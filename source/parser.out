@@ -1,0 +1,306 @@
+shift/reduce conflict in state 10 resolved as shift.
+shift/reduce conflict in state 10 resolved as shift.
+shift/reduce conflict in state 10 resolved as shift.
+shift/reduce conflict in state 10 resolved as shift.
+
+
+Unused terminals:
+
+
+Grammar
+
+Rule 1     expression -> expression expression
+Rule 2     expression -> func
+Rule 3     expression -> NUMBER
+Rule 4     expression -> STRING
+Rule 5     expression -> - expression
+Rule 6     arglist -> arglist , expression
+Rule 7     arglist -> expression
+Rule 8     func -> STARTFUNC arglist )
+
+Terminals, with rules where they appear
+
+)                    : 8
+,                    : 6
+-                    : 5
+NUMBER               : 3
+STARTFUNC            : 8
+STRING               : 4
+error                : 
+
+Nonterminals, with rules where they appear
+
+arglist              : 6 8
+expression           : 1 1 5 6 7 0
+func                 : 2
+
+
+Parsing method: LALR
+
+
+state 0
+
+    (0) S' -> . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    expression                     shift and go to state 6
+    func                           shift and go to state 4
+
+state 1
+
+    (4) expression -> STRING .
+
+    NUMBER          reduce using rule 4 (expression -> STRING .)
+    STRING          reduce using rule 4 (expression -> STRING .)
+    -               reduce using rule 4 (expression -> STRING .)
+    STARTFUNC       reduce using rule 4 (expression -> STRING .)
+    )               reduce using rule 4 (expression -> STRING .)
+    ,               reduce using rule 4 (expression -> STRING .)
+    $end            reduce using rule 4 (expression -> STRING .)
+
+
+
+state 2
+
+    (5) expression -> - . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    expression                     shift and go to state 7
+    func                           shift and go to state 4
+
+state 3
+
+    (3) expression -> NUMBER .
+
+    NUMBER          reduce using rule 3 (expression -> NUMBER .)
+    STRING          reduce using rule 3 (expression -> NUMBER .)
+    -               reduce using rule 3 (expression -> NUMBER .)
+    STARTFUNC       reduce using rule 3 (expression -> NUMBER .)
+    )               reduce using rule 3 (expression -> NUMBER .)
+    ,               reduce using rule 3 (expression -> NUMBER .)
+    $end            reduce using rule 3 (expression -> NUMBER .)
+
+
+
+state 4
+
+    (2) expression -> func .
+
+    NUMBER          reduce using rule 2 (expression -> func .)
+    STRING          reduce using rule 2 (expression -> func .)
+    -               reduce using rule 2 (expression -> func .)
+    STARTFUNC       reduce using rule 2 (expression -> func .)
+    )               reduce using rule 2 (expression -> func .)
+    ,               reduce using rule 2 (expression -> func .)
+    $end            reduce using rule 2 (expression -> func .)
+
+
+
+state 5
+
+    (8) func -> STARTFUNC . arglist )
+    (6) arglist -> . arglist , expression
+    (7) arglist -> . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    arglist                        shift and go to state 8
+    expression                     shift and go to state 9
+    func                           shift and go to state 4
+
+state 6
+
+    (0) S' -> expression .
+    (1) expression -> expression . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    expression                     shift and go to state 10
+    func                           shift and go to state 4
+
+state 7
+
+    (5) expression -> - expression .
+    (1) expression -> expression . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    NUMBER          reduce using rule 5 (expression -> - expression .)
+    -               reduce using rule 5 (expression -> - expression .)
+    STARTFUNC       reduce using rule 5 (expression -> - expression .)
+    )               reduce using rule 5 (expression -> - expression .)
+    ,               reduce using rule 5 (expression -> - expression .)
+    $end            reduce using rule 5 (expression -> - expression .)
+    STRING          shift and go to state 1
+
+  ! STRING          [ reduce using rule 5 (expression -> - expression .) ]
+  ! NUMBER          [ shift and go to state 3 ]
+  ! -               [ shift and go to state 2 ]
+  ! STARTFUNC       [ shift and go to state 5 ]
+
+    expression                     shift and go to state 10
+    func                           shift and go to state 4
+
+state 8
+
+    (8) func -> STARTFUNC arglist . )
+    (6) arglist -> arglist . , expression
+
+    )               shift and go to state 11
+    ,               shift and go to state 12
+
+
+
+state 9
+
+    (7) arglist -> expression .
+    (1) expression -> expression . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    )               reduce using rule 7 (arglist -> expression .)
+    ,               reduce using rule 7 (arglist -> expression .)
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    expression                     shift and go to state 10
+    func                           shift and go to state 4
+
+state 10
+
+    (1) expression -> expression expression .
+    (1) expression -> expression . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+  ! shift/reduce conflict for NUMBER resolved as shift.
+  ! shift/reduce conflict for STRING resolved as shift.
+  ! shift/reduce conflict for - resolved as shift.
+  ! shift/reduce conflict for STARTFUNC resolved as shift.
+    )               reduce using rule 1 (expression -> expression expression .)
+    ,               reduce using rule 1 (expression -> expression expression .)
+    $end            reduce using rule 1 (expression -> expression expression .)
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+  ! NUMBER          [ reduce using rule 1 (expression -> expression expression .) ]
+  ! STRING          [ reduce using rule 1 (expression -> expression expression .) ]
+  ! -               [ reduce using rule 1 (expression -> expression expression .) ]
+  ! STARTFUNC       [ reduce using rule 1 (expression -> expression expression .) ]
+
+    expression                     shift and go to state 10
+    func                           shift and go to state 4
+
+state 11
+
+    (8) func -> STARTFUNC arglist ) .
+
+    NUMBER          reduce using rule 8 (func -> STARTFUNC arglist ) .)
+    STRING          reduce using rule 8 (func -> STARTFUNC arglist ) .)
+    -               reduce using rule 8 (func -> STARTFUNC arglist ) .)
+    STARTFUNC       reduce using rule 8 (func -> STARTFUNC arglist ) .)
+    )               reduce using rule 8 (func -> STARTFUNC arglist ) .)
+    ,               reduce using rule 8 (func -> STARTFUNC arglist ) .)
+    $end            reduce using rule 8 (func -> STARTFUNC arglist ) .)
+
+
+
+state 12
+
+    (6) arglist -> arglist , . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    expression                     shift and go to state 13
+    func                           shift and go to state 4
+
+state 13
+
+    (6) arglist -> arglist , expression .
+    (1) expression -> expression . expression
+    (1) expression -> . expression expression
+    (2) expression -> . func
+    (3) expression -> . NUMBER
+    (4) expression -> . STRING
+    (5) expression -> . - expression
+    (8) func -> . STARTFUNC arglist )
+
+    )               reduce using rule 6 (arglist -> arglist , expression .)
+    ,               reduce using rule 6 (arglist -> arglist , expression .)
+    NUMBER          shift and go to state 3
+    STRING          shift and go to state 1
+    -               shift and go to state 2
+    STARTFUNC       shift and go to state 5
+
+
+    expression                     shift and go to state 10
+    func                           shift and go to state 4
