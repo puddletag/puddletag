@@ -10,7 +10,7 @@ class ProgressWin(QtGui.QProgressDialog):
         QtGui.QProgressDialog.__init__(self, "", "Cancel", 0, maximum, parent)
         self.setModal(True)
         self.setWindowTitle("Please Wait...")
-        self.forceShow()
+        #self.forceShow()
     
     def updateVal(self):
         self.setValue(self.value() + 1)
@@ -81,7 +81,7 @@ class TableWindow(QtGui.QWidget):
         self.table = abstract.TableShit(self)
         self.headerdata = ([("Path", "__path"), ("Artist", "artist"), 
                             ("Title", "title"), ("Album", "album"), \
-                            ("BPM","bpm"), ("Track", "track")])
+                            ("BitRate", "__bitrate"), ("Length","__length")])
         self.tablemodel = abstract.modelshit(self.headerdata)
         delegate = abstract.delegateshit(self)
         self.table.setItemDelegate(delegate)
@@ -194,7 +194,6 @@ class TableWindow(QtGui.QWidget):
                 tags.append(tag.tags.copy())
                 win.updateVal()                
         self.tablemodel.load(tags, append = appendtags)
-        self.table.selectRow(0)
         self.table.resizeRowsToContents()
         win.close()
         #print time.strftime("%H : %M : %S")
@@ -265,7 +264,10 @@ class MainWin(QtGui.QMainWindow):
         
         self.renamedir = QtGui.QAction(QtGui.QIcon(initdir("rename.png")), "Rename Dir",self)
         self.connect(self.renamedir, QtCore.SIGNAL("triggered()"), self.renamefolder)
-
+        
+        self.importfile = QtGui.QAction(QtGui.QIcon(initdir("import.png")), "Import tags from file",self)
+        self.connect(self.importfile, QtCore.SIGNAL("triggered()"), self.FileImport)
+        
         menubar = self.menuBar()
         file = menubar.addMenu('&File')
         file.addAction(self.opendir)
@@ -292,6 +294,7 @@ class MainWin(QtGui.QMainWindow):
         self.toolbar.addAction(self.changetracks)
         self.toolbar.addAction(self.adddir)
         self.toolbar.addAction(self.renamedir)
+        self.toolbar.addAction(self.importfile)
         
         self.statusbar = self.statusBar()
         self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
@@ -299,14 +302,41 @@ class MainWin(QtGui.QMainWindow):
         self.connect(self.cenwid.table, QtCore.SIGNAL('removedRow()'), self.rowEmpty)
         self.connect(self.cenwid.tree, QtCore.SIGNAL('addFolder'), self.openfolder)
         self.setWindowState(QtCore.Qt.WindowMaximized)
-                
+                    
+    def FileImport(self):
+        pattern = unicode(self.patterncombo.currentText())
+        filedlg = QtGui.QFileDialog()
+        filename = unicode(filedlg.getOpenFileName(self,
+                'OpenFolder','/media/multi/'))
+        if filename != "":
+            f = open(filename)
+            i = 0
+            import importfile
+            win = importfile.ImportWindow(self, filename)
+            win.setModal(True)
+            win.show()
+            patternitems = [self.patterncombo.itemText(z) for z in range(self.patterncombo.count())]
+            win.patterncombo.addItems(patternitems)
+            self.connect(win,QtCore.SIGNAL("Newtags"), self.goddamn)
+    
+    def goddamn(self,mylist):
+        i = 0        
+        for z in self.cenwid.table.selectedRows:
+            try:
+                self.cenwid.table.updaterow(z,mylist[i])
+            except IndexError:
+                break
+            i += 1
+    
+            
+                        
     def renamefolder(self, test = False):
         currentdir = path.dirname(self.cenwid.tablemodel.taginfo[self.cenwid.table.selectedRows[0]]["__filename"])
         filename = path.join(path.dirname(currentdir),path.splitext(path.basename(self.savetagtofile(True)))[0])
         if test == True:
-            return "Rename: " + currentdir + " to: " + filename
-        result = QtGui.QMessageBox.question (None, "Rename Folder?", 
-                    "Are you sure you want to rename \n " + currentdir + "\n to \n" + filename, 
+            return unicode("Rename: ") + currentdir + unicode(" to: ") + filename
+        result = QtGui.QMessageBox.question (None, unicode("Rename Folder?"), 
+                    unicode("Are you sure you want to rename \n ") + currentdir + unicode("\n to \n") + filename, 
                     "&Yes", "&No","", 1, 1)
         if result == 0:
             self.disconnect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
@@ -319,8 +349,8 @@ class MainWin(QtGui.QMainWindow):
                 self.cenwid.tree.setCurrentIndex(idx)
             except OSError:
                 QtGui.QMessageBox.information(self, 'Message',
-                    "I couldn't rename\n" + currentdir + " to \n" +
-                    filename + "\nCheck that you have write access.", QtGui.QMessageBox.Ok)
+                   unicode( "I couldn't rename\n") + currentdir + unicode(" to \n") +
+                    filename + unicode("\nCheck that you have write access."), QtGui.QMessageBox.Ok)
             self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
             self.connect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
             self.openfolder(filename)
@@ -339,8 +369,10 @@ class MainWin(QtGui.QMainWindow):
                 self.tagfromfile.setEnabled(True)
                 self.format.setEnabled(True)
                 self.renamedir.setEnabled(True)
+                self.importfile.setEnabled(True)
                 return
-        except AttributeError: pass
+        except AttributeError:
+                pass
         
         cenwid.combogroup.disableCombos()
         self.savecombotag.setEnabled(False)
@@ -351,6 +383,7 @@ class MainWin(QtGui.QMainWindow):
         self.tagfromfile.setEnabled(False)
         self.format.setEnabled(False)
         self.renamedir.setEnabled(False)
+        self.importfile.setEnabled(False)
         
     def tracks(self):
         """Shows the window for selecting the range that track
@@ -393,8 +426,8 @@ class MainWin(QtGui.QMainWindow):
     def patternchange(self):
         #There's an error everytime an item is deleted, we account for that
         try:
-            self.tagfromfile.setStatusTip("Newtag: " + unicode(self.gettagfromfile(True)))
-            self.tagtofile.setStatusTip("New Filename: " + self.savetagtofile(True))
+            self.tagfromfile.setStatusTip(unicode("Newtag: ") + unicode(self.gettagfromfile(True)))
+            self.tagtofile.setStatusTip(unicode("New Filename: ") + self.savetagtofile(True))
             self.renamedir.setStatusTip(self.renamefolder(True))
         except IndexError: pass
         
@@ -446,6 +479,7 @@ class MainWin(QtGui.QMainWindow):
         returned."""
         taginfo = self.cenwid.tablemodel.taginfo
         
+        
         if test == False:
             win = ProgressWin(self, len(self.cenwid.table.selectedRows))            
             startval = 0
@@ -466,7 +500,7 @@ class MainWin(QtGui.QMainWindow):
                 try:
                     if os.path.exists(newfilename):
                         result = QtGui.QMessageBox.question (self, "Error?", 
-                            "The file: " + newfilename + " exists. Should I continue?", 
+                            "The file: " + newfilename + " exists. Should I overwrite it?", 
                             "&Yes", "&No","", 1, 1)
                         if result == 1:
                             break        
@@ -507,7 +541,9 @@ class MainWin(QtGui.QMainWindow):
         self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
         self.connect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
         self.setWindowTitle("Freetag: " + filename)
-    
+        if appenddir == False:
+            self.cenwid.table.selectRow(0)    
+        
     def opentree(self):
         filename=unicode(self.cenwid.dirmodel.filePath(self.cenwid.tree.selectedIndexes()[0]))
         self.openfolder(filename)
@@ -522,6 +558,7 @@ class MainWin(QtGui.QMainWindow):
             if ch not in r'/\*?;|': escaped = escaped + ch
         if not escaped: return '""'
         return escaped
+        
 app = QtGui.QApplication(sys.argv)
 filename=sys.argv[-1]
     

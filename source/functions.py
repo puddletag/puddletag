@@ -1,5 +1,9 @@
 def num(number,numlen):
     number=str(number)
+    try:
+        numlen = long(numlen)
+    except ValueError:
+        return number
     if len(number)<numlen:
         number='0' * (numlen - len(number)) + number
     if len(number)>numlen:

@@ -109,7 +109,8 @@ class modelshit(QAbstractTableModel):
                 try:
                     what.writetags()
                 except IOError:
-                    QMessageBox.information(None,"Error", "Could not write to file " + filename, QMessageBox.Ok)
+                    QMessageBox.information(None,"Error", "Could not write to file " + \
+                    filename + "\nDo you have write access?", QMessageBox.Ok)
                     return False
                 self.taginfo[index.row()][tag] = unicode(value.toString())
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
@@ -148,7 +149,11 @@ class modelshit(QAbstractTableModel):
             for y in self.headerdata:
                 if y[1]==z:
                     what=self.createIndex(row,column)
-                    self.setData(what,QVariant(mydict[y[1]]))
+                    try:
+                        self.setData(what,QVariant(mydict[y[1]]))
+                    except AttributeError:
+                        pdb.set_trace()
+                        self.setData(what,QVariant(mydict[y[1]]))
                 column+=1
                 
     def removeRows(self, position, rows=1, index=QModelIndex(),showmsg = False, delfiles = True):

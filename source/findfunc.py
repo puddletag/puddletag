@@ -6,9 +6,37 @@
     filenametotag for more details"""
 
 import sre,audioinfo,os,pdb
-from myparser import parsefunc
 import eyeD3
-from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, Combine
+from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, NotAny
+import functions
+numtimes = 0
+
+def parsefunc(text):
+    identifier = Combine(ZeroOrMore("\$") + Word(alphanums + "_ \\($%!@"))
+    integer  = Word( nums )
+    funcstart =  NotAny("\\") + Combine(Literal("$") + ZeroOrMore(Word(alphanums + "_")) + "(")
+    arg = identifier | integer
+    args = arg + ZeroOrMore("," + arg)
+    #expression = functor + lparen + args + rparen
+    
+    def what(s,loc,tok):
+        arguments = tuple(tok[1:])
+        funcname = tok[0][1:-1]
+        try:
+            return getattr(functions,funcname)(*arguments)
+        except: 
+            #pdb.set_trace()
+            getattr(functions,funcname)(*arguments)
+    
+    
+    ignored = ZeroOrMore(Word(alphanums + " !@#$^&*(){}|\\][?+=/_~`"))
+    
+    content = Forward()
+    expression = funcstart + delimitedList(content) + Literal(")").suppress()
+    expression.setParseAction(what)
+    content << (expression | identifier | integer)
+    
+    return content.transformString(text)
 
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
@@ -76,20 +104,23 @@ def filenametotag(pattern, filename, checkext = False):
     #Make sure percentages aren't escaped
     pat = sre.compile(r'[^\\|.*]%\w*%')
     
-    
+    #if pattern == "%track% %title%": pdb.set_trace()
     if checkext:
         filename=os.path.splitext(filename)[0]
-    
+    #if pattern == '%track%. %title%': pdb.set_trace()
     text=re_escape(pattern)
-    
     taglist = []
-    def what(s, loc, tok):   
+    def what(s, loc, tok):
+        global numtimes
         taglist.append(tok[0][1:-1])
-        return "(.*)"
-    
+        numtimes -=1 
+        if numtimes == 0:
+            return "(.*)"
+        return "(.*?)"
     #Replace the tags with the regular expression "(.*)"
     tag = Combine(Literal("%") + OneOrMore(Word(alphas)) + Literal("%")).setParseAction(what)
-    
+    global numtimes
+    numtimes = len([z for z in tag.scanString(text)])
     text = tag.transformString(text)
     try:
         tags=sre.search(text, filename).groups()
@@ -137,11 +168,14 @@ def tagtofilename(pattern,filename,addext=False,extension=None):
     
     #for each tag with a value, replace it in the pattern
     #with that value
-    patterncopy=pattern
+    pattern=unicode(pattern)
     for idx in tags.keys():
         if tags[idx]==None:
-            tags[idx]=""                    
-        pattern=pattern.replace(unicode('%' + idx + '%'), unicode(tags[idx]))
+            tags[idx]=""
+        try:
+            pattern=pattern.replace(unicode('%' + idx + '%'), unicode(tags[idx]))
+        except UnicodeDecodeError:
+            print "Unicode Error in pattern.replace with, ", tags["__filename"]
     
     #ret=getfunc(pattern)
     #if ret==pattern:

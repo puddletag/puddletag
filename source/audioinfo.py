@@ -180,8 +180,13 @@ class Tag:
             #tmp has the tag with the function
             #to run when that tag is encountered.
 
-            
-            tag=eyeD3.Tag()
+            file = eyeD3.Mp3AudioFile(self.filename)
+            for z in [('getBitRateString','__bitrate'),
+                        ('getPlayTimeString', '__length'), 
+                        ('getSampleFreq',"__samplefreq"),
+                        ('getSize',"__filesize")]:
+                self.tags[z[1]] = getattr(file,z[0])()
+            tag = eyeD3.Tag()
             if tag.link(self.filename)==0:
                 return 0
             for z in tag.frames:
@@ -191,8 +196,7 @@ class Tag:
                     except AttributeError:pass
             if tag.getYear() is not None:
                 self.tags["date"]= tag.getYear()
-            
-            
+
             #if self.tags.has_key("track"):
                 #if type (self.tags["track"]=tuple:
                     #self.tags[tags]
@@ -233,27 +237,32 @@ class Tag:
         if self.filetype==self.MP3:
             
             try:   
-                tag=eyeD3.Mp3AudioFile(filename).getTag()
+                tag = eyeD3.Mp3AudioFile(filename).getTag()
             except eyeD3.tag.InvalidAudioFormatException:
                 #Sometimes the above doesn't work
                 #I really have no fucking idea why
                 tag = eyeD3.Tag()
                 tag.link(filename)
-            
-            #Set tag version to the latest.
-            #I'm doing this because for some files without
-            #tags the version does not want to be set
-            #and this seems to work.
-            try:
+            if tag is None:
+                tag = eyeD3.Tag(filename)
                 tag.setVersion(eyeD3.ID3_V2_4)
-            except AttributeError:
-                tag = eyeD3.Tag()
-                tag.link(filename)
-                tag.setVersion(eyeD3.ID3_V2_4)
+                
             try: del (self.tags["genre"])
             except KeyError: pass
             for z in self.tags:
-                tag.setTextFrame(self.__revids[z],self.tags[z])
+                try:
+                    tag.setTextFrame(self.__revids[z],self.tags[z])
+                except KeyError:
+                    pass
+            if self.tags.has_key("date"):
+                
+                if tag.getDate() is not None:
+                    #I'm doing this twice because for some reason Date frames
+                    #get added after they were removed
+                    [tag.frames.removeFramesByID(z.header.id) for z in tag.getDate()]
+                    if tag.getDate() is not None:
+                        [tag.frames.removeFramesByID(z.header.id) for z in tag.getDate()]
+                tag.setDate(self.tags["date"])
             tag.update()
             #write tags. See gettags for explanation of track
             #for z in self.tags.keys():
