@@ -26,8 +26,8 @@ class compare:
         "Natural string comparison, ignores case."
         return self.natcmp(a.lower(), b.lower())
         
-class modelshit(QAbstractTableModel):
-    """The model used"""
+class TagModel(QAbstractTableModel):
+    """The model used in TableShit"""
     def __init__(self, headerdata, taginfo = {}):
         """Load tags. 
         
@@ -95,50 +95,87 @@ class modelshit(QAbstractTableModel):
                             Qt.ItemIsEditable)
     
     def setData(self, index, value, role=Qt.EditRole):
+        """Sets the data in a cell of the table.
+        This method does just that.
+        It retrieves the tag from the file, conveniently
+        stored in "__filename" of each tag dictionary.
+        Then it writes that value."""
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
             filename = self.taginfo[index.row()]["__filename"]
+            newvalue = unicode(value.toString())
+            #Tags that startwith "__" are usually read only except for path
+            #and filename, in which case we rename the files
             if tag.startswith("__"):
-                return False
+                try:
+                    if tag == "__filename":
+                        os.move(filename, newvalue)
+                    elif tag == "__path":
+                        newfilename = os.path.join(os.path.dirname(filename),newvalue)
+                        os.rename(filename, newfilename)                  
+                    else:
+                        return False
+                except IOError, detail:
+                    QMessageBox.information(None,"Error", 
+                    "I couldn't rename the file :\n %s \n to %s.\nDo you have write access?" \
+                    % (filename, newvalue), QMessageBox.Ok)
+                    return False                                
             else:
                 what = audioinfo.Tag(filename)
-                tagtowrite = {tag: unicode(value.toString())}
-                #pdb.set_trace()
-                what.tags = tagtowrite.copy()
+                what.tags = {tag: newvalue}
                 try:
                     what.writetags()
-                except IOError:
+                except IOError, detail:
                     QMessageBox.information(None,"Error", "Could not write to file " + \
                     filename + "\nDo you have write access?", QMessageBox.Ok)
+                    print detail
                     return False
-                self.taginfo[index.row()][tag] = unicode(value.toString())
+            self.taginfo[index.row()][tag] = newvalue
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                       index, index)
             return True
         return False
     
     def writeTag(self, row, tags):
+        """A function to write the tags given in tags
+        to the file in row.
+        
+        Why this function?
+        
+        Because usually, not all available tags are
+        shown in the table. So if say, you want to write
+        the tag {"track":"12"} to the file in row 3, but
+        the track isn't in the table's headederdata, you'd
+        use this function."""
         try:
             self.taginfo[row].update(tags)
         except TypeError:
             print "Can't update row", row
         what = audioinfo.Tag(self.taginfo[row]["__filename"])
-        what.tags=tags
+        what.tags = tags
         what.writetags()
         
     
-    def sort(self,column,order=Qt.DescendingOrder):
+    def sort(self,column,order = Qt.DescendingOrder):
+        #If you're confused about anything here, look up
+        #the documentation for PyQt4 and look up
+        #QItemModel.
+        #If on the other hand, you know all that already
+        #disregard my insulting of your intelligence.
         tag = self.headerdata[column][1]
         for z in self.taginfo:
             if not z.has_key(tag): #We need every tag to have a value to sort with
                 z[tag] = ""
         cmpfunc = compare()
-        self.taginfo=sorted(self.taginfo, cmpfunc.natcasecmp, key = itemgetter(tag))
+        if order == Qt.AscendingOrder:
+            self.taginfo = sorted(self.taginfo, cmpfunc.natcasecmp, itemgetter(tag))
+        else:
+            self.taginfo = sorted(self.taginfo, cmpfunc.natcasecmp, itemgetter(tag), True)
         self.reset()
     
     def setRowData(self,row,mydict):
-        """A function to update one row
+        """A function to update one row.
         row is the row, mydict is tag you want to set."""
         try:
             self.taginfo[row].update(mydict)
@@ -147,14 +184,16 @@ class modelshit(QAbstractTableModel):
         for z in mydict:
             column=0
             for y in self.headerdata:
-                if y[1]==z:
-                    what=self.createIndex(row,column)
-                    try:
-                        self.setData(what,QVariant(mydict[y[1]]))
-                    except AttributeError:
-                        pdb.set_trace()
-                        self.setData(what,QVariant(mydict[y[1]]))
-                column+=1
+                if y[1] == z:
+                    what = self.createIndex(row,column)
+                    #try:
+                    self.setData(what,QVariant(mydict[y[1]]))
+                    #except AttributeError:
+                        #AttributeError was usually raised if the tag is
+                        #empty. It's been fixed.
+                        #pdb.set_trace()
+                        #self.setData(what,QVariant(mydict[y[1]]))
+                column += 1
                 
     def removeRows(self, position, rows=1, index=QModelIndex(),showmsg = False, delfiles = True):
         self.beginRemoveRows(QModelIndex(), position,
@@ -175,10 +214,9 @@ class modelshit(QAbstractTableModel):
         return True
 
 
-class delegateshit(QItemDelegate):
+class DelegateShit(QItemDelegate):
     def __init__(self,parent=None):
-        QItemDelegate.__init__(self,parent)
-        
+        QItemDelegate.__init__(self,parent)        
     
     def createEditor(self,parent,option,index):
             editor = QLineEdit(parent)
@@ -203,13 +241,23 @@ class delegateshit(QItemDelegate):
 
         
 class TableShit(QTableView):
-    def __init__(self,parent=None):
+    """I need a more descriptive name for this.
+    
+    This table is the table that handles all my tags for me.
+    The main functions and properties are:
+    
+    rowTags(row) -> Returns the tags from a row.
+    updateRow(row, tags) - > Updates a row with the tags specified
+    selectedRows -> A list of currently selected rows
+    remRows() -> Removes the selected rows."""
+    
+    def __init__(self,parent = None):
         QTableView.__init__(self,parent)
         self.setDragEnabled(True)
         
     def selectionChanged(self,what = None,shit = None):
-        selectedRows=set()
-        selectedColumns=set()
+        selectedRows = set()
+        selectedColumns = set()
         for z in self.selectedIndexes():
             selectedRows.add(z.row())
             selectedColumns.add(z.column())
@@ -217,13 +265,13 @@ class TableShit(QTableView):
         self.selectedColumns = list(selectedColumns)
         self.emit(SIGNAL("itemSelectionChanged()"))
     
-    def rowtags(self,row):
+    def rowTags(self,row):
         #for column in range(len(what.headerdata)):
             #index=what.index(row,column)
             #mydict[what.headerdata[column]ementation does nothing and returns false.[1]]=unicode(what.data(index).toString())
         return self.model().taginfo[row]
     
-    def updaterow(self,row,mydict):
+    def updateRow(self,row,mydict):
         self.model().setRowData(row,mydict)
     
     def dragEnterEvent(self, event):
@@ -237,21 +285,22 @@ class TableShit(QTableView):
 	
         if event.buttons() != Qt.LeftButton:
 	       return
-
         mimeData = QMimeData()
         plainText = ""
         tags= []
         selectedRows = list(self.selectedRows)
+        #I'm adding plaintext to MimeData
+        #because XMMS doesn't seem to work well with URL's
         for z in selectedRows:
-            plainText = plainText + os.path.join("file:///localhost", self.rowtags(z)["__filename"]) + "\n"
-            tags.append(QUrl(os.path.join("file:///localhost", self.rowtags(z)["__filename"])))            
+            plainText = plainText + os.path.join("file:///localhost", self.rowTags(z)["__filename"]) + "\n"
+            tags.append(QUrl(os.path.join("file:///localhost", self.rowTags(z)["__filename"])))            
         mimeData = QMimeData()
         mimeData.setUrls(tags)
         mimeData.setText(plainText)
+        
         drag = QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-
         dropAction = drag.start(Qt.MoveAction | Qt.MoveAction)
 
 
@@ -265,15 +314,18 @@ class TableShit(QTableView):
                     "Are you sure you want to delete the selected files?", 
                     "&Yes", "&No","", 1, 1)
             if result == 0:
-                self.remrows(self.selectedRows)
+                self.remRows()
             return
         QTableView.keyPressEvent(self, event)
     
-    def remrows(self, selectedRows):
-        if selectedRows == []: return
+    def remRows(self):
+        """Removes the currently selected rows
+        and deletes the files."""
+        if self.selectedRows == []: return
         self.model().removeRows(self.selectedRows[0], delfiles = True)
         self.selectionChanged()
-        self.remrows(self.selectedRows)
+        self.remRows()
+    
             
 #class mainwin(QWidget):
     #def __init__(self,parent=None):

@@ -1,25 +1,28 @@
-"""This module contains the function needed
+"""This module contains the functions needed
     to extract tags from files according to patterns
     specified. 
     
     See the docstrings for tagfromfilename and
     filenametotag for more details"""
 
-import sre,audioinfo,os,pdb
-import eyeD3
+import sre, audioinfo, os, pdb, eyeD3, functions
 from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, NotAny
-import functions
+#Used in 
 numtimes = 0
 
 def parsefunc(text):
+    """Parses a function in the form $name(arguments)
+    the function $name from the functions module is called
+    with the arguments."""
+    
     identifier = Combine(ZeroOrMore("\$") + Word(alphanums + "_ \\($%!@"))
     integer  = Word( nums )
     funcstart =  NotAny("\\") + Combine(Literal("$") + ZeroOrMore(Word(alphanums + "_")) + "(")
     arg = identifier | integer
     args = arg + ZeroOrMore("," + arg)
-    #expression = functor + lparen + args + rparen
+
     
-    def what(s,loc,tok):
+    def callfunc(s,loc,tok):
         arguments = tuple(tok[1:])
         funcname = tok[0][1:-1]
         try:
@@ -33,7 +36,7 @@ def parsefunc(text):
     
     content = Forward()
     expression = funcstart + delimitedList(content) + Literal(")").suppress()
-    expression.setParseAction(what)
+    expression.setParseAction(callfunc)
     content << (expression | identifier | integer)
     
     return content.transformString(text)
@@ -48,13 +51,12 @@ def re_escape(rex):
     return escaped
 
 def getfunc(text):
-    """getfunc(text)
-    parses the functions it text and replaces
-    them with their return value. The functions
-    are defined in functions.py
+    """Parses text and replaces all functions
+    with their appropriate values.
     
     Function must be of the form $name(args)
     Returns None if unsuccesful"""
+    
     pat = sre.compile(r'[^\\]\$[a-z]+\(')
     
     start = 0
@@ -75,31 +77,29 @@ def getfunc(text):
         except IndexError:
             #print "indexerror ", text
             return text
-        #print text[match.start(0)+1:idx]
+
         #Replace a function with its parsed text
-        text=text.replace(text[match.start(0)+1:idx],
-                        parsefunc(text[match.start(0)+1:idx]))
+        text = text.replace(text[match.start(0) + 1: idx],
+                        parsefunc(text[match.start(0) + 1: idx]))
         start = idx + 1
     return text
 
 
 def filenametotag(pattern, filename, checkext = False):    
-    """filenametotag(pattern,filename,checkext=False)
-        Retrieves tag values from your filename
+    """Retrieves tag values from your filename
         pattern is the rule with which to extract
         the tags from filename. Which does not have to
-        be an existing file.
-        Returns a dictionary with
+        be an existing file. Returns a dictionary with
         elements {tag:value} on success.
         If checkext=True, then the extension of the filename
         is included during the extraction process.
         
         E.g. if you want to retrieve a tags according to
-        pattern="%artist% - %track% - %title%"
+        >>>pattern = "%artist% - %track% - %title%"
         You set a dictionary like so...
-        filename = "Mr. Jones - 123 - Title of a song"
+        >>>filename = "Mr. Jones - 123 - Title of a song"
         filename to tag returns
-        {"artist":"Mr. Jones", "track":"123","title":"Title of a song" """
+        {"artist":"Mr. Jones", "track":"123","title":"Title of a song"} """
     
     #Make sure percentages aren't escaped
     pat = sre.compile(r'[^\\|.*]%\w*%')
@@ -107,24 +107,31 @@ def filenametotag(pattern, filename, checkext = False):
     #if pattern == "%track% %title%": pdb.set_trace()
     if checkext:
         filename=os.path.splitext(filename)[0]
-    #if pattern == '%track%. %title%': pdb.set_trace()
-    text=re_escape(pattern)
+
+    text = re_escape(pattern)
     taglist = []
+    
+    #what is run numtimes times. What I want to do is
+    #match all but the last tag as non-greedy.
+    #Otherwise filenames such as "01. artistname"
+    #won't be matched.
     def what(s, loc, tok):
         global numtimes
         taglist.append(tok[0][1:-1])
-        numtimes -=1 
+        numtimes -= 1 
         if numtimes == 0:
             return "(.*)"
         return "(.*?)"
-    #Replace the tags with the regular expression "(.*)"
+    
+    #Replace the tags with a regular expression
     tag = Combine(Literal("%") + OneOrMore(Word(alphas)) + Literal("%")).setParseAction(what)
     global numtimes
     numtimes = len([z for z in tag.scanString(text)])
     text = tag.transformString(text)
     try:
-        tags=sre.search(text, filename).groups()
+        tags = sre.search(text, filename).groups()
     except AttributeError:
+        #Attribute Error means that the expression probabably wasn't found.
         return
     
     mydict={}
@@ -154,12 +161,12 @@ def tagtofilename(pattern,filename,addext=False,extension=None):
     call tagtofilename(pattern,filename)"""
     
     #First check if a filename was passed or a dictionary.
-    if type(filename)==dict:
+    if type(filename) == dict:
         #if it was a dictionary, then use that as the tags.
-        tags=filename
+        tags = filename
     else:
-        tag=audioinfo.Tag()
-        if tag.link(filename)==0 or tag.link(filename)==1:
+        tag = audioinfo.Tag()
+        if tag.link(filename) == 0 or tag.link(filename) == 1:
             return 0
         #get tag info
         tag.gettags()
@@ -168,23 +175,15 @@ def tagtofilename(pattern,filename,addext=False,extension=None):
     
     #for each tag with a value, replace it in the pattern
     #with that value
-    pattern=unicode(pattern)
+    pattern = unicode(pattern)
     for idx in tags.keys():
-        if tags[idx]==None:
-            tags[idx]=""
+        if tags[idx] == None:
+            tags[idx] = ""
         try:
             pattern=pattern.replace(unicode('%' + idx + '%'), unicode(tags[idx]))
         except UnicodeDecodeError:
             print "Unicode Error in pattern.replace with, ", tags["__filename"]
-    
-    #ret=getfunc(pattern)
-    #if ret==pattern:
-        #for idx in tags.keys():
-            #if tags[idx]==None:
-                #tags[idx]=""
-                        
-            #patterncopy=patterncopy.replace(unicode('%' + idx + '%') ,unicode(tags[idx]))
-        #return patterncopy
+
 
     if addext==False:
         return getfunc(pattern)

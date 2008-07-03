@@ -137,7 +137,7 @@ class Tag:
         #self.filetype to it.
         self.filetype=None
         try:
-            f=vorbis.VorbisFile(filename)
+            f = vorbis.VorbisFile(filename)
             self.filename=filename
             self.filetype=self.OGG
             self.tags["__filename"] = filename
@@ -167,12 +167,17 @@ class Tag:
                    "__path" : os.path.basename(self.filename),
                    "__ext" : self.filetype}
                    
-        if self.filetype==self.OGG:
-            f=vorbis.VorbisFile(self.filename)
-            comments=f.comment().as_dict()            
+        if self.filetype == self.OGG:
+            f = vorbis.VorbisFile(self.filename)
+            comments = f.comment().as_dict()
+            self.tags["__bitrate"] = unicode(f.bitrate(0) / 1000) + " kb/s"
+            self.tags["__length"] = unicode(int(f.time_total(0) / 60)) + ":" + unicode(int((f.time_total(0) % 60) * 60 / 100))
+            self.tags["__filesize"] = unicode(f.raw_total(0)/1024.0**2)[:4] + "MB"
+            self.tags["__samplefreq"] = unicode(f.info().rate / 1000.0)[:4] + "kHz"
+            
             for z in comments.keys():
-                self.tags[z.lower()]=comments[z][0]
-            self.tags["track"]=self.tags["tracknumber"]
+                self.tags[z.lower()] = comments[z][0]
+            self.tags["track"] = self.tags["tracknumber"]
             del self.tags["tracknumber"]
             return self.tags
         
@@ -182,10 +187,11 @@ class Tag:
 
             file = eyeD3.Mp3AudioFile(self.filename)
             for z in [('getBitRateString','__bitrate'),
-                        ('getPlayTimeString', '__length'), 
-                        ('getSampleFreq',"__samplefreq"),
-                        ('getSize',"__filesize")]:
+                        ('getPlayTimeString', '__length')]:
                 self.tags[z[1]] = getattr(file,z[0])()
+            self.tags["__filesize"] = unicode(file.getSize() / 1024.0**2)[:4] + "MB"
+            self.tags["__samplefreq"] = unicode(file.getSampleFreq() / 1000.0)[:4] + "kHz"
+            
             tag = eyeD3.Tag()
             if tag.link(self.filename)==0:
                 return 0
@@ -264,14 +270,6 @@ class Tag:
                         [tag.frames.removeFramesByID(z.header.id) for z in tag.getDate()]
                 tag.setDate(self.tags["date"])
             tag.update()
-            #write tags. See gettags for explanation of track
-            #for z in self.tags.keys():
-                #try:
-                    #if z=="track":
-                        #getattr(tag,tmp[z])((self.tags[z],None))
-                    #else:
-                        #getattr(tag,tmp[z])(self.tags[z])
-                #except KeyError: pass
                 
             #write other ID3 version tags, just for compatibility
             tag.update(eyeD3.ID3_V2_3)

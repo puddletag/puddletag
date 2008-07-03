@@ -1,8 +1,6 @@
-from PyQt4 import QtGui,QtCore
-import sys, audioinfo,os, copy
-from subprocess import Popen
-import pdb,abstract
-import findfunc
+from PyQt4 import QtGui, QtCore
+import sys, audioinfo,os, copy, pdb
+import abstract, findfunc, formatwin
 from os import path
 
 class ProgressWin(QtGui.QProgressDialog):
@@ -50,12 +48,21 @@ class FrameCombo(QtGui.QGroupBox):
         for z in self.combos:
             self.combos[z].clear()
             self.combos[z].setEnabled(False)
+        
+    def initCombos(self):
+        """Clears the comboboxes and adds two items, <keep> and <blank>.
+        If <keep> is selected and the tags in the combos are saved, 
+        then they remain unchanged. If <blank> is selected, then the tag is removed"""
+        for combo in self.combos:
+            self.combos[combo].clear()
+            self.combos[combo].setEditable(True)
+            self.combos[combo].addItems(["<keep>", "<blank>"])
+            self.combos[combo].setEnabled(False)
+        
 
 
 class DirView(QtGui.QTreeView):
-    """The treeview sude to select a directory.
-    This class was created only to allow the itemselectionChanged
-    signal to be emitted."""
+    """The treeview used to select a directory."""
     def __init__(self,parent = None):
         QtGui.QTreeView.__init__(self,parent)
         self.setAcceptDrops(False)
@@ -68,22 +75,38 @@ class DirView(QtGui.QTreeView):
         twoAction = menu.addAction("&Add Folder")
         self.connect(twoAction,QtCore.SIGNAL('triggered()'),self.what)
         menu.exec_(event.globalPos())
+    
+    def mousePressEvent(self,event):
+        if event.button == QtCore.Qt.RightButton:
+            self.contextMenuEvent(event)
+            return
+        QtGui.QTreeView.mousePressEvent(self, event)
 
     def what(self):
         self.emit(QtCore.SIGNAL("addFolder", self.model().filePath(self.selectedIndexes()[0])))
 
 
 class TableWindow(QtGui.QWidget):
+    """It's called a TableWindow just because
+    the main widget is a table.
+    
+    The table allows the editing of tags
+    and stuff like that. Important methods are:
+    
+    fillTable -> Fills the table with tags from the folder specified.
+    fillCombos -> Fills the comboboxes with the tags of the selected files.
+    saveCombos -> Saves the values in the comboboxes."""
+    
     def __init__(self,parent=None):
         QtGui.QWidget.__init__(self,parent)
         self.resize(1000,800)
         
         self.table = abstract.TableShit(self)
         self.headerdata = ([("Path", "__path"), ("Artist", "artist"), 
-                            ("Title", "title"), ("Album", "album"), \
-                            ("BitRate", "__bitrate"), ("Length","__length")])
-        self.tablemodel = abstract.modelshit(self.headerdata)
-        delegate = abstract.delegateshit(self)
+                            ("Title", "title"), ("Track", "track"), \
+                            ("Album", "album"), ("Length","__length")])
+        self.tablemodel = abstract.TagModel(self.headerdata)
+        delegate = abstract.DelegateShit(self)
         self.table.setItemDelegate(delegate)
         self.table.setModel(self.tablemodel)
         header = self.table.horizontalHeader()
@@ -112,46 +135,38 @@ class TableWindow(QtGui.QWidget):
         grid.addWidget(self.tree,1,0)
         grid.addWidget(self.table,0,1,2,1)
         self.setLayout(grid)
-
-        self.connect(self.table, QtCore.SIGNAL('itemSelectionChanged()'),
-                                         self.fillcombos)       
-        self.connect(header, QtCore.SIGNAL("sectionClicked(int)"),
-             self.sorttable)
         
+        self.connect(self.table, QtCore.SIGNAL('itemSelectionChanged()'),
+                                         self.fillcombos)     
+        self.connect(header, QtCore.SIGNAL("sectionClicked(int)"),
+             self.sortTable)
+        
+        #Need's some cleaning
         i = 0
         for z in [238, 202, 243, 203, 54]:
             self.table.setColumnWidth(i, z)
             i += 1
         
-    def sorttable(self,val):
+    def sortTable(self,val):
         self.table.sortByColumn(val)
         #This is due to the odd behaviour of the table
         self.setFocus()
     
     def fillcombos(self):
         """Fills the QComboBoxes in FrameCombo with
-        the tags selected from self.table. It also adds
-        two items, <keep> and <blank>. If <keep> is selected
-        and the tags in the combos are saved, then they remain unchanged.
-        If <blank> is selected, then the tag is removed"""
+        the tags selected from self.table. """
         
         #import time
         #print "run"
         #print time.strftime("%H : %M : %S")
         combos = self.combogroup.combos
-        
-        for combo in self.combogroup.combos:
-            combos[combo].clear()
-            combos[combo].setEditable(True)
-            combos[combo].addItems(["<keep>", "<blank>"])
-            combos[combo].setEnabled(False)
-        
+        self.combogroup.initCombos()        
         mydict={}
         
         #Removes all duplicate entries for the combos
         #by adding them to a set.
         for row in self.table.selectedRows:
-            taginfo=self.table.rowtags(row)
+            taginfo=self.table.rowTags(row)
             for tag in taginfo:
                 try:
                     mydict[tag].add(taginfo[tag])
@@ -174,22 +189,23 @@ class TableWindow(QtGui.QWidget):
                         
         #print time.strftime("%H : %M : %S")
         
-    def filltable(self,folderpath, appendtags = False):
+    def fillTable(self,folderpath, appendtags = False):
         """Fills self.table with the tags as retrieved from the
-        directory folderpath."""
+        directory folderpath.
+        If appendtags = True, the new folder is just appended."""
         
         #import time
         #print folderpath
         #print time.strftime("%H : %M : %S")
-        tag=audioinfo.Tag()
-        tags=[]
-        files=(os.listdir(folderpath))
+        tag = audioinfo.Tag()
+        tags = []
+        files = (os.listdir(folderpath))
         #For the progressbar
         win = ProgressWin(self, len(files))
         #Get the tag of each file and add it to a list
         for file in files:
             if win.wasCanceled(): break
-            if tag.link(path.join(folderpath,file)) is None:
+            if tag.link(path.join(folderpath, file)) is None:
                 tag.gettags()
                 tags.append(tag.tags.copy())
                 win.updateVal()                
@@ -198,10 +214,12 @@ class TableWindow(QtGui.QWidget):
         win.close()
         #print time.strftime("%H : %M : %S")
         
-    def savecombos(self):
-        
-        combos = self.combogroup.combos
+    def saveCombos(self):
+        """Saves the values to the tags in the combos."""
+        combos = self.combogroup.combos        
+        win = ProgressWin(self, len(self.table.selectedRows))
         for row in self.table.selectedRows:
+            if win.wasCanceled(): break
             tags={}
             for tag in combos:
                 try:
@@ -212,61 +230,64 @@ class TableWindow(QtGui.QWidget):
                         tags[tag]=unicode(combos[tag].currentText())
                 except KeyError:
                     pass
+            win.updateVal()            
             self.tablemodel.setRowData(row,tags.copy())
             self.tablemodel.writeTag(row,tags.copy())
+        win.close()
 
         
     
 
 
-class MainWin(QtGui.QMainWindow):
-    
-    
+class MainWin(QtGui.QMainWindow):        
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
         
-        def initdir(filename):
-            return path.join(sys.path[0],filename)
+        initdir = lambda filename: os.path.join(sys.path[0], filename)
         
         self.setWindowTitle("Freetag")
-        self.cenwid=TableWindow()
+        self.cenwid = TableWindow()
         self.setCentralWidget(self.cenwid)
         
-        
-        
+        #Action for opening a folder
         self.opendir =  QtGui.QAction(QtGui.QIcon(initdir('open.png')), 'Open Folder', self)
         self.opendir.setShortcut('Ctrl+O')
-        self.connect(self.opendir, QtCore.SIGNAL('triggered()'), self.openfolder)
+        self.connect(self.opendir, QtCore.SIGNAL('triggered()'), self.openFolder)
         
+        #Action for adding another folder
         self.adddir = QtGui.QAction(QtGui.QIcon(initdir('fileimport.png')), 'Add Folder', self)
-        self.connect(self.adddir, QtCore.SIGNAL('triggered()'), self.addfolder)
+        self.connect(self.adddir, QtCore.SIGNAL('triggered()'), self.addFolder)
         
-        
-        self.savecombotag = QtGui.QAction(QtGui.QIcon(initdir('save.png')), 'Save', self)
+        #Action for saving tags in combos
+        self.savecombotag = QtGui.QAction(QtGui.QIcon(initdir('save.png')), 'Save Tags', self)
         self.savecombotag.setShortcut('Ctrl+S')
         self.connect(self.savecombotag,QtCore.SIGNAL("triggered()"), 
-                            self.cenwid.savecombos)
-
+                            self.cenwid.saveCombos)
+        
+        #Action for importing tags from files
         self.tagfromfile = QtGui.QAction(QtGui.QIcon(initdir('filetotag.png')), 
                                     'Tag from file', self)
         self.connect(self.tagfromfile, QtCore.SIGNAL("triggered()"), 
-                                    self.gettagfromfile)
+                                    self.getTagFromFile)
 
         self.tagtofile = QtGui.QAction(QtGui.QIcon(initdir('tagtofile.png')), 
                                     'Tag to File', self)
-        self.connect(self.tagtofile,QtCore.SIGNAL("triggered()"),self.savetagtofile)
+        self.connect(self.tagtofile,QtCore.SIGNAL("triggered()"),self.saveTagToFile)
         
+        #I'm using the name format because this will be expanded on quite a bit
         self.format = QtGui.QAction(QtGui.QIcon(initdir('cap.png')), 'Title Format', self)
-        self.connect(self.format,QtCore.SIGNAL("triggered()"),self.titlecase)
-
+        self.connect(self.format,QtCore.SIGNAL("triggered()"),self.titleCase)
+        
+        #Autonumbering shit
         self.changetracks = QtGui.QAction(QtGui.QIcon(initdir('track.png')), 'Autonumbering Wizard', self)
         self.connect(self.changetracks, QtCore.SIGNAL('triggered()'), self.tracks)
         
+        
         self.renamedir = QtGui.QAction(QtGui.QIcon(initdir("rename.png")), "Rename Dir",self)
-        self.connect(self.renamedir, QtCore.SIGNAL("triggered()"), self.renamefolder)
+        self.connect(self.renamedir, QtCore.SIGNAL("triggered()"), self.renameFolder)
         
         self.importfile = QtGui.QAction(QtGui.QIcon(initdir("import.png")), "Import tags from file",self)
-        self.connect(self.importfile, QtCore.SIGNAL("triggered()"), self.FileImport)
+        self.connect(self.importfile, QtCore.SIGNAL("triggered()"), self.fileImport)
         
         menubar = self.menuBar()
         file = menubar.addMenu('&File')
@@ -282,7 +303,7 @@ class MainWin(QtGui.QMainWindow):
         self.patterncombo.setStatusTip(self.patterncombo.toolTip())
         self.patterncombo.setFocusPolicy(QtCore.Qt.NoFocus)
         self.patterncombo.setMinimumWidth(500)
-        self.connect(self.patterncombo,QtCore.SIGNAL("editTextChanged(QString)"),self.patternchange)
+        self.connect(self.patterncombo,QtCore.SIGNAL("editTextChanged(QString)"),self.patternChange)
         
         self.toolbar = self.addToolBar("My Toolbar")
         self.toolbar.addAction(self.opendir)
@@ -297,13 +318,15 @@ class MainWin(QtGui.QMainWindow):
         self.toolbar.addAction(self.importfile)
         
         self.statusbar = self.statusBar()
-        self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
+        self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.openTree)
         self.connect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.rowEmpty)
         self.connect(self.cenwid.table, QtCore.SIGNAL('removedRow()'), self.rowEmpty)
-        self.connect(self.cenwid.tree, QtCore.SIGNAL('addFolder'), self.openfolder)
+        self.connect(self.cenwid.tree, QtCore.SIGNAL('addFolder'), self.openFolder)
         self.setWindowState(QtCore.Qt.WindowMaximized)
                     
-    def FileImport(self):
+    def fileImport(self):
+        """Opens a text file so that tags can be
+        imported from it."""
         pattern = unicode(self.patterncombo.currentText())
         filedlg = QtGui.QFileDialog()
         filename = unicode(filedlg.getOpenFileName(self,
@@ -311,36 +334,60 @@ class MainWin(QtGui.QMainWindow):
         if filename != "":
             f = open(filename)
             i = 0
-            import importfile
-            win = importfile.ImportWindow(self, filename)
+            win = formatwin.ImportWindow(self, filename)
             win.setModal(True)
             win.show()
             patternitems = [self.patterncombo.itemText(z) for z in range(self.patterncombo.count())]
             win.patterncombo.addItems(patternitems)
-            self.connect(win,QtCore.SIGNAL("Newtags"), self.goddamn)
+            self.connect(win,QtCore.SIGNAL("Newtags"), self.setSelectedTags)
+            self.cenwid.fillCombos
     
-    def goddamn(self,mylist):
-        i = 0        
+    def setSelectedTags(self, taglist):
+        """Sets the selected files' tags to the tags
+        in taglist."""
+        i = 0 
+        win = ProgressWin(self, len(self.cenwid.table.selectedRows))
         for z in self.cenwid.table.selectedRows:
+            if win.wasCanceled(): break
             try:
-                self.cenwid.table.updaterow(z,mylist[i])
+                self.cenwid.table.updateRow(z, taglist[i])
             except IndexError:
                 break
             i += 1
-    
-            
-                        
-    def renamefolder(self, test = False):
-        currentdir = path.dirname(self.cenwid.tablemodel.taginfo[self.cenwid.table.selectedRows[0]]["__filename"])
-        filename = path.join(path.dirname(currentdir),path.splitext(path.basename(self.savetagtofile(True)))[0])
+            win.updateVal()
+        win.close()
+        self.cenwid.fillCombos
+                                        
+    def renameFolder(self, test = False):
+        """This is best explained with an example.
+        
+        Okay, let's say that you've selected a file and want
+        to rename the files directory based on that file.
+        This function renames the directory using the
+        pattern in self.patterncombo.
+        
+        If test is True then the new filename is returned
+        and nothing else is done."""
+        
+        selectionChanged = QtCore.SIGNAL('itemSelectionChanged()')
+        currentdir = path.dirname(
+                        self.cenwid.tablemodel.taginfo 
+                            [self.cenwid.table.selectedRows[0]]["__filename"])                            
+        filename = path.join(path.dirname(currentdir),
+                     path.splitext(path.basename(self.saveTagToFile(True)))[0])
+        
         if test == True:
             return unicode("Rename: ") + currentdir + unicode(" to: ") + filename
+        
         result = QtGui.QMessageBox.question (None, unicode("Rename Folder?"), 
                     unicode("Are you sure you want to rename \n ") + currentdir + unicode("\n to \n") + filename, 
                     "&Yes", "&No","", 1, 1)
+        
         if result == 0:
-            self.disconnect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
-            self.disconnect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
+            #All this disconnecting and reconnecting is to prevent
+            #any extraneous loading of folders.
+            self.disconnect(self.cenwid.table, selectionChanged, self.patternChange)
+            self.disconnect(self.cenwid.tree, selectionChanged, self.openTree)
             try:
                 idx = self.cenwid.dirmodel.index(currentdir)
                 os.rename(currentdir, filename)
@@ -351,11 +398,15 @@ class MainWin(QtGui.QMainWindow):
                 QtGui.QMessageBox.information(self, 'Message',
                    unicode( "I couldn't rename\n") + currentdir + unicode(" to \n") +
                     filename + unicode("\nCheck that you have write access."), QtGui.QMessageBox.Ok)
-            self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
-            self.connect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
-            self.openfolder(filename)
+            self.connect(self.cenwid.tree, selectionChanged, self.openTree)
+            self.connect(self.cenwid.table, selectionChanged, self.patternChange)
+            #I'm opening the folder here, because reloading shit just seems
+            #complicated
+            self.openFolder(filename)
+            self.cenwid.fillCombos
             
     def rowEmpty(self):
+        """If nothing's selected, disable what needs to be disabled."""
         cenwid = self.cenwid
         #An error gets raised if the table's empty.
         #So we disable everything in that case
@@ -386,64 +437,72 @@ class MainWin(QtGui.QMainWindow):
         self.importfile.setEnabled(False)
         
     def tracks(self):
-        """Shows the window for selecting the range that track
-            numbers should be filled in"""
-        from formatwin import TrackWindow
+        """Shows the autonumbering wizard and sets the tracks
+            numbers should be filled in"""        
         
         row = self.cenwid.table.selectedRows[0]
-        numtracks = 0
+        numtracks = len(self.cenwid.table.selectedRows)
         try:
-            mintrack = long(self.cenwid.table.rowtags(row)["track"])
+            mintrack = min([long(self.cenwid.table.rowTags(row)["track"]) \
+                                for row in self.cenwid.table.selectedRows])
         except KeyError:
-            mintrack=1
+            #No track was specified, just set it to 1
+            mintrack = 1
         except ValueError:
-            mintrack = self.cenwid.table.rowtags(row)["track"]
+            #The tracks are probably in trackno/numtracks format
+            mintrack = self.cenwid.table.rowTags(row)["track"]
             try:
                 mintrack = long(mintrack[:mintrack.find("/")])
-                numtracks = len(self.cenwid.table.selectedRows)
             except ValueError:
-                mintrack = 1            
-        win = TrackWindow(self, mintrack, numtracks)
+                #Tracks are probably text, so we make them numbers
+                mintrack = 1
+        win = formatwin.TrackWindow(self, mintrack, numtracks)
         win.setModal(True)
-        self.connect(win, QtCore.SIGNAL("newtracks"), self.dotracks)
+        self.connect(win, QtCore.SIGNAL("newtracks"), self.doTracks)
         win.show()
 
     
-    def dotracks(self, indices ):
-        """Sets track numbers for all files in the range, fromnum to tonum"""
+    def doTracks(self, indices):
+        """Sets the track numbers specified in indices.
+        The first item of indices is the starting track.
+        The second item of indices is the number of tracks."""
+        
         fromnum = indices[0]
-        win = ProgressWin(self, len(self.cenwid.table.selectedRows))
         if indices[1] != "":
             num = "/" + indices[1]
         else: num = ""
-        for row in self.cenwid.table.selectedRows:
-            self.cenwid.tablemodel.setRowData(row,{"track": unicode(fromnum) + num})
-            self.cenwid.fillcombos()
-            fromnum += 1
-            win.updateVal()
-        win.close()
+        rows = self.cenwid.table.selectedRows
+        taglist = [{"track": unicode(z) + num} for z in range(1, len(rows) + 1)]
+        self.setSelectedTags(taglist)
         
-    def patternchange(self):
+    def patternChange(self):
+        """This function is called everytime patterncombo changes.
+        It sets the values of the StatusTips for various actions
+        to a preview of the resulf if that action is triggered."""
         #There's an error everytime an item is deleted, we account for that
         try:
-            self.tagfromfile.setStatusTip(unicode("Newtag: ") + unicode(self.gettagfromfile(True)))
-            self.tagtofile.setStatusTip(unicode("New Filename: ") + self.savetagtofile(True))
-            self.renamedir.setStatusTip(self.renamefolder(True))
+            self.tagfromfile.setStatusTip(unicode("Newtag: ") + unicode(self.getTagFromFile(True)))
+            self.tagtofile.setStatusTip(unicode("New Filename: ") + self.saveTagToFile(True))
+            self.renamedir.setStatusTip(self.renameFolder(True))
         except IndexError: pass
         
-    def titlecase(self):
+    def titleCase(self):
         """Sets the selected tag to Title Case"""
+        import functions
         win = ProgressWin(self, len(self.cenwid.table.selectedRows))
         for row in self.cenwid.table.selectedRows:
-            tags=self.cenwid.table.rowtags(row)
+            if win.wasCanceled(): break
+            tags = self.cenwid.table.rowTags(row)
             for z in self.cenwid.table.selectedColumns:
-                tags[self.cenwid.headerdata[z][1]]=tags[self.cenwid.headerdata[z][1]].title()
+                val = self.cenwid.headerdata[z][1] 
+                tags[val] = functions.titleCase(tags[val])
+                #tags[val] = functions.replaceAsWord(tags[val],"Ft","ft")
                 win.updateVal()
             self.cenwid.tablemodel.setRowData(row,tags)
         win.close()
         
     
-    def gettagfromfile(self,test = False):
+    def getTagFromFile(self, test = False):
         """Get tags from the selected items.
         If test = False then the table in cenwid is updated."""
         model = self.cenwid.tablemodel
@@ -455,7 +514,8 @@ class MainWin(QtGui.QMainWindow):
             return findfunc.filenametotag(unicode(self.patterncombo.currentText()),
                 path.basename(model.taginfo[row]["__filename"]), True)
                 
-        for row in self.cenwid.table.selectedRows:            
+        for row in self.cenwid.table.selectedRows:
+            if win.wasCanceled(): break            
             filename = model.taginfo[row]["__filename"]
             newtag = findfunc.filenametotag(unicode(self.patterncombo.currentText()),
                 path.basename(filename), True)
@@ -470,7 +530,7 @@ class MainWin(QtGui.QMainWindow):
         win.close()
         
     
-    def savetagtofile(self,test=False):
+    def saveTagToFile(self,test=False):
         """Renames the selected files as specified
         by patterncombo.
         
@@ -478,12 +538,11 @@ class MainWin(QtGui.QMainWindow):
         the new filename of the first selected file is
         returned."""
         taginfo = self.cenwid.tablemodel.taginfo
-        
-        
+                
         if test == False:
-            win = ProgressWin(self, len(self.cenwid.table.selectedRows))            
-            startval = 0
+            win = ProgressWin(self, len(self.cenwid.table.selectedRows))
         else:
+            #Just return an example value.
             row = self.cenwid.table.selectedRows[0]
             newfilename = (findfunc.tagtofilename(unicode(self.patterncombo.currentText())
                                     ,taginfo[row], True, taginfo[row]["__ext"] ))
@@ -509,8 +568,9 @@ class MainWin(QtGui.QMainWindow):
                     QtGui.QMessageBox.information(self, 'Message',
                         "Could not write to file \n" + filename
                         + "\nCheck that you have write access.", QtGui.QMessageBox.Ok)
+                
                 #Update the table to the new filename
-                self.cenwid.table.updaterow(row,{"__filename": newfilename, 
+                self.cenwid.table.updateRow(row,{"__filename": newfilename, 
                                         "__path": path.basename(newfilename)})
                 self.cenwid.fillcombos()
             else:
@@ -518,10 +578,12 @@ class MainWin(QtGui.QMainWindow):
             win.updateVal()
         win.close()
         
-    def openfolder(self, filename = None, appenddir = False):
+    def openFolder(self, filename = None, appenddir = False):
         """Opens a folder. If filename != None, then
         the table is filled with the folder."""
-        self.disconnect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
+        selectionChanged = QtCore.SIGNAL("itemSelectionChanged()")
+        self.disconnect(self.cenwid.table, selectionChanged, self.patternChange)
+        
         if filename is None: 
             filedlg = QtGui.QFileDialog()
             filedlg.setFileMode(filedlg.DirectoryOnly)
@@ -529,27 +591,28 @@ class MainWin(QtGui.QMainWindow):
                 'OpenFolder','/media/multi/',QtGui.QFileDialog.ShowDirsOnly))
         
         if not path.isdir(filename): 
-            self.connect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
+            self.connect(self.cenwid.table, selectionChanged, self.patternChange)
             return
         
+        #I'm doing this just to be safe.
         filename = path.realpath(filename)
         
-        self.disconnect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
+        self.disconnect(self.cenwid.tree, selectionChanged, self.openTree)
         pathindex = self.cenwid.dirmodel.index(filename)
         self.cenwid.tree.setCurrentIndex(pathindex)
-        self.cenwid.filltable(filename, appenddir)
-        self.connect(self.cenwid.tree, QtCore.SIGNAL('itemSelectionChanged()'), self.opentree)
-        self.connect(self.cenwid.table, QtCore.SIGNAL('itemSelectionChanged()'), self.patternchange)
+        self.cenwid.fillTable(filename, appenddir)
+        self.connect(self.cenwid.tree, selectionChanged, self.openTree)
+        self.connect(self.cenwid.table, selectionChanged, self.patternChange)
         self.setWindowTitle("Freetag: " + filename)
         if appenddir == False:
-            self.cenwid.table.selectRow(0)    
+            self.cenwid.table.selectRow(0)
         
-    def opentree(self):
-        filename=unicode(self.cenwid.dirmodel.filePath(self.cenwid.tree.selectedIndexes()[0]))
-        self.openfolder(filename)
+    def openTree(self):
+        filename = unicode(self.cenwid.dirmodel.filePath(self.cenwid.tree.selectedIndexes()[0]))
+        self.openFolder(filename)
         
-    def addfolder(self):
-        self.openfolder(appenddir = True)
+    def addFolder(self):
+        self.openFolder(appenddir = True)
     
     def safe_name(self, name):
         """Make a filename safe for use (remove some special chars)"""
@@ -567,6 +630,6 @@ qb.show()
 qb.rowEmpty()
 
 if path.isdir(filename)==True:
-    qb.openfolder(filename)
+    qb.openFolder(filename)
 
 app.exec_()
