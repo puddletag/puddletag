@@ -124,7 +124,8 @@ class FunctionDialog(QDialog):
                 else:
                     self.tagcombo.insertItem(0, " | ".join(defaulttags))
                     self.tagcombo.setCurrentIndex(0)
-                    
+            
+            self.vbox.addWidget(QLabel("Tags"))
             self.vbox.addWidget(self.tagcombo)
 
         i = 0        

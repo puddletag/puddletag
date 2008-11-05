@@ -162,13 +162,15 @@ class ImportWindow(QDialog):
                     self.openFile()
                 else:
                     self.close()
-                return 
+                return
+            import pdb
+            pdb.set_trace()
             i = 0
             self.lines = f.readlines()            
             self.file.setPlainText("".join(self.lines))
-            self.fillTags()
             self.setLines()
-            f.close()
+            self.fillTags()
+            self.show()
             self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
             self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),self.fillTags)
     
