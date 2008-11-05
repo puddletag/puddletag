@@ -1,0 +1,12 @@
+Thanks to
+
+Paul McGuire for PyParsing (It's really good once you get past the documentation) and helping me on the discussion board.
+Michael Urman and Joe Wreschnig for Mutagen (Another cool library).
+Phil Thomson and the Qt people for PyQt4.
+
+And for the code I stole:
+The guy on ActiveState who wrote the unique(gets all unique elements from a list) recipe.
+The other one who wrote the case-insensitive sort.
+Those who help me on comp.lang.python
+
+Everyone working on Debian. You're all going to heaven.

@@ -1,0 +1,1203 @@
+(dp1
+I0
+(lp2
+(lp3
+(iactiondlg
+Function
+p4
+(dp5
+S'function'
+p6
+cfunctions
+titleCase
+p7
+sS'info'
+p8
+(lp9
+S'Case Conversion'
+p10
+aS'$0: $1'
+p11
+asS'doc'
+p12
+(lp13
+S'Case Conversion, "$0: $1"'
+p14
+aS'Type, QComboBox, "",Mixed Case,UPPER CASE,lower case'
+p15
+aS'"For Mixed Case, after any of:", QLineEdit, "", "., !"'
+p16
+asS'args'
+p17
+(lp18
+VMixed Case
+p19
+aV, !
+p20
+asS'funcname'
+p21
+g10
+sS'tag'
+p22
+(VPath
+V__path
+tp23
+sba(iactiondlg
+Function
+p24
+(dp25
+S'function'
+p26
+cfunctions
+featFormat
+p27
+sS'info'
+p28
+(lp29
+S'Format ft'
+p30
+aS'Format featuring $0'
+p31
+asS'doc'
+p32
+(lp33
+S'Format ft, Format featuring $0'
+p34
+asS'args'
+p35
+(lp36
+sS'funcname'
+p37
+g30
+sS'tag'
+p38
+(VTitle
+Vtitle
+tp39
+sbaaVUpper
+p40
+asI1
+(lp41
+(lp42
+(iactiondlg
+Function
+p43
+(dp44
+S'function'
+p45
+cfunctions
+replace
+p46
+sS'info'
+p47
+(lp48
+S'Replace'
+p49
+aS'Replace $0: $1 -> $2'
+p50
+asS'doc'
+p51
+(lp52
+S'Replace, "Replace $0: $1 -> $2"'
+p53
+aS'Replace, QLineEdit'
+p54
+aS'with:, QLineEdit'
+p55
+aS'Match case:, QCheckBox, setText'
+p56
+aS'only as whole word, QCheckBox, setText'
+p57
+asS'args'
+p58
+(lp59
+V_
+aV 
+aI00
+aI00
+asS'funcname'
+p60
+g49
+sS'tag'
+p61
+(VTitle
+Vtitle
+tp62
+sba(iactiondlg
+Function
+p63
+(dp64
+S'function'
+p65
+g46
+sS'info'
+p66
+(lp67
+S'Replace'
+p68
+aS'Replace $0: $1 -> $2'
+p69
+asS'doc'
+p70
+(lp71
+S'Replace, "Replace $0: $1 -> $2"'
+p72
+aS'Replace, QLineEdit'
+p73
+aS'with:, QLineEdit'
+p74
+aS'Match case:, QCheckBox, setText'
+p75
+aS'only as whole word, QCheckBox, setText'
+p76
+asS'args'
+p77
+(lp78
+V_
+aV 
+aI00
+aI00
+asS'funcname'
+p79
+g68
+sS'tag'
+p80
+(VArtist
+Vartist
+tp81
+sba(iactiondlg
+Function
+p82
+(dp83
+S'function'
+p84
+g7
+sS'info'
+p85
+(lp86
+S'Case Conversion'
+p87
+aS'$0: $1'
+p88
+asS'doc'
+p89
+(lp90
+S'Case Conversion, "$0: $1"'
+p91
+aS'Type, QComboBox, "",Mixed Case,UPPER CASE,lower case'
+p92
+aS'"For Mixed Case, after any of:", QLineEdit, "", "., !"'
+p93
+asS'args'
+p94
+(lp95
+VMixed Case
+p96
+aV., !(
+p97
+asS'funcname'
+p98
+g87
+sS'tag'
+p99
+(VArtist
+Vartist
+tp100
+sba(iactiondlg
+Function
+p101
+(dp102
+g84
+g7
+sg85
+(lp103
+S'Case Conversion'
+p104
+aS'$0: $1'
+p105
+asg89
+(lp106
+S'Case Conversion, "$0: $1"'
+p107
+aS'Type, QComboBox, "",Mixed Case,UPPER CASE,lower case'
+p108
+aS'"For Mixed Case, after any of:", QLineEdit, "", "., !"'
+p109
+asg94
+(lp110
+VMixed Case
+p111
+aV., !(
+p112
+asg98
+g104
+sg99
+(VAlbum
+Valbum
+tp113
+sba(iactiondlg
+Function
+p114
+(dp115
+g84
+g7
+sg85
+(lp116
+S'Case Conversion'
+p117
+aS'$0: $1'
+p118
+asg89
+(lp119
+S'Case Conversion, "$0: $1"'
+p120
+aS'Type, QComboBox, "",Mixed Case,UPPER CASE,lower case'
+p121
+aS'"For Mixed Case, after any of:", QLineEdit, "", "., !"'
+p122
+asg94
+(lp123
+VMixed Case
+p124
+aV., !(
+p125
+asg98
+g117
+sg99
+(VTitle
+Vtitle
+tp126
+sba(iactiondlg
+Function
+p127
+(dp128
+S'function'
+p129
+g46
+sS'info'
+p130
+(lp131
+S'Replace'
+p132
+aS'Replace $0: $1 -> $2'
+p133
+asS'doc'
+p134
+(lp135
+S'Replace, "Replace $0: $1 -> $2"'
+p136
+aS'Replace, QLineEdit'
+p137
+aS'with:, QLineEdit'
+p138
+aS'Match case:, QCheckBox, setText'
+p139
+aS'only as whole word, QCheckBox, setText'
+p140
+asS'args'
+p141
+(lp142
+VVS
+p143
+aVvs
+p144
+aI00
+aI01
+asS'funcname'
+p145
+g132
+sS'tag'
+p146
+(VTitle
+Vtitle
+tp147
+sba(iactiondlg
+Function
+p148
+(dp149
+S'function'
+p150
+g46
+sS'info'
+p151
+(lp152
+S'Replace'
+p153
+aS'Replace $0: $1 -> $2'
+p154
+asS'doc'
+p155
+(lp156
+S'Replace, "Replace $0: $1 -> $2"'
+p157
+aS'Replace, QLineEdit'
+p158
+aS'with:, QLineEdit'
+p159
+aS'Match case:, QCheckBox, setText'
+p160
+aS'only as whole word, QCheckBox, setText'
+p161
+asS'args'
+p162
+(lp163
+VFeat
+p164
+aVft
+p165
+aI00
+aI01
+asS'funcname'
+p166
+g153
+sS'tag'
+p167
+(VTitle
+Vtitle
+tp168
+sba(iactiondlg
+Function
+p169
+(dp170
+S'function'
+p171
+g46
+sS'info'
+p172
+(lp173
+S'Replace'
+p174
+aS'Replace $0: $1 -> $2'
+p175
+asS'doc'
+p176
+(lp177
+S'Replace, "Replace $0: $1 -> $2"'
+p178
+aS'Replace, QLineEdit'
+p179
+aS'with:, QLineEdit'
+p180
+aS'Match case:, QCheckBox, setText'
+p181
+aS'only as whole word, QCheckBox, setText'
+p182
+asS'args'
+p183
+(lp184
+Vfeaturing
+p185
+aVft
+p186
+aI00
+aI01
+asS'funcname'
+p187
+g174
+sS'tag'
+p188
+(VTitle
+Vtitle
+tp189
+sba(iactiondlg
+Function
+p190
+(dp191
+S'function'
+p192
+g46
+sS'info'
+p193
+(lp194
+S'Replace'
+p195
+aS'Replace $0: $1 -> $2'
+p196
+asS'doc'
+p197
+(lp198
+S'Replace, "Replace $0: $1 -> $2"'
+p199
+aS'Replace, QLineEdit'
+p200
+aS'with:, QLineEdit'
+p201
+aS'Match case:, QCheckBox, setText'
+p202
+aS'only as whole word, QCheckBox, setText'
+p203
+asS'args'
+p204
+(lp205
+Vft.
+p206
+aVft
+p207
+aI00
+aI01
+asS'funcname'
+p208
+g195
+sS'tag'
+p209
+(VTitle
+Vtitle
+tp210
+sba(iactiondlg
+Function
+p211
+(dp212
+g171
+g46
+sg172
+(lp213
+S'Replace'
+p214
+aS'Replace $0: $1 -> $2'
+p215
+asg176
+(lp216
+S'Replace, "Replace $0: $1 -> $2"'
+p217
+aS'Replace, QLineEdit'
+p218
+aS'with:, QLineEdit'
+p219
+aS'Match case:, QCheckBox, setText'
+p220
+aS'only as whole word, QCheckBox, setText'
+p221
+asg183
+(lp222
+Vfeat.
+p223
+aVft
+p224
+aI00
+aI01
+asg187
+g214
+sg188
+g189
+sba(iactiondlg
+Function
+p225
+(dp226
+S'function'
+p227
+g46
+sS'info'
+p228
+(lp229
+S'Replace'
+p230
+aS'Replace $0: $1 -> $2'
+p231
+asS'doc'
+p232
+(lp233
+S'Replace, "Replace $0: $1 -> $2"'
+p234
+aS'Replace, QLineEdit'
+p235
+aS'with:, QLineEdit'
+p236
+aS'Match case:, QCheckBox, setText'
+p237
+aS'only as whole word, QCheckBox, setText'
+p238
+asS'args'
+p239
+(lp240
+VFT
+p241
+aVft
+p242
+aI00
+aI01
+asS'funcname'
+p243
+g230
+sS'tag'
+p244
+(VTitle
+Vtitle
+tp245
+sba(iactiondlg
+Function
+p246
+(dp247
+g171
+g46
+sg172
+(lp248
+S'Replace'
+p249
+aS'Replace $0: $1 -> $2'
+p250
+asg176
+(lp251
+S'Replace, "Replace $0: $1 -> $2"'
+p252
+aS'Replace, QLineEdit'
+p253
+aS'with:, QLineEdit'
+p254
+aS'Match case:, QCheckBox, setText'
+p255
+aS'only as whole word, QCheckBox, setText'
+p256
+asg183
+(lp257
+Vc
+aVSee
+p258
+aI00
+aI01
+asg187
+g249
+sg188
+g189
+sba(iactiondlg
+Function
+p259
+(dp260
+S'function'
+p261
+g46
+sS'info'
+p262
+(lp263
+S'Replace'
+p264
+aS'Replace $0: $1 -> $2'
+p265
+asS'doc'
+p266
+(lp267
+S'Replace, "Replace $0: $1 -> $2"'
+p268
+aS'Replace, QLineEdit'
+p269
+aS'with:, QLineEdit'
+p270
+aS'Match case:, QCheckBox, setText'
+p271
+aS'only as whole word, QCheckBox, setText'
+p272
+asS'args'
+p273
+(lp274
+Vu
+aVYou
+p275
+aI00
+aI01
+asS'funcname'
+p276
+g264
+sS'tag'
+p277
+(VTitle
+Vtitle
+tp278
+sba(iactiondlg
+Function
+p279
+(dp280
+S'function'
+p281
+g27
+sS'info'
+p282
+(lp283
+S'Format ft'
+p284
+aS'Format featuring $0'
+p285
+asS'doc'
+p286
+(lp287
+S'Format ft, Format featuring $0'
+p288
+asS'args'
+p289
+(lp290
+sS'funcname'
+p291
+g284
+sS'tag'
+p292
+(VTitle
+Vtitle
+tp293
+sba(iactiondlg
+Function
+p294
+(dp295
+S'function'
+p296
+g46
+sS'info'
+p297
+(lp298
+S'Replace'
+p299
+aS'Replace $0: $1 -> $2'
+p300
+asS'doc'
+p301
+(lp302
+S'Replace, "Replace $0: $1 -> $2"'
+p303
+aS'Replace, QLineEdit'
+p304
+aS'with:, QLineEdit'
+p305
+aS'Match case:, QCheckBox, setText'
+p306
+aS'only as whole word, QCheckBox, setText'
+p307
+asS'args'
+p308
+(lp309
+Vii
+p310
+aVII
+p311
+aI00
+aI01
+asS'funcname'
+p312
+g299
+sS'tag'
+p313
+(VTitle
+Vtitle
+tp314
+sba(iactiondlg
+Function
+p315
+(dp316
+S'function'
+p317
+g46
+sS'info'
+p318
+(lp319
+S'Replace'
+p320
+aS'Replace $0: $1 -> $2'
+p321
+asS'doc'
+p322
+(lp323
+S'Replace, "Replace $0: $1 -> $2"'
+p324
+aS'Replace, QLineEdit'
+p325
+aS'with:, QLineEdit'
+p326
+aS'Match case:, QCheckBox, setText'
+p327
+aS'only as whole word, QCheckBox, setText'
+p328
+asS'args'
+p329
+(lp330
+VWith
+p331
+aVwith
+p332
+aI00
+aI01
+asS'funcname'
+p333
+g320
+sS'tag'
+p334
+(VTitle
+Vtitle
+tp335
+sba(iactiondlg
+Function
+p336
+(dp337
+S'function'
+p338
+g46
+sS'info'
+p339
+(lp340
+S'Replace'
+p341
+aS'Replace $0: $1 -> $2'
+p342
+asS'doc'
+p343
+(lp344
+S'Replace, "Replace $0: $1 -> $2"'
+p345
+aS'Replace, QLineEdit'
+p346
+aS'with:, QLineEdit'
+p347
+aS'Match case:, QCheckBox'
+p348
+aS'only as whole word, QCheckBox'
+p349
+asS'args'
+p350
+(lp351
+Vvs.
+p352
+aVvs
+p353
+aI00
+aI01
+asS'funcname'
+p354
+g341
+sS'tag'
+p355
+(VTitle
+Vtitle
+tp356
+sbaaVCase Conversion
+p357
+asI2
+(lp358
+(lp359
+(iactiondlg
+Function
+p360
+(dp361
+S'function'
+p362
+cfunctions
+formatValue
+p363
+sS'info'
+p364
+(lp365
+S'Format Value'
+p366
+aS'Format $0 using $1'
+p367
+asS'doc'
+p368
+(lp369
+S'Format Value, Format $0 using $1'
+p370
+aS'Format string, QLineEdit'
+p371
+asS'args'
+p372
+(lp373
+VTrack %track%
+p374
+asS'funcname'
+p375
+g366
+sS'tag'
+p376
+(VTitle
+Vtitle
+tp377
+sbaaVTrack 12
+p378
+asI3
+(lp379
+(lp380
+(iactiondlg
+Function
+p381
+(dp382
+S'function'
+p383
+g363
+sS'info'
+p384
+(lp385
+S'Format Value'
+p386
+aS'Format $0 using $1'
+p387
+asS'doc'
+p388
+(lp389
+S'Format Value, Format $0 using $1'
+p390
+aS'Format string, QLineEdit'
+p391
+asS'args'
+p392
+(lp393
+V$num(%track%,1)
+p394
+asS'funcname'
+p395
+g386
+sS'tag'
+p396
+(VTrack
+Vtrack
+tp397
+sbaaVRemoveZeros
+p398
+asI4
+(lp399
+(lp400
+(iactiondlg
+Function
+p401
+(dp402
+S'function'
+p403
+g7
+sS'info'
+p404
+(lp405
+S'Case Conversion'
+p406
+aS'$0: $1'
+p407
+asS'doc'
+p408
+(lp409
+S'Case Conversion, "$0: $1"'
+p410
+aS'Type, QComboBox, Mixed Case,UPPER CASE,lower case'
+p411
+aS'"For Mixed Case, after any of:", QLineEdit, "", "., !"'
+p412
+asS'args'
+p413
+(lp414
+VUPPER CASE
+p415
+aV., !
+p416
+asS'funcname'
+p417
+g406
+sS'tag'
+p418
+(VTitle
+Vtitle
+tp419
+sbaaVUPPERCASE
+p420
+asI5
+(lp421
+(lp422
+(iactiondlg
+Function
+p423
+(dp424
+S'function'
+p425
+cfunctions
+ftTitle
+p426
+sS'info'
+p427
+(lp428
+S'Get FT Title'
+p429
+aS'FT Title: $0, String: $1'
+p430
+asS'doc'
+p431
+(lp432
+S'Get FT Title, "FT Title: $0, String: $1"'
+p433
+aS'Featuring String, QLineEdit'
+p434
+asS'args'
+p435
+(lp436
+V ft 
+p437
+asS'funcname'
+p438
+g429
+sS'tag'
+p439
+(VTitle
+Vtitle
+tp440
+sba(iactiondlg
+Function
+p441
+(dp442
+S'function'
+p443
+g426
+sS'info'
+p444
+(lp445
+S'Get FT Title'
+p446
+aS'FT Title: $0, String: $1'
+p447
+asS'doc'
+p448
+(lp449
+S'Get FT Title, "FT Title: $0, String: $1"'
+p450
+aS'Featuring String, QLineEdit'
+p451
+asS'args'
+p452
+(lp453
+V vs 
+p454
+asS'funcname'
+p455
+g446
+sS'tag'
+p456
+(VTitle
+Vtitle
+tp457
+sba(iactiondlg
+Function
+p458
+(dp459
+S'function'
+p460
+g426
+sS'info'
+p461
+(lp462
+S'Get FT Title'
+p463
+aS'FT Title: $0, String: $1'
+p464
+asS'doc'
+p465
+(lp466
+S'Get FT Title, "FT Title: $0, String: $1"'
+p467
+aS'Featuring String, QLineEdit'
+p468
+asS'args'
+p469
+(lp470
+V & 
+p471
+asS'funcname'
+p472
+g463
+sS'tag'
+p473
+(VTitle
+Vtitle
+tp474
+sba(iactiondlg
+Function
+p475
+(dp476
+g317
+g426
+sg318
+(lp477
+S'Get FT Title'
+p478
+aS'FT Title: $0, String: $1'
+p479
+asg322
+(lp480
+S'Get FT Title, "FT Title: $0, String: $1"'
+p481
+aS'Featuring String, QLineEdit'
+p482
+asg329
+(lp483
+V with 
+p484
+asg333
+g478
+sg334
+g335
+sba(iactiondlg
+Function
+p485
+(dp486
+g443
+cfunctions
+ftArtist
+p487
+sg444
+(lp488
+S'Get FT Artist'
+p489
+aS'FT Artist: $0, String: $1'
+p490
+asg448
+(lp491
+S'Get FT Artist, "FT Artist: $0, String: $1"'
+p492
+aS'Featuring String, QLineEdit'
+p493
+asg452
+(lp494
+V ft 
+p495
+asg455
+g489
+sg456
+(VArtist
+Vartist
+tp496
+sba(iactiondlg
+Function
+p497
+(dp498
+g443
+g487
+sg444
+(lp499
+S'Get FT Artist'
+p500
+aS'FT Artist: $0, String: $1'
+p501
+asg448
+(lp502
+S'Get FT Artist, "FT Artist: $0, String: $1"'
+p503
+aS'Featuring String, QLineEdit'
+p504
+asg452
+(lp505
+V vs 
+p506
+asg455
+g500
+sg456
+g496
+sba(iactiondlg
+Function
+p507
+(dp508
+g460
+g487
+sg461
+(lp509
+S'Get FT Artist'
+p510
+aS'FT Artist: $0, String: $1'
+p511
+asg465
+(lp512
+S'Get FT Artist, "FT Artist: $0, String: $1"'
+p513
+aS'Featuring String, QLineEdit'
+p514
+asg469
+(lp515
+V & 
+p516
+asg472
+g510
+sg473
+(VArtist
+Vartist
+tp517
+sba(iactiondlg
+Function
+p518
+(dp519
+g317
+g487
+sg318
+(lp520
+S'Get FT Artist'
+p521
+aS'FT Artist: $0, String: $1'
+p522
+asg322
+(lp523
+S'Get FT Artist, "FT Artist: $0, String: $1"'
+p524
+aS'Featuring String, QLineEdit'
+p525
+asg329
+(lp526
+V with 
+p527
+asg333
+g521
+sg334
+(VArtist
+Vartist
+tp528
+sbaaVFormat FT
+p529
+asI6
+(lp530
+(lp531
+(iactiondlg
+Function
+p532
+(dp533
+S'function'
+p534
+g426
+sS'info'
+p535
+(lp536
+S'Get FT Title'
+p537
+aS'FT Title: $0, String: $1'
+p538
+asS'doc'
+p539
+(lp540
+S'Get FT Title, "FT Title: $0, String: $1"'
+p541
+aS'Featuring String, QLineEdit'
+p542
+asS'args'
+p543
+(lp544
+V FT 
+p545
+asS'funcname'
+p546
+g537
+sS'tag'
+p547
+(VArtist
+Vartist
+tp548
+sba(iactiondlg
+Function
+p549
+(dp550
+g534
+g487
+sg535
+(lp551
+S'Get FT Artist'
+p552
+aS'FT Artist: $0, String: $1'
+p553
+asg539
+(lp554
+S'Get FT Artist, "FT Artist: $0, String: $1"'
+p555
+aS'Featuring String, QLineEdit'
+p556
+asg543
+(lp557
+V FT 
+p558
+asg546
+g552
+sg547
+g548
+sbaaVtest
+p559
+as.

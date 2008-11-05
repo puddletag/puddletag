@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file alias="cap.png">data/cap.png</file>
+<file alias="fileimport.png">data/fileimport.png</file>
+<file alias="filetotag.png">data/filetotag.png</file>
+<file alias="import.png">data/import.png</file>
+<file alias="rename.png">data/rename.png</file>
+<file alias="save.png">data/save.png</file>
+<file alias="tagtofile.png">data/tagtofile.png</file>
+<file alias="track.png">data/track.png</file>
+<file alias="open.png">data/open.png</file>
+<file alias="actions">data/actions</file>
+<file alias="puddletag.conf">data/puddletag.conf</file>
+</qresource>
+</RCC>

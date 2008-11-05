@@ -1,0 +1,764 @@
+(dp1
+I0
+(lp2
+(lp3
+(ipuddlestuff.actiondlg
+Function
+p4
+(dp5
+S'function'
+p6
+cpuddlestuff.functions
+titleCase
+p7
+sS'info'
+p8
+(lp9
+S'Case Conversion'
+p10
+aS'$0: $1'
+p11
+asS'doc'
+p12
+(lp13
+S'Case Conversion, "$0: $1"'
+p14
+aS'Type, QComboBox, Mixed Case,UPPER CASE,lower case'
+p15
+aS'"For Mixed Case, after any of:", QLineEdit, "., !"'
+p16
+asS'args'
+p17
+(lp18
+VMixed Case
+p19
+aV., !(
+p20
+asS'funcname'
+p21
+S'Case Conversion'
+p22
+sS'tag'
+p23
+(lp24
+Valbum
+p25
+aVtitle
+p26
+aVartist
+p27
+asba(ipuddlestuff.actiondlg
+Function
+p28
+(dp29
+g6
+cpuddlestuff.functions
+replace
+p30
+sg8
+(lp31
+S'Replace'
+p32
+aS"Replace '$0': '$1' -> '$2'"
+p33
+asg12
+(lp34
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p35
+aS'Replace, QLineEdit'
+p36
+aS'with:, QLineEdit'
+p37
+aS'Match case:, QCheckBox'
+p38
+aS'only as whole word, QCheckBox'
+p39
+asg17
+(lp40
+V_
+aV 
+aI00
+aI00
+asg21
+S'Replace'
+p41
+sg23
+(lp42
+Vartist
+p43
+aValbum
+p44
+aVtitle
+p45
+asba(ipuddlestuff.actiondlg
+Function
+p46
+(dp47
+g6
+g30
+sg8
+(lp48
+S'Replace'
+p49
+aS"Replace '$0': '$1' -> '$2'"
+p50
+asg12
+(lp51
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p52
+aS'Replace, QLineEdit'
+p53
+aS'with:, QLineEdit'
+p54
+aS'Match case:, QCheckBox'
+p55
+aS'only as whole word, QCheckBox'
+p56
+asg17
+(lp57
+VVS
+p58
+aVvs
+p59
+aI00
+aI01
+asg21
+S'Replace'
+p60
+sg23
+(lp61
+Vartist
+p62
+aVtitle
+p63
+asba(ipuddlestuff.actiondlg
+Function
+p64
+(dp65
+g6
+g30
+sg8
+(lp66
+S'Replace'
+p67
+aS"Replace '$0': '$1' -> '$2'"
+p68
+asg12
+(lp69
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p70
+aS'Replace, QLineEdit'
+p71
+aS'with:, QLineEdit'
+p72
+aS'Match case:, QCheckBox'
+p73
+aS'only as whole word, QCheckBox'
+p74
+asg17
+(lp75
+VFeat
+p76
+aVft
+p77
+aI00
+aI01
+asg21
+S'Replace'
+p78
+sg23
+(lp79
+Vartist
+p80
+aVtitle
+p81
+asba(ipuddlestuff.actiondlg
+Function
+p82
+(dp83
+g6
+g30
+sg8
+(lp84
+S'Replace'
+p85
+aS"Replace '$0': '$1' -> '$2'"
+p86
+asg12
+(lp87
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p88
+aS'Replace, QLineEdit'
+p89
+aS'with:, QLineEdit'
+p90
+aS'Match case:, QCheckBox'
+p91
+aS'only as whole word, QCheckBox'
+p92
+asg17
+(lp93
+Vfeaturing
+p94
+aVft
+p95
+aI00
+aI01
+asg21
+S'Replace'
+p96
+sg23
+(lp97
+Vartist
+p98
+aVtitle
+p99
+asba(ipuddlestuff.actiondlg
+Function
+p100
+(dp101
+g6
+g30
+sg8
+(lp102
+S'Replace'
+p103
+aS"Replace '$0': '$1' -> '$2'"
+p104
+asg12
+(lp105
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p106
+aS'Replace, QLineEdit'
+p107
+aS'with:, QLineEdit'
+p108
+aS'Match case:, QCheckBox'
+p109
+aS'only as whole word, QCheckBox'
+p110
+asg17
+(lp111
+Vft.
+p112
+aVft
+p113
+aI00
+aI01
+asg21
+S'Replace'
+p114
+sg23
+(lp115
+Vartist
+p116
+aVtitle
+p117
+asba(ipuddlestuff.actiondlg
+Function
+p118
+(dp119
+g6
+g30
+sg8
+(lp120
+S'Replace'
+p121
+aS"Replace '$0': '$1' -> '$2'"
+p122
+asg12
+(lp123
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p124
+aS'Replace, QLineEdit'
+p125
+aS'with:, QLineEdit'
+p126
+aS'Match case:, QCheckBox'
+p127
+aS'only as whole word, QCheckBox'
+p128
+asg17
+(lp129
+Vfeat.
+p130
+aVft
+p131
+aI00
+aI01
+asg21
+S'Replace'
+p132
+sg23
+(lp133
+Vartist
+p134
+aVtitle
+p135
+asba(ipuddlestuff.actiondlg
+Function
+p136
+(dp137
+g6
+g30
+sg8
+(lp138
+S'Replace'
+p139
+aS"Replace '$0': '$1' -> '$2'"
+p140
+asg12
+(lp141
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p142
+aS'Replace, QLineEdit'
+p143
+aS'with:, QLineEdit'
+p144
+aS'Match case:, QCheckBox'
+p145
+aS'only as whole word, QCheckBox'
+p146
+asg17
+(lp147
+VFT
+p148
+aVft
+p149
+aI00
+aI01
+asg21
+S'Replace'
+p150
+sg23
+(lp151
+Vartist
+p152
+aVtitle
+p153
+asba(ipuddlestuff.actiondlg
+Function
+p154
+(dp155
+g6
+g30
+sg8
+(lp156
+S'Replace'
+p157
+aS"Replace '$0': '$1' -> '$2'"
+p158
+asg12
+(lp159
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p160
+aS'Replace, QLineEdit'
+p161
+aS'with:, QLineEdit'
+p162
+aS'Match case:, QCheckBox'
+p163
+aS'only as whole word, QCheckBox'
+p164
+asg17
+(lp165
+Vc
+aVSee
+p166
+aI00
+aI01
+asg21
+S'Replace'
+p167
+sg23
+(lp168
+Vartist
+p169
+aVtitle
+p170
+asba(ipuddlestuff.actiondlg
+Function
+p171
+(dp172
+g6
+g30
+sg8
+(lp173
+S'Replace'
+p174
+aS"Replace '$0': '$1' -> '$2'"
+p175
+asg12
+(lp176
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p177
+aS'Replace, QLineEdit'
+p178
+aS'with:, QLineEdit'
+p179
+aS'Match case:, QCheckBox'
+p180
+aS'only as whole word, QCheckBox'
+p181
+asg17
+(lp182
+Vu
+aVYou
+p183
+aI00
+aI01
+asg21
+S'Replace'
+p184
+sg23
+(lp185
+Vartist
+p186
+aVtitle
+p187
+asba(ipuddlestuff.actiondlg
+Function
+p188
+(dp189
+g6
+cpuddlestuff.functions
+featFormat
+p190
+sg8
+(lp191
+S'Remove () from (ft)'
+p192
+aS'Format featuring: $0'
+p193
+asg12
+(lp194
+S'Remove () from (ft), Format featuring: $0'
+p195
+asg17
+(lp196
+sg21
+S'Remove () from (ft)'
+p197
+sg23
+(lp198
+Vtitle
+p199
+aVartist
+p200
+asba(ipuddlestuff.actiondlg
+Function
+p201
+(dp202
+g6
+g30
+sg8
+(lp203
+S'Replace'
+p204
+aS"Replace '$0': '$1' -> '$2'"
+p205
+asg12
+(lp206
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p207
+aS'Replace, QLineEdit'
+p208
+aS'with:, QLineEdit'
+p209
+aS'Match case:, QCheckBox'
+p210
+aS'only as whole word, QCheckBox'
+p211
+asg17
+(lp212
+Vii
+p213
+aVII
+p214
+aI00
+aI01
+asg21
+S'Replace'
+p215
+sg23
+(lp216
+Vtitle
+p217
+asba(ipuddlestuff.actiondlg
+Function
+p218
+(dp219
+g6
+g30
+sg8
+(lp220
+S'Replace'
+p221
+aS"Replace '$0': '$1' -> '$2'"
+p222
+asg12
+(lp223
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p224
+aS'Replace, QLineEdit'
+p225
+aS'with:, QLineEdit'
+p226
+aS'Match case:, QCheckBox'
+p227
+aS'only as whole word, QCheckBox'
+p228
+asg17
+(lp229
+VWith
+p230
+aVwith
+p231
+aI00
+aI01
+asg21
+S'Replace'
+p232
+sg23
+(lp233
+Vtitle
+p234
+asba(ipuddlestuff.actiondlg
+Function
+p235
+(dp236
+g6
+g30
+sg8
+(lp237
+S'Replace'
+p238
+aS"Replace '$0': '$1' -> '$2'"
+p239
+asg12
+(lp240
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p241
+aS'Replace, QLineEdit'
+p242
+aS'with:, QLineEdit'
+p243
+aS'Match case:, QCheckBox'
+p244
+aS'only as whole word, QCheckBox'
+p245
+asg17
+(lp246
+Vvs.
+p247
+aVvs
+p248
+aI00
+aI01
+asg21
+S'Replace'
+p249
+sg23
+(lp250
+Vtitle
+p251
+asbaaVCase Conversion
+p252
+asI1
+(lp253
+(lp254
+(ipuddlestuff.actiondlg
+Function
+p255
+(dp256
+g6
+g30
+sg8
+(lp257
+S'Replace'
+p258
+aS"Replace '$0': '$1' -> '$2'"
+p259
+asg12
+(lp260
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p261
+aS'Replace, QLineEdit'
+p262
+aS'with:, QLineEdit'
+p263
+aS'Match case:, QCheckBox'
+p264
+aS'only as whole word, QCheckBox'
+p265
+asg17
+(lp266
+V%20
+p267
+aV 
+aI00
+aI00
+asg21
+S'Replace'
+p268
+sg23
+(lp269
+V__all
+p270
+asba(ipuddlestuff.actiondlg
+Function
+p271
+(dp272
+g6
+g30
+sg8
+(lp273
+S'Replace'
+p274
+aS"Replace '$0': '$1' -> '$2'"
+p275
+asg12
+(lp276
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p277
+aS'Replace, QLineEdit'
+p278
+aS'with:, QLineEdit'
+p279
+aS'Match case:, QCheckBox'
+p280
+aS'only as whole word, QCheckBox'
+p281
+asg17
+(lp282
+V_
+aV 
+aI00
+aI00
+asg21
+S'Replace'
+p283
+sg23
+(lp284
+V__all
+p285
+asba(ipuddlestuff.actiondlg
+Function
+p286
+(dp287
+g6
+g30
+sg8
+(lp288
+S'Replace'
+p289
+aS"Replace '$0': '$1' -> '$2'"
+p290
+asg12
+(lp291
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p292
+aS'Replace, QLineEdit'
+p293
+aS'with:, QLineEdit'
+p294
+aS'Match case:, QCheckBox'
+p295
+aS'only as whole word, QCheckBox'
+p296
+asg17
+(lp297
+VDj
+p298
+aVDJ
+p299
+aI00
+aI01
+asg21
+S'Replace'
+p300
+sg23
+(lp301
+V__all
+p302
+asba(ipuddlestuff.actiondlg
+Function
+p303
+(dp304
+g6
+g30
+sg8
+(lp305
+S'Replace'
+p306
+aS"Replace '$0': '$1' -> '$2'"
+p307
+asg12
+(lp308
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p309
+aS'Replace, QLineEdit'
+p310
+aS'with:, QLineEdit'
+p311
+aS'Match case:, QCheckBox'
+p312
+aS'only as whole word, QCheckBox'
+p313
+asg17
+(lp314
+VMc
+p315
+aVMC
+p316
+aI00
+aI01
+asg21
+S'Replace'
+p317
+sg23
+(lp318
+V__all
+p319
+asba(ipuddlestuff.actiondlg
+Function
+p320
+(dp321
+g6
+g30
+sg8
+(lp322
+S'Replace'
+p323
+aS"Replace '$0': '$1' -> '$2'"
+p324
+asg12
+(lp325
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p326
+aS'Replace, QLineEdit'
+p327
+aS'with:, QLineEdit'
+p328
+aS'Match case:, QCheckBox'
+p329
+aS'only as whole word, QCheckBox'
+p330
+asg17
+(lp331
+Vvs
+p332
+aVvs
+p333
+aI00
+aI01
+asg21
+S'Replace'
+p334
+sg23
+(lp335
+V__all
+p336
+asbaaVStandard
+p337
+as.
