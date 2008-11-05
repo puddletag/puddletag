@@ -1,7 +1,7 @@
 Let me try to imitate you for a bit. You may be thinking:
 
 What is puddletag?
-	And I'll reply that puddletag is a tag editor for Linux based loosely on the windows program Mp3tag. Basically it uses a table layout so that all the tags you want to edit by hand are visible and easily editable. Besides that, puddletag also allows you to extract tags from filenames and renaming files based on their tags by using patterns(that you define, not crappy, uneditable).
+	And I'll reply that puddletag is a tag editor for Linux based loosely on the windows program Mp3tag. Basically it uses a table layout so that all the tags you want to edit by hand are visible and easily editable. Besides that, puddletag also allows you to extract tags from filenames and renaming files based on their tags by using patterns(that you define, not crappy, uneditable ones).
 
 Why puddletag?
 	Mp3tag was the only reason I kept an XP partition around.
@@ -9,8 +9,7 @@ Why puddletag?
 What makes it different?
 	Currently, nothing. Except that the layout differs considerably from Mp3tag. Unlike Mp3tag though, puddletag sucks. This will be addressed in future.
 
-	If you're interested, puddletag was written in Python2.4 on Debian Etch. It uses PyQt4 for the GUI and PyParsing for the parsing stuff and Mutagen as the tagging library. All are available via apt on Debian and Kubuntu as python-qt4, python-pyparsing and python-mutagen respectively.
-	I haven't tested on other distributions, but it should work(holler at your pets if it doesn't). 
+	If you're interested, puddletag was written in Python2.4 on Debian Etch. It uses PyQt4 for the GUI and PyParsing for the parsing stuff and Mutagen as the tagging library. All are available via apt on Debian and Kubuntu as python-qt4, python-pyparsing and python-mutagen respectively. I haven't tested on other distributions, but it should work (holler at your pets if it doesn't). 
 	
 	Most important of all, puddletag is released under GPLv2.
 
@@ -22,6 +21,7 @@ And run it?
 	In the main puddletag directory, you'll find a file called puddletag.py. You can run it by typing python puddletag.py in your console.
     
 Why did you name it puddletag?
-	I couldn't think of anything else, if you run it you'll get the name "Freetag". If you have anything better to suggest, send me a mail at cpuddle@users.sourceforge(dot comes here)net. That goes for bug reports to or anything else. Sourceforge has ways to do that, but you have to register and Sourceforge really isn't a pleasure to use.
+	Honestly, I don't really care that much about the name. If you have anything better to suggest, send me a mail at cpuddle@users.sourceforge(dot comes here)net. That goes for bug reports too, or any puddletag related questions. There are forums and shit on Sourceforge, but for now I'd prefer email.
 
-If you have any questions, holla at me via email(Which I check once a day).
+Releases?
+	Swing by every two weeks, I'll have at least some updates.
