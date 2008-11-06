@@ -43,7 +43,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys
+import sys, resource
 from copy import copy
 from puddleobjects import ButtonLayout, OKCancel, HeaderSetting
 
@@ -111,15 +111,15 @@ class ComboSetting(HeaderSetting):
         #Get the number of rows
         numrows = settings.beginReadArray("FrameCombo")
         rowcolors = {}
-        
         if numrows <= 0:
             settings = QSettings(":/puddletag.conf",QSettings.IniFormat)
             numrows = settings.beginReadArray("FrameCombo")
-            
+        
         for i in range(numrows):
             settings.setArrayIndex(i)
             rowcolor = settings.value('row', QVariant(-1)).toLongLong()[0]
             combos = list([long(z) for z in settings.value("rows").toStringList()])
+            print combos
             rowcolors[rowcolor] = combos
             if rowcolor != -1:
                 for z in combos:

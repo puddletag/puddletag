@@ -32,6 +32,7 @@ if sys.version_info[0] >= 2 and sys.version_info[1] > 4:
     import re as sre
 else:
     import sre
+    
 from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, NotAny
 numtimes = 0 #Used in filenametotag to keep track of shit.. Do not modify.
 
