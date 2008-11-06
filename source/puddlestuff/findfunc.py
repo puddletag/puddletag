@@ -26,7 +26,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import sre, audioinfo, os, pdb, functions, string
+import audioinfo, os, pdb, functions, string
+import sys
+if sys.version_info[0] >= 2 and sys.version_info[1] > 4:
+    import re as sre
+else:
+    import sre
 from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, NotAny
 numtimes = 0 #Used in filenametotag to keep track of shit.. Do not modify.
 
