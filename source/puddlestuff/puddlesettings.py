@@ -109,7 +109,6 @@ class ComboSetting(HeaderSetting):
             tags = ['artist', 'title', 'album', 'track', u'year', 'genre', 'comment']
         
         newtags = [(unicode(title),unicode(tag)) for title, tag in zip(titles, tags)]
-        print newtags
         HeaderSetting.__init__(self, newtags, parent, False)
         self.grid.addWidget(QLabel("You need to restart puddletag for these settings to be applied."),3,0)
         #Get the number of rows
@@ -119,12 +118,10 @@ class ComboSetting(HeaderSetting):
             settings = QSettings(":/puddletag.conf",QSettings.IniFormat)
             numrows = settings.beginReadArray("FrameCombo")
         
-        
         for i in range(numrows):
             settings.setArrayIndex(i)
             rowcolor = settings.value('row', QVariant(-1)).toLongLong()[0]
             combos = list([long(z) for z in settings.value("rows").toStringList()])
-            print combos
             rowcolors[rowcolor] = combos
             if rowcolor != -1:
                 for z in combos:
@@ -181,8 +178,8 @@ class ComboSetting(HeaderSetting):
             settings.setValue('row', QVariant(color))
             settings.setValue("rows", QVariant([unicode(z) for z in colors[color]]))
         settings.endArray()
-        settings.setValue("FrameCombo/titles", QVariant(titles))
-        settings.setValue("FrameCombo/tags", QVariant(tags))
+        settings.setValue("FrameCombo/titles", QVariant(QStringList(titles)))
+        settings.setValue("FrameCombo/tags", QVariant(QStringList(tags)))
 
         self.colors = colors
     
