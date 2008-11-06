@@ -115,6 +115,8 @@ class ComboSetting(HeaderSetting):
             settings = QSettings(":/puddletag.conf",QSettings.IniFormat)
             numrows = settings.beginReadArray("FrameCombo")
         
+        print "numrows: ", numrows
+        print "numitems:", self.listbox.count()        
         for i in range(numrows):
             settings.setArrayIndex(i)
             rowcolor = settings.value('row', QVariant(-1)).toLongLong()[0]
@@ -123,6 +125,7 @@ class ComboSetting(HeaderSetting):
             rowcolors[rowcolor] = combos
             if rowcolor != -1:
                 for z in combos:
+                    print "item:", z
                     rowcolor = QColor(rowcolor)
                     self.listbox.item(z).setBackgroundColor(rowcolor)
                     textcolor = (255-rowcolor.red(),255 - rowcolor.green(),255 - rowcolor.blue())
