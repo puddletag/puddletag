@@ -101,14 +101,17 @@ class ComboSetting(HeaderSetting):
         
         settings = QSettings()
         #Default shit
-        titles = list(settings.value("FrameCombo/titles", 
-            QVariant(['Artist', 'Title', 'Album', 'Track', u'Year', "Genre", 'Comment'])).toStringList())
-        tags = list(settings.value("FrameCombo/tags", 
-            QVariant(['artist', 'title', 'album', 'track', u'date', 'genre', 'comment'])).toStringList())
+        titles = list(settings.value("FrameCombo/titles").toStringList())
+        if not titles:
+            titles = ['Artist', 'Title', 'Album', 'Track', u'Year', "Genre", 'Comment']
+        tags = list(settings.value("FrameCombo/tags").toStringList())
+        if not tags:
+            tags = ['artist', 'title', 'album', 'track', u'year', 'genre', 'comment']
+        
         newtags = [(unicode(title),unicode(tag)) for title, tag in zip(titles, tags)]
         print newtags
         HeaderSetting.__init__(self, newtags, parent, False)
-        self.grid.addWidget(QLabel("You need to restart puddletag for these setting to be applied."),3,0)
+        self.grid.addWidget(QLabel("You need to restart puddletag for these settings to be applied."),3,0)
         #Get the number of rows
         numrows = settings.beginReadArray("FrameCombo")
         rowcolors = {}
