@@ -1195,13 +1195,13 @@ class MainWin(QMainWindow):
         titles = [z[0] for z in self.cenwid.headerdata]
         tags = [z[1] for z in self.cenwid.headerdata]
         
-        settings.setValue("editor/titles", QVariant(titles))
-        settings.setValue("editor/tags", QVariant(tags))
+        settings.setValue("editor/titles", QVariant(QStringList(titles)))
+        settings.setValue("editor/tags", QVariant(QStringList(tags)))
         
         patterns = QStringList()
         for z in xrange(self.patterncombo.count()):
             patterns.append(self.patterncombo.itemText(z))
-        settings.setValue("editor/patterns",QVariant(patterns))
+        settings.setValue("editor/patterns",QVariant(QStringList(patterns)))
         
         settings.setValue("splittersize", QVariant(self.splitter.saveState()))
         settings.setValue("hsplittersize", QVariant(self.hsplitter.saveState()))
