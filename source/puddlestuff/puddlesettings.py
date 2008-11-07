@@ -100,8 +100,17 @@ class ComboSetting(HeaderSetting):
     def __init__(self, parent = None, cenwid = None):
         
         settings = QSettings()
+        numtitles = settings.beginReadArray("FrameCombo")
+        print numtitles
         #Default shit
-        titles = list(settings.value("FrameCombo/titles").toStringList())
+        titles = []
+        tags = []
+        for z in range(numtitles):
+            settings.setArrayIndex(z)
+            titles.append(settings.value("titles").toString())
+            tags.append(settings.value("tags").toString())
+        settings.endArray()
+        
         if not titles:
             titles = ['Artist', 'Title', 'Album', 'Track', u'Year', "Genre", 'Comment']
         tags = list(settings.value("FrameCombo/tags").toStringList())
@@ -177,10 +186,11 @@ class ComboSetting(HeaderSetting):
             settings.setArrayIndex(i)
             settings.setValue('row', QVariant(color))
             settings.setValue("rows", QVariant([unicode(z) for z in colors[color]]))
+        for i,z in enumerate(titles):
+            settings.setArrayIndex(i)
+            settings.setValue("titles", QVariant(z))
+            settings.setValue("tags", QVariant(tags[i]))
         settings.endArray()
-        settings.setValue("FrameCombo/titles", QVariant(QStringList(titles)))
-        settings.setValue("FrameCombo/tags", QVariant(QStringList(tags)))
-
         self.colors = colors
     
     def add(self):
@@ -225,11 +235,10 @@ class GeneralSettings(QWidget):
                 return Qt.Unchecked
             else:
                 return Qt.Checked
-        
+
         settings = QSettings()
-        
+
         vbox = QVBoxLayout()
-        
         self.subfolders = QCheckBox("Subfolders")        
         self.subfolders.setCheckState(convertstate(settings.value('General/subfolders', QVariant(0)).toInt()[0]))
         self.pathinbar = QCheckBox("Show filename in titlebar")
@@ -251,7 +260,7 @@ class GeneralSettings(QWidget):
         
     def applySettings(self, cenwid):
         def convertState(checkbox):
-            if checkbox.checkState() == 2:
+            if checkbox.checkState() == Qt.Checked:
                 return True
             else:
                 return False
@@ -271,6 +280,7 @@ class GeneralSettings(QWidget):
         settings.setValue('General/gridlines', QVariant(self.gridlines.checkState()))
         settings.setValue('General/pathinbar', QVariant(self.pathinbar.checkState()))
         settings.setValue('General/vertheader', QVariant(self.vertheader.checkState()))
+    
         
 class MainWin(QDialog):
     """In order to use a class as an option add it to self.widgets"""
@@ -334,7 +344,8 @@ class MainWin(QDialog):
             try:
                 z[1].applySettings(self.cenwid)
             except AttributeError:
-                sys.stderr.write(z[0] + " doesn't have a settings applySettings method.\n")
+                pass
+                #sys.stderr.write(z[0] + " doesn't have a settings applySettings method.\n")
         self.close()
 
 if __name__ == "__main__":
