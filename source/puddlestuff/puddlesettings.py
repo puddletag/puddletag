@@ -110,10 +110,11 @@ class ComboSetting(HeaderSetting):
             titles.append(settings.value("titles").toString())
             tags.append(settings.value("tags").toString())
         settings.endArray()
-        
+        import pdb
+        pdb.set_trace()
         if not titles:
             titles = ['Artist', 'Title', 'Album', 'Track', u'Year', "Genre", 'Comment']
-        tags = list(settings.value("FrameCombo/tags").toStringList())
+
         if not tags:
             tags = ['artist', 'title', 'album', 'track', u'year', 'genre', 'comment']
         
