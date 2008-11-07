@@ -101,7 +101,6 @@ class ComboSetting(HeaderSetting):
         
         settings = QSettings()
         numtitles = settings.beginReadArray("FrameCombo")
-        print numtitles
         #Default shit
         titles = []
         tags = []
@@ -110,8 +109,7 @@ class ComboSetting(HeaderSetting):
             titles.append(settings.value("titles").toString())
             tags.append(settings.value("tags").toString())
         settings.endArray()
-        import pdb
-        pdb.set_trace()
+
         if not titles:
             titles = ['Artist', 'Title', 'Album', 'Track', u'Year', "Genre", 'Comment']
 
