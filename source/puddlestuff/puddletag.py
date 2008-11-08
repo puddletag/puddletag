@@ -517,7 +517,7 @@ class MainWin(QMainWindow):
         self.cenwid.inittable(headerdata)
         
         columnwidths = [z.toInt()[0] for z in getIniArray("Columns","column")]
-        pdb.set_trace()    
+
         if not columnwidths:
             columnwidths = [z.toInt()[0] for z in getIniArray("Columns","column", defaultsettings)]
         
