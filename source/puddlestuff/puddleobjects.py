@@ -36,7 +36,29 @@ from audioinfo import PATH, FILENAME
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 
-
+def getIniArray(title, child, settings = None):
+        
+        if settings:
+            settings = settings
+        else:
+            settings = QSettings()
+        
+        val = []
+        x = settings.beginReadArray(title)
+        for z in range(x):
+            settings.setArrayIndex(z)
+            val.append(settings.value(child))
+        settings.endArray()
+        return val
+    
+def saveIniArray(title, child, yourlist):
+        settings = QSettings()
+        settings.beginWriteArray(title)
+        for i,z in enumerate(yourlist):
+            settings.setArrayIndex(i)
+            settings.setValue(child, QVariant(z))
+        settings.endArray()
+        
 def unique(seq, stable=False):
     """unique(seq, stable=False): return a list of the elements in seq in arbitrary
     order, but without duplicates.

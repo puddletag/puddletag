@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, audioinfo,os, copy, puddleobjects, findfunc, actiondlg, helperwin, pdb, puddlesettings, functions, resource
-from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting
+from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting, getIniArray, saveIniArray
 from os import path
 from audioinfo import FILENAME, PATH
 from optparse import OptionParser
@@ -268,14 +268,13 @@ class TableWindow(QSplitter):
             [model.removeColumn(0) for z in xrange(len(tags), len(self.headerdata))]
         
         [model.setHeaderData(i, Qt.Horizontal, v, Qt.DisplayRole) for i,v in enumerate(tags)]            
-        
+
         for z in columnwidths:
             if z[0] in self.headerdata:
                 self.table.setColumnWidth(self.headerdata.index(z[0]), z[1])
         
         #self.headerdata = model.headerdata
         self.table.horizontalHeader().tags = self.headerdata
-        
         if sortedtag in self.headerdata:
             self.sortTable(self.headerdata.index(sortedtag))
         else:
@@ -475,9 +474,8 @@ class MainWin(QMainWindow):
         self.connect(self.tree, SIGNAL('addFolder'), self.openFolder)
         self.connect(self.cenwid.table, SIGNAL('itemSelectionChanged()'),
                                          self.fillCombos)
-    
-    
-                                             
+        
+
     def loadShortcuts(self):
         settings = QSettings()
         controls = {'table':self.cenwid.table,'patterncombo':self.patterncombo}
@@ -505,12 +503,12 @@ class MainWin(QMainWindow):
         
         self.lastFolder = unicode(settings.value("main/lastfolder", QVariant(QDir().homePath())).toString())
         
-        titles = list(settings.value("editor/titles").toStringList())
-        tags = list(settings.value("editor/tags").toStringList())
-        
-        if len(titles) == 0:
-            titles = list(defaultsettings.value("editor/titles").toStringList())
-            tags = list(defaultsettings.value("editor/tags").toStringList())
+        titles = [unicode(z.toString()) for z in getIniArray("editor", "titles")]
+        tags = [unicode(z.toString()) for z in getIniArray("editor", "tags")]
+             
+        if not titles:
+            titles = [unicode(z.toString()) for z in getIniArray("editor", "titles", defaultsettings)]
+            tags = [unicode(z.toString()) for z in getIniArray("editor", "tags", defaultsettings)]
         
         headerdata = []
         for title, tag in zip(titles, tags):
@@ -518,22 +516,23 @@ class MainWin(QMainWindow):
         
         self.cenwid.inittable(headerdata)
         
-        columnwidths = settings.value("editor/Column").toStringList()
-        if len(columnwidths) == 0:
-            columnwidths = defaultsettings.value("editor/Column").toStringList()       
-        [self.cenwid.table.setColumnWidth(i,int(z)) for i,z in enumerate(columnwidths)]
+        columnwidths = [z.toInt()[0] for z in getIniArray("Columns","column")]
+        pdb.set_trace()    
+        if not columnwidths:
+            columnwidths = [z.toInt()[0] for z in getIniArray("Columns","column", defaultsettings)]
+        
+        [self.cenwid.table.setColumnWidth(i,z) for i,z in enumerate(columnwidths)]
         
         sortColumn = settings.value("Table/sortColumn",QVariant(1)).toInt()[0]
         
         self.cenwid.sortTable(sortColumn)        
         
-        self.cenwid.table.playcommand = [unicode(z) for z in
-             settings.value("Table/PlayCommand",QVariant(["xmms"])).toStringList()]
-        
         self.patterncombo.clear()
-        self.patterncombo.addItems(settings.value("editor/patterns").toStringList())
-        if self.patterncombo.count() == 0:
-            self.patterncombo.addItems(defaultsettings.value("editor/patterns").toStringList())    
+        
+        patterns = [z.toString() for z in getIniArray("patterns", "pattern")]
+        if not patterns:
+            patterns = [z.toString() for z in getIniArray("patterns", "pattern", defaultsettings)]
+        self.patterncombo.addItems(patterns)
         
         self.splitter.restoreState(settings.value("splittersize").toByteArray())
         self.hsplitter.restoreState(settings.value("hsplittersize").toByteArray())
@@ -1189,19 +1188,20 @@ class MainWin(QMainWindow):
         """Save settings and close."""
         settings = QSettings()
         table = self.cenwid.table
-        columnwidths = QStringList([str(table.columnWidth(z)) for z in range(table.model().columnCount())])
-        settings.setValue("editor/Column",QVariant(columnwidths))
+        
+        
+        columnwidths = [table.columnWidth(z) for z in range(table.model().columnCount())]
+        saveIniArray("Columns", "column",columnwidths)
         
         titles = [z[0] for z in self.cenwid.headerdata]
         tags = [z[1] for z in self.cenwid.headerdata]
+        saveIniArray("editor", "titles", titles)
+        saveIniArray("editor", "tags",tags)
         
-        settings.setValue("editor/titles", QVariant(QStringList(titles)))
-        settings.setValue("editor/tags", QVariant(QStringList(tags)))
-        
-        patterns = QStringList()
+        patterns = []
         for z in xrange(self.patterncombo.count()):
-            patterns.append(self.patterncombo.itemText(z))
-        settings.setValue("editor/patterns",QVariant(QStringList(patterns)))
+            patterns.append(unicode(self.patterncombo.itemText(z)))
+        saveIniArray("patterns","pattern", patterns)
         
         settings.setValue("splittersize", QVariant(self.splitter.saveState()))
         settings.setValue("hsplittersize", QVariant(self.hsplitter.saveState()))

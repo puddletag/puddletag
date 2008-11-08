@@ -45,7 +45,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource
 from copy import copy
-from puddleobjects import ButtonLayout, OKCancel, HeaderSetting
+from puddleobjects import ButtonLayout, OKCancel, HeaderSetting, getIniArray, saveIniArray
 
 class ListModel(QAbstractListModel):
     """The model used in TableShit"""
@@ -203,7 +203,10 @@ class PlayCommand(QWidget):
     def __init__(self, parent = None, cenwid = None):
         
         settings = QSettings()
-        text = [unicode(z) for z in settings.value("Table/playcommand",QVariant(['xmms'])).toStringList()]
+        text = [unicode(z.toString()) for z in getIniArray("Table","playcommand")]
+        if not text:
+            text = [u'xmms']
+        
         if cenwid is not None:
             cenwid.cenwid.table.setPlayCommand(text)
             return
@@ -225,7 +228,8 @@ class PlayCommand(QWidget):
     
     def saveSettings(self):
         settings = QSettings()
-        settings.setValue("Table/playcommand", QVariant(self.text.text().split(" ")))
+        self.text.text().split(" ")
+        saveIniArray("Table", "playcommand", self.text.text().split(" "))
         
 class GeneralSettings(QWidget):
     def __init__(self, parent = None, cenwid = None):
