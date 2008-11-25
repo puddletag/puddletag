@@ -1,12 +1,10 @@
-Thanks to
-
-Paul McGuire for PyParsing (It's really good once you get past the documentation) and helping me on the discussion board.
+Paul McGuire for PyParsing and helping me out on the discussion board.
 Michael Urman and Joe Wreschnig for Mutagen (Another cool library).
-Phil Thomson and the Qt people for PyQt4.
+Phil Thomson and the Qt and PyQt people for PyQt4.
 
-And for the code I stole:
+And for the people whose code I stole:
 The guy on ActiveState who wrote the unique(gets all unique elements from a list) recipe.
 The other one who wrote the case-insensitive sort.
-Those who help me on comp.lang.python
+Those who helped me out on comp.lang.python
 
-Everyone working on Debian. You're all going to heaven.
+Lastly, to everyone working on open source and especially for the cool programs. Thanks.
