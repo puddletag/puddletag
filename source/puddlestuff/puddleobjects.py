@@ -36,29 +36,7 @@ from audioinfo import PATH, FILENAME
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 
-def getIniArray(title, child, settings = None):
-        
-        if settings:
-            settings = settings
-        else:
-            settings = QSettings()
-        
-        val = []
-        x = settings.beginReadArray(title)
-        for z in range(x):
-            settings.setArrayIndex(z)
-            val.append(settings.value(child))
-        settings.endArray()
-        return val
-    
-def saveIniArray(title, child, yourlist):
-        settings = QSettings()
-        settings.beginWriteArray(title)
-        for i,z in enumerate(yourlist):
-            settings.setArrayIndex(i)
-            settings.setValue(child, QVariant(z))
-        settings.endArray()
-        
+
 def unique(seq, stable=False):
     """unique(seq, stable=False): return a list of the elements in seq in arbitrary
     order, but without duplicates.
@@ -278,7 +256,6 @@ class ProgressWin(QProgressDialog):
         self.hide()
     
     def updateVal(self):
-        self.show()
         self.setValue(self.value() + 1)
 
 class compare:
@@ -487,8 +464,17 @@ class TagModel(QAbstractTableModel):
         else:
             self.taginfo = []
         self.undolevel = 0
+        self.testData = {}
         self.reset()
     
+    def changeFolder(self, olddir, newdir):
+        tags = [z for z in self.taginfo if z["__folder"] == olddir]
+        for z in tags:
+            z['__folder'] = newdir
+            z[FILENAME] = os.path.join(newdir, z[PATH])
+        self.reset()
+            
+            
     def undo(self):
         """Undos the last action.
         
@@ -507,7 +493,7 @@ class TagModel(QAbstractTableModel):
         for row, file in enumerate(self.taginfo):
             if level in file:
                 self.setRowData(row, file[level])
-                del(file[level])            
+                del(file[level])
         self.undolevel -= 1
         
     def supportedDropActions(self):
@@ -574,7 +560,7 @@ class TagModel(QAbstractTableModel):
             column = index.column()
             tag = self.headerdata[column][1]
             currentfile = self.taginfo[index.row()]
-            #pdb.set_trace()
+
             filename = currentfile[FILENAME]
             newvalue = unicode(value.toString())
             #Tags that startwith "__" are usually read only except for __path
@@ -623,14 +609,14 @@ class TagModel(QAbstractTableModel):
         row is the row, tags is a dictionary of tags.
         
         If undo`is True, then an undo level is created for this file.
-        If just rename is True, then (if tags contain a "__path" key) the files are just renamed.
-        This speeds it up a lot.
+        If justrename is True, then (if tags contain a "__path" key) the file is just renamed.
+        i.e not tags are written.
         """
 
         if undo:
             oldtag = self.taginfo[row]
             oldtag = dict([(tag, oldtag[tag]) for tag in tags])
-            if self.undolevel in self.taginfo[row]:
+            if self.undolevel in oldtag:
                 self.taginfo[row][self.undolevel].update(oldtag)
             else:
                 self.taginfo[row][self.undolevel] = oldtag
@@ -638,8 +624,15 @@ class TagModel(QAbstractTableModel):
         self.taginfo[row].update(self.renameFile(row, tags))        
         
         if not justrename:
-            what = audioinfo.Tag(self.taginfo[row][FILENAME])
-            what.tags.update(tags)
+            ints = []
+            for z in tags:
+                try:
+                    ints.append(long(z))
+                except ValueError:
+                    "just trying to separate ints here"
+
+            what = audioinfo.Tag(self.taginfo[row][FILENAME]) 
+            what.tags.update([(z,tags[z]) for z in tags if z not in ints])
             what.writetags()
             self.taginfo[row].update(tags)
             
@@ -648,6 +641,73 @@ class TagModel(QAbstractTableModel):
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                                         firstindex, lastindex)
     
+    def setTestData(self, rows, tags):
+        
+        for row, tag in zip(rows, tags):
+            if row in self.testData:
+                self.testData[row][1] = tag
+            else:
+                self.testData[row] = [self.taginfo[row].copy(), tag]
+            self.taginfo[row].update(tag)
+        if len(rows) > len(tags):
+            self.unSetTestData(rows = rows[len(tags):])
+        self.emit(SIGNAL("enableUndo"), False)
+        firstindex = self.index(min(rows), 0)
+        lastindex = self.index(max(rows),self.columnCount() - 1)
+        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                        firstindex, lastindex)
+    
+    def unSetTestData(self, write = False, rows = None):
+        
+        def getdiff(tag1, tag2):
+            undolevel = [z for z in tag1 if type(z) is int]
+            if undolevel: undolevel = max(undolevel)
+            oldundolevel = [z for z in tag2 if type(z) is int]
+            if oldundolevel: oldundolevel = max(oldundolevel)
+            if oldundolevel != undolevel:
+                return True
+            else:
+                return False
+        
+        if not self.testData:
+            return
+
+        
+        if write:
+            for row, tag in self.testData.items():
+                oldtag = tag[0]
+                newtag = tag[1]
+                if getdiff(oldtag, self.taginfo[row]):
+                    newtag = [dict([(z,newtag[z])]) for z in newtag if 
+                            (z in oldtag[z]) and (z in self.taginfo[row]) 
+                            and oldtag[z] == self.taginfo[row][z]]
+                self.setRowData(row, newtag, True)
+            self.undolevel += 1
+            rows = self.testData.keys()
+            self.testData = {}
+        else:
+            if rows is not None:
+                for row in [row for row in rows if row in self.testData]:
+                    tag = self.testData[row]
+                    if not getdiff(self.taginfo[row], tag[1]):
+                        self.taginfo[row] = tag[0].copy()            
+            else:
+                for row, tag in self.testData.items():
+                    oldtag = tag[0]
+                    newtag = tag[1]
+                    if not getdiff(self.taginfo[row], newtag):
+                        self.taginfo[row] = oldtag
+                rows = self.testData.keys()
+                
+        
+        self.emit(SIGNAL("enableUndo"), True)
+        
+        firstindex = self.index(min(rows), 0)
+        lastindex = self.index(max(rows), self.columnCount() - 1)
+        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                        firstindex, lastindex)
+        
+        
     def renameFile(self, row, tags):
         """If tags(a dictionary) contains a "__path" key, then the file
         in self.taginfo[row] is renamed based on that.
@@ -688,11 +748,12 @@ class TagModel(QAbstractTableModel):
                     "&Yes", "&No","", 1, 1)
             if result == 1:
                 return False
-        if delfiles == True:
+        if delfiles:
             try:
-                os.remove(self.taginfo[position][FILENAME])
-            except OSError:
-                QMessageBox.information(None,"Error", "I couldn't find the file :\n" + self.taginfo[position][FILENAME], QMessageBox.Ok)                
+                os.remove(self.taginfo[position][FILENAME])                
+            except (OSError, IOError):
+                QMessageBox.information(None,"Error", "I couldn't delete the file :\n" + self.taginfo[position][FILENAME], QMessageBox.Ok)                
+                return False
         del(self.taginfo[position])
         self.endRemoveRows()
         return True
@@ -771,6 +832,7 @@ class TableShit(QTableView):
         self.subFolders = False
         #For less typing and that the model doesn't have to be accessed directly
         self.updateRow = self.tagmodel.setRowData
+        
     
     def selectedTags(self):
         """Retun a dictionary with the currently selected rows as keys.
@@ -884,7 +946,8 @@ class TableShit(QTableView):
         from helperwin import ExTags
         win = ExTags(self.model(), self.selectedRows[0], self)
         win.setModal(True)
-        win.show()        
+        win.show()
+        self.connect(win, SIGNAL("tagAvailable"), self.selectionChanged)
         
     def playFiles(self):
         """Play the selected files using the player specified in self.playcommand"""
@@ -919,9 +982,17 @@ class TableShit(QTableView):
     
     def remRows(self):
         """Removes the currently selected rows
-        and deletes the files."""
-        if self.selectedRows == []: return
-        self.model().removeRows(self.selectedRows[0], delfiles = True)
+        and deletes the files.
+        
+        Doing it all at once, doesn't seem to work in Debian."""
+        if len(self.selectedRows) == 1:
+                self.lastselection = self.selectedTags()
+        if not self.selectedRows:
+            index = self.model().index(self.lastselection.keys()[0], self.lastselection.values()[0][0])
+            selection = QItemSelection(index, index);
+            self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent or Clear)
+            return
+        self.model().removeRows(self.selectedRows[0])
         self.selectionChanged()
         self.remRows()
     

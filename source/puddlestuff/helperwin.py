@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, findfunc, audioinfo, pdb
-from puddleobjects import OKCancel
+import sys, findfunc, audioinfo, os,pdb
+from puddleobjects import OKCancel, partial
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -109,7 +109,8 @@ class ImportWindow(QDialog):
         self.grid.addWidget(self.file,1,0,1,2)        
 
         self.tags = QTextEdit()
-        self.grid.addWidget(self.tags,1,2,1,2)        
+        self.grid.addWidget(self.tags,1,2,1,2)
+        self.tags.setLineWrapMode(QTextEdit.NoWrap)
         
         self.label = QLabel("Pattern")
         self.grid.addWidget(self.label,2,0,)
@@ -120,10 +121,10 @@ class ImportWindow(QDialog):
         self.patterncombo.setEditable(True)
         self.patterncombo.setDuplicatesEnabled(False)
         
-        self.ok = QPushButton("OK")
-        self.cancel = QPushButton("Cancel")
+        self.ok = QPushButton("&OK")
+        self.cancel = QPushButton("&Cancel")
         
-        self.openfile = QPushButton("Open File")
+        self.openfile = QPushButton("&Select File")
         
         self.hbox.addWidget(self.openfile)
         self.hbox.addWidget(self.patterncombo,1)
@@ -151,7 +152,7 @@ class ImportWindow(QDialog):
         if filename == "" or filename is None:
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
-                'OpenFolder','/media/multi/'))
+                'OpenFolder',QDir.homePath()))
         if filename != "":
             try:
                 f = open(filename)
@@ -163,8 +164,6 @@ class ImportWindow(QDialog):
                 else:
                     self.close()
                 return
-            import pdb
-            pdb.set_trace()
             i = 0
             self.lines = f.readlines()            
             self.file.setPlainText("".join(self.lines))
@@ -176,10 +175,18 @@ class ImportWindow(QDialog):
     
     def fillTags(self,string = None): #string is there purely for the SIGNAL
         """Fill the tag textbox."""
+        
+        def formattag(tags):
+            if tags:
+                return "".join(["<b>%s: </b> %s, " % (tag, tags[tag]) for tag in sorted(tags)])[:-2]
+            else:
+                return ""
+        
         self.dicttags = []
         for z in self.lines.split("\n"):
             self.dicttags.append(findfunc.filenametotag(unicode(self.patterncombo.currentText()),z,False))
-        self.tags.setPlainText("\n".join([unicode(z) for z in self.dicttags]))
+        if self.dicttags:
+            self.tags.setHtml("<br/>".join([formattag(z) for z in self.dicttags]))
                 
     def doStuff(self):
         """When I'm done, emit a signal with the updated tags."""
@@ -189,7 +196,7 @@ class ImportWindow(QDialog):
 class ListModel(QAbstractTableModel):
     """Called ListModel instead of tabelsomething, because
     it facilitates putting shit in a list."""
-    def __init__(self, model, row = 0):
+    def __init__(self, model = None, row = 0):
         """model is of type puddleobjects.TagModel.
         All the taginfo and stuff like that is imported from there.
         
@@ -259,6 +266,14 @@ class ListModel(QAbstractTableModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable| Qt.ItemIsDropEnabled)
 
+    def insertRow(self, row, count = None, parent = QModelIndex(), tag = None):
+        if row == -1:
+            row = self.rowCount()        
+        self.beginInsertRows(parent, row, row)
+        self.currentTag.insert(row, tag)
+        self.endInsertRows()
+        self.reset()
+        return True
 
 class Label(QLabel):
     """Just a QLabel that sends a clicked() signal
@@ -312,27 +327,31 @@ class EditTag(QDialog):
     value and the third is the dictionary of the previous tag.
     (Because the user mightc choose to edit a different tag,
     then the one that was chosen)"""
-    def __init__(self, tag, parent = None):
+    def __init__(self, tag = None, parent = None):
         
         QDialog.__init__(self, parent)
         self.vbox = QVBoxLayout()
         
         label = QLabel("Tag")
         self.tagcombo = QComboBox()
+        self.tagcombo.setEditable(True)
         self.tagcombo.addItems(sorted([z for z in audioinfo.REVTAGS]))
         
         #Get the previous tag
-        x = self.tagcombo.findText(tag[0])
-        
-        if x > -1:
-            self.tagcombo.setCurrentIndex(x)
-        else:
-            self.tagcombo.setCurrentIndex(0)
-        
-        label1 = QLabel("Value")
         self.prevtag = tag
-        self.value = QTextEdit()
-        self.value.setPlainText(tag[1])
+        label1 = QLabel("Value")
+        self.value = QTextEdit()        
+        
+        if tag is not None:
+            x = self.tagcombo.findText(tag[0])
+            
+            if x > -1:
+                self.tagcombo.setCurrentIndex(x)
+            else:
+                self.tagcombo.setCurrentIndex(0)
+            
+
+            self.value.setPlainText(tag[1])
         
         [self.vbox.addWidget(z) for z in [label, self.tagcombo, label1, self.value]]
         okcancel = OKCancel()
@@ -348,22 +367,17 @@ class EditTag(QDialog):
         self.close()
 
 class ExTags(QDialog):
-    """A dialog that shows you the tags in a file
-    by using a QListWidget().
-    
-    By double clicking on the listwidget another dialog is opened
-    allowing you to edit tags.
+    """A dialog that shows you the tags in a file 
     
     In addition, the file's image tag is shown."""
-    def __init__(self, filename = None, row = 0, parent = None):
+    def __init__(self, model = None, row = 0, parent = None):
         """If filename is not None, then I'll just load that file.
         Otherwise the window is loaded.
         
         If the filename is specfied, but does not exist(or isn't valid)
         then the user is asked to choose another file."""
         QDialog.__init__(self, parent)        
-        self.listbox = QTableView()
-        self.listbox.horizontalHeader().setStretchLastSection(True)
+        self.listbox = QListWidget()        
         
         self.pixmap = QPixmap()
         
@@ -373,10 +387,8 @@ class ExTags(QDialog):
         self.piclabel.setMaximumSize(150, 150)
         self.piclabel.setAlignment(Qt.AlignCenter)
         
-        if type(filename) is not str:
-            self.model = ListModel(filename, row)
-            self.listbox.setModel(self.model)
-            self.undolevel = filename.undolevel
+        if type(model) is not str:
+            self.model = model
             image = self.model.taginfo[row]["__image"]
             if image is not None and image != "":
                 image = QImage().fromData(image[0])
@@ -384,67 +396,69 @@ class ExTags(QDialog):
                     self.pixmap = QPixmap.fromImage(image)
                     self.piclabel.setPixmap(self.pixmap.scaled(self.piclabel.size(), Qt.KeepAspectRatio))
             self.setWindowTitle(self.model.taginfo[row]["__filename"])
-        	
-        self.hbox = QHBoxLayout()
-        self.hbox.addWidget(self.listbox)
+            self.loadFile(row)
+ 
+        addtag = QPushButton('&Add Tag')
+        edittag = QPushButton('&Edit Tag')
+        removetag = QPushButton('&Remove Tag')
+        
+        self.okcancel = OKCancel()
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.piclabel,1)
+        vbox.addWidget(addtag,0)
+        vbox.addWidget(edittag,0)
+        vbox.addWidget(removetag,0)        
+        vbox.addStretch()
+        
+        self.hbox = QHBoxLayout()        
+        self.hbox.addWidget(self.listbox)        
+        self.hbox.addLayout(vbox)
+        
         self.vbox = QVBoxLayout()
         self.vbox.addLayout(self.hbox)
-        self.setLayout(self.vbox)
-        
-        #self.cmdopen = QPushButton("Open")
-        self.okcancel = OKCancel()
-        ##self.okcancel.addWidget(self.cmdopen)
         self.vbox.addLayout(self.okcancel)
+        self.setLayout(self.vbox)  
         
-        #self.connect(self.cmdopen, SIGNAL("clicked()"), self.openFile)
+
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
         self.connect(self.listbox, SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.editTag)
         self.connect(self.piclabel,SIGNAL("clicked()"), self.fullPic)
-        self.connect(self.okcancel, SIGNAL("ok"),self.close)
+        self.connect(self.okcancel, SIGNAL("ok"),self.OK)
         
-        #self.openpic = QPushButton("Select picture")
-        #self.deletepic = QPushButton("Delete picture")
-        #self.savepic = QPushButton("Save picture to file")
+        self.connect(edittag, SIGNAL('clicked()'), self.editTag)
+        self.connect(addtag, SIGNAL('clicked()'), self.addTag)
+        self.connect(removetag, SIGNAL('clicked()'), self.removeTag)
         
-        #self.picbuttons = QHBoxLayout()
-        #[self.picbuttons.addWidget(z) for z in [self.openpic, self.deletepic, self.savepic]]
-        
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.piclabel)
-        vbox.addStretch()
-        self.hbox.addLayout(vbox)
 
         self.setMinimumSize(450,350)
         
         self.piclabel.setContextMenuPolicy(Qt.ActionsContextMenu)
         
-        self.openpic = QAction("&Choose other picture", self)
         self.savepic = QAction("&Save picture", self)
-        self.clearpic = QAction("&Clear picture", self)
-        
         self.piclabel.addAction(self.savepic)
-        
-        self.connect(self.openpic, SIGNAL("triggered()"), self.openPic)
-        self.connect(self.clearpic, SIGNAL("triggered()"), self.clearPic)
         self.connect(self.savepic, SIGNAL("triggered()"), self.savePic)
-        
+
         #Creating it here so that I can know when it is visible or not.
         self.win = PicWin()
         self.canceled = False
-        
-        if type(filename) is str:
-            self.openFile(filename)
-    
+            
+    def removeTag(self):
+        row = self.listbox.currentRow()
+        if row != -1:
+            self.listbox.takeItem(row)
+            del(self.currentfile[row])
+            
     def closeMe(self):
-        self.model.model.undolevel += 1
-        self.model.model.undo()
+        self.model.undolevel += 1
+        self.model.undo()
         self.canceled = True
         self.close()
         
     def closeEvent(self,event):
         self.win.close()
         if not self.canceled:
-            self.model.model.undolevel += 1
+            self.model.undolevel += 1
         QWidget.closeEvent(self,event)
     
     def fullPic(self):
@@ -457,45 +471,17 @@ class ExTags(QDialog):
             self.win.show()
 	
     def OK(self):
-        self.tag.writetags()
+        tags = [z[0] for z in self.currentfile]
+        toremove = [z for z in self.model.taginfo[self.currentrow] if not z.startswith("__") and z not in tags]        
+        self.currentfile.extend([[z,""] for z in toremove])
+        self.model.setRowData(self.currentrow, dict(self.currentfile))
+        self.emit(SIGNAL('tagAvailable'))
         self.close()
-                
-    def openPic(self):
-        """Allows the user to change the image of the current file.
-        
-        Don't use it. Doesn't work"""
-        image = QImage()
-        filedlg = QFileDialog()
-        while True:
-            filename = unicode(filedlg.getOpenFileName(self,
-                'OpenFolder',"~"))
-            image = QImage(filename)
-            if image.isNull() is False:
-                break
-            if filename == "":
-                return
-            ret = QMessageBox.question(self, "Error", filename + " is not a supported image type. \n Do you want to choose another file?",
-                            "&Yes, choose another", "&No, keep the original",0 ,1)
-            if ret == 1:
-                return
-        
-        ba = QByteArray()
-        mybuf = QBuffer(ba)
-        mybuf.open(QIODevice.WriteOnly);
-        image.save(mybuf, "PNG")
-        self.piclabel.setPixmap(QPixmap.fromImage(image).scaled(self.piclabel.size(), Qt.KeepAspectRatio))
-        #if self.image.
-        if self.tag['__image'] is None:
-            self.tag['__image'] = [0]
-        self.tag['__image'][0] = unicode(mybuf.data().data())
-    
-    def clearPic(self):
-        self.pixmap = QPixmap()        
-    
+                    
     def savePic(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
-        if self.tag["__image"][0] is not None:
+        if self.pixmap:
             filedlg = QFileDialog()
             #filedlg.setFilters(["JPEG (*.jpg)", "PNG (*.png)","Windows Bitmap (*.bmp)","X11 Bitmap (*.xbm)","X11 Bitmap (*.xpm)"])
             #FIXME: For some fucking reason, even though the filter is set up correctly,
@@ -505,11 +491,15 @@ class ExTags(QDialog):
                     'Save as...',"~", "PNG Images(*.png);;All Files (*)"))
             
             if os.path.exists(os.path.dirname(filename)):
-                image = QImage().fromData(self.tag["__image"][0])
-                image.save(filename, "PNG")
-        
+                self.pixmap.save(filename, "PNG")
     
-    def editTag(self, item = None):
+    def addTag(self):
+        win = EditTag(parent = self)
+        win.setModal(True)
+        win.show()
+        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+    
+    def editTag(self):
         """Opens a windows that allows the user 
         to edit the tag in item(a QListWidgetItem that's supposed to
         be from self.listbox).
@@ -518,60 +508,45 @@ class ExTags(QDialog):
         in self.listbox is used.
         
         After the value is edited, self.listbox is updated."""
-        if item is None:
-            tag = unicode(self.listbox.currentItem().text())
+        row = self.listbox.currentRow()
+        if row != -1:            
+            win = EditTag(self.currentfile[row], self)            
+            win.setModal(True)
+            win.show()
+            self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+    
+    def editTagBuddy(self, tag, value, prevtag = None):
+        if prevtag is not None:
+            try:
+                x = self.currentfile.index(prevtag)
+            except ValueError:
+                x = -1
+            if x >= 0 :
+                if prevtag[0] == tag:
+                    self.currentfile[x][1] = value
+                else:
+                    self.currentfile[x] = [tag, value]
+            self.listbox.item(x).setText(tag + " = " + value)
         else:
-            tag = unicode(item.text())
-            
-        value = tag[tag.find(" = ") + len(" = "): ]
-        tag = tag[ :tag.find(" = ")]
-        win = EditTag((tag,value), self)
-        win.setModal(True)
-        win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
-    
-    def editTagBuddy(self, tag, value, prevtag):        
-        del(self.tag.tags[prevtag[0]])
-        self.listbox.currentItem().setText(tag + " = " + value)
-        self.listbox.sortItems()
-        self.tag[tag] = value
-    
-    def openFile(self, filename = None):
-        """Just open the file to be edited, if filename is None
-        the a dialog is shown, asking the user to choose.
+            try:
+                x = [z[0] for z in self.currentfile].index(tag)
+                self.currentfile[x] = [tag, value]
+            except ValueError:
+                self.currentfile.append([tag, value])
+                self.listbox.addItem(tag + " = " + value)
         
-        If the file doesn't exist then the user is asked to choose
-        another."""
-        if filename is None:
-            filedlg = QFileDialog()
-            filename = unicode(filedlg.getOpenFileName(self, 'OpenFolder',"~"))
-        
-        tag = audioinfo.Tag()
-
-        if tag.link(filename) is None:
-            ret = QMessageBox.question(self, "Error", filename + " is not a supported file. \n Do you want to choose another file?",
-                            "&Yes, choose another", "&No")
-            if ret == 0:
-                self.openFile()
-                return
-                
-        self.tag = tag
+    
+    def loadFile(self, row):
         self.listbox.clear()
-        self.piclabel.setPixmap(QPixmap())
+        self.currentfile = sorted([[tag, val] for tag, val in  self.model.taginfo[row].items() if not tag.startswith('__') and val != ""])
+        self.listbox.addItems([item[0] + " = " + item[1] for item in self.currentfile])
+        self.currentrow = row
+        self.undolevel = self.model.undolevel
         
-        self.listbox.addItems(sorted([z + " = " + tag.tags[z] for z in tag.tags if not z.startswith("__")]))
-        
-        if self.tag["__image"] is not None:
-            image = QImage().fromData(self.tag["__image"][0])
-            if image.isNull():
-                self.tag["__image"] = None
-            else:
-                self.pixmap = QPixmap.fromImage(image)
-                self.piclabel.setPixmap(self.pixmap.scaled(self.piclabel.size(), Qt.KeepAspectRatio))
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    wid = ExTags('shit.mp3')
+    wid = ImportWindow()
     wid.resize(200,400)
     wid.show()
     app.exec_()

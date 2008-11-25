@@ -52,7 +52,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sre, pdb
 import findfunc, string
 import decimal
-
+from PyQt4.QtCore import QString, Qt, QStringList
 
 def re_escape(rex):
     escaped = ""
@@ -117,7 +117,7 @@ Type, QComboBox, Mixed Case,UPPER CASE,lower case
 def caps(text):
     return titleCase(text)
 
-def caps1(text):
+def caps2(text):
     upcase = [z for z,i in enumerate(text) if i in string.uppercase]
     text = list(titleCase(text))
     newtext = ""
@@ -125,7 +125,7 @@ def caps1(text):
         text[z] = text[z].upper()
     return "".join(text)
 
-def caps2(text):
+def caps3(text):
     try:
         start = sre.search("[a-zA-Z]", text).start(0)
     except AttributeError:
@@ -153,7 +153,7 @@ def div(x,y):
     except decimal.InvalidOperation:
         return
 
-def chr_(x):
+def char(x):
     try:
         return unicode(ord(x))
     except TypeError:
@@ -294,20 +294,18 @@ def replaceAsWord(text, word, replaceword, matchcase = False, characters = None)
     #in characters on it's left or right. If it does then it's replaced.
     #I'm converting text to string because then it's easier to make string substitutions
     #such as text[2:5] = "saotehustnu", that would do the replacing easily.
+    start = 0
+    if characters is None:
+        characters = ['.', '(', ')', ' ', '!']
     if not matchcase:
         word = word.lower()
     text = list(text)
-    
+
     while True:
         if not matchcase:
-            try:
-                newtext = u"".join(text).lower()
-            except UnicodeDecodeError:
-                import pdb
-                pdb.set_trace()
-                newtext = u"".join(text).lower()
+            newtext = "".join(text).lower()
         else:
-            newtext = u"".join(text)
+            newtext = "".join(text)
         start = newtext.find(word, start)
         if start == -1:
             break
@@ -317,23 +315,28 @@ def replaceAsWord(text, word, replaceword, matchcase = False, characters = None)
         elif text[start - 1] in characters and text[end] in characters:
             text[start: end] = replaceword
         start = start + len(word) + 1
-    return u"".join(text)
+    return "".join(text)
+
         
-def featFormat(text):
-    """Remove brackets from (ft), Brackets remove: $0"""
+def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
+    '''Remove brackets from (ft), Brackets remove: $0
+    Feat String, QLineEdit, ft
+    Opening bracket, QLineEdit, "("
+    Closing bracket, QLineEdit, ")"'''
     #Removes parenthesis from feat string
     #say if you had a title string "Booty (ft the boot man)"
     #featFormat would return "Booty ft the boot man"
     #In the same way "Booty (ft the boot man"
     #would give "Booty ft the boot man"
     #but "Booty ft the boot man)" would remain unchanged.
+    #the opening and closing parens can be changed to whatever.
     textli = list(text)
-    start = text.find("ft")
+    start = text.find(ftstring)
     if start == -1: return text
     if start != 0:
-        if text[start -1] == "(":
+        if text[start -1] == opening:
             del (textli[start - 1])
-            closeparen = "".join(textli).find(")", start)
+            closeparen = "".join(textli).find(closing, start)
             if closeparen == -1: return "".join(textli)            
             del textli[closeparen]
             return "".join(textli)

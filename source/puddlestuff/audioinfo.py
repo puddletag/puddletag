@@ -206,13 +206,12 @@ class Tag:
                         pass
 		                  
             #The date tag is not returned as text. Make it so.
-            if 'date' in self.tags:
-                self.tags["date"] = unicode(self.tags['date'])
+            if 'year' in self.tags:
+                self.tags["year"] = unicode(self.tags['year'])
             self.filetype = self.MP3
             #Get the image data.
             try:
                 x = [z for z in file if z.startswith(u"APIC:")][0]
-                #pdb.set_trace()
                 self.tags["__image"] = [file[x].data,file[x].mime, file[x].type]
             except IndexError:
                 self.tags['__image'] = None
@@ -220,6 +219,12 @@ class Tag:
             try:
                 x = [z for z in file if z.startswith(u"COMM:")][-1]
                 self.tags['comment'] = file[x].text[0]
+            except IndexError:
+                pass
+            try:
+                x = [z for z in file if z.startswith(u"TXXX:")][-1]
+                if file[x].desc not in self.tags:
+                    self.tags[file[x].desc] = file[x].text[0]                
             except IndexError:
                 pass
             
@@ -260,30 +265,20 @@ class Tag:
         if filename is None:
             filename = self.filename
         file = mutagen.File(unicode(filename))
-        
-        newtag = {}
+        newtag = []
         if type(file) == mutagen.mp3.MP3:
-            for z in self.tags:
+            for tag, value in self.tags.items():
                 try:
-                    if not z.startswith("__"):
-                        newtag[REVTAGS[z]] = unicode(self.tags[z])
+                    if not tag.startswith("__") and unicode(value):
+                            file[REVTAGS[tag]] = getattr(mutagen.id3, REVTAGS[tag])(encoding = 1, text = unicode(value))
+                            newtag.append(REVTAGS[tag])
                 except (KeyError, AttributeError):
-                    pass
+                    file[u'TXXX:' + unicode(tag)] = mutagen.id3.TXXX(1, tag, unicode(value))
+                    newtag.append(u'TXXX:' + unicode(tag))
             
-            for z in newtag:
-                file[z] = getattr(mutagen.id3, z)(encoding = 0, text = newtag[z])
-            for x in [y for y in file if (y not in newtag) and (not y.startswith("APIC:"))]:
-                del(file[x])
-            #if "__image" in self.tags and self.tags["__image"] is not None:
-                #try:
-                    #file["APIC:"].data = self.tags["__image"][0]
-                #except KeyError:
-                    #if self.tags['__image'] is None:
-                        #del(self.tags["__image"])
-                    #else:
-                        #pdb.set_trace()
-                        #x = mutagen.id3.APIC()
-                        #file["APIC:"] = x.fromData(file.tags, mutagen.id3.Frame.FLAG24_COMPRESS, self.tags["__image"][0])
+            toremove = [z for z in file if z not in newtag]
+            for z in toremove:
+                del(file[z])
             file.save()
             
         elif self.filetype == self.OGG:
