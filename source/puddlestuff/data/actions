@@ -380,385 +380,442 @@ asba(ipuddlestuff.actiondlg
 Function
 p171
 (dp172
-g6
+S'function'
+p173
 g30
-sg8
-(lp173
-S'Replace'
+sS'info'
 p174
+(lp175
+S'Replace'
+p176
 aS"Replace '$0': '$1' -> '$2'"
-p175
-asg12
-(lp176
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
 p177
-aS'Replace, QLineEdit'
+asS'doc'
 p178
-aS'with:, QLineEdit'
-p179
-aS'Match case:, QCheckBox'
+(lp179
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
 p180
-aS'only as whole word, QCheckBox'
+aS'Replace, QLineEdit'
 p181
-asg17
-(lp182
+aS'with:, QLineEdit'
+p182
+aS'Match case:, QCheckBox'
+p183
+aS'only as whole word, QCheckBox'
+p184
+asS'args'
+p185
+(lp186
 Vu
 aVYou
-p183
+p187
 aI00
 aI01
-asg21
+asS'funcname'
+p188
 S'Replace'
-p184
-sg23
-(lp185
-Vartist
-p186
-aVtitle
-p187
+p189
+sS'tag'
+p190
+(lp191
+Vtitle
+p192
 asba(ipuddlestuff.actiondlg
 Function
-p188
-(dp189
+p193
+(dp194
 g6
 cpuddlestuff.functions
 featFormat
-p190
-sg8
-(lp191
-S'Remove () from (ft)'
-p192
-aS'Format featuring: $0'
-p193
-asg12
-(lp194
-S'Remove () from (ft), Format featuring: $0'
 p195
-asg17
+sg8
 (lp196
+S'Remove brackets from (ft)'
+p197
+aS'Brackets remove: $0'
+p198
+asg12
+(lp199
+S'Remove brackets from (ft), Brackets remove: $0'
+p200
+aS'    Feat String, QLineEdit, ft'
+p201
+aS'    Opening bracket, QLineEdit, "("'
+p202
+aS'    Closing bracket, QLineEdit, ")"'
+p203
+asg17
+(lp204
 sg21
 S'Remove () from (ft)'
-p197
-sg23
-(lp198
-Vtitle
-p199
-aVartist
-p200
-asba(ipuddlestuff.actiondlg
-Function
-p201
-(dp202
-g6
-g30
-sg8
-(lp203
-S'Replace'
-p204
-aS"Replace '$0': '$1' -> '$2'"
 p205
-asg12
+sg23
 (lp206
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+Vtitle
 p207
-aS'Replace, QLineEdit'
+aVartist
 p208
-aS'with:, QLineEdit'
+asba(ipuddlestuff.actiondlg
+Function
 p209
-aS'Match case:, QCheckBox'
-p210
-aS'only as whole word, QCheckBox'
-p211
-asg17
-(lp212
-Vii
+(dp210
+g6
+g30
+sg8
+(lp211
+S'Replace'
+p212
+aS"Replace '$0': '$1' -> '$2'"
 p213
-aVII
-p214
-aI00
-aI01
-asg21
-S'Replace'
+asg12
+(lp214
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
 p215
-sg23
-(lp216
-Vtitle
+aS'Replace, QLineEdit'
+p216
+aS'with:, QLineEdit'
 p217
-asba(ipuddlestuff.actiondlg
-Function
+aS'Match case:, QCheckBox'
 p218
-(dp219
-g6
-g30
-sg8
-(lp220
-S'Replace'
-p221
-aS"Replace '$0': '$1' -> '$2'"
-p222
-asg12
-(lp223
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p224
-aS'Replace, QLineEdit'
-p225
-aS'with:, QLineEdit'
-p226
-aS'Match case:, QCheckBox'
-p227
 aS'only as whole word, QCheckBox'
-p228
+p219
 asg17
-(lp229
-VWith
-p230
-aVwith
-p231
+(lp220
+Vii
+p221
+aVII
+p222
 aI00
 aI01
 asg21
 S'Replace'
-p232
+p223
 sg23
-(lp233
+(lp224
 Vtitle
-p234
+p225
 asba(ipuddlestuff.actiondlg
 Function
-p235
-(dp236
-g6
+p226
+(dp227
+S'function'
+p228
 g30
-sg8
-(lp237
+sS'info'
+p229
+(lp230
 S'Replace'
-p238
+p231
 aS"Replace '$0': '$1' -> '$2'"
-p239
-asg12
-(lp240
+p232
+asS'doc'
+p233
+(lp234
 S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p241
+p235
 aS'Replace, QLineEdit'
-p242
+p236
 aS'with:, QLineEdit'
-p243
+p237
 aS'Match case:, QCheckBox'
-p244
+p238
 aS'only as whole word, QCheckBox'
-p245
-asg17
-(lp246
-Vvs.
-p247
-aVvs
-p248
+p239
+asS'args'
+p240
+(lp241
+VWith
+p242
+aVwith
+p243
 aI00
 aI01
-asg21
+asS'funcname'
+p244
 S'Replace'
+p245
+sS'tag'
+p246
+(lp247
+Vartist
+p248
+aVtitle
 p249
-sg23
-(lp250
-Vtitle
-p251
+asba(ipuddlestuff.actiondlg
+Function
+p250
+(dp251
+g228
+g30
+sg229
+(lp252
+S'Replace'
+p253
+aS"Replace '$0': '$1' -> '$2'"
+p254
+asg233
+(lp255
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p256
+aS'Replace, QLineEdit'
+p257
+aS'with:, QLineEdit'
+p258
+aS'Match case:, QCheckBox'
+p259
+aS'only as whole word, QCheckBox'
+p260
+asg240
+(lp261
+Vvs.
+p262
+aVvs
+p263
+aI00
+aI01
+asg244
+S'Replace'
+p264
+sg246
+(lp265
+Vartist
+p266
+aVtitle
+p267
+asba(ipuddlestuff.actiondlg
+Function
+p268
+(dp269
+S'function'
+p270
+cpuddlestuff.functions
+strip
+p271
+sS'info'
+p272
+(lp273
+S'Trim whitespace'
+p274
+aS'Trim $0'
+p275
+asS'doc'
+p276
+(lp277
+S'Trim whitespace, Trim $0'
+p278
+asS'args'
+p279
+(lp280
+sS'funcname'
+p281
+S'Trim whitespace'
+p282
+sS'tag'
+p283
+(lp284
+Vartist
+p285
+aVtitle
+p286
+aValbum
+p287
 asbaaVCase Conversion
-p252
+p288
 asI1
-(lp253
-(lp254
+(lp289
+(lp290
 (ipuddlestuff.actiondlg
 Function
-p255
-(dp256
+p291
+(dp292
 g6
 g30
 sg8
-(lp257
+(lp293
 S'Replace'
-p258
+p294
 aS"Replace '$0': '$1' -> '$2'"
-p259
+p295
 asg12
-(lp260
+(lp296
 S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p261
+p297
 aS'Replace, QLineEdit'
-p262
+p298
 aS'with:, QLineEdit'
-p263
+p299
 aS'Match case:, QCheckBox'
-p264
+p300
 aS'only as whole word, QCheckBox'
-p265
+p301
 asg17
-(lp266
+(lp302
 V%20
-p267
+p303
 aV 
 aI00
 aI00
 asg21
 S'Replace'
-p268
+p304
 sg23
-(lp269
+(lp305
 V__all
-p270
+p306
 asba(ipuddlestuff.actiondlg
 Function
-p271
-(dp272
+p307
+(dp308
 g6
 g30
 sg8
-(lp273
+(lp309
 S'Replace'
-p274
+p310
 aS"Replace '$0': '$1' -> '$2'"
-p275
+p311
 asg12
-(lp276
+(lp312
 S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p277
+p313
 aS'Replace, QLineEdit'
-p278
+p314
 aS'with:, QLineEdit'
-p279
+p315
 aS'Match case:, QCheckBox'
-p280
+p316
 aS'only as whole word, QCheckBox'
-p281
+p317
 asg17
-(lp282
+(lp318
 V_
 aV 
 aI00
 aI00
 asg21
 S'Replace'
-p283
-sg23
-(lp284
-V__all
-p285
-asba(ipuddlestuff.actiondlg
-Function
-p286
-(dp287
-g6
-g30
-sg8
-(lp288
-S'Replace'
-p289
-aS"Replace '$0': '$1' -> '$2'"
-p290
-asg12
-(lp291
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p292
-aS'Replace, QLineEdit'
-p293
-aS'with:, QLineEdit'
-p294
-aS'Match case:, QCheckBox'
-p295
-aS'only as whole word, QCheckBox'
-p296
-asg17
-(lp297
-VDj
-p298
-aVDJ
-p299
-aI00
-aI01
-asg21
-S'Replace'
-p300
-sg23
-(lp301
-V__all
-p302
-asba(ipuddlestuff.actiondlg
-Function
-p303
-(dp304
-g6
-g30
-sg8
-(lp305
-S'Replace'
-p306
-aS"Replace '$0': '$1' -> '$2'"
-p307
-asg12
-(lp308
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p309
-aS'Replace, QLineEdit'
-p310
-aS'with:, QLineEdit'
-p311
-aS'Match case:, QCheckBox'
-p312
-aS'only as whole word, QCheckBox'
-p313
-asg17
-(lp314
-VMc
-p315
-aVMC
-p316
-aI00
-aI01
-asg21
-S'Replace'
-p317
-sg23
-(lp318
-V__all
 p319
+sg23
+(lp320
+V__all
+p321
 asba(ipuddlestuff.actiondlg
 Function
-p320
-(dp321
+p322
+(dp323
 g6
 g30
 sg8
-(lp322
+(lp324
 S'Replace'
-p323
+p325
 aS"Replace '$0': '$1' -> '$2'"
-p324
-asg12
-(lp325
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
 p326
-aS'Replace, QLineEdit'
-p327
-aS'with:, QLineEdit'
+asg12
+(lp327
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
 p328
-aS'Match case:, QCheckBox'
+aS'Replace, QLineEdit'
 p329
-aS'only as whole word, QCheckBox'
+aS'with:, QLineEdit'
 p330
-asg17
-(lp331
-Vvs
+aS'Match case:, QCheckBox'
+p331
+aS'only as whole word, QCheckBox'
 p332
-aVvs
-p333
+asg17
+(lp333
+VDj
+p334
+aVDJ
+p335
 aI00
 aI01
 asg21
 S'Replace'
-p334
-sg23
-(lp335
-V__all
 p336
+sg23
+(lp337
+V__all
+p338
+asba(ipuddlestuff.actiondlg
+Function
+p339
+(dp340
+g6
+g30
+sg8
+(lp341
+S'Replace'
+p342
+aS"Replace '$0': '$1' -> '$2'"
+p343
+asg12
+(lp344
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p345
+aS'Replace, QLineEdit'
+p346
+aS'with:, QLineEdit'
+p347
+aS'Match case:, QCheckBox'
+p348
+aS'only as whole word, QCheckBox'
+p349
+asg17
+(lp350
+VMc
+p351
+aVMC
+p352
+aI00
+aI01
+asg21
+S'Replace'
+p353
+sg23
+(lp354
+V__all
+p355
+asba(ipuddlestuff.actiondlg
+Function
+p356
+(dp357
+g6
+g30
+sg8
+(lp358
+S'Replace'
+p359
+aS"Replace '$0': '$1' -> '$2'"
+p360
+asg12
+(lp361
+S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
+p362
+aS'Replace, QLineEdit'
+p363
+aS'with:, QLineEdit'
+p364
+aS'Match case:, QCheckBox'
+p365
+aS'only as whole word, QCheckBox'
+p366
+asg17
+(lp367
+Vvs
+p368
+aVvs
+p369
+aI00
+aI01
+asg21
+S'Replace'
+p370
+sg23
+(lp371
+V__all
+p372
 asbaaVStandard
-p337
+p373
 as.
