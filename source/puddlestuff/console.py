@@ -98,7 +98,7 @@ def main():
     #Rename the file using the tags.
     if sys.argv[2]=="tag":
         for z in inputfiles:
-            if tag.link(z)==None:
+            if tag.link(z) is not None:
                 newfilename=tagtofilename(pattern,z,True)
                 try:
                     if test==0: os.rename(z,newfilename)
@@ -111,11 +111,12 @@ def main():
     #Extract tags using the filename                
     elif sys.argv[2]=="file":
         for z in inputfiles:
-            if tag.link(z)==None:
-                tag.gettags()
-                tag.tags.update(filenametotag(pattern,os.path.basename(z),True))
-                if test==0:tag.writetags()
-                else:print filenametotag(pattern,os.path.basename(z),True)
+            if tag.link(z) is not None:
+                newtags = filenametotag(pattern,os.path.basename(z),True)
+                if newtags:
+                    tag.tags.update(filenametotag(pattern,os.path.basename(z),True))
+                    if test==0:tag.writetags()
+                    else:print filenametotag(pattern,os.path.basename(z),True)
     
         
 def renamedir(sourcedir,pattern):

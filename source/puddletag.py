@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-from PyQt4.QtCore import QString, QLocale, QTranslator
 from PyQt4.QtGui import QApplication
 
 import puddlestuff

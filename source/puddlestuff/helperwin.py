@@ -389,12 +389,13 @@ class ExTags(QDialog):
         
         if type(model) is not str:
             self.model = model
-            image = self.model.taginfo[row]["__image"]
-            if image is not None and image != "":
-                image = QImage().fromData(image[0])
-                if not image.isNull():
-                    self.pixmap = QPixmap.fromImage(image)
-                    self.piclabel.setPixmap(self.pixmap.scaled(self.piclabel.size(), Qt.KeepAspectRatio))
+            if '__image' in self.model.taginfo[row]:
+                image = self.model.taginfo[row]["__image"]
+                if image is not None and image != "":
+                    image = QImage().fromData(image[0])
+                    if not image.isNull():
+                        self.pixmap = QPixmap.fromImage(image)
+                        self.piclabel.setPixmap(self.pixmap.scaled(self.piclabel.size(), Qt.KeepAspectRatio))
             self.setWindowTitle(self.model.taginfo[row]["__filename"])
             self.loadFile(row)
  

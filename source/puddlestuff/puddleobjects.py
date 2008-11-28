@@ -615,7 +615,7 @@ class TagModel(QAbstractTableModel):
 
         if undo:
             oldtag = self.taginfo[row]
-            oldtag = dict([(tag, oldtag[tag]) for tag in tags])
+            oldtag = dict([(tag, oldtag[tag]) for tag in tags if tag in oldtag])
             if self.undolevel in oldtag:
                 self.taginfo[row][self.undolevel].update(oldtag)
             else:
@@ -643,14 +643,15 @@ class TagModel(QAbstractTableModel):
     
     def setTestData(self, rows, tags):
         
+        unsetrows = [row for row in rows if row in self.testData][len(tags):]
+        if unsetrows:
+            self.unSetTestData(rows = unsetrows)
         for row, tag in zip(rows, tags):
             if row in self.testData:
                 self.testData[row][1] = tag
             else:
                 self.testData[row] = [self.taginfo[row].copy(), tag]
             self.taginfo[row].update(tag)
-        if len(rows) > len(tags):
-            self.unSetTestData(rows = rows[len(tags):])
         self.emit(SIGNAL("enableUndo"), False)
         firstindex = self.index(min(rows), 0)
         lastindex = self.index(max(rows),self.columnCount() - 1)
@@ -672,7 +673,6 @@ class TagModel(QAbstractTableModel):
         if not self.testData:
             return
 
-        
         if write:
             for row, tag in self.testData.items():
                 oldtag = tag[0]
@@ -690,16 +690,16 @@ class TagModel(QAbstractTableModel):
                 for row in [row for row in rows if row in self.testData]:
                     tag = self.testData[row]
                     if not getdiff(self.taginfo[row], tag[1]):
-                        self.taginfo[row] = tag[0].copy()            
+                        self.taginfo[row] = tag[0].copy()
+                    del(self.testData[row])
             else:
                 for row, tag in self.testData.items():
                     oldtag = tag[0]
                     newtag = tag[1]
                     if not getdiff(self.taginfo[row], newtag):
                         self.taginfo[row] = oldtag
+                    del(self.testData[row])
                 rows = self.testData.keys()
-                
-        
         self.emit(SIGNAL("enableUndo"), True)
         
         firstindex = self.index(min(rows), 0)

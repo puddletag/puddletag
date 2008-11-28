@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import os, pdb, mutagen
 from os import path
 from mutagen.id3 import APIC
+import mutagen.oggvorbis, mutagen.flac, mutagen.apev2, mutagen.mp3
 
 
 PATH = "__path"
@@ -165,10 +166,10 @@ class Tag:
     #The filename of the linked file
     filename = None
     #The type of file
-    filetype=""
-    OGG = "ogg"
-    MP3 = "mp3"
-            
+    filetype=None
+    (oggtype, flactype, apev2type, mp3type) = [mutagen.oggvorbis.OggVorbis, mutagen.flac.FLAC, mutagen.apev2.APEv2, mutagen.mp3.MP3]
+    VORBISCOMMENT = [oggtype, flactype, apev2type]
+    
     def __getitem__(self,key):
         """Get the tag value from self.tags"""
         try:
@@ -196,7 +197,7 @@ class Tag:
             return
         if file is None:
             return
-        if type(file) == mutagen.mp3.MP3:
+        if type(file) == self.mp3type:
             for tagval in file:
                 if tagval in TAGS:
                     try:
@@ -208,7 +209,6 @@ class Tag:
             #The date tag is not returned as text. Make it so.
             if 'year' in self.tags:
                 self.tags["year"] = unicode(self.tags['year'])
-            self.filetype = self.MP3
             #Get the image data.
             try:
                 x = [z for z in file if z.startswith(u"APIC:")][0]
@@ -228,26 +228,34 @@ class Tag:
             except IndexError:
                 pass
             
-        elif type(file) == mutagen.oggvorbis.OggVorbis:                    
+        elif type(file) in self.VORBISCOMMENT:
             for z in file:
                 self.tags[z.lower()] = file.tags[z][0]
             self.tags["track"] = self.tags["tracknumber"]
-            del (self.tags["tracknumber"])            
-            self.filetype = self.OGG
+            del (self.tags["tracknumber"])
         else:
             #for z in file.tags:
                 #self.tags[z.lower()] = file.tags[z][0]
             return
         
-        info = file.info        
+        self.filetype = type(file)
+        info = file.info
         self.filename = path.realpath(filename)
-        self.tags.update({FILENAME: filename,
-                            PATH: path.basename(filename),
-                            "__folder": path.dirname(filename),
-                            "__ext": path.splitext(filename)[1][1:],
-                            "__bitrate": unicode(info.bitrate/1000) + u" kb/s",
-                            "__frequency": unicode(info.sample_rate / 1000.0)[:4] + u" kHz"})
-                                    
+        if self.filetype != self.flactype:
+            self.tags.update({FILENAME: filename,
+                                PATH: path.basename(filename),
+                                "__folder": path.dirname(filename),
+                                "__ext": path.splitext(filename)[1][1:],
+                                "__bitrate": unicode(info.bitrate/1000) + u" kb/s",
+                                "__frequency": unicode(info.sample_rate / 1000.0)[:4] + u" kHz"})
+        else:
+            self.tags.update({FILENAME: filename,
+                                PATH: path.basename(filename),
+                                "__folder": path.dirname(filename),
+                                "__ext": path.splitext(filename)[1][1:],
+                                "__bitrate": u"0" + u" kb/s",
+                                "__frequency": unicode(info.sample_rate / 1000.0)[:4] + u" kHz"})
+                                                                    
         seconds = long(info.length % 60)
         if seconds < 10:
             seconds = u"0" + unicode(seconds)
@@ -264,9 +272,9 @@ class Tag:
         
         if filename is None:
             filename = self.filename
-        file = mutagen.File(unicode(filename))
-        newtag = []
+        file = mutagen.File(unicode(filename))        
         if type(file) == mutagen.mp3.MP3:
+            newtag = []
             for tag, value in self.tags.items():
                 try:
                     if not tag.startswith("__") and unicode(value):
@@ -281,7 +289,8 @@ class Tag:
                 del(file[z])
             file.save()
             
-        elif self.filetype == self.OGG:
+        elif self.filetype in self.VORBISCOMMENT:
+            newtag = {}
             for z in self.tags:
                 try:
                     if not z.startswith("__"):                        

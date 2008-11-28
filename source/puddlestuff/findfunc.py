@@ -144,9 +144,6 @@ def filenametotag(pattern, filename, checkext = False):
         
         None is the returned if the pattern does not match the filename."""
     
-    #Make sure percentages aren't escaped
-    pat = sre.compile(r'[^\\|.*]%\w*%')
-    
     #if pattern == "%track% %title%": pdb.set_trace()
     if checkext:
         filename = os.path.splitext(filename)[0]
@@ -262,4 +259,4 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
     elif (addext == True) and (extension is not None):
         return getfunc(pattern) + os.path.extsep + extension
     else:
-        return getfunc(pattern) + os.path.extsep + tag.filetype
+        return getfunc(pattern) + os.path.extsep + tag["__ext"]
