@@ -29,7 +29,11 @@ from puddleobjects import OKCancel, partial
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
-    Number the tracks in range(start, end)"""
+    Number the tracks in range(start, end)
+    
+    Emit's the signal 'newtracks' containing a list of two items when it's closed:
+    the from value and the to value(a unicode string). If no to value
+    was specified then the to value is an empty string ('')"""
     def __init__(self, parent=None, minval=0, numtracks = None, enablenumtracks = False):
         QDialog.__init__(self,parent)        
         self.setWindowTitle("Autonumbering Wizard")
@@ -91,7 +95,10 @@ class TrackWindow(QDialog):
         self.close()
         
 class ImportWindow(QDialog):
-    """Dialog that allows you to import a file to tags."""
+    """Dialog that allows you to import a file to tags.
+    
+    emits a signal newtags with a dictionary containing
+    the...new tags."""
     def __init__(self,parent = None, filename = None):
         QDialog.__init__(self, parent)
         self.setWindowTitle("Import tags from file")
@@ -149,7 +156,7 @@ class ImportWindow(QDialog):
             
     def openFile(self, filename = ""):
         """Open the file and fills the textboxes."""
-        if filename == "" or filename is None:
+        if not filename:
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
                 'OpenFolder',QDir.homePath()))
@@ -174,8 +181,7 @@ class ImportWindow(QDialog):
             self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),self.fillTags)
     
     def fillTags(self,string = None): #string is there purely for the SIGNAL
-        """Fill the tag textbox."""
-        
+        """Fill the tag textbox."""        
         def formattag(tags):
             if tags:
                 return "".join(["<b>%s: </b> %s, " % (tag, tags[tag]) for tag in sorted(tags)])[:-2]
@@ -193,87 +199,6 @@ class ImportWindow(QDialog):
         self.emit(SIGNAL("Newtags"), self.dicttags)
         self.close()
 
-class ListModel(QAbstractTableModel):
-    """Called ListModel instead of tabelsomething, because
-    it facilitates putting shit in a list."""
-    def __init__(self, model = None, row = 0):
-        """model is of type puddleobjects.TagModel.
-        All the taginfo and stuff like that is imported from there.
-        
-        row is the row that you want to be shown. i.e the file
-        that is to edited."""
-        QAbstractTableModel.__init__(self)
-        if model is None:
-            self.taginfo = []
-        else:
-            self.taginfo = model.taginfo
-            self.setRowData = model.setRowData
-            self.tagValue(row)
-            self.model = model
-        self.undolevel = 0
-        self.reset()
-    
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
-        if role != Qt.DisplayRole:
-            return QVariant()
-        if orientation == Qt.Horizontal:
-            try:
-                if section == 0:
-                    return QVariant("Tag Value")
-            except IndexError:
-                return QVariant()
-        return QVariant(self.currentTag[section][0])
-    
-    def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid() or not (0 <= index.row() < len(self.currentTag)):
-            return QVariant()
-        if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole) or (role == Qt.EditRole):
-            try:
-                if not self.currentTag[index.row()][0].startswith("__"):
-                    return QVariant(self.currentTag[index.row()][1])
-            except TypeError:
-                pdb.set_trace()
-        return QVariant()
-    
-    def rowCount(self, index = QModelIndex()):
-        return len(self.currentTag)
-    
-    def columnCount(self, index=QModelIndex()):
-        return 1
-    
-    def tagValue(self, row):
-        self.currentRow = row
-        self.currentTag = sorted([list(z) for z in self.taginfo[row].items() 
-                                if (not type(z[0]) is int) and (not z[0].startswith("__"))])
-        self.reset()
-    
-    def setData(self, index, value, role = Qt.EditRole):
-        if index.isValid() and 0 <= index.row() < len(self.currentTag):
-            self.currentTag[index.row()][1] = unicode(value.toString())
-            self.setRowData(self.currentRow, dict([self.currentTag[index.row()]]), True)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        index, index)
-            return True
-        return False
-        
-    def flags(self, index):
-        if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsEditable| Qt.ItemIsDropEnabled)
-
-    def insertRow(self, row, count = None, parent = QModelIndex(), tag = None):
-        if row == -1:
-            row = self.rowCount()        
-        self.beginInsertRows(parent, row, row)
-        self.currentTag.insert(row, tag)
-        self.endInsertRows()
-        self.reset()
-        return True
 
 class Label(QLabel):
     """Just a QLabel that sends a clicked() signal
@@ -325,8 +250,8 @@ class EditTag(QDialog):
     
     The first being the new tag, the second that tag's
     value and the third is the dictionary of the previous tag.
-    (Because the user mightc choose to edit a different tag,
-    then the one that was chosen)"""
+    (Because the user might choose to edit a different tag,
+    then the one that was chosen and you'd want to delete that one)"""
     def __init__(self, tag = None, parent = None):
         
         QDialog.__init__(self, parent)
@@ -371,11 +296,9 @@ class ExTags(QDialog):
     
     In addition, the file's image tag is shown."""
     def __init__(self, model = None, row = 0, parent = None):
-        """If filename is not None, then I'll just load that file.
-        Otherwise the window is loaded.
-        
-        If the filename is specfied, but does not exist(or isn't valid)
-        then the user is asked to choose another file."""
+        """model -> is a puddlestuff.TableModel object
+        row -> the row that contains the file to be displayed
+        """
         QDialog.__init__(self, parent)        
         self.listbox = QListWidget()        
         

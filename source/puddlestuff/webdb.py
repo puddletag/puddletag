@@ -1,12 +1,4 @@
 #! /usr/bin/env python
-#
-# Search for an artist by name.
-#
-# Usage:
-#	python findartist.py 'artist-name'
-#
-# $Id: findartist.py 201 2006-03-27 14:43:13Z matt $
-#
 from puddleobjects import unique, TableShit, OKCancel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -15,25 +7,30 @@ from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, Connec
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as brainzmodel
 
-
+class MyThread(QThread):
+    def __init__(self, command, parent = None):
+        QThread.__init__(self, parent)
+        self.command = command
+    def run(self):
+        self.command()
 
 RELEASETYPES = {"Official Albums": [brainzmodel.Release.TYPE_OFFICIAL],
 "Promotional Album": [brainzmodel.Release.TYPE_PROMOTION],
 "Bootlegs": [brainzmodel.Release.TYPE_BOOTLEG]
 }
 
-CONNECTIONERROR = "Could not connect to Musicbrainz server."
+CONNECTIONERROR = "Could not connect to Musicbrainz server. Is your internet connection working?"
 
 class ReleaseWidget(QListWidget):
     def __init__(self, table = None, parent = None, row = 0):
         QListWidget.__init__(self, parent)
         if table is not None:
             self.table = table
-        self.setCurrentRow(row)
-        self.connect(self, SIGNAL("currentRowChanged(int)"), self.changeTable)
+        self.currentrow = row
+        self.connect(self, SIGNAL('itemActivated(QListWidgetItem *)'), self.changeTable)
         
     def setReleases(self, releases):
-        self.disconnect(self, SIGNAL("currentRowChanged(int)"), self.changeTable)
+        self.disconnect(self, SIGNAL('itemActivated(QListWidgetItem *)'), self.changeTable)
         self.tracks = {}
         self.clear()
         rels = sorted([[z.title, z] for z in releases])
@@ -50,10 +47,13 @@ class ReleaseWidget(QListWidget):
         except AttributeError:
             self.addItems(sorted([z.title + unicode(year) for z, year in zip(releases, years)]))
         self.releases = releases
-        self.connect(self, SIGNAL("currentRowChanged(int)"), self.changeTable)
+        if releases:
+            self.setCurrentRow(self.currentrow)
+        self.connect(self, SIGNAL('itemActivated(QListWidgetItem *)'), self.changeTable)
     
-    def changeTable(self, row):
-        if row != -1:
+    def changeTable(self, item):
+        row = self.row(item)
+        if row > -1:
             if row not in self.tracks:
                 release = self.releases[row]
                 self.emit(SIGNAL("statusChanged"), "Getting album tracks...")
@@ -87,7 +87,7 @@ def getArtist(tags):
     if not artists:
         return
     
-    artistids = []    
+    artistids = []
     for artist in artists:
         results = q.getArtists(ArtistFilter(artist, limit = 1))
         if results:
@@ -238,7 +238,9 @@ class MainWin(QDialog):
                             self.listbox.setCurrentIndex(0)
                         else:
                             self.label.setText("I couldn't find an exact match to the album you specified.")
-                            self.listbox.setReleases(albumtracks)                            
+                            self.listbox.setReleases(albumtracks)
+                    else:
+                        self.label.setText("No albums were found by the selected artist.")
                 return
         
         except ConnectionError:

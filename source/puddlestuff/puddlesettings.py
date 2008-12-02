@@ -48,7 +48,6 @@ from copy import copy
 from puddleobjects import ButtonLayout, OKCancel, HeaderSetting
 
 class ListModel(QAbstractListModel):
-    """The model used in TableShit"""
     def __init__(self, options):
         QAbstractListModel.__init__(self)
         self.options = options
@@ -94,8 +93,7 @@ class SettingsList(QListView):
         
 class ComboSetting(HeaderSetting):
     """Class that sets the type of tag that a combo should display
-    and what combos should be in the same row.
-    
+    and what combos should be in the same row.    
     """
     def __init__(self, parent = None, cenwid = None):
         

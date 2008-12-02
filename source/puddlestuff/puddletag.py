@@ -25,18 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, audioinfo,os, copy, puddleobjects, findfunc, actiondlg, helperwin, pdb, puddlesettings, functions, resource
+import sys, audioinfo,os, copy, puddleobjects, findfunc, actiondlg, helperwin, pdb, puddlesettings, functions, resource, thread
 from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting
 from os import path
 from audioinfo import FILENAME, PATH
 from optparse import OptionParser
-
-class MyThread(QThread):
-    def __init__(self, command, parent = None):
-        QThread.__init__(self, parent)
-        self.command = command
-    def run(self):
-        self.command()
 
 class FrameCombo(QGroupBox):
     """FrameCombo(self,tags,parent=None)
@@ -144,7 +137,6 @@ class DirView(QTreeView):
             event.accept()
         else:
             event.reject()
-    
         
     def mouseMoveEvent(self, event):
         pnt = QPoint(*self.StartPosition)
@@ -163,10 +155,6 @@ class DirView(QTreeView):
         if event.buttons() == Qt.LeftButton:
             self.StartPosition = [event.pos().x(), event.pos().y()]
         QTreeView.mousePressEvent(self, event)
-
-    def what(self):
-        self.emit(SIGNAL("addFolder"), unicode(self.model().filePath(self.selectedIndexes()[0])))
-
 
 class TableHeader(QHeaderView):
     """A headerview put here simply to enable the contextMenuEvent
@@ -202,6 +190,7 @@ class TableHeader(QHeaderView):
     
     def headerChanged(self, val):
         self.emit(SIGNAL("headerChanged"), val)
+    
         
 class TableWindow(QSplitter):
     """It's called a TableWindow just because
@@ -225,7 +214,7 @@ class TableWindow(QSplitter):
         many of the tables values from other functions
         (like when the app starts and setting are being restored).
         
-        Call it with hearderdata(as usual) to set the titles."""
+        Call it with headerdata(as usual) to set the titles."""
         self.table = puddleobjects.TableShit(headerdata, self)
         self.headerdata = headerdata
         header = TableHeader(Qt.Horizontal, self.headerdata, self)
@@ -242,7 +231,7 @@ class TableWindow(QSplitter):
         self.connect(header, SIGNAL("headerChanged"), self.setNewHeader)
         
     def setNewHeader(self, tags):
-        """Used for 'hotswapping of the table header.
+        """Used for 'hotswapping' of the table header.
         
         If you want to set the table header while the app
         is running, then this is the methods you should use.
@@ -312,6 +301,9 @@ class MainWin(QMainWindow):
         #Things to remember when editing this function:
         #1. If you add a QAction, add it to self.actions. 
         #It's a list that's disabled and enabled depending on state of the app.
+        #I also have a pretty bad convention of having action names in lower
+        #case and the action's triggered() slot being the action name in
+        #camelCase
         
         QMainWindow.__init__(self)
         
@@ -429,7 +421,6 @@ class MainWin(QMainWindow):
         
         
         convert = menubar.addMenu("&Convert")
-        #convert.addAction(
         convert.addAction(self.tagfromfile)
         convert.addAction(self.tagtofile)
         convert.addAction(self.renamedir)
@@ -447,7 +438,7 @@ class MainWin(QMainWindow):
         
         self.patterncombo = QComboBox()
         self.patterncombo.setEditable(True)
-        self.patterncombo.setToolTip("Enter pattern that you want here.")
+        self.patterncombo.setToolTip("Enter a pattern here.")
         self.patterncombo.setStatusTip(self.patterncombo.toolTip())
         self.patterncombo.setMinimumWidth(500)
         self.patterncombo.setDuplicatesEnabled(False)
@@ -543,9 +534,9 @@ class MainWin(QMainWindow):
                                              
     def loadShortcuts(self):
         settings = QSettings()
-        controls = {'table':self.cenwid.table,'patterncombo':self.patterncombo}
-        settings.beginReadArray('Shortcuts')
-        for z in range(settings.beginReadArray('Shortcuts') + 1):
+        controls = {'table':self.cenwid.table,'patterncombo':self.patterncombo, 'main':self}
+        size = settings.beginReadArray('Shortcuts')
+        for z in range(size):
             settings.setArrayIndex(z)
             control = "" #So that if control is defined incorrectly, no error is raised.
             try:
@@ -559,8 +550,21 @@ class MainWin(QMainWindow):
             if hasattr(control, command):
                 QShortcut(key, self, getattr(control,command))
         settings.endArray()
-   
-        
+    
+    def changefocus(self):
+        controls = [self.cenwid.table, self.patterncombo]
+        if self.combogroup.combos:
+            #Found it by trial and error
+            combo = self.combogroup.layout().itemAt(3).layout().itemAt(0).widget()
+            controls.append(combo)
+        if not hasattr(self, "currentfocus"):
+            self.currentfocus = [i for i,control in enumerate(controls) if control.hasFocus()][0]
+        if (self.currentfocus < (len(controls)-1)) :
+            self.currentfocus +=1
+        else:
+            self.currentfocus = 0           
+        controls[self.currentfocus].setFocus()
+
     def loadInfo(self):
         """Loads the settings from puddletags settings and sets it."""
         settings = QSettings()
@@ -640,8 +644,7 @@ class MainWin(QMainWindow):
                 filename = path.realpath(filename)
                 self.lastFolder = filename
                 if not appenddir:
-                    t = MyThread(lambda: self.tree.setCurrentIndex(self.dirmodel.index(filename)))
-                    t.run()
+                    self.tree.setCurrentIndex(self.dirmodel.index(filename))
                 self.cenwid.fillTable(filename, appenddir)
                 if self.pathinbar:                
                     self.setWindowTitle("Puddletag " + filename)
@@ -650,10 +653,10 @@ class MainWin(QMainWindow):
         else:
             self.cenwid.fillTable(filename, appenddir)
             self.setWindowTitle("Puddletag")
-        self.connect(self.tree, selectionChanged, self.openTree)
+
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.cenwid.table.setFocus()
-        
+    
     def openTree(self, filename = None):
         """If a folder in self.tree is clicked then it should be opened.
         

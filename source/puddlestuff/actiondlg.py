@@ -116,7 +116,7 @@ class FunctionDialog(QDialog):
             self.tagcombo = QComboBox()
             self.tagcombo.setEditable(True)
             from audioinfo import REVTAGS
-            self.tagcombo.addItems(["__all"] + sorted([z for z in REVTAGS]))
+            self.tagcombo.addItems(["__all", '__path'] + sorted([z for z in REVTAGS]))
             if defaulttags:
                 index = self.tagcombo.findText(" | ".join(defaulttags))
                 if index != -1:                    
@@ -234,20 +234,15 @@ class CreateFunction(QDialog):
         self.stack = QStackedWidget()
         self.vbox.addWidget(self.stack)
         
-        self.hbox = QHBoxLayout()
-        self.ok = QPushButton("OK")
-        self.cancel = QPushButton("Cancel")        
-        self.hbox.addStretch()
-        self.hbox.addWidget(self.ok)
-        self.hbox.addWidget(self.cancel)
+        self.okcancel = OKCancel()
         
-        self.vbox.addLayout(self.hbox)
+        self.vbox.addLayout(self.okcancel)
         self.mydict = {}    #Holds the created windows in the form self.functions.index: window
-        self.ok.setEnabled(False)
+        self.okcancel.setEnabled(False)
         self.setLayout(self.vbox)
         self.setMinimumHeight(self.sizeHint().height())
-        self.connect(self.ok, SIGNAL("clicked()"), self.okClicked)
-        self.connect(self.cancel, SIGNAL("clicked()"), self.close)
+        self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
+        self.connect(self.okcancel, SIGNAL('cancel'), self.close)
         self.setWindowTitle("Format")
         
         self.showcombo = showcombo
@@ -277,7 +272,7 @@ class CreateFunction(QDialog):
         self.setMinimumHeight(self.sizeHint().height())
         if self.sizeHint().width() > self.width():
             self.setMinimumWidth(self.sizeHint().width())
-        self.ok.setEnabled(True)
+        self.okcancel.ok.setEnabled(True)
 
 
 class CreateAction(QDialog):
@@ -297,22 +292,12 @@ class CreateAction(QDialog):
         self.grid.addWidget(self.listbox, 0, 0)
         self.grid.addLayout(self.buttonlist, 0, 1)
         
-        self.ok = QPushButton("OK")
-        self.ok.setDefault(True)
-        self.cancel = QPushButton("Cancel")
-                
-        self.hbox = QHBoxLayout()
-        self.hbox.addStretch()
-        self.hbox.addWidget(self.ok)
-        self.hbox.addWidget(self.cancel)
-        
-        
-        self.grid.addLayout(self.hbox,1,0,1,2)
+        self.okcancel = OKCancel() 
+        self.grid.addLayout(self.okcancel,1,0,1,2)
         self.setLayout(self.grid)
         
-        clicked = SIGNAL("clicked()")
-        self.connect(self.cancel, clicked, self.close)
-        self.connect(self.ok, clicked, self.okClicked)
+        self.connect(self.okcancel, SIGNAL("cancel"), self.close)
+        self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
         self.connect(self.buttonlist, SIGNAL("add"), self.add)
         self.connect(self.buttonlist, SIGNAL("edit"), self.edit)
         self.connect(self.buttonlist, SIGNAL("moveup"), self.moveUp)

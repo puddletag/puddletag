@@ -25,3 +25,6 @@ Why did you name it puddletag?
 
 Releases?
 	Swing by the website (http://puddletag.sourceforge.net) every couple of weeks, I'll have at least some updates.
+
+Bugs?
+    There's currently a really nasty bug in PyQt4.4.3 that's so nasty that the only workaround is to upgrade PyQt4.

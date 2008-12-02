@@ -92,6 +92,7 @@ def getfunc(text):
     start = 0
     funcs=[]
     #Get the functions
+    #Got this from comp.lang.python
     while 1: 
         match = pat.search(text, start) 
         if match is None: break 

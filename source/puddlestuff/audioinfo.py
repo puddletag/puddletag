@@ -161,7 +161,6 @@ class Tag:
     
     #Stores the tag info in the format {tag:tag value}
     tags={}
-    info={}
     
     #The filename of the linked file
     filename = None
@@ -268,11 +267,11 @@ class Tag:
             
     def writetags(self, filename = None):
         """Writes the tags in self.tags
-        to self.filename if no filename is specified"""
+        to self.filename if no filename is specified."""
         
         if filename is None:
             filename = self.filename
-        file = mutagen.File(unicode(filename))        
+        file = mutagen.File(unicode(filename))
         if type(file) == mutagen.mp3.MP3:
             newtag = []
             for tag, value in self.tags.items():
@@ -291,16 +290,14 @@ class Tag:
             
         elif self.filetype in self.VORBISCOMMENT:
             newtag = {}
-            for z in self.tags:
+            for tag, value in self.tags.items():
                 try:
-                    if not z.startswith("__"):                        
-                        newtag[z] = self.tags[z]
+                    if not z.startswith("__") and unicode(value):
+                        newtag[tag] = value
                 except AttributeError:
                         pass
             newtag["tracknumber"] = newtag["track"]
             del newtag["track"]
-            file.update(newtag)
+            file.tags = newtag
             file.save()
-        else:
-            file.update(newtag)
-            file.save()
+

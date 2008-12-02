@@ -642,6 +642,21 @@ class TagModel(QAbstractTableModel):
                                         firstindex, lastindex)
     
     def setTestData(self, rows, tags):
+        """A method that allows you to change the visible data of 
+        the model without writing tags.
+        
+        rows is the rows that you want to change
+        tags -> is the tags that are to be shown.
+        
+        If you want want to write the values that you showed
+        call unsetData with write = True.
+        
+        However, if you just want to return to the previous
+        view, call unsetData with write = False, and if you want,
+        the rows you want to return to normal.
+        
+        Note, that if the user changed anything during this
+        process, then those changes are left alone."""
         
         unsetrows = [row for row in rows if row in self.testData][len(tags):]
         if unsetrows:
@@ -659,7 +674,7 @@ class TagModel(QAbstractTableModel):
                                         firstindex, lastindex)
     
     def unSetTestData(self, write = False, rows = None):
-        
+        """See testData"""
         def getdiff(tag1, tag2):
             undolevel = [z for z in tag1 if type(z) is int]
             if undolevel: undolevel = max(undolevel)
