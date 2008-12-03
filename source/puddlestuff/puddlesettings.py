@@ -107,7 +107,6 @@ class ComboSetting(HeaderSetting):
             titles.append(settings.value("titles").toString())
             tags.append(settings.value("tags").toString())
         settings.endArray()
-
         if not titles:
             titles = ['Artist', 'Title', 'Album', 'Track', u'Year', "Genre", 'Comment']
 

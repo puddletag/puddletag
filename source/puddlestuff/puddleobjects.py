@@ -708,15 +708,15 @@ class TagModel(QAbstractTableModel):
                         self.taginfo[row] = tag[0].copy()
                     del(self.testData[row])
             else:
+                rows = self.testData.keys()
                 for row, tag in self.testData.items():
                     oldtag = tag[0]
                     newtag = tag[1]
                     if not getdiff(self.taginfo[row], newtag):
                         self.taginfo[row] = oldtag
                     del(self.testData[row])
-                rows = self.testData.keys()
+                
         self.emit(SIGNAL("enableUndo"), True)
-        
         firstindex = self.index(min(rows), 0)
         lastindex = self.index(max(rows), self.columnCount() - 1)
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),

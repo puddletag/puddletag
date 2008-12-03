@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, audioinfo,os, copy, puddleobjects, findfunc, actiondlg, helperwin, pdb, puddlesettings, functions, resource, thread
+import sys, audioinfo,os, copy, puddleobjects, findfunc, actiondlg, helperwin, pdb, puddlesettings, functions, resource, threading
 from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting
 from os import path
 from audioinfo import FILENAME, PATH
-from optparse import OptionParser
+from optparse import OptionParser        
 
 class FrameCombo(QGroupBox):
     """FrameCombo(self,tags,parent=None)
@@ -106,7 +106,7 @@ class FrameCombo(QGroupBox):
             self.vbox.addLayout(hbox[j])
             self.vbox.addLayout(hbox[j + 1])
             j+=2
-        
+                    
         self.vbox.addStretch()
         
     def initCombos(self):
@@ -118,6 +118,10 @@ class FrameCombo(QGroupBox):
             self.combos[combo].setEditable(True)
             self.combos[combo].addItems(["<keep>", "<blank>"])
             self.combos[combo].setEnabled(False)
+        
+        if 'genre' in self.combos:
+            from mutagen.id3 import TCON
+            self.combos['genre'].addItems(TCON.GENRES)
     
     def reloadCombos(self, tags):
         self.setCombos(tags)
@@ -536,7 +540,11 @@ class MainWin(QMainWindow):
         settings = QSettings()
         controls = {'table':self.cenwid.table,'patterncombo':self.patterncombo, 'main':self}
         size = settings.beginReadArray('Shortcuts')
-        for z in range(size):
+        if size <= 0:            
+            settings = QSettings(":/puddletag.conf", QSettings.IniFormat)
+            size = settings.beginReadArray('Shortcuts')
+        
+        for z in xrange(size):
             settings.setArrayIndex(z)
             control = "" #So that if control is defined incorrectly, no error is raised.
             try:
@@ -570,7 +578,15 @@ class MainWin(QMainWindow):
         settings = QSettings()
         defaultsettings = QSettings(":/puddletag.conf", QSettings.IniFormat)
         
-        self.lastFolder = unicode(settings.value("main/lastfolder", QVariant(QDir().homePath())).toString())
+        self.lastFolder = unicode(settings.value("main/lastfolder", QVariant(QDir.homePath())).toString())
+        maximise = settings.value('main/maximized', QVariant(Qt.WindowMaximized)).toBool()
+        if maximise:
+            self.setWindowState(Qt.WindowMaximized)
+        else:
+            height = settings.value('main/height', QVariant(600)).toInt()[0]
+            width = settings.value('main/width', QVariant(800)).toInt()[0]
+            self.resize(width, height)
+            self.setWindowState(Qt.WindowNoState)
         
         titles = list(settings.value("editor/titles").toStringList())
         tags = list(settings.value("editor/tags").toStringList())
@@ -612,6 +628,7 @@ class MainWin(QMainWindow):
         self.showfilter.setChecked(showfilter)
         self.filterframe.setVisible(showfilter)
         self.loadShortcuts()
+
         
     def clearTable(self):
         self.cenwid.table.model().taginfo = []
@@ -647,16 +664,18 @@ class MainWin(QMainWindow):
                     self.tree.setCurrentIndex(self.dirmodel.index(filename))
                 self.cenwid.fillTable(filename, appenddir)
                 if self.pathinbar:                
-                    self.setWindowTitle("Puddletag " + filename)
+                    self.setWindowTitle("puddletag " + filename)
                 else:
-                    self.setWindowTitle("Puddletag")
+                    self.setWindowTitle("puddletag")
         else:
             self.cenwid.fillTable(filename, appenddir)
             self.setWindowTitle("Puddletag")
 
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
+        self.connect(self.tree, selectionChanged, self.openTree)
         self.cenwid.table.setFocus()
-    
+        self.fillCombos()
+        
     def openTree(self, filename = None):
         """If a folder in self.tree is clicked then it should be opened.
         
@@ -708,7 +727,7 @@ class MainWin(QMainWindow):
         table = self.cenwid.table
         combos = self.combogroup.combos
         
-        if not hasattr(table, "selectedRows") or (table.rowCount() == 0):
+        if not hasattr(table, "selectedRows") or (table.rowCount() == 0) or not table.selectedRows:
             self.combogroup.disableCombos()
             return        
         self.combogroup.initCombos()        
@@ -736,7 +755,8 @@ class MainWin(QMainWindow):
         for tagset in tags:
             [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
                     if combos.has_key(tagset)]
-
+            
+            
         for combo in combos.values():
             combo.setEnabled(True)
             #If a QCombo has more than 3 it's not more than one artist, so we
@@ -745,6 +765,14 @@ class MainWin(QMainWindow):
                 combo.setCurrentIndex(0)
             else:                 
                 combo.setCurrentIndex(2)
+                
+        if 'genre' in tags and len(tags['genre']) == 1:            
+            combo = combos['genre']
+            index = combo.findText(tags['genre'][0])
+            if index > -1:
+                combo.setCurrentIndex(index)
+            else:
+                combo.setCurrentIndex(0)
                         
     def saveCombos(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
@@ -1274,9 +1302,11 @@ class MainWin(QMainWindow):
         settings.setValue("splittersize", QVariant(self.splitter.saveState()))
         settings.setValue("hsplittersize", QVariant(self.hsplitter.saveState()))
                                     
-        settings.setValue("Table/sortColumn", QVariant(self.cenwid.sortColumn))        
-        
+        settings.setValue("Table/sortColumn", QVariant(self.cenwid.sortColumn))                
         settings.setValue("main/lastfolder", QVariant(self.lastFolder))
+        settings.setValue("main/maximized", QVariant(self.isMaximized()))
+        settings.setValue('main/height', QVariant(self.height()))
+        settings.setValue('main/width', QVariant(self.width()))
         
         settings.setValue("editor/showfilter",QVariant(self.showfilter.isChecked()))
     
@@ -1293,7 +1323,15 @@ if __name__ == "__main__":
     app.setApplicationName("puddletag")   
         
     qb = MainWin()
-    qb.show()
     qb.rowEmpty()
-    qb.openFolder(filename)
+    pdb.set_trace()
+    print filename
+    if filename:
+        pdb.set_trace()
+        pixmap = QPixmap(':/puddlelogo.png')
+        splash = QSplash(pixmap)
+        splash.show()
+        QApplication.processEvents()
+        qb.openFolder(filename)
+        qb.show()
     app.exec_()

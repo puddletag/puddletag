@@ -11,5 +11,6 @@
 <file alias="open.png">data/open.png</file>
 <file alias="actions">data/actions</file>
 <file alias="puddletag.conf">data/puddletag.conf</file>
+<file alias="puddlelogo.png">data/puddlelogo.png</file>
 </qresource>
 </RCC>

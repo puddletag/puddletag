@@ -12,14 +12,15 @@ class MyThread(QThread):
         QThread.__init__(self, parent)
         self.command = command
     def run(self):
-        self.command()
+        self.retval = self.command()
+        
 
 RELEASETYPES = {"Official Albums": [brainzmodel.Release.TYPE_OFFICIAL],
 "Promotional Album": [brainzmodel.Release.TYPE_PROMOTION],
 "Bootlegs": [brainzmodel.Release.TYPE_BOOTLEG]
 }
 
-CONNECTIONERROR = "Could not connect to Musicbrainz server. Is your internet connection working?"
+CONNECTIONERROR = "Could not connect to Musicbrainz server.(Check your net connection)"
 
 class ReleaseWidget(QListWidget):
     def __init__(self, table = None, parent = None, row = 0):
@@ -27,10 +28,10 @@ class ReleaseWidget(QListWidget):
         if table is not None:
             self.table = table
         self.currentrow = row
-        self.connect(self, SIGNAL('itemActivated(QListWidgetItem *)'), self.changeTable)
+        self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
         
     def setReleases(self, releases):
-        self.disconnect(self, SIGNAL('itemActivated(QListWidgetItem *)'), self.changeTable)
+        self.disconnect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
         self.tracks = {}
         self.clear()
         rels = sorted([[z.title, z] for z in releases])
@@ -49,30 +50,47 @@ class ReleaseWidget(QListWidget):
         self.releases = releases
         if releases:
             self.setCurrentRow(self.currentrow)
-        self.connect(self, SIGNAL('itemActivated(QListWidgetItem *)'), self.changeTable)
+        self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
     
     def changeTable(self, item):
         row = self.row(item)
+        self.dirtyrow = row
         if row > -1:
             if row not in self.tracks:
                 release = self.releases[row]
                 self.emit(SIGNAL("statusChanged"), "Getting album tracks...")
                 QApplication.processEvents()
-                try:
-                    tracks = [dict([("title", track.title), ("track", number + 1), ("album",release.title)]) 
-                                    for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
-                except ConnectionError:
-                    self.emit(SIGNAL("statusChanged"), CONNECTIONERROR)
-                    return
-                except WebServiceError:
-                    self.emit(SIGNAL("statusChanged"), CONNECTIONERROR + " " + details)
-                    return
-                self.item(row).setText(release.title + " [" + unicode(len(tracks)) + "]")
-                self.tracks[row] = tracks
+                def func():
+                    try:
+                        tracks = [dict([("title", track.title), ("track", number + 1), ("album",release.title)]) 
+                                        for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
+                    except ConnectionError:
+                        return {'tracks':[], 'text': CONNECTIONERROR}
+                    except WebServiceError:
+                        return {'tracks':[], 'text': CONNECTIONERROR + " " + details}
+                    return {'tracks':tracks, 'text':"", 'releasetitle': release.title}
+                self.t = MyThread(func)
+                self.connect(self.t, SIGNAL("finished()"), self.showAlbum)
+                self.t.start()
             else:
-                tracks = self.tracks[row]
-            self.emit(SIGNAL("statusChanged"), "Currently selected: " + self.item(row).text())
-            self.table.model().setTestData(self.table.selectedRows, tracks[:len(self.table.selectedRows)])
+                self.showAlbum()
+                
+    def showAlbum(self):
+        text = self.t.retval['text']
+        releasetitle = self.t.retval['releasetitle']
+        
+        if text:
+            self.emit(SIGNAL("statusChanged"), self.retval.t['text'])
+            return
+        
+        if self.dirtyrow not in self.tracks:
+            tracks = self.t.retval['tracks']
+            self.item(self.dirtyrow).setText(releasetitle + " [" + unicode(len(tracks)) + "]")
+            self.tracks[self.dirtyrow] = tracks
+        else:
+            tracks = self.tracks[self.dirtyrow]
+        self.emit(SIGNAL("statusChanged"), "Currently selected: " + self.item(self.dirtyrow).text())
+        self.table.model().setTestData(self.table.selectedRows, tracks[:len(self.table.selectedRows)])
 
 def getArtist(tags):
     """If tags is a dictionary, getArtist will loop through it
@@ -152,6 +170,7 @@ class MainWin(QDialog):
         
         self.connect(self.okcancel, SIGNAL("ok"), self.writeVals)
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
+        self.connect(self,SIGNAL('rejected()'), self.closeMe)
         self.connect(clearcache, SIGNAL("clicked()"), self.table.model().unSetTestData)
         
         self.label = QLabel("Select files and click on Get Info to retrieve metadata.")
@@ -184,67 +203,91 @@ class MainWin(QDialog):
         self.close()
     
     def getInfo(self):
-        try:            
-            releasetype = RELEASETYPES[unicode(self.albumtype.currentText())]
-            tags = [self.table.rowTags(z) for z in self.table.selectedRows]
-            self.label.setText("Retrieving albums, please wait...")
-            QApplication.processEvents()
-            
-            if self.combo.currentIndex() == 0:
-                releases = []
-                albums = unique([z['album'] for z in tags if 'album' in z])
+        self.getinfo.setEnabled(False)
+        releasetype = RELEASETYPES[unicode(self.albumtype.currentText())]
+        tags = [self.table.rowTags(z) for z in self.table.selectedRows]
+        self.label.setText("Retrieving albums, please wait...")
+        QApplication.processEvents()
+        
+        if self.combo.currentIndex() == 0:
+            releases = []
+            albums = unique([z['album'] for z in tags if 'album' in z])
+            def func():
+                text = ""
                 for z in albums:
-                    album = getAlbums(album = z, releasetypes = releasetype)
+                    try:
+                        album = getAlbums(album = z, releasetypes = releasetype)
+                    except (WebServiceError, ConnectionError):
+                        text = CONNECTIONERROR
+                        break
                     if album:
                         releases.extend(album)
                 if releases:
-                    self.label.setText("The retrieved albums are listed below.")
-                else:
-                    self.label.setText("No albums were found by the selected artists.")
-                QApplication.processEvents()
-                self.listbox.setReleases(releases)
-                return
+                    text = text + " " + "The retrieved albums are listed below."
+                return {'releases': releases, 'text':text}
+                                        
+            self.t = MyThread(func)
+            self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
+            self.t.start()
             
-            elif self.combo.currentIndex() == 1:                
-                artists = getArtist(tags)
+        
+        elif self.combo.currentIndex() == 1:                
+            def func():
+                try:
+                    artists = getArtist(tags)
+                except (WebServiceError, ConnectionError):
+                    return {'releases': [], 'text': CONNECTIONERROR}
                 releases = []
                 text = "The following artist's album's were retrieved: "
-                QApplication.processEvents()
                 for z in artists:
                     artistname = z[0]
                     artistid = z[1][1]
-                    albums = getAlbums(artistid, releasetypes = releasetype)
+                    try:
+                        albums = getAlbums(artistid, releasetypes = releasetype)
+                    except (ConnectionError, WebServiceError):
+                        if releases:
+                            text = CONNECTIONERROR + " " + text
+                        else:
+                            text = CONNECTIONERROR
+                        break
                     if albums:
                         releases.extend(albums)
                         text = text + artistname + ", "
-                self.label.setText(text[:-2])
                 if releases:
-                    self.listbox.setReleases(releases)
+                    return {'releases': releases, 'text':text[:-2]}
                 else:
-                    self.label.setText("No albums were found by the selected artists.")
-                return
+                    return {'releases': releases, 'text':"No albums were found matching the selected artists"}
+            self.t = MyThread(func)
+            self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
+            self.t.start()                
             
-            elif self.combo.currentIndex() == 2:
-                artists = [getArtist(tags)[0]]
+                            
+        elif self.combo.currentIndex() == 2:
+            def func():
+                try:
+                    artists = [getArtist(tags)[0]]
+                except (WebServiceError, ConnectionError):                        
+                    return {'releases': [], 'text': CONNECTIONERROR}
                 album = unique([z['album'] for z in tags if 'album' in z])[0]
                 for z in artists:
                     artistid = z[1][1]
-                    albumtracks = getAlbums(artistid, album,releasetypes = releasetype)
-                    QApplication.processEvents()
-                    if albumtracks:
-                        if len(albumtracks == 1):
-                            self.listbox.setReleases(albumtracks)
-                            self.label.setText("Found album " + album + ". Click on Write Tags to save the tags.")
-                            self.listbox.setCurrentIndex(0)
+                    try:
+                        releases = getAlbums(artistid, album,releasetypes = releasetype)
+                    except (WebServiceError, ConnectionError):                        
+                        return {'releases': releases, 'text':CONNECTIONERROR}
+                    if releases:
+                        if len(releases) == 1:
+                            text = "Found album " + album + ". Click on Write Tags to save the tags."
                         else:
-                            self.label.setText("I couldn't find an exact match to the album you specified.")
-                            self.listbox.setReleases(albumtracks)
+                            text = "I couldn't find an exact match to the album you specified."
                     else:
-                        self.label.setText("No albums were found by the selected artist.")
-                return
-        
-        except ConnectionError:
-            self.label.setText(CONNECTIONERROR)
-        except WebServiceError, details:
-            self.label.setText(CONNECTIONERROR + " " + details)
-        return
+                        text = "I couldn't find any albums by the selected artist."
+                return {'releases': releases, 'text':text}
+            self.t = MyThread(func)
+            self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
+            self.t.start()
+            
+    def showAlbums(self):        
+        self.listbox.setReleases(self.t.retval['releases'])
+        self.label.setText(self.t.retval['text'])
+        self.getinfo.setEnabled(True)
