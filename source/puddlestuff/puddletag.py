@@ -508,6 +508,7 @@ class MainWin(QMainWindow):
         self.connect(self.tree, SIGNAL('addFolder'), self.openFolder)
         self.connect(self.cenwid.table, SIGNAL('itemSelectionChanged()'),
                                          self.fillCombos)
+    
     def filterTable(self, text):
         tag = unicode(self.filtertable.currentText())
         text = unicode(self.filtertext.text())
@@ -518,11 +519,12 @@ class MainWin(QMainWindow):
             [table.showRow(z) for z in range(table.rowCount())]
         elif tag == u"__all":
             for z in range(table.rowCount()):
+                table.hideRow(z)
                 for y in table.rowTags(z).values():
                     if (y is not None) and (text in unicode(y)):
                         table.showRow(z)
                         break
-                    table.hideRow(z)
+                    
         else:
             for z in range(table.rowCount()):
                 if (tag in table.rowTags(z)) and (text in table.rowTags(z)[tag]):
@@ -566,11 +568,14 @@ class MainWin(QMainWindow):
             combo = self.combogroup.layout().itemAt(3).layout().itemAt(0).widget()
             controls.append(combo)
         if not hasattr(self, "currentfocus"):
-            self.currentfocus = [i for i,control in enumerate(controls) if control.hasFocus()][0]
+            try:
+                self.currentfocus = [i for i,control in enumerate(controls) if control.hasFocus()][0]
+            except IndexError: #None of these control have focus
+                self.currentfocus = len(controls) + 1
         if (self.currentfocus < (len(controls)-1)) :
             self.currentfocus +=1
         else:
-            self.currentfocus = 0           
+            self.currentfocus = 0
         controls[self.currentfocus].setFocus()
 
     def loadInfo(self):
@@ -778,6 +783,8 @@ class MainWin(QMainWindow):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
         combos = self.combogroup.combos
         table = self.cenwid.table
+        if (not hasattr(table,'selectedRows')) or (not table.selectedRows):
+            return
         win = ProgressWin(self, len(table.selectedRows), table)
         model = table.model()
         showmessage = True
