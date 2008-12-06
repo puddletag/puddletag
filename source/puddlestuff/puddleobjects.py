@@ -569,18 +569,18 @@ class TagModel(QAbstractTableModel):
                 if tag == PATH:
                     try:
                         currentfile[FILENAME] = self.renameFile(index.row(), {PATH: newvalue})[FILENAME]
-                    except IOError, detail:
-                        #TODO: I would very much like for a tooltip to be displayed here saying that I can't write to the file.
+                    except (IOError, OSError), detail:
+                        self.emit(SIGNAL("setDataError"), index.row(), column, "Couldn't rename " + filename + ": " + detail.strerror)
                         return False
             else:
                 what = audioinfo.Tag(filename)
                 what.tags.update({tag: newvalue})
                 try:
                     what.writetags()
-                except IOError:
-                    sys.stderr.write("Could not write to file " + filename + "\nDo you have write access?\n")
+                except (IOError, OSError), detail:
+                    self.emit(SIGNAL("setDataError"), index.row(), column, "Couldn't write to " + filename + ": " + detail.strerror)
                     return False
-                
+
             try:
                 currentfile[self.undolevel] = {tag: currentfile[tag]}
             except KeyError:
@@ -633,7 +633,10 @@ class TagModel(QAbstractTableModel):
 
             what = audioinfo.Tag(self.taginfo[row][FILENAME]) 
             what.tags.update([(z,tags[z]) for z in tags if z not in ints])
-            what.writetags()
+            try:
+                what.writetags()
+            except ValueError:
+                "The tag is empty."
             self.taginfo[row].update(tags)
             
         firstindex = self.index(row, 0)
@@ -808,9 +811,8 @@ class DelegateShit(QItemDelegate):
         editor = self.sender()
         if isinstance(editor, (QTextEdit, QLineEdit)):
             self.emit(SIGNAL("commitData(QWidget*)"), editor)
-            self.emit(SIGNAL("closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)"), editor, QItemDelegate.EditNextItem)
+            #self.emit(SIGNAL("closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)"), editor, QItemDelegate.EditNextItem)
             
-    
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.EditRole).toString()
         editor.setText(text)
@@ -848,7 +850,16 @@ class TableShit(QTableView):
         #For less typing and that the model doesn't have to be accessed directly
         self.updateRow = self.tagmodel.setRowData
         
+        
+    def showTool(self, row, column, text):
+        y = -self.mapFromGlobal(self.pos()).y() + self.rowViewportPosition(row)
+        x = -self.mapFromGlobal(self.pos()).x() + self.columnViewportPosition(column)
+        QToolTip.showText(QPoint(x,y), text)
     
+    def setModel(self, model):
+        QTableView.setModel(self, model)
+        self.connect(model, SIGNAL('setDataError'), self.showTool)
+        
     def selectedTags(self):
         """Retun a dictionary with the currently selected rows as keys.
         Each key contains a list with the selected columns of that row.
@@ -1064,6 +1075,8 @@ class TableShit(QTableView):
                 'This is raised if the file is an empty string.'
             except UnicodeDecodeError:
                 sys.stderr.write("Couldn't open: " + file + " (UnicodeDecodeError)")
+        if tags:
+            [self.showRow(z) for z in range(self.rowCount())] #The table gets all fucked up if any rows are hidden.
         self.model().load(tags, append = appendtags)
         win.close()
         #Select first item in the topleft corner

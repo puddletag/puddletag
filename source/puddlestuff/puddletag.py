@@ -509,7 +509,7 @@ class MainWin(QMainWindow):
         self.connect(self.cenwid.table, SIGNAL('itemSelectionChanged()'),
                                          self.fillCombos)
     
-    def filterTable(self, text):
+    def filterTable(self, text ,*args):
         tag = unicode(self.filtertable.currentText())
         text = unicode(self.filtertext.text())
         if text == u"":
@@ -606,6 +606,8 @@ class MainWin(QMainWindow):
         
         self.cenwid.inittable(headerdata)
         self.connect(self.cenwid.table.model(), SIGNAL('enableUndo'), self.undo.setEnabled)
+        self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
+        self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
         
         columnwidths = settings.value("editor/Column").toStringList()
         if len(columnwidths) == 0:
@@ -722,7 +724,7 @@ class MainWin(QMainWindow):
             return
         self.cenwid.table.updateRow(row, tag, justrename = rename)
 
-    def fillCombos(self):
+    def fillCombos(self, **args):
         """Fills the QComboBoxes in FrameCombo with
         the tags selected from self.table. """
         
@@ -738,14 +740,16 @@ class MainWin(QMainWindow):
         self.combogroup.initCombos()        
         tags  = {}
         prevaudio = {}
-        
         #Removes all duplicate entries for the combos
         #Using the set type doesn't seem to work all the time.
-        for row in table.selectedRows:
+        for index,row in enumerate(table.selectedRows):
             audio = table.rowTags(row)
+            [tags[tag].append("") for tag in tags if tag not in audio]
             for tag in audio:
-                if not tags.has_key(tag):
+                if tag not in tags:
                     tags[tag] = []
+                    if index > 0:
+                        tags[tag].append("")
                 if prevaudio == {}:
                     tags[tag].append(audio[tag])
                 else:
@@ -789,6 +793,7 @@ class MainWin(QMainWindow):
         model = table.model()
         showmessage = True
         
+        self.disconnect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
         for row in table.selectedRows:
             if win.wasCanceled(): break
             tags = {}
@@ -819,6 +824,7 @@ class MainWin(QMainWindow):
                     else:
                         break
         self.setTag(True)
+        self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
         win.close()
 
     def formatValue(self):
@@ -1242,18 +1248,17 @@ class MainWin(QMainWindow):
             
             if not test:
                 if path.exists(newfilename) and (newfilename != filename):
+                    win.show()
                     if showoverwrite:
-                        mb = QMessageBox('Error', "The file exists", 
-                        "The file: " + newfilename + " exists. Should I overwrite it?", QMessageBox.Question,
-                            QMessageBox.Yes, QMessageBox.No or QMessageBox.Escape or QMessageBox.Default, QMessageBox.NoAll, self)
-                        result = mb.exec_()
-                        if ret == QMessageBox.Yes:
+                        mb = QMessageBox('Error', "The file: " + newfilename + " exists. Should I overwrite it?", 
+                                        QMessageBox.Question, QMessageBox.Yes, 
+                                        QMessageBox.No or QMessageBox.Escape or QMessageBox.Default, QMessageBox.NoAll, self)
+                        ret = mb.exec_()
+                        if ret == QMessageBox.No:
                             continue
                         if ret == QMessageBox.NoAll:
                             showoverwrite = False
                             continue
-                        else:
-                            continue                        
                     else:
                         continue
                 try:
