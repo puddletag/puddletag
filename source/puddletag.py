@@ -4,7 +4,7 @@ from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen
 
 import puddlestuff
 from puddlestuff import resource
-__version__ = 0.3
+__version__ = "0.3.1"
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)    

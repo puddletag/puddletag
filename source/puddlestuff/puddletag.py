@@ -328,6 +328,7 @@ class MainWin(QMainWindow):
         self.tree.setDragEnabled(True)
         
         #Action for opening a folder
+        #self.opendir =  QAction(self.style().standardIcon(QStyle.SP_DirOpenIcon), '&Open Folder...', self)
         self.opendir =  QAction(QIcon(':/open.png'), '&Open Folder...', self)
         self.opendir.setShortcut('Ctrl+O')
         self.connect(self.opendir, SIGNAL('triggered()'), self.openFolder)
@@ -867,16 +868,14 @@ class MainWin(QMainWindow):
             except (IOError, OSError):
                 if showmessage:
                     win.show()
-                    mb = QMessageBox('Error', "I couldn't write to:\n" + table.rowTags(row)[FILENAME] +
-                        "Do you want to continue formatting the rest?", QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
+                    errormsg = "I couldn't write to:\n" + table.rowTags(row)[FILENAME] + "Do you want to continue formatting the rest?"
+                    mb = QMessageBox('Error', errormsg , QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll, self)
                     ret = mb.exec_()
-                    if ret == QMessageBox.Yes:
-                        continue
-                    if ret == QMessageBox.YesAll:
-                        showmessage = False
-                    else:
+                    if ret == QMessageBox.No:
                         break
+                    elif ret == QMessageBox.YesAll:
+                        showmessage = False
         self.setTag(True)
         win.close()
         self.fillCombos()
@@ -896,7 +895,22 @@ class MainWin(QMainWindow):
             win.patterncombo.addItems(patternitems)
             self.connect(win,SIGNAL("Newtags"), self.setSelectedTags)
             self.fillCombos()
-
+            
+    def setSelectedTags(self, taglist):
+        """Sets the selected files' tags to the tags
+        in taglist. This method, while useful isn't general enough
+        to be used by other methods that do writing of many tags.
+        """
+        win = ProgressWin(self, len(self.cenwid.table.selectedRows))
+        for i,z in enumerate(self.cenwid.table.selectedRows):
+            if win.wasCanceled(): break
+            try:
+                self.setTag(z, taglist[i])
+            except IndexError:
+                break
+            win.updateVal()
+        self.setTag(True)
+        win.close()
                                         
     def renameFolder(self, test = False):
         """This is best explained with an example.
@@ -944,10 +958,10 @@ class MainWin(QMainWindow):
                     self.cenwid.table.model().changeFolder(currentdir, newfolder)
                     self.dirmodel.refresh(self.dirmodel.parent(idx))
                     self.tree.setCurrentIndex(self.dirmodel.index(newfolder))
-                except OSError:
+                except (IOError, OSError), detail:
                     QMessageBox.information(self, 'Message',
                     unicode( "I couldn't rename\n") + currentdir + unicode(" to \n") +
-                        newfolder + unicode("\nCheck that you have write access."), QMessageBox.Ok)
+                        newfolder + unicode("\nError: ") + unicode(detail.strerror), QMessageBox.Ok)
         self.connect(self.tree, selectionChanged, self.openTree)
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.fillCombos()
@@ -1019,19 +1033,18 @@ class MainWin(QMainWindow):
                 self.setTag(z, taglist[i])
             except IndexError:
                 break
-            except (IOError, OSError):
+            except (IOError, OSError), detail:
                 if showmessage:
                     win.show()
-                    mb = QMessageBox('Error', "Couldn't write to file", "I couldn't write to the file" + table.rowTags(i)["__filename"] + \
-                        "Do you want to continue?", QMessageBox.Warning,
+                    errormsg = "".join(["I couldn't not write to ", table.rowTags(i)[FILENAME], "\nError: ",
+                                                detail.strerror, ".\nDo you want to continue?"])
+                    mb = QMessageBox('Error', errormsg, QMessageBox.Warning,
                         QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
                     ret = mb.exec_()
-                    if ret == QMessageBox.Yes:
-                        continue
-                    if ret == QMessageBox.YesAll:
-                        showmessage = False
-                    else:
+                    if ret == QMessageBox.No:
                         break
+                    elif ret == QMessageBox.YesAll:
+                        showmessage = False
             win.updateVal()
         self.setTag(True)
         win.close()
@@ -1040,7 +1053,7 @@ class MainWin(QMainWindow):
     def patternChanged(self):
         """This function is called everytime patterncombo changes.
         It sets the values of the StatusTips for various actions
-        to a preview of the resulf if that action is triggered."""
+        to a preview of the resulf if that action is hovered over."""
         #There's an error everytime an item is deleted, we account for that
         try:
             self.tagfromfile.setStatusTip(self.displayTag(self.getTagFromFile(True)))
@@ -1062,10 +1075,11 @@ class MainWin(QMainWindow):
     def runAction(self, funcs):
         """Runs the action selected in openActions.
         
+        funcs is a list of list. Each list in turn containing
+        actiondlg.Function objects. These are applied to
+        the selected files.
+        
         See the actiondlg module for more details on funcs."""
-        #import time
-        #print "run"
-        #print time.strftime("%H : %M : %S")
         table = self.cenwid.table
         win = ProgressWin(self, len(table.selectedRows), table)
         taglist = []
@@ -1079,19 +1093,19 @@ class MainWin(QMainWindow):
                     tag = infunc.tag
                     val = {}
                     if tag == ["__all"]:
-                        tag = [z for z in tags.keys() if z != "__image"]
+                        tag = [z for z in tag if z != "__image"]
                     if infunc.function.func_code.co_varnames[0] == 'tags':
                         for z in tag:
                             try:
                                 val[z] = infunc.runFunction(tags)
                             except (AttributeError, TypeError, KeyError): 
-                                "A tag that doesn't exist is being accessed. We don't need to do anything"
+                                "The tag doesn't exist or is empty. In either case we can do nothing"
                     else:
                         for z in tag:
                             try:
                                 val[z] = infunc.runFunction(tags[z])                                    
                             except (AttributeError, TypeError, KeyError): 
-                                "Either tag doesn't exist or is empty. In either case we can do nothing"                    
+                                "The tag doesn't exist or is empty. In either case we can do nothing"
                     if val is not None or val != {}:
                         tags.update([(z,i) for z,i in val.items() if i is not None])
                         edited.extend([z for z in tag if (z in val) and (val[z] is not None)])
@@ -1102,20 +1116,18 @@ class MainWin(QMainWindow):
             except (IOError, OSError):
                 if showmessage:
                     win.show()
-                    mb = QMessageBox('Error', "I couldn't not write to \n" + table.rowTags(row)[FILENAME]
-                        + " because you don't have write access.\nDo you want to continue?.", QMessageBox.Warning,
-                        QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
+                    errormsg = "".join(["I couldn't not write to ", table.rowTags(row)[FILENAME], "\nError: ",
+                                                detail.strerror, ".\nDo you want to continue?"])
+                    mb = QMessageBox('Error writing to file', errormsg, QMessageBox.Warning,
+                                    QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
                     ret = mb.exec_()
-                    if ret == QMessageBox.Yes:
-                        continue
-                    if ret == QMessageBox.YesAll:
-                        showmessage = False
-                    else:
+                    if ret == QMessageBox.No:
                         break
+                    elif ret == QMessageBox.YesAll:
+                        showmessage = False                    
         self.setTag(True)
         win.close()
         self.fillCombos()
-        #print time.strftime("%H : %M : %S")
     
     def runQuickAction(self, funcs):
         """Basically the same as runAction, except that
@@ -1137,8 +1149,10 @@ class MainWin(QMainWindow):
         
         for row in table.selectedRows:
             if win.wasCanceled(): break
-            try:                
-                tags = dict([(headerdata[column][1], table.rowTags(row)[headerdata[column][1]]) for column in table.selectedTags()[row]])
+            try:
+                #looks complicated, but it's just the selected tags.
+                selectedtags = table.rowTags(row)
+                tags = dict([(headerdata[column][1], selectedtags[headerdata[column][1]]) for column in table.selectedTags()[row]])
                 for func in funcs:
                     for infunc in func:
                         for tag in tags:
@@ -1150,21 +1164,18 @@ class MainWin(QMainWindow):
                                     tags[tag] = val
                 try:
                     self.setTag(row, tags)
-                except (IOError, OSError):
+                except (IOError, OSError), detail:
                     if showmessage:
                         win.show()
-                        mb = QMessageBox('Error', "I couldn't not write to \n" + table.rowTags(row)[FILENAME]
-                            + " because you don't have write access.\nDo you want to continue?.", 
-                            QMessageBox.Warning,
-                            QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
+                        errormsg = "".join(["I couldn't not write to ", table.rowTags(row)[FILENAME], "\nError: ",
+                                                detail.strerror, ".\nDo you want to continue?"])
+                        mb = QMessageBox('Error writing to file', errormsg, QMessageBox.Warning,
+                                            QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
                         ret = mb.exec_()
-                        print ret
-                        if ret == QMessageBox.Yes:
-                            continue
+                        if ret == QMessageBox.No:
+                            break
                         if ret == QMessageBox.YesAll:
                             showmessage = False
-                        else:
-                            break
             except KeyError: #A tag doesn't exist, but needs to be read.
                 pass
             win.updateVal()
@@ -1196,21 +1207,18 @@ class MainWin(QMainWindow):
                 if newtag is not None:
                     self.setTag(row, newtag)
                     win.updateVal()
-            except (IOError, OSError):
+            except (IOError, OSError), detail:
                 if showmessage:
                     win.show()
-                    mb = QMessageBox('Error', "I couldn't not write to \n" + filename
-                        + " because you don't have write access.\nDo you want to continue?.", 
-                        QMessageBox.Warning,
-                        QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
+                    errormsg = "".join(["I couldn't not write to ", filename, "\nError: ",
+                                                detail.strerror, ".\nDo you want to continue?"])
+                    mb = QMessageBox('Error writing to file.', errormsg, QMessageBox.Warning,
+                                        QMessageBox.Yes  or QMessageBox.Default, QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
                     ret = mb.exec_()
-                    print ret
-                    if ret == QMessageBox.Yes:
-                        continue
+                    if ret == QMessageBox.No:
+                        break
                     if ret == QMessageBox.YesAll:
                         showmessage = False
-                    else:
-                        break
         self.setTag(True)
         win.close()
         self.fillCombos()
@@ -1237,12 +1245,12 @@ class MainWin(QMainWindow):
             row = table.selectedRows[0]
             newfilename = (findfunc.tagtofilename(pattern, taginfo[row], True,
                                                         taginfo[row]["__ext"] ))
-            return path.join(path.dirname(taginfo[row]["__filename"]), safe_name(newfilename))         
+            return path.join(path.dirname(taginfo[row]["__filename"]), safe_name(newfilename))
             
         for row in table.selectedRows:
-            filename = taginfo[row]["__filename"]
+            filename = taginfo[row][FILENAME]
             tag = taginfo[row]
-            newfilename = (findfunc.tagtofilename(pattern,tag, True, tag["__ext"] ))
+            newfilename = (findfunc.tagtofilename(pattern,tag, True, tag["__ext"]))
             newfilename = path.join(path.dirname(filename), safe_name(newfilename))
             renameFile = self.cenwid.table.model().renameFile
             
@@ -1250,7 +1258,7 @@ class MainWin(QMainWindow):
                 if path.exists(newfilename) and (newfilename != filename):
                     win.show()
                     if showoverwrite:
-                        mb = QMessageBox('Error', "The file: " + newfilename + " exists. Should I overwrite it?", 
+                        mb = QMessageBox('Ovewrite existing file?', "The file: " + newfilename + " exists. Should I overwrite it?", 
                                         QMessageBox.Question, QMessageBox.Yes, 
                                         QMessageBox.No or QMessageBox.Escape or QMessageBox.Default, QMessageBox.NoAll, self)
                         ret = mb.exec_()
@@ -1263,21 +1271,19 @@ class MainWin(QMainWindow):
                         continue
                 try:
                     self.setTag(row, {"__path": path.basename(newfilename)}, True)
-                except (IOError, OSError):
+                except (IOError, OSError), detail:
                     if showmessage:
                         win.show()
-                        mb = QMessageBox('Error', "I couldn't rename:\n" + filename + "\n to " + newfilename +
-                         ", because it may be write-protected.\nDo you want me to continue renaming the rest?",
+                        errormsg = "".join(["I could not rename ", filename, "\nError: ",
+                                                detail.strerror, ".\nDo you want to continue renaming the rest?"])
+                        mb = QMessageBox('Renaming failed', errormsg,
                             QMessageBox.Warning, QMessageBox.Yes  or QMessageBox.Default, 
                             QMessageBox.No or QMessageBox.Escape , QMessageBox.YesAll, self)
                         ret = mb.exec_()
-                        print ret
-                        if ret == QMessageBox.Yes:
-                            continue
-                        if ret == QMessageBox.YesAll:
-                            showmessage = False
-                        else:
+                        if ret == QMessageBox.No:
                             break
+                        elif ret == QMessageBox.YesAll:
+                            showmessage = False
             else:
                 return newfilename
             win.updateVal()
@@ -1297,7 +1303,7 @@ class MainWin(QMainWindow):
         """Save settings and close."""
         settings = QSettings()
         table = self.cenwid.table
-        columnwidths = QStringList([str(table.columnWidth(z)) for z in range(table.model().columnCount())])
+        columnwidths = QStringList([unicode(table.columnWidth(z)) for z in range(table.model().columnCount())])
         settings.setValue("editor/Column",QVariant(columnwidths))
         
         titles = [z[0] for z in self.cenwid.headerdata]
@@ -1317,8 +1323,10 @@ class MainWin(QMainWindow):
         settings.setValue("Table/sortColumn", QVariant(self.cenwid.sortColumn))                
         settings.setValue("main/lastfolder", QVariant(self.lastFolder))
         settings.setValue("main/maximized", QVariant(self.isMaximized()))
-        settings.setValue('main/height', QVariant(self.height()))
-        settings.setValue('main/width', QVariant(self.width()))
+        
+        if not self.isMaximized():
+            settings.setValue('main/height', QVariant(self.height()))
+            settings.setValue('main/width', QVariant(self.width()))
         
         settings.setValue("editor/showfilter",QVariant(self.showfilter.isChecked()))
     

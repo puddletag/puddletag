@@ -13,7 +13,6 @@ class MyThread(QThread):
         self.command = command
     def run(self):
         self.retval = self.command()
-        
 
 RELEASETYPES = {"Official Albums": [brainzmodel.Release.TYPE_OFFICIAL],
 "Promotional Album": [brainzmodel.Release.TYPE_PROMOTION],
@@ -28,14 +27,14 @@ class ReleaseWidget(QListWidget):
         if table is not None:
             self.table = table
         self.currentrow = row
+        self.tracks = {}
         self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
         
     def setReleases(self, releases):
         self.disconnect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
-        self.tracks = {}
         self.clear()
         rels = sorted([[z.title, z] for z in releases])
-        releases = [z[1] for z in rels]
+        releases = [z[1] for z in rels]        
         events = [z.getReleaseEventsAsDict() for z in releases]
         years = []
         for i,event in enumerate(events):
@@ -130,11 +129,11 @@ def getAlbums(artistid = None, album = None, releasetypes = None):
     if artistid is None and album is not None:
         release = ws.ReleaseFilter(title = album, releaseTypes = releasetypes, limit = 10)
         releases = [z.getRelease() for z in q.getReleases(release)]
-        if releases:
+        if releases:            
             return releases
             
             
-    if artistid is not None:
+    elif artistid is not None:
         artist = q.getArtistById(artistid, 
                     ws.ArtistIncludes(releases=releasetypes))        
         releases = artist.getReleases()
@@ -224,6 +223,8 @@ class MainWin(QDialog):
                         releases.extend(album)
                 if releases:
                     text = text + " " + "The retrieved albums are listed below."
+                else:
+                    text = "No albums were found with the matching criteria."
                 return {'releases': releases, 'text':text}
                                         
             self.t = MyThread(func)

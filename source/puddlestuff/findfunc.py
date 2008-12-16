@@ -25,10 +25,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
+import audioinfo, os, pdb, functions, string, sys
 
-import audioinfo, os, pdb, functions, string
-import sys
-if sys.version_info[0] >= 2 and sys.version_info[1] > 4:
+if sys.version_info[:2] < (2, 5):
     import re as sre
 else:
     import sre

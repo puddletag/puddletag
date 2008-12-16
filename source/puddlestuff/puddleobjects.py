@@ -37,7 +37,7 @@ from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 
 
-def unique(seq, stable=False):
+def unique(seq, stable = False):
     """unique(seq, stable=False): return a list of the elements in seq in arbitrary
     order, but without duplicates.
     If stable=True it keeps the original element order (using slower algorithms)."""
@@ -109,10 +109,13 @@ def unique(seq, stable=False):
     #if uniqueDebug: print "Brute force (" + ("Unstable","Stable")[stable] + ")."
     return result
 
-def partial(func, arg):
-    def callme():
-        return func(arg)
-    return callme
+if sys.version_info[:2] < (2, 5):
+    def partial(func, arg):
+        def callme():
+            return func(arg)
+        return callme
+else:
+    from functools import partial
 
 def safe_name(name, to = None):
     """Make a filename safe for use (remove some special chars)
@@ -302,12 +305,14 @@ class OKCancel(QHBoxLayout):
         self.emit(SIGNAL("cancel"))
         
 class ButtonLayout(QVBoxLayout):
-    """A Layout that contains, five buttons usually
+    """A Layout that contains five buttons usually
     associated with listboxes. They are
     add, edit, movedown, moveup and remove.
     
     Each button, when clicked sends signal with the
-    buttons name. e.g. add sends SIGNAL("add")."""
+    buttons name. e.g. add sends SIGNAL("add").
+    
+    You can find them all in the widgets attribute."""
     
     def __init__(self, parent = None):
         QVBoxLayout.__init__(self, parent)
@@ -344,7 +349,9 @@ class ButtonLayout(QVBoxLayout):
         self.emit(SIGNAL("edit"))
 
 class ListBox(QListWidget):
-    """Puddletag's replacement of QListWidget.
+    """Puddletag's replacement of QListWidget, because
+    removing, moving and deleting items in a listbox
+    is done a lot.
     
     Three methods are defined.    
     removeSelected, moveUp and moveDown.
@@ -438,9 +445,9 @@ class TagModel(QAbstractTableModel):
     Methods you shoud take not of are(read docstrings for more):
     
     setData -> As per the usual model, can only write one tag at a time.
-    setRowData -> Writes a bunch of tags at once.
-    undo -> undo's changes.
-        
+    setRowData -> Writes a row's tags at once.
+    undo -> undo's changes
+    setTestData and unSetTestData -> Used to display temporary values in the table.
     """
     def __init__(self, headerdata, taginfo = None):
         """Load tags. 
@@ -703,6 +710,7 @@ class TagModel(QAbstractTableModel):
             self.undolevel += 1
             rows = self.testData.keys()
             self.testData = {}
+            self.emit(SIGNAL("enableUndo"), True)
         else:
             if rows is not None:
                 for row in [row for row in rows if row in self.testData]:
@@ -718,8 +726,8 @@ class TagModel(QAbstractTableModel):
                     if not getdiff(self.taginfo[row], newtag):
                         self.taginfo[row] = oldtag
                     del(self.testData[row])
+                self.emit(SIGNAL("enableUndo"), True)
                 
-        self.emit(SIGNAL("enableUndo"), True)
         firstindex = self.index(min(rows), 0)
         lastindex = self.index(max(rows), self.columnCount() - 1)
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
@@ -741,7 +749,9 @@ class TagModel(QAbstractTableModel):
             oldfilename = self.taginfo[row][FILENAME]
             newfilename = path.join(path.dirname(oldfilename), safe_name(tags[PATH] + extension))
             try:
-                os.rename(oldfilename, newfilename)            
+                os.rename(oldfilename, newfilename)
+            #I don't want to handle the error, but at the same time I want to know
+            #which file the error occured at.
             except IOError, detail:
                 self.emit(SIGNAL('fileError'), self.taginfo[row])
                 raise IOError, detail
@@ -832,6 +842,7 @@ class TableShit(QTableView):
     selectedRows -> A list of currently selected rows
     remRows() -> Removes the selected rows.
     playcommand -> Command to run to play files.
+    showTool -> Shows a tooltip.
     """
     
     def __init__(self, headerdata = None, parent = None):
@@ -855,6 +866,7 @@ class TableShit(QTableView):
         y = -self.mapFromGlobal(self.pos()).y() + self.rowViewportPosition(row)
         x = -self.mapFromGlobal(self.pos()).x() + self.columnViewportPosition(column)
         QToolTip.showText(QPoint(x,y), text)
+        self.setStatusTip(text)
     
     def setModel(self, model):
         QTableView.setModel(self, model)
@@ -1048,8 +1060,8 @@ class TableShit(QTableView):
                     files = [path.join(files, z) for z in os.listdir(files)]
                 else: 
                     files = [files]
-        except OSError:
-            sys.stderr.write("".join(["Couldn't access, ", folderpath, " do you have read access?\n"]))
+        except (IOError, OSError), detail:
+            sys.stderr.write("".join(["Couldn't access, ", folderpath, ":" + detail.strerror]))
         
         win = ProgressWin(self, len(files))
         
