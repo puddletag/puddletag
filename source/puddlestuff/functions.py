@@ -289,7 +289,7 @@ only as whole word, QCheckBox'''
 def replaceAsWord(text, word, replaceword, matchcase = False, characters = None):
     start = 0
     if characters is None:
-        characters = [',','.', '(', ')', ' ', '!']
+        characters = [',','.', '(', ')', ' ', '!','[',']']
     #This function works by getting searching for word, checking if it has any of the characters
     #in characters on it's left or right. If it does then it's replaced.
     #I'm converting text to string because then it's easier to make string substitutions

@@ -45,7 +45,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource
 from copy import copy
-from puddleobjects import ButtonLayout, OKCancel, HeaderSetting
+from puddleobjects import ButtonLayout, OKCancel, HeaderSetting, ListBox
+import pdb
 
 class ListModel(QAbstractListModel):
     def __init__(self, options):
@@ -90,6 +91,58 @@ class SettingsList(QListView):
     
     def selectionChanged(self, selected, deselected):
         self.emit(SIGNAL("selectionChanged"), selected.indexes()[0].row())
+        
+class PatternEditor(QDialog):
+    def __init__(self, parent = None, cenwid = None):
+        QDialog.__init__(self, parent)
+        self.listbox = ListBox()
+        buttons = ButtonLayout()
+        settings = QSettings()
+        
+        patterns = settings.value("editor/patterns").toStringList()
+        if patterns.count() == 0:
+            patterns = QSettings(":/puddletag.conf", QSettings.IniFormat).value("editor/patterns").toStringList()
+        
+        if cenwid:
+            cenwid.patterncombo.clear()
+            cenwid.patterncombo.addItems(patterns)
+            return
+        self.listbox.addItems(patterns)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.listbox)
+        hbox.addLayout(buttons)
+        self.setLayout(hbox)
+        
+        self.connect(buttons, SIGNAL("add"), self.addPattern)
+        self.connect(buttons, SIGNAL("edit"), self.editItem)
+        self.connect(buttons, SIGNAL("remove"), self.listbox.removeSelected)
+        self.connect(buttons, SIGNAL("moveup"), self.listbox.moveUp)
+        self.connect(buttons, SIGNAL("movedown"), self.listbox.moveDown)
+    
+    def saveSettings(self):
+        settings = QSettings()
+        patterns = [self.listbox.item(row).text() for row in xrange(self.listbox.count())]
+        settings.setValue("editor/patterns",QVariant(QStringList(patterns)))
+
+    
+    def addPattern(self):
+        self.listbox.addItem("")
+        self.listbox.setCurrentRow(self.listbox.count() - 1)
+        self.editItem(True)
+        self.listbox.setFocus()
+    
+    def editItem(self, add = False):
+        item = self.listbox.currentItem()
+        if item:
+            (text, ok) = QInputDialog.getText(self, "Enter new pattern","Enter a pattern here:", QLineEdit.Normal, item.text())
+        if ok:
+            item.setText(text)
+    
+    def applySettings(self, cenwid):
+        patterns = [self.listbox.item(row).text() for row in xrange(self.listbox.count())]
+        cenwid.patterncombo.clear()
+        cenwid.patterncombo.addItems(patterns)
+        
         
 class ComboSetting(HeaderSetting):
     """Class that sets the type of tag that a combo should display
@@ -263,7 +316,7 @@ class GeneralSettings(QWidget):
             
         cenwid.cenwid.table.subFolders = convertState(self.subfolders)
         cenwid.pathinbar = convertState(self.pathinbar)
-        cenwid.cenwid.setGridVisible(convertState(self.gridlines))        
+        cenwid.cenwid.gridvisible = convertState(self.gridlines)
         if convertState(self.vertheader):
             cenwid.cenwid.table.verticalHeader().show()
         else:            
@@ -287,15 +340,17 @@ class MainWin(QDialog):
             self.combosetting = ComboSetting(parent = self, cenwid = cenwid)
             self.musicplayer = PlayCommand(parent = self, cenwid = cenwid)
             self.gensettings = GeneralSettings(parent = self, cenwid = cenwid)
+            self.patterns = PatternEditor(parent = self, cenwid = cenwid)
             return
         
         self.combosetting = ComboSetting()
         self.musicplayer = PlayCommand()
         self.gensettings = GeneralSettings()
+        self.patterns = PatternEditor()
         
         self.listbox = SettingsList()
             
-        self.widgets = {0: ["General Settings", self.gensettings], 1:["Combos", self.combosetting], 2:["Music Player", self.musicplayer]}
+        self.widgets = {0: ["General Settings", self.gensettings], 1:["Combos", self.combosetting], 2:["Music Player", self.musicplayer], 3:["Patterns", self.patterns]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid

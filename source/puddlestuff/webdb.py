@@ -34,7 +34,7 @@ class ReleaseWidget(QListWidget):
         self.disconnect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
         self.clear()
         rels = sorted([[z.title, z] for z in releases])
-        releases = [z[1] for z in rels]        
+        releases = [z[1] for z in rels]
         events = [z.getReleaseEventsAsDict() for z in releases]
         years = []
         for i,event in enumerate(events):
@@ -49,6 +49,8 @@ class ReleaseWidget(QListWidget):
         self.releases = releases
         if releases:
             self.setCurrentRow(self.currentrow)
+            if len(releases) == 1:
+               self.changeTable(self, self.item(0))
         self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
     
     def changeTable(self, item):

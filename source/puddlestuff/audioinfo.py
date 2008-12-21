@@ -292,12 +292,17 @@ class Tag:
             newtag = {}
             for tag, value in self.tags.items():
                 try:
-                    if not z.startswith("__") and unicode(value):
+                    if not tag.startswith("__") and unicode(value):
                         newtag[tag] = value
                 except AttributeError:
                         pass
-            newtag["tracknumber"] = newtag["track"]
-            del newtag["track"]
-            file.tags = newtag
+            if "track" in newtag:
+                newtag["tracknumber"] = newtag["track"]
+                del newtag["track"]
+            toremove = [z for z in file if z not in newtag]
+            for z in toremove:
+                pdb.set_trace()
+                del(file[z])
+            file.tags.update(newtag)
             file.save()
 

@@ -55,23 +55,24 @@ class TrackWindow(QDialog):
         self.numtracks = QLineEdit()
         self.numtracks.setEnabled(False)
         self.numtracks.setMaximumWidth(50)
-        self.hboxlayout2.addWidget(self.checkbox)
-        self.hboxlayout2.addWidget(self.numtracks)
+        self.foldernumbers = QCheckBox("Restart numbering at folders.")
         
+        self.hboxlayout2.addWidget(self.checkbox)
+        self.hboxlayout2.addWidget(self.numtracks)                
+
         self.hboxlayout3 = QHBoxLayout()
-        self.ok = QPushButton("OK")
-        self.cancel=QPushButton("Cancel")
-        self.hboxlayout3.addWidget(self.ok)
-        self.hboxlayout3.addWidget(self.cancel)
+        okcancel = OKCancel()
         
         self.vbox = QVBoxLayout(self)
         self.vbox.addLayout(self.hboxlayout)
         self.vbox.addLayout(self.hboxlayout2)
-        self.vbox.addLayout(self.hboxlayout3)
+        self.vbox.addWidget(self.foldernumbers)
+        self.vbox.addLayout(okcancel)
+        
         
         self.setLayout(self.vbox)
-        self.connect(self.ok,SIGNAL('clicked()'),self.doStuff)
-        self.connect(self.cancel,SIGNAL('clicked()'),self.close)
+        self.connect(okcancel,SIGNAL('ok'),self.doStuff)
+        self.connect(okcancel,SIGNAL('cancel'),self.close)
         self.connect(self.checkbox, SIGNAL("stateChanged(int)"), self.setEdit)
         self.numtracks.setText(unicode(numtracks))
         
@@ -89,9 +90,9 @@ class TrackWindow(QDialog):
         
     def doStuff(self):
         if self.checkbox.checkState() == 2:
-            self.emit(SIGNAL("newtracks"),[self.frombox.value(), unicode(self.numtracks.text())])
+            self.emit(SIGNAL("newtracks"),[self.frombox.value(), unicode(self.numtracks.text()), self.foldernumbers.checkState()])
         else:
-            self.emit(SIGNAL("newtracks"),[self.frombox.value(), ""])
+            self.emit(SIGNAL("newtracks"),[self.frombox.value(), "", self.foldernumbers.checkState()])
         self.close()
         
 class ImportWindow(QDialog):
@@ -299,8 +300,8 @@ class ExTags(QDialog):
         """model -> is a puddlestuff.TableModel object
         row -> the row that contains the file to be displayed
         """
-        QDialog.__init__(self, parent)        
-        self.listbox = QListWidget()        
+        QDialog.__init__(self, parent)
+        self.listbox = QListWidget()
         
         self.pixmap = QPixmap()
         
@@ -396,7 +397,7 @@ class ExTags(QDialog):
 	
     def OK(self):
         tags = [z[0] for z in self.currentfile]
-        toremove = [z for z in self.model.taginfo[self.currentrow] if not z.startswith("__") and z not in tags]        
+        toremove = [z for z in self.model.taginfo[self.currentrow] if not type(z) is int and not z.startswith("__") and z not in tags]        
         self.currentfile.extend([[z,""] for z in toremove])
         self.model.setRowData(self.currentrow, dict(self.currentfile))
         self.emit(SIGNAL('tagAvailable'))
@@ -462,7 +463,7 @@ class ExTags(QDialog):
     
     def loadFile(self, row):
         self.listbox.clear()
-        self.currentfile = sorted([[tag, val] for tag, val in  self.model.taginfo[row].items() if not tag.startswith('__') and val != ""])
+        self.currentfile = sorted([[tag, val] for tag, val in  self.model.taginfo[row].items() if not type(tag) is int and not tag.startswith('__') and val != ""])
         self.listbox.addItems([item[0] + " = " + item[1] for item in self.currentfile])
         self.currentrow = row
         self.undolevel = self.model.undolevel

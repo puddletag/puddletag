@@ -134,7 +134,7 @@ def safe_name(name, to = None):
         
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TableShit widget."""
-    def __init__(self, tags = None, parent = None, showok = True):
+    def __init__(self, tags = None, parent = None, showok = True, showedits = True):
         QDialog.__init__(self, parent)
         self.listbox = ListBox()
         self.tags = [list(z) for z in tags]
@@ -147,11 +147,14 @@ class HeaderSetting(QDialog):
         self.tag = QLineEdit()
         self.buttonlist = ButtonLayout()
         self.buttonlist.edit.setVisible(False)
-        self.vboxgrid.addWidget(QLabel("Name"),0,0)
-        self.vboxgrid.addWidget(self.textname,0,1)
-        self.vboxgrid.addWidget(QLabel("Tag"), 1,0)
-        self.vboxgrid.addWidget(self.tag,1,1)
-        self.vboxgrid.addLayout(self.buttonlist,2,0)
+        if showedits:
+            self.vboxgrid.addWidget(QLabel("Name"),0,0)
+            self.vboxgrid.addWidget(self.textname,0,1)
+            self.vboxgrid.addWidget(QLabel("Tag"), 1,0)
+            self.vboxgrid.addWidget(self.tag,1,1)
+            self.vboxgrid.addLayout(self.buttonlist,2,0)
+        else:
+            self.vboxgrid.addLayout(self.buttonlist,1,0)
         self.vboxgrid.setColumnStretch(0,0)
         
         self.vbox.addLayout(self.vboxgrid)
@@ -168,7 +171,7 @@ class HeaderSetting(QDialog):
         
         
         self.okbuttons = OKCancel()
-        if showok is True:        
+        if showok is True:
             self.grid.addLayout(self.okbuttons, 1,0,1,2)
         
         self.connect(self.okbuttons, SIGNAL("ok"), self.okClicked)
@@ -518,6 +521,7 @@ class TagModel(QAbstractTableModel):
             self.taginfo.extend(taginfo)
         else:
             self.taginfo = taginfo
+        self.taginfo = unique(self.taginfo)
         self.taginfo = unique(self.taginfo)
         self.reset()
         
@@ -916,15 +920,13 @@ class TableShit(QTableView):
         #and see what happens. I need some unicode education.
         files = [unicode(z.path()) for z in event.mimeData().urls()]
         #Usually the last element of files is an empty string.
-        while '' in files:
-            files.remove('')
-        indexes = []
         for index, file in enumerate(files):
             if path.isdir(file):
                 files.extend([path.join(file,z) for z in os.listdir(file)])
-                indexes.append(index)
-        for z in indexes:
-            del(files[z])
+                files[index] = ""
+        
+        while '' in files:
+            files.remove('')
         self.fillTable(files, True)
     
     def dragMoveEvent(self, event):
@@ -1077,7 +1079,7 @@ class TableShit(QTableView):
         if self.subFolders:
             [files.extend(recursedir(folder)) for folder in files if os.path.isdir(folder)]
 
-        for file in files:            
+        for file in files:      
             if win.wasCanceled(): break
             try:
                 if tag.link(file) is not None:
@@ -1088,7 +1090,7 @@ class TableShit(QTableView):
             except UnicodeDecodeError:
                 sys.stderr.write("Couldn't open: " + file + " (UnicodeDecodeError)")
         if tags:
-            [self.showRow(z) for z in range(self.rowCount())] #The table gets all fucked up if any rows are hidden.
+            [self.showRow(z) for z in xrange(self.rowCount())] #The table gets all fucked up if any rows are hidden.
         self.model().load(tags, append = appendtags)
         win.close()
         #Select first item in the topleft corner

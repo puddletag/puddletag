@@ -210,8 +210,7 @@ class TableWindow(QSplitter):
     
     def __init__(self, headerdata = None, parent=None):
         QSplitter.__init__(self,parent)
-        #I would really like to know why this doesn't work.
-        self.gridvisible = property(self.getGridVisible, self.setGridVisible)
+        
 
     def inittable(self, headerdata):
         """This is here, because I want to be able to initialize
@@ -295,6 +294,8 @@ class TableWindow(QSplitter):
             return True
         else:
             return False
+    
+    gridvisible = property(getGridVisible, setGridVisible)
         
 
 class MainWin(QMainWindow):
@@ -439,6 +440,7 @@ class MainWin(QMainWindow):
         toolmenu = menubar.addMenu("&Tools")
         toolmenu.addAction(self.autotagging)
         toolmenu.addAction(self.exttags)
+        toolmenu.addAction(self.changetracks)
         
         
         self.patterncombo = QComboBox()
@@ -621,12 +623,7 @@ class MainWin(QMainWindow):
         
         self.cenwid.table.playcommand = [unicode(z) for z in
              settings.value("Table/PlayCommand",QVariant(["xmms"])).toStringList()]
-        
-        self.patterncombo.clear()
-        self.patterncombo.addItems(settings.value("editor/patterns").toStringList())
-        if self.patterncombo.count() == 0:
-            self.patterncombo.addItems(defaultsettings.value("editor/patterns").toStringList())    
-        
+                 
         self.splitter.restoreState(settings.value("splittersize").toByteArray())
         self.hsplitter.restoreState(settings.value("hsplittersize").toByteArray())
         
@@ -727,11 +724,11 @@ class MainWin(QMainWindow):
 
     def fillCombos(self, **args):
         """Fills the QComboBoxes in FrameCombo with
-        the tags selected from self.table. """
+        the tags selected from self.table.
         
-        #import time
-        #print "run"
-        #print time.strftime("%H : %M : %S")
+        It's **args, because many methods connect to fillCombos
+        which pass arguments. None are needed."""
+        
         table = self.cenwid.table
         combos = self.combogroup.combos
         
@@ -774,8 +771,10 @@ class MainWin(QMainWindow):
             if (combo.count() > 3) or (combo.count() < 2):
                 combo.setCurrentIndex(0)
             else:                 
-                combo.setCurrentIndex(2)
-                
+                combo.setCurrentIndex(2)        
+        
+        #There are already prefefined genres so I have to check
+        #the selected files' one is there.
         if 'genre' in tags and len(tags['genre']) == 1:            
             combo = combos['genre']
             index = combo.findText(tags['genre'][0])
@@ -783,6 +782,10 @@ class MainWin(QMainWindow):
                 combo.setCurrentIndex(index)
             else:
                 combo.setCurrentIndex(0)
+        else:
+            combos['genre'].setEditText("")
+        
+        self.patternChanged()
                         
     def saveCombos(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
@@ -1023,10 +1026,24 @@ class MainWin(QMainWindow):
         if indexes[1] != "":
             num = "/" + indexes[1]
         else: num = ""
-        rows = self.cenwid.table.selectedRows
-        taglist = [{"track": unicode(z) + num} for z in range(fromnum, fromnum + len(rows) + 1)]
+        rows = self.cenwid.table.selectedRows        
         showmessage = True
         win = ProgressWin(self, len(self.cenwid.table.selectedRows), self.cenwid.table)
+        
+        if indexes[2]: #Restart dir numbering
+            rowTags = self.cenwid.table.rowTags
+            folders = {}
+            taglist = []
+            for row in self.cenwid.table.selectedRows:
+                folder = rowTags(row)["__folder"]
+                if folder in folders:
+                    folders[folder] += 1
+                else:
+                    folders[folder] = fromnum
+                taglist.append({"track": unicode(folders[folder]) + num})            
+        else:
+            taglist = [{"track": unicode(z) + num} for z in range(fromnum, fromnum + len(rows) + 1)]
+            
         for i,z in enumerate(self.cenwid.table.selectedRows):
             if win.wasCanceled(): break
             try:
@@ -1311,11 +1328,6 @@ class MainWin(QMainWindow):
         
         settings.setValue("editor/titles", QVariant(QStringList(titles)))
         settings.setValue("editor/tags", QVariant(QStringList(tags)))
-        
-        patterns = QStringList()
-        for z in xrange(self.patterncombo.count()):
-            patterns.append(self.patterncombo.itemText(z))
-        settings.setValue("editor/patterns",QVariant(QStringList(patterns)))
         
         settings.setValue("splittersize", QVariant(self.splitter.saveState()))
         settings.setValue("hsplittersize", QVariant(self.hsplitter.saveState()))
