@@ -25,14 +25,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import audioinfo, os, pdb, functions, string, sys
-
-if sys.version_info[:2] < (2, 5):
-    import re as sre
-else:
-    import sre
+import audioinfo, os, pdb, functions, sys
+if sys.version_info[:2] < (2, 5): import re as sre
+else: import sre
     
-from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, NotAny
+from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine
 numtimes = 0 #Used in filenametotag to keep track of shit.. Do not modify.
 
 def parsefunc(text):
@@ -43,10 +40,7 @@ def parsefunc(text):
     identifier = Combine(ZeroOrMore("\$") + Word(alphanums + "_ '!#$%&\'*+-./:;<=>?@[\\]^`{|}~"))
     integer  = Word( nums )
     funcstart =  NotAny("\\") + Combine(Literal("$") + ZeroOrMore(Word(alphanums + "_")) + "(")
-    arg = identifier | integer
-    args = arg + ZeroOrMore("," + arg)
 
-    
     def callfunc(s,loc,tok):
         arguments = tuple(tok[1:])
         funcname = tok[0][1:-1]
@@ -54,8 +48,7 @@ def parsefunc(text):
             return getattr(functions,funcname)(*arguments)
         except: 
             getattr(functions,funcname)(*arguments)
-    
-    
+        
     content = Forward()
     expression = funcstart + delimitedList(content) + Literal(")").suppress()
     expression.setParseAction(callfunc)
@@ -89,7 +82,6 @@ def getfunc(text):
         addspace = True
         
     start = 0
-    funcs=[]
     #Get the functions
     #Got this from comp.lang.python
     while 1: 
@@ -254,9 +246,9 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
             print "Unicode Error in pattern.replace with, ", tags["__filename"]
 
 
-    if addext == False:
+    if not addext:
         return getfunc(pattern)
-    elif (addext == True) and (extension is not None):
+    elif addext and (extension is not None):
         return getfunc(pattern) + os.path.extsep + extension
     else:
         return getfunc(pattern) + os.path.extsep + tag["__ext"]

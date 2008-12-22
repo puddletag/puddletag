@@ -67,7 +67,6 @@ class ListModel(QAbstractListModel):
     def data(self, index, role = Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.options)):
             return QVariant()
-        column = index.column()
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
                 return QVariant(self.options[index.row()][0])
@@ -77,7 +76,7 @@ class ListModel(QAbstractListModel):
     def widget(self, row):
         return self.options[row][1]
     
-    def rowCount(self, index=QModelIndex()):
+    def rowCount(self, index = QModelIndex()):
         return len(self.options)
     
     def flags(self, index):

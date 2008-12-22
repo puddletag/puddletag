@@ -3,7 +3,7 @@ audioinfo.py
 
 Copyright (C) 2008 concentricpuddle
 
-This file is part of puddletag, a semi-good music tag editor.
+This audio is part of puddletag, a semi-good music tag editor.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import os, pdb, mutagen
+import mutagen, pdb
 from os import path
 from mutagen.id3 import APIC
 import mutagen.oggvorbis, mutagen.flac, mutagen.apev2, mutagen.mp3
@@ -137,13 +137,13 @@ REVTAGS = {"encodingsettings" : "TSSE",
             }
 
 class Tag:
-    """Class that operates on audio file tags.
+    """Class that operates on audio audio tags.
     Currently supports ogg and mp3 files.
     
     It can be used in two ways.
     
     >>>tag = audioinfo.Tag(filename)
-    Gets the tags in the file, filename
+    Gets the tags in the audio, filename
     as a dictionary in format {tag: value} in Tag.tags.
     
     On the other hand, if you have already created
@@ -162,9 +162,9 @@ class Tag:
     #Stores the tag info in the format {tag:tag value}
     tags={}
     
-    #The filename of the linked file
+    #The filename of the linked audio
     filename = None
-    #The type of file
+    #The type of audio
     filetype=None
     (oggtype, flactype, apev2type, mp3type) = [mutagen.oggvorbis.OggVorbis, mutagen.flac.FLAC, mutagen.apev2.APEv2, mutagen.mp3.MP3]
     VORBISCOMMENT = [oggtype, flactype, apev2type]
@@ -177,68 +177,73 @@ class Tag:
             pass
             
     def __init__(self,filename=None):
-        """Links the file"""
+        """Links the audio"""
         if filename is not None:
             self.link(filename)
             
     def link(self, filename):
-        """Links the file, filename
+        """Links the audio, filename
         returns and sets self.tags if successful."""
             
-        #Get the type of file and set
+        #Get the type of audio and set
         #self.filetype to it.
         self.filetype = None
         self.tags = {}
-        file = path.realpath(filename)
+        audio = path.realpath(filename)
         try:
-            file = mutagen.File(filename)
+            audio = mutagen.File(filename)
         except (IOError, ValueError):
             return
-        if file is None:
+        except:
+            print filename
             return
-        if type(file) == self.mp3type:
-            for tagval in file:
+        if audio is None:
+            return
+        if type(audio) == self.mp3type:
+            for tagval in audio:
                 if tagval in TAGS:
                     try:
-                        self.tags[TAGS[tagval]] = file[tagval].text[0]
+                        self.tags[TAGS[tagval]] = audio[tagval].text[0]
                     except IndexError:
                         #The tag is empty, but it exists. Don't do anything.
                         pass
 		                  
-            #The date tag is not returned as text. Make it so.
+            #The year tag is not returned as text. Make it so.
             if 'year' in self.tags:
                 self.tags["year"] = unicode(self.tags['year'])
             #Get the image data.
             try:
-                x = [z for z in file if z.startswith(u"APIC:")][0]
-                self.tags["__image"] = [file[x].data,file[x].mime, file[x].type]
+                x = [z for z in audio if z.startswith(u"APIC:")][0]
+                self.tags["__image"] = [audio[x].data,audio[x].mime, audio[x].type]
             except IndexError:
                 self.tags['__image'] = None
             
             try:
-                x = [z for z in file if z.startswith(u"COMM:")][-1]
-                self.tags['comment'] = file[x].text[0]
-            except IndexError:
-                pass
-            try:
-                x = [z for z in file if z.startswith(u"TXXX:")][-1]
-                if file[x].desc not in self.tags:
-                    self.tags[file[x].desc] = file[x].text[0]                
+                x = [z for z in audio if z.startswith(u"COMM:")][-1]
+                self.tags['comment'] = audio[x].text[0]
             except IndexError:
                 pass
             
-        elif type(file) in self.VORBISCOMMENT:
-            for z in file:
-                self.tags[z.lower()] = file.tags[z][0]
-            self.tags["track"] = self.tags["tracknumber"]
-            del (self.tags["tracknumber"])
+            try:
+                x = [z for z in audio if z.startswith(u"TXXX:")][-1]
+                if audio[x].desc not in self.tags:
+                    self.tags[audio[x].desc] = audio[x].text[0]
+            except IndexError:
+                pass
+            
+        elif type(audio) in self.VORBISCOMMENT:
+            for z in audio:
+                self.tags[z.lower()] = audio.tags[z][0]
+            if 'tracknumber' in self.tags:
+                self.tags["track"] = self.tags["tracknumber"]
+                del(self.tags["tracknumber"])
         else:
-            #for z in file.tags:
-                #self.tags[z.lower()] = file.tags[z][0]
+            #for z in audio.tags:
+                #self.tags[z.lower()] = audio.tags[z][0]
             return
         
-        self.filetype = type(file)
-        info = file.info
+        self.filetype = type(audio)
+        info = audio.info
         self.filename = path.realpath(filename)
         if self.filetype != self.flactype:
             self.tags.update({FILENAME: filename,
@@ -271,22 +276,22 @@ class Tag:
         
         if filename is None:
             filename = self.filename
-        file = mutagen.File(unicode(filename))
-        if type(file) == mutagen.mp3.MP3:
+        audio = mutagen.File(unicode(filename))
+        if type(audio) == mutagen.mp3.MP3:
             newtag = []
             for tag, value in self.tags.items():
                 try:
                     if not tag.startswith("__") and unicode(value):
-                            file[REVTAGS[tag]] = getattr(mutagen.id3, REVTAGS[tag])(encoding = 1, text = unicode(value))
+                            audio[REVTAGS[tag]] = getattr(mutagen.id3, REVTAGS[tag])(encoding = 3, text = unicode(value))
                             newtag.append(REVTAGS[tag])
                 except (KeyError, AttributeError):
-                    file[u'TXXX:' + unicode(tag)] = mutagen.id3.TXXX(1, tag, unicode(value))
+                    audio[u'TXXX:' + unicode(tag)] = mutagen.id3.TXXX(1, tag, unicode(value))
                     newtag.append(u'TXXX:' + unicode(tag))
             
-            toremove = [z for z in file if z not in newtag]
+            toremove = [z for z in audio if z not in newtag]
             for z in toremove:
-                del(file[z])
-            file.save()
+                del(audio[z])
+            audio.save()
             
         elif self.filetype in self.VORBISCOMMENT:
             newtag = {}
@@ -299,10 +304,9 @@ class Tag:
             if "track" in newtag:
                 newtag["tracknumber"] = newtag["track"]
                 del newtag["track"]
-            toremove = [z for z in file if z not in newtag]
+            toremove = [z for z in audio if z not in newtag]
             for z in toremove:
-                pdb.set_trace()
-                del(file[z])
-            file.tags.update(newtag)
-            file.save()
+                del(audio[z])
+            audio.tags.update(newtag)
+            audio.save()
 

@@ -626,13 +626,13 @@ class TagModel(QAbstractTableModel):
 
         if undo:
             oldtag = self.taginfo[row]
-            oldtag = dict([(tag, oldtag[tag]) for tag in tags if tag in oldtag])
+            oldtag = dict([(tag, oldtag[tag]) for tag in set(oldtag).intersection(tags)])
             if self.undolevel in oldtag:
                 self.taginfo[row][self.undolevel].update(oldtag)
             else:
                 self.taginfo[row][self.undolevel] = oldtag
         
-        self.taginfo[row].update(self.renameFile(row, tags))        
+        self.taginfo[row].update(self.renameFile(row, tags))
         
         if not justrename:
             ints = []
@@ -920,9 +920,9 @@ class TableShit(QTableView):
         #and see what happens. I need some unicode education.
         files = [unicode(z.path()) for z in event.mimeData().urls()]
         #Usually the last element of files is an empty string.
-        for index, file in enumerate(files):
-            if path.isdir(file):
-                files.extend([path.join(file,z) for z in os.listdir(file)])
+        for index, audio in enumerate(files):
+            if path.isdir(audio):
+                files.extend([path.join(audio,z) for z in os.listdir(audio)])
                 files[index] = ""
         
         while '' in files:
@@ -962,8 +962,7 @@ class TableShit(QTableView):
         drag = QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropAction = drag.start(Qt.MoveAction | Qt.MoveAction)
-
+        drag.start(Qt.MoveAction)
 
     def mousePressEvent(self, event):
         QTableView.mousePressEvent(self, event)
@@ -1030,7 +1029,7 @@ class TableShit(QTableView):
         if not self.selectedRows:
             index = self.model().index(self.lastselection.keys()[0], self.lastselection.values()[0][0])
             selection = QItemSelection(index, index);
-            self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent or Clear)
+            self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent or QItemSelectionModel.Clear)
             return
         self.model().removeRows(self.selectedRows[0])
         self.selectionChanged()
@@ -1063,32 +1062,32 @@ class TableShit(QTableView):
                 else: 
                     files = [files]
         except (IOError, OSError), detail:
-            sys.stderr.write("".join(["Couldn't access, ", folderpath, ":" + detail.strerror]))
+            sys.stderr.write("".join(["Couldn't read, ", files, ":" + detail.strerror]))
         
         win = ProgressWin(self, len(files))
         
         def recursedir(folder):
             files = []
-            for file in os.listdir(folder):
-                if path.isdir(file):
-                    files.extend(recursedir(path.join(folder,file)))
+            for audio in os.listdir(folder):
+                if path.isdir(audio):
+                    files.extend(recursedir(path.join(folder,audio)))
                 else:
-                    files.append(path.join(folder,file))
+                    files.append(path.join(folder,audio))
             return files
         
         if self.subFolders:
             [files.extend(recursedir(folder)) for folder in files if os.path.isdir(folder)]
 
-        for file in files:      
+        for audio in files:      
             if win.wasCanceled(): break
             try:
-                if tag.link(file) is not None:
+                if tag.link(audio) is not None:
                     tags.append(tag.tags.copy())
                     win.updateVal()
             except AttributeError:
-                'This is raised if the file is an empty string.'
+                'This is raised if the audio is an empty string.'
             except UnicodeDecodeError:
-                sys.stderr.write("Couldn't open: " + file + " (UnicodeDecodeError)")
+                sys.stderr.write("Couldn't open: " + audio + " (UnicodeDecodeError)")
         if tags:
             [self.showRow(z) for z in xrange(self.rowCount())] #The table gets all fucked up if any rows are hidden.
         self.model().load(tags, append = appendtags)

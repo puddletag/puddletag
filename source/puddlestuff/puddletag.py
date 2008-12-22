@@ -25,10 +25,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, audioinfo,os, copy, puddleobjects, findfunc, actiondlg, helperwin, pdb, puddlesettings, functions, resource, threading
-from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting
-from os import path
-from audioinfo import FILENAME, PATH
+import sys, audioinfo,os, copy, findfunc, actiondlg, helperwin, pdb, puddlesettings,  resource
+from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting, TableShit
+path = os.path
+(FILENAME, PATH) = (audioinfo.FILENAME, audioinfo.PATH)
 from optparse import OptionParser        
 
 class FrameCombo(QGroupBox):
@@ -133,7 +133,7 @@ class DirView(QTreeView):
         QTreeView.__init__(self,parent)
         self.header().setStretchLastSection(True)
     
-    def selectionChanged(self,selected,deselected):
+    def selectionChanged(self, selected, deselected):
         self.emit(SIGNAL("itemSelectionChanged()"))
     
     def dragEnterEvent(self, event):
@@ -151,7 +151,7 @@ class DirView(QTreeView):
         mimedata.setUrls([QUrl(self.model().filePath(self.currentIndex()))])
         drag.setMimeData(mimedata)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropAction = drag.start(Qt.MoveAction)
+        drag.start(Qt.MoveAction)
         
     def mousePressEvent(self, event):
         if event.buttons() == Qt.RightButton:
@@ -208,8 +208,8 @@ class TableWindow(QSplitter):
     setNewHeader -> Sets the header of the table to what you want. 
                     tags are specified in the usual way"""
     
-    def __init__(self, headerdata = None, parent=None):
-        QSplitter.__init__(self,parent)
+    def __init__(self, parent=None):
+        QSplitter.__init__(self, parent)
         
 
     def inittable(self, headerdata):
@@ -218,7 +218,7 @@ class TableWindow(QSplitter):
         (like when the app starts and setting are being restored).
         
         Call it with headerdata(as usual) to set the titles."""
-        self.table = puddleobjects.TableShit(headerdata, self)
+        self.table = TableShit(headerdata, self)
         self.headerdata = headerdata
         header = TableHeader(Qt.Horizontal, self.headerdata, self)
         header.setSortIndicatorShown(True)
@@ -410,13 +410,13 @@ class MainWin(QMainWindow):
 
         
         menubar = self.menuBar()
-        file = menubar.addMenu('&File')
-        file.addAction(self.opendir)
-        file.addAction(self.addfolder)
-        file.addSeparator()
-        file.addAction(self.savecombotags)
-        file.addAction(self.cleartable)
-        file.addAction(self.reloaddir)
+        filemenu = menubar.addMenu('&File')
+        filemenu.addAction(self.opendir)
+        filemenu.addAction(self.addfolder)
+        filemenu.addSeparator()
+        filemenu.addAction(self.savecombotags)
+        filemenu.addAction(self.cleartable)
+        filemenu.addAction(self.reloaddir)
         
         edit = menubar.addMenu("&Edit")
         edit.addAction(self.undo)
@@ -512,7 +512,7 @@ class MainWin(QMainWindow):
         self.connect(self.cenwid.table, SIGNAL('itemSelectionChanged()'),
                                          self.fillCombos)
     
-    def filterTable(self, text ,*args):
+    def filterTable(self, *args):
         tag = unicode(self.filtertable.currentText())
         text = unicode(self.filtertext.text())
         if text == u"":
@@ -627,7 +627,7 @@ class MainWin(QMainWindow):
         self.splitter.restoreState(settings.value("splittersize").toByteArray())
         self.hsplitter.restoreState(settings.value("hsplittersize").toByteArray())
         
-        win = puddlesettings.MainWin(self, readvalues = True)
+        puddlesettings.MainWin(self, readvalues = True)
         self.connect(self.reloaddir, SIGNAL("triggered()"),self.cenwid.table.reloadFiles)
         showfilter = settings.value("editor/showfilter",QVariant(False)).toBool()
         self.showfilter.setChecked(showfilter)
@@ -667,6 +667,11 @@ class MainWin(QMainWindow):
                 self.lastFolder = filename
                 if not appenddir:
                     self.tree.setCurrentIndex(self.dirmodel.index(filename))
+                if not self.isVisible(): 
+                    #If puddletag is started via the command line with a 
+                    #large folder then the progress window is shown by itself without this window.
+                    self.show()
+                    QApplication.processEvents()
                 self.cenwid.fillTable(filename, appenddir)
                 if self.pathinbar:                
                     self.setWindowTitle("puddletag " + filename)
@@ -794,7 +799,6 @@ class MainWin(QMainWindow):
         if (not hasattr(table,'selectedRows')) or (not table.selectedRows):
             return
         win = ProgressWin(self, len(table.selectedRows), table)
-        model = table.model()
         showmessage = True
         
         self.disconnect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
@@ -925,14 +929,14 @@ class MainWin(QMainWindow):
         
         If test is True then the new filename is returned
         and nothing else is done."""
-        from findfunc import tagtofilename
+        tagtofilename = findfunc.tagtofilename
         selectionChanged = SIGNAL('itemSelectionChanged()')
         table = self.cenwid.table
         currentdir = table.rowTags(table.selectedRows[0])
         oldir = os.path.dirname(currentdir['__folder'])
         newfolder = os.path.join(oldir, os.path.basename(tagtofilename(unicode(self.patterncombo.currentText()), currentdir)))
         
-        if test == True:            
+        if test:            
             return unicode("Rename: <b>") + currentdir["__folder"] + unicode("</b> to: <b>") + newfolder + u'</b>'
         
         dirname = os.path.dirname
@@ -1026,15 +1030,17 @@ class MainWin(QMainWindow):
         if indexes[1] != "":
             num = "/" + indexes[1]
         else: num = ""
-        rows = self.cenwid.table.selectedRows        
+        
+        table = self.cenwid.table
+        rows = table.selectedRows
         showmessage = True
-        win = ProgressWin(self, len(self.cenwid.table.selectedRows), self.cenwid.table)
+        win = ProgressWin(self, len(rows), table)
         
         if indexes[2]: #Restart dir numbering
-            rowTags = self.cenwid.table.rowTags
+            rowTags = table.rowTags
             folders = {}
             taglist = []
-            for row in self.cenwid.table.selectedRows:
+            for row in rows:
                 folder = rowTags(row)["__folder"]
                 if folder in folders:
                     folders[folder] += 1
@@ -1044,7 +1050,7 @@ class MainWin(QMainWindow):
         else:
             taglist = [{"track": unicode(z) + num} for z in range(fromnum, fromnum + len(rows) + 1)]
             
-        for i,z in enumerate(self.cenwid.table.selectedRows):
+        for i,z in enumerate(rows):
             if win.wasCanceled(): break
             try:
                 self.setTag(z, taglist[i])
@@ -1099,7 +1105,6 @@ class MainWin(QMainWindow):
         See the actiondlg module for more details on funcs."""
         table = self.cenwid.table
         win = ProgressWin(self, len(table.selectedRows), table)
-        taglist = []
         showmessage = True
         for row in table.selectedRows:
             if win.wasCanceled(): break
@@ -1130,7 +1135,7 @@ class MainWin(QMainWindow):
             mydict = dict([(z,tags[z]) for z in set(edited)])
             try:
                 self.setTag(row, mydict)
-            except (IOError, OSError):
+            except (IOError, OSError), detail:
                 if showmessage:
                     win.show()
                     errormsg = "".join(["I couldn't not write to ", table.rowTags(row)[FILENAME], "\nError: ",
@@ -1209,9 +1214,8 @@ class MainWin(QMainWindow):
         pattern = unicode(self.patterncombo.currentText())
         showmessage = True
         
-        if test == False:
+        if not test:
             win = ProgressWin(self, len(table.selectedRows), table)
-            startval = 0
         else:
             row = table.selectedRows[0]
             return findfunc.filenametotag(pattern, path.basename(table.rowTags(row)["__filename"]), True)
@@ -1255,7 +1259,7 @@ class MainWin(QMainWindow):
         showmessage = True
         showoverwrite = True
         
-        if test == False:
+        if not test:
             win = ProgressWin(self, len(table.selectedRows), table)
         else:
             #Just return an example value.
@@ -1269,7 +1273,6 @@ class MainWin(QMainWindow):
             tag = taginfo[row]
             newfilename = (findfunc.tagtofilename(pattern,tag, True, tag["__ext"]))
             newfilename = path.join(path.dirname(filename), safe_name(newfilename))
-            renameFile = self.cenwid.table.model().renameFile
             
             if not test:
                 if path.exists(newfilename) and (newfilename != filename):
@@ -1356,10 +1359,7 @@ if __name__ == "__main__":
         
     qb = MainWin()
     qb.rowEmpty()
-    pdb.set_trace()
-    print filename
     if filename:
-        pdb.set_trace()
         pixmap = QPixmap(':/puddlelogo.png')
         splash = QSplash(pixmap)
         splash.show()

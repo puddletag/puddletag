@@ -120,7 +120,6 @@ def caps(text):
 def caps2(text):
     upcase = [z for z,i in enumerate(text) if i in string.uppercase]
     text = list(titleCase(text))
-    newtext = ""
     for z in upcase:
         text[z] = text[z].upper()
     return "".join(text)
@@ -202,7 +201,7 @@ def isdigit(x):
         return
 
 def left(x,n):
-    return unicode[:n + 1]
+    return unicode(x)[:n + 1]
 
 def len_(x):
     return len(unicode(x))
@@ -264,7 +263,7 @@ def strstr(x,y):
     if val > 0:
         return unicode(val)
     else:
-        return ""
+        return unicode()
 
 def sub(x,y):
     try:

@@ -51,11 +51,11 @@ class TrackWindow(QDialog):
         self.hboxlayout.addWidget(self.frombox)
         
         self.hboxlayout2 = QHBoxLayout()
-        self.checkbox = QCheckBox("Add seperator ['/']")
+        self.checkbox = QCheckBox("Add track seperator ['/']")
         self.numtracks = QLineEdit()
         self.numtracks.setEnabled(False)
         self.numtracks.setMaximumWidth(50)
-        self.foldernumbers = QCheckBox("Restart numbering at folders.")
+        self.foldernumbers = QCheckBox("Restart numbering at each directory.")
         
         self.hboxlayout2.addWidget(self.checkbox)
         self.hboxlayout2.addWidget(self.numtracks)                
@@ -172,7 +172,7 @@ class ImportWindow(QDialog):
                 else:
                     self.close()
                 return
-            i = 0
+
             self.lines = f.readlines()            
             self.file.setPlainText("".join(self.lines))
             self.setLines()
@@ -204,7 +204,7 @@ class ImportWindow(QDialog):
 class Label(QLabel):
     """Just a QLabel that sends a clicked() signal
     when left-clicked."""
-    def __init__ (self, text = "", parent = None, f = 0):
+    def __init__ (self, text = "", parent = None):
         QLabel.__init__ (self, text, parent)
     
     def mouseReleaseEvent(self, event):
