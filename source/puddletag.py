@@ -4,14 +4,14 @@ from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen
 
 from puddlestuff import resource
 from puddlestuff.puddletag import MainWin
-__version__ = "0.3.1"
+__version__ = "0.4.5"
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)    
+    app = QApplication(sys.argv)
     filename = sys.argv[1:]
     app.setOrganizationName("Puddle Inc.")
-    app.setApplicationName("puddletag")   
-    
+    app.setApplicationName("puddletag")
+
     pixmap = QPixmap(':/puddlelogo.png')
     splash = QSplashScreen(pixmap)
     splash.show()
@@ -21,8 +21,6 @@ if __name__ == "__main__":
     qb.rowEmpty()
     if filename:
         qb.openFolder(filename)
-        qb.show()
-        splash.finish(qb)
-    else:
-        qb.show()
+    qb.show()
+    splash.finish(qb)
     app.exec_()

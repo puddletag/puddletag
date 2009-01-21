@@ -60,7 +60,7 @@ def re_escape(rex):
         if ch in r'^$[]\+*?.(){},|' : escaped = escaped + '\\' + ch
         else: escaped = escaped + ch
     return escaped
-        
+
 def num(number,numlen):
     number=str(number)
     index = number.find("/")
@@ -82,7 +82,7 @@ def validate(text, to):
     return safe_name(text,to)
 
 def strip(text):
-    '''Trim whitespace, Trim $0'''    
+    '''Trim whitespace, Trim $0'''
     return text.strip()
 
 def formatValue(tags, pattern):
@@ -98,7 +98,7 @@ Type, QComboBox, Mixed Case,UPPER CASE,lower case
         return text.upper()
     elif ctype == "lower case":
         return text.lower()
-        
+
     text = [z for z in text]
     try:
         text[0] = text[0].upper()
@@ -210,7 +210,7 @@ def leql(x,y):
     if x <= y:
         return unicode(True)
     else:
-        return unicode(False)    
+        return unicode(False)
 
 def less(x,y):
     if x < y:
@@ -237,7 +237,7 @@ def neql(x,y):
     if unicode(x) != unicode(y):
         return unicode(True)
     else:
-        return unicode(False)    
+        return unicode(False)
 
 def not_(x):
     return unicode(not x)
@@ -283,8 +283,8 @@ only as whole word, QCheckBox'''
         return replaceAsWord(text, word, replaceword, matchcase, "")
     else:
         return replaceAsWord(text, word, replaceword, matchcase, None)
-    
-        
+
+
 def replaceAsWord(text, word, replaceword, matchcase = False, characters = None):
     start = 0
     if characters is None:
@@ -316,7 +316,7 @@ def replaceAsWord(text, word, replaceword, matchcase = False, characters = None)
         start = start + len(word) + 1
     return "".join(text)
 
-        
+
 def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
     '''Remove brackets from (ft), Brackets remove: $0
     Feat String, QLineEdit, ft
@@ -336,20 +336,24 @@ def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
         if text[start -1] == opening:
             del (textli[start - 1])
             closeparen = "".join(textli).find(closing, start)
-            if closeparen == -1: return "".join(textli)            
+            if closeparen == -1: return "".join(textli)
             del textli[closeparen]
             return "".join(textli)
     return text
-            
+
 def ftArtist(tags, ftval = " ft "):
     '''Get FT Artist, "FT Artist: $0, String: $1"
 Featuring String, QLineEdit'''
-    
+
     try:
         text = tags["artist"]
     except KeyError:
         return
-    x = text.find(ftval)
+    try:
+        x = text.find(ftval)
+    except:
+        import pdb
+        pdb.set_trace()
     if x != -1:
         return(text[:x])
 

@@ -115,7 +115,7 @@ def main():
                 newtags = filenametotag(pattern,os.path.basename(z),True)
                 if newtags:
                     tag.tags.update(filenametotag(pattern,os.path.basename(z),True))
-                    if test==0:tag.writetags()
+                    if test==0:tag.save()
                     else:print filenametotag(pattern,os.path.basename(z),True)
     
         

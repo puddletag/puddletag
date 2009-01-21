@@ -30,7 +30,7 @@ def undochanges():
                 tag.gettags()
                 temptags[filename]=copy.deepcopy(tag.tags)
                 tag.tags=copy.deepcopy(mydict[filename])
-                tag.writetags()
+                tag.save()
         writechanges("tag",temptags)
     
     elif operation=="file":

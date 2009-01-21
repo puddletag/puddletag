@@ -1,5 +1,16 @@
-3 December 2008
-For the next couple of weeks, I'm just gonna fix some things that are irritating me.
-That and getting album art working is what I'll be concentrating on.
+20 January
+    The library code is currently in first-draft mode. i.e I still have a bunch
+    of stuff to add and some cleanup to do.
 
-And if needed, fix bugs.
+    The next release won't be a 'feature' release so to speak as I'm going to be
+    concentrating on fixing bugs and porting any remaining functions that
+    Mp3tag has over to puddletag.
+
+    I've been toying with the idea of a console version (Maybe for the next release,
+    but probably not).
+
+    Oh, and I really gotta make puddletag look a bit prettier and improve some
+    minor niggles.
+
+    Yeah, I gotta speed it up too. Currently puddletag lags behind Mp3tag in
+    the speed category.
