@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-A class that contains objects used throughout puddletag"""
+A module that contains objects used throughout puddletag"""
 
 """puddleobjects.py
 
@@ -26,24 +26,79 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys,os, audioinfo, pdb
-from operator import itemgetter
-from copy import copy, deepcopy
-from subprocess import Popen
-from os import path
-from audioinfo import PATH, FILENAME
+import sys
 
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
+from copy import copy
+
+HORIZONTAL = 1
+VERTICAL = 0
+
+class MoveButtons(QWidget):
+    def __init__(self, arrayname, index = 0, orientation = HORIZONTAL, parent = None):
+        QWidget.__init__(self, parent)
+        self.next = QPushButton('&>>')
+        self.prev = QPushButton('&<<')
+        if orientation == VERTICAL:
+            box = QVBoxLayout()
+            box.addWidget(self.next, 0)
+            box.addWidget(self.prev, 0)
+        else:
+            box = QHBoxLayout()
+            box.addWidget(self.prev)
+            box.addWidget(self.next)
 
 
-class PuddleDock(QDockWidget):
-    def __init__(self, title = None, parent = None):
-        QDockWidget.__init__(self, title, parent)
+        self.arrayname = arrayname
 
-    def setVisible(self, visible):
-        self.emit(SIGNAL('visibilitychanged'), visible)
-        QDockWidget.setVisible(self, visible)
+        self.setLayout(box)
+        self.index = index
+        self.connect(self.next, SIGNAL('clicked()'), self.nextClicked)
+        self.connect(self.prev, SIGNAL('clicked()'), self.prevClicked)
+
+    def _setCurrentIndex(self, index):
+        try:
+            if index >= len(self.arrayname) or index < 0:
+                return
+            else:
+                self._currentindex = index
+                if self._currentindex >= len(self.arrayname) - 1:
+                    self.next.setEnabled(False)
+                else:
+                    self.next.setEnabled(True)
+
+                if self._currentindex <= 0:
+                    self.prev.setEnabled(False)
+                else:
+                    self.prev.setEnabled(True)
+        except TypeError:
+            "Probably arrayname is None or something."
+            self.prev.setEnabled(False)
+            self.next.setEnabled(False)
+
+        if (not self.prev.isEnabled()) and (not self.next.isEnabled()):
+            self.prev.hide()
+            self.next.hide()
+        else:
+            self.prev.show()
+            self.next.show()
+
+        self.emit(SIGNAL('indexChanged'), index)
+
+    def _getCurrentIndex(self):
+        return self._currentindex
+
+    index = property(_getCurrentIndex, _setCurrentIndex)
+
+    def nextClicked(self):
+        self.index += 1
+
+    def prevClicked(self):
+        self.index -= 1
+
+    def updateButtons(self):
+        self.index = self.index
 
 def unique(seq, stable = False):
     """unique(seq, stable=False): return a list of the elements in seq in arbitrary
@@ -140,14 +195,35 @@ def safe_name(name, to = None):
     if not escaped: return '""'
     return escaped
 
+class compare:
+    "Natural sorting class."
+    def try_int(self, s):
+        "Convert to integer if possible."
+        try: return int(s)
+        except: return s
+
+    def natsort_key(self, s):
+        "Used internally to get a tuple by which s is sorted."
+        import re
+        return map(self.try_int, re.findall(r'(\d+|\D+)', s))
+
+    def natcmp(self, a, b):
+        "Natural string comparison, case sensitive."
+        return cmp(self.natsort_key(a), self.natsort_key(b))
+
+    def natcasecmp(self, a, b):
+        "Natural string comparison, ignores case."
+        a = list(a)
+        b = list(b)
+        return self.natcmp("".join(a).lower(), "".join(b).lower())
+
 class HeaderSetting(QDialog):
-    """A dialog that allows you to edit the header of a TableShit widget."""
+    """A dialog that allows you to edit the header of a TagTable widget."""
     def __init__(self, tags = None, parent = None, showok = True, showedits = True):
         QDialog.__init__(self, parent)
         self.listbox = ListBox()
         self.tags = [list(z) for z in tags]
         self.listbox.addItems([z[0] for z in self.tags])
-        self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
 
         self.vbox = QVBoxLayout()
         self.vboxgrid = QGridLayout()
@@ -173,7 +249,6 @@ class HeaderSetting(QDialog):
         self.grid.addLayout(self.vbox,0,1)
         self.grid.setColumnStretch(1,2)
 
-        self.setLayout(self.grid)
         self.connect(self.listbox, SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"), self.fillEdits)
         self.connect(self.listbox, SIGNAL("itemSelectionChanged()"),self.enableEdits)
 
@@ -181,6 +256,7 @@ class HeaderSetting(QDialog):
         self.okbuttons = OKCancel()
         if showok is True:
             self.grid.addLayout(self.okbuttons, 1,0,1,2)
+        self.setLayout(self.grid)
 
         self.connect(self.okbuttons, SIGNAL("ok"), self.okClicked)
         self.connect(self.okbuttons, SIGNAL("cancel"), self.close)
@@ -258,72 +334,6 @@ class HeaderSetting(QDialog):
         self.listbox.setCurrentRow(row)
         self.textname.setFocus()
 
-class ProgressWin(QProgressDialog):
-    def __init__(self, parent=None, maximum = 100, increment = 1):
-        QProgressDialog.__init__(self, "", "Cancel", 0, maximum, parent)
-        self.setModal(True)
-        self.setWindowTitle("Please Wait...")
-        self.increment = increment
-        self.nextinc = increment
-        self.numcalled = 0
-        self.setAutoClose(True)
-
-    def updateVal(self, value = None):
-        self.numcalled += 1
-        if value:
-            self.setValue(self.value() + value)
-        else:
-            if self.numcalled >= self.increment:
-                self.setValue(self.value() + self.increment)
-                self.numcalled = 0
-        QApplication.processEvents()
-
-
-class compare:
-    "Natural sorting class."
-    def try_int(self, s):
-        "Convert to integer if possible."
-        try: return int(s)
-        except: return s
-
-    def natsort_key(self, s):
-        "Used internally to get a tuple by which s is sorted."
-        import re
-        return map(self.try_int, re.findall(r'(\d+|\D+)', s))
-
-    def natcmp(self, a, b):
-        "Natural string comparison, case sensitive."
-        return cmp(self.natsort_key(a), self.natsort_key(b))
-
-    def natcasecmp(self, a, b):
-        "Natural string comparison, ignores case."
-        a = list(a)
-        b = list(b)
-        return self.natcmp("".join(a).lower(), "".join(b).lower())
-
-class OKCancel(QHBoxLayout):
-    """Yes, I know about QButtonLayout, but I'm not using PyQt4.2 here."""
-    def __init__(self, parent = None):
-        QHBoxLayout.__init__(self, parent)
-
-        self.addStretch()
-
-        self.ok = QPushButton("&OK")
-        self.cancel = QPushButton("&Cancel")
-        self.ok.setDefault(True)
-
-        self.addWidget(self.ok)
-        self.addWidget(self.cancel)
-
-        self.connect(self.ok, SIGNAL("clicked()"), self.yes)
-        self.connect(self.cancel, SIGNAL("clicked()"), self.no)
-
-    def yes(self):
-        self.emit(SIGNAL("ok"))
-
-    def no(self):
-        self.emit(SIGNAL("cancel"))
-
 class ListButtons(QVBoxLayout):
     """A Layout that contains five buttons usually
     associated with listboxes. They are
@@ -336,14 +346,25 @@ class ListButtons(QVBoxLayout):
 
     def __init__(self, parent = None):
         QVBoxLayout.__init__(self, parent)
-        self.add = QPushButton("&Add")
-        self.remove = QPushButton("&Remove")
-        self.moveup = QPushButton("&Move Up")
-        self.movedown = QPushButton("&Move Down")
-        self.edit = QPushButton("&Edit")
+        self.add = QToolButton()
+        self.add.setIcon(QIcon(':/filenew.png'))
+        self.add.setToolTip('Add')
+        self.remove = QToolButton()
+        self.remove.setIcon(QIcon(':/remove.png'))
+        self.remove.setToolTip('Remove')
+        self.moveup = QToolButton()
+        self.moveup.setIcon(QIcon(':/moveup.png'))
+        self.moveup.setToolTip('Move Up')
+        self.movedown = QToolButton()
+        self.movedown.setIcon(QIcon(':/movedown.png'))
+        self.movedown.setToolTip('Move Down')
+        self.edit = QToolButton()
+        self.edit.setIcon(QIcon(':/edit.png'))
+        self.edit.setToolTip('Edit')
 
         self.widgets = [self.add, self.edit, self.remove, self.moveup, self.movedown]
         [self.addWidget(widget) for widget in self.widgets]
+        [z.setIconSize(QSize(16,16)) for z in self.widgets]
         self.addStretch()
 
         clicked = SIGNAL("clicked()")
@@ -373,830 +394,199 @@ class ListBox(QListWidget):
     removing, moving and deleting items in a listbox
     is done a lot.
 
-    Three methods are defined.
-    removeSelected, moveUp and moveDown.
-    See docstrings for more info"""
+    First the modifier methods.
+    removeSelected, moveUp and moveDown each does as the
+    name implies. See docstrings for more info.
+
+    connectToListButtons -> connects removeSelected etc. to
+    the respective buttons in a ListButtons object.
+
+    Attributes:
+    editButton -> Set this to a button or control which will be enabled only
+    when a single item is selected.
+
+    yourlist -> The list that will be used in removeSelected et al, if None
+    is passed when calling the function.."""
     def __init__(self, parent = None):
         QListWidget.__init__(self, parent)
+        self.yourlist = None
+        self.editButton = None
+        self.setSelectionMode(self.ExtendedSelection)
+
+    def selectionChanged(self, selected, deselected):
+        if self.editButton:
+            if len(self.selectedItems()) == 1:
+                self.editButton.setEnabled(True)
+            else:
+                self.editButton.setEnabled(False)
+        QListWidget.selectionChanged(self, selected, deselected)
+
+    def connectToListButtons(self, listbuttons, yourlist = None):
+        """Connect the moveUp, moveDown and removeSelected to the
+        moveup, movedown and remove signals of listbuttons and
+        sets the editButton.
+
+        yourlist is used a the argument in these functions if
+        no other yourlist is passed."""
+        self.editButton = listbuttons.edit
+        self.connect(listbuttons, SIGNAL('moveup'), self.moveUp)
+        self.connect(listbuttons, SIGNAL('movedown'), self.moveDown)
+        self.connect(listbuttons, SIGNAL('remove'), self.removeSelected)
+        self.yourlist = yourlist
 
     def removeSelected(self, yourlist = None, rows = None):
         """Removes the currently selected items.
         If yourlist is not None, then the selected
         items are removed for yourlist also. Note, that
         the indexes of the items in yourlist and the listbox
-        has to correspond.
+        have to correspond.
 
         If you want to remove anything other than the selected,
         just set rows to a list of integers."""
-        if rows is None:
-            rows = [self.row(item) for item in self.selectedItems()]
-        conter = 0
-        for row in rows:
-            row = row - conter
-            if yourlist is not None:
-                for i, item in enumerate(yourlist):
-                    if i > row:
-                        yourlist[i -1] = yourlist[i]
-                del(yourlist[len(yourlist) - 1])
-            self.takeItem(row)
-            conter += 1
+        if not yourlist:
+            yourlist = self.yourlist
+        if rows:
+            rows = sorted(rows)
+        else:
+            rows = sorted([self.row(item) for item in self.selectedItems()])
+
+        for i in range(len(rows)):
+            self.takeItem(rows[i])
+            if yourlist:
+                try:
+                    del(yourlist[rows[i]])
+                except (KeyError, IndexError):
+                    "The list doesn't have enough items or something"
+            rows = [z - 1 for z in rows]
 
     def moveUp(self, yourlist = None, rows = None):
         """Moves the currently selected items up one place.
         If yourlist is not None, then the indexes of yourlist
         are updated in tandem. Note, that
         the indexes of the items in yourlist and the listbox
-        has to correspond.
-
-        rows can be any list of integers"""
-        if rows is None:
+        have to correspond."""
+        if not rows:
             rows = [self.row(item) for item in self.selectedItems()]
-        def inline(rows):
-            if (rows == []) or (0 in rows): return
-            row = rows[0]
-            item = self.takeItem(row - 1)
-            self.insertItem(row, item)
+        rows = sorted(rows)
+        if not yourlist:
+            yourlist = self.yourlist
 
-            if yourlist is not None:
-                what = yourlist[row - 1]
+        if 0 in rows:
+            return
+        #import pdb
+        #pdb.set_trace()
+        [self.setItemSelected(item, False) for item in self.selectedItems()]
+        for i in range(len(rows)):
+            row = rows[i]
+            item = self.takeItem(row)
+            self.insertItem(row - 1, item)
+            if yourlist:
+                temp = copy(yourlist[row - 1])
                 yourlist[row - 1] = yourlist[row]
-                yourlist[row] = what
-            del(rows[0])
-            inline(rows)
-        inline(rows)
+                yourlist[row] = temp
+        [self.setItemSelected(self.item(row - 1), True) for row in rows]
 
     def moveDown(self, yourlist = None, rows = None):
         """See moveup. It's exactly the opposite."""
         if rows is None:
             rows = [self.row(item) for item in self.selectedItems()]
-
-        if (rows == []) or ((self.count() - 1) in rows): return
-
-        #moveDown doesn't work with contiguous selections that well.
-        if (rows == range(rows[0], rows[-1] + 1)) and (len(rows) > 1):
-            row = rows[0]
-            item = self.takeItem(row + len(rows))
-            self.insertItem(row, item)
-
-            if yourlist is not None:
-                what = yourlist[row + len(rows)]
-                for i,z in enumerate(reversed(yourlist)):
-                    yourlist[i + 1] = yourlist[row]
-                yourlist[row[0]] = what
-
-        def inline(rows):
-            if (rows == []) or ((self.count() - 1) in rows): return
-            row = rows[0]
-            item = self.takeItem(row + 1)
-            self.insertItem(row, item)
-
-            if yourlist is not None:
-                what = yourlist[row + 1]
-                yourlist[row + 1] = yourlist[row]
-                yourlist[row] = what
-            del(rows[0])
-            inline(rows)
-        inline(rows)
-
-
-class TagModel(QAbstractTableModel):
-    """The model used in TableShit
-    Methods you shoud take not of are(read docstrings for more):
-
-    setData -> As per the usual model, can only write one tag at a time.
-    setRowData -> Writes a row's tags at once.
-    undo -> undo's changes
-    setTestData and unSetTestData -> Used to display temporary values in the table.
-    """
-    def __init__(self, headerdata, taginfo = None):
-        """Load tags.
-
-        headerdata must be a list of tuples
-        where the first item is the displayrole and the second
-        the tag to be used.
-
-        taginfo should be a list of dictionaries
-        where each dictionary represents a tag
-        of a file. See audioinfo for more details.
-
-        >>> headerdata = [("Artist", "artist"), ("Title", title")]
-        >>> taginfo = [{"artist":"Gene Watson", "title": "Unknown"},
-                        {"artist": "Keith Sweat", "title": "Nobody"}]
-                        """
-        QAbstractTableModel.__init__(self)
-        self.headerdata = headerdata
-        if taginfo is not None:
-            self.taginfo = unique(taginfo)
-        else:
-            self.taginfo = []
-        self.undolevel = 0
-        self.testData = {}
-        self.reset()
-
-    def changeFolder(self, olddir, newdir):
-        """Used for changing the directory of all the files in olddir to newdir.
-        i.e. All children of olddir will now become children of newdir
-
-        No *actual* moving is done though."""
-
-        tags = [z for z in self.taginfo if z["__folder"].startswith(olddir)]
-        for z in tags:
-            if z['__folder'] == olddir:
-                z[FILENAME] = os.path.join(newdir, z[PATH])
-                z['__folder'] = newdir
+        if self.count() - 1 in rows:
+            return
+        [self.setItemSelected(item, False) for item in self.selectedItems()]
+        if not yourlist:
+            yourlist = self.yourlist
+        rows = sorted(rows)
+        lastindex = rows[0]
+        groups = {lastindex:[lastindex]}
+        lastrow = lastindex
+        for row in rows[1:]:
+            if row - 1 == lastindex:
+                groups[lastrow].append(row)
             else:
-                z['__folder'] = newdir + z['__folder'][len(olddir):]
-                z[FILENAME] = os.path.join(z['__folder'], z[PATH])
-        self.reset()
-
-
-    def undo(self):
-        """Undos the last action.
-
-        Basically, if a tag has a key which is = self.undolevel - 1,
-        then the tag is updated with the dictionary in that key.
-
-        setRowData does not modify the undoleve unless you explicitely tell
-        it, but setData does modify the undolevel.
-
-        It is recommended that you use consecutive indexes for self.undolevel."""
-        if self.undolevel <= 0:
-            self.undolevel = 0
-            return
-        level = self.undolevel - 1
-        oldfiles =  []
-        newfiles = []
-        for row, file in enumerate(self.taginfo):
-            if level in file:
-                if '__library' in file:
-                    oldfiles.append(file.tags.copy())
-                self.setRowData(row, file[level])
-                del(file[level])
-                if "__library" in file:
-                    newfiles.append(file.tags.copy())
-        if oldfiles:
-            self.emit(SIGNAL('libraryFile'), oldfiles, newfiles)
-
-        self.undolevel -= 1
-
-    def supportedDropActions(self):
-        return Qt.CopyAction
-
-    def dropMimeData(self, data, action, row, column, parent = QModelIndex()):
-        return True
-
-    def load(self,taginfo,headerdata=None, append = False):
-        """Loads tags as in __init__.
-        If append is true, then the tags are just appended."""
-        if headerdata is not None:
-            self.headerdata = headerdata
-        if append:
-            self.taginfo.extend(taginfo)
-        else:
-            self.taginfo = taginfo
-        self.taginfo = unique(self.taginfo)
-        self.reset()
-
-    def reset(self):
-        #Sometimes, (actually all the time on my box, but it may be different on yours)
-        #if a number files loaded into the model is equal to number
-        #of files currently in the model then the TableView isn't updated.
-        #Why the fuck I don't know, but this signal makes my job a lot easier.
-        self.emit(SIGNAL('modelReset'))
-        QAbstractTableModel.reset(self)
-
-
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
-        if role != Qt.DisplayRole:
-            return QVariant()
-        if orientation == Qt.Horizontal:
-            try:
-                return QVariant(self.headerdata[section][0])
-            except IndexError:
-                return QVariant()
-        return QVariant(int(section + 1))
-
-    def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid() or not (0 <= index.row() < len(self.taginfo)):
-            return QVariant()
-        if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole) or (role == Qt.EditRole):
-            try:
-                val = self.taginfo[index.row()][self.headerdata[index.column()][1]]
-                if type(val) is unicode or type(val) is str:
-                    return QVariant(val)
-                else:
-                    return QVariant(val[0])
-            except (KeyError, IndexError), detail:
-                return QVariant()
-        return QVariant()
-
-    def rowCount(self, index = QModelIndex()):
-        return len(self.taginfo)
-
-    def columnCount(self, index=QModelIndex()):
-        return len(self.headerdata)
-
-    def flags(self, index):
-        if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsEditable| Qt.ItemIsDropEnabled)
-
-    def setData(self, index, value, role = Qt.EditRole):
-        """Sets the data of the currently edited cell as expected.
-        Also writes tags and increases the undolevel."""
-
-        if index.isValid() and 0 <= index.row() < len(self.taginfo):
-            column = index.column()
-            tag = self.headerdata[column][1]
-            currentfile = self.taginfo[index.row()]
-
-            filename = currentfile[FILENAME]
-            newvalue = unicode(value.toString())
-            #Tags that startwith "__" are usually read only except for __path
-            #in which case we rename the files.
-            try:
-                oldvalue = deepcopy(currentfile[tag])
-            except KeyError:
-                oldvalue = [""]
-
-            if tag.startswith("__"):
-                if tag == PATH:
-                    try:
-                        currentfile[FILENAME] = self.renameFile(index.row(), {PATH: newvalue})[FILENAME]
-                    except (IOError, OSError), detail:
-                        self.emit(SIGNAL("setDataError"), index.row(), column, "Couldn't rename " + filename + ": " + detail.strerror)
-                        return False
-                else:
-                    return False #Editing read-only values
-            try:
-                currentfile[tag] = newvalue
-                currentfile.save()
-            except (IOError, OSError), detail:
-                currentfile[tag] = oldvalue
-                self.emit(SIGNAL("setDataError"), index.row(), column, "Couldn't write to " + filename + ": " + detail.strerror)
-                return False
-
-            currentfile[self.undolevel] = {tag: oldvalue}
-            if '__library' in currentfile:
-                oldfile = currentfile.tags.copy()
-                oldfile.update(currentfile[self.undolevel])
-                self.emit(SIGNAL('libraryFile'), [oldfile], [currentfile])
-            self.undolevel += 1
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        index, index)
-            return True
-        return False
-
-    def sort(self,column,order = Qt.DescendingOrder):
-        tag = self.headerdata[column][1]
-        cmpfunc = compare().natcasecmp
-        if order == Qt.AscendingOrder:
-            self.taginfo = sorted(self.taginfo, cmpfunc, itemgetter(tag))
-        else:
-            self.taginfo = sorted(self.taginfo, cmpfunc, itemgetter(tag), True)
-        self.reset()
-
-    def setRowData(self,row,tags, undo = False, justrename = False):
-        """A function to update one row.
-        row is the row, tags is a dictionary of tags.
-
-        If undo`is True, then an undo level is created for this file.
-        If justrename is True, then (if tags contain a "__path" key) the file is just renamed.
-        i.e not tags are written.
-        """
-
-        currentfile = self.taginfo[row]
-        if undo:
-            oldtag = currentfile
-            oldtag = dict([(tag, oldtag[tag]) for tag in set(oldtag).intersection(tags)])
-            if self.undolevel in oldtag:
-                currentfile[self.undolevel].update(oldtag)
-            else:
-                currentfile[self.undolevel] = oldtag
-        currentfile.update(self.renameFile(row, tags))
-        if justrename and '__library' in currentfile:
-            currentfile.save(True)
-        if not justrename:
-            try:
-                oldtags = deepcopy([(z, deepcopy(currentfile[z])) for z in tags
-                                                        if z in currentfile])
-                currentfile.update(tags)
-                currentfile.save()
-            except (OSError, IOError), detail:
-                currentfile.update(oldtags)
-                raise detail
-
-        firstindex = self.index(row, 0)
-        lastindex = self.index(row,self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
-
-    def setTestData(self, rows, tags):
-        """A method that allows you to change the visible data of
-        the model without writing tags.
-
-        rows is the rows that you want to change
-        tags -> is the tags that are to be shown.
-
-        If you want want to write the values that you showed
-        call unsetData with write = True.
-
-        However, if you just want to return to the previous
-        view, call unsetData with write = False, and if you want,
-        the rows you want to return to normal.
-
-        Note, that if the user changed anything during this
-        process, then those changes are left alone."""
-
-        unsetrows = [row for row in rows if row in self.testData][len(tags):]
-        if unsetrows:
-            self.unSetTestData(rows = unsetrows)
-        for row, tag in zip(rows, tags):
-            if row in self.testData:
-                self.testData[row][1] = tag
-            else:
-                self.testData[row] = [self.taginfo[row].copy(), tag]
-            self.taginfo[row].update(tag)
-        self.emit(SIGNAL("enableUndo"), False)
-        firstindex = self.index(min(rows), 0)
-        lastindex = self.index(max(rows),self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
-
-    def unSetTestData(self, write = False, rows = None):
-        """See testData"""
-        def getdiff(tag1, tag2):
-            undolevel = [z for z in tag1 if type(z) is int]
-            if undolevel: undolevel = max(undolevel)
-            oldundolevel = [z for z in tag2 if type(z) is int]
-            if oldundolevel: oldundolevel = max(oldundolevel)
-            if oldundolevel != undolevel:
-                return True
-            else:
-                return False
-
-        if not self.testData:
-            return
-
-        if write:
-            for row, tag in self.testData.items():
-                oldtag = tag[0]
-                newtag = tag[1]
-                if getdiff(oldtag, self.taginfo[row]):
-                    newtag = [dict([(z,newtag[z])]) for z in newtag if
-                            (z in oldtag[z]) and (z in self.taginfo[row])
-                            and oldtag[z] == self.taginfo[row][z]]
-                self.setRowData(row, newtag, True)
-            self.undolevel += 1
-            rows = self.testData.keys()
-            self.testData = {}
-            self.emit(SIGNAL("enableUndo"), True)
-        else:
-            if rows is not None:
-                for row in [row for row in rows if row in self.testData]:
-                    tag = self.testData[row]
-                    if not getdiff(self.taginfo[row], tag[1]):
-                        self.taginfo[row] = tag[0].copy()
-                    del(self.testData[row])
-            else:
-                rows = self.testData.keys()
-                for row, tag in self.testData.items():
-                    oldtag = tag[0]
-                    newtag = tag[1]
-                    if not getdiff(self.taginfo[row], newtag):
-                        self.taginfo[row] = oldtag
-                    del(self.testData[row])
-                self.emit(SIGNAL("enableUndo"), True)
-
-        firstindex = self.index(min(rows), 0)
-        lastindex = self.index(max(rows), self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
-
-
-    def renameFile(self, row, tags):
-        """If tags(a dictionary) contains a "__path" key, then the file
-        in self.taginfo[row] is renamed based on that.
-
-        If successful, tags is returned(with the new filename as a key)
-        otherwise {} is returned."""
-
-        if PATH in tags:
-            if os.path.splitext(tags[PATH])[1] == "":
-                extension = os.path.extsep + self.taginfo[row]["__ext"]
-            else:
-                extension = ""
-            oldfilename = self.taginfo[row][FILENAME]
-            newfilename = path.join(path.dirname(oldfilename), safe_name(tags[PATH] + extension))
-            try:
-                os.rename(oldfilename, newfilename)
-            #I don't want to handle the error, but at the same time I want to know
-            #which file the error occured at.
-            except (IOError, OSError), detail:
-                self.emit(SIGNAL('fileError'), self.taginfo[row])
-                raise detail
-            tags[FILENAME] = newfilename
-        else:
-            return {}
-        return tags
-
-
-    def removeRows(self, position, rows=1, index=QModelIndex(), delfiles = True):
-        """Please, only use this function to remove one row at a time. For some reason, it doesn't work
-        too well on debian if more than one row is removed at a time."""
-        self.beginRemoveRows(QModelIndex(), position,
-                         position + rows -1)
-        if delfiles: #Originally had this here to test the code, keeping it
-                     #for the same reason.
-            audio = self.taginfo[position]
-            try:
-                os.remove(audio[FILENAME])
-                if '__library' in audio:
-                    self.emit(SIGNAL('delLibFile'), [audio])
-            except (OSError, IOError):
-                QMessageBox.information(None,"Error", "I couldn't delete the file :\n" + audio[FILENAME], QMessageBox.Ok)
-                return False
-        del(self.taginfo[position])
-        self.endRemoveRows()
-        return True
-
-    def setHeaderData(self, section, orientation, value, role = Qt.EditRole):
-        if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
-            self.headerdata[section] = value
-        self.emit(SIGNAL("headerDataChanged (Qt::Orientation,int,int)"), orientation, section, section)
-
-    def insertColumns (self, column, count, parent = QModelIndex()):
-        self.beginInsertColumns (parent, column, column + count -1)
-        self.headerdata += [("","") for z in range(count - column)]
-        self.endInsertColumns()
-        return True
-
-    def removeColumns(self, column, count, parent = QModelIndex()):
-        """This function only allows removal of one column at a time.
-        For some reason, it just clears the columns otherwise.
-        So for now, this seems to work."""
-        self.beginRemoveColumns(QModelIndex(), column , column + count - 1)
-        del(self.headerdata[column])
-        self.endRemoveColumns()
-        return True
-
-class DelegateShit(QItemDelegate):
-    def __init__(self,parent=None):
-        QItemDelegate.__init__(self,parent)
-
-    def createEditor(self,parent,option,index):
-        editor = QLineEdit(parent)
-        editor.setFrame(False)
-        editor.installEventFilter(self)
-        return editor
-
-    def keyPressEvent(self, event):
-        QItemDelegate.keyPressEvent(self, event)
-
-    def commitAndCloseEditor(self):
-        editor = self.sender()
-        self.emit(SIGNAL("closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)"), editor, QItemDelegate.EditNextItem)
-
-    def setEditorData(self, editor, index):
-        text = index.model().data(index, Qt.EditRole).toString()
-        editor.setText(text)
-
-    def setModelData(self, editor, model, index):
-        model.setData(index, QVariant(editor.text()))
-
-
-
-class TableShit(QTableView):
-    """I need a more descriptive name for this.
-
-    This table is the table that handles all my tags for me.
-    The main functions and properties are:
-
-    rowTags(row) -> Returns the tags from a row.
-    updateRow(row, tags) - > Updates a row with the tags specified
-    selectedRows -> A list of currently selected rows
-    remRows() -> Removes the selected rows.
-    playcommand -> Command to run to play files.
-    showTool -> Shows a tooltip.
-    """
-
-    def __init__(self, headerdata = None, parent = None):
-        QTableView.__init__(self,parent)
-        self.setDragEnabled(True)
-        self.setAcceptDrops(True)
-        self.setDropIndicatorShown(True)
-        self.setAlternatingRowColors(True)
-        self.showmsg = True
-
-        self.tagmodel = TagModel(headerdata)
-        self.setModel(self.tagmodel)
-        delegate = DelegateShit(self)
-        self.setItemDelegate(delegate)
-        self.subFolders = False
-
-        self.play = QAction("&Play", self)
-        self.exttags = QAction("E&xtended Tags", self)
-        self.delete = QAction('&Delete', self)
-        self.connect(self.play, SIGNAL('triggered()'), self.playFiles)
-        self.connect(self.exttags, SIGNAL('triggered()'), self.editFile)
-        self.delete.setShortcut('Delete')
-        self.connect(self.delete, SIGNAL('triggered()'), self.deleteSelected)
-        self.actions = [self.play, self.exttags, self.delete]
-
-    def _isEmpty(self):
-        if self.model().rowCount() == 0:
-            return True
-        return False
-
-    isempty = property(_isEmpty)
-
-    def modelShit(self):
-        topLeft = self.model().index(0, 0)
-        selection = QItemSelection(topLeft, topLeft)
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
-        self.setFocus()
-
-    def showTool(self, row, column, text):
-        y = -self.mapFromGlobal(self.pos()).y() + self.rowViewportPosition(row)
-        x = -self.mapFromGlobal(self.pos()).x() + self.columnViewportPosition(column)
-        QToolTip.showText(QPoint(x,y), text)
-        self.emit(SIGNAL('setDataError'), text)
-
-    def setModel(self, model):
-        QTableView.setModel(self, model)
-        #For less typing and that the model doesn't have to be accessed directly
-        self.updateRow = model.setRowData
-        self.connect(model, SIGNAL('modelReset'), self.modelShit)
-        self.connect(model, SIGNAL('setDataError'), self.showTool)
-
-    def selectedTags(self):
-        """Retun a dictionary with the currently selected rows as keys.
-        Each key contains a list with the selected columns of that row.
-
-        {} is return if nothing is selected."""
-        x = {}
-        for z in self.selectedIndexes():
-            try:
-                x[z.row()].append(z.column())
-            except KeyError:
-                x[z.row()] = [z.column()]
-        return x
-
-    def selectionChanged(self, selected = None, deselected = None):
-        """Pretty important. This updates self.selectedRows, which is used
-        everywhere.
-
-        I've set selected an deselected as None, because I sometimes
-        want self.selectedRows updated without hassle."""
-
-        selectedRows = set()
-        selectedColumns = set()
-        for z in self.selectedIndexes():
-            selectedRows.add(z.row())
-            selectedColumns.add(z.column())
-        self.selectedRows = sorted(list(selectedRows))
-        self.selectedColumns = sorted(list(selectedColumns))
-        if selected is not None and deselected is not None:
-            QTableView.selectionChanged(self, selected, deselected)
-        self.emit(SIGNAL("itemSelectionChanged()"))
-
-    def rowTags(self,row, stringtags = False):
-        """Returns all the tags pertinent to the file at row."""
-        if stringtags:
-            return self.model().taginfo[row].stringtags()
-        return self.model().taginfo[row]
-
-
-    def dragEnterEvent(self, event):
-        self.setAcceptDrops(True)
-        event.accept()
-
-    def dropEvent(self, event):
-        #Unicode is really fucked up. Just drag and drop a file with unicode characters
-        #and see what happens. I need some unicode education.
-        files = [unicode(z.path()) for z in event.mimeData().urls()]
-        #Usually the last element of files is an empty string.
-        for index, audio in enumerate(files):
-            if path.isdir(audio):
-                files.extend([path.join(audio,z) for z in os.listdir(audio)])
-                files[index] = ""
-
-        while '' in files:
-            files.remove('')
-        self.fillTable(files, True)
-
-    def dragMoveEvent(self, event):
-        if event.source() == self:
-            event.ignore()
-            return
-        if event.mimeData().hasUrls():
-            event.accept()
-
-    def mouseMoveEvent(self, event):
-
-        if event.buttons() != Qt.LeftButton:
-	       return
-        mimeData = QMimeData()
-        plainText = ""
-        tags= []
-        if hasattr(self, "selectedRows"):
-            selectedRows = self.selectedRows
-        else:
-            return
-        pnt = QPoint(*self.StartPosition)
-        if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
-            return
-        #I'm adding plaintext to MimeData
-        #because XMMS doesn't seem to work well with Qt's URL's
-        for z in selectedRows:
-            plainText = plainText + os.path.join("file:///localhost", self.rowTags(z)[FILENAME]) + "\n"
-            tags.append(QUrl(os.path.join("file:///localhost", self.rowTags(z)[FILENAME])))
-        mimeData = QMimeData()
-        mimeData.setUrls(tags)
-        mimeData.setText(plainText)
-
-        drag = QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(event.pos() - self.rect().topLeft())
-        drag.start(Qt.MoveAction)
-
-    def mousePressEvent(self, event):
-        QTableView.mousePressEvent(self, event)
-        if event.buttons()  == Qt.RightButton:
-            self.contextMenuEvent(event)
-        if event.buttons() == Qt.LeftButton:
-            self.StartPosition = [event.pos().x(), event.pos().y()]
-
-
-    def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        [menu.addAction(z) for z in self.actions]
-        menu.exec_(event.globalPos())
-
-    def editFile(self):
-        """Open window to edit all the tags in a file"""
-        from helperwin import ExTags
-        win = ExTags(self.model(), self.selectedRows[0], self)
-        win.setModal(True)
-        win.show()
-        self.connect(win, SIGNAL("tagAvailable"), self.selectionChanged)
-
-    def playFiles(self):
-        """Play the selected files using the player specified in self.playcommand"""
-        if not self.selectedRows: return
-        if hasattr(self, "playcommand"):
-            li = copy(self.playcommand)
-        else:
-            li=["xmms"]
-        for z in self.selectedRows:
-            li.append(self.rowTags(z)[FILENAME])
-        Popen(li)
-
-    def deleteSelected(self):
-        result = QMessageBox.question (self, "Delete files?",
-                    "Are you sure you want to delete the selected files?",
-                    "&Yes", "&No","", 1, 1)
-        if result == 0:
-            self.remRows()
-
-    def setPlayCommand(self, command):
-        self.playcommand = command
-
-    def rowCount(self):
-        return self.model().rowCount()
-
-    def columnCount(self):
-        return self.model().columnCount()
-
-    def keyPressEvent(self, event):
-        event.accept()
-        #You might think that this is redunndant since a delete
-        #action is defined in contextMenuEvent, but if this isn't
-        #done then the delegate is entered.
-        if event.key() == Qt.Key_Delete and self.selectedRows is not None:
-            self.deleteSelected()
-            return
-        QTableView.keyPressEvent(self, event)
-
-    def remRows(self):
-        """Removes the currently selected rows
-        and deletes the files.
-
-        Doing it all at once, doesn't seem to work in Debian."""
-        if len(self.selectedRows) == 1:
-                self.lastselection = self.selectedTags()
-        if not self.selectedRows:
-            index = self.model().index(self.lastselection.keys()[0], self.lastselection.values()[0][0])
-            selection = QItemSelection(index, index);
-            self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent or QItemSelectionModel.Clear)
-            return
-        self.model().removeRows(self.selectedRows[0])
-        self.selectionChanged()
-        self.remRows()
-        self.showsg = True
-
-    def fillTable(self, files, appendtags = False):
-        """Fills the table with tags of the files specified in files.
-        Files can be either a path(i.e a string) to a folder or a list of files.
-
-        Nothing is returned since the results should be visible.
-
-        If appendtags is True implies that files should just be appended to the table.
-
-        If self.subFolders is True and files contains directory names
-        then the files from this directory is added too.
-
-        If self.subFolders is False and files is a list with just
-        one item which happens to be a directory, then nothing will
-        happen. Please convert it to a string first.
-        """
-
-        tag = audioinfo.Tag()
-        tags = []
-        self.dirname = None
-        try:
-            if (type(files) is str) or (type(files) is unicode):
-                if path.isdir(files):
-                    self.dirname = files
-                    files = [path.join(files, z) for z in os.listdir(files)]
-                else:
-                    files = [files]
-        except (IOError, OSError), detail:
-            sys.stderr.write("".join(["Couldn't read, ", files, ":" + detail.strerror]))
-
-        win = ProgressWin(self, len(files), 20)
-        win.show()
-
-        def recursedir(folder):
-            #Not sure (cause I just discovered it), but os.walk would be more complicated.
-            files = []
-            try:
-                for audio in os.listdir(folder):
-                    if path.isdir(audio):
-                        files.extend(recursedir(path.join(folder,audio)))
-                    else:
-                        files.append(path.join(folder,audio))
-            except (OSError, IOError):
-                "Don't want to stop on account of not having permission."
-            return files
-
-        if self.subFolders:
-            [files.extend(recursedir(folder)) for folder in files if os.path.isdir(folder)]
-
-        for audio in files:
-            if win.wasCanceled(): break
-            try:
-                tag = audioinfo.Tag(audio)
-                if tag:
-                    tags.append(tag)
-                    win.updateVal()
-            except UnicodeDecodeError:
-                sys.stderr.write("Couldn't open: " + audio + " (UnicodeDecodeError)")
-        if tags:
-            [self.showRow(z) for z in xrange(self.rowCount())] #The table gets all fucked up if any rows are hidden.
-        self.model().load(tags, append = appendtags)
-        win.setValue(len(files))
-        win.close()
-        #Select first item in the topleft corner
-        if not appendtags:
-            topLeft = self.model().index(0, 0)
-            selection = QItemSelection(topLeft, topLeft)
-            self.selectionModel().select(selection, QItemSelectionModel.Select)
-
-    def selectAll(self):
-        model = self.model()
-        topLeft = model.index(0, 0);
-        bottomRight = model.index(model.rowCount()-1, model.columnCount()-1)
-
-        selection = QItemSelection(topLeft, bottomRight);
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
-
-    def invertSelection(self):
-        model = self.model()
-        topLeft = model.index(0, 0);
-        bottomRight = model.index(model.rowCount()-1, model.columnCount()-1)
-
-        selection = QItemSelection(topLeft, bottomRight);
-        self.selectionModel().select(selection, QItemSelectionModel.Toggle)
-
-    def selectCurrentColumn(self):
-        if self.selectedIndexes():
-            col = self.selectedIndexes()[0].column()
-            model = self.model()
-            topLeft = model.index(0, col)
-            bottomRight = model.index(model.rowCount()-1, col)
-
-            selection = QItemSelection(topLeft, bottomRight);
-            self.selectionModel().select(selection, QItemSelectionModel.Select)
-
-    def reloadFiles(self):
-        if self.dirname is not None:
-            self.fillTable(self.dirname)
-        else:
-            self.fillTable([z[FILENAME] for z in self.model().taginfo])
-        self.modelShit()
+                groups[row] = [row]
+                lastrow = row
+            lastindex = row
+
+        for group in groups:
+            item = self.takeItem(group + len(groups[group]))
+            if yourlist:
+                temp = copy(yourlist[group + len(groups[group])])
+                for index in reversed(groups[group]):
+                    yourlist[index + 1] = copy(yourlist[index])
+                yourlist[group] = temp
+            self.insertItem(group, item)
+
+        [self.setItemSelected(self.item(row + 1), True) for row in rows]
+
+class PuddleThread(QThread):
+    """puddletag rudimentary thread.
+    pass a command to run in another thread. The result
+    is stored in retval."""
+    def __init__(self, command, parent = None):
+        QThread.__init__(self, parent)
+        self.command = command
+    def run(self):
+        self.retval = self.command()
+
+class ProgressWin(QProgressDialog):
+    def __init__(self, parent=None, maximum = 100, increment = 1):
+        QProgressDialog.__init__(self, "", "Cancel", 0, maximum, parent)
+        self.setModal(True)
+        self.setWindowTitle("Please Wait...")
+        self.increment = increment
+        self.nextinc = increment
+        self.numcalled = 0
+        self.setAutoClose(True)
+        self.setValue(0)
+
+    def updateVal(self, value = None):
+        if value:
+            self.setValue(self.value() + value)
+        QApplication.processEvents()
+
+class PuddleDock(QDockWidget):
+    """A normal QDockWidget that emits a 'visibilitychanged' signal
+    when...uhm...it changes visibility."""
+    def __init__(self, title = None, parent = None):
+        QDockWidget.__init__(self, title, parent)
+
+    def setVisible(self, visible):
+        self.emit(SIGNAL('visibilitychanged'), visible)
+        QDockWidget.setVisible(self, visible)
+
+class OKCancel(QHBoxLayout):
+    """Yes, I know about QDialogButtonBox, but I'm not using PyQt4.2 here."""
+    def __init__(self, parent = None):
+        QHBoxLayout.__init__(self, parent)
+
+        self.addStretch()
+
+        self.ok = QPushButton("&OK")
+        self.cancel = QPushButton("&Cancel")
+        self.ok.setDefault(True)
+
+        self.addWidget(self.ok)
+        self.addWidget(self.cancel)
+
+        self.connect(self.ok, SIGNAL("clicked()"), self.yes)
+        self.connect(self.cancel, SIGNAL("clicked()"), self.no)
+
+    def yes(self):
+        self.emit(SIGNAL("ok"))
+
+    def no(self):
+        self.emit(SIGNAL("cancel"))
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    listbox = ListBox()
+    listbox.addItems([u'%artist% - $num(%track%, 2) - %title%', u'%artist% - %title%', u'%artist% - %album%', u'%artist% - Track %track%', u'%artist% - %title%', u'%artist%'])
+    buttons = ListButtons()
+    listbox.connectToListButtons(buttons)
+    widget = QWidget()
+    hbox = QHBoxLayout()
+    hbox.addWidget(listbox)
+    hbox.addLayout(buttons)
+    widget.setLayout(hbox)
+    widget.show()
+    app.exec_()

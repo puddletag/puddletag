@@ -27,11 +27,69 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, audioinfo,os,findfunc, actiondlg, helperwin, pdb, puddlesettings, resource, ConfigParser
 from copy import copy, deepcopy
-from puddleobjects import ProgressWin, partial, safe_name, HeaderSetting, TableShit, unique, PuddleDock
+from puddleobjects import (ProgressWin, partial, safe_name, HeaderSetting,
+unique, PuddleDock, PuddleThread)
+from tagmodel import TagTable, itemgetter
+from helperwin import PicWidget
 (FILENAME, PATH, path) = (audioinfo.FILENAME, audioinfo.PATH, os.path)
 from optparse import OptionParser
+
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
+HIDEPROGRESS = 'HIDETHEPROGRESS!'
+
+def showwriteprogress(func):
+    """To be used as a decorator for fonction that need a progressbar.
+
+    Use *only* in MainWin objects. It'll probably fail otherwise.
+
+    func is the function you want wrapped. To work it must yield None when
+    the progressbar is to be updated. If an error occurs, yield a tuple to
+    be used in MainWin.writeError. Otherwise, if you want to show your
+    own error message, but just want to hide the progress window, yield
+    HIDEPROGRESS."""
+    def s(*args):
+        self = args[0]
+        win = ProgressWin(self, len(self.cenwid.table.selectedRows))
+
+        f = func(*args)
+        i = 0
+        showmessage = True
+        while True:
+            try:
+                i+=1
+                if win.wasCanceled():
+                    break
+                temp = f.next()
+                if i % 10 == 0:
+                    win.show()
+                    win.updateVal(i)
+                    i = 0
+                if temp == HIDEPROGRESS:
+                    win.show()
+                    win.hide()
+                    QApplication.processEvents()
+                elif temp is not None:
+                    if showmessage:
+                        #This has to be done, otherwise, if win isn't
+                        #visible it'll appear on top of the messagebox.
+                        #Thereby making the user go WTF?
+                        win.updateVal(i)
+                        win.show()
+                        win.hide()
+                        QApplication.processEvents()
+                        ret = self.writeError(*temp)
+                        if ret is False:
+                            break
+                        elif ret is True:
+                            showmessage = False
+            except StopIteration:
+                break
+        win.hide()
+        win.close()
+        self.setTag(True)
+        self.fillCombos()
+    return s
 
 class FrameCombo(QGroupBox):
     """A group box with combos that allow to edit
@@ -56,7 +114,10 @@ class FrameCombo(QGroupBox):
 
     def disableCombos(self):
         for z in self.combos:
-            self.combos[z].clear()
+            if z  == "__image":
+                self.combos[z].setImages(None)
+            else:
+                self.combos[z].clear()
             self.combos[z].setEnabled(False)
 
     def setCombos(self, tags, rows = None):
@@ -85,8 +146,15 @@ class FrameCombo(QGroupBox):
             for tag in [tags[z] for z in row]:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
-                self.combos[tagval] = QComboBox()
-                self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
+                if tagval == '__image':
+                    self.combos[tagval] = PicWidget()
+                    self.labels[tagval].hide()
+                    self.combos[tagval].next.setVisible(True)
+                    self.combos[tagval].prev.setVisible(True)
+                else:
+                    self.combos[tagval] = QComboBox()
+                    self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
+                self.labels[tagval].setBuddy(self.combos[tagval])
                 hbox[j].addWidget(self.labels[tagval])
                 hbox[j + 1].addWidget(self.combos[tagval])
             self.vbox.addLayout(hbox[j])
@@ -101,10 +169,15 @@ class FrameCombo(QGroupBox):
         If <keep> is selected and the tags in the combos are saved,
         then they remain unchanged. If <blank> is selected, then the tag is removed"""
         for combo in self.combos:
-            self.combos[combo].clear()
-            self.combos[combo].setEditable(True)
-            self.combos[combo].addItems(["<keep>", "<blank>"])
-            self.combos[combo].setEnabled(False)
+            if combo  == "__image":
+                self.combos[combo].setImages(None)
+                self.combos[combo].addBlanks(':/keep.png', ':/blank.png')
+                self.combos[combo].readonly = [0,1]
+            else:
+                self.combos[combo].clear()
+                self.combos[combo].setEditable(True)
+                self.combos[combo].addItems(["<keep>", "<blank>"])
+                self.combos[combo].setEnabled(False)
 
         if 'genre' in self.combos:
             from mutagen.id3 import TCON
@@ -112,14 +185,6 @@ class FrameCombo(QGroupBox):
 
     def reloadCombos(self, tags):
         self.setCombos(tags)
-
-class MyThread(QThread):
-    def __init__(self, command, parent = None):
-        QThread.__init__(self, parent)
-        self.command = command
-    def run(self):
-        self.retval = self.command()
-
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""
@@ -166,7 +231,9 @@ class DirView(QTreeView):
         QTreeView.expand(self, index)
 
     def setFileIndex(self, filename):
-        self.t = MyThread(lambda: self.model().index(filename))
+        """Use instead of setCurrentIndex for threaded index changing."""
+        self.blockSignals(True)
+        self.t = PuddleThread(lambda: self.model().index(filename))
         self.connect(self.t, SIGNAL('finished()'), self._setCurrentIndex)
         self.setEnabled(False)
         self.t.start()
@@ -175,6 +242,7 @@ class DirView(QTreeView):
         self.setCurrentIndex(self.t.retval)
         self.resizeColumnToContents(0)
         self.setEnabled(True)
+        self.blockSignals(False)
 
 class TableHeader(QHeaderView):
     """A headerview put here simply to enable the contextMenuEvent
@@ -234,7 +302,7 @@ class TableWindow(QSplitter):
         (like when the app starts and setting are being restored).
 
         Call it with headerdata(as usual) to set the titles."""
-        self.table = TableShit(headerdata, self)
+        self.table = TagTable(headerdata, self)
         self.headerdata = headerdata
         header = TableHeader(Qt.Horizontal, self.headerdata, self)
         header.setSortIndicatorShown(True)
@@ -291,12 +359,10 @@ class TableWindow(QSplitter):
     def sortTable(self,column):
         self.sortColumn = column
         self.table.sortByColumn(column)
-        #FIXME: Using setFocus because the table isn't updated like it should be.
-        #To see, load a folder, the load another folder with the same number of files.
         self.setFocus()
 
     def fillTable(self,folderpath, appendtags = False):
-        """See TableShit's fillTable method for more details."""
+        """See TagTable's fillTable method for more details."""
         self.table.fillTable(folderpath, appendtags)
         self.sortTable(self.sortColumn)
 
@@ -388,10 +454,10 @@ class MainWin(QMainWindow):
         connect(self.preferences, self.openPrefs)
 
         self.actionvalue = partial(self.openActions, True)
-        self.quickactions = QAction(QIcon(":/cap.png"), "&Quick Actions...", self)
+        self.quickactions = QAction(QIcon(":/quickactions.png"), "&Quick Actions...", self)
         connect(self.quickactions, self.actionvalue)
 
-        self.reloaddir = QAction("Reload", self)
+        self.reloaddir = QAction(QIcon(':/reload.png'), "Reload", self)
 
         self.renamedir = QAction(QIcon(":/rename.png"), "&Rename Dir...",self)
         connect(self.renamedir, self.renameFolder)
@@ -427,8 +493,17 @@ class MainWin(QMainWindow):
         connect(self.tagtofile, self.saveTagToFile)
         self.tagtofile.setShortcut('Ctrl+T')
 
-        self.undo = QAction("&Undo", self)
+        self.undo = QAction(QIcon(':/undo.png'), "&Undo", self)
         self.undo.setShortcut("Ctrl+Z")
+        self.undo.setEnabled(False)
+
+        self.duplicates = QAction('Show dupes', self)
+        self.duplicates.setCheckable(True)
+        self.connect(self.duplicates, SIGNAL('toggled(bool)'), self.inLib)
+
+        self.fileinlib = QAction('In library?', self)
+        self.fileinlib.setCheckable(True)
+        self.connect(self.fileinlib, SIGNAL('toggled(bool)'), self.inLib)
 
         self.patterncombo = QComboBox()
         self.patterncombo.setEditable(True)
@@ -436,9 +511,6 @@ class MainWin(QMainWindow):
         self.patterncombo.setStatusTip(self.patterncombo.toolTip())
         self.patterncombo.setMinimumWidth(500)
         self.patterncombo.setDuplicatesEnabled(False)
-
-        self.toolbar = self.addToolBar("My Toolbar")
-        self.toolbar.setObjectName("Toolbar")
 
         self.statusbar = self.statusBar()
         statuslabel = QLabel()
@@ -453,9 +525,9 @@ class MainWin(QMainWindow):
         self.combodock.layout().setAlignment(Qt.AlignTop)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(QLabel("Filter"))
+        hbox.addWidget(QLabel("Tag"))
         self.filtertable = QComboBox()
-        self.filtertable.addItems(["None"] + audioinfo.INFOTAGS + sorted([z for z in audioinfo.REVTAGS]))
+        self.filtertable.addItems(["None", '__all'] + audioinfo.INFOTAGS + sorted([z for z in audioinfo.REVTAGS]))
         self.filtertable.setEditable(True)
         self.filtertext = QLineEdit()
         hbox.addWidget(self.filtertable,0)
@@ -477,12 +549,16 @@ class MainWin(QMainWindow):
         self.connect(self.filtertable, SIGNAL("editTextChanged(QString)"), self.filterTable)
         self.connect(self.statusbar,SIGNAL("messageChanged (const QString&)"), statuslabel.setText)
 
+        self.toolbar = self.addToolBar("My Toolbar")
+        self.toolbar.setIconSize(QSize(16,16))
+        self.toolbar.setObjectName("Toolbar")
+
         self.loadInfo()
 
         menubar = self.menuBar()
         filemenu = menubar.addMenu('&File')
         [filemenu.addAction(z) for z in [self.opendir, self.addfolder,
-        self.cenwid.table.play, self.savecombotags, self.cleartable, self.reloaddir]]
+        self.cenwid.table.play, self.savecombotags, self.reloaddir, self.cleartable]]
         filemenu.insertSeparator(self.savecombotags)
 
         edit = menubar.addMenu("&Edit")
@@ -502,16 +578,24 @@ class MainWin(QMainWindow):
         [toolmenu.addAction(z) for z in [self.autotagging, self.cenwid.table.exttags, self.changetracks, self.importlib]]
 
         self.actions = [self.cenwid.table.delete, self.cenwid.table.play, self.cenwid.table.exttags,
-                        self.tagfromfile, self.tagtofile, self.openactions, self.changetracks,
-                        self.addfolder, self.renamedir, self.importfile,
-                        self.quickactions, self.formattag, self.reloaddir, self.autotagging]
+                       self.addfolder, self.savecombotags, self.reloaddir, self.tagfromfile,
+                       self.tagtofile, self.openactions, self.quickactions, self.formattag,
+                       self.changetracks, self.importfile, self.renamedir, self.autotagging,
+                       self.duplicates, self.fileinlib]
 
-        self.supportactions = [self.undo, self.selectall, self.invertselection]
+        self.supportactions = [self.selectall, self.invertselection]
 
         self.toolbar.addAction(self.opendir)
+        self.toolbar.addAction(self.addfolder)
+        self.toolbar.addAction(self.reloaddir)
+        self.toolbar.addSeparator()
         self.toolbar.addAction(self.savecombotags)
+        self.toolbar.addAction(self.undo)
+        self.toolbar.addSeparator()
         self.toolbar.addWidget(self.patterncombo)
-        [self.toolbar.addAction(action) for action in self.actions[3:]]
+        [self.toolbar.addAction(action) for action in self.actions[6:]]
+        self.toolbar.insertSeparator(self.changetracks)
+        self.toolbar.addAction(self.duplicates)
 
         connect(self.undo, self.cenwid.table.model().undo)
         connect(self.selectall, self.cenwid.table.selectAll)
@@ -534,10 +618,70 @@ class MainWin(QMainWindow):
         self.connect(self.combodock, SIGNAL('visibilitychanged'), self.showcombodock.setChecked)
         self.connect(self.filterframe, SIGNAL('visibilitychanged'), self.showfilter.setChecked)
 
+    def inLib(self, visible):
+        try:
+            libclass = self.librarywin.tree.library
+        except AttributeError:
+            self.warningMessage("Dude, you don't have a music library loaded")
+            self.fileinlib.blockSignals(True)
+            self.fileinlib.setChecked(False)
+            self.fileinlib.blockSignals(False)
+            return
+        table = self.cenwid.table
+        if visible:
+            rowTags = table.rowTags
+            rowtracks = sorted([rowTags(row) for row in xrange(table.rowCount())], key = itemgetter('artist'))
+            libartists = libclass.getArtists()
+            oldartist = ""
+            for track in rowtracks:
+                artist = track['artist'][0]
+                if artist in libartists and artist != oldartist:
+                    tracks = libclass.getTracks(artist)
+                    titles = [z['title'] for z in tracks]
+                    oldartist = artist
+                if artist in libartists and artist == oldartist:
+                    if track['title'] in titles:
+                        table.showRow(row)
+                else:
+                    row = table.model().taginfo.index(track)
+                    table.hideRow(row)
+        else:
+            for row in xrange(table.rowCount()):
+                table.showRow(row)
+
+    def showDupes(self, visible):
+        from functions import finddups
+        table = self.cenwid.table
+        if visible:
+            key, val = QInputDialog.getText(self, 'puddletag',
+                        "Enter name of tag to check for duplicates.",
+                        QLineEdit.Normal, 'title')
+            if not val:
+                return
+            key = unicode(key)
+            rowTags = table.rowTags
+            tofind = [rowTags(row).stringtags() for row in xrange(table.rowCount())]
+            [table.hideRow(row) for row in xrange(table.rowCount())]
+            rows = finddups(tofind, key)
+            for row, dupes in rows.items():
+                [table.showRow(z) for z in [row] + dupes]
+        else:
+            for row in xrange(table.rowCount()):
+                table.showRow(row)
+
+
     def warningMessage(self, msg):
+        """Like the name implies, shows a warning messagebox with message msg."""
         QMessageBox.warning(self, 'Error', msg, QMessageBox.Ok, QMessageBox.NoButton)
 
     def writeError(self, filename, error, single):
+        """Shows a messagebox containing an error message indicating that
+        writing to filename has failed and asks the user to continue, stop,
+        or continue without interruption.
+
+        error is the error that caused the disruption.
+        single is the number of files that are being written. If it is 1, then
+        just a warningMessage is shown."""
         if single > 1:
             errormsg = u"I couldn't write to: <b>%s</b> (%s)<br /> Do you want to continue?" % \
                         (filename, error)
@@ -560,9 +704,13 @@ class MainWin(QMainWindow):
 
     def autoTagging(self):
         """Opens Musicbrainz window"""
-        from webdb import MainWin
-        win = MainWin(self.cenwid.table, self)
-        win.show()
+        try:
+            from webdb import MainWin
+            win = MainWin(self.cenwid.table, self)
+            win.show()
+        except ImportError:
+            self.warningMessage("There was an error loading the musicbrainz library.<br />" +
+                                "Do you have the <a href='http://musicbrainz2.org/doc/PythonMusicBrainz2'>python musicbrainz</a> bindings installed?")
 
     def changefocus(self):
         """Switches between different controls in puddletag, after user presses shortcut key."""
@@ -590,21 +738,8 @@ class MainWin(QMainWindow):
     def closeEvent(self, event):
         """Save settings and close."""
         settings = QSettings()
-        cparser = puddlesettings.PuddleConfig(unicode(settings.fileName()))
-        table = self.cenwid.table
-        columnwidths = [unicode(table.columnWidth(z)) for z in range(table.model().columnCount())]
-        cparser.setSection('editor', 'column', columnwidths)
-
-        titles = [z[0] for z in self.cenwid.headerdata]
-        tags = [z[1] for z in self.cenwid.headerdata]
-
-        cparser.setSection('editor', 'titles', titles)
-        cparser.setSection('editor', 'tags', tags)
-        patterns = [unicode(self.patterncombo.itemText(z)) for z in xrange(self.patterncombo.count())]
-        cparser.setSection('editor', 'patterns', patterns)
-
         settings.setValue("table/sortcolumn", QVariant(self.cenwid.sortColumn))
-        settings.setValue("main/lastfolder", QVariant(self.lastFolder))
+        settings.setValue("main/lastfolder", QVariant(self.lastfolder))
         settings.setValue("main/maximized", QVariant(self.isMaximized()))
         settings.setValue('main/state', QVariant(self.saveState()))
 
@@ -615,14 +750,27 @@ class MainWin(QMainWindow):
         settings.setValue("editor/showcombo",QVariant(self.combodock.isVisible()))
         settings.setValue("editor/showtree",QVariant(self.treedock.isVisible()))
 
+        cparser = puddlesettings.PuddleConfig()
+        table = self.cenwid.table
+        columnwidths = [unicode(table.columnWidth(z)) for z in range(table.model().columnCount())]
+        cparser.setSection('columnwidths', 'column', columnwidths)
+
+        titles = [z[0] for z in self.cenwid.headerdata]
+        tags = [z[1] for z in self.cenwid.headerdata]
+
+        cparser.setSection('tableheader', 'titles', titles)
+        cparser.setSection('tableheader', 'tags', tags)
+        patterns = [unicode(self.patterncombo.itemText(z)) for z in xrange(self.patterncombo.count())]
+        cparser.setSection('editor', 'patterns', patterns)
+
     def loadInfo(self):
         """Loads the settings from puddletags settings and sets it."""
         settings = QSettings()
 
-        cparser = puddlesettings.PuddleConfig(unicode(QSettings().fileName()))
+        cparser = puddlesettings.PuddleConfig()
         puddlesettings.cparser = cparser
 
-        self.lastFolder = cparser.load("main","lastfolder", unicode(QDir.homePath()))
+        self.lastfolder = cparser.load("main","lastfolder", unicode(QDir.homePath()))
         maximise = bool(cparser.load('main','maximized', True))
 
         self.setWindowState(Qt.WindowMaximized)
@@ -632,10 +780,10 @@ class MainWin(QMainWindow):
         if maximise:
             self.setWindowState(Qt.WindowNoState)
 
-        titles = cparser.load('editor', 'titles',
+        titles = cparser.load('tableheader', 'titles',
         ['Path', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 'Bitrate', 'Genre', 'Comment', 'Filename'])
 
-        tags = cparser.load('editor', 'tags',
+        tags = cparser.load('tableheader', 'tags',
         ['__path', 'artist', 'title', 'album', 'track', '__length', 'date', '__bitrate', 'genre', 'comment', '__filename'])
 
         headerdata = []
@@ -647,11 +795,14 @@ class MainWin(QMainWindow):
         self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
         self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
 
-        columnwidths = [int(z) for z in cparser.load("editor","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191])]
+        #pdb.set_trace()
+        columnwidths = [z for z in cparser.load("columnwidths","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191], True)]
         [self.cenwid.table.setColumnWidth(i, z) for i,z in enumerate(columnwidths)]
 
-        sortColumn = cparser.load("Table","sortcolumn",1, True)
+        sortColumn = cparser.load("table","sortcolumn",1, True)
         self.cenwid.sortTable(int(sortColumn))
+        header = self.cenwid.table.horizontalHeader()
+        header.setSortIndicator (sortColumn, Qt.AscendingOrder)
 
         #self.splitter.restoreState(settings.value("splittersize").toByteArray())
         puddlesettings.MainWin(self, readvalues = True)
@@ -668,7 +819,7 @@ class MainWin(QMainWindow):
 
 
     def displayTag(self, tag):
-        """Used to display tags in the status bar with bolded tags."""
+        """Used to display tags in the status bar in a human parseable format."""
         if not tag:
             return "<b>Error in pattern</b>"
         s = "%s: <b>%s</b>, "
@@ -679,31 +830,54 @@ class MainWin(QMainWindow):
         the tags selected from self.table.
 
         It's **args, because many methods connect to fillCombos
-        which pass arguments. None are needed."""
+        which pass arguments. None are needed(or used)."""
 
         table = self.cenwid.table
         combos = self.combogroup.combos
 
+        self.rowEmpty()
         if not hasattr(table, "selectedRows") or (table.rowCount() == 0) or not table.selectedRows:
             self.combogroup.disableCombos()
             return
         self.combogroup.initCombos()
 
-        tags = dict([(tag,[]) for tag in combos])
+        tags = dict([(tag,[]) for tag in combos if tag != '__image'])
+        images = []
         for row in table.selectedRows:
             audio = table.rowTags(row)
+            if ('__image' in combos):
+                if audio.images:
+                    images.extend(audio.images)
+                else:
+                    images.append(None)
             for tag in tags:
                 try:
                     if isinstance(audio[tag],(unicode, str)):
                         tags[tag].append(audio[tag])
                     else:
-                        tags[tag].append("\\\\".join(audio[tag]))
+                            tags[tag].append("\\\\".join(audio[tag]))
                 except KeyError:
                     tags[tag].append("")
 
+        if '__image' in combos:
+            images = unique(images)
+            if None in images:
+                while None in images:
+                    images.remove(None)
+                i = 1
+            else:
+                i = -1
+            if images:
+                combos['__image'].images.extend(images)
+                if (len(images) == 1 or len(table.selectedRows) == 1) and i == -1:
+                    combos['__image'].currentImage = 2
+                else:
+                    combos['__image'].currentImage = 0
+            else:
+                combos['__image'].currentImage = 1
+
         for z in tags:
             tags[z] = list(set(tags[z]))
-
         #Add values to combos
         for tagset in tags:
             [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
@@ -714,10 +888,13 @@ class MainWin(QMainWindow):
             combo.setEnabled(True)
             #If a combo has more than 3 items it's not more than one artist, so we
             #set it to the defaultvalue.
-            if (combo.count() > 3) or (combo.count() < 2):
-                combo.setCurrentIndex(0)
-            else:
-                combo.setCurrentIndex(2)
+            try:
+                if (combo.count() > 3) or (combo.count() < 2):
+                    combo.setCurrentIndex(0)
+                else:
+                    combo.setCurrentIndex(2)
+            except AttributeError:
+                pass
 
         #There are already prefefined genres so I have to check
         #the selected file's one is there.
@@ -732,6 +909,7 @@ class MainWin(QMainWindow):
             combos['genre'].setCurrentIndex(0)
 
         self.patternChanged()
+
 
     def filterTable(self, *args):
         """Filter the table. args are ignored,
@@ -768,18 +946,16 @@ class MainWin(QMainWindow):
         f.show()
         self.connect(f, SIGNAL("valschanged"), self.formatValueBuddy)
 
+    @showwriteprogress
     def formatValueBuddy(self, func):
         self.prevfunc = func
         table = self.cenwid.table
-        win = ProgressWin(self, len(table.selectedRows), 10)
         headerdata = self.cenwid.headerdata
-        showmessage = True
 
         for row in table.selectedRows:
-            if win.wasCanceled(): break
             tags = {}
             rowtags = table.rowTags(row).stringtags()
-            for column in table.selectedTags()[row]:
+            for column in table.currentSelection()[row]:
                 try:
                     tags[headerdata[column][1]] = deepcopy(rowtags[headerdata[column][1]])
                 except KeyError: #The key doesn't consist of any text
@@ -795,65 +971,33 @@ class MainWin(QMainWindow):
                         tags[tag] = val
                 except KeyError:
                     pass
-            win.updateVal()
             try:
                 self.setTag(row,tags)
+                yield None
             except (IOError, OSError), detail:
-                if showmessage:
-                    win.hide()
-                    ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
-                    if ret is False:
-                        break
-                    elif ret is True:
-                        showmessage = False
+                yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        win.hide()
-        win.close()
-        self.fillCombos()
-
-    def getTagFromFile(self, tag = None):
+    @showwriteprogress
+    def getTagFromFile(self):
         """Get tags from the selected files using the pattern in
-        self.pattercombo.
-        If test = False then the tags are written.
-        Otherwise the new tag of the first selected files is returned."""
+        self.patterncombo."""
         table = self.cenwid.table
         pattern = unicode(self.patterncombo.currentText())
-        showmessage = True
-
-        if not tag:
-            win = ProgressWin(self, len(table.selectedRows), 10)
-        else:
-            return findfunc.filenametotag(pattern, path.basename(tag["__filename"]), True)
 
         for row in table.selectedRows:
-            if win.wasCanceled(): break
             filename = table.rowTags(row)["__filename"]
             newtag = findfunc.filenametotag(pattern, path.basename(filename), True)
             try:
                 if newtag is not None:
                     self.setTag(row, newtag)
-                    win.updateVal()
+                yield None
             except (IOError, OSError), detail:
-                if showmessage:
-                    win.hide()
-                    ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
-                    if ret is False:
-                        break
-                    elif ret is True:
-                        showmessage = False
-
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        win.hide()
-        win.close()
-        self.fillCombos()
+                yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
 
     def importFile(self):
-        """Opens a text file so that tags can be
-        read from it."""
+        """Shows a window that allows the user to import a text file to extract
+        tags from."""
         filedlg = QFileDialog()
         foldername = self.cenwid.table.rowTags(self.cenwid.table.selectedRows[0])["__folder"]
         filename = unicode(filedlg.getOpenFileName(self,
@@ -865,35 +1009,22 @@ class MainWin(QMainWindow):
             patternitems = [self.patterncombo.itemText(z) for z in range(self.patterncombo.count())]
             win.patterncombo.addItems(patternitems)
             self.connect(win,SIGNAL("Newtags"), self.importFileBuddy)
-            self.fillCombos()
 
+    @showwriteprogress
     def importFileBuddy(self, taglist):
         table = self.cenwid.table
-        win = ProgressWin(self, len(table.selectedRows))
-        showmessage = True
         for i, row in enumerate(table.selectedRows):
             if win.wasCanceled(): break
             try:
                 self.setTag(row, taglist[i])
+                yield None
             except IndexError:
                 break
             except (IOError, OSError), detail:
-                if showmessage:
-                    win.hide()
-                    QApplication.processEvents()
-                    ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(taglist))
-                    if ret is False:
-                        break
-                    elif ret is True:
-                        showmessage = False
-            win.updateVal()
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        #win.hide()
-        win.close()
+                yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(taglist))
 
     def importLib(self):
-        """Shows window to import library."""
+        """Shows window to import music library."""
         from musiclib import MainWin
         win = MainWin(self)
         win.setModal(True)
@@ -912,7 +1043,7 @@ class MainWin(QMainWindow):
                 self.showlibrarywin.setEnabled(True)
                 self.addDockWidget(Qt.RightDockWidgetArea, self.librarywin)
                 self.connect(self.cenwid.table.model(),
-                            SIGNAL('libraryFile'), self.librarywin.tree.filesEdited)
+                            SIGNAL('libFileChanged'), self.librarywin.tree.filesEdited)
                 self.connect(self.cenwid.table.model(),
                             SIGNAL('delLibFile'), self.librarywin.tree.delTracks)
             else:
@@ -945,8 +1076,8 @@ class MainWin(QMainWindow):
 
 
     def openActions(self, quickaction = False):
-        """Shows the action window and calls the corresponding
-        method depending on the value of quickaction."""
+        """Shows the action window and calls either RunAction or RunQuickaction
+        depending on the value of quickaction."""
         self.qb = actiondlg.ActionWindow(self.cenwid.headerdata, self)
         self.qb.setModal(True)
         self.qb.show()
@@ -955,6 +1086,7 @@ class MainWin(QMainWindow):
         else:
             self.connect(self.qb, SIGNAL("donewithmyshit"), self.runAction)
 
+    @showwriteprogress
     def runAction(self, funcs):
         """Runs the action selected in openActions.
 
@@ -964,56 +1096,18 @@ class MainWin(QMainWindow):
 
         See the actiondlg module for more details on funcs."""
         table = self.cenwid.table
-        win = ProgressWin(self, len(table.selectedRows), 10)
-        showmessage = True
-        for row in table.selectedRows:
-            if win.wasCanceled(): break
-            tags = table.rowTags(row).stringtags()
-            edited = []
-            for func in funcs:
-                for infunc in func:
-                    tag = infunc.tag
-                    val = {}
-                    if tag == ["__all"]:
-                        tag = tags.keys()
-                    if infunc.function.func_code.co_varnames[0] == 'tags':
-                        for z in tag:
-                            try:
-                                val[z] = infunc.runFunction(tags)
-                            except KeyError:
-                                """The tag doesn't exist or is empty.
-                                In either case we do nothing"""
-                    else:
-                        for z in tag:
-                            try:
-                                val[z] = infunc.runFunction(tags[z])
-                            except KeyError:
-                                """The tag doesn't exist or is empty.
-                                In either case we do nothing"""
-
-                    val = dict([z for z in val.items() if z[1]])
-                    if val:
-                        tags.update(val)
-                        edited.extend(val)
-            win.updateVal()
-            mydict = dict([(z,tags[z]) for z in set(edited)])
+        for audio, row in zip(table.selectedTags, table.selectedRows):
             try:
-                self.setTag(row, mydict)
+                tags = findfunc.runAction(funcs, audio)
+            except:
+                pdb.set_trace()
+                tags = findfunc.runAction(funcs, audio)
+            try:
+                self.setTag(row, tags)
             except (IOError, OSError), detail:
-                if showmessage:
-                    win.hide()
-                    ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
-                    if ret is False:
-                        break
-                    elif ret is True:
-                        showmessage = False
-        self.setTag(True)
-        win.setValue(len(table.selectedRows)) #win doesn't close if it isn't
-        #updated. Select five files or so and run this method without this line.
-        win.hide()
-        win.close()
-        self.fillCombos()
+                yield (audio[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
+    @showwriteprogress
     def runQuickAction(self, funcs):
         """Basically the same as runAction, except that
         all the functions in funcs are executed on the curently selected cells.
@@ -1028,44 +1122,17 @@ class MainWin(QMainWindow):
         No error checking is done, so don't pass shitty values."""
 
         table = self.cenwid.table
-        win = ProgressWin(self, len(table.selectedRows), 10)
         headerdata = self.cenwid.headerdata
-        showmessage = True
 
-        for row in table.selectedRows:
-            if win.wasCanceled(): break
+        for row, audio in zip(table.selectedRows, table.selectedTags):
+            #looks complicated, but it's just the selected tags.
+            selectedtags = [headerdata[column][1]
+                    for column in table.currentSelection()[row]]
+            tags = findfunc.runQuickAction(funcs, audio, selectedtags)
             try:
-                #looks complicated, but it's just the selected tags.
-                selectedtags = table.rowTags(row).stringtags()
-                tags = dict([(headerdata[column][1], selectedtags[headerdata[column][1]]) for column in table.selectedTags()[row]])
-                for func in funcs:
-                    for infunc in func:
-                        for tag in tags:
-                                if infunc.function.func_code.co_varnames[0] == 'tags':
-                                    val = infunc.runFunction(selectedtags)
-                                else:
-                                    val = infunc.runFunction(tags[tag])
-                                if val is not None:
-                                    tags[tag] = val
-                try:
-                    self.setTag(row, tags)
-                except (IOError, OSError), detail:
-                    if showmessage:
-                        win.hide()
-                        ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
-                        if ret is False:
-                            break
-                        elif ret is True:
-                            showmessage = False
-
-            except KeyError: #A tag doesn't exist, but needs to be read.
-                pass
-            win.updateVal()
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        win.hide()
-        win.close()
-        self.fillCombos()
+                self.setTag(row, tags)
+            except (IOError, OSError), detail:
+                yield (audio[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
     def openFolder(self, filename = None, appenddir = False):
         """Opens a folder. If filename != None, then
@@ -1085,28 +1152,33 @@ class MainWin(QMainWindow):
             filedlg = QFileDialog()
             filedlg.setFileMode(filedlg.DirectoryOnly)
             filename = unicode(filedlg.getExistingDirectory(self,
-                'OpenFolder', self.lastFolder ,QFileDialog.ShowDirsOnly))
+                'OpenFolder', self.lastfolder ,QFileDialog.ShowDirsOnly))
 
-        if len(filename) == 1:
-            filename = filename[0]
-        if type(filename) is unicode or type(filename) is str:
+        if not isinstance(filename, basestring):
+            filename = unicode(filename[0], 'utf8')
+        if not filename:
+            return
+        if isinstance(filename, basestring):
             if path.isdir(filename):
                 #I'm doing this just to be safe.
-                filename = path.realpath(filename)
-                self.lastFolder = filename
+                try:
+                    filename = path.realpath(filename)
+                except UnicodeDecodeError:
+                    filename = path.realpath(filename.encode('utf8')).decode('utf8')
+                self.lastfolder = filename
                 if not appenddir:
                     self.tree.setFileIndex(filename)
                     self.tree.resizeColumnToContents(0)
-                if not self.isVisible():
-                    #If puddletag is started via the command line with a
-                    #large folder then the progress window is shown by itself without this window.
-                    self.show()
-                QApplication.processEvents()
-                self.cenwid.fillTable(filename, appenddir)
                 if self.pathinbar:
                     self.setWindowTitle("puddletag " + filename)
                 else:
                     self.setWindowTitle("puddletag")
+            if not self.isVisible():
+                #If puddletag is started via the command line with a
+                #large folder then the progress window is shown by itself without this window.
+                self.show()
+            QApplication.processEvents()
+            self.cenwid.fillTable(filename, appenddir)
         else:
             self.cenwid.fillTable(filename, appenddir)
             self.setWindowTitle("Puddletag")
@@ -1119,6 +1191,7 @@ class MainWin(QMainWindow):
 
     def openPrefs(self):
         """Nothing much. Just opens a preferences window and shows it.
+
         The preferences windows does everything like setting of values, updating
         and so forth."""
         win = puddlesettings.MainWin(self, self)
@@ -1148,13 +1221,25 @@ class MainWin(QMainWindow):
         #There's an error everytime an item is deleted, we account for that
         try:
             if hasattr(self.cenwid.table,'selectedRows'):
+                pattern = unicode(self.patterncombo.currentText())
                 tag = self.cenwid.table.rowTags(self.cenwid.table.selectedRows[0], True)
-                self.tagfromfile.setStatusTip(self.displayTag(self.getTagFromFile(tag)))
-                self.tagtofile.setStatusTip(unicode("New Filename: <b>") + self.saveTagToFile(tag) + '</b>')
-                self.renamedir.setStatusTip(self.renameFolder(tag))
+
+                tip = self.displayTag(findfunc.filenametotag(pattern, path.basename(tag["__filename"]), True))
+                self.tagfromfile.setStatusTip(tip)
+
+                newfilename = (findfunc.tagtofilename(pattern, tag, True,
+                                                        tag["__ext"] ))
+                newfilename = path.join(path.dirname(tag["__filename"]), safe_name(newfilename))
+                self.tagtofile.setStatusTip(u"New Filename: <b>%s</b>" % newfilename)
+
+                oldir = path.dirname(tag['__folder'])
+                newfolder = path.join(oldir, path.basename(findfunc.tagtofilename(pattern, tag)))
+                dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (tag["__folder"], newfolder)
+                self.renamedir.setStatusTip(dirstatus)
         except IndexError: pass
 
     def reloadFiles(self):
+        """Guess..."""
         selectionChanged = SIGNAL("itemSelectionChanged()")
         self.disconnect(self.tree, selectionChanged, self.openTree)
         self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
@@ -1162,22 +1247,14 @@ class MainWin(QMainWindow):
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.connect(self.tree, selectionChanged, self.openTree)
 
-    def renameFolder(self, tag = None):
+    def renameFolder(self):
         """Changes the directory of the currently selected files, to
-        one as per the pattern in self.patterncombo.
-
-        If a tag is passed, then nothing is done, but the new directory
-        name using that tag is returned."""
+        one as per the pattern in self.patterncombo."""
 
         tagtofilename = findfunc.tagtofilename
         selectionChanged = SIGNAL('itemSelectionChanged()')
         table = self.cenwid.table
         showmessage = True
-
-        if tag:
-            oldir = os.path.dirname(tag['__folder'])
-            newfolder = os.path.join(oldir, os.path.basename(tagtofilename(unicode(self.patterncombo.currentText()), tag)))
-            return unicode("Rename: <b>") + tag["__folder"] + unicode("</b> to: <b>") + newfolder + u'</b>'
 
         dirname = os.path.dirname
         basename = os.path.basename
@@ -1200,21 +1277,15 @@ class MainWin(QMainWindow):
         for z in newdirs:
             currentdir = z[1]
             newfolder = path.join(dirname(z[1]), (basename(tagtofilename(unicode(self.patterncombo.currentText()), table.rowTags(z[0])))))
-            msg += u'<b>%s</b> to <i>%s</i><br /><br />' % (currentdir, newfolder)
+            msg += u'<i>%s</i> to <b>%s</b><br /><br />' % (currentdir, newfolder)
             dirs.append([z[1], newfolder])
 
         msg = msg[:-len('<br /><br />')]
 
-        #msgbox = QMessageBox("Rename dirs?", msg, QMessageBox.Question,
-                            #QMessageBox.Yes or QMessageBox.Default,
-                            #QMessageBox.No or QMessageBox.Escape, QMessageBox.NoButton, self)
-        #msgbox.setTextFormat(Qt.RichText)
-        #result = msgbox.exec_()
-
         result = QMessageBox.question(self, 'Rename dirs?', msg, "Yes","No", "" ,1, 1)
 
         #Compare function to sort directories via parent.
-        #So that the parent is renamed before the child (Giving permission denied errors)
+        #So that the child is renamed before parent, thereby not giving Permission Denied errors.
         def comp(a, b):
             if a == b:
                 return 0
@@ -1229,8 +1300,8 @@ class MainWin(QMainWindow):
             elif len(b) == len(a):
                 return 0
 
-        from operator import itemgetter
         dirs = sorted(dirs, comp, itemgetter(0))
+
 
         #Finally, renaming
         if result == 0:
@@ -1241,8 +1312,12 @@ class MainWin(QMainWindow):
                     self.cenwid.table.model().changeFolder(olddir, newdir)
                     self.dirmodel.refresh(self.dirmodel.parent(idx))
                     self.tree.setCurrentIndex(self.dirmodel.index(newdir))
+                    if hasattr(self, "lastfolder"):
+                        if olddir == self.lastfolder:
+                            self.lastfolder = newdir
+                            self.setWindowTitle(u'puddletag: ' + self.lastfolder)
                 except (IOError, OSError), detail:
-                    errormsg = u"I couldn't rename: <b>%s</b> to <i>%s</i> (%s)" % (olddir, newdir, unicode(detail.strerror))
+                    errormsg = u"I couldn't rename: <i>%s</i> to <b>%s</b> (%s)" % (olddir, newdir, unicode(detail.strerror))
                     if len(dirs) > 1:
                         if showmessage:
                             mb = QMessageBox('Error during rename', errormsg + u"<br />Do you want me to continue?", *(MSGARGS[:-1] + (QMessageBox.NoButton, self)))
@@ -1282,66 +1357,52 @@ class MainWin(QMainWindow):
         [action.setEnabled(False) for action in self.actions]
         self.patterncombo.setEnabled(False)
 
+    @showwriteprogress
     def saveCombos(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
         combos = self.combogroup.combos
         table = self.cenwid.table
-        if (not hasattr(table,'selectedRows')) or (not table.selectedRows):
-            return
-        win = ProgressWin(self, len(table.selectedRows), 10)
-        showmessage = True
-
-        self.disconnect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
-        for row in table.selectedRows:
-            if win.wasCanceled(): break
-            tags = {}
-            for tag in combos:
+        if hasattr(table,'selectedRows') or table.selectedRows:
+            self.disconnect(self.cenwid.table.model(),
+                        SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'),
+                                 self.fillCombos)
+            for row in table.selectedRows:
+                tags = {}
+                for tag in combos:
+                    try:
+                        if tag == '__image':
+                            combo = combos[tag]
+                            if combo.currentImage == 1: #<blank>
+                                tags[tag] = []
+                            elif combo.currentImage > 1:
+                                if len(self.selectedRows) == 1:
+                                    tags[tag] = combo.images
+                                else:
+                                    tags[tag] = [combo.images[combo.currentImage]]
+                        else:
+                            curtext = unicode(combos[tag].currentText())
+                            if curtext == "<blank>": tags[tag] = ""
+                            elif curtext == "<keep>": pass
+                            else:
+                                tags[tag] = unicode(combos[tag].currentText()).split("\\\\")
+                    except KeyError:
+                        pass
                 try:
-                    curtext = unicode(combos[tag].currentText())
-                    if curtext == "<blank>": tags[tag] = ""
-                    elif curtext == "<keep>": pass
-                    else:
-                        tags[tag] = unicode(combos[tag].currentText()).split("\\\\")
-                except KeyError:
-                    pass
-            win.updateVal()
-            try:
-                self.setTag(row, tags)
-            except (IOError, OSError), detail:
-                if showmessage:
-                    win.hide()
-                    ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
-                    if ret is False:
-                        break
-                    elif ret is True:
-                        showmessage = False
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
-        win.hide()
-        win.close()
+                    self.setTag(row, tags)
+                    yield None
+                except (IOError, OSError), detail:
+                    yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
-    def saveTagToFile(self, tag = None):
+    @showwriteprogress
+    def saveTagToFile(self):
         """Renames the selected files using the pattern
-        in self.patterncombo.
-
-        If tag is True then the files are not renamed and
-        a new filename with using that tag is returned."""
+        in self.patterncombo."""
 
         pattern = unicode(self.patterncombo.currentText())
         table = self.cenwid.table
-
-        if not tag:
-            win = ProgressWin(self, len(table.selectedRows), 10)
-        else:
-            #Just return an example value.
-            newfilename = (findfunc.tagtofilename(pattern, tag, True,
-                                                        tag["__ext"] ))
-            return path.join(path.dirname(tag["__filename"]), safe_name(newfilename))
-
-        taginfo = self.cenwid.tablemodel.taginfo
-        pattern = unicode(self.patterncombo.currentText())
         showmessage = True
+        taginfo = self.cenwid.tablemodel.taginfo
+
         showoverwrite = True
         for row in table.selectedRows:
             filename = taginfo[row][FILENAME]
@@ -1350,25 +1411,26 @@ class MainWin(QMainWindow):
             newfilename = path.join(path.dirname(filename), safe_name(newfilename))
 
             if path.exists(newfilename) and (newfilename != filename):
-                win.show()
                 if showoverwrite:
+                    yield HIDEPROGRESS
                     mb = QMessageBox('Ovewrite existing file?', "The file: " + newfilename + " exists. Should I overwrite it?",
                                     QMessageBox.Question, QMessageBox.Yes,
                                     QMessageBox.No or QMessageBox.Escape or QMessageBox.Default, QMessageBox.NoAll, self)
                     ret = mb.exec_()
                     if ret == QMessageBox.No:
                         continue
-                    if ret == QMessageBox.NoAll:
+                    elif ret == QMessageBox.NoAll:
                         showoverwrite = False
                         continue
                 else:
                     continue
             try:
                 self.setTag(row, {"__path": path.basename(newfilename)}, True)
+                yield None
             except (IOError, OSError), detail:
                 if showmessage:
-                    win.show()
-                    errormsg = u"I couldn't rename <b>%s<b> to <i>%s</i> (%s)" \
+                    yield HIDEPROGRESS
+                    errormsg = u"I couldn't rename <b>%s</b> to <i>%s</i> (%s)" \
                                  % (filename, newfilename, unicode(detail.strerror))
                     if len(table.selectedRows) > 1:
                         errormsg += "<br /> Do you want to continue?"
@@ -1378,15 +1440,8 @@ class MainWin(QMainWindow):
                             break
                         elif ret == QMessageBox.YesAll:
                             showmessage = False
-                    self.warningMessage(errormsg)
-
-            win.updateVal()
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        self.fillCombos()
-        win.hide()
-        win.close()
-
+                    else:
+                        self.warningMessage(errormsg)
 
     def setTag(self, row, tag = None, rename = False):
         """Used to write tags.
@@ -1402,15 +1457,7 @@ class MainWin(QMainWindow):
         """
         table = self.cenwid.table
         if row is not True:
-            rowtags = table.rowTags(row)
-
-        if row is True and hasattr(self, 'librarywin'):
-            self.librarywin.tree.cacheFiles(True)
-        elif (row is not True) and ('__library' in rowtags):
-            newfile = rowtags.tags.copy()
-            newfile.update(tag)
-            self.librarywin.tree.cacheFiles([rowtags.tags.copy()],
-                                                [newfile])
+            rowtags = table.rowTags(row).copy()
 
         if row is True:
             table.model().undolevel += 1
@@ -1429,6 +1476,13 @@ class MainWin(QMainWindow):
             return
         table.updateRow(row, tag, justrename = rename)
 
+        if row is True and hasattr(self, 'librarywin'):
+            self.librarywin.tree.cacheFiles(True)
+        elif (row is not True) and ('__library' in rowtags):
+            newfile = rowtags.copy()
+            newfile.update(tag)
+            self.librarywin.tree.cacheFiles([rowtags], [newfile])
+
     def trackWizard(self):
         """Shows the autonumbering wizard and sets the tracks
             numbers should be filled in"""
@@ -1438,7 +1492,7 @@ class MainWin(QMainWindow):
         rowTags = self.cenwid.table.rowTags
         tags = [rowTags(row, True) for row in selectedRows]
 
-        from puddleobjects import compare, itemgetter
+        from puddleobjects import compare
         cmpfunc = compare().natcasecmp
         for tag in tags:
             if 'track' not in tags:
@@ -1460,6 +1514,7 @@ class MainWin(QMainWindow):
         self.connect(win, SIGNAL("newtracks"), self.numberTracks)
         win.show()
 
+    @showwriteprogress
     def numberTracks(self, indexes):
         """Numbers the selected tracks sequentially in the range
         between the indexes.
@@ -1472,8 +1527,6 @@ class MainWin(QMainWindow):
 
         table = self.cenwid.table
         rows = table.selectedRows
-        showmessage = True
-        win = ProgressWin(self, len(rows), table)
 
         if indexes[2]: #Restart dir numbering
             rowTags = table.rowTags
@@ -1490,25 +1543,13 @@ class MainWin(QMainWindow):
             taglist = [{"track": unicode(z) + num} for z in range(fromnum, fromnum + len(rows) + 1)]
 
         for i, row in enumerate(rows):
-            if win.wasCanceled(): break
             try:
                 self.setTag(row, taglist[i])
+                yield None
             except IndexError:
                 break
             except (IOError, OSError), detail:
-                if showmessage:
-                    win.hide()
-                    ret = self.writeError(table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
-                    if ret is False:
-                        break
-                    elif ret is True:
-                        showmessage = False
-            win.updateVal()
-        self.setTag(True)
-        win.setValue(len(table.selectedRows))
-        win.hide()
-        win.close()
-        self.fillCombos()
+                yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

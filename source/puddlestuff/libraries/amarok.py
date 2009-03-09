@@ -1,48 +1,114 @@
 import MySQLdb as mysql
 import sys, os, pdb
-sys.path.insert(1, '..')
-import audioinfo, pdb
+try:
+    import puddlestuff.audioinfo as audioinfo
+except ImportError:
+    sys.path.insert(1, '..')
+    import audioinfo
 from operator import itemgetter
 FILENAME = audioinfo.FILENAME
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from mutagen.id3 import TCON
 GENRES = TCON.GENRES
-import musiclib
+try:
+    import puddlestuff.musiclib as musiclib
+except ImportError:
+    import musiclib
+try:
+    from mysqllib import MySQLLib
+except ImportError:
+    from puddlestuff.libraries.mysqllib import MySQLLib
 
-name = "Amarok"
+name = "Amarok MySQL"
 description = "Amorok Database"
 author = 'concentricpuddle'
 
-class Amarok:
-    def __init__(self, **keywords):
-        keywords['use_unicode'] = True
-        keywords['charset'] = 'utf8'
-        self.db = mysql.connect(**keywords)
-        self.cursor = self.db.cursor()
+join = os.path.join
+dirname = os.path.dirname
+
+class Amarok(MySQLLib):
+
+    def convertTrack(self, track, artist = None, album = None, convert = True):
+        if artist is None:
+            artist = track[-2]
+        if album is None:
+            album = track[-1]
+
+        if convert:
+            if track[4]:
+                self.cursor.execute(u"SELECT DISTINCT BINARY name FROM composer WHERE id = BINARY %s", (track[4],))
+                composer = self.cursor.fetchall()[0][0]
+            else:
+                composer = u""
+
+            if track[5]:
+                self.cursor.execute(u"SELECT DISTINCT BINARY name FROM genre WHERE id = BINARY %s", (track[5],))
+                genre = self.cursor.fetchall()[0][0]
+            else:
+                genre = u""
+
+            if track[7]:
+                self.cursor.execute(u"SELECT DISTINCT BINARY name FROM year WHERE id = BINARY %s", (track[7],))
+                year = self.cursor.fetchall()[0][0]
+            else:
+                year = u""
+        else:
+            composer = track[4]
+            genre = track[5]
+            year = track[7]
+
+        filename = track[0][1:]
+        temp = {'__filename': filename,
+                    '__folder': dirname(filename),
+                    '__created': audioinfo.strtime(track[2]),
+                    '__modified': audioinfo.strtime(track[3]),
+                    'album': album,
+                    'artist': artist,
+                    'composer': composer,
+                    'genre': genre,
+                    'title': track[6],
+                    'year': year,
+                    'comment': track[8],
+                    'track': unicode(track[9]),
+                    'discnumber': unicode(track[10]),
+                    '__bitrate': audioinfo.strbitrate(track[11] * 1000),
+                    '__length': audioinfo.strlength(track[12]),
+                    '__frequency': audioinfo.strfrequency(track[13]),
+                    '__size': unicode(track[14]),
+                    '___filetype': unicode(track[15]),
+                    '___sampler': unicode(track[16]),
+                    'bpm': unicode(track[17]),
+                    '___deviceid': unicode(track[18]),
+                    '__path': os.path.basename(filename),
+                    '__ext': os.path.splitext(filename)[1][1:],
+                    '__library': 'amarok'}
+
+        return (self.applyToDict(self.applyToDict(temp, self.valuetostring),
+                                self.latinutf))
 
     def getArtists(self):
         self.cursor.execute(u"SELECT DISTINCT BINARY name FROM artist ORDER BY name")
         artists = self.cursor.fetchall()
-        return [z[0] for z in artists]
+        return [self.latinutf(artist[0]) for artist in artists]
 
     def getAlbums(self, artist):
-        self.cursor.execute(u"SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (artist,))
+        self.cursor.execute(u"SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (self.utflatin(artist),))
         fileid = self.cursor.fetchall()[0][0]
         self.cursor.execute(u"SELECT DISTINCT BINARY album FROM tags WHERE artist = BINARY %s", (fileid,))
-        albumid = [z[0] for z in self.cursor.fetchall()]
+        albumids = [z[0] for z in self.cursor.fetchall()]
         albums = []
-        for z in albumid:
-            self.cursor.execute(u"SELECT DISTINCT BINARY name FROM album WHERE id = BINARY %s", (z,))
-            albums.append(self.cursor.fetchall()[0][0])
+        for albumid in albumids:
+            self.cursor.execute(u"SELECT DISTINCT BINARY name FROM album WHERE id = BINARY %s", (albumid,))
+            albums.append(self.latinutf(self.cursor.fetchall()[0][0]))
         return albums
 
     def getTracks(self, artist, albums):
-        join = os.path.join
-        dirname = os.path.dirname
         ret = []
-        if self.cursor.execute(u"SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (artist,)):
-            artistid = fileid = self.cursor.fetchall()[0][0]
+        if not albums:
+            albums = self.getAlbums(artist)
+        if self.cursor.execute(u"SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (self.utflatin(artist),)):
+            artistid = self.cursor.fetchall()[0][0]
 
         if not self.cursor.execute(u"""SELECT DISTINCT BINARY album FROM tags WHERE artist = BINARY %s""", (artistid,)):
             return []
@@ -61,90 +127,53 @@ class Amarok:
                                 FROM tags WHERE artist = BINARY %s
                                 AND album = BINARY %s""", (artistid, albumid))
             tracks = self.cursor.fetchall()
-            for track in tracks:
-                if track[4]:
-                    self.cursor.execute(u"SELECT DISTINCT BINARY name FROM composer WHERE id = BINARY %s", (track[4],))
-                    composer = self.cursor.fetchall()[0][0]
-                else:
-                    composer = u""
-
-                if track[5]:
-                    self.cursor.execute(u"SELECT DISTINCT BINARY name FROM genre WHERE id = BINARY %s", (track[5],))
-                    genre = self.cursor.fetchall()[0][0]
-                else:
-                    genre = u""
-
-                if track[7]:
-                    self.cursor.execute(u"SELECT DISTINCT BINARY name FROM year WHERE id = BINARY %s", (track[7],))
-                    year = self.cursor.fetchall()[0][0]
-                else:
-                    year = u""
-                filename = track[0][1:]
-                ret.append({'__filename': filename,
-                            '__folder': dirname(filename),
-                            '__created': audioinfo.strtime(track[2]),
-                            '__modified': audioinfo.strtime(track[3]),
-                            'album': album,
-                            'artist': artist,
-                            'composer': composer,
-                            'genre': genre,
-                            'title': track[6],
-                            'year': year,
-                            'comment': track[8],
-                            'track': unicode(track[9]),
-                            'discnumber': unicode(track[10]),
-                            '__bitrate': audioinfo.strbitrate(track[11] * 1000),
-                            '__length': audioinfo.strlength(track[12]),
-                            '__frequency': audioinfo.strfrequency(track[13]),
-                            '__size': unicode(track[14]),
-                            '___filetype': unicode(track[15]),
-                            '___sampler': unicode(track[16]),
-                            'bpm': unicode(track[17]),
-                            '___deviceid': unicode(track[18]),
-                            '__path': os.path.basename(filename),
-                            '__ext': os.path.splitext(filename)[1][1:],
-                            '__library': 'amarok'})
+            ret.extend([musiclib.Tag(self, self.convertTrack(track, artist, album)) for track in tracks])
         return ret
 
     def _delTrack(self, track):
-        self.cursor.execute('DELETE FROM tags WHERE url = %s', ("." + track[FILENAME],))
+        self.cursor.execute('DELETE FROM tags WHERE url = %s', (u"." + track[FILENAME],))
 
-        for key in ('genre', 'year', 'album', 'composer', 'artist'):
-            if self.cursor.execute('SELECT id FROM ' + key + ' WHERE name = BINARY %s', (track[key],)):
+        for key in (u'genre', u'year', u'album', u'composer', u'artist'):
+            if self.cursor.execute(u'SELECT id FROM ' + key + u' WHERE name = BINARY %s', (track[key],)):
                 keyid = self.cursor.fetchall()[0][0]
-            if not self.cursor.execute('SELECT ' + key + ' FROM tags WHERE ' + key + ' = BINARY %s', (keyid,)):
-                self.cursor.execute('DELETE FROM ' + key + ' WHERE id = %s', (keyid,))
+            if not self.cursor.execute(u'SELECT ' + key + u' FROM tags WHERE ' + key + u' = BINARY %s', (keyid,)):
+                self.cursor.execute(u'DELETE FROM ' + key + u' WHERE id = %s', (keyid,))
 
     def delTracks(self, tracks):
+        converttag = audioinfo.converttag
+        app = self.applyToDict
+        utflatin = self.utflatin
         for track in tracks:
-            self._delTrack(track)
+            self._delTrack(app(converttag(track, True), utflatin))
 
 
     def saveTracks(self, tracks):
-        dirname = os.path.dirname
         basename = os.path.basename
         freq = audioinfo.lngfrequency
         leng = audioinfo.lnglength
         converttag = audioinfo.converttag
         lngtime = audioinfo.lngtime
+        app = self.applyToDict
+        utflatin = self.utflatin
 
         for old, new in tracks:
-            (old, new) = (converttag(old), converttag(new))
+            (old, new) = (app(converttag(old, True), utflatin),
+                                app(converttag(new, True), utflatin))
+
             mixed = old.copy()
             mixed.update(new)
-
             ids = {}
-            for key in ('genre', 'year', 'album', 'composer', 'artist'):
-                if self.cursor.execute('SELECT id FROM ' + key + ' WHERE name = BINARY %s', (new[key],)):
+            for key in (u'genre', u'year', u'album', u'composer', u'artist'):
+                if self.cursor.execute(u'SELECT id FROM ' + key + u' WHERE name = BINARY %s', (new[key],)):
                     keyid = self.cursor.fetchall()[0][0]
                 else:
-                    self.cursor.execute('INSERT INTO ' + key + ' VALUES (NULL, %s)', (new[key], ))
+                    self.cursor.execute(u'INSERT INTO ' + key + u' VALUES (NULL, %s)', (new[key], ))
                     self.cursor.execute('SELECT LAST_INSERT_ID()')
                     keyid = self.cursor.fetchall()[0][0]
                 ids[key] = keyid
 
-            url = "." + new['__filename']
-            folder = "." + dirname(new['__filename'])
+            url = u"." + new['__filename']
+            folder = u"." + dirname(new['__filename'])
             self.cursor.execute("""REPLACE INTO tags VALUES (%s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
@@ -162,35 +191,80 @@ class Amarok:
             if old[FILENAME] != new[FILENAME]:
                 self._delTrack(old)
 
+    def search(self, term):
+        self.cursor.execute(u'''SELECT tags.url, tags.dir, tags.createdate,
+            tags.modifydate, composer.name as composer,
+            genre.name as genre, tags.title, year.name as year, tags.comment,
+            tags.track, tags.discnumber, tags.bitrate, tags.length,
+            tags.samplerate, tags.filesize, tags.filetype, tags.sampler,
+            tags.bpm, tags.deviceid,
+            artist.name AS artist, album.name as album
+
+            FROM tags, artist, album, genre, composer, year WHERE
+            (tags.artist = artist.id AND tags.album = album.id
+            AND tags.genre = genre.id AND tags.composer = composer.id AND
+            tags.year = year.id)
+
+            AND
+
+            (UCASE(tags.url) REGEXP UCASE(%s) OR UCASE(artist.name) REGEXP UCASE(%s)
+            OR UCASE(album.name) REGEXP UCASE(%s) OR UCASE(tags.title) REGEXP
+            UCASE(%s) OR UCASE(tags.composer) REGEXP UCASE(%s) OR
+            UCASE(genre.name) REGEXP UCASE(%s) OR UCASE(year.name)
+            REGEXP UCASE(%s)) limit 1000''', (term, ) * 7)
+
+        return [musiclib.Tag(self, self.convertTrack(z, convert=False)) for z in self.cursor.fetchall()]
+
+    def updateSearch(self, term, tracks):
+        tags = ['artist', 'title', FILENAME, '__path', 'album', 'genre', 'comment'
+        , 'composer', 'year']
+        term = term.lower()
+        tracks = []
+        for audio in files:
+            temp = audioinfo.converttag(audio)
+            for tag in tags:
+                if term in temp[tag].lower():
+                    tracks.append(audio)
+                    break
+        return tracks
+
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
         self.setWindowTitle("Import Library")
+
+        userlabel = QLabel('&Username')
         self.username = QLineEdit('amarok')
+        userlabel.setBuddy(self.username)
+
+        passlabel = QLabel('&Password')
         self.passwd = QLineEdit()
-        self.database = QLineEdit('amarok')
         self.passwd.setEchoMode(QLineEdit.Password)
+        passlabel.setBuddy(self.passwd)
+
+        datalabel = QLabel('&Database')
+        self.database = QLineEdit('amarok')
+        datalabel.setBuddy(self.database)
+
+        portlabel = QLabel('Po&rt')
         validator = QIntValidator(self)
         self.port = QLineEdit('3306')
+        portlabel.setBuddy(self.port)
         self.port.setValidator(validator)
 
         vbox = QVBoxLayout()
-        [vbox.addWidget(z) for z in [QLabel('Username'), self.username,
-            QLabel('Password'), self.passwd, QLabel('Database'),
-            self.database, QLabel('port'), self.port]]
+        [vbox.addWidget(z) for z in [userlabel, self.username, passlabel,
+            self.passwd, datalabel, self.database, portlabel, self.port]]
         vbox.addStretch()
         self.setLayout(vbox)
 
-    def setStuff(self):
+    def getLibClass(self):
         username = unicode(self.username.text())
         passwd = unicode(self.passwd.text())
         database = unicode(self.database.text())
         port = long(self.port.text())
 
-        try:
-            return Amarok(user = username, passwd = passwd, db = database, port = port)
-        except mysql.OperationalError, details:
-            raise musiclib.LibLoadError, details
+        return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 
     def saveSettings(self):
         username = QVariant(self.username.text())
@@ -223,10 +297,7 @@ def loadLibrary():
     passwd = unicode(settings.value('passwd').toString())
     database = unicode(settings.value('database').toString())
     port = settings.value('port').toLongLong()[0]
-    #try:
-    return Amarok(user = username, passwd = passwd, db = database, port = port)
-    #except mysql.OperationalError, details:
-        #raise musiclib.LibLoadError, details
+    return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 
 
 #if __name__ == "__main__":

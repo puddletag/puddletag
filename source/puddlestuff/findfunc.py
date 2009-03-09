@@ -1,60 +1,192 @@
-"""This module contains the functions needed
-    to extract tags from files according to patterns
-    specified.
-
-    See the docstrings for tagfromfilename and
-    filenametotag for more details"""
-
-"""findfunc.py
-
-Copyright (C) 2008 concentricpuddle
-
-This file is part of puddletag, a semi-good music tag editor.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-"""
 import audioinfo, os, pdb, functions, sys
-if sys.version_info[:2] < (2, 5): import re as sre
+if sys.version_info[:2] >= (2, 5): import re as sre
 else: import sre
 
-from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine
+try:
+    from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString
+except ImportError:
+    sys.stderr.write("The PyParsing module wasn't found. Did you install it correctly?")
+    self.exit(0)
+from puddlesettings import PuddleConfig
 numtimes = 0 #Used in filenametotag to keep track of shit.. Do not modify.
 
-def parsefunc(text):
+import cPickle as pickle
+from puddleobjects import ListBox, OKCancel, ListButtons
+
+converttag = audioinfo.converttag
+
+class Function:
+    """Basically, a wrapper for functions, but makes it easier to
+    call according to the needs of puddletag.
+    Methods of importance are:
+
+    description -> Returns the parsed description of the function.
+    setArgs -> Sets the 2nd to last arguments that the function is to be called with.
+    runFunction(arg1) -> Run the function with arg1 as the first argument.
+    setTag -> Sets the tag of the function for editing of tags.
+
+    self.info is a tuple with the first element is the function name form the docstring.
+    The second element is the description in unparsed format.
+
+    See the functions module for more info."""
+
+    def __init__(self, funcname):
+        """funcname must be either a function or string(which is the functions name)."""
+        if type(funcname) is str:
+            self.function = getattr(functions, funcname)
+        else:
+            self.function = funcname
+
+        self.reInit()
+
+        self.funcname = self.info[0]
+        self.tag = ""
+
+    def reInit(self):
+        #Since this class gets pickled in ActionWindow, the class is never 'destroyed'
+        #Therefore, if a functions docstring was changed, it wouldn't be reflected back
+        #to puddletag. So this function is called here and in description just to 're-read'
+        #the docstring
+        self.doc = self.function.__doc__.split("\n")
+
+        identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
+        tags = delimitedList(identifier)
+
+        self.info = [z for z in tags.parseString(self.doc[0])]
+
+    def setArgs(self, args):
+        self.args = args
+
+    def runFunction (self, arg1 = None, audio = None):
+        varnames = self.function.func_code.co_varnames
+        if isinstance(arg1, (list,tuple)):
+            arg1 = arg1[0]
+        if varnames[-1] == 'tags':
+            return self.function(*([arg1] + self.args + [audio]))
+        elif varnames[0] == 'tags':
+            return self.function(*([audio] + self.args))
+        else:
+            return self.function(*([arg1] + self.args))
+
+    def description(self):
+
+        def what (s,loc,tok):
+            if long(tok[0]) == 0:
+                return ", ".join(self.tag)
+            return self.args[long(tok[0]) - 1]
+
+        self.reInit()
+        foo = Combine(NotAny("\\").suppress() + Literal("$").suppress() + Word(nums)).setParseAction(what)
+        return foo.transformString(self.info[1])
+
+    def setTag(self, tag):
+        self.tag = tag
+
+    def addArg(self, arg):
+        if self.function.func_code.co_argcount > len(self.args) + 1:
+            self.args.append(arg)
+
+def getAction(filename):
+    if isinstance(filename, basestring):
+        f = open(filename, "rb")
+    else:
+        f = filename
+    name = pickle.load(f)
+    funcs = pickle.load(f)
+    f.close()
+    return [funcs, name]
+
+def runAction(funcs, audio):
+    if isinstance(funcs, basestring):
+        funcs = getAction(funcs)[0]
+
+    audio = converttag(audio)
+    tags = {}
+    for func in funcs:
+        tag = func.tag
+        val = {}
+        if tag[0] == "__all":
+            tag = audio.keys()
+        for z in tag:
+            try:
+                val[z] = func.runFunction(tags[z], audio = audio)
+            except KeyError:
+                try:
+                    val[z] = func.runFunction(audio[z], audio = audio)
+                except KeyError:
+                    """The tag doesn't exist or is empty.
+                    In either case we do nothing"""
+        val = dict([z for z in val.items() if z[1]])
+        if val:
+            tags.update(val)
+    return tags
+
+def runQuickAction(funcs, audio, tag):
+    if isinstance(funcs, basestring):
+        funcs = getAction(funcs)[0]
+
+    audio = converttag(audio)
+    tags = {}
+    for func in funcs:
+        val = {}
+        if tag[0] == "__all":
+            tag = audio.keys()
+        for z in tag:
+            try:
+                val[z] = func.runFunction(tags[z], audio = audio)
+            except KeyError:
+                try:
+                    val[z] = func.runFunction(audio[z], audio = audio)
+                except KeyError:
+                    """The tag doesn't exist or is empty.
+                    In either case we do nothing"""
+        val = dict([z for z in val.items() if z[1]])
+        if val:
+            tags.update(val)
+    return tags
+
+def saveAction(filename, actionname, func):
+    if isinstance(filename, basestring):
+        fileobj = open(filename, 'wb')
+    else:
+        fileobj = filename
+    pickle.dump(actionname, fileobj)
+    pickle.dump(func, fileobj)
+
+def replacevars(text, audio):
+    for tag in audio.keys():
+        if (tag not in audio) or (not audio[tag]):
+            audio[tag] = ""
+        pattern = pattern.replace(unicode('%' + unicode(idx) + '%'),
+                                        unicode(audio[tag]))
+
+def parsefunc(text, audio):
     """Parses a function in the form $name(arguments)
     the function $name from the functions module is called
     with the arguments."""
 
-    identifier = Combine(ZeroOrMore("\$") + Word(alphanums + "_ '!#$%&\'*+-./:;<=>?@[\\]^`{|}~"))
+    identifier = QuotedString('"') | Combine(ZeroOrMore("\$") + Word(alphanums + "_ '!#$%&\'*+-./:;<=>?@[\\]^`{|}~"))
     integer  = Word( nums )
-    funcstart =  NotAny("\\") + Combine(Literal("$") + ZeroOrMore(Word(alphanums + "_")) + "(")
+    funcstart =  NotAny("\\") + Combine(Literal("$") + ZeroOrMore(Word("_" + alphas)) + "(")
 
     def callfunc(s,loc,tok):
         arguments = tuple(tok[1:])
-        funcname = tok[0][1:-1]
-        try:
-            return getattr(functions,funcname)(*arguments)
-        except:
-            getattr(functions,funcname)(*arguments)
+        function = getattr(functions,tok[0][1:-1])
+        firstvar = function.func_code.co_varnames[0]
+        for i, param in enumerate(arguments):
+            if param.startswith('text'):
+                arguments[i] = replacevars(param, audio)
+        return function(*arguments)
 
     content = Forward()
     expression = funcstart + delimitedList(content) + Literal(")").suppress()
     expression.setParseAction(callfunc)
     content << (expression | identifier | integer)
-
-    return content.transformString(text)
+    try:
+        return content.transformString(text)
+    except:
+        pdb.set_trace()
+        return content.transformString(text)
 
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
@@ -65,14 +197,14 @@ def re_escape(rex):
         else: escaped = escaped + ch
     return escaped
 
-def getfunc(text):
+def getfunc(text, audio):
     """Parses text and replaces all functions
     with their appropriate values.
 
     Function must be of the form $name(args)
-    Returns None if unsuccesful"""
+    Returns the text unmodified if unsuccesful"""
 
-    pat = sre.compile(r'[^\\]\$[a-z]+\(')
+    pat = sre.compile(r'[^\\]\$[a-z_]+\(')
 
     addspace = False
     #pat doesn't match if the text starts with the pattern, because there isn't
@@ -97,17 +229,14 @@ def getfunc(text):
                     num_brackets_open += 1
                 idx += 1  # Check for end-of-text!
         except IndexError:
-            #print "indexerror ", text
             return text
-
         #Replace a function with its parsed text
         text = text.replace(text[match.start(0) + 1: idx],
-                        parsefunc(text[match.start(0) + 1: idx]))
+                        parsefunc(text[match.start(0) + 1: idx], audio))
         start = idx + 1
     if addspace:
         return text[1:]
     return text
-
 
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename
@@ -163,7 +292,7 @@ def filenametotag(pattern, filename, checkext = False):
     try:
         tags = sre.search(text, filename).groups()
     except AttributeError:
-        #Attribute Error means that the expression probabably wasn't found.
+        #AttributeError means that the expression probabably wasn't found.
         return
 
     mydict={}
@@ -246,8 +375,8 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
 
 
     if not addext:
-        return getfunc(pattern)
+        return getfunc(pattern, tags)
     elif addext and (extension is not None):
-        return getfunc(pattern) + os.path.extsep + extension
+        return getfunc(pattern, tags) + os.path.extsep + extension
     else:
-        return getfunc(pattern) + os.path.extsep + tag["__ext"]
+        return getfunc(pattern, tags) + os.path.extsep + tags["__ext"]

@@ -9,8 +9,21 @@
 <file alias="tagtofile.png">data/tagtofile.png</file>
 <file alias="track.png">data/track.png</file>
 <file alias="open.png">data/open.png</file>
-<file alias="actions">data/actions</file>
+<file alias="standard.action">data/caseconversion.action</file>
+<file alias="caseconversion.action">data/standard.action</file>
 <file alias="puddletag.conf">data/puddletag.conf</file>
 <file alias="puddlelogo.png">data/puddlelogo.png</file>
+<file alias="filenew.png">data/filenew.png</file>
+<file alias="edit.png">data/edit.png</file>
+<file alias="moveup.png">data/moveup.png</file>
+<file alias="movedown.png">data/movedown.png</file>
+<file alias="remove.png">data/remove.png</file>
+<file alias="rarrow.png">data/rarrow.png</file>
+<file alias="larrow.png">data/larrow.png</file>
+<file alias="reload.png">data/reload.png</file>
+<file alias="undo.png">data/undo.png</file>
+<file alias="quickactions.png">data/quickactions.png</file>
+<file alias="keep.png">data/keep.png</file>
+<file alias="blank.png">data/blank.png</file>
 </qresource>
 </RCC>

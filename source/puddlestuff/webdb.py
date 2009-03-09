@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from puddleobjects import unique, TableShit, OKCancel
+from puddleobjects import unique, OKCancel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb
@@ -29,7 +29,7 @@ class ReleaseWidget(QListWidget):
         self.currentrow = row
         self.tracks = {}
         self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
-        
+
     def setReleases(self, releases):
         self.disconnect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
         self.clear()
@@ -52,7 +52,7 @@ class ReleaseWidget(QListWidget):
             if len(releases) == 1:
                self.changeTable(self, self.item(0))
         self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
-    
+
     def changeTable(self, item):
         row = self.row(item)
         self.dirtyrow = row
@@ -63,7 +63,7 @@ class ReleaseWidget(QListWidget):
                 QApplication.processEvents()
                 def func():
                     try:
-                        tracks = [dict([("title", track.title), ("track", number + 1), ("album",release.title)]) 
+                        tracks = [dict([("title", track.title), ("track", number + 1), ("album",release.title)])
                                         for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
                     except ConnectionError:
                         return {'tracks':[], 'text': CONNECTIONERROR}
@@ -75,15 +75,15 @@ class ReleaseWidget(QListWidget):
                 self.t.start()
             else:
                 self.showAlbum()
-                
+
     def showAlbum(self):
         text = self.t.retval['text']
         releasetitle = self.t.retval['releasetitle']
-        
+
         if text:
             self.emit(SIGNAL("statusChanged"), self.retval.t['text'])
             return
-        
+
         if self.dirtyrow not in self.tracks:
             tracks = self.t.retval['tracks']
             self.item(self.dirtyrow).setText(releasetitle + " [" + unicode(len(tracks)) + "]")
@@ -96,7 +96,7 @@ class ReleaseWidget(QListWidget):
 def getArtist(tags):
     """If tags is a dictionary, getArtist will loop through it
     find the musicbrainz2 artist ids of all the artists and return them in a list
-    
+
     Same goes for if tags is string(i.e a list is returned)"""
     q = Query()
     if (type(tags) is unicode) or (type(tags) is str):
@@ -105,14 +105,14 @@ def getArtist(tags):
         artists = unique([z['artist'] for z in tags if 'artist' in z])
     if not artists:
         return
-    
+
     artistids = []
     for artist in artists:
         results = q.getArtists(ArtistFilter(artist, limit = 1))
         if results:
             artistids.append([artist,[results[0].artist.name, results[0].artist.id]])
     return artistids
-        
+
 def getalbumtracks(releases):
         q = Query()
         tracks = []
@@ -122,22 +122,22 @@ def getalbumtracks(releases):
                 releasetracks = release.getTracks()
                 tracks.append(releasetracks)
         return unique([dict([("album", release.title), ("tracks", tracklist)]) for release, tracklist in zip(releases, tracks)])
-        
+
 def getAlbums(artistid = None, album = None, releasetypes = None):
     q = Query()
     if releasetypes is None:
-        releasetypes = [brainzmodel.Release.TYPE_OFFICIAL]        
-    
+        releasetypes = [brainzmodel.Release.TYPE_OFFICIAL]
+
     if artistid is None and album is not None:
         release = ws.ReleaseFilter(title = album, releaseTypes = releasetypes, limit = 10)
         releases = [z.getRelease() for z in q.getReleases(release)]
-        if releases:            
+        if releases:
             return releases
-            
-            
+
+
     elif artistid is not None:
-        artist = q.getArtistById(artistid, 
-                    ws.ArtistIncludes(releases=releasetypes))        
+        artist = q.getArtistById(artistid,
+                    ws.ArtistIncludes(releases=releasetypes))
         releases = artist.getReleases()
         if releases:
             if album is not None:
@@ -146,7 +146,7 @@ def getAlbums(artistid = None, album = None, releasetypes = None):
                 return myrel
             else:
                 return releases
-            
+
 class MainWin(QDialog):
     def __init__(self, table, parent = None):
         QDialog.__init__(self, parent)
@@ -155,61 +155,61 @@ class MainWin(QDialog):
         self.combo = QComboBox()
         self.combo.addItems(["Album only", "Artist only", "Album and Artist"])
         self.combo.setCurrentIndex(0)
-        
+
         self.albumtype = QComboBox()
         self.albumtype.addItems([z for z in RELEASETYPES])
         self.albumtype.setCurrentIndex(self.albumtype.findText("Official Albums"))
-        
+
         self.getinfo = QPushButton("Get Info")
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
-        
+
         self.okcancel = OKCancel()
         self.okcancel.ok.setText("&Write tags")
         self.okcancel.cancel.setText("&Close")
         clearcache = QPushButton("Clea&r tags")
         self.okcancel.insertWidget(2,clearcache)
-        
+
         self.connect(self.okcancel, SIGNAL("ok"), self.writeVals)
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
         self.connect(self,SIGNAL('rejected()'), self.closeMe)
         self.connect(clearcache, SIGNAL("clicked()"), self.table.model().unSetTestData)
-        
+
         self.label = QLabel("Select files and click on Get Info to retrieve metadata.")
-        
+
         self.listbox = ReleaseWidget(table)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
-        
+
         hbox = QHBoxLayout()
-        
+
         hbox.addWidget(self.combo,1)
         hbox.addWidget(self.albumtype,1)
         hbox.addWidget(self.getinfo)
-        
+
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
         vbox.addWidget(self.label)
         vbox.addWidget(self.listbox, 1)
         vbox.addLayout(self.okcancel)
-        
-        
+
+
         self.setLayout(vbox)
         self.show()
-    
+
     def writeVals(self):
         self.table.model().unSetTestData(True)
         self.label.setText("<b>Tags were written.</b>")
-        
+
     def closeMe(self):
         self.table.model().unSetTestData()
         self.close()
-    
+
     def getInfo(self):
         self.getinfo.setEnabled(False)
         releasetype = RELEASETYPES[unicode(self.albumtype.currentText())]
         tags = [self.table.rowTags(z) for z in self.table.selectedRows]
         self.label.setText("Retrieving albums, please wait...")
         QApplication.processEvents()
-        
+
         if self.combo.currentIndex() == 0:
             releases = []
             albums = unique([z['album'] for z in tags if 'album' in z])
@@ -228,13 +228,13 @@ class MainWin(QDialog):
                 else:
                     text = "No albums were found with the matching criteria."
                 return {'releases': releases, 'text':text}
-                                        
+
             self.t = MyThread(func)
             self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
             self.t.start()
-            
-        
-        elif self.combo.currentIndex() == 1:                
+
+
+        elif self.combo.currentIndex() == 1:
             def func():
                 try:
                     artists = getArtist(tags)
@@ -262,21 +262,21 @@ class MainWin(QDialog):
                     return {'releases': releases, 'text':"No albums were found matching the selected artists"}
             self.t = MyThread(func)
             self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
-            self.t.start()                
-            
-                            
+            self.t.start()
+
+
         elif self.combo.currentIndex() == 2:
             def func():
                 try:
                     artists = [getArtist(tags)[0]]
-                except (WebServiceError, ConnectionError):                        
+                except (WebServiceError, ConnectionError):
                     return {'releases': [], 'text': CONNECTIONERROR}
                 album = unique([z['album'] for z in tags if 'album' in z])[0]
                 for z in artists:
                     artistid = z[1][1]
                     try:
                         releases = getAlbums(artistid, album,releasetypes = releasetype)
-                    except (WebServiceError, ConnectionError):                        
+                    except (WebServiceError, ConnectionError):
                         return {'releases': releases, 'text':CONNECTIONERROR}
                     if releases:
                         if len(releases) == 1:
@@ -289,8 +289,8 @@ class MainWin(QDialog):
             self.t = MyThread(func)
             self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
             self.t.start()
-            
-    def showAlbums(self):        
+
+    def showAlbums(self):
         self.listbox.setReleases(self.t.retval['releases'])
         self.label.setText(self.t.retval['text'])
         self.getinfo.setEnabled(True)

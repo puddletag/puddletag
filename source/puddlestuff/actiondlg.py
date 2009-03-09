@@ -27,78 +27,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui
-import sys, findfunc, pdb, os, resource
-import functions
+import sys, findfunc, pdb, os, resource, string, functions
 from copy import copy
-from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, QuotedString, Literal, NotAny, nums
+from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
+                        QuotedString, Literal, NotAny, nums
 import cPickle as pickle
 from puddleobjects import ListBox, OKCancel, ListButtons
-
-class Function:
-    """Basically, a wrapper for functions, but makes it easier to
-    call according to the needs of puddletag.
-    Methods of importance are:
-
-    description -> Returns the parsed description of the function.
-    setArgs -> Sets the 2nd to last arguments that the function is to be called with.
-    runFunction(arg1) -> Run the function with arg1 as the first argument.
-    setTag -> Sets the tag of the function for editing of tags.
-
-    self.info is a tuple with the first element is the function name form the docstring.
-    The second element is the description in unparsed format.
-
-    See the functions module for more info."""
-
-    def __init__(self, funcname):
-        """funcname must be either a function or string(which is the functions name)."""
-        if type(funcname) is str:
-            self.function = getattr(functions, funcname)
-        else:
-            self.function = funcname
-
-        self.reInit()
-
-        self.funcname = self.info[0]
-        self.tag = ""
-
-    def reInit(self):
-        #Since this class gets pickled in ActionWindow, the class is never 'destroyed'
-        #Therefore, if a functions docstring was changed, it wouldn't be reflected back
-        #to puddletag. So this function is called here and in description just to 're-read'
-        #the docstring
-        self.doc = self.function.__doc__.split("\n")
-
-        identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
-        tags = delimitedList(identifier)
-
-        self.info = [z for z in tags.parseString(self.doc[0])]
-
-    def setArgs(self, args):
-        self.args = args
-
-    def runFunction (self, arg1):
-        if isinstance(arg1, (list,tuple)):
-            arg1 = arg1[0]
-        return self.function(*([arg1] + self.args))
-
-    def description(self):
-
-        def what (s,loc,tok):
-            if long(tok[0]) == 0:
-                return ", ".join(self.tag)
-            return self.args[long(tok[0]) - 1]
-
-        self.reInit()
-        foo = Combine(NotAny("\\").suppress() + Literal("$").suppress() + Word(nums)).setParseAction(what)
-        return foo.transformString(self.info[1])
-
-    def setTag(self, tag):
-        self.tag = tag
-
-    def addArg(self, arg):
-        if self.function.func_code.co_argcount > len(self.args) + 1:
-            self.args.append(arg)
-
+from findfunc import Function
+from puddlesettings import PuddleConfig
 
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
@@ -158,6 +94,7 @@ class FunctionDialog(QWidget):
                         if index >= 0:
                             control.setCurrentIndex(index)
                 label = QLabel(args[0])
+                label.setBuddy(control)
                 self.vbox.addWidget(label)
             elif type(control) == QLineEdit:
                 self.retval.append(control.text)
@@ -166,6 +103,7 @@ class FunctionDialog(QWidget):
                 if defaultargs is not None:
                     control.setText(defaultargs[i])
                 label = QLabel(args[0])
+                label.setBuddy(control)
                 self.vbox.addWidget(label)
             elif type(control) == QCheckBox:
                 self.retval.append(control.checkState)
@@ -275,18 +213,6 @@ class CreateFunction(QDialog):
         self.setMinimumHeight(self.sizeHint().height())
         if self.sizeHint().width() > self.width():
             self.setMinimumWidth(self.sizeHint().width())
-        #itemAt = self.stack.currentWidget().layout().itemAt
-        #self.setTabOrder(self.functions, itemAt(0).widget())
-        #prevwidget = itemAt(0).widget()
-        #for index in range(1, self.stack.currentWidget().layout().count() - 1):
-            #print index
-            #self.setTabOrder(prevwidget, itemAt(index).widget())
-            #print prevwidget
-            #prevwidget = itemAt(index).widget()
-            #print prevwidget
-        #self.setTabOrder(prevwidget, self.okcancel.ok)
-        ##self.setTabOrder(self.okcancel.ok, self.okcancel.cancel)
-
 
 class CreateAction(QDialog):
     "An action is defined as a collection of functions. This dialog serves the purpose of creating an action"
@@ -373,17 +299,21 @@ class ActionWindow(QDialog):
         QDialog.__init__(self,parent)
         settings = QSettings()
         path = os.path.dirname(unicode(settings.fileName()))
-        self.funcs = {}
         self.setWindowTitle("Actions")
         self.tags = tags
         self.listbox = ListBox()
         self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        self.funcs = self.loadActions()
+        self.listbox.addItems([self.funcs[z][1] for z in sorted(self.funcs)])
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
         self.grid = QGridLayout()
 
         self.buttonlist = ListButtons()
+        self.buttonlist.moveup.setVisible(False)
+        self.buttonlist.movedown.setVisible(False)
 
         self.grid.addWidget(self.listbox,0,0)
         self.grid.addLayout(self.buttonlist, 0,1)
@@ -399,21 +329,29 @@ class ActionWindow(QDialog):
         self.connect(self.buttonlist, SIGNAL("movedown"), self.moveDown)
         self.connect(self.buttonlist, SIGNAL("remove"), self.remove)
         self.connect(self.listbox, SIGNAL("itemDoubleClicked (QListWidgetItem *)"), self.okClicked)
-        #Load previous actions
-        try:
-            f = open(os.path.join(path, "actions"), "rb")
-            self.funcs = pickle.load(f)
-            #Add function names to listbox
-            self.listbox.addItems([self.funcs[z][1] for z in sorted(self.funcs)])
-            f.close()
-        except (IOError, ImportError):
-            import StringIO
-            f = StringIO.StringIO(QFile(":/actions").readData(1024**2))
-            self.funcs = pickle.load(f)
-            self.listbox.addItems([self.funcs[z][1] for z in sorted(self.funcs)])
-        except EOFError: f.close()
-
         self.connect(self.listbox, SIGNAL("currentRowChanged(int)"), self.enableOK)
+
+    def loadActions(self):
+        funcs = {}
+        settings = QSettings()
+        cparser = PuddleConfig()
+        firstrun = cparser.load('puddleactions', 'firstrun', 0, True)
+        filedir = os.path.dirname(unicode(settings.fileName()))
+        from glob import glob
+        files = glob(os.path.join(filedir, u'*.action'))
+        if not firstrun and not files:
+            import StringIO
+            files = [StringIO.StringIO(QFile(filename).readData(1024**2))
+                        for filename in [':/caseconversion.action', ':/standard.action']]
+            cparser.setSection('puddleactions', 'firstrun',1)
+
+            for i, f in enumerate(files):
+                funcs[i] = findfunc.getAction(f)
+                self.saveAction(funcs[i][1], funcs[i][0])
+        else:
+            for i, f in enumerate(files):
+                funcs[i] = findfunc.getAction(f)
+        return funcs
 
     def moveUp(self):
         self.listbox.moveUp(self.funcs)
@@ -422,6 +360,14 @@ class ActionWindow(QDialog):
         self.listbox.moveDown(self.funcs)
 
     def remove(self):
+        settings = QSettings()
+        filedir = os.path.dirname(unicode(settings.fileName()))
+        listbox = self.listbox
+        rows = sorted([listbox.row(item) for item in listbox.selectedItems()])
+        for row in rows:
+            name = self.funcs[row][1]
+            filename = os.path.join(filedir, self.removeSpaces(name) + u'.action')
+            os.rename(filename, filename + '.deleted')
         self.listbox.removeSelected(self.funcs)
 
     def enableOK(self, val):
@@ -434,19 +380,28 @@ class ActionWindow(QDialog):
 
     def okClicked(self):
         """When clicked, save the current contents of the listbox and the associated functions"""
-        settings = QSettings()
-        path = os.path.dirname(unicode(settings.fileName()))
-        f = open(os.path.join(path, "actions"), "wb")
-        pickle.dump(self.funcs, f)
-        f.close()
         selectedrows = [self.listbox.row(item) for item in self.listbox.selectedItems()]
+        tempfuncs = [self.funcs[row][0] for row in selectedrows]
+        funcs = []
+        [funcs.extend(func) for func in tempfuncs]
         self.close()
-        self.emit(SIGNAL("donewithmyshit"), [self.funcs[row][0] for row in selectedrows])
+        self.emit(SIGNAL("donewithmyshit"), funcs)
+
+    def removeSpaces(self, text):
+        for char in string.whitespace:
+            text = text.replace(char, '')
+        return text.lower()
+
+    def saveAction(self, name, funcs):
+        settings = QSettings()
+        filedir = os.path.dirname(unicode(settings.fileName()))
+        filename = os.path.join(filedir, self.removeSpaces(name) + u'.action')
+        findfunc.saveAction(filename, name, funcs)
 
     def add(self):
-        what = QInputDialog.getText (self, "New Configuration", "Enter a name for the new action.", QLineEdit.Normal)
-        if (what[1] is True) and (what[0] != ""):
-            self.listbox.addItem(what[0])
+        (text, ok) = QInputDialog.getText (self, "New Configuration", "Enter a name for the new action.", QLineEdit.Normal)
+        if (ok is True) and (text != ""):
+            self.listbox.addItem(text)
         else:
             return
         win = CreateAction(self.tags, self)
@@ -455,9 +410,10 @@ class ActionWindow(QDialog):
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.addBuddy)
 
-    def addBuddy(self, functions):
-        itemtext = unicode(self.listbox.item(self.listbox.count() - 1).text())
-        self.funcs.update({self.listbox.count() - 1: [functions, itemtext]})
+    def addBuddy(self, funcs):
+        name = unicode(self.listbox.item(self.listbox.count() - 1).text())
+        self.funcs.update({self.listbox.count() - 1: [funcs, name]})
+        self.saveAction(name, funcs)
 
     def edit(self):
         win = CreateAction(self.tags, self, self.funcs[self.listbox.currentRow()][0])
@@ -466,6 +422,7 @@ class ActionWindow(QDialog):
         self.connect(win, SIGNAL("donewithmyshit"), self.editBuddy)
 
     def editBuddy(self, funcs):
+        self.saveAction(self.funcs[self.listbox.currentRow()][1], funcs)
         self.funcs[self.listbox.currentRow()][0] = funcs
 
 if __name__ == "__main__":

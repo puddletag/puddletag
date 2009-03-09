@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, findfunc, audioinfo, os,pdb
-from puddleobjects import OKCancel, partial
+import sys, findfunc, audioinfo, os,pdb, resource
+from puddleobjects import OKCancel, partial, MoveButtons, HORIZONTAL, VERTICAL, ListButtons
 from mutagen.id3 import APIC
 from copy import deepcopy
 
@@ -51,6 +51,7 @@ class TrackWindow(QDialog):
         self.frombox.setValue(minval)
         self.frombox.setMaximum(65536)
         self.hboxlayout.addWidget(self.frombox)
+        self.hboxlayout.addStretch()
 
         self.hboxlayout2 = QHBoxLayout()
         self.checkbox = QCheckBox("Add track seperator ['/']")
@@ -61,7 +62,7 @@ class TrackWindow(QDialog):
 
         self.hboxlayout2.addWidget(self.checkbox)
         self.hboxlayout2.addWidget(self.numtracks)
-
+        self.hboxlayout2.addStretch()
         self.hboxlayout3 = QHBoxLayout()
         okcancel = OKCancel()
 
@@ -168,7 +169,7 @@ class ImportWindow(QDialog):
             try:
                 f = open(filename)
             except (IOError, OSError), detail:
-                ret = QMessageBox.question(self, "Error", u"I could load the file:" + \
+                ret = QMessageBox.question(self, "Error", u"I couldn't load the file:" + \
                     "<b>%s</b> <br /> . Do you want to choose another?" % filename,
                         "&Yes, choose another", "&No, close this window.")
                 if ret == 0:
@@ -217,7 +218,7 @@ class Label(QLabel):
       QLabel.mousePressEvent(self, event)
 
 class PicWidget(QWidget):
-    """A with that shows a files pictures.
+    """A widget that shows a file's pictures.
 
     images is a list of mutagen.id3.APIC objects.
     It allows the user to edit, save and delete whichever
@@ -234,56 +235,85 @@ class PicWidget(QWidget):
     removeImage -> Removes the current image.
     next and prevImage -> Moves to the next and previous image.
     saveToFile -> Save the current image to file."""
-    def __init__ (self, images = None, parent = None):
+    def __init__ (self, images = None, parent = None, readonly = None, buttons = False):
         QWidget.__init__(self, parent)
         self.label = Label()
         self.label.setFrameStyle(QFrame.Box)
-        self.label.setMinimumSize(180,150)
+        self.label.setMargin(0)
+        self.label.setMinimumSize(180, 150)
         self.label.setMaximumSize(180, 150)
         self.label.setAlignment(Qt.AlignCenter)
+
+        if not readonly:
+            self.readonly = []
+        self.blanks = 0
 
         self.next = QPushButton('&>>')
         self.prev = QPushButton('&<<')
         self.connect(self.next, SIGNAL('clicked()'), self.nextImage)
         self.connect(self.prev, SIGNAL('clicked()'), self.prevImage)
-        self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
+
+        if not images:
+            images = []
+        self.setImages(images)
+
+        movebuttons = QHBoxLayout()
+        movebuttons.addStretch()
+        movebuttons.addWidget(self.prev)
+        movebuttons.addWidget(self.next)
+        movebuttons.addStretch()
 
         vbox = QVBoxLayout()
-        vbox.addStretch()
-        vbox.addWidget(self.next,0)
-        vbox.addWidget(self.prev,0)
-        vbox.addStretch()
+        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label); h.addStretch()
+        vbox.addLayout(h)
+        vbox.setMargin(0)
+        vbox.addLayout(movebuttons)
+        vbox.setAlignment(Qt.AlignCenter)
 
-        self.label.setContextMenuPolicy(Qt.ActionsContextMenu)
-
-        self.savepic = QAction("&Save picture", self)
-        self.label.addAction(self.savepic)
-        self.connect(self.savepic, SIGNAL("triggered()"), self.saveToFile)
-
-        self.addpic = QAction("&Add picture", self)
-        self.label.addAction(self.addpic)
-        self.connect(self.addpic, SIGNAL("triggered()"), self.addImage)
-
-        self.removepic = QAction("&Remove picture", self)
-        self.label.addAction(self.removepic)
-        self.connect(self.removepic, SIGNAL("triggered()"), self.removeImage)
-
-        self.editpic = QAction("&Change picture", self)
-        self.label.addAction(self.editpic)
-        self.edit = partial(self.addImage, True)
-        self.connect(self.editpic, SIGNAL("triggered()"), self.edit)
+        self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(self.label)
         hbox.addLayout(vbox)
         self.setLayout(hbox)
+
+        if buttons:
+            listbuttons = ListButtons()
+            self.addpic = listbuttons.add
+            self.removepic = listbuttons.remove
+            self.editpic = listbuttons.edit
+            self.savepic = QToolButton()
+            self.savepic.setIcon(QIcon(':/save.png'))
+            self.savepic.setIconSize(QSize(16,16))
+            listbuttons.insertWidget(3,self.savepic)
+            listbuttons.moveup.hide()
+            listbuttons.movedown.hide()
+            signal = SIGNAL('clicked()')
+            hbox.addLayout(listbuttons)
+
+        else:
+            self.label.setContextMenuPolicy(Qt.ActionsContextMenu)
+            self.savepic = QAction("&Save picture", self)
+            self.label.addAction(self.savepic)
+
+            self.addpic = QAction("&Add picture", self)
+            self.label.addAction(self.addpic)
+
+            self.removepic = QAction("&Remove picture", self)
+            self.label.addAction(self.removepic)
+
+            self.editpic = QAction("&Change picture", self)
+            self.label.addAction(self.editpic)
+            signal = SIGNAL('triggered()')
+
+        self.connect(self.addpic, signal, self.addImage)
+        self.connect(self.removepic, signal, self.removeImage)
+        self.edit = partial(self.addImage, True)
+        self.connect(self.editpic, signal, self.edit)
+        self.connect(self.savepic, signal, self.saveToFile)
+
         self.win = PicWin(parent = self)
         self._currentImage = -1
-        self.images = []
-        self.next.setEnabled(False)
-        self.prev.setEnabled(False)
-        if images:
-            self.setImages(images)
+
 
     def close(self):
         self.win.close()
@@ -291,28 +321,56 @@ class PicWidget(QWidget):
 
     def _setImage(self, num):
         try:
-            image = QImage().fromData(self.images[num].data)
+            while True:
+                image = QImage().fromData(self.images[num].data)
+                if image.isNull(): #Badly written data, which isn't useful in any way.
+                    del(self.images[num])
+                else:
+                    break
+            [action.setEnabled(True) for action in
+                    (self.editpic, self.savepic, self.removepic)]
         except IndexError:
+            [action.setEnabled(False) for action in
+                    (self.editpic, self.savepic, self.removepic)]
             self.label.setPixmap(QPixmap())
             return
 
+        if num in self.readonly:
+            self.editpic.setEnabled(False)
+            self.removepic.setEnabled(False)
         self.pixmap = QPixmap.fromImage(image)
+        self.win.setImage(self.pixmap)
         self.label.setPixmap(self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio))
         self._currentImage = num
         self.label.setFrameStyle(QFrame.NoFrame)
+        self.enableButtons()
 
-        self.next.setEnabled(True)
-        self.prev.setEnabled(True)
-        if num >= len(self.images) - 1:
+    def enableButtons(self):
+        if not self.images:
             self.next.setEnabled(False)
-        if num <= 0:
             self.prev.setEnabled(False)
+        else:
+            if self.currentImage >= len(self.images) - 1:
+                self.next.setEnabled(False)
+            else:
+                self.next.setEnabled(True)
+            if self.currentImage <= 0:
+                self.prev.setEnabled(False)
+            else:
+                self.prev.setEnabled(True)
+
+        if not self.next.isEnabled() and not self.prev.isEnabled():
+            self.next.hide()
+            self.prev.hide()
+        else:
+            self.next.show()
+            self.prev.show()
 
     def _getImage(self):
         return self._currentImage
 
-    currentImage = property(_getImage, _setImage,"""The index of the currently
-    selected image. It can be set to some valid index too. If the index isn't valid
+    currentImage = property(_getImage, _setImage,"""Get or set the index of
+    the current image. If the index isn't valid
     then a blank image is loaded.""")
 
     def maxImage(self):
@@ -331,7 +389,8 @@ class PicWidget(QWidget):
             self.label.setFrameStyle(QFrame.Box)
             self.label.setPixmap(QPixmap())
             self.pixmap = None
-            self.images = None
+            self.images = []
+        self.enableButtons()
 
     def nextImage(self):
         self.currentImage += 1
@@ -349,10 +408,11 @@ class PicWidget(QWidget):
             if os.path.exists(os.path.dirname(filename)):
                 self.pixmap.save(filename, "PNG")
 
-    def addImage(self, edit = False):
-        filedlg = QFileDialog()
-        filename = unicode(filedlg.getOpenFileName(self,
-                'Save as...',"~", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
+    def addImage(self, edit = False, filename = None):
+        if not filename:
+            filedlg = QFileDialog()
+            filename = unicode(filedlg.getOpenFileName(self,
+                    'Save as...',"~", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
         image = QImage()
         if image.load(filename):
             ba = QByteArray()
@@ -366,10 +426,16 @@ class PicWidget(QWidget):
                     self.images[self.currentImage] = pic
                     self.currentImage = self.currentImage
             else:
-                (text, ret) = QInputDialog.getText(self,"Input text", "Please enter a short description for the picture.",
-                                    QLineEdit.Normal, u'' + unicode(self.currentImage))
-                if not ret:
-                        text = u'Picture' + unicode(self.currentImage)
+                try:
+                    desc = [image.desc for image in self.images]
+                except TypeError:
+                    desc = []
+                i = 0
+                while True:
+                    text = unicode(i)
+                    if text not in desc:
+                        break
+                    i += 1
                 pic = APIC(3,'image/png', 3, text, data)
                 if not self.images:
                     self.setImages([pic])
@@ -385,6 +451,22 @@ class PicWidget(QWidget):
             else:
                 self.currentImage =  self.currentImage
 
+    def addBlanks(self, *filenames):
+        images = []
+        for i, filename in enumerate(filenames):
+            image = QImage()
+            if image.load(filename):
+                ba = QByteArray()
+                buf = QBuffer()
+                buf.open(QIODevice.WriteOnly)
+                image.save(buf, "PNG")
+                data = buf.data()
+                text = unicode(i)
+                pic = APIC(3,'image/png', 3, text, data)
+                images.append(pic)
+        self.blanks = len(filenames)
+        self.setImages(images)
+
 
 class PicWin(QDialog):
     """A windows that shows an image."""
@@ -398,6 +480,7 @@ class PicWin(QDialog):
         self.label = Label()
 
         vbox = QVBoxLayout()
+        vbox.setMargin(0)
         vbox.addWidget(self.label)
         self.setLayout(vbox)
 
@@ -410,6 +493,7 @@ class PicWin(QDialog):
         self.label.setPixmap(pixmap)
         self.setMaximumSize(pixmap.size())
         self.setMinimumSize(pixmap.size())
+        self.resize(pixmap.size())
 
 
 class EditTag(QDialog):
@@ -460,80 +544,76 @@ class EditTag(QDialog):
         self.close()
         self.emit(SIGNAL("donewithmyshit"), unicode(self.tagcombo.currentText()), unicode(self.value.toPlainText()), self.prevtag)
 
+
 class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
     In addition, the file's image tag is shown."""
-    def __init__(self, model = None, row = 0, parent = None):
+    def __init__(self, model, row = 0, parent = None):
         """model -> is a puddlestuff.TableModel object
         row -> the row that contains the file to be displayed
         """
         QDialog.__init__(self, parent)
         self.listbox = QListWidget()
-        self.piclabel = PicWidget()
+        self.piclabel = PicWidget(buttons = True)
 
-        if type(model) is not str:
-            self.model = model
-            self.loadFile(row)
-
-        addtag = QPushButton('&Add')
-        edittag = QPushButton('&Edit')
-        removetag = QPushButton('&Remove')
+        buttons = MoveButtons(model.taginfo, row)
 
         self.okcancel = OKCancel()
 
+        listbuttons = ListButtons()
+        listbuttons.moveup.hide()
+        listbuttons.movedown.hide()
+
+        listframe = QFrame()
+        listframe.setFrameStyle(QFrame.Box)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.listbox,1)
+        hbox.addLayout(listbuttons, 0)
+        listframe.setLayout(hbox)
+
+        imageframe = QFrame()
+        imageframe.setFrameStyle(QFrame.Box)
         vbox = QVBoxLayout()
+        vbox.setMargin(0)
         vbox.addWidget(self.piclabel)
-        (h1, h2, h3) = (QHBoxLayout(),QHBoxLayout(),QHBoxLayout())
-        for widget, box in zip((addtag, edittag, removetag),(h1, h2, h3)):
-            box.addWidget(widget)
-            box.addStretch()
-            vbox.addLayout(box)
         vbox.addStretch()
+        imageframe.setLayout(vbox)
 
-        self.hbox = QHBoxLayout()
-        self.hbox.addWidget(self.listbox,1)
-        self.hbox.addLayout(vbox,0)
+        hbox = QHBoxLayout()
+        hbox.addWidget(listframe)
+        hbox.addSpacing(4)
+        hbox.addWidget(imageframe)
 
-        self.vbox = QVBoxLayout()
-        self.vbox.addLayout(self.hbox)
-        prevaudio = QPushButton('<<')
-        nextaudio = QPushButton('>>')
-        self.okcancel.insertWidget(1, nextaudio)
-        self.okcancel.insertWidget(1, prevaudio)
-        self.vbox.addLayout(self.okcancel)
-        self.setLayout(self.vbox)
-
+        layout = QVBoxLayout()
+        layout.addLayout(hbox)
+        layout.addLayout(self.okcancel)
+        self.okcancel.insertWidget(0, buttons)
+        self.setLayout(layout)
 
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
         self.connect(self.listbox, SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.editTag)
         self.connect(self.okcancel, SIGNAL("ok"),self.OK)
 
         clicked = SIGNAL('clicked()')
-        self.connect(edittag, clicked, self.editTag)
-        self.connect(addtag, clicked, self.addTag)
-        self.connect(removetag, clicked, self.removeTag)
-        self.connect(prevaudio, clicked, self.prevAudio)
-        self.connect(nextaudio, clicked, self.nextAudio)
+        self.connect(listbuttons.edit, clicked, self.editTag)
+        self.connect(listbuttons.add, clicked, self.addTag)
+        self.connect(listbuttons.remove, clicked, self.removeTag)
 
         self.setMinimumSize(450,350)
 
         self.canceled = False
 
-    def nextAudio(self):
-        if self.currentrow < len(self.model.taginfo) - 1:
-            self.save()
-            self.loadFile(self.currentrow + 1)
-
-    def prevAudio(self):
-        if self.currentrow > 0 and len(self.model.taginfo) > 1:
-            self.save()
-            self.loadFile(self.currentrow - 1)
+        if not isinstance(model, basestring):
+            self.model = model
+            self.loadFile(row)
+            self.connect(buttons, SIGNAL('indexChanged'), self.loadFile)
 
     def removeTag(self):
         row = self.listbox.currentRow()
         if row != -1:
             self.listbox.takeItem(row)
+        self.filechanged = True
 
     def closeMe(self):
         self.model.undolevel += 1
@@ -548,19 +628,25 @@ class ExTags(QDialog):
         QDialog.closeEvent(self,event)
 
     def save(self):
-        tags = {}
-        listitems = [unicode(self.listbox.item(row).text()).split(" = ") for row in xrange(self.listbox.count())]
-        for tag, val in listitems:
-            if tag in tags:
-                tags[tag].append(val)
-            else:
-                tags[tag] = [val]
-        toremove = [z for z in audioinfo.usertags(self.model.taginfo[self.currentrow]) if z not in tags]
-        for tag in toremove:
-            tags[tag] = ""
-        tags["__image"] =  deepcopy(self.piclabel.images)
-        self.model.setRowData(self.currentrow, tags)
-        self.emit(SIGNAL('tagAvailable'))
+        audio = self.model.taginfo[self.currentrow]
+        if not self.piclabel.images:
+            images = None
+        else:
+            images = self.piclabel.images
+        if (images != audio['__image']) or self.filechanged:
+            tags = {}
+            listitems = [unicode(self.listbox.item(row).text()).split(" = ") for row in xrange(self.listbox.count())]
+            for tag, val in listitems:
+                if tag in tags:
+                    tags[tag].append(val)
+                else:
+                    tags[tag] = [val]
+            toremove = [z for z in audioinfo.usertags(self.model.taginfo[self.currentrow]) if z not in tags]
+            for tag in toremove:
+                tags[tag] = ""
+            tags["__image"] =  deepcopy(self.piclabel.images)
+            self.model.setRowData(self.currentrow, tags)
+            self.emit(SIGNAL('tagChanged()'))
 
     def OK(self):
         self.save()
@@ -589,15 +675,18 @@ class ExTags(QDialog):
             win.show()
             self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
 
+
     def editTagBuddy(self, tag, value, prevtag = None):
         if prevtag is not None:
             self.listbox.currentItem().setText(tag + " = " + value)
         else:
             self.listbox.addItem(tag + " = " + value)
         self.listbox.sortItems()
+        self.filechanged = True
 
 
     def loadFile(self, row):
+        self.filechanged = False
         self.listbox.clear()
         items = []
         tags = self.model.taginfo[row]
@@ -608,10 +697,14 @@ class ExTags(QDialog):
                 [items.append(item + " = " + z) for z in val]
         self.listbox.addItems(items)
         self.currentrow = row
-        if tags.filetype != audioinfo.MP3:
-            self.piclabel.setEnabled(False)
-        if tags.images:
-            self.piclabel.setImages(tags.images)
+        self.piclabel.setEnabled(False)
+        if '__library' not in tags:
+            if tags.filetype == audioinfo.PID3:
+                self.piclabel.setEnabled(True)
+                if tags.images:
+                    self.piclabel.setImages(deepcopy(tags.images))
+                else:
+                    self.piclabel.setImages(None)
         else:
             self.piclabel.setImages(None)
         self.setWindowTitle(tags["__filename"])

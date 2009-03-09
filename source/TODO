@@ -1,3 +1,19 @@
+9 March 2009
+    Time has been real tight which has resulted on puddletag being neglected.
+    First is the console version, which is not in this release and scripting
+    isn't that much more powerful(although many bugs have been fixed).
+    So, things that'll be done for the next release are:
+    	Code quality should be increased(comments and shit)
+	A console version(for real this time)
+	User interface improvements that I have in mind are:
+	    Enabling drag and drop in the dirview.
+	    Allow the user  to add toolbar buttons corresponding to an action.
+	    Enable shortcut editing(maybe with KDE)
+
+5 February
+    Expect more powerful scripting for the next release, I'll be working on the
+    console version which I'll include in the release if it's good enough.
+
 20 January
     The library code is currently in first-draft mode. i.e I still have a bunch
     of stuff to add and some cleanup to do.

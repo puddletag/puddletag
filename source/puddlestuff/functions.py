@@ -49,10 +49,44 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import sre, pdb
-import findfunc, string
-import decimal
-from PyQt4.QtCore import QString, Qt, QStringList
+import findfunc, string, pdb, sys, audioinfo, decimal, os
+path = os.path
+if sys.version_info[:2] >= (2, 5): import re as sre
+else: import sre
+import time
+def finddups(tracks, key = 'title'):
+    the = time.time()
+    li = [z[key].lower() for z in tracks if key in z and z[key] is not None]
+    temp = set(li)
+    dups = {}
+    for i, z in enumerate(li):
+        if z in temp:
+            temp.discard(z)
+        else:
+            index = li.index(z)
+            try:
+                dups[index].append(i)
+            except:
+                dups[index] = [i]
+    return dups
+
+def changeartist(artist, *files):
+    for audio in files:
+        audio['artist'] = artist
+        audio.save()
+
+def libstuff(dirname):
+    files = []
+    for filename in os.listdir(dirname):
+        tag = audioinfo.Tag(path.join(dirname, filename))
+        if tag:
+            files.append(tag)
+    return files
+
+def hasformat(pattern, tagname = "__filename"):
+    if findfunc.filenametotag(pattern, tagname):
+        return unicode(True)
+    return unicode(False)
 
 def re_escape(rex):
     escaped = ""
@@ -87,13 +121,13 @@ def strip(text):
 
 def formatValue(tags, pattern):
     """Format Value, Format $0 using $1
-Format string, QLineEdit"""
+&Format string, QLineEdit"""
     return findfunc.tagtofilename(pattern, tags)
 
 def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
     '''Case Conversion, "$0: $1"
-Type, QComboBox, Mixed Case,UPPER CASE,lower case
-"For Mixed Case, after any of:", QLineEdit, "., !"'''
+&Type, QComboBox, Mixed Case,UPPER CASE,lower case
+"For &Mixed Case, after any of:", QLineEdit, "., !"'''
     if ctype == "UPPER CASE":
         return text.upper()
     elif ctype == "lower case":
@@ -240,6 +274,8 @@ def neql(x,y):
         return unicode(False)
 
 def not_(x):
+    if x == "False":
+        return True
     return unicode(not x)
 
 def odd(x):
@@ -273,10 +309,10 @@ def sub(x,y):
 
 def replace(text, word, replaceword, matchcase = False, whole = False):
     '''Replace, "Replace '$0': '$1' -> '$2'"
-Replace, QLineEdit
-with:, QLineEdit
-Match case:, QCheckBox
-only as whole word, QCheckBox'''
+&Replace, QLineEdit
+w&ith:, QLineEdit
+Match c&ase:, QCheckBox
+only as &whole word, QCheckBox'''
     if (matchcase) and (not whole):
         return text.replace(word, replaceword)
     elif (not matchcase) and (not whole):
@@ -319,9 +355,9 @@ def replaceAsWord(text, word, replaceword, matchcase = False, characters = None)
 
 def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
     '''Remove brackets from (ft), Brackets remove: $0
-    Feat String, QLineEdit, ft
-    Opening bracket, QLineEdit, "("
-    Closing bracket, QLineEdit, ")"'''
+    Feat &String, QLineEdit,  ft
+    O&pening bracket, QLineEdit, "("
+    C&losing bracket, QLineEdit, ")"'''
     #Removes parenthesis from feat string
     #say if you had a title string "Booty (ft the boot man)"
     #featFormat would return "Booty ft the boot man"
@@ -343,24 +379,20 @@ def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
 
 def ftArtist(tags, ftval = " ft "):
     '''Get FT Artist, "FT Artist: $0, String: $1"
-Featuring String, QLineEdit'''
+Featuring &String, QLineEdit, " ft "'''
 
     try:
         text = tags["artist"]
     except KeyError:
         return
-    try:
-        x = text.find(ftval)
-    except:
-        import pdb
-        pdb.set_trace()
+    x = text.find(ftval)
     if x != -1:
         return(text[:x])
 
 def ftTitle(tags, ftval = " ft ", replacetext = None):
     '''Get FT Title, "FT Title: $0, String: $1"
-Featuring String, QLineEdit
-Append text, QLineEdit'''
+Featuring &String, QLineEdit, " ft "
+&Text to append, QLineEdit, " ft "'''
     if replacetext == None:
         replacetext = ftval
     try:

@@ -4,7 +4,7 @@ from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen
 
 from puddlestuff import resource
 from puddlestuff.puddletag import MainWin
-__version__ = "0.4.5"
+__version__ = "0.5.2"
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -19,8 +19,8 @@ if __name__ == "__main__":
 
     qb = MainWin()
     qb.rowEmpty()
+    splash.finish(qb)
     if filename:
         qb.openFolder(filename)
     qb.show()
-    splash.finish(qb)
     app.exec_()

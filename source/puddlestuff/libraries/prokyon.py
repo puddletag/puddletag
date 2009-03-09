@@ -1,70 +1,102 @@
 import MySQLdb as mysql
 import sys, os, pdb
-sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
-import audioinfo, pdb
-from operator import itemgetter
+sys.path.insert(1, '..')
+try:
+    import puddlestuff.audioinfo as audioinfo
+except ImportError:
+    import audioinfo
 FILENAME = audioinfo.FILENAME
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from mutagen.id3 import TCON
 GENRES = TCON.GENRES
+try:
+    import puddlestuff.musiclib as musiclib
+except ImportError:
+    import musiclib
+try:
+    from mysqllib import MySQLLib
+except ImportError:
+    from puddlestuff.libraries.mysqllib import MySQLLib
 
 name = "Prokyon"
 description = "Prokyon Database"
 author = 'concentricpuddle'
 
-class Prokyon:
-    def __init__(self, **keywords):
-        keywords['use_unicode'] = True
-        keywords['charset'] = 'utf8'
-        self.db = mysql.connect(**keywords)
-        self.cursor = self.db.cursor()
-
+class Prokyon(MySQLLib):
     def getArtists(self):
         self.cursor.execute(u"SELECT DISTINCT BINARY artist FROM tracks ORDER BY artist")
-        artists = self.cursor.fetchall()
-        return [z[0] for z in artists]
+        return [self.latinutf(artist[0]) for artist in self.cursor.fetchall()]
 
     def getAlbums(self, artist):
-        self.cursor.execute(u"SELECT DISTINCT BINARY album FROM tracks WHERE artist = BINARY %s", (artist,))
-        albums = [z[0] for z in self.cursor.fetchall()]
-        return albums
+        self.cursor.execute(u"""SELECT DISTINCT BINARY album FROM tracks WHERE artist = BINARY %s""", (self.utflatin(artist),))
+        return [self.latinutf(album[0]) for album in self.cursor.fetchall()]
 
-    def getTracks(self, artist, albums):
+    def convertTrack(self, track, artist = None, album = None):
         join = os.path.join
+        if artist is None:
+            artist = track[20]
+
+        if album is None:
+            album = track[21]
+        try:
+            genre = GENRES[track[8]]
+        except (IndexError, TypeError):
+            genre = u''
+
+        temp = {'__filename': join(track[0], track[1]),
+            '__path': track[1],
+            '__ext': os.path.splitext(track[1])[1][1:], #Don't need(or want) the extra dot
+            '__bitrate': audioinfo.strbitrate(track[2] * 1000),
+            '__frequency': audioinfo.strfrequency(track[3]),
+            '__length': audioinfo.strlength(track[4]),
+            '__folder': track[0],
+            'title': track[5],
+            'track': track[6],
+            'year': track[7],
+            'genre': genre,
+            'comment': track[9],
+            '__size' : track[10],
+            '__modified': track[11],
+            'artist': artist,
+            'album': album,
+            '__library': 'prokyon',
+            "___layer": track[12],
+            '___mimetype': track[13],
+            '___version': track[14],
+            '___mode': track[15],
+            '___lyricsid': track[16],
+            '___notes': track[17],
+            '___rating': track[18],
+            '___medium': track[19]}
+
+        return self.applyToDict(self.applyToDict(temp, self.valuetostring), self.latinutf)
+
+    def getTracks(self, artist, albums = None):
         ret = []
+        artist = self.utflatin(artist)
+        if albums is None:
+            albums = self.getAlbums(artist)
+            print albums
         for album in albums:
-            self.cursor.execute(u"""SELECT path, filename, bitrate, samplerate,
-                                length, title, tracknumber, year, genre, comment,
-                                size, lastModified, layer, mimetype, version,
-                                mode FROM tracks WHERE artist = BINARY %s
-                                AND album = BINARY %s""", (artist, album))
-            tracks = (self.cursor.fetchall())
-            for track in tracks:
-                try:
-                    genre = GENRES[track[8]]
-                except (IndexError, TypeError):
-                    genre = u''
-                ret.append({'__filename': join(track[0], track[1]),
-                    '__path': track[1],
-                    '__ext': os.path.splitext(track[1])[1][1:], #Don't need(or want) the extra dot
-                    '__bitrate': audioinfo.strbitrate(track[2] * 1000),
-                    '__frequency': audioinfo.strfrequency(track[3]),
-                    '__length': audioinfo.strlength(track[4]),
-                    '__folder': track[0],
-                    'title': track[5],
-                    'track': unicode(track[6]),
-                    'year': unicode(track[7]),
-                    'genre': genre,
-                    'comment': track[9],
-                    '__size' : unicode(track[10]),
-                    '__modified': unicode(track[11]),
-                    'artist': artist,
-                    'album': album,
-                    '__library': 'prokyon',
-                    "___layer": track[12],
-                    '___mimetype': track[13],
-                    '___version': track[14]})
+            album = self.utflatin(album)
+            if not album:
+                self.cursor.execute(u"""SELECT path, filename, bitrate,
+                samplerate, length, title, tracknumber, year, genre,
+                comment, size, lastModified, layer, mimetype,
+                version, mode, lyrics_id, notes,rating,
+                medium FROM tracks WHERE artist = BINARY %s
+                AND (album = '' or album is NULL)""", (artist,))
+            else:
+                self.cursor.execute(u"""SELECT path, filename, bitrate,
+                samplerate, length, title, tracknumber, year, genre,
+                comment, size, lastModified, layer, mimetype,
+                version, mode, lyrics_id, notes,rating,
+                medium FROM tracks WHERE artist = BINARY %s
+                AND album = %s""", (artist, album))
+
+            tracks = self.cursor.fetchall()
+            ret.extend([musiclib.Tag(self, self.convertTrack(track, artist, album)) for track in tracks])
         return ret
 
     def delTracks(self, tracks):
@@ -87,15 +119,15 @@ class Prokyon:
                 if tks <= 1:
                     self.cursor.execute('DELETE FROM artists WHERE id = %s', (fileid,))
                 else:
-                    self.cursor.execute('''UPDATE artists SET total = %s,
-                        local = %s WHERE id = %s''', (tks - 1, tks - 1, fileid))
+                    self.cursor.execute('''UPDATE artists SET total = total - 1,
+                        local = local - 1 WHERE id = %s''', (fileid,))
 
             album = track['album'][0]
             if self.cursor.execute('''SELECT id, tracks_available FROM albums
                 WHERE artist = BINARY %s AND name = BINARY %s''', (artist, album)):
                 (fileid, tks) = self.cursor.fetchall()[0]
                 if tks > 1:
-                    self.cursor.execute('UPDATE albums SET tracks_available = %s WHERE id = %s', (tks - 1, fileid))
+                    self.cursor.execute('UPDATE albums SET tracks_available = tracks_available - 1 WHERE id = %s', (fileid, ))
                 else:
                     self.cursor.execute('DELETE FROM albums WHERE id = %s', (fileid,))
 
@@ -105,6 +137,8 @@ class Prokyon:
         freq = audioinfo.lngfrequency
         leng = audioinfo.lnglength
         converttag = audioinfo.converttag
+        utflatin = self.utflatin
+        appDict = self.applyToDict
         def genretoint(genre):
             try:
                 return GENRES.index(genre)
@@ -112,38 +146,57 @@ class Prokyon:
                 return 255
 
         for old, new in tracks:
-            (old, new) = (converttag(old), converttag(new))
+            (old, new) = (converttag(old, True), converttag(new, True))
             mixed = old.copy()
             mixed.update(new)
-            oldfilename = basename(old['__filename'])
-            oldpath = dirname(old['__filename'])
+            mixed = appDict(appDict(mixed, self.utflatin), self.strToNone)
+            for z in ['artist', 'album', 'title']:
+                try:
+                    if mixed[z] is None:
+                        mixed[z] = u""
+                except KeyError:
+                    mixed[z] = u""
 
-            newfilename = basename(new['__filename'])
-            newpath = dirname(new['__filename'])
+            oldfilename = utflatin(basename(old['__filename']))
+            oldpath = utflatin(dirname(old['__filename']))
+            old = appDict(old, utflatin)
+
+            newfilename = basename(mixed['__filename'])
+            newpath = dirname(mixed['__filename'])
             #Check if the new file exists in the table, delete the row if it does
             #since filenames have to be unique.
-            if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (newpath, newfilename)):
-                fileid = self.cursor.fetchall()[0][0]
-                self.cursor.execute('DELETE FROM tracks WHERE id = %s', (fileid,))
+            try:
+                if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (newpath, newfilename)):
+                    fileid = self.cursor.fetchall()[0][0]
+                    self.cursor.execute('DELETE FROM tracks WHERE id = %s', (fileid,))
 
-            #Update the old file if it exists. Create new one otherwise.
-            if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (oldpath, oldfilename)):
-                fileid = self.cursor.fetchall()[0][0]
-            else:
-                self.cursor.execute('SELECT MAX(id) FROM tracks')
-                fileid = self.cursor.fetchall()[0][0] + 1
+                #Update the old file if it exists. Create new one otherwise.
+                if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (oldpath, oldfilename)):
+                    fileid = self.cursor.fetchall()[0][0]
+                else:
+                    self.cursor.execute('SELECT MAX(id) FROM tracks')
+                    fileid = self.cursor.fetchall()[0][0] + 1
 
-            self.cursor.execute("""REPLACE INTO tracks VALUES
-                            (%s, %s, %s, 0, %s,
-                            0, %s, %s, %s ,0,
-                            %s, %s, %s, %s,
-                            %s, %s,NULL, %s, %s,
-                            %s, %s, %s, NULL,3)""",
-                            (fileid, newpath, newfilename, mixed['__modified'],
-                            mixed['___mimetype'], mixed['___version'], mixed['___layer'],
-                            freq(mixed['__bitrate']) / 1000, freq(mixed["__frequency"]), leng(mixed["__length"]), long(mixed["__size"]),
-                            mixed["artist"], mixed["title"], mixed['album'], mixed['track'],
-                            mixed['year'], genretoint(mixed['genre']), mixed["comment"]))
+                self.cursor.execute("""REPLACE INTO tracks VALUES
+                                (%s, %s, %s, %s, %s,
+                                0, %s, %s, %s ,
+                                %s, %s, %s,
+                                %s, %s,
+                                %s, %s, %s, %s, %s,
+                                %s, %s, %s, %s, %s)""",
+                                (fileid, newpath, newfilename, mixed['___medium'], mixed['__modified'],
+                                mixed['___mimetype'], mixed['___version'], mixed['___layer'],
+                                mixed['___mode'], freq(mixed['__bitrate']) / 1000, freq(mixed["__frequency"]),
+                                leng(mixed["__length"]), long(mixed["__size"]),
+                                mixed["artist"], mixed["title"], mixed['___lyricsid'], mixed['album'], mixed['track'],
+                                mixed['year'], genretoint(mixed['genre']), mixed["comment"],
+                                mixed['___notes'], mixed['___rating']))
+
+            except mysql.OperationalError, details:
+                if details.args[0] == 1142: #User doesn't have permission
+                    raise musiclib.MusicLibError(1, unicode(details.args[1]))
+                else:
+                    raise musiclib.MusicLibError(1, unicode(details.args[1]))
 
             #Update artists table
             artist = mixed['artist']
@@ -188,32 +241,70 @@ class Prokyon:
             except IndexError:
                 "No need to do any removing since old['album'] does not exist in the database."
 
+    def search(self, term):
+        self.cursor.execute(u"""SELECT path, filename, bitrate,
+                samplerate, length, title, tracknumber, year, genre,
+                comment, size, lastModified, layer, mimetype,
+                version, mode, lyrics_id, notes,rating,
+                medium, artist, album FROM tracks WHERE
+                UCASE(artist) REGEXP(%s) or UCASE(filename) REGEXP(%s) or
+                UCASE(title) REGEXP(%s) or UCASE(path) REGEXP(%s) or
+                UCASE(album) REGEXP(%s) or UCASE(genre) REGEXP(%s) or
+                UCASE(comment) REGEXP(%s) or UCASE(notes) REGEXP(%s) or
+                UCASE(year) REGEXP(%s)
+                """, (term,) * 9)
+        return [musiclib.Tag(self, self.convertTrack(track)) for track in self.cursor.fetchall()]
+
+    def updateSearch(self, term, files):
+        tags = ['artist', 'title', FILENAME, '__path', 'album', 'genre', 'comment'
+        , '___notes', 'year']
+        term = term.lower()
+        tracks = []
+        for audio in files:
+            temp = audioinfo.converttag(audio)
+            for tag in tags:
+                if term in temp[tag].lower():
+                    tracks.append(audio)
+                    break
+        return tracks
+
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
         self.setWindowTitle("Import Library")
-        self.username = QLineEdit('root')
+
+        userlabel = QLabel('&Username')
+        self.username = QLineEdit('prokyon')
+        userlabel.setBuddy(self.username)
+
+        passlabel = QLabel('&Password')
         self.passwd = QLineEdit()
-        self.database = QLineEdit('prokyon')
         self.passwd.setEchoMode(QLineEdit.Password)
+        passlabel.setBuddy(self.passwd)
+
+        datalabel = QLabel('&Database')
+        self.database = QLineEdit('prokyon')
+        datalabel.setBuddy(self.database)
+
+        portlabel = QLabel('Po&rt')
         validator = QIntValidator(self)
         self.port = QLineEdit('3306')
+        portlabel.setBuddy(self.port)
         self.port.setValidator(validator)
 
         vbox = QVBoxLayout()
-        [vbox.addWidget(z) for z in [QLabel('Username'), self.username,
-            QLabel('Password'), self.passwd, QLabel('Database'),
-            self.database, QLabel('port'), self.port]]
+        [vbox.addWidget(z) for z in [userlabel, self.username, passlabel,
+            self.passwd, datalabel, self.database, portlabel, self.port]]
         vbox.addStretch()
         self.setLayout(vbox)
 
-    def setStuff(self):
+    def getLibClass(self):
         username = unicode(self.username.text())
         passwd = unicode(self.passwd.text())
         database = unicode(self.database.text())
         port = long(self.port.text())
 
-        return Prokyon(user = username, passwd = passwd, db = database, port = port)
+        return Prokyon('tracks', user = username, passwd = passwd, db = database, port = port)
 
     def saveSettings(self):
         username = QVariant(self.username.text())
@@ -248,8 +339,6 @@ def loadLibrary():
     port = settings.value('port').toLongLong()[0]
     return Prokyon(user = username, passwd = passwd, db = database, port = port)
 
-
 if __name__ == "__main__":
-    db = Prokyon(user = 'root', passwd = 'ktgisgreat', db = 'prokyon')
-    albums = db.getTracks('101', [db.getAlbums('101')[0]])
-    db.saveTracks([(albums[0],{'artist': '102 well, who else'})])
+    p = Prokyon('tracks', user = "prokyon", passwd = 'prokyon', db = 'prokyon')
+    print [p.getTracks(z, p.getAlbums(z)) for z in p.getArtists()[:10]]

@@ -2,14 +2,21 @@ from xml.dom import minidom
 import pdb
 from os import path
 import sys
-sys.path.insert(1,'..')
 import urllib, os
-import audioinfo
-from audioinfo import FILENAME, PATH
+try:
+    import puddlestuff.audioinfo as audioinfo
+except:
+    sys.path.insert(1, '..')
+    import audioinfo
+FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+try:
+    import puddlestuff.musiclib as musiclib
+except:
+    import musiclib
 
 name = "Rhythmbox"
 description = "Rhythmbox Database"
@@ -17,6 +24,12 @@ author = 'concentricpuddle'
 
 def getFilename(filename):
     filename = urllib.url2pathname(filename)
+    try:
+        filename = filename.encode('latin1').decode('utf8')
+    except UnicodeDecodeError:
+        print u"UnicodeDecodeError on: ", filename
+        pass
+
     if filename.startswith(u'file://'):
         filename = filename[len(u'file://'):]
         return {u'__folder': path.dirname(filename),
@@ -49,7 +62,7 @@ setLength = lambda length: {'duration': unicode(audioinfo.lnglength(length))}
 setCreated = lambda created: {'first-seen': unicode(audioinfo.lngtime(created))}
 setBitrate = lambda bitrate: {'bitrate': unicode(audioinfo.lngfrequency(bitrate) / 1000)}
 setModified = lambda modified: {'last-seen': unicode(audioinfo.lngtime(modified))}
-setFilename = lambda filename: {u'location': u'file://' + urllib.pathname2url(filename)}
+setFilename = lambda filename: {u'location': u'file://' + unicode(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
 
 RECONVERSION = {
     'title': 'title',
@@ -84,16 +97,24 @@ class RhythmDB(ContentHandler):
         self.extratype = ""
         parser = make_parser()
         parser.setContentHandler(self)
-        parser.parse(filename)
+        try:
+            parser.parse(filename)
+        except ValueError, detail:
+            if not os.path.exists(filename):
+                msg = "%s does not exist." % filename
+            else:
+                msg = "%s is not a valid Rhythmbox XML database." % filename
+            raise musiclib.MusicLibError(0, msg)
         self.filename = filename
 
     def startElement(self, name, attrs):
-        if name == 'entry' and attrs.get('type') == 'song':
-            self.stargetting = True
-        elif name == 'entry' and attrs.get('type') != 'song':
-            self.extratype = attrs.get('type')
-            self.extras = True
-            self.stargetting = True
+        if name == 'entry':
+            if attrs.get('type') == 'song':
+                self.stargetting = True
+            else:
+                self.extratype = attrs.get('type')
+                self.extras = True
+                self.stargetting = True
         if self.stargetting and name != 'entry':
             self.current = name
             self.values[name] = ""
@@ -144,14 +165,17 @@ class RhythmDB(ContentHandler):
         except KeyError:
             return None
 
-    def getTracks(self, artist, albums):
+    def getTracks(self, artist, albums = None):
         ret = []
+        if albums is None:
+            albums = self.albums[artist].keys()
+
         if artist in self.albums:
             stored = self.albums[artist]
             for album in albums:
                 if album in stored:
                     ret.extend(self.tracks[stored[album]])
-        return ret
+        return [musiclib.Tag(self, z) for z in ret]
 
     def _escapedText(self, txt):
         result = txt
@@ -217,10 +241,7 @@ class RhythmDB(ContentHandler):
                         tagname = RECONVERSION[key]
                     except KeyError:
                         continue
-                    #if tagvalue  == 'Me So Horny':
-                        #pdb.set_trace()
                     entry.append(u'    <%s>%s</%s>\n' % (self._escapedText(tagname), self._escapedText(tagvalue), self._escapedText(tagname)))
-                        #entry.append('        <%s>%s</%s>\n' % (self._escapedText(tagname), self._escapedText(unicode(tagvalue)), self._escapedText(tagname)))
                 entry.append(u'  </entry>\n')
                 f.write((u"".join(entry)).encode('utf-8'))
                 entry = []
@@ -241,6 +262,44 @@ class RhythmDB(ContentHandler):
             os.rename(self.filename, backup)
         os.rename(filename, self.filename)
 
+    def close(self):
+        pass
+
+    def search(self, term):
+        term = term.upper()
+        ret = []
+        artists = set([z for z in self.albums if term in z.upper()])
+        [ret.extend(self.getTracks(z)) for z in artists]
+        others = set(self.albums).difference(artists)
+
+        for artist in others:
+            albums = self.albums[artist]
+            for album in albums:
+                if term in album.upper():
+                    ret.extend(self.getTracks(artist, [album]))
+                else:
+                    index = self.albums[artist][album]
+                    tracks = self.tracks[index]
+                    for track in tracks:
+                        for value in track.values():
+                            if term in value.upper():
+                                ret.append(track)
+                                break
+        return [musiclib.Tag(self, z) for z in ret]
+
+    def updateSearch(self, term, tracks):
+        tags = ['artist', 'title', FILENAME, '__path', 'album', 'genre',
+                'comment', 'year']
+        term = term.lower()
+        tracks = []
+        for audio in files:
+            temp = audioinfo.converttag(audio)
+            for tag in tags:
+                if term in temp[tag].lower():
+                    tracks.append(audio)
+                    break
+        return tracks
+
 
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
@@ -248,13 +307,28 @@ class ConfigWindow(QWidget):
         self.dbpath = QLineEdit(path.join(unicode(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
 
         vbox = QVBoxLayout()
-        [vbox.addWidget(z) for z in [QLabel('Database path'), self.dbpath]]
+        [vbox.addWidget(z) for z in [QLabel('&Database path'), self.dbpath]]
+
+        hbox = QHBoxLayout()
+        openfile = QPushButton("&Browse...")
+        hbox.addStretch()
+        hbox.addWidget(openfile)
+        vbox.addLayout(hbox)
+        self.connect(openfile, SIGNAL('clicked()'), self.getFile)
         vbox.addStretch()
         self.setLayout(vbox)
         self.dbpath.selectAll()
         self.dbpath.setFocus()
 
-    def setStuff(self):
+    def getFile(self):
+        filedlg = QFileDialog()
+        filename = unicode(filedlg.getOpenFileName(self,
+            'Select RhythmBox database file.', self.dbpath.text()))
+        if filename:
+            self.dbpath.setText(filename)
+
+
+    def getLibClass(self):
         return RhythmDB(unicode(self.dbpath.text()))
 
     def saveSettings(self):
@@ -264,15 +338,4 @@ def loadLibrary():
     settings = QSettings()
     return RhythmDB(unicode(settings.value('Library/dbpath').toString()))
 
-if __name__ == "__main__":
-    import time
-    #db = RhythmDB('rhyth.xml')
-    db = RhythmDB(path.join(unicode(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
-    #artist = db.getArtists()[3]
-    #x = db.getTracks(artist, db.getAlbums(artist))[0]
-    #y = x.copy()
-    #y['genreoeau'] = 'KTG is the great'
-    #db.saveTracks([(x,y)])
-    print "saving"
-    db.save()
 

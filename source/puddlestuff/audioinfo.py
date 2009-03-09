@@ -24,16 +24,49 @@ import mutagen, time, pdb, calendar
 from decimal import Decimal
 from copy import copy, deepcopy
 from os import path, stat
-from stat import ST_SIZE, ST_MTIME, ST_CTIME
-from mutagen.id3 import APIC, TimeStampTextFrame, TextFrame
+from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
+from mutagen.id3 import APIC, TimeStampTextFrame, TextFrame, ID3
+import mutagen.id3
 import mutagen.oggvorbis, mutagen.flac, mutagen.apev2, mutagen.mp3
+from puddleobjects import partial
 
+from mutagen.apev2 import APEv2File
+from mutagen.flac import FLAC
+from mutagen.oggvorbis import OggVorbis
+
+class PuddleID3(ID3):
+    """ID3 reader to replace mutagen's just to allow the reading of APIC
+    tags with the same description, ala Mp3tag."""
+    def loaded_frame(self, tag):
+        if len(type(tag).__name__) == 3:
+            tag = type(tag).__base__(tag)
+        i = 0
+        while tag.HashKey in self:
+            try:
+                tag.desc = tag.desc + unicode(i)
+            except AttributeError:
+                break
+            i += 1
+        self[tag.HashKey] = tag
+
+class PuddleID3FileType(mutagen.mp3.MP3):
+    """See PuddleID3."""
+    def add_tags(self, ID3=PuddleID3):
+        mutagen.mp3.MP3.add_tags(self, ID3)
+
+    def load(self, filename, ID3 = PuddleID3, **kwargs):
+        mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
+options = [FLAC, PuddleID3FileType, OggVorbis, FLAC]
 
 PATH = u"__path"
 FILENAME = u"__filename"
 READONLY = ('__bitrate', '__frequency', "__length", "__modified", "__size", "__created", "__library")
 INFOTAGS = [PATH, FILENAME, "__ext", "__folder"]
 INFOTAGS.extend(READONLY)
+
+SUPPORTED = (PuddleID3FileType, mutagen.oggvorbis.OggVorbis, mutagen.flac.FLAC, mutagen.apev2.APEv2)
+(PID3, OGG, FLAC, APEV2) = range(len(SUPPORTED))
+VORBISCOMMENT = (OGG, FLAC, APEV2)
 
 
 TAGS = {'TALB': 'album',
@@ -56,7 +89,6 @@ TAGS = {'TALB': 'album',
         'TKEY': 'initialkey',
         'TLAN': 'language',
         'TLEN': 'length',
-        'TMCL': 'musiciancredits',
         'TMED': 'mediatype',
         'TMOO': 'mood',
         'TOAL': 'originalalbum',
@@ -80,54 +112,59 @@ TAGS = {'TALB': 'album',
         'TSRC': 'isrc',
         'TSSE': 'encodingsettings',
         'TSST': 'setsubtitle',}
-
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
-SUPPORTED = (mutagen.mp3.MP3, mutagen.oggvorbis.OggVorbis, mutagen.flac.FLAC, mutagen.apev2.APEv2)
-(MP3, OGG, FLAC, APEV2) = range(len(SUPPORTED))
-VORBISCOMMENT = (OGG, FLAC, APEV2)
 
-def converttag(tag):
+def converttag(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.
-    If a key is a list then the first item of that list is returned.
+    If a key is a list then the first item of that list is returned."""
 
     #Created this function, because a lot of puddletag's functions expects dicts with
-    only string items. So, rather than rewriting every function to do something like this, I use this."""
+    #only string items. So, rather than rewriting every function to do something like this, I use this.
     newtag = {}
     for i in tag:
         v = tag[i]
-        if isinstance(v, (unicode,str)):
+        if isinstance(v, basestring):
             newtag[i] = v
         elif not isinstance(i, int) and hasattr(v, '__iter__'):
             newtag[i] = v[0]
+        elif isinstance(i, basestring) and leaveNone:
+            newtag[i] = v
     return newtag
 
 def usertags(tag):
+    """Return all the tags in a file, except the images."""
     return dict([(z,tag[z]) for z in tag if type(z) is not int and not z.startswith("__")])
 
 def strlength(value):
+    """Converts seconds to length in minute:seconds format."""
     seconds = long(value % 60)
     if seconds < 10:
         seconds = u"0" + unicode(seconds)
     return "".join([unicode(long(value/60)),  ":", unicode(seconds)])
 
-def strbitrate(value):
-    return unicode(value/1000) + u' kb/s'
+def strbitrate(bitrate):
+    """Returns a string representation of bitrate in kb/s."""
+    return unicode(bitrate/1000) + u' kb/s'
 
 def strfrequency(value):
     return unicode(value / 1000.0)[:4] + u" kHz"
 
 def lnglength(value):
+    """Converts a string representation of length to seconds."""
     (minutes, seconds) = value.split(':')
     (minutes, seconds) = (long(minutes), long(seconds))
     return (minutes * 60) + seconds
 
 def lngfrequency(value):
+    """Inverse of strfrequency."""
     return long(Decimal(value.split(" ")[0]) * 1000)
 
 def strtime(seconds):
+    """Converts UNIX time(in seconds) to more Human Readable format."""
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds))
 
 def lngtime(value):
+    '''Converts time in %Y-%m-%d %H:%M:%S format to seconds.'''
     return calendar.timegm(time.strptime(value, '%Y-%m-%d %H:%M:%S'))
 
 class Tag:
@@ -146,19 +183,20 @@ class Tag:
     >>>tag = audioinfo.Tag()
     >>>tag.link(filename)
     {'artist': "Artist", "track":"12", title:"Title", '__length':"5:14"}
-    The tags are stored in tag._tags.
 
     File info tags like length start with '__'.
-    Except for '__image', '__path', these tags are readonly.
+    Images can be accessed by either the '__image' tag or via Tag.images. Note
+    that images aren't included when iterating through Tag.
 
     Use save to save tags."""
-    images = None
     def __init__(self,filename=None):
         """Links the audio"""
+        self.images = None
         if filename is not None:
             self.link(filename)
 
     def load(self, tags, filetype, images):
+        """Used only for creating a copy of myself."""
         self._tags = deepcopy(tags)
         if isinstance(filetype, int):
             self.filetype = filetype
@@ -171,10 +209,8 @@ class Tag:
 
     def link(self, filename):
         """Links the audio, filename
-        returns and sets self._tags if successful."""
+        returns self if successful, None otherwise."""
 
-        #Get the type of audio and set
-        #self.filetype to it.
         self.filetype = None
         self._tags = {}
 
@@ -186,15 +222,16 @@ class Tag:
                 filename = unicode(path.realpath(filename), 'utf-8')
             else:
                 filename = path.realpath(filename)
+
             try:
-                audio = mutagen.File(filename)
+                audio = mutagen.File(filename, options)
             except (IOError, ValueError):
                 return
 
         if audio is None:
             return
 
-        if isinstance(audio, SUPPORTED[MP3]):
+        if isinstance(audio, SUPPORTED[PID3]):
             if audio.tags: #Not empty
                 audio.tags.update_to_v24()
                 try:
@@ -222,17 +259,18 @@ class Tag:
         elif isinstance(audio, tuple([SUPPORTED[z] for z in VORBISCOMMENT])):
             for z in audio:
                 self._tags[z.lower()] = audio.tags[z]
-            if 'tracknumber' in self._tags:
+            if 'tracknumber' in self._tags: #Vorbiscomment uses tracknumber instead of track.
                 self._tags["track"] = copy(self._tags["tracknumber"])
                 del(self._tags["tracknumber"])
-            if hasattr(audio, 'Pictures'):
-                self.images = audio.Pictures
+            #if hasattr(audio, 'Pictures'):
+                #self.images = audio.Pictures
         else:
             return
 
         self.filetype = list(SUPPORTED).index(type(audio))
-        if self.filetype == MP3:
+        if self.filetype == PID3:
             self._originaltags = [z[0] for z in self.mutvalues()]
+
         else:
             self._originaltags = self._tags.keys()
 
@@ -243,17 +281,16 @@ class Tag:
                             PATH: unicode(path.basename(self.filename)),
                             u"__folder": unicode(path.dirname(self.filename)),
                             u"__ext": unicode(path.splitext(self.filename)[1][1:]),
-                            u"__bitrate": strbitrate(info.bitrate),
                             u"__frequency": strfrequency(info.sample_rate),
                             u"__length": strlength(info.length),
                             u"__modified": strtime(fileinfo[ST_MTIME]),
                             u"__size" : unicode(fileinfo[ST_SIZE]),
-                            u"__created": strtime(fileinfo[ST_CTIME])})
-
-        if self.filetype != FLAC:
+                            u"__created": strtime(fileinfo[ST_CTIME]),
+                            u'__accessed': strtime(fileinfo[ST_ATIME])})
+        try:
             self._tags[u"__bitrate"] = strbitrate(info.bitrate)
-        else:
-            self._tags[u"__bitrate"] = u'0' + u' kb/s'
+        except AttributeError:
+            self._tags[u"__bitrate"] = u'0 kb/s'
         self._mutfile = audio
         return self
 
@@ -269,12 +306,14 @@ class Tag:
                 self[key] = value
 
     def __getitem__(self,key):
-        """Get the tag value from self._tags"""
+        """Get the tag value from self._tags. There is a slight
+        caveat in that this method will never return a KeyError exception.
+        Rather it'll return ''."""
         if key == '__image':
             return self.images
         elif key in INFOTAGS or isinstance(key,(int,long)):
             return self._tags[key]
-        elif self.filetype == MP3:
+        elif self.filetype == PID3:
             try:
                 val = self._tags[key][1]
                 if isinstance(val, TimeStampTextFrame):
@@ -288,7 +327,7 @@ class Tag:
             return self._tags[key]
         except KeyError:
             #This is a bit of a bother since there will never be a KeyError exception
-            #But its needed for the sort method in puddbleobject.TagModel, .i.e it fails
+            #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
             #if a key doesn't exist.
             return ""
 
@@ -307,11 +346,7 @@ class Tag:
 
         if key in [FILENAME, PATH, "__ext"]:
             self._tags[key] = value
-            try:
-                self.filename = self._tags[FILENAME]
-            except KeyError:
-                """"Sometimes you create a Tag object and just set values willy
-                nilly, while forgetting to set the filename attribute."""
+            self.filename = self._tags[FILENAME]
             self.filenamechanged = True
             return
 
@@ -327,18 +362,21 @@ class Tag:
             del(self._tags[key])
             return
 
-        if self.filetype == MP3:
+        if self.filetype == PID3:
             if key in self._tags:
-                if isinstance(value, (str,unicode, int, long)):
+                oldvalue = self._tags[key][1]
+                if isinstance(value, (basestring, int, long)):
                     value = [unicode(value)]
-                if isinstance(self._tags[key][1], TimeStampTextFrame):
+                if isinstance(oldvalue, TimeStampTextFrame):
                     value = [mutagen.id3.ID3TimeStamp(z) for z in value if unicode(mutagen.id3.ID3TimeStamp(z))]
                     if value:
-                        self._tags[key][1].text = value
+                        oldvalue.text = value
+                        oldvalue.encoding = 3
                 elif isinstance(self._tags[key][1], TextFrame):
-                    self._tags[key][1].text = value
+                    oldvalue.text = value
+                    oldvalue.encoding = 3
             else:
-                if isinstance(value, (str,unicode, int, long)):
+                if isinstance(value, (basestring, int, long)):
                     value = [unicode(value)]
                 try:
                     mut = getattr(mutagen.id3, REVTAGS[key])
@@ -359,7 +397,7 @@ class Tag:
                         self._tags[key] = [u'TXXX:' + key, mutagen.id3.TXXX(3, key, value)]
 
         elif self.filetype in VORBISCOMMENT:
-            if isinstance(value, (str,unicode, int, long)):
+            if isinstance(value, (unicode, str, int, long)):
                 value = [unicode(value)]
             self._tags[key] = value
         else:
@@ -373,7 +411,7 @@ class Tag:
     def clear(self):
         keys = self._tags.keys()
         for z in keys:
-            if z not in INFOTAGS:
+            if z not in INFOTAGS and not z.startswith('___'):
                 del(self._tags[z])
 
     def keys(self):
@@ -405,6 +443,12 @@ class Tag:
     def stringtags(self):
         return converttag(self)
 
+    #def __repr__(self):
+        #if self.tags:
+            #return u", ".join([u"%s: %s" % (tag, value) for tag, value
+                                            #in self.tags.items()])[:-2]
+
+
     def save(self, filename = None):
         """Writes the tags in self._tags
         to self.filename if no filename is specified."""
@@ -415,31 +459,33 @@ class Tag:
             raise IOError(2, u"No such file or directory.")
 
         if hasattr(self, 'filenamechanged'):
-            audio = mutagen.File(unicode(filename))
+            audio = mutagen.File(unicode(filename), options)
         else:
             audio = self._mutfile
 
-        if isinstance(audio, SUPPORTED[MP3]):
+        if isinstance(audio, SUPPORTED[PID3]):
             for tag, value in self.mutvalues():
                 audio[tag] = value
             vals = [z[0] for z in self.mutvalues()]
             toremove = [z for z in self._originaltags if z not in vals]
 
+            try:
+                images = audio.tags.getall('APIC')
+            except AttributeError: #The tag is probably empty
+                images = []
             if self.images:
-                try:
-                    images = audio.tags.getall('APIC')
-                except AttributeError: #The tag is probably empty
-                    images = []
                 if images != self.images:
                     images = [z for z in audio if z.startswith(u'APIC')]
                     newimages = []
                     for image in self.images:
                         try:
-                            audio[u'APIC:' + image.desc] = image
-                            newimages.append(u'APIC:' + image.desc)
+                            audio[image.HashKey] = image
+                            newimages.append(image.HashKey)
                         except AttributeError:
                             "Don't write images with strings, but with APIC objects"
                     [toremove.append(z) for z in images if z not in newimages]
+            else:
+                [toremove.append(image.HashKey) for image in images]
 
             for z in set(toremove):
                 try:
@@ -447,6 +493,7 @@ class Tag:
                 except KeyError:
                     continue
             audio.save(v1 = 2)
+
             self._originaltags = [z[0] for z in self.mutvalues()]
 
         else:
