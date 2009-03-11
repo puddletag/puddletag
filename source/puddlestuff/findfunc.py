@@ -101,7 +101,6 @@ def runAction(funcs, audio):
         funcs = getAction(funcs)[0]
 
     audio = converttag(audio)
-    tags = {}
     for func in funcs:
         tag = func.tag
         val = {}
@@ -109,17 +108,14 @@ def runAction(funcs, audio):
             tag = audio.keys()
         for z in tag:
             try:
-                val[z] = func.runFunction(tags[z], audio = audio)
+                val[z] = func.runFunction(audio[z], audio = audio)
             except KeyError:
-                try:
-                    val[z] = func.runFunction(audio[z], audio = audio)
-                except KeyError:
-                    """The tag doesn't exist or is empty.
-                    In either case we do nothing"""
+                """The tag doesn't exist or is empty.
+                In either case we do nothing"""
         val = dict([z for z in val.items() if z[1]])
         if val:
-            tags.update(val)
-    return tags
+            audio.update(val)
+    return audio
 
 def runQuickAction(funcs, audio, tag):
     if isinstance(funcs, basestring):
@@ -153,12 +149,13 @@ def saveAction(filename, actionname, func):
     pickle.dump(actionname, fileobj)
     pickle.dump(func, fileobj)
 
-def replacevars(text, audio):
+def replacevars(pattern, audio):
     for tag in audio.keys():
-        if (tag not in audio) or (not audio[tag]):
-            audio[tag] = ""
-        pattern = pattern.replace(unicode('%' + unicode(idx) + '%'),
+        if not audio[tag]:
+            audio[tag] = ''
+        pattern = pattern.replace(unicode('%' + unicode(tag) + '%'),
                                         unicode(audio[tag]))
+    return pattern
 
 def parsefunc(text, audio):
     """Parses a function in the form $name(arguments)
@@ -182,11 +179,7 @@ def parsefunc(text, audio):
     expression = funcstart + delimitedList(content) + Literal(")").suppress()
     expression.setParseAction(callfunc)
     content << (expression | identifier | integer)
-    try:
-        return content.transformString(text)
-    except:
-        pdb.set_trace()
-        return content.transformString(text)
+    return content.transformString(text)
 
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
@@ -231,8 +224,10 @@ def getfunc(text, audio):
         except IndexError:
             return text
         #Replace a function with its parsed text
-        text = text.replace(text[match.start(0) + 1: idx],
-                        parsefunc(text[match.start(0) + 1: idx], audio))
+        torep = text[match.start(0) + 1: idx]
+        replacetext = parsefunc(text[match.start(0) + 1: idx], audio)
+        text = text.replace(torep, replacetext)
+        idx += len(replacetext) - len(torep)
         start = idx + 1
     if addspace:
         return text[1:]
@@ -265,7 +260,6 @@ def filenametotag(pattern, filename, checkext = False):
 
         None is the returned if the pattern does not match the filename."""
 
-    #if pattern == "%track% %title%": pdb.set_trace()
     if checkext:
         filename = os.path.splitext(filename)[0]
 
@@ -360,20 +354,10 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
         if tags.link(filename) is None:
             return 0
         #get tag info
-    tags = audioinfo.converttag(tags)
 
     #for each tag with a value, replace it in the pattern
     #with that value
-    pattern = unicode(pattern)
-    for idx in tags.keys():
-        if not tags[idx]:
-            tags[idx] = ""
-        try:
-            pattern=pattern.replace(unicode('%' + unicode(idx) + '%'), unicode(tags[idx]))
-        except UnicodeDecodeError:
-            print "Unicode Error in pattern.replace with, ", tags["__filename"]
-
-
+    pattern = replacevars(pattern, audioinfo.converttag(tags))
     if not addext:
         return getfunc(pattern, tags)
     elif addext and (extension is not None):

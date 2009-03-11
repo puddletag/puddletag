@@ -106,13 +106,17 @@ class LibraryWindow(PuddleDock):
             self.saveall.hide()
 
         searchlabel = QLabel('&Search')
-        searchtext = QLineEdit()
-        self.connect(searchtext, SIGNAL('textChanged(const QString&)'),
-                self.tree.search)
-        searchlabel.setBuddy(searchtext)
+        self.searchtext = QLineEdit()
+        searchbutton = QPushButton('&Go')
+        self.connect(self.searchtext, SIGNAL('returnPressed()'),
+                self.searchTree)
+        self.connect(searchbutton, SIGNAL('clicked()'),
+                self.searchTree)
+        searchlabel.setBuddy(self.searchtext)
         searchbox = QHBoxLayout()
         searchbox.addWidget(searchlabel)
-        searchbox.addWidget(searchtext)
+        searchbox.addWidget(self.searchtext)
+        searchbox.addWidget(searchbutton)
 
         vbox.addLayout(hbox)
         vbox.addLayout(searchbox)
@@ -123,6 +127,9 @@ class LibraryWindow(PuddleDock):
         if loadmethod:
             self._loadmethod = loadmethod
             self.connect(self.tree, SIGNAL("loadFiles"), loadmethod)
+
+    def searchTree(self):
+        self.tree.search(unicode(self.searchtext.text()))
 
     def _setLoadMethod(self, value):
         self._loadmethod = value
@@ -336,7 +343,6 @@ class LibraryTree(QTreeWidget):
         self.blockSignals(False)
 
     def search(self, text):
-        text = unicode(text)
         self.lastsearch = text
         self.blockSignals(True)
         if not text:

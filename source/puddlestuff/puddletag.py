@@ -57,14 +57,11 @@ def showwriteprogress(func):
         showmessage = True
         while True:
             try:
-                i+=1
                 if win.wasCanceled():
                     break
                 temp = f.next()
-                if i % 10 == 0:
-                    win.show()
-                    win.updateVal(i)
-                    i = 0
+                win.show()
+                win.updateVal(1)
                 if temp == HIDEPROGRESS:
                     win.show()
                     win.hide()
@@ -499,7 +496,7 @@ class MainWin(QMainWindow):
 
         self.duplicates = QAction('Show dupes', self)
         self.duplicates.setCheckable(True)
-        self.connect(self.duplicates, SIGNAL('toggled(bool)'), self.inLib)
+        self.connect(self.duplicates, SIGNAL('toggled(bool)'), self.showDupes)
 
         self.fileinlib = QAction('In library?', self)
         self.fileinlib.setCheckable(True)
@@ -795,7 +792,6 @@ class MainWin(QMainWindow):
         self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
         self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
 
-        #pdb.set_trace()
         columnwidths = [z for z in cparser.load("columnwidths","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191], True)]
         [self.cenwid.table.setColumnWidth(i, z) for i,z in enumerate(columnwidths)]
 
@@ -959,14 +955,13 @@ class MainWin(QMainWindow):
                 try:
                     tags[headerdata[column][1]] = deepcopy(rowtags[headerdata[column][1]])
                 except KeyError: #The key doesn't consist of any text
-                    pass
-
+                    tags[headerdata[column][1]] = ['']
             for tag in tags:
                 try:
                     if func.function.func_code.co_varnames[0] == 'tags':
-                        val = func.runFunction(rowtags)
+                        val = func.runFunction(rowtags, rowtags)
                     else:
-                        val = func.runFunction(tags[tag])
+                        val = func.runFunction(tags[tag], rowtags)
                     if val is not None:
                         tags[tag] = val
                 except KeyError:
@@ -1097,13 +1092,10 @@ class MainWin(QMainWindow):
         See the actiondlg module for more details on funcs."""
         table = self.cenwid.table
         for audio, row in zip(table.selectedTags, table.selectedRows):
-            try:
-                tags = findfunc.runAction(funcs, audio)
-            except:
-                pdb.set_trace()
-                tags = findfunc.runAction(funcs, audio)
+            tags = findfunc.runAction(funcs, audio)
             try:
                 self.setTag(row, tags)
+                yield None
             except (IOError, OSError), detail:
                 yield (audio[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
@@ -1131,6 +1123,7 @@ class MainWin(QMainWindow):
             tags = findfunc.runQuickAction(funcs, audio, selectedtags)
             try:
                 self.setTag(row, tags)
+                yield None
             except (IOError, OSError), detail:
                 yield (audio[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 

@@ -96,6 +96,8 @@ def re_escape(rex):
     return escaped
 
 def num(number,numlen):
+    if not number:
+        return u""
     number=str(number)
     index = number.find("/")
     if index >= 0:
