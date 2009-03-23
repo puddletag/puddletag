@@ -77,7 +77,6 @@ class Prokyon(MySQLLib):
         artist = self.utflatin(artist)
         if albums is None:
             albums = self.getAlbums(artist)
-            print albums
         for album in albums:
             album = self.utflatin(album)
             if not album:
@@ -93,7 +92,7 @@ class Prokyon(MySQLLib):
                 comment, size, lastModified, layer, mimetype,
                 version, mode, lyrics_id, notes,rating,
                 medium FROM tracks WHERE artist = BINARY %s
-                AND album = %s""", (artist, album))
+                AND album = BINARY %s""", (artist, album))
 
             tracks = self.cursor.fetchall()
             ret.extend([musiclib.Tag(self, self.convertTrack(track, artist, album)) for track in tracks])

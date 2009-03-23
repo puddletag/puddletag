@@ -297,7 +297,7 @@ class LibraryTree(QTreeWidget):
                     else:
                         child = QTreeWidgetItem([album])
                         item.addChild(child)
-                    toselect.append(child)
+                        toselect.append(child)
                 self.expandItem(item)
                 QApplication.processEvents()
                 [self.setItemSelected(z, True) for z in toselect]
@@ -348,6 +348,7 @@ class LibraryTree(QTreeWidget):
         if not text:
             self.connect(self, SIGNAL('itemSelectionChanged()'), self.loadFiles)
             self.fillTree(self.library)
+            self.blockSignals(False)
             return
         text = unicode(text)
         self.disconnect(self, SIGNAL('itemSelectionChanged()'), self.loadFiles)
@@ -416,7 +417,6 @@ class Tag:
         return self.tags.__contains__(key)
 
     def save(self, libonly = False):
-        self.library.saveTracks([(self._originaltags, self.tags)])
         toremove = [z for z in self._originaltags if z not in self.tags]
         if not libonly:
             tag = audioinfo.Tag(self[FILENAME])
@@ -429,6 +429,7 @@ class Tag:
                 if key in tag:
                     del(tag[key])
             tag.save()
+        self.library.saveTracks([(self._originaltags, self.tags)])
         self._originaltags = self.tags.copy()
 
     def update(self, dictionary, **kwargs):

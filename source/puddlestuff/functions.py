@@ -54,101 +54,16 @@ path = os.path
 if sys.version_info[:2] >= (2, 5): import re as sre
 else: import sre
 import time
-def finddups(tracks, key = 'title'):
-    the = time.time()
-    li = [z[key].lower() for z in tracks if key in z and z[key] is not None]
-    temp = set(li)
-    dups = {}
-    for i, z in enumerate(li):
-        if z in temp:
-            temp.discard(z)
-        else:
-            index = li.index(z)
-            try:
-                dups[index].append(i)
-            except:
-                dups[index] = [i]
-    return dups
 
-def changeartist(artist, *files):
-    for audio in files:
-        audio['artist'] = artist
-        audio.save()
-
-def libstuff(dirname):
-    files = []
-    for filename in os.listdir(dirname):
-        tag = audioinfo.Tag(path.join(dirname, filename))
-        if tag:
-            files.append(tag)
-    return files
-
-def hasformat(pattern, tagname = "__filename"):
-    if findfunc.filenametotag(pattern, tagname):
-        return unicode(True)
-    return unicode(False)
-
-def re_escape(rex):
-    escaped = ""
-    for ch in rex:
-        if ch in r'^$[]\+*?.(){},|' : escaped = escaped + '\\' + ch
-        else: escaped = escaped + ch
-    return escaped
-
-def num(number,numlen):
-    if not number:
-        return u""
-    number=str(number)
-    index = number.find("/")
-    if index >= 0:
-        number = number[:index]
+def add(text,text1):
     try:
-        numlen = long(numlen)
-    except ValueError:
-        return number
-    if len(number)<numlen:
-        number='0' * (numlen - len(number)) + number
-    if len(number)>numlen:
-        while number.startswith('0') and len(number)>numlen:
-            number=number[1:]
-    return number
+        return unicode((decimal.Decimal(unicode(text)) + decimal.Decimal(unicode(text1))).normalize())
+    except decimal.InvalidOperation:
+        return
 
-def validate(text, to):
-    from puddleobjects import safe_name
-    return safe_name(text,to)
+def and_(text,text1):
+    return unicode(bool(text) and bool(text1))
 
-def strip(text):
-    '''Trim whitespace, Trim $0'''
-    return text.strip()
-
-def formatValue(tags, pattern):
-    """Format Value, Format $0 using $1
-&Format string, QLineEdit"""
-    return findfunc.tagtofilename(pattern, tags)
-
-def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
-    '''Case Conversion, "$0: $1"
-&Type, QComboBox, Mixed Case,UPPER CASE,lower case
-"For &Mixed Case, after any of:", QLineEdit, "., !"'''
-    if ctype == "UPPER CASE":
-        return text.upper()
-    elif ctype == "lower case":
-        return text.lower()
-
-    text = [z for z in text]
-    try:
-        text[0] = text[0].upper()
-    except IndexError:
-        return ""
-    for char in range(len(text)):
-        try:
-            if text[char] in characters:
-                    text[char + 1] = text[char + 1].upper()
-            else:
-                text[char + 1] = text[char + 1].lower()
-        except IndexError:
-            pass
-    return "".join(text)
 
 def caps(text):
     return titleCase(text)
@@ -167,147 +82,238 @@ def caps3(text):
         return
     return text[:start] + text[start].upper() + text[start + 1:].lower()
 
-def upper(text):
-    return string.upper(text)
+def char(text):
+    try:
+        return unicode(ord(text))
+    except TypeError:
+        return
+
+def changeartist(artist, *files):
+    for audio in files:
+        audio['artist'] = artist
+        audio.save()
+
+def div(text,text1):
+    try:
+        return unicode((decimal.Decimal(unicode(text)) / decimal.Decimal(unicode(text1))).normalize())
+    except decimal.InvalidOperation:
+        return
+
+
+def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
+    '''Remove brackets from (ft), Brackets remove: $0
+    Feat &String, QLineEdit,  ft
+    O&pening bracket, QLineEdit, "("
+    C&losing bracket, QLineEdit, ")"'''
+    #Removes parenthesis from feat string
+    #say if you had a title string "Booty (ft the boot man)"
+    #featFormat would return "Booty ft the boot man"
+    #In the same way "Booty (ft the boot man"
+    #would give "Booty ft the boot man"
+    #but "Booty ft the boot man)" would remain unchanged.
+    #the opening and closing parens can be changed to whatever.
+    textli = list(text)
+    start = text.find(ftstring)
+    if start == -1: return text
+    if start != 0:
+        if text[start -1] == opening:
+            del (textli[start - 1])
+            closeparen = "".join(textli).find(closing, start)
+            if closeparen == -1: return "".join(textli)
+            del textli[closeparen]
+            return "".join(textli)
+    return text
+
+def finddups(tracks, key = 'title'):
+    the = time.time()
+    li = [z[key].lower() for z in tracks if key in z and z[key] is not None]
+    temp = set(li)
+    dups = {}
+    for i, z in enumerate(li):
+        if z in temp:
+            temp.discard(z)
+        else:
+            index = li.index(z)
+            try:
+                dups[index].append(i)
+            except:
+                dups[index] = [i]
+    return dups
+
+def formatValue(tags, pattern):
+    """Format Value, Format $0 using $1
+&Format string, QLineEdit"""
+    return findfunc.tagtofilename(pattern, tags)
+
+def ftArtist(tags, ftval = " ft "):
+    '''Get FT Artist, "FT Artist: $0, String: $1"
+Featuring &String, QLineEdit, " ft "'''
+
+    try:
+        text = tags["artist"]
+    except KeyError:
+        return
+    index = text.find(ftval)
+    if index != -1:
+        return(text[:index])
+
+def ftTitle(tags, ftval = " ft ", replacetext = None):
+    '''Get FT Title, "FT Title: $0, String: $1"
+Featuring &String, QLineEdit, " ft "
+&Text to append, QLineEdit, " ft "'''
+    if replacetext == None:
+        replacetext = ftval
+    try:
+        text = tags["artist"]
+    except KeyError:
+        return
+    index = text.find(ftval)
+    if index != -1:
+        try:
+            return tags["title"] + replacetext + text[index + len(ftval):]
+        except:
+            pdb.set_trace()
+            return tags["title"] + replacetext + text[index + len(ftval):]
+
+def geql(text,text1):
+    if text >= text1:
+        return unicode(True)
+    else:
+        return unicode(False)
+
+def grtr(text,text1):
+    if text > text1:
+        return unicode(True)
+    else:
+        return unicode(False)
+
+def hasformat(pattern, tagname = "__filename"):
+    if findfunc.filenametotag(pattern, tagname):
+        return unicode(True)
+    return unicode(False)
+
+def if_(text,text1,z):
+    if text != "False" and bool(text):
+        return text1
+    else:
+        return z
+
+def ifgreater(a, b, text, text1):
+    try:
+        if float(a) > float(b):
+            return unicode(text)
+        else:
+            return unicode(text1)
+    except ValueError:
+        return
+
+def iflonger(a, b, text, text1):
+    try:
+        if len(unicode(a)) > len(unicode(b)):
+            return unicode(text)
+        else:
+            return unicode(text1)
+    except TypeError:
+        return
+
+def isdigit(text):
+    try:
+        return decimal.Decimal(text)
+    except decimal.InvalidOperation:
+        return
+
+def left(text,n):
+    return unicode(text)[:n + 1]
+
+def len_(text):
+    return len(unicode(text))
+
+def leql(text,text1):
+    if text <= text1:
+        return unicode(True)
+    else:
+        return unicode(False)
+
+def less(text,text1):
+    if text < text1:
+        return unicode(True)
+    else:
+        return unicode(False)
+
+def libstuff(dirname):
+    files = []
+    for filename in os.listdir(dirname):
+        tag = audioinfo.Tag(path.join(dirname, filename))
+        if tag:
+            files.append(tag)
+    return files
 
 def lower(text):
     return string.lower(text)
 
-def add(x,y):
+def mid(text,n,i):
+    return unicode(text)[n:i+1]
+
+def mod(text,text1):
     try:
-        return unicode((decimal.Decimal(unicode(x)) + decimal.Decimal(unicode(y))).normalize())
+        return unicode((decimal.Decimal(unicode(text)) % decimal.Decimal(unicode(text1))).normalize())
     except decimal.InvalidOperation:
         return
 
-def and_(x,y):
-    return unicode(bool(x) and bool(y))
-
-def div(x,y):
+def mul(text,text1):
     try:
-        return unicode((decimal.Decimal(unicode(x)) / decimal.Decimal(unicode(y))).normalize())
+        return unicode((decimal.Decimal(unicode(text)) * decimal.Decimal(unicode(text1))).normalize())
     except decimal.InvalidOperation:
         return
 
-def char(x):
-    try:
-        return unicode(ord(x))
-    except TypeError:
-        return
-
-def geql(x,y):
-    if x >= y:
+def neql(text,text1):
+    if unicode(text) != unicode(text1):
         return unicode(True)
     else:
         return unicode(False)
 
-def grtr(x,y):
-    if x > y:
-        return unicode(True)
-    else:
-        return unicode(False)
-
-def if_(x,y,z):
-    if x != "False" and bool(x):
-        return y
-    else:
-        return z
-
-def ifgreater(a, b, x, y):
-    try:
-        if float(a) > float(b):
-            return unicode(x)
-        else:
-            return unicode(y)
-    except ValueError:
-        return
-
-def iflonger(a, b, x, y):
-    try:
-        if len(unicode(a)) > len(unicode(b)):
-            return unicode(x)
-        else:
-            return unicode(y)
-    except TypeError:
-        return
-
-def isdigit(x):
-    try:
-        return decimal.Decimal(x)
-    except decimal.InvalidOperation:
-        return
-
-def left(x,n):
-    return unicode(x)[:n + 1]
-
-def len_(x):
-    return len(unicode(x))
-
-def leql(x,y):
-    if x <= y:
-        return unicode(True)
-    else:
-        return unicode(False)
-
-def less(x,y):
-    if x < y:
-        return unicode(True)
-    else:
-        return unicode(False)
-
-def mid(x,n,i):
-    return unicode(x)[n:i+1]
-
-def mod(x,y):
-    try:
-        return unicode((decimal.Decimal(unicode(x)) % decimal.Decimal(unicode(y))).normalize())
-    except decimal.InvalidOperation:
-        return
-
-def mul(x,y):
-    try:
-        return unicode((decimal.Decimal(unicode(x)) * decimal.Decimal(unicode(y))).normalize())
-    except decimal.InvalidOperation:
-        return
-
-def neql(x,y):
-    if unicode(x) != unicode(y):
-        return unicode(True)
-    else:
-        return unicode(False)
-
-def not_(x):
-    if x == "False":
+def not_(text):
+    if text == "False":
         return True
-    return unicode(not x)
+    return unicode(not text)
 
-def odd(x):
-    if decimal.Decimal(x) % 2 != decimal.Decimal(0):
+def num(text, numlen):
+    if not text:
+        return u""
+    text=str(text)
+    index = text.find("/")
+    if index >= 0:
+        text = text[:index]
+    try:
+        numlen = long(numlen)
+    except ValueError:
+        return text
+    if len(text)<numlen:
+        text='0' * (numlen - len(text)) + text
+    if len(text)>numlen:
+        while text.startswith('0') and len(text)>numlen:
+            text=text[1:]
+    return text
+
+def odd(text):
+    if decimal.Decimal(text) % 2 != decimal.Decimal(0):
         return unicode(True)
     else:
         return unicode(False)
 
-def or_(x,y):
-    return unicode(bool(x) or bool(y))
+def or_(text,text1):
+    return unicode(bool(text) or bool(text1))
 
 def rand():
     import random
-    return random.random()
+    return unicode(random.random())
 
-def right(x,n):
-    return x[n:]
-
-def strstr(x,y):
-    val = x.find(y)
-    if val > 0:
-        return unicode(val)
-    else:
-        return unicode()
-
-def sub(x,y):
-    try:
-        return unicode((decimal.Decimal(unicode(x)) - decimal.Decimal(unicode(y))).normalize())
-    except decimal.InvalidOperation:
-        return
+def re_escape(rex):
+    escaped = ""
+    for ch in rex:
+        if ch in r'^$[]\+*?.(){},|' : escaped = escaped + '\\' + ch
+        else: escaped = escaped + ch
+    return escaped
 
 def replace(text, word, replaceword, matchcase = False, whole = False):
     '''Replace, "Replace '$0': '$1' -> '$2'"
@@ -321,7 +327,6 @@ only as &whole word, QCheckBox'''
         return replaceAsWord(text, word, replaceword, matchcase, "")
     else:
         return replaceAsWord(text, word, replaceword, matchcase, None)
-
 
 def replaceAsWord(text, word, replaceword, matchcase = False, characters = None):
     start = 0
@@ -354,53 +359,53 @@ def replaceAsWord(text, word, replaceword, matchcase = False, characters = None)
         start = start + len(word) + 1
     return "".join(text)
 
+def right(text,n):
+    return text[n:]
 
-def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
-    '''Remove brackets from (ft), Brackets remove: $0
-    Feat &String, QLineEdit,  ft
-    O&pening bracket, QLineEdit, "("
-    C&losing bracket, QLineEdit, ")"'''
-    #Removes parenthesis from feat string
-    #say if you had a title string "Booty (ft the boot man)"
-    #featFormat would return "Booty ft the boot man"
-    #In the same way "Booty (ft the boot man"
-    #would give "Booty ft the boot man"
-    #but "Booty ft the boot man)" would remain unchanged.
-    #the opening and closing parens can be changed to whatever.
-    textli = list(text)
-    start = text.find(ftstring)
-    if start == -1: return text
-    if start != 0:
-        if text[start -1] == opening:
-            del (textli[start - 1])
-            closeparen = "".join(textli).find(closing, start)
-            if closeparen == -1: return "".join(textli)
-            del textli[closeparen]
-            return "".join(textli)
-    return text
+def strip(text):
+    '''Trim whitespace, Trim $0'''
+    return text.strip()
 
-def ftArtist(tags, ftval = " ft "):
-    '''Get FT Artist, "FT Artist: $0, String: $1"
-Featuring &String, QLineEdit, " ft "'''
+def strstr(text,text1):
+    val = text.find(text1)
+    if val > 0:
+        return unicode(val)
+    else:
+        return unicode()
 
+def sub(text,text1):
     try:
-        text = tags["artist"]
-    except KeyError:
+        return unicode((decimal.Decimal(unicode(text)) - decimal.Decimal(unicode(text1))).normalize())
+    except decimal.InvalidOperation:
         return
-    x = text.find(ftval)
-    if x != -1:
-        return(text[:x])
 
-def ftTitle(tags, ftval = " ft ", replacetext = None):
-    '''Get FT Title, "FT Title: $0, String: $1"
-Featuring &String, QLineEdit, " ft "
-&Text to append, QLineEdit, " ft "'''
-    if replacetext == None:
-        replacetext = ftval
+def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
+    '''Case Conversion, "$0: $1"
+&Type, QComboBox, Mixed Case,UPPER CASE,lower case
+"For &Mixed Case, after any of:", QLineEdit, "., !"'''
+    if ctype == "UPPER CASE":
+        return text.upper()
+    elif ctype == "lower case":
+        return text.lower()
+
+    text = [z for z in text]
     try:
-        text = tags["artist"]
-    except KeyError:
-        return
-    x = text.find(ftval)
-    if x != -1:
-        return tags["title"] + replacetext + text[x + len(ftval):]
+        text[0] = text[0].upper()
+    except IndexError:
+        return ""
+    for char in range(len(text)):
+        try:
+            if text[char] in characters:
+                    text[char + 1] = text[char + 1].upper()
+            else:
+                text[char + 1] = text[char + 1].lower()
+        except IndexError:
+            pass
+    return "".join(text)
+
+def upper(text):
+    return string.upper(text)
+
+def validate(text, to):
+    from puddleobjects import safe_name
+    return safe_name(text,to)

@@ -466,6 +466,9 @@ class MainWin(QMainWindow):
         self.selectall = QAction("Select &All", self)
         self.selectall.setShortcut("Ctrl+A")
 
+        self.selectcolumn = QAction('Select Current Column', self)
+        self.selectcolumn.setShortcut('Meta+C')
+
         self.showcombodock = QAction('Show Tag Editor', self)
         self.showcombodock.setCheckable(True)
 
@@ -560,7 +563,7 @@ class MainWin(QMainWindow):
 
         edit = menubar.addMenu("&Edit")
         [edit.addAction(z) for z in [self.undo, self.cenwid.table.delete, self.showfilter, self.showcombodock,
-        self.showtreedock, self.showlibrarywin, self.preferences]]
+        self.showtreedock, self.showlibrarywin, self.selectall, self.invertselection, self.selectcolumn, self.preferences]]
         edit.insertSeparator(self.showfilter)
         edit.insertSeparator(self.selectall)
         edit.insertSeparator(self.preferences)
@@ -577,10 +580,10 @@ class MainWin(QMainWindow):
         self.actions = [self.cenwid.table.delete, self.cenwid.table.play, self.cenwid.table.exttags,
                        self.addfolder, self.savecombotags, self.reloaddir, self.tagfromfile,
                        self.tagtofile, self.openactions, self.quickactions, self.formattag,
-                       self.changetracks, self.importfile, self.renamedir, self.autotagging,
-                       self.duplicates, self.fileinlib]
+                       self.changetracks, self.importfile, self.renamedir, self.autotagging]
 
-        self.supportactions = [self.selectall, self.invertselection]
+        self.supportactions = [self.selectall, self.invertselection, self.selectcolumn,
+            self.duplicates, self.fileinlib]
 
         self.toolbar.addAction(self.opendir)
         self.toolbar.addAction(self.addfolder)
@@ -592,11 +595,13 @@ class MainWin(QMainWindow):
         self.toolbar.addWidget(self.patterncombo)
         [self.toolbar.addAction(action) for action in self.actions[6:]]
         self.toolbar.insertSeparator(self.changetracks)
+        self.toolbar.addAction(self.fileinlib)
         self.toolbar.addAction(self.duplicates)
 
         connect(self.undo, self.cenwid.table.model().undo)
         connect(self.selectall, self.cenwid.table.selectAll)
         connect(self.invertselection, self.cenwid.table.invertSelection)
+        connect(self.selectcolumn, self.cenwid.table.selectCurrentColumn)
 
         self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"), self.patternChanged)
         self.connect(self.tree, SIGNAL('itemSelectionChanged()'), self.openTree)
@@ -627,24 +632,28 @@ class MainWin(QMainWindow):
         table = self.cenwid.table
         if visible:
             rowTags = table.rowTags
-            rowtracks = sorted([rowTags(row) for row in xrange(table.rowCount())], key = itemgetter('artist'))
+            rowtracks = [rowTags(row).stringtags() for row in xrange(table.rowCount())]
             libartists = libclass.getArtists()
             oldartist = ""
-            for track in rowtracks:
-                artist = track['artist'][0]
-                if artist in libartists and artist != oldartist:
-                    tracks = libclass.getTracks(artist)
-                    titles = [z['title'] for z in tracks]
-                    oldartist = artist
-                if artist in libartists and artist == oldartist:
-                    if track['title'] in titles:
-                        table.showRow(row)
-                else:
-                    row = table.model().taginfo.index(track)
-                    table.hideRow(row)
+            rows = []
+            for row, track in enumerate(rowtracks):
+                try:
+                    artist = track['artist']
+                    if artist in libartists and artist != oldartist:
+                        tracks = libclass.getTracks(artist)
+                        titles = [z['title'][0] for z in tracks]
+                        oldartist = artist
+                    if artist in libartists and artist == oldartist:
+                        if track['title'] in titles:
+                            rows.append(row)
+                        else:
+                            if track['title'] in titles:
+                                rows.append(row)
+                except (KeyError, IndexError):
+                    pass
+            table.model().rowColors(rows)
         else:
-            for row in xrange(table.rowCount()):
-                table.showRow(row)
+            table.model().rowColors()
 
     def showDupes(self, visible):
         from functions import finddups
@@ -658,14 +667,14 @@ class MainWin(QMainWindow):
             key = unicode(key)
             rowTags = table.rowTags
             tofind = [rowTags(row).stringtags() for row in xrange(table.rowCount())]
-            [table.hideRow(row) for row in xrange(table.rowCount())]
+            #[table.hideRow(row) for row in xrange(table.rowCount())]
             rows = finddups(tofind, key)
+            arows = []
             for row, dupes in rows.items():
-                [table.showRow(z) for z in [row] + dupes]
+                arows.extend([z for z in [row] + dupes])
+            table.model().rowColors(arows)
         else:
-            for row in xrange(table.rowCount()):
-                table.showRow(row)
-
+            table.model().rowColors()
 
     def warningMessage(self, msg):
         """Like the name implies, shows a warning messagebox with message msg."""
@@ -781,7 +790,7 @@ class MainWin(QMainWindow):
         ['Path', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 'Bitrate', 'Genre', 'Comment', 'Filename'])
 
         tags = cparser.load('tableheader', 'tags',
-        ['__path', 'artist', 'title', 'album', 'track', '__length', 'date', '__bitrate', 'genre', 'comment', '__filename'])
+        ['__path', 'artist', 'title', 'album', 'track', '__length', 'year', '__bitrate', 'genre', 'comment', '__filename'])
 
         headerdata = []
         for title, tag in zip(titles, tags):
@@ -1304,7 +1313,7 @@ class MainWin(QMainWindow):
                     os.rename(olddir, newdir)
                     self.cenwid.table.model().changeFolder(olddir, newdir)
                     self.dirmodel.refresh(self.dirmodel.parent(idx))
-                    self.tree.setCurrentIndex(self.dirmodel.index(newdir))
+                    self.tree.setFileIndex(newdir)
                     if hasattr(self, "lastfolder"):
                         if olddir == self.lastfolder:
                             self.lastfolder = newdir
@@ -1454,6 +1463,8 @@ class MainWin(QMainWindow):
 
         if row is True:
             table.model().undolevel += 1
+            if hasattr(self, 'librarywin'):
+                self.librarywin.tree.cacheFiles(True)
             return
         level = table.model().undolevel
         mydict = {}
@@ -1469,9 +1480,7 @@ class MainWin(QMainWindow):
             return
         table.updateRow(row, tag, justrename = rename)
 
-        if row is True and hasattr(self, 'librarywin'):
-            self.librarywin.tree.cacheFiles(True)
-        elif (row is not True) and ('__library' in rowtags):
+        if (row is not True) and ('__library' in rowtags):
             newfile = rowtags.copy()
             newfile.update(tag)
             self.librarywin.tree.cacheFiles([rowtags], [newfile])

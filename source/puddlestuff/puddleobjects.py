@@ -542,6 +542,8 @@ class ProgressWin(QProgressDialog):
     def updateVal(self, value = None):
         if value:
             self.setValue(self.value() + value)
+        else:
+            self.setValue(self.value() + 1)
         QApplication.processEvents()
 
 class PuddleDock(QDockWidget):

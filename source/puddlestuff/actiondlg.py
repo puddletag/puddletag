@@ -220,7 +220,7 @@ class CreateAction(QDialog):
         """tags is a list of the tags you want to show in the FunctionDialog.
         Each item should be in the form (DisplayName, tagname as used in audioinfo).
         prevfunction is the previous function that is to be edited."""
-        QDialog.__init__(self,parent)
+        QDialog.__init__(self, parent)
         self.setWindowTitle("Modify Action")
         self.tags = tags
         self.grid = QGridLayout()
