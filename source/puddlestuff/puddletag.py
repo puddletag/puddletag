@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, audioinfo,os,findfunc, actiondlg, helperwin, pdb, puddlesettings, resource, ConfigParser
+import sys, audioinfo,os,findfunc, actiondlg, helperwin, pdb, puddlesettings, resource
 from copy import copy, deepcopy
 from puddleobjects import (ProgressWin, partial, safe_name, HeaderSetting,
 unique, PuddleDock, PuddleThread)
@@ -1368,19 +1368,25 @@ class MainWin(QMainWindow):
             self.disconnect(self.cenwid.table.model(),
                         SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'),
                                  self.fillCombos)
+            if '__image' in combos:
+                combo = combos['__image']
+                images = None
+                if combo.currentImage == 1: #<blank>
+                    images = []
+                elif combo.currentImage > 1:
+                    if len(table.selectedRows) == 1:
+                        images = combo.images[2:]
+                    else:
+                        images = [combo.images[combo.currentImage]]
+
+
             for row in table.selectedRows:
                 tags = {}
                 for tag in combos:
                     try:
                         if tag == '__image':
-                            combo = combos[tag]
-                            if combo.currentImage == 1: #<blank>
-                                tags[tag] = []
-                            elif combo.currentImage > 1:
-                                if len(self.selectedRows) == 1:
-                                    tags[tag] = combo.images
-                                else:
-                                    tags[tag] = [combo.images[combo.currentImage]]
+                            if images is not None:
+                                tags['__image'] = images
                         else:
                             curtext = unicode(combos[tag].currentText())
                             if curtext == "<blank>": tags[tag] = ""

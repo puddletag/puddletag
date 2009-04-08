@@ -4,7 +4,7 @@ from os import path
 import sys, pdb
 from puddleobjects import PuddleDock, OKCancel
 import audioinfo
-(converttag, FILENAME, READONLY, INFOTAGS) = (audioinfo.converttag, audioinfo.FILENAME, audioinfo.READONLY, audioinfo.INFOTAGS)
+(stringtags, FILENAME, READONLY, INFOTAGS) = (audioinfo.stringtags, audioinfo.FILENAME, audioinfo.READONLY, audioinfo.INFOTAGS)
 import libraries, imp
 
 class MusicLibError(Exception):
@@ -441,7 +441,7 @@ class Tag:
                 self.tags[tag] = value
 
     def stringtags(self):
-        return converttag(self)
+        return stringtags(self)
 
     def items(self):
         return self.tags.items()

@@ -1,7 +1,6 @@
-import audioinfo, os, pdb, functions, sys
+import audioinfo, os, pdb, functions, sys, string
 if sys.version_info[:2] >= (2, 5): import re as sre
 else: import sre
-
 try:
     from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString
 except ImportError:
@@ -11,9 +10,7 @@ from puddlesettings import PuddleConfig
 numtimes = 0 #Used in filenametotag to keep track of shit.. Do not modify.
 
 import cPickle as pickle
-from puddleobjects import ListBox, OKCancel, ListButtons
-
-converttag = audioinfo.converttag
+stringtags = audioinfo.stringtags
 
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename
@@ -153,6 +150,15 @@ class Function:
         if self.function.func_code.co_argcount > len(self.args) + 1:
             self.args.append(arg)
 
+def removeSpaces(text):
+    for char in string.whitespace:
+        text = text.replace(char, '')
+    return text.lower()
+
+def getActionFromName(name):
+    actionpath = os.getenv('HOME') + u'/.config/Puddle Inc./' + removeSpaces(name) + '.action'
+    funcs = getAction(actionpath)
+    return funcs
 
 def getAction(filename):
     """Gets the action from filename, where filename is either a string or
@@ -276,7 +282,7 @@ def runAction(funcs, audio):
     if isinstance(funcs, basestring):
         funcs = getAction(funcs)[0]
 
-    audio = converttag(audio)
+    audio = stringtags(audio)
     for func in funcs:
         tag = func.tag
         val = {}
@@ -299,7 +305,7 @@ def runQuickAction(funcs, audio, tag):
     if isinstance(funcs, basestring):
         funcs = getAction(funcs)[0]
 
-    audio = converttag(audio)
+    audio = stringtags(audio)
     tags = {}
     for func in funcs:
         val = {}
@@ -382,7 +388,7 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
         tags = audioinfo.Tag(filename)
         if not tags:
             return 0
-    tags = converttag(tags)
+    tags = stringtags(tags)
 
     if not addext:
         return replacevars(getfunc(pattern, tags), tags)

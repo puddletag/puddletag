@@ -26,7 +26,6 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import OKCancel, partial, MoveButtons, HORIZONTAL, VERTICAL, ListButtons
-from mutagen.id3 import APIC
 from copy import deepcopy
 
 class TrackWindow(QDialog):
@@ -244,6 +243,29 @@ class PicWidget(QWidget):
         self.label.setMaximumSize(180, 150)
         self.label.setAlignment(Qt.AlignCenter)
 
+        self._image_desc = QLineEdit(self)
+        self.connect(self._image_desc, SIGNAL('textEdited (const QString&)'),
+                    self.setDescription)
+        self._image_type = QComboBox(self)
+        self._image_type.addItems(audioinfo.IMAGETYPES)
+        self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
+                        self.setType)
+        controls = QHBoxLayout()
+
+        dbox = QVBoxLayout()
+        label = QLabel('&Description')
+        label.setBuddy(self._image_desc)
+        dbox.addWidget(label)
+        dbox.addWidget(self._image_desc)
+        controls.addLayout(dbox)
+
+        dbox = QVBoxLayout()
+        label = QLabel('&Type')
+        label.setBuddy(self._image_type)
+        dbox.addWidget(label)
+        dbox.addWidget(self._image_type)
+        controls.addLayout(dbox)
+
         if not readonly:
             self.readonly = []
         self.blanks = 0
@@ -267,6 +289,7 @@ class PicWidget(QWidget):
         h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label); h.addStretch()
         vbox.addLayout(h)
         vbox.setMargin(0)
+        vbox.addLayout(controls)
         vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
 
@@ -314,36 +337,38 @@ class PicWidget(QWidget):
         self.win = PicWin(parent = self)
         self._currentImage = -1
 
+    def setDescription(self, text):
+        self.images[self.currentImage]['description'] = unicode(text)
+
+    def setType(self, index):
+        self.images[self.currentImage]['imagetype'] = index
+
+    def addImage(self, edit = False, filename = None):
+        if not filename:
+            filedlg = QFileDialog()
+            filename = unicode(filedlg.getOpenFileName(self,
+                    'Select Image...',"~", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
+        data = open(filename, 'rb').read()
+        image = QImage()
+        if image.loadFromData(data):
+            pic = {'data': data, 'height': image.height(),
+                    'width': image.width(), 'size': len(data),
+                    'mime': 'image/jpeg', 'description': 'Enter description',
+                    'imagetype': 3}
+            if edit and self.images:
+                desc = self.images[self.currentImage]['description']
+                self.images[self.currentImage].update(pic)
+                self.currentImage = self.currentImage
+            else:
+                if not self.images:
+                    self.setImages([pic])
+                else:
+                    self.images.append(pic)
+                    self.currentImage = len(self.images) - 1
 
     def close(self):
         self.win.close()
         QWidget.close(self)
-
-    def _setImage(self, num):
-        try:
-            while True:
-                image = QImage().fromData(self.images[num].data)
-                if image.isNull(): #Badly written data, which isn't useful in any way.
-                    del(self.images[num])
-                else:
-                    break
-            [action.setEnabled(True) for action in
-                    (self.editpic, self.savepic, self.removepic)]
-        except IndexError:
-            [action.setEnabled(False) for action in
-                    (self.editpic, self.savepic, self.removepic)]
-            self.label.setPixmap(QPixmap())
-            return
-
-        if num in self.readonly:
-            self.editpic.setEnabled(False)
-            self.removepic.setEnabled(False)
-        self.pixmap = QPixmap.fromImage(image)
-        self.win.setImage(self.pixmap)
-        self.label.setPixmap(self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio))
-        self._currentImage = num
-        self.label.setFrameStyle(QFrame.NoFrame)
-        self.enableButtons()
 
     def enableButtons(self):
         if not self.images:
@@ -369,7 +394,43 @@ class PicWidget(QWidget):
     def _getImage(self):
         return self._currentImage
 
-    currentImage = property(_getImage, _setImage,"""Get or set the index of
+    def _setCurrentImage(self, num):
+        try:
+            while True:
+                image = QImage().fromData(self.images[num]['data'])
+                if image.isNull(): #Badly written data, which isn't useful in any way.
+                    del(self.images[num])
+                else:
+                    break
+            [action.setEnabled(True) for action in
+                    (self.editpic, self.savepic, self.removepic)]
+        except IndexError:
+            [action.setEnabled(False) for action in
+                    (self.editpic, self.savepic, self.removepic)]
+            self.label.setPixmap(QPixmap())
+            return
+
+        if num in self.readonly:
+            self.editpic.setEnabled(False)
+            self.removepic.setEnabled(False)
+        self.pixmap = QPixmap.fromImage(image)
+        self.win.setImage(self.pixmap)
+        self.label.setPixmap(self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio))
+        try:
+            self._image_desc.setText(self.images[num]['description'])
+            self._image_desc.setEnabled(True)
+        except KeyError:
+            self._image_desc.setEnabled(False)
+        try:
+            self._image_type.setCurrentIndex(self.images[num]['imagetype'])
+            self._image_type.setEnabled(True)
+        except KeyError:
+            self._image_type.setEnabled(False)
+        self._currentImage = num
+        self.label.setFrameStyle(QFrame.NoFrame)
+        self.enableButtons()
+
+    currentImage = property(_getImage, _setCurrentImage,"""Get or set the index of
     the current image. If the index isn't valid
     then a blank image is loaded.""")
 
@@ -380,17 +441,6 @@ class PicWidget(QWidget):
             else:
                 self.win = PicWin(self.pixmap, self)
                 self.win.show()
-
-    def setImages(self, images):
-        if images:
-            self.images = images
-            self.currentImage = 0
-        else:
-            self.label.setFrameStyle(QFrame.Box)
-            self.label.setPixmap(QPixmap())
-            self.pixmap = None
-            self.images = []
-        self.enableButtons()
 
     def nextImage(self):
         self.currentImage += 1
@@ -408,40 +458,17 @@ class PicWidget(QWidget):
             if os.path.exists(os.path.dirname(filename)):
                 self.pixmap.save(filename, "PNG")
 
-    def addImage(self, edit = False, filename = None):
-        if not filename:
-            filedlg = QFileDialog()
-            filename = unicode(filedlg.getOpenFileName(self,
-                    'Save as...',"~", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
-        image = QImage()
-        if image.load(filename):
-            ba = QByteArray()
-            buf = QBuffer()
-            buf.open(QIODevice.WriteOnly)
-            image.save(buf, "PNG")
-            data = buf.data()
-            if edit and self.images:
-                    desc = self.images[self.currentImage].desc
-                    pic = APIC(3,'image/png', 3, desc, data)
-                    self.images[self.currentImage] = pic
-                    self.currentImage = self.currentImage
-            else:
-                try:
-                    desc = [image.desc for image in self.images]
-                except TypeError:
-                    desc = []
-                i = 0
-                while True:
-                    text = unicode(i)
-                    if text not in desc:
-                        break
-                    i += 1
-                pic = APIC(3,'image/png', 3, text, data)
-                if not self.images:
-                    self.setImages([pic])
-                else:
-                    self.images.append(pic)
-                    self.currentImage = len(self.images) - 1
+    def setImages(self, images):
+        if images:
+            self.images = images
+            self.currentImage = 0
+        else:
+            self.label.setFrameStyle(QFrame.Box)
+            self.label.setPixmap(QPixmap())
+            self.pixmap = None
+            self.images = []
+        self.enableButtons()
+
 
     def removeImage(self):
         if len(self.images) >= 1:
@@ -456,13 +483,18 @@ class PicWidget(QWidget):
         for i, filename in enumerate(filenames):
             image = QImage()
             if image.load(filename):
-                ba = QByteArray()
-                buf = QBuffer()
-                buf.open(QIODevice.WriteOnly)
-                image.save(buf, "PNG")
-                data = buf.data()
-                text = unicode(i)
-                pic = APIC(3,'image/png', 3, text, data)
+                try:
+                    data = open(filename, 'rb').read()
+                except IOError, e:
+                    if filename.startswith(u':/'):
+                        ba = QByteArray()
+                        data = QBuffer(ba)
+                        data.open(QIODevice.WriteOnly)
+                        image.save(data, "JPG")
+                        data = data.data()
+                    else:
+                        raise e
+                pic = {'data': data}
                 images.append(pic)
         self.blanks = len(filenames)
         self.setImages(images)
@@ -641,10 +673,12 @@ class ExTags(QDialog):
                     tags[tag].append(val)
                 else:
                     tags[tag] = [val]
-            toremove = [z for z in audioinfo.usertags(self.model.taginfo[self.currentrow]) if z not in tags]
+            toremove = [z for z in self.model.taginfo[self.currentrow] if z not in tags and z not in audioinfo.INFOTAGS]
             for tag in toremove:
                 tags[tag] = ""
-            tags["__image"] =  deepcopy(self.piclabel.images)
+            keys = ['data', 'mime', 'description', 'imagetype']
+            pics = [dict([(key, z[key]) for key in keys if key in z]) for z in images]
+            tags["__image"] =  [audio.image(**pic) for pic in pics]
             self.model.setRowData(self.currentrow, tags)
             self.emit(SIGNAL('tagChanged()'))
 
@@ -690,16 +724,13 @@ class ExTags(QDialog):
         self.listbox.clear()
         items = []
         tags = self.model.taginfo[row]
-        for item, val in  audioinfo.usertags(tags).items():
-            if val and (type(val) is unicode):
-                items.append(item + " = " + val)
-            else:
-                [items.append(item + " = " + z) for z in val]
+        for item, val in audioinfo.usertags(tags).items():
+            [items.append(item + " = " + z) for z in val]
         self.listbox.addItems(items)
         self.currentrow = row
         self.piclabel.setEnabled(False)
         if '__library' not in tags:
-            if tags.filetype == audioinfo.PID3:
+            if hasattr(tags, 'image'):
                 self.piclabel.setEnabled(True)
                 if tags.images:
                     self.piclabel.setImages(deepcopy(tags.images))
@@ -717,8 +748,3 @@ if __name__ == "__main__":
     wid.resize(200,400)
     wid.show()
     app.exec_()
-
-#app=QApplication(sys.argv)
-#qb=TrackWindow(None,12,23)
-#qb.show()
-#app.exec_()
