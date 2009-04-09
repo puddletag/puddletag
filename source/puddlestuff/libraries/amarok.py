@@ -140,25 +140,25 @@ class Amarok(MySQLLib):
                 self.cursor.execute(u'DELETE FROM ' + key + u' WHERE id = %s', (keyid,))
 
     def delTracks(self, tracks):
-        converttag = audioinfo.converttag
+        stringtags = audioinfo.stringtags
         app = self.applyToDict
         utflatin = self.utflatin
         for track in tracks:
-            self._delTrack(app(converttag(track, True), utflatin))
+            self._delTrack(app(stringtags(track, True), utflatin))
 
 
     def saveTracks(self, tracks):
         basename = os.path.basename
         freq = audioinfo.lngfrequency
         leng = audioinfo.lnglength
-        converttag = audioinfo.converttag
+        stringtags = audioinfo.stringtags
         lngtime = audioinfo.lngtime
         app = self.applyToDict
         utflatin = self.utflatin
 
         for old, new in tracks:
-            (old, new) = (app(converttag(old, True), utflatin),
-                                app(converttag(new, True), utflatin))
+            (old, new) = (app(stringtags(old, True), utflatin),
+                                app(stringtags(new, True), utflatin))
 
             mixed = old.copy()
             mixed.update(new)
@@ -221,7 +221,7 @@ class Amarok(MySQLLib):
         term = term.lower()
         tracks = []
         for audio in files:
-            temp = audioinfo.converttag(audio)
+            temp = audioinfo.stringtags(audio)
             for tag in tags:
                 if term in temp[tag].lower():
                     tracks.append(audio)

@@ -376,6 +376,7 @@ class LibraryTree(QTreeWidget):
 class Tag:
     def __init__(self, library, tags = None):
         self.library = library
+        self.images = None
         if tags:
             self.link(tags)
 

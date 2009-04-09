@@ -186,7 +186,7 @@ class RhythmDB(ContentHandler):
 
     def delTracks(self, tracks):
         for track in tracks:
-            track = audioinfo.converttag(track)
+            track = audioinfo.stringtags(track)
             artist = track['artist']
             album = track['album']
             dbtracks = self.tracks[self.albums[artist][album]]
@@ -198,7 +198,7 @@ class RhythmDB(ContentHandler):
 
     def saveTracks(self, tracks):
         for old, new in tracks:
-            old, new = audioinfo.converttag(old), audioinfo.converttag(new)
+            old, new = audioinfo.stringtags(old), audioinfo.stringtags(new)
             artist = new['artist']
             album = new['album']
             if old['artist'] != artist:
@@ -293,7 +293,7 @@ class RhythmDB(ContentHandler):
         term = term.lower()
         tracks = []
         for audio in files:
-            temp = audioinfo.converttag(audio)
+            temp = audioinfo.stringtags(audio)
             for tag in tags:
                 if term in temp[tag].lower():
                     tracks.append(audio)

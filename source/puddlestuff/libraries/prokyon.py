@@ -135,7 +135,7 @@ class Prokyon(MySQLLib):
         basename = os.path.basename
         freq = audioinfo.lngfrequency
         leng = audioinfo.lnglength
-        converttag = audioinfo.converttag
+        stringtags = audioinfo.stringtags
         utflatin = self.utflatin
         appDict = self.applyToDict
         def genretoint(genre):
@@ -145,7 +145,7 @@ class Prokyon(MySQLLib):
                 return 255
 
         for old, new in tracks:
-            (old, new) = (converttag(old, True), converttag(new, True))
+            (old, new) = (stringtags(old, True), stringtags(new, True))
             mixed = old.copy()
             mixed.update(new)
             mixed = appDict(appDict(mixed, self.utflatin), self.strToNone)
@@ -260,7 +260,7 @@ class Prokyon(MySQLLib):
         term = term.lower()
         tracks = []
         for audio in files:
-            temp = audioinfo.converttag(audio)
+            temp = audioinfo.stringtags(audio)
             for tag in tags:
                 if term in temp[tag].lower():
                     tracks.append(audio)

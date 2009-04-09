@@ -148,6 +148,7 @@ class FrameCombo(QGroupBox):
                     self.labels[tagval].hide()
                     self.combos[tagval].next.setVisible(True)
                     self.combos[tagval].prev.setVisible(True)
+                    self.combos[tagval].showbuttons = True
                 else:
                     self.combos[tagval] = QComboBox()
                     self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)

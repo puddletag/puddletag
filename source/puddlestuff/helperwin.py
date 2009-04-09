@@ -266,6 +266,8 @@ class PicWidget(QWidget):
         dbox.addWidget(self._image_type)
         controls.addLayout(dbox)
 
+        self.showbuttons = True
+
         if not readonly:
             self.readonly = []
         self.blanks = 0
@@ -384,7 +386,7 @@ class PicWidget(QWidget):
             else:
                 self.prev.setEnabled(True)
 
-        if not self.next.isEnabled() and not self.prev.isEnabled():
+        if not self.showbuttons and not self.next.isEnabled() and not self.prev.isEnabled():
             self.next.hide()
             self.prev.hide()
         else:
