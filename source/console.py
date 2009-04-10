@@ -1,8 +1,27 @@
+#console.py
+
+#Copyright (C) 2008-2009 concentricpuddle
+
+#This file is part of puddletag, a semi-good music tag editor.
+
+#This program is free software; you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation; either version 2 of the License, or
+#(at your option) any later version.
+
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 from optparse import OptionParser
 import sys,os,shutil
 from puddlestuff.findfunc import *
 from puddlestuff.audioinfo import Tag
-from puddlestuff.console import *
 import pdb
 
 path, PATH, FILENAME = os.path, audioinfo.PATH, audioinfo.FILENAME
@@ -88,13 +107,14 @@ class Format:
     name = 'Format'
     command = 'format'
     description = 'Formats tags using a pattern'
-    usage = '--format tags::pattern'
+    usage = '--format [tags...] pattern'
 
-    def setup(self, tags, pattern):
+    def setup(self, pattern, *tags):
         self.tags = tags
-        self.pattern = pattern[0]
+        self.pattern = pattern
 
     def run(self, tags):
+        #pdb.set_trace()
         value = tagtofilename(self.pattern, tags)
         return dict([(tag, value) for tag in self.tags])
 
@@ -127,21 +147,18 @@ class SetTag:
     name = 'SetTag'
     command = 'set'
     description = 'Writes the specified tags on the files.'
-    usage = 'tags::values'
+    usage = 'tag value [tag value]...'
 
-    def setup(self, tags, values):
-        if tags:
-            self.tags = tags
-        else:
-            raise PuddleError("No tags were specified")
-        self.values = values
-        if len(values) <> len(tags) and len(values) != 1:
-            raise PuddleError("I can only accept one value, or values equal to the number of tags")
-        elif len(values) == len(tags):
-            self.tags = zip(tags, values)
-        else:
-            val = values[0]
-            self.tags = [(tag, val) for tag in tags]
+    def setup(self, *args):
+        arglen = len(args)
+        if arglen == 0:
+            raise PuddleError("Dude, I need some tags to modify.")
+        elif arglen % 2 != 0:
+            raise PuddleError("You tags and values aren't equal.")
+
+        tags = args[0:arglen:2]
+        values = args[1:arglen:2]
+        self.tags = zip(tags,values)
 
     def run(self, tags):
         return dict([(tag, value) for tag, value in self.tags])
@@ -153,12 +170,35 @@ class SetMul:
     description = 'Writes multiple values to the specified tags'
     usage = '--setmul tags::values'
 
-    def setup(self, tags, values):
+    def setup(self, *args):
+        for i, z in enumerate(args):
+            if '::' in z: #The separator
+                y = z.strip()
+                if y == '::': #Something like ['what.py', 'artist', 'title', '::', 'what is ithis']
+                    tags = args[:i]
+                    values = args[i+1:]
+                    break
+                elif y.startswith('::'): #['what.py', 'artist', 'title', '::what is ithis']
+                    tags = args[:i]
+                    values = args[i:]
+                    values[0] = values[0][2:]
+                    break
+                elif y.endswith('::'): #['what.py', 'artist', 'title::', 'what is ithis']
+                    tags = args[:i+1]
+                    tags[-1] = tags[-1][:-2]
+                    values = args[i+1:]
+                    break
+                else: #['artist', 'title::"my name is"', 'what', 'is', 'this']
+                    tag = y[:y.find('::')]
+                    value = y[y.find('::') + 2:]
+                    tags = list(args[:i]) + [tag]
+                    values =  [value] + list(args[i+1:])
+                    break
         if tags:
             self.tags = tags
         else:
             raise PuddleError("No tags were specified")
-        self.values = values
+        values = values
         self.tags = [(tag, values) for tag in tags]
 
     def run(self, tags):
@@ -205,37 +245,31 @@ def writeTags(original, tags):
     except (OSError, IOError), detail:
         sys.stderr.write(u"Couldn't write to file, " + original['__filename'] + u'\n')
 
-classes = {'runaction': PuddleRunAction, 'set': SetTag, 'setmul': SetMul}
+classes = {'runaction': PuddleRunAction, 'set': SetTag, 'setmul': SetMul,
+            'format': Format}
 options, actions = parseoptions(classes)
 files = options.filename
 identifier = QuotedString('"') | Combine(NotAny('\\') + Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
 tags = delimitedList(identifier)
 commands = []
 for command, args in [action.items()[0] for action in actions]:
-    if len(args) != 0:
-        args = u''.join(args).split(u'::')
-        while True:
-            try:
-                args.remove(u'')
-            except ValueError:
-                break
-        args = [tags.parseString(z).asList() for z in args]
+    #Instantiate the class for the command
     cl = classes[command]()
     try:
         cl.setup(*args)
     except PuddleError, e:
         print 'Error:', unicode(e)
         sys.exit(0)
-    except TypeError, e:
-        text = unicode(e)
-        temp = []
-        for s in ['takes exactly ', 'arguments (']:
-            i = text.rfind(s) + len(s)
-            temp.append(int(text[i:i+1]))
-        if temp[0] > temp[1]:
-            print 'Not enough arguments were specified to --' + cl.command
-        else:
-            print 'Too many arguments were specified to --' + cl.command
+    #except TypeError, e:
+        #text = unicode(e)
+        #temp = []
+        #for s in ['takes exactly ', 'arguments (']:
+            #i = text.rfind(s) + len(s)
+            #temp.append(int(text[i:i+1]))
+        #if temp[0] > temp[1]:
+            #print 'Not enough arguments were specified to --' + cl.command
+        #else:
+            #print 'Too many arguments were specified to --' + cl.command
         print 'Usage:', cl.usage
         sys.exit(0)
     commands.append(cl.run)
@@ -274,14 +308,3 @@ for f in files:
         else:
             writeTags(tag, tags)
 
-
-#if options.preview:
-    #def decor(func):
-        #def s(*args):
-            #x = func(*args)
-            #print pprint(x)
-            #return x
-        #return s
-    #commands = [decor(z) for z in commands]
-
-#writefiles(commands, files)

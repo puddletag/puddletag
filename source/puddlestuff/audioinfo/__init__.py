@@ -1,24 +1,23 @@
-"""
-__init__.py
+#__init__.py
 
-Copyright (C) 2008 concentricpuddle
+#Copyright (C) 2008-2009 concentricpuddle
 
-This audio is part of puddletag, a semi-good music tag editor.
+#This audio is part of puddletag, a semi-good music tag editor.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+#This program is free software; you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation; either version 2 of the License, or
+#(at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-"""
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 
 import mutagen, time, pdb, calendar
 from decimal import Decimal
@@ -168,27 +167,10 @@ def usertags(tags):
                     not (isinstance(z, (int, long)) or z.startswith('__'))])
 
 class MockTag(object):
-    """Class that operates on audio audio tags.
-    Currently supports ogg and mp3 files.
-
-    It can be used in two ways.
-
-    >>>tag = audioinfo.Tag(filename)
-    Gets the tags in the audio, filename
-    as a dictionary in format {tag: value} in Tag._tags.
-
-    On the other hand, if you have already created
-    a tag object. Use link like so:
-
-    >>>tag = audioinfo.Tag()
-    >>>tag.link(filename)
-    {'artist': "Artist", "track":"12", title:"Title", '__length':"5:14"}
-
-    File info tags like length start with '__'.
-    Images can be accessed by either the '__image' tag or via Tag.images. Note
-    that images aren't included when iterating through Tag.
-
-    Use save to save tags."""
+    """Use as base for all tag classes."""
+    def __init__(self, filename = None):
+        if filename:
+            self.link(filename)
 
     def update(self, dictionary=None, **kwargs):
         if dictionary is None:
@@ -238,14 +220,30 @@ class MockTag(object):
 
 
 def Tag(filename):
-    """Guess the type of the file and try to open it.
+    """Class that operates on audio tags.
+    Currently supports ogg, mp3, mp4, apev2 and flac files
 
-    The file type is decided by several things, such as the first 128
-    bytes (which usually contains a file type identifier), the
-    filename extension, and the presence of existing tags.
+    It can be used in two ways.
 
-    If no appropriate type could be found, None is returned.
-    """
+    >>>tag = audioinfo.Tag(filename)
+    Gets the tags in the audio, filename
+    as a dictionary in format {tag: value} in Tag._tags.
+
+    On the other hand, if you have already created
+    a tag object. Use link like so:
+
+    >>>tag = audioinfo.Tag()
+    >>>tag.link(filename)
+    {'artist': "Artist", "track":"12", title:"Title", '__length':"5:14"}
+
+    File info tags like length start with '__'.
+    Images can be accessed by either the '__image' tag or via Tag.images. Note
+    that images aren't included when iterating through Tag.
+
+    Use save to save tags.
+
+    There are caveats associated with each module, so check out their docstrings
+    for more info."""
     import id3, flac, ogg, apev2, mp4
     options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, mp4.filetype)
 
