@@ -29,7 +29,7 @@ class Tag(audioinfo.MockTag):
     """Tag class for APEv2 files.
 
     Tags are used as in ogg.py"""
-
+    IMAGETAGS = ()
     def __getitem__(self,key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
@@ -42,6 +42,24 @@ class Tag(audioinfo.MockTag):
             #But its needed for the sort method in tagmodel.TagModel, because it fails
             #if a key doesn't exist.
             return u""
+
+    def __setitem__(self, key, value):
+        if key == FILENAME:
+            self.filename = value
+        elif (key not in INFOTAGS) and isinstance(value, (unicode, str, int, long)):
+            self._tags[key] = [unicode(value)]
+        else:
+            self._tags[key] = [unicode(z) for z in value]
+
+    def copy(self):
+        tag = Tag()
+        tag.load(copy(self._mutfile), self._tags.copy())
+        return tag
+
+    def load(self, mutfile, tags):
+        self._mutfile = mutfile
+        self.filename = tags[FILENAME]
+        self._tags = tags
 
     def link(self, filename):
         """Links the audio, filename
@@ -85,12 +103,5 @@ class Tag(audioinfo.MockTag):
         audio.tags.update(newtag)
         audio.save()
 
-    def __setitem__(self, key, value):
-        if key == FILENAME:
-            self.filename = value
-        elif (key not in INFOTAGS) and isinstance(value, (unicode, str, int, long)):
-            self._tags[key] = [unicode(value)]
-        else:
-            self._tags[key] = [unicode(z) for z in value]
 
 filetype = (APEv2File, Tag)

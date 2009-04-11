@@ -26,79 +26,39 @@ Contains objects used throughout puddletag"""
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys
+import sys, os
 
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
+from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
+
+
+if sys.version_info[:2] < (2, 5):
+    def partial(func, arg):
+        def callme():
+            return func(arg)
+        return callme
+else:
+    from functools import partial
 
 HORIZONTAL = 1
 VERTICAL = 0
 
-class MoveButtons(QWidget):
-    def __init__(self, arrayname, index = 0, orientation = HORIZONTAL, parent = None):
-        QWidget.__init__(self, parent)
-        self.next = QPushButton('&>>')
-        self.prev = QPushButton('&<<')
-        if orientation == VERTICAL:
-            box = QVBoxLayout()
-            box.addWidget(self.next, 0)
-            box.addWidget(self.prev, 0)
-        else:
-            box = QHBoxLayout()
-            box.addWidget(self.prev)
-            box.addWidget(self.next)
+def safe_name(name, to = None):
+    """Make a filename safe for use (remove some special chars)
 
-
-        self.arrayname = arrayname
-
-        self.setLayout(box)
-        self.index = index
-        self.connect(self.next, SIGNAL('clicked()'), self.nextClicked)
-        self.connect(self.prev, SIGNAL('clicked()'), self.prevClicked)
-
-    def _setCurrentIndex(self, index):
-        try:
-            if index >= len(self.arrayname) or index < 0:
-                return
-            else:
-                self._currentindex = index
-                if self._currentindex >= len(self.arrayname) - 1:
-                    self.next.setEnabled(False)
-                else:
-                    self.next.setEnabled(True)
-
-                if self._currentindex <= 0:
-                    self.prev.setEnabled(False)
-                else:
-                    self.prev.setEnabled(True)
-        except TypeError:
-            "Probably arrayname is None or something."
-            self.prev.setEnabled(False)
-            self.next.setEnabled(False)
-
-        if (not self.prev.isEnabled()) and (not self.next.isEnabled()):
-            self.prev.hide()
-            self.next.hide()
-        else:
-            self.prev.show()
-            self.next.show()
-
-        self.emit(SIGNAL('indexChanged'), index)
-
-    def _getCurrentIndex(self):
-        return self._currentindex
-
-    index = property(_getCurrentIndex, _setCurrentIndex)
-
-    def nextClicked(self):
-        self.index += 1
-
-    def prevClicked(self):
-        self.index -= 1
-
-    def updateButtons(self):
-        self.index = self.index
+    If any special chars are found they are replaced by to."""
+    if not to:
+        to = ""
+    else:
+        to = unicode(to)
+    escaped = ""
+    for ch in name:
+        if ch not in r'/\*?;"|:': escaped = escaped + ch
+        else: escaped = escaped + to
+    if not escaped: return '""'
+    return escaped
 
 def unique(seq, stable = False):
     """unique(seq, stable=False): return a list of the elements in seq in arbitrary
@@ -171,29 +131,6 @@ def unique(seq, stable = False):
             result.append(elem)
     #if uniqueDebug: print "Brute force (" + ("Unstable","Stable")[stable] + ")."
     return result
-
-if sys.version_info[:2] < (2, 5):
-    def partial(func, arg):
-        def callme():
-            return func(arg)
-        return callme
-else:
-    from functools import partial
-
-def safe_name(name, to = None):
-    """Make a filename safe for use (remove some special chars)
-
-    If any special chars are found they are replaced by to."""
-    if not to:
-        to = ""
-    else:
-        to = unicode(to)
-    escaped = ""
-    for ch in name:
-        if ch not in r'/\*?;"|:': escaped = escaped + ch
-        else: escaped = escaped + to
-    if not escaped: return '""'
-    return escaped
 
 class compare:
     "Natural sorting class."
@@ -334,60 +271,16 @@ class HeaderSetting(QDialog):
         self.listbox.setCurrentRow(row)
         self.textname.setFocus()
 
-class ListButtons(QVBoxLayout):
-    """A Layout that contains five buttons usually
-    associated with listboxes. They are
-    add, edit, movedown, moveup and remove.
+class Label(QLabel):
+    """Just a QLabel that sends a clicked() signal
+    when left-clicked."""
+    def __init__ (self, text = "", parent = None):
+        QLabel.__init__ (self, text, parent)
 
-    Each button, when clicked sends signal with the
-    buttons name. e.g. add sends SIGNAL("add").
-
-    You can find them all in the widgets attribute."""
-
-    def __init__(self, parent = None):
-        QVBoxLayout.__init__(self, parent)
-        self.add = QToolButton()
-        self.add.setIcon(QIcon(':/filenew.png'))
-        self.add.setToolTip('Add')
-        self.remove = QToolButton()
-        self.remove.setIcon(QIcon(':/remove.png'))
-        self.remove.setToolTip('Remove')
-        self.moveup = QToolButton()
-        self.moveup.setIcon(QIcon(':/moveup.png'))
-        self.moveup.setToolTip('Move Up')
-        self.movedown = QToolButton()
-        self.movedown.setIcon(QIcon(':/movedown.png'))
-        self.movedown.setToolTip('Move Down')
-        self.edit = QToolButton()
-        self.edit.setIcon(QIcon(':/edit.png'))
-        self.edit.setToolTip('Edit')
-
-        self.widgets = [self.add, self.edit, self.remove, self.moveup, self.movedown]
-        [self.addWidget(widget) for widget in self.widgets]
-        [z.setIconSize(QSize(16,16)) for z in self.widgets]
-        self.addStretch()
-
-        clicked = SIGNAL("clicked()")
-        self.connect(self.add, clicked, self.addClicked)
-        self.connect(self.remove, clicked, self.removeClicked)
-        self.connect(self.moveup, clicked, self.moveupClicked)
-        self.connect(self.movedown, clicked, self.movedownClicked)
-        self.connect(self.edit, clicked, self.editClicked)
-
-    def addClicked(self):
-        self.emit(SIGNAL("add"))
-
-    def removeClicked(self):
-        self.emit(SIGNAL("remove"))
-
-    def moveupClicked(self):
-        self.emit(SIGNAL("moveup"))
-
-    def movedownClicked(self):
-        self.emit(SIGNAL("movedown"))
-
-    def editClicked(self):
-        self.emit(SIGNAL("edit"))
+    def mouseReleaseEvent(self, event):
+      if event.button() == Qt.LeftButton:
+        self.emit(SIGNAL("clicked()"))
+      QLabel.mousePressEvent(self, event)
 
 class ListBox(QListWidget):
     """Puddletag's replacement of QListWidget, because
@@ -473,8 +366,7 @@ class ListBox(QListWidget):
 
         if 0 in rows:
             return
-        #import pdb
-        #pdb.set_trace()
+
         [self.setItemSelected(item, False) for item in self.selectedItems()]
         for i in range(len(rows)):
             row = rows[i]
@@ -518,15 +410,516 @@ class ListBox(QListWidget):
 
         [self.setItemSelected(self.item(row + 1), True) for row in rows]
 
-class PuddleThread(QThread):
-    """puddletag rudimentary thread.
-    pass a command to run in another thread. The result
-    is stored in retval."""
-    def __init__(self, command, parent = None):
-        QThread.__init__(self, parent)
-        self.command = command
-    def run(self):
-        self.retval = self.command()
+class ListButtons(QVBoxLayout):
+    """A Layout that contains five buttons usually
+    associated with listboxes. They are
+    add, edit, movedown, moveup and remove.
+
+    Each button, when clicked sends signal with the
+    buttons name. e.g. add sends SIGNAL("add").
+
+    You can find them all in the widgets attribute."""
+
+    def __init__(self, parent = None):
+        QVBoxLayout.__init__(self, parent)
+        self.add = QToolButton()
+        self.add.setIcon(QIcon(':/filenew.png'))
+        self.add.setToolTip('Add')
+        self.remove = QToolButton()
+        self.remove.setIcon(QIcon(':/remove.png'))
+        self.remove.setToolTip('Remove')
+        self.moveup = QToolButton()
+        self.moveup.setIcon(QIcon(':/moveup.png'))
+        self.moveup.setToolTip('Move Up')
+        self.movedown = QToolButton()
+        self.movedown.setIcon(QIcon(':/movedown.png'))
+        self.movedown.setToolTip('Move Down')
+        self.edit = QToolButton()
+        self.edit.setIcon(QIcon(':/edit.png'))
+        self.edit.setToolTip('Edit')
+
+        self.widgets = [self.add, self.edit, self.remove, self.moveup, self.movedown]
+        [self.addWidget(widget) for widget in self.widgets]
+        [z.setIconSize(QSize(16,16)) for z in self.widgets]
+        self.addStretch()
+
+        clicked = SIGNAL("clicked()")
+        self.connect(self.add, clicked, self.addClicked)
+        self.connect(self.remove, clicked, self.removeClicked)
+        self.connect(self.moveup, clicked, self.moveupClicked)
+        self.connect(self.movedown, clicked, self.movedownClicked)
+        self.connect(self.edit, clicked, self.editClicked)
+
+    def addClicked(self):
+        self.emit(SIGNAL("add"))
+
+    def removeClicked(self):
+        self.emit(SIGNAL("remove"))
+
+    def moveupClicked(self):
+        self.emit(SIGNAL("moveup"))
+
+    def movedownClicked(self):
+        self.emit(SIGNAL("movedown"))
+
+    def editClicked(self):
+        self.emit(SIGNAL("edit"))
+
+class MoveButtons(QWidget):
+    def __init__(self, arrayname, index = 0, orientation = HORIZONTAL, parent = None):
+        QWidget.__init__(self, parent)
+        self.next = QPushButton('&>>')
+        self.prev = QPushButton('&<<')
+        if orientation == VERTICAL:
+            box = QVBoxLayout()
+            box.addWidget(self.next, 0)
+            box.addWidget(self.prev, 0)
+        else:
+            box = QHBoxLayout()
+            box.addWidget(self.prev)
+            box.addWidget(self.next)
+
+
+        self.arrayname = arrayname
+
+        self.setLayout(box)
+        self.index = index
+        self.connect(self.next, SIGNAL('clicked()'), self.nextClicked)
+        self.connect(self.prev, SIGNAL('clicked()'), self.prevClicked)
+
+    def _setCurrentIndex(self, index):
+        try:
+            if index >= len(self.arrayname) or index < 0:
+                return
+            else:
+                self._currentindex = index
+                if self._currentindex >= len(self.arrayname) - 1:
+                    self.next.setEnabled(False)
+                else:
+                    self.next.setEnabled(True)
+
+                if self._currentindex <= 0:
+                    self.prev.setEnabled(False)
+                else:
+                    self.prev.setEnabled(True)
+        except TypeError:
+            "Probably arrayname is None or something."
+            self.prev.setEnabled(False)
+            self.next.setEnabled(False)
+
+        if (not self.prev.isEnabled()) and (not self.next.isEnabled()):
+            self.prev.hide()
+            self.next.hide()
+        else:
+            self.prev.show()
+            self.next.show()
+
+        self.emit(SIGNAL('indexChanged'), index)
+
+    def _getCurrentIndex(self):
+        return self._currentindex
+
+    index = property(_getCurrentIndex, _setCurrentIndex)
+
+    def nextClicked(self):
+        self.index += 1
+
+    def prevClicked(self):
+        self.index -= 1
+
+    def updateButtons(self):
+        self.index = self.index
+
+class OKCancel(QHBoxLayout):
+    """Yes, I know about QDialogButtonBox, but I'm not using PyQt4.2 here."""
+    def __init__(self, parent = None):
+        QHBoxLayout.__init__(self, parent)
+
+        self.addStretch()
+
+        self.ok = QPushButton("&OK")
+        self.cancel = QPushButton("&Cancel")
+        self.ok.setDefault(True)
+
+        self.addWidget(self.ok)
+        self.addWidget(self.cancel)
+
+        self.connect(self.ok, SIGNAL("clicked()"), self.yes)
+        self.connect(self.cancel, SIGNAL("clicked()"), self.no)
+
+    def yes(self):
+        self.emit(SIGNAL("ok"))
+
+    def no(self):
+        self.emit(SIGNAL("cancel"))
+
+class PicWidget(QWidget):
+    """A widget that shows a file's pictures.
+
+    images is a list of mutagen.id3.APIC objects.
+    It allows the user to edit, save and delete whichever
+    picture the user wants, by right-clicking on it.
+
+    In addition, there are buttons to browse through
+    all the pictures.
+
+    Some important attributes are:
+    currentImage -> The index of the current image
+    maxImage -> Shows the current image fullsized.
+    setImages -> Guess
+    addImage -> Guess again...but it also shows and open file dialog.
+    removeImage -> Removes the current image.
+    next and prevImage -> Moves to the next and previous image.
+    saveToFile -> Save the current image to file.
+    showbuttons -> If True, the >> and << buttons are always shown. If False,
+                    they are shown depending on context."""
+
+    def __init__ (self, images = None, parent = None, readonly = None, buttons = False):
+        """Initialises the widget.
+
+        images -> A list of images as described in the classes docstring.
+        parent -> Qt parent
+        readonly -> indexes of images that are readonly. Can be changed by modifying
+                    the readonly attribute.
+        buttons -> If True, then the Add, Edit, etc. Buttons are shown.
+                   If False, then these functions can be found by right clicking
+                   on the picture."""
+        QWidget.__init__(self, parent)
+        self.lastfilename = u'~'
+        #The picture.
+        self.label = Label()
+        self.label.setFrameStyle(QFrame.Box)
+        self.label.setMargin(0)
+        self.label.setMinimumSize(180, 150)
+        self.label.setMaximumSize(180, 150)
+        self.label.setAlignment(Qt.AlignCenter)
+
+        #Description and picture type shit.
+        self._image_desc = QLineEdit(self)
+        self.connect(self._image_desc, SIGNAL('textEdited (const QString&)'),
+                    self.setDescription)
+        self._image_type = QComboBox(self)
+        self._image_type.addItems(IMAGETYPES)
+        self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
+                        self.setType)
+        controls = QHBoxLayout()
+
+        dbox = QVBoxLayout()
+        label = QLabel('&Description')
+        label.setBuddy(self._image_desc)
+        dbox.addWidget(label)
+        dbox.addWidget(self._image_desc)
+        controls.addLayout(dbox)
+
+        dbox = QVBoxLayout()
+        label = QLabel('&Type')
+        label.setBuddy(self._image_type)
+        dbox.addWidget(label)
+        dbox.addWidget(self._image_type)
+        controls.addLayout(dbox)
+
+        self.showbuttons = True
+
+        if not readonly:
+            readonly = []
+        self.readonly = readonly
+
+        self.next = QPushButton('&>>')
+        self.prev = QPushButton('&<<')
+        self.connect(self.next, SIGNAL('clicked()'), self.nextImage)
+        self.connect(self.prev, SIGNAL('clicked()'), self.prevImage)
+
+        if not images:
+            images = []
+        self.setImages(images)
+
+        movebuttons = QHBoxLayout()
+        movebuttons.addStretch()
+        movebuttons.addWidget(self.prev)
+        movebuttons.addWidget(self.next)
+        movebuttons.addStretch()
+
+        vbox = QVBoxLayout()
+        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label); h.addStretch()
+        vbox.addLayout(h)
+        vbox.setMargin(0)
+        vbox.addLayout(controls)
+        vbox.addLayout(movebuttons)
+        vbox.setAlignment(Qt.AlignCenter)
+
+        self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
+
+        hbox = QHBoxLayout()
+        hbox.addLayout(vbox)
+        self.setLayout(hbox)
+
+        if buttons:
+            listbuttons = ListButtons()
+            self.addpic = listbuttons.add
+            self.removepic = listbuttons.remove
+            self.editpic = listbuttons.edit
+            self.savepic = QToolButton()
+            self.savepic.setIcon(QIcon(':/save.png'))
+            self.savepic.setIconSize(QSize(16,16))
+            listbuttons.insertWidget(3,self.savepic)
+            listbuttons.moveup.hide()
+            listbuttons.movedown.hide()
+            signal = SIGNAL('clicked()')
+            hbox.addLayout(listbuttons)
+
+        else:
+            self.label.setContextMenuPolicy(Qt.ActionsContextMenu)
+            self.savepic = QAction("&Save picture", self)
+            self.label.addAction(self.savepic)
+
+            self.addpic = QAction("&Add picture", self)
+            self.label.addAction(self.addpic)
+
+            self.removepic = QAction("&Remove picture", self)
+            self.label.addAction(self.removepic)
+
+            self.editpic = QAction("&Change picture", self)
+            self.label.addAction(self.editpic)
+            signal = SIGNAL('triggered()')
+
+        self.connect(self.addpic, signal, self.addImage)
+        self.connect(self.removepic, signal, self.removeImage)
+        self.edit = partial(self.addImage, True)
+        self.connect(self.editpic, signal, self.edit)
+        self.connect(self.savepic, signal, self.saveToFile)
+
+        self.win = PicWin(parent = self)
+        self._currentImage = -1
+
+    def setDescription(self, text):
+        '''Sets the description of the current image to the text in the
+            description text box.'''
+        self.images[self.currentImage]['description'] = unicode(text)
+
+    def setType(self, index):
+        """Like setDescription, but for imagetype"""
+        try:
+            self.images[self.currentImage]['imagetype'] = index
+        except IndexError:
+            pass
+
+    def addImage(self, edit = False, filename = None):
+        """Adds an image from the given filename to self.images.
+
+        If a filename is not given, then an open file dialog is shown.
+        If edit is True, then the current image is changed."""
+
+        if not filename:
+            filedlg = QFileDialog()
+            filename = unicode(filedlg.getOpenFileName(self,
+                    'Select Image...',self.lastfilename, "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
+        self.lastfilename = os.path.dirname(filename)
+        data = open(filename, 'rb').read()
+        pic = self.loadPics(filename)
+        if pic:
+            pic = pic[0]
+            if edit and self.images:
+                self.images[self.currentImage].update(pic)
+                self.currentImage = self.currentImage
+            else:
+                if not self.images:
+                    self.setImages([pic])
+                else:
+                    self.images.append(pic)
+                    self.currentImage = len(self.images) - 1
+
+    def close(self):
+        self.win.close()
+        QWidget.close(self)
+
+    def enableButtons(self):
+        """Enables or disables buttons depending on context.
+
+        With < 1 image in self.images,
+        they're hidden unless overidden by self.showbuttons."""
+        if not self.images:
+            self.next.setEnabled(False)
+            self.prev.setEnabled(False)
+        else:
+            if self.currentImage >= len(self.images) - 1:
+                self.next.setEnabled(False)
+            else:
+                self.next.setEnabled(True)
+            if self.currentImage <= 0:
+                self.prev.setEnabled(False)
+            else:
+                self.prev.setEnabled(True)
+
+        if not self.showbuttons and not self.next.isEnabled() and not self.prev.isEnabled():
+            self.next.hide()
+            self.prev.hide()
+        else:
+            self.next.show()
+            self.prev.show()
+
+    def _getCurrentImage(self):
+        return self._currentImage
+
+    def _setCurrentImage(self, num):
+        try:
+            while True:
+                #A lot of files have bad picture data. I just want to
+                #skip those and not have the user be any wiser.
+                image = QImage().fromData(self.images[num]['data'])
+                if image.isNull(): #Badly written data, which isn't useful in any way.
+                    del(self.images[num])
+                else:
+                    break
+            [action.setEnabled(True) for action in
+                    (self.editpic, self.savepic, self.removepic)]
+        except IndexError:
+            [action.setEnabled(False) for action in
+                    (self.editpic, self.savepic, self.removepic)]
+            self.label.setPixmap(QPixmap())
+            return
+
+        if num in self.readonly:
+            self.editpic.setEnabled(False)
+            self.removepic.setEnabled(False)
+        self.pixmap = QPixmap.fromImage(image)
+        self.win.setImage(self.pixmap)
+        self.label.setPixmap(self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio))
+        try:
+            self._image_desc.blockSignals(True)
+            self._image_desc.setText(self.images[num]['description'])
+        except KeyError:
+            pass
+        self._image_desc.blockSignals(False)
+        self._image_type.blockSignals(True)
+        try:
+            self._image_type.setCurrentIndex(self.images[num]['imagetype'])
+        except KeyError:
+            pass
+        self._image_type.blockSignals(False)
+        self._currentImage = num
+        self.label.setFrameStyle(QFrame.NoFrame)
+        self.enableButtons()
+
+    currentImage = property(_getCurrentImage, _setCurrentImage,"""Get or set the index of
+    the current image. If the index isn't valid
+    then a blank image is loaded.""")
+
+    def maxImage(self):
+        """Shows a window with the picture fullsized."""
+        if self.pixmap:
+            if self.win.isVisible():
+                self.win.hide()
+            else:
+                self.win = PicWin(self.pixmap, self)
+                self.win.show()
+
+    def nextImage(self):
+        self.currentImage += 1
+
+    def prevImage(self):
+        self.currentImage -= 1
+
+    def saveToFile(self):
+        """Opens a dialog that allows the user to save,
+        the image in the current file to disk."""
+        if self.currentImage > -1:
+            filedlg = QFileDialog()
+            filename = unicode(filedlg.getSaveFileName(self,
+                    'Save as...',self.lastfilename, "PNG (*.png)"))
+            if os.path.exists(os.path.dirname(filename)):
+                self.pixmap.save(filename, "PNG")
+
+    def setImages(self, images):
+        """Sets images. images are dictionaries as described in the class docstring."""
+        if images:
+            self.images = images
+            self.currentImage = 0
+        else:
+            self.label.setFrameStyle(QFrame.Box)
+            self.label.setPixmap(QPixmap())
+            self.pixmap = None
+            self.images = []
+        self.enableButtons()
+
+
+    def removeImage(self):
+        """Removes the current image."""
+        if len(self.images) >= 1:
+            del(self.images[self.currentImage])
+            if self.currentImage >= len(self.images) - 1 and self.currentImage > 0:
+                self.currentImage = len(self.images) - 1
+            else:
+                self.currentImage =  self.currentImage
+
+    def loadPics(self, *filenames):
+        """Loads pictures from the filenames"""
+        images = []
+        for filename in filenames:
+            image = QImage()
+            if image.load(filename):
+                try:
+                    data = open(filename, 'rb').read()
+                except IOError, e:
+                    if filename.startswith(u':/'):
+                        ba = QByteArray()
+                        data = QBuffer(ba)
+                        data.open(QIODevice.WriteOnly)
+                        image.save(data, "JPG")
+                        data = data.data()
+                    else:
+                        raise e
+                pic = {'data': data, 'height': image.height(),
+                    'width': image.width(), 'size': len(data),
+                    'mime': 'image/jpeg', 'description': 'Enter description',
+                    'imagetype': 0}
+                images.append(pic)
+        return images
+
+    def setImageTags(self, itags):
+        tags = {DESCRIPTION: self._image_desc.setEnabled,
+                DATA: self.label.setEnabled,
+                IMAGETYPE: self._image_type.setEnabled}
+        self.enableButtons()
+        for z in itags:
+            try:
+                tags[z](True)
+            except KeyError:
+                pass
+
+        others = [z for z in tags if z not in itags]
+        if len(others) == len(tags):
+            self.next.setEnabled(False)
+            self.prev.setEnabled(False)
+        for z in others:
+            tags[z](False)
+
+
+class PicWin(QDialog):
+    """A windows that shows an image."""
+    def __init__(self, pixmap = None, parent = None):
+        """Loads the image specified in QPixmap pixmap.
+        If picture is clicked, the window closes.
+
+        If you don't want to load an image when the class
+        is created, let pixmap = None and call setImage later."""
+        QDialog.__init__(self, parent)
+        self.label = Label()
+
+        vbox = QVBoxLayout()
+        vbox.setMargin(0)
+        vbox.addWidget(self.label)
+        self.setLayout(vbox)
+
+        if pixmap is not None:
+            self.setImage(pixmap)
+
+        self.connect(self.label, SIGNAL('clicked()'), self.close)
+
+    def setImage(self, pixmap):
+        self.label.setPixmap(pixmap)
+        self.setMaximumSize(pixmap.size())
+        self.setMinimumSize(pixmap.size())
+        self.resize(pixmap.size())
 
 class ProgressWin(QProgressDialog):
     def __init__(self, parent=None, maximum = 100, increment = 1):
@@ -556,28 +949,15 @@ class PuddleDock(QDockWidget):
         self.emit(SIGNAL('visibilitychanged'), visible)
         QDockWidget.setVisible(self, visible)
 
-class OKCancel(QHBoxLayout):
-    """Yes, I know about QDialogButtonBox, but I'm not using PyQt4.2 here."""
-    def __init__(self, parent = None):
-        QHBoxLayout.__init__(self, parent)
-
-        self.addStretch()
-
-        self.ok = QPushButton("&OK")
-        self.cancel = QPushButton("&Cancel")
-        self.ok.setDefault(True)
-
-        self.addWidget(self.ok)
-        self.addWidget(self.cancel)
-
-        self.connect(self.ok, SIGNAL("clicked()"), self.yes)
-        self.connect(self.cancel, SIGNAL("clicked()"), self.no)
-
-    def yes(self):
-        self.emit(SIGNAL("ok"))
-
-    def no(self):
-        self.emit(SIGNAL("cancel"))
+class PuddleThread(QThread):
+    """puddletag rudimentary threading.
+    pass a command to run in another thread. The result
+    is stored in retval."""
+    def __init__(self, command, parent = None):
+        QThread.__init__(self, parent)
+        self.command = command
+    def run(self):
+        self.retval = self.command()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -42,7 +42,7 @@ class Tag(audioinfo.MockTag):
 
     >>>x['track']
     [u'1]"""
-
+    IMAGETAGS = ()
     def __getitem__(self,key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
@@ -66,7 +66,7 @@ class Tag(audioinfo.MockTag):
 
     def copy(self):
         tag = Tag()
-        tag.load(self._mutfile.copy(), self._tags.copy())
+        tag.load(copy(self._mutfile), self._tags.copy())
         return tag
 
     def load(self, mutfile, tags):

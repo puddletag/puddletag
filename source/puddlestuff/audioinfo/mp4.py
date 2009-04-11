@@ -119,10 +119,9 @@ def setint(value):
     for z in value:
         try:
             temp.append(int(z))
-        except TypeError:
+        except ValueError:
             continue
     return temp
-
 
 FUNCS = {'title': (gettext, settext),
 'album': (gettext, settext),
@@ -162,10 +161,10 @@ class Tag(audioinfo.MockTag):
     """Class for Mp4 tags.
 
     Do not use unicode! It's fucked."""
-
+    IMAGETAGS = (audioinfo.MIMETYPE, audioinfo.DATA)
     def copy(self):
         tag = Tag()
-        tag.load(self._tags.copy(), self._mutfile.copy(), copy(self.images))
+        tag.load(self._tags.copy(), copy(self._mutfile), copy(self.images))
         return tag
 
     def __getitem__(self,key):
@@ -186,6 +185,29 @@ class Tag(audioinfo.MockTag):
                 return gettext(self._tags[key])
             except KeyError:
                 return ""
+
+    def __setitem__(self,key,value):
+
+        if isinstance(key, (int, long)):
+            self._tags[key] = value
+            return
+
+        if key == '__image':
+            self.images = value
+            return
+
+        if key in INFOTAGS:
+            self._tags[key] = value
+            if key == FILENAME:
+                self.filename = value
+            return
+
+        try:
+            self._tags[key] = FUNCS[key][1](value)
+        except KeyError:
+            #User defined tags.
+            self._freeform[str(key)] = '----:net.sf.puddletag:' + str(key)
+            self._tags[str(key)] = settext(value)
 
     def image(self, data, mime, **kwargs):
         if mime.lower().endswith(u'png'):
@@ -215,6 +237,7 @@ class Tag(audioinfo.MockTag):
         filename = tags[FILENAME]
         audio = MP4(filename)
         self._tags = {}
+        self._images = []
 
         if audio is None:
             return
@@ -228,7 +251,7 @@ class Tag(audioinfo.MockTag):
                 self.images = audio['covr']
                 keys.remove('covr')
             except KeyError:
-                self._images = []
+                pass
 
             #I want 'trkn', to split into track and totaltracks, like Mp3tag.
             if 'trkn' in keys:
@@ -310,28 +333,5 @@ class Tag(audioinfo.MockTag):
             del(audio[key])
         audio.update(newtag)
         audio.save()
-
-    def __setitem__(self,key,value):
-
-        if isinstance(key, (int, long)):
-            self._tags[key] = value
-            return
-
-        if key == '__image':
-            self.images = setimg(value)
-            return
-
-        if key in INFOTAGS:
-            self._tags[key] = value
-            if key == FILENAME:
-                self.filename = value
-            return
-
-        try:
-            self._tags[key] = FUNCS[key][1](value)
-        except KeyError:
-            #User defined tags.
-            self._freeform[str(key)] = '----:net.sf.puddletag:' + str(key)
-            self._tags[str(key)] = settext(value)
 
 filetype = (MP4, Tag)

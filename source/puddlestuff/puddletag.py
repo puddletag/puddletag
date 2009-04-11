@@ -166,8 +166,8 @@ class FrameCombo(QGroupBox):
         then they remain unchanged. If <blank> is selected, then the tag is removed"""
         for combo in self.combos:
             if combo  == "__image":
-                self.combos[combo].setImages(None)
-                self.combos[combo].addBlanks(':/keep.png', ':/blank.png')
+                pics = self.combos[combo].loadPics(':/keep.png', ':/blank.png')
+                self.combos[combo].setImages(pics)
                 self.combos[combo].readonly = [0,1]
             else:
                 self.combos[combo].clear()
@@ -847,13 +847,13 @@ class MainWin(QMainWindow):
 
         tags = dict([(tag,[]) for tag in combos if tag != '__image'])
         images = []
+        imagetags = set()
         for row in table.selectedRows:
             audio = table.rowTags(row)
+            imagetags = imagetags.union(audio.IMAGETAGS)
             if ('__image' in combos):
-                if audio.images:
+                if hasattr(audio,'image'):
                     images.extend(audio.images)
-                else:
-                    images.append(None)
             for tag in tags:
                 try:
                     if isinstance(audio[tag],(unicode, str)):
@@ -865,20 +865,15 @@ class MainWin(QMainWindow):
 
         if '__image' in combos:
             images = unique(images)
-            if None in images:
-                while None in images:
-                    images.remove(None)
-                i = 1
-            else:
-                i = -1
             if images:
                 combos['__image'].images.extend(images)
-                if (len(images) == 1 or len(table.selectedRows) == 1) and i == -1:
+                if (len(images) == 1 or len(table.selectedRows) == 1):
                     combos['__image'].currentImage = 2
                 else:
                     combos['__image'].currentImage = 0
             else:
                 combos['__image'].currentImage = 1
+            combos['__image'].setImageTags(imagetags)
 
         for z in tags:
             tags[z] = list(set(tags[z]))
@@ -886,7 +881,6 @@ class MainWin(QMainWindow):
         for tagset in tags:
             [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
                     if combos.has_key(tagset)]
-
 
         for combo in combos.values():
             combo.setEnabled(True)

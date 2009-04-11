@@ -54,9 +54,11 @@ TAGS = audioinfo.TAGS
 REVTAGS = audioinfo.REVTAGS
 
 class Tag(audioinfo.MockTag):
+    IMAGETAGS = (audioinfo.MIMETYPE, audioinfo.DESCRIPTION, audioinfo.DATA,
+                                                        audioinfo.IMAGETYPE)
     def copy(self):
         tag = Tag()
-        tag.load(self._tags, self._mutfile, self._images)
+        tag.load(self._tags.copy(), copy(self._mutfile), copy(self._images))
         return tag
 
     def __getitem__(self,key):
@@ -98,7 +100,7 @@ class Tag(audioinfo.MockTag):
             return [{'data': image.data, 'description': image.desc,
                     'mime': image.mime, 'imagetype': image.type}
                                             for image in self._images]
-        return
+        return []
 
     def _setImages(self, images):
         self._images = images
@@ -112,6 +114,7 @@ class Tag(audioinfo.MockTag):
         filename = tags[FILENAME]
         audio = PuddleID3FileType(filename)
         self._tags = {}
+        self._images = []
         if audio is None:
             return
 
@@ -132,8 +135,6 @@ class Tag(audioinfo.MockTag):
             x = audio.tags.getall("APIC")
             if x:
                 self._images = x
-            else:
-                self._images = []
 
             x = [z for z in audio if z.startswith("COMM")]
             if x:
@@ -154,7 +155,10 @@ class Tag(audioinfo.MockTag):
         """Used only for creating a copy of myself."""
         self._tags = deepcopy(tags)
         self.filename = tags[FILENAME]
-        self._images = deepcopy(images)
+        if not images:
+            self._images = []
+        else:
+            self._images = deepcopy(images)
         self._originaltags = tags.keys()
         self._mutfile = mutfile
 
@@ -178,6 +182,10 @@ class Tag(audioinfo.MockTag):
             newimages = []
             for image in self._images:
                 try:
+                    i = 0
+                    while image.HashKey in newimages:
+                        i += 1
+                        image.desc += u' '*i #Pad with spaces so that each
                     audio[image.HashKey] = image
                     newimages.append(image.HashKey)
                 except AttributeError:
