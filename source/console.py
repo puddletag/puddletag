@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #console.py
 
 #Copyright (C) 2008-2009 concentricpuddle

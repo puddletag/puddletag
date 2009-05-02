@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #mp4.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -23,7 +24,7 @@ import puddlestuff.audioinfo as audioinfo
 from puddlestuff.audioinfo import (usertags, strlength, strbitrate,
                                 strfrequency, getinfo, FILENAME, PATH, INFOTAGS)
 from copy import copy, deepcopy
-from mutagen.mp4 import MP4, MP4Cover
+from mutagen.mp4 import MP4,  MP4Cover
 
 #mp4 tags, like id3 can only have a fixed number of tags. The ones on the left
 #with the corresponding tag as recognized by puddletag on the right...
