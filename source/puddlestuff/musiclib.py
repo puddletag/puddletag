@@ -22,7 +22,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from os import path
 import sys, pdb
-from puddleobjects import PuddleDock, OKCancel
+from puddleobjects import PuddleDock, OKCancel, ProgressWin, PuddleThread
 import audioinfo
 (stringtags, FILENAME, READONLY, INFOTAGS) = (audioinfo.stringtags, audioinfo.FILENAME, audioinfo.READONLY, audioinfo.INFOTAGS)
 import libraries, imp
@@ -93,20 +93,34 @@ class MainWin(QDialog):
             self.stack.setCurrentWidget(self.stackwidgets[number])
             self.currentlib = self.libattrs[number]
 
-    def loadLib(self):
+    def _what(self):
         try:
-            self.emit(SIGNAL('libraryAvailable'), self.stack.currentWidget().getLibClass())
+             return self.stack.currentWidget().getLibClass()
         except MusicLibError, details:
+            return unicode(details.strerror)
+
+    def loadLib(self):
+        p = ProgressWin(self, 0, showcancel = False)
+        p.show()
+        t = PuddleThread(self._what)
+        t.start()
+        while t.isRunning():
+            QApplication.processEvents()
+        err = t.retval
+        if isinstance(err, basestring):
+            p.close()
             QMessageBox.critical(self, u"Error", u'I encountered an error while loading %s: <b>%s</b>' \
-                            % (unicode(self.currentlib['name']), unicode(details.strerror)),
+                            % (unicode(self.currentlib['name']), err),
                             QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
-            return
-        settings = QSettings()
-        modname = self.currentlib['module'].__name__
-        modname = modname[modname.rfind('.')+1: ]
-        settings.setValue('Library/lastlib', QVariant(modname))
-        self.stack.currentWidget().saveSettings()
-        self.close()
+        else:
+            self.emit(SIGNAL('libraryAvailable'), err, p)
+            settings = QSettings()
+            modname = self.currentlib['module'].__name__
+            modname = modname[modname.rfind('.')+1: ]
+            settings.setValue('Library/lastlib', QVariant(modname))
+            self.stack.currentWidget().saveSettings()
+            p.close()
+            self.close()
 
 class LibraryWindow(PuddleDock):
     def __init__(self, library, loadmethod = None, parent = None):
@@ -420,7 +434,10 @@ class Tag:
             del(self.tags[key])
 
     def __getitem__(self, key):
-        return self.tags[key]
+        try:
+            return self.tags[key]
+        except KeyError:
+            return ['']
 
     def __iter__(self):
         return self.tags.__iter__()

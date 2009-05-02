@@ -24,6 +24,19 @@ from puddlestuff.findfunc import *
 from puddlestuff.audioinfo import Tag
 import pdb
 
+noprints = ['__path', '__ext', '__modified', '__accessed', '__folder']
+sortorder = ['__filename', '__size', '__length', '__bitrate', '__frequency', '__created']
+bold = chr(0x1b) + "[1m";
+normal  = chr(0x1b) + "[0m";
+red   = chr(0x1b) + "[31m";
+
+def printerror(text):
+    print red + text + normal
+def sortedkeys(keys):
+    sortkeys = [z for z in sortorder if z in keys]
+    others = sorted(set(keys).difference(sortkeys))
+    return sortkeys + others
+
 path, PATH, FILENAME = os.path, audioinfo.PATH, audioinfo.FILENAME
 
 class PuddleError(Exception): pass
@@ -60,10 +73,12 @@ def vararg_callback(option, opt_str, value, parser):
     setattr(parser.values, option.dest, value)
 
 def parseoptions(classes):
-    parser=OptionParser()
+    usage = '%prog -switches --option [arguments] -f files'
+    parser=OptionParser(usage)
     parser.add_option("-f","--filenames",dest="filename",action="callback",help="The filenames of the input files", callback=vararg_callback)
-    parser.add_option("-p","--preview",action="store_true", dest="preview",help="Don't change anything, just print results.")
+    parser.add_option("-p","--preview",action="store_true", dest="preview",help="Ask for confirmation before writing.")
     parser.add_option("-v","--verbose",action="store_true", dest="verbose",help="Rename the directory according to your pattern.")
+    parser.add_option("-t","--test",action="store_true", dest="test",help="Don't change anything, just print results.")
     #parser.add_option("-c","--continue",action="store_false", dest="cont",help="Yes, when asked.")
     for cl in classes.values():
         parser.add_option('--' + cl.command, dest='action' + cl.command, help=cl.description, action='callback', callback=vararg_callback)
@@ -77,17 +92,14 @@ def parseoptions(classes):
 
     actions = [{z[len('action'):]: getattr(options,z)} for z in dir(options) if z.startswith('action')]
     actions = [z for z in actions if z.values()[0] is not None]
-    if not options.filename:
-        print 'Dude, puddletag needs files to work on.'
-        parser.print_help()
-        sys.exit(0)
     return (options, actions)
 
 class PuddleRunAction:
     name = 'RunAction'
     command = 'runaction'
     description = 'Run the specified action on the selected files.'
-    usage = '--runaction Action Names'
+    usage = '--runaction Action Names -f files'
+    files = True
 
     def setup(self, args):
         if not args:
@@ -107,11 +119,19 @@ class Format:
     name = 'Format'
     command = 'format'
     description = 'Formats tags using a pattern'
-    usage = '--format [tags...] pattern'
+    usage = '--format pattern tags... -f files'
+    files = True
 
-    def setup(self, pattern, *tags):
+    def setup(self, *args):
+        pattern = args[:1]
+        tags = args[1:]
+        if not pattern:
+            raise PuddleError('No pattern was specified.')
+        if not tags:
+            raise PuddleError('No tags were specified.')
         self.tags = tags
         self.pattern = pattern
+
 
     def run(self, tags):
         #pdb.set_trace()
@@ -122,7 +142,8 @@ class FileToTag:
     name = 'FileToTag'
     command = 'filetotag'
     description = 'Retrieves tag information from the filename'
-    usage = 'pattern'
+    usage = '--filetotag pattern -f files'
+    files = True
 
     def setup(self, pattern):
         self.pattern = pattern[0]
@@ -135,7 +156,8 @@ class TagToFile:
     name = 'TagToFile'
     command = 'tagtofile'
     description = 'Renames the file according to pattern'
-    usage = 'pattern'
+    usage = '--tagtofile pattern -f files'
+    files = True
 
     def setup(self, pattern):
         self.pattern = pattern[0]
@@ -147,14 +169,15 @@ class SetTag:
     name = 'SetTag'
     command = 'set'
     description = 'Writes the specified tags on the files.'
-    usage = 'tag value [tag value]...'
+    usage = '--set tag value [tag value]... -f files'
+    files = True
 
     def setup(self, *args):
         arglen = len(args)
         if arglen == 0:
             raise PuddleError("Dude, I need some tags to modify.")
         elif arglen % 2 != 0:
-            raise PuddleError("You tags and values aren't equal.")
+            raise PuddleError(u"I need a value for the " + args[-1] + ' tag.')
 
         tags = args[0:arglen:2]
         values = args[1:arglen:2]
@@ -168,7 +191,8 @@ class SetMul:
     name = 'SetMul'
     command = 'setmul'
     description = 'Writes multiple values to the specified tags'
-    usage = '--setmul tags::values'
+    usage = '--setmul tags::values -f files'
+    files = True
 
     def setup(self, *args):
         for i, z in enumerate(args):
@@ -206,11 +230,10 @@ class SetMul:
 
 
 def pprint(tags):
-    bold = chr(0x1b) + "[1m";
-    normal  = chr(0x1b) + "[0m";
-    red   = chr(0x1b) + "[31m";
     temp = []
-    for tag, value in tags.items():
+    keys = [z for z in sortedkeys(tags.keys()) if z not in noprints]
+    for tag in keys:
+        value = tags[tag]
         if not isinstance(value, basestring):
             value = u'[' + ','.join(value) + u']'
         temp.append(tag + u': ' + bold + value + normal)
@@ -236,75 +259,97 @@ def writeTags(original, tags):
     try:
         renameFile(original, tags)
     except (OSError, IOError), e:
-        print "Couldn't rename to " + original[FILENAME] + ": " + e.strerror
+        printerror("Couldn't rename to " + original[FILENAME] + ": " + e.strerror)
         return
 
     try:
         original.update(tags)
         original.save()
     except (OSError, IOError), detail:
-        sys.stderr.write(u"Couldn't write to file, " + original['__filename'] + u'\n')
+        printerror(u"Couldn't write to file, " + original['__filename'] + u'\n')
 
-classes = {'runaction': PuddleRunAction, 'set': SetTag, 'setmul': SetMul,
-            'format': Format}
-options, actions = parseoptions(classes)
-files = options.filename
-identifier = QuotedString('"') | Combine(NotAny('\\') + Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
-tags = delimitedList(identifier)
-commands = []
-for command, args in [action.items()[0] for action in actions]:
-    #Instantiate the class for the command
-    cl = classes[command]()
-    try:
-        cl.setup(*args)
-    except PuddleError, e:
-        print 'Error:', unicode(e)
-        sys.exit(0)
-    #except TypeError, e:
-        #text = unicode(e)
-        #temp = []
-        #for s in ['takes exactly ', 'arguments (']:
-            #i = text.rfind(s) + len(s)
-            #temp.append(int(text[i:i+1]))
-        #if temp[0] > temp[1]:
-            #print 'Not enough arguments were specified to --' + cl.command
-        #else:
-            #print 'Too many arguments were specified to --' + cl.command
-        print 'Usage:', cl.usage
-        sys.exit(0)
-    commands.append(cl.run)
+def main():
+    classes = {'runaction': PuddleRunAction, 'set': SetTag, 'setmul': SetMul,
+                'format': Format}
+    options, actions = parseoptions(classes)
+    files = options.filename
+    identifier = QuotedString('"') | Combine(NotAny('\\') + Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
+    tags = delimitedList(identifier)
+    commands = []
+    for command, args in [action.items()[0] for action in actions]:
+        #Instantiate the class for the command
+        cl = classes[command]()
+        try:
+            if not files and cl.files:
+                raise PuddleError(u'No files were specified to ' + command)
+            cl.setup(*args)
+        except PuddleError, e:
+            printerror(u'Error: ' + unicode(e))
+            print u'usage: ' + cl.usage
+            sys.exit(0)
+        #except TypeError, e:
+            #text = unicode(e)
+            #temp = []
+            #match = sre.search('\d+', text)
+            #temp.append(int(text[match.start(0):match.end(0)]))
+            #text = text[match.end(0): ]
+            #match = sre.search('\d+', text)
+            #temp.append(int(text[match.start(0):match.end(0)]))
+            #if temp[0] > temp[1]:
+                #print 'Not enough arguments were specified to --' + cl.command
+            #else:
+                #print 'Too many arguments were specified to --' + cl.command
+            #print 'Usage:', cl.usage
+            #sys.exit(0)
+        commands.append(cl.run)
 
-for f in files:
-    try:
-        tag = audioinfo.Tag(f)
-    except (IOError, OSError), e:
-        print "Couldn't read " + f + ': ' + e.strerror
-        continue
-    if tag is not None:
-        tags = tag.tags
-        for com in commands:
-            tags.update(com(tags))
-        tags = audioinfo.converttag(tags)
-        if options.preview:
-            changes = {}
-            for z in tags:
-                if not (z in tag and tag[z] == tags[z]):
-                    changes[z] = tags[z]
-            print 'Original: \n', pprint(tag.tags), '\n'
-            print 'Changes: \n', pprint(changes), '\n'
-            print "Do you want to write the changes to the file? [Y/n]"
-            i = raw_input()
-            if i != u'n' or i != u'N':
+    for f in files:
+        try:
+            tag = audioinfo.Tag(f)
+        except (IOError, OSError), e:
+            try:
+                printerror("Couldn't read " + f + ': ' + e.strerror)
+            except AttributeError:
+                printerror(u"Couldn't read " + f + ': ' + unicode(e))
+            continue
+        if tag is not None:
+            tags = tag.tags
+            for com in commands:
+                tags.update(com(tags))
+            tags = audioinfo.converttag(tags)
+            if options.preview:
+                changes = {}
+                for z in tags:
+                    if not (z in tag and tag[z] == tags[z]):
+                        changes[z] = tags[z]
+                print 'Original: \n', pprint(tag.tags), '\n'
+                print 'Changes: \n', pprint(changes), '\n'
+                print "Do you want to write the changes to the file? [Y/n]"
+                s = raw_input()
+                if not(s == u'n' or s == u'N'):
+                    writeTags(tag, tags)
+            elif options.verbose:
+                changes = {}
+                for z in tags:
+                    if not (z in tag and tag[z] == tags[z]):
+                        changes[z] = tags[z]
+                print 'Original: \n', pprint(tag.tags), '\n'
+                print 'Changes: \n', pprint(changes), '\n'
+                u'Now writing...' + tag['__filename']
                 writeTags(tag, tags)
-        elif options.verbose:
-            changes = {}
-            for z in tags:
-                if not (z in tag and tag[z] == tags[z]):
-                    changes[z] = tags[z]
-            print 'Original: \n', pprint(tag.tags), '\n'
-            print 'Changes: \n', pprint(changes), '\n'
-            u'Now writing...' + tag['__filename']
-            writeTags(tag, tags)
-        else:
-            writeTags(tag, tags)
+            elif options.test:
+                changes = {}
+                for z in tags:
+                    if not (z in tag and tag[z] == tags[z]):
+                        changes[z] = tags[z]
+                print 'Original: \n', pprint(tag.tags), '\n'
+                print 'Changes: \n', pprint(changes), '\n'
+            else:
+                print options.test
+                #writeTags(tag, tags)
 
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)

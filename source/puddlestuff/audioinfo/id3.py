@@ -30,6 +30,7 @@ import imghdr
 class PuddleID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
     tags with the same description, ala Mp3tag."""
+    PEDANTIC = True
     def loaded_frame(self, tag):
         if len(type(tag).__name__) == 3:
             tag = type(tag).__base__(tag)
@@ -169,8 +170,10 @@ class Tag(audioinfo.MockTag):
     def save(self):
         """Writes the tags to file."""
         if self.filename != self._mutfile.filename:
+            self._mutfile.tags.filename = self.filename
             self._mutfile.filename = self.filename
         audio = self._mutfile
+        audioinfo.MockTag.save(self)
 
         for tag, value in self.mutvalues():
             audio[tag] = value
@@ -200,7 +203,7 @@ class Tag(audioinfo.MockTag):
             except KeyError:
                 continue
 
-        audio.save(v1 = 2)
+        audio.tags.save(v1 = 2)
         self._originaltags = [z[0] for z in self.mutvalues()]
 
     def __setitem__(self,key,value):

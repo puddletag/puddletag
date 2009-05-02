@@ -28,14 +28,16 @@ from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
 import cPickle as pickle
 from puddleobjects import ListBox, OKCancel, ListButtons
 from findfunc import Function
-from puddlesettings import PuddleConfig
+from puddleobjects import PuddleConfig, PuddleCombo
+
 
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
-    def __init__(self, funcname, showcombo = False, defaultargs = None, defaulttags = None, parent = None):
+    controls = {'text': PuddleCombo, 'combo': QComboBox, 'check': QCheckBox}
+    def __init__(self, funcname, showcombo = False, userargs = None, defaulttags = None, parent = None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
-        defaultargs is the default values you want to fill the controls in the dialog with[make sure they don't exceed the number of arguments of funcname]."""
+        userargs is the default values you want to fill the controls in the dialog with[make sure they don't exceed the number of arguments of funcname]."""
         QWidget.__init__(self,parent)
         identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
         tags = delimitedList(identifier)
@@ -60,60 +62,58 @@ class FunctionDialog(QWidget):
             self.vbox.addWidget(QLabel("Tags"))
             self.vbox.addWidget(self.tagcombo)
 
-        i = 0
+        self.textcombos = []
         #Loop that creates all the controls
-        for line in docstr:
+        for argno, line in enumerate(docstr):
             args = tags.parseString(line)
             #Get the control
             try:
-                control = getattr(QtGui, args[1])(self)
+                ctype = args[1]
+                if ctype == 'text':
+                    control = self.controls['text'](args[0], parent = self)
+                else:
+                    control = self.controls[ctype](self)
             except IndexError:
                 sys.stderr.write("The function isn't defined correctly, I'll continue anyway.")
 
-            try:
-                defaultarg = args[2:]
-            except IndexError:
-                defaultarg = None
+            defaultarg = args[2:]
 
             #Create the controls with their default values
             #if default values have been defined, we set them.
             #self.retval contains the method to be called when we get
             #the value of the control
-            if type(control) == QComboBox:
-                self.retval.append(control.currentText)
-                if (defaultarg is not None) and (defaultarg != []) :
+            if ctype == 'combo':
+                self.retval.append(control.currentIndex)
+                if defaultarg:
                     control.addItems(defaultarg)
-                    if defaultargs is not None:
-                        index = control.findText(defaultargs[i])
-                        if index >= 0:
-                            control.setCurrentIndex(index)
-                label = QLabel(args[0])
-                label.setBuddy(control)
-                self.vbox.addWidget(label)
-            elif type(control) == QLineEdit:
-                self.retval.append(control.text)
-                if (defaultarg is not None) and (defaultarg != []):
-                    control.setText(defaultarg[0])
-                if defaultargs is not None:
-                    control.setText(defaultargs[i])
-                label = QLabel(args[0])
-                label.setBuddy(control)
-                self.vbox.addWidget(label)
-            elif type(control) == QCheckBox:
+                    if userargs:
+                        control.setCurrentIndex(userargs[argno])
+            elif ctype == 'text':
+                self.textcombos.append(control)
+                self.retval.append(control.combo.currentText)
+                if defaultarg:
+                    control.combo.setEditText(defaultarg[0])
+                if userargs:
+                    control.combo.setEditText(userargs[argno])
+            elif ctype == 'check':
                 self.retval.append(control.checkState)
-                if (defaultarg is not None) and (defaultarg != []):
+                if defaultarg:
                     if defaultarg[2] == "True":
                         control.setCheckState(Qt.Checked)
                     else:
                         control.setCheckState(Qt.Unchecked)
-                if defaultargs is not None:
-                    if defaultargs[i] is True:
+                if userargs:
+                    if userargs[argno] is True:
                         control.setCheckState(Qt.Checked)
                     else:
                         control.setCheckState(Qt.Unchecked)
                 control.setText(args[0])
+
+            if ctype != 'check':
+                label = QLabel(args[0])
+                label.setBuddy(control)
+                self.vbox.addWidget(label)
             self.vbox.addWidget(control)
-            i += 1
         self.vbox.addStretch()
         self.setLayout(self.vbox)
         self.setMinimumSize(self.sizeHint())
@@ -124,13 +124,17 @@ class FunctionDialog(QWidget):
         Also sets self.func's arg and tag values."""
         newargs = []
         for method in self.retval:
-            if method() == Qt.Checked:
-                newargs.append(True)
-            elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
-                newargs.append(False)
+            if method == QtGui.QCheckBox.checkState:
+                if method() == Qt.Checked:
+                    newargs.append(True)
+                elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
+                    newargs.append(False)
             else:
-                newargs.append(unicode(method()))
-
+                if isinstance(method(), (int, long)):
+                    newargs.append(method())
+                else:
+                    newargs.append(unicode(method()))
+        [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
         if hasattr(self, "tagcombo"):
             tags = [x for x in [z.strip() for z in unicode(self.tagcombo.currentText()).split("|")] if z != ""]
@@ -138,7 +142,6 @@ class FunctionDialog(QWidget):
             return newargs + tags
         else:
             return newargs + [""]
-
 
 
 class CreateFunction(QDialog):
@@ -291,8 +294,6 @@ class ActionWindow(QDialog):
     def __init__(self, tags, parent = None):
         """tags are the tags to be shown in the FunctionDialog"""
         QDialog.__init__(self,parent)
-        settings = QSettings()
-        path = os.path.dirname(unicode(settings.fileName()))
         self.setWindowTitle("Actions")
         self.tags = tags
         self.listbox = ListBox()
@@ -327,10 +328,10 @@ class ActionWindow(QDialog):
 
     def loadActions(self):
         funcs = {}
-        settings = QSettings()
+
         cparser = PuddleConfig()
         firstrun = cparser.load('puddleactions', 'firstrun', 0, True)
-        filedir = os.path.dirname(unicode(settings.fileName()))
+        filedir = os.path.dirname(cparser.filename)
         from glob import glob
         files = glob(os.path.join(filedir, u'*.action'))
         if not firstrun and not files:
@@ -354,8 +355,8 @@ class ActionWindow(QDialog):
         self.listbox.moveDown(self.funcs)
 
     def remove(self):
-        settings = QSettings()
-        filedir = os.path.dirname(unicode(settings.fileName()))
+        cparser = PuddleConfig()
+        filedir = os.path.dirname(cparser.filename)
         listbox = self.listbox
         rows = sorted([listbox.row(item) for item in listbox.selectedItems()])
         for row in rows:
@@ -387,8 +388,8 @@ class ActionWindow(QDialog):
         return text.lower()
 
     def saveAction(self, name, funcs):
-        settings = QSettings()
-        filedir = os.path.dirname(unicode(settings.fileName()))
+        cparser = PuddleConfig()
+        filedir = os.path.dirname(cparser.filename)
         filename = os.path.join(filedir, self.removeSpaces(name) + u'.action')
         findfunc.saveAction(filename, name, funcs)
 

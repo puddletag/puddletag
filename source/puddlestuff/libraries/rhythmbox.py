@@ -119,11 +119,17 @@ class RhythmDB(ContentHandler):
         parser.setContentHandler(self)
         try:
             parser.parse(filename)
-        except ValueError, detail:
+        except ValueError , detail:
             if not os.path.exists(filename):
                 msg = "%s does not exist." % filename
             else:
                 msg = "%s is not a valid Rhythmbox XML database." % filename
+            raise musiclib.MusicLibError(0, msg)
+        except (IOError, OSError), detail:
+            if not os.path.exists(filename):
+                msg = "%s does not exist." % filename
+            else:
+                msg = detail.strerror()
             raise musiclib.MusicLibError(0, msg)
         self.filename = filename
 
@@ -327,7 +333,9 @@ class ConfigWindow(QWidget):
         self.dbpath = QLineEdit(path.join(unicode(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
 
         vbox = QVBoxLayout()
-        [vbox.addWidget(z) for z in [QLabel('&Database path'), self.dbpath]]
+        label = QLabel('&Database Path')
+        label.setBuddy(self.dbpath)
+        [vbox.addWidget(z) for z in [label, self.dbpath]]
 
         hbox = QHBoxLayout()
         openfile = QPushButton("&Browse...")

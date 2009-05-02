@@ -25,5 +25,8 @@
 <file alias="quickactions.png">data/quickactions.png</file>
 <file alias="keep.png">data/keep.png</file>
 <file alias="blank.png">data/blank.png</file>
+<file alias="cut.png">data/cut.png</file>
+<file alias="copy.png">data/copy.png</file>
+<file alias="paste.png">data/paste.png</file>
 </qresource>
 </RCC>

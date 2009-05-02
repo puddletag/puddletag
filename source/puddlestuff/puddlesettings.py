@@ -43,53 +43,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource
 from copy import copy
-from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox
+from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig
 import pdb
-
-class PuddleConfig:
-    """Module that allows you to values from INI config files, similar to
-    Qt's Settings module (Created it because PyQt4.4.3 has problems with
-    saving and loading lists.
-
-    Only two functions of interest:
-
-    load -> load a key from a specified section
-    setSection -> save a key section"""
-    def __init__(self):
-        self.settings = QSettings()
-
-    def load(self, section, key, default, getint = False):
-        settings = self.settings
-        if isinstance(default, (list, tuple)):
-            num = settings.beginReadArray(section)
-            if num <= 0:
-                return default
-            retval = []
-            for index in range(num):
-                settings.setArrayIndex(index)
-                if getint:
-                    retval.append(settings.value(key).toLongLong()[0])
-                else:
-                    retval.append(unicode(settings.value(key).toString()))
-            settings.endArray()
-        else:
-            if getint:
-                retval = settings.value("/".join([section, key]), QVariant(default)).toLongLong()[0]
-            else:
-                retval = unicode(settings.value("/".join([section, key]), QVariant(default)).toString())
-        return retval
-
-    def setSection(self, section = None, key = None, value = None):
-        settings = self.settings
-        if isinstance(value, (list, tuple)):
-            settings.beginWriteArray(section)
-            for i,val in enumerate(value):
-                settings.setArrayIndex(i)
-                settings.setValue(key,QVariant(val))
-            settings.endArray()
-        else:
-            sections = section + "/" + key
-            settings.setValue(sections, QVariant(value))
 
 class PatternEditor(QFrame):
     def __init__(self, parent = None, cenwid = None):

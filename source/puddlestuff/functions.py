@@ -45,7 +45,7 @@ not including the first[it's either tags or text].
 actiondlg.FunctionDialog creates controls using this line.
 This line is further split into three parts
     The first contains the Explanatory Label above the control.
-    The Second contains the control itself, either QLineEdit, QComboBox or QCheckBox
+    The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
 
@@ -102,9 +102,9 @@ def div(text,text1):
 
 def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
     '''Remove brackets from (ft), Brackets remove: $0
-    Feat &String, QLineEdit,  ft
-    O&pening bracket, QLineEdit, "("
-    C&losing bracket, QLineEdit, ")"'''
+    Feat &String, text,  ft
+    O&pening bracket, text, "("
+    C&losing bracket, text, ")"'''
     #Removes parenthesis from feat string
     #say if you had a title string "Booty (ft the boot man)"
     #featFormat would return "Booty ft the boot man"
@@ -142,12 +142,12 @@ def finddups(tracks, key = 'title'):
 
 def formatValue(tags, pattern):
     """Format Value, Format $0 using $1
-&Format string, QLineEdit"""
+&Format string, text"""
     return findfunc.tagtofilename(pattern, tags)
 
 def ftArtist(tags, ftval = " ft "):
     '''Get FT Artist, "FT Artist: $0, String: $1"
-Featuring &String, QLineEdit, " ft "'''
+Featuring &String, text, " ft "'''
 
     try:
         text = tags["artist"]
@@ -159,8 +159,8 @@ Featuring &String, QLineEdit, " ft "'''
 
 def ftTitle(tags, ftval = " ft ", replacetext = None):
     '''Get FT Title, "FT Title: $0, String: $1"
-Featuring &String, QLineEdit, " ft "
-&Text to append, QLineEdit, " ft "'''
+Featuring &String, text, " ft "
+&Text to append, text, " ft "'''
     if replacetext == None:
         replacetext = ftval
     try:
@@ -317,10 +317,10 @@ def re_escape(rex):
 
 def replace(text, word, replaceword, matchcase = False, whole = False):
     '''Replace, "Replace '$0': '$1' -> '$2'"
-&Replace, QLineEdit
-w&ith:, QLineEdit
-Match c&ase:, QCheckBox
-only as &whole word, QCheckBox'''
+&Replace, text
+w&ith:, text
+Match c&ase:, check
+only as &whole word, check'''
     if (matchcase) and (not whole):
         return text.replace(word, replaceword)
     elif (not matchcase) and (not whole):
@@ -381,11 +381,11 @@ def sub(text,text1):
 
 def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
     '''Case Conversion, "$0: $1"
-&Type, QComboBox, Mixed Case,UPPER CASE,lower case
-"For &Mixed Case, after any of:", QLineEdit, "., !"'''
-    if ctype == "UPPER CASE":
+&Type, combo, Mixed Case,UPPER CASE,lower case
+"For &Mixed Case, after any of:", text, "., !"'''
+    if ctype == 1:
         return text.upper()
-    elif ctype == "lower case":
+    elif ctype == 2:
         return text.lower()
 
     text = [z for z in text]

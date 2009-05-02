@@ -14,14 +14,14 @@ What makes it different?
 	Most important of all, puddletag is released under GPLv2.
 
 How do I get it?
-	Follow the link at http://puddletag.sourceforge.net or alternatively, if you have svn installed
+	Follow the links at http://puddletag.sourceforge.net or alternatively, using svn
 	svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
 
 And run it?
 	In the main puddletag directory, you'll find a file called puddletag.py. You can run it by typing python puddletag.py in your console.
 
 Releases?
-	Swing by the website (http://puddletag.sourceforge.net) every couple of weeks (Next on 1 April 2009), I'll have at least some updates.
+	Swing by the website (http://puddletag.sourceforge.net) every couple of weeks (next release due, 1 June 2009) for updates.
 
 Questions?
     There's a puddletag reddit over on http://www.reddit.com/r/puddletag if you have any questions. Alternatively, send me a mail at concentricpuddle@gmail.com.

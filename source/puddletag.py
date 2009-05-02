@@ -24,7 +24,7 @@ from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen
 
 from puddlestuff import resource
 from puddlestuff.puddletag import MainWin
-__version__ = "0.5.9"
+__version__ = "0.6.5"
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

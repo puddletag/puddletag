@@ -406,13 +406,13 @@ class ExTags(QDialog):
         self.currentrow = row
         self.piclabel.setEnabled(False)
         if '__library' not in tags:
+            self.piclabel.setImageTags(tags.IMAGETAGS)
             if hasattr(tags, 'image'):
                 self.piclabel.setEnabled(True)
                 if tags.images:
                     self.piclabel.setImages(deepcopy(tags.images))
                 else:
                     self.piclabel.setImages(None)
-            self.piclabel.setImageTags(tags.IMAGETAGS)
         else:
             self.piclabel.setImages(None)
         self.setWindowTitle(tags["__filename"])

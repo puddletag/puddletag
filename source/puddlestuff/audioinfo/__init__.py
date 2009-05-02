@@ -19,10 +19,12 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import mutagen, time, pdb, calendar
+import mutagen, time, pdb, calendar, os
+from errno import ENOENT
 from decimal import Decimal
 from copy import copy, deepcopy
 from os import path, stat
+
 from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
 
 PATH = u"__path"
@@ -85,10 +87,12 @@ REVTAGS = dict([reversed(z) for z in TAGS.items()])
 
 
 IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (back)',
-'Leaflet page',' Media (e.g. label side of CD)','Lead artist',' Artist',
+'Leaflet page','Media (e.g. label side of CD)','Lead artist','Artist',
 'Conductor', 'Band', 'Composer','Lyricist', 'Recording Location', 'During recording',
 'During performance', 'Movie/video screen capture', 'A bright coloured fish', 'Illustration',
 'Band/artist logotype', 'Publisher/Studio logotype']
+
+splitext = lambda x: path.splitext(x)[1][1:].lower()
 
 def stringtags(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.
@@ -175,7 +179,7 @@ class MockTag(object):
     def update(self, dictionary=None, **kwargs):
         if dictionary is None:
             return
-        if isinstance(dictionary, (dict,Tag)):
+        if isinstance(dictionary, (dict, MockTag)):
             for key, value in dictionary.items():
                 self[key] = value
         else:
@@ -218,6 +222,10 @@ class MockTag(object):
     def stringtags(self):
         return stringtags(self)
 
+    def save(self):
+        if not path.exists(self.filename):
+            raise IOError(ENOENT, os.strerror(ENOENT), self.filename)
+
 
 def Tag(filename):
     """Class that operates on audio tags.
@@ -248,6 +256,17 @@ def Tag(filename):
     options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, mp4.filetype)
 
     fileobj = file(filename, "rb")
+    e = {'mp3': id3.filetype,
+            'flac': flac.filetype,
+            'ogg': ogg.filetype,
+            'mp4': mp4.filetype,
+            'm4a': mp4.filetype}
+    ext = splitext(filename)
+    try:
+        return e[ext][1](filename)
+    except KeyError:
+        pass
+
     try:
         header = fileobj.read(128)
         results = [Kind[0].score(filename, fileobj, header) for Kind in options]

@@ -25,10 +25,10 @@ else: import sre
 try:
     from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString
 except ImportError:
-    sys.stderr.write("The PyParsing module wasn't found. Did you install it correctly?")
-    self.exit(0)
+    sys.stderr.write("The PyParsing module wasn't found. Did you install it correctly?\n")
+    sys.exit(0)
 from puddlesettings import PuddleConfig
-numtimes = 0 #Used in filenametotag to keep track of shit.. Do not modify.
+numtimes = 0 #Used in filenametotag to keep track of shit.
 
 import cPickle as pickle
 stringtags = audioinfo.stringtags
@@ -177,7 +177,7 @@ def removeSpaces(text):
     return text.lower()
 
 def getActionFromName(name):
-    actionpath = os.getenv('HOME') + u'/.config/Puddle Inc./' + removeSpaces(name) + '.action'
+    actionpath = os.path.join(os.getenv('HOME'),'.puddletag', removeSpaces(name) + '.action')
     funcs = getAction(actionpath)
     return funcs
 

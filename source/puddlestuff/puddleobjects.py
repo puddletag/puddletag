@@ -33,7 +33,6 @@ from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
 from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 
-
 if sys.version_info[:2] < (2, 5):
     def partial(func, arg):
         def callme():
@@ -574,7 +573,7 @@ class PicWidget(QWidget):
     showbuttons -> If True, the >> and << buttons are always shown. If False,
                     they are shown depending on context."""
 
-    def __init__ (self, images = None, parent = None, readonly = None, buttons = False):
+    def __init__ (self, images = None, imagetags = None, parent = None, readonly = None, buttons = False):
         """Initialises the widget.
 
         images -> A list of images as described in the classes docstring.
@@ -628,10 +627,6 @@ class PicWidget(QWidget):
         self.prev = QPushButton('&<<')
         self.connect(self.next, SIGNAL('clicked()'), self.nextImage)
         self.connect(self.prev, SIGNAL('clicked()'), self.prevImage)
-
-        if not images:
-            images = []
-        self.setImages(images)
 
         movebuttons = QHBoxLayout()
         movebuttons.addStretch()
@@ -691,6 +686,14 @@ class PicWidget(QWidget):
         self.win = PicWin(parent = self)
         self._currentImage = -1
 
+        if not images:
+            images = []
+
+        if not imagetags:
+            imagetags = []
+
+        self.setImages(images, imagetags)
+
     def setDescription(self, text):
         '''Sets the description of the current image to the text in the
             description text box.'''
@@ -713,6 +716,9 @@ class PicWidget(QWidget):
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
                     'Select Image...',self.lastfilename, "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
+
+        if not filename:
+            return
         self.lastfilename = os.path.dirname(filename)
         data = open(filename, 'rb').read()
         pic = self.loadPics(filename)
@@ -763,21 +769,20 @@ class PicWidget(QWidget):
     def _setCurrentImage(self, num):
         try:
             while True:
-                #A lot of files have bad picture data. I just want to
+                #A lot of files have corrupt picture data. I just want to
                 #skip those and not have the user be any wiser.
                 image = QImage().fromData(self.images[num]['data'])
-                if image.isNull(): #Badly written data, which isn't useful in any way.
+                if image.isNull():
                     del(self.images[num])
                 else:
                     break
             [action.setEnabled(True) for action in
                     (self.editpic, self.savepic, self.removepic)]
         except IndexError:
-            [action.setEnabled(False) for action in
-                    (self.editpic, self.savepic, self.removepic)]
-            self.label.setPixmap(QPixmap())
+            self.setNone()
             return
-
+        if hasattr(self, '_itags'):
+            self.setImageTags(self._itags)
         if num in self.readonly:
             self.editpic.setEnabled(False)
             self.removepic.setEnabled(False)
@@ -829,16 +834,26 @@ class PicWidget(QWidget):
             if os.path.exists(os.path.dirname(filename)):
                 self.pixmap.save(filename, "PNG")
 
-    def setImages(self, images):
+    def setNone(self):
+        self.label.setFrameStyle(QFrame.Box)
+        self.label.setPixmap(QPixmap())
+        self.pixmap = None
+        self.images = []
+        self._image_desc.setEnabled(False)
+        self._image_type.setEnabled(False)
+        [action.setEnabled(False) for action in
+                    (self.editpic, self.savepic, self.removepic)]
+
+
+    def setImages(self, images, imagetags = None):
         """Sets images. images are dictionaries as described in the class docstring."""
+        if imagetags:
+            self.setImageTags(imagetags)
         if images:
             self.images = images
             self.currentImage = 0
         else:
-            self.label.setFrameStyle(QFrame.Box)
-            self.label.setPixmap(QPixmap())
-            self.pixmap = None
-            self.images = []
+            self.setNone()
         self.enableButtons()
 
 
@@ -892,6 +907,7 @@ class PicWidget(QWidget):
             self.prev.setEnabled(False)
         for z in others:
             tags[z](False)
+        self._itags = itags
 
 
 class PicWin(QDialog):
@@ -921,23 +937,161 @@ class PicWin(QDialog):
         self.setMinimumSize(pixmap.size())
         self.resize(pixmap.size())
 
-class ProgressWin(QProgressDialog):
-    def __init__(self, parent=None, maximum = 100, increment = 1):
-        QProgressDialog.__init__(self, "", "Cancel", 0, maximum, parent)
+class ProgressWin(QDialog):
+    def __init__(self, parent=None, maximum = 100, progresstext = '', showcancel = True):
+        QDialog.__init__(self, parent)
         self.setModal(True)
         self.setWindowTitle("Please Wait...")
-        self.increment = increment
-        self.nextinc = increment
-        self.numcalled = 0
-        self.setAutoClose(True)
-        self.setValue(0)
 
-    def updateVal(self, value = None):
-        if value:
-            self.setValue(self.value() + value)
-        else:
-            self.setValue(self.value() + 1)
+        self.ptext = progresstext
+
+        self.pbar = QProgressBar(self)
+        self.pbar.setRange(0, maximum)
+
+        self.label = QLabel()
+        self.label.setAlignment(Qt.AlignHCenter)
+
+        if maximum <= 0:
+            self.pbar.setTextVisible(False)
+            self.label.setVisible(False)
+
+        cancel = QPushButton('Cancel')
+        cbox = QHBoxLayout()
+        cbox.addStretch()
+        cbox.addWidget(cancel)
+        cancel.setVisible(showcancel)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.label)
+        vbox.addWidget(self.pbar)
+        vbox.addLayout(cbox)
+        self.setLayout(vbox)
+
+        self.setValue(0)
+        self.show()
+
+        self.wasCanceled = False
+        self.connect(self, SIGNAL('rejected()'), self.cancel)
+        self.connect(cancel, SIGNAL('clicked()'), self.cancel)
+
+    def setValue(self, value):
+        self.blockSignals(True)
+        if self.ptext:
+            self.pbar.setTextVisible(False)
+            self.label.setText(self.ptext + unicode(value) + ' of ' +
+                                        unicode(self.pbar.maximum()) + ' ...')
+        self.pbar.setValue(value)
         QApplication.processEvents()
+        self.blockSignals(False)
+
+    def cancel(self):
+        self.wasCanceled = True
+        self.emit(SIGNAL('canceled()'))
+
+    def _value(self):
+        return self.pbar.value()
+
+    value = property(_value)
+
+class PuddleCombo(QWidget):
+    def __init__(self, name, default = None, parent = None):
+        QWidget.__init__(self, parent)
+        hbox = QHBoxLayout()
+        hbox.setMargin(0)
+        self.combo = QComboBox()
+
+        self.remove = QToolButton()
+        self.remove.setIcon(QIcon(':/remove.png'))
+        self.remove.setToolTip('Remove current item.')
+        self.remove.setIconSize(QSize(13, 13))
+        self.connect(self.remove, SIGNAL('clicked()'), (self.removeCurrent))
+
+        hbox.addWidget(self.combo)
+        hbox.addWidget(self.remove)
+        self.setLayout(hbox)
+
+
+        self.combo.setEditable(True)
+        self.name = name
+        cparser = PuddleConfig()
+        self.filename = os.path.join(os.path.dirname(cparser.filename), 'combos')
+        if not default:
+            default = []
+        cparser.filename = self.filename
+        items = cparser.load(self.name, 'values', default)
+        self.combo.addItems(items)
+
+    def load(self, name = None, default = None):
+        if name:
+            self.name = name
+        if not default:
+            default = []
+        self.combo.clear()
+        self.combo.addItems(cparser.load(self.name, 'values', default))
+
+    def save(self):
+        values = [unicode(self.combo.itemText(index)) for index in xrange(self.combo.count())]
+        cparser = PuddleConfig(self.filename)
+        cparser.setSection(self.name, 'values', values)
+
+    def removeCurrent(self):
+        self.combo.removeItem(self.combo.currentIndex())
+
+class PuddleConfig(object):
+    """Module that allows you to values from INI config files, similar to
+    Qt's Settings module (Created it because PyQt4.4.3 has problems with
+    saving and loading lists.
+
+    Only two functions of interest:
+
+    load -> load a key from a specified section
+    setSection -> save a key section"""
+    def __init__(self, filename = None):
+        self.settings = QSettings()
+        if not filename:
+            filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
+        self._setFilename(filename)
+
+    def load(self, section, key, default, getint = False):
+        settings = self.settings
+        if isinstance(default, (list, tuple)):
+            num = settings.beginReadArray(section)
+            if num <= 0:
+                return default
+            retval = []
+            for index in range(num):
+                settings.setArrayIndex(index)
+                if getint:
+                    retval.append(settings.value(key).toLongLong()[0])
+                else:
+                    retval.append(unicode(settings.value(key).toString()))
+            settings.endArray()
+        else:
+            if getint:
+                retval = settings.value("/".join([section, key]), QVariant(default)).toLongLong()[0]
+            else:
+                retval = unicode(settings.value("/".join([section, key]), QVariant(default)).toString())
+        return retval
+
+    def setSection(self, section = None, key = None, value = None):
+        settings = self.settings
+        if isinstance(value, (list, tuple)):
+            settings.beginWriteArray(section)
+            for i,val in enumerate(value):
+                settings.setArrayIndex(i)
+                settings.setValue(key,QVariant(val))
+            settings.endArray()
+        else:
+            sections = section + "/" + key
+            settings.setValue(sections, QVariant(value))
+
+    def _setFilename(self, filename):
+        self.settings = QSettings(filename, QSettings.IniFormat)
+
+    def _getFilename(self):
+        return unicode(self.settings.fileName())
+
+    filename = property(_getFilename, _setFilename)
 
 class PuddleDock(QDockWidget):
     """A normal QDockWidget that emits a 'visibilitychanged' signal
@@ -957,18 +1111,26 @@ class PuddleThread(QThread):
         QThread.__init__(self, parent)
         self.command = command
     def run(self):
-        self.retval = self.command()
+        try:
+            self.retval = self.command()
+        except StopIteration:
+            self.retval = 'STOP'
 
 if __name__ == '__main__':
+    class MainWin(QDialog):
+        def __init__(self, parent = None):
+            QDialog.__init__(self, parent)
+            self.combo = PuddleCombo('patterncombo', [u'%artist% - $num(%track%, 2) - %title%', u'%artist% - %title%', u'%artist% - %album%', u'%artist% - Track %track%', u'%artist% - %title%', u'%artist%'])
+
+            hbox = QHBoxLayout()
+            hbox.addWidget(self.combo)
+            self.setLayout(hbox)
+
+        def closeEvent(self,e):
+            self.combo.save()
+            QDialog.closeEvent(self, e)
+
     app = QApplication(sys.argv)
-    listbox = ListBox()
-    listbox.addItems([u'%artist% - $num(%track%, 2) - %title%', u'%artist% - %title%', u'%artist% - %album%', u'%artist% - Track %track%', u'%artist% - %title%', u'%artist%'])
-    buttons = ListButtons()
-    listbox.connectToListButtons(buttons)
-    widget = QWidget()
-    hbox = QHBoxLayout()
-    hbox.addWidget(listbox)
-    hbox.addLayout(buttons)
-    widget.setLayout(hbox)
+    widget = MainWin()
     widget.show()
     app.exec_()
