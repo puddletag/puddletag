@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
 Contains objects used throughout puddletag"""
@@ -1020,6 +1021,8 @@ class PuddleCombo(QWidget):
         cparser.filename = self.filename
         items = cparser.load(self.name, 'values', default)
         self.combo.addItems(items)
+        self.connect(self.combo, SIGNAL('editTextChanged(const QString&)'),
+                        self._editTextChanged)
 
     def load(self, name = None, default = None):
         if name:
@@ -1036,6 +1039,9 @@ class PuddleCombo(QWidget):
 
     def removeCurrent(self):
         self.combo.removeItem(self.combo.currentIndex())
+
+    def _editTextChanged(self, text):
+        self.emit(SIGNAL('editTextChanged(const QString&)'), text)
 
 class PuddleConfig(object):
     """Module that allows you to values from INI config files, similar to

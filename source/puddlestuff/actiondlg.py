@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #actiondlg.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -34,7 +35,10 @@ from puddleobjects import PuddleConfig, PuddleCombo
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
     controls = {'text': PuddleCombo, 'combo': QComboBox, 'check': QCheckBox}
-    def __init__(self, funcname, showcombo = False, userargs = None, defaulttags = None, parent = None):
+    signals = {'text': SIGNAL('editTextChanged(const QString&)'),
+                'combo' : SIGNAL('currentIndexChanged(int)'),
+                'check': SIGNAL('stateChanged(int)')}
+    def __init__(self, funcname, showcombo = False, userargs = None, defaulttags = None, parent = None, example = None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
         userargs is the default values you want to fill the controls in the dialog with[make sure they don't exceed the number of arguments of funcname]."""
@@ -61,6 +65,7 @@ class FunctionDialog(QWidget):
 
             self.vbox.addWidget(QLabel("Tags"))
             self.vbox.addWidget(self.tagcombo)
+        self.example = example
 
         self.textcombos = []
         #Loop that creates all the controls
@@ -113,6 +118,10 @@ class FunctionDialog(QWidget):
                 label = QLabel(args[0])
                 label.setBuddy(control)
                 self.vbox.addWidget(label)
+
+            if self.example is not None:
+                control.connect(control, self.signals[ctype], self.showexample)
+
             self.vbox.addWidget(control)
         self.vbox.addStretch()
         self.setLayout(self.vbox)
@@ -143,11 +152,27 @@ class FunctionDialog(QWidget):
         else:
             return newargs + [""]
 
+    def showexample(self, *args, **kwargs):
+        self.argValues()
+        if self.example is not None:
+            audio = self.example[-1]
+            try:
+                text = self.example[0]
+            except IndexError:
+                text = None
+            val = self.func.runFunction(text, audio.stringtags())
+            if val:
+                self.emit(SIGNAL('updateExample'), val)
+            else:
+                if text is None:
+                    self.emit(SIGNAL('updateExample'), u'')
+                else:
+                    self.emit(SIGNAL('updateExample'), text[0])
 
 class CreateFunction(QDialog):
     """A dialog to allow the creation of functions using only one window and a QStackedWidget.
     For each function in functions, a dialog is created and displayed in the stacked widget."""
-    def __init__(self, tags = None, prevfunc = None, showcombo = True, parent = None):
+    def __init__(self, tags = None, prevfunc = None, showcombo = True, parent = None, example = None):
         """tags is a list of the tags you want to show in the FunctionDialog.
         Each item should be in the form (DisplayName, tagname) as used in audioinfo.
         prevfunc is a Function object that is to be edited."""
@@ -178,7 +203,7 @@ class CreateFunction(QDialog):
         self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
         self.connect(self.okcancel, SIGNAL('cancel'), self.close)
         self.setWindowTitle("Format")
-
+        self.example = example
         self.showcombo = showcombo
 
         if prevfunc is not None:
@@ -190,6 +215,8 @@ class CreateFunction(QDialog):
             self.createWindow(0)
 
         self.connect(self.functions, SIGNAL("activated(int)"), self.createWindow)
+        self.exlabel = QLabel('')
+        self.vbox.addWidget(self.exlabel)
         self.vbox.addLayout(self.okcancel)
         self.setLayout(self.vbox)
 
@@ -203,7 +230,8 @@ class CreateFunction(QDialog):
         if it doesn't exist already."""
         self.stack.setFrameStyle(QFrame.Box)
         if index not in self.mydict:
-            what = FunctionDialog(self.realfuncs[index], self.showcombo, defaultargs, defaulttags)
+            what = FunctionDialog(self.realfuncs[index], self.showcombo, defaultargs, defaulttags, example = self.example)
+            self.connect(what, SIGNAL('updateExample'), self.updateExample)
             self.mydict.update({index: what})
             self.stack.addWidget(what)
         self.stack.setCurrentWidget(self.mydict[index])
@@ -211,9 +239,13 @@ class CreateFunction(QDialog):
         if self.sizeHint().width() > self.width():
             self.setMinimumWidth(self.sizeHint().width())
 
+    def updateExample(self, text):
+        self.exlabel.setText(text)
+        QApplication.processEvents()
+
 class CreateAction(QDialog):
     "An action is defined as a collection of functions. This dialog serves the purpose of creating an action"
-    def __init__(self, tags = None, parent = None, prevfunctions = None):
+    def __init__(self, tags = None, parent = None, prevfunctions = None, example = None):
         """tags is a list of the tags you want to show in the FunctionDialog.
         Each item should be in the form (DisplayName, tagname as used in audioinfo).
         prevfunction is the previous function that is to be edited."""
@@ -231,6 +263,7 @@ class CreateAction(QDialog):
         self.okcancel = OKCancel()
         self.grid.addLayout(self.okcancel,1,0,1,2)
         self.setLayout(self.grid)
+        self.example = example
 
         self.connect(self.okcancel, SIGNAL("cancel"), self.close)
         self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
@@ -261,13 +294,13 @@ class CreateAction(QDialog):
         self.listbox.removeSelected(self.functions)
 
     def add(self):
-        self.win = CreateFunction(self.tags, None, parent = self)
+        self.win = CreateFunction(self.tags, None, parent = self, example = self.example)
         self.win.setModal(True)
         self.win.show()
         self.connect(self.win, SIGNAL("valschanged"), self.addBuddy)
 
     def edit(self):
-        self.win = CreateFunction(self.tags, self.functions[self.listbox.currentRow()], self)
+        self.win = CreateFunction(self.tags, self.functions[self.listbox.currentRow()], self, example = self.example)
         self.win.setModal(True)
         self.win.show()
         self.connect(self.win, SIGNAL("valschanged"), self.editBuddy)
@@ -291,13 +324,14 @@ class ActionWindow(QDialog):
     It returns a list of lists.
     Each element of a list contains one complete action. While
     the elements of that action are just normal Function objects."""
-    def __init__(self, tags, parent = None):
+    def __init__(self, tags, parent = None, example = None):
         """tags are the tags to be shown in the FunctionDialog"""
         QDialog.__init__(self,parent)
         self.setWindowTitle("Actions")
         self.tags = tags
         self.listbox = ListBox()
         self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.example = example
 
         self.funcs = self.loadActions()
         self.listbox.addItems([self.funcs[z][1] for z in sorted(self.funcs)])
@@ -399,7 +433,7 @@ class ActionWindow(QDialog):
             self.listbox.addItem(text)
         else:
             return
-        win = CreateAction(self.tags, self)
+        win = CreateAction(self.tags, self, example = self.example)
         win.setWindowTitle("Edit Action: " + self.listbox.item(self.listbox.count() - 1).text())
         win.setModal(True)
         win.show()
@@ -411,7 +445,7 @@ class ActionWindow(QDialog):
         self.saveAction(name, funcs)
 
     def edit(self):
-        win = CreateAction(self.tags, self, self.funcs[self.listbox.currentRow()][0])
+        win = CreateAction(self.tags, self, self.funcs[self.listbox.currentRow()][0], example = self.example)
         win.setWindowTitle("Edit Action: " + self.listbox.currentItem().text())
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editBuddy)

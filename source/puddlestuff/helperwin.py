@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Dialog's that crop up along the application, but are used at at most
 one place, and aren't that complicated are put here."""
 
@@ -354,7 +355,10 @@ class ExTags(QDialog):
             for tag in toremove:
                 tags[tag] = ""
             keys = ['data', 'mime', 'description', 'imagetype']
-            tags["__image"] =  [dict([(key, z[key]) for key in keys if key in z]) for z in images]
+            if images:
+                tags["__image"] =  [dict([(key, z[key]) for key in keys if key in z]) for z in images]
+            else:
+                tags['__image'] = []
             self.model.setRowData(self.currentrow, tags)
             self.emit(SIGNAL('tagChanged()'))
 

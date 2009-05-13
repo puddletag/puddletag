@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #puddletag.py
 
 #Copyright (C) 2008 concentricpuddle
@@ -1068,10 +1069,18 @@ class MainWin(QMainWindow):
 
     def formatValue(self):
         """Show format value window."""
+        table = self.cenwid.table
+        row = table.selectedRows[0]
+        column = table.currentRowSelection()[row][0]
+        tag = table.model().headerdata[column][1]
+        text = table.selectedTags[0][tag]
+
+        print tag, text, table.selectedTags[0]
+        example = [text, table.selectedTags[0]]
         if hasattr(self, "prevfunc"):
-            f = actiondlg.CreateFunction(prevfunc = self.prevfunc, parent = self, showcombo = False)
+            f = actiondlg.CreateFunction(prevfunc = self.prevfunc, parent = self, showcombo = False, example = example)
         else:
-            f = actiondlg.CreateFunction(parent = self, showcombo = False)
+            f = actiondlg.CreateFunction(parent = self, showcombo = False, example = example)
         f.setModal(True)
         f.show()
         self.connect(f, SIGNAL("valschanged"), self.formatValueBuddy)
@@ -1101,7 +1110,7 @@ class MainWin(QMainWindow):
                     tags[tagname] = ''
             for tag in tags:
                 try:
-                    if useaudio == 'tags':
+                    if useaudio:
                         val = function(rowtags, rowtags)
                     else:
                         val = function(tags[tag], rowtags)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #functions.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -50,6 +51,9 @@ This line is further split into three parts
 
 
 import findfunc, string, pdb, sys, audioinfo, decimal, os
+if sys.version_info[:2] >= (2, 5): import re
+else: import sre as re
+
 path = os.path
 if sys.version_info[:2] >= (2, 5): import re as sre
 else: import sre
@@ -188,6 +192,7 @@ def grtr(text,text1):
         return unicode(False)
 
 def hasformat(pattern, tagname = "__filename"):
+    pdb.set_trace()
     if findfunc.filenametotag(pattern, tagname):
         return unicode(True)
     return unicode(False)
@@ -315,49 +320,51 @@ def re_escape(rex):
         else: escaped = escaped + ch
     return escaped
 
-def replace(text, word, replaceword, matchcase = False, whole = False):
+def replace(text, word, replaceword, matchcase = False, whole = False, chars = None):
     '''Replace, "Replace '$0': '$1' -> '$2'"
 &Replace, text
 w&ith:, text
 Match c&ase:, check
 only as &whole word, check'''
-    if (matchcase) and (not whole):
-        return text.replace(word, replaceword)
-    elif (not matchcase) and (not whole):
-        return replaceAsWord(text, word, replaceword, matchcase, "")
+    if matchcase:
+        matchcase = 0
     else:
-        return replaceAsWord(text, word, replaceword, matchcase, None)
+        matchcase = re.IGNORECASE
+    if chars is None:
+        chars = '\,\.\(\) \!\[\]'
 
-def replaceAsWord(text, word, replaceword, matchcase = False, characters = None):
-    start = 0
-    if characters is None:
-        characters = [',','.', '(', ')', ' ', '!','[',']']
-    #This function works by getting searching for word, checking if it has any of the characters
-    #in characters on it's left or right. If it does then it's replaced.
-    #I'm converting text to string because then it's easier to make string substitutions
-    #such as text[2:5] = "saotehustnu", that would do the replacing easily.
-    start = 0
-    if characters is None:
-        characters = ['.', '(', ')', ' ', '!']
-    if not matchcase:
-        word = word.lower()
-    text = list(text)
+    if whole:
+        pat = re.compile('(^|[%s])%s([%s]|$)' %(chars, word, chars), matchcase)
+    else:
+        pat = re.compile(word, matchcase)
 
-    while True:
-        if not matchcase:
-            newtext = "".join(text).lower()
-        else:
-            newtext = "".join(text)
-        start = newtext.find(word, start)
-        if start == -1:
-            break
-        end = start + len(word)
-        if (end == len(newtext) and newtext[start - 1] in characters) or (start == 0 and newtext[end] in characters) or characters == "":
-            text[start: end] = replaceword
-        elif text[start - 1] in characters and text[end] in characters:
-            text[start: end] = replaceword
-        start = start + len(word) + 1
-    return "".join(text)
+    start = 0
+    match = pat.search(text, start)
+    if whole:
+        while match:
+            start = match.start()
+            end = match.end()
+            sub = text[start: end]
+            repl = replaceword
+            if sub[0] in chars:
+                repl = sub[0] + repl
+            if sub[-1] in chars:
+                repl = repl + sub[-1]
+
+            text = pat.sub(repl, text, 1)
+            match = pat.search(text, start + len(repl))
+    else:
+        text = pat.sub(replaceword, text)
+    return text
+
+def replaceWithReg(text, expr, rep):
+    """Replace with RegExp, "RegReplace $0: RegExp $1, with $1"
+&Regular Expression, text
+w&ith, text"""
+    try:
+        return sre.sub(expr, rep, text)
+    except:
+        return None
 
 def right(text,n):
     return text[n:]
