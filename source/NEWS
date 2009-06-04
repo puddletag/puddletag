@@ -1,3 +1,14 @@
+4 June 2009 (0.7.0)
+    New Features:
+        Loading times are improved by a couple of miliseconds.
+        Showing duplicates can now be slightly fuzzy by adding : in front of the tag that's to be used.
+        Added an :artist fuzzy compare listing to the libary view.
+    Fixes:
+        Sorting or doing anything else while some rows are higlighted is fixed.
+        Other little stuff that I can't remember.
+    Changes:
+        The user interface has been modified just a tad, to be me 'aligned.'
+
 1 May 2009 (0.6.5)
     New Features:
         Cut, copy,  paste.

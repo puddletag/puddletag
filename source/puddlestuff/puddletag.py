@@ -23,6 +23,7 @@
 import actiondlg, findfunc, mainwin, puddlesettings, os, resource,sys, time, pdb
 from audioinfo import FILENAME, PATH
 from copy import copy, deepcopy
+import helperwin
 from helperwin import PicWidget
 from puddleobjects import (ProgressWin, safe_name, unique, PuddleThread, natcasecmp)
 from PyQt4.QtCore import QDir, Qt, QSettings, QString, QVariant, SIGNAL
