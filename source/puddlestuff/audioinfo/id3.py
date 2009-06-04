@@ -20,12 +20,11 @@
 #Foundation, Inc., 51 Fr anklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import mutagen, mutagen.id3, mutagen.mp3, pdb
+import mutagen, mutagen.id3, mutagen.mp3, pdb, util
 from copy import copy, deepcopy
 APIC, TimeStampTextFrame, TextFrame, ID3  = mutagen.id3.APIC, mutagen.id3.TimeStampTextFrame, mutagen.id3.TextFrame, mutagen.id3.ID3
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.audioinfo import  (strlength, strbitrate, strfrequency,
-                                            getinfo, FILENAME, PATH, INFOTAGS, READONLY)
+from util import  (strlength, strbitrate, strfrequency,
+                                        getfilename, getinfo, FILENAME, PATH, INFOTAGS, READONLY)
 import imghdr
 
 class PuddleID3(ID3):
@@ -52,12 +51,12 @@ class PuddleID3FileType(mutagen.mp3.MP3):
     def load(self, filename, ID3 = PuddleID3, **kwargs):
         mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
 
-TAGS = audioinfo.TAGS
-REVTAGS = audioinfo.REVTAGS
+TAGS = util.TAGS
+REVTAGS = util.REVTAGS
 
-class Tag(audioinfo.MockTag):
-    IMAGETAGS = (audioinfo.MIMETYPE, audioinfo.DESCRIPTION, audioinfo.DATA,
-                                                        audioinfo.IMAGETYPE)
+class Tag(util.MockTag):
+    IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
+                                                        util.IMAGETYPE)
     def copy(self):
         tag = Tag()
         tag.load(self._tags.copy(), copy(self._mutfile), copy(self._images))
@@ -112,9 +111,9 @@ class Tag(audioinfo.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        tags = getinfo(filename)
-        filename = tags[FILENAME]
+        filename = getfilename(filename)
         audio = PuddleID3FileType(filename)
+        tags = getinfo(filename)
         self._tags = {}
         self._images = []
         if audio is None:
@@ -174,7 +173,7 @@ class Tag(audioinfo.MockTag):
             self._mutfile.tags.filename = self.filename
             self._mutfile.filename = self.filename
         audio = self._mutfile
-        audioinfo.MockTag.save(self)
+        util.MockTag.save(self)
 
         for tag, value in self.mutvalues():
             audio[tag] = value
@@ -204,6 +203,7 @@ class Tag(audioinfo.MockTag):
             except KeyError:
                 continue
 
+        audio.tags.filename = self.filename
         audio.tags.save(v1 = 2)
         self._originaltags = [z[0] for z in self.mutvalues()]
 

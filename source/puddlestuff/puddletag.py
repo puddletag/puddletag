@@ -20,22 +20,18 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-import sys, audioinfo,os,findfunc, actiondlg, helperwin, pdb, puddlesettings, resource
+import actiondlg, findfunc, mainwin, puddlesettings, os, resource,sys, time, pdb
+from audioinfo import FILENAME, PATH
 from copy import copy, deepcopy
-from puddleobjects import (ProgressWin, partial, safe_name, HeaderSetting,
-unique, PuddleDock, PuddleThread)
-from tagmodel import TagTable, itemgetter
 from helperwin import PicWidget
-(FILENAME, PATH, path, usertags) = (audioinfo.FILENAME, audioinfo.PATH,
-                                            os.path, audioinfo.usertags)
-from optparse import OptionParser
-import time
-from threading import Thread
+from puddleobjects import (ProgressWin, safe_name, unique, PuddleThread, natcasecmp)
+from PyQt4.QtCore import QDir, Qt, QSettings, QString, QVariant, SIGNAL
+from PyQt4.QtGui import (QAction, QApplication, QFileDialog, QFrame, QInputDialog,
+                        QLabel, QLineEdit, QMainWindow, QMessageBox, QPixmap,
+                        QShortcut)
+from operator import itemgetter
 
+path = os.path
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 HIDEPROGRESS = 'HIDETHEPROGRESS!'
@@ -53,7 +49,15 @@ def showwriteprogress(func):
     def s(*args):
         self = args[0]
         win = ProgressWin(self, len(self.cenwid.table.selectedRows), 'Writing ')
-        th = time.time()
+        win.show()
+        #Sometimes when doing a quick action (like writing to only 1 file)
+        #this window will display, but nothing will be drawn on it, because
+        #(I assume) it got killed before anything happened. So I force that shit.
+        #It doesn't work all the time. So if you have a fix, don't hesitate to
+        #to share the knowledge.
+        win.repaint()
+        win.update()
+        QApplication.processEvents()
         f = func(*args)
         self.showmessage = True
 
@@ -65,20 +69,21 @@ def showwriteprogress(func):
                     temp = f.next()
                     if temp == HIDEPROGRESS:
                         err = True
-                        self.emit(SIGNAL('win(int)'), -2)
+                        self.t.emit(SIGNAL('win(int)'), -2)
                         break
                     elif temp is not None:
-                        self.emit(SIGNAL('error(QString, QString, int)'), temp[0], temp[1], temp[2])
+                        self.t.emit(SIGNAL('error(QString, QString, int)'),
+                                                    temp[0], temp[1], temp[2])
                         err = True
                         break
                     else:
-                        self.emit(SIGNAL('win(int)'), i)
+                        self.t.emit(SIGNAL('win(int)'), i)
                 except StopIteration:
                     break
                 i += 1
 
             if not err:
-                self.emit(SIGNAL('win(int)'), -1)
+                self.t.emit(SIGNAL('win(int)'), -1)
 
         def shit(*theargs):
             if theargs[0] == -2:
@@ -88,14 +93,12 @@ def showwriteprogress(func):
                     if ret:
                         self.t.start()
                     else:
-                        self.setTag(True)
-                        self.fillCombos()
+                        raise StopIteration
                 except StopIteration:
                     self.setTag(True)
                     self.fillCombos()
             elif theargs[0] == -1:
-                win.hide()
-                print time.time() - th
+                win.close()
                 self.setTag(True)
                 self.fillCombos()
             elif isinstance(theargs[0], QString):
@@ -104,7 +107,7 @@ def showwriteprogress(func):
                     if ret is True:
                         self.showmessage = False
                     elif ret is False:
-                        self.emit(SIGNAL('win(int)'), -1)
+                        self.t.emit(SIGNAL('win(int)'), -1)
                         return
                 if not win.isVisible():
                     win.show()
@@ -115,305 +118,10 @@ def showwriteprogress(func):
 
         self.t = PuddleThread(what)
         self.shit = shit
-        self.connect(self, SIGNAL('win(int)'), self.shit)
-        self.connect(self, SIGNAL('error(QString, QString, int)'), self.shit)
+        self.connect(self.t, SIGNAL('win(int)'), self.shit)
+        self.connect(self.t, SIGNAL('error(QString, QString, int)'), self.shit)
         self.t.start()
     return s
-
-class FrameCombo(QGroupBox):
-    """A group box with combos that allow to edit
-    tags individually if so inclined.
-
-    tags should be a list with the tags
-    that each combo box should hold specified
-    in the form [(Display Value, internal tag)]
-    .e.g [("Artist","artist"), ("Track Number", "track")]
-
-    Individual comboboxes can be accessed by using FrameCombo.combos
-    which is a dictionary key = tag, value = respective combobox.
-    """
-
-    def __init__(self,tags = None,parent= None):
-        QGroupBox.__init__(self,parent)
-        self.tags = tags
-        self.vbox = QVBoxLayout()
-        self.setLayout(self.vbox)
-        if tags is not None:
-            self.setCombos(tags)
-
-    def disableCombos(self):
-        for z in self.combos:
-            if z  == "__image":
-                self.combos[z].setImages(None)
-            else:
-                self.combos[z].clear()
-            self.combos[z].setEnabled(False)
-
-    def setCombos(self, tags, rows = None):
-        """Creates a vertical column of comboboxes.
-        tags are tags is usual in the (tag, backgroundvalue) case[should be enumerable].
-        rows are a dictionary with each key being a list of the indexes of tags that should
-        be one one row.
-
-        E.g Say you wanted to have the artist, album, title, and comments on
-        seperate rows. But then you want year, genre and track on one row. With that
-        row being before the comments row. You'd do something like...
-
-        >>>tags = [('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'),
-        ...        ('Track', 'track'), ("Comments",'comment'), ('Genre', 'genre'), (u'Year', u'date')]
-        >>>rows = {0:[0], 1:[1], 2:[2], 3[3,4,6],4:[5]
-        >>>f = FrameCombo()
-        >>>f.setCombo(tags,rows)"""
-        self.combos = {}
-        self.labels = {}
-
-        j = 0
-        hbox = [1] * (len(rows) * 2)
-        for row in sorted(rows.values()):
-            hbox[j] = QHBoxLayout()
-            hbox[j + 1] = QHBoxLayout()
-            for tag in [tags[z] for z in row]:
-                tagval = tag[1]
-                self.labels[tagval] = QLabel(tag[0])
-                if tagval == '__image':
-                    self.labels[tagval].hide()
-
-                    pic = PicWidget()
-                    pic.next.setVisible(True)
-                    pic.prev.setVisible(True)
-                    pic.showbuttons = True
-                    pic._image_desc.setEnabled(False)
-                    pic._image_type.setEnabled(False)
-                    self.combos[tagval] = pic
-                else:
-                    self.combos[tagval] = QComboBox()
-                    self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
-                self.labels[tagval].setBuddy(self.combos[tagval])
-                hbox[j].addWidget(self.labels[tagval])
-                hbox[j + 1].addWidget(self.combos[tagval])
-            self.vbox.addLayout(hbox[j])
-            self.vbox.addLayout(hbox[j + 1])
-            j+=2
-
-        self.vbox.addStrut(0)
-        self.setMaximumHeight(self.sizeHint().height())
-
-    def initCombos(self):
-        """Clears the comboboxes and adds two items, <keep> and <blank>.
-        If <keep> is selected and the tags in the combos are saved,
-        then they remain unchanged. If <blank> is selected, then the tag is removed"""
-        for combo in self.combos:
-            if combo  == "__image":
-                pics = self.combos[combo].loadPics(':/keep.png', ':/blank.png')
-                self.combos[combo].setImages(pics)
-                self.combos[combo].readonly = [0,1]
-            else:
-                self.combos[combo].clear()
-                self.combos[combo].setEditable(True)
-                self.combos[combo].addItems(["<keep>", "<blank>"])
-                self.combos[combo].setEnabled(False)
-
-        if 'genre' in self.combos:
-            from mutagen.id3 import TCON
-            self.combos['genre'].addItems(sorted(TCON.GENRES))
-
-    def reloadCombos(self, tags):
-        self.setCombos(tags)
-
-class DirView(QTreeView):
-    """The treeview used to select a directory."""
-    def __init__(self,parent = None):
-        QTreeView.__init__(self,parent)
-        self.header().setStretchLastSection(False)
-        self.header().hide()
-
-    def selectionChanged(self, selected, deselected):
-        self.resizeColumnToContents(0)
-        self.emit(SIGNAL("itemSelectionChanged()"))
-
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls():
-            event.accept()
-        else:
-            event.reject()
-
-    def mouseMoveEvent(self, event):
-        try:
-            pnt = QPoint(*self.StartPosition)
-            if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
-                return
-            drag = QDrag(self)
-            mimedata = QMimeData()
-            mimedata.setUrls([QUrl(self.model().filePath(self.currentIndex()))])
-            drag.setMimeData(mimedata)
-            drag.setHotSpot(event.pos() - self.rect().topLeft())
-            drag.start(Qt.MoveAction)
-        except AttributeError:
-            "No StartPosition, therefore no need to do dragging."
-
-    def mousePressEvent(self, event):
-        if event.buttons() == Qt.RightButton:
-            self.contextMenuEvent(event)
-        if event.buttons() == Qt.LeftButton:
-            self.StartPosition = [event.pos().x(), event.pos().y()]
-        QTreeView.mousePressEvent(self, event)
-        self.resizeColumnToContents(0)
-
-    def expand(self, index):
-        self.resizeColumnToContents(0)
-        QTreeView.expand(self, index)
-
-    def setFileIndex(self, filename):
-        """Use instead of setCurrentIndex for threaded index changing."""
-        self.blockSignals(True)
-        self.t = PuddleThread(lambda: self.model().index(filename))
-        self.connect(self.t, SIGNAL('finished()'), self._setCurrentIndex)
-        self.setEnabled(False)
-        self.t.start()
-
-    def _setCurrentIndex(self):
-        self.setCurrentIndex(self.t.retval)
-        self.resizeColumnToContents(0)
-        self.setEnabled(True)
-        self.blockSignals(False)
-
-class TableHeader(QHeaderView):
-    """A headerview put here simply to enable the contextMenuEvent
-    so that I can show the edit columns menu.
-
-    Call it with tags in the usual form, to set the top header."""
-    def __init__(self, orientation, tags = None, parent = None):
-        QHeaderView.__init__(self, orientation, parent)
-        if tags is not None: self.tags = tags
-        self.setClickable(True)
-        self.setHighlightSections(True)
-
-    def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        settings = menu.addAction("&Select Columns")
-        self.connect(settings, SIGNAL('triggered()'), self.setTitles)
-        menu.exec_(event.globalPos())
-
-    def mousePressEvent(self,event):
-        if event.button == Qt.RightButton:
-            self.contextMenuEvent(event)
-            return
-        self.emit(SIGNAL('saveSelection'))
-        QHeaderView.mousePressEvent(self, event)
-
-    def setTitles(self):
-        if hasattr(self, "tags"):
-            self.win = HeaderSetting(self.tags)
-        else:
-            self.win = HeaderSetting()
-        self.win.setModal(True)
-        self.win.show()
-        self.connect(self.win, SIGNAL("headerChanged"), self.headerChanged)
-
-    def headerChanged(self, val):
-        self.emit(SIGNAL("headerChanged"), val)
-
-
-class TableWindow(QSplitter):
-    """It's called a TableWindow just because
-    the main widget is a table even though it uses a splitter.
-
-    The table allows the editing of tags and stuff like that.
-
-    Important methods are:
-    inittable -> Creates table, gets defaults values and shit
-    fillTable -> Fills the table with tags from the folder specified.
-    setNewHeader -> Sets the header of the table to what you want.
-                    tags are specified in the usual way"""
-
-    def __init__(self, parent=None):
-        QSplitter.__init__(self, parent)
-
-
-    def inittable(self, headerdata):
-        """This is here, because I want to be able to initialize
-        many of the tables values from other functions
-        (like when the app starts and settings are being restored).
-
-        Call it with headerdata(as usual) to set the titles."""
-        self.table = TagTable(headerdata, self)
-        self.headerdata = headerdata
-        header = TableHeader(Qt.Horizontal, self.headerdata, self)
-        header.setSortIndicatorShown(True)
-        header.setSortIndicator(0, Qt.AscendingOrder)
-        self.table.setHorizontalHeader(header)
-        self.tablemodel = self.table.model()
-
-        grid = QGridLayout()
-        grid.addWidget(self.table)
-        self.setLayout(grid)
-
-        self.connect(self.table.horizontalHeader(), SIGNAL("sectionClicked(int)"),
-             self.sortTable)
-        self.connect(header, SIGNAL("headerChanged"), self.setNewHeader)
-
-    def setNewHeader(self, tags):
-        """Used for 'hotswapping' of the table header.
-
-        If you want to set the table header while the app
-        is running, then this is the methods you should use.
-
-        tags are a list of tags defined as usual(See FrameCombo's docstring).
-
-        Nothing is returned, if the function is successful, then you should
-        see the correct results."""
-        sortedtag = deepcopy(self.headerdata[self.sortColumn])
-        model = self.table.model()
-
-        if len(self.headerdata) < len(tags):
-            model.insertColumns(len(self.headerdata) - 1, len(tags) - 1)
-
-        columnwidths = [[tag, self.table.columnWidth(index)] for index, tag in enumerate(self.headerdata)]
-
-        if len(self.headerdata) > len(tags):
-            #I'm removing one column at a time, because removing many at a time, doesn't
-            #seem work well all the time(I think this is a problem early versions of PyQt).
-            #This works(All the time, I think).
-            [model.removeColumn(0) for z in xrange(len(tags), len(self.headerdata))]
-
-        [model.setHeaderData(i, Qt.Horizontal, v, Qt.DisplayRole) for i,v in enumerate(tags)]
-
-        for z in columnwidths:
-            if z[0] in self.headerdata:
-                self.table.setColumnWidth(self.headerdata.index(z[0]), z[1])
-
-        #self.headerdata = model.headerdata
-        self.table.horizontalHeader().tags = self.headerdata
-
-        if sortedtag in self.headerdata:
-            self.sortTable(self.headerdata.index(sortedtag))
-        else:
-            self.sortTable(self.sortColumn)
-
-    def sortTable(self,column):
-        self.sortColumn = column
-        self.table.sortByColumn(column)
-        self.setFocus()
-
-    def fillTable(self,folderpath, appendtags = False):
-        """See TagTable's fillTable method for more details."""
-        self.table.fillTable(folderpath, appendtags)
-        self.sortTable(self.sortColumn)
-
-    def setGridVisible(self, val):
-        if (val is True) or (val > 0):
-            self.table.setGridStyle(Qt.SolidLine)
-        else:
-            self.table.setGridStyle(Qt.NoPen)
-
-    def getGridVisible(self):
-        if self.table.gridStyle() > 0:
-            return True
-        else:
-            return False
-
-    gridvisible = property(getGridVisible, setGridVisible)
-
 
 class MainWin(QMainWindow):
     """The brain of puddletag. Everything happens here."""
@@ -429,261 +137,25 @@ class MainWin(QMainWindow):
 
         #Shows or doesn't show path in titlebar of current folder
         self.pathinbar = False
-        def connect(action, slot):
-            self.connect(action, SIGNAL('triggered()'), slot)
-
         self.setWindowTitle("puddletag")
-        self.cenwid = TableWindow()
-
-        self.dirmodel = QDirModel()
-        self.dirmodel.setSorting(QDir.IgnoreCase)
-        self.dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
-        self.dirmodel.setReadOnly(True)
-        self.dirmodel.setLazyChildCount(True)
-
-        self.tree = DirView()
-        self.tree.setModel(self.dirmodel)
-        [self.tree.hideColumn(column) for column in range(1,4)]
-        self.tree.setDragEnabled(True)
-        self.treedock = PuddleDock('Filesystem')
-        self.treedock.setWidget(self.tree)
-        self.treedock.layout().setAlignment(Qt.AlignTop)
-        self.treedock.setObjectName('TreeDock')
-
-        #Action for opening a folder
-        self.opendir =  QAction(QIcon(':/open.png'), '&Open Folder...', self)
-        self.opendir.setShortcut('Ctrl+O')
-        connect(self.opendir, self.openFolder)
-
-        #Action for adding another folder
-        self.addfolder = QAction(QIcon(':/fileimport.png'), '&Add Folder...', self)
-        connect(self.addfolder, self.addFolder)
-
-        self.autotagging = QAction("Musicbrain&z", self)
-        connect(self.autotagging, self.autoTagging)
-
-        #Autonumbering shit
-        self.changetracks = QAction(QIcon(':/track.png'), 'Autonumbering &Wizard...', self)
-        connect(self.changetracks, self.trackWizard)
-
-        self.cleartable = QAction("&Clear", self)
-        connect(self.cleartable, self.clearTable)
-
-        self.formattag = QAction("&Format...", self)
-        connect(self.formattag, self.formatValue)
-
-        #Imports a file to read tags from.
-        self.importfile = QAction(QIcon(":/import.png"), "Te&xt File -> Tag",self)
-        connect(self.importfile, self.importFile)
-
-        self.importlib = QAction("Import Music Library", self)
-        connect(self.importlib, self.importLib)
-
-        self.invertselection = QAction("&Invert selection", self)
-        self.invertselection.setShortcut('Meta+I')
-
-        self.openactions = QAction(QIcon(':/cap.png'), 'Ac&tions...', self)
-        connect(self.openactions, self.openActions)
-
-        self.preferences = QAction("&Preferences...", self)
-        connect(self.preferences, self.openPrefs)
-
-        self.actionvalue = partial(self.openActions, True)
-        self.quickactions = QAction(QIcon(":/quickactions.png"), "&Quick Actions...", self)
-        connect(self.quickactions, self.actionvalue)
-
-        self.reloaddir = QAction(QIcon(':/reload.png'), "Reload", self)
-
-        self.renamedir = QAction(QIcon(":/rename.png"), "&Rename Dir...",self)
-        connect(self.renamedir, self.renameFolder)
-
-        self.savecombotags = QAction(QIcon(':/save.png'), '&Save', self)
-        self.savecombotags.setShortcut('Ctrl+S')
-        connect(self.savecombotags, self.saveCombos)
-
-        self.selectall = QAction("Select &All", self)
-        self.selectall.setShortcut("Ctrl+A")
-
-        self.selectcolumn = QAction('Select Current Column', self)
-        self.selectcolumn.setShortcut('Meta+C')
-
-        self.showcombodock = QAction('Show Tag Editor', self)
-        self.showcombodock.setCheckable(True)
-
-        self.showfilter = QAction("Show Filter", self)
-        self.showfilter.setCheckable(True)
-        self.showfilter.setShortcut("F3")
-
-        self.showlibrarywin = QAction('Show Library', self)
-        self.showlibrarywin.setCheckable(True)
-        self.showlibrarywin.setEnabled(False)
-
-        self.showtreedock = QAction('Show Filesystem', self)
-        self.showtreedock.setCheckable(True)
-
-        #Action for importing tags from files
-        self.tagfromfile = QAction(QIcon(':/filetotag.png'), '&File -> Tag', self)
-        connect(self.tagfromfile, self.getTagFromFile)
-        self.tagfromfile.setShortcut('Ctrl+F')
-
-        self.tagtofile = QAction(QIcon(':/tagtofile.png'),
-                                            'Tag -> &File', self)
-        connect(self.tagtofile, self.saveTagToFile)
-        self.tagtofile.setShortcut('Ctrl+T')
-
-        self.undo = QAction(QIcon(':/undo.png'), "&Undo", self)
-        self.undo.setShortcut("Ctrl+Z")
-        self.undo.setEnabled(False)
-
-        self.duplicates = QAction('Show dupes', self)
-        self.duplicates.setCheckable(True)
-        self.connect(self.duplicates, SIGNAL('toggled(bool)'), self.showDupes)
-
-        self.fileinlib = QAction('In library?', self)
-        self.fileinlib.setCheckable(True)
-        self.connect(self.fileinlib, SIGNAL('toggled(bool)'), self.inLib)
-
-        self.cutaction = QAction(QIcon(':/cut.png'), '&Cut Selected', self)
-        self.cutaction.setShortcut('Ctrl+X')
-
-        self.copyaction = QAction(QIcon(':/copy.png'),'C&opy Selected', self)
-        self.copyaction.setShortcut('Ctrl+C')
-
-        self.pasteaction = QAction(QIcon(':/paste.png'), '&Paste Onto Selected', self)
-        self.pasteaction.setShortcut('Ctrl+V')
-
-        self.patterncombo = QComboBox()
-        self.patterncombo.setEditable(True)
-        self.patterncombo.setToolTip("Enter a pattern here.")
-        self.patterncombo.setStatusTip(self.patterncombo.toolTip())
-        self.patterncombo.setMinimumWidth(500)
-        self.patterncombo.setDuplicatesEnabled(False)
+        mainwin.createActions(self)
+        mainwin.createControls(self)
+        self.loadInfo()
+        mainwin.createMenus(self)
+        mainwin.connectActions(self)
 
         self.statusbar = self.statusBar()
         statuslabel = QLabel()
         statuslabel.setFrameStyle(QFrame.NoFrame)
         self.statusbar.addPermanentWidget(statuslabel,1)
-
-        self.combogroup = FrameCombo()
-        self.combogroup.setMinimumWidth(200)
-        self.combodock = PuddleDock("Tag editor")
-        self.combodock.setWidget(self.combogroup)
-        self.combodock.setObjectName('Combodock')
-        self.combodock.layout().setAlignment(Qt.AlignTop)
-
-        hbox = QHBoxLayout()
-        hbox.addWidget(QLabel("Tag"))
-        self.filtertable = QComboBox()
-        self.filtertable.addItems(["None", '__all'] + audioinfo.INFOTAGS + sorted([z for z in audioinfo.REVTAGS]))
-        self.filtertable.setEditable(True)
-        self.filtertext = QLineEdit()
-        hbox.addWidget(self.filtertable,0)
-        hbox.setMargin(0)
-        hbox.addWidget(self.filtertext,1)
-        widget = QWidget(self)
-        widget.setLayout(hbox)
-
-        self.filterframe = PuddleDock("Filter", self)
-        self.filterframe.setObjectName('Filter')
-        self.filterframe.setWidget(widget)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.combodock)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.treedock)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self.filterframe)
-
-        self.setCentralWidget(self.cenwid)
-
-        self.connect(self.filtertext, SIGNAL("textChanged(QString)"), self.filterTable)
-        self.connect(self.filtertable, SIGNAL("editTextChanged(QString)"), self.filterTable)
         self.connect(self.statusbar,SIGNAL("messageChanged (const QString&)"), statuslabel.setText)
 
-        self.toolbar = self.addToolBar("My Toolbar")
-        self.toolbar.setIconSize(QSize(16,16))
-        self.toolbar.setObjectName("Toolbar")
-
-        self.loadInfo()
-        table = self.cenwid.table
-        separator = QAction(self)
-        separator.setSeparator(True)
-        table.actions.extend([separator, self.copyaction, self.cutaction, self.pasteaction])
-
-        menubar = self.menuBar()
-        filemenu = menubar.addMenu('&File')
-        [filemenu.addAction(z) for z in [self.opendir, self.addfolder,
-        self.cenwid.table.play, self.savecombotags, self.reloaddir, self.cleartable]]
-        filemenu.insertSeparator(self.savecombotags)
-
-        edit = menubar.addMenu("&Edit")
-        table = self.cenwid.table
-        [edit.addAction(z) for z in [self.undo, self.cutaction,
-            self.copyaction, self.pasteaction, table.delete,
-            self.selectall, self.invertselection, self.selectcolumn,
-                                                    self.preferences]]
-        edit.insertSeparator(self.cutaction)
-        edit.insertSeparator(table.delete)
-        edit.insertSeparator(self.selectall)
-        edit.insertSeparator(self.preferences)
-
-        convert = menubar.addMenu("&Convert")
-        [convert.addAction(z) for z in [self.tagfromfile, self.tagtofile, self.renamedir, self.importfile]]
-
-        actionmenu = menubar.addMenu("&Actions")
-        [actionmenu.addAction(z) for z in [self.openactions, self.quickactions, self.formattag]]
-
-        toolmenu = menubar.addMenu("&Tools")
-        [toolmenu.addAction(z) for z in [self.autotagging, table.exttags, self.changetracks, self.importlib]]
-
-        winmenu = menubar.addMenu('&Windows')
-        [winmenu.addAction(z) for z in (self.showfilter, self.showcombodock,
-                                        self.showtreedock, self.showlibrarywin)]
-
-        self.actions = [table.delete, table.play, table.exttags,
-                       self.cutaction, self.copyaction, self.pasteaction,
-                       self.addfolder, self.savecombotags, self.reloaddir, self.tagfromfile,
-                       self.tagtofile, self.openactions, self.quickactions, self.formattag,
-                       self.changetracks, self.importfile, self.renamedir, self.autotagging]
-
-        self.supportactions = [self.selectall, self.invertselection, self.selectcolumn,
-            self.duplicates, self.fileinlib]
-
-        self.toolbar.addAction(self.opendir)
-        self.toolbar.addAction(self.addfolder)
-        self.toolbar.addAction(self.reloaddir)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(self.savecombotags)
-        self.toolbar.addAction(self.undo)
-        self.toolbar.addSeparator()
-        #[self.toolbar.addAction(z) for z in (self.cutaction, self.pasteaction, self.copyaction)]
-        #self.toolbar.addSeparator()
-        self.toolbar.addWidget(self.patterncombo)
-        [self.toolbar.addAction(action) for action in self.actions[9:]]
-        self.toolbar.insertSeparator(self.changetracks)
-        self.toolbar.addAction(self.fileinlib)
-        self.toolbar.addAction(self.duplicates)
-
-        connect(self.undo, table.model().undo)
-        connect(self.selectall, table.selectAll)
-        connect(self.invertselection, table.invertSelection)
-        connect(self.selectcolumn, table.selectCurrentColumn)
-        connect(self.cutaction, self.cut)
-        connect(self.pasteaction, self.paste)
-        connect(self.copyaction, self.clipcopy)
-
-        self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"), self.patternChanged)
-        self.connect(self.tree, SIGNAL('itemSelectionChanged()'), self.openTree)
-        self.connect(table, SIGNAL('itemSelectionChanged()'), self.rowEmpty)
-        self.connect(table, SIGNAL('removedRow()'), self.rowEmpty)
-        self.connect(self.tree, SIGNAL('addFolder'), self.openFolder)
-        self.connect(table, SIGNAL('itemSelectionChanged()'),
-                                         self.fillCombos)
-        self.connect(table, SIGNAL('setDataError'), self.statusbar.showMessage)
-
-        #You'd think that this would cause recursion errors, but fortunately it doesn't.
-        self.connect(self.showfilter, SIGNAL("toggled(bool)"), self.filterframe.setVisible)
-        self.connect(self.showcombodock, SIGNAL('toggled(bool)'), self.combodock.setVisible)
-        self.connect(self.showtreedock, SIGNAL('toggled(bool)'), self.treedock.setVisible)
-        self.connect(self.treedock, SIGNAL('visibilitychanged'), self.showtreedock.setChecked)
-        self.connect(self.combodock, SIGNAL('visibilitychanged'), self.showcombodock.setChecked)
-        self.connect(self.filterframe, SIGNAL('visibilitychanged'), self.showfilter.setChecked)
+    def newFolderLoaded(self, *args):
+        actions = [self.fileinlib, self.duplicates]
+        for action in actions:
+            action.blockSignals(True)
+            action.setChecked(False)
+            action.blockSignals(False)
 
     @showwriteprogress
     def cut(self):
@@ -745,16 +217,18 @@ class MainWin(QMainWindow):
         QApplication.clipboard().setText(clip)
 
     def inLib(self, visible):
-        try:
-            libclass = self.librarywin.tree.library
-        except AttributeError:
-            self.warningMessage("Dude, you don't have a music library loaded")
-            self.fileinlib.blockSignals(True)
-            self.fileinlib.setChecked(False)
-            self.fileinlib.blockSignals(False)
-            return
+
         table = self.cenwid.table
         if visible:
+            self.duplicates.setChecked(False)
+            try:
+                libclass = self.librarywin.tree.library
+            except AttributeError:
+                self.warningMessage("Dude, you don't have a music library loaded")
+                self.fileinlib.blockSignals(True)
+                self.fileinlib.setChecked(False)
+                self.fileinlib.blockSignals(False)
+                return
             rowTags = table.rowTags
             rowtracks = [rowTags(row).stringtags() for row in xrange(table.rowCount())]
             libartists = libclass.getArtists()
@@ -781,21 +255,27 @@ class MainWin(QMainWindow):
 
     def showDupes(self, visible):
         from functions import finddups
+        from puddleobjects import ratio
         table = self.cenwid.table
         if visible:
+            self.fileinlib.setChecked(False)
             key, val = QInputDialog.getText(self, 'puddletag',
                         "Enter name of tag to check for duplicates.",
                         QLineEdit.Normal, 'title')
             if not val:
+                self.duplicates.blockSignals(True)
+                self.duplicates.setChecked(False)
+                self.duplicates.blockSignals(False)
                 return
             key = unicode(key)
             rowTags = table.rowTags
             tofind = [rowTags(row).stringtags() for row in xrange(table.rowCount())]
-            #[table.hideRow(row) for row in xrange(table.rowCount())]
-            rows = finddups(tofind, key)
+            if key.startswith(':'):
+                rows = finddups(tofind, key[1:], ratio)
+            else:
+                rows = finddups(tofind, key)
             arows = []
-            for row, dupes in rows.items():
-                arows.extend([z for z in [row] + dupes])
+            [arows.extend(z) for z in rows]
             table.model().rowColors(arows)
         else:
             table.model().rowColors()
@@ -968,7 +448,8 @@ class MainWin(QMainWindow):
 
         table = self.cenwid.table
         combos = self.combogroup.combos
-
+        if not combos:
+            return
         self.rowEmpty()
         if not hasattr(table, "selectedRows") or (table.rowCount() == 0) or not table.selectedRows:
             self.combogroup.disableCombos()
@@ -1067,7 +548,27 @@ class MainWin(QMainWindow):
                 else:
                     table.hideRow(z)
 
-    def formatValue(self):
+    @showwriteprogress
+    def formatValue(self, test = None):
+        """Get tags from the selected files using the pattern in
+        self.patterncombo."""
+        table = self.cenwid.table
+        pattern = unicode(self.patterncombo.currentText())
+        rowselection = table.currentRowSelection()
+        headerdata = [z[1] for z in table.model().headerdata]
+
+        for row in table.selectedRows:
+            audio = table.rowTags(row).stringtags()
+            tags = [headerdata[c] for c in rowselection[row]]
+            val = findfunc.tagtofilename(pattern, audio)
+            newtag = dict([(tag, val) for tag in tags])
+            try:
+                self.setTag(row, newtag)
+                yield None
+            except (IOError, OSError), detail:
+                yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
+
+    def puddleFunctions(self):
         """Show format value window."""
         table = self.cenwid.table
         row = table.selectedRows[0]
@@ -1075,7 +576,6 @@ class MainWin(QMainWindow):
         tag = table.model().headerdata[column][1]
         text = table.selectedTags[0][tag]
 
-        print tag, text, table.selectedTags[0]
         example = [text, table.selectedTags[0]]
         if hasattr(self, "prevfunc"):
             f = actiondlg.CreateFunction(prevfunc = self.prevfunc, parent = self, showcombo = False, example = example)
@@ -1083,10 +583,10 @@ class MainWin(QMainWindow):
             f = actiondlg.CreateFunction(parent = self, showcombo = False, example = example)
         f.setModal(True)
         f.show()
-        self.connect(f, SIGNAL("valschanged"), self.formatValueBuddy)
+        self.connect(f, SIGNAL("valschanged"), self.puddleFunctionsBuddy)
 
     @showwriteprogress
-    def formatValueBuddy(self, func):
+    def puddleFunctionsBuddy(self, func):
         self.prevfunc = func
         table = self.cenwid.table
         headerdata = self.cenwid.headerdata
@@ -1161,7 +661,6 @@ class MainWin(QMainWindow):
     def importFileBuddy(self, taglist):
         table = self.cenwid.table
         for i, row in enumerate(table.selectedRows):
-            if win.wasCanceled(): break
             try:
                 self.setTag(row, taglist[i])
                 yield None
@@ -1184,6 +683,8 @@ class MainWin(QMainWindow):
         if libclass:
             if not hasattr(self, 'librarywin'):
                 self.librarywin = musiclib.LibraryWindow(libclass, self.cenwid.table.model().load, self)
+                self.connect(self.librarywin.tree, SIGNAL('loadFiles'),
+                                                        self.newFolderLoaded)
                 self.librarywin.setObjectName("LibraryDock")
                 self.connect(self.showlibrarywin, SIGNAL('toggled(bool)'), self.librarywin.setVisible)
                 self.connect(self.librarywin, SIGNAL('visibilitychanged'), self.showlibrarywin.setChecked)
@@ -1195,6 +696,8 @@ class MainWin(QMainWindow):
                             SIGNAL('delLibFile'), self.librarywin.tree.delTracks)
             else:
                 self.librarywin.loadLibrary(libclass, self.cenwid.table.model().load)
+                self.connect(self.librarywin.tree, SIGNAL('loadFiles'),
+                                                        self.newFolderLoaded)
             self.librarywin.show()
 
     def loadShortcuts(self):
@@ -1287,8 +790,6 @@ class MainWin(QMainWindow):
 
         If appenddir = True, the folder is appended.
         Otherwise, the folder is just loaded."""
-        import time
-        t1 = time.time()
         selectionChanged = SIGNAL("itemSelectionChanged()")
 
         self.disconnect(self.tree, selectionChanged, self.openTree)
@@ -1332,7 +833,7 @@ class MainWin(QMainWindow):
         self.connect(self.tree, selectionChanged, self.openTree)
         self.cenwid.table.setFocus()
         self.fillCombos()
-        #print time.time() - t1
+        self.newFolderLoaded()
 
     def openPrefs(self):
         """Nothing much. Just opens a preferences window and shows it.
@@ -1366,8 +867,9 @@ class MainWin(QMainWindow):
         #There's an error everytime an item is deleted, we account for that
         try:
             if hasattr(self.cenwid.table,'selectedRows'):
+                table = self.cenwid.table
                 pattern = unicode(self.patterncombo.currentText())
-                tag = self.cenwid.table.rowTags(self.cenwid.table.selectedRows[0], True)
+                tag = table.rowTags(table.selectedRows[0], True)
 
                 tip = self.displayTag(findfunc.filenametotag(pattern, path.basename(tag["__filename"]), True))
                 self.tagfromfile.setStatusTip(tip)
@@ -1381,6 +883,16 @@ class MainWin(QMainWindow):
                 newfolder = path.join(oldir, path.basename(findfunc.tagtofilename(pattern, tag)))
                 dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (tag["__folder"], newfolder)
                 self.renamedir.setStatusTip(dirstatus)
+
+                rowselection = table.currentRowSelection()
+                headerdata = [z[1] for z in table.model().headerdata]
+                row = rowselection.keys()[0]
+                audio = table.rowTags(row).stringtags()
+                tags = [headerdata[c] for c in rowselection[row]]
+                val = findfunc.tagtofilename(pattern, audio)
+                newtag = dict([(tag, val) for tag in tags])
+                tip = self.displayTag(newtag)
+                self.formattag.setStatusTip(tip)
         except IndexError: pass
 
     def reloadFiles(self):
@@ -1447,7 +959,7 @@ class MainWin(QMainWindow):
 
         dirs = sorted(dirs, comp, itemgetter(0))
 
-
+        table.saveSelection()
         #Finally, renaming
         if result == 0:
             for olddir, newdir in dirs:
@@ -1478,6 +990,7 @@ class MainWin(QMainWindow):
         self.connect(self.tree, selectionChanged, self.openTree)
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.fillCombos()
+        table.restoreSelection()
 
 
     def rowEmpty(self):
@@ -1615,6 +1128,7 @@ class MainWin(QMainWindow):
             rowtags = table.rowTags(row).copy()
 
         if row is True:
+            #print 'row:', row, 'undolevel: ', table.model().undolevel
             table.model().updateTable(table.selectedRows)
             table.model().undolevel += 1
             if hasattr(self, 'librarywin'):
@@ -1648,12 +1162,10 @@ class MainWin(QMainWindow):
         rowTags = self.cenwid.table.rowTags
         tags = [rowTags(row, True) for row in selectedRows]
 
-        from puddleobjects import compare
-        cmpfunc = compare().natcasecmp
         for tag in tags:
             if 'track' not in tags:
                 tag['track'] = ""
-        mintrack = sorted(tags, cmpfunc, key = itemgetter("track"))[0]["track"]
+        mintrack = sorted(tags, natcasecmp, key = itemgetter("track"))[0]["track"]
 
         try:
             if "/" in mintrack:

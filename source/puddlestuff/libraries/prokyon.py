@@ -46,10 +46,10 @@ author = 'concentricpuddle'
 class Prokyon(MySQLLib):
     def getArtists(self):
         self.cursor.execute(u"SELECT DISTINCT BINARY artist FROM tracks ORDER BY artist")
-        return [self.latinutf(artist[0]) for artist in self.cursor.fetchall()]
+        return [unicode(artist[0], 'utf8') for artist in self.cursor.fetchall()]
 
     def getAlbums(self, artist):
-        self.cursor.execute(u"""SELECT DISTINCT BINARY album FROM tracks WHERE artist = BINARY %s""", (self.utflatin(artist),))
+        self.cursor.execute(u"""SELECT DISTINCT BINARY album FROM tracks WHERE artist = BINARY %s""", (artist.encode('utf8')))
         return [self.latinutf(album[0]) for album in self.cursor.fetchall()]
 
     def convertTrack(self, track, artist = None, album = None):
@@ -86,9 +86,10 @@ class Prokyon(MySQLLib):
             '___version': track[14],
             '___mode': track[15],
             '___lyricsid': track[16],
-            '___notes': track[17],
-            '___rating': track[18],
-            '___medium': track[19]}
+            '___synclyricsid': track[17],
+            '___notes': track[18],
+            '___rating': track[19],
+            '___medium': track[20]}
 
         return self.applyToDict(self.applyToDict(temp, self.valuetostring), self.latinutf)
 
@@ -98,19 +99,23 @@ class Prokyon(MySQLLib):
         if albums is None:
             albums = self.getAlbums(artist)
         for album in albums:
-            album = self.utflatin(album)
+            try:
+                album = self.utflatin(album)
+            except Exception, e:
+                print 'artist:',artist, 'album',album
+                raise e
             if not album:
                 self.cursor.execute(u"""SELECT path, filename, bitrate,
                 samplerate, length, title, tracknumber, year, genre,
                 comment, size, lastModified, layer, mimetype,
-                version, mode, lyrics_id, notes,rating,
+                version, mode, lyrics_id, synced_lyrics_id, notes,rating,
                 medium FROM tracks WHERE artist = BINARY %s
                 AND (album = '' or album is NULL)""", (artist,))
             else:
                 self.cursor.execute(u"""SELECT path, filename, bitrate,
                 samplerate, length, title, tracknumber, year, genre,
                 comment, size, lastModified, layer, mimetype,
-                version, mode, lyrics_id, notes,rating,
+                version, mode, lyrics_id, synced_lyrics_id, notes,rating,
                 medium FROM tracks WHERE artist = BINARY %s
                 AND album = BINARY %s""", (artist, album))
 
@@ -184,38 +189,38 @@ class Prokyon(MySQLLib):
             newpath = dirname(mixed['__filename'])
             #Check if the new file exists in the table, delete the row if it does
             #since filenames have to be unique.
-            try:
-                if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (newpath, newfilename)):
-                    fileid = self.cursor.fetchall()[0][0]
-                    self.cursor.execute('DELETE FROM tracks WHERE id = %s', (fileid,))
+            #try:
+            if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (newpath, newfilename)):
+                fileid = self.cursor.fetchall()[0][0]
+                self.cursor.execute('DELETE FROM tracks WHERE id = %s', (fileid,))
 
-                #Update the old file if it exists. Create new one otherwise.
-                if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (oldpath, oldfilename)):
-                    fileid = self.cursor.fetchall()[0][0]
-                else:
-                    self.cursor.execute('SELECT MAX(id) FROM tracks')
-                    fileid = self.cursor.fetchall()[0][0] + 1
+            #Update the old file if it exists. Create new one otherwise.
+            if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (oldpath, oldfilename)):
+                fileid = self.cursor.fetchall()[0][0]
+            else:
+                self.cursor.execute('SELECT MAX(id) FROM tracks')
+                fileid = self.cursor.fetchall()[0][0] + 1
 
-                self.cursor.execute("""REPLACE INTO tracks VALUES
-                                (%s, %s, %s, %s, %s,
-                                0, %s, %s, %s ,
-                                %s, %s, %s,
-                                %s, %s,
-                                %s, %s, %s, %s, %s,
-                                %s, %s, %s, %s, %s)""",
-                                (fileid, newpath, newfilename, mixed['___medium'], mixed['__modified'],
-                                mixed['___mimetype'], mixed['___version'], mixed['___layer'],
-                                mixed['___mode'], freq(mixed['__bitrate']) / 1000, freq(mixed["__frequency"]),
-                                leng(mixed["__length"]), long(mixed["__size"]),
-                                mixed["artist"], mixed["title"], mixed['___lyricsid'], mixed['album'], mixed['track'],
-                                mixed['year'], genretoint(mixed['genre']), mixed["comment"],
-                                mixed['___notes'], mixed['___rating']))
+            self.cursor.execute("""REPLACE INTO tracks VALUES
+                            (%s, %s, %s, %s, %s,
+                            0, %s, %s, %s ,
+                            %s, %s, %s,
+                            %s, %s,
+                            %s, %s, %s, %s, %s,
+                            %s, %s, %s, %s, %s, %s)""",
+                            (fileid, newpath, newfilename, mixed['___medium'], mixed['__modified'],
+                            mixed['___mimetype'], mixed['___version'], mixed['___layer'],
+                            mixed['___mode'], freq(mixed['__bitrate']) / 1000, freq(mixed["__frequency"]),
+                            leng(mixed["__length"]), long(mixed["__size"]),
+                            mixed["artist"], mixed["title"], mixed['___lyricsid'], mixed['___synclyricsid'], mixed['album'], mixed['track'],
+                            mixed['year'], genretoint(mixed['genre']), mixed["comment"],
+                            mixed['___notes'], mixed['___rating']))
 
-            except mysql.OperationalError, details:
-                if details.args[0] == 1142: #User doesn't have permission
-                    raise musiclib.MusicLibError(1, unicode(details.args[1]))
-                else:
-                    raise musiclib.MusicLibError(1, unicode(details.args[1]))
+            #except mysql.OperationalError, details:
+                #if details.args[0] == 1142: #User doesn't have permission
+                    #raise musiclib.MusicLibError(1, unicode(details.args[1]))
+                #else:
+                    #raise musiclib.MusicLibError(1, unicode(details.args[1]))
 
             #Update artists table
             artist = mixed['artist']

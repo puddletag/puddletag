@@ -20,9 +20,9 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.audioinfo import (usertags, strlength, strbitrate,
-                                strfrequency, getinfo, FILENAME, PATH, INFOTAGS)
+import util
+from util import (usertags, strlength, strbitrate,
+                                getfilename, strfrequency, getinfo, FILENAME, PATH, INFOTAGS)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 
@@ -158,11 +158,11 @@ FUNCS = {'title': (gettext, settext),
 'totaldiscs': (getint, setint),
 'bpm': (getint, setint)}
 
-class Tag(audioinfo.MockTag):
+class Tag(util.MockTag):
     """Class for Mp4 tags.
 
     Do not use unicode! It's fucked."""
-    IMAGETAGS = (audioinfo.MIMETYPE, audioinfo.DATA)
+    IMAGETAGS = (util.MIMETYPE, util.DATA)
     def copy(self):
         tag = Tag()
         tag.load(self._tags.copy(), copy(self._mutfile), copy(self.images))
@@ -234,9 +234,9 @@ class Tag(audioinfo.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        tags = getinfo(filename)
-        filename = tags[FILENAME]
+        filename = getfilename(filename)
         audio = MP4(filename)
+        tags = getinfo(filename)
         self._tags = {}
         self._images = []
 

@@ -19,13 +19,13 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import puddlestuff.audioinfo as audioinfo
+import util
 from mutagen.oggvorbis import OggVorbis
-from puddlestuff.audioinfo import (strlength, strbitrate, strfrequency, usertags,
-                                    lnglength, getinfo, FILENAME, INFOTAGS)
+from util import (strlength, strbitrate, strfrequency, usertags,
+                                    getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
 
 
-class Tag(audioinfo.MockTag):
+class Tag(util.MockTag):
     """Ogg Tag class.
 
     All methods, etc., work as with a usual dictionary.
@@ -79,9 +79,9 @@ class Tag(audioinfo.MockTag):
         """Links the audio, filename
         returns self if successful, None otherwise."""
         self.images = None
-        tags = getinfo(filename)
-        filename = tags[FILENAME]
+        filename = getfilename(filename)
         audio = OggVorbis(filename)
+        tags = getinfo(filename)
         self._tags = {}
         if audio is None:
             return

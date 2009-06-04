@@ -33,6 +33,14 @@ from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
 from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
+from operator import itemgetter
+path = os.path
+
+try:
+    from Levenshtein import ratio
+except ImportError:
+    from difflib import SequenceMatcher
+    ratio = lambda a,b: SequenceMatcher(None, a,b).ratio()
 
 if sys.version_info[:2] < (2, 5):
     def partial(func, arg):
@@ -45,7 +53,7 @@ else:
 HORIZONTAL = 1
 VERTICAL = 0
 
-def safe_name(name, to = None):
+def safe_name(name, chars=r'/\*?;"|:', to=None):
     """Make a filename safe for use (remove some special chars)
 
     If any special chars are found they are replaced by to."""
@@ -55,7 +63,7 @@ def safe_name(name, to = None):
         to = unicode(to)
     escaped = ""
     for ch in name:
-        if ch not in r'/\*?;"|:': escaped = escaped + ch
+        if ch not in chars: escaped = escaped + ch
         else: escaped = escaped + to
     if not escaped: return '""'
     return escaped
@@ -138,21 +146,66 @@ class compare:
         "Convert to integer if possible."
         try: return int(s)
         except: return s
-
     def natsort_key(self, s):
         "Used internally to get a tuple by which s is sorted."
         import re
         return map(self.try_int, re.findall(r'(\d+|\D+)', s))
-
     def natcmp(self, a, b):
         "Natural string comparison, case sensitive."
         return cmp(self.natsort_key(a), self.natsort_key(b))
-
     def natcasecmp(self, a, b):
         "Natural string comparison, ignores case."
         a = list(a)
         b = list(b)
         return self.natcmp("".join(a).lower(), "".join(b).lower())
+
+natcasecmp = compare().natcasecmp
+
+def dupes(l, method = None):
+    if method is None:
+        method = lambda a,b: int(a==b)
+    l = [{'key': z, 'index': i} for i, z in enumerate(l)]
+    chars = chars=r'/\*?;"|:\''
+    strings = sorted([(safe_name(z['key'].lower(), chars, ''), z['index'])
+                            for z in l if z['key'] is not None])
+    try:
+        last = strings[0][0]
+    except IndexError:
+        return []
+    groups = [[0]]
+    for z, i in strings[1:]:
+        if z is not None:
+            val = method(last, z)
+            if val >= 0.85:
+                groups[-1].append(i)
+            else:
+                last = z
+                groups.append([i])
+    return [z for z in groups if len(z) > 1]
+
+def getfiles(files, subfolders = False):
+    def recursedir(folder, subfolders):
+        if subfolders:
+            files = []
+            [[files.append(path.join(z[0], y)) for y in z[2]]
+                                                for z in os.walk(folder)]
+        else:
+            files = os.walk(folder).next()[2]
+            files = [path.join(folder, f) for f in files]
+        return files
+
+    if isinstance(files, basestring):
+        if path.isdir(files):
+            files = recursedir(files, subfolders)
+        else:
+            files = [files]
+    else:
+        dirnames = [z for z in files if os.path.isdir(z)]
+        while dirnames and subfolders:
+            [files.extend(recursedir(d, True)) for d in dirnames]
+            dirnames = [z for z in files if os.path.isdir(z)]
+
+    return files
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""
@@ -699,11 +752,13 @@ class PicWidget(QWidget):
         '''Sets the description of the current image to the text in the
             description text box.'''
         self.images[self.currentImage]['description'] = unicode(text)
+        self.emit(SIGNAL('imageChanged'))
 
     def setType(self, index):
         """Like setDescription, but for imagetype"""
         try:
             self.images[self.currentImage]['imagetype'] = index
+            self.emit(SIGNAL('imageChanged'))
         except IndexError:
             pass
 
@@ -734,6 +789,7 @@ class PicWidget(QWidget):
                 else:
                     self.images.append(pic)
                     self.currentImage = len(self.images) - 1
+            self.emit(SIGNAL('imageChanged'))
 
     def close(self):
         self.win.close()
@@ -866,6 +922,7 @@ class PicWidget(QWidget):
                 self.currentImage = len(self.images) - 1
             else:
                 self.currentImage =  self.currentImage
+        self.emit(SIGNAL('imageChanged'))
 
     def loadPics(self, *filenames):
         """Loads pictures from the filenames"""
@@ -896,6 +953,10 @@ class PicWidget(QWidget):
                 DATA: self.label.setEnabled,
                 IMAGETYPE: self._image_type.setEnabled}
         self.enableButtons()
+        if not itags:
+            self.addpic.setEnabled(False)
+        else:
+            self.addpic.setEnabled(True)
         for z in itags:
             try:
                 tags[z](True)
@@ -967,13 +1028,11 @@ class ProgressWin(QDialog):
         vbox.addWidget(self.pbar)
         vbox.addLayout(cbox)
         self.setLayout(vbox)
-
-        self.setValue(0)
-        self.show()
-
         self.wasCanceled = False
         self.connect(self, SIGNAL('rejected()'), self.cancel)
         self.connect(cancel, SIGNAL('clicked()'), self.cancel)
+
+        self.setValue(1)
 
     def setValue(self, value):
         self.blockSignals(True)
@@ -982,8 +1041,9 @@ class ProgressWin(QDialog):
             self.label.setText(self.ptext + unicode(value) + ' of ' +
                                         unicode(self.pbar.maximum()) + ' ...')
         self.pbar.setValue(value)
-        QApplication.processEvents()
         self.blockSignals(False)
+        if value >= self.pbar.maximum():
+            self.close()
 
     def cancel(self):
         self.wasCanceled = True

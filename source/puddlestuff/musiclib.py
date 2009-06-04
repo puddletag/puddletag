@@ -203,10 +203,11 @@ class LibraryTree(QTreeWidget):
         self.disconnect(self, SIGNAL('itemSelectionChanged()'), self.loadSearch)
         self.connect(self, SIGNAL('itemSelectionChanged()'), self.loadFiles)
 
-    def fillTree(self, library):
+    def fillTree(self, library, artists = None):
         self.clear()
-        artists = library.getArtists()
-        items = sorted([(artist, library.getAlbums(artist)) for artist in artists])
+        if not artists:
+            artists = library.getArtists()
+        items = [(artist, library.getAlbums(artist)) for artist in artists]
         icon =  self.style().standardIcon(QStyle.SP_DirClosedIcon)
         for artist, albums in items:
             if albums:
@@ -377,7 +378,6 @@ class LibraryTree(QTreeWidget):
         self.blockSignals(False)
 
     def search(self, text):
-        self.lastsearch = text
         self.blockSignals(True)
         if not text:
             self.connect(self, SIGNAL('itemSelectionChanged()'), self.loadFiles)
@@ -385,6 +385,17 @@ class LibraryTree(QTreeWidget):
             self.blockSignals(False)
             return
         text = unicode(text)
+        if text == u':artist':
+            artists = self.library.getArtists()
+            from puddleobjects import dupes, ratio
+            temp = []
+            [temp.extend(z) for z in dupes(artists, ratio)]
+            x = [artists[z] for z in temp]
+            self.fillTree(self.library, x)
+            self.connect(self, SIGNAL('itemSelectionChanged()'), self.loadFiles)
+            self.blockSignals(False)
+            return
+        self.lastsearch = text
         self.disconnect(self, SIGNAL('itemSelectionChanged()'), self.loadFiles)
         self.searchfiles = self.library.search(text)
         self.fillTracks(self.searchfiles)

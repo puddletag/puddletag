@@ -20,12 +20,12 @@
 
 from mutagen.apev2 import APEv2File
 
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.audioinfo import (strlength, strbitrate, strfrequency, usertags,
-                                    lnglength, getinfo, FILENAME, INFOTAGS)
+import util
+from util import (strlength, strbitrate, strfrequency, usertags,
+                            getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
 
 
-class Tag(audioinfo.MockTag):
+class Tag(util.MockTag):
     """Tag class for APEv2 files.
 
     Tags are used as in ogg.py"""
@@ -64,9 +64,9 @@ class Tag(audioinfo.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        tags = getinfo(filename)
-        filename = tags[FILENAME]
+        filename = getfilename(filename)
         audio = APEv2File(filename)
+        tags = getinfo(filename)
         self._tags = {}
         if audio is None:
             return

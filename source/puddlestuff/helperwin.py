@@ -266,20 +266,21 @@ class ExTags(QDialog):
         QDialog.__init__(self, parent)
         self.listbox = QListWidget()
         self.piclabel = PicWidget(buttons = True)
+        self.connect(self.piclabel, SIGNAL('imageChanged'), self._imageChanged)
 
         buttons = MoveButtons(model.taginfo, row)
 
         self.okcancel = OKCancel()
 
-        listbuttons = ListButtons()
-        listbuttons.moveup.hide()
-        listbuttons.movedown.hide()
+        self.listbuttons = ListButtons()
+        self.listbuttons.moveup.hide()
+        self.listbuttons.movedown.hide()
 
         listframe = QFrame()
         listframe.setFrameStyle(QFrame.Box)
         hbox = QHBoxLayout()
         hbox.addWidget(self.listbox,1)
-        hbox.addLayout(listbuttons, 0)
+        hbox.addLayout(self.listbuttons, 0)
         listframe.setLayout(hbox)
 
         imageframe = QFrame()
@@ -306,9 +307,9 @@ class ExTags(QDialog):
         self.connect(self.okcancel, SIGNAL("ok"),self.OK)
 
         clicked = SIGNAL('clicked()')
-        self.connect(listbuttons.edit, clicked, self.editTag)
-        self.connect(listbuttons.add, clicked, self.addTag)
-        self.connect(listbuttons.remove, clicked, self.removeTag)
+        self.connect(self.listbuttons.edit, clicked, self.editTag)
+        self.connect(self.listbuttons.add, clicked, self.addTag)
+        self.connect(self.listbuttons.remove, clicked, self.removeTag)
 
         self.setMinimumSize(450,350)
 
@@ -316,14 +317,29 @@ class ExTags(QDialog):
 
         if not isinstance(model, basestring):
             self.model = model
+            self.filechanged = False
             self.loadFile(row)
             self.connect(buttons, SIGNAL('indexChanged'), self.loadFile)
+
+    def _checkListBox(self):
+        if self.listbox.count() <= 0:
+            self.listbox.setEnabled(False)
+            self.listbuttons.edit.setEnabled(False)
+            self.listbuttons.remove.setEnabled(False)
+        else:
+            self.listbox.setEnabled(True)
+            self.listbuttons.edit.setEnabled(True)
+            self.listbuttons.remove.setEnabled(True)
+
+    def _imageChanged(self):
+        self.filechanged = True
 
     def removeTag(self):
         row = self.listbox.currentRow()
         if row != -1:
             self.listbox.takeItem(row)
         self.filechanged = True
+        self._checkListBox()
 
     def closeMe(self):
         self.model.undolevel += 1
@@ -343,18 +359,12 @@ class ExTags(QDialog):
             images = None
         else:
             images = self.piclabel.images
-        if (images != audio['__image']) or self.filechanged:
-            tags = {}
-            listitems = [unicode(self.listbox.item(row).text()).split(" = ") for row in xrange(self.listbox.count())]
-            for tag, val in listitems:
-                if tag in tags:
-                    tags[tag].append(val)
-                else:
-                    tags[tag] = [val]
-            toremove = [z for z in self.model.taginfo[self.currentrow] if z not in tags and z not in audioinfo.INFOTAGS]
+        if self.filechanged:
+            tags = self.listtotag()
+            toremove = [z for z in audio if z not in tags and z not in audioinfo.INFOTAGS]
             for tag in toremove:
                 tags[tag] = ""
-            keys = ['data', 'mime', 'description', 'imagetype']
+            keys = currentfile.IMAGETAGS
             if images:
                 tags["__image"] =  [dict([(key, z[key]) for key in keys if key in z]) for z in images]
             else:
@@ -396,15 +406,32 @@ class ExTags(QDialog):
         else:
             self.listbox.addItem(tag + " = " + value)
         self.listbox.sortItems()
+        self._checkListBox()
         self.filechanged = True
 
+    def listtotag(self):
+        gettag = lambda row: unicode(self.listbox.item(row).text()).split(' = ', 1)
+        tags = {}
+        listitems = [gettag(row) for row in xrange(self.listbox.count())]
+        try:
+            for tag, val in listitems:
+                if tag in tags:
+                    tags[tag].append(val)
+                else:
+                    tags[tag] = [val]
+        except Exception, e:
+            print listitems
+            raise e
+        return tags
 
     def loadFile(self, row):
+        if self.filechanged:
+            self.save()
         self.filechanged = False
         self.listbox.clear()
         items = []
         tags = self.model.taginfo[row]
-        for item, val in audioinfo.usertags(tags).items():
+        for item, val in sorted(audioinfo.usertags(tags).items()):
             [items.append(item + " = " + z) for z in val]
         self.listbox.addItems(items)
         self.currentrow = row
@@ -419,9 +446,9 @@ class ExTags(QDialog):
                     self.piclabel.setImages(None)
         else:
             self.piclabel.setImages(None)
+        self._checkListBox()
         self.setWindowTitle(tags["__filename"])
         self.undolevel = self.model.undolevel
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

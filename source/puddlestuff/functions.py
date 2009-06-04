@@ -128,21 +128,15 @@ def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
             return "".join(textli)
     return text
 
-def finddups(tracks, key = 'title'):
-    the = time.time()
-    li = [z[key].lower() for z in tracks if key in z and z[key] is not None]
-    temp = set(li)
-    dups = {}
-    for i, z in enumerate(li):
-        if z in temp:
-            temp.discard(z)
-        else:
-            index = li.index(z)
-            try:
-                dups[index].append(i)
-            except:
-                dups[index] = [i]
-    return dups
+def finddups(tracks, key = 'title', method=None):
+    from puddleobjects import dupes
+    li = []
+    for z in tracks:
+        try:
+            li.append(z[key])
+        except KeyError:
+            li.append(None)
+    return dupes(li, method)
 
 def formatValue(tags, pattern):
     """Format Value, Format $0 using $1
@@ -326,6 +320,7 @@ def replace(text, word, replaceword, matchcase = False, whole = False, chars = N
 w&ith:, text
 Match c&ase:, check
 only as &whole word, check'''
+    word = re_escape(word)
     if matchcase:
         matchcase = 0
     else:
@@ -390,9 +385,9 @@ def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
     '''Case Conversion, "$0: $1"
 &Type, combo, Mixed Case,UPPER CASE,lower case
 "For &Mixed Case, after any of:", text, "., !"'''
-    if ctype == 1:
+    if ctype == "UPPER CASE":
         return text.upper()
-    elif ctype == 2:
+    elif ctype == 'lower case':
         return text.lower()
 
     text = [z for z in text]

@@ -88,11 +88,12 @@ class FunctionDialog(QWidget):
             #self.retval contains the method to be called when we get
             #the value of the control
             if ctype == 'combo':
-                self.retval.append(control.currentIndex)
+                self.retval.append(control.currentText)
                 if defaultarg:
                     control.addItems(defaultarg)
                     if userargs:
-                        control.setCurrentIndex(userargs[argno])
+                        index = control.findText(userargs[argno])
+                        control.setCurrentIndex(index)
             elif ctype == 'text':
                 self.textcombos.append(control)
                 self.retval.append(control.combo.currentText)

@@ -19,8 +19,8 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from mutagen.flac import FLAC
-from puddlestuff.audioinfo import (strlength, strbitrate, strfrequency,
-                                    getinfo, FILENAME, PATH, INFOTAGS)
+from util import (strlength, strbitrate, strfrequency,
+                                    getfilename, getinfo, FILENAME, PATH, INFOTAGS)
 import ogg
 
 class Tag(ogg.Tag):
@@ -36,9 +36,9 @@ class Tag(ogg.Tag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        tags = getinfo(filename)
-        filename = tags[FILENAME]
+        filename = getfilename(filename)
         audio = FLAC(filename)
+        tags = getinfo(filename)
         self._tags = {}
         if audio is None:
             return
