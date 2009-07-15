@@ -26,11 +26,13 @@ def createActions(parent):
         parent.importlib = QAction("Import Music Library", parent)
         parent.invertselection = QAction("&Invert selection", parent)
         parent.invertselection.setShortcut('Meta+I')
+        parent.loadplaylist = QAction(QIcon(":/playlist.png"), 'Load m3u playlist', parent)
         parent.openactions = QAction(QIcon(':/cap.png'), 'Ac&tions...', parent)
         parent.preferences = QAction("&Preferences...", parent)
         parent.quickactions = QAction(QIcon(":/quickactions.png"), "&Quick Actions...", parent)
         parent.reloaddir = QAction(QIcon(':/reload.png'), "Reload", parent)
         parent.renamedir = QAction(QIcon(":/rename.png"), "&Rename Dir...",parent)
+        parent.saveplaylist = QAction(QIcon(":/playlist.png"), 'Save playlist', parent)
         parent.savecombotags = QAction(QIcon(':/save.png'), '&Save', parent)
         parent.savecombotags.setShortcut('Ctrl+S')
         parent.selectall = QAction("Select &All", parent)
@@ -75,11 +77,13 @@ def connectActions(parent):
     connect(parent.autotagging, parent.autoTagging)
     connect(parent.cleartable, parent.clearTable)
     connect(parent.formattag, parent.formatValue)
-    connect(parent.puddlefunctions, parent.puddleFunctions)
     connect(parent.importfile, parent.importFile)
     connect(parent.importlib, parent.importLib)
+    connect(parent.loadplaylist, parent.loadPlayList)
+    connect(parent.saveplaylist, parent.savePlayList)
     connect(parent.openactions, parent.openActions)
     connect(parent.preferences, parent.openPrefs)
+    connect(parent.puddlefunctions, parent.puddleFunctions)
     parent._actionvalue = partial(parent.openActions, True)
     connect(parent.quickactions, parent._actionvalue)
     connect(parent.renamedir, parent.renameFolder)
@@ -117,6 +121,7 @@ def connectActions(parent):
     parent.connect(parent.combodock, SIGNAL('visibilitychanged'), parent.showcombodock.setChecked)
     parent.connect(parent.filterframe, SIGNAL('visibilitychanged'), parent.showfilter.setChecked)
 
+
 def createMenus(parent):
     table = parent.cenwid.table
     separator = QAction(parent)
@@ -125,8 +130,9 @@ def createMenus(parent):
 
     menubar = parent.menuBar()
     filemenu = menubar.addMenu('&File')
-    [filemenu.addAction(z) for z in [parent.opendir, parent.addfolder,
-    table.play, separator, parent.savecombotags, parent.reloaddir, parent.cleartable]]
+    [filemenu.addAction(z) for z in [parent.savecombotags, table.play,
+    parent.saveplaylist, separator, parent.opendir, parent.addfolder,
+    parent.loadplaylist, separator, parent.reloaddir, parent.cleartable ]]
 
     edit = menubar.addMenu("&Edit")
     table = parent.cenwid.table
@@ -158,7 +164,7 @@ def createMenus(parent):
                     parent.changetracks, parent.importfile, parent.renamedir, parent.autotagging]
 
     parent.supportactions = [parent.selectall, parent.invertselection, parent.selectcolumn,
-        parent.duplicates, parent.fileinlib, parent.addfolder, parent.reloaddir]
+        parent.duplicates, parent.fileinlib, parent.addfolder, parent.reloaddir, parent.saveplaylist]
 
     [parent.toolbar.addAction(z) for z in (parent.opendir, parent.addfolder,
                     parent.reloaddir, separator, parent.savecombotags, parent.undo,

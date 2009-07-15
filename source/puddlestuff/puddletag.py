@@ -31,6 +31,7 @@ from PyQt4.QtGui import (QAction, QApplication, QFileDialog, QFrame, QInputDialo
                         QLabel, QLineEdit, QMainWindow, QMessageBox, QPixmap,
                         QShortcut)
 from operator import itemgetter
+import m3u
 
 path = os.path
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
@@ -651,7 +652,7 @@ class MainWin(QMainWindow):
         filename = unicode(filedlg.getOpenFileName(self,
                 'OpenFolder',foldername))
 
-        if filename != "":
+        if filename:
             win = helperwin.ImportWindow(self, filename)
             win.setModal(True)
             patternitems = [self.patterncombo.itemText(z) for z in range(self.patterncombo.count())]
@@ -725,6 +726,38 @@ class MainWin(QMainWindow):
                 QShortcut(key, self, getattr(control,command))
         settings.endArray()
 
+    def loadPlayList(self):
+        filedlg = QFileDialog()
+        filename = unicode(filedlg.getOpenFileName(None,
+            'OpenFolder'))
+        try:
+            files = m3u.readm3u(filename)
+        except (OSError, IOError), e:
+            QMessageBox.information(self.cenwid.table, 'Error',
+                   'Could not read file: <b>%s</b><br />%s' % (filename,
+                    e.strerror),
+                    QMessageBox.Ok, QMessageBox.NoButton)
+        except Exception, e:
+            QMessageBox.information(self.cenwid.table, 'Error',
+                   'Could not read file: <b>%s</b><br />%s' % (filename,
+                    unicode(e)),
+                    QMessageBox.Ok, QMessageBox.NoButton)
+
+        selectionChanged = SIGNAL("itemSelectionChanged()")
+
+        self.disconnect(self.tree, selectionChanged, self.openTree)
+        self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
+        if self.pathinbar:
+            self.setWindowTitle("puddletag " + filename)
+        else:
+            self.setWindowTitle("puddletag")
+        self.cenwid.fillTable(files, False)
+
+        self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
+        self.connect(self.tree, selectionChanged, self.openTree)
+        self.cenwid.table.setFocus()
+        self.fillCombos()
+        self.newFolderLoaded()
 
     def openActions(self, quickaction = False):
         """Shows the action window and calls either RunAction or RunQuickaction
@@ -1058,6 +1091,23 @@ class MainWin(QMainWindow):
                 except (IOError, OSError), detail:
                     yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
+    def savePlayList(self):
+        tags = self.cenwid.table.model().taginfo
+        cparser = puddlesettings.PuddleConfig()
+        filepattern = cparser.load('playlist', 'filepattern','puddletag.m3u')
+        default = findfunc.tagtofilename(filepattern, tags[0])
+        f = unicode(QFileDialog.getSaveFileName(self,
+                'Save Playlist', os.path.join(self.lastfolder, default)))
+        if f:
+            if cparser.load('playlist', 'extinfo', 1, True):
+                pattern = cparser.load('playlist', 'extpattern','%artist% - %title%')
+            else:
+                pattern = None
+
+            reldir = cparser.load('playlist', 'reldir',0, True)
+
+            m3u.exportm3u(tags, f, pattern, reldir)
+        
     @showwriteprogress
     def saveTagToFile(self):
         """Renames the selected files using the pattern

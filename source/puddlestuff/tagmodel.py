@@ -348,7 +348,7 @@ class TagModel(QAbstractTableModel):
             
         if delfiles:
             audio = self.taginfo[position]
-            #os.remove(audio[FILENAME])
+            os.remove(audio[FILENAME])
             if LIBRARY in audio:
                 self.emit(SIGNAL('delLibFile'), [audio])
         del(self.taginfo[position])

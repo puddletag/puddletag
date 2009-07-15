@@ -1,8 +1,9 @@
-from PyQt4.QtGui import QApplication, QTreeView, QHeaderView, QSplitter, QDirModel, QComboBox, QLabel, QFrame, QGroupBox, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget, QGridLayout, QDrag
+from PyQt4.QtGui import QApplication, QTreeView, QHeaderView, QSplitter, QDirModel, QComboBox, QLabel, QFrame, QGroupBox, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget, QGridLayout, QDrag, QMenu
 from PyQt4.QtCore import QDir, QPoint, Qt, QSize, SIGNAL, QMimeData, QUrl
-from puddlestuff.puddleobjects import PuddleDock, PuddleThread
+from puddlestuff.puddleobjects import PuddleDock, PuddleThread, HeaderSetting
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagmodel import TagTable
+from copy import deepcopy
 
 class FrameCombo(QGroupBox):
     """A group box with combos that allow to edit

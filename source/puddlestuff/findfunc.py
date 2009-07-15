@@ -253,8 +253,8 @@ def parsefunc(text, audio):
     with the arguments."""
 
     identifier = QuotedString('"') | Combine(ZeroOrMore("\$") + Word(alphanums + "_ '!#$%&\'*+-./:;<=>?@[\\]^`{|}~"))
-    integer  = Word( nums )
-    funcstart =  NotAny("\\") + Combine(Literal("$") + ZeroOrMore(Word("_" + alphas)) + "(")
+    integer  = Word(nums)
+    funcstart =  NotAny("\\") + Combine(Literal("$") + OneOrMore(Word("_" + alphas)) + "(")
 
     def callfunc(s,loc,tok):
         arguments = tok[1:]
@@ -291,7 +291,7 @@ def replacevars(pattern, audio):
     for tag in audio.keys():
         if not audio[tag]:
             audio[tag] = ''
-        pattern = pattern.replace(unicode('%' + unicode(tag) + '%'),
+        pattern = pattern.replace(u'%' + unicode(tag) + u'%',
                                         unicode(audio[tag]))
     return pattern
 

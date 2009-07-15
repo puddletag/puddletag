@@ -28,5 +28,6 @@
 <file alias="cut.png">data/cut.png</file>
 <file alias="copy.png">data/copy.png</file>
 <file alias="paste.png">data/paste.png</file>
+<file alias="playlist.png">data/playlist.png</file>
 </qresource>
 </RCC>

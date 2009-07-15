@@ -21,17 +21,17 @@
 
 
 """In this module, all the dialogs for configuring puddletag are
-stored. These are accessed via the Preferences windows.
+stored. These are accessed via the Preferences window.
 
 The MainWin class is the important class since it creates,
 the dialogs in a stacked widget and calls their methods as needed.
 
-Each dialog must have in it's init method an argument called 'cenwid'.
+Each dialog must have in its __init__ method an argument called 'cenwid'.
 cenwid is puddletag's main window found in puddletag.MainWin.
 If cenwid is passed, then the dialog should read all it's values,
-apply them and return(close). This is done when puddletag starts.
+apply them (if needed) and return(close). This is done when puddletag starts.
 
-In adittion, each dialog should have a saveSettings functions, which
+In addition, each dialog should have a saveSettings functions, which
 is called when settings pertinent to that dialog need to be saved.
 
 It is not required, that each dialog should also have
@@ -93,6 +93,59 @@ class PatternEditor(QFrame):
         patterns = [self.listbox.item(row).text() for row in xrange(self.listbox.count())]
         cenwid.patterncombo.clear()
         cenwid.patterncombo.addItems(patterns)
+
+class Playlist(QFrame):
+    def __init__(self, parent = None, cenwid = None):
+        QFrame.__init__(self, parent)
+
+        def inttocheck(value):
+            if value:
+                return Qt.Checked
+            return Qt.Unchecked
+
+        cparser = PuddleConfig()
+        self.setFrameStyle(QFrame.Box)
+
+        self.extpattern = QLineEdit()
+        self.extpattern.setText(cparser.load('playlist', 'extpattern','%artist% - %title%'))
+        hbox = QHBoxLayout()
+        hbox.addSpacing(10)
+        hbox.addWidget(self.extpattern)
+
+        self.extinfo = QCheckBox('&Write extended info', self)
+        self.connect(self.extinfo, SIGNAL('stateChanged(int)'), self.extpattern.setEnabled)
+        self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo',1, True)))
+        self.extpattern.setEnabled(self.extinfo.checkState())
+
+        self.reldir = QCheckBox('Entries &relative to working directory')
+        self.reldir.setCheckState(inttocheck(cparser.load('playlist', 'reldir',0, True)))
+
+
+        self.filename = QLineEdit()
+        self.filename.setText(cparser.load('playlist', 'filepattern','puddletag.m3u'))
+        label = QLabel('&Filename pattern.')
+        label.setBuddy(self.filename)
+
+        vbox = QVBoxLayout()
+        [vbox.addWidget(z) for z in (self.extinfo, self.reldir,
+                                        label, self.filename)]
+        vbox.insertLayout(1, hbox)
+        vbox.addStretch()
+        vbox.insertSpacing(2, 5)
+        vbox.insertSpacing(4, 5)
+        self.setLayout(vbox)
+
+    def saveSettings(self):
+        def checktoint(checkbox):
+            if checkbox.checkState() == Qt.Checked:
+                return 1
+            else:
+                return 0
+        cparser = PuddleConfig()
+        cparser.setSection('playlist', 'extinfo', checktoint(self.extinfo))
+        cparser.setSection('playlist', 'extpattern', unicode(self.extpattern.text()))
+        cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
+        cparser.setSection('playlist', 'filepattern', unicode(self.filename.text()))
 
 class ComboSetting(HeaderSetting):
     """Class that sets the type of tag that a combo should display
@@ -218,12 +271,6 @@ class GeneralSettings(QFrame):
         self.vertheader = QCheckBox("Show &row numbers")
         self.vertheader.setCheckState(convertstate('vertheader',0))
 
-        self.loadlastlib = QCheckBox('Load &music library on startup')
-        self.loadlastlib.setCheckState(convertstate('loadlastlib',0))
-        self.loadlib = True
-
-        #self.enableplay = QCheckBox("Use usual media player.",1)
-        #self.connect(self.enableplay, SIGNAL('stateChanged(int)'), self.enablePlay
         playtext = cparser.load('table', 'playcommand', ['xmms'])
         label = QLabel("Enter the &command to play files with.")
         self.playcommand = QLineEdit()
@@ -231,7 +278,7 @@ class GeneralSettings(QFrame):
         self.playcommand.setText(" ".join(playtext))
 
         [vbox.addWidget(z) for z in [self.subfolders, self.pathinbar,
-            self.gridlines, self.vertheader, self.loadlastlib,label, self.playcommand]]
+            self.gridlines, self.vertheader, label, self.playcommand]]
         vbox.addStretch()
 
         if cenwid is not None:
@@ -271,16 +318,6 @@ class GeneralSettings(QFrame):
         else:
             cenwid.cenwid.table.verticalHeader().hide()
 
-        #if convertState(self.loadlastlib):
-            #cparser = PuddleConfig()
-            #libname = cparser.load('library', 'lastlib', "")
-
-            #if libname and self.loadlib:
-                #import musiclib
-                #library = musiclib.loadLibrary(libname).loadLibrary()
-                #cenwid.loadLib(library)
-
-
     def saveSettings(self):
         def convertState(state):
             if state == Qt.Checked:
@@ -290,9 +327,7 @@ class GeneralSettings(QFrame):
         controls = {'subfolders': convertState(self.subfolders.checkState()),
                     'gridlines': convertState(self.gridlines.checkState()),
                     'pathinbar': convertState(self.pathinbar.checkState()),
-                    'vertheader': convertState(self.vertheader.checkState()),
-                    'loadlastlib': convertState(self.loadlastlib.checkState())}
-                    #'desktopplay': convertState(self.enableplay.checkState())}
+                    'vertheader': convertState(self.vertheader.checkState())}
         for z in controls:
             cparser.setSection('general', z, controls[z])
         cparser.setSection('table', 'playcommand',[unicode(z) for z in self.playcommand.text().split(" ")])
@@ -352,15 +387,20 @@ class MainWin(QDialog):
             self.combosetting = ComboFrame(parent = self, cenwid = cenwid)
             self.gensettings = GeneralSettings(parent = self, cenwid = cenwid)
             self.patterns = PatternEditor(parent = self, cenwid = cenwid)
+            self.playlist = Playlist(parent = self, cenwid = cenwid)
             return
 
         self.combosetting = ComboFrame()
         self.gensettings = GeneralSettings()
         self.patterns = PatternEditor()
+        self.playlist = Playlist()
 
         self.listbox = SettingsList()
 
-        self.widgets = {0: ["General Settings", self.gensettings], 1:["Tag Editor", self.combosetting], 2:["Patterns", self.patterns]}
+        self.widgets = {0: ["General Settings", self.gensettings],
+                        1:["Tag Editor", self.combosetting],
+                        2:["Patterns", self.patterns],
+                        3:['Playlist', self.playlist]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid

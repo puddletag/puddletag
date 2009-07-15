@@ -222,10 +222,11 @@ def isdigit(text):
         return
 
 def left(text,n):
+    n = int(decimal.Decimal(n))
     return unicode(text)[:n + 1]
 
 def len_(text):
-    return len(unicode(text))
+    return unicode(len(text))
 
 def leql(text,text1):
     if text <= text1:
