@@ -25,13 +25,16 @@ from audioinfo import FILENAME, PATH
 from copy import copy, deepcopy
 import helperwin
 from helperwin import PicWidget
-from puddleobjects import (ProgressWin, safe_name, unique, PuddleThread, natcasecmp)
-from PyQt4.QtCore import QDir, Qt, QSettings, QString, QVariant, SIGNAL
+from puddleobjects import (ProgressWin, safe_name, unique, PuddleThread,
+                            natcasecmp, getfiles, gettags, PuddleDock)
+from PyQt4.QtCore import QDir, Qt, QSettings, QString, QVariant, SIGNAL, pyqtRemoveInputHook
 from PyQt4.QtGui import (QAction, QApplication, QFileDialog, QFrame, QInputDialog,
                         QLabel, QLineEdit, QMainWindow, QMessageBox, QPixmap,
                         QShortcut)
 from operator import itemgetter
 import m3u
+from puddlestuff.duplicates import algwin
+#pyqtRemoveInputHook()
 
 path = os.path
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
@@ -150,6 +153,7 @@ class MainWin(QMainWindow):
         statuslabel = QLabel()
         statuslabel.setFrameStyle(QFrame.NoFrame)
         self.statusbar.addPermanentWidget(statuslabel,1)
+        self.statusbar.setMaximumHeight(self.statusbar.height())
         self.connect(self.statusbar,SIGNAL("messageChanged (const QString&)"), statuslabel.setText)
 
     def newFolderLoaded(self, *args):
@@ -158,6 +162,30 @@ class MainWin(QMainWindow):
             action.blockSignals(True)
             action.setChecked(False)
             action.blockSignals(False)
+
+    def libDupes(self):
+        
+        win = algwin.SetDialog(self)
+        self.connect(win, SIGNAL('setAvailable'), self._showLibDupes)
+        win.show()
+
+    def _showLibDupes(self, setname, dispformat, algs):
+        try:
+            libclass = self.librarywin.tree.library
+        except AttributeError:
+            self.warningMessage("The duplicate finder works only with music libraries. Load one first.")
+            return
+        self.dupedock = PuddleDock('Library Duplicates: ' + setname)
+        tree = algwin.DupeTree(self.dupedock)
+        self.dupedock.setWidget(tree)
+        self.dupedock.layout().setAlignment(Qt.AlignTop)
+        self.dupedock.setObjectName('DupeDock')
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.dupedock)
+        self.dupedock.show()
+        self.connect(tree, SIGNAL('loadFiles'), self.cenwid.table.model().load)
+        self.connect(tree, SIGNAL('loadFiles'), self.newFolderLoaded)
+        tree.loadDupes(libclass, algs, dispformat)
+        tree.setHeaderLabel('Duplicates')
 
     @showwriteprogress
     def cut(self):
@@ -357,29 +385,29 @@ class MainWin(QMainWindow):
         cparser = puddlesettings.PuddleConfig()
         settings = QSettings(cparser.filename, QSettings.IniFormat)
 
-        settings.setValue("table/sortcolumn", QVariant(self.cenwid.sortColumn))
-        settings.setValue("main/lastfolder", QVariant(self.lastfolder))
-        settings.setValue("main/maximized", QVariant(self.isMaximized()))
+        cparser.set("table", "sortcolumn", self.cenwid.sortColumn)
+        cparser.set("main", "lastfolder", self.lastfolder)
+        cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', QVariant(self.saveState()))
 
-        settings.setValue('main/height', QVariant(self.height()))
-        settings.setValue('main/width', QVariant(self.width()))
+        cparser.set('main','height', self.height())
+        cparser.set('main','width', self.width())
 
-        settings.setValue("editor/showfilter",QVariant(self.filtertable.isVisible()))
-        settings.setValue("editor/showcombo",QVariant(self.combodock.isVisible()))
-        settings.setValue("editor/showtree",QVariant(self.treedock.isVisible()))
+        cparser.set("editor", "showfilter", self.filtertable.isVisible())
+        cparser.set("editor", "showcombo", self.combodock.isVisible())
+        cparser.set("editor", "showtree", self.treedock.isVisible())
 
         table = self.cenwid.table
-        columnwidths = [unicode(table.columnWidth(z)) for z in range(table.model().columnCount())]
-        cparser.setSection('columnwidths', 'column', columnwidths)
+        columnwidths = [table.columnWidth(z) for z in range(table.model().columnCount())]
+        cparser.set('columnwidths', 'column', columnwidths)
 
         titles = [z[0] for z in self.cenwid.headerdata]
         tags = [z[1] for z in self.cenwid.headerdata]
 
-        cparser.setSection('tableheader', 'titles', titles)
-        cparser.setSection('tableheader', 'tags', tags)
+        cparser.set('tableheader', 'titles', titles)
+        cparser.set('tableheader', 'tags', tags)
         patterns = [unicode(self.patterncombo.itemText(z)) for z in xrange(self.patterncombo.count())]
-        cparser.setSection('editor', 'patterns', patterns)
+        cparser.set('editor', 'patterns', patterns)
 
     def loadInfo(self):
         """Loads the settings from puddletags settings and sets it."""
@@ -387,20 +415,19 @@ class MainWin(QMainWindow):
         cparser = puddlesettings.PuddleConfig()
         settings = QSettings(cparser.filename, QSettings.IniFormat)
 
-        self.lastfolder = cparser.load("main","lastfolder", unicode(QDir.homePath()))
-        maximise = bool(cparser.load('main','maximized', True))
+        self.lastfolder = cparser.get("main","lastfolder", unicode(QDir.homePath()))
+        maximise = bool(cparser.get('main','maximized', True))
 
-        self.setWindowState(Qt.WindowMaximized)
-        height = settings.value('main/height', QVariant(600)).toInt()[0]
-        width = settings.value('main/width', QVariant(800)).toInt()[0]
+        height = cparser.get('main', 'height', 600)
+        width = cparser.get('main', 'width', 800)
         self.resize(width, height)
         if maximise:
             self.setWindowState(Qt.WindowNoState)
 
-        titles = cparser.load('tableheader', 'titles',
+        titles = cparser.get('tableheader', 'titles',
         ['Path', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 'Bitrate', 'Genre', 'Comment', 'Filename'])
 
-        tags = cparser.load('tableheader', 'tags',
+        tags = cparser.get('tableheader', 'tags',
         ['__path', 'artist', 'title', 'album', 'track', '__length', 'year', '__bitrate', 'genre', 'comment', '__filename'])
 
         headerdata = []
@@ -408,14 +435,15 @@ class MainWin(QMainWindow):
             headerdata.append((title,tag))
 
         self.cenwid.inittable(headerdata)
-        self.connect(self.cenwid.table.model(), SIGNAL('enableUndo'), self.undo.setEnabled)
-        self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
-        self.connect(self.cenwid.table.model(), SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
+        model = self.cenwid.table.model()
+        self.connect(model, SIGNAL('enableUndo'), self.undo.setEnabled)
+        self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
+        self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
 
-        columnwidths = [z for z in cparser.load("columnwidths","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191], True)]
+        columnwidths = [z for z in cparser.get("columnwidths","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191], True)]
         [self.cenwid.table.setColumnWidth(i, z) for i,z in enumerate(columnwidths)]
 
-        sortColumn = cparser.load("table","sortcolumn",1, True)
+        sortColumn = cparser.get("table","sortcolumn",1, True)
         self.cenwid.sortTable(int(sortColumn))
         header = self.cenwid.table.horizontalHeader()
         header.setSortIndicator (sortColumn, Qt.AscendingOrder)
@@ -650,7 +678,7 @@ class MainWin(QMainWindow):
         filedlg = QFileDialog()
         foldername = self.cenwid.table.rowTags(self.cenwid.table.selectedRows[0])["__folder"]
         filename = unicode(filedlg.getOpenFileName(self,
-                'OpenFolder',foldername))
+                'Select text file',foldername))
 
         if filename:
             win = helperwin.ImportWindow(self, filename)
@@ -678,6 +706,40 @@ class MainWin(QMainWindow):
         win.setModal(True)
         win.show()
         self.connect(win, SIGNAL('libraryAvailable'), self.loadLib)
+
+    def loadFiles(self, files, append=False, subfolders=None, dirnames=None):
+        if subfolders is None:
+            subfolders = self.subfolders
+
+        if not dirnames:
+            files, dirnames = getfiles(files)
+        try:
+            self.lastfolder = dirnames[0]
+        except IndexError:
+            self.statusBar().setStatusTip('Directory is empty')
+            return
+            
+        def tempfunc():
+            tags = []
+            for i, f in enumerate(gettags(files)):
+                if win.wasCanceled:
+                    break
+                self.t.emit(SIGNAL('updateProgress(int)'), i + 1)
+                if f:
+                    tags.append(f)
+            return tags, append, dirnames
+        self.t = PuddleThread(tempfunc)
+        self.t.connect(self.t, SIGNAL('finished()'), self._loadFiles)
+        win = ProgressWin(self, len(files), 'Loading ')
+        self.connect(self.t, SIGNAL('updateProgress(int)'), win.setValue)
+        win.show()
+        self.t.start()
+
+    def _loadFiles(self):
+        QApplication.processEvents()
+        #self._win.close()
+        ret = self.t.retval
+        self.cenwid.table.fillTable(*ret)
 
     def loadLib(self, libclass):
         """Loads a music library. Creates tree and everything."""
@@ -728,8 +790,8 @@ class MainWin(QMainWindow):
 
     def loadPlayList(self):
         filedlg = QFileDialog()
-        filename = unicode(filedlg.getOpenFileName(None,
-            'OpenFolder'))
+        filename = unicode(filedlg.getOpenFileName(self,
+            'Select m3u file', self.lastfolder))
         try:
             files = m3u.readm3u(filename)
         except (OSError, IOError), e:
@@ -745,16 +807,14 @@ class MainWin(QMainWindow):
 
         selectionChanged = SIGNAL("itemSelectionChanged()")
 
-        self.disconnect(self.tree, selectionChanged, self.openTree)
         self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
         if self.pathinbar:
             self.setWindowTitle("puddletag " + filename)
         else:
             self.setWindowTitle("puddletag")
-        self.cenwid.fillTable(files, False)
+        self.loadFiles(files, dirnames=[os.path.dirname(filename)])
 
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
-        self.connect(self.tree, selectionChanged, self.openTree)
         self.cenwid.table.setFocus()
         self.fillCombos()
         self.newFolderLoaded()
@@ -816,7 +876,7 @@ class MainWin(QMainWindow):
             except (IOError, OSError), detail:
                 yield (audio[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
-    def openFolder(self, filename = None, appenddir = False):
+    def openFolder(self, filename = None, append = False):
         """Opens a folder. If filename != None, then
         the table is filled with the folder.
 
@@ -826,45 +886,30 @@ class MainWin(QMainWindow):
         Otherwise, the folder is just loaded."""
         selectionChanged = SIGNAL("itemSelectionChanged()")
 
-        self.disconnect(self.tree, selectionChanged, self.openTree)
         self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
         if filename is None:
             filedlg = QFileDialog()
             filedlg.setFileMode(filedlg.DirectoryOnly)
             filename = unicode(filedlg.getExistingDirectory(self,
-                'OpenFolder', self.lastfolder ,QFileDialog.ShowDirsOnly))
+                'Select folder', self.lastfolder ,QFileDialog.ShowDirsOnly))
+        self.setWindowTitle("puddletag")
 
         if not isinstance(filename, basestring):
-            filename = unicode(filename[0], 'utf8')
-        if not filename:
-            return
-        if isinstance(filename, basestring):
-            if path.isdir(filename):
-                #I'm doing this just to be safe.
-                try:
-                    filename = path.realpath(filename)
-                except UnicodeDecodeError:
-                    filename = path.realpath(filename.encode('utf8')).decode('utf8')
-                self.lastfolder = filename
-                if not appenddir:
-                    self.tree.setFileIndex(filename)
-                    self.tree.resizeColumnToContents(0)
-                if self.pathinbar:
-                    self.setWindowTitle("puddletag " + filename)
-                else:
-                    self.setWindowTitle("puddletag")
+            filename = os.path.realpath(filename[0])
+        if path.isdir(filename):
+            self.tree._load = False
+            self.tree.setFileIndex(filename, append)
+            self.tree._load = True
+            if self.pathinbar:
+                self.setWindowTitle("puddletag " + filename)
             if not self.isVisible():
                 #If puddletag is started via the command line with a
                 #large folder then the progress window is shown by itself without this window.
                 self.show()
             QApplication.processEvents()
-            self.cenwid.fillTable(filename, appenddir)
-        else:
-            self.cenwid.fillTable(filename, appenddir)
-            self.setWindowTitle("Puddletag")
+            self.loadFiles(filename, append)
 
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
-        self.connect(self.tree, selectionChanged, self.openTree)
         self.cenwid.table.setFocus()
         self.fillCombos()
         self.newFolderLoaded()
@@ -931,12 +976,10 @@ class MainWin(QMainWindow):
 
     def reloadFiles(self):
         """Guess..."""
-        selectionChanged = SIGNAL("itemSelectionChanged()")
-        self.disconnect(self.tree, selectionChanged, self.openTree)
+        selectionChanged = SIGNAL("itemSelectionChanged()")                                                           
         self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.cenwid.table.reloadFiles()
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
-        self.connect(self.tree, selectionChanged, self.openTree)
 
     def renameFolder(self):
         """Changes the directory of the currently selected files, to
@@ -959,7 +1002,6 @@ class MainWin(QMainWindow):
                 newdirs.append(z)
 
         self.disconnect(table, selectionChanged, self.patternChanged)
-        self.disconnect(self.tree, selectionChanged, self.openTree)
 
         #Create the msgbox, I like that there'd be a difference between
         #the new and the old filename, so I bolded the new and italicised the old.
@@ -994,6 +1036,8 @@ class MainWin(QMainWindow):
         dirs = sorted(dirs, comp, itemgetter(0))
 
         table.saveSelection()
+        temp = bool(self.tree._load)
+        self.tree._load = False
         #Finally, renaming
         if result == 0:
             for olddir, newdir in dirs:
@@ -1002,7 +1046,7 @@ class MainWin(QMainWindow):
                     os.rename(olddir, newdir)
                     self.cenwid.table.model().changeFolder(olddir, newdir)
                     self.dirmodel.refresh(self.dirmodel.parent(idx))
-                    self.tree.setFileIndex(newdir)
+                    self.tree.setFileIndex(newdir, True)
                     if hasattr(self, "lastfolder"):
                         if olddir == self.lastfolder:
                             self.lastfolder = newdir
@@ -1021,7 +1065,7 @@ class MainWin(QMainWindow):
                                 break
                     else:
                         self.warningMessage(u"I couldn't rename:<br /> <b>%s</b> to <i>%s</i> (%s)" % (olddir, newdir, unicode(detail.strerror)))
-        self.connect(self.tree, selectionChanged, self.openTree)
+        self.tree._load = True
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.fillCombos()
         table.restoreSelection()
@@ -1094,17 +1138,17 @@ class MainWin(QMainWindow):
     def savePlayList(self):
         tags = self.cenwid.table.model().taginfo
         cparser = puddlesettings.PuddleConfig()
-        filepattern = cparser.load('playlist', 'filepattern','puddletag.m3u')
+        filepattern = cparser.get('playlist', 'filepattern','puddletag.m3u')
         default = findfunc.tagtofilename(filepattern, tags[0])
         f = unicode(QFileDialog.getSaveFileName(self,
                 'Save Playlist', os.path.join(self.lastfolder, default)))
         if f:
-            if cparser.load('playlist', 'extinfo', 1, True):
-                pattern = cparser.load('playlist', 'extpattern','%artist% - %title%')
+            if cparser.get('playlist', 'extinfo', 1, True):
+                pattern = cparser.get('playlist', 'extpattern','%artist% - %title%')
             else:
                 pattern = None
 
-            reldir = cparser.load('playlist', 'reldir',0, True)
+            reldir = cparser.get('playlist', 'reldir',0, True)
 
             m3u.exportm3u(tags, f, pattern, reldir)
         

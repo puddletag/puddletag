@@ -232,9 +232,8 @@ class Tag(util.MockTag):
             oldvalue = self._tags[key][1]
             if isinstance(oldvalue, TimeStampTextFrame):
                 value = [mutagen.id3.ID3TimeStamp(z) for z in value if unicode(mutagen.id3.ID3TimeStamp(z))]
-                if value:
-                    oldvalue.text = value
-                    oldvalue.encoding = 3
+                oldvalue.text = value
+                oldvalue.encoding = 3
             elif isinstance(self._tags[key][1], TextFrame):
                 oldvalue.text = value
                 oldvalue.encoding = 3

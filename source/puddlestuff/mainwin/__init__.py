@@ -1,6 +1,6 @@
 from PyQt4.QtGui import QAction, QIcon
 from controls import *
-from puddlestuff.puddleobjects import partial
+from puddlestuff.puddleobjects import partial, PuddleDock
 
 def createActions(parent):
         #Things to remember when editing this function:
@@ -68,6 +68,9 @@ def createActions(parent):
         parent.pasteaction = QAction(QIcon(':/paste.png'), '&Paste Onto Selected', parent)
         parent.pasteaction.setShortcut('Ctrl+V')
 
+        parent.libdupes = QAction('Duplicate Finder', parent)
+        
+
 def connectActions(parent):
     def connect(action, slot):
             parent.connect(action, SIGNAL('triggered()'), slot)
@@ -90,6 +93,8 @@ def connectActions(parent):
     connect(parent.savecombotags, parent.saveCombos)
     connect(parent.tagfromfile, parent.getTagFromFile)
     connect(parent.tagtofile, parent.saveTagToFile)
+    connect(parent.libdupes, parent.libDupes)
+    
     parent.connect(parent.duplicates, SIGNAL('toggled(bool)'), parent.showDupes)
     parent.connect(parent.fileinlib, SIGNAL('toggled(bool)'), parent.inLib)
     parent.connect(parent.filtertext, SIGNAL("textChanged(QString)"), parent.filterTable)
@@ -105,10 +110,13 @@ def connectActions(parent):
     connect(parent.copyaction, parent.clipcopy)
 
     parent.connect(parent.patterncombo, SIGNAL("editTextChanged(QString)"), parent.patternChanged)
-    parent.connect(parent.tree, SIGNAL('itemSelectionChanged()'), parent.openTree)
+    parent.connect(parent.tree, SIGNAL('loadFiles'), parent.loadFiles)
+    parent.connect(parent.tree, SIGNAL('changeFolder'), table.model().changeFolder)
     parent.connect(table, SIGNAL('itemSelectionChanged()'), parent.rowEmpty)
     parent.connect(table, SIGNAL('removedRow()'), parent.rowEmpty)
-    parent.connect(parent.tree, SIGNAL('addFolder'), parent.openFolder)
+    #parent.connect(parent.tree, SIGNAL('addFolder'), parent.openFolder)
+    parent.connect(parent.tree, SIGNAL('removeFolders'), parent.cenwid.table.removeFolders)
+    parent.connect(table, SIGNAL('loadFiles'), parent.loadFiles)
     parent.connect(table, SIGNAL('itemSelectionChanged()'),
                                         parent.fillCombos)
     parent.connect(table, SIGNAL('setDataError'), parent.statusBar().showMessage)
@@ -124,33 +132,37 @@ def connectActions(parent):
 
 def createMenus(parent):
     table = parent.cenwid.table
-    separator = QAction(parent)
-    separator.setSeparator(True)
-    table.actions.extend([separator, parent.copyaction, parent.cutaction, parent.pasteaction])
+    def separator():
+        #Using just one separator object results in only one separator per menu.
+        #Why the fuck that is I don't know.
+        sep = QAction(parent)
+        sep.setSeparator(True)
+        return sep
+    table.actions.extend([separator(), parent.copyaction, parent.cutaction, parent.pasteaction])
 
     menubar = parent.menuBar()
     filemenu = menubar.addMenu('&File')
-    [filemenu.addAction(z) for z in [parent.savecombotags, table.play,
-    parent.saveplaylist, separator, parent.opendir, parent.addfolder,
-    parent.loadplaylist, separator, parent.reloaddir, parent.cleartable ]]
+    [filemenu.addAction(z) for z in [parent.opendir, parent.addfolder, separator(),
+    parent.loadplaylist, parent.saveplaylist, separator(), parent.savecombotags,
+    table.play, separator(), parent.reloaddir, parent.cleartable ]]
 
     edit = menubar.addMenu("&Edit")
     table = parent.cenwid.table
-    [edit.addAction(z) for z in [parent.undo, separator, parent.cutaction,
-        parent.copyaction, parent.pasteaction, separator, table.delete, separator,
-        parent.selectall, parent.invertselection, parent.selectcolumn, separator,
+    [edit.addAction(z) for z in [parent.undo, separator(), parent.cutaction,
+        parent.copyaction, parent.pasteaction, separator(), table.delete, separator(),
+        parent.selectall, parent.invertselection, parent.selectcolumn, separator(),
                                                 parent.preferences]]
 
     convert = menubar.addMenu("&Convert")
     [convert.addAction(z) for z in [parent.tagfromfile, parent.tagtofile,
-                parent.formattag, separator, parent.renamedir, parent.importfile]]
+                parent.formattag, separator(), parent.renamedir, parent.importfile]]
 
     actionmenu = menubar.addMenu("&Actions")
     [actionmenu.addAction(z) for z in [parent.openactions, parent.quickactions, parent.puddlefunctions]]
 
     toolmenu = menubar.addMenu("&Tools")
     [toolmenu.addAction(z) for z in [parent.autotagging, table.exttags,
-            parent.changetracks, parent.importlib, separator, parent.fileinlib, parent.duplicates]]
+            parent.changetracks, parent.importlib, separator(), parent.fileinlib, parent.duplicates, parent.libdupes]]
 
     winmenu = menubar.addMenu('&Windows')
     [winmenu.addAction(z) for z in (parent.showfilter, parent.showcombodock,
@@ -167,8 +179,8 @@ def createMenus(parent):
         parent.duplicates, parent.fileinlib, parent.addfolder, parent.reloaddir, parent.saveplaylist]
 
     [parent.toolbar.addAction(z) for z in (parent.opendir, parent.addfolder,
-                    parent.reloaddir, separator, parent.savecombotags, parent.undo,
-                    separator)]
+                    parent.reloaddir, separator(), parent.savecombotags, parent.undo,
+                    separator())]
     #[parent.toolbar.addAction(z) for z in (parent.cutaction, parent.pasteaction, parent.copyaction)]
     #parent.toolbar.addSeparator()
     parent.toolbar.addWidget(parent.patterncombo)
@@ -183,10 +195,11 @@ def createControls(parent):
     parent.dirmodel = QDirModel()
     parent.dirmodel.setSorting(QDir.IgnoreCase)
     parent.dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
-    parent.dirmodel.setReadOnly(True)
+    parent.dirmodel.setReadOnly(False)
     parent.dirmodel.setLazyChildCount(True)
 
-    parent.tree = DirView()
+    parent.tree = DirView(subfolders = False)
+    
     parent.tree.setModel(parent.dirmodel)
     [parent.tree.hideColumn(column) for column in range(1,4)]
     parent.tree.setDragEnabled(True)

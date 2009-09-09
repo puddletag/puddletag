@@ -34,6 +34,44 @@ numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 
+def tagtotag(pattern, text, expression):
+    """See filenametotag for an implementation example and explanation.
+
+    pattern is a string with position of each token in text
+    text is the text to me matched
+    expression is a pyparsing object (i.e. what a token look like)
+
+    >>>tagtotag('$1 - $2', 'Artist - Title', Literal('$').suppress() + Word(nums))
+    {'1': 'Artist', '2': 'Title'}
+    """
+    pattern = re_escape(pattern)
+    taglist = []
+    def what(s, loc, tok):
+        global numtimes
+        taglist.append(tok[0])
+        numtimes -= 1
+        if numtimes == 0:
+            return "(.*)"
+        return "(.*?)"
+    expression.setParseAction(what)
+    global numtimes
+    numtimes = len([z for z in expression.scanString(pattern)])
+    if not numtimes:
+        return
+    pattern = expression.transformString(pattern)
+    try:
+        tags = sre.search(pattern, text).groups()
+    except AttributeError:
+        #No matches were found
+        return
+    mydict={}
+    for i in range(len(tags)):
+        if mydict.has_key(taglist[i]):
+            mydict[taglist[i]] = ''.join([mydict[taglist[i]],tags[i]])
+        else:
+            mydict[taglist[i]]=tags[i]
+    return mydict
+
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename
         pattern is the rule with which to extract
@@ -64,43 +102,12 @@ def filenametotag(pattern, filename, checkext = False):
     if checkext:
         filename = os.path.splitext(filename)[0]
 
-    text = re_escape(pattern)
-    taglist = []
-
-    #what is run numtimes times. What I want to do is
-    #match all but the last tag as non-greedy.
-    #Otherwise filenames such as "01. artistname"
-    #won't be matched.
-    def what(s, loc, tok):
-        global numtimes
-        taglist.append(tok[0][1:-1])
-        numtimes -= 1
-        if numtimes == 0:
-            return "(.*)"
-        return "(.*?)"
-
-    #Replace the tags with a regular expression
-    tag = Combine(Literal("%") + OneOrMore(Word(alphas)) + Literal("%")).setParseAction(what)
-    global numtimes
-    numtimes = len([z for z in tag.scanString(text)])
-    text = tag.transformString(text)
-    try:
-        tags = sre.search(text, filename).groups()
-    except AttributeError:
-        #AttributeError means that the expression probabably wasn't found.
-        return
-
-    mydict={}
-    for i in range(len(tags)):
-        if mydict.has_key(taglist[i]):
-            mydict[taglist[i]] = ''.join([mydict[taglist[i]],tags[i]])
-        else:
-            mydict[taglist[i]]=tags[i]
-
-    if mydict.has_key("dummy"):
-        del(mydict["dummy"])
-
-    return mydict
+    e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
+    mydict = tagtotag(pattern, filename, e)
+    if mydict:
+        if mydict.has_key("dummy"):
+            del(mydict["dummy"])
+        return mydict
 
 class Function:
     """Basically, a wrapper for functions, but makes it easier to

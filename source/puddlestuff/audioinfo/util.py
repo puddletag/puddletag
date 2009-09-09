@@ -104,14 +104,21 @@ def stringtags(tag, leaveNone = False):
     newtag = {}
     for i in tag:
         v = tag[i]
-        if isinstance(i, int) or (not v) or (len(v) == 1 and not v[0]):
+        if isinstance(i, int):
             continue
+
+        if leaveNone and ((not v) or (len(v) == 1 and not v[0])):
+            newtag[i] = ''
+            continue
+        elif (not v) or (len(v) == 1 and not v[0]):
+            continue
+
         if isinstance(v, basestring):
             newtag[i] = v
-        elif isinstance(i, basestring) and leaveNone:
-            newtag[i] = v
-        else:
+        elif isinstance(i, basestring) and not isinstance(v, basestring):
             newtag[i] = v[0]
+        else:
+            newtag[i] = v
     return newtag
 
 def strlength(value):

@@ -1,6 +1,8 @@
 Paul McGuire for PyParsing and helping me out on the discussion board.
 Michael Urman and Joe Wreschnig for Mutagen (Another cool library).
 Phil Thomson and the Qt and PyQt people for PyQt4.
+Michael Foord and Nicola Larosa for ConfigObj.
+Michael Noll for the python-Levenshtein.
 
 And for the people whose code I stole:
 The guy on ActiveState who wrote the unique(gets all unique elements from a list) recipe.

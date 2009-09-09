@@ -51,6 +51,7 @@ This line is further split into three parts
 
 
 import findfunc, string, pdb, sys, audioinfo, decimal, os
+import pyparsing
 if sys.version_info[:2] >= (2, 5): import re
 else: import sre as re
 
@@ -363,7 +364,11 @@ w&ith, text"""
         return None
 
 def right(text,n):
-    return text[n:]
+    try:
+        n = decimal.Decimal(n)
+    except decimal.InvalidOperation:
+        return
+    return text[-int(n):]
 
 def strip(text):
     '''Trim whitespace, Trim $0'''
@@ -381,6 +386,22 @@ def sub(text,text1):
         return unicode((decimal.Decimal(unicode(text)) - decimal.Decimal(unicode(text1))).normalize())
     except decimal.InvalidOperation:
         return
+
+def texttotag(tags, text, text1, text2):
+    """Text to Tag, "Tag to Tag: $0 -> $1, $2"
+&Text, text
+&Pattern, text
+&Output, text"""
+    pattern = text1
+    tagpattern = pyparsing.Literal('%').suppress() + pyparsing.Word(pyparsing.nums)
+    print pattern, findfunc.tagtofilename(text, tags)
+    d = findfunc.tagtotag(pattern, findfunc.tagtofilename(text, tags), tagpattern)
+    if d:
+        output = text2
+        for key in d:
+            output = output.replace(u'%' + unicode(key), unicode(d[key]))
+        return findfunc.tagtofilename(output, tags)
+    return ''
 
 def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
     '''Case Conversion, "$0: $1"

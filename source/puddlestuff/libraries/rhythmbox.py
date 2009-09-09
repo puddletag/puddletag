@@ -98,13 +98,18 @@ RECONVERSION = {
     '__filename': setFilename,
     '__size': 'file-size'}
 
+SUPPORTEDTAGS = ['artist', 'genre', 'title', 'track', '__size', 'album']
+
 
 class RhythmDB(ContentHandler):
-    head = """<?xml version="1.0" standalone="yes"?>
-<rhythmdb version="1.3">"""
     indent = " " * 4
-
     def __init__ (self, filename):
+        #Information is stored as follows:
+        #self.albums is a dictionary with each key being an artist.
+        #self.albums[key] is also a dictionary with album names as keys
+        #and an integer specifying the index of the album in self.tracks
+        #self.tracks being a list of lists, each of which contains the
+        #track metadata for an album as dictionaries.
         self.tagval = ""
         self.name = ""
         self.stargetting = False
@@ -134,16 +139,22 @@ class RhythmDB(ContentHandler):
         self.filename = filename
 
     def startElement(self, name, attrs):
-        if name == 'entry':
-            if attrs.get('type') == 'song':
-                self.stargetting = True
-            else:
-                self.extratype = attrs.get('type')
-                self.extras = True
-                self.stargetting = True
-        if self.stargetting and name != 'entry':
-            self.current = name
-            self.values[name] = ""
+        def startelement(name, attrs):
+            if name == 'entry':
+                if attrs.get('type') == 'song':
+                    self.stargetting = True
+                else:
+                    self.extratype = attrs.get('type')
+                    self.extras = True
+                    self.stargetting = True
+            if self.stargetting and name != 'entry':
+                self.current = name
+                self.values[name] = ""
+        if name == 'rhythmdb':
+            version = attrs.get('version')
+            self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
+                        u'  <rhythmdb version="%s">' % unicode(version)
+            self.startElement = startelement
 
     def characters (self, ch):
         try:
@@ -181,6 +192,47 @@ class RhythmDB(ContentHandler):
                 self.extravalues.append(x)
                 self.extras = False
             self.values = {}
+
+    def tracksByTag(self, parent, parentvalue, child = None, childval = None):
+        if parent not in SUPPORTEDTAGS:
+            return
+        if parent == 'artist' and child == 'album':
+            return self.getTracks(parentvalue, childval)
+
+        if (childval is None) or (child is None):
+            files = []
+            for album in self.tracks:
+                for f in album:
+                    if f[parent] == parentvalue:
+                        files.append(f)
+        elif childval and child:
+            files = []
+            for album in self.tracks:
+                for f in album:
+                    if f[parent] == parentvalue and f[child] == childval:
+                        files.append(f)
+
+        return [musiclib.Tag(self, z) for z in files]
+
+    def children(self, parent, parentvalue, child):
+        if parent == 'artist' and child == 'album':
+            return self.getAlbums(parentvalue)
+        else:
+            values = set()
+            for album in self.tracks:
+                [values.add(z[child]) for z in album if z[parent] == parentvalue]
+            return list(values)
+
+    def distinctValues(self, tag):
+        if tag not in SUPPORTEDTAGS:
+            return
+        if tag == 'artist':
+            return self.albums.keys()
+        else:
+            values = set()
+            for album in self.tracks:
+                [values.add(z[tag]) for z in album]
+            return list(values)
 
     def getArtists(self):
         return self.albums.keys()

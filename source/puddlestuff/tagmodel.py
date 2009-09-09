@@ -123,6 +123,12 @@ class TagModel(QAbstractTableModel):
 
         if append:
             top = self.index(self.rowCount(), 0)
+            column = self.sortOrder[0]
+            tag = self.headerdata[column][1]
+            if self.sortOrder[1] == Qt.AscendingOrder:
+                taginfo = sorted(taginfo, natcasecmp, itemgetter(tag))
+            else:
+                taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag), True)
             self.taginfo.extend(taginfo)
             rowcount = self.rowCount()
             self.beginInsertRows(QModelIndex(), rowcount, rowcount + len(taginfo) - 1)
@@ -345,7 +351,6 @@ class TagModel(QAbstractTableModel):
                 else:
                     rows.append(z)
             self.rowColors(rows)
-            
         if delfiles:
             audio = self.taginfo[position]
             os.remove(audio[FILENAME])
@@ -532,6 +537,16 @@ class TagModel(QAbstractTableModel):
         if colorrows:
             self.rowColors([self.taginfo.index(z) for z in colorrows])
 
+    def removeFolders(self, folders):
+        f = [i for i, tag in enumerate(self.taginfo) if tag['__folder'] not in folders]
+        while f:
+            try:
+                self.removeRows(f[0], delfiles = False)
+                del(f[0])
+                f = [z - 1 for z in f]
+            except IndexError:
+                break
+
 class TagDelegate(QItemDelegate):
     def __init__(self,parent=None):
         QItemDelegate.__init__(self,parent)
@@ -577,6 +592,7 @@ class TagTable(QTableView):
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self.setAlternatingRowColors(True)
+        self.dropaction = Qt.MoveAction
         self.showmsg = True
         self._currentcol = {}
         self._currentrow = {}
@@ -615,6 +631,7 @@ class TagTable(QTableView):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
+        print self.actions
         [menu.addAction(z) for z in self.actions]
         menu.exec_(event.globalPos())
 
@@ -625,19 +642,22 @@ class TagTable(QTableView):
 
     isempty = property(_isEmpty)
 
-    def deleteSelected(self):
+    def deleteSelected(self, delfiles=True):
         #filenames = [self.rowTags(z)[FILENAME] for z in self.selectedRows]
         #msg = '<br />'.join(filenames)
-        result = QMessageBox.question (self, "puddletag",
-                    "Are you sure you want to delete the selected files?",
-                    "&Yes", "&No","", 1, 1)
+        if delfiles:
+            result = QMessageBox.question (self, "puddletag",
+                        "Are you sure you want to delete the selected files?",
+                        "&Yes", "&No","", 1, 1)
+        else:
+            result = 0
         if result == 0:
             showmessage = True
             selectedRows = sorted(self.selectedRows)
             temprows = copy(selectedRows)
             for i,row in enumerate(selectedRows):
                 try:
-                    self.model().removeRows(temprows[i], msgparent = self)
+                    self.model().removeRows(temprows[i], msgparent = self, delfiles=delfiles)
                     temprows = [z - 1 for z in temprows]
                 except (OSError, IOError), detail:
                     filename = self.rowTags(row)[FILENAME]
@@ -660,17 +680,13 @@ class TagTable(QTableView):
     def dragEnterEvent(self, event):
         self.setAcceptDrops(True)
         event.accept()
+        event.acceptProposedAction()
 
     def dropEvent(self, event):
         files = [unicode(z.path()) for z in event.mimeData().urls()]
-        for index, audio in enumerate(files):
-            if path.isdir(audio):
-                files.extend([path.join(audio,z) for z in os.listdir(audio)])
-                files[index] = ""
-
         while '' in files:
             files.remove('')
-        self.fillTable(files, True)
+        self.emit(SIGNAL('loadFiles'), files, True)
 
     def dragMoveEvent(self, event):
         if event.source() == self:
@@ -687,7 +703,7 @@ class TagTable(QTableView):
         plainText = ""
         tags= []
         if hasattr(self, "selectedRows"):
-            selectedRows = self.selectedRows
+            selectedRows = self.selectedRows[::]
         else:
             return
         pnt = QPoint(*self.StartPosition)
@@ -704,9 +720,12 @@ class TagTable(QTableView):
         mimeData.setText(plainText)
 
         drag = QDrag(self)
+        drag.setDragCursor(QPixmap(), self.dropaction)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        drag.start(Qt.MoveAction)
+        dropaction = drag.exec_(self.dropaction)
+        if dropaction == Qt.MoveAction:
+            self.deleteSelected(False)
 
     def mousePressEvent(self, event):
         QTableView.mousePressEvent(self, event)
@@ -723,7 +742,7 @@ class TagTable(QTableView):
         win.show()
         self.connect(win, SIGNAL("tagChanged()"), self.selectionChanged)
 
-    def fillTable(self, files, appendtags = False):
+    def fillTable(self, tags, append=False, dirnames=None):
         """Fills the table with tags of the files specified in files.
         Files can be either a path(i.e a string) to a folder or a list of files.
 
@@ -738,51 +757,16 @@ class TagTable(QTableView):
         one item which happens to be a directory, then nothing will
         happen. Please convert it to a string first.
         """
-
-        if isinstance(files, basestring):
-            self.dirname = files
-        else:
-            self.dirname = None
+        self.dirnames = dirnames
         self.selectedRows = []
         self.selectedColumns = []
-        files = getfiles(files, self.subFolders)
-        if appendtags:
+        if append:
             self.saveSelection()
+        self.model().load(tags, append = append)
 
-        win = ProgressWin(self.parentWidget(), len(files), 'Reading ')
-        win.show()
-
-        def tempfunc():
-            tags = []
-            for i, audio in enumerate(files):
-                if win.wasCanceled: break
-                try:
-                    tag = audioinfo.Tag(audio)
-                    if tag:
-                        tags.append(tag)
-                except IOError, OSError:
-                    pass
-                except Exception, e:
-                    print unicode(e)
-                self.emit(SIGNAL('updateProgress(int)'), i)
-            return tags
-
-        self.t = PuddleThread(tempfunc)
-        self.connect(self, SIGNAL('updateProgress(int)'), win.setValue)
-        self._appfill = partial(self._fillTable, [win, appendtags])
-        self.connect(self.t, SIGNAL('finished()'), self._appfill)
-        self.t.start()
-
-    def _fillTable(self, temp):
-        win = temp[0]
-        appendtags = temp[1]
-        if appendtags:
+        if append:
             self.restoreSelection()
-        win.close()
-        tags = self.t.retval
-        self.model().load(tags, append = appendtags)
-
-        if not appendtags:
+        else:
             self.selectCorner()
 
     def invertSelection(self):
@@ -973,6 +957,9 @@ class TagTable(QTableView):
         for col, rows in groups.items():
             [select(min(row), max(row), col) for row in rows]
         self.selectionModel().select(selection, QItemSelectionModel.Select)
+
+    def removeFolders(self, folders):
+        self.model().removeFolders(folders)
 
     def setHorizontalHeader(self, header):
         QTableView.setHorizontalHeader(self, header)

@@ -32,9 +32,11 @@ import sys, os
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
+import audioinfo
 from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
+from configobj import ConfigObj
 
 try:
     from Levenshtein import ratio
@@ -194,18 +196,33 @@ def getfiles(files, subfolders = False):
             files = [path.join(folder, f) for f in files]
         return files
 
+    if len(files) == 1 and os.path.isdir(files[0]):
+        files = files[0]
     if isinstance(files, basestring):
         if path.isdir(files):
             files = recursedir(files, subfolders)
+            dirname = files
         else:
             files = [files]
     else:
         dirnames = [z for z in files if os.path.isdir(z)]
+        dirname = dirnames
         while dirnames and subfolders:
             [files.extend(recursedir(d, True)) for d in dirnames]
             dirnames = [z for z in files if os.path.isdir(z)]
+    return (files, dirname)
 
-    return files
+def gettags(files):
+    for audio in files:
+        try:
+            tag = audioinfo.Tag(audio)
+            yield tag
+        except IOError, OSError:
+            pass
+            yield None
+        except Exception, e:
+            print unicode(e)
+            yield None
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""
@@ -416,7 +433,7 @@ class ListBox(QListWidget):
         rows = sorted(rows)
         if not yourlist:
             yourlist = self.yourlist
-
+        currentrow = self.currentRow() - 1
         if 0 in rows:
             return
 
@@ -430,6 +447,7 @@ class ListBox(QListWidget):
                 yourlist[row - 1] = yourlist[row]
                 yourlist[row] = temp
         [self.setItemSelected(self.item(row - 1), True) for row in rows]
+        self.setCurrentRow(currentrow)
 
     def moveDown(self, yourlist = None, rows = None):
         """See moveup. It's exactly the opposite."""
@@ -493,6 +511,7 @@ class ListButtons(QVBoxLayout):
 
         self.widgets = [self.add, self.edit, self.remove, self.moveup, self.movedown]
         [self.addWidget(widget) for widget in self.widgets]
+        self.insertStretch(3)
         [z.setIconSize(QSize(16,16)) for z in self.widgets]
         self.addStretch()
 
@@ -502,6 +521,10 @@ class ListButtons(QVBoxLayout):
         self.connect(self.moveup, clicked, self.moveupClicked)
         self.connect(self.movedown, clicked, self.movedownClicked)
         self.connect(self.edit, clicked, self.editClicked)
+
+    def connectToWidget(self, widget):
+        connect = lambda a: self.connect(self, SIGNAL(a), getattr(widget, a))
+        [connect(z) for z in ['add', 'remove', 'edit']]
 
     def addClicked(self):
         self.emit(SIGNAL("add"))
@@ -1048,6 +1071,7 @@ class ProgressWin(QDialog):
     def cancel(self):
         self.wasCanceled = True
         self.emit(SIGNAL('canceled()'))
+        self.close()
 
     def _value(self):
         return self.pbar.value()
@@ -1113,49 +1137,54 @@ class PuddleConfig(object):
     load -> load a key from a specified section
     setSection -> save a key section"""
     def __init__(self, filename = None):
-        self.settings = QSettings()
+        self.settings = ConfigObj(filename, create_empty=True, encoding='utf8')
+        
         if not filename:
             filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
         self._setFilename(filename)
 
-    def load(self, section, key, default, getint = False):
-        settings = self.settings
-        if isinstance(default, (list, tuple)):
-            num = settings.beginReadArray(section)
-            if num <= 0:
-                return default
-            retval = []
-            for index in range(num):
-                settings.setArrayIndex(index)
-                if getint:
-                    retval.append(settings.value(key).toLongLong()[0])
-                else:
-                    retval.append(unicode(settings.value(key).toString()))
-            settings.endArray()
-        else:
-            if getint:
-                retval = settings.value("/".join([section, key]), QVariant(default)).toLongLong()[0]
-            else:
-                retval = unicode(settings.value("/".join([section, key]), QVariant(default)).toString())
-        return retval
+        #TODO: backward compatibility, remove all.
+        self.setSection = self.set
+        self.load = self.get
 
-    def setSection(self, section = None, key = None, value = None):
+    def get(self, section, key, default, getint = False):
         settings = self.settings
-        if isinstance(value, (list, tuple)):
-            settings.beginWriteArray(section)
-            for i,val in enumerate(value):
-                settings.setArrayIndex(i)
-                settings.setValue(key,QVariant(val))
-            settings.endArray()
+        try:
+            if isinstance(default, bool):
+                if self.settings[section][key] == 'True':
+                    return True
+                return False
+            elif getint or isinstance(default, (long,int)):
+                try:
+                    return int(self.settings[section][key])
+                except TypeError:
+                    return [int(z) for z in self.settings[section][key]]
+            else:
+                return self.settings[section][key]
+        except KeyError:
+            return default
+
+    def set(self, section = None, key = None, value = None):
+        settings = self.settings
+        if section in self.settings:
+            settings[section][key] = value
         else:
-            sections = section + "/" + key
-            settings.setValue(sections, QVariant(value))
+            settings[section] = {}
+            settings[section][key] = value
+        settings.write()
 
     def _setFilename(self, filename):
-        self.settings = QSettings(filename, QSettings.IniFormat)
+        dirname = os.path.dirname(filename)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        self.settings.filename = filename
+        self.settings.reload()
 
     def _getFilename(self):
-        return unicode(self.settings.fileName())
+        return self.settings.filename
+
+    def sections(self):
+        return self.settings.keys()
 
     filename = property(_getFilename, _setFilename)
 

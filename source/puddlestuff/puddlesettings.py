@@ -270,6 +270,10 @@ class GeneralSettings(QFrame):
         self.gridlines.setCheckState(convertstate('gridlines', 1))
         self.vertheader = QCheckBox("Show &row numbers")
         self.vertheader.setCheckState(convertstate('vertheader',0))
+        self.dragcombo = QComboBox()
+        self.dragcombo.addItems(['Ask me each time', 'Move', 'Copy'])
+        draglabel = QLabel('When files are droppen on Filesystem:')
+        self.dragcombo.setCurrentIndex(cparser.load('general', 'dropaction', 0, True))
 
         playtext = cparser.load('table', 'playcommand', ['xmms'])
         label = QLabel("Enter the &command to play files with.")
@@ -278,7 +282,8 @@ class GeneralSettings(QFrame):
         self.playcommand.setText(" ".join(playtext))
 
         [vbox.addWidget(z) for z in [self.subfolders, self.pathinbar,
-            self.gridlines, self.vertheader, label, self.playcommand]]
+            self.gridlines, self.vertheader, label, self.playcommand,
+            draglabel, self.dragcombo]]
         vbox.addStretch()
 
         if cenwid is not None:
@@ -304,9 +309,16 @@ class GeneralSettings(QFrame):
             else:
                 return 0
 
-        cenwid.cenwid.table.subFolders = convertState(self.subfolders)
+        cenwid.subfolders = convertState(self.subfolders)
         cenwid.pathinbar = convertState(self.pathinbar)
         cenwid.cenwid.gridvisible = convertState(self.gridlines)
+        curindex = self.dragcombo.currentIndex()
+        if curindex == 0:
+            cenwid.tree.defaultDropAction = None
+        elif curindex == 1:
+            cenwid.tree.defaultDropAction = Qt.MoveAction
+        elif curindex == 2:
+            cenwid.tree.defaultDropAction = Qt.CopyAction
 
         #if convertstate(self.enableplay):
             #cenwid.cenwid.table.playcommand = True
@@ -327,7 +339,8 @@ class GeneralSettings(QFrame):
         controls = {'subfolders': convertState(self.subfolders.checkState()),
                     'gridlines': convertState(self.gridlines.checkState()),
                     'pathinbar': convertState(self.pathinbar.checkState()),
-                    'vertheader': convertState(self.vertheader.checkState())}
+                    'vertheader': convertState(self.vertheader.checkState()),
+                    'dropaction': self.dragcombo.currentIndex()}
         for z in controls:
             cparser.setSection('general', z, controls[z])
         cparser.setSection('table', 'playcommand',[unicode(z) for z in self.playcommand.text().split(" ")])

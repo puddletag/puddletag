@@ -43,22 +43,58 @@ name = "Prokyon"
 description = "Prokyon Database"
 author = 'concentricpuddle'
 
+PROKYONTAGS = {'__path': 'filename',
+        '__folder': 'path',
+        '__bitrate': 'bitrate',
+        '__frequency': 'samplerate',
+        '__length': 'length',
+        'title': 'title',
+        'track': 'title',
+        'year': 'title',
+        'genre': 'genre',
+        'comment': 'comment',
+        '__size' : 'size',
+        '__modified': 'modified',
+        'artist': 'artist',
+        'album': 'album',
+        "layer": 'layer',
+        '___mimetype': 'mimetype',
+        '___version': 'version',
+        '___mode': 'mode',
+        '___lyricsid': 'lyrics_id',
+        '___synclyricsid': 'synced_lyrics_id',
+        '___notes': 'notes',
+        '___rating': 'rating',
+        '___medium': 'medium'}
+
+def prokyontag(tag):
+    ret = PROKYONTAGS[tag]
+    if isinstance(ret, basestring):
+        return ret
+    else:
+        return ret(tag)
+
+SUPPORTEDTAGS = ['artist', 'album', 'title', 'year', 'track']
+
 class Prokyon(MySQLLib):
     def getArtists(self):
-        self.cursor.execute(u"SELECT DISTINCT BINARY artist FROM tracks ORDER BY artist")
-        return [unicode(artist[0], 'utf8') for artist in self.cursor.fetchall()]
+        return self.distinctValues('artist')
 
     def getAlbums(self, artist):
-        self.cursor.execute(u"""SELECT DISTINCT BINARY album FROM tracks WHERE artist = BINARY %s""", (artist.encode('utf8')))
-        return [self.latinutf(album[0]) for album in self.cursor.fetchall()]
+        return self.children('artist', artist, 'album')
 
     def convertTrack(self, track, artist = None, album = None):
         join = os.path.join
         if artist is None:
-            artist = track[20]
+            #print len(track), track
+            try:
+                artist = track[21]
+            except:
+                print track.tags
+                raise
 
         if album is None:
-            album = track[21]
+            album = track[22]
         try:
             genre = GENRES[track[8]]
         except (IndexError, TypeError):
@@ -92,6 +128,50 @@ class Prokyon(MySQLLib):
             '___medium': track[20]}
 
         return self.applyToDict(self.applyToDict(temp, self.valuetostring), self.latinutf)
+
+    def distinctValues(self, tag):
+        if tag not in SUPPORTEDTAGS:
+            return
+        s = 'SELECT DISTINCT BINARY ' + PROKYONTAGS[tag] + ' FROM tracks ' + \
+            'ORDER BY ' + PROKYONTAGS[tag]
+        self.cursor.execute(s)
+        return [unicode(artist[0], 'utf8') for artist in self.cursor.fetchall()]
+
+    def children(self, parent, parentvalue, child):
+        self.cursor.execute("SELECT DISTINCT BINARY " + PROKYONTAGS[child] + \
+                " FROM tracks WHERE " + PROKYONTAGS[parent] + " = BINARY %s",
+                (parentvalue.encode('utf8')))
+        return [self.latinutf(album[0]) for album in self.cursor.fetchall()]
+
+    def tracksByTag(self, parent, parentvalue, child = None, childval = None):
+        if parent not in SUPPORTEDTAGS:
+            return
+        if child is None:
+            s = """SELECT path, filename, bitrate,
+                    samplerate, length, title, tracknumber, year, genre,
+                    comment, size, lastModified, layer, mimetype,
+                    version, mode, lyrics_id, synced_lyrics_id, notes,rating,
+                    medium, artist, album FROM tracks WHERE """ + \
+                    PROKYONTAGS[parent] + " = BINARY %s"
+            self.cursor.execute(s,  (parentvalue.encode('utf8'),))
+            tracks = self.cursor.fetchall()
+        else:
+            if childval is None:
+                children = self.children(parent, parentvalue, child)
+                tracks = [self.tracksByTag(parent, parentvalue, child, cval)
+                                    for cval in children]
+                return tracks
+            else:
+                s = """SELECT path, filename, bitrate,
+                    samplerate, length, title, tracknumber, year, genre,
+                    comment, size, lastModified, layer, mimetype,
+                    version, mode, lyrics_id, synced_lyrics_id, notes,rating,
+                    medium, artist, album FROM tracks WHERE """ + \
+                    PROKYONTAGS[parent] + " = BINARY %s AND " + \
+                    PROKYONTAGS[child] + " = BINARY %s"
+                self.cursor.execute(s, (parentvalue.encode('utf8'), childval.encode('utf8')))
+                tracks = self.cursor.fetchall()
+        return [musiclib.Tag(self, self.convertTrack(track)) for track in tracks]
 
     def getTracks(self, artist, albums = None):
         ret = []
@@ -170,6 +250,7 @@ class Prokyon(MySQLLib):
                 return 255
 
         for old, new in tracks:
+            pdb.set_trace()
             (old, new) = (stringtags(old, True), stringtags(new, True))
             mixed = old.copy()
             mixed.update(new)
@@ -189,7 +270,7 @@ class Prokyon(MySQLLib):
             newpath = dirname(mixed['__filename'])
             #Check if the new file exists in the table, delete the row if it does
             #since filenames have to be unique.
-            #try:
+
             if self.cursor.execute('SELECT id FROM tracks WHERE path = BINARY %s AND filename = BINARY %s', (newpath, newfilename)):
                 fileid = self.cursor.fetchall()[0][0]
                 self.cursor.execute('DELETE FROM tracks WHERE id = %s', (fileid,))
@@ -215,12 +296,6 @@ class Prokyon(MySQLLib):
                             mixed["artist"], mixed["title"], mixed['___lyricsid'], mixed['___synclyricsid'], mixed['album'], mixed['track'],
                             mixed['year'], genretoint(mixed['genre']), mixed["comment"],
                             mixed['___notes'], mixed['___rating']))
-
-            #except mysql.OperationalError, details:
-                #if details.args[0] == 1142: #User doesn't have permission
-                    #raise musiclib.MusicLibError(1, unicode(details.args[1]))
-                #else:
-                    #raise musiclib.MusicLibError(1, unicode(details.args[1]))
 
             #Update artists table
             artist = mixed['artist']

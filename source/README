@@ -7,21 +7,32 @@ Why puddletag?
 	Mp3tag was the only reason I kept an XP partition around.
 
 What makes it different?
-	Currently, nothing. Except that the layout differs considerably from Mp3tag. Unlike Mp3tag though, puddletag sucks. This will be addressed in future.
+	Besides being more buggy that Mp3tag (to be addressed), puddletag can import Rhythmbox and Prokyon music libraries, allowing for a better tag editing experience than the programs provide (including being able to search for duplicates). To see the rest you'll have to try out puddletag
 
-	If you're interested, puddletag was written in Python2.4 on Debian Etch. It uses PyQt4 for the GUI and PyParsing for the parsing stuff and Mutagen as the tagging library. All are available via apt on Debian and Kubuntu as python-qt4, python-pyparsing and python-mutagen respectively. I haven't tested on other distributions, but it should work (holler at your pets if it doesn't).
+What you need.
+	At least Python2.5. 
+	PyQt4 for the GUI 
+	PyParsing is used for parsing. 
+	Mutagen does the tagging. 
 
-	Most important of all, puddletag is released under GPLv2.
+	For music library support you'll need:
+		Python-MySQLdb for Prokyon3
+		python-Levenshtein for string comparison functions (these are written in C and are fast)
+
+	Also note python-musicbrainsz2 for MusicBrainz support is recommended.
+		
+License:
+	GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html
 
 How do I get it?
-	Follow the links at http://puddletag.sourceforge.net or alternatively, using svn
+	There's a download link it at http://puddletag.sourceforge.net or alternatively, using svn
 	svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
 
 And run it?
 	In the main puddletag directory, you'll find a file called puddletag.py. You can run it by typing python puddletag.py in your console.
 
 Releases?
-	Swing by the website (http://puddletag.sourceforge.net) every couple of weeks (next release due, 1 June 2009) for updates.
+	Swing by the website (http://puddletag.sourceforge.net) every couple of weeks (next release due, 5 October 2009) for updates.
 
 Questions?
     There's a puddletag reddit over on http://www.reddit.com/r/puddletag if you have any questions. Alternatively, send me a mail at concentricpuddle@gmail.com.

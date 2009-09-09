@@ -342,8 +342,6 @@ class ActionWindow(QDialog):
         self.grid = QGridLayout()
 
         self.buttonlist = ListButtons()
-        self.buttonlist.moveup.setVisible(False)
-        self.buttonlist.movedown.setVisible(False)
 
         self.grid.addWidget(self.listbox,0,0)
         self.grid.addLayout(self.buttonlist, 0,1)
@@ -379,6 +377,8 @@ class ActionWindow(QDialog):
                 funcs[i] = findfunc.getAction(f)
                 self.saveAction(funcs[i][1], funcs[i][0])
         else:
+            order = cparser.load('puddleactions', 'order', [])
+            files = [z for z in order if z in files] + [z for z in files if z not in order]
             for i, f in enumerate(files):
                 funcs[i] = findfunc.getAction(f)
         return funcs
@@ -454,6 +454,15 @@ class ActionWindow(QDialog):
     def editBuddy(self, funcs):
         self.saveAction(self.funcs[self.listbox.currentRow()][1], funcs)
         self.funcs[self.listbox.currentRow()][0] = funcs
+
+    def close(self):
+        order = [unicode(self.listbox.item(row).text()) for row in
+                                                xrange(self.listbox.count())]
+        cparser = PuddleConfig()
+        filedir = os.path.dirname(cparser.filename)
+        filenames = [os.path.join(filedir,self.removeSpaces(z) + u'.action') for z in order]
+        cparser.setSection('puddleactions', 'order', filenames)
+        QDialog.close(self)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

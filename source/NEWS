@@ -1,3 +1,12 @@
+9 September 2009
+   New Features:
+	A duplicated finder, which is super useful. It's not as well tested as I'd like so I'll make that a priority for the next release.
+	Rudimentary file-editing support had been added to the filesystem view.
+	Bugs were fixed where needed (I seriously need to remember to log this stuff)
+   
+    The website looks tons better.
+	
+
 4 June 2009 (0.7.0)
     New Features:
         Loading times are improved by a couple of miliseconds.
