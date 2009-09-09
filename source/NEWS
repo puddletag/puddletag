@@ -1,11 +1,13 @@
-9 September 2009
-   New Features:
-	A duplicated finder, which is super useful. It's not as well tested as I'd like so I'll make that a priority for the next release.
-	Rudimentary file-editing support had been added to the filesystem view.
-	Bugs were fixed where needed (I seriously need to remember to log this stuff)
+9 September 2009 (0.7.8)
+    New Features:
+        A duplicates finder, which is super useful. It's not as well tested as I'd like so I'll make that a priority for the next release.
+        Rudimentary file-editing support had been added to the filesystem view.
+        Bugs were fixed where needed (I seriously need to remember to log this stuff)
+        Note that I haven't added any progress bars for these features (due in a week) so just have patience when using them (and keep an eye on the command line for errors).
+    Changes:
+        I've changed the config system to use ConfigObj as PyQt4's too buggy and Python's built in library too sucky.
    
-    The website looks tons better.
-	
+    The website looks a lot better.
 
 4 June 2009 (0.7.0)
     New Features:
