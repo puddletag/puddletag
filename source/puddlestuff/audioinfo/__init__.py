@@ -26,10 +26,11 @@ import id3, flac, ogg, apev2, mp4
 options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, mp4.filetype)
 
 e = {'mp3': id3.filetype,
-            'flac': flac.filetype,
-            'ogg': ogg.filetype,
-            'mp4': mp4.filetype,
-            'm4a': mp4.filetype}
+    'flac': flac.filetype,
+    'ogg': ogg.filetype,
+    'mp4': mp4.filetype,
+    'm4a': mp4.filetype,
+    'ape': apev2.filetype}
 
 def Tag(filename):
     """Class that operates on audio tags.

@@ -1,3 +1,16 @@
+11 October 2009
+    New Features:
+        A Stored Tags dialog that shows the current tags of the selected file as stored on disk. Useful for when editing libraries and the tag differs from the tag on disk.
+        I added an option to allow retrieval of duplicates via a specific tag. This can speed things up for some searches.
+    Fixes:
+        There were a lot but the major ones are:
+        Duplicates can retrieve more than 300 at a time. (My fault for not checking.)
+        Musicbrainz now works for all cases (it gave an error when retrieving via 'album').
+        There ain't no more barfing of errors while editing text in the pattern combo.
+        Reloading works again (didn't even know it was broken).
+    Changes:	
+	    Instead of changing the background colour of a row, the Musicbrainz dialog now just bold the text that's to be written.
+
 9 September 2009 (0.7.8)
     New Features:
         A duplicates finder, which is super useful. It's not as well tested as I'd like so I'll make that a priority for the next release.

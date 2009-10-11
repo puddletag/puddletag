@@ -210,6 +210,12 @@ class Tag(util.MockTag):
             self._freeform[str(key)] = '----:net.sf.puddletag:' + str(key)
             self._tags[str(key)] = settext(value)
 
+    def delete(self):
+        self._mutfile.delete()
+        for z in self.usertags:
+            del(self._tags[z])
+        self.images = []
+
     def image(self, data, mime, **kwargs):
         if mime.lower().endswith(u'png'):
             format = MP4Cover.FORMAT_PNG
@@ -230,6 +236,23 @@ class Tag(util.MockTag):
         return temp
 
     images = property(_getImages, _setImages)
+
+    def _info(self):
+        info = self._mutfile.info
+        fileinfo = [('Filename', self[FILENAME]),
+                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
+                    ('Path', self[PATH]),
+                    ('Modified', self['__modified'])]
+
+        mp4info = [('Bitrate', self['__bitrate']),
+                   ('Frequency', self['__frequency']),
+                   ('Channels', unicode(info.channels)),
+                   ('Length', self['__length']),
+                   ('Bits per sample', unicode(info.bits_per_sample))]
+
+        return [('File', fileinfo), ('MP4 Info', mp4info)]
+
+    info = property(_info)
 
     def link(self, filename):
         """Links the audio, filename

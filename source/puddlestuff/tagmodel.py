@@ -27,8 +27,8 @@ from copy import copy, deepcopy
 from subprocess import Popen
 from os import path
 from audioinfo import PATH, FILENAME, usertags
-from puddleobjects import (unique, safe_name, partial, natcasecmp,
-                                getfiles, ProgressWin, PuddleThread)
+from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
+                                getfiles, ProgressWin, PuddleThread, progress)
 from musiclib import MusicLibError
 import time
 from errno import EEXIST
@@ -36,6 +36,55 @@ from errno import EEXIST
 SETDATAERROR = SIGNAL("setDataError")
 LIBRARY = '__library'
 ENABLEUNDO = SIGNAL('enableUndo')
+
+class Properties(QDialog):
+    def __init__(self, info, parent=None):
+        """Shows a window with the properties in info.
+
+        info should be a list of 2-entry tuples. These tuples should consists
+        of a string in the 0-th index to be used as the title of a group.
+        The first index (the properties) should also be a list length 2 tuples.
+        Both indexes containing strings. Where the 0-th is used as the description
+        and the other as the value.
+
+        .e.g
+        [('File', [('Filename', u'/Hip Hop Songs/Nas-These Are Our Heroes .mp3'),
+                  ('Size', u'6151 kB'),
+                  ('Path', u'Nas - These Are Our Heroes .mp3'),
+                  ('Modified', '2009-07-28 14:04:05'),
+                  ('ID3 Version', u'ID3v2.4')]),
+        ('Version', [('Version', u'MPEG 1 Layer 3'),
+                    ('Bitrate', u'192 kb/s'),
+                    ('Frequency', u'44.1 kHz'),
+                    ('Mode', 'Stereo'),
+                    ('Length', u'4:22')])]
+        """
+        QDialog.__init__(self,parent)
+        self._load(info)
+
+    def _load(self, info):
+        vbox = QVBoxLayout()
+        interaction = Qt.TextSelectableByMouse or Qt.TextSelectableByKeyboard
+        for title, items in info:
+            frame = QGroupBox(title)
+            framegrid = QGridLayout()
+            framegrid.setColumnStretch(1,1)
+            for row, value in enumerate(items):
+                property = QLabel(value[0] + u':')
+                property.setTextInteractionFlags(interaction)
+                framegrid.addWidget(property, row, 0)
+                propvalue = QLabel(u'<b>%s</b>' % value[1])
+                propvalue.setTextInteractionFlags(interaction)
+                framegrid.addWidget(propvalue, row, 1)
+            frame.setLayout(framegrid)
+            vbox.addWidget(frame)
+        close = QPushButton('Close')
+        self.connect(close, SIGNAL('clicked()'), self.close)
+        hbox = QHBoxLayout()
+        hbox.addStretch()
+        hbox.addWidget(close)
+        vbox.addLayout(hbox)
+        self.setLayout(vbox)
 
 
 class TagModel(QAbstractTableModel):
@@ -66,6 +115,8 @@ class TagModel(QAbstractTableModel):
         else:
             self.taginfo = []
             self.reset()
+        for z in self.taginfo:
+            z.testData = {}
         self.undolevel = 0
         self.testData = {}
 
@@ -82,82 +133,11 @@ class TagModel(QAbstractTableModel):
 
     undolevel = property(_getUndoLevel, _setUndoLevel)
 
-    def undo(self):
-        """Undos the last action.
-
-        Basically, if a tag has a key which is = self.undolevel - 1,
-        then the tag is updated with the dictionary in that key.
-
-        setRowData does not modify the undoleve unless you explicitely tell
-        it, but setData does modify the undolevel.
-
-        It is recommended that you use consecutive indexes for self.undolevel."""
-        if self.undolevel <= 0:
-            self.undolevel = 0
-            return
-        level = self.undolevel - 1
-        oldfiles =  []
-        newfiles = []
-        rows = []
-        for row, audio in enumerate(self.taginfo):
-            if level in audio:
-                if LIBRARY in audio:
-                    oldfiles.append(audio.tags.copy())
-                self.setRowData(row, audio[level])
-                rows.append(row)
-                del(audio[level])
-                if LIBRARY in audio:
-                    newfiles.append(audio.tags.copy())
-        if rows:
-            self.updateTable(rows)
-            if oldfiles:
-                self.emit(SIGNAL('libFileChanged'), oldfiles, newfiles)
-        if self.undolevel > 0:
-            self.undolevel -= 1
-
-    def load(self,taginfo,headerdata=None, append = False):
-        """Loads tags as in __init__.
-        If append is true, then the tags are just appended."""
-        if headerdata is not None:
-            self.headerdata = headerdata
-
-        if append:
-            top = self.index(self.rowCount(), 0)
-            column = self.sortOrder[0]
-            tag = self.headerdata[column][1]
-            if self.sortOrder[1] == Qt.AscendingOrder:
-                taginfo = sorted(taginfo, natcasecmp, itemgetter(tag))
-            else:
-                taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag), True)
-            self.taginfo.extend(taginfo)
-            rowcount = self.rowCount()
-            self.beginInsertRows(QModelIndex(), rowcount, rowcount + len(taginfo) - 1)
-            self.endInsertRows()
-            bottom = self.index(self.rowCount(), self.columnCount())
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                            top, bottom)
-        else:
-            top = self.index(0, 0)
-            self.taginfo = taginfo
-            self.reset()
-            self.sort(*self.sortOrder)
-            self.undolevel = 0
-
-    def reset(self):
-        #Sometimes, (actually all the time on my box, but it may be different on yours)
-        #if a number files loaded into the model is equal to number
-        #of files currently in the model then the TableView isn't updated.
-        #Why the fuck I don't know, but this signal, intercepted by the table,
-        #updates the view and make everything work okay.
-        self.emit(SIGNAL('modelReset'))
-        self.rowColors([])
-        QAbstractTableModel.reset(self)
-
     def changeFolder(self, olddir, newdir):
         """Used for changing the directory of all the files in olddir to newdir.
         i.e. All children of olddir will now become children of newdir
 
-        No *actual* moving is done though."""
+        No actual moving is done though."""
 
         folder = itemgetter('__folder')
         tags = [z for z in self.taginfo if folder(z).startswith(olddir)]
@@ -176,126 +156,59 @@ class TagModel(QAbstractTableModel):
     def columnCount(self, index=QModelIndex()):
         return len(self.headerdata)
 
-    def rowCount(self, index = QModelIndex()):
-        return len(self.taginfo)
-
     def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid() or not (0 <= index.row() < len(self.taginfo)):
+        row = index.row()
+        if not index.isValid() or not (0 <= row < len(self.taginfo)):
             return QVariant()
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole) or (role == Qt.EditRole):
             try:
-                val = self.taginfo[index.row()][self.headerdata[index.column()][1]]
-                if type(val) is unicode or type(val) is str:
+                audio = self.taginfo[row]
+                tag = self.headerdata[index.column()][1]
+                if tag in audio.testData:
+                    val = audio.testData[tag]
+                else:
+                    val = audio[tag]
+
+                if isinstance(val, basestring):
                     return QVariant(val)
                 else:
-                    return QVariant(val[0])
-            except (KeyError, IndexError), detail:
+                    try:
+                        return QVariant(val[0])
+                    except:
+                        import pdb
+                        pdb.set_trace()
+                        return QVariant(val[0])
+            except (KeyError, IndexError):
                 return QVariant()
         elif role == Qt.BackgroundColorRole:
-            if index.row() in self.colorRows:
-                return QVariant(QColor(Qt.green))
+            try:
+                return QVariant(QColor(self.taginfo[row].color))
+            except AttributeError:
+                return QVariant()
+        elif role == Qt.FontRole:
+            tag = self.headerdata[index.column()][1]
+            if tag in self.taginfo[row].testData:
+                f = QFont()
+                f.setBold(True)
+                return QVariant(f)
         return QVariant()
 
-    def setData(self, index, value, role = Qt.EditRole):
-        """Sets the data of the currently edited cell as expected.
-        Also writes tags and increases the undolevel."""
+    def deleteTag(self, row):
+        audio = self.taginfo[row]
+        uns = dict([(key, val) for key,val in audio.items()
+                            if isinstance(key, (int, long))])
+        tags = audio.usertags
+        tags['__image'] = audio['__image']
+        audio.delete()
+        audio[self.undolevel] = tags
+        audio.update(uns)
 
-        if index.isValid() and 0 <= index.row() < len(self.taginfo):
-            column = index.column()
-            tag = self.headerdata[column][1]
-            currentfile = self.taginfo[index.row()]
-
-            filename = currentfile[FILENAME]
-            newvalue = unicode(value.toString())
-            #Tags that startwith "__" are usually read only except for __path
-            #in which case we rename the files.
-            try:
-                oldvalue = deepcopy(currentfile[tag])
-            except KeyError:
-                oldvalue = [""]
-
-            if tag.startswith("__"):
-                if tag in [PATH, '__ext']:
-                    try:
-                        self.setRowData(index.row(), {tag: newvalue}, True, True)
-                        self.undolevel += 1
-                        return True
-                    except (IOError, OSError), detail:
-                        self.emit(SETDATAERROR, index.row(), column, "Couldn't rename " + filename + ": " + detail.strerror)
-                        return False
-                else:
-                    return False #Editing read-only values
-            try:
-                currentfile[tag] = newvalue
-                currentfile.save()
-            except (IOError, OSError), detail:
-                currentfile[tag] = oldvalue
-                self.emit(SETDATAERROR, index.row(), column, "Couldn't write to " + filename + ": " + detail.strerror)
-                return False
-
-            currentfile[self.undolevel] = {tag: oldvalue}
-            self.emit(SIGNAL('fileChanged()'))
-            if LIBRARY in currentfile:
-                oldfile = currentfile.tags.copy()
-                oldfile.update(currentfile[self.undolevel])
-                self.emit(SIGNAL('libFileChanged'), [oldfile], [currentfile])
-            self.undolevel += 1
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        index, index)
-            return True
-        return False
-
-    def setRowData(self,row,tags, undo = False, justrename = False):
-        """A function to update one row.
-        row is the row, tags is a dictionary of tags.
-
-        If undo`is True, then an undo level is created for this file.
-        If justrename is True, then (if tags contain a "__path" or '__ext' key)
-        the file is just renamed i.e not tags are written.
-        """
-        if '__folder' in tags:
-            del(tags['__folder'])
-        currentfile = self.taginfo[row]
-        if undo:
-            oldtag = currentfile
-            oldtag = dict([(tag, oldtag[tag]) for tag in set(oldtag).intersection(tags)])
-            if self.undolevel in oldtag:
-                currentfile[self.undolevel].update(oldtag)
-            else:
-                currentfile[self.undolevel] = oldtag
-            self.emit(ENABLEUNDO, True)
-        if '__image' in tags:
-            if not hasattr(currentfile, 'image'):
-                del(tags['__image'])
-            else:
-                images = []
-                for z in tags['__image']:
-                    images.append(dict([(key,val) for key,val in z.items() if key in currentfile.IMAGETAGS]))
-                tags['__image'] = [currentfile.image(**z) for z in images]
-        currentfile.update(self.renameFile(row, tags))
-        if justrename and LIBRARY in currentfile:
-            currentfile.save(True)
-        if not justrename:
-            try:
-                currentfile.update(tags)
-                currentfile.save()
-            except (OSError, IOError), detail:
-                currentfile.update(currentfile[self.undolevel])
-                del(currentfile[self.undolevel])
-                raise detail
-
-    def updateTable(self, rows):
-        firstindex = self.index(min(rows), 0)
-        lastindex = self.index(max(rows),self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
-
+    def deleteTags(self, rows):
+        [self.deleteTag(row) for row in rows]
+        self.undolevel += 1
 
     def dropMimeData(self, data, action, row, column, parent = QModelIndex()):
         return True
-
-    def supportedDropActions(self):
-        return Qt.CopyAction
 
     def flags(self, index):
         if not index.isValid():
@@ -324,6 +237,38 @@ class TagModel(QAbstractTableModel):
         self.emit(SIGNAL('modelReset')) #Because of the strange behaviour mentioned in reset.
         return True
 
+    def load(self,taginfo,headerdata=None, append = False):
+        """Loads tags as in __init__.
+        If append is true, then the tags are just appended."""
+        if headerdata is not None:
+            self.headerdata = headerdata
+
+        for z in taginfo:
+            z.testData = {}
+
+        if append:
+            top = self.index(self.rowCount(), 0)
+            column = self.sortOrder[0]
+            tag = self.headerdata[column][1]
+            if self.sortOrder[1] == Qt.AscendingOrder:
+                taginfo = sorted(taginfo, natcasecmp, itemgetter(tag))
+            else:
+                taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag), True)
+            filenames = [z[FILENAME] for z in self.taginfo]
+            self.taginfo.extend([z for z in taginfo if z[FILENAME] not in filenames])
+            rowcount = self.rowCount()
+            self.beginInsertRows(QModelIndex(), rowcount, rowcount + len(taginfo) - 1)
+            self.endInsertRows()
+            bottom = self.index(self.rowCount() -1, self.columnCount() -1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                            top, bottom)
+        else:
+            top = self.index(0, 0)
+            self.taginfo = taginfo
+            self.reset()
+            self.sort(*self.sortOrder)
+            self.undolevel = 0
+
     def removeColumns(self, column, count, parent = QModelIndex()):
         """This function only allows removal of one column at a time.
         For some reason, it just clears the columns otherwise.
@@ -333,24 +278,21 @@ class TagModel(QAbstractTableModel):
         self.endRemoveColumns()
         return True
 
+    def removeFolders(self, folders):
+        f = [i for i, tag in enumerate(self.taginfo) if tag['__folder'] not in folders]
+        while f:
+            try:
+                self.removeRows(f[0], delfiles = False)
+                del(f[0])
+                f = [z - 1 for z in f]
+            except IndexError:
+                break
 
     def removeRows(self, position, rows=1, index=QModelIndex(), delfiles = True, msgparent = None):
         """Please, only use this function to remove one row at a time. For some reason, it doesn't work
         too well on debian if more than one row is removed at a time."""
         self.beginRemoveRows(QModelIndex(), position,
                          position + rows -1)
-        if position in self.colorRows:
-            i = self.colorRows.index(position)
-            rows = self.colorRows[:i] + [z - 1 for z in self.colorRows[i + 1:]]
-            self.rowColors(rows)
-        elif self.colorRows:
-            rows = []
-            for z in self.colorRows:
-                if z > position:
-                    rows.append(z - 1)
-                else:
-                    rows.append(z)
-            self.rowColors(rows)
         if delfiles:
             audio = self.taginfo[position]
             os.remove(audio[FILENAME])
@@ -405,44 +347,140 @@ class TagModel(QAbstractTableModel):
             return {}
         return tags
 
-    def rowColors(self, rows = None):
+
+    def reset(self):
+        #Sometimes, (actually all the time on my box, but it may be different on yours)
+        #if a number files loaded into the model is equal to number
+        #of files currently in the model then the TableView isn't updated.
+        #Why the fuck I don't know, but this signal, intercepted by the table,
+        #updates the view and makes everything work okay.
+        self.emit(SIGNAL('modelReset'))
+        QAbstractTableModel.reset(self)
+
+    def rowColors(self, rows = None, clear=False):
         """Changes the background of rows to green.
 
         If rows is None, then the background of all the rows in the table
         are returned to normal."""
-        if not rows:
-            if self.colorRows:
-                firstindex = self.index(self.colorRows[0], 0)
-                lastindex = self.index(self.colorRows[-1], self.columnCount() - 1)
+        taginfo = self.taginfo
+        if rows:
+            if clear:
+                for row in rows:
+                    if hasattr(taginfo[row], "color"):
+                        del(taginfo[row].color)
             else:
-                firstindex = self.index(0, 0)
-                lastindex = self.index(0, self.columnCount() - 1)
-            self.colorRows = []
+                for row in rows:
+                    self.taginfo[row].color = Qt.green
+                for i, z in enumerate(taginfo):
+                    if i not in rows and hasattr(taginfo[row], "color"):
+                        del(taginfo[row].color)
         else:
-            if self.colorRows:
-                if min(self.colorRows) <= min(rows):
-                    firstrow = min(self.colorRows)
+            rows = []
+            for i, tag in enumerate(self.taginfo):
+                if hasattr(tag, 'color'):
+                    del(tag.color)
+                    rows.append(i)
+        if rows:
+            firstindex = self.index(min(rows), 0)
+            lastindex = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                            firstindex, lastindex)
+
+    def rowCount(self, index = QModelIndex()):
+        return len(self.taginfo)
+
+    def setData(self, index, value, role = Qt.EditRole):
+        """Sets the data of the currently edited cell as expected.
+        Also writes tags and increases the undolevel."""
+
+        if index.isValid() and 0 <= index.row() < len(self.taginfo):
+            column = index.column()
+            tag = self.headerdata[column][1]
+            currentfile = self.taginfo[index.row()]
+
+            filename = currentfile[FILENAME]
+            newvalue = unicode(value.toString())
+            #Tags that startwith "__" are usually read only except for __path
+            #in which case we rename the files.
+            try:
+                oldvalue = deepcopy(currentfile[tag])
+            except KeyError:
+                oldvalue = [""]
+
+            if tag.startswith("__"):
+                if tag in [PATH, '__ext']:
+                    try:
+                        self.setRowData(index.row(), {tag: newvalue}, True, True)
+                        self.undolevel += 1
+                        return True
+                    except (IOError, OSError), detail:
+                        self.emit(SETDATAERROR, index.row(), column, "Couldn't rename " + filename + ": " + detail.strerror)
+                        return False
                 else:
-                    firstrow = min(rows)
-                if max(self.colorRows) <= max(rows):
-                    lastrow = max(self.colorRows)
-                else:
-                    lastrow = max(rows)
-                self.colorRows = rows
-            else:
-                firstrow = min(rows)
-                lastrow = max(rows)
-                self.colorRows = rows
-            firstindex = self.index(firstrow, 0)
-            lastindex = self.index(lastrow, self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
+                    return False #Editing read-only values
+            try:
+                currentfile[tag] = newvalue
+                currentfile.save()
+            except (IOError, OSError), detail:
+                currentfile[tag] = oldvalue
+                self.emit(SETDATAERROR, index.row(), column, "Couldn't write to " + filename + ": " + detail.strerror)
+                return False
+
+            currentfile[self.undolevel] = {tag: oldvalue}
+            self.emit(SIGNAL('fileChanged()'))
+            if LIBRARY in currentfile:
+                oldfile = currentfile.tags.copy()
+                oldfile.update(currentfile[self.undolevel])
+                self.emit(SIGNAL('libFileChanged'), [oldfile], [currentfile])
+            self.undolevel += 1
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                        index, index)
+            return True
+        return False
 
     def setHeaderData(self, section, orientation, value, role = Qt.EditRole):
         if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
             self.headerdata[section] = value
         self.emit(SIGNAL("headerDataChanged (Qt::Orientation,int,int)"), orientation, section, section)
 
+    def setRowData(self,row, tags, undo = False, justrename = False):
+        """A function to update one row.
+        row is the row, tags is a dictionary of tags.
+
+        If undo`is True, then an undo level is created for this file.
+        If justrename is True, then (if tags contain a "__path" or '__ext' key)
+        the file is just renamed i.e not tags are written.
+        """
+        if '__folder' in tags:
+            del(tags['__folder'])
+        currentfile = self.taginfo[row]
+        if undo:
+            oldtag = currentfile
+            oldtag = dict([(tag, oldtag[tag]) for tag in set(oldtag).intersection(tags)])
+            if self.undolevel in oldtag:
+                currentfile[self.undolevel].update(oldtag)
+            else:
+                currentfile[self.undolevel] = oldtag
+            self.emit(ENABLEUNDO, True)
+        if '__image' in tags:
+            if not hasattr(currentfile, 'image'):
+                del(tags['__image'])
+            else:
+                images = []
+                for z in tags['__image']:
+                    images.append(dict([(key,val) for key,val in z.items() if key in currentfile.IMAGETAGS]))
+                tags['__image'] = [currentfile.image(**z) for z in images]
+        currentfile.update(self.renameFile(row, tags))
+        if justrename and LIBRARY in currentfile:
+            currentfile.save(True)
+        if not justrename:
+            try:
+                currentfile.update(tags)
+                currentfile.save()
+            except (OSError, IOError), detail:
+                currentfile.update(currentfile[self.undolevel])
+                del(currentfile[self.undolevel])
+                raise detail
 
     def setTestData(self, rows, tags):
         """A method that allows you to change the visible data of
@@ -461,72 +499,18 @@ class TagModel(QAbstractTableModel):
         Note, that if the user changed anything during this
         process, then those changes are left alone."""
 
-        unsetrows = [row for row in rows if row in self.testData][len(tags):]
+        unsetrows = rows[len(tags):]
+        taginfo = self.taginfo
         if unsetrows:
             self.unSetTestData(rows = unsetrows)
         for row, tag in zip(rows, tags):
-            if row in self.testData:
-                self.testData[row][1] = tag
-            else:
-                self.testData[row] = [self.taginfo[row].copy(), tag]
-            self.taginfo[row].update(tag)
+            taginfo[row].testData = tag
         firstindex = self.index(min(rows), 0)
         lastindex = self.index(max(rows),self.columnCount() - 1)
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                                         firstindex, lastindex)
 
-    def unSetTestData(self, write = False, rows = None):
-        """See testData"""
-        def getdiff(tag1, tag2):
-            undolevel = [z for z in tag1 if type(z) is int]
-            if undolevel: undolevel = max(undolevel)
-            oldundolevel = [z for z in tag2 if type(z) is int]
-            if oldundolevel: oldundolevel = max(oldundolevel)
-            if oldundolevel != undolevel:
-                return True
-            else:
-                return False
-
-        if not self.testData:
-            return
-
-        if write:
-            for row, tag in self.testData.items():
-                oldtag = tag[0]
-                newtag = tag[1]
-                if getdiff(oldtag, self.taginfo[row]):
-                    newtag = [dict([(z,newtag[z])]) for z in newtag if
-                            (z in oldtag[z]) and (z in self.taginfo[row])
-                            and oldtag[z] == self.taginfo[row][z]]
-                self.setRowData(row, newtag, True)
-            self.undolevel += 1
-            rows = self.testData.keys()
-            self.testData = {}
-            self.emit(ENABLEUNDO, True)
-        else:
-            if rows is not None:
-                for row in [row for row in rows if row in self.testData]:
-                    tag = self.testData[row]
-                    if not getdiff(self.taginfo[row], tag[1]):
-                        self.taginfo[row] = tag[0].copy()
-                    del(self.testData[row])
-            else:
-                rows = self.testData.keys()
-                for row, tag in self.testData.items():
-                    oldtag = tag[0]
-                    newtag = tag[1]
-                    if not getdiff(self.taginfo[row], newtag):
-                        self.taginfo[row] = oldtag
-                    del(self.testData[row])
-                self.emit(ENABLEUNDO, True)
-
-        firstindex = self.index(min(rows), 0)
-        lastindex = self.index(max(rows), self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
-
     def sort(self,column, order = Qt.DescendingOrder):
-        colorrows = [self.taginfo[z] for z in self.colorRows]
         self.sortOrder = (column, order)
         tag = self.headerdata[column][1]
         if order == Qt.AscendingOrder:
@@ -534,18 +518,83 @@ class TagModel(QAbstractTableModel):
         else:
             self.taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag), True)
         self.reset()
-        if colorrows:
-            self.rowColors([self.taginfo.index(z) for z in colorrows])
 
-    def removeFolders(self, folders):
-        f = [i for i, tag in enumerate(self.taginfo) if tag['__folder'] not in folders]
-        while f:
-            try:
-                self.removeRows(f[0], delfiles = False)
-                del(f[0])
-                f = [z - 1 for z in f]
-            except IndexError:
-                break
+    def supportedDropActions(self):
+        return Qt.CopyAction
+
+    def undo(self):
+        """Undos the last action.
+
+        Basically, if a tag has a key which is = self.undolevel - 1,
+        then the tag is updated with the dictionary in that key.
+
+        setRowData does not modify the undoleve unless you explicitely tell
+        it, but setData does modify the undolevel.
+
+        It is recommended that you use consecutive indexes for self.undolevel."""
+        if self.undolevel <= 0:
+            self.undolevel = 0
+            return
+        level = self.undolevel - 1
+        oldfiles =  []
+        newfiles = []
+        rows = []
+        for row, audio in enumerate(self.taginfo):
+            if level in audio:
+                if LIBRARY in audio:
+                    oldfiles.append(audio.tags.copy())
+                self.setRowData(row, audio[level])
+                rows.append(row)
+                del(audio[level])
+                if LIBRARY in audio:
+                    newfiles.append(audio.tags.copy())
+        if rows:
+            self.updateTable(rows)
+            if oldfiles:
+                self.emit(SIGNAL('libFileChanged'), oldfiles, newfiles)
+        if self.undolevel > 0:
+            self.undolevel -= 1
+
+    def unSetTestData(self, write = False, rows = None):
+        """See testData for info on how to use this function.
+
+        Note that if write is True then a function is returned.
+        It accepts an argument to be used as parent for a progress dialog
+        to be shown."""
+        taginfo = self.taginfo
+        if write:
+            if not rows:
+                rows = [i for i,z in enumerate(taginfo) if z.testData]
+            def what():
+                for row in rows:
+                    try:
+                        self.setRowData(row, taginfo[row].testData, True)
+                        taginfo[row].testData = {}
+                        yield None
+                    except (OSError, IOError), e:
+                        errmsg = u"I couldn't write to <b>%s</b>. (%s)" % (
+                                            taginfo[row][FILENAME], e.strerror)
+                        yield (errmsg, len(rows))
+                if rows:
+                    self.undolevel += 1
+            return progress(what, 'Writing ', len(rows), lambda: self.updateTable(rows))
+        else:
+            if not rows:
+                rows = [i for i,z in enumerate(taginfo) if z.testData]
+            for row in rows:
+                taginfo[row].testData = {}
+
+        if rows:
+            firstindex = self.index(min(rows), 0)
+            lastindex = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                            firstindex, lastindex)
+
+    def updateTable(self, rows):
+        firstindex = self.index(min(rows), 0)
+        lastindex = self.index(max(rows),self.columnCount() - 1)
+        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                                        firstindex, lastindex)
 
 class TagDelegate(QItemDelegate):
     def __init__(self,parent=None):
@@ -611,17 +660,37 @@ class TagTable(QTableView):
         self.exttags = QAction("E&xtended Tags", self)
         self.delete = QAction(QIcon(':/remove.png'), '&Delete', self)
         self.delete.setShortcut('Delete')
+        self.cleartag = QAction('Delete Tag', self)
+        self.properties = QAction('Properties', self)
 
         connect = lambda a,f: self.connect(a, SIGNAL('triggered()'), f)
 
         connect(self.play, self.playFiles)
         connect(self.exttags, self.editFile)
         connect(self.delete, self.deleteSelected)
+        connect(self.cleartag, self.clearTags)
+        connect(self.properties, self.showProperties)
 
-        separator = QAction(self)
-        separator.setSeparator(True)
+        def sep():
+            separator = QAction(self)
+            separator.setSeparator(True)
+            return separator
 
-        self.actions = [self.play, self.exttags, separator, self.delete]
+        self.actions = [self.play, self.exttags, self.cleartag,
+                        sep(), self.delete, sep(), self.properties]
+
+    def clearTags(self):
+        deltag = self.model().deleteTag
+        def func():
+            for row in self.selectedRows:
+                try:
+                    deltag(row)
+                    yield None
+                except (OSError, IOError), e:
+                    yield "There was an error deleting the tag of %s: <b>%s</b>" % (
+                                e.filename, e.strerror), len(self.selectedRows)
+        f = progress(func, 'Deleting tag... ', len(self.selectedRows))
+        f(self)
 
     def columnCount(self):
         return self.model().columnCount()
@@ -631,12 +700,11 @@ class TagTable(QTableView):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        print self.actions
         [menu.addAction(z) for z in self.actions]
         menu.exec_(event.globalPos())
 
     def _isEmpty(self):
-        if self.model().rowCount() == 0:
+        if self.model().rowCount() <= 0:
             return True
         return False
 
@@ -729,7 +797,7 @@ class TagTable(QTableView):
 
     def mousePressEvent(self, event):
         QTableView.mousePressEvent(self, event)
-        if event.buttons()  == Qt.RightButton:
+        if event.buttons()  == Qt.RightButton and self.model().taginfo:
             self.contextMenuEvent(event)
         if event.buttons() == Qt.LeftButton:
             self.StartPosition = [event.pos().x(), event.pos().y()]
@@ -742,22 +810,12 @@ class TagTable(QTableView):
         win.show()
         self.connect(win, SIGNAL("tagChanged()"), self.selectionChanged)
 
-    def fillTable(self, tags, append=False, dirnames=None):
-        """Fills the table with tags of the files specified in files.
-        Files can be either a path(i.e a string) to a folder or a list of files.
+    def fillTable(self, tags, append=False):
+        """Clears the table and fills it with metadata in tags.
 
-        Nothing is returned since the results should be visible.
-
-        If appendtags is True implies that files should just be appended to the table.
-
-        If self.subFolders is True and files contains directory names
-        then the files from this directory is added too.
-
-        If self.subFolders is False and files is a list with just
-        one item which happens to be a directory, then nothing will
-        happen. Please convert it to a string first.
+        tags are a list of audioinfo.Tag objects.
+        If append is True then the tags are just appended.
         """
-        self.dirnames = dirnames
         self.selectedRows = []
         self.selectedColumns = []
         if append:
@@ -779,7 +837,7 @@ class TagTable(QTableView):
 
     def keyPressEvent(self, event):
         event.accept()
-        #You might think that this is redunndant since a delete
+        #You might think that this is redundant since a delete
         #action is defined in contextMenuEvent, but if this isn't
         #done then the delegate is entered.
         if event.key() == Qt.Key_Delete and self.selectedRows:
@@ -788,9 +846,10 @@ class TagTable(QTableView):
         #This is so that an item isn't edited when the user's holding the shift or
         #control key.
         elif event.key() == Qt.Key_Space and (Qt.ControlModifier == event.modifiers() or Qt.ShiftModifier == event.modifiers()):
+            trigger = self.editTriggers()
             self.setEditTriggers(self.NoEditTriggers)
             QTableView.keyPressEvent(self, event)
-            self.setEditTriggers(self.AnyKeyPressed)
+            self.setEditTriggers(trigger)
             return
         QTableView.keyPressEvent(self, event)
 
@@ -815,11 +874,18 @@ class TagTable(QTableView):
                                             % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
 
     def reloadFiles(self):
-        if self.dirname is not None:
-            self.fillTable(self.dirname)
-        else:
-            self.fillTable([z[FILENAME] for z in self.model().taginfo])
-        self.selectCorner()
+        tags = []
+        finished = lambda: self.fillTable(tags)
+        def what():
+            for z in self.model().taginfo:
+                if '__library' in z:
+                    tags.append(z)
+                else:
+                    if gettag(z['__filename']) is not None:
+                        tags.append(z)
+                yield None
+        s = progress(what, 'Reloading ', len(self.model().taginfo), finished)
+        s(self.parentWidget())
 
     def rowTags(self,row, stringtags = False):
         """Returns all the tags pertinent to the file at row."""
@@ -856,6 +922,7 @@ class TagTable(QTableView):
         QTableView.setModel(self, model)
         #For less typing and that the model doesn't have to be accessed directly
         self.updateRow = model.setRowData
+        self.connect(model, SIGNAL('modelReset'), self.selectionChanged)
         self.connect(model, SIGNAL('modelReset'), self.selectCorner)
         self.connect(model, SIGNAL('setDataError'), self.showTool)
         self.connect(model, SIGNAL('fileChanged()'), self.selectionChanged)
@@ -977,6 +1044,11 @@ class TagTable(QTableView):
         x = -self.mapFromGlobal(self.pos()).x() + self.columnViewportPosition(column)
         QToolTip.showText(QPoint(x,y), text)
         self.emit(SIGNAL('setDataError'), text)
+
+    def showProperties(self):
+        f = self.selectedTags[0]
+        win = Properties(f.info, self.parentWidget())
+        win.show()
 
     def setPlayCommand(self, command):
         self.playcommand = command

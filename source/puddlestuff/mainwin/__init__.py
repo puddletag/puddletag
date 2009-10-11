@@ -22,7 +22,7 @@ def createActions(parent):
         parent.cleartable = QAction("&Clear", parent)
         parent.formattag = QAction("&Format", parent)
         parent.puddlefunctions = QAction('Functions...', parent)
-        parent.importfile = QAction(QIcon(":/import.png"), "Te&xt File -> Tag",parent)
+        parent.importfile = QAction(QIcon(":/import.png"), "Te&xt File -> Tag...",parent)
         parent.importlib = QAction("Import Music Library", parent)
         parent.invertselection = QAction("&Invert selection", parent)
         parent.invertselection.setShortcut('Meta+I')
@@ -38,8 +38,8 @@ def createActions(parent):
         parent.selectall = QAction("Select &All", parent)
         parent.selectall.setShortcut("Ctrl+A")
         parent.selectcolumn = QAction('Select Current Column', parent)
-        parent.selectcolumn.setShortcut('Meta+C')
-        parent.showcombodock = QAction('Show Tag Editor', parent)
+        parent.selectcolumn.setShortcut('Meta+L')
+        parent.showcombodock = QAction('Tag Editor', parent)
         parent.showcombodock.setCheckable(True)
         parent.showfilter = QAction("Filter", parent)
         parent.showfilter.setCheckable(True)
@@ -69,7 +69,8 @@ def createActions(parent):
         parent.pasteaction.setShortcut('Ctrl+V')
 
         parent.libdupes = QAction('Duplicate Finder', parent)
-        
+        parent.showfiledock = QAction('Stored Tags', parent)
+        parent.showfiledock.setCheckable(True)
 
 def connectActions(parent):
     def connect(action, slot):
@@ -125,9 +126,12 @@ def connectActions(parent):
     parent.connect(parent.showfilter, SIGNAL("toggled(bool)"), parent.filterframe.setVisible)
     parent.connect(parent.showcombodock, SIGNAL('toggled(bool)'), parent.combodock.setVisible)
     parent.connect(parent.showtreedock, SIGNAL('toggled(bool)'), parent.treedock.setVisible)
+    parent.connect(parent.showfiledock, SIGNAL('toggled(bool)'), parent.filedock.setVisible)
+
     parent.connect(parent.treedock, SIGNAL('visibilitychanged'), parent.showtreedock.setChecked)
     parent.connect(parent.combodock, SIGNAL('visibilitychanged'), parent.showcombodock.setChecked)
     parent.connect(parent.filterframe, SIGNAL('visibilitychanged'), parent.showfilter.setChecked)
+    parent.connect(parent.filedock, SIGNAL('visibilitychanged'), parent.showfiledock.setChecked)
 
 
 def createMenus(parent):
@@ -138,7 +142,8 @@ def createMenus(parent):
         sep = QAction(parent)
         sep.setSeparator(True)
         return sep
-    table.actions.extend([separator(), parent.copyaction, parent.cutaction, parent.pasteaction])
+    table.actions = table.actions[:4] + [separator(), parent.copyaction,
+                        parent.cutaction, parent.pasteaction] + table.actions[3:]
 
     menubar = parent.menuBar()
     filemenu = menubar.addMenu('&File')
@@ -166,7 +171,8 @@ def createMenus(parent):
 
     winmenu = menubar.addMenu('&Windows')
     [winmenu.addAction(z) for z in (parent.showfilter, parent.showcombodock,
-                                    parent.showtreedock, parent.showlibrarywin)]
+                                    parent.showtreedock, parent.showlibrarywin,
+                                    parent.showfiledock)]
 
     parent.actions = [table.delete, table.play, table.exttags,
                     parent.cutaction, parent.copyaction, parent.pasteaction,
@@ -190,6 +196,13 @@ def createMenus(parent):
     parent.toolbar.insertSeparator(parent.fileinlib)
 
 def createControls(parent):
+    parent.filetags = FileTags()
+    parent.filedock = PuddleDock('Stored Tags')
+    parent.filedock.setWidget(parent.filetags)
+    parent.filedock.layout().setAlignment(Qt.AlignTop)
+    parent.filedock.setObjectName('FileDock')
+    parent.filedock.hide()
+
     parent.cenwid = TableWindow()
 
     parent.dirmodel = QDirModel()
@@ -239,6 +252,7 @@ def createControls(parent):
     parent.filterframe.setWidget(widget)
     parent.addDockWidget(Qt.LeftDockWidgetArea, parent.combodock)
     parent.addDockWidget(Qt.LeftDockWidgetArea, parent.treedock)
+    parent.addDockWidget(Qt.LeftDockWidgetArea, parent.filedock)
     parent.addDockWidget(Qt.BottomDockWidgetArea, parent.filterframe)
 
     parent.setCentralWidget(parent.cenwid)

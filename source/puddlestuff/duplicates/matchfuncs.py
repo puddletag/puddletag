@@ -56,7 +56,6 @@ class Algo(object):
         if isinstance(func, basestring):
             funcnames = [f.__name__ for f in funcs]
             try:
-                print func, funcnames
                 func = funcs[funcnames.index(func)]
             except IndexError:
                 return

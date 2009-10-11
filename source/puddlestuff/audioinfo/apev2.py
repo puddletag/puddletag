@@ -18,11 +18,12 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from mutagen.apev2 import APEv2File
+from mutagen.monkeysaudio import MonkeysAudio
+APEv2File = MonkeysAudio
 
 import util
-from util import (strlength, strbitrate, strfrequency, usertags,
-                            getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
+from util import (strlength, strbitrate, strfrequency, usertags, PATH,
+                        getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
 
 
 class Tag(util.MockTag):
@@ -56,12 +57,31 @@ class Tag(util.MockTag):
         tag.load(copy(self._mutfile), self._tags.copy())
         return tag
 
+    def delete(self):
+        self._mutfile.delete()
+        for z in self.usertags:
+            del(self._tags[z])
+
+    def _info(self):
+        info = self._mutfile.info
+        fileinfo = [('Filename', self[FILENAME]),
+                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
+                    ('Path', self[PATH]),
+                    ('Modified', self['__modified'])]
+        apeinfo = [('Frequency', self['__frequency']),
+                   ('Channels', unicode(info.channels)),
+                   ('Length', self['__length']),
+                   ('Version', unicode(info.version))]
+        return [('File', fileinfo), ("Monkey's Audio Info", apeinfo)]
+
+    info = property(_info)
+
     def load(self, mutfile, tags):
         self._mutfile = mutfile
         self.filename = tags[FILENAME]
         self._tags = tags
 
-    def link(self, filename):
+    def link(self, filename, x = None):
         """Links the audio, filename
         returns self if successful, None otherwise."""
         filename = getfilename(filename)
@@ -75,8 +95,7 @@ class Tag(util.MockTag):
             self._tags[z.lower()] = audio.tags[z][:]
 
         info = audio.info
-        self._tags.update({u"__bitrate": strbitrate(info.bitrate),
-                    u"__length": strlength(info.length)})
+        self._tags[u"__length"] = strlength(info.length)
         try:
             self._tags[u"__frequency"] = strfrequency(info.sample_rate)
         except AttributeError:

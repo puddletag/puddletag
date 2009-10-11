@@ -21,8 +21,8 @@
 
 import util
 from mutagen.oggvorbis import OggVorbis
-from util import (strlength, strbitrate, strfrequency, usertags,
-                                    getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
+from util import (strlength, strbitrate, strfrequency, usertags, PATH,
+                  getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
 
 
 class Tag(util.MockTag):
@@ -69,6 +69,27 @@ class Tag(util.MockTag):
         tag = Tag()
         tag.load(copy(self._mutfile), self._tags.copy())
         return tag
+
+    def delete(self):
+        self._mutfile.delete()
+        for z in self.usertags:
+            del(self._tags[z])
+
+    def _info(self):
+        info = self._mutfile.info
+        fileinfo = [('Filename', self[FILENAME]),
+                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
+                    ('Path', self[PATH]),
+                    ('Modified', self['__modified'])]
+
+        ogginfo = [('Bitrate', self['__bitrate']),
+                   ('Frequency', self['__frequency']),
+                   ('Channels', unicode(info.channels)),
+                   ('Length', self['__length'])]
+        return [('File', fileinfo), ('Ogg Info', ogginfo)]
+        
+    info = property(_info)
+        
 
     def load(self, mutfile, tags):
         self._mutfile = mutfile

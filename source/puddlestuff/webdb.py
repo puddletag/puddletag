@@ -69,7 +69,7 @@ class ReleaseWidget(QListWidget):
         if releases:
             self.setCurrentRow(self.currentrow)
             if len(releases) == 1:
-               self.changeTable(self, self.item(0))
+               self.changeTable(self.item(0))
         self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
 
     def changeTable(self, item):
@@ -82,7 +82,7 @@ class ReleaseWidget(QListWidget):
                 QApplication.processEvents()
                 def func():
                     try:
-                        tracks = [dict([("title", track.title), ("track", number + 1), ("album",release.title)])
+                        tracks = [dict([("title", track.title), ("track", unicode(number + 1)), ("album",release.title)])
                                         for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
                     except ConnectionError:
                         return {'tracks':[], 'text': CONNECTIONERROR}
@@ -215,7 +215,7 @@ class MainWin(QDialog):
         self.show()
 
     def writeVals(self):
-        self.table.model().unSetTestData(True)
+        self.table.model().unSetTestData(True)(self)
         self.label.setText("<b>Tags were written.</b>")
 
     def closeMe(self):
@@ -225,7 +225,7 @@ class MainWin(QDialog):
     def getInfo(self):
         self.getinfo.setEnabled(False)
         releasetype = RELEASETYPES[unicode(self.albumtype.currentText())]
-        tags = [self.table.rowTags(z) for z in self.table.selectedRows]
+        tags = [self.table.rowTags(z).stringtags() for z in self.table.selectedRows]
         self.label.setText("Retrieving albums, please wait...")
         QApplication.processEvents()
 
@@ -303,6 +303,7 @@ class MainWin(QDialog):
                         else:
                             text = "I couldn't find an exact match to the album you specified."
                     else:
+                        releases = []
                         text = "I couldn't find any albums by the selected artist."
                 return {'releases': releases, 'text':text}
             self.t = MyThread(func)

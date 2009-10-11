@@ -1,10 +1,73 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QDir, QPoint, Qt, QSize, SIGNAL, QMimeData, QUrl
-from puddlestuff.puddleobjects import PuddleThread, HeaderSetting, partial
+from puddlestuff.puddleobjects import PuddleThread, HeaderSetting, partial, natcasecmp
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagmodel import TagTable
 from copy import deepcopy
 import os, shutil
+
+class FileTags(QScrollArea):
+    def __init__(self, parent=None):
+        QScrollArea.__init__(self,parent)
+        self._labels = []
+        self.grid = QGridLayout()
+        self.grid.setSizeConstraint(self.grid.SetFixedSize)
+        self.grid.setColumnStretch(1,1)
+        self.group = QGroupBox()
+        self.group.setLayout(self.grid)
+        self.setWidget(self.group)
+
+    def load(self, audio):
+        if not self.isVisible():
+            self._filename = audio['__filename']
+            return
+        def what():
+            try:
+                tags = audioinfo.Tag(audio['__filename'])
+            except (OSError, IOError), e:
+                tags = {'Error': [e.strerror]}
+            return tags
+        if hasattr(self, '_t'):
+            while self._t.isRunning():
+                pass
+        self._t = PuddleThread(what)
+        self._t.connect(self._t, SIGNAL('threadfinished'), self._load)
+        self._t.start()
+
+    def _load(self, audio):
+        interaction = Qt.TextSelectableByMouse or Qt.TextSelectableByKeyboard
+        if audio:
+            try:
+                tags = audio.usertags
+            except AttributeError:
+                tags = audio
+        if tags:
+            [(z.setVisible(True), v.setVisible(True)) for z, v
+                                            in self._labels if not z.isVisible()
+                                            or not v.isVisible()]
+        else:
+            [(z.setVisible(False), v.setVisible(False)) for z, v
+                                            in self._labels]
+            return
+        self.grid.setRowStretch(self.grid.rowCount() - 1, 0)
+        if len(tags) > len(self._labels):
+            self._labels += [[QLabel(), QLabel()] for z in range(len(tags) - len(self._labels) + 1)]
+            row = self.grid.rowCount()
+            for d, p in self._labels:
+                d.setTextInteractionFlags(interaction)
+                p.setTextInteractionFlags(interaction)
+                self.grid.addWidget(d, row,0)
+                self.grid.addWidget(p, row,1)
+                row += 1
+
+        elif len(tags) < len(self._labels):
+            [(z.setVisible(False), v.setVisible(False)) for z, v
+                                            in self._labels[len(tags):]]
+
+        for key, label in zip(sorted(tags, cmp = natcasecmp), self._labels):
+            label[0].setText(key + ':')
+            label[1].setText(u'<b>%s</b>' % tags[key][0])
+        self.grid.setRowStretch(self.grid.rowCount(), 1)
 
 class FrameCombo(QGroupBox):
     """A group box with combos that allow to edit
@@ -35,6 +98,80 @@ class FrameCombo(QGroupBox):
             else:
                 self.combos[z].clear()
             self.combos[z].setEnabled(False)
+
+    def fillCombos(self, audios):
+        combos = self.combos
+        for z in combos:
+            if z  == "__image":
+                combos[z].setImages(None)
+            else:
+                combos[z].clear()
+            combos[z].setEnabled(False)
+
+        self.initCombos()
+
+        tags = dict([(tag,[]) for tag in combos if tag != '__image'])
+        images = []
+        imagetags = set()
+        for audio in audios:
+            try:
+                imagetags = imagetags.union(audio.IMAGETAGS)
+            except AttributeError:
+                pass
+            if ('__image' in combos):
+                if hasattr(audio,'image'):
+                    images.extend(audio.images)
+            for tag in tags:
+                try:
+                    if isinstance(audio[tag],(unicode, str)):
+                        tags[tag].append(audio[tag])
+                    else:
+                            tags[tag].append("\\\\".join(audio[tag]))
+                except KeyError:
+                    tags[tag].append("")
+
+        if '__image' in combos:
+            images = unique(images)
+            if images:
+                combos['__image'].images.extend(images)
+                if (len(images) == 1 or len(table.selectedRows) == 1):
+                    combos['__image'].currentImage = 2
+                else:
+                    combos['__image'].currentImage = 0
+            else:
+                combos['__image'].currentImage = 1
+            combos['__image'].setImageTags(imagetags)
+
+        for z in tags:
+            tags[z] = list(set(tags[z]))
+        #Add values to combos
+        for tagset in tags:
+            [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
+                    if combos.has_key(tagset)]
+
+        for combo in combos.values():
+            combo.setEnabled(True)
+            #If a combo has more than 3 items it's not more than one artist, so we
+            #set it to the defaultvalue.
+            try:
+                if (combo.count() > 3) or (combo.count() < 2):
+                    combo.setCurrentIndex(0)
+                else:
+                    combo.setCurrentIndex(2)
+            except AttributeError:
+                pass
+
+        #There are already prefefined genres so I have to check
+        #the selected file's one is there.
+        if 'genre' in tags and len(tags['genre']) == 1:
+            combo = combos['genre']
+            index = combo.findText(tags['genre'][0])
+            if index > -1:
+                combo.setCurrentIndex(index)
+            else:
+                combo.setEditText(tags['genre'][0])
+        else:
+            combos['genre'].setCurrentIndex(0)
 
     def setCombos(self, tags, rows = None):
         """Creates a vertical column of comboboxes.
@@ -119,7 +256,7 @@ class DirView(QTreeView):
         self._lastselection = 0 #If > 0 appends files. See selectionChanged
         self._load = True #If True a loadFiles signal is emitted when
                           #an index is clicked. See selectionChanged.
-        self.setDragEnabled(True)
+        self.setDragEnabled(False)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self._dropaction = Qt.MoveAction
@@ -199,28 +336,22 @@ class DirView(QTreeView):
         dest = files[1]
         files = files[0]
         valid = self.selectedFilenames
-        
+
         model = self.model()
         refresh = model.refresh
         parent = model.parent
         getindex = model.index
         self._load = False
+        newdirnames = []
         for f in files:
             try:
-                index = getindex(f)
                 if f.endswith(u'/'):
                     f = f[:-1]
                 newdir = os.path.join(dest, os.path.basename(f))
                 if newdir == f:
                     continue
                 shutil.move(f, newdir)
-                refresh(parent(index))
-                destindex = getindex(dest)
-                refresh(parent(destindex))
-                self.expand(parent(destindex))
-                newindex = getindex(newdir)
-                selection = QItemSelection(newindex, newindex)
-                self.selectionModel().select(selection, QItemSelectionModel.Select)
+                newdirnames.append(newdir)
                 if f in valid:
                     self.emit(SIGNAL('changeFolder'), f, newdir)
             except (IOError, OSError), e:
@@ -232,6 +363,14 @@ class DirView(QTreeView):
                         showmessage = False
                     elif ret is False:
                         break
+        refresh(parent(getindex(dest)))
+        self.expand(getindex(dest))
+        select = self.selectionModel().select
+        for d in newdirnames:
+            index = getindex(d)
+            self.expand(index)
+            selection = QItemSelection(index, index)
+            select(selection, QItemSelectionModel.Select)
         self._load = True
 
     def _renameFolder(self, index):
@@ -294,7 +433,12 @@ class DirView(QTreeView):
             self._dropaction = action
         else:
             self._dropaction = None
-    
+
+    def clearSelection(self, *args):
+        self.blockSignals(True)
+        self.selectionModel().clearSelection()
+        self.blockSignals(False)
+
     defaultDropAction = property(_getDefaultDrop, _setDefaultDrop)
         
     def dropEvent(self, event):
@@ -303,7 +447,7 @@ class DirView(QTreeView):
         while '' in files:
             files.remove('')
         dest = unicode(self.model().filePath(self.indexAt(event.pos())))
-        
+
         if not self.defaultDropAction:
             menu = QMenu(self)
             move = QAction('Move', self)
@@ -319,12 +463,12 @@ class DirView(QTreeView):
                 event.setDropAction(Qt.CopyAction)
             elif action == move:
                 event.setDropAction(Qt.MoveAction)
-            else:
-                event.setDropAction(Qt.IgnoreAction)
+            #else:
+                #event.setDropAction(Qt.IgnoreAction)
             event.accept()
         else:
             temp = {Qt.CopyAction: self._copy, Qt.MoveAction:self._move}
-            event.setDropAction(self.defaultDropAction)
+            #event.setDropAction(self.defaultDropAction)
             temp[self.defaultDropAction]([files, dest])
             event.accept()
 
@@ -332,39 +476,39 @@ class DirView(QTreeView):
         if event.mimeData().hasUrls():
             event.accept()
         else:
-            event.reject()
+            event.ignore()
         QTreeView.dragEnterEvent(self, event)
         
     def expand(self, index):
         self.resizeColumnToContents(0)
         QTreeView.expand(self, index)
 
-    def mouseMoveEvent(self, event):
-        if self.StartPosition is None:
-            QTreeView.mouseMoveEvent(self, event)
-            return
-        pnt = QPoint(*self.StartPosition)
-        if (event.pos() - pnt).manhattanLength() < QApplication.startDragDistance():
-            return
-        drag = QDrag(self)
-        mimedata = QMimeData()
-        mimedata.setUrls([QUrl(f) for f in self.selectedFilenames])
-        drag.setMimeData(mimedata)
-        drag.setHotSpot(event.pos() - self.rect().topLeft())
-        if self.defaultDropAction:
-            cursor = self.defaultDropAction
-        else:
-            cursor = Qt.MoveAction
-        drag.setDragCursor (QPixmap(), cursor)
-        dropaction = drag.exec_(cursor)
+    #def mouseMoveEvent(self, event):
+        #if self.StartPosition is None:
+            #QTreeView.mouseMoveEvent(self, event)
+            #return
+        #pnt = QPoint(*self.StartPosition)
+        #if (event.pos() - pnt).manhattanLength() < QApplication.startDragDistance():
+            #return
+        #drag = QDrag(self)
+        #mimedata = QMimeData()
+        #mimedata.setUrls([QUrl(f) for f in self.selectedFilenames])
+        #drag.setMimeData(mimedata)
+        #drag.setHotSpot(event.pos() - self.rect().topLeft())
+        #if self.defaultDropAction:
+            #cursor = self.defaultDropAction
+        #else:
+            #cursor = Qt.MoveAction
+        #drag.setDragCursor (QPixmap(), cursor)
+        #dropaction = drag.exec_(cursor)
 
     def mousePressEvent(self, event):
         if event.buttons() == Qt.RightButton:
             self.StartPosition = None
             self.contextMenuEvent(event)
             return
-        if event.buttons() == Qt.LeftButton:
-            self.StartPosition = [event.pos().x(), event.pos().y()]
+        #if event.buttons() == Qt.LeftButton:
+            #self.StartPosition = [event.pos().x(), event.pos().y()]
         QTreeView.mousePressEvent(self, event)
         self.resizeColumnToContents(0)
 
@@ -399,9 +543,7 @@ class DirView(QTreeView):
             valid = list(set([unicode(getfilename(i)) for i in self.selectedIndexes()]))
             self.emit(SIGNAL('removeFolders'), valid)
         if dirs:
-            temp = dirs[::]
-            [temp.extend([os.path.join(d,f) for f in os.listdir(d)]) for d in dirs]
-            self.emit(SIGNAL('loadFiles'), temp, append)
+            self.emit(SIGNAL('loadFiles'), dirs, append)
         self._lastselection = len(self.selectedIndexes())
     
     def warningMessage(self, text, numfiles):
@@ -549,7 +691,8 @@ class TableWindow(QSplitter):
     def fillTable(self,folderpath, appendtags = False):
         """See TagTable's fillTable method for more details."""
         self.table.fillTable(folderpath, appendtags)
-        self.sortTable(self.sortColumn)
+        if not appendtags:
+            self.sortTable(self.sortColumn)
 
     def setGridVisible(self, val):
         if (val is True) or (val > 0):

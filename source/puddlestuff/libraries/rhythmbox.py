@@ -263,12 +263,17 @@ class RhythmDB(ContentHandler):
         return result
 
     def delTracks(self, tracks):
+        prevartist = None
+        prevalbum = None
         for track in tracks:
             track = audioinfo.stringtags(track)
             artist = track['artist']
             album = track['album']
-            dbtracks = self.tracks[self.albums[artist][album]]
-            dbtracks.remove(track)
+            if artist != prevartist or album != prevalbum:
+                dbtracks = self.tracks[self.albums[artist][album]]
+                filenames = [z[FILENAME] for z in dbtracks]
+            del(dbtracks[filenames.index(track[FILENAME])])
+            filenames.remove(track[FILENAME])
             if not dbtracks:
                 del(self.albums[artist][album])
             if not self.albums[artist]:

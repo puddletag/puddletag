@@ -265,7 +265,10 @@ def parsefunc(text, audio):
 
     def callfunc(s,loc,tok):
         arguments = tok[1:]
-        function = getattr(functions,tok[0][1:-1])
+        try:
+            function = getattr(functions,tok[0][1:-1])
+        except AttributeError:
+            return ''
         for i, param in enumerate(function.func_code.co_varnames):
             if param.startswith('text'):
                 arguments[i] = replacevars(arguments[i], audio)

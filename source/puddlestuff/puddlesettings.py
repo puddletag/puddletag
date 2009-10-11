@@ -253,7 +253,7 @@ class ComboFrame(QFrame):
 class GeneralSettings(QFrame):
     def __init__(self, parent = None, cenwid = None):
         def convertstate(setting, defaultval):
-            state = int(cparser.load("general", setting, defaultval))
+            state = int(cparser.load("General", setting, defaultval))
             if not state:
                 return Qt.Unchecked
             else:
@@ -272,8 +272,8 @@ class GeneralSettings(QFrame):
         self.vertheader.setCheckState(convertstate('vertheader',0))
         self.dragcombo = QComboBox()
         self.dragcombo.addItems(['Ask me each time', 'Move', 'Copy'])
-        draglabel = QLabel('When files are droppen on Filesystem:')
-        self.dragcombo.setCurrentIndex(cparser.load('general', 'dropaction', 0, True))
+        draglabel = QLabel('When files are dropped on Filesystem:')
+        self.dragcombo.setCurrentIndex(cparser.load('General', 'dropaction', 0, True))
 
         playtext = cparser.load('table', 'playcommand', ['xmms'])
         label = QLabel("Enter the &command to play files with.")
@@ -308,7 +308,6 @@ class GeneralSettings(QFrame):
                 return 1
             else:
                 return 0
-
         cenwid.subfolders = convertState(self.subfolders)
         cenwid.pathinbar = convertState(self.pathinbar)
         cenwid.cenwid.gridvisible = convertState(self.gridlines)
@@ -342,7 +341,7 @@ class GeneralSettings(QFrame):
                     'vertheader': convertState(self.vertheader.checkState()),
                     'dropaction': self.dragcombo.currentIndex()}
         for z in controls:
-            cparser.setSection('general', z, controls[z])
+            cparser.setSection('General', z, controls[z])
         cparser.setSection('table', 'playcommand',[unicode(z) for z in self.playcommand.text().split(" ")])
 
 class ListModel(QAbstractListModel):

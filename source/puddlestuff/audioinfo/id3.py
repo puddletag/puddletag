@@ -27,6 +27,8 @@ from util import  (strlength, strbitrate, strfrequency,
                                         getfilename, getinfo, FILENAME, PATH, INFOTAGS, READONLY)
 import imghdr
 
+MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
+
 class PuddleID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
     tags with the same description, ala Mp3tag."""
@@ -88,6 +90,12 @@ class Tag(util.MockTag):
             #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
             #if a key doesn't exist.
             return ""
+
+    def delete(self):
+        self._mutfile.delete()
+        for z in self.usertags:
+            del(self._tags[z])
+        self.images = []
 
     def image(self, data, description = '', mime = '', imagetype=0):
         if not mime:
@@ -167,6 +175,32 @@ class Tag(util.MockTag):
         #Retrieves key, value pairs according to id3.
         return [self._tags[key] for key in self if type(key) is not int and not key.startswith('__')]
 
+    def _info(self):
+        info = self._mutfile.info
+        fileinfo = [('Filename', self[FILENAME]),
+                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
+                    ('Path', self[PATH]),
+                    ('Modified', self['__modified'])]
+
+        try:
+            version = self._mutfile.tags.version
+            version = ('ID3 Version', u'ID3v' + unicode(version[0]) + '.' + \
+                                        unicode(version[1]))
+        except AttributeError:
+            version = ('ID3 Version', 'No tags in file.')
+        fileinfo.append(version)
+
+        mpginfo = [('Version', u'MPEG %i Layer %i' % (info.version, info.layer)),
+                   ('Bitrate', self['__bitrate']),
+                   ('Frequency', self['__frequency']),
+                   ('Mode', MODES[info.mode]),
+                   ('Length', self['__length'])]
+
+        return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
+
+
+    info = property(_info)
+
     def save(self):
         """Writes the tags to file."""
         if self.filename != self._mutfile.filename:
@@ -188,7 +222,7 @@ class Tag(util.MockTag):
                     i = 0
                     while image.HashKey in newimages:
                         i += 1
-                        image.desc += u' '*i #Pad with spaces so that each
+                        image.desc += u' '*i #Pad with spaces so that each key is unique.
                     audio[image.HashKey] = image
                     newimages.append(image.HashKey)
                 except AttributeError:

@@ -1,6 +1,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, resource, os
+import sys, resource, os, pdb
+sys.path.insert(1, '../..')
 from decimal import Decimal
 from puddlestuff.puddlesettings import PuddleConfig
 from puddlestuff.puddleobjects import ListButtons, ListBox, OKCancel
@@ -8,18 +9,25 @@ pyqtRemoveInputHook()
 from matchfuncs import Algo, funcinfo, funcs, _ratio
 from dupefuncs import dupesinlib
 from puddlestuff.findfunc import tagtofilename
+from puddlestuff.puddleobjects import progress
+import time
 
 DEFAULTSET = {'setname': 'Default',
               'algs': [Algo(['artist', 'title'], 0.85, _ratio, False)],
-              'disp': ['%artist%', '%artist% - %title%']}
+              'disp': ['%artist%', '%artist% - %title%'],
+              'maintag': 'artist'}
 
 DUPEDIR = os.path.join(os.path.dirname(PuddleConfig().filename), 'dupes')
 
-def saveset(setname, disp, algs):
+def saveset(setname, disp, algs, maintag):
     cparser = PuddleConfig()
-    cparser.filename = os.path.join(DUPEDIR, setname)
+    filename = os.path.join(DUPEDIR, setname)
+    open(filename, 'w').close() #I have to clear the file because if a previous
+                                #set had more algos then the extra algos will get loaded.
+    cparser.filename = filename
     algs = [{'tags': a.tags, 'threshold': a.threshold,
-            'func': a.func.__name__, 'matchcase': a.matchcase} for a in algs]
+            'func': a.func.__name__, 'matchcase': a.matchcase,
+            'maintag': maintag} for a in algs]
 
     cparser.set('info', 'name', setname)
     cparser.set('info', 'disp', disp)
@@ -49,8 +57,9 @@ def loadsets():
             threshold = float(cparser.get(section, 'threshold', '0.85'))
             func = cparser.get(section, 'func', '')
             matchcase = cparser.get(section, 'matchcase', True)
+            maintag = cparser.get(section, 'maintag', 'artist')
             algos.append(Algo(tags, threshold, func, matchcase))
-        sets.append([name, disp, algos])
+        sets.append([name, disp, algos, maintag])
     return sets
 
 class DupeTree(QTreeWidget):
@@ -81,85 +90,94 @@ class DupeTree(QTreeWidget):
 
     def selectionChanged(self, selected, deselected):
         QTreeWidget.selectionChanged(self, selected, deselected)
+        #pdb.set_trace()
         self.emit(SIGNAL('loadFiles'), self.selectedFiles())
 
-    def loadDupes(self, lib, algos, dispformat):
+    def loadDupes(self, lib, algos, dispformat, maintag = 'artist'):
         self.clear()
-        dupes = dupesinlib(lib, algos)
+        dupes = dupesinlib(lib, algos, maintag = maintag)
         self.dupes = []
         artists = dupes.next()
-        i = 0
-        for i, d in enumerate(dupes):
-            if i>300:
-                break
-            a = artists[i]
-            if d:
-                self.dupes.append(d)
-                item = QTreeWidgetItem([a])
-                self.addTopLevelItem(item)
-                for z in d:
-                    child = QTreeWidgetItem([tagtofilename(dispformat[0], z[0])])
-                    item.addChild(child)
-                    [child.addChild(QTreeWidgetItem([tagtofilename(dispformat[1],x)])) for x in z[1:]]
+        def what():
+            for i, d in enumerate(dupes):
+                a = artists[i]
+                if d:
+                    self.dupes.append(d)
+                    item = QTreeWidgetItem([a])
+                    for z in d:
+                        child = QTreeWidgetItem([tagtofilename(dispformat[0], z[0])])
+                        item.addChild(child)
+                        [child.addChild(QTreeWidgetItem([tagtofilename(dispformat[1],x)])) for x in z[1:]]
+                    self.emit(SIGNAL('toplevel'), item)
+                yield None
+        s = progress(what, 'Checking ', len(artists))
+        self.connect(self, SIGNAL('toplevel'), self._addItem)
+        if self.parentWidget():
+            s(self.parentWidget())
+        else:
+            s(self)
+
+    def _addItem(self, item):
+        self.addTopLevelItem(item)
 
     def dragEnterEvent(self, event):
         event.reject()
 
-    def mouseMoveEvent(self, event):
-        QTreeWidget.mouseMoveEvent(self, event)
-        if event.buttons() != Qt.LeftButton:
-           return
-        mimeData = QMimeData()
-        plainText = ""
-        tags= []
-        pnt = QPoint(*self.StartPosition)
-        if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
-            return
-        #I'm adding plaintext to MimeData
-        #because XMMS doesn't seem to work well with Qt's URL's
-        for z in self.selectedFiles():
-            url = QUrl.fromLocalFile(z['__filename'])
-            plainText = plainText + unicode(url.toString()) + u"\n"
-            tags.append(url)
-        mimeData = QMimeData()
-        mimeData.setUrls(tags)
-        mimeData.setText(plainText)
+    #def mouseMoveEvent(self, event):
+        #QTreeWidget.mouseMoveEvent(self, event)
+        #if event.buttons() != Qt.LeftButton:
+           #return
+        #mimeData = QMimeData()
+        #plainText = ""
+        #tags= []
+        #pnt = QPoint(*self.StartPosition)
+        #if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
+            #return
+        ##I'm adding plaintext to MimeData
+        ##because XMMS doesn't seem to work well with Qt's URL's
+        #for z in self.selectedFiles():
+            #url = QUrl.fromLocalFile(z['__filename'])
+            #plainText = plainText + unicode(url.toString()) + u"\n"
+            #tags.append(url)
+        #mimeData = QMimeData()
+        #mimeData.setUrls(tags)
+        #mimeData.setText(plainText)
 
-        drag = QDrag(self)
-        drag.setDragCursor(QPixmap(), self.dropaction)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropaction = drag.exec_(self.dropaction)
+        #drag = QDrag(self)
+        #drag.setDragCursor(QPixmap(), self.dropaction)
+        #drag.setMimeData(mimeData)
+        #drag.setHotSpot(event.pos() - self.rect().topLeft())
+        #dropaction = drag.exec_(self.dropaction)
 
-    def mousePressEvent(self, event):
-        if event.buttons() == Qt.RightButton:
-            e = QContextMenuEvent(QContextMenuEvent.Mouse, event.pos(), event.globalPos())
-            self.contextMenuEvent(e)
-            return
-        if event.buttons() == Qt.LeftButton:
-            self.StartPosition = [event.pos().x(), event.pos().y()]
-        QTreeWidget.mousePressEvent(self, event)
+    #def mousePressEvent(self, event):
+        #if event.buttons() == Qt.RightButton:
+            #e = QContextMenuEvent(QContextMenuEvent.Mouse, event.pos(), event.globalPos())
+            #self.contextMenuEvent(e)
+            #return
+        #if event.buttons() == Qt.LeftButton:
+            #self.StartPosition = [event.pos().x(), event.pos().y()]
+        #QTreeWidget.mousePressEvent(self, event)
 
-    def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        move = QAction('Move duplicates', self)
-        delete = QAction('Delete duplicates', self)
-        remove = QAction('Remove from listing', self)
+    #def contextMenuEvent(self, event):
+        #menu = QMenu(self)
+        #move = QAction('Move duplicates', self)
+        #delete = QAction('Delete duplicates', self)
+        #remove = QAction('Remove from listing', self)
 
-        self.connect(delete, SIGNAL('triggered()'), self._move)
-        self.connect(create, SIGNAL('triggered()'), self._delete)
-        self.connect(rename, SIGNAL('triggered()'), self._remove)
-        [menu.addAction(z) for z in [move, remove, delete]]
-        menu.exec_(event.globalPos())
+        #self.connect(delete, SIGNAL('triggered()'), self._move)
+        #self.connect(create, SIGNAL('triggered()'), self._delete)
+        #self.connect(rename, SIGNAL('triggered()'), self._remove)
+        #[menu.addAction(z) for z in [move, remove, delete]]
+        #menu.exec_(event.globalPos())
 
-    def _remove(self):
-        pass
+    #def _remove(self):
+        #pass
 
-    def _delete(self):
-        pass
+    #def _delete(self):
+        #pass
 
-    def _move(self):
-        pass
+    #def _move(self):
+        #pass
 
 class AlgWin(QDialog):
     def __init__(self, parent=None, alg = None):
@@ -268,6 +286,15 @@ class SetDialog(QDialog):
         listhbox.addWidget(self.listbox)
         listhbox.addLayout(listbuttons)
         vbox.addLayout(listhbox)
+
+        label = QLabel('Retrieve values via: ')
+        self.maintag = QComboBox()
+        self.maintag.addItems(['artist', 'title', 'genre', 'album', 'year'])
+        maintaghbox = QHBoxLayout()
+        maintaghbox.addWidget(label)
+        maintaghbox.addWidget(self.maintag)
+        maintaghbox.addStretch()
+        vbox.addLayout(maintaghbox)
         
         dispformat = QLabel('Display Format')
         vbox.addWidget(dispformat)
@@ -320,6 +347,12 @@ class SetDialog(QDialog):
         [text.setText(disp) for text, disp in zip(self.texts, s[1])]
         self.listbox.clear()
         [self.listbox.addItem(alg.pprint()) for alg in s[2]]
+        index = self.maintag.findText(s[3])
+        if index > -1:
+            self.maintag.setCurrentIndex(index)
+        else:
+            self.maintag.addItem(s[3])
+            self.maintag.setCurrentIndex(self.maintag.count() - 1)
 
     def _getCurrentSet(self):
         return self._sets[self.setscombo.currentIndex()]
@@ -330,7 +363,11 @@ class SetDialog(QDialog):
         i = self._previndex
         prevset = {'setname': self._sets[i][0],
                    'disp': [unicode(text.text()) for text in self.texts],
-                   'algs': self._sets[i][2]}
+                   'algs': self._sets[i][2],
+                   'maintag': unicode(self.maintag.currentText())}
+        self._sets[i][1] = prevset['disp']
+        self._sets[i][2] = prevset['algs']
+        self._sets[i][3] = prevset['maintag']
         saveset(**prevset)
         self.currentSet = self._sets[index]
         self._previndex = index
@@ -369,7 +406,8 @@ class SetDialog(QDialog):
         i = self.setscombo.currentIndex()
         prevset = {'setname': self._sets[i][0],
                    'disp': [unicode(text.text()) for text in self.texts],
-                   'algs': self._sets[i][2]}
+                   'algs': self._sets[i][2],
+                   'maintag': unicode(self.maintag.currentText())}
         saveset(**prevset)
         self.close()
         self.emit(SIGNAL('setAvailable'), *self.currentSet)
@@ -378,7 +416,13 @@ class SetDialog(QDialog):
         self.close()
 
 if __name__ == "__main__":
+    import puddlestuff.libraries.prokyon as prokyon
+    lib = prokyon.Prokyon('tracks', user='prokyon', passwd='prokyon', db='prokyon')
+    from Levenshtein import ratio
+    algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]
     app = QApplication(sys.argv)
-    qb = Window()
+    qb = DupeTree()
     qb.show()
+    QApplication.processEvents()
+    qb.loadDupes(lib, algos, ['%artist% - %title%', '%title%'])
     app.exec_()

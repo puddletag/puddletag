@@ -11,7 +11,7 @@ Contains objects used throughout puddletag"""
 #This file is part of puddletag, a semi-good music tag editor.
 
 #This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
+#it under the terms of the GNU 12 Public License as published by
 #the Free Software Foundation; either version 2 of the License, or
 #(at your option) any later version.
 
@@ -37,6 +37,9 @@ from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
+import shutil
+MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
+                        QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 
 try:
     from Levenshtein import ratio
@@ -54,6 +57,33 @@ else:
 
 HORIZONTAL = 1
 VERTICAL = 0
+                        
+def singleerror(parent, msg):
+    QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok, QMessageBox.NoButton)
+
+def errormsg(parent, msg, maximum):
+    """Shows a messagebox containing an error message indicating that
+    writing to filename has failed and asks the user to continue, stop,
+    or continue without interruption.
+
+    error is the error that caused the disruption.
+    single is the number of files that are being written. If it is 1, then
+    just a warningMessage is shown.
+
+    Returns:
+        True if yes to all.
+        False if No.
+        None if just yes."""
+    if maximum > 1:
+        mb = QMessageBox('Error', msg + u"<br /> Do you want to continue?",
+                                                 *(MSGARGS + (parent, )))
+        ret = mb.exec_()
+        if ret == QMessageBox.No:
+            return False
+        elif ret == QMessageBox.YesAll:
+            return True
+    else:
+        singleerror(parent, msg)
 
 def safe_name(name, chars=r'/\*?;"|:', to=None):
     """Make a filename safe for use (remove some special chars)
@@ -188,9 +218,11 @@ def dupes(l, method = None):
 def getfiles(files, subfolders = False):
     def recursedir(folder, subfolders):
         if subfolders:
+            #TODO: This really fucks up when reading files with malformed
+            #unicode filenames.
             files = []
             [[files.append(path.join(z[0], y)) for y in z[2]]
-                                                for z in os.walk(folder)]
+                                            for z in os.walk(folder)]
         else:
             files = os.walk(folder).next()[2]
             files = [path.join(folder, f) for f in files]
@@ -200,12 +232,14 @@ def getfiles(files, subfolders = False):
         files = files[0]
     if isinstance(files, basestring):
         if path.isdir(files):
+            dirname = [files]
             files = recursedir(files, subfolders)
-            dirname = files
         else:
+            dirname = []
             files = [files]
     else:
         dirnames = [z for z in files if os.path.isdir(z)]
+        files = [z for z in files if not os.path.isdir(z)]
         dirname = dirnames
         while dirnames and subfolders:
             [files.extend(recursedir(d, True)) for d in dirnames]
@@ -213,16 +247,99 @@ def getfiles(files, subfolders = False):
     return (files, dirname)
 
 def gettags(files):
-    for audio in files:
-        try:
-            tag = audioinfo.Tag(audio)
-            yield tag
-        except IOError, OSError:
-            pass
-            yield None
-        except Exception, e:
-            print unicode(e)
-            yield None
+    return (gettag(audio) for audio in files)
+
+def gettag(f):
+    try:
+        return audioinfo.Tag(f)
+    except (IOError, OSError):
+        return
+    except Exception, e:
+        print unicode(e)
+        return
+
+def progress(func, pstring, maximum, threadfin = None):
+    """To be used for functions that need a threaded progressbar.
+
+    Note that this function will only (and is meant to) work on dialogs.
+
+    func is the function that will be run by the thread. It should yield None
+    while successful. Otherwise it should yield an errormsg and the number
+    of files (this'll be used when calling errormsg).
+
+    pstring is the progress message. This is shown with the number of times
+    func yielded a value. For instance, pstring = 'Loading... ', and maximum = 20
+    will show 'Loading... 1 of 20', 'Loading... 2 of 20', etc.on the progress
+    bar.
+
+    maximum is the maximum value of the progessbar.
+
+    threadfin is the function to run when the thread has finished. Usually
+    for cleanup stuff.
+
+    Note that the function returns a function that expects a parent for
+    the progess window as the first argument. This with the rest of the arguments
+    passed to the returned function are used when calling func (except in the
+    case where only the parent argument is passed).
+    """
+    def s(*args):
+        parent = args[0]
+        win = ProgressWin(parent, maximum, pstring)
+        win.show()
+        if len(args) > 1:
+            f = func(*args)
+        else:
+            f = func()
+        parent.showmessage = True
+
+        def threadfunc():
+            i = 0
+            err = False
+            while not win.wasCanceled:
+                try:
+                    temp = f.next()
+                    if temp is not None:
+                        #temp[0] is the error message, temp[1] the num files
+                        parent._t.emit(SIGNAL('error(QString, int)'),
+                                                    temp[0], temp[1])
+                        err = True
+                        break
+                    else:
+                        parent._t.emit(SIGNAL('win(int)'), i)
+                except StopIteration:
+                    break
+                i += 1
+
+            if not err:
+                parent._t.emit(SIGNAL('win(int)'), -1)
+
+        def threadexit(*args):
+            if args[0] == -1:
+                win.close()
+                win.destroy()
+                if threadfin:
+                    threadfin()
+            elif isinstance(args[0], QString):
+                if parent.showmessage:
+                    ret = errormsg(parent, unicode(args[0]), int(args[1]))
+                    if ret is True:
+                        parent.showmessage = False
+                    elif ret is False:
+                        parent._t.emit(SIGNAL('win(int)'), -1)
+                        return
+                if not win.isVisible():
+                    win.show()
+                while parent._t.isRunning():
+                    pass
+                parent._t.start()
+            win.setValue(win.value + 1)
+
+        parent._t = PuddleThread(threadfunc)
+        parent._threadexit = threadexit
+        parent.connect(parent._t, SIGNAL('win(int)'), parent._threadexit)
+        parent.connect(parent._t, SIGNAL('error(QString, int)'), parent._threadexit)
+        parent._t.start()
+    return s
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""
@@ -1204,12 +1321,21 @@ class PuddleThread(QThread):
     is stored in retval."""
     def __init__(self, command, parent = None):
         QThread.__init__(self, parent)
+        self.connect(self, SIGNAL('finished()'), self._finish)
         self.command = command
+
     def run(self):
         try:
             self.retval = self.command()
         except StopIteration:
             self.retval = 'STOP'
+
+    def _finish(self):
+        if hasattr(self, 'retval'):
+            self.emit(SIGNAL('threadfinished'), self.retval)
+        else:
+            self.emit(SIGNAL('threadfinished'), None)
+
 
 if __name__ == '__main__':
     class MainWin(QDialog):

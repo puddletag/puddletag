@@ -304,7 +304,12 @@ class LibraryTree(QTreeWidget):
         if self.lastsearch:
             filenames = [z[FILENAME] for z in self.searchfiles]
             for f,n in zip(originals, newfiles):
-                index = filenames.index(f[FILENAME])
+                try:
+                    index = filenames.index(f[FILENAME])
+                except ValueError:
+                    import pdb
+                    pdb.set_trace()
+                    index = filenames.index(f[FILENAME])
                 self.searchfiles[index] = n
             data = self.treedata(self.searchfiles)
 

@@ -364,7 +364,7 @@ class ExTags(QDialog):
             toremove = [z for z in audio if z not in tags and z not in audioinfo.INFOTAGS]
             for tag in toremove:
                 tags[tag] = ""
-            keys = currentfile.IMAGETAGS
+            keys = audio.IMAGETAGS
             if images:
                 tags["__image"] =  [dict([(key, z[key]) for key in keys if key in z]) for z in images]
             else:

@@ -181,6 +181,10 @@ def converttag(tags):
 def usertags(tags):
     return dict([(z,v) for z,v in tags.items() if
                     not (isinstance(z, (int, long)) or z.startswith('__'))])
+
+def writeable(tags):
+    return [z for z in tags if not z.starswith('___') or z.starswith('~')]
+
 class MockTag(object):
     """Use as base for all tag classes."""
     def __init__(self, filename = None):
@@ -237,5 +241,6 @@ class MockTag(object):
         if not path.exists(self.filename):
             raise IOError(ENOENT, os.strerror(ENOENT), self.filename)
 
-    def usertags(self):
+    def _usertags(self):
         return usertags(self)
+    usertags = property(_usertags)
