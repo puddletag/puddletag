@@ -438,6 +438,7 @@ class DirView(QTreeView):
         self.blockSignals(True)
         self.selectionModel().clearSelection()
         self.blockSignals(False)
+        self.emit(SIGNAL('removeFolders'), [], True)
 
     defaultDropAction = property(_getDefaultDrop, _setDefaultDrop)
         
@@ -512,6 +513,10 @@ class DirView(QTreeView):
         QTreeView.mousePressEvent(self, event)
         self.resizeColumnToContents(0)
 
+    def selectIndex(self, index):
+        self.selectionModel().select(QItemSelection(index, index),
+                                            QItemSelectionModel.Select)
+
     def _selectedFilenames(self):
         filename = self.model().filePath
         return list(set([unicode(filename(i)) for i in self.selectedIndexes()]))
@@ -541,7 +546,7 @@ class DirView(QTreeView):
             append = False
         if old:
             valid = list(set([unicode(getfilename(i)) for i in self.selectedIndexes()]))
-            self.emit(SIGNAL('removeFolders'), valid)
+            self.emit(SIGNAL('removeFolders'), old, False)
         if dirs:
             self.emit(SIGNAL('loadFiles'), dirs, append)
         self._lastselection = len(self.selectedIndexes())

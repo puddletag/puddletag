@@ -30,7 +30,7 @@ from puddleobjects import (ProgressWin, safe_name, unique, PuddleThread, progres
 from PyQt4.QtCore import QDir, Qt, QSettings, QString, QVariant, SIGNAL, pyqtRemoveInputHook
 from PyQt4.QtGui import (QAction, QApplication, QFileDialog, QFrame, QInputDialog,
                         QLabel, QLineEdit, QMainWindow, QMessageBox, QPixmap,
-                        QShortcut)
+                        QShortcut, QItemSelection, QItemSelectionModel)
 from operator import itemgetter
 import m3u, time
 from puddlestuff.duplicates import algwin
@@ -150,6 +150,7 @@ class MainWin(QMainWindow):
         self.loadInfo()
         mainwin.createMenus(self)
         mainwin.connectActions(self)
+        self._dirnames = None
 
         self.statusbar = self.statusBar()
         statuslabel = QLabel()
@@ -210,7 +211,6 @@ class MainWin(QMainWindow):
         tree.loadDupes(libclass, algs, dispformat, maintag)
         tree.setHeaderLabel('Duplicates')
 
-    
     def cut(self):
         """The same as the cut operation in normal apps. In this case, though,
         the tag data isn't cut to the clipboard and instead remains in
@@ -689,6 +689,11 @@ class MainWin(QMainWindow):
 
         if dirnames:
             self.lastfolder = dirnames[0]
+            if append:
+                self._dirnames.extend(dirnames)
+            else:
+                self._dirnames = dirnames
+            self._dirnames = list(set(self._dirnames))
         if dirnames and dirnametitle:
             self.setTitleFilename(dirnames[0])
         elif dirnames and  not files:
@@ -943,7 +948,13 @@ class MainWin(QMainWindow):
         """Guess..."""
         selectionChanged = SIGNAL("itemSelectionChanged()")                                                           
         self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
-        self.cenwid.table.reloadFiles()
+        if self._dirnames:
+            #pdb.set_trace()
+            files, d = getfiles(self._dirnames, self.subfolders)
+            self.cenwid.table.removeFolders(self._dirnames, False)
+            self.cenwid.table.reloadFiles(files)
+        else:
+            self.cenwid.table.reloadFiles()
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
 
     def renameFolder(self):
@@ -1004,6 +1015,8 @@ class MainWin(QMainWindow):
         temp = bool(self.tree._load)
         self.tree._load = False
         #Finally, renaming
+        selectindex = self.tree.selectionModel().select
+        getindex = self.tree.model().index
         if result == 0:
             for olddir, newdir in dirs:
                 try:
@@ -1011,7 +1024,7 @@ class MainWin(QMainWindow):
                     os.rename(olddir, newdir)
                     self.cenwid.table.model().changeFolder(olddir, newdir)
                     self.dirmodel.refresh(self.dirmodel.parent(idx))
-                    self.tree.setFileIndex(newdir, True)
+                    selectindex(getindex(newdir), QItemSelectionModel.Select)
                     if hasattr(self, "lastfolder"):
                         if olddir == self.lastfolder:
                             self.lastfolder = newdir
@@ -1278,6 +1291,13 @@ class MainWin(QMainWindow):
                 break
             except (IOError, OSError), detail:
                 yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
+
+    def updateOpenFolders(self, folders, leave = True):
+        if leave:
+            self._dirnames = folders
+        else:
+            self._dirnames = [z for z in self._dirnames if z not in folders]
+                
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

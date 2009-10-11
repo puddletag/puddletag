@@ -228,7 +228,7 @@ class TagModel(QAbstractTableModel):
                 return QVariant(self.headerdata[section][0])
             except IndexError:
                 return QVariant()
-        return QVariant(int(section + 1))
+        return QVariant(long(section + 1))
 
     def insertColumns (self, column, count, parent = QModelIndex()):
         self.beginInsertColumns (parent, column, column + count -1)
@@ -278,8 +278,13 @@ class TagModel(QAbstractTableModel):
         self.endRemoveColumns()
         return True
 
-    def removeFolders(self, folders):
-        f = [i for i, tag in enumerate(self.taginfo) if tag['__folder'] not in folders]
+    def removeFolders(self, folders, v = True):
+        if v:
+            f = [i for i, tag in enumerate(self.taginfo) if tag['__folder']
+                                    not in folders and '__library' not in tag]
+        else:
+            f = [i for i, tag in enumerate(self.taginfo) if tag['__folder']
+                                        in folders and '__library' not in tag]
         while f:
             try:
                 self.removeRows(f[0], delfiles = False)
@@ -873,7 +878,7 @@ class TagTable(QTableView):
                         QMessageBox.critical(self,"Error", u"I couldn't play the selected files, because the music player you defined (<b>%s</b>) does not exist." \
                                             % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
 
-    def reloadFiles(self):
+    def reloadFiles(self, filenames = None):
         tags = []
         finished = lambda: self.fillTable(tags)
         def what():
@@ -883,8 +888,20 @@ class TagTable(QTableView):
                 else:
                     if gettag(z['__filename']) is not None:
                         tags.append(z)
+                        print z['__filename']
                 yield None
-        s = progress(what, 'Reloading ', len(self.model().taginfo), finished)
+
+            if filenames:
+                for f in filenames:
+                    tag = gettag(f)
+                    if tag is not None:
+                        tags.append(tag)
+                    yield None
+        if filenames:
+            n = len(filenames) + len(self.model().taginfo)
+        else:
+            n = len(self.model().taginfo)
+        s = progress(what, 'Reloading ', n, finished)
         s(self.parentWidget())
 
     def rowTags(self,row, stringtags = False):
@@ -1025,8 +1042,8 @@ class TagTable(QTableView):
             [select(min(row), max(row), col) for row in rows]
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
-    def removeFolders(self, folders):
-        self.model().removeFolders(folders)
+    def removeFolders(self, folders, v = True):
+        self.model().removeFolders(folders, v)
 
     def setHorizontalHeader(self, header):
         QTableView.setHorizontalHeader(self, header)

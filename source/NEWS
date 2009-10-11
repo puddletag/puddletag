@@ -2,6 +2,7 @@
     New Features:
         A Stored Tags dialog that shows the current tags of the selected file as stored on disk. Useful for when editing libraries and the tag differs from the tag on disk.
         I added an option to allow retrieval of duplicates via a specific tag. This can speed things up for some searches.
+        And finally, a setup script.
     Fixes:
         There were a lot but the major ones are:
         Duplicates can retrieve more than 300 at a time. (My fault for not checking.)

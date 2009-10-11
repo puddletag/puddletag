@@ -245,7 +245,7 @@ class MainWin(QDialog):
                 if releases:
                     text = text + " " + "The retrieved albums are listed below."
                 else:
-                    text = "No albums were found with the matching criteria."
+                    text = "No matching albums were found."
                 return {'releases': releases, 'text':text}
 
             self.t = MyThread(func)
@@ -286,11 +286,16 @@ class MainWin(QDialog):
 
         elif self.combo.currentIndex() == 2:
             def func():
+                album = unique([z['album'] for z in tags if 'album' in z])
+                if not album:
+                    return {'releases':[], 'text': "There's no album in the selected tags. <br />Please choose another method te retrieval method."}
+
+                album = album[0]
                 try:
                     artists = [getArtist(tags)[0]]
                 except (WebServiceError, ConnectionError):
                     return {'releases': [], 'text': CONNECTIONERROR}
-                album = unique([z['album'] for z in tags if 'album' in z])[0]
+
                 for z in artists:
                     artistid = z[1][1]
                     try:
