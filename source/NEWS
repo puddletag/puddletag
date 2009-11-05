@@ -1,3 +1,9 @@
+5 November 2009
+    New Features:
+        The only new feature for this release is that the musicbrainz dialog now allows you to select individual tracks. I like it better now.
+    Fixes:
+        Some bugs with loading directories were fixed.
+
 11 October 2009
     New Features:
         A Stored Tags dialog that shows the current tags of the selected file as stored on disk. Useful for when editing libraries and the tag differs from the tag on disk.

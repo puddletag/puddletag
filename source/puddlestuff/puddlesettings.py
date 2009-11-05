@@ -308,6 +308,7 @@ class GeneralSettings(QFrame):
                 return 1
             else:
                 return 0
+        cenwid.cenwid.table.subFolders = convertState(self.subfolders)
         cenwid.subfolders = convertState(self.subfolders)
         cenwid.pathinbar = convertState(self.pathinbar)
         cenwid.cenwid.gridvisible = convertState(self.gridlines)

@@ -215,7 +215,7 @@ def dupes(l, method = None):
                 groups.append([i])
     return [z for z in groups if len(z) > 1]
 
-def getfiles(files, subfolders = False):
+def getfiles(dirs, subfolders = False):
     def recursedir(folder, subfolders):
         if subfolders:
             #TODO: This really fucks up when reading files with malformed
@@ -228,23 +228,17 @@ def getfiles(files, subfolders = False):
             files = [path.join(folder, f) for f in files]
         return files
 
-    if len(files) == 1 and os.path.isdir(files[0]):
-        files = files[0]
-    if isinstance(files, basestring):
-        if path.isdir(files):
-            dirname = [files]
-            files = recursedir(files, subfolders)
-        else:
-            dirname = []
-            files = [files]
+    if isinstance(dirs, basestring):
+        files = recursedir(dirs, subfolders)
     else:
-        dirnames = [z for z in files if os.path.isdir(z)]
-        files = [z for z in files if not os.path.isdir(z)]
-        dirname = dirnames
-        while dirnames and subfolders:
-            [files.extend(recursedir(d, True)) for d in dirnames]
-            dirnames = [z for z in files if os.path.isdir(z)]
-    return (files, dirname)
+        files = []
+        if subfolders:
+            while dirs and subfolders:
+                [files.extend(recursedir(d, True)) for d in dirs]
+                dirs = [z for z in files if os.path.isdir(z)]
+        else:
+            [files.extend(recursedir(d, False)) for d in dirs]
+    return [z for z in files if not os.path.isdir(z)]
 
 def gettags(files):
     return (gettag(audio) for audio in files)

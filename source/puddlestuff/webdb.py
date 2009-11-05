@@ -18,20 +18,13 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-from puddleobjects import unique, OKCancel
+from puddleobjects import unique, OKCancel, PuddleThread
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb
 from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ConnectionError
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as brainzmodel
-
-class MyThread(QThread):
-    def __init__(self, command, parent = None):
-        QThread.__init__(self, parent)
-        self.command = command
-    def run(self):
-        self.retval = self.command()
 
 RELEASETYPES = {"Official Albums": [brainzmodel.Release.TYPE_OFFICIAL],
 "Promotional Album": [brainzmodel.Release.TYPE_PROMOTION],
@@ -40,18 +33,90 @@ RELEASETYPES = {"Official Albums": [brainzmodel.Release.TYPE_OFFICIAL],
 
 CONNECTIONERROR = "Could not connect to Musicbrainz server.(Check your net connection)"
 
-class ReleaseWidget(QListWidget):
-    def __init__(self, table = None, parent = None, row = 0):
-        QListWidget.__init__(self, parent)
+class ReleaseWidget(QTreeWidget):
+    def __init__(self, table = None, parent = None):
+        QTreeWidget.__init__(self, parent)
+
+        self.setHeaderHidden(True)
+        self.setRootIsDecorated(True)
         if table is not None:
             self.table = table
-        self.currentrow = row
         self.tracks = {}
-        self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
+        self._dirtyrow = 0
+        self.connect(self, SIGNAL('itemSelectionChanged()'), self._selChanged)
+        self.connect(self, SIGNAL('itemCollapsed (QTreeWidgetItem *)'), self.setClosedIcon)
+        self.connect(self, SIGNAL('itemExpanded (QTreeWidgetItem *)'), self.setOpenIcon)
+
+
+    def setClosedIcon(self, item):
+        item.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
+
+    def setOpenIcon(self, item):
+        item.setIcon(0, self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        row = self.indexOfTopLevelItem(item)
+        if row not in self.tracks:
+            self.gettracks([row])
+
+    def _selChanged(self):
+        rowindex = self.indexOfTopLevelItem
+        toplevels = [z for z in self.selectedItems() if not z.parent()]
+        if toplevels:
+            toprows = [rowindex(z) for z in toplevels]
+            t = [z for z in toprows if z not in self.tracks]
+            if t:
+                self.gettracks(t)
+                return
+        self._selectedTracks()
+        #self.emit(SIGNAL("statusChanged"), "Selection changed.")
+
+    def _selectedTracks(self):
+        rowindex = self.indexOfTopLevelItem
+        selected = self.selectedItems()
+        tracks = []
+        toplevels = [z for z in selected if not z.parent()]
+        if toplevels:
+            children = [z for z in selected if z.parent() and z.parent() not in toplevels]
+            toprows = [rowindex(z) for z in toplevels]
+            [tracks.extend(self.tracks[z]) for z in toprows]
+        else:
+            children = selected
+
+        for child in children:
+            parent = child.parent()
+            tracks.append(self.tracks[rowindex(parent)][parent.indexOfChild(child)])
+
+        self.table.model().setTestData(self.table.selectedRows, tracks[:len(self.table.selectedRows)])
+
+    def gettracks(self, rows):
+        try:
+            while self.t.isRunning():
+                pass
+        except AttributeError:
+            pass
+
+        self.emit(SIGNAL("statusChanged"), "Retrieving album tracks...")
+        QApplication.processEvents()
+        def func():
+            total = {}
+            for row in rows:
+                release = self.releases[row]
+                try:
+                    total[row] = [dict([("title", track.title), ("track", unicode(number + 1)), ("album",release.title)])
+                                    for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
+                except ConnectionError:
+                    return {'tracks':{}, 'text': CONNECTIONERROR}
+                except WebServiceError:
+                    return {'tracks':{}, 'text': CONNECTIONERROR + " " + details}
+            return {'tracks':total, 'text':"", 'releasetitle': release.title}
+        self.t = PuddleThread(func)
+        self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
+        self.t.start()
+
 
     def setReleases(self, releases):
-        self.disconnect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
         self.clear()
+        self.tracks = {}
+        self._dirtyrow = 0
         rels = sorted([[z.title, z] for z in releases])
         releases = [z[1] for z in rels]
         events = [z.getReleaseEventsAsDict() for z in releases]
@@ -62,55 +127,34 @@ class ReleaseWidget(QListWidget):
             else:
                 years.append("")
         try:
-            self.addItems([z.artist.name + ": " + z.title for z in releases])
+            text = [z.artist.name + " - "+ z.title for z in releases]
         except AttributeError:
-            self.addItems(sorted([z.title + unicode(year) for z, year in zip(releases, years)]))
+            text = sorted([z.title + unicode(year) for z, year in zip(releases, years)])
+
+        for t in text:
+            item = QTreeWidgetItem([t])
+            item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+            item.setIcon(0,self.style().standardIcon(QStyle.SP_DirOpenIcon))
+            [self.addTopLevelItem(item) for t in text]
         self.releases = releases
-        if releases:
-            self.setCurrentRow(self.currentrow)
-            if len(releases) == 1:
-               self.changeTable(self.item(0))
-        self.connect(self, SIGNAL('itemClicked(QListWidgetItem *)'), self.changeTable)
 
-    def changeTable(self, item):
-        row = self.row(item)
-        self.dirtyrow = row
-        if row > -1:
-            if row not in self.tracks:
-                release = self.releases[row]
-                self.emit(SIGNAL("statusChanged"), "Getting album tracks...")
-                QApplication.processEvents()
-                def func():
-                    try:
-                        tracks = [dict([("title", track.title), ("track", unicode(number + 1)), ("album",release.title)])
-                                        for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
-                    except ConnectionError:
-                        return {'tracks':[], 'text': CONNECTIONERROR}
-                    except WebServiceError:
-                        return {'tracks':[], 'text': CONNECTIONERROR + " " + details}
-                    return {'tracks':tracks, 'text':"", 'releasetitle': release.title}
-                self.t = MyThread(func)
-                self.connect(self.t, SIGNAL("finished()"), self.showAlbum)
-                self.t.start()
-            else:
-                self.showAlbum()
-
-    def showAlbum(self):
-        text = self.t.retval['text']
-        releasetitle = self.t.retval['releasetitle']
-
-        if text:
-            self.emit(SIGNAL("statusChanged"), self.retval.t['text'])
+    def updateStatus(self, val):
+        if not val:
+            self.emit(SIGNAL("statusChanged"), 'An unexpected error occurred.')
             return
-
-        if self.dirtyrow not in self.tracks:
-            tracks = self.t.retval['tracks']
-            self.item(self.dirtyrow).setText(releasetitle + " [" + unicode(len(tracks)) + "]")
-            self.tracks[self.dirtyrow] = tracks
-        else:
-            tracks = self.tracks[self.dirtyrow]
-        self.emit(SIGNAL("statusChanged"), "Currently selected: " + self.item(self.dirtyrow).text())
-        self.table.model().setTestData(self.table.selectedRows, tracks[:len(self.table.selectedRows)])
+        text = val['text']
+        if text:
+            self.emit(SIGNAL("statusChanged"), text)
+            return
+        tracks = val['tracks']
+        self.tracks.update(tracks)
+        for row in tracks:
+            item = self.topLevelItem(row)
+            item.takeChildren()
+            item.setText(0, item.text(0) + '[%d]' % len(tracks[row]))
+            [item.addChild(QTreeWidgetItem([z['title']])) for z in tracks[row]]
+        self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
+        self._selectedTracks()
 
 def getArtist(tags):
     """If tags is a dictionary, getArtist will loop through it
@@ -248,7 +292,7 @@ class MainWin(QDialog):
                     text = "No matching albums were found."
                 return {'releases': releases, 'text':text}
 
-            self.t = MyThread(func)
+            self.t = PuddleThread(func)
             self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
             self.t.start()
 
@@ -279,7 +323,7 @@ class MainWin(QDialog):
                     return {'releases': releases, 'text':text[:-2]}
                 else:
                     return {'releases': releases, 'text':"No albums were found matching the selected artists"}
-            self.t = MyThread(func)
+            self.t = PuddleThread(func)
             self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
             self.t.start()
 
@@ -311,7 +355,7 @@ class MainWin(QDialog):
                         releases = []
                         text = "I couldn't find any albums by the selected artist."
                 return {'releases': releases, 'text':text}
-            self.t = MyThread(func)
+            self.t = PuddleThread(func)
             self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
             self.t.start()
 

@@ -148,9 +148,11 @@ class MainWin(QMainWindow):
         mainwin.createActions(self)
         mainwin.createControls(self)
         self.loadInfo()
+        self.loadFiles = self.cenwid.table.loadFiles
         mainwin.createMenus(self)
         mainwin.connectActions(self)
-        self._dirnames = None
+        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.tree.selectDirs)
+        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.setTitleFilename)
 
         self.statusbar = self.statusBar()
         statuslabel = QLabel()
@@ -173,8 +175,16 @@ class MainWin(QMainWindow):
     pathinbar = property(_getpathinbar, _setpathinbar)
 
     def setTitleFilename(self, filename = None):
+        if not isinstance(filename, basestring):
+            try:
+                filename = filename[-1]
+            except (TypeError, IndexError):
+                pass
+
         if filename:
             self._title = filename
+            if os.path.isdir(filename):
+                self.lastfolder = filename
         if self.pathinbar and filename:
             self.setWindowTitle(u'puddletag: ' + filename)
         else:
@@ -380,13 +390,14 @@ class MainWin(QMainWindow):
 
     def autoTagging(self):
         """Opens Musicbrainz window"""
-        try:
-            from webdb import MainWin
-            win = MainWin(self.cenwid.table, self)
-            win.show()
-        except ImportError:
-            self.warningMessage("There was an error loading the musicbrainz library.<br />" +
-                                "Do you have the <a href='http://musicbrainz2.org/doc/PythonMusicBrainz2'>python musicbrainz</a> bindings installed?")
+        #try:
+        import webdb
+        win = webdb.MainWin(self.cenwid.table, self)
+        win.show()
+        #except ImportError, e:
+            #print 
+            #self.warningMessage("There was an error loading the musicbrainz library.<br />" +
+                                #"Do you have the <a href='http://musicbrainz2.org/doc/PythonMusicBrainz2'>python musicbrainz</a> bindings installed?")
 
     def changefocus(self):
         """Switches between different controls in puddletag, after user presses shortcut key."""
@@ -679,36 +690,6 @@ class MainWin(QMainWindow):
         win.show()
         self.connect(win, SIGNAL('libraryAvailable'), self.loadLib)
 
-    def loadFiles(self, files, append=False, subfolders=None, dirnames=None, dirnametitle = True):
-        timer = time.time()
-        if subfolders is None:
-            subfolders = self.subfolders
-
-        if not dirnames:
-            files, dirnames = getfiles(files, subfolders)
-
-        if dirnames:
-            self.lastfolder = dirnames[0]
-            if append:
-                self._dirnames.extend(dirnames)
-            else:
-                self._dirnames = dirnames
-            self._dirnames = list(set(self._dirnames))
-        if dirnames and dirnametitle:
-            self.setTitleFilename(dirnames[0])
-        elif dirnames and  not files:
-            self.setStatusTip('Directories are empty.')
-
-        tags = []
-        finished = lambda: self.cenwid.fillTable(tags, append)
-        def what():
-            for i, f in enumerate(gettags(files)):
-                if f is not None:
-                    tags.append(f)
-                yield None
-        s = progress(what, 'Loading ', len(files), finished)
-        s(self)
-
     def loadLib(self, libclass):
         """Loads a music library. Creates tree and everything."""
         import musiclib
@@ -776,7 +757,7 @@ class MainWin(QMainWindow):
 
         self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.setTitleFilename(filename)
-        self.loadFiles(files, dirnames=[os.path.dirname(filename)], dirnametitle = False)
+        self.loadFiles(files)
 
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.cenwid.table.setFocus()
@@ -869,15 +850,12 @@ class MainWin(QMainWindow):
         filename = os.path.realpath(filename)
 
         if path.isdir(filename):
-            self.tree._load = False
-            self.tree.setFileIndex(filename, append)
-            self.tree._load = True
             if not self.isVisible():
                 #If puddletag is started via the command line with a
                 #large folder then the progress window is shown by itself without this window.
                 self.show()
             QApplication.processEvents()
-            self.loadFiles(filename, append)
+            self.loadFiles(dirs=filename, append=append)
 
         self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
         self.cenwid.table.setFocus()
@@ -946,16 +924,11 @@ class MainWin(QMainWindow):
 
     def reloadFiles(self):
         """Guess..."""
-        selectionChanged = SIGNAL("itemSelectionChanged()")                                                           
-        self.disconnect(self.cenwid.table, selectionChanged, self.patternChanged)
-        if self._dirnames:
-            #pdb.set_trace()
-            files, d = getfiles(self._dirnames, self.subfolders)
-            self.cenwid.table.removeFolders(self._dirnames, False)
-            self.cenwid.table.reloadFiles(files)
-        else:
-            self.cenwid.table.reloadFiles()
-        self.connect(self.cenwid.table, selectionChanged, self.patternChanged)
+        t = (self.cenwid.table, SIGNAL('itemSelectionChanged()'),
+                                    self.patternChanged)
+        self.disconnect(*t)
+        self.cenwid.table.reloadFiles()
+        self.connect(*t)
 
     def renameFolder(self):
         """Changes the directory of the currently selected files, to
@@ -1292,11 +1265,6 @@ class MainWin(QMainWindow):
             except (IOError, OSError), detail:
                 yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
-    def updateOpenFolders(self, folders, leave = True):
-        if leave:
-            self._dirnames = folders
-        else:
-            self._dirnames = [z for z in self._dirnames if z not in folders]
                 
 
 if __name__ == "__main__":

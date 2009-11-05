@@ -172,12 +172,7 @@ class TagModel(QAbstractTableModel):
                 if isinstance(val, basestring):
                     return QVariant(val)
                 else:
-                    try:
-                        return QVariant(val[0])
-                    except:
-                        import pdb
-                        pdb.set_trace()
-                        return QVariant(val[0])
+                    return QVariant(val[0])
             except (KeyError, IndexError):
                 return QVariant()
         elif role == Qt.BackgroundColorRole:
@@ -646,11 +641,11 @@ class TagTable(QTableView):
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self.setAlternatingRowColors(True)
-        self.dropaction = Qt.MoveAction
         self.showmsg = True
         self._currentcol = {}
         self._currentrow = {}
         self._currenttags = []
+        self.dirs = []
 
         if not headerdata:
             headerdata = []
@@ -715,8 +710,8 @@ class TagTable(QTableView):
 
     isempty = property(_isEmpty)
 
-    def deleteSelected(self, delfiles=True):
-        #filenames = [self.rowTags(z)[FILENAME] for z in self.selectedRows]
+    def deleteSelected(self, delfiles=True, ifgone = False):
+        filenames = [z[FILENAME] for z in self.selectedTags]
         #msg = '<br />'.join(filenames)
         if delfiles:
             result = QMessageBox.question (self, "puddletag",
@@ -730,6 +725,9 @@ class TagTable(QTableView):
             temprows = copy(selectedRows)
             for i,row in enumerate(selectedRows):
                 try:
+                    if ifgone:
+                        if os.path.exists(filenames[i]):
+                            continue
                     self.model().removeRows(temprows[i], msgparent = self, delfiles=delfiles)
                     temprows = [z - 1 for z in temprows]
                 except (OSError, IOError), detail:
@@ -751,7 +749,6 @@ class TagTable(QTableView):
             self.selectionChanged()
 
     def dragEnterEvent(self, event):
-        self.setAcceptDrops(True)
         event.accept()
         event.acceptProposedAction()
 
@@ -759,7 +756,7 @@ class TagTable(QTableView):
         files = [unicode(z.path()) for z in event.mimeData().urls()]
         while '' in files:
             files.remove('')
-        self.emit(SIGNAL('loadFiles'), files, True)
+        self.loadFiles(files, append = True)
 
     def dragMoveEvent(self, event):
         if event.source() == self:
@@ -782,23 +779,17 @@ class TagTable(QTableView):
         pnt = QPoint(*self.StartPosition)
         if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
             return
-        #I'm adding plaintext to MimeData
-        #because XMMS doesn't seem to work well with Qt's URL's
-        for z in selectedRows:
-            url = QUrl.fromLocalFile(self.rowTags(z)[FILENAME])
-            plainText = plainText + unicode(url.toString()) + u"\n"
-            tags.append(url)
+        filenames = [z[FILENAME] for z in self.selectedTags]
+        urls = [QUrl.fromLocalFile(f) for f in filenames]
         mimeData = QMimeData()
-        mimeData.setUrls(tags)
-        mimeData.setText(plainText)
+        mimeData.setUrls(urls)
 
         drag = QDrag(self)
-        drag.setDragCursor(QPixmap(), self.dropaction)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropaction = drag.exec_(self.dropaction)
+        dropaction = drag.exec_()
         if dropaction == Qt.MoveAction:
-            self.deleteSelected(False)
+            self.deleteSelected(False, True)
 
     def mousePressEvent(self, event):
         QTableView.mousePressEvent(self, event)
@@ -858,6 +849,57 @@ class TagTable(QTableView):
             return
         QTableView.keyPressEvent(self, event)
 
+    def loadFiles(self, files = None, dirs = None, append = False, subfolders = None):
+        assert files or dirs, 'Either files or dirs (or both) must be specified.'
+
+        if subfolders is None:
+            subfolders = self.subFolders
+
+        if not files:
+            files = []
+        if not dirs:
+            dirs = []
+        elif isinstance(dirs, basestring):
+            dirs = [dirs]
+
+        if dirs:
+            for d in dirs:
+                files = [z for z in files if not z.startswith(d)]
+
+        if self.dirs:
+            for d in self.dirs:
+                files = [z for z in files if not z.startswith(d)]
+
+        if append:
+            if subfolders:
+                #Remove all subfolders if the parent's already loaded.
+                for d in self.dirs:
+                    dirs = [z for z in dirs if not z.startswith(d)]
+                toremove = set()
+                for d in dirs:
+                    toremove = toremove.union([z for z in self.dirs if z.startswith(d)])
+                self.removeFolders(toremove)
+            self.dirs.extend(dirs)
+        else:
+            self.dirs = dirs
+        files = set(files + getfiles(dirs, subfolders))
+
+        tags = []
+        finished = lambda: self._loadFilesDone(tags, append)
+        def what():
+            for f in files:
+                tag = gettag(f)
+                if tag is not None:
+                    tags.append(tag)
+                yield None
+
+        s = progress(what, 'Loading ', len(files), finished)
+        s(self.parentWidget())
+
+    def _loadFilesDone(self, tags, append):
+        self.fillTable(tags, append)
+        self.emit(SIGNAL('dirnames'), self.dirs)
+
     def playFiles(self):
         """Play the selected files using the player specified in self.playcommand"""
         if not self.selectedRows: return
@@ -879,30 +921,11 @@ class TagTable(QTableView):
                                             % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
 
     def reloadFiles(self, filenames = None):
-        tags = []
-        finished = lambda: self.fillTable(tags)
-        def what():
-            for z in self.model().taginfo:
-                if '__library' in z:
-                    tags.append(z)
-                else:
-                    if gettag(z['__filename']) is not None:
-                        tags.append(z)
-                        print z['__filename']
-                yield None
-
-            if filenames:
-                for f in filenames:
-                    tag = gettag(f)
-                    if tag is not None:
-                        tags.append(tag)
-                    yield None
-        if filenames:
-            n = len(filenames) + len(self.model().taginfo)
-        else:
-            n = len(self.model().taginfo)
-        s = progress(what, 'Reloading ', n, finished)
-        s(self.parentWidget())
+        files = [z['__filename'] for z in self.model().taginfo if z['__folder']
+                        not in self.dirs]
+        libfiles = [z for z in self.model().taginfo if '__library' in z]
+        self.loadFiles(files, self.dirs, False, self.subFolders)
+        self.model().load(libfiles, append = True)
 
     def rowTags(self,row, stringtags = False):
         """Returns all the tags pertinent to the file at row."""
@@ -1042,8 +1065,10 @@ class TagTable(QTableView):
             [select(min(row), max(row), col) for row in rows]
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
-    def removeFolders(self, folders, v = True):
-        self.model().removeFolders(folders, v)
+    def removeFolders(self, dirs, superflousremovethismotherfucker = None):
+        if dirs:
+            self.dirs = list(set(self.dirs).difference(dirs))
+            self.model().removeFolders(dirs, True)
 
     def setHorizontalHeader(self, header):
         QTableView.setHorizontalHeader(self, header)

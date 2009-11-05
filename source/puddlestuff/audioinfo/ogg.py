@@ -23,7 +23,7 @@ import util
 from mutagen.oggvorbis import OggVorbis
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
                   getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
-
+from copy import copy
 
 class Tag(util.MockTag):
     """Ogg Tag class.

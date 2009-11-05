@@ -253,7 +253,10 @@ def lower(text):
     return string.lower(text)
 
 def mid(text,n,i):
-    return unicode(text)[n:i+1]
+    try:
+        return unicode(text)[int(n):int(i)+1]
+    except ValueError:
+        return
 
 def mod(text,text1):
     try:

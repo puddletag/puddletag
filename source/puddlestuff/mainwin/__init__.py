@@ -117,7 +117,6 @@ def connectActions(parent):
     parent.connect(table, SIGNAL('removedRow()'), parent.rowEmpty)
     #parent.connect(parent.tree, SIGNAL('addFolder'), parent.openFolder)
     parent.connect(parent.tree, SIGNAL('removeFolders'), parent.cenwid.table.removeFolders)
-    parent.connect(parent.tree, SIGNAL('removeFolders'), parent.updateOpenFolders)
     parent.connect(table, SIGNAL('loadFiles'), parent.loadFiles)
     parent.connect(table, SIGNAL('itemSelectionChanged()'),
                                         parent.fillCombos)

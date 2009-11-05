@@ -532,23 +532,49 @@ class DirView(QTreeView):
         self.t.start()
         self._append = append
 
+    def selectDirs(self, dirlist):
+        self.blockSignals(True)
+        load = self._load
+        self._load = False
+        self.selectionModel().clear()
+        selectindex = self.selectionModel().select
+        getindex = self.model().index
+        parent = self.model().parent
+        
+        for d in dirlist:
+            index = getindex(d)
+            selectindex(index, QItemSelectionModel.Select)
+            i = parent(index)
+            parents = []
+            while i.isValid():
+                parents.append(i)
+                i = parent(i)
+            [self.expand(p) for p in parents]
+        self.resizeColumnToContents(0)
+        self._load = load
+        self.blockSignals(False)
+
     def selectionChanged(self, selected, deselected):
         QTreeView.selectionChanged(self, selected, deselected)
         if not self._load:
+            self._lastselection = len(self.selectedIndexes())
             return
         self.resizeColumnToContents(0)
         getfilename = self.model().filePath
         dirs = list(set([unicode(getfilename(i)) for i in selected.indexes()]))
         old = list(set([unicode(getfilename(i)) for i in deselected.indexes()]))
         if self._lastselection:
-            append = True
+            if len(old) == self._lastselection:
+                append = False
+            else:
+                append = True
         else:
             append = False
+        dirs = list(set(dirs).difference(old))
         if old:
-            valid = list(set([unicode(getfilename(i)) for i in self.selectedIndexes()]))
             self.emit(SIGNAL('removeFolders'), old, False)
         if dirs:
-            self.emit(SIGNAL('loadFiles'), dirs, append)
+            self.emit(SIGNAL('loadFiles'), None, dirs, append)
         self._lastselection = len(self.selectedIndexes())
     
     def warningMessage(self, text, numfiles):
