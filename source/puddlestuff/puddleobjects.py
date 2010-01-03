@@ -309,7 +309,6 @@ def progress(func, pstring, maximum, threadfin = None):
 
         def threadexit(*args):
             if args[0] == -1:
-                print 'exit'
                 win.close()
                 win.destroy()
                 if threadfin:

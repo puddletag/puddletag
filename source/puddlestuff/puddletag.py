@@ -995,7 +995,7 @@ class MainWin(QMainWindow):
                 try:
                     idx = self.dirmodel.index(olddir)
                     os.rename(olddir, newdir)
-                    self.cenwid.table.model().changeFolder(olddir, newdir)
+                    self.cenwid.table.changeFolder(olddir, newdir)
                     self.dirmodel.refresh(self.dirmodel.parent(idx))
                     selectindex(getindex(newdir), QItemSelectionModel.Select)
                     if hasattr(self, "lastfolder"):

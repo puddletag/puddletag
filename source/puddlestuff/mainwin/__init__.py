@@ -31,6 +31,7 @@ def createActions(parent):
         parent.preferences = QAction("&Preferences...", parent)
         parent.quickactions = QAction(QIcon(":/quickactions.png"), "&Quick Actions...", parent)
         parent.reloaddir = QAction(QIcon(':/reload.png'), "Reload", parent)
+        parent.reloaddir.setShortcut('F5')
         parent.renamedir = QAction(QIcon(":/rename.png"), "&Rename Dir...",parent)
         parent.saveplaylist = QAction(QIcon(":/playlist.png"), 'Save playlist', parent)
         parent.savecombotags = QAction(QIcon(':/save.png'), '&Save', parent)

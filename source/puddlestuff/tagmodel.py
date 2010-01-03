@@ -680,6 +680,18 @@ class TagTable(QTableView):
         self.actions = [self.play, self.exttags, self.cleartag,
                         sep(), self.delete, sep(), self.properties]
 
+    def changeFolder(self, olddir, newdir):
+      try:
+        for i, d in enumerate(self.dirs[::]):
+            if d == olddir:
+                self.dirs[i] = newdir
+            elif d.startswith(olddir):
+                self.dirs[i] = newdir + d[len(olddir):]
+      except IndexError:
+        pass
+      self.model().changeFolder(olddir, newdir)
+      
+
     def clearTags(self):
         deltag = self.model().deleteTag
         def func():
