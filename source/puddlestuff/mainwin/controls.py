@@ -571,7 +571,6 @@ class DirView(QTreeView):
         else:
             append = False
         dirs = list(set(dirs).difference(old))
-        print dirs
         if old:
             self.emit(SIGNAL('removeFolders'), old, False)
         if dirs:

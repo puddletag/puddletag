@@ -26,7 +26,6 @@ except ImportError:
     
 The ratio by which the strings differ."""
         return SequenceMatcher(None, a,b).ratio()
-    print 'here'
     funcs = [_ratio]
 
 def exact(a,b):

@@ -63,6 +63,7 @@ class Tag(util.MockTag):
           return
         if key == FILENAME:
             self.filename = value
+            self._tags[FILENAME] = value
         elif key in INFOTAGS or isinstance(key, (int, long)):
           self._tags[key] = value
         elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):

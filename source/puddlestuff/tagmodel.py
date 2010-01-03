@@ -21,7 +21,7 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys,os, audioinfo, resource
+import sys,os, audioinfo, resource, pdb
 from operator import itemgetter
 from copy import copy, deepcopy
 from subprocess import Popen
@@ -151,7 +151,7 @@ class TagModel(QAbstractTableModel):
                 audio['__folder'] = newdir + folder(audio)[len(olddir):]
                 audio[FILENAME] = path.join(folder(audio), audio[PATH])
             if '__library' in audio:
-                    audio.save(True)
+                audio.save(True)
         self.reset()
 
     def columnCount(self, index=QModelIndex()):
@@ -892,6 +892,8 @@ class TagTable(QTableView):
                 for d in dirs:
                     toremove = toremove.union([z for z in self.dirs if z.startswith(d)])
                 self.removeFolders(toremove)
+            else:
+                self.removeFolders([z for z in dirs if z in self.dirs], False)
             self.dirs.extend(dirs)
         else:
             self.dirs = dirs
@@ -1078,10 +1080,10 @@ class TagTable(QTableView):
             [select(min(row), max(row), col) for row in rows]
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
-    def removeFolders(self, dirs, superflousremovethismotherfucker = None):
+    def removeFolders(self, dirs, valid = True):
         if dirs:
             self.dirs = list(set(self.dirs).difference(dirs))
-            self.model().removeFolders(dirs, True)
+            self.model().removeFolders(dirs, valid)
 
     def setHorizontalHeader(self, header):
         QTableView.setHorizontalHeader(self, header)
