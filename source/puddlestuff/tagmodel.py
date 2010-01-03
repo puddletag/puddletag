@@ -32,6 +32,7 @@ from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
 from musiclib import MusicLibError
 import time
 from errno import EEXIST
+import traceback
 
 SETDATAERROR = SIGNAL("setDataError")
 LIBRARY = '__library'

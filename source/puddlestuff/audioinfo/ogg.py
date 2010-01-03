@@ -22,7 +22,8 @@
 import util
 from mutagen.oggvorbis import OggVorbis
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
-                  getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
+                  getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
+                  READONLY)
 from copy import copy
 
 class Tag(util.MockTag):
@@ -58,9 +59,13 @@ class Tag(util.MockTag):
             return ""
 
     def __setitem__(self,key,value):
+        if key in READONLY:
+          return
         if key == FILENAME:
             self.filename = value
-        elif (key not in INFOTAGS) and isinstance(value, (unicode, str, int, long)):
+        elif key in INFOTAGS or isinstance(key, (int, long)):
+          self._tags[key] = value
+        elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
             self._tags[key] = [unicode(value)]
         else:
             self._tags[key] = [unicode(z) for z in value]

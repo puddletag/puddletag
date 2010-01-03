@@ -26,7 +26,8 @@ except ImportError:
     
 The ratio by which the strings differ."""
         return SequenceMatcher(None, a,b).ratio()
-        funcs = [_ratio]
+    print 'here'
+    funcs = [_ratio]
 
 def exact(a,b):
     """Exact
@@ -43,7 +44,7 @@ def funcinfo(func):
     return (func.__doc__.split(u'\n')[0], u'\n'.join(func.__doc__.split(u'\n')[2:]))
 
 class Algo(object):
-    def __init__(self, tags = None, threshold = 0.85, func = ratio, matchcase = True):
+    def __init__(self, tags = None, threshold = 0.85, func = _ratio, matchcase = True):
         self.threshold = threshold
         if tags is None:
             self.tags = []

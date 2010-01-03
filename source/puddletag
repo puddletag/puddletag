@@ -26,7 +26,17 @@ pyqtRemoveInputHook()
 
 from puddlestuff import resource
 from puddlestuff.puddletag import MainWin
-__version__ = "0.8.0"
+__version__ = "0.8.1"
+import logging
+
+try:
+  if sys.argv[1] == '--debug':
+    logging.basicConfig(stream=sys.stderr,
+                        level=logging.DEBUG,
+                        )
+    del(sys.argv[1])
+except IndexError:
+  pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

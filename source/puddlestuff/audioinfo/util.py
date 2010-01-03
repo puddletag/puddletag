@@ -20,7 +20,7 @@
 #Foundation, Inc., 51  Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import mutagen, time, pdb, calendar, os
+import mutagen, time, pdb, calendar, os, logging
 from errno import ENOENT
 from decimal import Decimal
 from copy import copy, deepcopy
@@ -198,6 +198,7 @@ class MockTag(object):
             for key, value in dictionary.items():
                 self[key] = value
         else:
+            logging.debug(unicode(dictionary))
             for key, value in dictionary:
                 self[key] = value
 
