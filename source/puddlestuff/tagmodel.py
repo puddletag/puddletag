@@ -120,6 +120,19 @@ class TagModel(QAbstractTableModel):
             z.testData = {}
         self.undolevel = 0
         self.testData = {}
+        self._fontSize = QFont().pointSize()
+
+    def _setFontSize(self, size):
+        self._fontSize = size
+        top = self.index(self.rowCount(), 0)
+        bottom = self.index(self.rowCount() -1, self.columnCount() -1)
+        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+        top, bottom)
+    
+    def _getFontSize(self):
+        return self._fontSize
+        
+    fontSize = property(_getFontSize, _setFontSize)
 
     def _getUndoLevel(self):
         return self._undolevel
@@ -183,10 +196,12 @@ class TagModel(QAbstractTableModel):
                 return QVariant()
         elif role == Qt.FontRole:
             tag = self.headerdata[index.column()][1]
+            f = QFont()
+            if f.pointSize() != self.fontSize:
+                f.setPointSize(self.fontSize)
             if tag in self.taginfo[row].testData:
-                f = QFont()
                 f.setBold(True)
-                return QVariant(f)
+            return QVariant(f)
         return QVariant()
 
     def deleteTag(self, row):
@@ -681,13 +696,10 @@ class TagTable(QTableView):
                         sep(), self.delete, sep(), self.properties]
 
     def _setFontSize(self, size):
-        print 'set:', size
-        print 'old:', self.viewOptions().font.pointSize()
-        self.viewOptions().font.setPointSize(size)
-        print 'new:', self.viewOptions().font.pointSize()
+        self.model().fontSize = size
 
     def _getFontSize(self):
-        return self.viewOptions().font.pointSize()
+        return self.model().fontSize
 
     fontSize = property(_getFontSize, _setFontSize)
 
