@@ -23,8 +23,8 @@
 import mutagen, mutagen.id3, mutagen.mp3, pdb, util
 from copy import copy, deepcopy
 APIC, TimeStampTextFrame, TextFrame, ID3  = mutagen.id3.APIC, mutagen.id3.TimeStampTextFrame, mutagen.id3.TextFrame, mutagen.id3.ID3
-from util import  (strlength, strbitrate, strfrequency,
-                                        getfilename, getinfo, FILENAME, PATH, INFOTAGS, READONLY)
+from util import  (strlength, strbitrate, strfrequency, isempty,
+                    getfilename, getinfo, FILENAME, PATH, INFOTAGS, READONLY)
 import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
@@ -65,7 +65,9 @@ class Tag(util.MockTag):
         return tag
 
     def __getitem__(self,key):
-        """Get the tag value from self._tags. There is a slight
+        """Get the tag value        if key not in INFOTAGS and isempty(value):
+            del(self[value])
+            return from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
         Rather it'll return ''."""
         if key == '__image':
@@ -251,10 +253,15 @@ class Tag(util.MockTag):
             self._images = value
             return
 
-        if key in INFOTAGS:
+        if key in INFOTAGS and key not in READONLY:
             self._tags[key] = value
             if key == FILENAME:
                 self.filename = value
+            return
+
+
+        if key not in INFOTAGS and isempty(value):
+            del(self[key])
             return
 
         if isinstance(value, (basestring, int, long)):

@@ -436,6 +436,7 @@ class ExTags(QDialog):
         self.listbox.addItems(items)
         self.currentrow = row
         self.piclabel.setEnabled(False)
+        self.piclabel.lastfilename = tags['__folder']
         if '__library' not in tags:
             self.piclabel.setImageTags(tags.IMAGETAGS)
             if hasattr(tags, 'image'):

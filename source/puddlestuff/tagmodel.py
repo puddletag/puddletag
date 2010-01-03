@@ -231,7 +231,7 @@ class TagModel(QAbstractTableModel):
         self.headerdata += [("","") for z in range(count - column)]
         self.endInsertColumns()
         self.emit(SIGNAL('modelReset')) #Because of the strange behaviour mentioned in reset.
-        return True
+        return True\
 
     def load(self,taginfo,headerdata=None, append = False):
         """Loads tags as in __init__.
@@ -679,6 +679,17 @@ class TagTable(QTableView):
 
         self.actions = [self.play, self.exttags, self.cleartag,
                         sep(), self.delete, sep(), self.properties]
+
+    def _setFontSize(self, size):
+        print 'set:', size
+        print 'old:', self.viewOptions().font.pointSize()
+        self.viewOptions().font.setPointSize(size)
+        print 'new:', self.viewOptions().font.pointSize()
+
+    def _getFontSize(self):
+        return self.viewOptions().font.pointSize()
+
+    fontSize = property(_getFontSize, _setFontSize)
 
     def changeFolder(self, olddir, newdir):
       try:

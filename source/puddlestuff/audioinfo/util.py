@@ -185,6 +185,18 @@ def usertags(tags):
 def writeable(tags):
     return [z for z in tags if not z.starswith('___') or z.starswith('~')]
 
+def isempty(value):
+    if isinstance(value, (int, long)):
+        return False
+
+    if not value:
+        return True
+
+    try:
+        return not [z for z in value if z or isinstance(z, (int, long))]
+    except TypeError:
+        return False
+
 class MockTag(object):
     """Use as base for all tag classes."""
     def __init__(self, filename = None):

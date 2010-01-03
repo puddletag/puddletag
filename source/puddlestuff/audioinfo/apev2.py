@@ -22,8 +22,8 @@ from mutagen.monkeysaudio import MonkeysAudio
 APEv2File = MonkeysAudio
 
 import util
-from util import (strlength, strbitrate, strfrequency, usertags, PATH,
-                        getfilename, lnglength, getinfo, FILENAME, INFOTAGS)
+from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
+                getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY)
 
 
 class Tag(util.MockTag):
@@ -45,9 +45,19 @@ class Tag(util.MockTag):
             return u""
 
     def __setitem__(self, key, value):
+        if key in READONLY:
+          return
         if key == FILENAME:
             self.filename = value
-        elif (key not in INFOTAGS) and isinstance(value, (unicode, str, int, long)):
+            self._tags[FILENAME] = value
+            return
+
+        if key not in INFOTAGS and isempty(value):
+            del(self[key])
+
+        if key in INFOTAGS or isinstance(key, (int, long)):
+          self._tags[key] = value
+        elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
             self._tags[key] = [unicode(value)]
         else:
             self._tags[key] = [unicode(z) for z in value]

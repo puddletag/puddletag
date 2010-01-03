@@ -21,8 +21,8 @@
 
 
 import util
-from util import (usertags, strlength, strbitrate,
-                                getfilename, strfrequency, getinfo, FILENAME, PATH, INFOTAGS)
+from util import (usertags, strlength, strbitrate, READONLY, isempty,
+                    getfilename, strfrequency, getinfo, FILENAME, PATH, INFOTAGS)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 
@@ -188,6 +188,8 @@ class Tag(util.MockTag):
                 return ""
 
     def __setitem__(self,key,value):
+        if key in READONLY:
+            return
 
         if isinstance(key, (int, long)):
             self._tags[key] = value
@@ -201,6 +203,10 @@ class Tag(util.MockTag):
             self._tags[key] = value
             if key == FILENAME:
                 self.filename = value
+            return
+
+        if key not in INFOTAGS and isempty(value):
+            del(self[key])
             return
 
         try:

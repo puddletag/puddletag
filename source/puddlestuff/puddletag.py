@@ -690,6 +690,12 @@ class MainWin(QMainWindow):
         win.show()
         self.connect(win, SIGNAL('libraryAvailable'), self.loadLib)
 
+    def increaseFont(self):
+        self.cenwid.table.fontSize += 1
+
+    def decreaseFont(self):
+        self.cenwid.table.fontSize -= 1
+
     def loadLib(self, libclass):
         """Loads a music library. Creates tree and everything."""
         import musiclib

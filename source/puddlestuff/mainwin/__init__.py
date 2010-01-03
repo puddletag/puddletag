@@ -73,6 +73,12 @@ def createActions(parent):
         parent.showfiledock = QAction('Stored Tags', parent)
         parent.showfiledock.setCheckable(True)
 
+        parent.increasefont = QAction('Increase Font', parent)
+        parent.increasefont.setShortcut('Ctrl++')
+
+        parent.decreasefont = QAction('Decrease Font', parent)
+        parent.decreasefont.setShortcut('Ctrl+-')
+
 def connectActions(parent):
     def connect(action, slot):
             parent.connect(action, SIGNAL('triggered()'), slot)
@@ -96,6 +102,8 @@ def connectActions(parent):
     connect(parent.tagfromfile, parent.getTagFromFile)
     connect(parent.tagtofile, parent.saveTagToFile)
     connect(parent.libdupes, parent.libDupes)
+    connect(parent.increasefont, parent.increaseFont)
+    connect(parent.decreasefont, parent.decreaseFont)
     
     parent.connect(parent.duplicates, SIGNAL('toggled(bool)'), parent.showDupes)
     parent.connect(parent.fileinlib, SIGNAL('toggled(bool)'), parent.inLib)
@@ -157,7 +165,7 @@ def createMenus(parent):
     [edit.addAction(z) for z in [parent.undo, separator(), parent.cutaction,
         parent.copyaction, parent.pasteaction, separator(), table.delete, separator(),
         parent.selectall, parent.invertselection, parent.selectcolumn, separator(),
-                                                parent.preferences]]
+        parent.increasefont, parent.decreasefont, separator(), parent.preferences]]
 
     convert = menubar.addMenu("&Convert")
     [convert.addAction(z) for z in [parent.tagfromfile, parent.tagtofile,
