@@ -448,7 +448,7 @@ class HeaderSetting(QDialog):
         row = self.listbox.count()
         self.tags.append(["",""])
         self.listbox.addItem("")
-        [self.listbox.setItemSelected(item, False) for item in self.listbox.selectedItems()]
+        self.listbox.clearSelection()
         self.listbox.setCurrentRow(row)
         self.textname.setFocus()
 

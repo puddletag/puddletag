@@ -18,15 +18,28 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from mutagen.flac import FLAC
-from util import (strlength, strbitrate, strfrequency,
-                                    getfilename, getinfo, FILENAME, PATH, INFOTAGS)
+from mutagen.flac import FLAC, Picture
+import util
+from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
+                                getfilename, getinfo, FILENAME, PATH, INFOTAGS)
 import ogg
 
-class Tag(ogg.Tag):
+PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
+
+try:
+    from puddlestuff.image import imageproperties
+    IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
+                    util.IMAGETYPE)
+except ImportError:
+    IMAGETAGS = None
+
+
+class TempTag(ogg.Tag):
     """Flac Tag Class.
 
     Behaves like Tag class in ogg.py"""
+    IMAGETAGS = ()
+    
     def __init__(self,filename=None):
         """Links the audio"""
         self.images = None
@@ -49,6 +62,8 @@ class Tag(ogg.Tag):
             self._tags["track"] = self._tags["tracknumber"][:]
             del(self._tags["tracknumber"])
 
+        self._images = audio.pictures
+
         info = audio.info
         self._tags.update({u"__frequency": strfrequency(info.sample_rate),
                     u"__length": strlength(info.length)})
@@ -61,5 +76,60 @@ class Tag(ogg.Tag):
         self.filename = tags[FILENAME]
         self._mutfile = audio
         return self
+
+if IMAGETAGS:
+    class Tag(TempTag):
+        IMAGETAGS = IMAGETAGS
+        def image(self, data, description = '', mime = '', imagetype=0):
+            props = imageproperties(data = data)
+            props['type'] = imagetype
+            props['desc'] = description
+            props['width'], props['height'] = props['size']
+            args = dict([(z, props[z]) for z in PICARGS])
+            p = Picture()
+            [setattr(p, z, props[z]) for z in PICARGS]
+            return p
+
+        def _getImages(self):
+            if self._images:
+                return [{'data': image.data, 'description': image.desc,
+                        'mime': image.mime, 'imagetype': image.type}
+                                                for image in self._images]
+            return []
+
+        def _setImages(self, images):
+            self._images = images
+
+        def __setitem__(self, key, value):
+            if key == '__image':
+                self._images = value
+                return
+            TempTag.__setitem__(self, key, value)
+
+        images = property(_getImages, _setImages)
+
+        def save(self):
+            """Writes the tags in self._tags
+            to self.filename if no filename is specified."""
+
+            if self.filename != self._mutfile.filename:
+                self._mutfile.filename = self.filename
+            audio = self._mutfile
+
+            newtag = {}
+            for tag, value in usertags(self).items():
+                newtag[tag] = value
+            if "track" in newtag:
+                newtag["tracknumber"] = newtag["track"][:]
+                del newtag["track"]
+            toremove = [z for z in audio if z not in newtag]
+            for z in toremove:
+                del(audio[z])
+            audio.clear_pictures()
+            [audio.add_picture(z) for z in self._images]
+            audio.update(newtag)
+            audio.save()
+else:
+    Tag = TempTag
 
 filetype = (FLAC, Tag)
