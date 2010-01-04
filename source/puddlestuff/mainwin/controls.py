@@ -1,6 +1,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QDir, QPoint, Qt, QSize, SIGNAL, QMimeData, QUrl
-from puddlestuff.puddleobjects import PuddleThread, HeaderSetting, partial, natcasecmp
+from puddlestuff.puddleobjects import PuddleThread, HeaderSetting, partial, natcasecmp, PicWidget, unique
 from puddlestuff.puddlesettings import ColumnSettings
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagmodel import TagTable
@@ -135,7 +135,7 @@ class FrameCombo(QGroupBox):
             images = unique(images)
             if images:
                 combos['__image'].images.extend(images)
-                if (len(images) == 1 or len(table.selectedRows) == 1):
+                if (len(images) == 1 or len(audios) == 1):
                     combos['__image'].currentImage = 2
                 else:
                     combos['__image'].currentImage = 0
