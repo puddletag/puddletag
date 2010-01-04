@@ -100,6 +100,12 @@ if IMAGETAGS:
         def _setImages(self, images):
             self._images = images
 
+        def __getitem__(self, key):
+            if key == '__image':
+                return self.images
+
+            return TempTag.__getitem__(self, key)
+
         def __setitem__(self, key, value):
             if key == '__image':
                 self._images = value
