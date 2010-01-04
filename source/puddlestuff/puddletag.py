@@ -446,11 +446,11 @@ class MainWin(QMainWindow):
         columnwidths = [table.columnWidth(z) for z in range(table.model().columnCount())]
         cparser.set('columnwidths', 'column', columnwidths)
 
-        titles = [z[0] for z in self.cenwid.headerdata]
-        tags = [z[1] for z in self.cenwid.headerdata]
+        #titles = [z[0] for z in self.cenwid.headerdata]
+        #tags = [z[1] for z in self.cenwid.headerdata]
 
-        cparser.set('tableheader', 'titles', titles)
-        cparser.set('tableheader', 'tags', tags)
+        #cparser.set('tableheader', 'titles', titles)
+        #cparser.set('tableheader', 'tags', tags)
         patterns = [unicode(self.patterncombo.itemText(z)) for z in xrange(self.patterncombo.count())]
         cparser.set('editor', 'patterns', patterns)
 
@@ -469,24 +469,21 @@ class MainWin(QMainWindow):
         if maximise:
             self.setWindowState(Qt.WindowNoState)
 
-        titles = cparser.get('tableheader', 'titles',
-        ['Path', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 'Bitrate', 'Genre', 'Comment', 'Filename'])
+        #titles = cparser.get('tableheader', 'titles',
+        #['Path', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 'Bitrate', 'Genre', 'Comment', 'Filename'])
 
-        tags = cparser.get('tableheader', 'tags',
-        ['__path', 'artist', 'title', 'album', 'track', '__length', 'year', '__bitrate', 'genre', 'comment', '__filename'])
+        #tags = cparser.get('tableheader', 'tags',
+        #['__path', 'artist', 'title', 'album', 'track', '__length', 'year', '__bitrate', 'genre', 'comment', '__filename'])
 
-        headerdata = []
-        for title, tag in zip(titles, tags):
-            headerdata.append((title,tag))
+        #headerdata = []
+        #for title, tag in zip(titles, tags):
+            #headerdata.append((title,tag))
 
-        self.cenwid.inittable(headerdata)
+        self.cenwid.inittable()
         model = self.cenwid.table.model()
         self.connect(model, SIGNAL('enableUndo'), self.undo.setEnabled)
         self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
-        self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
-
-        columnwidths = [z for z in cparser.get("columnwidths","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191], True)]
-        [self.cenwid.table.setColumnWidth(i, z) for i,z in enumerate(columnwidths)]
+        self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)     
 
         sortColumn = cparser.get("table","sortcolumn",1, True)
         self.cenwid.sortTable(int(sortColumn))
@@ -495,6 +492,8 @@ class MainWin(QMainWindow):
 
         #self.splitter.restoreState(settings.value("splittersize").toByteArray())
         puddlesettings.MainWin(self, readvalues = True)
+        columnwidths = [z for z in cparser.get("columnwidths","column",[356, 190, 244, 206, 48, 52, 60, 100, 76, 304, 1191], True)]
+        [self.cenwid.table.setColumnWidth(i, z) for i,z in enumerate(columnwidths)]
         self.showcombodock.setChecked(cparser.get("editor", "showcombo",True))
         self.showtreedock.setChecked(cparser.get("editor", "showtree",True))
         self.showfiledock.setChecked(cparser.get("editor", "showfile",False))

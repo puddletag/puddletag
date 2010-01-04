@@ -1,6 +1,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QDir, QPoint, Qt, QSize, SIGNAL, QMimeData, QUrl
 from puddlestuff.puddleobjects import PuddleThread, HeaderSetting, partial, natcasecmp
+from puddlestuff.puddlesettings import ColumnSettings
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagmodel import TagTable
 from copy import deepcopy
@@ -57,7 +58,7 @@ class FileTags(QScrollArea):
                 d.setTextInteractionFlags(interaction)
                 p.setTextInteractionFlags(interaction)
                 self.grid.addWidget(d, row,0)
-                self.grid.addWidget(p, row,1)
+                #self.grid.addWidget(p, row,1)
                 row += 1
 
         elif len(tags) < len(self._labels):
@@ -576,7 +577,7 @@ class DirView(QTreeView):
         if dirs:
             self.emit(SIGNAL('loadFiles'), None, dirs, append)
         self._lastselection = len(self.selectedIndexes())
-    
+
     def warningMessage(self, text, numfiles):
         """Just shows a warning box with text (in HTML). Should only be called
         when errors occured.
@@ -626,10 +627,7 @@ class TableHeader(QHeaderView):
         QHeaderView.mousePressEvent(self, event)
 
     def setTitles(self):
-        if hasattr(self, "tags"):
-            self.win = HeaderSetting(self.tags)
-        else:
-            self.win = HeaderSetting()
+        self.win = ColumnSettings(showok = True)
         self.win.setModal(True)
         self.win.show()
         self.connect(self.win, SIGNAL("headerChanged"), self.headerChanged)
@@ -654,12 +652,14 @@ class TableWindow(QSplitter):
         QSplitter.__init__(self, parent)
 
 
-    def inittable(self, headerdata):
+    def inittable(self, headerdata = None):
         """This is here, because I want to be able to initialize
         many of the tables values from other functions
         (like when the app starts and settings are being restored).
 
         Call it with headerdata(as usual) to set the titles."""
+        if not headerdata:
+            headerdata = [('',''), ('','')]
         self.table = TagTable(headerdata, self)
         self.headerdata = headerdata
         header = TableHeader(Qt.Horizontal, self.headerdata, self)
@@ -686,7 +686,10 @@ class TableWindow(QSplitter):
 
         Nothing is returned, if the function is successful, then you should
         see the correct results."""
-        sortedtag = deepcopy(self.headerdata[self.sortColumn])
+        try:
+            sortedtag = self.headerdata[self.sortColumn][::]
+        except IndexError:
+            sortedtag = tags[0][::]
         model = self.table.model()
 
         if len(self.headerdata) < len(tags):

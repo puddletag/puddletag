@@ -357,14 +357,44 @@ only as &whole word, check'''
         text = pat.sub(replaceword, text)
     return text
 
+def replacetokens(text, dictionary):
+
+    pat = re.compile('\$\d+')
+    start = 0
+    match = pat.search(text, start)
+    if match:
+        start = match.start()
+        l = [text[:start]]
+        end = start
+    else:
+        return
+    while match:
+        start = match.start()
+        l.append(text[end:start])
+        end = match.end()
+        sub = int(text[start+1: end])
+        try:
+            l.append(dictionary[sub])
+        except KeyError:
+            l.append(text[start: end])
+        match = pat.search(text, end)
+    return ''.join(l)
+
+
 def replaceWithReg(text, expr, rep):
     """Replace with RegExp, "RegReplace $0: RegExp $1, with $1"
 &Regular Expression, text
 w&ith, text"""
-    try:
-        return sre.sub(expr, rep, text)
-    except:
-        return None
+    match = re.search(expr, text)
+    if match:
+        groups = match.groups()
+        if groups:
+            d = dict(enumerate(groups))
+            return parsefunc(replacetokens(rep, d), {})
+        else:
+            return parsefunc(re.sub(expr, rep, text), {})
+    else:
+        return
 
 def right(text,n):
     try:

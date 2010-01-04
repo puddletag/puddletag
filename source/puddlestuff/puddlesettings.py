@@ -147,6 +147,73 @@ class Playlist(QFrame):
         cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
         cparser.setSection('playlist', 'filepattern', unicode(self.filename.text()))
 
+class ColumnSettings(HeaderSetting):
+    """A dialog that allows you to edit the header of a TagTable widget."""
+    def __init__(self, parent = None, cenwid=None, showok = False, showedits = True):
+        cparser = PuddleConfig()
+        titles = cparser.get('tableheader', 'titles',
+                                ['Path', 'Artist', 'Title', 'Album', 'Track',
+                                 'Length', 'Year', 'Bitrate', 'Genre',
+                                 'Comment', 'Filename'])
+        tags = cparser.get('tableheader', 'tags',
+                            ['__path', 'artist', 'title',
+                             'album', 'track', '__length', 'year', '__bitrate',
+                             'genre', 'comment', '__filename'])
+        checked = cparser.get('tableheader', 'enabled', range(len(tags)), True)
+        headerdata = [z for i, z in enumerate(zip(titles, tags)) if i in checked]
+
+        if cenwid:
+            cenwid.cenwid.setNewHeader(headerdata)
+            return
+        self.tags = zip(titles, tags)
+
+        HeaderSetting.__init__(self, self.tags, parent, showok, showedits)
+        if parent:
+            self.setWindowFlags(Qt.Widget)
+        label = QLabel('Adjust visibility of columns.')
+        self.grid.addWidget(label,0,0)
+        items = [self.listbox.item(z) for z in range(self.listbox.count())]
+        if not checked:
+            checked = []
+        [z.setCheckState(Qt.Checked) if i in checked else z.setCheckState(Qt.Unchecked)
+                                for i,z in enumerate(items)]
+
+    def saveSettings(self):
+        row = self.listbox.currentRow()
+        if row > -1:
+            self.tags[row][0] = unicode(self.textname.text())
+            self.tags[row][1] = unicode(self.tag.text())
+        checked = [z for z in range(self.listbox.count()) if self.listbox.item(z).checkState()]
+        titles = [z[0] for z in self.tags]
+        tags = [z[1] for z in self.tags]
+        cparser = PuddleConfig()
+        cparser.set('tableheader', 'titles', titles)
+        cparser.set('tableheader', 'tags', tags)
+        cparser.set('tableheader', 'enabled', checked)
+        
+
+    def applySettings(self, cenwid = None):
+        checked = [z for z in range(self.listbox.count()) if self.listbox.item(z).checkState()]
+        headerdata = [z for i, z in enumerate(self.tags) if i in checked]
+        self.emit(SIGNAL("headerChanged"), headerdata)
+        if cenwid:
+            cenwid.cenwid.setNewHeader(headerdata)
+
+    def add(self):
+        row = self.listbox.count()
+        self.tags.append(["",""])
+        item = QListWidgetItem('')
+        item.setCheckState(True)
+        self.listbox.addItem(item)
+        self.listbox.clearSelection()
+        self.listbox.setCurrentRow(row)
+        self.textname.setFocus()
+
+    def okClicked(self):
+        self.saveSettings()
+        self.applySettings()
+        self.close()
+
 class ComboSetting(HeaderSetting):
     """Class that sets the type of tag that a combo should display
     and what combos should be in the same row.
@@ -159,7 +226,7 @@ class ComboSetting(HeaderSetting):
         newtags = [(unicode(title),unicode(tag)) for title, tag in zip(titles, tags)]
         HeaderSetting.__init__(self, newtags, parent, False)
         self.setWindowFlags(Qt.Widget)
-        self.grid.addWidget(QLabel("You need to restart puddletag for these settings to be applied."),3,0)
+        self.grid.addWidget(QLabel("You need to restart puddletag for these settings to be applied."),2,0)
         #Get the number of rows
         try:
             numrows = cparser.load('framecombo','numrows',0, True)
@@ -401,19 +468,22 @@ class MainWin(QDialog):
             self.gensettings = GeneralSettings(parent = self, cenwid = cenwid)
             self.patterns = PatternEditor(parent = self, cenwid = cenwid)
             self.playlist = Playlist(parent = self, cenwid = cenwid)
+            self.columns = ColumnSettings(parent=self, cenwid=cenwid)
             return
 
         self.combosetting = ComboFrame()
         self.gensettings = GeneralSettings()
         self.patterns = PatternEditor()
         self.playlist = Playlist()
+        self.columns = ColumnSettings()
 
         self.listbox = SettingsList()
 
         self.widgets = {0: ["General Settings", self.gensettings],
                         1:["Tag Editor", self.combosetting],
                         2:["Patterns", self.patterns],
-                        3:['Playlist', self.playlist]}
+                        3:['Playlist', self.playlist],
+                        4:['Columns', self.columns]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid

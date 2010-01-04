@@ -363,8 +363,8 @@ class HeaderSetting(QDialog):
         self.vbox.addStretch()
 
         self.grid = QGridLayout()
-        self.grid.addWidget(self.listbox,0,0)
-        self.grid.addLayout(self.vbox,0,1)
+        self.grid.addWidget(self.listbox,1,0)
+        self.grid.addLayout(self.vbox,1,1)
         self.grid.setColumnStretch(1,2)
 
         self.connect(self.listbox, SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"), self.fillEdits)
@@ -373,7 +373,7 @@ class HeaderSetting(QDialog):
 
         self.okbuttons = OKCancel()
         if showok is True:
-            self.grid.addLayout(self.okbuttons, 1,0,1,2)
+            self.grid.addLayout(self.okbuttons, 2,0,1,2)
         self.setLayout(self.grid)
 
         self.connect(self.okbuttons, SIGNAL("ok"), self.okClicked)

@@ -24,7 +24,7 @@ import audioinfo, os, pdb, functions, sys, string
 if sys.version_info[:2] >= (2, 5): import re as sre
 else: import sre
 try:
-    from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString
+    from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, CharsNotIn
 except ImportError:
     sys.stderr.write("The PyParsing module wasn't found. Did you install it correctly?\n")
     sys.exit(0)
@@ -218,7 +218,7 @@ def getfunc(text, audio):
     #without a lot of buggy work.
     #So, if you have a way to do that, send me a mail at concentricpuddle@gmail.com
 
-    pat = sre.compile(r'[^\\]\$[a-z_]+\(')
+    pat = sre.compile(r'[^\\]\$[a-z_0-9]+\(')
 
     addspace = False
     #pat doesn't match if the text starts with the pattern, because there isn't
@@ -259,9 +259,9 @@ def parsefunc(text, audio):
     the function $name from the functions module is called
     with the arguments."""
 
-    identifier = QuotedString('"') | Combine(ZeroOrMore("\$") + Word(alphanums + "_ '!#$%&\'*+-./:;<=>?@[\\]^`{|}~"))
+    identifier = QuotedString('"') | Combine(ZeroOrMore("\$") + CharsNotIn(',)'))
     integer  = Word(nums)
-    funcstart =  NotAny("\\") + Combine(Literal("$") + OneOrMore(Word("_" + alphas)) + "(")
+    funcstart =  NotAny("\\") + Combine(Literal("$") + OneOrMore(Word("_" + alphanums)) + "(")
 
     def callfunc(s,loc,tok):
         arguments = tok[1:]
