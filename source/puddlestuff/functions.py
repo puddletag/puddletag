@@ -50,14 +50,10 @@ This line is further split into three parts
     The third contains the default arguments as shown to the user."""
 
 
-import findfunc, string, pdb, sys, audioinfo, decimal, os
+import findfunc, string, pdb, sys, audioinfo, decimal, os, pyparsing, re
 import pyparsing
-if sys.version_info[:2] >= (2, 5): import re
-else: import sre as re
 
 path = os.path
-if sys.version_info[:2] >= (2, 5): import re as sre
-else: import sre
 import time
 
 def add(text,text1):
@@ -82,7 +78,7 @@ def caps2(text):
 
 def caps3(text):
     try:
-        start = sre.search("[a-zA-Z]", text).start(0)
+        start = re.search("[a-zA-Z]", text).start(0)
     except AttributeError:
         return
     return text[:start] + text[start].upper() + text[start + 1:].lower()

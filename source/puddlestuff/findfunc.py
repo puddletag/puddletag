@@ -20,9 +20,7 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import audioinfo, os, pdb, functions, sys, string
-if sys.version_info[:2] >= (2, 5): import re as sre
-else: import sre
+import audioinfo, os, pdb, functions, sys, string, re
 try:
     from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, CharsNotIn
 except ImportError:
@@ -60,7 +58,7 @@ def tagtotag(pattern, text, expression):
         return
     pattern = expression.transformString(pattern)
     try:
-        tags = sre.search(pattern, text).groups()
+        tags = re.search(pattern, text).groups()
     except AttributeError:
         #No matches were found
         return
@@ -218,7 +216,7 @@ def getfunc(text, audio):
     #without a lot of buggy work.
     #So, if you have a way to do that, send me a mail at concentricpuddle@gmail.com
 
-    pat = sre.compile(r'[^\\]\$[a-z_0-9]+\(')
+    pat = re.compile(r'[^\\]\$[a-z_0-9]+\(')
 
     addspace = False
     #pat doesn't match if the text starts with the pattern, because there isn't
