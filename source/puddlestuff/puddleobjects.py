@@ -777,8 +777,8 @@ class PicWidget(QWidget):
         self.label = Label()
         self.label.setFrameStyle(QFrame.Box)
         self.label.setMargin(0)
-        self.label.setMinimumSize(180, 150)
-        self.label.setMaximumSize(180, 150)
+        self.label.setMinimumSize(150, 130)
+        self.label.setMaximumSize(150, 130)
         self.label.setAlignment(Qt.AlignCenter)
 
         #Description and picture type shit.

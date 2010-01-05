@@ -358,7 +358,7 @@ class TagModel(QAbstractTableModel):
                 raise detail
             tags[FILENAME] = newfilename
             tags[PATH] = newpath
-            tags['__ext'] = extension[1:]
+            tags['__ext'] = extension[1:] if extension[1:] else ''
         else:
             return {}
         return tags
@@ -488,6 +488,7 @@ class TagModel(QAbstractTableModel):
                 for z in tags['__image']:
                     images.append(dict([(key,val) for key,val in z.items() if key in currentfile.IMAGETAGS]))
                 tags['__image'] = [currentfile.image(**z) for z in images]
+        
         currentfile.update(self.renameFile(row, tags))
         if justrename and LIBRARY in currentfile:
             currentfile.save(True)

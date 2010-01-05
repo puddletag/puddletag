@@ -853,18 +853,6 @@ class MainWin(QMainWindow):
 
     @showwriteprogress
     def writeExtended(self, tags):
-        """Basically the same as runAction, except that
-        all the functions in funcs are executed on the curently selected cells.
-
-        Say you had a action that would convert "__path" to Mixed Case.
-        If you ran it using runAction, it would do just that, but if you ran
-        it using this function but had the title column selected, then
-        all the files selected in the title column would have their titles
-        converted to Mixed Case.
-
-        funcs is a list of actiondlg.Function objects.
-        No error checking is done, so don't pass shitty values."""
-
         table = self.cenwid.table
         for row, audio in zip(table.selectedRows, table.selectedTags):
             #looks complicated, but it's just the selected tags.

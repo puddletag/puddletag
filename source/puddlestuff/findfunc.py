@@ -313,6 +313,7 @@ def runAction(funcs, audio):
         funcs = getAction(funcs)[0]
 
     audio = stringtags(audio)
+    changed = set()
     for func in funcs:
         tag = func.tag
         val = {}
@@ -326,8 +327,9 @@ def runAction(funcs, audio):
                 In either case we do nothing"""
         val = dict([z for z in val.items() if z[1]])
         if val:
+            [changed.add(z) for z in val]
             audio.update(val)
-    return audio
+    return dict([(z,audio[z]) for z in changed])
 
 def runQuickAction(funcs, audio, tag):
     """Same as runAction, except that all funcs are applied not in the values stored

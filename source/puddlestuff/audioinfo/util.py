@@ -96,20 +96,12 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (
 splitext = lambda x: path.splitext(x)[1][1:].lower()
 
 def commonimages(imagedicts):
-    combined = dict([(tag, set()) for tag in IMAGETAGS])
-    for image in imagedicts:
-        for tag in combined:
-            try:
-                value = image[tag]
-            except KeyError:
-                value = 0
-            combined[tag].add(value)
-    for key, value in combined.items():
-        if len(value) == 1 and list(value)[0] == 0:
-            del(combined[key])
-        elif 0 in value:
-            value.remove(0)
-    return combined
+    if imagedicts:
+        x = imagedicts[0]
+    for image in imagedicts[1:]:
+        if z != x:
+            return 0
+    return x
 
 def commontags(audios):
     images = []
@@ -119,7 +111,7 @@ def commontags(audios):
     images = []
     for audio in audios:
         if audio.IMAGETAGS:
-            images.append(audio['__image'][0] if audio['__image'] else {})
+            images.append(audio['__image'] if audio['__image'] else {})
         else:
             images.append({})
         audio = stringtags(audio.usertags)
@@ -142,6 +134,9 @@ def stringtags(tag, leaveNone = False):
     newtag = {}
     for i in tag:
         v = tag[i]
+        if i in INFOTAGS:
+            newtag[i] = v
+            continue
         if isinstance(i, int):
             continue
 
