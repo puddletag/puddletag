@@ -478,7 +478,9 @@ class TagModel(QAbstractTableModel):
             else:
                 currentfile[self.undolevel] = oldtag
             self.emit(ENABLEUNDO, True)
+        oldimages = None
         if '__image' in tags:
+            oldimages = tags['__image']
             if not hasattr(currentfile, 'image'):
                 del(tags['__image'])
             else:
@@ -497,6 +499,8 @@ class TagModel(QAbstractTableModel):
                 currentfile.update(currentfile[self.undolevel])
                 del(currentfile[self.undolevel])
                 raise detail
+        if oldimages is not None:
+            tags['__image'] = oldimages
 
     def setTestData(self, rows, tags):
         """A method that allows you to change the visible data of
@@ -685,7 +689,6 @@ class TagTable(QTableView):
         connect = lambda a,f: self.connect(a, SIGNAL('triggered()'), f)
 
         connect(self.play, self.playFiles)
-        connect(self.exttags, self.editFile)
         connect(self.delete, self.deleteSelected)
         connect(self.cleartag, self.clearTags)
         connect(self.properties, self.showProperties)
@@ -836,14 +839,6 @@ class TagTable(QTableView):
             self.contextMenuEvent(event)
         if event.buttons() == Qt.LeftButton:
             self.StartPosition = [event.pos().x(), event.pos().y()]
-
-    def editFile(self):
-        """Open window to edit all the tags in a file"""
-        from helperwin import ExTags
-        win = ExTags(self.model(), self.selectedRows[0], self)
-        win.setModal(True)
-        win.show()
-        self.connect(win, SIGNAL("tagChanged()"), self.selectionChanged)
 
     def fillTable(self, tags, append=False):
         """Clears the table and fills it with metadata in tags.

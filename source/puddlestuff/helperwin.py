@@ -33,6 +33,7 @@ REMOVE, EDIT, ADD = (1,2,3)
 c = [Qt.red, Qt.green, Qt.darkYellow]
 COLOR = {REMOVE: QBrush(c[0]), EDIT: QBrush(c[1]), ADD:QBrush(c[2])}
 RGBCOLORS = [QColor(z).rgb() for z in c]
+from puddlestuff.audioinfo.util import commontags
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -266,6 +267,7 @@ class StatusWidgetItem(QTableWidgetItem):
         if status and status in COLOR:
             self.setBackground(COLOR[status])
         self._status = status
+        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
     def _getstatus(self):
         return self._status
@@ -285,7 +287,7 @@ class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
     In addition, the file's image tag is shown."""
-    def __init__(self, model, row = 0, parent = None):
+    def __init__(self, parent = None, row = None, model = None):
         """model -> is a puddlestuff.TableModel object
         row -> the row that contains the file to be displayed
         """
@@ -301,7 +303,14 @@ class ExTags(QDialog):
         self.piclabel = PicWidget(buttons = True)
         self.connect(self.piclabel, SIGNAL('imageChanged'), self._imageChanged)
 
-        buttons = MoveButtons(model.taginfo, row)
+        if row >= 0 and model:
+            buttons = MoveButtons(model.taginfo, row)
+            self.connect(buttons, SIGNAL('indexChanged'), self._prevnext)
+            self._model = model
+            buttons.setVisible(True)
+        else:
+            buttons = MoveButtons([], row)
+            buttons.setVisible(False)
 
         self.okcancel = OKCancel()
 
@@ -336,7 +345,7 @@ class ExTags(QDialog):
         self.setLayout(layout)
 
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
-        self.connect(self.listbox, SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.editTag)
+        self.connect(self.listbox, SIGNAL("itemDoubleClicked(QTableWidgetItem *)"), self.editTag)
         self.connect(self.okcancel, SIGNAL("ok"),self.OK)
 
         clicked = SIGNAL('clicked()')
@@ -347,12 +356,15 @@ class ExTags(QDialog):
         self.setMinimumSize(450,350)
 
         self.canceled = False
+        self.filechanged = False
 
-        if not isinstance(model, basestring):
-            self.model = model
-            self.filechanged = False
-            self.loadFile(row)
-            self.connect(buttons, SIGNAL('indexChanged'), self.loadFile)
+        if row >= 0 and model:
+            self._prevnext(row)
+
+    def _prevnext(self, row):
+        if self.filechanged:
+            self.save()
+        self.loadFiles([self._model.taginfo[row]])
 
     def _checkListBox(self):
         if self.listbox.rowCount() <= 0:
@@ -379,35 +391,21 @@ class ExTags(QDialog):
         self._checkListBox()
 
     def closeMe(self):
-        self.model.undolevel += 1
-        self.model.undo()
         self.canceled = True
         self.close()
 
     def closeEvent(self,event):
-        if not self.canceled:
-            self.model.undolevel += 1
         self.piclabel.close()
         QDialog.closeEvent(self,event)
 
     def save(self):
-        audio = self.model.taginfo[self.currentrow]
-        if not self.piclabel.images:
-            images = None
-        else:
-            images = self.piclabel.images
         if self.filechanged:
             tags = self.listtotag()
-            toremove = [z for z in audio if z not in tags and z not in audioinfo.INFOTAGS]
-            for tag in toremove:
-                tags[tag] = ""
-            keys = audio.IMAGETAGS
-            if images:
-                tags["__image"] =  [dict([(key, z[key]) for key in keys if key in z]) for z in images]
-            else:
-                tags['__image'] = []
-            self.model.setRowData(self.currentrow, tags)
-            self.emit(SIGNAL('tagChanged()'))
+        if not self.piclabel.images:
+            tags['__image'] = []
+        else:
+            tags["__image"] = self.piclabel.images
+        self.emit(SIGNAL('extendedtags'), tags)
 
     def OK(self):
         self.save()
@@ -476,42 +474,70 @@ class ExTags(QDialog):
         try:
             for tag, val, status in listitems:
                 if status != REMOVE:
+                    if val == u'<keep>':
+                        continue
                     if tag in tags:
                         tags[tag].append(val)
                     else:
                         tags[tag] = [val]
+                else:
+                    if tag not in tags:
+                        tags[tag] = []
         except Exception, e:
             print listitems
             raise e
         return tags
 
-    def loadFile(self, row):
+    def loadFiles(self, audios):
         if self.filechanged:
             self.save()
         self.filechanged = False
         self.listbox.clearContents()
         self.listbox.setRowCount(0)
+        self.piclabel.lastfilename = audios[0]['__folder']
+        self.piclabel.setEnabled(False)
+        self.piclabel.setImages(None)
+        if len(audios) == 1:
+            audio = audios[0]
+            self.setWindowTitle(audios[0]["__filename"])
+            self._loadsingle(audio)
+        else:
+            self.setWindowTitle('Different files.')
+            common, numvalues = commontags(audios)
+            images = common['__image']
+            del(common['__image'])
+            for i, key in enumerate(common):
+                if numvalues[key] != len(audios):
+                    self._settag(i, key, '<keep>')
+                else:
+                    self._settag(i, key, audios[key].pop())
+            if images and len(images['data']) == 1:
+                self.piclabel.setImageTags(images.keys())
+                self.piclabel.setEnabled(True)
+                image = dict([(z,v.pop()) for z,v in images.items()])
+                self.piclabel.setImages([image])
+            else:
+                self.piclabel.setImageTags(audioinfo.IMAGETAGS)
+                self.piclabel.setImages(None)
+                self.piclabel.setEnabled(True)
+        self._checkListBox()
+
+    def _loadsingle(self, tags):
         items = []
-        tags = self.model.taginfo[row]
-        for item, val in sorted(audioinfo.usertags(tags).items()):
+        for item, val in sorted(tags.usertags.items()):
             [items.append([item, z]) for z in val]
         [self._settag(i, *item) for i, item in enumerate(items)]
-        self.currentrow = row
-        self.piclabel.setEnabled(False)
         self.piclabel.lastfilename = tags['__folder']
         if '__library' not in tags:
             self.piclabel.setImageTags(tags.IMAGETAGS)
-            if hasattr(tags, 'image'):
+            if tags.IMAGETAGS:
                 self.piclabel.setEnabled(True)
                 if tags.images:
                     self.piclabel.setImages(deepcopy(tags.images))
                 else:
                     self.piclabel.setImages(None)
-        else:
-            self.piclabel.setImages(None)
         self._checkListBox()
         self.setWindowTitle(tags["__filename"])
-        self.undolevel = self.model.undolevel
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

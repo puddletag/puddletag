@@ -481,6 +481,7 @@ class MainWin(QMainWindow):
 
         self.cenwid.inittable()
         model = self.cenwid.table.model()
+        self.connect(self.cenwid.table.exttags, SIGNAL('triggered()'), self.etagsEdit)
         self.connect(model, SIGNAL('enableUndo'), self.undo.setEnabled)
         self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
         self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)     
@@ -821,6 +822,52 @@ class MainWin(QMainWindow):
             selectedtags = [headerdata[column][1]
                     for column in table.currentRowSelection()[row]]
             tags = findfunc.runQuickAction(funcs, audio, selectedtags)
+            try:
+                self.setTag(row, tags)
+                yield None
+            except (IOError, OSError), detail:
+                yield (audio[FILENAME], unicode(detail.strerror), len(table.selectedRows))
+
+    def etagsEdit(self):
+        """Open window to edit all the tags in a file"""
+        from helperwin import ExTags
+        table = self.cenwid.table
+        if len(table.selectedRows) > 1:
+            win = ExTags(self)
+            win.loadFiles(table.selectedTags)
+            self.connect(win, SIGNAL("extendedtags"), self.writeExtended)
+        else:
+            win = ExTags(self, table.selectedRows[0], table.model())
+            self.connect(win, SIGNAL("extendedtags"), self._writeOneExtended)
+        win.setModal(True)
+        win.show()
+        
+
+    def _writeOneExtended(self, tags):
+        #Segmentation fault if I use the other one.
+        table = self.cenwid.table
+        if len(table.selectedRows) == 1:
+            self.setTag(table.selectedRows[0], tags)
+            self.setTag(True)
+            return
+
+    @showwriteprogress
+    def writeExtended(self, tags):
+        """Basically the same as runAction, except that
+        all the functions in funcs are executed on the curently selected cells.
+
+        Say you had a action that would convert "__path" to Mixed Case.
+        If you ran it using runAction, it would do just that, but if you ran
+        it using this function but had the title column selected, then
+        all the files selected in the title column would have their titles
+        converted to Mixed Case.
+
+        funcs is a list of actiondlg.Function objects.
+        No error checking is done, so don't pass shitty values."""
+
+        table = self.cenwid.table
+        for row, audio in zip(table.selectedRows, table.selectedTags):
+            #looks complicated, but it's just the selected tags.
             try:
                 self.setTag(row, tags)
                 yield None

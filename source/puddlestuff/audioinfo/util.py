@@ -95,6 +95,44 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
 
+def commonimages(imagedicts):
+    combined = dict([(tag, set()) for tag in IMAGETAGS])
+    for image in imagedicts:
+        for tag in combined:
+            try:
+                value = image[tag]
+            except KeyError:
+                value = 0
+            combined[tag].add(value)
+    for key, value in combined.items():
+        if len(value) == 1 and list(value)[0] == 0:
+            del(combined[key])
+        elif 0 in value:
+            value.remove(0)
+    return combined
+
+def commontags(audios):
+    images = []
+    imagetags = set()
+    combined = {}
+    tags = {}
+    images = []
+    for audio in audios:
+        if audio.IMAGETAGS:
+            images.append(audio['__image'][0] if audio['__image'] else {})
+        else:
+            images.append({})
+        audio = stringtags(audio.usertags)
+        for tag, value in audio.items():
+            try:
+                combined[tag].add(value)
+                tags[tag] += 1
+            except KeyError:
+                combined[tag] = set([value])
+                tags[tag] = 0
+    combined['__image'] = commonimages(images)
+    return combined, tags
+
 def stringtags(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.
     If a key is a list then the first item of that list is returned."""

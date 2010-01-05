@@ -71,9 +71,9 @@ class Tag(util.MockTag):
         elif key in INFOTAGS or isinstance(key, (int, long)):
             self._tags[key] = value
         elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
-            self._tags[key] = [unicode(value)]
+            self._tags[key.lower()] = [unicode(value)]
         else:
-            self._tags[key] = [unicode(z) for z in value]
+            self._tags[key.lower()] = [unicode(z) for z in value]
 
     def copy(self):
         tag = Tag()

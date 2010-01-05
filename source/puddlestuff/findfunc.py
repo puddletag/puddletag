@@ -320,7 +320,7 @@ def runAction(funcs, audio):
             tag = audio.keys()
         for z in tag:
             try:
-                val[z] = func.runFunction(audio[z], audio = audio)
+                val[z] = func.runFunction(audio.get(z), audio = audio)
             except KeyError:
                 """The tag doesn't exist or is empty.
                 In either case we do nothing"""
