@@ -789,7 +789,7 @@ class PicWidget(QWidget):
         self._image_type.addItems(IMAGETYPES)
         self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
                         self.setType)
-        controls = QHBoxLayout()
+        controls = QVBoxLayout()
 
         dbox = QVBoxLayout()
         label = QLabel('&Description')
@@ -829,6 +829,10 @@ class PicWidget(QWidget):
         vbox.addLayout(controls)
         vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
+
+        self._contextlabel = QLabel()
+        self._contextlabel.setVisible(False)
+        vbox.addWidget(self._contextlabel)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 

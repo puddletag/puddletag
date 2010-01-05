@@ -510,7 +510,7 @@ class ExTags(QDialog):
                 if numvalues[key] != len(audios):
                     self._settag(i, key, '<keep>')
                 else:
-                    self._settag(i, key, audios[key].pop())
+                    self._settag(i, key, common[key].pop())
             if images and len(images['data']) == 1:
                 self.piclabel.setImageTags(images.keys())
                 self.piclabel.setEnabled(True)

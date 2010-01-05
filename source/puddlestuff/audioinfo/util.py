@@ -129,7 +129,7 @@ def commontags(audios):
                 tags[tag] += 1
             except KeyError:
                 combined[tag] = set([value])
-                tags[tag] = 0
+                tags[tag] = 1
     combined['__image'] = commonimages(images)
     return combined, tags
 
