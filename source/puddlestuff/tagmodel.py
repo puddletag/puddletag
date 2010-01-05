@@ -528,7 +528,10 @@ class TagModel(QAbstractTableModel):
 
     def sort(self,column, order = Qt.DescendingOrder):
         self.sortOrder = (column, order)
-        tag = self.headerdata[column][1]
+        try:
+            tag = self.headerdata[column][1]
+        except IndexError:
+            tag = self.headerdata[0][1]
         if order == Qt.AscendingOrder:
             self.taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag))
         else:

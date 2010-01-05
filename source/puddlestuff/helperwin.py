@@ -29,6 +29,10 @@ import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (OKCancel, partial, MoveButtons, ListButtons,
                             PicWidget)
 from copy import deepcopy
+REMOVE, EDIT, ADD = (1,2,3)
+c = [Qt.red, Qt.green, Qt.darkYellow]
+COLOR = {REMOVE: QBrush(c[0]), EDIT: QBrush(c[1]), ADD:QBrush(c[2])}
+RGBCOLORS = [QColor(z).rgb() for z in c]
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -254,6 +258,28 @@ class EditTag(QDialog):
         self.close()
         self.emit(SIGNAL("donewithmyshit"), unicode(self.tagcombo.currentText()), unicode(self.value.toPlainText()), self.prevtag)
 
+class StatusWidgetItem(QTableWidgetItem):
+    def __init__(self, text = None, status = None):
+        QTableWidgetItem.__init__(self)
+        if text:
+            self.setText(text)
+        if status and status in COLOR:
+            self.setBackground(COLOR[status])
+        self._status = status
+
+    def _getstatus(self):
+        return self._status
+
+    def _setstatus(self, status):
+        if status and status in COLOR:
+            self.setBackground(COLOR[status])
+            self._status = status
+        else:
+            self.setBackground(QTableWidgetItem().background())
+            self._status = None
+
+    status = property(_getstatus, _setstatus)
+            
 
 class ExTags(QDialog):
     """A dialog that shows you the tags in a file
@@ -264,7 +290,14 @@ class ExTags(QDialog):
         row -> the row that contains the file to be displayed
         """
         QDialog.__init__(self, parent)
-        self.listbox = QListWidget()
+        self.listbox = QTableWidget(0, 2, self)
+        header = self.listbox.horizontalHeader()
+        self.listbox.setSortingEnabled(True)
+        header.setVisible(True)
+        header.setSortIndicatorShown (True)
+        header.setStretchLastSection (True)
+        self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
+        self.listbox.verticalHeader().setVisible(False)
         self.piclabel = PicWidget(buttons = True)
         self.connect(self.piclabel, SIGNAL('imageChanged'), self._imageChanged)
 
@@ -322,7 +355,7 @@ class ExTags(QDialog):
             self.connect(buttons, SIGNAL('indexChanged'), self.loadFile)
 
     def _checkListBox(self):
-        if self.listbox.count() <= 0:
+        if self.listbox.rowCount() <= 0:
             self.listbox.setEnabled(False)
             self.listbuttons.edit.setEnabled(False)
             self.listbuttons.remove.setEnabled(False)
@@ -335,9 +368,13 @@ class ExTags(QDialog):
         self.filechanged = True
 
     def removeTag(self):
-        row = self.listbox.currentRow()
+        l = self.listbox
+        row = l.currentRow()
+        l.setSortingEnabled(False)
         if row != -1:
-            self.listbox.takeItem(row)
+            l.item(row,0).status = REMOVE
+            l.item(row,1).status = REMOVE
+        l.setSortingEnabled(True)
         self.filechanged = True
         self._checkListBox()
 
@@ -382,6 +419,30 @@ class ExTags(QDialog):
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
 
+    def _tag(self, row, status = None):
+        getitem = self.listbox.item
+        item = getitem(row, 0)
+        tag = unicode(item.text())
+        value = unicode(getitem(row, 1).text())
+        if status:
+            return (tag, value, item.status)
+        else:
+            return (tag, value)
+
+    def _settag(self, row, tag, value, status = None):
+        l = self.listbox
+        l.setSortingEnabled(False)
+        if row >= l.rowCount():
+            l.insertRow(row)
+        else:
+            if l.item(row, 0).status:
+                status = l.item(row, 0).status
+        tagitem = StatusWidgetItem(tag, status)
+        l.setItem(row, 0, tagitem)
+        valitem = StatusWidgetItem(value, status)
+        l.setItem(row, 1, valitem)
+        l.setSortingEnabled(True)
+        
     def editTag(self):
         """Opens a windows that allows the user
         to edit the tag in item(a QListWidgetItem that's supposed to
@@ -393,7 +454,7 @@ class ExTags(QDialog):
         After the value is edited, self.listbox is updated."""
         row = self.listbox.currentRow()
         if row != -1:
-            prevtag = unicode(self.listbox.currentItem().text()).split(" = ")
+            prevtag = self._tag(row)
             win = EditTag(prevtag, self)
             win.setModal(True)
             win.show()
@@ -402,23 +463,23 @@ class ExTags(QDialog):
 
     def editTagBuddy(self, tag, value, prevtag = None):
         if prevtag is not None:
-            self.listbox.currentItem().setText(tag + " = " + value)
+            self._settag(self.listbox.currentRow(), tag, value, EDIT)
         else:
-            self.listbox.addItem(tag + " = " + value)
-        self.listbox.sortItems()
+            self._settag(self.listbox.rowCount(), tag, value, ADD)
         self._checkListBox()
         self.filechanged = True
 
     def listtotag(self):
-        gettag = lambda row: unicode(self.listbox.item(row).text()).split(' = ', 1)
+        gettag = self._tag
         tags = {}
-        listitems = [gettag(row) for row in xrange(self.listbox.count())]
+        listitems = [gettag(row, True) for row in xrange(self.listbox.rowCount())]
         try:
-            for tag, val in listitems:
-                if tag in tags:
-                    tags[tag].append(val)
-                else:
-                    tags[tag] = [val]
+            for tag, val, status in listitems:
+                if status != REMOVE:
+                    if tag in tags:
+                        tags[tag].append(val)
+                    else:
+                        tags[tag] = [val]
         except Exception, e:
             print listitems
             raise e
@@ -428,12 +489,13 @@ class ExTags(QDialog):
         if self.filechanged:
             self.save()
         self.filechanged = False
-        self.listbox.clear()
+        self.listbox.clearContents()
+        self.listbox.setRowCount(0)
         items = []
         tags = self.model.taginfo[row]
         for item, val in sorted(audioinfo.usertags(tags).items()):
-            [items.append(item + " = " + z) for z in val]
-        self.listbox.addItems(items)
+            [items.append([item, z]) for z in val]
+        [self._settag(i, *item) for i, item in enumerate(items)]
         self.currentrow = row
         self.piclabel.setEnabled(False)
         self.piclabel.lastfilename = tags['__folder']

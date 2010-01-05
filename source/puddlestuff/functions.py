@@ -78,7 +78,7 @@ def caps2(text):
 
 def caps3(text):
     try:
-        start = re.search("[a-zA-Z]", text).start(0)
+        start = re.search("\w", text, re.U).start(0)
     except AttributeError:
         return
     return text[:start] + text[start].upper() + text[start + 1:].lower()

@@ -58,7 +58,7 @@ class FileTags(QScrollArea):
                 d.setTextInteractionFlags(interaction)
                 p.setTextInteractionFlags(interaction)
                 self.grid.addWidget(d, row,0)
-                #self.grid.addWidget(p, row,1)
+                self.grid.addWidget(p, row,1)
                 row += 1
 
         elif len(tags) < len(self._labels):
