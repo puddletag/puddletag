@@ -503,7 +503,7 @@ class ExTags(QDialog):
             self._loadsingle(audio)
         else:
             self.setWindowTitle('Different files.')
-            common, numvalues = commontags(audios)
+            common, numvalues, imagetags = commontags(audios)
             images = common['__image']
             del(common['__image'])
             for i, key in enumerate(common):
@@ -511,15 +511,16 @@ class ExTags(QDialog):
                     self._settag(i, key, '<keep>')
                 else:
                     self._settag(i, key, common[key].pop())
-            if images and len(images['data']) == 1:
-                self.piclabel.setImageTags(images.keys())
+            if images:
+                self.piclabel.setImageTags(imagetags)
                 self.piclabel.setEnabled(True)
-                image = dict([(z,v.pop()) for z,v in images.items()])
-                self.piclabel.setImages([image])
+                self.piclabel.setImages(images)
             else:
-                self.piclabel.setImageTags(audioinfo.IMAGETAGS)
+                self.piclabel.setImageTags(imagetags)
                 self.piclabel.setImages(None)
                 self.piclabel.setEnabled(True)
+                if images == 0:
+                    self.piclabel.context = 'Cover Varies'
         self._checkListBox()
 
     def _loadsingle(self, tags):

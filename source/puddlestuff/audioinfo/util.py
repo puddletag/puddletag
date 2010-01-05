@@ -99,8 +99,10 @@ def commonimages(imagedicts):
     if imagedicts:
         x = imagedicts[0]
     for image in imagedicts[1:]:
-        if z != x:
+        if image != x:
             return 0
+    if not x:
+        return None
     return x
 
 def commontags(audios):
@@ -109,11 +111,13 @@ def commontags(audios):
     combined = {}
     tags = {}
     images = []
+    imagetags = set()
     for audio in audios:
         if audio.IMAGETAGS:
             images.append(audio['__image'] if audio['__image'] else {})
         else:
             images.append({})
+        imagetags = imagetags.union(audio.IMAGETAGS)
         audio = stringtags(audio.usertags)
         for tag, value in audio.items():
             try:
@@ -123,7 +127,7 @@ def commontags(audios):
                 combined[tag] = set([value])
                 tags[tag] = 1
     combined['__image'] = commonimages(images)
-    return combined, tags
+    return combined, tags, imagetags
 
 def stringtags(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.

@@ -832,7 +832,8 @@ class PicWidget(QWidget):
 
         self._contextlabel = QLabel()
         self._contextlabel.setVisible(False)
-        vbox.addWidget(self._contextlabel)
+        b = QHBoxLayout(); b.setAlignment(Qt.AlignHCenter);b.addWidget(self._contextlabel)
+        vbox.addLayout(b)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
@@ -885,6 +886,19 @@ class PicWidget(QWidget):
             imagetags = []
 
         self.setImages(images, imagetags)
+
+    def _setContext(self, text):
+        if not text:
+            self._contextlabel.setVisible(False)
+            self._contextlabel.setText('')
+        else:
+            self._contextlabel.setText(text)
+            self._contextlabel.setVisible(True)
+
+    def _getContext(self):
+        return self._contextlabel.Text()
+
+    context = property(_getContext, _setContext)
 
     def setDescription(self, text):
         '''Sets the description of the current image to the text in the
@@ -997,6 +1011,7 @@ class PicWidget(QWidget):
             pass
         self._image_type.blockSignals(False)
         self._currentImage = num
+        self.context = unicode(num + 1) + '/' + unicode(len(self.images))
         self.label.setFrameStyle(QFrame.NoFrame)
         self.enableButtons()
 
