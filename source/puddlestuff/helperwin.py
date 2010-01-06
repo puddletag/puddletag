@@ -318,7 +318,9 @@ class ExTags(QDialog):
         header.setVisible(True)
         header.setSortIndicatorShown (True)
         header.setStretchLastSection (True)
+        header.setSortIndicator (0, Qt.AscendingOrder)
         self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
+        
         self.listbox.verticalHeader().setVisible(False)
         self.piclabel = PicWidget(buttons = True)
         self.connect(self.piclabel, SIGNAL('imageChanged'), self._imageChanged)

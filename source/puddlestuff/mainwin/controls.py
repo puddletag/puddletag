@@ -132,6 +132,7 @@ class FrameCombo(QGroupBox):
                     tags[tag].append("")
 
         if '__image' in combos:
+            combos['__image'].lastfilename = audios[0]['__filename']
             images = unique(images)
             if images:
                 combos['__image'].images.extend(images)

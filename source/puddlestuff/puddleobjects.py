@@ -830,15 +830,20 @@ class PicWidget(QWidget):
             readonly = []
         self.readonly = readonly
 
-        self.next = QPushButton('&>>')
-        self.prev = QPushButton('&<<')
+        self.next = QToolButton()
+        self.next.setArrowType(Qt.RightArrow)
+        self.prev = QToolButton()
+        self.prev.setArrowType(Qt.LeftArrow)
         self.connect(self.next, SIGNAL('clicked()'), self.nextImage)
         self.connect(self.prev, SIGNAL('clicked()'), self.prevImage)
 
         movebuttons = QHBoxLayout()
+        self._contextlabel = QLabel()
+        self._contextlabel.setVisible(False)
         movebuttons.addStretch()
         movebuttons.addWidget(self.prev)
         movebuttons.addWidget(self.next)
+        movebuttons.addWidget(self._contextlabel)
         movebuttons.addStretch()
 
         vbox = QVBoxLayout()
@@ -848,11 +853,6 @@ class PicWidget(QWidget):
         vbox.addLayout(controls)
         vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
-
-        self._contextlabel = QLabel()
-        self._contextlabel.setVisible(False)
-        b = QHBoxLayout(); b.setAlignment(Qt.AlignHCenter);b.addWidget(self._contextlabel)
-        vbox.addLayout(b)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
@@ -1027,6 +1027,7 @@ class PicWidget(QWidget):
         try:
             self._image_type.setCurrentIndex(self.images[num]['imagetype'])
         except KeyError:
+            self._image_type.setCurrentIndex(3)
             pass
         self._image_type.blockSignals(False)
         self._currentImage = num
@@ -1116,7 +1117,7 @@ class PicWidget(QWidget):
                 pic = {'data': data, 'height': image.height(),
                     'width': image.width(), 'size': len(data),
                     'mime': 'image/jpeg', 'description': 'Enter description',
-                    'imagetype': 0}
+                    'imagetype': 3}
                 images.append(pic)
         return images
 

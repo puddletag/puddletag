@@ -70,6 +70,7 @@ class PatternEditor(QFrame):
         self.connect(buttons, SIGNAL("edit"), self.editItem)
         self.listbox.connectToListButtons(buttons)
         self.listbox.editButton = buttons.edit
+        self.connect(self.listbox, SIGNAL('itemDoubleClicked (QListWidgetItem *)'), self._doubleClicked)
 
     def saveSettings(self):
         patterns = [unicode(self.listbox.item(row).text()) for row in xrange(self.listbox.count())]
@@ -82,6 +83,9 @@ class PatternEditor(QFrame):
         self.listbox.clearSelection()
         self.editItem(True)
         self.listbox.setFocus()
+
+    def _doubleClicked(self, item):
+        self.editItem()
 
     def editItem(self, add = False):
         row = self.listbox.currentRow()

@@ -375,7 +375,11 @@ class ActionWindow(QDialog):
         self.example = example
 
         self.funcs = self.loadActions()
-        self.listbox.addItems([self.funcs[z][1] for z in sorted(self.funcs)])
+        for z in self.funcs:
+            item = QListWidgetItem(self.funcs[z][1])
+            item.setCheckState(Qt.Unchecked)
+            self.listbox.addItem(item)
+        #self.listbox.addItems([self.funcs[z][1] for z in sorted(self.funcs)])
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
@@ -396,14 +400,14 @@ class ActionWindow(QDialog):
         self.connect(self.buttonlist, SIGNAL("moveup"), self.moveUp)
         self.connect(self.buttonlist, SIGNAL("movedown"), self.moveDown)
         self.connect(self.buttonlist, SIGNAL("remove"), self.remove)
-        self.connect(self.listbox, SIGNAL("itemDoubleClicked (QListWidgetItem *)"), self.okClicked)
+        self.connect(self.listbox, SIGNAL("itemDoubleClicked (QListWidgetItem *)"), self.edit)
         self.connect(self.listbox, SIGNAL("currentRowChanged(int)"), self.enableOK)
 
         if example:
             self._examplelabel = QLabel('')
             self.grid.addWidget(self._examplelabel,1,0)
             self._example = example
-            self.connect(self.listbox, SIGNAL('itemSelectionChanged ()'),
+            self.connect(self.listbox, SIGNAL('itemChanged (QListWidgetItem *)'),
                                 self.updateExample)
             self.grid.addLayout(self.okcancel,2,0,1,2)
         else:
@@ -458,13 +462,14 @@ class ActionWindow(QDialog):
                 funcs[i] = findfunc.getAction(f)
         return funcs
 
-    def updateExample(self):
-        selectedrows = [self.listbox.row(item) for item in self.listbox.selectedItems()]
+    def updateExample(self, *args):
+        l = self.listbox
+        items = [l.item(z) for z in range(l.count())]
+        selectedrows = [i for i,z in enumerate(items) if z.checkState() == Qt.Checked]
         if selectedrows:
             tempfuncs = [self.funcs[row][0] for row in selectedrows]
             funcs = []
             [funcs.extend(func) for func in tempfuncs]
-            row = self.listbox.row(item)
             tags = runAction(funcs, self._example)
             self._examplelabel.setText(displaytags(tags))
 
@@ -482,7 +487,9 @@ class ActionWindow(QDialog):
     def add(self):
         (text, ok) = QInputDialog.getText (self, "New Configuration", "Enter a name for the new action.", QLineEdit.Normal)
         if (ok is True) and (text != ""):
-            self.listbox.addItem(text)
+            item = QListWidgetItem(text)
+            item.setCheckState(Qt.Unchecked)
+            self.listbox.addItem(item)
         else:
             return
         win = CreateAction(self.tags, self, example = self.example)
@@ -518,7 +525,9 @@ class ActionWindow(QDialog):
 
     def okClicked(self):
         """When clicked, save the current contents of the listbox and the associated functions"""
-        selectedrows = [self.listbox.row(item) for item in self.listbox.selectedItems()]
+        l = self.listbox
+        items = [l.item(z) for z in range(l.count())]
+        selectedrows = [i for i,z in enumerate(items) if z.checkState() == Qt.Checked]
         tempfuncs = [self.funcs[row][0] for row in selectedrows]
         funcs = []
         [funcs.extend(func) for func in tempfuncs]
