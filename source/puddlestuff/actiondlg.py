@@ -30,6 +30,7 @@ import cPickle as pickle
 from puddleobjects import ListBox, OKCancel, ListButtons, winsettings
 from findfunc import Function, runAction
 from puddleobjects import PuddleConfig, PuddleCombo
+from audioinfo import REVTAGS
 
 def displaytags(tags):
     if tags:
@@ -38,6 +39,12 @@ def displaytags(tags):
     else:
         return '<b>No change.</b>'
 
+def gettaglist():
+    try:
+        tags =  open(os.path.join(PuddleConfig().savedir, 'taglist'), 'r').read()
+        return tags.split('\n')
+    except IOError, OSError:
+        return ['__path'] + sorted([z for z in REVTAGS])
 
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
@@ -60,8 +67,7 @@ class FunctionDialog(QWidget):
         if showcombo:
             self.tagcombo = QComboBox()
             self.tagcombo.setEditable(True)
-            from audioinfo import REVTAGS
-            self.tagcombo.addItems(["__all", '__path'] + sorted([z for z in REVTAGS]))
+            self.tagcombo.addItems(['__all', '__path'] + sorted([z for z in REVTAGS]))
             if defaulttags:
                 index = self.tagcombo.findText(" | ".join(defaulttags))
                 if index != -1:

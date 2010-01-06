@@ -65,7 +65,7 @@ TAGS = {'TALB': 'album',
         'TMOO': 'mood',
         'TOAL': 'originalalbum',
         'TOFN': 'originalfilename',
-        'TOLY': 'author',
+            'TOLY': 'author',
         'TOPE': 'originalartist',
         'TOWN': 'fileowner',
         'TPE1': 'artist',
@@ -120,11 +120,11 @@ def commontags(audios):
         imagetags = imagetags.union(audio.IMAGETAGS)
         audio = stringtags(audio.usertags)
         for tag, value in audio.items():
-            try:
-                combined[tag].add(value)
-                tags[tag] += 1
-            except KeyError:
-                combined[tag] = set([value])
+            if tag in combined:
+                if combined[tag] == value:
+                    tags[tag] += 1
+            else:
+                combined[tag] = value
                 tags[tag] = 1
     combined['__image'] = commonimages(images)
     return combined, tags, imagetags

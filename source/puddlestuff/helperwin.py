@@ -356,9 +356,9 @@ class ExTags(QDialog):
         imageframe.setLayout(vbox)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(listframe)
+        hbox.addWidget(listframe, 1)
         hbox.addSpacing(4)
-        hbox.addWidget(imageframe)
+        hbox.addWidget(imageframe, 0)
 
         layout = QVBoxLayout()
         layout.addLayout(hbox)
@@ -532,7 +532,7 @@ class ExTags(QDialog):
                 if numvalues[key] != len(audios):
                     self._settag(i, key, '<keep>')
                 else:
-                    self._settag(i, key, common[key].pop())
+                    self._settag(i, key, common[key])
             if images:
                 self.piclabel.setImageTags(imagetags)
                 self.piclabel.setEnabled(True)

@@ -1014,6 +1014,8 @@ class PicWidget(QWidget):
         if num in self.readonly:
             self.editpic.setEnabled(False)
             self.removepic.setEnabled(False)
+            self._image_desc.setEnabled(False)
+            self._image_type.setEnabled(False)
         self.pixmap = QPixmap.fromImage(image)
         self.win.setImage(self.pixmap)
         self.label.setPixmap(self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio))

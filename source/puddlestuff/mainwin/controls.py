@@ -3,6 +3,7 @@ from PyQt4.QtCore import QDir, QPoint, Qt, QSize, SIGNAL, QMimeData, QUrl
 from puddlestuff.puddleobjects import PuddleThread, HeaderSetting, partial, natcasecmp, PicWidget, unique
 from puddlestuff.puddlesettings import ColumnSettings
 import puddlestuff.audioinfo as audioinfo
+from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.tagmodel import TagTable
 from copy import deepcopy
 import os, shutil
@@ -120,8 +121,10 @@ class FrameCombo(QGroupBox):
             except AttributeError:
                 pass
             if ('__image' in combos):
-                if hasattr(audio,'image'):
-                    images.extend(audio.images)
+                if audio.IMAGETAGS:
+                    images.append(audio['__image'] if audio['__image'] else {})
+                else:
+                    images.append({})
             for tag in tags:
                 try:
                     if isinstance(audio[tag],(unicode, str)):
@@ -133,16 +136,17 @@ class FrameCombo(QGroupBox):
 
         if '__image' in combos:
             combos['__image'].lastfilename = audios[0]['__filename']
-            images = unique(images)
-            if images:
-                combos['__image'].images.extend(images)
-                if (len(images) == 1 or len(audios) == 1):
-                    combos['__image'].currentImage = 2
-                else:
-                    combos['__image'].currentImage = 0
-            else:
+            images = commonimages(images)
+            if images == 0:
+                combos['__image'].setImageTags(imagetags)
+                combos['__image'].context = 'Cover Varies'
+                combos['__image'].currentImage = 0
+            elif images == None:
                 combos['__image'].currentImage = 1
-            combos['__image'].setImageTags(imagetags)
+            else:
+                combos['__image'].setImageTags(imagetags)
+                combos['__image'].images.extend(images)
+                combos['__image'].currentImage = 2
 
         for z in tags:
             tags[z] = list(set(tags[z]))
