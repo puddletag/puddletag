@@ -9,7 +9,7 @@ pyqtRemoveInputHook()
 from matchfuncs import Algo, funcinfo, funcs, _ratio
 from dupefuncs import dupesinlib
 from puddlestuff.findfunc import tagtofilename
-from puddlestuff.puddleobjects import progress
+from puddlestuff.puddleobjects import progress, winsettings
 import time
 
 DEFAULTSET = {'setname': 'Default',
@@ -182,6 +182,7 @@ class DupeTree(QTreeWidget):
 class AlgWin(QDialog):
     def __init__(self, parent=None, alg = None):
         QDialog.__init__(self, parent)
+        winsettings('algwin', self)
         taglabel = QLabel('&Tags')
         self.tags = QLineEdit('artist | title')
         taglabel.setBuddy(self.tags)
@@ -257,6 +258,7 @@ class AlgWin(QDialog):
 class SetDialog(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self,parent)
+        winsettings('setdialog', self)
         vbox = QVBoxLayout()
         self._previndex = 0
         self.setscombo = QComboBox()

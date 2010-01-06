@@ -27,7 +27,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (OKCancel, partial, MoveButtons, ListButtons,
-                            PicWidget)
+                            PicWidget, winsettings)
 from copy import deepcopy
 REMOVE, EDIT, ADD = (1,2,3)
 c = [Qt.red, Qt.green, Qt.darkYellow]
@@ -45,6 +45,7 @@ class TrackWindow(QDialog):
     def __init__(self, parent=None, minval=0, numtracks = None, enablenumtracks = False):
         QDialog.__init__(self,parent)
         self.setWindowTitle("Autonumbering Wizard")
+        winsettings('autonumbering')
 
         self.hboxlayout = QHBoxLayout()
         self.hboxlayout.setMargin(0)
@@ -110,9 +111,10 @@ class ImportWindow(QDialog):
 
     emits a signal newtags with a dictionary containing
     the...new tags."""
-    def __init__(self,parent = None, filename = None):
+    def __init__(self,parent = None, filename = None, clipboard = None):
         QDialog.__init__(self, parent)
         self.setWindowTitle("Import tags from file")
+        winsettings('importwin', self)
 
         self.grid = QGridLayout()
 
@@ -143,8 +145,11 @@ class ImportWindow(QDialog):
         self.cancel = QPushButton("&Cancel")
 
         self.openfile = QPushButton("&Select File")
+        getclip = QPushButton("&Paste Clipboard")
+        self.connect(getclip, SIGNAL('clicked()'), self.openClipBoard)
 
         self.hbox.addWidget(self.openfile)
+        self.hbox.addWidget(getclip)
         self.hbox.addWidget(self.patterncombo,1)
         self.hbox.addWidget(self.ok)
         self.hbox.addWidget(self.cancel)
@@ -156,6 +161,10 @@ class ImportWindow(QDialog):
         self.connect(self.openfile,SIGNAL("clicked()"),self.openFile)
         self.connect(self.cancel, SIGNAL("clicked()"),self.close)
         self.connect(self.ok, SIGNAL("clicked()"),self.doStuff)
+
+        if clipboard:
+            self.openClipBoard()
+            return
 
         if filename is not None:
             self.openFile(filename)
@@ -191,6 +200,16 @@ class ImportWindow(QDialog):
             self.show()
             self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
             self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),self.fillTags)
+
+    def openClipBoard(self):
+        text = unicode(QApplication.clipboard().text())
+        self.lines = text.split(u'\n')
+        self.file.setPlainText(text)
+        self.setLines()
+        self.fillTags()
+        self.show()
+        self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
+        self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),self.fillTags)
 
     def fillTags(self,string = None): #string is there purely for the SIGNAL
         """Fill the tag textbox."""
@@ -292,6 +311,7 @@ class ExTags(QDialog):
         row -> the row that contains the file to be displayed
         """
         QDialog.__init__(self, parent)
+        winsettings('extendedtags', self)
         self.listbox = QTableWidget(0, 2, self)
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(True)

@@ -162,13 +162,10 @@ Featuring &String, text, " ft "
         text = tags["artist"]
     except KeyError:
         return
+    title = tags.get('title') if tags.get('title') else ''
     index = text.find(ftval)
     if index != -1:
-        try:
-            return tags["title"] + replacetext + text[index + len(ftval):]
-        except:
-            pdb.set_trace()
-            return tags["title"] + replacetext + text[index + len(ftval):]
+        return title + replacetext + text[index + len(ftval):]
 
 def geql(text,text1):
     if text >= text1:
@@ -386,9 +383,9 @@ w&ith, text"""
         groups = match.groups()
         if groups:
             d = dict(enumerate(groups))
-            return parsefunc(replacetokens(rep, d), {})
+            return findfunc.parsefunc(replacetokens(rep, d), {})
         else:
-            return parsefunc(re.sub(expr, rep, text), {})
+            return findfunc.parsefunc(re.sub(expr, rep, text), {})
     else:
         return
 

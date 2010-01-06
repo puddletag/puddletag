@@ -43,7 +43,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource
 from copy import copy
-from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig
+from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig, savewinsize, winsettings
 import pdb
 
 class PatternEditor(QFrame):
@@ -79,14 +79,20 @@ class PatternEditor(QFrame):
     def addPattern(self):
         self.listbox.addItem("")
         self.listbox.setCurrentRow(self.listbox.count() - 1)
+        self.listbox.clearSelection()
         self.editItem(True)
         self.listbox.setFocus()
 
     def editItem(self, add = False):
-        item = self.listbox.currentItem()
-        if item:
-            (text, ok) = QInputDialog.getText(self, "puddletag","Enter a pattern:", QLineEdit.Normal, item.text())
+        row = self.listbox.currentRow()
+        if not add and row < 0:
+            return
+        l = self.listbox.item
+        items = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        (text, ok) = QInputDialog().getItem (self, 'puddletag', 'Enter a pattern', items, row)
         if ok:
+            item = l(row)
+            self.listbox.setItemSelected (item, True)
             item.setText(text)
 
     def applySettings(self, cenwid):
@@ -463,6 +469,7 @@ class MainWin(QDialog):
     def __init__(self, cenwid = None, parent = None, readvalues = False):
         QDialog.__init__(self, parent)
         self.setWindowTitle("puddletag settings")
+        winsettings('settingswin', self)
         if readvalues:
             self.combosetting = ComboFrame(parent = self, cenwid = cenwid)
             self.gensettings = GeneralSettings(parent = self, cenwid = cenwid)

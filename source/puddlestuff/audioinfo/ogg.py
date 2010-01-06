@@ -84,6 +84,7 @@ class Tag(util.MockTag):
         self._mutfile.delete()
         for z in self.usertags:
             del(self._tags[z])
+        self.save()
 
     def _info(self):
         info = self._mutfile.info

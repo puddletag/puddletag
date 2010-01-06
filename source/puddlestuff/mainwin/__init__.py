@@ -79,9 +79,11 @@ def createActions(parent):
         parent.decreasefont = QAction('Decrease Font', parent)
         parent.decreasefont.setShortcut('Ctrl+-')
 
+        parent.importclipboard = QAction('Clipboard -> Tag', parent)
+
 def connectActions(parent):
     def connect(action, slot):
-            parent.connect(action, SIGNAL('triggered()'), slot)
+        parent.connect(action, SIGNAL('triggered()'), slot)
     connect(parent.changetracks, parent.trackWizard)
     connect(parent.addfolder, parent.addFolder)
     connect(parent.opendir, parent.openFolder)
@@ -104,6 +106,7 @@ def connectActions(parent):
     connect(parent.libdupes, parent.libDupes)
     connect(parent.increasefont, parent.increaseFont)
     connect(parent.decreasefont, parent.decreaseFont)
+    connect(parent.importclipboard, parent.importClipBoard)
     
     parent.connect(parent.duplicates, SIGNAL('toggled(bool)'), parent.showDupes)
     parent.connect(parent.fileinlib, SIGNAL('toggled(bool)'), parent.inLib)
@@ -163,13 +166,14 @@ def createMenus(parent):
     edit = menubar.addMenu("&Edit")
     table = parent.cenwid.table
     [edit.addAction(z) for z in [parent.undo, separator(), parent.cutaction,
-        parent.copyaction, parent.pasteaction, separator(), table.delete, separator(),
+        parent.copyaction, parent.pasteaction, separator(), table.cleartag, separator(),
+        table.delete, separator(),
         parent.selectall, parent.invertselection, parent.selectcolumn, separator(),
         parent.increasefont, parent.decreasefont, separator(), parent.preferences]]
 
     convert = menubar.addMenu("&Convert")
     [convert.addAction(z) for z in [parent.tagfromfile, parent.tagtofile,
-                parent.formattag, separator(), parent.renamedir, parent.importfile]]
+                parent.formattag, separator(), parent.renamedir, parent.importfile, parent.importclipboard]]
 
     actionmenu = menubar.addMenu("&Actions")
     [actionmenu.addAction(z) for z in [parent.openactions, parent.quickactions, parent.puddlefunctions]]
@@ -188,7 +192,7 @@ def createMenus(parent):
                     parent.savecombotags, parent.tagfromfile,
                     parent.tagtofile, parent.formattag,
                     parent.openactions, parent.quickactions, parent.puddlefunctions,
-                    parent.changetracks, parent.importfile, parent.renamedir, parent.autotagging]
+                    parent.changetracks, parent.importfile, parent.renamedir, parent.autotagging, parent.importclipboard]
 
     parent.supportactions = [parent.selectall, parent.invertselection, parent.selectcolumn,
         parent.duplicates, parent.fileinlib, parent.addfolder, parent.reloaddir, parent.saveplaylist]

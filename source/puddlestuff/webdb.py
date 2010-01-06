@@ -18,7 +18,7 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-from puddleobjects import unique, OKCancel, PuddleThread
+from puddleobjects import unique, OKCancel, PuddleThread, winsettings
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb
@@ -214,6 +214,7 @@ class MainWin(QDialog):
     def __init__(self, table, parent = None):
         QDialog.__init__(self, parent)
         self.setWindowTitle("puddletag Musicbrainz")
+        winsettings('musicbrainz', self)
         self.table = table
         self.combo = QComboBox()
         self.combo.addItems(["Album only", "Artist only", "Album and Artist"])

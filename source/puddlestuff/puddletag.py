@@ -587,13 +587,13 @@ class MainWin(QMainWindow):
         row = table.selectedRows[0]
         column = table.currentRowSelection()[row][0]
         tag = table.model().headerdata[column][1]
-        text = table.selectedTags[0][tag]
 
-        example = [text, table.selectedTags[0]]
+        example = table.selectedTags[0]
+        text = table.selectedTags[0][tag]
         if hasattr(self, "prevfunc"):
-            f = actiondlg.CreateFunction(prevfunc = self.prevfunc, parent = self, showcombo = False, example = example)
+            f = actiondlg.CreateFunction(prevfunc = self.prevfunc, parent = self, showcombo = False, example =example, text=text)
         else:
-            f = actiondlg.CreateFunction(parent = self, showcombo = False, example = example)
+            f = actiondlg.CreateFunction(parent = self, showcombo = False, example = example, text = text)
         f.setModal(True)
         f.show()
         self.connect(f, SIGNAL("valschanged"), self.puddleFunctionsBuddy)
@@ -669,6 +669,13 @@ class MainWin(QMainWindow):
             patternitems = [self.patterncombo.itemText(z) for z in range(self.patterncombo.count())]
             win.patterncombo.addItems(patternitems)
             self.connect(win, SIGNAL("Newtags"), self.importFileBuddy)
+
+    def importClipBoard(self):
+        win = helperwin.ImportWindow(self, clipboard = True)
+        win.setModal(True)
+        patternitems = [self.patterncombo.itemText(z) for z in range(self.patterncombo.count())]
+        win.patterncombo.addItems(patternitems)
+        self.connect(win, SIGNAL("Newtags"), self.importFileBuddy)
 
     @showwriteprogress
     def importFileBuddy(self, taglist):
@@ -774,7 +781,8 @@ class MainWin(QMainWindow):
     def openActions(self, quickaction = False):
         """Shows the action window and calls either RunAction or RunQuickaction
         depending on the value of quickaction."""
-        self.qb = actiondlg.ActionWindow(self.cenwid.headerdata, self)
+        example = self.cenwid.table.selectedTags[0]
+        self.qb = actiondlg.ActionWindow(self.cenwid.headerdata, self, example)
         self.qb.setModal(True)
         self.qb.show()
         if quickaction:

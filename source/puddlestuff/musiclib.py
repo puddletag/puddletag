@@ -22,7 +22,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from os import path
 import sys, pdb
-from puddleobjects import PuddleDock, OKCancel, ProgressWin, PuddleThread
+from puddleobjects import PuddleDock, OKCancel, ProgressWin, PuddleThread, winsettings
 import audioinfo
 (stringtags, FILENAME, READONLY, INFOTAGS) = (audioinfo.stringtags, audioinfo.FILENAME, audioinfo.READONLY, audioinfo.INFOTAGS)
 import libraries, imp
@@ -42,6 +42,7 @@ class MainWin(QDialog):
         QDialog.__init__(self, parent)
         self.listbox = QListWidget()
         self.setWindowTitle('Import Music Library')
+        winsettings('importmusiclib', self)
         self.resize(550,300)
 
         self.libattrs = []

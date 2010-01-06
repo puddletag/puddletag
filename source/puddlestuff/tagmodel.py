@@ -685,6 +685,7 @@ class TagTable(QTableView):
         self.delete = QAction(QIcon(':/remove.png'), '&Delete', self)
         self.delete.setShortcut('Delete')
         self.cleartag = QAction('Delete Tag', self)
+        self.cleartag.setShortcut('Ctrl+R')
         self.properties = QAction('Properties', self)
 
         connect = lambda a,f: self.connect(a, SIGNAL('triggered()'), f)
@@ -732,6 +733,8 @@ class TagTable(QTableView):
                 except (OSError, IOError), e:
                     yield "There was an error deleting the tag of %s: <b>%s</b>" % (
                                 e.filename, e.strerror), len(self.selectedRows)
+            self.model().undolevel += 1
+            
         f = progress(func, 'Deleting tag... ', len(self.selectedRows))
         f(self)
 

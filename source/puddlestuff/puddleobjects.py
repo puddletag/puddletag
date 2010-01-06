@@ -41,6 +41,25 @@ import shutil
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 
+def _setupsaves(func):
+    #filename = os.path.join(PuddleConfig().savedir, 'windowsizes')
+    filename = '/home/keith/Desktop/puddle.conf'
+    settings = QSettings(filename, QSettings.IniFormat)
+    return lambda x, y: func(x, y, settings)
+
+@_setupsaves
+def savewinsize(name, dialog, settings):
+    settings.setValue(name, QVariant(dialog.saveGeometry()))
+
+@_setupsaves
+def winsettings(name, dialog, settings):
+    dialog.restoreGeometry(settings.value(name).toByteArray())
+    cevent = dialog.closeEvent
+    def closeEvent(e):
+        cevent(e)
+        savewinsize(name, dialog)
+    setattr(dialog, 'closeEvent', closeEvent)
+
 try:
     from Levenshtein import ratio
 except ImportError:
