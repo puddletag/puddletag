@@ -564,6 +564,72 @@ class TagMappings(QDialog):
         f.write('\n'.join([' '.join(z) for z in text]))
         f.close()
 
+class StatusWidgetItem(QTableWidgetItem):
+    def __init__(self, text, color):
+        QTableWidgetItem.__init__(self, text)
+        self.setBackground(QBrush(color))
+        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
+class ColorEdit(QDialog):
+    def __init__(self, parent = None, cenwid = None):
+
+        if cenwid:
+            return
+        cparser = PuddleConfig()
+        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [0,255,0], True))
+        edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [255,255,0], True))
+        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
+        colors = (add, edit, remove)
+
+        QDialog.__init__(self, parent)
+
+        self.listbox = QTableWidget(0, 2, self)
+        header = self.listbox.horizontalHeader()
+        self.listbox.setSortingEnabled(True)
+        header.setVisible(True)
+        header.setSortIndicatorShown (True)
+        header.setStretchLastSection (True)
+        header.setSortIndicator (0, Qt.AscendingOrder)
+        self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
+        self.listbox.setRowCount(3)
+
+        for i, z in enumerate([('Added', add), ('Edited', edit), ('Removed', remove)]):
+            self.listbox.setItem(i, 0, StatusWidgetItem(*z))
+            self.listbox.setItem(i, 1, StatusWidgetItem('Double click to edit', z[1]))
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.listbox)
+        self.setLayout(vbox)
+        self.connect(self.listbox, SIGNAL('cellDoubleClicked(int,int)'), self.edit)
+
+
+    def edit(self, row, column):
+        self._status = (row, self.listbox.item(row, column).background())
+        win = QColorDialog(self)
+        win.setCurrentColor(self.listbox.item(row, column).background().color())
+        self.connect(win, SIGNAL('currentColorChanged(const QColor&)'), self.intermediateColor)
+        self.connect(win, SIGNAL('rejected()'), self.setColor)
+        win.open()
+
+    def setColor(self):
+        row = self._status[0]
+        self.listbox.item(row, 0).setBackground(self._status[1])
+        self.listbox.item(row, 1).setBackground(self._status[1])
+
+    def intermediateColor(self, color):
+        row = self._status[0]
+        if color.isValid():
+            self.listbox.item(row, 0).setBackground(QBrush(color))
+            self.listbox.item(row, 1).setBackground(QBrush(color))
+
+    def saveSettings(self):
+        cparser = PuddleConfig()
+        x = lambda c: (c.red(), c.green(), c.blue())
+        colors = [x(self.listbox.item(z,0).background().color()) for z in range(self.listbox.rowCount())]
+        cparser.set('extendedtags', 'add', colors[0])
+        cparser.set('extendedtags', 'edit', colors[1])
+        cparser.set('extendedtags', 'remove', colors[2])
+
 
 class MainWin(QDialog):
     """In order to use a class as an option add it to self.widgets"""
@@ -577,7 +643,8 @@ class MainWin(QDialog):
             self.patterns = PatternEditor(parent = self, cenwid = cenwid)
             self.playlist = Playlist(parent = self, cenwid = cenwid)
             self.columns = ColumnSettings(parent=self, cenwid=cenwid)
-            self.mapping = TagMappings(parent=self, cenwid=cenwid)
+            #self.mapping = TagMappings(parent=self, cenwid=cenwid)
+            self.coloredit = ColorEdit(parent=self, cenwid=cenwid)
             return
 
         self.combosetting = ComboFrame()
@@ -585,7 +652,8 @@ class MainWin(QDialog):
         self.patterns = PatternEditor()
         self.playlist = Playlist()
         self.columns = ColumnSettings()
-        self.mapping = TagMappings()
+        self.coloredit = ColorEdit()
+        #self.mapping = TagMappings()
 
         self.listbox = SettingsList()
 
@@ -593,8 +661,8 @@ class MainWin(QDialog):
                         1:["Tag Editor", self.combosetting],
                         2:["Patterns", self.patterns],
                         3:['Playlist', self.playlist],
-                        4:['Columns', self.columns]}
-                        #5: ['Mapping', self.mapping]}
+                        4:['Columns', self.columns],
+                        5: ['Extended colors', self.coloredit]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid

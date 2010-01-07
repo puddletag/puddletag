@@ -27,12 +27,9 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (OKCancel, partial, MoveButtons, ListButtons,
-                            PicWidget, winsettings)
+                            PicWidget, winsettings, PuddleConfig)
 from copy import deepcopy
-REMOVE, EDIT, ADD = (1,2,3)
-c = [Qt.red, Qt.green, Qt.darkYellow]
-COLOR = {REMOVE: QBrush(c[0]), EDIT: QBrush(c[1]), ADD:QBrush(c[2])}
-RGBCOLORS = [QColor(z).rgb() for z in c]
+ADD, EDIT, REMOVE = (1,2,3)
 from puddlestuff.audioinfo.util import commontags
 
 class TrackWindow(QDialog):
@@ -279,12 +276,13 @@ class EditTag(QDialog):
         self.emit(SIGNAL("donewithmyshit"), unicode(self.tagcombo.currentText()), unicode(self.value.toPlainText()), self.prevtag)
 
 class StatusWidgetItem(QTableWidgetItem):
-    def __init__(self, text = None, status = None):
+    def __init__(self, text = None, status = None, colors = None):
         QTableWidgetItem.__init__(self)
+        self._color = colors
         if text:
             self.setText(text)
-        if status and status in COLOR:
-            self.setBackground(COLOR[status])
+        if status and status in self._color:
+            self.setBackground(self._color[status])
         self._status = status
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
@@ -292,8 +290,8 @@ class StatusWidgetItem(QTableWidgetItem):
         return self._status
 
     def _setstatus(self, status):
-        if status and status in COLOR:
-            self.setBackground(COLOR[status])
+        if status and status in self._color:
+            self.setBackground(self._color[status])
             self._status = status
         else:
             self.setBackground(QTableWidgetItem().background())
@@ -312,6 +310,13 @@ class ExTags(QDialog):
         """
         QDialog.__init__(self, parent)
         winsettings('extendedtags', self)
+        cparser = PuddleConfig()
+
+        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [255,0,0], True))
+        edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [0,255,0], True))
+        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [0,0,255], True))
+        self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
+
         self.listbox = QTableWidget(0, 2, self)
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(True)
@@ -458,9 +463,9 @@ class ExTags(QDialog):
         else:
             if l.item(row, 0).status:
                 status = l.item(row, 0).status
-        tagitem = StatusWidgetItem(tag, status)
+        tagitem = StatusWidgetItem(tag, status, self._colors)
         l.setItem(row, 0, tagitem)
-        valitem = StatusWidgetItem(value, status)
+        valitem = StatusWidgetItem(value, status, self._colors)
         l.setItem(row, 1, valitem)
         l.setSortingEnabled(True)
         
