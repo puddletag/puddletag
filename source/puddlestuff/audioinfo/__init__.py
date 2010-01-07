@@ -24,6 +24,8 @@ import mutagen, time, pdb, calendar, os
 from util import *
 import id3, flac, ogg, apev2, mp4
 options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, mp4.filetype)
+from mutagen.id3 import TCON
+GENRES = sorted(TCON.GENRES)
 
 e = {'mp3': id3.filetype,
     'flac': flac.filetype,

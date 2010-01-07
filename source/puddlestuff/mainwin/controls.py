@@ -245,7 +245,7 @@ class FrameCombo(QGroupBox):
 
         if 'genre' in self.combos:
             from mutagen.id3 import TCON
-            self.combos['genre'].addItems(sorted(TCON.GENRES))
+            self.combos['genre'].addItems(audioinfo.GENRES)
 
     def reloadCombos(self, tags):
         self.setCombos(tags)

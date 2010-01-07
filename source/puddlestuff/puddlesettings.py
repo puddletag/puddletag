@@ -636,6 +636,78 @@ class ColorEdit(QDialog):
         cparser.set('extendedtags', 'remove', colors[2])
 
 
+class Genres(QDialog):
+    def __init__(self, parent = None, cenwid = None):
+
+        cparser = PuddleConfig()
+
+        try:
+            genres = open(os.path.join(cparser.savedir, 'genres'), 'r').read().split('\n')
+            genres = [z.strip() for z in genres]
+        except IOError:
+            genres = audioinfo.GENRES[::]
+        if cenwid:
+            audioinfo.GENRES = genres
+            return
+        QDialog.__init__(self, parent)
+        self.listbox = ListBox()
+        self._itemflags = Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+        [self.listbox.addItem(self._createItem(z)) for z in genres]
+
+        buttons = ListButtons()
+        self.listbox.connectToListButtons(buttons)
+        self.listbox.setAutoScroll(False)
+
+        self.connect(buttons, SIGNAL('add'), self.add)
+        self.connect(buttons, SIGNAL('edit'), self.edit)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.listbox,1)
+        hbox.addLayout(buttons, 0)
+        self.setLayout(hbox)
+
+    def _createItem(self, text):
+        item = QListWidgetItem(text)
+        item.setFlags(self._itemflags)
+        return item
+
+    def add(self):
+        self.listbox.setAutoScroll(True)
+        item = self._createItem('')
+        self.listbox.addItem(item)
+        self.listbox.clearSelection()
+        self.listbox.setCurrentItem(item)
+        self.listbox.editItem(item)
+        self.listbox.setAutoScroll(False)
+
+    def edit(self):
+        self.listbox.setAutoScroll(True)
+        self.listbox.editItem(self.listbox.currentItem())
+        self.listbox.setAutoScroll(False)
+
+    def saveSettings(self):
+        cparser = PuddleConfig()
+        f = open(os.path.join(cparser.savedir, 'genres'), 'w')
+        text = '\n'.join([unicode(self.listbox.item(row).text()) for row in range(self.listbox.count())])
+        f.write(text)
+        f.close()
+
+    def applySettings(self, cenwid=None):
+        audioinfo.GENRES = [unicode(self.listbox.item(row).text()) for row in range(self.listbox.count())]
+        #combos = cenwid.cenwid.combogroup.combos
+        #if 'genre' in combos:
+            #c = combos['genre']
+            #text = c.currentText()
+            #c.blockSignals(True)
+            #c.clear()
+            #c.addItems(audioinfo.GENRES)
+            #i = c.findText(text)
+            #if i > -1:
+                #c.setCurrentIndex(i)
+            #else:
+                #c.setEditText(text)
+            #c.blockSignals(False)
+
 class MainWin(QDialog):
     """In order to use a class as an option add it to self.widgets"""
     def __init__(self, cenwid = None, parent = None, readvalues = False):
@@ -650,6 +722,7 @@ class MainWin(QDialog):
             self.columns = ColumnSettings(parent=self, cenwid=cenwid)
             #self.mapping = TagMappings(parent=self, cenwid=cenwid)
             self.coloredit = ColorEdit(parent=self, cenwid=cenwid)
+            self.genres = Genres(parent=self, cenwid=cenwid)
             return
 
         self.combosetting = ComboFrame()
@@ -658,6 +731,7 @@ class MainWin(QDialog):
         self.playlist = Playlist()
         self.columns = ColumnSettings()
         self.coloredit = ColorEdit()
+        self.genres = Genres()
         #self.mapping = TagMappings()
 
         self.listbox = SettingsList()
@@ -667,7 +741,8 @@ class MainWin(QDialog):
                         2:["Patterns", self.patterns],
                         3:['Playlist', self.playlist],
                         4:['Columns', self.columns],
-                        5: ['Extended colors', self.coloredit]}
+                        5: ['Extended colors', self.coloredit],
+                        6: ['Genres', self.genres]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid
@@ -707,6 +782,7 @@ class MainWin(QDialog):
             self.setMinimumWidth(self.sizeHint().width())
 
     def saveSettings(self):
+        self.cenwid.cenwid.table.saveSelection()
         for i, z in enumerate(self.widgets.values()):
             z[1].saveSettings()
             try:
@@ -714,6 +790,7 @@ class MainWin(QDialog):
             except AttributeError:
                 pass
                 #sys.stderr.write(z[0] + " doesn't have a settings applySettings method.\n")
+        self.cenwid.cenwid.table.restoreSelection()
         self.close()
 
 if __name__ == "__main__":
