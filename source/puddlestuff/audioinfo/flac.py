@@ -21,7 +21,7 @@
 from mutagen.flac import FLAC, Picture
 import util
 from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
-                                getfilename, getinfo, FILENAME, PATH, INFOTAGS)
+                    getfilename, getinfo, FILENAME, PATH, INFOTAGS)
 import ogg
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -45,6 +45,10 @@ class TempTag(ogg.Tag):
         self.images = None
         if filename is not None:
             self.link(filename)
+
+    def delete(self):
+        self.images = []
+        ogg.Tag.delete(self)
 
     def link(self, filename):
         """Links the audio, filename

@@ -734,6 +734,7 @@ class TagTable(QTableView):
                     yield "There was an error deleting the tag of %s: <b>%s</b>" % (
                                 e.filename, e.strerror), len(self.selectedRows)
             self.model().undolevel += 1
+            self.selectionChanged()
             
         f = progress(func, 'Deleting tag... ', len(self.selectedRows))
         f(self)

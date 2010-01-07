@@ -384,7 +384,8 @@ class HeaderSetting(QDialog):
         self.grid = QGridLayout()
         self.grid.addWidget(self.listbox,1,0)
         self.grid.addLayout(self.vbox,1,1)
-        self.grid.setColumnStretch(1,2)
+        self.grid.setColumnStretch(1,1)
+        self.grid.setColumnStretch(0,2)
 
         self.connect(self.listbox, SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"), self.fillEdits)
         self.connect(self.listbox, SIGNAL("itemSelectionChanged()"),self.enableEdits)
@@ -1330,6 +1331,7 @@ class PuddleConfig(object):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         self.settings.filename = filename
+        self.savedir = dirname
         self.settings.reload()
 
     def _getFilename(self):

@@ -95,6 +95,41 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
 
+mapping = {'VorbisComment': {'tracknumber': 'track'}}
+revmapping = {}
+
+def setmapping(m):
+    global revmapping
+    global mapping
+
+    mapping = m
+    #if 'puddletag' in mapping:
+        #[mapping[z].update(mapping['puddletag']) for z in mapping]
+    for z, v in mapping.items():
+        revmapping[z] = dict([(value,key) for key, value in v.items()])
+
+setmapping(mapping)
+
+def setdeco(setitem):
+    def func(self, key, value):
+        typestring = self.typestring
+        def retfunc(self, key, value):
+            if key in mapping[typestring]:
+                key = mapping[typestring][key]
+            setitem(self, key, value)
+        return retfunc(self, key, value)
+    return func
+
+def getdeco(getitem):
+    def func(self, key):
+        typestring = self.typestring
+        def retfunc(self, key):
+            if key in revmapping[typestring]:
+                key = revmapping[typestring][key]
+            return getitem(self, key)
+        return retfunc(self, key)
+    return func
+
 def commonimages(imagedicts):
     if imagedicts:
         x = imagedicts[0]

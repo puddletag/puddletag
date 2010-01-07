@@ -134,7 +134,7 @@ class Tag(util.MockTag):
             try:
                 x = [z for z in audio if z.startswith("TXXX")]
                 for z in x:
-                    self._tags[audio[z].desc] = [z, audio[z]]
+                    self._tags[audio[z].desc.lower()] = [z, audio[z]]
             except (IndexError, AttributeError):
                 pass
 
@@ -151,7 +151,7 @@ class Tag(util.MockTag):
             if x:
                 self._tags['comment'] = [x[0], audio[x[0]]]
                 for comment in x[1:]:
-                    self._tags[u'comment: ' + audio[comment].desc ] = [comment, audio[comment]]
+                    self._tags[u'comment: ' + audio[comment].desc.lower() ] = [comment, audio[comment]]
 
         info = audio.info
         self._tags.update( {u"__frequency": strfrequency(info.sample_rate),

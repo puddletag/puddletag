@@ -41,10 +41,11 @@ settings need to be applied while puddletag is running.
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, resource
+import sys, resource, os
 from copy import copy
 from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig, savewinsize, winsettings
 import pdb
+import audioinfo.util
 
 class PatternEditor(QFrame):
     def __init__(self, parent = None, cenwid = None):
@@ -468,6 +469,102 @@ class SettingsList(QListView):
     def selectionChanged(self, selected, deselected):
         self.emit(SIGNAL("selectionChanged"), selected.indexes()[0].row())
 
+class TagMappings(QDialog):
+    def __init__(self, parent = None, cenwid = None):
+
+        filename = os.path.join(PuddleConfig().savedir, 'mappings')
+        lines = open(filename, 'r').read().split('\n')
+        mappings = {}
+        for l in lines:
+            tags = [z.strip() for z in l.split(' ')]
+            if len(tags) == 3: #Tag, Source, Target
+                try:
+                    mappings[tags[0]].update({tags[1].lower(): tags[2].lower()})
+                except KeyError:
+                    mappings[tags[0]] = ({tags[1].lower(): tags[2].lower()})
+        self._mappings = mappings
+        self.applySettings()
+
+        if cenwid:
+            #if 'puddletag' in mappings:
+                #cenwid.cenwid.table.model().setMapping(mappings['puddletag'])
+            #else:
+                #cenwid.cenwid.table.model().setMapping({})
+            return
+                        
+        QDialog.__init__(self, parent)
+        self._table = QTableWidget()
+        self._table.setColumnCount(3)
+        self._table.setHorizontalHeaderLabels(['Tag', 'Source', 'Target'])
+        self._table.horizontalHeader().setVisible(True)
+        buttons = ListButtons()
+        buttons.connectToWidget(self)
+        buttons.moveup.setVisible(False)
+        buttons.movedown.setVisible(False)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self._table, 1)
+        hbox.addLayout(buttons, 0)
+        self.setLayout(hbox)
+        self._setMappings(mappings)
+
+    def _setMappings(self, mappings):
+        self._table.clearContents()
+        setItem = self._table.setItem
+        self._table.setRowCount(1)
+        row = 0
+        if 'puddletag' in mappings:
+            puddletag = mappings['puddletag']
+        else:
+            puddletag = {}
+        for z, v in mappings.items():
+            for source, target in v.items():
+                if source in puddletag and z != 'puddletag':
+                    continue
+                setItem(row, 0, QTableWidgetItem(z))
+                setItem(row, 1, QTableWidgetItem(source))
+                setItem(row, 2, QTableWidgetItem(target))
+                row += 1
+                self._table.setRowCount(row + 1)
+        self._table.removeRow(self._table.rowCount() -1)
+
+    def add(self):
+        table = self._table
+        row = table.rowCount()
+        self._table.insertRow(row)
+        for column, v in enumerate(['Tag', 'Source', 'Target']):
+            table.setItem(row, column, QTableWidgetItem(v))
+
+    def edit(self):
+        self._table.editItem(self._table.currentItem())
+
+    def remove(self):
+        self._table.removeRow(self._table.currentRow())
+
+    def applySettings(self, cenwid = None):
+        audioinfo.util.setmapping(self._mappings)
+
+    def saveSettings(self):
+        text = []
+        mappings = {}
+        item = self._table.item
+        itemtext = lambda row, column: unicode(item(row, column).text())
+        for row in range(self._table.rowCount()):
+            tag = itemtext(row, 0)
+            original = itemtext(row, 1).lower()
+            other = itemtext(row, 2).lower()
+            text.append((tag, original, other))
+            if tag in mappings:
+                mappings[tag].update({original: other})
+            else:
+                mappings[tag] = {original:other}
+        self._mappings = mappings
+        filename = os.path.join(PuddleConfig().savedir, 'mappings')
+        f = open(filename, 'w')
+        f.write('\n'.join([' '.join(z) for z in text]))
+        f.close()
+
+
 class MainWin(QDialog):
     """In order to use a class as an option add it to self.widgets"""
     def __init__(self, cenwid = None, parent = None, readvalues = False):
@@ -480,6 +577,7 @@ class MainWin(QDialog):
             self.patterns = PatternEditor(parent = self, cenwid = cenwid)
             self.playlist = Playlist(parent = self, cenwid = cenwid)
             self.columns = ColumnSettings(parent=self, cenwid=cenwid)
+            self.mapping = TagMappings(parent=self, cenwid=cenwid)
             return
 
         self.combosetting = ComboFrame()
@@ -487,6 +585,7 @@ class MainWin(QDialog):
         self.patterns = PatternEditor()
         self.playlist = Playlist()
         self.columns = ColumnSettings()
+        self.mapping = TagMappings()
 
         self.listbox = SettingsList()
 
@@ -495,6 +594,7 @@ class MainWin(QDialog):
                         2:["Patterns", self.patterns],
                         3:['Playlist', self.playlist],
                         4:['Columns', self.columns]}
+                        #5: ['Mapping', self.mapping]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid
