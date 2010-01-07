@@ -1168,7 +1168,6 @@ class TagTable(QTableView):
                 break
             newindexes[tag[0]] = getrow(tag[1])
             del(tags[0])
-        print 'sort:', newindexes
         groups = {}
         for col, rows in currentcol.items():
             groups[col] = getGroups(sorted([newindexes[row] for row in rows if row in newindexes]))
