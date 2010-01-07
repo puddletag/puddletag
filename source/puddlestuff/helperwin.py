@@ -421,8 +421,9 @@ class ExTags(QDialog):
         QDialog.closeEvent(self,event)
 
     def save(self):
-        if self.filechanged:
-            tags = self.listtotag()
+        if not self.filechanged:
+            return
+        tags = self.listtotag()
         if not self.piclabel.images:
             tags['__image'] = []
         else:
