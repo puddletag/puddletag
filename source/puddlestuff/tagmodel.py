@@ -671,6 +671,7 @@ class TagTable(QTableView):
         self._currenttags = []
         self.dirs = []
         self._resize = False
+        self._restore = False
 
         if not headerdata:
             headerdata = []
@@ -955,6 +956,10 @@ class TagTable(QTableView):
     def _loadFilesDone(self, tags, append):
         self.fillTable(tags, append)
         self.emit(SIGNAL('dirnames'), self.dirs)
+        if self._restore:
+            self.clearSelection()
+            self.restoreReloadSelection(*self._restore)
+            self._restore = False
 
     def playFiles(self):
         """Play the selected files using the player specified in self.playcommand"""
@@ -977,6 +982,7 @@ class TagTable(QTableView):
                                             % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
 
     def reloadFiles(self, filenames = None):
+        self._restore = self.saveSelection()
         files = [z['__filename'] for z in self.model().taginfo if z['__folder']
                         not in self.dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
@@ -1074,11 +1080,60 @@ class TagTable(QTableView):
         self._currentcol = self.currentColumnSelection()
         self._currentrow = self.currentRowSelection()
         self._currenttags = [(row, self.rowTags(row)) for row in self._currentrow]
+        return (self._currentrow, self._currentcol, self._currenttags)
 
-    def restoreSelection(self):
-        currentrow = self._currentrow
-        currentcol = self._currentcol
-        tags = self._currenttags
+    def restoreReloadSelection(self, currentrow, currentcol, tags):
+        if not tags:
+            return
+
+        def getGroups(rows):
+            groups = []
+            try:
+                last = [rows[0]]
+            except IndexError:
+                return []
+            for row in rows[1:]:
+                if row - 1 == last[-1]:
+                    last.append(row)
+                else:
+                    groups.append(last)
+                    last = [row]
+            groups.append(last)
+            return groups
+
+        modelindex = self.model().index
+        filenames = [z['__filename'] for z in self.model().taginfo]
+        getrow = lambda x: filenames.index(x['__filename'])
+        selection = QItemSelection()
+        select = lambda top, low, col: selection.append(
+                        QItemSelectionRange(modelindex(top, col),
+                                                    modelindex(low, col)))
+
+        newindexes = {}
+        while True:
+            try:
+                tag = tags[0]
+            except IndexError:
+                break
+            try:
+                newindexes[tag[0]] = getrow(tag[1])
+            except ValueError:
+                pass
+            del(tags[0])
+
+        groups = {}
+        for col, rows in currentcol.items():
+            groups[col] = getGroups(sorted([newindexes[row] for row in rows if row in newindexes]))
+
+        for col, rows in groups.items():
+            [select(min(row), max(row), col) for row in rows]
+        self.selectionModel().select(selection, QItemSelectionModel.Select)
+
+    def restoreSelection(self, currentrow=None, currentcol=None, tags=None):
+        if not currentrow:
+            currentrow = self._currentrow
+            currentcol = self._currentcol
+            tags = self._currenttags
         if not tags:
             return
 
@@ -1105,6 +1160,7 @@ class TagTable(QTableView):
                                                     modelindex(low, col)))
 
         newindexes = {}
+        
         while True:
             try:
                 tag = tags[0]
@@ -1112,7 +1168,7 @@ class TagTable(QTableView):
                 break
             newindexes[tag[0]] = getrow(tag[1])
             del(tags[0])
-
+        print 'sort:', newindexes
         groups = {}
         for col, rows in currentcol.items():
             groups[col] = getGroups(sorted([newindexes[row] for row in rows if row in newindexes]))
