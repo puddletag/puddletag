@@ -670,6 +670,7 @@ class TagTable(QTableView):
         self._currentrow = {}
         self._currenttags = []
         self.dirs = []
+        self._resize = False
 
         if not headerdata:
             headerdata = []
@@ -710,6 +711,17 @@ class TagTable(QTableView):
         return self.model().fontSize
 
     fontSize = property(_getFontSize, _setFontSize)
+
+    def _getResize(self):
+        return self._resize
+
+    def _setResize(self, value):
+        self._resize = value
+        if value:
+            print 'here'
+            self.resizeColumnsToContents()
+
+    autoresize = property(_getResize, _setResize)
 
     def changeFolder(self, olddir, newdir):
       try:
@@ -861,6 +873,9 @@ class TagTable(QTableView):
             self.restoreSelection()
         else:
             self.selectCorner()
+
+        if self.autoresize:
+            self.resizeColumnsToContents()
 
     def invertSelection(self):
         model = self.model()

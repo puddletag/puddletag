@@ -348,6 +348,8 @@ class GeneralSettings(QFrame):
         self.gridlines.setCheckState(convertstate('gridlines', 1))
         self.vertheader = QCheckBox("Show &row numbers")
         self.vertheader.setCheckState(convertstate('vertheader',0))
+        self.columnresize = QCheckBox("&Resize columns to contents.")
+        self.columnresize.setCheckState(convertstate('columnresize',0))
         self.dragcombo = QComboBox()
         self.dragcombo.addItems(['Ask me each time', 'Move', 'Copy'])
         draglabel = QLabel('When files are dropped on Filesystem:')
@@ -360,7 +362,7 @@ class GeneralSettings(QFrame):
         self.playcommand.setText(" ".join(playtext))
 
         [vbox.addWidget(z) for z in [self.subfolders, self.pathinbar,
-            self.gridlines, self.vertheader, label, self.playcommand,
+            self.gridlines, self.vertheader, self.columnresize, label, self.playcommand,
             draglabel, self.dragcombo]]
         vbox.addStretch()
 
@@ -397,6 +399,8 @@ class GeneralSettings(QFrame):
             cenwid.tree.defaultDropAction = Qt.MoveAction
         elif curindex == 2:
             cenwid.tree.defaultDropAction = Qt.CopyAction
+        cenwid.cenwid.table.autoresize = convertState(self.columnresize)
+        cenwid.cenwid.gridvisible = convertState(self.gridlines)
 
         #if convertstate(self.enableplay):
             #cenwid.cenwid.table.playcommand = True
@@ -418,6 +422,7 @@ class GeneralSettings(QFrame):
                     'gridlines': convertState(self.gridlines.checkState()),
                     'pathinbar': convertState(self.pathinbar.checkState()),
                     'vertheader': convertState(self.vertheader.checkState()),
+                    'columnresize': convertState(self.columnresize.checkState()),
                     'dropaction': self.dragcombo.currentIndex()}
         for z in controls:
             cparser.setSection('General', z, controls[z])
