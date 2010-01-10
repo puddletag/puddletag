@@ -1,6 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-<file alias="cap.png">data/cap.png</file>
+<file alias="action.svg">data/action.svg</file>
 <file alias="fileimport.png">data/fileimport.png</file>
 <file alias="filetotag.png">data/filetotag.png</file>
 <file alias="import.png">data/import.png</file>

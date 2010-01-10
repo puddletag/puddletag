@@ -27,7 +27,7 @@ def createActions(parent):
         parent.invertselection = QAction("&Invert selection", parent)
         parent.invertselection.setShortcut('Meta+I')
         parent.loadplaylist = QAction(QIcon(":/playlist.png"), 'Load m3u playlist', parent)
-        parent.openactions = QAction(QIcon(':/cap.png'), 'Ac&tions...', parent)
+        parent.openactions = QAction(QIcon(':/action.svg'), 'Ac&tions...', parent)
         parent.preferences = QAction("&Preferences...", parent)
         parent.quickactions = QAction(QIcon(":/quickactions.png"), "&Quick Actions...", parent)
         parent.reloaddir = QAction(QIcon(':/reload.png'), "Reload", parent)
@@ -189,10 +189,10 @@ def createMenus(parent):
 
     parent.actions = [table.delete, table.play, table.exttags,
                     parent.cutaction, parent.copyaction, parent.pasteaction,
-                    parent.savecombotags, parent.tagfromfile,
+                    parent.savecombotags, parent.importclipboard, parent.tagfromfile,
                     parent.tagtofile, parent.formattag,
                     parent.openactions, parent.quickactions, parent.puddlefunctions,
-                    parent.changetracks, parent.importfile, parent.renamedir, parent.autotagging, parent.importclipboard]
+                    parent.changetracks, parent.importfile, parent.renamedir, parent.autotagging]
 
     parent.supportactions = [parent.selectall, parent.invertselection, parent.selectcolumn,
         parent.duplicates, parent.fileinlib, parent.addfolder, parent.reloaddir, parent.saveplaylist]
@@ -203,7 +203,7 @@ def createMenus(parent):
     #[parent.toolbar.addAction(z) for z in (parent.cutaction, parent.pasteaction, parent.copyaction)]
     #parent.toolbar.addSeparator()
     parent.toolbar.addWidget(parent.patterncombo)
-    [parent.toolbar.addAction(action) for action in parent.actions[7:] + [parent.fileinlib, parent.duplicates]]
+    [parent.toolbar.addAction(action) for action in parent.actions[8:] + [parent.fileinlib, parent.duplicates]]
     parent.toolbar.insertSeparator(parent.openactions)
     parent.toolbar.insertSeparator(parent.changetracks)
     parent.toolbar.insertSeparator(parent.fileinlib)

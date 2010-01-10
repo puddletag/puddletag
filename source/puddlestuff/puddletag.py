@@ -163,7 +163,7 @@ class MainWin(QMainWindow):
 
     def _getpathinbar(self):
         return self._pathinbar
-        
+
     def _setpathinbar(self, value):
         self._pathinbar = value
         if value:
@@ -395,7 +395,7 @@ class MainWin(QMainWindow):
         win = webdb.MainWin(self.cenwid.table, self)
         win.show()
         #except ImportError, e:
-            #print 
+            #print
             #self.warningMessage("There was an error loading the musicbrainz library.<br />" +
                                 #"Do you have the <a href='http://musicbrainz2.org/doc/PythonMusicBrainz2'>python musicbrainz</a> bindings installed?")
 
@@ -484,7 +484,7 @@ class MainWin(QMainWindow):
         self.connect(self.cenwid.table.exttags, SIGNAL('triggered()'), self.etagsEdit)
         self.connect(model, SIGNAL('enableUndo'), self.undo.setEnabled)
         self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.fillCombos)
-        self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)     
+        self.connect(model, SIGNAL('dataChanged (const QModelIndex&,const QModelIndex&)'), self.filterTable)
 
         sortColumn = cparser.get("table","sortcolumn",1, True)
         self.cenwid.sortTable(int(sortColumn))
@@ -849,7 +849,7 @@ class MainWin(QMainWindow):
             self.connect(win, SIGNAL("extendedtags"), self._writeOneExtended)
         win.setModal(True)
         win.show()
-        
+
 
     def _writeOneExtended(self, tags):
         #Segmentation fault if I use the other one.
@@ -955,7 +955,7 @@ class MainWin(QMainWindow):
                 self.tagtofile.setStatusTip(u"New Filename: <b>%s</b>" % newfilename)
 
                 oldir = path.dirname(tag['__folder'])
-                newfolder = path.join(oldir, path.basename(findfunc.tagtofilename(pattern, tag)))
+                newfolder = path.join(oldir, path.basename(safe_name(findfunc.tagtofilename(pattern, tag))))
                 dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (tag["__folder"], newfolder)
                 self.renamedir.setStatusTip(dirstatus)
 
@@ -1006,7 +1006,7 @@ class MainWin(QMainWindow):
         dirs = []
         for z in newdirs:
             currentdir = z[1]
-            newfolder = path.join(dirname(z[1]), (basename(tagtofilename(unicode(self.patterncombo.currentText()), table.rowTags(z[0])))))
+            newfolder = path.join(dirname(z[1]), (basename(safe_name(tagtofilename(unicode(self.patterncombo.currentText()), table.rowTags(z[0]))))))
             msg += u'<i>%s</i> to <b>%s</b><br /><br />' % (currentdir, newfolder)
             dirs.append([z[1], newfolder])
 
@@ -1150,7 +1150,7 @@ class MainWin(QMainWindow):
             reldir = cparser.get('playlist', 'reldir',0, True)
 
             m3u.exportm3u(tags, f, pattern, reldir)
-        
+
     @showwriteprogress
     def saveTagToFile(self):
         """Renames the selected files using the pattern
@@ -1313,7 +1313,7 @@ class MainWin(QMainWindow):
             except (IOError, OSError), detail:
                 yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
 
-                
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
