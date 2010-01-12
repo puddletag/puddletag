@@ -21,9 +21,9 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import actiondlg, findfunc, mainwin, puddlesettings, os, resource,sys, time, pdb
-from audioinfo import FILENAME, PATH
+from audioinfo import FILENAME, PATH, mapping, INFOTAGS, READONLY, DIRPATH, revmapping
 from copy import copy, deepcopy
-import helperwin
+import helperwin, pdb
 from helperwin import PicWidget
 from puddleobjects import (ProgressWin, safe_name, unique, PuddleThread, progress,
                             natcasecmp, getfiles, gettags, PuddleDock)
@@ -782,7 +782,7 @@ class MainWin(QMainWindow):
         """Shows the action window and calls either RunAction or RunQuickaction
         depending on the value of quickaction."""
         example = self.cenwid.table.selectedTags[0]
-        self.qb = actiondlg.ActionWindow(self.cenwid.headerdata, self, example)
+        self.qb = actiondlg.ActionWindow(self.cenwid.headerdata, self, example, mapping.get('puddletag'))
         self.qb.setModal(True)
         self.qb.show()
         if quickaction:
@@ -801,7 +801,7 @@ class MainWin(QMainWindow):
         See the actiondlg module for more details on funcs."""
         table = self.cenwid.table
         for audio, row in zip(table.selectedTags, table.selectedRows):
-            tags = findfunc.runAction(funcs, audio)
+            tags = findfunc.runAction(funcs, audio, mapping.get('puddletag'))
             try:
                 self.setTag(row, tags)
                 yield None
@@ -1095,6 +1095,7 @@ class MainWin(QMainWindow):
     @showwriteprogress
     def saveCombos(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
+        readonly = list(READONLY )+ [FILENAME, DIRPATH]
         combos = self.combogroup.combos
         table = self.cenwid.table
         if hasattr(table,'selectedRows') or table.selectedRows:
@@ -1122,10 +1123,13 @@ class MainWin(QMainWindow):
                                 tags['__image'] = images
                         else:
                             curtext = unicode(combos[tag].currentText())
-                            if curtext == "<blank>": tags[tag] = ""
+                            if curtext == "<blank>": tags[tag] = []
                             elif curtext == "<keep>": pass
                             else:
-                                tags[tag] = unicode(combos[tag].currentText()).split("\\\\")
+                                if tag in INFOTAGS:
+                                    tags[tag] = curtext
+                                else:
+                                    tags[tag] = curtext.split("\\\\")
                     except KeyError:
                         pass
                 try:

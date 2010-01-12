@@ -90,6 +90,8 @@ class FrameCombo(QGroupBox):
         self.tags = tags
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
+        self._mapping = {}
+        self._revmapping = {}
         if tags is not None:
             self.setCombos(tags)
 
@@ -112,7 +114,7 @@ class FrameCombo(QGroupBox):
 
         self.initCombos()
 
-        tags = dict([(tag,[]) for tag in combos if tag != '__image'])
+        tags = dict([(self._revmapping[tag],[]) if tag in self._revmapping else (tag,[]) for tag in combos if tag != '__image'])
         images = []
         imagetags = set()
         for audio in audios:
@@ -152,8 +154,12 @@ class FrameCombo(QGroupBox):
             tags[z] = list(set(tags[z]))
         #Add values to combos
         for tagset in tags:
-            [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
-                    if combos.has_key(tagset)]
+            if tagset in self._mapping:
+                [combos[self._mapping[tagset]].addItem(unicode(z)) for z in sorted(tags[tagset])
+                        if combos.has_key(tagset)]
+            else:
+                [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
+                        if combos.has_key(tagset)]
 
         for combo in combos.values():
             combo.setEnabled(True)
@@ -207,7 +213,6 @@ class FrameCombo(QGroupBox):
                 self.labels[tagval] = QLabel(tag[0])
                 if tagval == '__image':
                     self.labels[tagval].hide()
-
                     pic = PicWidget()
                     pic.next.setVisible(True)
                     pic.prev.setVisible(True)
@@ -250,6 +255,10 @@ class FrameCombo(QGroupBox):
     def reloadCombos(self, tags):
         self.setCombos(tags)
 
+    def setMapping(self, mapping,revmapping):
+        self._mapping = mapping
+        self._revmapping = {}
+
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""
@@ -272,7 +281,7 @@ class DirView(QTreeView):
         #I have to do it like in the docstring, because the partial function
         #used in contextMenuEvent doesn't support more than one parameter
         #for python < 2.5
-        
+
         dest = files[1]
         files = files[0]
         showmessage = True
@@ -326,7 +335,7 @@ class DirView(QTreeView):
             except (OSError, IOError), e:
                 text = u"I couldn't delete <b>%s</b> (%s)" % (filename, e.strerror)
                 self.warningMessage(text, 1)
-                return 
+                return
             model.refresh(index.parent())
             valid = self.selectedFilenames
             if filename in valid:
@@ -433,7 +442,7 @@ class DirView(QTreeView):
 
     def _getDefaultDrop(self):
         return self._dropaction
-    
+
     def _setDefaultDrop(self, action):
         if action in [Qt.MoveAction, Qt.CopyAction]:
             self._dropaction = action
@@ -447,7 +456,7 @@ class DirView(QTreeView):
         self.emit(SIGNAL('removeFolders'), [], True)
 
     defaultDropAction = property(_getDefaultDrop, _setDefaultDrop)
-        
+
     def dropEvent(self, event):
         """Shows a menu to copy or move when files dropped."""
         files = [unicode(z.path()) for z in event.mimeData().urls()]
@@ -485,7 +494,7 @@ class DirView(QTreeView):
         else:
             event.ignore()
         QTreeView.dragEnterEvent(self, event)
-        
+
     def expand(self, index):
         self.resizeColumnToContents(0)
         QTreeView.expand(self, index)
@@ -526,7 +535,7 @@ class DirView(QTreeView):
     def _selectedFilenames(self):
         filename = self.model().filePath
         return list(set([unicode(filename(i)) for i in self.selectedIndexes()]))
-    
+
     selectedFilenames = property(_selectedFilenames)
 
     def setFileIndex(self, filename, append = False):
@@ -546,7 +555,7 @@ class DirView(QTreeView):
         selectindex = self.selectionModel().select
         getindex = self.model().index
         parent = self.model().parent
-        
+
         for d in dirlist:
             index = getindex(d)
             selectindex(index, QItemSelectionModel.Select)

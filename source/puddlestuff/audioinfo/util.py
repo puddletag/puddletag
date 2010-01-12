@@ -30,8 +30,10 @@ from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
 
 PATH = u"__path"
 FILENAME = u"__filename"
+EXTENSION = '__ext'
+DIRPATH = '__folder'
 READONLY = ('__bitrate', '__frequency', "__length", "__modified", "__size", "__created", "__library")
-INFOTAGS = [PATH, FILENAME, "__ext", "__folder"]
+INFOTAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
 INFOTAGS.extend(READONLY)
 
 MIMETYPE = 'mime'
@@ -94,21 +96,6 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (
 'Band/artist logotype', 'Publisher/Studio logotype']
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
-
-mapping = {'VorbisComment': {'tracknumber': 'track'}}
-revmapping = {}
-
-def setmapping(m):
-    global revmapping
-    global mapping
-
-    mapping = m
-    #if 'puddletag' in mapping:
-        #[mapping[z].update(mapping['puddletag']) for z in mapping]
-    for z, v in mapping.items():
-        revmapping[z] = dict([(value,key) for key, value in v.items()])
-
-setmapping(mapping)
 
 def setdeco(setitem):
     def func(self, key, value):

@@ -27,12 +27,39 @@ options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, mp4.filety
 from mutagen.id3 import TCON
 GENRES = sorted(TCON.GENRES)
 
+
+
 e = {'mp3': id3.filetype,
     'flac': flac.filetype,
     'ogg': ogg.filetype,
     'mp4': mp4.filetype,
     'm4a': mp4.filetype,
     'ape': apev2.filetype}
+
+mapping = {'VorbisComment': {'tracknumber': 'track'}}
+revmapping = {'VorbisComment': {'track': 'tracknumber'}}
+
+def setmapping(m):
+    global revmapping
+    global mapping
+
+    for z in mapping.keys():
+        mapping[z] = {}
+    for z in revmapping.keys():
+        revmapping[z] = {}
+    mapping.update(m)
+
+    for z in mapping:
+        revmapping[z] = dict([(value,key) for key, value in mapping[z].items()])
+    for z in e.values():
+        try:
+            if z[2] in mapping:
+                z[1].mapping = mapping[z[2]]
+                z[1].revmapping = revmapping[z[2]]
+        except IndexError:
+            pass
+
+setmapping(mapping)
 
 def Tag(filename):
     """Class that operates on audio tags.

@@ -42,7 +42,7 @@ class TrackWindow(QDialog):
     def __init__(self, parent=None, minval=0, numtracks = None, enablenumtracks = False):
         QDialog.__init__(self,parent)
         self.setWindowTitle("Autonumbering Wizard")
-        winsettings('autonumbering')
+        winsettings('autonumbering', self)
 
         self.hboxlayout = QHBoxLayout()
         self.hboxlayout.setMargin(0)
@@ -298,7 +298,7 @@ class StatusWidgetItem(QTableWidgetItem):
             self._status = None
 
     status = property(_getstatus, _setstatus)
-            
+
 
 class ExTags(QDialog):
     """A dialog that shows you the tags in a file
@@ -325,7 +325,7 @@ class ExTags(QDialog):
         header.setStretchLastSection (True)
         header.setSortIndicator (0, Qt.AscendingOrder)
         self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
-        
+
         self.listbox.verticalHeader().setVisible(False)
         self.piclabel = PicWidget(buttons = True)
         self.connect(self.piclabel, SIGNAL('imageChanged'), self._imageChanged)
@@ -468,7 +468,7 @@ class ExTags(QDialog):
         valitem = StatusWidgetItem(value, status, self._colors)
         l.setItem(row, 1, valitem)
         l.setSortingEnabled(True)
-        
+
     def editTag(self):
         """Opens a windows that allows the user
         to edit the tag in item(a QListWidgetItem that's supposed to

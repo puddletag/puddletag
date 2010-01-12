@@ -201,7 +201,7 @@ class ColumnSettings(HeaderSetting):
         cparser.set('tableheader', 'titles', titles)
         cparser.set('tableheader', 'tags', tags)
         cparser.set('tableheader', 'enabled', checked)
-        
+
 
     def applySettings(self, cenwid = None):
         checked = [z for z in range(self.listbox.count()) if self.listbox.item(z).checkState()]
@@ -478,25 +478,28 @@ class TagMappings(QDialog):
     def __init__(self, parent = None, cenwid = None):
 
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
-        lines = open(filename, 'r').read().split('\n')
-        mappings = {}
-        for l in lines:
-            tags = [z.strip() for z in l.split(' ')]
-            if len(tags) == 3: #Tag, Source, Target
-                try:
-                    mappings[tags[0]].update({tags[1].lower(): tags[2].lower()})
-                except KeyError:
-                    mappings[tags[0]] = ({tags[1].lower(): tags[2].lower()})
+        try:
+            lines = open(filename, 'r').read().split('\n')
+            mappings = {}
+            for l in lines:
+                tags = [z.strip() for z in l.split(' ')]
+                if len(tags) == 3: #Tag, Source, Target
+                    try:
+                        mappings[tags[0]].update({tags[1].lower(): tags[2].lower()})
+                    except KeyError:
+                        mappings[tags[0]] = ({tags[1].lower(): tags[2].lower()})
+        except IOError, OSError:
+            mappings = {'VorbisComment': {'tracknumber': 'track'}}
         self._mappings = mappings
-        self.applySettings()
 
         if cenwid:
+            self.applySettings(cenwid)
             #if 'puddletag' in mappings:
                 #cenwid.cenwid.table.model().setMapping(mappings['puddletag'])
             #else:
                 #cenwid.cenwid.table.model().setMapping({})
             return
-                        
+
         QDialog.__init__(self, parent)
         self._table = QTableWidget()
         self._table.setColumnCount(3)
@@ -547,7 +550,16 @@ class TagMappings(QDialog):
         self._table.removeRow(self._table.currentRow())
 
     def applySettings(self, cenwid = None):
-        audioinfo.util.setmapping(self._mappings)
+        import tagmodel
+        audioinfo.setmapping(self._mappings)
+        if 'puddletag' in self._mappings:
+            tagmodel.mapping = self._mappings['puddletag']
+            tagmodel.revmapping = audioinfo.revmapping['puddletag']
+            cenwid.combogroup.setMapping(tagmodel.mapping, tagmodel.revmapping)
+        else:
+            tagmodel.mapping = {}
+            tagmodel.revmapping = {}
+            cenwid.combogroup.setMapping({}, {})
 
     def saveSettings(self):
         text = []
@@ -560,9 +572,9 @@ class TagMappings(QDialog):
             other = itemtext(row, 2).lower()
             text.append((tag, original, other))
             if tag in mappings:
-                mappings[tag].update({original: other})
+                mappings[tag].update({other: original})
             else:
-                mappings[tag] = {original:other}
+                mappings[tag] = {other: original}
         self._mappings = mappings
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
         f = open(filename, 'w')
@@ -720,7 +732,7 @@ class MainWin(QDialog):
             self.patterns = PatternEditor(parent = self, cenwid = cenwid)
             self.playlist = Playlist(parent = self, cenwid = cenwid)
             self.columns = ColumnSettings(parent=self, cenwid=cenwid)
-            #self.mapping = TagMappings(parent=self, cenwid=cenwid)
+            self.mapping = TagMappings(parent=self, cenwid=cenwid)
             self.coloredit = ColorEdit(parent=self, cenwid=cenwid)
             self.genres = Genres(parent=self, cenwid=cenwid)
             return
@@ -732,7 +744,7 @@ class MainWin(QDialog):
         self.columns = ColumnSettings()
         self.coloredit = ColorEdit()
         self.genres = Genres()
-        #self.mapping = TagMappings()
+        self.mapping = TagMappings()
 
         self.listbox = SettingsList()
 
@@ -742,7 +754,8 @@ class MainWin(QDialog):
                         3:['Playlist', self.playlist],
                         4:['Columns', self.columns],
                         5: ['Extended colors', self.coloredit],
-                        6: ['Genres', self.genres]}
+                        6: ['Genres', self.genres],
+                        7: ['Mappings', self.mapping]}
         self.model = ListModel(self.widgets)
         self.listbox.setModel(self.model)
         self.cenwid = cenwid

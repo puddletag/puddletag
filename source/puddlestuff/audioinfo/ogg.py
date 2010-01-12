@@ -26,6 +26,23 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
                   READONLY, isempty)
 from copy import copy
 
+def getdeco(func):
+    def f(self, key):
+        mapping = self.mapping
+        if key in mapping:
+            return func(self, mapping[key])
+        return func(self, key)
+    return f
+
+def setdeco(func):
+    def f(self, key, value):
+        mapping = self.mapping
+        if key in mapping:
+            func(self, mapping[key], value)
+        return func(self, key, value)
+    return f
+
+
 class Tag(util.MockTag):
     """Ogg Tag class.
 
@@ -45,6 +62,10 @@ class Tag(util.MockTag):
     >>>x['track']
     [u'1]"""
     IMAGETAGS = ()
+    mapping = {}
+    revmapping = {}
+
+    @getdeco
     def __getitem__(self,key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
@@ -58,6 +79,7 @@ class Tag(util.MockTag):
             #if a key doesn't exist.
             return ""
 
+    @setdeco
     def __setitem__(self,key,value):
         if key in READONLY:
           return
@@ -98,9 +120,9 @@ class Tag(util.MockTag):
                    ('Channels', unicode(info.channels)),
                    ('Length', self['__length'])]
         return [('File', fileinfo), ('Ogg Info', ogginfo)]
-        
+
     info = property(_info)
-        
+
 
     def load(self, mutfile, tags):
         self._mutfile = mutfile
@@ -120,9 +142,6 @@ class Tag(util.MockTag):
 
         for z in audio:
             self._tags[z.lower()] = audio.tags[z]
-        if 'tracknumber' in self._tags: #Vorbiscomment uses tracknumber instead of track.
-            self._tags["track"] = self._tags["tracknumber"][:]
-            del(self._tags["tracknumber"])
 
         info = audio.info
         self._tags.update({u"__frequency": strfrequency(info.sample_rate),
@@ -145,9 +164,7 @@ class Tag(util.MockTag):
         newtag = {}
         for tag, value in usertags(self).items():
             newtag[tag] = value
-        if "track" in newtag:
-            newtag["tracknumber"] = newtag["track"][:]
-            del newtag["track"]
+
         toremove = [z for z in audio if z not in newtag]
         for z in toremove:
             del(audio[z])
@@ -155,4 +172,4 @@ class Tag(util.MockTag):
         audio.save()
 
 
-filetype = (OggVorbis, Tag)
+filetype = (OggVorbis, Tag, 'VorbisComment')

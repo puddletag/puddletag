@@ -26,7 +26,7 @@ from operator import itemgetter
 from copy import copy, deepcopy
 from subprocess import Popen
 from os import path
-from audioinfo import PATH, FILENAME, usertags
+from audioinfo import PATH, FILENAME, DIRPATH, EXTENSION, usertags, mapping
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                                 getfiles, ProgressWin, PuddleThread, progress)
 from musiclib import MusicLibError
@@ -37,6 +37,8 @@ import traceback
 SETDATAERROR = SIGNAL("setDataError")
 LIBRARY = '__library'
 ENABLEUNDO = SIGNAL('enableUndo')
+
+mapping = {}
 
 class Properties(QDialog):
     def __init__(self, info, parent=None):
@@ -128,10 +130,10 @@ class TagModel(QAbstractTableModel):
         bottom = self.index(self.rowCount() -1, self.columnCount() -1)
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
         top, bottom)
-    
+
     def _getFontSize(self):
         return self._fontSize
-        
+
     fontSize = property(_getFontSize, _setFontSize)
 
     def _getUndoLevel(self):
@@ -153,15 +155,15 @@ class TagModel(QAbstractTableModel):
 
         No actual moving is done though."""
 
-        folder = itemgetter('__folder')
+        folder = itemgetter(DIRPATH)
         tags = [z for z in self.taginfo if folder(z).startswith(olddir)]
         libtags = []
         for audio in tags:
             if folder(audio) == olddir:
                 audio[FILENAME] = path.join(newdir, audio[PATH])
-                audio['__folder'] = newdir
+                audio[DIRPATH] = newdir
             else: #Newdir is a parent
-                audio['__folder'] = newdir + folder(audio)[len(olddir):]
+                audio[DIRPATH] = newdir + folder(audio)[len(olddir):]
                 audio[FILENAME] = path.join(folder(audio), audio[PATH])
             if '__library' in audio:
                 audio.save(True)
@@ -178,6 +180,8 @@ class TagModel(QAbstractTableModel):
             try:
                 audio = self.taginfo[row]
                 tag = self.headerdata[index.column()][1]
+                if tag in mapping:
+                    tag = mapping[tag]
                 if tag in audio.testData:
                     val = audio.testData[tag]
                 else:
@@ -291,10 +295,10 @@ class TagModel(QAbstractTableModel):
 
     def removeFolders(self, folders, v = True):
         if v:
-            f = [i for i, tag in enumerate(self.taginfo) if tag['__folder']
+            f = [i for i, tag in enumerate(self.taginfo) if tag[DIRPATH]
                                     not in folders and '__library' not in tag]
         else:
-            f = [i for i, tag in enumerate(self.taginfo) if tag['__folder']
+            f = [i for i, tag in enumerate(self.taginfo) if tag[DIRPATH]
                                         in folders and '__library' not in tag]
         while f:
             try:
@@ -319,7 +323,7 @@ class TagModel(QAbstractTableModel):
         return True
 
     def renameFile(self, row, tags):
-        """If tags(a dictionary) contains a "__path" key, then the file
+        """If tags(a dictionary) contains a PATH key, then the file
         in self.taginfo[row] is renamed based on that.
 
         If successful, tags is returned(with the new filename as a key)
@@ -327,13 +331,13 @@ class TagModel(QAbstractTableModel):
         currentfile = self.taginfo[row]
         oldfilename = currentfile[FILENAME]
 
-        if '__ext' in tags:
-            extension = tags['__ext']
+        if EXTENSION in tags:
+            extension = tags[EXTENSION]
         else:
             if PATH in tags:
                 extension = path.splitext(tags[PATH])[1][1:]
             else:
-                extension = currentfile['__ext']
+                extension = currentfile[EXTENSION]
 
         if extension:
             extension = path.extsep + extension
@@ -358,7 +362,7 @@ class TagModel(QAbstractTableModel):
                 raise detail
             tags[FILENAME] = newfilename
             tags[PATH] = newpath
-            tags['__ext'] = extension[1:] if extension[1:] else ''
+            tags[EXTENSION] = extension[1:] if extension[1:] else ''
         else:
             return {}
         return tags
@@ -412,6 +416,10 @@ class TagModel(QAbstractTableModel):
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
+            if tag in mapping:
+                oldtag = mapping[tag]
+            else:
+                oldtag = tag
             currentfile = self.taginfo[index.row()]
 
             filename = currentfile[FILENAME]
@@ -423,8 +431,8 @@ class TagModel(QAbstractTableModel):
             except KeyError:
                 oldvalue = [""]
 
-            if tag.startswith("__"):
-                if tag in [PATH, '__ext']:
+            if oldtag.startswith("__"):
+                if oldtag in [PATH, EXTENSION]:
                     try:
                         self.setRowData(index.row(), {tag: newvalue}, True, True)
                         self.undolevel += 1
@@ -464,44 +472,51 @@ class TagModel(QAbstractTableModel):
         row is the row, tags is a dictionary of tags.
 
         If undo`is True, then an undo level is created for this file.
-        If justrename is True, then (if tags contain a "__path" or '__ext' key)
+        If justrename is True, then (if tags contain a PATH or EXTENSION key)
         the file is just renamed i.e not tags are written.
         """
-        if '__folder' in tags:
-            del(tags['__folder'])
+        audio = {}
+        for tag in tags:
+            if tag in mapping:
+                audio[mapping[tag]] = tags[tag]
+            else:
+                audio[tag] = tags[tag]
+
+        if DIRPATH in audio:
+            del(audio[DIRPATH])
         currentfile = self.taginfo[row]
         if undo:
             oldtag = currentfile
-            oldtag = dict([(tag, oldtag[tag]) for tag in set(oldtag).intersection(tags)])
+            oldtag = dict([(tag, oldtag[tag]) for tag in set(oldtag).intersection(audio)])
             if self.undolevel in oldtag:
                 currentfile[self.undolevel].update(oldtag)
             else:
                 currentfile[self.undolevel] = oldtag
             self.emit(ENABLEUNDO, True)
         oldimages = None
-        if '__image' in tags:
-            oldimages = tags['__image']
+        if '__image' in audio:
+            oldimages = audio['__image']
             if not hasattr(currentfile, 'image'):
-                del(tags['__image'])
+                del(audio['__image'])
             else:
                 images = []
-                for z in tags['__image']:
+                for z in audio['__image']:
                     images.append(dict([(key,val) for key,val in z.items() if key in currentfile.IMAGETAGS]))
-                tags['__image'] = [currentfile.image(**z) for z in images]
-        
-        currentfile.update(self.renameFile(row, tags))
+                audio['__image'] = [currentfile.image(**z) for z in images]
+
+        currentfile.update(self.renameFile(row, audio))
         if justrename and LIBRARY in currentfile:
             currentfile.save(True)
         if not justrename:
             try:
-                currentfile.update(tags)
+                currentfile.update(audio)
                 currentfile.save()
             except (OSError, IOError), detail:
                 currentfile.update(currentfile[self.undolevel])
                 del(currentfile[self.undolevel])
                 raise detail
         if oldimages is not None:
-            tags['__image'] = oldimages
+            audio['__image'] = oldimages
 
     def setTestData(self, rows, tags):
         """A method that allows you to change the visible data of
@@ -734,7 +749,7 @@ class TagTable(QTableView):
       except IndexError:
         pass
       self.model().changeFolder(olddir, newdir)
-      
+
 
     def clearTags(self):
         deltag = self.model().deleteTag
@@ -748,7 +763,7 @@ class TagTable(QTableView):
                                 e.filename, e.strerror), len(self.selectedRows)
             self.model().undolevel += 1
             self.selectionChanged()
-            
+
         f = progress(func, 'Deleting tag... ', len(self.selectedRows))
         f(self)
 
@@ -983,7 +998,7 @@ class TagTable(QTableView):
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()
-        files = [z['__filename'] for z in self.model().taginfo if z['__folder']
+        files = [z[FILENAME] for z in self.model().taginfo if z[DIRPATH]
                         not in self.dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
         self.loadFiles(files, self.dirs, False, self.subFolders)
@@ -1102,8 +1117,8 @@ class TagTable(QTableView):
             return groups
 
         modelindex = self.model().index
-        filenames = [z['__filename'] for z in self.model().taginfo]
-        getrow = lambda x: filenames.index(x['__filename'])
+        filenames = [z[FILENAME] for z in self.model().taginfo]
+        getrow = lambda x: filenames.index(x[FILENAME])
         selection = QItemSelection()
         select = lambda top, low, col: selection.append(
                         QItemSelectionRange(modelindex(top, col),
@@ -1160,7 +1175,7 @@ class TagTable(QTableView):
                                                     modelindex(low, col)))
 
         newindexes = {}
-        
+
         while True:
             try:
                 tag = tags[0]
