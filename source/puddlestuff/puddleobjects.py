@@ -76,7 +76,7 @@ else:
 
 HORIZONTAL = 1
 VERTICAL = 0
-                        
+
 def singleerror(parent, msg):
     QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok, QMessageBox.NoButton)
 
@@ -270,6 +270,23 @@ def gettag(f):
     except Exception, e:
         print unicode(e)
         return
+
+def gettaglist():
+    cparser = PuddleConfig()
+    filename = os.path.join(cparser.savedir, 'usertags')
+    try:
+        lines = sorted(set([z.strip() for z in open(filename, 'r').read().split('\n')]))
+    except (IOError, OSError):
+        lines = sorted(REVTAGS)
+    return lines
+
+def settaglist(tags):
+    cparser = PuddleConfig()
+    filename = os.path.join(cparser.savedir, 'usertags')
+    f = open(filename, 'w')
+    text = '\n'.join(sorted(tags))
+    f.write(text)
+    f.close()
 
 def progress(func, pstring, maximum, threadfin = None):
     """To be used for functions that need a threaded progressbar.
@@ -1291,7 +1308,7 @@ class PuddleConfig(object):
     setSection -> save a key section"""
     def __init__(self, filename = None):
         self.settings = ConfigObj(filename, create_empty=True, encoding='utf8')
-        
+
         if not filename:
             filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
         self._setFilename(filename)

@@ -27,10 +27,10 @@ from copy import copy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
                         QuotedString, Literal, NotAny, nums
 import cPickle as pickle
-from puddleobjects import ListBox, OKCancel, ListButtons, winsettings
+from puddleobjects import ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist
 from findfunc import Function, runAction
 from puddleobjects import PuddleConfig, PuddleCombo
-from audioinfo import REVTAGS
+from audioinfo import REVTAGS, INFOTAGS
 
 
 def displaytags(tags):
@@ -39,13 +39,6 @@ def displaytags(tags):
         return "".join([s % (z,v) for z,v in tags.items()])[:-2]
     else:
         return '<b>No change.</b>'
-
-def gettaglist():
-    try:
-        tags =  open(os.path.join(PuddleConfig().savedir, 'taglist'), 'r').read()
-        return tags.split('\n')
-    except IOError, OSError:
-        return ['__path'] + sorted([z for z in REVTAGS])
 
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
@@ -66,11 +59,13 @@ class FunctionDialog(QWidget):
         self.retval = []
         self._mapping = mapping if mapping else {}
         self._revmapping = dict([(value,key) for key, value in self._mapping.items()])
+        self._combotags = []
 
         if showcombo:
             self.tagcombo = QComboBox()
             self.tagcombo.setEditable(True)
-            self.tagcombo.addItems(['__all', '__path'] + sorted([z for z in REVTAGS]))
+            self.tagcombo.addItems(['__all'] + sorted(INFOTAGS) + showcombo)
+            self._combotags = showcombo
             if defaulttags:
                 index = self.tagcombo.findText(" | ".join(defaulttags))
                 if index != -1:
@@ -234,7 +229,10 @@ class CreateFunction(QDialog):
         self.setWindowTitle("Format")
         self.example = example
         self._text = text
-        self.showcombo = showcombo
+        if showcombo:
+            self.showcombo = gettaglist()
+        else:
+            self.showcombo = showcombo
         self.exlabel = QLabel('')
 
         if prevfunc is not None:
@@ -252,9 +250,14 @@ class CreateFunction(QDialog):
         self.setLayout(self.vbox)
 
     def okClicked(self):
-        self.stack.currentWidget().argValues()
+        w = self.stack.currentWidget()
+        w.argValues()
         self.close()
-        self.emit(SIGNAL("valschanged"), self.stack.currentWidget().func)
+        if self.showcombo:
+            newtags = [z for z in w.func.tag if z not in self.showcombo]
+            if newtags:
+                settaglist(sorted(newtags + self.showcombo))
+        self.emit(SIGNAL("valschanged"), w.func)
 
     def createWindow(self, index, defaultargs = None, defaulttags = None):
         """Creates a Function dialog in the stack window

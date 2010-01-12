@@ -26,11 +26,11 @@ one place, and aren't that complicated are put here."""
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, findfunc, audioinfo, os,pdb, resource
-from puddleobjects import (OKCancel, partial, MoveButtons, ListButtons,
+from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButtons, ListButtons,
                             PicWidget, winsettings, PuddleConfig)
 from copy import deepcopy
 ADD, EDIT, REMOVE = (1,2,3)
-from puddlestuff.audioinfo.util import commontags
+from puddlestuff.audioinfo import commontags, INFOTAGS, REVTAGS
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -238,7 +238,7 @@ class EditTag(QDialog):
     value and the third is the dictionary of the previous tag.
     (Because the user might choose to edit a different tag,
     then the one that was chosen and you'd want to delete that one)"""
-    def __init__(self, tag = None, parent = None):
+    def __init__(self, tag = None, parent = None, taglist = None):
 
         QDialog.__init__(self, parent)
         self.vbox = QVBoxLayout()
@@ -246,7 +246,10 @@ class EditTag(QDialog):
         label = QLabel("Tag")
         self.tagcombo = QComboBox()
         self.tagcombo.setEditable(True)
-        self.tagcombo.addItems(sorted([z for z in audioinfo.REVTAGS]))
+        if not taglist:
+            self.tagcombo.addItems(gettaglist())
+        else:
+            self.tagcombo.addItems(taglist)
 
         #Get the previous tag
         self.prevtag = tag
@@ -311,6 +314,7 @@ class ExTags(QDialog):
         QDialog.__init__(self, parent)
         winsettings('extendedtags', self)
         cparser = PuddleConfig()
+        self._taglist = gettaglist()
 
         add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [255,0,0], True))
         edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [0,255,0], True))
@@ -433,6 +437,9 @@ class ExTags(QDialog):
             tags['__image'] = []
         else:
             tags["__image"] = self.piclabel.images
+        newtags = [z for z in tags if z not in self._taglist]
+        if newtags and newtags != ['__image']:
+            settaglist(newtags + self._taglist)
         self.emit(SIGNAL('extendedtags'), tags)
 
     def OK(self):
@@ -440,7 +447,7 @@ class ExTags(QDialog):
         self.close()
 
     def addTag(self):
-        win = EditTag(parent = self)
+        win = EditTag(parent = self, taglist = self._taglist)
         win.setModal(True)
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
@@ -481,7 +488,7 @@ class ExTags(QDialog):
         row = self.listbox.currentRow()
         if row != -1:
             prevtag = self._tag(row)
-            win = EditTag(prevtag, self)
+            win = EditTag(prevtag, self, self._taglist)
             win.setModal(True)
             win.show()
             self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
