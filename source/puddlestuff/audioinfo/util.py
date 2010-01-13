@@ -97,6 +97,11 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
 
+def setmodtime(filepath, atime, mtime):
+    mtime = lngtime(mtime)
+    atime = lngtime(atime)
+    os.utime(filepath, (atime, mtime))
+
 def setdeco(setitem):
     def func(self, key, value):
         typestring = self.typestring
@@ -185,7 +190,10 @@ def strlength(value):
     seconds = long(value % 60)
     if seconds < 10:
         seconds = u"0" + unicode(seconds)
-    return "".join([unicode(long(value/60)),  ":", unicode(seconds)])
+    if value/3600 >= 1:
+        return '%d:%d:%s' % (long(value/3600), long(value % 3600 / 60), unicode(seconds))
+    else:
+        return "".join([unicode(long(value/60)),  ":", unicode(seconds)])
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
@@ -196,9 +204,14 @@ def strfrequency(value):
 
 def lnglength(value):
     """Converts a string representation of length to seconds."""
-    (minutes, seconds) = value.split(':')
-    (minutes, seconds) = (long(minutes), long(seconds))
-    return (minutes * 60) + seconds
+    if len(value.split(':')) == 3:
+        (hours, minutes, seconds) = value.split(':')
+        (hours, minutes, seconds) = (long(hours), long(minutes), long(seconds))
+        return (hours * 3600) + (minutes * 60) + seconds
+    else:
+        (minutes, seconds) = value.split(':')
+        (minutes, seconds) = (long(minutes), long(seconds))
+        return (minutes * 60) + seconds
 
 def lngfrequency(value):
     """Inverse of strfrequency."""

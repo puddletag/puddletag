@@ -26,7 +26,7 @@ from operator import itemgetter
 from copy import copy, deepcopy
 from subprocess import Popen
 from os import path
-from audioinfo import PATH, FILENAME, DIRPATH, EXTENSION, usertags, mapping
+from audioinfo import PATH, FILENAME, DIRPATH, EXTENSION, usertags, mapping, setmodtime
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                                 getfiles, ProgressWin, PuddleThread, progress)
 from musiclib import MusicLibError
@@ -109,6 +109,7 @@ class TagModel(QAbstractTableModel):
         taginfo is a list of audioinfo.Tag objects."""
 
         QAbstractTableModel.__init__(self)
+        self.saveModification = True
         self.headerdata = headerdata
         self.colorRows = []
         self.sortOrder = (0, Qt.AscendingOrder)
@@ -457,6 +458,8 @@ class TagModel(QAbstractTableModel):
                 oldfile.update(currentfile[self.undolevel])
                 self.emit(SIGNAL('libFileChanged'), [oldfile], [currentfile])
             self.undolevel += 1
+            if self.saveModification:
+                setmodtime(currentfile[FILENAME], currentfile['__accessed'], currentfile['__modified'])
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                                         index, index)
             return True
@@ -511,6 +514,8 @@ class TagModel(QAbstractTableModel):
             try:
                 currentfile.update(audio)
                 currentfile.save()
+                if self.saveModification:
+                    setmodtime(currentfile[FILENAME], currentfile['__accessed'], currentfile['__modified'])
             except (OSError, IOError), detail:
                 currentfile.update(currentfile[self.undolevel])
                 del(currentfile[self.undolevel])

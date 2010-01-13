@@ -350,6 +350,10 @@ class GeneralSettings(QFrame):
         self.vertheader.setCheckState(convertstate('vertheader',0))
         self.columnresize = QCheckBox("&Resize columns to contents.")
         self.columnresize.setCheckState(convertstate('columnresize',0))
+        self.reloaddir = QCheckBox("&Reload last opened directory at startup.")
+        self.reloaddir.setCheckState(convertstate('reloaddir',0))
+        self.savemod = QCheckBox("&Preserve file modification times.")
+        self.savemod.setCheckState(convertstate('savemodification',0))
         self.dragcombo = QComboBox()
         self.dragcombo.addItems(['Ask me each time', 'Move', 'Copy'])
         draglabel = QLabel('When files are dropped on Filesystem:')
@@ -362,11 +366,13 @@ class GeneralSettings(QFrame):
         self.playcommand.setText(" ".join(playtext))
 
         [vbox.addWidget(z) for z in [self.subfolders, self.pathinbar,
-            self.gridlines, self.vertheader, self.columnresize, label, self.playcommand,
-            draglabel, self.dragcombo]]
+            self.gridlines, self.vertheader, self.columnresize, self.reloaddir,
+            self.savemod, label, self.playcommand, draglabel, self.dragcombo]]
         vbox.addStretch()
 
         if cenwid is not None:
+            if self.reloaddir.checkState() == Qt.Checked:
+                cenwid.cenwid.table.loadFiles(dirs=[cenwid.lastfolder], append=False)
             cenwid.cenwid.table.setPlayCommand(playtext)
             self.applySettings(cenwid)
             return
@@ -392,6 +398,7 @@ class GeneralSettings(QFrame):
         cenwid.subfolders = convertState(self.subfolders)
         cenwid.pathinbar = convertState(self.pathinbar)
         cenwid.cenwid.gridvisible = convertState(self.gridlines)
+
         curindex = self.dragcombo.currentIndex()
         if curindex == 0:
             cenwid.tree.defaultDropAction = None
@@ -401,6 +408,7 @@ class GeneralSettings(QFrame):
             cenwid.tree.defaultDropAction = Qt.CopyAction
         cenwid.cenwid.table.autoresize = convertState(self.columnresize)
         cenwid.cenwid.gridvisible = convertState(self.gridlines)
+        cenwid.cenwid.table.model().saveModification = convertState(self.savemod)
 
         #if convertstate(self.enableplay):
             #cenwid.cenwid.table.playcommand = True
@@ -423,7 +431,9 @@ class GeneralSettings(QFrame):
                     'pathinbar': convertState(self.pathinbar.checkState()),
                     'vertheader': convertState(self.vertheader.checkState()),
                     'columnresize': convertState(self.columnresize.checkState()),
-                    'dropaction': self.dragcombo.currentIndex()}
+                    'dropaction': self.dragcombo.currentIndex(),
+                    'reloaddir': convertState(self.reloaddir.checkState()),
+                    'savemodification': convertState(self.savemod.checkState())}
         for z in controls:
             cparser.setSection('General', z, controls[z])
         cparser.setSection('table', 'playcommand',[unicode(z) for z in self.playcommand.text().split(" ")])

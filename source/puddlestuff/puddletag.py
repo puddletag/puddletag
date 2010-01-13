@@ -21,7 +21,7 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import actiondlg, findfunc, mainwin, puddlesettings, os, resource,sys, time, pdb
-from audioinfo import FILENAME, PATH, mapping, INFOTAGS, READONLY, DIRPATH, revmapping
+from audioinfo import FILENAME, PATH, mapping, INFOTAGS, READONLY, DIRPATH, revmapping, lnglength, strlength
 from copy import copy, deepcopy
 import helperwin, pdb
 from helperwin import PicWidget
@@ -151,15 +151,21 @@ class MainWin(QMainWindow):
         self.loadFiles = self.cenwid.table.loadFiles
         mainwin.createMenus(self)
         mainwin.connectActions(self)
-        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.tree.selectDirs)
-        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.setTitleFilename)
 
         self.statusbar = self.statusBar()
         statuslabel = QLabel()
         statuslabel.setFrameStyle(QFrame.NoFrame)
         self.statusbar.addPermanentWidget(statuslabel,1)
+        self._totalstats = QLabel('00 (00:00:00 | 00 MB)')
+        self._selectedstats = QLabel('00 (00:00:00 | 00 MB)')
+        self.statusbar.addPermanentWidget(self._selectedstats,0)
+        self.statusbar.addPermanentWidget(self._totalstats,0)
         self.statusbar.setMaximumHeight(self.statusbar.height())
         self.connect(self.statusbar,SIGNAL("messageChanged (const QString&)"), statuslabel.setText)
+        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.tree.selectDirs)
+        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.setTitleFilename)
+        self.connect(self.cenwid.table, SIGNAL('dirnames'), self.updateTotalStats)
+        self.connect(self.cenwid.table, SIGNAL('itemSelectionChanged()'), self.updateSelectedStats)
 
     def _getpathinbar(self):
         return self._pathinbar
@@ -1316,6 +1322,30 @@ class MainWin(QMainWindow):
                 break
             except (IOError, OSError), detail:
                 yield (table.rowTags(row)[FILENAME], unicode(detail.strerror), len(table.selectedRows))
+
+    def updateSelectedStats(self):
+        try:
+            self._selectedstats.setText(self._updateStatus(self.cenwid.table.selectedTags))
+        except ValueError:
+            #No rows selected.
+            self._selectedstats.setText('0 (00:00 | 0 KB)')
+
+    def updateTotalStats(self):
+        self._totalstats.setText(self._updateStatus(self.cenwid.table.model().taginfo))
+
+
+    def _updateStatus(self, files):
+        numfiles = len(files)
+        stats = [(int(z['__size']), lnglength(z['__length'])) for z in files]
+        totalsize = sum([z[0] for z in stats])
+        totallength = strlength(sum([z[1] for z in stats]))
+
+        sizes = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB'}
+
+        valid = [z for z in sizes if totalsize / (1024.0**z) > 1]
+        val = max(valid)
+        sizetext = '%.2f %s' % (totalsize/(1024.0**val), sizes[val])
+        return '%d (%s | %s)' % (numfiles, totallength, sizetext)
 
 
 
