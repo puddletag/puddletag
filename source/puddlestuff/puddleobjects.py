@@ -277,7 +277,7 @@ def gettaglist():
     try:
         lines = sorted(set([z.strip() for z in open(filename, 'r').read().split('\n')]))
     except (IOError, OSError):
-        lines = sorted(REVTAGS)
+        lines = sorted(audioinfo.REVTAGS)
     return lines
 
 def settaglist(tags):
