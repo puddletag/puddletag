@@ -466,7 +466,7 @@ class MainWin(QMainWindow):
         cparser = puddlesettings.PuddleConfig()
         settings = QSettings(cparser.filename, QSettings.IniFormat)
 
-        self.lastfolder = cparser.get("main","lastfolder", unicode(QDir.homePath()))
+        self.lastfolder = unicode(settings.value('main/lastfolder', QVariant(QDir.homePath())).toString())
         maximise = bool(cparser.get('main','maximized', True))
 
         height = cparser.get('main', 'height', 600)
@@ -898,10 +898,10 @@ class MainWin(QMainWindow):
         if not isinstance(filename, basestring):
             filename = filename[0]
 
+        filename = os.path.realpath(filename)
+
         if isinstance(filename, str):
             filename = filename.decode('utf8')
-
-        filename = os.path.realpath(filename)
 
         if path.isdir(filename):
             if not self.isVisible():

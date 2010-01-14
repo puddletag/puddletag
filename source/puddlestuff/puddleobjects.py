@@ -27,7 +27,7 @@ Contains objects used throughout puddletag"""
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, os
+import sys, os,pdb,shutil
 
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
@@ -37,7 +37,6 @@ from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
-import shutil
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 
@@ -648,10 +647,10 @@ class ListButtons(QVBoxLayout):
         self.remove.setIcon(QIcon(':/remove.png'))
         self.remove.setToolTip('Remove')
         self.moveup = QToolButton()
-        self.moveup.setIcon(QIcon(':/moveup.png'))
+        self.moveup.setArrowType(Qt.UpArrow)
         self.moveup.setToolTip('Move Up')
         self.movedown = QToolButton()
-        self.movedown.setIcon(QIcon(':/movedown.png'))
+        self.movedown.setArrowType(Qt.DownArrow)
         self.movedown.setToolTip('Move Down')
         self.edit = QToolButton()
         self.edit.setIcon(QIcon(':/edit.png'))

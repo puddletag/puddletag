@@ -371,7 +371,7 @@ class GeneralSettings(QFrame):
         vbox.addStretch()
 
         if cenwid is not None:
-            if self.reloaddir.checkState() == Qt.Checked:
+            if self.reloaddir.checkState() == Qt.Checked and os.path.exists(cenwid.lastfolder):
                 cenwid.cenwid.table.loadFiles(dirs=[cenwid.lastfolder], append=False)
             cenwid.cenwid.table.setPlayCommand(playtext)
             self.applySettings(cenwid)

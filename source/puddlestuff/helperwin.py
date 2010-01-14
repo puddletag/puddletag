@@ -324,6 +324,7 @@ class ExTags(QDialog):
         self.listbox = QTableWidget(0, 2, self)
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(True)
+        self.listbox.setSelectionBehavior(QAbstractItemView.SelectRows)
         header.setVisible(True)
         header.setSortIndicatorShown (True)
         header.setStretchLastSection (True)
@@ -414,9 +415,10 @@ class ExTags(QDialog):
         l = self.listbox
         row = l.currentRow()
         l.setSortingEnabled(False)
-        if row != -1:
-            l.item(row,0).status = REMOVE
-            l.item(row,1).status = REMOVE
+        for i in self.listbox.selectedItems():
+            row = l.row(i)
+            i.status = REMOVE
+            i.status = REMOVE
         l.setSortingEnabled(True)
         self.filechanged = True
         self._checkListBox()

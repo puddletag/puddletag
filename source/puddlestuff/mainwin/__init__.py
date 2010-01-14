@@ -107,7 +107,7 @@ def connectActions(parent):
     connect(parent.increasefont, parent.increaseFont)
     connect(parent.decreasefont, parent.decreaseFont)
     connect(parent.importclipboard, parent.importClipBoard)
-    
+
     parent.connect(parent.duplicates, SIGNAL('toggled(bool)'), parent.showDupes)
     parent.connect(parent.fileinlib, SIGNAL('toggled(bool)'), parent.inLib)
     parent.connect(parent.filtertext, SIGNAL("textChanged(QString)"), parent.filterTable)
@@ -222,10 +222,10 @@ def createControls(parent):
     parent.dirmodel.setSorting(QDir.IgnoreCase)
     parent.dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
     parent.dirmodel.setReadOnly(False)
-    parent.dirmodel.setLazyChildCount(True)
+    parent.dirmodel.setLazyChildCount(False)
 
     parent.tree = DirView(subfolders = False)
-    
+
     parent.tree.setModel(parent.dirmodel)
     [parent.tree.hideColumn(column) for column in range(1,4)]
     parent.tree.setDragEnabled(True)
