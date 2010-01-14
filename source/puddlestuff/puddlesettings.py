@@ -63,15 +63,31 @@ class PatternEditor(QFrame):
         self.listbox.addItems(patterns)
         hbox = QHBoxLayout()
         hbox.addWidget(self.listbox)
-        hbox.addLayout(buttons)
-
         self.setLayout(hbox)
+
+        vbox = QVBoxLayout()
+        sortlistbox = QPushButton('&Sort')
+        self._sortOrder = Qt.AscendingOrder
+        self.connect(sortlistbox, SIGNAL('clicked()'), self._sortListBox)
+        vbox.addWidget(sortlistbox)
+        vbox.addLayout(buttons)
+        vbox.addStretch()
+
+        hbox.addLayout(vbox)
 
         self.connect(buttons, SIGNAL("add"), self.addPattern)
         self.connect(buttons, SIGNAL("edit"), self.editItem)
         self.listbox.connectToListButtons(buttons)
         self.listbox.editButton = buttons.edit
         self.connect(self.listbox, SIGNAL('itemDoubleClicked (QListWidgetItem *)'), self._doubleClicked)
+
+    def _sortListBox(self):
+        if self._sortOrder == Qt.AscendingOrder:
+            self.listbox.sortItems(Qt.DescendingOrder)
+            self._sortOrder = Qt.DescendingOrder
+        else:
+            self.listbox.sortItems(Qt.AscendingOrder)
+            self._sortOrder = Qt.AscendingOrder
 
     def saveSettings(self):
         patterns = [unicode(self.listbox.item(row).text()) for row in xrange(self.listbox.count())]
