@@ -288,20 +288,27 @@ def re_escape(rex):
     return escaped
 
 
-def replacevars(pattern, audio):
+_varpat = re.compile('%(\w+)%')
+def replacevars(text, dictionary):
     """Replaces the tags in pattern with their corresponding value in audio.
 
     A tag is a string enclosed by percentages, .e.g. %tag%.
 
     >>>replacevars('%artist% - %title%', {'artist':'Artist', 'title':'Title"}
     Artist - Title."""
-
-    for tag in audio.keys():
-        if not audio[tag]:
-            audio[tag] = ''
-        pattern = pattern.replace(u'%' + unicode(tag) + u'%',
-                                        unicode(audio[tag]))
-    return pattern
+    start = 0
+    l = []
+    append = l.append
+    for match in _varpat.finditer(text):
+        append(text[start: match.start(0)])
+        try:
+            append(dictionary[match.groups()[0]])
+        except KeyError:
+            append('')
+        start = match.end(0)
+    if not l:
+        return text
+    return ''.join(l)
 
 
 def runAction(funcs, audio, revmapping = None, mapping = None):

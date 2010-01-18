@@ -956,6 +956,7 @@ class MainWin(QMainWindow):
 
                 newfilename = (findfunc.tagtofilename(pattern, tag, True,
                                                         tag["__ext"] ))
+
                 newfilename = path.join(path.dirname(tag["__filename"]), safe_name(newfilename))
                 self.tagtofile.setStatusTip(u"New Filename: <b>%s</b>" % newfilename)
 
