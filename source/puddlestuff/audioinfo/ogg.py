@@ -23,25 +23,9 @@ import util
 from mutagen.oggvorbis import OggVorbis
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
                   getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-                  READONLY, isempty)
+                  READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
+                  getdeco, setdeco)
 from copy import copy
-
-def getdeco(func):
-    def f(self, key):
-        mapping = self.mapping
-        if key in mapping:
-            return func(self, mapping[key])
-        return func(self, key)
-    return f
-
-def setdeco(func):
-    def f(self, key, value):
-        mapping = self.mapping
-        if key in mapping:
-            func(self, mapping[key], value)
-        return func(self, key, value)
-    return f
-
 
 class Tag(util.MockTag):
     """Ogg Tag class.
@@ -65,6 +49,11 @@ class Tag(util.MockTag):
     mapping = {}
     revmapping = {}
 
+    _hash = {FILENAME: 'filepath',
+             PATH:'filename',
+             EXTENSION: 'ext',
+             DIRPATH: 'dirpath'}
+
     @getdeco
     def __getitem__(self,key):
         """Get the tag value from self._tags. There is a slight
@@ -82,10 +71,9 @@ class Tag(util.MockTag):
     @setdeco
     def __setitem__(self,key,value):
         if key in READONLY:
-          return
-        if key == FILENAME:
-            self.filename = value
-            self._tags[FILENAME] = value
+            return
+        elif key in FILETAGS:
+            setattr(self, self._hash[key], value)
             return
 
         if key not in INFOTAGS and isempty(value):
@@ -133,10 +121,11 @@ class Tag(util.MockTag):
         """Links the audio, filename
         returns self if successful, None otherwise."""
         self.images = None
-        filename = getfilename(filename)
+        self._tags = {}
+
+        self.filepath = getfilename(filename)
         audio = OggVorbis(filename)
         tags = getinfo(filename)
-        self._tags = {}
         if audio is None:
             return
 
@@ -148,7 +137,6 @@ class Tag(util.MockTag):
                     u"__length": strlength(info.length),
                     u"__bitrate": strbitrate(info.bitrate)})
         self._tags.update(tags)
-        self.filename = tags[FILENAME]
         self._mutfile = audio
         self._originaltags = self._tags.keys()
         return self
@@ -156,9 +144,10 @@ class Tag(util.MockTag):
     def save(self):
         """Writes the tags in self._tags
         to self.filename if no filename is specified."""
+        filepath = self.filepath
 
-        if self.filename != self._mutfile.filename:
-            self._mutfile.filename = self.filename
+        if filepath != self._mutfile.filename:
+            self._mutfile.filename = filepath
         audio = self._mutfile
 
         newtag = {}
@@ -170,6 +159,5 @@ class Tag(util.MockTag):
             del(audio[z])
         audio.update(newtag)
         audio.save()
-
 
 filetype = (OggVorbis, Tag, 'VorbisComment')

@@ -7,11 +7,9 @@ from puddlestuff.findfunc import tagtofilename
 from puddlestuff.audioinfo.util import lnglength
 import puddlestuff.audioinfo as audioinfo
 
-from os.path import abspath, dirname, normcase, normpath, splitdrive
+from os.path import abspath, dirname, normcase, normpath, splitdrive, realpath
 from os.path import join as path_join, commonprefix
 import os
-
-
 
 def commonpath(a, b):
     """Returns the longest common to 'paths' path.
@@ -75,15 +73,17 @@ def relpath(target, base_path=os.curdir):
         ret = path_join(ret, target[common_path_len + 1:])
 
     return ret
-    
+
 def readm3u(path):
     #From http://forums.fedoraforum.org/showthread.php?p=1224109
     fileHandle = open (path, 'r')
     reader = csv.reader(open(path, "r"))
-    
+    olddir = os.path.realpath(os.curdir)
+    os.chdir(os.path.dirname(path))
+
     # List of mp3files
     mp3Files = []
-    
+
     for row in reader:
         if len(row)<1:
             # Skip blanks
@@ -93,9 +93,10 @@ def readm3u(path):
             continue
         else:
             # store rule
-            mp3Files.append(os.path.normpath(row[0]))
-    
-    fileHandle.close()   
+            mp3Files.append(normpath(realpath(row[0])))
+
+    fileHandle.close()
+    os.chdir(olddir)
     return mp3Files
 
 def exportm3u(tags, tofile, format = None, reldir = False):

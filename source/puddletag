@@ -20,13 +20,12 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import sys
-from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen
+import sys, os
+from PyQt4.QtGui import QApplication
 from PyQt4.QtCore import pyqtRemoveInputHook
+from puddlestuff.maintest import MainWin
 pyqtRemoveInputHook()
-
-from puddlestuff import resource
-from puddlestuff.puddletag import MainWin
-__version__ = "0.8.1"
+__version__ = "0.8.3"
 import logging
 
 try:
@@ -38,21 +37,17 @@ try:
 except IndexError:
   pass
 
-if __name__ == "__main__":
+if len(sys.argv) > 1:
+    filename = sys.argv[1]
+else:
+    filename = None
+
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    filename = sys.argv[1:]
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
-
-    pixmap = QPixmap(':/puddlelogo.png')
-    splash = QSplashScreen(pixmap)
-    splash.show()
-    QApplication.processEvents()
-
-    qb = MainWin()
-    qb.rowEmpty()
-    splash.finish(qb)
-    if filename:
-        qb.openFolder(filename)
-    qb.show()
+    win = MainWin()
+    win.setVisible(True)
+    if filename and os.path.exists(filename):
+        win.openDir(filename)
     app.exec_()

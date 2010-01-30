@@ -484,7 +484,6 @@ class MainWin(QMainWindow):
         #for title, tag in zip(titles, tags):
             #headerdata.append((title,tag))
 
-        self.cenwid.inittable()
         model = self.cenwid.table.model()
         self.connect(self.cenwid.table.exttags, SIGNAL('triggered()'), self.etagsEdit)
         self.connect(model, SIGNAL('enableUndo'), self.undo.setEnabled)

@@ -311,19 +311,13 @@ def replacevars(text, dictionary):
     return ''.join(l)
 
 
-def runAction(funcs, audio, revmapping = None, mapping = None):
+def runAction(funcs, audio):
     """Runs an action on audio
 
     funcs can be a list of Function objects or a filename of an action file (see getAction).
     audio must dictionary-like object."""
     if isinstance(funcs, basestring):
         funcs = getAction(funcs)[0]
-
-    if (not mapping) and revmapping:
-        mapping = dict([(v,z) for z,v in revmapping.items()])
-    else:
-        mapping = {}
-        revmapping = {}
 
     audio = stringtags(audio)
     changed = set()
@@ -332,29 +326,18 @@ def runAction(funcs, audio, revmapping = None, mapping = None):
         val = {}
         if tag[0] == "__all":
             tag = audio.keys()
-        if not revmapping:
-            for z in tag:
-                try:
-                    t = audio.get(z)
-                    val[z] = func.runFunction(t if t is not None else '', audio = audio)
-                except KeyError:
-                    """The tag doesn't exist or is empty.
-                    In either case we do nothing"""
-        else:
-            for z in tag:
-                try:
-                    if z in revmapping:
-                        z = revmapping[z]
-                    t = audio.get(z)
-                    val[z] = func.runFunction(t if t is not None else '', audio = audio)
-                except KeyError:
-                    """The tag doesn't exist or is empty.
-                        In either case we do nothing"""
+        for z in tag:
+            try:
+                t = audio.get(z)
+                val[z] = func.runFunction(t if t else '', audio = audio)
+            except KeyError:
+                """The tag doesn't exist or is empty.
+                In either case we do nothing"""
         val = dict([z for z in val.items() if z[1]])
         if val:
             [changed.add(z) for z in val]
             audio.update(val)
-    return dict([(z,audio[z]) if z not in mapping else (mapping[z], audio[z]) for z in changed])
+    return dict([(z,audio[z]) for z in changed])
 
 def runQuickAction(funcs, audio, tag):
     """Same as runAction, except that all funcs are applied not in the values stored

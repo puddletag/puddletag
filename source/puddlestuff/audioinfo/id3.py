@@ -22,9 +22,13 @@
 
 import mutagen, mutagen.id3, mutagen.mp3, pdb, util
 from copy import copy, deepcopy
-APIC, TimeStampTextFrame, TextFrame, ID3  = mutagen.id3.APIC, mutagen.id3.TimeStampTextFrame, mutagen.id3.TextFrame, mutagen.id3.ID3
-from util import  (strlength, strbitrate, strfrequency, isempty,
-                    getfilename, getinfo, FILENAME, PATH, INFOTAGS, READONLY)
+APIC = mutagen.id3.APIC
+TimeStampTextFrame = mutagen.id3.TimeStampTextFrame
+TextFrame = mutagen.id3.TextFrame
+ID3  = mutagen.id3.ID3
+from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
+                    setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
+                    READONLY, EXTENSION, DIRPATH)
 import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
@@ -59,15 +63,22 @@ REVTAGS = util.REVTAGS
 class Tag(util.MockTag):
     IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
                                                         util.IMAGETYPE)
+    mapping = {}
+    revmapping = {}
+
+    _hash = {FILENAME: 'filepath',
+             PATH:'filename',
+             EXTENSION: 'ext',
+             DIRPATH: 'dirpath'}
+
     def copy(self):
         tag = Tag()
         tag.load(self._tags.copy(), copy(self._mutfile), copy(self._images))
         return tag
 
+    @getdeco
     def __getitem__(self,key):
-        """Get the tag value        if key not in INFOTAGS and isempty(value):
-            del(self[value])
-            return from self._tags. There is a slight
+        """Get the tag value. There is a slight
         caveat in that this method will never return a KeyError exception.
         Rather it'll return ''."""
         if key == '__image':
@@ -121,11 +132,12 @@ class Tag(util.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        filename = getfilename(filename)
-        audio = PuddleID3FileType(filename)
-        tags = getinfo(filename)
         self._tags = {}
         self._images = []
+        filename = getfilename(filename)
+        self.filepath = filename
+        audio = PuddleID3FileType(filename)
+        tags = getinfo(filename)
         if audio is None:
             return
 
@@ -158,7 +170,6 @@ class Tag(util.MockTag):
                       u"__length": strlength(info.length),
                       u"__bitrate": strbitrate(info.bitrate)})
         self._tags.update(tags)
-        self.filename = tags[FILENAME]
         self._mutfile = audio
         self._originaltags = [z[0] for z in self.mutvalues()]
 
@@ -243,20 +254,18 @@ class Tag(util.MockTag):
         audio.tags.save(v1 = 2)
         self._originaltags = [z[0] for z in self.mutvalues()]
 
+    @setdeco
     def __setitem__(self,key,value):
-
-        if isinstance(key, (int, long)):
+        if key in READONLY:
+            return
+        elif not isinstance(key, basestring):
             self._tags[key] = value
             return
-
-        if key == '__image':
+        elif key == '__image':
             self._images = value
             return
-
-        if key in INFOTAGS and key not in READONLY:
-            self._tags[key] = value
-            if key == FILENAME:
-                self.filename = value
+        elif key in FILETAGS:
+            setattr(self, self._hash[key], value)
             return
 
 
@@ -297,4 +306,11 @@ class Tag(util.MockTag):
                 else:
                     self._tags[key] = [u'TXXX:' + key, mutagen.id3.TXXX(3, key, value)]
 
-filetype = (PuddleID3FileType, Tag)
+    def get(self, key):
+        print self.mapping, self.revmapping
+        try:
+            return self[key]
+        except KeyError:
+            return None
+
+filetype = (PuddleID3FileType, Tag, 'ID3')

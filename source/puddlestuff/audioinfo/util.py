@@ -33,8 +33,9 @@ FILENAME = u"__filename"
 EXTENSION = '__ext'
 DIRPATH = '__folder'
 READONLY = ('__bitrate', '__frequency', "__length", "__modified", "__size", "__created", "__library")
-INFOTAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
-INFOTAGS.extend(READONLY)
+FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
+INFOTAGS = FILETAGS + list(READONLY)
+
 
 MIMETYPE = 'mime'
 DESCRIPTION = 'description'
@@ -67,7 +68,7 @@ TAGS = {'TALB': 'album',
         'TMOO': 'mood',
         'TOAL': 'originalalbum',
         'TOFN': 'originalfilename',
-            'TOLY': 'author',
+        'TOLY': 'author',
         'TOPE': 'originalartist',
         'TOWN': 'fileowner',
         'TPE1': 'artist',
@@ -233,11 +234,7 @@ def getfilename(filename):
 
 def getinfo(filename):
     fileinfo = stat(filename)
-    return ({FILENAME: filename,
-            PATH: unicode(path.basename(filename)),
-            u"__folder": unicode(path.dirname(filename)),
-            u"__ext": unicode(path.splitext(filename)[1][1:]),
-            u"__modified": strtime(fileinfo[ST_MTIME]),
+    return ({u"__modified": strtime(fileinfo[ST_MTIME]),
             u"__size" : unicode(fileinfo[ST_SIZE]),
             u"__created": strtime(fileinfo[ST_CTIME]),
             u'__accessed': strtime(fileinfo[ST_ATIME])})
@@ -255,7 +252,7 @@ def usertags(tags):
                     not (isinstance(z, (int, long)) or z.startswith('__'))])
 
 def writeable(tags):
-    return [z for z in tags if not z.starswith('___') or z.starswith('~')]
+    return [z for z in tags if not z.starswith('___') or z.startswith('~')]
 
 def isempty(value):
     if isinstance(value, (int, long)):
@@ -269,11 +266,64 @@ def isempty(value):
     except TypeError:
         return False
 
+def getdeco(func):
+    def f(self, key):
+        mapping = self.mapping
+        if key in mapping:
+            return func(self, mapping[key])
+        return func(self, key)
+    return f
+
+def setdeco(func):
+    def f(self, key, value):
+        mapping = self.mapping
+        if key in mapping:
+            return func(self, mapping[key], value)
+        return func(self, key, value)
+    return f
+
 class MockTag(object):
     """Use as base for all tag classes."""
     def __init__(self, filename = None):
+        self._info = {}
         if filename:
             self.link(filename)
+
+    def _getfilepath(self):
+        return self._tags[FILENAME]
+
+    def _setfilepath(self,  val):
+        self._tags.update({FILENAME: val,
+                           DIRPATH: path.dirname(val),
+                           PATH: path.basename(val),
+                           EXTENSION: path.splitext(val)[1][1:]})
+
+    def _setext(self,  val):
+        if val:
+            self.filepath = u'%s%s%s' % (path.splitext(self.filepath)[0],
+                                     path.extsep, val)
+        else:
+            self.filepath = path.splitext(self.filepath)[0]
+
+    def _getext(self):
+        return self._tags[EXTENSION]
+
+    def _getfilename(self):
+        return self._tags[PATH]
+
+    def _setfilename(self, val):
+        self.filepath = os.path.join(self.dirpath, val)
+
+    def _getdirpath(self):
+        return self._tags[DIRPATH]
+
+    def _setdirpath(self, val):
+        self.filepath = os.path.join(val,  self.filename)
+
+    filepath = property(_getfilepath, _setfilepath)
+    dirpath = property(_getdirpath, _setdirpath)
+    ext = property(_getext, _setext)
+    filename = property(_getfilename, _setfilename)
 
     def update(self, dictionary=None, **kwargs):
         if dictionary is None:
@@ -328,4 +378,14 @@ class MockTag(object):
 
     def _usertags(self):
         return usertags(self)
+
     usertags = property(_usertags)
+
+    def get(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            return None
+
+    def real(self, key):
+        return self.revmapping[key]

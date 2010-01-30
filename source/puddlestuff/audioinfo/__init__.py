@@ -36,19 +36,29 @@ e = {'mp3': id3.filetype,
     'm4a': mp4.filetype,
     'ape': apev2.filetype}
 
-mapping = {'VorbisComment': {'tracknumber': 'track'}}
-revmapping = {'VorbisComment': {'track': 'tracknumber'}}
+mapping = {}
+revmapping = {}
+
+def loadmapping(filepath):
+    try:
+        lines = open(filepath, 'r').read().split('\n')
+    except IOError, OSError:
+        return {'VorbisComment': {'tracknumber': 'track'}}
+    mappings = {}
+    for l in lines:
+        tags = [z.strip() for z in l.split(' ')]
+        if len(tags) == 3: #Tag, Source, Target
+            try:
+                mappings[tags[0]].update({tags[1].lower(): tags[2].lower()})
+            except KeyError:
+                mappings[tags[0]] = ({tags[1].lower(): tags[2].lower()})
+    return mappings
 
 def setmapping(m):
     global revmapping
     global mapping
 
-    for z in mapping.keys():
-        mapping[z] = {}
-    for z in revmapping.keys():
-        revmapping[z] = {}
-    mapping.update(m)
-
+    mapping = m
     for z in mapping:
         revmapping[z] = dict([(value,key) for key, value in mapping[z].items()])
     for z in e.values():
@@ -56,10 +66,13 @@ def setmapping(m):
             if z[2] in mapping:
                 z[1].mapping = mapping[z[2]]
                 z[1].revmapping = revmapping[z[2]]
+                if 'puddletag' in mapping:
+                    z[1].mapping.update(mapping['puddletag'])
+                    z[1].revmapping.update(revmapping['puddletag'])
         except IndexError:
             pass
 
-setmapping(mapping)
+setmapping({'VorbisComment': {'tracknumber': 'track'}})
 
 def Tag(filename):
     """Class that operates on audio tags.

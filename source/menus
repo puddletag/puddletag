@@ -1,0 +1,19 @@
+[menus]
+&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Refresh,&Clear,separator,&Exit
+&Edit=&Undo,separator,&Cut,&Copy,&Paste,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,separator,&Increase Font,&Decrease Font,separator,&Preferences
+&Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
+&Actions=&Actions,&QuickActions,&Functions
+&Tools=Autonumbering &Wizard...,&Import Music Library...,&Duplicate finder...
+
+[menuattrs]
+order=&File,&Edit,&Convert,&Actions,&Tools
+
+[toolbar]
+&File=&Open Folder,&Add Folder,&Refresh
+&Edit=&Save,&Undo
+&Convert=widget-patterncombo,&File->Tag,&Tag->File,&Format
+&Action=&Actions,&QuickActions,&Functions
+&Tools=Autonumbering &Wizard...,&Text File->Tag,&Rename Directories
+
+[toolbarattrs]
+order=&File,&Edit,&Convert,&Action,&Tools

@@ -1,5 +1,5 @@
 from PyQt4.QtGui import QAction, QIcon
-from controls import *
+#from controls import *
 from puddlestuff.puddleobjects import partial, PuddleDock
 
 def createActions(parent):
@@ -218,13 +218,6 @@ def createControls(parent):
 
     parent.cenwid = TableWindow()
 
-    parent.dirmodel = QDirModel()
-    parent.dirmodel.setSorting(QDir.IgnoreCase)
-    parent.dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
-    parent.dirmodel.setReadOnly(False)
-    parent.dirmodel.setLazyChildCount(False)
-
-    parent.tree = DirView(subfolders = False)
 
     parent.tree.setModel(parent.dirmodel)
     [parent.tree.hideColumn(column) for column in range(1,4)]
@@ -273,3 +266,4 @@ def createControls(parent):
     parent.toolbar = parent.addToolBar("My Toolbar")
     parent.toolbar.setIconSize(QSize(16,16))
     parent.toolbar.setObjectName("Toolbar")
+

@@ -1,10 +1,10 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 <file alias="action.svg">data/action.svg</file>
-<file alias="fileimport.png">data/fileimport.png</file>
+<file alias="addfolder.png">data/addfolder.png</file>
 <file alias="filetotag.png">data/filetotag.png</file>
-<file alias="import.png">data/import.png</file>
-<file alias="rename.png">data/rename.png</file>
+<file alias="text-tag.png">data/text-tag.png</file>
+<file alias="renamedirs.png">data/renamedirs.png</file>
 <file alias="save.png">data/save.png</file>
 <file alias="tagtofile.png">data/tagtofile.png</file>
 <file alias="track.png">data/track.png</file>

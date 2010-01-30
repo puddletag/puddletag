@@ -98,9 +98,9 @@ class TrackWindow(QDialog):
     def doStuff(self):
         self.close()
         if self.checkbox.checkState() == 2:
-            self.emit(SIGNAL("newtracks"),[self.frombox.value(), unicode(self.numtracks.text()), self.foldernumbers.checkState()])
+            self.emit(SIGNAL("newtracks"), self.frombox.value(), self.numtracks.text(), self.foldernumbers.checkState())
         else:
-            self.emit(SIGNAL("newtracks"),[self.frombox.value(), "", self.foldernumbers.checkState()])
+            self.emit(SIGNAL("newtracks"), self.frombox.value(), None, self.foldernumbers.checkState())
 
 
 class ImportWindow(QDialog):

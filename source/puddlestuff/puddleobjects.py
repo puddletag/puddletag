@@ -39,6 +39,7 @@ path = os.path
 from configobj import ConfigObj
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
+from functools import partial
 
 def _setupsaves(func):
     #filename = os.path.join(PuddleConfig().savedir, 'windowsizes')
@@ -65,13 +66,22 @@ except ImportError:
     from difflib import SequenceMatcher
     ratio = lambda a,b: SequenceMatcher(None, a,b).ratio()
 
-if sys.version_info[:2] < (2, 5):
-    def partial(func, arg):
-        def callme():
-            return func(arg)
-        return callme
-else:
-    from functools import partial
+def dircmp(a, b):
+    """Compare function to sort directories via parent.
+So that the child is renamed before parent, thereby not
+giving Permission Denied errors."""
+    if a == b:
+        return 0
+    elif a in b:
+        return 1
+    elif b in a:
+        return -1
+    elif len(a) > len(b):
+        return 1
+    elif len(b) > len(a):
+        return -1
+    elif len(b) == len(a):
+        return 0
 
 HORIZONTAL = 1
 VERTICAL = 0
@@ -264,7 +274,8 @@ def gettags(files):
 def gettag(f):
     try:
         return audioinfo.Tag(f)
-    except (IOError, OSError):
+    except (IOError, OSError), e:
+        print e.strerror, f
         return
     except Exception, e:
         print unicode(e)
@@ -669,9 +680,18 @@ class ListButtons(QVBoxLayout):
         self.connect(self.movedown, clicked, self.movedownClicked)
         self.connect(self.edit, clicked, self.editClicked)
 
-    def connectToWidget(self, widget):
-        connect = lambda a: self.connect(self, SIGNAL(a), getattr(widget, a))
-        [connect(z) for z in ['add', 'remove', 'edit']]
+    def connectToWidget(self, widget, add=None, edit=None, remove=None,
+                        moveup=None, movedown=None):
+        l = ['add', 'edit', 'remove']
+        if moveup:
+            l.append('moveup')
+        if movedown:
+            l.append('movedown')
+        connections = dict([(z,v) for z,v in zip(l,
+                                [add, edit, remove, moveup, movedown]) if v])
+        connect = lambda a: self.connect(self, SIGNAL(a),
+                    connections[a] if a in connections else getattr(widget, a))
+        map(connect, l)
 
     def addClicked(self):
         self.emit(SIGNAL("add"))
@@ -1361,12 +1381,31 @@ class PuddleConfig(object):
 class PuddleDock(QDockWidget):
     """A normal QDockWidget that emits a 'visibilitychanged' signal
     when...uhm...it changes visibility."""
-    def __init__(self, title = None, parent = None):
-        QDockWidget.__init__(self, title, parent)
+    _controls = {}
 
-    def setVisible(self, visible):
-        self.emit(SIGNAL('visibilitychanged'), visible)
-        QDockWidget.setVisible(self, visible)
+    def __init__(self, title, control=None,parent = None, status=None):
+        QDockWidget.__init__(self, title, parent)
+        self.title = title
+        if control:
+            control = control(status=status)
+            self.setObjectName(title)
+            self._control = control
+            self._controls.update({title: control})
+            self.setWidget(control)
+
+class PuddleStatus(object):
+    _status = {}
+
+    def __init__(self):
+        object.__init__(self)
+    def __setitem__(self, name, val):
+        self._status[name] = val
+
+    def __getitem__(self, name):
+        x = self._status.get(name)
+        if callable(x):
+            return x()
+        return x
 
 class PuddleThread(QThread):
     """puddletag rudimentary threading.
