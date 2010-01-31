@@ -66,9 +66,9 @@ def setmapping(m):
             if z[2] in mapping:
                 z[1].mapping = mapping[z[2]]
                 z[1].revmapping = revmapping[z[2]]
-                if 'puddletag' in mapping:
-                    z[1].mapping.update(mapping['puddletag'])
-                    z[1].revmapping.update(revmapping['puddletag'])
+            if 'puddletag' in mapping:
+                z[1].mapping.update(mapping['puddletag'])
+                z[1].revmapping.update(revmapping['puddletag'])
         except IndexError:
             pass
 

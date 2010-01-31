@@ -268,7 +268,7 @@ def isempty(value):
 
 def getdeco(func):
     def f(self, key):
-        mapping = self.mapping
+        mapping = self.revmapping
         if key in mapping:
             return func(self, mapping[key])
         return func(self, key)

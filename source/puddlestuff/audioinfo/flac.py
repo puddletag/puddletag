@@ -39,7 +39,7 @@ class TempTag(ogg.Tag):
 
     Behaves like Tag class in ogg.py"""
     IMAGETAGS = ()
-    
+
     def __init__(self,filename=None):
         """Links the audio"""
         self.images = None
@@ -142,4 +142,4 @@ if IMAGETAGS:
 else:
     Tag = TempTag
 
-filetype = (FLAC, Tag)
+filetype = (FLAC, Tag, 'VorbisComment')
