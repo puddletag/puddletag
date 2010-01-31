@@ -41,9 +41,70 @@ MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
 
+class PuddleConfig(object):
+    """Module that allows you to values from INI config files, similar to
+    Qt's Settings module (Created it because PyQt4.4.3 has problems with
+    saving and loading lists.
+
+    Only two functions of interest:
+
+    load -> load a key from a specified section
+    setSection -> save a key section"""
+    def __init__(self, filename = None):
+        self.settings = ConfigObj(filename, create_empty=True, encoding='utf8')
+
+        if not filename:
+            filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
+        self._setFilename(filename)
+
+        #TODO: backward compatibility, remove all.
+        self.setSection = self.set
+        self.load = self.get
+
+    def get(self, section, key, default, getint = False):
+        settings = self.settings
+        try:
+            if isinstance(default, bool):
+                if self.settings[section][key] == 'True':
+                    return True
+                return False
+            elif getint or isinstance(default, (long,int)):
+                try:
+                    return int(self.settings[section][key])
+                except TypeError:
+                    return [int(z) for z in self.settings[section][key]]
+            else:
+                return self.settings[section][key]
+        except KeyError:
+            return default
+
+    def set(self, section = None, key = None, value = None):
+        settings = self.settings
+        if section in self.settings:
+            settings[section][key] = value
+        else:
+            settings[section] = {}
+            settings[section][key] = value
+        settings.write()
+
+    def _setFilename(self, filename):
+        dirname = os.path.dirname(filename)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        self.settings.filename = filename
+        self.savedir = dirname
+        self.settings.reload()
+
+    def _getFilename(self):
+        return self.settings.filename
+
+    def sections(self):
+        return self.settings.keys()
+
+    filename = property(_getFilename, _setFilename)
+
 def _setupsaves(func):
-    #filename = os.path.join(PuddleConfig().savedir, 'windowsizes')
-    filename = '/home/keith/Desktop/puddle.conf'
+    filename = os.path.join(PuddleConfig().savedir, 'windowsizes')
     settings = QSettings(filename, QSettings.IniFormat)
     return lambda x, y: func(x, y, settings)
 
@@ -1315,68 +1376,6 @@ class PuddleCombo(QWidget):
 
     def _editTextChanged(self, text):
         self.emit(SIGNAL('editTextChanged(const QString&)'), text)
-
-class PuddleConfig(object):
-    """Module that allows you to values from INI config files, similar to
-    Qt's Settings module (Created it because PyQt4.4.3 has problems with
-    saving and loading lists.
-
-    Only two functions of interest:
-
-    load -> load a key from a specified section
-    setSection -> save a key section"""
-    def __init__(self, filename = None):
-        self.settings = ConfigObj(filename, create_empty=True, encoding='utf8')
-
-        if not filename:
-            filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
-        self._setFilename(filename)
-
-        #TODO: backward compatibility, remove all.
-        self.setSection = self.set
-        self.load = self.get
-
-    def get(self, section, key, default, getint = False):
-        settings = self.settings
-        try:
-            if isinstance(default, bool):
-                if self.settings[section][key] == 'True':
-                    return True
-                return False
-            elif getint or isinstance(default, (long,int)):
-                try:
-                    return int(self.settings[section][key])
-                except TypeError:
-                    return [int(z) for z in self.settings[section][key]]
-            else:
-                return self.settings[section][key]
-        except KeyError:
-            return default
-
-    def set(self, section = None, key = None, value = None):
-        settings = self.settings
-        if section in self.settings:
-            settings[section][key] = value
-        else:
-            settings[section] = {}
-            settings[section][key] = value
-        settings.write()
-
-    def _setFilename(self, filename):
-        dirname = os.path.dirname(filename)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
-        self.settings.filename = filename
-        self.savedir = dirname
-        self.settings.reload()
-
-    def _getFilename(self):
-        return self.settings.filename
-
-    def sections(self):
-        return self.settings.keys()
-
-    filename = property(_getFilename, _setFilename)
 
 class PuddleDock(QDockWidget):
     """A normal QDockWidget that emits a 'visibilitychanged' signal
