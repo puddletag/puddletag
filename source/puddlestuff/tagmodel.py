@@ -545,8 +545,8 @@ class TagModel(QAbstractTableModel):
             del(audio[DIRPATH])
         if undo:
             oldtag = currentfile
-            oldtag = dict([(tag, oldtag[tag]) for tag in
-                                    set(oldtag).intersection(audio)])
+            oldtag = dict([(tag, copy(currentfile[tag])) if tag in currentfile
+                            else (tag, []) for tag in tags])
             if self.undolevel in oldtag:
                 currentfile[self.undolevel].update(oldtag)
             else:
@@ -813,7 +813,9 @@ class TagTable(QTableView):
         self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)
         self.setModel(model)
 
-        emitundo = lambda val: self.emit(ENABLEUNDO, val)
+        def emitundo(val):
+            self.emit(ENABLEUNDO, val)
+            self.selectionChanged()
         self.connect(model, ENABLEUNDO, emitundo)
         self.undo = model.undo
 

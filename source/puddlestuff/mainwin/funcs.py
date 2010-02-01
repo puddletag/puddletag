@@ -233,7 +233,7 @@ def run_func(selectedfiles, func):
                 if useaudio:
                     val = function(rowtags, rowtags)
                 else:
-                    val = function(tags[tag], rowtags)
+                    val = function(tags[tag] if tag in tags else '', rowtags)
                 if val is not None:
                     tags[tag] = val
             yield tags

@@ -74,42 +74,49 @@ def create_window_action(parent, dockwidget):
 TRIGGERED = SIGNAL('triggered()')
 
 def connect_actions(actions, controls):
+    emits = {}
+    for c in controls.values():
+        for sig in c.emits:
+            emits[sig].append(c) if sig in emits else emits.update({sig:[c]})
     connect = QObject.connect
     for action in actions:
-        try:
-            c = controls[action.control]
-            if action.enabled in ENABLESIGNALS:
-                connect(c, ENABLESIGNALS[action.enabled], action.setEnabled)
+            if action.enabled in emits:
+                if action.enabled in ENABLESIGNALS:
+                    [connect(c, ENABLESIGNALS[action.enabled], action.setEnabled)
+                            for c in emits[action.enabled]]
+                else:
+                    [connect(c, SIGNAL(action.enabled), action.setEnabled)
+                            for c in emits[action.enabled]]
             else:
-                connect(c, SIGNAL(action.enabled), action.setEnabled)
-        except KeyError:
-            print 'Control', action.control, 'not found.', action.text()
-            action.setEnabled(False)
-            continue
-        try:
+                print 'No enable signal found for', action.text()
+                action.setEnabled(False)
+                continue
             command = action.command
-            connect(action, TRIGGERED, getattr(c, command))
-            #print 'Connected', action.text(), action.command
-        except AttributeError:
             if action.control == 'mainwin' and hasattr(mainfuncs, command):
                 f = getattr(mainfuncs, command)
                 if 'parent' in f.func_code.co_varnames:
                     f = partial(f, parent=c)
-                connect(action, TRIGGERED, f)
-                continue
-            print action.command, 'not found', action.text()
+                    connect(action, TRIGGERED, f)
+                    continue
+            elif action.control in controls:
+                c = controls[action.control]
+                if hasattr(c, command):
+                    connect(action, TRIGGERED, getattr(c, command))
+                else:
+                    print action.command, 'not found', action.text()
 
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        self.emits = ['loadFiles']
+        self.emits = ['loadFiles', 'always']
         self.receives = [('writeselected', self.writeSelected),
                           ('filesloaded', self._filesLoaded),
                           ('viewfilled', self._viewFilled),
                           ('filesselected', self._filesSelected),
                           ('renamedirs', self.renameDirs),
                           ('filesloaded', self.updateTotalStats),
-                          ('filesselected', self.updateSelectedStats)]
+                          ('filesselected', self.updateSelectedStats),
+                          ('onetomany', self.writeOneToMany)]
 
         ls = loadshortcuts
 
@@ -328,7 +335,26 @@ class MainWin(QMainWindow):
                     yield None
                 except (IOError, OSError), e:
                     yield e.filename, e.strerror, len(rows)
-        def fin(): self._table.model().undolevel += 1
+        def fin():
+            self._table.model().undolevel += 1
+            self._table.selectionChanged()
+        s = progress(func, 'Writing', len(rows), fin)
+        s(self)
+
+    def writeOneToMany(self, d):
+        rows = status['selectedrows']
+        setRowData = self._table.model().setRowData
+
+        def func():
+            for row in rows:
+                try:
+                    setRowData(row, d, undo=True)
+                    yield None
+                except (IOError, OSError), e:
+                    yield e.filename, e.strerror, len(rows)
+        def fin():
+            self._table.model().undolevel += 1
+            self._table.selectionChanged()
         s = progress(func, 'Writing', len(rows), fin)
         s(self)
 
