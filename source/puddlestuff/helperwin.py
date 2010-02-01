@@ -307,10 +307,7 @@ class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
     In addition, the file's image tag is shown."""
-    def __init__(self, parent = None, row = None, model = None):
-        """model -> is a puddlestuff.TableModel object
-        row -> the row that contains the file to be displayed
-        """
+    def __init__(self, parent = None, row=None, files=None):
         QDialog.__init__(self, parent)
         winsettings('extendedtags', self)
         cparser = PuddleConfig()
@@ -335,14 +332,14 @@ class ExTags(QDialog):
         self.piclabel = PicWidget(buttons = True)
         self.connect(self.piclabel, SIGNAL('imageChanged'), self._imageChanged)
 
-        if row >= 0 and model:
-            buttons = MoveButtons(model.taginfo, row)
+        if row >= 0 and files:
+            buttons = MoveButtons(files, row)
             self.connect(buttons, SIGNAL('indexChanged'), self._prevnext)
-            self._model = model
             buttons.setVisible(True)
         else:
             buttons = MoveButtons([], row)
             buttons.setVisible(False)
+        self._files = files
 
         self.okcancel = OKCancel()
 
@@ -390,13 +387,15 @@ class ExTags(QDialog):
         self.canceled = False
         self.filechanged = False
 
-        if row >= 0 and model:
+        if row >= 0 and files:
             self._prevnext(row)
+        else:
+            self.loadFiles(files)
 
     def _prevnext(self, row):
         if self.filechanged:
             self.save()
-        self.loadFiles([self._model.taginfo[row]])
+        self.loadFiles([self._files[row]])
 
     def _checkListBox(self):
         if self.listbox.rowCount() <= 0:

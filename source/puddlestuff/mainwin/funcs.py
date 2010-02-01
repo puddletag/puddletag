@@ -75,13 +75,23 @@ def cut():
     emit('writeselected', (dict([(z[0], "") for z in s])
                                     for s in selected))
 
-def display_tag( tag):
+def display_tag(tag):
     """Used to display tags in the status bar in a human parseable format."""
     if not tag:
         return "<b>Error in pattern</b>"
     s = "%s: <b>%s</b>, "
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     return "".join([s % (z, tostr(v)) for z, v in tag.items()])[:-2]
+
+def extended_tags(parent=None):
+    rows = status['selectedrows']
+    if len(rows) == 1:
+        win = helperwin.ExTags(parent, rows[0], status['alltags'])
+    else:
+        win = helperwin.ExTags(files = status['selectedfiles'], parent=parent)
+    x = lambda val: emit('onetomany', val)
+    obj.connect(win, SIGNAL('extendedtags'), x)
+    win.show()
 
 def filename_to_tag():
     """Get tags from the selected files using the pattern in
@@ -297,7 +307,7 @@ def update_status(enable = True):
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
-                'formatstatus', 'renamedirs']
+                'formatstatus', 'renamedirs', 'onetomany']
 obj.receives = [('filesselected', update_status),
                 ('patternchanged', update_status)]
 

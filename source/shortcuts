@@ -229,3 +229,9 @@ control=table
 shortcut=Ctrl+R
 icon=:/remove.png
 enabled=filesselected
+
+[shortcut33]
+name=E&xtended Tags
+command=extended_tags
+control=mainwin
+enabled=filesselected
