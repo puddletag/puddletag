@@ -807,6 +807,7 @@ class TagTable(QTableView):
         self._restore = False
         self._selectedRows = []
         self._selectedColumns = []
+        self.setHorizontalScrollMode(self.ScrollPerPixel)
 
         model = TagModel(headerdata)
         self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)
@@ -1419,8 +1420,7 @@ class TagTable(QTableView):
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
         if not self.verticalScrollBar().isVisible() and h.isVisible():
-            numdegrees = e.delta() / 8
-            numsteps = numdegrees / 15
+            numsteps = e.delta() / 5
             h.setValue(h.value() + numsteps)
             e.accept()
         else:
