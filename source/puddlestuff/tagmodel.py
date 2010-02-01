@@ -476,6 +476,7 @@ class TagModel(QAbstractTableModel):
             else:
                 if tag in READONLY:
                     return False
+                oldtag = ''
 
             filename = currentfile.filepath
             newvalue = unicode(value.toString())
@@ -783,7 +784,9 @@ class TagTable(QTableView):
 
         self.emits = ['dirschanged', 'tagselectionchanged', 'filesloaded',
                       'viewfilled', 'filesselected', 'enableUndo', 'dirsmoved']
-        self.receives = [('loadFiles', self.loadFiles), ('removeFolders', self.removeFolders)]
+        self.receives = [('loadFiles', self.loadFiles),
+                         ('removeFolders', self.removeFolders)]
+        self.gensettings = [('Subfolders', True)]
         if not headerdata:
             headerdata = []
         header = TableHeader(Qt.Horizontal, headerdata, self)
@@ -879,6 +882,10 @@ class TagTable(QTableView):
             tags = (htags[column] for column in rows[row])
             ret.append(dict([(tag, f[tag]) for tag  in tags]))
         return ret
+
+    def applyGenSettings(self, settings):
+        self.subFolders = settings['Subfolders']
+
 
     autoresize = property(_getResize, _setResize)
 

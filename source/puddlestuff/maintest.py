@@ -9,7 +9,7 @@ import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import loadshortcuts, m3u
 
-from puddlestuff.puddlesettings import SettingsDialog
+from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings
 import puddlestuff.mainwin.funcs as mainfuncs
 from functools import partial
 from itertools import izip
@@ -256,6 +256,9 @@ class MainWin(QMainWindow):
         for control in PuddleDock._controls.values():
             if hasattr(control, 'loadSettings'):
                 control.loadSettings()
+            if hasattr(control, 'gensettings'):
+                t = load_gen_settings(control.gensettings)
+                control.applyGenSettings(t)
         cparser = PuddleConfig()
         settings = QSettings(cparser.filename, QSettings.IniFormat)
         home = os.getenv('HOME')

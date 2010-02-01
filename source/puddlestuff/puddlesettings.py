@@ -47,6 +47,75 @@ from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleC
 import pdb
 import audioinfo.util
 
+def load_gen_settings(setlist, extras=False):
+    settings = PuddleConfig()
+    settings.filename = os.path.join(settings.savedir, 'gensettings')
+    ret = {}
+    for setting in setlist:
+        desc = setting[0]
+        default = setting[1]
+        ret[desc] = settings.get(desc, 'value', default)
+    return ret
+
+def save_gen_settings(setlist):
+    settings = PuddleConfig()
+    settings.filename = os.path.join(settings.savedir, 'gensettings')
+    for desc, value in setlist.items():
+        settings.set(desc, 'value', value)
+
+class SettingsCheckBox(QCheckBox):
+    def __init__(self, default=None, text=None, parent=None):
+        QCheckBox.__init__(self, text, parent)
+
+        self.settingValue = default
+
+    def _value(self):
+        if self.checkState() == Qt.Checked:
+            return unicode(self.text()), True
+        else:
+            return unicode(self.text()), False
+
+    def _setValue(self, value):
+        if value:
+            self.setCheckState(Qt.Checked)
+        else:
+            self.setCheckState(Qt.Unchecked)
+
+    settingValue = property(_value, _setValue)
+
+
+class GeneralSettings(QWidget):
+    def __init__(self, controls, parent = None):
+        QWidget.__init__(self, parent)
+        settings = {}
+        for control in controls:
+            if hasattr(control, 'gensettings'):
+                settings.update(load_gen_settings(control.gensettings, True))
+        self._controls = []
+
+        def create_control(desc, val):
+            if isinstance(val, bool):
+                return SettingsCheckBox(val, desc)
+
+        vbox = QVBoxLayout()
+        for desc, val in settings.items():
+            widget = create_control(desc, val)
+            try:
+                vbox.addWidget(widget)
+            except Exception, e:
+                print e
+                vbox.addLayout(widget)
+            self._controls.append(widget)
+        vbox.addStretch()
+        self.setLayout(vbox)
+
+    def applySettings(self, controls):
+        vals =  dict([c.settingValue for c in self._controls])
+        for c in controls:
+            if hasattr(c, 'applyGenSettings'):
+                c.applyGenSettings(vals)
+        save_gen_settings(vals)
+
 class TagMappings(QWidget):
     def __init__(self, parent = None):
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
@@ -176,14 +245,14 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("puddletag settings")
         winsettings('settingswin', self)
 
-        d = {}
-        i = 0
+        d = {0: ('General', GeneralSettings(controls), controls),
+             1: ('Mappings', TagMappings(), None)}
+        i = 2
         for control in controls:
             if hasattr(control, SETTINGSWIN):
                 c = getattr(control, SETTINGSWIN)(status=status)
                 d[i] = [c.title, c, control]
                 i += 1
-        d[max(d) + 1] = ('Mappings', TagMappings(), None)
         self._widgets = d
 
         self.listbox = SettingsList()
