@@ -103,26 +103,6 @@ def setmodtime(filepath, atime, mtime):
     atime = lngtime(atime)
     os.utime(filepath, (atime, mtime))
 
-def setdeco(setitem):
-    def func(self, key, value):
-        typestring = self.typestring
-        def retfunc(self, key, value):
-            if key in mapping[typestring]:
-                key = mapping[typestring][key]
-            setitem(self, key, value)
-        return retfunc(self, key, value)
-    return func
-
-def getdeco(getitem):
-    def func(self, key):
-        typestring = self.typestring
-        def retfunc(self, key):
-            if key in revmapping[typestring]:
-                key = revmapping[typestring][key]
-            return getitem(self, key)
-        return retfunc(self, key)
-    return func
-
 def commonimages(imagedicts):
     if imagedicts:
         x = imagedicts[0]
@@ -271,15 +251,25 @@ def getdeco(func):
         mapping = self.revmapping
         if key in mapping:
             return func(self, mapping[key])
+        elif key in self.mapping:
+            return ''
         return func(self, key)
     return f
 
 def setdeco(func):
     def f(self, key, value):
-        mapping = self.mapping
+        mapping = self.revmapping
         if key in mapping:
             return func(self, mapping[key], value)
         return func(self, key, value)
+    return f
+
+def deldeco(func):
+    def f(self, key):
+        mapping = self.revmapping
+        if key in mapping:
+            return func(self, mapping[key])
+        return func(self, key)
     return f
 
 class MockTag(object):
@@ -336,6 +326,7 @@ class MockTag(object):
             for key, value in dictionary:
                 self[key] = value
 
+    @deldeco
     def __delitem__(self, key):
         if key in self._tags and key not in INFOTAGS:
             del(self._tags[key])
@@ -347,7 +338,11 @@ class MockTag(object):
                 del(self._tags[z])
 
     def keys(self):
-        return self._tags.keys()
+        if not self.mapping:
+            return self._tags.keys()
+        else:
+            return [self.mapping[z] if z in self.mapping else z
+                            for z in self._tags.keys()]
 
     def values(self):
         return [self[key] for key in self]
@@ -358,10 +353,10 @@ class MockTag(object):
     tags = property(lambda self: dict(self.items()))
 
     def __iter__(self):
-        return self._tags.__iter__()
+        return self.keys().__iter__()
 
     def __contains__(self, key):
-        return self._tags.__contains__(key)
+        return key in self.keys()
 
     def __len__(self):
         try:
@@ -373,7 +368,7 @@ class MockTag(object):
         return stringtags(self)
 
     def save(self):
-        if not path.exists(self.filename):
+        if not path.exists(self.filepath):
             raise IOError(ENOENT, os.strerror(ENOENT), self.filename)
 
     def _usertags(self):

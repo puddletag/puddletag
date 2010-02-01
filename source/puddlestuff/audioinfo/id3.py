@@ -28,7 +28,7 @@ TextFrame = mutagen.id3.TextFrame
 ID3  = mutagen.id3.ID3
 from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
                     setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
-                    READONLY, EXTENSION, DIRPATH)
+                    READONLY, EXTENSION, DIRPATH, FILETAGS)
 import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
@@ -216,9 +216,10 @@ class Tag(util.MockTag):
 
     def save(self):
         """Writes the tags to file."""
-        if self.filename != self._mutfile.filename:
-            self._mutfile.tags.filename = self.filename
-            self._mutfile.filename = self.filename
+        filename = self.filepath
+        if filename != self._mutfile.filename:
+            self._mutfile.tags.filename = filename
+            self._mutfile.filename = filename
         audio = self._mutfile
         util.MockTag.save(self)
 
@@ -250,7 +251,7 @@ class Tag(util.MockTag):
             except KeyError:
                 continue
 
-        audio.tags.filename = self.filename
+        audio.tags.filename = self.filepath
         audio.tags.save(v1 = 2)
         self._originaltags = [z[0] for z in self.mutvalues()]
 
@@ -307,7 +308,6 @@ class Tag(util.MockTag):
                     self._tags[key] = [u'TXXX:' + key, mutagen.id3.TXXX(3, key, value)]
 
     def get(self, key):
-        print self.mapping, self.revmapping
         try:
             return self[key]
         except KeyError:

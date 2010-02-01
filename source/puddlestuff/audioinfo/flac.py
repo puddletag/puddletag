@@ -39,6 +39,8 @@ class TempTag(ogg.Tag):
 
     Behaves like Tag class in ogg.py"""
     IMAGETAGS = ()
+    mapping = {}
+    revmapping = {}
 
     def __init__(self,filename=None):
         """Links the audio"""
@@ -53,18 +55,16 @@ class TempTag(ogg.Tag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
+        self._tags = {}
         filename = getfilename(filename)
+        self.filepath = filename
         audio = FLAC(filename)
         tags = getinfo(filename)
-        self._tags = {}
         if audio is None:
             return
 
         for z in audio:
             self._tags[z.lower()] = audio.tags[z]
-        if 'tracknumber' in self._tags: #Vorbiscomment uses tracknumber instead of track.
-            self._tags["track"] = self._tags["tracknumber"][:]
-            del(self._tags["tracknumber"])
 
         self._images = audio.pictures
 
@@ -77,7 +77,6 @@ class TempTag(ogg.Tag):
             self._tags[u"__bitrate"] = u'0 kb/s'
 
         self._tags.update(tags)
-        self.filename = tags[FILENAME]
         self._mutfile = audio
         return self
 
@@ -122,16 +121,13 @@ if IMAGETAGS:
             """Writes the tags in self._tags
             to self.filename if no filename is specified."""
 
-            if self.filename != self._mutfile.filename:
-                self._mutfile.filename = self.filename
+            if self.filepath != self._mutfile.filename:
+                self._mutfile.filename = self.filepath
             audio = self._mutfile
 
             newtag = {}
-            for tag, value in usertags(self).items():
+            for tag, value in usertags(self._tags).items():
                 newtag[tag] = value
-            if "track" in newtag:
-                newtag["tracknumber"] = newtag["track"][:]
-                del newtag["track"]
             toremove = [z for z in audio if z not in newtag]
             for z in toremove:
                 del(audio[z])

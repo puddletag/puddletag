@@ -55,7 +55,7 @@ class Tag(util.MockTag):
              DIRPATH: 'dirpath'}
 
     @getdeco
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
         Rather it'll return ''."""
@@ -93,7 +93,7 @@ class Tag(util.MockTag):
     def delete(self):
         self._mutfile.delete()
         for z in self.usertags:
-            del(self._tags[z])
+            del(self[z])
         self.save()
 
     def _info(self):
@@ -151,7 +151,7 @@ class Tag(util.MockTag):
         audio = self._mutfile
 
         newtag = {}
-        for tag, value in usertags(self).items():
+        for tag, value in usertags(self._tags).items():
             newtag[tag] = value
 
         toremove = [z for z in audio if z not in newtag]
