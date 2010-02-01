@@ -38,6 +38,7 @@ class DirView(QTreeView):
             index = index.parent()
             self.setExpanded(index, True)
         self.resizeColumnToContents(0)
+        self._select = True
 
     def _copy(self, files):
         """Copies the list in files[0] to the dirname in files[1]."""
@@ -322,6 +323,9 @@ class DirView(QTreeView):
         self._append = append
 
     def selectDirs(self, dirlist):
+        if not self._select:
+            self._select = True
+            return
         self.blockSignals(True)
         load = self._load
         self._load = False
@@ -365,6 +369,7 @@ class DirView(QTreeView):
         if dirs:
             self.emit(SIGNAL('loadFiles'), None, dirs, append)
         self._lastselection = len(self.selectedIndexes())
+        self._select = False
 
     def warningMessage(self, text, numfiles):
         """Just shows a warning box with text (in HTML). Should only be called

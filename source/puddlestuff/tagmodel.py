@@ -464,12 +464,11 @@ class TagModel(QAbstractTableModel):
     def setData(self, index, value, role = Qt.EditRole):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
-
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
             currentfile = self.taginfo[index.row()]
-            if tag in currentfile.mapping:
+            if tag in currentfile.revmapping:
                 oldtag = currentfile.real(tag)
                 if oldtag in READONLY:
                     return False
@@ -537,9 +536,9 @@ class TagModel(QAbstractTableModel):
         currentfile = self.taginfo[row]
         filetags = {}
         if currentfile.mapping:
-            mapping, real = currentfile.mapping, currentfile.real
-            filetags = dict([(real(key), tags[key]) for key in FILETAGS
-                                if key in tags and key in mapping])
+            revmapping, real = currentfile.revmapping, currentfile.real
+            filetags = dict([(revmapping[key], tags[key]) for key in FILETAGS
+                                if key in tags and key in revmapping])
         audio = tags.copy()
 
         if DIRPATH in audio:
@@ -1163,7 +1162,7 @@ class TagTable(QTableView):
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()
-        files = [z[FILENAME] for z in self.model().taginfo if z[DIRPATH]
+        files = [z.filepath for z in self.model().taginfo if z[DIRPATH]
                         not in self.dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
         self.loadFiles(files, self.dirs, False, self.subFolders)

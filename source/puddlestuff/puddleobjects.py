@@ -339,7 +339,7 @@ def gettag(f):
         print e.strerror, f
         return
     except Exception, e:
-        print unicode(e)
+        print e, f
         return
 
 def gettaglist():
