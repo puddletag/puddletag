@@ -30,7 +30,7 @@ from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
                         usertags, setmodtime, FILETAGS, READONLY)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                            HeaderSetting, getfiles, ProgressWin, PuddleStatus,
-                           PuddleThread, progress, PuddleConfig)
+                           PuddleThread, progress, PuddleConfig, singleerror)
 from musiclib import MusicLibError
 import time
 from errno import EEXIST
@@ -492,14 +492,18 @@ class TagModel(QAbstractTableModel):
                     self.undolevel += 1
                     return True
                 except (IOError, OSError), detail:
-                    self.emit(SETDATAERROR, index.row(), column, "Couldn't rename " + filename + ": " + detail.strerror)
+                    self.emit(SETDATAERROR, u"An error occurred while renaming"
+                                             " <b>%s</b>: (%s)" % (
+                                             filename, detail.strerror))
                     return False
             try:
                 currentfile[tag] = newvalue
                 currentfile.save()
             except (IOError, OSError), detail:
                 currentfile[tag] = oldvalue
-                self.emit(SETDATAERROR, index.row(), column, "Couldn't write to " + filename + ": " + detail.strerror)
+                self.emit(SETDATAERROR, u"An error occurred while writing to"
+                                         " <b>%s</b>: (%s)" % (
+                                         filename, detail.strerror))
                 return False
 
             currentfile[self.undolevel] = {tag: oldvalue}
@@ -1220,7 +1224,7 @@ class TagTable(QTableView):
         self.updateRow = model.setRowData
         self.connect(model, SIGNAL('modelReset'), self.selectionChanged)
         self.connect(model, SIGNAL('modelReset'), self.selectCorner)
-        self.connect(model, SIGNAL('setDataError'), self.showTool)
+        self.connect(model, SETDATAERROR, self.writeError)
         self.connect(model, SIGNAL('fileChanged()'), self.selectionChanged)
 
     def currentRowSelection(self):
@@ -1405,17 +1409,15 @@ class TagTable(QTableView):
         QTableView.setHorizontalHeader(self, header)
         self.connect(header, SIGNAL('saveSelection'), self.saveSelection)
 
-    def showTool(self, row, column, text):
+    def writeError(self, text):
         """Shows a tooltip when an error occors.
 
         Actually, a tooltip is never shown, because the table
         is updated as soon as it tries to show it. So a setDataError
         signal is emitted with the text that can be used to show
         text in the status bar or something."""
-        y = -self.mapFromGlobal(self.pos()).y() + self.rowViewportPosition(row)
-        x = -self.mapFromGlobal(self.pos()).x() + self.columnViewportPosition(column)
-        QToolTip.showText(QPoint(x,y), text)
-        self.emit(SIGNAL('setDataError'), text)
+        singleerror(self.parentWidget(), text)
+        self.emit(SETDATAERROR, text)
 
     def showProperties(self):
         f = self.selectedTags[0]

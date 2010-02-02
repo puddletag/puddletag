@@ -155,7 +155,7 @@ class FrameCombo(QGroupBox):
             if index > -1:
                 combo.setCurrentIndex(index)
             else:
-                combo.setEditText(tags['genre'][0])self._grid.setRowStretch(0,0)
+                combo.setEditText(tags['genre'][0])
         else:
 
             combos['genre'].setCurrentIndex(0)
@@ -231,14 +231,17 @@ class FrameCombo(QGroupBox):
                 self.labels[tagval].setBuddy(self.combos[tagval])
                 labelbox.addWidget(self.labels[tagval])
                 widgetbox.addWidget(self.combos[tagval])
-            self.vbox.addLayout(labelbox)
-            self.vbox.addLayout(widgetbox)
-
-        self.vbox.addStrut(0)
+            self.vbox.addLayout(labelbox, 0)
+            self.vbox.addLayout(widgetbox, 0)
+            widgetbox.addStrut(1)
+        self.vbox.addStretch(1)
         column = self._grid.columnCount()
         self._grid.addLayout(self.vbox, 0, column)
-        self._grid.setSizeConstraint(self.vbox.SetMinAndMaxSize)
-        self.setMaximumHeight(self.sizeHint().height())
+        #self._grid.addItem(QSpacerItem(1,1), 1, column)
+        self._grid.setSizeConstraint(self.vbox.SetMaximumSize)
+        self.setMaximumHeight(self._grid.sizeHint().height())
+        #self.setFixedHeight(self._grid.minimumSize().height())
+
 
     def initCombos(self):
         """Clears the comboboxes and adds two items, <keep> and <blank>.

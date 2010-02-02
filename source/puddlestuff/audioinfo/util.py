@@ -369,7 +369,7 @@ class MockTag(object):
 
     def save(self):
         if not path.exists(self.filepath):
-            raise IOError(ENOENT, os.strerror(ENOENT), self.filename)
+            raise IOError(ENOENT, os.strerror(ENOENT), self.filepath)
 
     def _usertags(self):
         return usertags(self)

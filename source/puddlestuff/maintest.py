@@ -367,7 +367,12 @@ class MainWin(QMainWindow):
                     setRowData(row, f, undo=True)
                     yield None
                 except (IOError, OSError), e:
-                    yield e.filename, e.strerror, len(rows)
+                    m = 'An error occured while writing to <b>%s</b>. (%s)' % (
+                            e.filename, e.strerror)
+                    if row == rows[-1]:
+                        yield m, 1
+                    else:
+                        yield m, len(rows)
         def fin():
             self._table.model().undolevel += 1
             self._table.selectionChanged()

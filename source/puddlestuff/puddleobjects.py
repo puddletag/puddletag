@@ -37,6 +37,7 @@ from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
+
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
@@ -148,7 +149,8 @@ HORIZONTAL = 1
 VERTICAL = 0
 
 def singleerror(parent, msg):
-    QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok, QMessageBox.NoButton)
+    QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok,
+                                                    QMessageBox.NoButton)
 
 def errormsg(parent, msg, maximum):
     """Shows a messagebox containing an error message indicating that
@@ -422,7 +424,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     threadfin()
             elif isinstance(args[0], QString):
                 if parent.showmessage:
-                    ret = errormsg(parent, unicode(args[0]), int(args[1]))
+                    ret = errormsg(parent, args[0], maximum)
                     if ret is True:
                         parent.showmessage = False
                     elif ret is False:
