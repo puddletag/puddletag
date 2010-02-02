@@ -313,9 +313,9 @@ class ExTags(QDialog):
         cparser = PuddleConfig()
         self._taglist = gettaglist()
 
-        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [255,0,0], True))
+        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [255,255,0], True))
         edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [0,255,0], True))
-        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [0,0,255], True))
+        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
         self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
 
         self.listbox = QTableWidget(0, 2, self)

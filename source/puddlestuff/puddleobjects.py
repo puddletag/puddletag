@@ -347,8 +347,10 @@ def gettag(f):
 def gettaglist():
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
+
     try:
         lines = sorted(set([z.strip() for z in open(filename, 'r').read().split('\n')]))
+
     except (IOError, OSError):
         lines = sorted(audioinfo.REVTAGS)
     return lines
@@ -357,7 +359,7 @@ def settaglist(tags):
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
     f = open(filename, 'w')
-    text = '\n'.join(sorted(tags))
+    text = '\n'.join(sorted([z for z in tags if not z.startswith('__')]))
     f.write(text)
     f.close()
 

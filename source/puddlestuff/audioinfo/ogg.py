@@ -98,9 +98,9 @@ class Tag(util.MockTag):
 
     def _info(self):
         info = self._mutfile.info
-        fileinfo = [('Filename', self[FILENAME]),
+        fileinfo = [('Filename', self.filepath),
                     ('Size', unicode(int(self['__size'])/1024) + ' kB'),
-                    ('Path', self[PATH]),
+                    ('Path', self.filename),
                     ('Modified', self['__modified'])]
 
         ogginfo = [('Bitrate', self['__bitrate']),

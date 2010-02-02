@@ -30,11 +30,12 @@ def auto_numbering(parent=None):
 
     numtracks = len(tags)
 
-    mintrack = min([tag['track'] for tag in tags if tag.get('track')])
-    if not mintrack:
+    numbers = [tag['track'] for tag in tags if 'track' in tag]
+    if not numbers:
         mintrack = 1
+        enablenumtracks = False
     else:
-        mintrack = mintrack[0]
+        mintrack = sorted(numbers)[0]
         if "/" in mintrack:
             enablenumtracks = True
             mintrack = long(mintrack.split("/")[0])

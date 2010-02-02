@@ -834,29 +834,11 @@ class TagTable(QTableView):
         self.setItemDelegate(delegate)
         self.subFolders = False
 
-        self.play = QAction("&Play", self)
-        self.play.setShortcut('Ctrl+p')
-        self.exttags = QAction("E&xtended Tags", self)
-        self.delete = QAction(QIcon(':/remove.png'), '&Delete', self)
-        self.delete.setShortcut('Delete')
-        self.cleartag = QAction('Delete Tag', self)
-        self.cleartag.setShortcut('Ctrl+R')
-        self.properties = QAction('Properties', self)
-
-        connect = lambda a,f: self.connect(a, SIGNAL('triggered()'), f)
-
-        connect(self.play, self.playFiles)
-        connect(self.delete, self.deleteSelected)
-        #connect(self.cleartag, self.clearTags)
-        connect(self.properties, self.showProperties)
-
         def sep():
             separator = QAction(self)
             separator.setSeparator(True)
             return separator
 
-        self.actions = [self.play, self.exttags, self.cleartag,
-                        sep(), self.delete, sep(), self.properties]
         status['selectedrows'] = self._getSelectedRows
         status['selectedfiles'] = self._selectedTags
         status['selectedcolumns'] = self._getSelectedColumns
@@ -1163,21 +1145,17 @@ class TagTable(QTableView):
         """Play the selected files using the player specified in self.playcommand"""
         if not self.selectedRows: return
         if hasattr(self, "playcommand"):
-            if self.playcommand is True:
-                li = [QUrl(path.join("file:///localhost", self.rowTags(z)[FILENAME])) for z in self.selectedRows]
-                QDesktopServices.openUrl(li)
-            else:
-                li = copy(self.playcommand)
-                li.extend([self.rowTags(z)[FILENAME] for z in self.selectedRows])
-                try:
-                    Popen(li)
-                except (OSError), detail:
-                    if detail.errno != 2:
-                        QMessageBox.critical(self,"Error", u"I couldn't play the selected files: (<b>%s</b>) <br />Does the music player you defined (<b>%s</b>) exist?" % \
-                                            (detail.strerror, u" ".join(self.playcommand)), QMessageBox.Ok, QMessageBox.NoButton)
-                    else:
-                        QMessageBox.critical(self,"Error", u"I couldn't play the selected files, because the music player you defined (<b>%s</b>) does not exist." \
-                                            % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
+            li = copy(self.playcommand)
+            li.extend([z.filepath for z in self.selectedTags])
+            try:
+                Popen(li)
+            except (OSError), detail:
+                if detail.errno != 2:
+                    QMessageBox.critical(self,"Error", u"I couldn't play the selected files: (<b>%s</b>) <br />Does the music player you defined (<b>%s</b>) exist?" % \
+                                        (detail.strerror, u" ".join(self.playcommand)), QMessageBox.Ok, QMessageBox.NoButton)
+                else:
+                    QMessageBox.critical(self,"Error", u"I couldn't play the selected files, because the music player you defined (<b>%s</b>) does not exist." \
+                                        % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()
