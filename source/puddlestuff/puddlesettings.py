@@ -50,11 +50,11 @@ import audioinfo.util
 def load_gen_settings(setlist, extras=False):
     settings = PuddleConfig()
     settings.filename = os.path.join(settings.savedir, 'gensettings')
-    ret = {}
+    ret = []
     for setting in setlist:
         desc = setting[0]
         default = setting[1]
-        ret[desc] = settings.get(desc, 'value', default)
+        ret.append([desc, settings.get(desc, 'value', default)])
     return ret
 
 def save_gen_settings(setlist):
@@ -83,28 +83,46 @@ class SettingsCheckBox(QCheckBox):
 
     settingValue = property(_value, _setValue)
 
+class SettingsLineEdit(QWidget):
+    def __init__(self, desc, default, parent=None):
+        QWidget.__init__(self, parent)
+        vbox = QVBoxLayout()
+        vbox.setMargin(0)
+        self._text = QLineEdit(default)
+        label = QLabel(desc)
+        self._desc = desc
+        label.setBuddy(self._text)
+        vbox.addWidget(label)
+        vbox.addWidget(self._text)
+        self.setLayout(vbox)
+
+    def _value(self):
+        return self._desc, unicode(self._text.text())
+
+    def _setValue(self, value):
+        self._text.setText(self._desc, text)
+
+    settingValue = property(_value, _setValue)
 
 class GeneralSettings(QWidget):
     def __init__(self, controls, parent = None):
         QWidget.__init__(self, parent)
-        settings = {}
+        settings = []
         for control in controls:
             if hasattr(control, 'gensettings'):
-                settings.update(load_gen_settings(control.gensettings, True))
+                settings.extend(load_gen_settings(control.gensettings, True))
         self._controls = []
 
         def create_control(desc, val):
             if isinstance(val, bool):
                 return SettingsCheckBox(val, desc)
+            elif isinstance(val, basestring):
+                return SettingsLineEdit(desc, val)
 
         vbox = QVBoxLayout()
-        for desc, val in settings.items():
+        for desc, val in settings:
             widget = create_control(desc, val)
-            try:
-                vbox.addWidget(widget)
-            except Exception, e:
-                print e
-                vbox.addLayout(widget)
+            vbox.addWidget(widget)
             self._controls.append(widget)
         vbox.addStretch()
         self.setLayout(vbox)
@@ -125,7 +143,10 @@ class TagMappings(QWidget):
         self._table = QTableWidget()
         self._table.setColumnCount(3)
         self._table.setHorizontalHeaderLabels(['Tag', 'Source', 'Target'])
-        self._table.horizontalHeader().setVisible(True)
+        header = self._table.horizontalHeader()
+        header.setVisible(True)
+        self._table.verticalHeader().setVisible(False)
+        header.setStretchLastSection(True)
         buttons = ListButtons()
         buttons.connectToWidget(self)
         buttons.moveup.setVisible(False)
@@ -156,6 +177,7 @@ class TagMappings(QWidget):
                 row += 1
                 self._table.setRowCount(row + 1)
         self._table.removeRow(self._table.rowCount() -1)
+        self._table.resizeColumnsToContents()
 
     def add(self):
         table = self._table
@@ -163,6 +185,9 @@ class TagMappings(QWidget):
         self._table.insertRow(row)
         for column, v in enumerate(['Tag', 'Source', 'Target']):
             table.setItem(row, column, QTableWidgetItem(v))
+        item = table.item(row, 0)
+        table.setCurrentItem(item)
+        table.editItem(item)
 
     def edit(self):
         self._table.editItem(self._table.currentItem())
@@ -260,6 +285,7 @@ class SettingsDialog(QDialog):
         self.listbox.setModel(self.model)
 
         self.stack = QStackedWidget()
+        self.stack.setFrameStyle(QFrame.StyledPanel)
 
         self.grid = QGridLayout()
         self.grid.addWidget(self.listbox)

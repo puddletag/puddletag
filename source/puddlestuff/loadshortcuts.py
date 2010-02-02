@@ -6,15 +6,15 @@ import sys, pdb, resource,os
 SEPARATOR = 'separator'
 ALWAYS = 'always'
 
-def get_menus(filepath=None):
+def get_menus(section, filepath=None):
     cparser = PuddleConfig()
     if not filepath:
         filepath = os.path.join(cparser.savedir, 'menus')
     cparser.filename = filepath
     menus = []
     settings = cparser.settings
-    temp = settings['menus']
-    menus = [(z, temp[z]) for z in settings['menuattrs']['order']]
+    temp = settings[section]
+    menus = [(z, temp[z]) for z in settings[section + 'attrs']['order']]
     return menus
 
 def menubar(menus, actions):
@@ -29,16 +29,22 @@ def menubar(menus, actions):
                 menu.addSeparator()
     return menubar
 
-def get_toolbargroups(filepath=None):
-    cparser = PuddleConfig()
+def context_menu(section, actions, filepath=None):
+    cparser = PuddleConfig(filepath)
     if not filepath:
         filepath = os.path.join(cparser.savedir, 'menus')
-    cparser.filename = filepath
-    groups = []
-    settings = cparser.settings
-    temp = settings['toolbar']
-    groups = [(z, temp[z]) for z in settings['toolbarattrs']['order']]
-    return groups
+        cparser.filename = filepath
+    order = cparser.get(section, 'order', [])
+    if not order:
+        return
+    texts = [unicode(action.text()) for action in actions]
+    menu = QMenu()
+    for action in order:
+        if action in texts:
+            menu.addAction(actions[texts.index(action)])
+        elif action == SEPARATOR:
+            menu.addSeparator()
+    return menu
 
 def toolbar(groups, actions, controls=None):
     texts = [unicode(action.text()) for action in actions]

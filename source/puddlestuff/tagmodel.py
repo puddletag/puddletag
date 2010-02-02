@@ -785,7 +785,13 @@ class TagTable(QTableView):
                       'viewfilled', 'filesselected', 'enableUndo', 'dirsmoved']
         self.receives = [('loadFiles', self.loadFiles),
                          ('removeFolders', self.removeFolders)]
-        self.gensettings = [('Subfolders', True)]
+        self.gensettings = [('Su&bfolders', True),
+                            ('Show &gridlines', True),
+                            ('Show &row numbers', True),
+                            ('Automatically resize columns to contents',
+                                                                    False),
+                            ('&Preserve file modification times', True),
+                            ('Program to &play files with:', 'xmms')]
         if not headerdata:
             headerdata = []
         header = TableHeader(Qt.Horizontal, headerdata, self)
@@ -807,6 +813,7 @@ class TagTable(QTableView):
         self._restore = False
         self._selectedRows = []
         self._selectedColumns = []
+        self.contextMenu = None
         self.setHorizontalScrollMode(self.ScrollPerPixel)
 
         model = TagModel(headerdata)
@@ -885,8 +892,14 @@ class TagTable(QTableView):
             ret.append(dict([(tag, f[tag]) for tag  in tags]))
         return ret
 
-    def applyGenSettings(self, settings):
-        self.subFolders = settings['Subfolders']
+    def applyGenSettings(self, d, a=None):
+        if not a:
+            self.subFolders = d['Su&bfolders']
+            self.setShowGrid(d['Show &gridlines'])
+            self.verticalHeader().setVisible(d['Show &row numbers'])
+            self.autoresize = d['Automatically resize columns to contents']
+            self.saveModification = d['&Preserve file modification times']
+            self.playcommand = d['Program to &play files with:'].split(' ')
 
 
     autoresize = property(_getResize, _setResize)
@@ -931,9 +944,8 @@ class TagTable(QTableView):
         return self.model().rowCount()
 
     def contextMenuEvent(self, event):
-        menu = QMenu(self)
-        [menu.addAction(z) for z in self.actions]
-        menu.exec_(event.globalPos())
+        if self.contextMenu:
+            self.contextMenu.exec_(event.globalPos())
 
     def _isEmpty(self):
         if self.model().rowCount() <= 0:

@@ -2,6 +2,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from copy import deepcopy
 import os, shutil
+from puddlestuff.puddleobjects import PuddleConfig
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""
@@ -39,6 +40,16 @@ class DirView(QTreeView):
             self.setExpanded(index, True)
         self.resizeColumnToContents(0)
         self._select = True
+
+    def loadSettings(self):
+        t = PuddleConfig()
+        settings = QSettings(t.filename, QSettings.IniFormat)
+        d = settings.value('main/lastfolder',
+                                        QVariant(QDir.homePath())).toString()
+        index = self.model().index(d)
+        while index.isValid():
+            self.expand(index)
+            index = index.parent()
 
     def _copy(self, files):
         """Copies the list in files[0] to the dirname in files[1]."""

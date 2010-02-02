@@ -7,7 +7,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
-import loadshortcuts, m3u
+import loadshortcuts as ls
+import m3u
 
 from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings
 import puddlestuff.mainwin.funcs as mainfuncs
@@ -46,6 +47,12 @@ def create_tool_windows(parent):
         parent.addDockWidget(Qt.LeftDockWidgetArea, p)
         actions.append(create_window_action(parent, p))
     return actions
+
+def create_context_menus(controls, actions):
+    for name in controls:
+        menu = ls.context_menu(name, actions)
+        if menu:
+            controls[name].contextMenu = menu
 
 def connect_controls(controls, actions=None):
     emits = {}
@@ -116,9 +123,9 @@ class MainWin(QMainWindow):
                           ('renamedirs', self.renameDirs),
                           ('filesloaded', self.updateTotalStats),
                           ('filesselected', self.updateSelectedStats),
-                          ('onetomany', self.writeOneToMany)]
-
-        ls = loadshortcuts
+                          ('onetomany', self.writeOneToMany),
+                          ('dirschanged', self._dirChanged)]
+        self.gensettings = [('&Load last folder at startup', True, 1)]
 
         self.setWindowTitle("puddletag")
         self._table = TagTable()
@@ -136,7 +143,7 @@ class MainWin(QMainWindow):
         self.createStatusBar()
 
         actions = ls.get_actions(self)
-        menus = ls.get_menus()
+        menus = ls.get_menus('menu')
         menubar = ls.menubar(menus, actions)
         self.setMenuBar(menubar)
         winmenu = menubar.addMenu('&Windows')
@@ -145,13 +152,13 @@ class MainWin(QMainWindow):
 
         controls = PuddleDock._controls
 
-        toolgroup = ls.get_toolbargroups()
+        toolgroup = ls.get_menus('toolbar')
         [self.addToolBar(z) for z in ls.toolbar(toolgroup, actions, controls)]
 
         connect_actions(actions, controls)
+        create_context_menus(controls, actions)
 
         self.restoreSettings()
-        connect_controls(controls.values())
         self.emit(SIGNAL('always'), True)
 
     def _status(self, controls):
@@ -164,6 +171,15 @@ class MainWin(QMainWindow):
         self._status = x
         self.connect(control, 'getstatus', getstatus)
 
+    def _dirChanged(self, dirs):
+        initial = self._lastdir[0]
+        if initial in dirs and len(dirs) > 1:
+            self.setWindowTitle('puddletag: %s + others' % initial)
+        elif initial not in dirs and len(dirs) == 1:
+            self.setWindowTitle('puddletag: %s' % dirs[0])
+        elif initial not in dirs and len(dirs) > 1:
+            self.setWindowTitle('puddletag: %s + others' % dirs[0])
+        self._lastdir = dirs
 
     def _getDir(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
@@ -181,6 +197,11 @@ class MainWin(QMainWindow):
 
     def _filesSelected(self, val):
         self.emit(SIGNAL('filesselected'), val)
+
+    def applyGenSettings(self, settings, a=None):
+        if a == 1:
+            if settings['&Load last folder at startup']:
+                self.openDir(self._lastdir[0], False)
 
     def closeEvent(self, e):
         controls = PuddleDock._controls
@@ -232,7 +253,7 @@ class MainWin(QMainWindow):
                     unicode(e)),
                     QMessageBox.Ok)
 
-    def openDir(self, filename=None, append=True):
+    def openDir(self, filename=None, append=False):
         """Opens a folder. If filename != None, then
         the table is filled with the folder.
 
@@ -252,7 +273,6 @@ class MainWin(QMainWindow):
 
             if isinstance(filename, str):
                 filename = unicode(filename, 'utf8')
-
         self.emit(SIGNAL('loadFiles'), None, [filename], append)
 
     def openPrefs(self):
@@ -260,16 +280,23 @@ class MainWin(QMainWindow):
         win.show()
 
     def restoreSettings(self):
-        for control in PuddleDock._controls.values():
+        cparser = PuddleConfig()
+        settings = QSettings(cparser.filename, QSettings.IniFormat)
+        gensettings = {}
+        controls = PuddleDock._controls.values()
+        for control in controls:
             if hasattr(control, 'loadSettings'):
                 control.loadSettings()
             if hasattr(control, 'gensettings'):
                 t = load_gen_settings(control.gensettings)
-                control.applyGenSettings(t)
-        cparser = PuddleConfig()
-        settings = QSettings(cparser.filename, QSettings.IniFormat)
+                gensettings[control] = dict(t)
+
+        for control, val in gensettings.items():
+            control.applyGenSettings(val, 0)
+
         home = os.getenv('HOME')
-        self._lastdir = cparser.get('mainwin', 'lastfolder', [home])
+        self._lastdir = [unicode(settings.value('main/lastfolder',
+                                        QVariant(home)).toString())]
 
         filepath = os.path.join(cparser.savedir, 'mappings')
         audioinfo.setmapping(audioinfo.loadmapping(filepath))
@@ -277,9 +304,15 @@ class MainWin(QMainWindow):
         h = self._table.horizontalHeader()
         h.restoreState(settings.value('table/header').toByteArray())
         self.restoreState(settings.value('main/state').toByteArray())
+
+        connect_controls(controls)
+
         winsettings('mainwin', self)
         if cparser.get("main", "maximized", True):
             self.showMaximized()
+        QApplication.processEvents()
+        for control, val in gensettings.items():
+            control.applyGenSettings(val, 1)
 
     def savePlayList(self):
         tags = self._table.model().taginfo

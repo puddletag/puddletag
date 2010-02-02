@@ -235,3 +235,11 @@ name=E&xtended Tags
 command=extended_tags
 control=mainwin
 enabled=filesselected
+
+[shortcut34]
+name=&Delete
+command=deleteSelected
+control=table
+shortcut=Del
+icon=:/remove.png
+enabled=filesselected

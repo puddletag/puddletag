@@ -1,4 +1,4 @@
-[menus]
+[menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Refresh,&Clear,separator,&Exit
 &Edit=&Undo,E&xtended Tags,separator,&Cut,&Copy,&Paste,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,separator,&Increase Font,&Decrease Font,separator,&Preferences
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
@@ -19,4 +19,4 @@ order=&File,&Edit,&Convert,&Actions,&Tools
 order=&File,&Edit,&Convert,&Action,&Tools
 
 [table]
-order=
+order=&Play,E&xtended Tags,&Remove Tag,separator,&Cut,&Copy,&Paste,separator,&Delete,separator

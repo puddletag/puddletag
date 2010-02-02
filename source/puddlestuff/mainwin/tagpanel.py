@@ -3,7 +3,8 @@ from PyQt4.QtGui import *
 import pdb, sys, os
 sys.path.insert(1,'../..')
 from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
-from puddlestuff.puddleobjects import ListButtons, PuddleConfig
+from puddlestuff.audioinfo.util import commonimages
+from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
 pyqtRemoveInputHook()
 
@@ -17,11 +18,8 @@ def loadsettings(filepath = None):
     if numrows > -1:
         sections = settings.sections()
         d = {}
-        for section in sections:
-            try:
-                row = int(section)
-            except ValueError:
-                continue
+        for row in xrange(numrows):
+            section = unicode(row)
             tags = settings.get(section, 'tags', [''])
             titles = settings.get(section, 'titles', [''])
             d[row] = zip(titles, tags)
@@ -65,12 +63,11 @@ class FrameCombo(QGroupBox):
         self.emits = ['onetomany']
         self.receives = [('tagselectionchanged', self.fillCombos)]
         self.combos = {}
+        self.labels = {}
 
         self.vbox = QVBoxLayout()
-        self.setLayout(self.vbox)
-        self._mapping = {}
-        self._revmapping = {}
-
+        self._grid = QGridLayout()
+        self.setLayout(self._grid)
 
     def disableCombos(self):
         for z in self.combos:
@@ -135,12 +132,8 @@ class FrameCombo(QGroupBox):
             tags[z] = list(set(tags[z]))
         #Add values to combos
         for tagset in tags:
-            if tagset in self._mapping:
-                [combos[self._mapping[tagset]].addItem(unicode(z)) for z in sorted(tags[tagset])
-                        if combos.has_key(tagset)]
-            else:
-                [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
-                        if combos.has_key(tagset)]
+            [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
+                    if combos.has_key(tagset)]
 
         for combo in combos.values():
             combo.setEnabled(True)
@@ -162,7 +155,7 @@ class FrameCombo(QGroupBox):
             if index > -1:
                 combo.setCurrentIndex(index)
             else:
-                combo.setEditText(tags['genre'][0])
+                combo.setEditText(tags['genre'][0])self._grid.setRowStretch(0,0)
         else:
 
             combos['genre'].setCurrentIndex(0)
@@ -208,8 +201,13 @@ class FrameCombo(QGroupBox):
         >>>rows = {0:[0], 1:[1], 2:[2], 3[3,4,6],4:[5]
         >>>f = FrameCombo()
         >>>f.setCombo(tags,rows)"""
+        if self.combos:
+            [z.hide() for z in self.combos.values()]
+            [z.hide() for z in self.labels.values()]
+            self.vbox = QVBoxLayout()
         self.combos = {}
         self.labels = {}
+
 
         j = 0
         for row, tags in sorted(rowtags.items()):
@@ -237,6 +235,9 @@ class FrameCombo(QGroupBox):
             self.vbox.addLayout(widgetbox)
 
         self.vbox.addStrut(0)
+        column = self._grid.columnCount()
+        self._grid.addLayout(self.vbox, 0, column)
+        self._grid.setSizeConstraint(self.vbox.SetMinAndMaxSize)
         self.setMaximumHeight(self.sizeHint().height())
 
     def initCombos(self):
@@ -261,10 +262,6 @@ class FrameCombo(QGroupBox):
     def reloadCombos(self, tags):
         self.setCombos(tags)
 
-    def setMapping(self, mapping,revmapping):
-        self._mapping = mapping
-        self._revmapping = {}
-
     def loadSettings(self):
         self.setCombos(loadsettings())
 
@@ -275,6 +272,7 @@ class PuddleTable(QTableWidget):
         if columns:
             self.setColumnCount(len(columns))
             self.setHorizontalHeaderLabels(columns)
+            self.horizontalHeader().setStretchLastSection(True)
 
     def add(self, texts = None):
         row = self.rowCount()
@@ -321,11 +319,7 @@ class PuddleTable(QTableWidget):
 
     def texts(self, row):
         item = self.item
-        try:
-            return [unicode(item(row, z).text()) for z in range(self.columnCount())]
-        except AttributeError:
-            pdb.set_trace()
-            return [unicode(item(row, z).text()) for z in range(self.columnCount())]
+        return [unicode(item(row, z).text()) for z in range(self.columnCount())]
 
     def items(self, row):
         item = self.item
@@ -344,7 +338,7 @@ class SettingsWin(QWidget):
         self._table = PuddleTable(['Title', 'Tag', 'Row'],
                                         ['Title', 'tag', unicode(0)], self)
         buttons = ListButtons()
-        buttons.connectToWidget(self._table, edit=self.edit,
+        buttons.connectToWidget(self._table, add=self.add, edit=self.edit,
                     moveup=self._table.moveUp, movedown=self._table.moveDown)
 
         hbox = QHBoxLayout()
@@ -354,6 +348,14 @@ class SettingsWin(QWidget):
 
         self.connect(self._table, SIGNAL('cellChanged(int,int)'), self._checkItem)
         self.fill()
+
+    def add(self):
+        table = self._table
+        text = table.text
+        table.add(['Title', 'tag', max([text(row, 2) for row in table.rows])])
+        item = table.item(table.rowCount() - 1, 0)
+        table.setCurrentItem(item)
+        table.editItem(item)
 
     def fill(self):
         d = loadsettings()
@@ -376,6 +378,7 @@ class SettingsWin(QWidget):
                 d[l[2]] = [l[:-1]]
         d = dict([(i,d[v]) for i,v in enumerate(sorted(d))]) #consecutive rows
         savesettings(d)
+        control.setCombos(d)
 
 
     def edit(self):
