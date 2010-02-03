@@ -32,7 +32,7 @@ from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                            HeaderSetting, getfiles, ProgressWin, PuddleStatus,
                            PuddleThread, progress, PuddleConfig, singleerror)
 from musiclib import MusicLibError
-import time
+import time, re
 from errno import EEXIST
 import traceback
 
@@ -178,6 +178,7 @@ class TagModel(QAbstractTableModel):
         self.colorRows = []
         self.sortOrder = (0, Qt.AscendingOrder)
         self.saveModification = True
+        self._filtered = []
         if taginfo is not None:
             self.taginfo = unique(taginfo)
             self.sort(*self.sortOrder)
@@ -214,6 +215,45 @@ class TagModel(QAbstractTableModel):
         self._undolevel = value
 
     undolevel = property(_getUndoLevel, _setUndoLevel)
+
+    def applyFilter(self, tags, pattern=None, matchcase=True):
+        self.taginfo = self.taginfo + self._filtered
+        taginfo = self.taginfo
+        if ((not tags) or (not pattern)) and (not self._filtered):
+            return
+        elif (not tags) or (not pattern):
+            self._filtered = []
+            self.reset()
+            return
+
+        pattern = re.compile(pattern)
+        def filt(tags, audio, check):
+            if check:
+                for tag in tags:
+                    if tag not in audio:
+                        continue
+                    elif isinstance(audio[tag], basestring):
+                        if pattern.search(audio[tag]):
+                            return True
+                    else:
+                        if [True for t in audio[tag] if pattern.search(t)]:
+                            return True
+            else:
+                for tag in tags:
+                    if isinstance(audio[tag], basestring):
+                        if pattern.search(audio[tag]):
+                            return True
+                    else:
+                        if [True for t in audio[tag] if pattern.search(t)]:
+                            return True
+            return False
+        if tags == ['__all']:
+            t = [filt(audio.keys(), audio, False) for audio in self.taginfo]
+        else:
+            t = [filt(tags, audio, True) for audio in self.taginfo]
+        self._filtered = [taginfo[i] for i,z in enumerate(t) if not z]
+        self.taginfo = [taginfo[i] for i,z in enumerate(t) if z]
+        self.reset()
 
     def changeFolder(self, olddir, newdir):
         """Used for changing the directory of all the files in olddir to newdir.
@@ -347,6 +387,7 @@ class TagModel(QAbstractTableModel):
         else:
             top = self.index(0, 0)
             self.taginfo = taginfo
+            self._filtered = []
             self.reset()
             self.sort(*self.sortOrder)
             self.undolevel = 0
@@ -784,18 +825,6 @@ class TagTable(QTableView):
         QTableView.__init__(self,parent)
         self.settingsdialog = ColumnSettings
         self.saveModification = True
-
-        self.emits = ['dirschanged', 'tagselectionchanged', 'filesloaded',
-                      'viewfilled', 'filesselected', 'enableUndo', 'dirsmoved']
-        self.receives = [('loadFiles', self.loadFiles),
-                         ('removeFolders', self.removeFolders)]
-        self.gensettings = [('Su&bfolders', True),
-                            ('Show &gridlines', True),
-                            ('Show &row numbers', True),
-                            ('Automatically resize columns to contents',
-                                                                    False),
-                            ('&Preserve file modification times', True),
-                            ('Program to &play files with:', 'xmms')]
         if not headerdata:
             headerdata = []
         header = TableHeader(Qt.Horizontal, headerdata, self)
@@ -823,6 +852,7 @@ class TagTable(QTableView):
         model = TagModel(headerdata)
         self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)
         self.setModel(model)
+        self.applyFilter = model.applyFilter
 
         def emitundo(val):
             self.emit(ENABLEUNDO, val)
@@ -838,6 +868,19 @@ class TagTable(QTableView):
             separator = QAction(self)
             separator.setSeparator(True)
             return separator
+
+        self.emits = ['dirschanged', 'tagselectionchanged', 'filesloaded',
+                      'viewfilled', 'filesselected', 'enableUndo', 'dirsmoved']
+        self.receives = [('loadFiles', self.loadFiles),
+                         ('removeFolders', self.removeFolders),
+                         ('filter', self.applyFilter)]
+        self.gensettings = [('Su&bfolders', True),
+                            ('Show &gridlines', True),
+                            ('Show &row numbers', True),
+                            ('Automatically resize columns to contents',
+                                                                    False),
+                            ('&Preserve file modification times', True),
+                            ('Program to &play files with:', 'xmms')]
 
         status['selectedrows'] = self._getSelectedRows
         status['selectedfiles'] = self._selectedTags
@@ -1194,7 +1237,7 @@ class TagTable(QTableView):
         topLeft = self.model().index(0, 0)
         selection = QItemSelection(topLeft, topLeft)
         self.selectionModel().select(selection, QItemSelectionModel.Select)
-        self.setFocus()
+        #self.setFocus()
 
     def setModel(self, model):
         QTableView.setModel(self, model)

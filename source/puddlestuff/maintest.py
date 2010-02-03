@@ -6,7 +6,7 @@ from tagmodel import TagTable
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, resource
-import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
+import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo, mainwin.filterwin
 import loadshortcuts as ls
 import m3u
 
@@ -35,7 +35,7 @@ tagmodel.status = status
 def create_tool_windows(parent):
     actions = []
     for z in (mainwin.tagpanel.control, mainwin.dirview.control,
-                mainwin.patterncombo.control):
+                mainwin.patterncombo.control, mainwin.filterwin.control):
         try:
             if not z[2]:
                 PuddleDock._controls[z[0]] = z[1](status=status)

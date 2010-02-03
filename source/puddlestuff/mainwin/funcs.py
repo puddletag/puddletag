@@ -301,10 +301,14 @@ def update_status(enable = True):
     dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (tag.dirpath, newfolder)
     emit('renamedirstatus', dirstatus)
 
-    selected = status['selectedtags'][0]
-    val = tf(pattern, tag)
-    newtag = dict([(key, val) for key in selected])
-    emit('formatstatus', display_tag(newtag))
+    selected = status['selectedtags']
+    if not selected:
+        emit('formatstatus', display_tag(''))
+    else:
+        selected = selected[0]
+        val = tf(pattern, tag)
+        newtag = dict([(key, val) for key in selected])
+        emit('formatstatus', display_tag(newtag))
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
