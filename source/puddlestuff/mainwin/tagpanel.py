@@ -209,6 +209,7 @@ class FrameCombo(QGroupBox):
                 QApplication.processEvents()
         else:
             vbox = QVBoxLayout()
+            vbox.setMargin(0)
         self.combos = {}
         self.labels = {}
         self._hboxes = []

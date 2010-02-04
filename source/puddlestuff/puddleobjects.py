@@ -117,9 +117,12 @@ def savewinsize(name, dialog, settings):
 def winsettings(name, dialog, settings):
     dialog.restoreGeometry(settings.value(name).toByteArray())
     cevent = dialog.closeEvent
-    def closeEvent(e):
-        cevent(e)
+    def closeEvent(self, event=None):
         savewinsize(name, dialog)
+        if event is None:
+            cevent(self)
+        else:
+            cevent(event)
     setattr(dialog, 'closeEvent', closeEvent)
 
 try:

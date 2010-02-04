@@ -150,7 +150,8 @@ class MainWin(QMainWindow):
         controls = PuddleDock._controls
 
         toolgroup = ls.get_menus('toolbar')
-        [self.addToolBar(z) for z in ls.toolbar(toolgroup, actions, controls)]
+        [(z.setIconSize(QSize(16,16)), self.addToolBar(z)) for z in
+                                    ls.toolbar(toolgroup, actions, controls)]
 
         connect_actions(actions, controls)
         create_context_menus(controls, actions)
@@ -214,7 +215,8 @@ class MainWin(QMainWindow):
 
         headstate = self._table.horizontalHeader().saveState()
         settings.setValue('table/header', QVariant(headstate))
-        QMainWindow.closeEvent(self, e)
+        e.accept()
+        #QMainWindow.closeEvent(self, e)
 
     def createStatusBar(self):
         statusbar = self.statusBar()
