@@ -48,6 +48,7 @@ if __name__ == '__main__':
     app.setApplicationName("puddletag")
     win = MainWin()
     win.setVisible(True)
+    QApplication.processEvents()
     if filename and os.path.exists(filename):
         win.openDir(filename)
     app.exec_()

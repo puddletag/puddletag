@@ -243,3 +243,9 @@ control=table
 shortcut=Del
 icon=:/remove.png
 enabled=filesselected
+
+[shortcut35]
+name=&Properties
+command=showProperties
+control=table
+enabled=filesselected

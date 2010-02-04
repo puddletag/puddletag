@@ -1396,6 +1396,10 @@ class PuddleDock(QDockWidget):
             self._controls.update({title: control})
             self.setWidget(control)
 
+    def setVisible(self, visible):
+        QDockWidget.setVisible(self, visible)
+        self.emit(SIGNAL('visibilitychanged'), visible)
+
 class PuddleStatus(object):
     _status = {}
 

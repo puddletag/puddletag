@@ -34,19 +34,27 @@ tagmodel.status = status
 
 def create_tool_windows(parent):
     actions = []
+    cparser = PuddleConfig()
+    cparser.filename = os.path.join(cparser.savedir, 'menus')
     for z in (mainwin.tagpanel.control, mainwin.dirview.control,
                 mainwin.patterncombo.control, mainwin.filterwin.control):
+        name = z[0]
         try:
             if not z[2]:
-                PuddleDock._controls[z[0]] = z[1](status=status)
+                PuddleDock._controls[name] = z[1](status=status)
                 continue
         except IndexError:
             pass
 
         p = PuddleDock(*z, **{'status':status})
         parent.addDockWidget(Qt.LeftDockWidgetArea, p)
-        actions.append(create_window_action(parent, p))
-    return actions
+        action = p.toggleViewAction()
+        scut = cparser.get('winshortcuts', name, '')
+        if scut:
+            action.setShortcut(scut)
+        actions.append(action)
+    menu = ls.context_menu('windows', actions)
+    return menu
 
 def create_context_menus(controls, actions):
     for name in controls:
@@ -66,17 +74,6 @@ def connect_controls(controls, actions=None):
         for signal, slot in c.receives:
             if signal in emits:
                 [connect(i, SIGNAL(signal), slot) for i in emits[signal]]
-
-def create_window_action(parent, dockwidget):
-    action = QAction(dockwidget.title, parent)
-    action.setCheckable(True)
-    if dockwidget.isVisible():
-        action.setChecked(True)
-    else:
-        action.setChecked(False)
-    parent.connect(action, SIGNAL("toggled(bool)"), dockwidget.setVisible)
-    parent.connect(dockwidget, SIGNAL('visibilityChanged(bool)'), action.setChecked)
-    return action
 
 TRIGGERED = SIGNAL('triggered()')
 
@@ -139,16 +136,16 @@ class MainWin(QMainWindow):
         PuddleDock._controls = {'table': self._table,
                                 'mainwin':self,
                                 'funcs': mainfuncs.obj}
-        winactions = create_tool_windows(self)
+        self._winmenu = create_tool_windows(self)
+        self._winmenu.setTitle('&Windows')
         self.createStatusBar()
 
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
         menubar = ls.menubar(menus, actions)
+        menubar.addMenu(self._winmenu)
         self.setMenuBar(menubar)
-        winmenu = menubar.addMenu('&Windows')
         mainfuncs.connect_status(actions)
-        [winmenu.addAction(action) for action in winactions]
 
         controls = PuddleDock._controls
 
