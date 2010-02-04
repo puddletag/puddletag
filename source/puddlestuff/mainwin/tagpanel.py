@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import pdb, sys, os
+import pdb, sys, os, sip
 sys.path.insert(1,'../..')
 from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
 from puddlestuff.audioinfo.util import commonimages
@@ -64,10 +64,6 @@ class FrameCombo(QGroupBox):
         self.receives = [('tagselectionchanged', self.fillCombos)]
         self.combos = {}
         self.labels = {}
-
-        self.vbox = QVBoxLayout()
-        self._grid = QGridLayout()
-        self.setLayout(self._grid)
 
     def disableCombos(self):
         for z in self.combos:
@@ -202,12 +198,20 @@ class FrameCombo(QGroupBox):
         >>>f = FrameCombo()
         >>>f.setCombo(tags,rows)"""
         if self.combos:
-            [z.hide() for z in self.combos.values()]
-            [z.hide() for z in self.labels.values()]
-            self.vbox = QVBoxLayout()
+            vbox = self.layout()
+            for box, control in self._hboxes:
+                box.removeWidget(control)
+                sip.delete(control)
+                QApplication.processEvents()
+                if not box.count():
+                    vbox.removeItem(box)
+                    sip.delete(box)
+                QApplication.processEvents()
+        else:
+            vbox = QVBoxLayout()
         self.combos = {}
         self.labels = {}
-
+        self._hboxes = []
 
         j = 0
         for row, tags in sorted(rowtags.items()):
@@ -231,17 +235,14 @@ class FrameCombo(QGroupBox):
                 self.labels[tagval].setBuddy(self.combos[tagval])
                 labelbox.addWidget(self.labels[tagval])
                 widgetbox.addWidget(self.combos[tagval])
-            self.vbox.addLayout(labelbox, 0)
-            self.vbox.addLayout(widgetbox, 0)
-            widgetbox.addStrut(1)
-        self.vbox.addStretch(1)
-        column = self._grid.columnCount()
-        self._grid.addLayout(self.vbox, 0, column)
-        #self._grid.addItem(QSpacerItem(1,1), 1, column)
-        self._grid.setSizeConstraint(self.vbox.SetMaximumSize)
-        self.setMaximumHeight(self._grid.sizeHint().height())
-        #self.setFixedHeight(self._grid.minimumSize().height())
-
+                self._hboxes.append((labelbox, self.labels[tagval]))
+                self._hboxes.append((widgetbox, self.combos[tagval]))
+            vbox.addLayout(labelbox)
+            vbox.addLayout(widgetbox)
+        vbox.addStrut(0)
+        self.setLayout(vbox)
+        QApplication.processEvents()
+        self.setMaximumHeight(self.sizeHint().height())
 
     def initCombos(self):
         """Clears the comboboxes and adds two items, <keep> and <blank>.
