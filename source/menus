@@ -25,4 +25,4 @@ order=&Play,E&xtended Tags,&Remove Tag,separator,&Cut,&Copy,&Paste,separator,&De
 Filter=F3
 
 [windows]
-order=Filter,Tag Panel,Filesystem
+order=Filter,Tag Panel,Filesystem,MusicBrainz

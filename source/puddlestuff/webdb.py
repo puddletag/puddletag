@@ -18,35 +18,36 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+import sys, pdb
+import cPickle as pickle
+sys.path.insert(1, '/home/keith/Documents/python/puddletag')
 from puddleobjects import unique, OKCancel, PuddleThread, winsettings
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import sys, pdb
-from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ConnectionError
-import musicbrainz2.webservice as ws
-import musicbrainz2.model as brainzmodel
 
-RELEASETYPES = {"Official Albums": [brainzmodel.Release.TYPE_OFFICIAL],
-"Promotional Album": [brainzmodel.Release.TYPE_PROMOTION],
-"Bootlegs": [brainzmodel.Release.TYPE_BOOTLEG]
-}
-
-CONNECTIONERROR = "Could not connect to Musicbrainz server.(Check your net connection)"
+import puddlestuff.tagsources.musicbrainz as mbrainz
+from puddlestuff.tagsources import RetrievalError
+from puddlestuff.tagsources import exampletags
+pyqtRemoveInputHook()
 
 class ReleaseWidget(QTreeWidget):
-    def __init__(self, table = None, parent = None):
+    def __init__(self, status, tagsource, parent = None):
         QTreeWidget.__init__(self, parent)
 
         self.setHeaderHidden(True)
         self.setRootIsDecorated(True)
-        if table is not None:
-            self.table = table
-        self.tracks = {}
+        self.setSelectionMode(self.ExtendedSelection)
+        self._artists = {}
+        self._albums = []
+        self._tracks = {}
         self._dirtyrow = 0
-        self.connect(self, SIGNAL('itemSelectionChanged()'), self._selChanged)
-        self.connect(self, SIGNAL('itemCollapsed (QTreeWidgetItem *)'), self.setClosedIcon)
-        self.connect(self, SIGNAL('itemExpanded (QTreeWidgetItem *)'), self.setOpenIcon)
+        self._status = status
+        self._tagsource = tagsource
 
+        connect = lambda signal, slot: self.connect(self, SIGNAL(signal), slot)
+        connect('itemSelectionChanged()', self._selChanged)
+        connect('itemCollapsed (QTreeWidgetItem *)', self.setClosedIcon)
+        connect('itemExpanded (QTreeWidgetItem *)', self.setOpenIcon)
 
     def setClosedIcon(self, item):
         item.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
@@ -54,7 +55,7 @@ class ReleaseWidget(QTreeWidget):
     def setOpenIcon(self, item):
         item.setIcon(0, self.style().standardIcon(QStyle.SP_DirOpenIcon))
         row = self.indexOfTopLevelItem(item)
-        if row not in self.tracks:
+        if row not in self._tracks:
             self.gettracks([row])
 
     def _selChanged(self):
@@ -62,7 +63,7 @@ class ReleaseWidget(QTreeWidget):
         toplevels = [z for z in self.selectedItems() if not z.parent()]
         if toplevels:
             toprows = [rowindex(z) for z in toplevels]
-            t = [z for z in toprows if z not in self.tracks]
+            t = [z for z in toprows if z not in self._tracks]
             if t:
                 self.gettracks(t)
                 return
@@ -77,15 +78,14 @@ class ReleaseWidget(QTreeWidget):
         if toplevels:
             children = [z for z in selected if z.parent() and z.parent() not in toplevels]
             toprows = [rowindex(z) for z in toplevels]
-            [tracks.extend(self.tracks[z]) for z in toprows]
+            [tracks.extend(self._tracks[z][0]) for z in toprows]
         else:
             children = selected
 
         for child in children:
             parent = child.parent()
-            tracks.append(self.tracks[rowindex(parent)][parent.indexOfChild(child)])
-
-        self.table.model().setTestData(self.table.selectedRows, tracks[:len(self.table.selectedRows)])
+            tracks.append(self._tracks[rowindex(parent)][0][parent.indexOfChild(child)])
+        self.emit(SIGNAL('preview'), tracks[:len(self._status['selectedrows'])])
 
     def gettracks(self, rows):
         try:
@@ -93,274 +93,157 @@ class ReleaseWidget(QTreeWidget):
                 pass
         except AttributeError:
             pass
-
+        topitem = self.topLevelItem
         self.emit(SIGNAL("statusChanged"), "Retrieving album tracks...")
         QApplication.processEvents()
         def func():
-            total = {}
+            ret = {}
             for row in rows:
-                release = self.releases[row]
-                try:
-                    total[row] = [dict([("title", track.title), ("track", unicode(number + 1)), ("album",release.title)])
-                                    for number,track in enumerate(getalbumtracks([release])[0]["tracks"])]
-                except ConnectionError:
-                    return {'tracks':{}, 'text': CONNECTIONERROR}
-                except WebServiceError:
-                    return {'tracks':{}, 'text': CONNECTIONERROR + " " + details}
-            return {'tracks':total, 'text':"", 'releasetitle': release.title}
+                if row in self._tracks:
+                    ret[row] = self._tracks[row]
+                else:
+                    artist = self._artists[row]
+                    album = self._albums[row]
+                    self.emit(SIGNAL("statusChanged"),
+                                u'Retrieving: <b>%s</b>' % topitem(row).text(0))
+                    ret[row] = self._tagsource.retrieve(artist, album)
+            return ret
         self.t = PuddleThread(func)
         self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
         self.t.start()
 
-
     def setReleases(self, releases):
         self.clear()
-        self.tracks = {}
-        self._dirtyrow = 0
-        rels = sorted([[z.title, z] for z in releases])
-        releases = [z[1] for z in rels]
-        events = [z.getReleaseEventsAsDict() for z in releases]
-        years = []
-        for i,event in enumerate(events):
-            if event:
-                years.append(" (" + unicode(event.values()[0]) +") ")
-            else:
-                years.append("")
-        try:
-            text = [z.artist.name + " - "+ z.title for z in releases]
-        except AttributeError:
-            text = sorted([z.title + unicode(year) for z, year in zip(releases, years)])
-
-        for t in text:
-            item = QTreeWidgetItem([t])
+        self._tracks = {}
+        self._artists = []
+        self._albums = []
+        def item(text):
+            item = QTreeWidgetItem([text])
             item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-            item.setIcon(0,self.style().standardIcon(QStyle.SP_DirOpenIcon))
-            [self.addTopLevelItem(item) for t in text]
-        self.releases = releases
+            item.setIcon(0,self.style().standardIcon(QStyle.SP_DirClosedIcon))
+            return item
+        for artist, albums in releases.items():
+            if '__albumlist' in albums:
+                albums = albums['__albumlist']
+            for album, tracks in albums.items():
+                self.addTopLevelItem(item('%s - %s' % (artist, album)))
+                if tracks:
+                    row = len(self._artists)
+                    self._tracks[len(self._artists)] = tracks
+                    self._addTracks(row, tracks)
+                self._artists.append(artist)
+                self._albums.append(album)
+
+    def _addTracks(self, row, tracks):
+        item = self.topLevelItem(row)
+        item.takeChildren()
+        item.setText(0, item.text(0) + '[%d]' % len(tracks[0]))
+        [item.addChild(QTreeWidgetItem([z['title']])) for z in tracks[0]]
 
     def updateStatus(self, val):
         if not val:
             self.emit(SIGNAL("statusChanged"), 'An unexpected error occurred.')
             return
-        text = val['text']
-        if text:
-            self.emit(SIGNAL("statusChanged"), text)
-            return
-        tracks = val['tracks']
-        self.tracks.update(tracks)
-        for row in tracks:
-            item = self.topLevelItem(row)
-            item.takeChildren()
-            item.setText(0, item.text(0) + '[%d]' % len(tracks[row]))
-            [item.addChild(QTreeWidgetItem([z['title']])) for z in tracks[row]]
+        for row, tracks in val.items():
+            if row in self._tracks:
+                continue
+            self._tracks[row] = tracks
+            self._addTracks(row, tracks)
         self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
         self._selectedTracks()
 
-def getArtist(tags):
-    """If tags is a dictionary, getArtist will loop through it
-    find the musicbrainz2 artist ids of all the artists and return them in a list
-
-    Same goes for if tags is string(i.e a list is returned)"""
-    q = Query()
-    if (type(tags) is unicode) or (type(tags) is str):
-        artists = [tags]
-    else:
-        artists = unique([z['artist'] for z in tags if 'artist' in z])
-    if not artists:
-        return
-
-    artistids = []
-    for artist in artists:
-        results = q.getArtists(ArtistFilter(artist, limit = 1))
-        if results:
-            artistids.append([artist,[results[0].artist.name, results[0].artist.id]])
-    return artistids
-
-def getalbumtracks(releases):
-        q = Query()
-        tracks = []
-        inc = ws.ReleaseIncludes(discs=True, tracks=True, artist = True, releaseEvents = True)
-        for release in releases:
-                release = q.getReleaseById(release.id, inc)
-                releasetracks = release.getTracks()
-                tracks.append(releasetracks)
-        return unique([dict([("album", release.title), ("tracks", tracklist)]) for release, tracklist in zip(releases, tracks)])
-
-def getAlbums(artistid = None, album = None, releasetypes = None):
-    q = Query()
-    if releasetypes is None:
-        releasetypes = [brainzmodel.Release.TYPE_OFFICIAL]
-
-    if artistid is None and album is not None:
-        release = ws.ReleaseFilter(title = album, releaseTypes = releasetypes, limit = 10)
-        releases = [z.getRelease() for z in q.getReleases(release)]
-        if releases:
-            return releases
-
-
-    elif artistid is not None:
-        artist = q.getArtistById(artistid,
-                    ws.ArtistIncludes(releases=releasetypes))
-        releases = artist.getReleases()
-        if releases:
-            if album is not None:
-                album = album.lower()
-                myrel = [release for release in releases if release.title.lower().find(album) != -1]
-                return myrel
-            else:
-                return releases
-
 class MainWin(QDialog):
-    def __init__(self, table, parent = None):
+    def __init__(self, status, parent = None):
         QDialog.__init__(self, parent)
+        self.emits = ['writepreview', 'setpreview']
+        self.receives = []
         self.setWindowTitle("puddletag Musicbrainz")
-        winsettings('musicbrainz', self)
-        self.table = table
-        self.combo = QComboBox()
-        self.combo.addItems(["Album only", "Artist only", "Album and Artist"])
-        self.combo.setCurrentIndex(0)
-
-        self.albumtype = QComboBox()
-        self.albumtype.addItems([z for z in RELEASETYPES])
-        self.albumtype.setCurrentIndex(self.albumtype.findText("Official Albums"))
+        self._status = status
+        self._tagsource = mbrainz.MusicBrainz()
+        #winsettings('tagsources', self)
 
         self.getinfo = QPushButton("Get Info")
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
-        self.okcancel = OKCancel()
-        self.okcancel.ok.setText("&Write tags")
-        self.okcancel.cancel.setText("&Close")
-        clearcache = QPushButton("Clea&r tags")
-        self.okcancel.insertWidget(2,clearcache)
+        self._writebutton = QPushButton('&Write')
+        clear = QPushButton("Clea&r tags")
 
-        self.connect(self.okcancel, SIGNAL("ok"), self.writeVals)
-        self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
-        self.connect(self,SIGNAL('rejected()'), self.closeMe)
-        self.connect(clearcache, SIGNAL("clicked()"), self.table.model().unSetTestData)
+        self.connect(self._writebutton, SIGNAL("clicked()"), self._write)
+        self.connect(clear, SIGNAL("clicked()"), self._clear)
 
-        self.label = QLabel("Select files and click on Get Info to retrieve metadata.")
+        self.label = QLabel("Select files and click on Search to retrieve "
+                            "metadata.")
 
-        self.listbox = ReleaseWidget(table)
+        self.listbox = ReleaseWidget(status, self._tagsource)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
-
+        self.connect(self.listbox, SIGNAL('itemSelectionChanged()'),
+                        self._enableWrite)
+        self.connect(self.listbox, SIGNAL('preview'),
+                        lambda tags: self.emit(SIGNAL('setpreview'), tags))
         hbox = QHBoxLayout()
+        hbox.addStretch()
 
-        hbox.addWidget(self.combo,1)
-        hbox.addWidget(self.albumtype,1)
         hbox.addWidget(self.getinfo)
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
         vbox.addWidget(self.label)
         vbox.addWidget(self.listbox, 1)
-        vbox.addLayout(self.okcancel)
-
+        hbox = QHBoxLayout()
+        hbox.addStretch()
+        hbox.addWidget(self._writebutton)
+        hbox.addWidget(clear)
+        vbox.addLayout(hbox)
 
         self.setLayout(vbox)
         self.show()
 
-    def writeVals(self):
-        self.table.model().unSetTestData(True)(self)
+    def _clear(self):
+        self.emit(SIGNAL('clearpreview'))
+
+    def _enableWrite(self):
+        if self.listbox.selectedItems():
+            self._writebutton.setEnabled(True)
+        else:
+            self._writebutton.setEnabled(False)
+
+    def _write(self):
+        self.emit(SIGNAL('writepreview'))
         self.label.setText("<b>Tags were written.</b>")
 
-    def closeMe(self):
-        self.table.model().unSetTestData()
-        self.close()
+    def closeEvent(self, e):
+        self._clear()
 
     def getInfo(self):
+        tags = self._status['selectedfiles']
         self.getinfo.setEnabled(False)
-        releasetype = RELEASETYPES[unicode(self.albumtype.currentText())]
-        tags = [self.table.rowTags(z).stringtags() for z in self.table.selectedRows]
-        self.label.setText("Retrieving albums, please wait...")
-        QApplication.processEvents()
+        self.label.setText('Retrieving album info.')
+        def retrieve():
+            try:
+                return self._tagsource.search(tags)
+                #f = '/home/keith/Documents/python/puddletag/puddlestuff/releases'
+                #return pickle.load(open(f, 'rb'))
+            except RetrievalError, e:
+                return 'An error occured: %s', unicode(e)
+        self._t = PuddleThread(retrieve)
+        self.connect(self._t, SIGNAL('threadfinished'), self.setInfo)
+        self._writebutton.setEnabled(False)
+        self._t.start()
 
-        if self.combo.currentIndex() == 0:
-            releases = []
-            albums = unique([z['album'] for z in tags if 'album' in z])
-            def func():
-                text = ""
-                for z in albums:
-                    try:
-                        album = getAlbums(album = z, releasetypes = releasetype)
-                    except (WebServiceError, ConnectionError):
-                        text = CONNECTIONERROR
-                        break
-                    if album:
-                        releases.extend(album)
-                if releases:
-                    text = text + " " + "The retrieved albums are listed below."
-                else:
-                    text = "No matching albums were found."
-                return {'releases': releases, 'text':text}
-
-            self.t = PuddleThread(func)
-            self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
-            self.t.start()
-
-
-        elif self.combo.currentIndex() == 1:
-            def func():
-                try:
-                    artists = getArtist(tags)
-                except (WebServiceError, ConnectionError):
-                    return {'releases': [], 'text': CONNECTIONERROR}
-                releases = []
-                text = "The following artist's album's were retrieved: "
-                for z in artists:
-                    artistname = z[0]
-                    artistid = z[1][1]
-                    try:
-                        albums = getAlbums(artistid, releasetypes = releasetype)
-                    except (ConnectionError, WebServiceError):
-                        if releases:
-                            text = CONNECTIONERROR + " " + text
-                        else:
-                            text = CONNECTIONERROR
-                        break
-                    if albums:
-                        releases.extend(albums)
-                        text = text + artistname + ", "
-                if releases:
-                    return {'releases': releases, 'text':text[:-2]}
-                else:
-                    return {'releases': releases, 'text':"No albums were found matching the selected artists"}
-            self.t = PuddleThread(func)
-            self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
-            self.t.start()
-
-
-        elif self.combo.currentIndex() == 2:
-            def func():
-                album = unique([z['album'] for z in tags if 'album' in z])
-                if not album:
-                    return {'releases':[], 'text': "There's no album in the selected tags. <br />Please choose another method te retrieval method."}
-
-                album = album[0]
-                try:
-                    artists = [getArtist(tags)[0]]
-                except (WebServiceError, ConnectionError):
-                    return {'releases': [], 'text': CONNECTIONERROR}
-
-                for z in artists:
-                    artistid = z[1][1]
-                    try:
-                        releases = getAlbums(artistid, album,releasetypes = releasetype)
-                    except (WebServiceError, ConnectionError):
-                        return {'releases': releases, 'text':CONNECTIONERROR}
-                    if releases:
-                        if len(releases) == 1:
-                            text = "Found album " + album + ". Click on Write Tags to save the tags."
-                        else:
-                            text = "I couldn't find an exact match to the album you specified."
-                    else:
-                        releases = []
-                        text = "I couldn't find any albums by the selected artist."
-                return {'releases': releases, 'text':text}
-            self.t = PuddleThread(func)
-            self.connect(self.t, SIGNAL("finished()"), self.showAlbums)
-            self.t.start()
-
-    def showAlbums(self):
-        self.listbox.setReleases(self.t.retval['releases'])
-        self.label.setText(self.t.retval['text'])
+    def setInfo(self, releases):
         self.getinfo.setEnabled(True)
+        if isinstance(releases, basestring):
+            self.label.setText(releases)
+        else:
+            self.listbox.setReleases(releases)
+            self.label.setText('Albums retrieved.')
+
+control = ('MusicBrainz', MainWin)
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    status = {}
+    status['selectedfiles'] = exampletags.tags
+    win = MainWin(status)
+    win.show()
+    app.exec_()

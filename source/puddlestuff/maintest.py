@@ -7,6 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo, mainwin.filterwin
+import puddlestuff.webdb
 import loadshortcuts as ls
 import m3u
 
@@ -37,7 +38,8 @@ def create_tool_windows(parent):
     cparser = PuddleConfig()
     cparser.filename = os.path.join(cparser.savedir, 'menus')
     for z in (mainwin.tagpanel.control, mainwin.dirview.control,
-                mainwin.patterncombo.control, mainwin.filterwin.control):
+                mainwin.patterncombo.control, mainwin.filterwin.control,
+                puddlestuff.webdb.control):
         name = z[0]
         try:
             if not z[2]:
@@ -113,7 +115,7 @@ class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.emits = ['loadFiles', 'always']
-        self.receives = [('writeselected', self.writeSelected),
+        self.receives = [('writeselected', self.writeTags),
                           ('filesloaded', self._filesLoaded),
                           ('viewfilled', self._viewFilled),
                           ('filesselected', self._filesSelected),
@@ -121,7 +123,8 @@ class MainWin(QMainWindow):
                           ('filesloaded', self.updateTotalStats),
                           ('filesselected', self.updateSelectedStats),
                           ('onetomany', self.writeOneToMany),
-                          ('dirschanged', self._dirChanged)]
+                          ('dirschanged', self._dirChanged),
+                          ('writepreview', self._writePreview)]
         self.gensettings = [('&Load last folder at startup', True, 1)]
 
         self.setWindowTitle("puddletag")
@@ -356,8 +359,9 @@ class MainWin(QMainWindow):
     def updateTotalStats(self, *args):
         self._totalstats.setText(self._updateStatus(status['alltags']))
 
-    def writeSelected(self, tagiter):
-        rows = status['selectedrows']
+    def writeTags(self, tagiter, rows=None):
+        if not rows:
+            rows = status['selectedrows']
         setRowData = self._table.model().setRowData
 
         def func():
@@ -394,6 +398,11 @@ class MainWin(QMainWindow):
             self._table.selectionChanged()
         s = progress(func, 'Writing', len(rows), fin)
         s(self)
+
+    def _writePreview(self):
+        taginfo = self._table.model().taginfo
+        data = [z for z in enumerate(taginfo) if z[1].testData]
+        self.writeTags((z[1].testData for z in data), [z[0] for z in data])
 
     def renameDirs(self, dirs):
         self._table.saveSelection()

@@ -140,6 +140,7 @@ class ColumnSettings(HeaderSetting):
             control.setHeaderTags([z for i, z in enumerate(self.tags) if i in checked])
         else:
             self.emit(SIGNAL("headerChanged"), headerdata)
+        control.restoreSelection()
 
     def add(self):
         row = self.listbox.count()
@@ -579,6 +580,10 @@ class TagModel(QAbstractTableModel):
         the file is just renamed i.e not tags are written.
         """
         currentfile = self.taginfo[row]
+        testdata = {}
+        if currentfile.testData:
+            testdata = currentfile.testData
+            currentfile.testData = {}
         filetags = {}
         if currentfile.mapping:
             revmapping, real = currentfile.revmapping, currentfile.real
@@ -620,6 +625,7 @@ class TagModel(QAbstractTableModel):
                                 currentfile['__modified'])
             except (OSError, IOError), detail:
                 currentfile.update(currentfile[self.undolevel])
+                currentfile.testdata = testData
                 del(currentfile[self.undolevel])
                 raise detail
         if oldimages is not None:
@@ -873,7 +879,8 @@ class TagTable(QTableView):
                       'viewfilled', 'filesselected', 'enableUndo', 'dirsmoved']
         self.receives = [('loadFiles', self.loadFiles),
                          ('removeFolders', self.removeFolders),
-                         ('filter', self.applyFilter)]
+                         ('filter', self.applyFilter),
+                         ('setpreview', self.setTestData)]
         self.gensettings = [('Su&bfolders', True),
                             ('Show &gridlines', True),
                             ('Show &row numbers', True),
@@ -921,8 +928,9 @@ class TagTable(QTableView):
             ret.append(dict([(tag, f[tag]) for tag  in tags]))
         return ret
 
-    def applyGenSettings(self, d, a=None):
-        if not a:
+    def applyGenSettings(self, d, startlevel=None):
+        self.saveSelection()
+        if not startlevel:
             self.subFolders = d['Su&bfolders']
             self.setShowGrid(d['Show &gridlines'])
             self.verticalHeader().setVisible(d['Show &row numbers'])
@@ -1447,6 +1455,9 @@ class TagTable(QTableView):
 
     def setPlayCommand(self, command):
         self.playcommand = command
+
+    def setTestData(self, data):
+        self.model().setTestData(self.selectedRows, data)
 
 
     def sortByColumn(self, column):
