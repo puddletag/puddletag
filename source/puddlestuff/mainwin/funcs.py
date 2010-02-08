@@ -63,7 +63,7 @@ def connect_status(actions):
 
 def copy():
     selected = status['selectedtags']
-    QApplication.clipboard().setText(unicode([z.tags for z in selected]))
+    QApplication.clipboard().setText(unicode(selected))
 
 def cut():
     """The same as the cut operation in normal apps. In this case, though,
@@ -71,9 +71,9 @@ def cut():
     the copied atrribute."""
     selected = status['selectedtags']
 
-    QApplication.clipboard().setText(unicode([z.tags for z in selected]))
+    QApplication.clipboard().setText(unicode(selected))
 
-    emit('writeselected', (dict([(z[0], "") for z in s])
+    emit('writeselected', (dict([(z, "") for z in s])
                                     for s in selected))
 
 def display_tag(tag):
@@ -142,15 +142,15 @@ def number_tracks(tags, start, numtracks, restartdirs):
                                                     start + len(tags) + 1)]
     emit('writeselected', taglist)
 
-def paste(parent=None):
+def paste():
     try:
         clip = eval(unicode(QApplication.clipboard().text()),
                                 {"__builtins__":None},{})
     except:
         raise StopIteration
-    selected = status['selected']
-    for s, cliptag in zip(selected, clip):
-        self.setTag(row, dict(zip(seltags, [z[1] for z in tag])))
+    selected = status['selectedtags']
+    emit('writeselected', (dict(zip(s, cliptag.values()))
+                            for s, cliptag in izip(selected, clip)))
 
 def rename_dirs(parent=None):
     """Changes the directory of the currently selected files, to

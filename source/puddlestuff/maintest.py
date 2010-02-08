@@ -86,30 +86,30 @@ def connect_actions(actions, controls):
             emits[sig].append(c) if sig in emits else emits.update({sig:[c]})
     connect = QObject.connect
     for action in actions:
-            if action.enabled in emits:
-                if action.enabled in ENABLESIGNALS:
-                    [connect(c, ENABLESIGNALS[action.enabled], action.setEnabled)
-                            for c in emits[action.enabled]]
-                else:
-                    [connect(c, SIGNAL(action.enabled), action.setEnabled)
-                            for c in emits[action.enabled]]
+        if action.enabled in emits:
+            if action.enabled in ENABLESIGNALS:
+                [connect(c, ENABLESIGNALS[action.enabled], action.setEnabled)
+                        for c in emits[action.enabled]]
             else:
-                print 'No enable signal found for', action.text()
-                action.setEnabled(False)
-                continue
-            command = action.command
-            if action.control == 'mainwin' and hasattr(mainfuncs, command):
-                f = getattr(mainfuncs, command)
-                if 'parent' in f.func_code.co_varnames:
-                    f = partial(f, parent=c)
-                    connect(action, TRIGGERED, f)
-                    continue
-            elif action.control in controls:
-                c = controls[action.control]
-                if hasattr(c, command):
-                    connect(action, TRIGGERED, getattr(c, command))
-                else:
-                    print action.command, 'not found', action.text()
+                [connect(c, SIGNAL(action.enabled), action.setEnabled)
+                        for c in emits[action.enabled]]
+        else:
+            print 'No enable signal found for', action.text()
+            action.setEnabled(False)
+            continue
+        command = action.command
+        if action.control == 'mainwin' and hasattr(mainfuncs, command):
+            f = getattr(mainfuncs, command)
+            if 'parent' in f.func_code.co_varnames:
+                f = partial(f, parent=c)
+            connect(action, TRIGGERED, f)
+            continue
+        elif action.control in controls:
+            c = controls[action.control]
+            if hasattr(c, command):
+                connect(action, TRIGGERED, getattr(c, command))
+            else:
+                print action.command, 'not found', action.text()
 
 class MainWin(QMainWindow):
     def __init__(self):
