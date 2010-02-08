@@ -212,7 +212,7 @@ class TagMappings(QWidget):
         self._mappings = mappings
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
         f = open(filename, 'w')
-        f.write('\n'.join([' '.join(z) for z in text]))
+        f.write('\n'.join([','.join(z) for z in text]))
         f.close()
 
 

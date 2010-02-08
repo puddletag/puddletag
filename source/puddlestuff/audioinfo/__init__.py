@@ -46,7 +46,7 @@ def loadmapping(filepath):
         return {'VorbisComment': {'tracknumber': 'track'}}
     mappings = {}
     for l in lines:
-        tags = [z.strip() for z in l.split(' ')]
+        tags = [z.strip() for z in l.split(',')]
         if len(tags) == 3: #Tag, Source, Target
             try:
                 mappings[tags[0]].update({tags[1].lower(): tags[2].lower()})

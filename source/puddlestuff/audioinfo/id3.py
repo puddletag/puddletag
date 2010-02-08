@@ -186,7 +186,9 @@ class Tag(util.MockTag):
 
     def mutvalues(self):
         #Retrieves key, value pairs according to id3.
-        return [self._tags[key] for key in self if type(key) is not int and not key.startswith('__')]
+        real = self.real
+        return [self._tags[key] for key in self._tags if
+                    not isinstance(key, int) and not key.startswith('__')]
 
     def _info(self):
         info = self._mutfile.info

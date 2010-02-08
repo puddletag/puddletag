@@ -50,7 +50,7 @@ def get_tracks(r_id):
         extra = {'date': min(release.getReleaseEventsAsDict().values())}
     else:
         extra = {}
-    return [[{'mbrainz_track_id': track.id,
+    return [[{#'mbrainz_track_id': track.id,
             'title': track.title,
             'album': release.title,
             'year': release.getEarliestReleaseDate(),

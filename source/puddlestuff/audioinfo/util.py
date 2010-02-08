@@ -383,4 +383,6 @@ class MockTag(object):
             return None
 
     def real(self, key):
-        return self.revmapping[key]
+        if key in self.revmapping:
+            return self.revmapping[key]
+        return key

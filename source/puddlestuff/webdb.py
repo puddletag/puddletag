@@ -165,7 +165,7 @@ class MainWin(QDialog):
         tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
         self._searchparams.setToolTip(tooltip)
 
-        self.getinfo = QPushButton("Search")
+        self.getinfo = QPushButton("&Search")
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
         self._writebutton = QPushButton('&Write')
@@ -238,8 +238,6 @@ class MainWin(QDialog):
                     return self._tagsource.search(params=params)
                 else:
                     return self._tagsource.search(audios=tags)
-                #f = '/home/keith/Documents/python/puddletag/puddlestuff/releases'
-                #return pickle.load(open(f, 'rb'))
             except RetrievalError, e:
                 return 'An error occured: %s', unicode(e)
         self._t = PuddleThread(retrieve)
