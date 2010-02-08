@@ -42,8 +42,8 @@ revmapping = {}
 def loadmapping(filepath):
     try:
         lines = open(filepath, 'r').read().split('\n')
-    except IOError, OSError:
-        return {'VorbisComment': {'tracknumber': 'track'}}
+    except (IOError, OSError):
+        return {'VorbisComment': {'tracknumber': 'track', 'musicbrainz_artist_id': 'mbrainz_artist_id', 'musicbrainz_albumid': 'mbrainz_album_id'}, 'puddletag': {'__path': '__filename', '__folder': '__path'}, 'ID3': {'musicbrainz album id': 'mbrainz_album_id', 'musicbrainz artist id': 'mbrainz_artist_id'}}
     mappings = {}
     for l in lines:
         tags = [z.strip() for z in l.split(',')]
