@@ -19,7 +19,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys, pdb
-from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ConnectionError
+from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ConnectionError, ReleaseFilter
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as brainzmodel
 from collections import defaultdict
@@ -46,6 +46,10 @@ def get_tracks(r_id):
         artist = release.artist.name
     else:
         artist = None
+    if release.getReleaseEventsAsDict():
+        extra = {'date': min(release.getReleaseEventsAsDict().values())}
+    else:
+        extra = {}
     return [[{'mbrainz_track_id': track.id,
             'title': track.title,
             'album': release.title,
@@ -54,12 +58,24 @@ def get_tracks(r_id):
             'mbrainz_artist_id': release.artist.id,
             'track': unicode(i+1),
             'artist': artist if artist else track.artist.name}
-                for i, track in enumerate(release.tracks)],
-                    {'date': min(release.getReleaseEventsAsDict().values())}]
+                for i, track in enumerate(release.tracks)], extra]
 
 def get_releases(artistid):
     artist = q.getArtistById(artistid, ARTIST_INCLUDES)
     return [(z.title, z.id) for z in artist.releases]
+
+def get_all_releases(title):
+    tmp = ReleaseFilter(releaseTypes=RELEASETYPES,title=title)
+    releases = q.getReleases(filter=tmp)
+    artists = defaultdict(lambda: {})
+    albums = defaultdict(lambda:{})
+    albumlist = defaultdict(lambda:[])
+    for release in releases:
+        r = release.release
+        artists[r.artist.name] = (r.artist.name, r.artist.id)
+        albums[r.artist.id][r.title] = r.id
+        albumlist[r.artist.name].append((r.title, []))
+    return artists, albums, albumlist
 
 def separate(tags):
     #artist = tags.real('artist')
@@ -72,38 +88,50 @@ def separate(tags):
     return ret
 
 class MusicBrainz(object):
-    def search(self, audios):
+    def search(self, audios=None, params=None):
         self._artistids = {}
         self._releases = {}
         ret = defaultdict(lambda:{})
-        for artist, albums in separate(audios).items():
-            if not artist:
-                continue
-            try:
-                a_id = artist_id(artist)
-            except WebServiceError, e:
-                raise RetrievalError(unicode(e))
-            self._artistids[artist] = a_id
-            if not a_id:
-                print u'%s not found.' % artist
-                continue
-            try:
-                releases = get_releases(a_id[1])
-            except WebServiceError, e:
-                raise RetrievalError(unicode(e))
-            self._releases[a_id[1]] = dict(releases)
-            if not releases:
-                print u'No albums found for %s.' % artist
-                continue
-            releasenames = [z[0].lower() for z in releases]
-            for album in albums:
-                if album.lower() in releasenames:
-                    i = releasenames.index(album.lower())
-                    ret[artist][album] = get_tracks(releases[i][1])
-                else:
-                    ret[artist][album] = []
-                    ret[artist]['__albumlist'] = dict([(z[0],[]) for z in releases])
-                    break
+        if not params:
+            params = separate(audios)
+        for artist, albums in params.items():
+            if artist:
+                try:
+                    a_id = artist_id(artist)
+                except WebServiceError, e:
+                    raise RetrievalError(unicode(e))
+                self._artistids[artist] = a_id
+                if not a_id:
+                    print u'%s not found.' % artist
+                    continue
+                try:
+                    releases = get_releases(a_id[1])
+                except WebServiceError, e:
+                    raise RetrievalError(unicode(e))
+                self._releases[a_id[1]] = dict(releases)
+                if not releases:
+                    print u'No albums found for %s.' % artist
+                    continue
+                releasenames = [z[0].lower() for z in releases]
+                for album in albums:
+                    if album.lower() in releasenames:
+                        i = releasenames.index(album.lower())
+                        ret[artist][album] = get_tracks(releases[i][1])
+                    else:
+                        ret[artist][album] = []
+                        ret[artist]['__albumlist'] = dict([(z[0],[]) for z in releases])
+                        break
+            elif albums:
+                for album in albums:
+                    if album:
+                        try:
+                            artists, albums, albumlist = get_all_releases(album)
+                        except WebServiceError, e:
+                            raise RetrievalError(unicode(e))
+                        self._artistids.update(artists)
+                        self._releases.update(albums)
+                        for artist in albumlist:
+                            ret[artist]['__albumlist'] = dict(albumlist[artist])
         return ret
 
     def retrieve(self, artist, album):
@@ -113,7 +141,7 @@ class MusicBrainz(object):
 
 if __name__ == '__main__':
     from exampletags import tags
-    x = MusicBrainz()
+    x = MusicBrainz(params = dict([('Linkin Park', 'Minutes To Midnight'), (u"Beyonc\xe9" ,"B'day")]))
     print x.search(tags)
-    pickle.dump(x, open('mbrainz', 'wb'))
-    #print sorted(retrieve([('Linkin Park', 'Minutes To Midnight'), (u"Beyonc\xe9" ,"B'day")]).items())
+    #pickle.dump(x, open('mbrainz', 'wb'))
+    print sorted(retrieve([('Linkin Park', 'Minutes To Midnight'), (u"Beyonc\xe9" ,"B'day")]).items())

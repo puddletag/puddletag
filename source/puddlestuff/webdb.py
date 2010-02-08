@@ -19,11 +19,10 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys, pdb
-import cPickle as pickle
-sys.path.insert(1, '/home/keith/Documents/python/puddletag')
 from puddleobjects import unique, OKCancel, PuddleThread, winsettings
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from collections import defaultdict
 
 import puddlestuff.tagsources.musicbrainz as mbrainz
 from puddlestuff.tagsources import RetrievalError
@@ -162,7 +161,11 @@ class MainWin(QDialog):
         self._tagsource = mbrainz.MusicBrainz()
         #winsettings('tagsources', self)
 
-        self.getinfo = QPushButton("Get Info")
+        self._searchparams = QLineEdit()
+        tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
+        self._searchparams.setToolTip(tooltip)
+
+        self.getinfo = QPushButton("Search")
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
         self._writebutton = QPushButton('&Write')
@@ -181,9 +184,8 @@ class MainWin(QDialog):
         self.connect(self.listbox, SIGNAL('preview'),
                         lambda tags: self.emit(SIGNAL('setpreview'), tags))
         hbox = QHBoxLayout()
-        hbox.addStretch()
-
-        hbox.addWidget(self.getinfo)
+        hbox.addWidget(self._searchparams, 1)
+        hbox.addWidget(self.getinfo, 0)
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
@@ -218,9 +220,24 @@ class MainWin(QDialog):
         tags = self._status['selectedfiles']
         self.getinfo.setEnabled(False)
         self.label.setText('Retrieving album info.')
+        if self._searchparams:
+            text = unicode(self._searchparams.text())
+            params = defaultdict(lambda:[])
+            try:
+                text = [z.split(';') for z in text.split(u'|') if z]
+                [params[z.strip()].append(v.strip()) for z, v in text]
+            except ValueError:
+                self.label.setText('<b>Error parsing artist/album combinations</b>')
+                self.getinfo.setEnabled(True)
+                return
+        else:
+            params = None
         def retrieve():
             try:
-                return self._tagsource.search(tags)
+                if params:
+                    return self._tagsource.search(params=params)
+                else:
+                    return self._tagsource.search(audios=tags)
                 #f = '/home/keith/Documents/python/puddletag/puddlestuff/releases'
                 #return pickle.load(open(f, 'rb'))
             except RetrievalError, e:

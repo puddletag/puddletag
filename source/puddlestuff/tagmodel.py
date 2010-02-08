@@ -714,34 +714,17 @@ class TagModel(QAbstractTableModel):
         if self.undolevel > 0:
             self.undolevel -= 1
 
-    def unSetTestData(self, write = False, rows = None):
+    def unSetTestData(self, rows = None):
         """See testData for info on how to use this function.
 
         Note that if write is True then a function is returned.
         It accepts an argument to be used as parent for a progress dialog
         to be shown."""
         taginfo = self.taginfo
-        if write:
-            if not rows:
-                rows = [i for i,z in enumerate(taginfo) if z.testData]
-            def what():
-                for row in rows:
-                    try:
-                        self.setRowData(row, taginfo[row].testData, True)
-                        taginfo[row].testData = {}
-                        yield None
-                    except (OSError, IOError), e:
-                        errmsg = u"I couldn't write to <b>%s</b>. (%s)" % (
-                                            taginfo[row][FILENAME], e.strerror)
-                        yield (errmsg, len(rows))
-                if rows:
-                    self.undolevel += 1
-            return progress(what, 'Writing ', len(rows), lambda: self.updateTable(rows))
-        else:
-            if not rows:
-                rows = [i for i,z in enumerate(taginfo) if z.testData]
-            for row in rows:
-                taginfo[row].testData = {}
+        if not rows:
+            rows = [i for i,z in enumerate(taginfo) if z.testData]
+        for row in rows:
+            taginfo[row].testData = {}
 
         if rows:
             firstindex = self.index(min(rows), 0)
