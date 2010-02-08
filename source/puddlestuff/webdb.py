@@ -153,7 +153,7 @@ class ReleaseWidget(QTreeWidget):
 class MainWin(QDialog):
     def __init__(self, status, parent = None):
         QDialog.__init__(self, parent)
-        self.emits = ['writepreview', 'setpreview']
+        self.emits = ['writepreview', 'setpreview', 'clearpreview']
         self.receives = []
         self.setWindowTitle("puddletag Musicbrainz")
         self._status = status
@@ -168,7 +168,7 @@ class MainWin(QDialog):
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
         self._writebutton = QPushButton('&Write')
-        clear = QPushButton("Clea&r tags")
+        clear = QPushButton("Clea&r preview")
 
         self.connect(self._writebutton, SIGNAL("clicked()"), self._write)
         self.connect(clear, SIGNAL("clicked()"), self._clear)

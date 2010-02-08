@@ -715,11 +715,7 @@ class TagModel(QAbstractTableModel):
             self.undolevel -= 1
 
     def unSetTestData(self, rows = None):
-        """See testData for info on how to use this function.
-
-        Note that if write is True then a function is returned.
-        It accepts an argument to be used as parent for a progress dialog
-        to be shown."""
+        """See testData for info on how to use this function."""
         taginfo = self.taginfo
         if not rows:
             rows = [i for i,z in enumerate(taginfo) if z.testData]

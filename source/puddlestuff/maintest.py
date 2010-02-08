@@ -124,7 +124,8 @@ class MainWin(QMainWindow):
                           ('filesselected', self.updateSelectedStats),
                           ('onetomany', self.writeOneToMany),
                           ('dirschanged', self._dirChanged),
-                          ('writepreview', self._writePreview)]
+                          ('writepreview', self._writePreview),
+                          ('clearpreview', self._clearPreview)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
 
         self.setWindowTitle("puddletag")
@@ -171,6 +172,9 @@ class MainWin(QMainWindow):
         [x.update(z.status) for z in controls]
         self._status = x
         self.connect(control, 'getstatus', getstatus)
+
+    def _clearPreview(self):
+        self._table.model().unSetTestData()
 
     def _dirChanged(self, dirs):
         initial = self._lastdir[0]
