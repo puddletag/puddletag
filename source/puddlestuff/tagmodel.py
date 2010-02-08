@@ -819,6 +819,11 @@ class TagTable(QTableView):
         header = TableHeader(Qt.Horizontal, headerdata, self)
         header.setSortIndicatorShown(True)
         header.setStretchLastSection(True)
+
+        vh = self.verticalHeader()
+        vh.setDefaultSectionSize(vh.minimumSectionSize() + 3)
+        #vh.setResizeMode(QHeaderView.ResizeToContents)
+
         self.connect(header, SIGNAL("sectionClicked(int)"), self.sortByColumn)
         #header.setSortIndicator(0, Qt.AscendingOrder)
         self.setHorizontalHeader(header)
