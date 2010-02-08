@@ -26,7 +26,6 @@ from collections import defaultdict
 
 import puddlestuff.tagsources.musicbrainz as mbrainz
 from puddlestuff.tagsources import RetrievalError
-from puddlestuff.tagsources import exampletags
 pyqtRemoveInputHook()
 
 class ReleaseWidget(QTreeWidget):
@@ -121,10 +120,10 @@ class ReleaseWidget(QTreeWidget):
             item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             item.setIcon(0,self.style().standardIcon(QStyle.SP_DirClosedIcon))
             return item
-        for artist, albums in releases.items():
+        for artist, albums in sorted(releases.items()):
             if '__albumlist' in albums:
                 albums = albums['__albumlist']
-            for album, tracks in albums.items():
+            for album, tracks in sorted(albums.items()):
                 self.addTopLevelItem(item('%s - %s' % (artist, album)))
                 if tracks:
                     row = len(self._artists)

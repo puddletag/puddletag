@@ -125,7 +125,7 @@ class MainWin(QMainWindow):
                           ('onetomany', self.writeOneToMany),
                           ('dirschanged', self._dirChanged),
                           ('writepreview', self._writePreview)]
-        self.gensettings = [('&Load last folder at startup', True, 1)]
+        self.gensettings = [('&Load last folder at startup', False, 1)]
 
         self.setWindowTitle("puddletag")
         self._table = TagTable()

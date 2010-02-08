@@ -42,23 +42,26 @@ def artist_id(artist):
 
 def get_tracks(r_id):
     release = q.getReleaseById(r_id, RELEASEINCLUDES)
-    if release.isSingleArtistRelease():
+    if release:
         artist = release.artist.name
     else:
-        artist = None
+        artist = ''
     if release.getReleaseEventsAsDict():
         extra = {'date': min(release.getReleaseEventsAsDict().values())}
     else:
         extra = {}
-    return [[{#'mbrainz_track_id': track.id,
-            'title': track.title,
-            'album': release.title,
-            'year': release.getEarliestReleaseDate(),
-            'mbrainz_album_id': r_id,
-            'mbrainz_artist_id': release.artist.id,
-            'track': unicode(i+1),
-            'artist': artist if artist else track.artist.name}
-                for i, track in enumerate(release.tracks)], extra]
+    if release.tracks:
+        return [[{#'mbrainz_track_id': track.id,
+                'title': track.title,
+                'album': release.title,
+                'year': release.getEarliestReleaseDate(),
+                'mbrainz_album_id': r_id,
+                'mbrainz_artist_id': release.artist.id,
+                'track': unicode(i+1),
+                'artist': track.artist.name if track.artist else artist}
+                    for i, track in enumerate(release.tracks)], extra]
+    else:
+        return [], extra
 
 def get_releases(artistid):
     artist = q.getArtistById(artistid, ARTIST_INCLUDES)
