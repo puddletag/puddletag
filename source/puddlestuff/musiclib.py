@@ -43,7 +43,6 @@ class MainWin(QDialog):
         self.listbox = QListWidget()
         self.setWindowTitle('Import Music Library')
         winsettings('importmusiclib', self)
-        self.resize(550,300)
 
         self.libattrs = []
         filedir = path.join(path.dirname(libraries.__file__))
@@ -115,17 +114,18 @@ class MainWin(QDialog):
                             QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
         else:
             self.emit(SIGNAL('libraryAvailable'), err, p)
-            settings = QSettings()
+            #settings = QSettings()
             modname = self.currentlib['module'].__name__
             modname = modname[modname.rfind('.')+1: ]
-            settings.setValue('Library/lastlib', QVariant(modname))
-            self.stack.currentWidget().saveSettings()
+            #settings.setValue('Library/lastlib', QVariant(modname))
+            #self.stack.currentWidget().saveSettings()
             p.close()
             self.close()
 
-class LibraryWindow(PuddleDock):
-    def __init__(self, library, loadmethod = None, parent = None):
+class LibraryWindow(QDialog):
+    def __init__(self, library, parent = None):
         QDockWidget.__init__(self, "Library", parent)
+        self.emits = ['loadfiles']
         self.tree = LibraryTree(library)
         widget = QWidget(self)
         vbox = QVBoxLayout()
@@ -156,21 +156,10 @@ class LibraryWindow(PuddleDock):
         vbox.addLayout(hbox)
         vbox.addLayout(searchbox)
         vbox.addWidget(self.tree)
-        widget.setLayout(vbox)
-        self.setWidget(widget)
-
-        if loadmethod:
-            self._loadmethod = loadmethod
-            self.connect(self.tree, SIGNAL("loadFiles"), loadmethod)
+        self.setLayout(vbox)
 
     def searchTree(self):
         self.tree.search(unicode(self.searchtext.text()))
-
-    def _setLoadMethod(self, value):
-        self._loadmethod = value
-        self.connect(self.tree, SIGNAL('loadFiles'), value)
-
-    loadmethod = property(lambda x: self._loadmethod, _setLoadMethod)
 
     def loadLibrary(self, library, loadmethod):
         self.tree.loadLibrary(library)
@@ -179,10 +168,6 @@ class LibraryWindow(PuddleDock):
             self.connect(self.saveall, SIGNAL('clicked()'), library.save)
         else:
             self.saveall.hide()
-
-        if loadmethod:
-            self._loadmethod = loadmethod
-            self.connect(self.tree, SIGNAL("loadFiles"), loadmethod)
 
 class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):
@@ -303,14 +288,9 @@ class LibraryTree(QTreeWidget):
         self.blockSignals(True)
         old, new = self.treedata(originals), self.treedata(newfiles)
         if self.lastsearch:
-            filenames = [z[FILENAME] for z in self.searchfiles]
+            filenames = [z.filepath for z in self.searchfiles]
             for f,n in zip(originals, newfiles):
-                try:
-                    index = filenames.index(f[FILENAME])
-                except ValueError:
-                    import pdb
-                    pdb.set_trace()
-                    index = filenames.index(f[FILENAME])
+                index = filenames.index(f[FILENAME])
                 self.searchfiles[index] = n
             data = self.treedata(self.searchfiles)
 

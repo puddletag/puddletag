@@ -299,8 +299,8 @@ class PuddleTable(QTableWidget):
             return
         previtems = self.texts(row - 1)
         newitems = self.texts(row)
-        self.setRowItems(row, previtems)
-        self.setRowItems(row - 1, newitems)
+        self.setRowTexts(row, previtems)
+        self.setRowTexts(row - 1, newitems)
         curitem = self.item(row-1, self.currentItem().column())
         self.setCurrentItem(curitem)
 
@@ -310,8 +310,8 @@ class PuddleTable(QTableWidget):
             return
         previtems = self.texts(row + 1)
         newitems = self.texts(row)
-        self.setRowItems(row, previtems)
-        self.setRowItems(row + 1, newitems)
+        self.setRowTexts(row, previtems)
+        self.setRowTexts(row + 1, newitems)
         curitem = self.item(row+1, self.currentItem().column())
         self.setCurrentItem(curitem)
 

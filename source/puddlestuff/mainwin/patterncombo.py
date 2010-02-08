@@ -95,6 +95,7 @@ class SettingsWin(QFrame):
         self.listbox.addItem("")
         self.listbox.setCurrentRow(self.listbox.count() - 1)
         self.listbox.clearSelection()
+        self._add = True
         self.editItem(True)
         self.listbox.setFocus()
 
@@ -112,6 +113,10 @@ class SettingsWin(QFrame):
             item = l(row)
             self.listbox.setItemSelected(item, True)
             item.setText(text)
+        else:
+            if self._add:
+                self.listbox.takeItem(self.listbox.count() - 1)
+                self._add = False
 
     def applySettings(self, control):
         item = self.listbox.item
