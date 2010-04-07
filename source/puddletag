@@ -19,31 +19,47 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+#import psyco
+#psyco.full()
 import sys
 import sys, os
-from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QApplication, QFont
 from PyQt4.QtCore import pyqtRemoveInputHook
-from puddlestuff.maintest import MainWin
+from puddlestuff.puddletag import MainWin
 pyqtRemoveInputHook()
-__version__ = "0.8.3"
+__version__ = "0.8.5"
 import logging
 
 try:
   if sys.argv[1] == '--debug':
     logging.basicConfig(stream=sys.stderr,
-                        level=logging.DEBUG,
-                        )
+                        level=logging.DEBUG)
     del(sys.argv[1])
 except IndexError:
   pass
 
+size = None
+
+for i, arg in enumerate(sys.argv):
+    if arg.startswith('--fontsize'):
+        try:
+            size = int(sys.argv[i + 1])
+        except IndexError:
+            print 'No fontsize specified.'
+        except ValueError:
+            print 'Invalid fontsize specified.'
+
 if len(sys.argv) > 1:
-    filename = sys.argv[1]
+    filename = sys.argv[-1]
 else:
     filename = None
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    if size is not None:
+        font = app.font()
+        font.setPointSize(size)
+        app.setFont(font)
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
     win = MainWin()

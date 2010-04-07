@@ -109,7 +109,7 @@ control=mainwin
 [shortcut15]
 name=&Actions
 command=run_action
-icon=:/action.svg
+icon=:/action.png
 control=mainwin
 enabled=filesselected
 
@@ -130,7 +130,7 @@ name=&QuickActions
 command=run_quick_action
 control=mainwin
 enabled=filesselected
-icon=:/quickactions.png
+icon=:/quickaction.png
 
 [shortcut19]
 name=&Rename Directories
@@ -195,7 +195,7 @@ shortcut=Ctrl+Shift+A
 name=&Select Column
 command=selectCurrentColumn
 control=table
-shortcut=Alt+C
+shortcut=Alt+Meta+C
 enabled=filesselected
 
 [shortcut29]
@@ -218,7 +218,7 @@ icon=:/copy.png
 name=&Paste
 command=paste
 control=mainwin
-shortcut=Ctrl+V
+shortcut=Ctrl+V,Shift+Ins
 enabled=filesselected
 icon=:/paste.png
 
@@ -248,4 +248,10 @@ enabled=filesselected
 name=&Properties
 command=showProperties
 control=table
+enabled=filesselected
+
+[shortcut36]
+name=Paste &Onto
+command=paste_onto
+control=mainwin
 enabled=filesselected
