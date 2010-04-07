@@ -19,7 +19,7 @@ Visit the puddletag website (<a href="http://puddletag.sourceforge.net">http://p
 Licensed under GPLv2 (<a href="www.gnu.org/licenses/gpl-2.0.html">www.gnu.org/licenses/gpl-2.0.html</a>).
 '''
 
-thanks = """<b>Evan surname</b> for contributing many, many ideas for putting up with more bugs than any user's expected to and being a helluva tester. <br /> <br />
+thanks = """<b>Evan Devetzis</b> for contributing many, many ideas for putting up with more bugs than any user's expected to and being a helluva tester. <br /> <br />
 The authors of the libraries puddletag depends on:< br />
 <b>Paul McGuire</b> for PyParsing and for being helpful when I needed it.<br />
 <b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (without it, puddletag woulda been a whole lot buggier).<br />
