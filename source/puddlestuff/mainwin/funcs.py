@@ -1,15 +1,16 @@
 import puddlestuff.findfunc as findfunc
-from puddlestuff.puddleobjects import dircmp, safe_name
+from puddlestuff.puddleobjects import dircmp, safe_name, natcasecmp, LongInfoMessage
 import puddlestuff.actiondlg as actiondlg
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import os
+import os, pdb
 path = os.path
 import puddlestuff.helperwin as helperwin
 from functools import partial
 from itertools import izip
 from puddlestuff.audioinfo import stringtags
 from operator import itemgetter
+import puddlestuff.musiclib, puddlestuff.about as about
 
 status = {}
 
@@ -27,21 +28,26 @@ def auto_numbering(parent=None):
     """Shows the autonumbering wizard and sets the tracks
         numbers should be filled in"""
     tags = status['selectedfiles']
+    def convert(num):
+        try:
+            return long(num)
+        except TypeError:
+            return 1
 
     numtracks = len(tags)
 
-    numbers = [tag['track'] for tag in tags if 'track' in tag]
+    numbers = [tag['track'][0] for tag in tags if 'track' in tag]
     if not numbers:
         mintrack = 1
         enablenumtracks = False
     else:
-        mintrack = sorted(numbers)[0]
+        mintrack = sorted(numbers, cmp=natcasecmp)[0]
         if "/" in mintrack:
             enablenumtracks = True
-            mintrack = long(mintrack.split("/")[0])
+            mintrack, numtracks = [convert(z) for z in mintrack.split("/", 2)]
         else:
             enablenumtracks = False
-            mintrack = long(mintrack)
+            mintrack = convert(mintrack)
 
     win = helperwin.TrackWindow(parent, mintrack, numtracks, enablenumtracks)
     win.setModal(True)
@@ -118,7 +124,19 @@ def format(parent=None, preview = None):
         ret.append(dict([(tag, val) for tag in s]))
     emit('writeselected', ret)
 
-def number_tracks(tags, start, numtracks, restartdirs):
+def load_musiclib(parent=None):
+    m = puddlestuff.musiclib.LibChooseDialog()
+    m.setModal(True)
+    obj.connect(m, SIGNAL('adddock'), emit_received('adddock'))
+    m.show()
+
+_padding = u'0'
+def _pad(text, numlen):
+    if len(text) < numlen:
+        text = _padding * ((numlen - len(text)) / len(_padding)) + text
+    return text
+
+def number_tracks(tags, start, numtracks, restartdirs, padlength):
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.
@@ -136,13 +154,30 @@ def number_tracks(tags, start, numtracks, restartdirs):
                 folders[folder] += 1
             else:
                 folders[folder] = start
-            taglist.append({"track": unicode(folders[folder]) + num})
+            taglist.append({"track": _pad(unicode(folders[folder]) + num,
+                                            padlength)})
     else:
-        taglist = [{"track": unicode(z) + num} for z in range(start,
-                                                    start + len(tags) + 1)]
+        taglist = [{"track": _pad(unicode(z) + num, padlength)}
+                            for z in range(start, start + len(tags) + 1)]
+
     emit('writeselected', taglist)
 
 def paste():
+    rows = status['selectedrows']
+    if not rows:
+        return
+    try:
+        clip = eval(unicode(QApplication.clipboard().text()),
+                                {"__builtins__":None},{})
+    except:
+        raise StopIteration
+    tags = []
+    while len(tags) < len(rows):
+        tags.extend(clip)
+    tags.extend(clip)
+    emit('writeselected', (tag for tag in tags))
+
+def paste_onto():
     try:
         clip = eval(unicode(QApplication.clipboard().text()),
                                 {"__builtins__":None},{})
@@ -173,19 +208,19 @@ def rename_dirs(parent=None):
 
     #Create the msgbox, I like that there'd be a difference between
     #the new and the old filename, so I bolded the new and italicised the old.
-    msg = u"Are you sure you want to rename: <br />"
+    title = u"<b>Are you sure you want to rename the following directories?</b>"
     dirs = []
     newname = lambda x: basename(safe_name(tagtofilename(pattern, x)))
+    msg = ''
     for d, f in newdirs.items():
         newfolder = path.join(dirname(d), newname(f))
-        msg += u'<i>%s</i> to <b>%s</b><br /><br />' % (d, newfolder)
+        msg += u'%s -> <b>%s</b><br /><br />' % (d, newfolder)
         dirs.append([d, newfolder])
 
     msg = msg[:-len('<br /><br />')]
 
-    result = QMessageBox.question(parent, 'Rename dirs?', msg, "Yes","No", "",
-                                    1 ,1)
-    if result != 0:
+    info = LongInfoMessage('Rename dirs?', title, msg, parent)
+    if not info.exec_():
         return
     dirs = sorted(dirs, dircmp, itemgetter(0))
     emit('renamedirs', dirs)
@@ -197,7 +232,11 @@ def run_action(parent=None, quickaction=False):
     else:
         example = {}
 
-    win = actiondlg.ActionWindow(parent, example)
+    if quickaction:
+        tags = status['selectedtags'][0]
+        win = actiondlg.ActionWindow(parent, example, tags.keys())
+    else:
+        win = actiondlg.ActionWindow(parent, example)
     win.setModal(True)
 
     if quickaction:
@@ -252,6 +291,11 @@ def run_func(selectedfiles, func):
 
 run_quick_action = lambda parent=None: run_action(parent, True)
 
+def show_about(parent=None):
+    win = about.AboutPuddletag(parent)
+    win.setModal(True)
+    win.exec_()
+
 def tag_to_file():
     pattern = status['patterntext']
     files = status['selectedfiles']
@@ -282,6 +326,7 @@ def text_file_to_tag(parent=None):
         win.show()
 
 def update_status(enable = True):
+    return
     files = status['selectedfiles']
     pattern = status['patterntext']
     tf = findfunc.tagtofilename
@@ -312,9 +357,15 @@ def update_status(enable = True):
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
-                'formatstatus', 'renamedirs', 'onetomany']
+                'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
+                'adddock']
 obj.receives = [('filesselected', update_status),
                 ('patternchanged', update_status)]
+
+def emit_received(signal):
+    def emit(*args):
+        obj.emit(SIGNAL(signal), *args)
+    return emit
 
 def emit(sig, value):
     obj.emit(SIGNAL(sig), value)

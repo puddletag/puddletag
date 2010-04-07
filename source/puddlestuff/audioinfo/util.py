@@ -31,7 +31,7 @@ from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
 PATH = u"__path"
 FILENAME = u"__filename"
 EXTENSION = '__ext'
-DIRPATH = '__folder'
+DIRPATH = '__dirpath'
 READONLY = ('__bitrate', '__frequency', "__length", "__modified", "__size", "__created", "__library")
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
 INFOTAGS = FILETAGS + list(READONLY)
@@ -272,6 +272,15 @@ def deldeco(func):
         return func(self, key)
     return f
 
+def reversedict(d):
+    return dict(((v,k) for k in d))
+
+_sizes = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB'}
+def str_filesize(size):
+    valid = [z for z in _sizes if size / (1024.0**z) > 1]
+    val = max(valid)
+    return '%.2f %s' % (size/(1024.0**val), _sizes[val])
+
 class MockTag(object):
     """Use as base for all tag classes."""
     def __init__(self, filename = None):
@@ -280,12 +289,12 @@ class MockTag(object):
             self.link(filename)
 
     def _getfilepath(self):
-        return self._tags[FILENAME]
+        return self._tags[PATH]
 
     def _setfilepath(self,  val):
-        self._tags.update({FILENAME: val,
+        self._tags.update({PATH: val,
                            DIRPATH: path.dirname(val),
-                           PATH: path.basename(val),
+                           FILENAME: path.basename(val),
                            EXTENSION: path.splitext(val)[1][1:]})
 
     def _setext(self,  val):
@@ -299,7 +308,7 @@ class MockTag(object):
         return self._tags[EXTENSION]
 
     def _getfilename(self):
-        return self._tags[PATH]
+        return self._tags[FILENAME]
 
     def _setfilename(self, val):
         self.filepath = os.path.join(self.dirpath, val)
@@ -314,6 +323,18 @@ class MockTag(object):
     dirpath = property(_getdirpath, _setdirpath)
     ext = property(_getext, _setext)
     filename = property(_getfilename, _setfilename)
+
+    def _set_attrs(self, attrs):
+        tags = self._tags
+        [setattr(self, z, tags['__%s' % z]) for z in attrs]
+
+    def _init_info(self, filename, filetype):
+        self._tags = {}
+        filename = getfilename(filename)
+        self.filepath = filename
+        audio = filetype(filename)
+        tags = getinfo(filename)
+        return tags, audio
 
     def update(self, dictionary=None, **kwargs):
         if dictionary is None:
@@ -341,8 +362,17 @@ class MockTag(object):
         if not self.mapping:
             return self._tags.keys()
         else:
-            return [self.mapping[z] if z in self.mapping else z
-                            for z in self._tags.keys()]
+            revmapping = self.revmapping
+            mapping = self.mapping
+            ret = []
+            for key in self._tags:
+                if key in mapping:
+                    ret.append(mapping[key])
+                elif key in revmapping:
+                    pass
+                else:
+                    ret.append(key)
+            return ret
 
     def values(self):
         return [self[key] for key in self]

@@ -1,6 +1,7 @@
 from PyQt4.QtGui import QWidget, QLabel, QComboBox, QLineEdit, QHBoxLayout
 from PyQt4.QtCore import SIGNAL
 from puddlestuff.puddleobjects import gettaglist
+from puddlestuff.constants import BOTTOMDOCK
 
 class FilterView(QWidget):
     def __init__(self, parent=None, status=None):
@@ -32,4 +33,4 @@ class FilterView(QWidget):
             tag = [z.strip() for z in tag.split('|') if z.strip()]
         self.emit(SIGNAL('filter'), tag, text)
 
-control = ("Filter", FilterView)
+control = ("Filter", FilterView, BOTTOMDOCK, True)

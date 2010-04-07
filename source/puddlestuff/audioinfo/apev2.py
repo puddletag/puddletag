@@ -23,14 +23,24 @@ APEv2File = MonkeysAudio
 
 import util
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
-                getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY)
-
+                getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
+                FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
+ATTRIBUTES = ('length', 'accessed', 'size', 'created',
+              'modified')
 
 class Tag(util.MockTag):
     """Tag class for APEv2 files.
 
     Tags are used as in ogg.py"""
     IMAGETAGS = ()
+    mapping = {}
+    revmapping = {}
+    _hash = {PATH: 'filepath',
+        FILENAME:'filename',
+        EXTENSION: 'ext',
+        DIRPATH: 'dirpath'}
+
+    @getdeco
     def __getitem__(self,key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
@@ -44,20 +54,24 @@ class Tag(util.MockTag):
             #if a key doesn't exist.
             return u""
 
+    @setdeco
     def __setitem__(self, key, value):
-        if key in READONLY:
-          return
-        if key == FILENAME:
-            self.filename = value
-            self._tags[FILENAME] = value
+        if isinstance(key, (int, long)):
+            self._tags[key] = value
+            return
+        elif key in READONLY:
+            return
+        elif key in FILETAGS:
+            setattr(self, self._hash[key], value)
+            return
+        elif key in INFOTAGS:
+            self._tags[key] = value
+            return
+        elif key not in INFOTAGS and isempty(value):
+            del(self[key])
             return
 
-        if key not in INFOTAGS and isempty(value):
-            del(self[key])
-
-        if key in INFOTAGS or isinstance(key, (int, long)):
-          self._tags[key] = value
-        elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
+        if (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
             self._tags[key] = [unicode(value)]
         else:
             self._tags[key] = [unicode(z) for z in value]
@@ -74,30 +88,28 @@ class Tag(util.MockTag):
 
     def _info(self):
         info = self._mutfile.info
-        fileinfo = [('Filename', self[FILENAME]),
-                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
-                    ('Path', self[PATH]),
-                    ('Modified', self['__modified'])]
-        apeinfo = [('Frequency', self['__frequency']),
-                   ('Channels', unicode(info.channels)),
-                   ('Length', self['__length']),
+        fileinfo = [('Path', self.filepath),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self.filename),
+                    ('Modified', self.modified)]
+        apeinfo = [('Channels', unicode(info.channels)),
+                   ('Length', self.length),
                    ('Version', unicode(info.version))]
-        return [('File', fileinfo), ("Monkey's Audio Info", apeinfo)]
+        return [('File', fileinfo), ("APEv2 Info", apeinfo)]
 
     info = property(_info)
 
     def load(self, mutfile, tags):
         self._mutfile = mutfile
-        self.filename = tags[FILENAME]
+        self.filepath = tags.filepath
         self._tags = tags
 
     def link(self, filename, x = None):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        filename = getfilename(filename)
-        audio = APEv2File(filename)
-        tags = getinfo(filename)
-        self._tags = {}
+
+        tags, audio = self._init_info(filename, APEv2File)
+
         if audio is None:
             return
 
@@ -110,20 +122,24 @@ class Tag(util.MockTag):
             self._tags[u"__frequency"] = strfrequency(info.sample_rate)
         except AttributeError:
             'No frequency.'
+        self._tags[u"__filetype"] = 'APEv2'
+        self.filetype = 'APEv2'
         self._tags.update(tags)
-        self.filename = tags[FILENAME]
+        self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
         return self
 
     def save(self):
-        if self.filename != self._mutfile.filename:
-            self._mutfile.filename = self.filename
+        if self._mutfile.tags is None:
+            self._mutfile.add_tags()
+        if self.filepath != self._mutfile.filename:
+            self._mutfile.filename = self.filepath
         audio = self._mutfile
 
         newtag = {}
         for tag, value in usertags(self).items():
             try:
-                newtag[tag] = value
+                newtag[tag] = [z.encode('utf8') for z in value]
             except AttributeError:
                 pass
         toremove = [z for z in audio if z not in newtag and audio[z].kind == 0]
@@ -132,5 +148,4 @@ class Tag(util.MockTag):
         audio.tags.update(newtag)
         audio.save()
 
-
-filetype = (APEv2File, Tag)
+filetype = (APEv2File, Tag, 'APEv2')

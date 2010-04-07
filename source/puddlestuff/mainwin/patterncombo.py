@@ -6,10 +6,11 @@ from puddlestuff.puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
 
 def load_patterns(filepath=None):
     settings = PuddleConfig(filepath)
-    return settings.get('editor', 'patterns',
+    return [settings.get('editor', 'patterns',
                             ['%artist% - $num(%track%,2) - %title%',
                             '%artist% - %title%', '%artist% - %album%',
-                            '%artist% - Track %track%', '%artist% - %title%'])
+                            '%artist% - Track %track%', '%artist% - %title%']),
+           settings.get('editor', 'index', 0, True)]
 
 class PatternCombo(QComboBox):
     name = 'toolbar-patterncombo'
@@ -39,11 +40,14 @@ class PatternCombo(QComboBox):
         return [unicode(text(i)) for i in range(self.count())]
 
     def loadSettings(self):
-        self.setItems(load_patterns())
+        patterns, index = load_patterns()
+        self.setItems(patterns)
+        self.setCurrentIndex(index)
 
     def saveSettings(self):
         settings = PuddleConfig()
         settings.set('editor', 'patterns', self.items())
+        settings.set('editor', 'index', self.currentIndex())
 
 
 class SettingsWin(QFrame):
@@ -73,6 +77,7 @@ class SettingsWin(QFrame):
 
         connect(buttons, "add", self.addPattern)
         connect(buttons, "edit", self.editItem)
+        buttons.duplicate.setVisible(False)
         self.listbox.connectToListButtons(buttons)
         self.listbox.editButton = buttons.edit
         connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
@@ -93,17 +98,19 @@ class SettingsWin(QFrame):
 
     def addPattern(self):
         self.listbox.addItem("")
+        row = self.listbox.currentRow()
         self.listbox.setCurrentRow(self.listbox.count() - 1)
         self.listbox.clearSelection()
         self._add = True
-        self.editItem(True)
+        self.editItem(True, row)
         self.listbox.setFocus()
 
     def _doubleClicked(self, item):
         self.editItem()
 
-    def editItem(self, add = False):
-        row = self.listbox.currentRow()
+    def editItem(self, add = False, row = None):
+        if row is None:
+            row = self.listbox.currentRow()
         if not add and row < 0:
             return
         l = self.listbox.item

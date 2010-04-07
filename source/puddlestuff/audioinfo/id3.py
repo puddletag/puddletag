@@ -28,10 +28,12 @@ TextFrame = mutagen.id3.TextFrame
 ID3  = mutagen.id3.ID3
 from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
                     setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
-                    READONLY, EXTENSION, DIRPATH, FILETAGS)
+                    READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize)
 import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
+ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
+              'modified')
 
 class PuddleID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
@@ -66,8 +68,8 @@ class Tag(util.MockTag):
     mapping = {}
     revmapping = {}
 
-    _hash = {FILENAME: 'filepath',
-             PATH:'filename',
+    _hash = {PATH: 'filepath',
+             FILENAME:'filename',
              EXTENSION: 'ext',
              DIRPATH: 'dirpath'}
 
@@ -132,12 +134,8 @@ class Tag(util.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        self._tags = {}
         self._images = []
-        filename = getfilename(filename)
-        self.filepath = filename
-        audio = PuddleID3FileType(filename)
-        tags = getinfo(filename)
+        tags, audio = self._init_info(filename, PuddleID3FileType)
         if audio is None:
             return
 
@@ -170,13 +168,21 @@ class Tag(util.MockTag):
                       u"__length": strlength(info.length),
                       u"__bitrate": strbitrate(info.bitrate)})
         self._tags.update(tags)
+        try:
+            version = audio.tags.version
+            self.filetype = u'ID3v%s.%s' % audio.tags.version[:2]
+        except AttributeError:
+            self.filetype = u'ID3'
+        self._tags['__filetype'] = self.filetype
+
+        self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
         self._originaltags = [z[0] for z in self.mutvalues()]
 
     def load(self, tags, mutfile, images = None):
         """Used only for creating a copy of myself."""
         self._tags = deepcopy(tags)
-        self.filename = tags[FILENAME]
+        self.filepath = tags.filepath
         if not images:
             self._images = []
         else:
@@ -192,24 +198,22 @@ class Tag(util.MockTag):
 
     def _info(self):
         info = self._mutfile.info
-        fileinfo = [('Filename', self.filepath),
-                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
-                    ('Path', self.filename),
-                    ('Modified', self['__modified'])]
-
+        fileinfo = [('Path', self.filepath),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self.filename),
+                    ('Modified', self.modified)]
         try:
             version = self._mutfile.tags.version
-            version = ('ID3 Version', u'ID3v' + unicode(version[0]) + '.' + \
-                                        unicode(version[1]))
+            version = ('ID3 Version', self.filetype)
         except AttributeError:
             version = ('ID3 Version', 'No tags in file.')
         fileinfo.append(version)
 
         mpginfo = [('Version', u'MPEG %i Layer %i' % (info.version, info.layer)),
-                   ('Bitrate', self['__bitrate']),
-                   ('Frequency', self['__frequency']),
+                   ('Bitrate', self.bitrate),
+                   ('Frequency', self.frequency),
                    ('Mode', MODES[info.mode]),
-                   ('Length', self['__length'])]
+                   ('Length', self.length)]
 
         return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
 
@@ -219,6 +223,8 @@ class Tag(util.MockTag):
     def save(self):
         """Writes the tags to file."""
         filename = self.filepath
+        if self._mutfile.tags is None:
+            self._mutfile.add_tags()
         if filename != self._mutfile.filename:
             self._mutfile.tags.filename = filename
             self._mutfile.filename = filename

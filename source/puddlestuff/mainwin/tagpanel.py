@@ -1,12 +1,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, sys, os, sip
-sys.path.insert(1,'../..')
 from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
 from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
 pyqtRemoveInputHook()
+from puddlestuff.constants import LEFTDOCK
 
 def loadsettings(filepath = None):
     settings = PuddleConfig()
@@ -43,7 +43,6 @@ def savesettings(d, filepath=None):
         settings.set(unicode(row), 'tags', [z[1] for z in rowtags])
         settings.set(unicode(row), 'titles', [z[0] for z in rowtags])
 
-
 class FrameCombo(QGroupBox):
     """A group box with combos that allow to edit
     tags individually if so inclined.
@@ -64,6 +63,7 @@ class FrameCombo(QGroupBox):
         self.receives = [('tagselectionchanged', self.fillCombos)]
         self.combos = {}
         self.labels = {}
+        self._status = status
 
     def disableCombos(self):
         for z in self.combos:
@@ -103,7 +103,7 @@ class FrameCombo(QGroupBox):
                     images.append({})
             for tag in tags:
                 try:
-                    if isinstance(audio[tag],(unicode, str)):
+                    if isinstance(audio[tag], basestring):
                         tags[tag].append(audio[tag])
                     else:
                         tags[tag].append("\\\\".join(audio[tag]))
@@ -153,7 +153,6 @@ class FrameCombo(QGroupBox):
             else:
                 combo.setEditText(tags['genre'][0])
         else:
-
             combos['genre'].setCurrentIndex(0)
 
     def save(self):
@@ -180,7 +179,12 @@ class FrameCombo(QGroupBox):
                 else:
                     tags[tag] = curtext.split("\\\\")
         self.emit(SIGNAL('onetomany'), tags)
-        #print tags
+        if 'genre' in combos:
+            combo = combos['genre']
+            genre = unicode(combo.currentText())
+            genres = self._status['genres']
+            if genre not in genres:
+                self._status['genres'] = genres + [genre]
 
     def setCombos(self, rowtags):
         """Creates a vertical column of comboboxes.
@@ -217,7 +221,9 @@ class FrameCombo(QGroupBox):
         j = 0
         for row, tags in sorted(rowtags.items()):
             labelbox = QHBoxLayout()
+            labelbox.setContentsMargins(6, 1, 1, 1)
             widgetbox = QHBoxLayout()
+            widgetbox.setMargin(0)
             for tag in tags:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
@@ -261,8 +267,7 @@ class FrameCombo(QGroupBox):
                 self.combos[combo].setEnabled(False)
 
         if 'genre' in self.combos:
-            from mutagen.id3 import TCON
-            self.combos['genre'].addItems(GENRES)
+            self.combos['genre'].addItems(self._status['genres'])
 
     def reloadCombos(self, tags):
         self.setCombos(tags)
@@ -274,6 +279,7 @@ class PuddleTable(QTableWidget):
     def __init__(self, columns=None, defaultvals=None, parent=None):
         QTableWidget.__init__(self, parent)
         self._default = defaultvals
+        self.verticalHeader().hide()
         if columns:
             self.setColumnCount(len(columns))
             self.setHorizontalHeaderLabels(columns)
@@ -344,7 +350,8 @@ class SettingsWin(QWidget):
                                         ['Title', 'tag', unicode(0)], self)
         buttons = ListButtons()
         buttons.connectToWidget(self._table, add=self.add, edit=self.edit,
-                    moveup=self._table.moveUp, movedown=self._table.moveDown)
+                    moveup=self._table.moveUp, movedown=self._table.moveDown,
+                    duplicate=self.duplicate)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
@@ -354,10 +361,13 @@ class SettingsWin(QWidget):
         self.connect(self._table, SIGNAL('cellChanged(int,int)'), self._checkItem)
         self.fill()
 
-    def add(self):
+    def add(self, texts = None):
         table = self._table
-        text = table.text
-        table.add(['Title', 'tag', max([text(row, 2) for row in table.rows])])
+        if not texts:
+            text = table.text
+            table.add(['Title', 'tag', max([text(row, 2) for row in table.rows])])
+        else:
+            table.add(texts)
         item = table.item(table.rowCount() - 1, 0)
         table.setCurrentItem(item)
         table.editItem(item)
@@ -399,7 +409,14 @@ class SettingsWin(QWidget):
                 i = table.item(row, column)
                 i.setBackground(RED)
 
-control = ('Tag Panel', FrameCombo)
+    def duplicate(self):
+        table = self._table
+        row = table.currentRow()
+        if row < 0: return
+        self.add(table.texts(row))
+
+
+control = ('Tag Panel', FrameCombo, LEFTDOCK, True)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

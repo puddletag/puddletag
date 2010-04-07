@@ -142,6 +142,9 @@ class MusicBrainz(object):
         r_id = self._releases[a_id[1]][album]
         return get_tracks(r_id)
 
+info = [MusicBrainz, None]
+name = 'Musicbrainz'
+
 if __name__ == '__main__':
     from exampletags import tags
     x = MusicBrainz(params = dict([('Linkin Park', 'Minutes To Midnight'), (u"Beyonc\xe9" ,"B'day")]))

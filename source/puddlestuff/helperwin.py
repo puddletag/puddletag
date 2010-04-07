@@ -29,8 +29,8 @@ import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButtons, ListButtons,
                             PicWidget, winsettings, PuddleConfig)
 from copy import deepcopy
-ADD, EDIT, REMOVE = (1,2,3)
-from puddlestuff.audioinfo import commontags, INFOTAGS, REVTAGS
+ADD, EDIT, REMOVE = (1, 2, 3)
+from audioinfo import commontags, INFOTAGS, REVTAGS
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -39,69 +39,95 @@ class TrackWindow(QDialog):
     Emit's the signal 'newtracks' containing a list of two items when it's closed:
     the from value and the to value(a unicode string). If no to value
     was specified then the to value is an empty string ('')"""
-    def __init__(self, parent=None, minval=0, numtracks = None, enablenumtracks = False):
+    def __init__(self, parent=None, minval=0, numtracks = 0, enablenumtracks = False):
         QDialog.__init__(self,parent)
         self.setWindowTitle("Autonumbering Wizard")
         winsettings('autonumbering', self)
 
-        self.hboxlayout = QHBoxLayout()
-        self.hboxlayout.setMargin(0)
-        self.hboxlayout.setSpacing(6)
+        def hbox(*widgets):
+            box = QHBoxLayout()
+            [box.addWidget(z) for z in widgets]
+            box.addStretch()
+            return box
 
-        self.label = QLabel("Start")
-        self.hboxlayout.addWidget(self.label)
+        vbox = QVBoxLayout()
 
-        self.frombox = QSpinBox()
-        self.frombox.setValue(minval)
-        self.frombox.setMaximum(65536)
-        self.hboxlayout.addWidget(self.frombox)
-        self.hboxlayout.addStretch()
+        startlabel = QLabel("&Start: ")
+        self._start = QSpinBox()
+        startlabel.setBuddy(self._start)
+        self._start.setValue(minval)
+        self._start.setMaximum(65536)
 
-        self.hboxlayout2 = QHBoxLayout()
-        self.checkbox = QCheckBox("Add track seperator ['/']")
-        self.numtracks = QLineEdit()
-        self.numtracks.setEnabled(False)
-        self.numtracks.setMaximumWidth(50)
-        self.foldernumbers = QCheckBox("Restart numbering at each directory.")
+        vbox.addLayout(hbox(startlabel, self._start))
 
-        self.hboxlayout2.addWidget(self.checkbox)
-        self.hboxlayout2.addWidget(self.numtracks)
-        self.hboxlayout2.addStretch()
-        self.hboxlayout3 = QHBoxLayout()
+        label = QLabel('Max length after padding with zeroes: ')
+        self._padlength = QSpinBox()
+        label.setBuddy(self._padlength)
+        self._padlength.setValue(1)
+        self._padlength.setMaximum(65535)
+        self._padlength.setMinimum(1)
+        vbox.addLayout(hbox(label, self._padlength))
+
+        self._separator = QCheckBox("Add track &seperator ['/']")
+        self._numtracks = QSpinBox()
+        self._numtracks.setEnabled(False)
+        if numtracks:
+            self._numtracks.setValue(numtracks)
+        self._restart_numbering = QCheckBox("&Restart numbering at each directory.")
+
+        vbox.addLayout(hbox(self._separator, self._numtracks))
+        vbox.addWidget(self._restart_numbering)
+
         okcancel = OKCancel()
+        vbox.addLayout(okcancel)
+        self.setLayout(vbox)
 
-        self.vbox = QVBoxLayout(self)
-        self.vbox.addLayout(self.hboxlayout)
-        self.vbox.addLayout(self.hboxlayout2)
-        self.vbox.addWidget(self.foldernumbers)
-        self.vbox.addLayout(okcancel)
-
-
-        self.setLayout(self.vbox)
         self.connect(okcancel,SIGNAL('ok'), self.doStuff)
         self.connect(okcancel,SIGNAL('cancel'),self.close)
-        self.connect(self.checkbox, SIGNAL("stateChanged(int)"), self.setEdit)
-        self.numtracks.setText(unicode(numtracks))
+        self.connect(self._separator, SIGNAL("stateChanged(int)"), self.setEdit)
 
         if enablenumtracks:
-            self.checkbox.setCheckState(Qt.Checked)
+            self._separator.setCheckState(Qt.Checked)
         else:
-            self.checkbox.setCheckState(Qt.Unchecked)
+            self._separator.setCheckState(Qt.Unchecked)
+
+        self._loadSettings()
+
+    def _loadSettings(self):
+        cparser = PuddleConfig()
+        section = 'autonumbering'
+        self._start.setValue(cparser.get(section, 'start', 1))
+        self._separator.setCheckState(cparser.get(section, 'separator', Qt.Unchecked))
+        self._numtracks.setValue(cparser.get(section, 'numtracks', -1))
+        self._padlength.setValue(cparser.get(section, 'padlength',1))
 
     def setEdit(self, val):
         #print val
-        if val == 2:
-            self.numtracks.setEnabled(True)
+        if val == Qt.Checked:
+            self._numtracks.setEnabled(True)
         else:
-            self.numtracks.setEnabled(False)
+            self._numtracks.setEnabled(False)
 
     def doStuff(self):
         self.close()
-        if self.checkbox.checkState() == 2:
-            self.emit(SIGNAL("newtracks"), self.frombox.value(), self.numtracks.text(), self.foldernumbers.checkState())
+        if self._separator.checkState() == Qt.Checked:
+            self.emit(SIGNAL("newtracks"), self._start.value(),
+                        self._numtracks.value(),
+                        self._restart_numbering.checkState(),
+                        self._padlength.value())
         else:
-            self.emit(SIGNAL("newtracks"), self.frombox.value(), None, self.foldernumbers.checkState())
+            self.emit(SIGNAL("newtracks"), self._start.value(),
+                        None, self._restart_numbering.checkState(),
+                        self._padlength.value())
+        self._saveSettings()
 
+    def _saveSettings(self):
+        cparser = PuddleConfig()
+        section = 'autonumbering'
+        cparser.set(section, 'start', self._start.value())
+        cparser.set(section, 'separator', self._separator.checkState())
+        cparser.set(section, 'numtracks', self._numtracks.value())
+        cparser.set(section, 'padlength', self._padlength.value())
 
 class ImportWindow(QDialog):
     """Dialog that allows you to import a file to tags.
@@ -115,10 +141,10 @@ class ImportWindow(QDialog):
 
         self.grid = QGridLayout()
 
-        self.label = QLabel("File")
+        self.label = QLabel("Text")
         self.grid.addWidget(self.label,0,0)
 
-        self.label = QLabel("Tags")
+        self.label = QLabel("Tag preview")
         self.grid.addWidget(self.label,0,2)
 
 
@@ -138,8 +164,9 @@ class ImportWindow(QDialog):
         self.patterncombo.setEditable(True)
         self.patterncombo.setDuplicatesEnabled(False)
 
-        self.ok = QPushButton("&OK")
-        self.cancel = QPushButton("&Cancel")
+        okcancel = OKCancel()
+        self.ok = okcancel.ok
+        self.cancel = okcancel.cancel
 
         self.openfile = QPushButton("&Select File")
         getclip = QPushButton("&Paste Clipboard")
@@ -148,8 +175,7 @@ class ImportWindow(QDialog):
         self.hbox.addWidget(self.openfile)
         self.hbox.addWidget(getclip)
         self.hbox.addWidget(self.patterncombo,1)
-        self.hbox.addWidget(self.ok)
-        self.hbox.addWidget(self.cancel)
+        self.hbox.addLayout(okcancel)
 
         self.grid.addLayout(self.hbox,3,0,1,4)
         self.setLayout(self.grid)
@@ -217,9 +243,24 @@ class ImportWindow(QDialog):
                 return ""
 
         self.dicttags = []
+        self.tags.clear()
         for z in self.lines.split("\n"):
             self.dicttags.append(findfunc.filenametotag(unicode(self.patterncombo.currentText()),z,False))
         if self.dicttags:
+            #append = self.tags.insertPlainText
+            #setbg = self.tags.setTextBackgroundColor
+            #i = 0
+            #base = QPalette().color(QPalette.Base)
+            #alt = QPalette().color(QPalette.AlternateBase)
+            #for z in self.dicttags:
+                #if i:
+                    #setbg(base)
+                    #i = 0
+                #else:
+                    #i = 1
+                    #setbg(alt)
+                #text = u"%s\n" % formattag(z)
+                #append(text)
             self.tags.setHtml("<br/>".join([formattag(z) for z in self.dicttags]))
 
     def doStuff(self):
@@ -273,6 +314,11 @@ class EditTag(QDialog):
 
         self.connect(okcancel, SIGNAL("ok"), self.ok)
         self.connect(okcancel, SIGNAL("cancel"), self.close)
+
+        self.value.selectAll()
+        self.tagcombo.lineEdit().selectAll()
+        if self.prevtag:
+            self.value.setFocus()
 
     def ok(self):
         self.close()
@@ -378,9 +424,10 @@ class ExTags(QDialog):
         self.connect(self.okcancel, SIGNAL("ok"),self.OK)
 
         clicked = SIGNAL('clicked()')
-        self.connect(self.listbuttons.edit, clicked, self.editTag)
+        self.connect(self.listbuttons, SIGNAL('edit'), self.editTag)
         self.connect(self.listbuttons.add, clicked, self.addTag)
         self.connect(self.listbuttons.remove, clicked, self.removeTag)
+        self.connect(self.listbuttons, SIGNAL('duplicate'), self.duplicate)
 
         self.setMinimumSize(450,350)
 
@@ -477,7 +524,10 @@ class ExTags(QDialog):
         l.setItem(row, 1, valitem)
         l.setSortingEnabled(True)
 
-    def editTag(self):
+    def duplicate(self):
+        self.editTag(True)
+
+    def editTag(self, duplicate=False):
         """Opens a windows that allows the user
         to edit the tag in item(a QListWidgetItem that's supposed to
         be from self.listbox).
@@ -492,12 +542,20 @@ class ExTags(QDialog):
             win = EditTag(prevtag, self, self._taglist)
             win.setModal(True)
             win.show()
-            self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+            if duplicate is True: #Have to check for truth, because this method
+                                  #is called by the doubleclicked signal.
+                buddy = partial(self.editTagBuddy, duplicate=True)
+            else:
+                buddy = self.editTagBuddy
+            self.connect(win, SIGNAL("donewithmyshit"), buddy)
 
 
-    def editTagBuddy(self, tag, value, prevtag = None):
+    def editTagBuddy(self, tag, value, prevtag = None, duplicate=False):
         if prevtag is not None:
-            self._settag(self.listbox.currentRow(), tag, value, EDIT)
+            if duplicate:
+                self._settag(self.listbox.rowCount(), tag, value, ADD)
+            else:
+                self._settag(self.listbox.currentRow(), tag, value, EDIT)
         else:
             self._settag(self.listbox.rowCount(), tag, value, ADD)
         self._checkListBox()
@@ -530,12 +588,12 @@ class ExTags(QDialog):
         self.filechanged = False
         self.listbox.clearContents()
         self.listbox.setRowCount(0)
-        self.piclabel.lastfilename = audios[0]['__folder']
+        self.piclabel.lastfilename = audios[0].dirpath
         self.piclabel.setEnabled(False)
         self.piclabel.setImages(None)
         if len(audios) == 1:
             audio = audios[0]
-            self.setWindowTitle(audios[0]["__filename"])
+            self.setWindowTitle(audios[0].filepath)
             self._loadsingle(audio)
         else:
             self.setWindowTitle('Different files.')
@@ -564,7 +622,7 @@ class ExTags(QDialog):
         for item, val in sorted(tags.usertags.items()):
             [items.append([item, z]) for z in val]
         [self._settag(i, *item) for i, item in enumerate(items)]
-        self.piclabel.lastfilename = tags['__folder']
+        self.piclabel.lastfilename = tags.dirpath
         if '__library' not in tags:
             self.piclabel.setImageTags(tags.IMAGETAGS)
             if tags.IMAGETAGS:
@@ -574,11 +632,11 @@ class ExTags(QDialog):
                 else:
                     self.piclabel.setImages(None)
         self._checkListBox()
-        self.setWindowTitle(tags["__filename"])
+        self.setWindowTitle(tags.filepath)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    wid = ImportWindow()
+    wid = ImportWindow(clipboard = True)
     wid.resize(200,400)
     wid.show()
     app.exec_()

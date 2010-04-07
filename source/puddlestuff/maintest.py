@@ -1,23 +1,33 @@
 import sys, os
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
-                                       progress, PuddleStatus)
+                                       progress, PuddleStatus, errormsg, dircmp)
 import tagmodel
 from tagmodel import TagTable
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, resource
-import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo, mainwin.filterwin
+import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
+import mainwin.filterwin, mainwin.storedtags, mainwin.musiclibtest
 import puddlestuff.webdb
 import loadshortcuts as ls
-import m3u
+import m3u, findfunc, genres
 
 from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings
 import puddlestuff.mainwin.funcs as mainfuncs
 from functools import partial
 from itertools import izip
 import puddlestuff.audioinfo as audioinfo
-from audioinfo import lnglength, strlength
+from audioinfo import lnglength, strlength, PATH, str_filesize
+from errno import EEXIST
+from operator import itemgetter
+from collections import defaultdict
 
+pyqtRemoveInputHook()
+
+#Signals used in enabling/disabling actions.
+#An actions default state is to be disabled.
+#and action can use these signals to enable
+#itself. See the loadshortcuts module for more info.
 ALWAYS = 'always'
 FILESLOADED = 'filesloaded'
 VIEWFILLED = 'viewfilled'
@@ -28,18 +38,30 @@ FILESLOADED: SIGNAL('filesloaded'),
 VIEWFILLED: SIGNAL('viewfilled'),
 FILESSELECTED: SIGNAL('filesselected')}
 
-pyqtRemoveInputHook()
+#A global variable that hold the status of
+#various puddletag statuses.
+#It is passed to any and all modules that asks for it.
+#Feel free to read as much as you want from it, but
+#modify only values that you've created or that are
+#intended to be modified. This rule may be enforced
+#in the future.
 status = PuddleStatus()
 mainfuncs.status = status
 tagmodel.status = status
 
 def create_tool_windows(parent):
+    """Creates the dock widgets for the main window (parent) using
+    the modules stored in puddlestuff/mainwin.
+
+    Returns (the toggleViewActions of the docks, the dockWidgets the
+    mselves)."""
     actions = []
+    docks = []
     cparser = PuddleConfig()
-    cparser.filename = os.path.join(cparser.savedir, 'menus')
+    cparser.filename = ls.menu_path
     for z in (mainwin.tagpanel.control, mainwin.dirview.control,
                 mainwin.patterncombo.control, mainwin.filterwin.control,
-                puddlestuff.webdb.control):
+                puddlestuff.webdb.control, mainwin.storedtags.control):
         name = z[0]
         try:
             if not z[2]:
@@ -48,24 +70,32 @@ def create_tool_windows(parent):
         except IndexError:
             pass
 
-        p = PuddleDock(*z, **{'status':status})
-        parent.addDockWidget(Qt.LeftDockWidgetArea, p)
+        p = PuddleDock(*z[:2], **{'status':status})
+        parent.addDockWidget(z[2], p)
+        p.setVisible(z[3])
+        docks.append(p)
         action = p.toggleViewAction()
         scut = cparser.get('winshortcuts', name, '')
         if scut:
             action.setShortcut(scut)
         actions.append(action)
-    menu = ls.context_menu('windows', actions)
-    return menu
+    return actions, docks
 
 def create_context_menus(controls, actions):
+    """Creates context menus for controls using actions
+    depending on whether and action in actions is
+    supposed to be in a menu. See the context_menu
+    function in the loadshortcuts module for more info."""
     for name in controls:
         menu = ls.context_menu(name, actions)
         if menu:
             controls[name].contextMenu = menu
 
-def connect_controls(controls, actions=None):
+def connect_controls(controls):
+    """Connects the signals emitted by controls to any
+    controls that receive them."""
     emits = {}
+    #controls = controls + [mainfuncs.obj]
     for c in controls:
         for sig in c.emits:
             emits[sig].append(c) if sig in emits else emits.update({sig:[c]})
@@ -75,11 +105,32 @@ def connect_controls(controls, actions=None):
     for c in controls:
         for signal, slot in c.receives:
             if signal in emits:
+                #print signal
                 [connect(i, SIGNAL(signal), slot) for i in emits[signal]]
+
+def connect_control(control, controls):
+    emits = defaultdict(lambda: [])
+    #controls = controls + [mainfuncs.obj]
+    for c in controls:
+        [emits[sig].append(c) for sig in c.emits]
+
+    connect = QObject.connect
+
+    for signal, slot in control.receives:
+        if signal in emits:
+            [connect(c, SIGNAL(signal), slot) for c in emits[signal]]
+
+    for c in controls:
+        for signal, slot in c.receives:
+            if signal in control.emits:
+                connect(control, SIGNAL(signal), slot)
 
 TRIGGERED = SIGNAL('triggered()')
 
 def connect_actions(actions, controls):
+    """Connect the triggered() signals in actions to the respective
+    slot in controls if it exists. Just a message is shown if it
+    doesn't."""
     emits = {}
     for c in controls.values():
         for sig in c.emits:
@@ -109,12 +160,22 @@ def connect_actions(actions, controls):
             if hasattr(c, command):
                 connect(action, TRIGGERED, getattr(c, command))
             else:
-                print action.command, 'not found', action.text()
+                print action.command, 'slot not found for', action.text()
+
+def help_menu(parent):
+    menu = QMenu('Help', parent)
+    about = QAction('About puddletag', parent)
+    about_qt = QAction('About Qt', parent)
+    about_qt.connect(about_qt, SIGNAL('triggered()'), QApplication.aboutQt)
+    about.connect(about, SIGNAL('triggered()'), mainfuncs.show_about)
+    menu.addAction(about)
+    menu.addAction(about_qt)
+    return menu
 
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        self.emits = ['loadFiles', 'always']
+        self.emits = ['loadFiles', 'always', 'dirsmoved', 'libfilesedited']
         self.receives = [('writeselected', self.writeTags),
                           ('filesloaded', self._filesLoaded),
                           ('viewfilled', self._viewFilled),
@@ -125,10 +186,15 @@ class MainWin(QMainWindow):
                           ('onetomany', self.writeOneToMany),
                           ('dirschanged', self._dirChanged),
                           ('writepreview', self._writePreview),
-                          ('clearpreview', self._clearPreview)]
+                          ('clearpreview', self._clearPreview),
+                          ('renameselected', self._renameSelected),
+                          ('playlistchanged', self._dirChanged),
+                          ('adddock', self.addDock)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
+        self._playlist = None
 
         self.setWindowTitle("puddletag")
+        self.setDockNestingEnabled(True)
         self._table = TagTable()
         win = QSplitter()
 
@@ -140,28 +206,41 @@ class MainWin(QMainWindow):
         PuddleDock._controls = {'table': self._table,
                                 'mainwin':self,
                                 'funcs': mainfuncs.obj}
-        self._winmenu = create_tool_windows(self)
-        self._winmenu.setTitle('&Windows')
+        winactions, self._docks = create_tool_windows(self)
         self.createStatusBar()
 
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
-        menubar = ls.menubar(menus, actions)
-        menubar.addMenu(self._winmenu)
+        menubar, winmenu = ls.menubar(menus, actions + winactions)
+        if winmenu:
+            winmenu.addSeparator()
+            self._winmenu = winmenu
+        else:
+            self._winmenu = QMenu('&Windows', self)
+            menubar.addMenu(self._winmenu)
         self.setMenuBar(menubar)
+        menubar.addMenu(help_menu(self))
         mainfuncs.connect_status(actions)
 
         controls = PuddleDock._controls
 
         toolgroup = ls.get_menus('toolbar')
-        [(z.setIconSize(QSize(16,16)), self.addToolBar(z)) for z in
-                                    ls.toolbar(toolgroup, actions, controls)]
+        toolbar = ls.toolbar(toolgroup, actions, controls)
+        toolbar.setObjectName('Toolbar')
+        self.addToolBar(toolbar)
 
         connect_actions(actions, controls)
         create_context_menus(controls, actions)
 
         self.restoreSettings()
         self.emit(SIGNAL('always'), True)
+
+    def addDock(self, name, dialog, position):
+        controls = PuddleDock._controls.values()
+        dock = PuddleDock(name, dialog, self, status)
+        self.addDockWidget(position, dock)
+        self._winmenu.addAction(dock.toggleViewAction())
+        connect_control(PuddleDock._controls[name], controls)
 
     def _status(self, controls):
         x = {}
@@ -177,13 +256,23 @@ class MainWin(QMainWindow):
         self._table.model().unSetTestData()
 
     def _dirChanged(self, dirs):
-        initial = self._lastdir[0]
+        if isinstance(dirs, basestring):
+            self.setWindowTitle(u'puddletag: %s' % dirs)
+            return
+        if not dirs:
+            self.setWindowTitle('puddletag')
+            self._lastdir = dirs
+            return
+        if self._lastdir:
+            initial = self._lastdir[0]
+        else:
+            initial = None
         if initial in dirs and len(dirs) > 1:
-            self.setWindowTitle('puddletag: %s + others' % initial)
+            self.setWindowTitle(u'puddletag: %s + others' % initial)
         elif initial not in dirs and len(dirs) == 1:
-            self.setWindowTitle('puddletag: %s' % dirs[0])
+            self.setWindowTitle(u'puddletag: %s' % dirs[0])
         elif initial not in dirs and len(dirs) > 1:
-            self.setWindowTitle('puddletag: %s + others' % dirs[0])
+            self.setWindowTitle(u'puddletag: %s + others' % dirs[0])
         self._lastdir = dirs
 
     def _getDir(self):
@@ -210,18 +299,20 @@ class MainWin(QMainWindow):
 
     def closeEvent(self, e):
         controls = PuddleDock._controls
-        cparser = PuddleConfig()
-        settings = QSettings(cparser.filename, QSettings.IniFormat)
         for control in PuddleDock._controls.values():
             if hasattr(control, 'saveSettings'):
                 control.saveSettings()
 
-        settings.setValue("main/lastfolder", QVariant(self._lastdir[0]))
+        cparser = PuddleConfig()
+        settings = QSettings(cparser.filename, QSettings.IniFormat)
+        if self._lastdir:
+            settings.setValue("main/lastfolder", QVariant(self._lastdir[0]))
         cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', QVariant(self.saveState()))
 
         headstate = self._table.horizontalHeader().saveState()
         settings.setValue('table/header', QVariant(headstate))
+        genres.save_genres(status['genres'])
         e.accept()
         #QMainWindow.closeEvent(self, e)
 
@@ -247,7 +338,7 @@ class MainWin(QMainWindow):
             return
         try:
             files = m3u.readm3u(filename)
-            self.emit(SIGNAL('loadFiles'), files)
+            self.emit(SIGNAL('loadFiles'), files, None, None, None, filename)
         except (OSError, IOError), e:
             QMessageBox.information(self._table, 'Error',
                    'Could not read file: <b>%s</b><br />%s' % (filename,
@@ -306,6 +397,7 @@ class MainWin(QMainWindow):
 
         filepath = os.path.join(cparser.savedir, 'mappings')
         audioinfo.setmapping(audioinfo.loadmapping(filepath))
+        status['genres'] = genres.load_genres()
 
         h = self._table.horizontalHeader()
         h.restoreState(settings.value('table/header').toByteArray())
@@ -322,43 +414,40 @@ class MainWin(QMainWindow):
 
     def savePlayList(self):
         tags = self._table.model().taginfo
-        settings = puddlesettings.PuddleConfig()
+        settings = PuddleConfig()
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
         default = findfunc.tagtofilename(filepattern, tags[0])
         f = unicode(QFileDialog.getSaveFileName(self,
-                'Save Playlist', os.path.join(self.lastfolder, default)))
+                'Save Playlist', os.path.join(self._lastdir[0], default)))
         if f:
-            if cparser.get('playlist', 'extinfo', 1, True):
-                pattern = cparser.get('playlist', 'extpattern','%artist% - %title%')
+            if settings.get('playlist', 'extinfo', 1, True):
+                pattern = settings.get('playlist', 'extpattern','%artist% - %title%')
             else:
                 pattern = None
 
-            reldir = cparser.get('playlist', 'reldir', 0, True)
-
+            reldir = settings.get('playlist', 'reldir', 0, True)
             m3u.exportm3u(tags, f, pattern, reldir)
 
     def _viewFilled(self, val):
         self.emit(SIGNAL('viewfilled'), val)
 
     def _updateStatus(self, files):
+        if not files:
+            return '00 (00:00:00 | 00 KB)'
         numfiles = len(files)
-        stats = [(int(z['__size']), lnglength(z['__length'])) for z in files]
+        stats = [(int(z.size), lnglength(z.length)) for z in files]
         totalsize = sum([z[0] for z in stats])
         totallength = strlength(sum([z[1] for z in stats]))
 
-        sizes = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB'}
-
-        valid = [z for z in sizes if totalsize / (1024.0**z) > 1]
-        val = max(valid)
-        sizetext = '%.2f %s' % (totalsize/(1024.0**val), sizes[val])
+        sizetext = str_filesize(totalsize)
         return '%d (%s | %s)' % (numfiles, totallength, sizetext)
 
+    def lockLayout(self):
+        for dw in self._docks:
+            dw.setTitleBarWidget(QWidget())
+
     def updateSelectedStats(self, *args):
-        files = status['selectedfiles']
-        if files:
-            self._selectedstats.setText(self._updateStatus(files))
-        else:
-            self._selectedstats.setText('0 (00:00 | 0 KB)')
+        self._selectedstats.setText(self._updateStatus(status['selectedfiles']))
 
     def updateTotalStats(self, *args):
         self._totalstats.setText(self._updateStatus(status['alltags']))
@@ -367,11 +456,14 @@ class MainWin(QMainWindow):
         if not rows:
             rows = status['selectedrows']
         setRowData = self._table.model().setRowData
+        lib_updates = []
 
         def func():
             for row, f in izip(rows, tagiter):
                 try:
-                    setRowData(row, f, undo=True)
+                    update = setRowData(row, f, undo=True)
+                    if update:
+                        lib_updates.append(update)
                     yield None
                 except (IOError, OSError), e:
                     m = 'An error occured while writing to <b>%s</b>. (%s)' % (
@@ -383,24 +475,29 @@ class MainWin(QMainWindow):
         def fin():
             self._table.model().undolevel += 1
             self._table.selectionChanged()
-        s = progress(func, 'Writing', len(rows), fin)
+            self.emit(SIGNAL('libfilesedited'), lib_updates)
+        s = progress(func, 'Writing ', len(rows), fin)
         s(self)
 
     def writeOneToMany(self, d):
         rows = status['selectedrows']
         setRowData = self._table.model().setRowData
+        lib_updates = []
 
         def func():
             for row in rows:
                 try:
-                    setRowData(row, d, undo=True)
+                    update = setRowData(row, d, undo=True)
+                    if update:
+                        lib_updates.append(update)
                     yield None
                 except (IOError, OSError), e:
                     yield e.filename, e.strerror, len(rows)
         def fin():
             self._table.model().undolevel += 1
             self._table.selectionChanged()
-        s = progress(func, 'Writing', len(rows), fin)
+            self.emit(SIGNAL('libfilesedited'), lib_updates)
+        s = progress(func, 'Writing ', len(rows), fin)
         s(self)
 
     def _writePreview(self):
@@ -408,26 +505,55 @@ class MainWin(QMainWindow):
         data = [z for z in enumerate(taginfo) if z[1].testData]
         self.writeTags((z[1].testData for z in data), [z[0] for z in data])
 
+    def _renameSelected(self, filenames):
+        rows = status['selectedrows']
+        files = status['selectedfiles']
+        setRowData = self._table.model().setRowData
+
+        def func():
+            for row, audio, filename in izip(rows, files, filenames):
+                tag = PATH
+                if tag in audio.mapping:
+                    tag = audio.mapping[tag]
+                try:
+                    setRowData(row, {tag: filename}, True, True)
+                    yield None
+                except (IOError, OSError), e:
+                    m = 'An error occured while renaming <b>%s</b>. (%s)' % (
+                            e.filename, e.strerror)
+                    if row == rows[-1]:
+                        yield m, 1
+                    else:
+                        yield m, len(rows)
+        def fin():
+            self._table.model().undolevel += 1
+            self._table.selectionChanged()
+        s = progress(func, 'Renaming ', len(rows), fin)
+        s(self)
+
     def renameDirs(self, dirs):
         self._table.saveSelection()
         showmessage = True
-        changed = []
-        for olddir, newdir in dirs:
+        dirs = sorted(dirs, dircmp, itemgetter(0))
+        for index, (olddir, newdir) in enumerate(dirs):
             try:
+                if os.path.exists(newdir) and (olddir != newdir):
+                    raise IOError(EEXIST, os.strerror(EEXIST), newdir)
                 os.rename(olddir, newdir)
                 self._table.changeFolder(olddir, newdir)
             except (IOError, OSError), detail:
-                errormsg = u"I couldn't rename: <i>%s</i> to <b>%s</b> (%s)" % (olddir, newdir, unicode(detail.strerror))
-                #if len(dirs) > 1:
+                msg = u"I couldn't rename: <i>%s</i> to <b>%s</b> (%s)" % (olddir, newdir, unicode(detail.strerror))
+                if index == len(dirs) - 1:
+                    dirlen = 1
+                else:
+                    dirlen = len(dirs)
                 if showmessage:
-                    mb = QMessageBox('Error during rename', errormsg + u"<br />Do you want me to continue?", *(MSGARGS[:-1] + (QMessageBox.NoButton, self)))
-                    ret = mb.exec_()
-                    if ret == QMessageBox.Yes:
-                        continue
-                    if ret == QMessageBox.YesAll:
+                    ret = errormsg(self, msg, dirlen)
+                    if ret is True:
                         showmessage = False
-                    else:
+                    elif ret is False:
                         break
+        self.emit(SIGNAL('dirsmoved'), dirs)
         self._table.restoreSelection()
 
 if __name__ == '__main__':

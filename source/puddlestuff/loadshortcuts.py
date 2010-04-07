@@ -2,14 +2,34 @@ from puddleobjects import PuddleConfig
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb, resource,os
+from constants import SAVEDIR, DATADIR
+import StringIO
+files = [StringIO.StringIO(QFile(filename).readData(1024**2))
+            for filename in [':/caseconversion.action', ':/standard.action']]
 
 SEPARATOR = 'separator'
 ALWAYS = 'always'
 
+menu_path = os.path.join(SAVEDIR, 'menus')
+shortcut_path = os.path.join(SAVEDIR, 'shortcuts')
+
+def create_files():
+    if not os.path.exists(menu_path):
+        text = StringIO.StringIO(QFile(':/menus').readData(1024**2)).read()
+        f = open(menu_path, 'w')
+        f.write(text)
+        f.close()
+
+    if not os.path.exists(shortcut_path):
+        text = StringIO.StringIO(QFile(':/shortcuts').readData(1024**2)).read()
+        f = open(shortcut_path, 'w')
+        f.write(text)
+        f.close()
+
 def get_menus(section, filepath=None):
     cparser = PuddleConfig()
     if not filepath:
-        filepath = os.path.join(cparser.savedir, 'menus')
+        filepath = menu_path
     cparser.filename = filepath
     menus = []
     settings = cparser.settings
@@ -20,19 +40,22 @@ def get_menus(section, filepath=None):
 def menubar(menus, actions):
     texts = [unicode(action.text()) for action in actions]
     menubar = QMenuBar()
+    winmenu = None
     for title, actionlist in menus:
         menu = menubar.addMenu(title)
+        if title == u'&Windows':
+            winmenu = menu
         for action in actionlist:
             if action in texts:
                 menu.addAction(actions[texts.index(action)])
             elif action == SEPARATOR:
                 menu.addSeparator()
-    return menubar
+    return menubar, winmenu
 
 def context_menu(section, actions, filepath=None):
     cparser = PuddleConfig(filepath)
     if not filepath:
-        filepath = os.path.join(cparser.savedir, 'menus')
+        filepath = menu_path
         cparser.filename = filepath
     order = cparser.get(section, 'order', [])
     if not order:
@@ -50,17 +73,17 @@ def toolbar(groups, actions, controls=None):
     texts = [unicode(action.text()) for action in actions]
     if controls:
         controls = dict([('widget-' + z, v) for z,v in controls.items()])
-    toolbars = []
+    toolbar = QToolBar('Toolbar')
     for name, actionlist in groups:
-        toolbar = QToolBar(name)
-        toolbar.setObjectName(name)
+        #toolbar = QToolBar(name)
+        #toolbar.setObjectName(name)
         for action in actionlist:
             if action in texts:
                 toolbar.addAction(actions[texts.index(action)])
             elif action in controls:
                 toolbar.addWidget(controls[action])
-        toolbars.append(toolbar)
-    return toolbars
+        toolbar.addSeparator()
+    return toolbar
 
 def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
                     tooltip=None, shortcut=None, checked=None, status=None):
@@ -71,7 +94,10 @@ def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
     action.setEnabled(False)
 
     if shortcut:
-        action.setShortcut(shortcut)
+        try:
+            action.setShortcut(shortcut)
+        except TypeError:
+            action.setShortcuts(shortcut)
 
     if tooltip:
         action.setToolTip(tooltip)
@@ -89,7 +115,7 @@ def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
 def get_actions(parent, filepath=None):
     cparser = PuddleConfig()
     if not filepath:
-        filepath = os.path.join(cparser.savedir, 'shortcuts')
+        filepath = shortcut_path
     cparser.filename = filepath
     setting = cparser.settings
     actions = []

@@ -75,7 +75,10 @@ class PuddleConfig(object):
                 except TypeError:
                     return [int(z) for z in self.settings[section][key]]
             else:
-                return self.settings[section][key]
+                val = self.settings[section][key]
+                if val is None:
+                    return default
+                return val
         except KeyError:
             return default
 
@@ -131,21 +134,41 @@ except ImportError:
     from difflib import SequenceMatcher
     ratio = lambda a,b: SequenceMatcher(None, a,b).ratio()
 
+dirlevels = lambda a: len(a.split('/'))
+
+def removeslash(x):
+    while x.endswith('/'):
+        return removeslash(x[:-1])
+    return x
+
 def dircmp(a, b):
     """Compare function to sort directories via parent.
 So that the child is renamed before parent, thereby not
 giving Permission Denied errors."""
+    a,b = removeslash(a), removeslash(b)
     if a == b:
         return 0
-    elif a in b:
+    elif a in b and (dirlevels(a) != dirlevels(b)):
         return 1
-    elif b in a:
+    elif b in a and (dirlevels(a) != dirlevels(b)):
         return -1
     elif len(a) > len(b):
         return 1
     elif len(b) > len(a):
         return -1
     elif len(b) == len(a):
+        return 0
+
+def dircmp1(a, b):
+    """Like dircmp, but returns dirs as being in the same directory as equal."""
+    a,b = removeslash(a), removeslash(b)
+    if a == b or (dirlevels(a) == dirlevels(b)):
+        return 0
+    elif a in b:
+        return 1
+    elif b in a:
+        return -1
+    else:
         return 0
 
 HORIZONTAL = 1
@@ -316,7 +339,7 @@ def getfiles(dirs, subfolders = False):
             #unicode filenames.
             files = []
             [[files.append(path.join(z[0], y)) for y in z[2]]
-                                            for z in os.walk(folder)]
+                                        for z in os.walk(folder.encode('utf'))]
         else:
             files = os.walk(folder).next()[2]
             files = [path.join(folder, f) for f in files]
@@ -350,7 +373,6 @@ def gettag(f):
 def gettaglist():
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
-
     try:
         lines = sorted(set([z.strip() for z in open(filename, 'r').read().split('\n')]))
 
@@ -498,6 +520,7 @@ class HeaderSetting(QDialog):
         self.connect(self.buttonlist, SIGNAL("moveup"), self.moveup)
         self.connect(self.buttonlist, SIGNAL("movedown"), self.movedown)
         self.connect(self.buttonlist, SIGNAL("remove"), self.remove)
+        self.connect(self.buttonlist, SIGNAL("duplicate"), self.duplicate)
 
         self.listbox.setCurrentRow(0)
 
@@ -565,6 +588,17 @@ class HeaderSetting(QDialog):
         self.listbox.addItem("")
         self.listbox.clearSelection()
         self.listbox.setCurrentRow(row)
+        self.textname.setFocus()
+
+    def duplicate(self):
+        row = self.listbox.currentRow()
+        if row < 0:
+            return
+        tag = self.tags[row][::]
+        self.tags.append(tag)
+        self.listbox.addItem(tag[0])
+        self.listbox.clearSelection()
+        self.listbox.setCurrentRow(self.listbox.count() - 1)
         self.textname.setFocus()
 
 class Label(QLabel):
@@ -734,10 +768,15 @@ class ListButtons(QVBoxLayout):
         self.edit = QToolButton()
         self.edit.setIcon(QIcon(':/edit.png'))
         self.edit.setToolTip('Edit')
+        self.duplicate = QToolButton()
+        self.duplicate.setIcon(QIcon(':/duplicate.png'))
+        self.duplicate.setToolTip('Duplicate')
 
-        self.widgets = [self.add, self.edit, self.remove, self.moveup, self.movedown]
+        self.widgets = [self.add, self.edit, self.duplicate,
+                        self.remove, self.moveup, self.movedown]
         [self.addWidget(widget) for widget in self.widgets]
-        self.insertStretch(3)
+        self.insertStretch(4)
+        self.insertSpacing(4,6)
         [z.setIconSize(QSize(16,16)) for z in self.widgets]
         self.addStretch()
 
@@ -747,16 +786,20 @@ class ListButtons(QVBoxLayout):
         self.connect(self.moveup, clicked, self.moveupClicked)
         self.connect(self.movedown, clicked, self.movedownClicked)
         self.connect(self.edit, clicked, self.editClicked)
+        self.connect(self.duplicate, clicked, self.duplicateClicked)
 
     def connectToWidget(self, widget, add=None, edit=None, remove=None,
-                        moveup=None, movedown=None):
+                        moveup=None, movedown=None, duplicate=None):
         l = ['add', 'edit', 'remove']
         if moveup:
             l.append('moveup')
         if movedown:
             l.append('movedown')
+        if duplicate:
+            l.append('duplicate')
         connections = dict([(z,v) for z,v in zip(l,
-                                [add, edit, remove, moveup, movedown]) if v])
+                                [add, edit, remove, moveup, movedown,
+                                duplicate]) if v])
         connect = lambda a: self.connect(self, SIGNAL(a),
                     connections[a] if a in connections else getattr(widget, a))
         map(connect, l)
@@ -775,6 +818,9 @@ class ListButtons(QVBoxLayout):
 
     def editClicked(self):
         self.emit(SIGNAL("edit"))
+
+    def duplicateClicked(self):
+        self.emit(SIGNAL('duplicate'))
 
 class MoveButtons(QWidget):
     def __init__(self, arrayname, index = 0, orientation = HORIZONTAL, parent = None):
@@ -845,15 +891,20 @@ class OKCancel(QHBoxLayout):
     """Yes, I know about QDialogButtonBox, but I'm not using PyQt4.2 here."""
     def __init__(self, parent = None):
         QHBoxLayout.__init__(self, parent)
+        #QDialogButtonBox.__init__(self, parent)
 
+        #self.addStretch()
+        dbox = QDialogButtonBox()
+
+        self.ok = dbox.addButton(dbox.Ok)
+        self.cancel = dbox.addButton(dbox.Cancel)
         self.addStretch()
+        self.addWidget(dbox)
+        #self.cancel = QPushButton("&Cancel")
+        #self.ok.setDefault(True)
 
-        self.ok = QPushButton("&OK")
-        self.cancel = QPushButton("&Cancel")
-        self.ok.setDefault(True)
-
-        self.addWidget(self.ok)
-        self.addWidget(self.cancel)
+        #self.addWidget(self.ok)
+        #self.addWidget(self.cancel)
 
         self.connect(self.ok, SIGNAL("clicked()"), self.yes)
         self.connect(self.cancel, SIGNAL("clicked()"), self.no)
@@ -863,6 +914,33 @@ class OKCancel(QHBoxLayout):
 
     def no(self):
         self.emit(SIGNAL("cancel"))
+
+class LongInfoMessage(QDialog):
+    def __init__(self, title, question, html, parent =None):
+        QDialog.__init__(self, parent)
+        winsettings('infomessage', self)
+        question = QLabel(question)
+
+        text = QTextEdit()
+        text.setReadOnly(True)
+        #text.setWordWrapMode(QTextOption.NoWrap)
+        text.setHtml(html)
+
+        okcancel = OKCancel()
+
+        self.connect(okcancel, SIGNAL('ok'), self._ok)
+        self.connect(okcancel, SIGNAL('cancel'), self.close)
+
+        vbox = QVBoxLayout()
+        self.setWindowTitle(title)
+        vbox.addWidget(question)
+        vbox.addWidget(text)
+        vbox.addLayout(okcancel)
+        self.setLayout(vbox)
+
+    def _ok(self):
+        self.close()
+        self.accept()
 
 class PicWidget(QWidget):
     """A widget that shows a file's pictures.
@@ -967,6 +1045,7 @@ class PicWidget(QWidget):
 
         if buttons:
             listbuttons = ListButtons()
+            listbuttons.duplicate.hide()
             self.addpic = listbuttons.add
             self.removepic = listbuttons.remove
             self.editpic = listbuttons.edit
@@ -1389,7 +1468,7 @@ class PuddleDock(QDockWidget):
     when...uhm...it changes visibility."""
     _controls = {}
 
-    def __init__(self, title, control=None,parent = None, status=None):
+    def __init__(self, title, control=None, parent=None, status=None):
         QDockWidget.__init__(self, title, parent)
         self.title = title
         if control:

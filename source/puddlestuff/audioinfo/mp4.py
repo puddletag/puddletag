@@ -22,9 +22,13 @@
 
 import util
 from util import (usertags, strlength, strbitrate, READONLY, isempty,
-                    getfilename, strfrequency, getinfo, FILENAME, PATH, INFOTAGS)
+                    getfilename, strfrequency, getinfo, FILENAME, PATH,
+                    INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
+                    FILETAGS, str_filesize)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
+ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
+              'modified', 'bitspersample', 'channels')
 
 #mp4 tags, like id3 can only have a fixed number of tags. The ones on the left
 #with the corresponding tag as recognized by puddletag on the right...
@@ -68,6 +72,8 @@ REVTAGS = dict([reversed(z) for z in TAGS.items()])
 #Functions are in get and set pairs.
 #get functions take a value mutagen expects it and returns it in puddletag's format.
 #set functions do the opposite.
+
+encode = lambda x: [z.encode('utf8') for z in x]
 
 def getbool(value):
     if value:
@@ -125,49 +131,58 @@ def setint(value):
     return temp
 
 FUNCS = {'title': (gettext, settext),
-'album': (gettext, settext),
-'artist': (gettext, settext),
-'albumartist': (gettext, settext),
-'composer': (gettext, settext),
-'year': (gettext, settext),
-'comment': (gettext, settext),
-'description': (gettext, settext),
-'purchasedate': (gettext, settext),
-'grouping': (gettext, settext),
-'genre': (gettext, settext),
-'lyrics': (gettext, settext),
-'podcastURL': (gettext, settext),
-'podcastepisodeGUID': (gettext, settext),
-'podcastcategory': (gettext, settext),
-'podcastkeywords': (gettext, settext),
-'encodedby': (gettext, settext),
-'copyright': (gettext, settext),
-'albumsortorder': (gettext, settext),
-'albumartistsortorder': (gettext, settext),
-'artistsortorder': (gettext, settext),
-'titlesortorder': (gettext, settext),
-'composersortorder': (gettext, settext),
-'showsortorder': (gettext, settext),
-'showname': (gettext, settext),
-'partofcompilation': (getbool, setbool),
-'partofgaplessalbum': (getbool, setbool),
-'podcast': (getbool, setbool),
-'track': (getint, setint),
-'disc': (getint, setint),
-'totaltracks': (getint, setint),
-'totaldiscs': (getint, setint),
-'bpm': (getint, setint)}
+        'album': (gettext, settext),
+        'artist': (gettext, settext),
+        'albumartist': (gettext, settext),
+        'composer': (gettext, settext),
+        'year': (gettext, settext),
+        'comment': (gettext, settext),
+        'description': (gettext, settext),
+        'purchasedate': (gettext, settext),
+        'grouping': (gettext, settext),
+        'genre': (gettext, settext),
+        'lyrics': (gettext, settext),
+        'podcastURL': (gettext, settext),
+        'podcastepisodeGUID': (gettext, settext),
+        'podcastcategory': (gettext, settext),
+        'podcastkeywords': (gettext, settext),
+        'encodedby': (gettext, settext),
+        'copyright': (gettext, settext),
+        'albumsortorder': (gettext, settext),
+        'albumartistsortorder': (gettext, settext),
+        'artistsortorder': (gettext, settext),
+        'titlesortorder': (gettext, settext),
+        'composersortorder': (gettext, settext),
+        'showsortorder': (gettext, settext),
+        'showname': (gettext, settext),
+        'partofcompilation': (getbool, setbool),
+        'partofgaplessalbum': (getbool, setbool),
+        'podcast': (getbool, setbool),
+        'track': (getint, setint),
+        'disc': (getint, setint),
+        'totaltracks': (getint, setint),
+        'totaldiscs': (getint, setint),
+        'bpm': (getint, setint)}
 
 class Tag(util.MockTag):
-    """Class for Mp4 tags.
+    """Class for AAC(mp4) tags.
 
     Do not use unicode! It's fucked."""
+
+    mapping = {}
+    revmapping = {}
     IMAGETAGS = (util.MIMETYPE, util.DATA)
+    _hash = {PATH: 'filepath',
+            FILENAME:'filename',
+            EXTENSION: 'ext',
+            DIRPATH: 'dirpath'}
+
     def copy(self):
         tag = Tag()
         tag.load(self._tags.copy(), copy(self._mutfile), copy(self.images))
         return tag
 
+    @getdeco
     def __getitem__(self,key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
@@ -186,26 +201,23 @@ class Tag(util.MockTag):
                 return gettext(self._tags[key])
             except KeyError:
                 return ""
-
-    def __setitem__(self,key,value):
-        if key in READONLY:
-            return
-
+    @setdeco
+    def __setitem__(self, key, value):
         if isinstance(key, (int, long)):
             self._tags[key] = value
             return
-
-        if key == '__image':
+        elif key in READONLY:
+            return
+        elif key in FILETAGS:
+            setattr(self, self._hash[key], value)
+            return
+        elif key == '__image':
             self.images = value
             return
-
-        if key in INFOTAGS:
+        elif key in INFOTAGS:
             self._tags[key] = value
-            if key == FILENAME:
-                self.filename = value
             return
-
-        if key not in INFOTAGS and isempty(value):
+        elif key not in INFOTAGS and isempty(value):
             del(self[key])
             return
 
@@ -213,8 +225,8 @@ class Tag(util.MockTag):
             self._tags[key] = FUNCS[key][1](value)
         except KeyError:
             #User defined tags.
-            self._freeform[str(key)] = '----:net.sf.puddletag:' + str(key)
-            self._tags[str(key)] = settext(value)
+            self._freeform[key] = '----:net.sf.puddletag:%s' % key
+            self._tags[key] = settext(value)
 
     def delete(self):
         self._mutfile.delete()
@@ -245,15 +257,15 @@ class Tag(util.MockTag):
 
     def _info(self):
         info = self._mutfile.info
-        fileinfo = [('Filename', self[FILENAME]),
-                    ('Size', unicode(int(self['__size'])/1024) + ' kB'),
-                    ('Path', self[PATH]),
-                    ('Modified', self['__modified'])]
+        fileinfo = [('Path', self.filepath),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self.filename),
+                    ('Modified', self.modified)]
 
-        mp4info = [('Bitrate', self['__bitrate']),
-                   ('Frequency', self['__frequency']),
+        mp4info = [('Bitrate', self.bitrate),
+                   ('Frequency', self.frequency),
                    ('Channels', unicode(info.channels)),
-                   ('Length', self['__length']),
+                   ('Length', self.length),
                    ('Bits per sample', unicode(info.bits_per_sample))]
 
         return [('File', fileinfo), ('MP4 Info', mp4info)]
@@ -263,11 +275,8 @@ class Tag(util.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        filename = getfilename(filename)
-        audio = MP4(filename)
-        tags = getinfo(filename)
-        self._tags = {}
         self._images = []
+        tags, audio = self._init_info(filename, MP4)
 
         if audio is None:
             return
@@ -295,13 +304,13 @@ class Tag(util.MockTag):
                 self[u'totaldiscs'] = [z[1] for z in audio['disk']]
                 keys.remove('disk')
 
-            for z in keys:
-                if z in TAGS:
-                    self[TAGS[z]] = audio[z]
+            for key in keys:
+                if key in TAGS:
+                    self[TAGS[key]] = audio[key]
                 else:
-                    tag = z[z.find(':', z.find(':') +1) + 1:]
-                    self._freeform[tag] = z
-                    self._tags[tag] = audio[z]
+                    tag = key[key.find(':', key.find(':') +1) + 1:]
+                    self._freeform[tag] = key
+                    self._tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
 
         info = audio.info
         self._tags.update( {u"__frequency": strfrequency(info.sample_rate),
@@ -310,7 +319,9 @@ class Tag(util.MockTag):
                     u'__channels': unicode(info.channels),
                     u'__bitspersample': unicode(info.bits_per_sample)})
         self._tags.update(tags)
-        self.filename = filename
+        self.filetype = 'MP4'
+        self._tags['__filetype'] = self.filetype
+        self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
 
     def load(self, tags, mutfile, images = None):
@@ -324,8 +335,10 @@ class Tag(util.MockTag):
         self._mutfile = mutfile
 
     def save(self):
-        if self.filename != self._mutfile.filename:
-            self._mutfile.filename = self.filename
+        if self._mutfile.tags is None:
+            self._mutfile.add_tags()
+        if self.filepath != self._mutfile.filename:
+            self._mutfile.filename = self.filepath
         audio = self._mutfile
 
         newtag = {}
@@ -353,7 +366,7 @@ class Tag(util.MockTag):
             try:
                 newtag[REVTAGS[tag]] = value
             except KeyError:
-                newtag[self._freeform[tag]] = [str(z) for z in self._tags[tag]]
+                newtag[self._freeform[tag].encode('utf8')] = encode(self._tags[tag])
 
         if self.images:
             newtag['covr'] = self._images
@@ -364,4 +377,4 @@ class Tag(util.MockTag):
         audio.update(newtag)
         audio.save()
 
-filetype = (MP4, Tag)
+filetype = (MP4, Tag, 'AAC')

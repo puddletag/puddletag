@@ -25,6 +25,8 @@ from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
 import ogg
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
+ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
+              'modified')
 
 try:
     from puddlestuff.image import imageproperties
@@ -55,11 +57,8 @@ class TempTag(ogg.Tag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        self._tags = {}
-        filename = getfilename(filename)
-        self.filepath = filename
-        audio = FLAC(filename)
-        tags = getinfo(filename)
+        tags, audio = self._init_info(filename, FLAC)
+
         if audio is None:
             return
 
@@ -77,7 +76,10 @@ class TempTag(ogg.Tag):
             self._tags[u"__bitrate"] = u'0 kb/s'
 
         self._tags.update(tags)
+        self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
+        self.filetype = 'FLAC'
+        self._tags['__filetype'] = self.filetype
         return self
 
 if IMAGETAGS:
@@ -120,7 +122,8 @@ if IMAGETAGS:
         def save(self):
             """Writes the tags in self._tags
             to self.filename if no filename is specified."""
-
+            if self._mutfile.tags is None:
+                self._mutfile.add_tags()
             if self.filepath != self._mutfile.filename:
                 self._mutfile.filename = self.filepath
             audio = self._mutfile
@@ -134,6 +137,7 @@ if IMAGETAGS:
             audio.clear_pictures()
             [audio.add_picture(z) for z in self._images]
             audio.update(newtag)
+
             audio.save()
 else:
     Tag = TempTag

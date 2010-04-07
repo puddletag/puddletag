@@ -93,7 +93,7 @@ def readm3u(path):
             continue
         else:
             # store rule
-            mp3Files.append(normpath(realpath(row[0])))
+            mp3Files.append(unicode(normpath(realpath(row[0])), 'utf8'))
 
     fileHandle.close()
     os.chdir(olddir)
@@ -104,21 +104,21 @@ def exportm3u(tags, tofile, format = None, reldir = False):
 
     if reldir:
         reldir = os.path.dirname(os.path.realpath(tofile))
-        filenames = [relpath(f['__filename'], reldir) for f in tags]
+        filenames = [relpath(f.filepath, reldir) for f in tags]
     else:
-        filenames = [f['__filename'] for f in tags]
+        filenames = [f.filepath for f in tags]
 
     if format is None:
         text = u'\n'.join(header + filenames)
     else:
         text = header
-        extinfo = (u'#EXTINF: %s, %s' % (unicode(lnglength(f['__length'])),
+        extinfo = (u'#EXTINF: %s, %s' % (unicode(lnglength(f.length)),
                                 tagtofilename(format, f, True)) for f in tags)
         [text.extend([z,y]) for z,y in zip(extinfo, filenames)]
-        text = '\n'.join(text)
+        text = u'\n'.join(text)
 
     playlist = open(tofile, 'w')
-    playlist.write(text)
+    playlist.write(text.encode('utf8'))
     playlist.close()
 
 if __name__ == '__main__':

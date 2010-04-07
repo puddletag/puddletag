@@ -46,6 +46,7 @@ from copy import copy
 from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig, winsettings
 import pdb
 import audioinfo.util
+import genres
 
 def load_gen_settings(setlist, extras=False):
     settings = PuddleConfig()
@@ -134,6 +135,58 @@ class GeneralSettings(QWidget):
                 c.applyGenSettings(vals)
         save_gen_settings(vals)
 
+class Playlist(QWidget):
+    def __init__(self, parent = None):
+        QWidget.__init__(self, parent)
+
+        def inttocheck(value):
+            if value:
+                return Qt.Checked
+            return Qt.Unchecked
+
+        cparser = PuddleConfig()
+
+        self.extpattern = QLineEdit()
+        self.extpattern.setText(cparser.load('playlist', 'extpattern','%artist% - %title%'))
+        hbox = QHBoxLayout()
+        hbox.addSpacing(10)
+        hbox.addWidget(self.extpattern)
+
+        self.extinfo = QCheckBox('&Write extended info', self)
+        self.connect(self.extinfo, SIGNAL('stateChanged(int)'), self.extpattern.setEnabled)
+        self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo',1, True)))
+        self.extpattern.setEnabled(self.extinfo.checkState())
+
+        self.reldir = QCheckBox('Entries &relative to working directory')
+        self.reldir.setCheckState(inttocheck(cparser.load('playlist', 'reldir',0, True)))
+
+
+        self.filename = QLineEdit()
+        self.filename.setText(cparser.load('playlist', 'filepattern','puddletag.m3u'))
+        label = QLabel('&Filename pattern.')
+        label.setBuddy(self.filename)
+
+        vbox = QVBoxLayout()
+        [vbox.addWidget(z) for z in (self.extinfo, self.reldir,
+                                        label, self.filename)]
+        vbox.insertLayout(1, hbox)
+        vbox.addStretch()
+        vbox.insertSpacing(2, 5)
+        vbox.insertSpacing(4, 5)
+        self.setLayout(vbox)
+
+    def applySettings(self, control=None):
+        def checktoint(checkbox):
+            if checkbox.checkState() == Qt.Checked:
+                return 1
+            else:
+                return 0
+        cparser = PuddleConfig()
+        cparser.setSection('playlist', 'extinfo', checktoint(self.extinfo))
+        cparser.setSection('playlist', 'extpattern', unicode(self.extpattern.text()))
+        cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
+        cparser.setSection('playlist', 'filepattern', unicode(self.filename.text()))
+
 class TagMappings(QWidget):
     def __init__(self, parent = None):
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
@@ -151,6 +204,7 @@ class TagMappings(QWidget):
         buttons.connectToWidget(self)
         buttons.moveup.setVisible(False)
         buttons.movedown.setVisible(False)
+        self.connect(buttons, SIGNAL('duplicate'), self.duplicate)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
@@ -182,7 +236,7 @@ class TagMappings(QWidget):
     def add(self):
         table = self._table
         row = table.rowCount()
-        self._table.insertRow(row)
+        table.insertRow(row)
         for column, v in enumerate(['Tag', 'Source', 'Target']):
             table.setItem(row, column, QTableWidgetItem(v))
         item = table.item(row, 0)
@@ -214,6 +268,21 @@ class TagMappings(QWidget):
         f = open(filename, 'w')
         f.write('\n'.join([','.join(z) for z in text]))
         f.close()
+
+    def duplicate(self):
+        table = self._table
+        row = table.currentRow()
+        if row < 0: return
+        item = table.item
+        itemtext = lambda column: unicode(item(row, column).text())
+        texts = [itemtext(z) for z in range(3)]
+        row = table.rowCount()
+        table.insertRow(row)
+        for column, v in enumerate(texts):
+            table.setItem(row, column, QTableWidgetItem(v))
+        item = table.item(row, 0)
+        table.setCurrentItem(item)
+        table.editItem(item)
 
 
 class ListModel(QAbstractListModel):
@@ -261,6 +330,70 @@ class SettingsList(QListView):
     def selectionChanged(self, selected, deselected):
         self.emit(SIGNAL("selectionChanged"), selected.indexes()[0].row())
 
+class StatusWidgetItem(QTableWidgetItem):
+    def __init__(self, text, color):
+        QTableWidgetItem.__init__(self, text)
+        self.setBackground(QBrush(color))
+        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
+class ColorEdit(QWidget):
+    def __init__(self, parent = None):
+        cparser = PuddleConfig()
+        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [0,255,0], True))
+        edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [255,255,0], True))
+        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
+        colors = (add, edit, remove)
+
+        QWidget.__init__(self, parent)
+
+        self.listbox = QTableWidget(0, 2, self)
+        header = self.listbox.horizontalHeader()
+        self.listbox.setSortingEnabled(True)
+        header.setVisible(True)
+        header.setSortIndicatorShown (True)
+        header.setStretchLastSection (True)
+        header.setSortIndicator (0, Qt.AscendingOrder)
+        self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
+        self.listbox.setRowCount(3)
+
+        for i, z in enumerate([('Added', add), ('Edited', edit), ('Removed', remove)]):
+            self.listbox.setItem(i, 0, StatusWidgetItem(*z))
+            self.listbox.setItem(i, 1, StatusWidgetItem('Double click to edit', z[1]))
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.listbox)
+        self.setLayout(vbox)
+        self.connect(self.listbox, SIGNAL('cellDoubleClicked(int,int)'), self.edit)
+
+
+    def edit(self, row, column):
+        self._status = (row, self.listbox.item(row, column).background())
+        win = QColorDialog(self)
+        win.setCurrentColor(self.listbox.item(row, column).background().color())
+        self.connect(win, SIGNAL('currentColorChanged(const QColor&)'), self.intermediateColor)
+        self.connect(win, SIGNAL('rejected()'), self.setColor)
+        win.open()
+
+    def setColor(self):
+        row = self._status[0]
+        self.listbox.item(row, 0).setBackground(self._status[1])
+        self.listbox.item(row, 1).setBackground(self._status[1])
+
+    def intermediateColor(self, color):
+        row = self._status[0]
+        if color.isValid():
+            self.listbox.item(row, 0).setBackground(QBrush(color))
+            self.listbox.item(row, 1).setBackground(QBrush(color))
+
+    def applySettings(self, control=None):
+        cparser = PuddleConfig()
+        x = lambda c: (c.red(), c.green(), c.blue())
+        colors = [x(self.listbox.item(z,0).background().color()) for z in range(self.listbox.rowCount())]
+        cparser.set('extendedtags', 'add', colors[0])
+        cparser.set('extendedtags', 'edit', colors[1])
+        cparser.set('extendedtags', 'remove', colors[2])
+
+
 SETTINGSWIN = 'settingsdialog'
 
 class SettingsDialog(QDialog):
@@ -271,8 +404,11 @@ class SettingsDialog(QDialog):
         winsettings('settingswin', self)
 
         d = {0: ('General', GeneralSettings(controls), controls),
-             1: ('Mappings', TagMappings(), None)}
-        i = 2
+             1: ('Mappings', TagMappings(), None),
+             2: ('Playlist', Playlist(), None),
+             3: ('Extended Tags Colors', ColorEdit(), None),
+             4: ('Genres', genres.Genres(status=status), None)}
+        i = len(d)
         for control in controls:
             if hasattr(control, SETTINGSWIN):
                 c = getattr(control, SETTINGSWIN)(status=status)
@@ -289,8 +425,8 @@ class SettingsDialog(QDialog):
 
         self.grid = QGridLayout()
         self.grid.addWidget(self.listbox)
-        self.grid.addWidget(self.stack,0,1)
-        self.grid.setColumnStretch(1,2)
+        self.grid.addWidget(self.stack, 0, 1)
+        self.grid.setColumnStretch(1, 2)
         self.setLayout(self.grid)
 
         self.connect(self.listbox, SIGNAL("selectionChanged"), self.showOption)

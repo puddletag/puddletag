@@ -1,0 +1,27 @@
+[menu]
+&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Refresh,&Clear,separator,&Exit
+&Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy,&Paste,Paste &Onto,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,separator,&Increase Font,&Decrease Font,separator,&Preferences
+&Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
+&Actions=&Actions,&QuickActions,&Functions
+&Tools=Autonumbering &Wizard...,&Import Music Library...,&Duplicate finder...
+&Windows=Filter,Tag Panel,Filesystem,Tag Sources,Stored Tags,Music Library #,separator,&Lock Layout
+#Ab&out=About &Qt,
+
+[menuattrs]
+order=&File,&Edit,&Convert,&Actions,&Tools,&Windows #,Ab&out
+
+[toolbar]
+&File=&Open Folder,&Add Folder,&Refresh
+&Edit=&Save,&Undo
+&Convert=widget-patterncombo,&File->Tag,&Tag->File,&Format
+&Action=&Actions,&QuickActions,&Functions
+&Tools=Autonumbering &Wizard...,&Text File->Tag,&Rename Directories
+
+[toolbarattrs]
+order=&File,&Edit,&Convert,&Action,&Tools
+
+[table]
+order=&Play,E&xtended Tags,&Remove Tag,separator,&Cut,&Copy,&Paste,separator,&Delete,separator,&Properties
+
+[winshortcuts]
+Filter=F3

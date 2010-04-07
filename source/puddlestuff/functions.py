@@ -49,22 +49,25 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-
-import findfunc, string, pdb, sys, audioinfo, decimal, os, pyparsing, re
-import pyparsing
-
+from puddleobjects import PuddleConfig
+import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time
+import plugins
+true = u'1'
+false = u'0'
 path = os.path
-import time
 
 def add(text,text1):
+    D = decimal.Decimal
     try:
-        return unicode((decimal.Decimal(unicode(text)) + decimal.Decimal(unicode(text1))).normalize())
+        return unicode((D(unicode(text)) + D(unicode(text1))).normalize().to_eng_string())
     except decimal.InvalidOperation:
         return
 
-def and_(text,text1):
-    return unicode(bool(text) and bool(text1))
+def check_truth(text):
+    return 0 if ((not text) or (text == u'0')) else 1
 
+def and_(text, text1):
+    return unicode(check_truth(text) and check_truth(text1))
 
 def caps(text):
     return titleCase(text)
@@ -95,8 +98,9 @@ def changeartist(artist, *files):
         audio.save()
 
 def div(text,text1):
+    D = decimal.Decimal
     try:
-        return unicode((decimal.Decimal(unicode(text)) / decimal.Decimal(unicode(text1))).normalize())
+        return unicode((D(text) / D(text1)).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -169,70 +173,61 @@ Featuring &String, text, " ft "
 
 def geql(text,text1):
     if text >= text1:
-        return unicode(True)
+        return true
     else:
-        return unicode(False)
+        return false
 
-def grtr(text,text1):
+def grtr(text, text1):
     if text > text1:
-        return unicode(True)
+        return true
     else:
-        return unicode(False)
+        return false
 
 def hasformat(pattern, tagname = "__filename"):
-    pdb.set_trace()
     if findfunc.filenametotag(pattern, tagname):
-        return unicode(True)
-    return unicode(False)
+        return true
+    return false
 
-def if_(text,text1,z):
-    if text != "False" and bool(text):
+def if_(text, text1, z):
+    if check_truth(text):
         return text1
     else:
         return z
 
-def ifgreater(a, b, text, text1):
-    try:
-        if float(a) > float(b):
-            return unicode(text)
-        else:
-            return unicode(text1)
-    except ValueError:
-        return
-
 def iflonger(a, b, text, text1):
     try:
-        if len(unicode(a)) > len(unicode(b)):
-            return unicode(text)
+        if len(a) > len(b):
+            return text
         else:
-            return unicode(text1)
+            return text1
     except TypeError:
         return
 
 def isdigit(text):
     try:
-        return decimal.Decimal(text)
+        decimal.Decimal(text)
+        return true
     except decimal.InvalidOperation:
-        return
+        return false
 
-def left(text,n):
-    n = int(decimal.Decimal(n))
-    return unicode(text)[:n + 1]
+def left(text, n):
+    n = int(n)
+    return text[:n]
 
 def len_(text):
     return unicode(len(text))
 
 def leql(text,text1):
     if text <= text1:
-        return unicode(True)
+        return true
     else:
-        return unicode(False)
+        return false
 
-def less(text,text1):
+def less(text, text1):
     if text < text1:
-        return unicode(True)
+        return true
     else:
-        return unicode(False)
+        return false
 
 def libstuff(dirname):
     files = []
@@ -245,34 +240,38 @@ def libstuff(dirname):
 def lower(text):
     return string.lower(text)
 
-def mid(text,n,i):
+def mid(text, n, i):
     try:
-        return unicode(text)[int(n):int(i)+1]
+        n = int(n)
+        i = int(i)
+        return unicode(text)[n: n + i]
     except ValueError:
         return
 
 def mod(text,text1):
+    D = decimal.Decimal
     try:
-        return unicode((decimal.Decimal(unicode(text)) % decimal.Decimal(unicode(text1))).normalize())
+        return unicode((D(text) % D(text1).normalize()))
     except decimal.InvalidOperation:
         return
 
-def mul(text,text1):
+def mul(text, text1):
+    D = decimal.Decimal
     try:
-        return unicode((decimal.Decimal(unicode(text)) * decimal.Decimal(unicode(text1))).normalize())
+        return unicode((D(text) * D(text1)).normalize())
     except decimal.InvalidOperation:
         return
 
-def neql(text,text1):
-    if unicode(text) != unicode(text1):
-        return unicode(True)
+def neql(text, text1):
+    if text == text1:
+        return false
     else:
-        return unicode(False)
+        return true
 
 def not_(text):
-    if text == "False":
-        return True
-    return unicode(not text)
+    if check_truth(text):
+        return false
+    return true
 
 def num(text, numlen):
     if not text:
@@ -293,13 +292,14 @@ def num(text, numlen):
     return text
 
 def odd(text):
-    if decimal.Decimal(text) % 2 != decimal.Decimal(0):
-        return unicode(True)
+    D = decimal.Decimal
+    if D(text) % 2 != 0:
+        return true
     else:
-        return unicode(False)
+        return false
 
 def or_(text,text1):
-    return unicode(bool(text) or bool(text1))
+    return unicode(check_truth(text) or check_truth(text1))
 
 def rand():
     import random
@@ -313,11 +313,12 @@ def re_escape(rex):
     return escaped
 
 def replace(text, word, replaceword, matchcase = False, whole = False, chars = None):
-    '''Replace, "Replace '$0': '$1' -> '$2'"
+    '''Replace, "Replace $0: '$1' -> '$2', Match Case: $3, Words Only: $4"
 &Replace, text
 w&ith:, text
 Match c&ase:, check
 only as &whole word, check'''
+    matchcase, whole = check_truth(matchcase), check_truth(whole)
     word = re_escape(word)
     if matchcase:
         matchcase = 0
@@ -371,11 +372,12 @@ def replacetokens(text, dictionary):
         except KeyError:
             l.append(text[start: end])
         match = pat.search(text, end)
-    return ''.join(l)
+    l.append(text[end:])
+    return u''.join(l)
 
 
 def replaceWithReg(text, expr, rep):
-    """Replace with RegExp, "RegReplace $0: RegExp $1, with $1"
+    """Replace with RegExp, "RegReplace $0: RegExp $1, with $2"
 &Regular Expression, text
 w&ith, text"""
     match = re.search(expr, text)
@@ -391,27 +393,36 @@ w&ith, text"""
 
 def right(text,n):
     try:
-        n = decimal.Decimal(n)
-    except decimal.InvalidOperation:
+        n = int(n)
+    except TypeError:
         return
+    if n == 0:
+        return u''
     return text[-int(n):]
 
 def strip(text):
     '''Trim whitespace, Trim $0'''
     return text.strip()
 
-def strstr(text,text1):
+def find(text, text1):
     val = text.find(text1)
-    if val > 0:
+    if val >= 0:
         return unicode(val)
-    else:
-        return unicode()
+    return unicode(-1)
 
 def sub(text,text1):
+    D = decimal.Decimal
     try:
-        return unicode((decimal.Decimal(unicode(text)) - decimal.Decimal(unicode(text1))).normalize())
+        return unicode((D(text) - D(text1)).normalize())
     except decimal.InvalidOperation:
         return
+
+def testfunction(tags, t_text, p_pattern, n_number):
+    text = u'%s - %s' % (tags['artist'], tags['title'])
+    assert t_text == text
+    assert p_pattern == '%artist% - %title%'
+    assert n_number == 23
+    return u'Passed'
 
 def texttotag(tags, text, text1, text2):
     """Text to Tag, "Tag to Tag: $0 -> $1, $2"
@@ -420,7 +431,6 @@ def texttotag(tags, text, text1, text2):
 &Output, text"""
     pattern = text1
     tagpattern = pyparsing.Literal('%').suppress() + pyparsing.Word(pyparsing.nums)
-    print pattern, findfunc.tagtofilename(text, tags)
     d = findfunc.tagtotag(pattern, findfunc.tagtofilename(text, tags), tagpattern)
     if d:
         output = text2
@@ -429,10 +439,12 @@ def texttotag(tags, text, text1, text2):
         return findfunc.tagtofilename(output, tags)
     return ''
 
-def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
-    '''Case Conversion, "$0: $1"
+def titleCase(text, ctype = None, characters = None):
+    '''Case Conversion, "Convert Case: $0: $1"
 &Type, combo, Mixed Case,UPPER CASE,lower case
 "For &Mixed Case, after any of:", text, "., !"'''
+    if characters is None:
+        characters = ['.', '(', ')', ' ', '!']
     if ctype == "UPPER CASE":
         return text.upper()
     elif ctype == 'lower case':
@@ -454,8 +466,59 @@ def titleCase(text, ctype = None, characters = ['.', '(', ')', ' ', '!']):
     return "".join(text)
 
 def upper(text):
-    return string.upper(text)
+    return text.upper()
 
 def validate(text, to):
     from puddleobjects import safe_name
-    return safe_name(text,to)
+    return safe_name(text, to)
+
+functions = {"add": add,
+            "and": and_,
+            "caps": caps,
+            "caps2": caps2,
+            "caps3": caps3,
+            "char": char,
+            "div": div,
+            "featFormat": featFormat,
+            "find": find,
+            "formatValue": formatValue,
+            "ftArtist": ftArtist,
+            "ftTitle": ftTitle,
+            "geql": geql,
+            "grtr": grtr,
+            "hasformat": hasformat,
+            "if": if_,
+            "iflonger": iflonger,
+            "isdigit": isdigit,
+            "left": left,
+            "len": len_,
+            "leql": leql,
+            "less": less,
+            "lower": lower,
+            "mid": mid,
+            "mod": mod,
+            "mul": mul,
+            "neql": neql,
+            "not_": not_,
+            "num": num,
+            "odd": odd,
+            "or": or_,
+            "rand": rand,
+            "re": re,
+            "re_escape": re_escape,
+            "replace": replace,
+            "replaceWithReg": replaceWithReg,
+            "right": right,
+            "string": string,
+            "strip": strip,
+            "sub": sub,
+            "texttotag": texttotag,
+            'testfunction': testfunction,
+            "time": time,
+            "titleCase": titleCase,
+            "true": true,
+            "upper": upper,
+            "validate": validate}
+functions.update(plugins.functions)
+
+import findfunc
