@@ -16,6 +16,7 @@ class MusicLibError(Exception):
     def __init__(self, number, stringvalue):
         self.strerror = stringvalue
         self.number = number
+
 errors = {
     0: "Library load error",
     1: "Library save error",
@@ -94,7 +95,7 @@ class LibChooseDialog(QDialog):
         p.close()
         QApplication.processEvents()
         if isinstance(library, basestring):
-            QMessageBox.critical(self, u"Error", u'I encountered an error while loading %s: <b>%s</b>' \
+            QMessageBox.critical(self, u"Error", u'I encountered an error while loading the %s library: <b>%s</b>' \
                             % (unicode(self.currentlib['name']), library),
                             QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
         else:
@@ -143,7 +144,15 @@ class LibraryDialog(QWidget):
         self.tree.search(unicode(self.searchtext.text()))
 
     def saveSettings(self):
-        self._library.save()
+        p = ProgressWin(self, 0, showcancel = False)
+        p.setWindowTitle('Saving music library...')
+        p.show()
+        t = PuddleThread(self._library.save)
+        t.start()
+        while t.isRunning():
+            QApplication.processEvents()
+        p.close()
+
 
 class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):

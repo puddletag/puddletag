@@ -1,38 +1,33 @@
-Let me try to imitate you for a bit. You may be thinking:
+puddletag is a tag editor for LInux loosely based on the awesome Windows program Mptag. It does basic tag editing like any other tag editing like any other tag editor out there, but with a table based layout that allows you too see and edit many tags at once. Things like renaming files using its tag and retrieving tags via a filename is made easy.
 
-What is puddletag?
-	And I'll reply that puddletag is a tag editor for Linux based loosely on the windows program Mp3tag. Basically it uses a table layout so that all the t ags you want to edit by hand are visible and easily editable. Besides that, puddletag also allows you to extract tags from filenames and renaming files based on their tags by using patterns(that you define, not crappy, uneditable ones).
+Supported formats are: id3v1 and id3v2 (.mp3), APEv2 (.ape), AAC (.m4a, .mp4), VorbisComments (.flac, .ogg) though album art is supported for FLAC files only.
 
-Why puddletag?
-	Mp3tag was the only reason I kept an XP partition around.
+But there's more...
+There's functions, which can do things like replace text, trim, change the case of any tag, etc. Actions can automate repetitive tasks, and then theres importing music libraries (though only QuodLibet is supported for now), automatic retrieval of tags via musicbrainz and more, so fire it up and explore.
 
-What makes it different?
-	Besides being more buggy that Mp3tag (to be addressed), puddletag can import Rhythmbox and Prokyon music libraries, allowing for a better tag editing experience than the programs provide (including being able to search for duplicates). To see the rest you'll have to try out puddletag
+Requirements
+	At least Python2.5.
+	PyQt4 (python-pyqt4 for most Linux distributions) for the GUI (puddletag was developed with PyQt4.5 though it may work with previous versions)
+	PyParsing (python-parsing in some distros, python-pyparsing in others) is used for parsing.
+	Mutagen (python-mutagen) takes care of reading/writing tags.
+	ConfigObj (python-configobj in most distros) is used to read/write settings.
+	python-musicbrainz2 for musicbrainz support.
 
-What you need.
-	At least Python2.5. 
-	PyQt4 for the GUI 
-	PyParsing is used for parsing. 
-	Mutagen does the tagging. 
+	In order to use the QuodLibet library you need QuodLIbet installed.
+	And to edit/view FLAC album art the Python Imaging Library (usually python-pil or python-image as a distro package) is required.
 
-	For music library support you'll need:
-		Python-MySQLdb for Prokyon3
-		python-Levenshtein for string comparison functions (these are written in C and are fast)
-
-	Also note python-musicbrainsz2 for MusicBrainz support is recommended.
-		
 License:
 	GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html
 
-How do I get it?
+Where to get it.
 	There's a download link it at http://puddletag.sourceforge.net or alternatively, using svn
 	svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
 
-And run it?
-	In the main puddletag directory, you'll find a file called puddletag.py. You can run it by typing python puddletag.py in your console.
+How to run it.
+	Unzip the tarball and cd into the puddletag directory. In it you can run the puddletag executable using ./puddletag. Although it will install (using setup.py) this is not recommended as the results may not be satisfactory.
 
-Releases?
-	Swing by the website (http://puddletag.sourceforge.net) every couple of weeks (next release due, 5 October 2009) for updates.
+Release schedule.
+	I don't adhere to a strict release schedule so releases are released when they are released. In the past this has been about once a month. Swing by the puddletag website http://puddletag.sourceforge.net for updates.
 
-Questions?
-    There's a puddletag reddit over on http://www.reddit.com/r/puddletag if you have any questions. Alternatively, send me a mail at concentricpuddle@gmail.com.
+Contact info
+    For bug reports and feature requests visit the issue tracker that's being outsourced to Google Code (http://code.google.com/p/puddletag/issues). For anything else send me and email at concentricpuddle@gmail.com (I'll reply to an email if needed, but give it a week before you can assume it's been caught by the spam filter.)

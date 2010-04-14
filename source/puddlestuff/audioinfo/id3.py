@@ -1,24 +1,14 @@
-# -*- coding: utf-8 -*-
-#id3.py
-
-#Copyright (C) 2008-2009 concentricpuddle
-
-#This audio is part of puddletag, a semi-good music tag editor.
-
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Fr anklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
+import sys
+sys.path.insert(1, '/home/keith/Documents/python/puddletag/puddlestuff/audioinfo')
+import mutagen.id3 as id3
+import unittest, pdb
+import mutagen
+from functools import partial
+from mutagen.id3 import TextFrame, TimeStampTextFrame, UrlFrame, UrlFrameU, PairedTextFrame
+from collections import defaultdict
+from util import *
+TagBase = MockTag
+import util
 
 import mutagen, mutagen.id3, mutagen.mp3, pdb, util
 from copy import copy, deepcopy
@@ -59,10 +49,389 @@ class PuddleID3FileType(mutagen.mp3.MP3):
     def load(self, filename, ID3 = PuddleID3, **kwargs):
         mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
 
-TAGS = util.TAGS
-REVTAGS = util.REVTAGS
+def create_text(title, value):
+    frame = revtext_frames[title](3, value)
+    frame.get_value = lambda: get_text(frame)
+    frame.set_value = partial(set_text, frame)
+    return {title: frame}
 
-class Tag(util.MockTag):
+def get_text(textframe):
+    return [unicode(z) for z in textframe.text]
+
+def set_text(frame, value):
+    frame.text = TextFrame(3, value).text
+    return True
+
+def text_handler(title):
+    def func(frames):
+        frame = frames[0]
+        frame.get_value = lambda: get_text(frame)
+        frame.set_value = partial(set_text, frame)
+        return {title: frame}
+    return func
+
+text_frames ={
+    id3.TALB: 'album',
+    id3.TBPM: 'bpm',
+    id3.TCOM: 'composer',
+    id3.TCON: 'genre',
+    id3.TCOP: "copyright",
+    id3.TDAT: "date",
+#    id3.TCMP: "itunescompilationflag",
+    id3.TDLY: "audiodelay",
+    id3.TENC: "encodedby",
+    id3.TEXT: "lyricist",
+    id3.TFLT: "filetype",
+    id3.TIME: "time",
+    id3.TIT1: "grouping",
+    id3.TIT2: "title",
+    id3.TIT3: "version",
+    id3.TKEY: "initialkey",
+    id3.TLAN: "language",
+    id3.TLEN: "audiolength",
+    id3.TMED: "mediatype",
+    id3.TMOO: "mood",
+    id3.TOAL: "originalalbum",
+    id3.TOFN: "filename",
+    id3.TOLY: "author",
+    id3.TOPE: "originalartist",
+    id3.TORY: "originalyear",
+    id3.TOWN: "fileowner",
+    id3.TPE1: "artist",
+    id3.TPE2: "performer",
+    id3.TPE3: "conductor",
+    id3.TPE4: "arranger",
+    id3.TPOS: "discnumber",
+    id3.TPRO: "producednotice",
+    id3.TPUB: "organization",
+    id3.TRCK: "track",
+    id3.TRDA: "recordingdates",
+    id3.TRSN: "radiostationname",
+    id3.TRSO: "radioowner",
+    id3.TSIZ: "audiosize",
+#    id3.TSO2: "itunesalbumsortorder",
+    id3.TSOA: "albumsortorder",
+#    id3.TSOC: "itunescomposersortorder",
+    id3.TSOP: "peformersortorder",
+    id3.TSOT: "titlesortorder",
+    id3.TSRC: "isrc",
+    id3.TSSE: "encodingsettings",
+    id3.TSST: "setsubtitle",
+    id3.TYER: 'year'}
+
+revtext_frames = dict([(key, frame) for frame, key in text_frames.items()])
+write_frames = dict([(key, partial(create_text, key)) for key in text_frames.values()])
+
+def create_time(title, value):
+    frame = revtime_frames[title](3)
+    if not set_time(frame, value):
+        return {}
+    frame.get_value = lambda: get_text(frame)
+    frame.set_value = partial(set_time, frame)
+    return {title: frame}
+
+def set_time(frame, value):
+    text = TimeStampTextFrame(3, value).text
+    if not filter(None, text):
+        return
+    frame.text = text
+    return True
+
+def time_handler(title):
+    def func(frames):
+        frame = frames[0]
+        frame.get_value = lambda: get_text(frame)
+        frame.set_value = partial(set_time, frame)
+        return {title: frame}
+    return func
+
+time_frames = {
+    id3.TDEN: "encodingtime",
+    id3.TDOR: "originalreleasetime",
+    id3.TDRC: "year",
+    id3.TDRL: "releasetime",
+    id3.TDTG: "taggingtime"}
+
+revtime_frames = dict([(key, frame) for frame, key in time_frames.items()])
+write_frames.update([(key, partial(create_time, key)) for
+                        key in revtime_frames])
+
+def create_usertext(title, value):
+    frame = id3.TXXX(3, title, value)
+    frame.get_value = lambda: get_text(frame)
+    frame.set_value = partial(set_text, frame)
+    return {title: frame}
+
+def usertext_handler(frames):
+    d = {}
+    for frame in frames:
+        frame.get_value = lambda: get_text(frame)
+        frame.set_value = partial(set_text, frame)
+        d[frame.desc] = frame
+    return d
+
+url_frames = {
+    id3.WCOP: "wwwcopyright",
+    id3.WOAF: "wwwfileinfo",
+    id3.WOAS: "wwwsource",
+    id3.WORS: "wwwradio",
+    id3.WPAY: "wwwpayment",
+    id3.WPUB: "wwwpublisher"}
+
+def create_url(title, value):
+    frame = revurl_frames[title]()
+    frame.get_value = lambda: get_url(frame)
+    frame.set_value = partial(set_url, frame)
+    frame.set_value(value)
+    return {title: frame}
+
+def get_url(frame):
+    return [frame.url]
+
+def set_url(frame, value):
+    if not isinstance(value, basestring):
+        value = value[0]
+    frame.url = UrlFrame(value).url
+    return True
+
+def url_handler(title):
+    def func(frames):
+        frame = frames[0]
+        frame.get_value = lambda: get_url(frame)
+        frame.set_value = partial(set_url, frame)
+        return {title: frame}
+    return func
+
+revurl_frames = dict([(key, frame) for frame, key in url_frames.items()])
+write_frames.update([(key, partial(create_url, key)) for key in revurl_frames])
+
+uurl_frames = {
+    id3.WCOM: "wwwcommercialinfo",
+    id3.WOAR: "wwwartist"}
+
+def create_uurl(title, value):
+    frame = revuurl_frames[title]()
+    d = uurl_handler(title)([frame])
+    d[title].set_value(value)
+    return d
+
+def uurl_handler(title):
+    def set_uurl(frames, value):
+        if isinstance(value, basestring):
+            value = [value]
+        while frames:
+            frames.pop()
+        cls = revuurl_frames[title]
+        frames.extend([cls(v) for v in value])
+
+    def func(frames):
+        frame = frames[0]
+        frame.get_value = lambda: [f.url for f in frames]
+        frame.set_value = partial(set_uurl, frames)
+        frame.frames = frames
+        return {title: frame}
+    return func
+
+revuurl_frames = dict([(key, frame) for frame, key in uurl_frames.items()])
+write_frames.update([(key, partial(create_uurl, key)) for
+                        key in revuurl_frames])
+
+def create_userurl(title, value):
+    value = to_string(value)
+    desc = title[len('www:'):]
+    frame = id3.WXXX(3, desc, value)
+    frame.get_value = lambda: get_url(frame)
+    frame.set_value = partial(set_url, frame)
+    return {title: frame}
+
+def userurl_handler(frames):
+    d = {}
+    for frame in frames:
+        frame.get_value = partial(get_url, frame)
+        frame.set_value = partial(set_url, frame)
+        d[u'www:'+ frame.desc] = frame
+    return d
+
+paired_textframes = {
+    id3.TIPL: "involvedpeople",
+    id3.TMCL: "musiciancredits",
+    id3.IPLS: "involvedpeople"}
+
+def create_paired(key, value):
+    frame = revpaired_frames[key](3)
+    if set_paired(frame, value):
+        frame.get_value = lambda: get_paired(frame)
+        frame.set_value = partial(set_paired, frame)
+        return {key: frame}
+    return {}
+
+def get_paired(frame):
+    return [u';'.join([u':'.join(z) for z in frame.people])]
+
+def set_paired(frame, text):
+    if not isinstance(text, basestring):
+        text = text[0]
+    value = [people.split(':') for people in text.split(';')]
+    temp = []
+    for pair in value:
+        if len(pair) == 1:
+            temp.append([pair[0], u''])
+        else:
+            temp.append(pair)
+    value = temp
+    frame.people = PairedTextFrame(3, value).people
+    return True
+
+def paired_handler(title):
+    def func(frame):
+        frame = frame[0]
+        frame.get_value = lambda: get_paired(frame)
+        frame.set_value = partial(set_paired, frame)
+        return {title: frame}
+    return func
+
+revpaired_frames = dict([(key, frame) for frame, key in paired_textframes.items()])
+write_frames.update([(key, partial(create_paired, key)) for
+                        key in revpaired_frames])
+
+def create_comment(desc, value):
+    frame = id3.COMM(3, 'XXX', desc, value)
+    frame.get_value = lambda: get_text(frame)
+    frame.set_value = partial(set_text, frame)
+    return {u'comment:' + frame.desc: frame}
+
+def set_commentattrs(frame):
+    frame.get_value = lambda: get_text(frame)
+    frame.set_value = partial(set_text, frame)
+
+def comment_handler(frames):
+    d = {}
+    for frame in frames:
+        set_commentattrs(frame)
+        if not frame.desc and 'comment' not in d:
+            d[u'comment'] = frame
+        else:
+            d[u'comment:' + frame.desc] = frame
+    return d
+
+def create_playcount(value):
+    frame = id3.PCNT()
+    if set_playcount(frame, value):
+        frame.get_value = lambda: get_playcount(frame)
+        frame.set_value = partial(set_playcount, frame)
+        return {'playcount': frame}
+    return {}
+
+def get_playcount(frame):
+    return [unicode(frame.count)]
+
+def set_playcount(frame, value):
+    if not isinstance(value, basestring):
+        value = value[0]
+    try:
+        frame.count = int(value)
+    except ValueError:
+        return
+    return True
+
+def playcount_handler(frame):
+    frame = frame[0]
+    frame.get_value = lambda: get_playcount(frame)
+    frame.set_value = partial(set_playcount, frame)
+    return {u'playcount': frame}
+
+def create_popm(values):
+    if isinstance(values, basestring):
+        values = [values]
+    frames = filter(None, map(lambda v: set_popm(id3.POPM(), v), values))
+    if frames:
+        return popm_handler(frames)
+    return {}
+
+def get_popm(frame):
+    return u':'.join([frame.email, unicode(frame.rating),
+                unicode(frame.count)])
+
+def to_string(value):
+    if isinstance(value, str):
+        return value.decode('utf8')
+    elif isinstance(value, unicode):
+        return value
+    else:
+        return to_string(value[0])
+
+
+def set_popm(frame, value):
+    value = to_string(value)
+    try:
+        email, rating, count = value.split(':', 3)
+        rating = int(rating)
+        count = int(count)
+    except ValueError:
+        return
+    frame.email = email
+    frame.rating = rating
+    frame.count = count
+    return frame
+
+def popm_handler(frames):
+    def set_values(frames, values):
+        if isinstance(values, basestring):
+            values = [values]
+        temp = filter(None, [set_popm(id3.POPM(), v) for v in values])
+        if not temp:
+            return
+        while frames:
+            frames.pop()
+        [frames.append(v) for v in temp]
+
+    get_value = lambda: [get_popm(f) for f in frames]
+    set_value = partial(set_values, frames)
+
+    for frame in frames:
+        frame.get_value = get_value
+        frame.set_value = set_value
+        frame.frames = frames
+    return {'popularitimeter': frame}
+
+write_frames.update({'playcount': create_playcount,
+                     'popularitimeter': create_popm})
+
+frames = dict([(key, text_handler(title)) for key,
+                    title in text_frames.items()])
+
+frames.update([(key, time_handler(title)) for key, title in
+                time_frames.items()])
+
+frames.update([(key, url_handler(title)) for key, title in
+                url_frames.items()])
+
+frames.update([(key, uurl_handler(title)) for key, title in
+                uurl_frames.items()])
+
+frames.update([(key, paired_handler(title)) for key, title in
+                paired_textframes.items()])
+
+frames.update({mutagen.id3.WXXX: userurl_handler,
+               mutagen.id3.TXXX: usertext_handler,
+               mutagen.id3.COMM: comment_handler,
+               id3.PCNT: playcount_handler,
+               id3.POPM: popm_handler})
+
+revframes = dict([(val, key) for key, val in frames.items()])
+
+def handle(f):
+    d = defaultdict(lambda: [])
+    for val in f.values():
+        c = val.__class__
+        if c in frames:
+            d[frames[c]].append(val)
+    ret = {}
+    for func, val in d.items():
+        ret.update(func(val))
+    return ret
+
+class Tag(TagBase):
     IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
                                                         util.IMAGETYPE)
     mapping = {}
@@ -73,11 +442,6 @@ class Tag(util.MockTag):
              EXTENSION: 'ext',
              DIRPATH: 'dirpath'}
 
-    def copy(self):
-        tag = Tag()
-        tag.load(self._tags.copy(), copy(self._mutfile), copy(self._images))
-        return tag
-
     @getdeco
     def __getitem__(self,key):
         """Get the tag value. There is a slight
@@ -86,25 +450,19 @@ class Tag(util.MockTag):
         if key == '__image':
             return self.images
 
-        elif key in INFOTAGS or isinstance(key,(int,long)):
+        elif key in INFOTAGS or isinstance(key, (int,long)):
             return self._tags[key]
         else:
             try:
-                val = self._tags[key][1]
-                if isinstance(val, TimeStampTextFrame):
-                    return [unicode(z) for z in val]
-                elif isinstance(val, TextFrame):
-                    return val.text
+                return self._tags[key].get_value()
             except KeyError:
-                pass
-
-        try:
-            return self._tags[key]
-        except KeyError:
-            #This is a bit of a bother since there will never be a KeyError exception
-            #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
-            #if a key doesn't exist.
-            return ""
+                #This is a bit of a bother since there will never be a KeyError exception
+                #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
+                #if a key doesn't exist.
+                return ""
+            except AttributeError:
+                pdb.set_trace()
+                return self._tags[key].get_value()
 
     def delete(self):
         self._mutfile.delete()
@@ -141,27 +499,12 @@ class Tag(util.MockTag):
 
         if audio.tags: #Not empty
             audio.tags.update_to_v24()
-            try:
-                x = [z for z in audio if z.startswith("TXXX")]
-                for z in x:
-                    self._tags[audio[z].desc.lower()] = [z, audio[z]]
-            except (IndexError, AttributeError):
-                pass
-
-            for tagval in audio:
-                if tagval in TAGS:
-                    self._tags[TAGS[tagval]] = [tagval, audio[tagval]]
+            self._tags.update(handle(audio))
 
             #Get the image data.
             x = audio.tags.getall("APIC")
             if x:
                 self._images = x
-
-            x = [z for z in audio if z.startswith("COMM")]
-            if x:
-                self._tags['comment'] = [x[0], audio[x[0]]]
-                for comment in x[1:]:
-                    self._tags[u'comment: ' + audio[comment].desc.lower() ] = [comment, audio[comment]]
 
         info = audio.info
         self._tags.update( {u"__frequency": strfrequency(info.sample_rate),
@@ -177,24 +520,7 @@ class Tag(util.MockTag):
 
         self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
-        self._originaltags = [z[0] for z in self.mutvalues()]
-
-    def load(self, tags, mutfile, images = None):
-        """Used only for creating a copy of myself."""
-        self._tags = deepcopy(tags)
-        self.filepath = tags.filepath
-        if not images:
-            self._images = []
-        else:
-            self._images = deepcopy(images)
-        self._originaltags = tags.keys()
-        self._mutfile = mutfile
-
-    def mutvalues(self):
-        #Retrieves key, value pairs according to id3.
-        real = self.real
-        return [self._tags[key] for key in self._tags if
-                    not isinstance(key, int) and not key.startswith('__')]
+        self._originaltags = audio.keys()
 
     def _info(self):
         info = self._mutfile.info
@@ -231,24 +557,27 @@ class Tag(util.MockTag):
         audio = self._mutfile
         util.MockTag.save(self)
 
-        for tag, value in self.mutvalues():
-            audio[tag] = value
-        vals = [z[0] for z in self.mutvalues()]
-        toremove = [z for z in self._originaltags if z not in vals]
+
+        userkeys = self.usertags.keys()
+        frames = []
+        [frames.append(frame) if not hasattr(frame, 'frames') else
+            frames.extend(frame.frames) for key, frame in self._tags.items()
+            if key in userkeys]
+        hashes = dict([(frame.HashKey, frame) for frame in frames])
+        toremove = [z for z in self._originaltags if z in audio
+                    and not (z in hashes or z.startswith('APIC'))]
+        audio.update(hashes)
 
         images = [z for z in audio if z.startswith(u'APIC')]
         if self._images:
             newimages = []
             for image in self._images:
-                try:
-                    i = 0
-                    while image.HashKey in newimages:
-                        i += 1
-                        image.desc += u' '*i #Pad with spaces so that each key is unique.
-                    audio[image.HashKey] = image
-                    newimages.append(image.HashKey)
-                except AttributeError:
-                    "Don't write images with strings, but with APIC objects"
+                i = 0
+                while image.HashKey in newimages:
+                    i += 1
+                    image.desc += u' '*i #Pad with spaces so that each key is unique.
+                audio[image.HashKey] = image
+                newimages.append(image.HashKey)
             [toremove.append(z) for z in images if z not in newimages]
         else:
             toremove.extend(images)
@@ -260,8 +589,11 @@ class Tag(util.MockTag):
                 continue
 
         audio.tags.filename = self.filepath
-        audio.tags.save(v1 = 2)
-        self._originaltags = [z[0] for z in self.mutvalues()]
+        try:
+            audio.tags.save(v1 = 2)
+        except:
+            pdb.set_trace()
+        self._originaltags = audio.keys()
 
     @setdeco
     def __setitem__(self,key,value):
@@ -288,37 +620,26 @@ class Tag(util.MockTag):
             value = [unicode(z) for z in value]
 
         if key in self._tags:
-            oldvalue = self._tags[key][1]
-            if isinstance(oldvalue, TimeStampTextFrame):
-                value = [mutagen.id3.ID3TimeStamp(z) for z in value if unicode(mutagen.id3.ID3TimeStamp(z))]
-                oldvalue.text = value
-                oldvalue.encoding = 3
-            elif isinstance(self._tags[key][1], TextFrame):
-                oldvalue.text = value
-                oldvalue.encoding = 3
+            self._tags[key].set_value(value)
         else:
-            try:
-                mut = getattr(mutagen.id3, REVTAGS[key])
-                if isinstance(mut, TimeStampTextFrame):
-                    value = [mutagen.id3.ID3TimeStamp(z) for z in value if mutagen.id3.ID3TimeStamp(z)]
-                    mut.text = value
-                elif issubclass(mut, TextFrame):
-                    mut = mut(3, value)
-                self._tags[key] = [REVTAGS[key], mut]
-            except KeyError:
-                if key.startswith('comment'):
-                    comment = key.split('comment: ')
-                    if len(comment) == 1:
-                        self._tags['comment'] = ["", mutagen.id3.COMM(3, "XXX", "", value)]
-                    else:
-                        self._tags[key] = [comment[1], mutagen.id3.COMM(3, "XXX", comment[1], value)]
-                else:
-                    self._tags[key] = [u'TXXX:' + key, mutagen.id3.TXXX(3, key, value)]
+            if key in write_frames:
+                self._tags.update(write_frames[key](value))
+            elif key == u'comment':
+                frame = create_comment('', value)
+                self._tags[key] == value
+            elif key.startswith('comment:'):
+                self._tags.update(create_comment(key[len('comment:'):], value))
+            elif key.startswith('www:'):
+                self._tags.update(create_userurl(key, value))
+            else:
+                self._tags.update(create_usertext(key, value))
+
 
     def get(self, key):
         try:
             return self[key]
         except KeyError:
             return None
+
 
 filetype = (PuddleID3FileType, Tag, 'ID3')

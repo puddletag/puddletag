@@ -68,7 +68,7 @@ class TrackWindow(QDialog):
         self._padlength.setMinimum(1)
         vbox.addLayout(hbox(label, self._padlength))
 
-        self._separator = QCheckBox("Add track &seperator ['/']")
+        self._separator = QCheckBox("Add track &separator ['/']")
         self._numtracks = QSpinBox()
         self._numtracks.setEnabled(False)
         if numtracks:

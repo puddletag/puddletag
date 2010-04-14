@@ -32,7 +32,8 @@ PATH = u"__path"
 FILENAME = u"__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
-READONLY = ('__bitrate', '__frequency', "__length", "__modified", "__size", "__created", "__library")
+READONLY = ('__bitrate', '__frequency', "__length", "__modified",
+            "__size", "__created", "__library", '__accessed', '__filetype')
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
 INFOTAGS = FILETAGS + list(READONLY)
 

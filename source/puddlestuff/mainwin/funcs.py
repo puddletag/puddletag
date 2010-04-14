@@ -65,7 +65,7 @@ def clipboard_to_tag(parent=None):
 
 def connect_status(actions):
     connect = lambda a: obj.connect(obj, SIGNAL(a.status), a.setStatusTip)
-    map(connect, actions)
+    map(connect, [z for z in actions if z.status])
 
 def copy():
     selected = status['selectedtags']

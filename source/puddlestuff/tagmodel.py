@@ -311,7 +311,7 @@ class TagModel(QAbstractTableModel):
                 audio.dirpath = newdir
             else: #Newdir is a parent
                 audio.dirpath = newdir + audio.dirpath[len(olddir):]
-            if '__library' in audio:
+            if hasattr(audio, 'library'):
                 audio.save(True)
         rows = [z[0] for z in tags]
         if rows:
@@ -464,10 +464,10 @@ class TagModel(QAbstractTableModel):
     def removeFolders(self, folders, v = True):
         if v:
             f = [i for i, tag in enumerate(self.taginfo) if tag.dirpath
-                                    not in folders and '__library' not in tag]
+                            not in folders and not hasattr(tag, 'library')]
         else:
             f = [i for i, tag in enumerate(self.taginfo) if tag.dirpath
-                                        in folders and '__library' not in tag]
+                                in folders and not hasattr(tag, 'library')]
         while f:
             try:
                 self.removeRows(f[0])
@@ -603,12 +603,12 @@ class TagModel(QAbstractTableModel):
 
             currentfile[self.undolevel] = {tag: oldvalue}
             self.emit(SIGNAL('fileChanged()'))
-            if hasattr(currentfile, library):
+            if hasattr(currentfile, 'library'):
                 if tag == 'artist':
                     self.emit(SIGNAL('libfilesedit'), (oldvalue, {tag: value}))
             self.undolevel += 1
             if self.saveModification:
-                setmodtime(currentfile.filepath, (currentfile.accessed, currentfile.modified))
+                setmodtime(currentfile.filepath, currentfile.accessed, currentfile.modified)
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                                         index, index)
             return True

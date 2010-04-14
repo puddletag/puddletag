@@ -1,12 +1,11 @@
+First off thanks to Evan Devetsis for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
+
+To the library writers of the puddletag dependencies.
+
 Paul McGuire for PyParsing and helping me out on the discussion board.
 Michael Urman and Joe Wreschnig for Mutagen (Another cool library).
 Phil Thomson and the Qt and PyQt people for PyQt4.
 Michael Foord and Nicola Larosa for ConfigObj.
-Michael Noll for python-Levenshtein.
+The Oxygen team for the Oxygen icons.
 
-And for the people whose code I stole:
-The guy on ActiveState who wrote the unique(gets all unique elements from a list) recipe.
-The other one who wrote the case-insensitive sort.
-Those who helped me out on comp.lang.python
-
-Lastly, to everyone working on open source, thanks for the cool programs.
+And for the people whose code I stole, those who helped be out on discussion boards and to open-source creators. Thanks a bunch.

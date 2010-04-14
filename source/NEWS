@@ -1,3 +1,17 @@
+14 April 2010
+    New Features
+        Multiple tag sources support. Musicbrainz only for now, will add more over the coming week.
+        Tag mappings. Map a tag to whatever you want to.
+        Some tags were changed. See the puddletag.sourceforge.net/tags.html
+        More ID3 tags are supported.
+        Unicode in MP4 tags is supported.
+        Library code has been rewritten. Currently only QuodLibet is supported. Will add more week after next.
+        Some of the scripting functions with odd names (if_, not_, etc.) have been renamed to what they're supposed to be.
+        All icons not created by me are from the Oxygen icon set for KDE. As soon as I found out how to detect if GNOME is running, I'll add some Ubuntu icons.
+    Fixes:
+        Far too many to list.
+
+
 5 November 2009
     New Features:
         The only new feature for this release is that the musicbrainz dialog now allows you to select individual tracks. I like it better now.
@@ -15,7 +29,7 @@
         Musicbrainz now works for all cases (it gave an error when retrieving via 'album').
         There ain't no more barfing of errors while editing text in the pattern combo.
         Reloading works again (didn't even know it was broken).
-    Changes:	
+    Changes:
 	    Instead of changing the background colour of a row, the Musicbrainz dialog now just bold the text that's to be written.
 
 9 September 2009 (0.7.8)
@@ -26,7 +40,7 @@
         Note that I haven't added any progress bars for these features (due in a week) so just have patience when using them (and keep an eye on the command line for errors).
     Changes:
         I've changed the config system to use ConfigObj as PyQt4's too buggy and Python's built in library too sucky.
-   
+
     The website looks a lot better.
 
 4 June 2009 (0.7.0)

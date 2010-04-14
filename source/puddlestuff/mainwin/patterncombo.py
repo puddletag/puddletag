@@ -98,8 +98,8 @@ class SettingsWin(QFrame):
 
     def addPattern(self):
         self.listbox.addItem("")
-        row = self.listbox.currentRow()
         self.listbox.setCurrentRow(self.listbox.count() - 1)
+        row = self.listbox.currentRow()
         self.listbox.clearSelection()
         self._add = True
         self.editItem(True, row)
@@ -127,8 +127,10 @@ class SettingsWin(QFrame):
 
     def applySettings(self, control):
         item = self.listbox.item
+        text = control.currentText()
         patterns = [item(row).text() for row in xrange(self.listbox.count())]
         control.setItems(patterns)
+        control.setEditText(text)
 
 control = ('patterncombo', PatternCombo, False)
 
