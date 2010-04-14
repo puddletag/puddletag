@@ -2,7 +2,7 @@ from distutils.core import setup
 import sys
 
 setup(name='puddletag',
-      version='0.8.5',
+      version='0.8.6',
       author='concentricpuddle',
       author_email='concentricpuddle@gmail.com',
       url='http://puddletag.sourceforge.net',
