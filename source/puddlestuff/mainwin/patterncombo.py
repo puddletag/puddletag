@@ -98,6 +98,7 @@ class SettingsWin(QFrame):
 
     def addPattern(self):
         self.listbox.addItem("")
+        row = self.listbox.currentRow()
         self.listbox.setCurrentRow(self.listbox.count() - 1)
         row = self.listbox.currentRow()
         self.listbox.clearSelection()

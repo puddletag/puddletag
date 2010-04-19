@@ -97,7 +97,6 @@ def connect_controls(controls):
     """Connects the signals emitted by controls to any
     controls that receive them."""
     emits = {}
-    #controls = controls + [mainfuncs.obj]
     for c in controls:
         for sig in c.emits:
             emits[sig].append(c) if sig in emits else emits.update({sig:[c]})
@@ -112,7 +111,6 @@ def connect_controls(controls):
 
 def connect_control(control, controls):
     emits = defaultdict(lambda: [])
-    #controls = controls + [mainfuncs.obj]
     for c in controls:
         [emits[sig].append(c) for sig in c.emits]
 

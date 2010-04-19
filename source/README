@@ -14,7 +14,7 @@ Requirements
 	python-musicbrainz2 for musicbrainz support.
 
 	In order to use the QuodLibet library you need QuodLIbet installed.
-	And to edit/view FLAC album art the Python Imaging Library (usually python-pil or python-image as a distro package) is required.
+	And to edit/view FLAC album art the Python Imaging Library (usually python-imaging as a distro package) is required.
 
 License:
 	GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html

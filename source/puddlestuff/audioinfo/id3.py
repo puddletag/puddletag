@@ -77,7 +77,6 @@ text_frames ={
     id3.TCON: 'genre',
     id3.TCOP: "copyright",
     id3.TDAT: "date",
-#    id3.TCMP: "itunescompilationflag",
     id3.TDLY: "audiodelay",
     id3.TENC: "encodedby",
     id3.TEXT: "lyricist",
@@ -109,15 +108,20 @@ text_frames ={
     id3.TRSN: "radiostationname",
     id3.TRSO: "radioowner",
     id3.TSIZ: "audiosize",
-#    id3.TSO2: "itunesalbumsortorder",
     id3.TSOA: "albumsortorder",
-#    id3.TSOC: "itunescomposersortorder",
     id3.TSOP: "peformersortorder",
     id3.TSOT: "titlesortorder",
     id3.TSRC: "isrc",
     id3.TSSE: "encodingsettings",
     id3.TSST: "setsubtitle",
     id3.TYER: 'year'}
+
+try:
+    text_frames.update({id3.TCMP: "itunescompilationflag",
+                        id3.TSO2: "itunesalbumsortorder",
+                        id3.TSOC: "itunescomposersortorder"})
+except AttributeError:
+    pass
 
 revtext_frames = dict([(key, frame) for frame, key in text_frames.items()])
 write_frames = dict([(key, partial(create_text, key)) for key in text_frames.values()])

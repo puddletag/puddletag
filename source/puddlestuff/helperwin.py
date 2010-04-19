@@ -155,8 +155,8 @@ class ImportWindow(QDialog):
         self.grid.addWidget(self.tags,1,2,1,2)
         self.tags.setLineWrapMode(QTextEdit.NoWrap)
 
-        self.label = QLabel("Pattern")
-        self.grid.addWidget(self.label,2,0,)
+        #self.label = QLabel("Pattern")
+        #self.grid.addWidget(self.label,2,0,)
 
         self.hbox = QHBoxLayout()
 
@@ -197,13 +197,13 @@ class ImportWindow(QDialog):
         self.lines = unicode(self.file.document().toPlainText())
         self.fillTags()
 
-    def openFile(self, filename = ""):
+    def openFile(self, filename=None):
         """Open the file and fills the textboxes."""
         if not filename:
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
                 'OpenFolder',QDir.homePath()))
-        if filename != "":
+        if not filename:
             try:
                 f = open(filename)
             except (IOError, OSError), detail:
@@ -212,6 +212,7 @@ class ImportWindow(QDialog):
                         "&Yes, choose another", "&No, close this window.")
                 if ret == 0:
                     self.openFile()
+                    return
                 else:
                     self.close()
                 return

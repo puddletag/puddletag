@@ -644,8 +644,7 @@ class TagModel(QAbstractTableModel):
         filetags = {}
         if currentfile.mapping:
             revmapping, real = currentfile.revmapping, currentfile.real
-            filetags = dict([(revmapping[key], tags[key]) for key in FILETAGS
-                                if (key in tags) and (key in revmapping)])
+            filetags = dict([(revmapping[key], tags[key]) if key in revmapping else (key, tags[key]) for key in FILETAGS if key in tags])
         else:
             filetags = dict([(key, tags[key]) for key in FILETAGS
                                 if key in tags])
