@@ -97,21 +97,29 @@ class FrameCombo(QGroupBox):
             except AttributeError:
                 pass
             if ('__image' in combos):
+                if '__image' in audio.preview:
+                    value = audio.preview['__image']
+                else:
+                    value = audio['__image'] if audio['__image'] else {}
                 if audio.IMAGETAGS:
-                    images.append(audio['__image'] if audio['__image'] else {})
+                    images.append(value)
                 else:
                     images.append({})
             for tag in tags:
                 try:
-                    if isinstance(audio[tag], basestring):
-                        tags[tag].append(audio[tag])
+                    if tag in audio.preview:
+                        value = audio.preview[tag]
                     else:
-                        tags[tag].append("\\\\".join(audio[tag]))
+                        value = audio[tag]
+                    if isinstance(value, basestring):
+                        tags[tag].append(value)
+                    else:
+                        tags[tag].append("\\\\".join(value))
                 except KeyError:
                     tags[tag].append("")
 
         if '__image' in combos:
-            combos['__image'].lastfilename = audios[0]['__filename']
+            combos['__image'].lastfilename = audios[0].filepath
             images = commonimages(images)
             if images == 0:
                 combos['__image'].setImageTags(imagetags)
@@ -121,8 +129,14 @@ class FrameCombo(QGroupBox):
                 combos['__image'].currentImage = 1
             else:
                 combos['__image'].setImageTags(imagetags)
-                combos['__image'].images.extend(images)
-                combos['__image'].currentImage = 2
+                try:
+                    combos['__image'].images.extend(images)
+                    combos['__image'].currentImage = 2
+                except:
+                    pdb.set_trace()
+                    combos['__image'].images.extend(images)
+                    combos['__image'].currentImage = 2
+
 
         for z in tags:
             tags[z] = list(set(tags[z]))

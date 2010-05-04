@@ -1,2 +1,3 @@
-version_string = '0.8.5'
-version = (0,8,5)
+# -*- coding: utf-8 -*-
+version_string = '0.8.7'
+version = (0,8,7)

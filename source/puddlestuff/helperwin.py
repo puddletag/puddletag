@@ -519,6 +519,7 @@ class ExTags(QDialog):
         else:
             if l.item(row, 0).status:
                 status = l.item(row, 0).status
+        
         tagitem = StatusWidgetItem(tag, status, self._colors)
         l.setItem(row, 0, tagitem)
         valitem = StatusWidgetItem(value, status, self._colors)
@@ -552,13 +553,19 @@ class ExTags(QDialog):
 
 
     def editTagBuddy(self, tag, value, prevtag = None, duplicate=False):
+        item = self.listbox.item
+        rowcount = self.listbox.rowCount()
+        tags = [unicode(item(row, 0).text()) for row in range(rowcount)]
+        tags = dict([(text.lower(), text) for text in tags])
+        if tag.lower() in tags:
+            tag = tags[tag.lower()]
         if prevtag is not None:
             if duplicate:
-                self._settag(self.listbox.rowCount(), tag, value, ADD)
+                self._settag(rowcount, tag, value, ADD)
             else:
                 self._settag(self.listbox.currentRow(), tag, value, EDIT)
         else:
-            self._settag(self.listbox.rowCount(), tag, value, ADD)
+            self._settag(rowcount, tag, value, ADD)
         self._checkListBox()
         self.filechanged = True
 

@@ -4,24 +4,25 @@ from PyQt4.QtGui import *
 import sys, pdb, resource,os
 from constants import SAVEDIR, DATADIR
 import StringIO
-files = [StringIO.StringIO(QFile(filename).readData(1024**2))
+from util import open_resourcefile
+
+files = [open_resourcefile(filename)
             for filename in [':/caseconversion.action', ':/standard.action']]
 
 SEPARATOR = 'separator'
 ALWAYS = 'always'
-
 menu_path = os.path.join(SAVEDIR, 'menus')
 shortcut_path = os.path.join(SAVEDIR, 'shortcuts')
 
 def create_files():
     if not os.path.exists(menu_path):
-        text = StringIO.StringIO(QFile(':/menus').readData(1024**2)).read()
+        text = open_resourcefile(':/menus').read()
         f = open(menu_path, 'w')
         f.write(text)
         f.close()
 
     if not os.path.exists(shortcut_path):
-        text = StringIO.StringIO(QFile(':/shortcuts').readData(1024**2)).read()
+        text = open_resourcefile(':/shortcuts').read()
         f = open(shortcut_path, 'w')
         f.write(text)
         f.close()

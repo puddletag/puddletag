@@ -145,7 +145,7 @@ def dircmp(a, b):
     """Compare function to sort directories via parent.
 So that the child is renamed before parent, thereby not
 giving Permission Denied errors."""
-    a,b = removeslash(a), removeslash(b)
+    a, b = removeslash(a), removeslash(b)
     if a == b:
         return 0
     elif a in b and (dirlevels(a) != dirlevels(b)):
@@ -170,6 +170,12 @@ def dircmp1(a, b):
         return -1
     else:
         return 0
+
+def issubfolder(parent, child):
+    parent, child = removeslash(parent), removeslash(child)
+    if parent in child and dirlevels(parent) + 1 == dirlevels(child):
+        return True
+    return False
 
 HORIZONTAL = 1
 VERTICAL = 0

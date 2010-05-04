@@ -65,7 +65,7 @@ def clipboard_to_tag(parent=None):
 
 def connect_status(actions):
     connect = lambda a: obj.connect(obj, SIGNAL(a.status), a.setStatusTip)
-    map(connect, [z for z in actions if z.status])
+    map(connect, actions)
 
 def copy():
     selected = status['selectedtags']
@@ -326,7 +326,6 @@ def text_file_to_tag(parent=None):
         win.show()
 
 def update_status(enable = True):
-    return
     files = status['selectedfiles']
     pattern = status['patterntext']
     tf = findfunc.tagtofilename

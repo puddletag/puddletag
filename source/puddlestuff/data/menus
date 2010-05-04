@@ -1,6 +1,6 @@
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Refresh,&Clear,separator,&Exit
-&Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy,&Paste,Paste &Onto,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,separator,&Increase Font,&Decrease Font,separator,&Preferences
+&Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy,&Paste,Paste &Onto,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,Select &Directory,separator,&Increase Font,&Decrease Font,separator,&Preferences
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
 &Tools=Autonumbering &Wizard...,&Import Music Library...,&Duplicate finder...

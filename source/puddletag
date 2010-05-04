@@ -25,9 +25,10 @@ import sys
 import sys, os
 from PyQt4.QtGui import QApplication, QFont
 from PyQt4.QtCore import pyqtRemoveInputHook
+import pdb
 from puddlestuff.puddletag import MainWin
 pyqtRemoveInputHook()
-__version__ = "0.8.5"
+__version__ = "0.8.6"
 import logging
 
 try:

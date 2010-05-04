@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 #webdb.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -115,15 +116,9 @@ class MusicBrainz(object):
                 if not releases:
                     print u'No albums found for %s.' % artist
                     continue
-                releasenames = [z[0].lower() for z in releases]
-                for album in albums:
-                    if album.lower() in releasenames:
-                        i = releasenames.index(album.lower())
-                        ret[artist][album] = get_tracks(releases[i][1])
-                    else:
-                        ret[artist][album] = []
-                        ret[artist]['__albumlist'] = dict([(z[0],[]) for z in releases])
-                        break
+                releasenames = [z[0] for z in releases]
+                for z in releasenames:
+                    ret[artist][z] = []
             elif albums:
                 for album in albums:
                     if album:
@@ -134,8 +129,8 @@ class MusicBrainz(object):
                         self._artistids.update(artists)
                         self._releases.update(albums)
                         for artist in albumlist:
-                            ret[artist]['__albumlist'] = dict(albumlist[artist])
-        return ret
+                            ret[artist] = dict(albumlist[artist])
+        return ret, {}
 
     def retrieve(self, artist, album):
         a_id = self._artistids[artist]

@@ -348,7 +348,10 @@ only as &whole word, check'''
             text = pat.sub(repl, text, 1)
             match = pat.search(text, start + len(repl))
     else:
-        text = pat.sub(replaceword, text)
+        try:
+            text = pat.sub(replaceword, text)
+        except Exception, e:
+            raise findfunc.FuncError(unicode(e))
     return text
 
 def replacetokens(text, dictionary):

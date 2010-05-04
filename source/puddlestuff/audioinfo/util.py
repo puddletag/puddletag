@@ -282,6 +282,16 @@ def str_filesize(size):
     val = max(valid)
     return '%.2f %s' % (size/(1024.0**val), _sizes[val])
 
+def to_string(value):
+    if not value:
+        return u''
+    elif isinstance(value, str):
+        return value.decode('utf8')
+    elif isinstance(value, unicode):
+        return value
+    else:
+        return to_string(value[0])
+
 class MockTag(object):
     """Use as base for all tag classes."""
     def __init__(self, filename = None):
@@ -417,3 +427,8 @@ class MockTag(object):
         if key in self.revmapping:
             return self.revmapping[key]
         return key
+
+    def sget(self, key):
+        if key in self:
+            return to_string(self[key])
+        return ''

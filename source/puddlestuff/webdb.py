@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 #webdb.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -25,10 +26,13 @@ from PyQt4.QtGui import *
 from collections import defaultdict
 import plugins
 import puddlestuff.tagsources.musicbrainz as mbrainz
+import puddlestuff.tagsources.amazonsource as amazon
+import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
+from functools import partial
 
 def display_tag(tag):
     """Used to display tags in the status bar in a human parseable format."""
@@ -36,10 +40,13 @@ def display_tag(tag):
         return "<b>Error in pattern</b>"
     s = "<b>%s</b>: %s, "
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
-    return "<br />".join([s % (z, tostr(v)) for z, v in sorted(tag.items())])[:-2]
+    return "<br />".join([s % (z, tostr(v)) for z, v in sorted(tag.items()) if z != '__image'])[:-2]
 
 def display(pattern, tags):
     return replacevars(getfunc(pattern, tags), tags)
+
+def strip(audio, taglist):
+    return dict([(key, audio[key]) for key in taglist if key in audio])
 
 class TagListWidget(QWidget):
     def __init__(self, tags=None, parent=None):
@@ -131,14 +138,25 @@ class SettingsDialog(QWidget):
         vbox = QVBoxLayout()
         vbox.addWidget(label)
         vbox.addWidget(self._text)
+
+        self._coverdir = QLineEdit(tagsources.COVERDIR)
+        label = QLabel('Directory to store album c&overs in.')
+        label.setBuddy(self._coverdir)
+
+        vbox.addWidget(label)
+        vbox.addWidget(self._coverdir)
+
         vbox.addStretch()
         self.setLayout(vbox)
 
     def applySettings(self, control):
         text = unicode(self._text.text())
         control.listbox.dispformat = text
+        coverdir = unicode(self._coverdir.text())
+        tagsources.set_coverdir(coverdir)
         cparser = PuddleConfig()
         cparser.set('tagsources', 'displayformat', text)
+        cparser.set('tagsources', 'coverdir', coverdir)
 
 class ChildItem(QTreeWidgetItem):
     def __init__(self, dispformat, track, *args):
@@ -157,6 +175,43 @@ class ChildItem(QTreeWidgetItem):
         return self._dispformat
 
     dispformat = property(_getPattern, _setPattern)
+
+
+class ExactMatchItem(ChildItem):
+    def __init__(self, dispformat, audio, preview, *args):
+        ChildItem.__init__(self, dispformat, preview, *args)
+        self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsDragEnabled
+                      | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
+        self.setCheckState(0, Qt.Checked)
+        self.preview = preview
+        self.audio = audio
+
+    def check(self):
+        self.setCheckState(0, Qt.Checked)
+
+    def unCheck(self):
+        self.setCheckState(0, Qt.Unchecked)
+
+class ParentItem(QTreeWidgetItem):
+    def __init__(self, artist, album, *itemargs):
+        QTreeWidgetItem.__init__(self, *itemargs)
+        self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        self.artist = artist
+        self.album = album
+        self.setText(0, u'%s - %s' % (artist, album))
+        self.tracks = None
+        self.setChildIndicatorPolicy(self.ShowIndicator)
+        self.setIcon(0, QWidget().style().standardIcon(QStyle.SP_DirClosedIcon))
+
+    def addTracks(self, tracks, dispformat):
+        self.takeChildren()
+        self.setText(0, self.text(0) + ' [%d]' % len(tracks))
+        try:
+            [self.addChild(ChildItem(dispformat, track)) for track in tracks]
+        except:
+            pdb.set_trace()
+            [self.addChild(ChildItem(dispformat, track)) for track in tracks]
+        self.tracks = tracks
 
 class ReleaseWidget(QTreeWidget):
     def __init__(self, status, tagsource, parent = None):
@@ -180,15 +235,18 @@ class ReleaseWidget(QTreeWidget):
         connect('itemSelectionChanged()', self._selChanged)
         connect('itemCollapsed (QTreeWidgetItem *)', self.setClosedIcon)
         connect('itemExpanded (QTreeWidgetItem *)', self.setOpenIcon)
+        connect('itemChanged (QTreeWidgetItem *,int)', self._setExactMatches)
 
     def setClosedIcon(self, item):
         item.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
 
     def setOpenIcon(self, item):
         item.setIcon(0, self.style().standardIcon(QStyle.SP_DirOpenIcon))
-        row = self.indexOfTopLevelItem(item)
-        if row not in self._tracks:
-            self.gettracks([row])
+        try:
+            if item.tracks is None:
+                self.gettracks([item])
+        except AttributeError:
+            return
 
     def _selChanged(self):
         rowindex = self.indexOfTopLevelItem
@@ -198,13 +256,19 @@ class ReleaseWidget(QTreeWidget):
                 child = parent.child
                 [child(row).setSelected(False) for row in
                     range(parent.childCount())]
-            toprows = [rowindex(z) for z in toplevels]
-            t = [z for z in toprows if z not in self._tracks]
-            if t:
-                self.gettracks(t)
+            toretrieve = [item for item in toplevels if item.tracks is None]
+            if toretrieve:
+                self.gettracks(toplevels)
                 return
         self._selectedTracks()
-        #self.emit(SIGNAL("statusChanged"), "Selection changed.")
+
+    def _setExactMatches(self, item, row):
+        if hasattr(item, 'preview'):
+            if item.checkState(0) != Qt.Unchecked:
+                self.emit(SIGNAL('preview'), {item.audio:
+                        strip(item.preview, self.tagstowrite)})
+            else:
+                self.emit(SIGNAL('preview'), {item.audio: {}})
 
     def _children(self, item):
         child = item.child
@@ -213,7 +277,7 @@ class ReleaseWidget(QTreeWidget):
     def _selectedTracks(self):
         rowindex = self.indexOfTopLevelItem
         selected = self.selectedItems()
-        #tracks = []
+
         toplevels = [z for z in selected if not z.parent()]
         if toplevels:
             children = [z for z in selected if z.parent() and z.parent() not in toplevels]
@@ -223,75 +287,73 @@ class ReleaseWidget(QTreeWidget):
 
         tracks = [child.track for child in children]
         if self.tagstowrite:
-            def strip(audio, taglist):
-                return dict([(key, audio[key]) for key in taglist if key in audio])
             tags = self.tagstowrite
             tracks = [strip(track, tags) for track in tracks]
-        self.emit(SIGNAL('preview'), tracks[:len(self._status['selectedrows'])])
+        if tracks:
+            self.emit(SIGNAL('preview'),
+                tracks[:len(self._status['selectedrows'])])
 
-    def gettracks(self, rows):
+    def gettracks(self, items):
         try:
             while self.t.isRunning():
                 pass
         except AttributeError:
             pass
-        topitem = self.topLevelItem
         self.emit(SIGNAL("statusChanged"), "Retrieving album tracks...")
         QApplication.processEvents()
         def func():
             ret = {}
-            for row in rows:
-                if row in self._tracks:
-                    ret[row] = self._tracks[row]
-                else:
-                    artist = self._artists[row]
-                    album = self._albums[row]
-                    self.emit(SIGNAL("statusChanged"),
-                                u'Retrieving: <b>%s</b>' % topitem(row).text(0))
-                    ret[row] = self._tagsource.retrieve(artist, album)
+            for item in items:
+                if item.tracks is not None:
+                    continue
+                artist = item.artist
+                album = item.album
+                self.emit(SIGNAL("statusChanged"),
+                            u'Retrieving: <b>%s</b>' % item.text(0))
+                ret[item] = self._tagsource.retrieve(artist, album)[0]
             return ret
         self.t = PuddleThread(func)
         self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
         self.t.start()
 
-    def setReleases(self, releases):
+    def setReleases(self, releases, exactmatches):
         self.clear()
-        self._tracks = {}
-        self._artists = []
-        self._albums = []
         def item(text):
-            item = QTreeWidgetItem([text])
-            item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
-            item.setIcon(0,self.style().standardIcon(QStyle.SP_DirClosedIcon))
-            return item
-        for artist, albums in sorted(releases.items()):
-            if '__albumlist' in albums:
-                albums = albums['__albumlist']
-            for album, tracks in sorted(albums.items()):
-                self.addTopLevelItem(item(u'%s - %s' % (artist, album)))
-                if tracks:
-                    row = len(self._artists)
-                    self._tracks[len(self._artists)] = tracks
-                    self._addTracks(row, tracks)
-                self._artists.append(artist)
-                self._albums.append(album)
+            i = QTreeWidgetItem([text])
+            i.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+            i.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
+            return i
 
-    def _addTracks(self, row, tracks):
-        item = self.topLevelItem(row)
-        item.takeChildren()
-        item.setText(0, item.text(0) + ' [%d]' % len(tracks[0]))
-        [item.addChild(ChildItem(self.dispformat, z))
-            for z in tracks[0]]
+        if exactmatches:
+            exactitem = item('Exact Matches')
+            self.addTopLevelItem(exactitem)
+            def f(track, preview):
+                item = ExactMatchItem(self.dispformat, track, preview)
+                exactitem.addChild(item)
+                item.check()
+            [f(track, preview) for track, preview in exactmatches.items()]
+            if self.tagstowrite:
+                _strip = partial(strip, taglist=self.tagstowrite)
+                func = lambda (a, b): (a, _strip(b))
+                self.emit(SIGNAL('preview'), dict(map(func, exactmatches.items())))
+            else:
+                self.emit(SIGNAL('preview'), exactmatches)
+
+        for artist, albums in sorted(releases.items()):
+            for album, tracks in sorted(albums.items()):
+                parent = ParentItem(artist, album)
+                self.addTopLevelItem(parent)
+                if tracks:
+                    parent.addTracks(tracks, self.dispformat)
 
     def updateStatus(self, val):
         if not val:
             self.emit(SIGNAL("statusChanged"), 'An unexpected error occurred.')
             return
-        for row, tracks in val.items():
-            if row in self._tracks:
+        for item, tracks in val.items():
+            if item.tracks is not None:
                 continue
-            self._tracks[row] = tracks
-            self._addTracks(row, tracks)
+            item.addTracks(tracks, self.dispformat)
         self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
         self._selectedTracks()
 
@@ -317,7 +379,7 @@ class MainWin(QWidget):
         self.receives = []
         self.setWindowTitle("Tag Sources")
         self._status = status
-        tagsources = [mbrainz]
+        tagsources = [mbrainz, amazon]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
         self._configs = [module.info[1] for module in tagsources]
@@ -459,7 +521,7 @@ class MainWin(QWidget):
         config = self._config
         if config is None:
             return
-        if isinstance(config, QDialog):
+        if hasattr(config, 'connect'):
             win = config(parent=self)
         else:
             win = SourcePrefs(config, self)
@@ -467,12 +529,13 @@ class MainWin(QWidget):
         self.connect(win, SIGNAL('tagsourceprefs'), self._tagsource.applyPrefs)
         win.show()
 
-    def setInfo(self, releases):
+    def setInfo(self, retval):
         self.getinfo.setEnabled(True)
-        if isinstance(releases, basestring):
-            self.label.setText(releases)
+        if isinstance(retval, basestring):
+            self.label.setText(retval)
         else:
-            self.listbox.setReleases(releases)
+            releases, exact = retval
+            self.listbox.setReleases(releases, exact)
             found = []
             notfound = []
             for artist, values in releases.items():

@@ -32,7 +32,6 @@ from puddlesettings import PuddleConfig
 from funcprint import pprint
 import plugins
 numtimes = 0 #Used in filenametotag to keep track of shit.
-
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 
@@ -40,6 +39,8 @@ class ParseError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
         self.message = message
+
+class FuncError(ParseError): pass
 
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename
@@ -197,6 +198,9 @@ def parsefunc(text, audio):
                 raise ParseError(message)
             else:
                 raise e
+        except FuncError, e:
+            message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (tok[0], message)
+            raise ParseError(message)
 
     content = Forward()
     expression = (funcstart + ZeroOrMore(delimitedList(content)) + Literal(")").suppress())
@@ -263,6 +267,9 @@ def runAction(funcs, audio):
             except KeyError:
                 """The tag doesn't exist or is empty.
                 In either case we do nothing"""
+            except ParseError, e:
+                message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (func.funcname, e.message)
+                raise ParseError(message)
         val = dict([z for z in val.items() if z[1]])
         if val:
             [changed.add(z) for z in val]

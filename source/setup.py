@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 from distutils.core import setup
 import sys
 
 setup(name='puddletag',
-      version='0.8.6',
+      version='0.8.7',
       author='concentricpuddle',
       author_email='concentricpuddle@gmail.com',
       url='http://puddletag.sourceforge.net',

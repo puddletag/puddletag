@@ -19,12 +19,15 @@ Visit the puddletag website (<a href="http://puddletag.sourceforge.net">http://p
 Licensed under GPLv2 (<a href="www.gnu.org/licenses/gpl-2.0.html">www.gnu.org/licenses/gpl-2.0.html</a>).
 '''
 
-thanks = """<b>Evan Devetzis</b> for contributing many, many ideas for putting up with more bugs than any user's expected to and being a helluva tester. <br /> <br />
-The authors of the libraries puddletag depends on:< br />
-<b>Paul McGuire</b> for PyParsing and for being helpful when I needed it.<br />
-<b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (without it, puddletag woulda been a whole lot buggier).<br />
-<b>Phil Thomson</b>, <b>Trolltech</b> and everyone responsible for PyQt4 and...<br />
-<b>Michael Foord</b> and Nicola Larosa</b>, the creators of ConfigObj."""
+thanks = """<b>Evan Devetsis</b> for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.<br /><br />
+
+To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).<br /><br />
+
+<b>Paul McGuire</b> for PyParsing and for being generally helpful.<br />
+<b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (It. Is. Awesome).<br />
+<b>Phil Thomson</b> and everyone responsible for PyQt4.<br />
+<b>Michael Foord</b> and <b>Nicola Larosa</b> for ConfigObj (seriously, they should replace ConfigParser with this).<br />
+The <b>Oxygen team</b> for the Oxygen icons."""
 
 
 class ScrollLabel(QWidget):

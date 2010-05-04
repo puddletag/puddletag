@@ -1,5 +1,6 @@
 import os
 from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget
 from os.path import dirname, join
 #Paths
 HOMEDIR = os.getenv('HOME')

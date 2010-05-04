@@ -262,3 +262,10 @@ name=&Lock Layout
 command=lockLayout
 control=mainwin
 enabled=always
+
+[shortcut39]
+name=Select &Directory
+command=selectAllInFolder
+control=table
+enabled=filesselected
+shortcut=Shift+*

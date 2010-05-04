@@ -60,6 +60,7 @@ def get_text(textframe):
 
 def set_text(frame, value):
     frame.text = TextFrame(3, value).text
+    frame.encoding = 3
     return True
 
 def text_handler(title):
@@ -139,6 +140,7 @@ def set_time(frame, value):
     if not filter(None, text):
         return
     frame.text = text
+    frame.encoding = 3
     return True
 
 def time_handler(title):
@@ -464,9 +466,6 @@ class Tag(TagBase):
                 #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
                 #if a key doesn't exist.
                 return ""
-            except AttributeError:
-                pdb.set_trace()
-                return self._tags[key].get_value()
 
     def delete(self):
         self._mutfile.delete()
@@ -593,10 +592,7 @@ class Tag(TagBase):
                 continue
 
         audio.tags.filename = self.filepath
-        try:
-            audio.tags.save(v1 = 2)
-        except:
-            pdb.set_trace()
+        audio.tags.save(v1 = 2)
         self._originaltags = audio.keys()
 
     @setdeco

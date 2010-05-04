@@ -34,6 +34,7 @@ from audioinfo import REVTAGS, INFOTAGS, READONLY
 from functools import partial
 from constants import TEXT, COMBO, CHECKBOX
 import plugins
+from util import open_resourcefile
 
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
@@ -202,8 +203,10 @@ class FunctionDialog(QWidget):
                     text = u''
             else:
                 text = self._text
-
-            val = self.func.runFunction(text, audio)
+            try:
+                val = self.func.runFunction(text, audio)
+            except findfunc.ParseError, e:
+                val = e.message
             if val:
                 self.emit(SIGNAL('updateExample'), val)
             else:
@@ -346,9 +349,11 @@ class CreateAction(QDialog):
             self.grid.addLayout(self.okcancel,1,0,1,2)
 
     def updateExample(self):
-        tags = runAction(self.functions, self._example)
-        self._examplelabel.setText(displaytags(tags))
-
+        try:
+            tags = runAction(self.functions, self._example)
+            self._examplelabel.setText(displaytags(tags))
+        except findfunc.ParseError, e:
+            self._examplelabel.setText(e.message)
 
     def enableOK(self, val):
         if val == -1:
@@ -505,7 +510,7 @@ class ActionWindow(QDialog):
         files = glob(os.path.join(filedir, u'*.action'))
         if not firstrun and not files:
             import StringIO
-            files = [StringIO.StringIO(QFile(filename).readData(1024**2))
+            files = [open_resourcefile(filename)
                         for filename in [':/caseconversion.action', ':/standard.action']]
             cparser.setSection('puddleactions', 'firstrun',1)
 
@@ -527,12 +532,16 @@ class ActionWindow(QDialog):
             tempfuncs = [self.funcs[row][0] for row in selectedrows]
             funcs = []
             [funcs.extend(func) for func in tempfuncs]
-            if self._quickaction:
-                tags = runQuickAction(funcs, self._example, self._quickaction)
-            else:
-                tags = runAction(funcs, self._example)
-            self._examplelabel.show()
-            self._examplelabel.setText(displaytags(tags))
+            try:
+                if self._quickaction:
+                    tags = runQuickAction(funcs, self._example, self._quickaction)
+                else:
+                    tags = runAction(funcs, self._example)
+                self._examplelabel.show()
+                self._examplelabel.setText(displaytags(tags))
+            except findfunc.ParseError, e:
+                self._examplelabel.show()
+                self._examplelabel.setText(e.message)
         else:
             self._examplelabel.hide()
 
