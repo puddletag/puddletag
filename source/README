@@ -1,6 +1,6 @@
 puddletag is a tag editor for LInux loosely based on the awesome Windows program Mptag. It does basic tag editing like any other tag editing like any other tag editor out there, but with a table based layout that allows you too see and edit many tags at once. Things like renaming files using its tag and retrieving tags via a filename is made easy.
 
-Supported formats are: id3v1 and id3v2 (.mp3), APEv2 (.ape), AAC (.m4a, .mp4), VorbisComments (.flac, .ogg) though album art is supported for FLAC files only.
+Supported formats are: id3v1 and id3v2 (.mp3), APEv2 (.ape), AAC (.m4a, .mp4), VorbisComments (.flac, .ogg though album art is supported for FLAC files only).
 
 But there's more...
 There's functions, which can do things like replace text, trim, change the case of any tag, etc. Actions can automate repetitive tasks, and then theres importing music libraries (though only QuodLibet is supported for now), automatic retrieval of tags via musicbrainz and more, so fire it up and explore.

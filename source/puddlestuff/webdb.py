@@ -26,7 +26,7 @@ from PyQt4.QtGui import *
 from collections import defaultdict
 import plugins
 import puddlestuff.tagsources.musicbrainz as mbrainz
-import puddlestuff.tagsources.amazonsource as amazon
+#import puddlestuff.tagsources.amazonsource as amazon
 import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
@@ -379,7 +379,7 @@ class MainWin(QWidget):
         self.receives = []
         self.setWindowTitle("Tag Sources")
         self._status = status
-        tagsources = [mbrainz, amazon]
+        tagsources = [mbrainz]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
         self._configs = [module.info[1] for module in tagsources]
