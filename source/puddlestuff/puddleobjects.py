@@ -1249,12 +1249,17 @@ class PicWidget(QWidget):
     def saveToFile(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
+        filters = {'PNG(*.png)': 'PNG',
+                   'JPEG(*.jpg)': 'JPG'}
         if self.currentImage > -1:
             filedlg = QFileDialog()
-            filename = unicode(filedlg.getSaveFileName(self,
-                    'Save as...',self.lastfilename, "PNG (*.png)"))
-            if os.path.exists(os.path.dirname(filename)):
-                self.pixmap.save(filename, "PNG")
+            filedlg.setNameFilters(filters.keys())
+            filename = filedlg.getSaveFileName(self,
+                    'Save as...',self.lastfilename, u';;'.join(filters))
+            filt = unicode(filedlg.selectedNameFilter())
+            if not self.pixmap.save(filename):
+                QMessageBox.critical(self, 'Error - puddletag', u'I was unable'
+                    u' to write to <b>%s</b>.' % unicode(filename))
 
     def setNone(self):
         self.label.setFrameStyle(QFrame.Box)

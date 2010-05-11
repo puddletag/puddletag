@@ -5,7 +5,7 @@ from StringIO import StringIO
 from copy import copy
 from audioinfo import FILETAGS, setmodtime, PATH, FILENAME, EXTENSION
 from errno import EEXIST
-import os
+import os, pdb
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -89,7 +89,7 @@ def write(audio, tags, save_mtime = True):
     If justrename is True, then (if tags contain a PATH or EXTENSION key)
     the file is just renamed i.e not tags are written.
     """
-
+    tags = copy(tags)
     if audio.library and (ARTIST in tags or ALBUM in tags):
         artist = audio.sget(ARTIST)
     else:
@@ -109,6 +109,7 @@ def write(audio, tags, save_mtime = True):
             del(tags['__image'])
         else:
             oldimages = audio['__image']
+            undo['__image'] = oldimages
             images = []
             for z in tags['__image']:
                 images.append(dict([(key,val) for key,val in z.items()

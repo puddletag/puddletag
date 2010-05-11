@@ -268,4 +268,10 @@ name=Select &Directory
 command=selectAllInFolder
 control=table
 enabled=filesselected
-shortcut=Shift+*
+shortcut=Ctrl+Shift+S
+
+[shortcut40]
+name=Copy Complete &Tag
+command=copy_whole
+control=mainwin
+enabled=filesselected

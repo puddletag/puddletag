@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import puddlestuff.findfunc as findfunc
 from puddlestuff.puddleobjects import dircmp, safe_name, natcasecmp, LongInfoMessage
 import puddlestuff.actiondlg as actiondlg
@@ -11,6 +12,7 @@ from itertools import izip
 from puddlestuff.audioinfo import stringtags
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
+import traceback
 
 status = {}
 
@@ -69,15 +71,33 @@ def connect_status(actions):
 
 def copy():
     selected = status['selectedtags']
-    QApplication.clipboard().setText(unicode(selected))
+    ba = QByteArray(unicode(selected).encode('utf8'))
+    mime = QMimeData()
+    mime.setData('application/x-puddletag-tags', ba)
+    QApplication.clipboard().setMimeData(mime)
+
+def copy_whole():
+    tags = []
+    def usertags(f):
+        ret = f.usertags
+        if f.images:
+            ret.update({'__image': f.images})
+        return ret
+    tags = [usertags(f) for f in status['selectedfiles']]
+    ba = QByteArray(unicode(tags).encode('utf8'))
+    mime = QMimeData()
+    mime.setData('application/x-puddletag-tags', ba)
+    QApplication.clipboard().setMimeData(mime)
 
 def cut():
     """The same as the cut operation in normal apps. In this case, though,
     the tag data isn't cut to the clipboard and instead remains in
     the copied atrribute."""
     selected = status['selectedtags']
-
-    QApplication.clipboard().setText(unicode(selected))
+    ba = QByteArray(unicode(selected).encode('utf8'))
+    mime = QMimeData()
+    mime.setData('application/x-puddletag-tags', ba)
+    QApplication.clipboard().setMimeData(mime)
 
     emit('writeselected', (dict([(z, "") for z in s])
                                     for s in selected))
@@ -166,11 +186,11 @@ def paste():
     rows = status['selectedrows']
     if not rows:
         return
-    try:
-        clip = eval(unicode(QApplication.clipboard().text()),
-                                {"__builtins__":None},{})
-    except:
-        raise StopIteration
+    data = QApplication.clipboard().mimeData().data(
+                'application/x-puddletag-tags').data()
+    if not data:
+        return
+    clip = eval(data.decode('utf8'), {"__builtins__":None},{})
     tags = []
     while len(tags) < len(rows):
         tags.extend(clip)
@@ -178,11 +198,11 @@ def paste():
     emit('writeselected', (tag for tag in tags))
 
 def paste_onto():
-    try:
-        clip = eval(unicode(QApplication.clipboard().text()),
-                                {"__builtins__":None},{})
-    except:
-        raise StopIteration
+    data = QApplication.clipboard().mimeData().data(
+                'application/x-puddletag-tags').data()
+    if not data:
+        return
+    clip = eval(data.decode('utf8'), {"__builtins__":None},{})
     selected = status['selectedtags']
     emit('writeselected', (dict(zip(s, cliptag.values()))
                             for s, cliptag in izip(selected, clip)))
