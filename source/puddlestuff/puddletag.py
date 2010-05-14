@@ -503,8 +503,8 @@ class MainWin(QMainWindow):
 
     def _writePreview(self):
         taginfo = self._table.model().taginfo
-        data = [z for z in enumerate(taginfo) if z[1].testData]
-        self.writeTags((z[1].testData for z in data), [z[0] for z in data])
+        data = [z for z in enumerate(taginfo) if z[1].preview]
+        self.writeTags((z[1].preview for z in data), [z[0] for z in data])
 
     def _renameSelected(self, filenames):
         rows = status['selectedrows']

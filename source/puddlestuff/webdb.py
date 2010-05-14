@@ -27,26 +27,38 @@ from collections import defaultdict
 import plugins
 import puddlestuff.tagsources.musicbrainz as mbrainz
 #import puddlestuff.tagsources.amazonsource as amazon
+try:
+    import puddlestuff.tagsources.amg as allmusic
+except:
+    allmusic = None
 import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
 from functools import partial
+from copy import copy
 
 def display_tag(tag):
-    """Used to display tags in the status bar in a human parseable format."""
+    """Used to display tags in in a human parseable format."""
     if not tag:
         return "<b>Error in pattern</b>"
-    s = "<b>%s</b>: %s, "
+    s = "<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
-    return "<br />".join([s % (z, tostr(v)) for z, v in sorted(tag.items()) if z != '__image'])[:-2]
+    if ('__image' in tag) and tag['__image']:
+        d = {'#images': unicode(len(tag['__image']))}
+    else:
+        d = {}
+    return "<br />".join([s % (z, tostr(v)) for z, v in
+                    sorted(tag.items() + d.items()) if z != '__image' and not
+                    z.startswith('#')])
 
 def display(pattern, tags):
     return replacevars(getfunc(pattern, tags), tags)
 
 def strip(audio, taglist):
-    return dict([(key, audio[key]) for key in taglist if key in audio])
+    return dict([(key, audio[key]) for key in taglist if key in audio and
+        not key.startswith('#')])
 
 class TagListWidget(QWidget):
     def __init__(self, tags=None, parent=None):
@@ -159,23 +171,25 @@ class SettingsDialog(QWidget):
         cparser.set('tagsources', 'coverdir', coverdir)
 
 class ChildItem(QTreeWidgetItem):
-    def __init__(self, dispformat, track, *args):
+    def __init__(self, dispformat, track, albuminfo, *args):
         QTreeWidgetItem.__init__(self, *args)
         self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsDragEnabled
                         | Qt.ItemIsSelectable)
+        self.setToolTip(0, display_tag(track))
+        self.displaytrack = track
+        track = track.copy()
+        track.update(albuminfo)
         self.track = track
         self.dispformat = dispformat
-        self.setToolTip(0, display_tag(track))
 
     def _setPattern(self, val):
-        self.setText(0, display(val, self.track))
+        self.setText(0, display(val, self.displaytrack))
         self._dispformat = val
 
     def _getPattern(self):
         return self._dispformat
 
     dispformat = property(_getPattern, _setPattern)
-
 
 class ExactMatchItem(ChildItem):
     def __init__(self, dispformat, audio, preview, *args):
@@ -193,25 +207,29 @@ class ExactMatchItem(ChildItem):
         self.setCheckState(0, Qt.Unchecked)
 
 class ParentItem(QTreeWidgetItem):
-    def __init__(self, artist, album, *itemargs):
+    def __init__(self, albuminfo, *itemargs):
         QTreeWidgetItem.__init__(self, *itemargs)
         self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
-        self.artist = artist
-        self.album = album
-        self.setText(0, u'%s - %s' % (artist, album))
         self.tracks = None
         self.setChildIndicatorPolicy(self.ShowIndicator)
         self.setIcon(0, QWidget().style().standardIcon(QStyle.SP_DirClosedIcon))
+        self.setInfo(albuminfo)
 
     def addTracks(self, tracks, dispformat):
         self.takeChildren()
         self.setText(0, self.text(0) + ' [%d]' % len(tracks))
-        try:
-            [self.addChild(ChildItem(dispformat, track)) for track in tracks]
-        except:
-            pdb.set_trace()
-            [self.addChild(ChildItem(dispformat, track)) for track in tracks]
+        [self.addChild(ChildItem(dispformat, track, self.info)) for track in tracks]
         self.tracks = tracks
+
+    def setInfo(self, info):
+        self.info = copy(info)
+        artist = info['artist']
+        album = info['album']
+        self.artist = artist
+        self.album = album
+        self.setText(0, u'%s - %s' % (artist, album))
+        self.setToolTip(0, display_tag(info))
+        
 
 class ReleaseWidget(QTreeWidget):
     def __init__(self, status, tagsource, parent = None):
@@ -306,17 +324,15 @@ class ReleaseWidget(QTreeWidget):
             for item in items:
                 if item.tracks is not None:
                     continue
-                artist = item.artist
-                album = item.album
                 self.emit(SIGNAL("statusChanged"),
                             u'Retrieving: <b>%s</b>' % item.text(0))
-                ret[item] = self._tagsource.retrieve(artist, album)[0]
+                ret[item] = self._tagsource.retrieve(item.info)
             return ret
         self.t = PuddleThread(func)
         self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
         self.t.start()
 
-    def setReleases(self, releases, exactmatches):
+    def setReleases(self, releases):
         self.clear()
         def item(text):
             i = QTreeWidgetItem([text])
@@ -324,35 +340,22 @@ class ReleaseWidget(QTreeWidget):
             i.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
             return i
 
-        if exactmatches:
-            exactitem = item('Exact Matches')
-            self.addTopLevelItem(exactitem)
-            def f(track, preview):
-                item = ExactMatchItem(self.dispformat, track, preview)
-                exactitem.addChild(item)
-                item.check()
-            [f(track, preview) for track, preview in exactmatches.items()]
-            if self.tagstowrite:
-                _strip = partial(strip, taglist=self.tagstowrite)
-                func = lambda (a, b): (a, _strip(b))
-                self.emit(SIGNAL('preview'), dict(map(func, exactmatches.items())))
-            else:
-                self.emit(SIGNAL('preview'), exactmatches)
-
-        for artist, albums in sorted(releases.items()):
-            for album, tracks in sorted(albums.items()):
-                parent = ParentItem(artist, album)
-                self.addTopLevelItem(parent)
-                if tracks:
-                    parent.addTracks(tracks, self.dispformat)
+        for albuminfo, tracks in sorted(releases):
+            artist = albuminfo['artist']
+            album = albuminfo['album']
+            parent = ParentItem(albuminfo)
+            self.addTopLevelItem(parent)
+            if tracks:
+                parent.addTracks(tracks, self.dispformat)
 
     def updateStatus(self, val):
         if not val:
             self.emit(SIGNAL("statusChanged"), 'An unexpected error occurred.')
             return
-        for item, tracks in val.items():
+        for item, (info, tracks) in val.items():
             if item.tracks is not None:
                 continue
+            item.setInfo(info)
             item.addTracks(tracks, self.dispformat)
         self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
         self._selectedTracks()
@@ -379,7 +382,10 @@ class MainWin(QWidget):
         self.receives = []
         self.setWindowTitle("Tag Sources")
         self._status = status
-        tagsources = [mbrainz]
+        if allmusic:
+            tagsources = [mbrainz, allmusic]
+        else:
+            tagsources = [mbrainz, allmusic]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
         self._configs = [module.info[1] for module in tagsources]
@@ -534,24 +540,8 @@ class MainWin(QWidget):
         if isinstance(retval, basestring):
             self.label.setText(retval)
         else:
-            releases, exact = retval
-            self.listbox.setReleases(releases, exact)
-            found = []
-            notfound = []
-            for artist, values in releases.items():
-                if not values.get('__albumlist') and len(values) <= 1:
-                    notfound.append(artist)
-                else:
-                    found.append(artist)
-            foundtext = u'Albums retrieved for %s.' % u', '.join(found)
-            notfoundtext = u'No albums found for %s.' % u', '.join(notfound)
-            if found and notfound:
-                text = u'%s<br />%s' % (foundtext, notfoundtext)
-            elif found:
-                text = foundtext
-            else:
-                text = notfoundtext
-            self.label.setText(text)
+            self.listbox.setReleases(retval)
+            self.label.setText(u'Albums retrieved.')
 
     def loadSettings(self):
         settings = PuddleConfig()

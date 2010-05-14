@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
-import sys
+import sys, puddlestuff
 
 setup(name='puddletag',
-      version='0.8.7',
+      version=puddlestuff.version_string,
       author='concentricpuddle',
       author_email='concentricpuddle@gmail.com',
       url='http://puddletag.sourceforge.net',
