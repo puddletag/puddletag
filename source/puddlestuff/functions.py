@@ -320,15 +320,17 @@ Match c&ase:, check
 only as &whole word, check'''
     matchcase, whole = check_truth(matchcase), check_truth(whole)
     word = re_escape(word)
+    
     if matchcase:
         matchcase = 0
     else:
         matchcase = re.IGNORECASE
     if chars is None:
-        chars = '\,\.\(\) \!\[\]'
+        chars = u'\,\.\(\) \!\[\]'
+    replaceword = replaceword.replace(u'\\', u'\\\\')
 
     if whole:
-        pat = re.compile('(^|[%s])%s([%s]|$)' %(chars, word, chars), matchcase)
+        pat = re.compile('(^|[%s])%s([%s]|$)' % (chars, word, chars), matchcase)
     else:
         pat = re.compile(word, matchcase)
 

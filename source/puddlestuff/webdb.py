@@ -56,9 +56,19 @@ def display_tag(tag):
 def display(pattern, tags):
     return replacevars(getfunc(pattern, tags), tags)
 
-def strip(audio, taglist):
-    return dict([(key, audio[key]) for key in taglist if key in audio and
-        not key.startswith('#')])
+def strip(audio, taglist, reverse = False):
+    tags = taglist[::]
+    if tags and tags[0].startswith('~'):
+        reverse = True
+        tags[0] = tags[0][1:]
+    else:
+        reverse = False
+    if reverse:
+        return dict([(key, audio[key]) for key in audio if key not in
+                        tags and not key.startswith('#')])
+    else:
+        return dict([(key, audio[key]) for key in taglist if key in audio and
+            not key.startswith('#')])
 
 class TagListWidget(QWidget):
     def __init__(self, tags=None, parent=None):
@@ -192,19 +202,23 @@ class ChildItem(QTreeWidgetItem):
     dispformat = property(_getPattern, _setPattern)
 
 class ExactMatchItem(ChildItem):
-    def __init__(self, dispformat, audio, preview, *args):
-        ChildItem.__init__(self, dispformat, preview, *args)
+    def __init__(self, dispformat, track, albuminfo, *args):
+        ChildItem.__init__(self, dispformat, track, albuminfo, *args)
         self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsDragEnabled
                       | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable)
+        self.audio = track['#exact']
         self.setCheckState(0, Qt.Checked)
-        self.preview = preview
-        self.audio = audio
 
     def check(self):
         self.setCheckState(0, Qt.Checked)
 
     def unCheck(self):
         self.setCheckState(0, Qt.Unchecked)
+
+
+def Item(dispformat, track, info):
+    return ChildItem(dispformat, track, info) if '#exact' not in \
+                track else ExactMatchItem(dispformat, track, info)
 
 class ParentItem(QTreeWidgetItem):
     def __init__(self, albuminfo, *itemargs):
@@ -218,8 +232,12 @@ class ParentItem(QTreeWidgetItem):
     def addTracks(self, tracks, dispformat):
         self.takeChildren()
         self.setText(0, self.text(0) + ' [%d]' % len(tracks))
-        [self.addChild(ChildItem(dispformat, track, self.info)) for track in tracks]
+        def addChild(track):
+            item = Item(dispformat, track, self.info)
+            self.addChild(item)
+            return item if '#exact' in track else None
         self.tracks = tracks
+        return filter(None, [addChild(track) for track in tracks])
 
     def setInfo(self, info):
         self.info = copy(info)
@@ -280,11 +298,11 @@ class ReleaseWidget(QTreeWidget):
                 return
         self._selectedTracks()
 
-    def _setExactMatches(self, item, row):
-        if hasattr(item, 'preview'):
+    def _setExactMatches(self, item, row=None):
+        if hasattr(item, 'audio'):
             if item.checkState(0) != Qt.Unchecked:
                 self.emit(SIGNAL('preview'), {item.audio:
-                        strip(item.preview, self.tagstowrite)})
+                        strip(item.track, self.tagstowrite)})
             else:
                 self.emit(SIGNAL('preview'), {item.audio: {}})
 
@@ -305,7 +323,7 @@ class ReleaseWidget(QTreeWidget):
 
         tracks = [child.track for child in children]
         if self.tagstowrite:
-            tags = self.tagstowrite
+            tags = self.tagstowrite[::]            
             tracks = [strip(track, tags) for track in tracks]
         if tracks:
             self.emit(SIGNAL('preview'),
@@ -346,7 +364,9 @@ class ReleaseWidget(QTreeWidget):
             parent = ParentItem(albuminfo)
             self.addTopLevelItem(parent)
             if tracks:
-                parent.addTracks(tracks, self.dispformat)
+                exact = parent.addTracks(tracks, self.dispformat)
+                if exact:
+                    [self._setExactMatches(item) for item in exact]
 
     def updateStatus(self, val):
         if not val:
