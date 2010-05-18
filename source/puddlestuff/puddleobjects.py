@@ -28,24 +28,15 @@ Contains objects used throughout puddletag"""
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, os,pdb,shutil
-from constants import MUTAGENERROR
 
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
-try:
-    import audioinfo
-except ImportError:
-    print MUTAGEN_LOAD_ERROR
-    sys.exit(0)
+import audioinfo
 from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
-try:
-    from configobj import ConfigObj
-except ImportError:
-    print CONFIGOBJ_LOAD_ERROR
-    sys.exit(0)
+from configobj import ConfigObj
 
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
