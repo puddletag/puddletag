@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QWidget

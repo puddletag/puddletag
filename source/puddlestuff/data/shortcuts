@@ -208,7 +208,7 @@ enabled=filesselected
 icon=:/cut.png
 
 [shortcut30]
-name=&Copy
+name=&Copy Selection
 command=copy
 control=mainwin
 shortcut=Ctrl+C
@@ -252,7 +252,7 @@ control=table
 enabled=filesselected
 
 [shortcut36]
-name=Paste &Onto
+name=Paste &Onto Selection
 command=paste_onto
 control=mainwin
 enabled=filesselected
@@ -275,3 +275,4 @@ name=Copy Complete &Tag
 command=copy_whole
 control=mainwin
 enabled=filesselected
+shortcut=Ctrl+Shift+C

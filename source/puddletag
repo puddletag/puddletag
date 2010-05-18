@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #puddletag.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -21,8 +22,36 @@
 
 #import psyco
 #psyco.full()
-import sys
 import sys, os
+_libs = [('mutagen', '(usually python-mutagen or just mutagen)', 
+                    'http://code.google.com/p/quodlibet/wiki/Mutagen'),
+         ('configobj', '(usually python-configobj)', 
+            'http://code.google.com/p/configobj/'),
+         ('pyparsing', '(python-pyparsing or python-parsing in most distros)',
+            'http://pyparsing.wikispaces.com/'),
+         ('musicbrainz2', '(python-musicbrainz2 in most distros)', 
+            'http://musicbrainz2.org/doc/PythonMusicBrainz2'),
+         ('PyQt4', '(python-qt4 in most)', 
+            'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
+
+def check_libs():
+    found = True
+    msg = "Error: %s module wasn't found, please check that it's installed " \
+            "properly. You can download it from you distro's repository" \
+            " %s or from the website %s"
+    for lib in _libs:
+        try:
+            __import__(lib[0])
+        except ImportError:
+            print msg % lib
+            found = False
+    if not found:
+       sys.exit(0)
+
+if __name__ == '__main__':
+    check_libs()
+
+
 from PyQt4.QtGui import QApplication, QFont
 from PyQt4.QtCore import pyqtRemoveInputHook
 import pdb
@@ -56,6 +85,7 @@ else:
     filename = None
 
 if __name__ == '__main__':
+    check_libs()
     app = QApplication(sys.argv)
     if size is not None:
         font = app.font()

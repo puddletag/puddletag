@@ -28,15 +28,25 @@ Contains objects used throughout puddletag"""
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, os,pdb,shutil
+from constants import MUTAGENERROR
 
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
-import audioinfo
+try:
+    import audioinfo
+except ImportError:
+    print MUTAGEN_LOAD_ERROR
+    sys.exit(0)
 from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
-from configobj import ConfigObj
+try:
+    from configobj import ConfigObj
+except ImportError:
+    print CONFIGOBJ_LOAD_ERROR
+    sys.exit(0)
+
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
@@ -49,8 +59,8 @@ class PuddleConfig(object):
 
     Only two functions of interest:
 
-    load -> load a key from a specified section
-    setSection -> save a key section"""
+    get -> load a key from a specified section
+    set -> save a key section"""
     def __init__(self, filename = None):
         self.settings = ConfigObj(filename, create_empty=True, encoding='utf8')
 

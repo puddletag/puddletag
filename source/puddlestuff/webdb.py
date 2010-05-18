@@ -57,6 +57,9 @@ def display(pattern, tags):
     return replacevars(getfunc(pattern, tags), tags)
 
 def strip(audio, taglist, reverse = False):
+    if not taglist:
+        return dict([(key, audio[key]) for key in audio if 
+                        not key.startswith('#')])
     tags = taglist[::]
     if tags and tags[0].startswith('~'):
         reverse = True
@@ -367,6 +370,7 @@ class ReleaseWidget(QTreeWidget):
                 exact = parent.addTracks(tracks, self.dispformat)
                 if exact:
                     [self._setExactMatches(item) for item in exact]
+                    self.emit(SIGNAL('exactMatches'), True)
 
     def updateStatus(self, val):
         if not val:
@@ -405,7 +409,7 @@ class MainWin(QWidget):
         if allmusic:
             tagsources = [mbrainz, allmusic]
         else:
-            tagsources = [mbrainz, allmusic]
+            tagsources = [mbrainz]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
         self._configs = [module.info[1] for module in tagsources]
@@ -458,6 +462,8 @@ class MainWin(QWidget):
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
         self.connect(self.listbox, SIGNAL('itemSelectionChanged()'),
                         self._enableWrite)
+        self.connect(self.listbox, SIGNAL('exactMatches'),
+                        self._enableWrite)
         self.connect(self.listbox, SIGNAL('preview'),
                         lambda tags: self.emit(SIGNAL('setpreview'), tags))
         hbox = QHBoxLayout()
@@ -497,8 +503,10 @@ class MainWin(QWidget):
         self.listbox._selectedTracks()
         self._tagstowrite[self._lastindex] = tags
 
-    def _enableWrite(self):
-        if self.listbox.selectedItems():
+    def _enableWrite(self, value = None):
+        if value is None:
+            value = self.listbox.selectedItems()
+        if value:
             self._writebutton.setEnabled(True)
         else:
             self._writebutton.setEnabled(False)
