@@ -4,7 +4,7 @@
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
 &Tools=Autonumbering &Wizard...,&Import Music Library...,&Duplicate finder...
-&Windows=Filter,Tag Panel,Filesystem,Tag Sources,Stored Tags,Music Library #,separator,&Lock Layout
+&Windows=Filter,Tag Panel,Filesystem,Tag Sources,Stored Tags,Music Library,Logs #,separator,&Lock Layout
 #Ab&out=About &Qt,
 
 [menuattrs]

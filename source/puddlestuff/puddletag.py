@@ -9,7 +9,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
-import mainwin.filterwin, mainwin.storedtags
+import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
 import puddlestuff.webdb
 import loadshortcuts as ls
 import m3u, findfunc, genres
@@ -63,7 +63,8 @@ def create_tool_windows(parent):
     cparser.filename = ls.menu_path
     for z in (mainwin.tagpanel.control, mainwin.dirview.control,
                 mainwin.patterncombo.control, mainwin.filterwin.control,
-                puddlestuff.webdb.control, mainwin.storedtags.control):
+                puddlestuff.webdb.control, mainwin.storedtags.control,
+                mainwin.logdialog.control):
         name = z[0]
         try:
             if not z[2]:

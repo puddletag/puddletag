@@ -1174,11 +1174,13 @@ class TagTable(QTableView):
             self.dirs.extend(dirs)
         else:
             self.dirs = dirs
-        files = set(files + getfiles(dirs, subfolders))
+        files = files 
+        [files.extend(z[1]) for z in getfiles(dirs, subfolders)]
 
         tags = []
         finished = lambda: self._loadFilesDone(tags, append, filepath)
         def what():
+            isdir = os.path.isdir
             for f in files:
                 tag = gettag(f)
                 if tag is not None:

@@ -33,5 +33,6 @@
 <file alias="preferences.png">data/preferences.png</file>
 <file alias="shortcuts">data/shortcuts</file>
 <file alias="menus">data/menus</file>
+<file alias="appicon.png">data/icon.png</file>
 </qresource>
 </RCC>

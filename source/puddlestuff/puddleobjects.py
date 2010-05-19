@@ -339,30 +339,29 @@ def dupes(l, method = None):
                 groups.append([i])
     return [z for z in groups if len(z) > 1]
 
-def getfiles(dirs, subfolders = False):
+def getfiles(dirs, subfolders = False, pattern='*'):
+    from glob import glob
+    join = path.join
     def recursedir(folder, subfolders):
         if subfolders:
-            #TODO: This really fucks up when reading files with malformed
-            #unicode filenames.
-            files = []
-            [[files.append(path.join(z[0], y)) for y in z[2]]
-                                        for z in os.walk(folder.encode('utf'))]
+            if isinstance(folder, str):
+                folder = folder.decode('utf')
+            return ((dirname, glob(join(dirname, pattern)))
+                for dirname, n, paths in os.walk(folder.encode('utf')))
         else:
             files = os.walk(folder).next()[2]
-            files = [path.join(folder, f) for f in files]
-        return files
+            return (folder, [path.join(folder, f) for f in files])
 
     if isinstance(dirs, basestring):
-        files = recursedir(dirs, subfolders)
+        dirs = [dirs]
+
+    if subfolders:
+        for dirname in dirs:
+            for info in recursedir(dirname, True):
+                yield info
     else:
-        files = []
-        if subfolders:
-            while dirs and subfolders:
-                [files.extend(recursedir(d, True)) for d in dirs]
-                dirs = [z for z in files if os.path.isdir(z)]
-        else:
-            [files.extend(recursedir(d, False)) for d in dirs]
-    return [z for z in files if not os.path.isdir(z)]
+        for d in dirs:
+            yield recursedir(d, False)
 
 def gettags(files):
     return (gettag(audio) for audio in files)

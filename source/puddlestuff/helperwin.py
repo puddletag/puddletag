@@ -280,7 +280,7 @@ class EditTag(QDialog):
     value and the third is the dictionary of the previous tag.
     (Because the user might choose to edit a different tag,
     then the one that was chosen and you'd want to delete that one)"""
-    def __init__(self, tag = None, parent = None, taglist = None):
+    def __init__(self, tag = None, parent = None, taglist = None, edit=True):
 
         QDialog.__init__(self, parent)
         self.vbox = QVBoxLayout()
@@ -297,7 +297,8 @@ class EditTag(QDialog):
         self.prevtag = tag
         label1 = QLabel("Value")
         self.value = QTextEdit()
-
+        okcancel = OKCancel()
+        okcancel.ok.setText('A&dd')
         if tag is not None:
             x = self.tagcombo.findText(tag[0])
 
@@ -306,10 +307,11 @@ class EditTag(QDialog):
             else:
                 self.tagcombo.setEditText(tag[0])
             self.value.setPlainText(tag[1])
+            if edit:
+                okcancel.ok.setText('E&dit')
 
         [self.vbox.addWidget(z) for z in [label, self.tagcombo, label1, self.value]]
-        okcancel = OKCancel()
-        okcancel.ok.setText("&Save")
+        
         self.vbox.addLayout(okcancel)
         self.setLayout(self.vbox)
 
@@ -541,7 +543,10 @@ class ExTags(QDialog):
         row = self.listbox.currentRow()
         if row != -1:
             prevtag = self._tag(row)
-            win = EditTag(prevtag, self, self._taglist)
+            if duplicate is True:
+                win = EditTag(prevtag, self, self._taglist, edit=False)
+            else:
+                win = EditTag(prevtag, self, self._taglist)
             win.setModal(True)
             win.show()
             if duplicate is True: #Have to check for truth, because this method

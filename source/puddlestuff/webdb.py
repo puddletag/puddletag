@@ -29,10 +29,10 @@ import puddlestuff.tagsources.musicbrainz as mbrainz
 #import puddlestuff.tagsources.amazonsource as amazon
 try:
     import puddlestuff.tagsources.amg as allmusic
-except:
+except ImportError:
     allmusic = None
 import puddlestuff.tagsources as tagsources
-from puddlestuff.tagsources import RetrievalError
+from puddlestuff.tagsources import RetrievalError, status_obj
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
@@ -402,7 +402,8 @@ class MainWin(QWidget):
     def __init__(self, status, parent = None):
         QWidget.__init__(self, parent)
         self.settingsdialog = SettingsDialog
-        self.emits = ['writepreview', 'setpreview', 'clearpreview']
+        self.emits = ['writepreview', 'setpreview', 'clearpreview',
+                      'logappend']
         self.receives = []
         self.setWindowTitle("Tag Sources")
         self._status = status
@@ -460,12 +461,15 @@ class MainWin(QWidget):
         self._taglist = TagListWidget()
         self.connect(self._taglist, SIGNAL('tagschanged'), self._changeTags)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
+        self.connect(status_obj, SIGNAL('statusChanged'), self.label.setText)
         self.connect(self.listbox, SIGNAL('itemSelectionChanged()'),
                         self._enableWrite)
         self.connect(self.listbox, SIGNAL('exactMatches'),
                         self._enableWrite)
         self.connect(self.listbox, SIGNAL('preview'),
                         lambda tags: self.emit(SIGNAL('setpreview'), tags))
+        self.connect(status_obj, SIGNAL('logappend'),
+                        lambda text: self.emit(SIGNAL('logappend'), text))
         hbox = QHBoxLayout()
         hbox.addWidget(self._searchparams, 1)
         hbox.addWidget(self.getinfo, 0)
@@ -569,7 +573,7 @@ class MainWin(QWidget):
             self.label.setText(retval)
         else:
             self.listbox.setReleases(retval)
-            self.label.setText(u'Albums retrieved.')
+            self.label.setText(u'Searching complete.')
 
     def loadSettings(self):
         settings = PuddleConfig()

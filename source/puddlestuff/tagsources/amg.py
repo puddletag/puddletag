@@ -6,16 +6,20 @@ import codecs
 import sys, pdb
 from functools import partial
 from collections import defaultdict
-try:
-    from puddlestuff.util import split_by_tag
-except ImportError:
-    pass
+from puddlestuff.util import split_by_tag
+from puddlestuff.tagsources import write_log, set_status, RetrievalError
 
 release_order = ('year', 'type', 'label', 'catalog')
 search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=1&x=0&y=0'
 
-search_order = (None, 'year', 'artist', None, 'album', None, 'label', None, 'genre')
+search_order = (None, 'year', 'artist', None, 'album', None, 'label', 
+                    None, 'genre')
 album_url = 'http://www.allmusic.com/cg/amg.dll?p=amg&sql='
+
+spanmap = {'Genre': 'genre',
+           'Styles': 'style',
+           'Themes': 'theme',
+           'Moods': 'mood'}
 
 def create_search(terms):
     return search_adress % terms.replace(' ', '+')
@@ -31,15 +35,6 @@ def equal(audio1, audio2, play=False, tags=('artist', 'album')):
         return False
     return True
 
-def get_track(trackinfo):
-    try:
-        return {'track': trackinfo[2].all_recursive_text().strip(),
-                'title': trackinfo[4].all_recursive_text().strip(),
-                'composer': trackinfo[5].all_recursive_text().strip(),
-                '__length': trackinfo[6].all_recursive_text().strip()}
-    except IndexError:
-        return None
-
 def find_a(tag, regex):
     ret = tag.find('a', href=re.compile(regex))
     if ret:
@@ -49,13 +44,18 @@ def find_a(tag, regex):
 def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
+def get_track(trackinfo):
+    try:
+        return {'track': text(trackinfo[2]),
+                'title': text(trackinfo[4]),
+                'composer': text(trackinfo[5]),
+                '__length': text(trackinfo[6])}
+    except IndexError:
+        return None
+
 def parse_album_element(element):
     return dict([(k, z.all_recursive_text()) for k, z in
                     zip(release_order, element)])
-
-def print_track(track):
-    print '\n'.join([u'  %s - %s' % z for z in track.items()])
-    print
 
 def parse_cover(soup):
     cover_html = soup.find('img', src=re.compile('http://image.allmusic.com/'))
@@ -67,12 +67,11 @@ def parse_cover(soup):
 
 def parselist(item):
     d = {}
-    titles = [z.all_recursive_text().strip() for z in item.find_all('span')]
+    titles = [text(z) for z in item.find_all('span')]
     for key, ul in zip(titles, item.find_all('ul')):
-        if key in listkeys:
-            key = listkeys[key]
-            d[key] = [li.all_recursive_text().strip() for 
-                            li in ul.find_all('li')]
+        if key in spanmap:
+            key = spanmap[key]
+            d[key] = [text(li) for li in ul.find_all('li')]
     return d
 
 def parse_rating(soup):
@@ -88,20 +87,19 @@ def parse_review(soup):
         review_td = [x for x in soup.find_all('td', valign="top", colspan="2")][0]
     except IndexError:
         return {}
-    review = review_td.all_recursive_text().strip()
+    review = text(review_td)
     #There are double-spaces in links and italics. Have to clean up.
     review = review.replace(' . ', '. ')
     review = review.replace('  ', ' ')
     return {'review': review}
 
+def print_track(track):
+    print '\n'.join([u'  %s - %s' % z for z in track.items()])
+    print
+
 def parse_tracks(soup):
     return filter(None, [get_track(trackinfo) for trackinfo in
                     soup.find_all('tr', {'id':"trlink"})])
-    
-listkeys = {'Genre': 'genre',
-            'Styles': 'style',
-            'Themes': 'theme',
-            'Moods': 'mood'}
 
 keys = {'Release Date': 'date',
         'Label': 'label',
@@ -112,9 +110,6 @@ keys = {'Release Date': 'date',
         'Styles': parselist,
         'Themes': parselist,
         'Rating': parse_rating}
-
-def text(z):
-    return z.all_recursive_text().strip()
 
 def parse_albumpage(page):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
@@ -142,7 +137,7 @@ def parse_search_element(element):
                         {'rel': 'track'}).element.attrib['href']})
     except AttributeError:
         pass
-    ret.update([(field, z.all_recursive_text().strip()) for field, z
+    ret.update([(field, text(z)) for field, z
                     in zip(search_order , element) if field])
     return ret
 
@@ -156,9 +151,20 @@ def parse_searchpage(page, artist, album):
     else:
         return False, albums
 
-def search(album):
-    search_url = create_search(album)
-    return urllib2.urlopen(search_url).read()
+def retrieve_album(url, coverurl=None):
+    write_log('Opening Album Page - %s' % url)
+    album_page = urllib2.urlopen(url).read()
+    info, tracks = parse_albumpage(album_page)
+    if coverurl:
+        try:
+            write_log('Retrieving Cover - %s'  % info['#cover-url'])
+            cover = retrieve_cover(info['#cover-url'])
+        except KeyError:
+            write_log('No cover found.')
+            cover = None
+    else:
+        cover = None
+    return info, tracks, cover
 
 def retrieve_cover(url):
     cover = urllib2.urlopen(url).read()
@@ -167,25 +173,18 @@ def retrieve_cover(url):
     f.close()
     return {'__image': [{'data': cover}]}
 
+def search(album):
+    search_url = create_search(album)
+    write_log(u'Search URL - %s' % search_url)
+    return urllib2.urlopen(search_url).read()
+
+def text(z):
+    return z.all_recursive_text().strip()
+
 def to_file(data, name):
     f = open(name, 'w')
     f.write(data)
     f.close()
-
-def retrieve_album(url, coverurl=None):
-    print 'Opening Album Page', url
-    album_page = urllib2.urlopen(url).read()
-    info, tracks = parse_albumpage(album_page)
-    if coverurl:
-        try:
-            print 'Retrieving Cover', info['#cover-url']
-            cover = retrieve_cover(info['#cover-url'])
-        except KeyError:
-            print 'No cover found.'
-            cover = None
-    else:
-        cover = None
-    return info, tracks, cover
 
 class AllMusic(object):
     def __init__(self, retrievecover=True):
@@ -199,19 +198,22 @@ class AllMusic(object):
             check_matches = True
         for artist, albums in params.items():
             for album in albums:
-                print 'Searching...', artist, album
-                searchpage = search(album)
-                print 'Retrieved search results.'
-                searchpage = open('name', 'r').read()
+                set_status(u'Searching for %s - %s' % (artist, album))
+                write_log(u'Searching for %s - %s' % (artist, album))
+                try:
+                    searchpage = search(album)
+                except urllib2.URLError, e:
+                    write_log(u'Error: While retrieving search page %s' % 
+                                unicode(e))
+                    raise RetrievalError(unicode(e))
+                write_log(u'Retrieved search results.')
                 matched, matches = parse_searchpage(searchpage, artist, album)
-                #matched, matches = True, [{'#albumurl': 'file:///mnt/documents/flux/allmusic/corrinne.htm',
-                        #'artist' : 'Corinne Bailey Rae',
-                        #'album' : 'The Sea'}]
-                #matched, matches = True, [{'#albumurl': 'file:///mnt/documents/flux/allmusic/ratatat-classsics.htm',
-                        #'artist' : 'Ratatat',
-                        #'album' : 'Classics'}]
                 if matched and len(matches) == 1:
                     info, tracks = self.retrieve(matches[0])
+                    set_status(u'Found match for: %s - %s' % 
+                                    (artist, info['#album']))
+                    write_log(u'Found match for: %s - %s' % 
+                                    (artist, info['#album']))
                     if check_matches:
                         for audio in albums[album]:
                             for track in tracks:
@@ -224,8 +226,16 @@ class AllMusic(object):
         return ret
 
     def retrieve(self, albuminfo):
+        set_status('Retrieving %s - %s' % (info['artist'], info['album']))
+        write_log('Retrieving %s - %s' % (info['artist'], info['album']))
+        write_log('Album URL - %s' % info['#albumurl'])
         url = albuminfo['#albumurl']
-        info, tracks, cover = retrieve_album(url, self._getcover)
+        try:
+            info, tracks, cover = retrieve_album(url, self._getcover)
+        except urllib2.URLError, e:
+            write_log(u'Error: While retrieving album URL %s - %s' % 
+                        (url, unicode(e)))
+            raise RetrievalError(unicode(e))
         if cover:
             info.update(cover)
         return info, tracks
@@ -236,5 +246,5 @@ name = 'AllMusic.com'
 
 if __name__ == '__main__':
     x = AllMusic()
-    info, tracks = x.search(params = {'cb': ['aoeu']})[0]
+    info, tracks = x.search(params = {'Corinne Bailey Rae': ['The Sea']})[0]
     print info['mood']

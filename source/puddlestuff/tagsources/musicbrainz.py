@@ -5,7 +5,7 @@ import musicbrainz2.webservice as ws
 import musicbrainz2.model as brainzmodel
 from collections import defaultdict
 import cPickle as pickle
-from puddlestuff.tagsources import RetrievalError
+from puddlestuff.tagsources import RetrievalError, write_log, set_status
 from puddlestuff.util import split_by_tag
 
 RELEASETYPES = (brainzmodel.Release.TYPE_OFFICIAL)
@@ -46,8 +46,8 @@ def get_tracks(r_id):
                 'title': track.title,
                 'album': release.title,
                 'year': release.getEarliestReleaseDate(),
-                'mbrainz_album_id': r_id,
-                'mbrainz_artist_id': release.artist.id,
+                #'mbrainz_album_id': r_id,
+                #'mbrainz_artist_id': release.artist.id,
                 'track': unicode(i+1),
                 'artist': track.artist.name if track.artist else artist}
                     for i, track in enumerate(release.tracks)], extra]
@@ -80,33 +80,44 @@ class MusicBrainz(object):
             check_matches = True
         for artist, albums in params.items():
             try:
-                print u'Retrieving Artist Info', artist
+                set_status(u'Retrieving Artist Info for <b>%s</b>' % artist)
+                write_log(u'Retrieving Artist Info for <b>%s</b>' % artist)
                 artist, artistid = artist_id(artist)
-                print artist, artistid
+                write_log(u'ArtistID for %s = "%s"' % (artist, artistid))
             except WebServiceError, e:
+                write_log('<b>Error:</b> While retrieving %s: %s' % (
+                            artist, unicode(e)))
                 raise RetrievalError(unicode(e))
             except ValueError:
-                print u'%s not found.' % artist
+                set_status(u'Artist %s not found.' % artist)
+                write_log(u'Artist %s not found.' % artist)
                 continue
             try:
-                print u'Getting Releases', artist
+                set_status(u'Retrieving releases for %s' % artist)
+                write_log(u'Retrieving releases for %s' % artist)
                 releases = get_releases(artistid)
                 releases = [{'artist': artist,
                             'album': z[0],
                             '#albumid': z[1],
                             '#artistid': artistid} for z in releases]
-                print releases
             except WebServiceError, e:
+                write_log('<b>Error:</b> While retrieving %s: %s' % (
+                            artistid, unicode(e)))
                 raise RetrievalError(unicode(e))
             if not releases:
-                print u'No albums found for %s.' % artist
+                set_status(u'No albums found for %s.' % artist)
+                write_log(u'No releases found for %s.' % artist)
                 continue
+            else:
+                write_log(u"MusicBrainz ID's for %s releases \n%s" % (artist,
+                            u'\n'.join([u'%s - %s' % z for z in releases])))
+                set_status(u'Releases found for %s' % artist)
             lowered = [z['album'].lower() for z in releases]
             matched = []
             allmatched = True
             for album in albums:
                 if album.lower() in lowered:
-                    print 'Getting tracks', artist, album
+                    set_status('Retrieving tracks for %s - %s' % (artist, album))
                     index = lowered.index(album.lower())
                     info, tracks = get_tracks(releases[index]['#albumid'])
                     if check_matches:
