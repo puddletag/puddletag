@@ -226,9 +226,9 @@ class AllMusic(object):
         return ret
 
     def retrieve(self, albuminfo):
-        set_status('Retrieving %s - %s' % (info['artist'], info['album']))
-        write_log('Retrieving %s - %s' % (info['artist'], info['album']))
-        write_log('Album URL - %s' % info['#albumurl'])
+        set_status('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
+        write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
+        write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
         try:
             info, tracks, cover = retrieve_album(url, self._getcover)
