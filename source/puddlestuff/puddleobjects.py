@@ -346,9 +346,9 @@ def getfiles(files, subfolders = False):
             #unicode filenames.
             files = []
             [[files.append(path.join(z[0], y)) for y in z[2]]
-                                            for z in os.walk(folder)]
+                                            for z in os.walk(folder.encode('utf8'))]
         else:
-            files = os.walk(folder).next()[2]
+            files = os.walk(folder.encode('utf8')).next()[2]
             files = [path.join(folder, f) for f in files]
         return files
 

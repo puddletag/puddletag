@@ -110,16 +110,20 @@ class MusicBrainz(object):
                 continue
             else:
                 write_log(u"MusicBrainz ID's for %s releases \n%s" % (artist,
-                            u'\n'.join([u'%s - %s' % z for z in releases])))
+                    u'\n'.join([u'%s - %s' % (z['album'], z['#albumid']) 
+                    for z in releases])))
                 set_status(u'Releases found for %s' % artist)
             lowered = [z['album'].lower() for z in releases]
             matched = []
             allmatched = True
             for album in albums:
                 if album.lower() in lowered:
-                    set_status('Retrieving tracks for %s - %s' % (artist, album))
                     index = lowered.index(album.lower())
-                    info, tracks = get_tracks(releases[index]['#albumid'])
+                    info = releases[index]
+                    set_status('Retrieving tracks for %s - %s' % (artist, album))
+                    write_log('Retrieving %s - %s: %s' % (artist, album, info['#albumid']))
+                    tracks, tempinfo = get_tracks(info['#albumid'])
+                    info.update(tempinfo)
                     if check_matches:
                         for audio in albums[album]:
                             for track in tracks:
@@ -138,7 +142,7 @@ class MusicBrainz(object):
     def retrieve(self, info):
         a_id = info['#artistid']
         r_id = info['#albumid']
-        return info, get_tracks(r_id)
+        return info, get_tracks(r_id)[0]
 
 info = [MusicBrainz, None]
 name = 'Musicbrainz'

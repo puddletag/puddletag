@@ -211,9 +211,9 @@ class AllMusic(object):
                 if matched and len(matches) == 1:
                     info, tracks = self.retrieve(matches[0])
                     set_status(u'Found match for: %s - %s' % 
-                                    (artist, info['#album']))
+                                    (artist, info['album']))
                     write_log(u'Found match for: %s - %s' % 
-                                    (artist, info['#album']))
+                                    (artist, info['album']))
                     if check_matches:
                         for audio in albums[album]:
                             for track in tracks:
