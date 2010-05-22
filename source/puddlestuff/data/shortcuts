@@ -276,3 +276,10 @@ command=copy_whole
 control=mainwin
 enabled=filesselected
 shortcut=Ctrl+Shift+C
+
+[shortcut41]
+name=No &Message Delete
+command=deleteSelectedWithoutMessage
+control=table
+enabled=filesselected
+shortcut=Shift+Delete

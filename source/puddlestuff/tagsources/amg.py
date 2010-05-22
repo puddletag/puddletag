@@ -202,6 +202,7 @@ class AllMusic(object):
                 write_log(u'Searching for %s - %s' % (artist, album))
                 try:
                     searchpage = search(album)
+                    #searchpage = open('search.htm').read()
                 except urllib2.URLError, e:
                     write_log(u'Error: While retrieving search page %s' % 
                                 unicode(e))

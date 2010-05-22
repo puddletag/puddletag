@@ -38,6 +38,7 @@ pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
 from functools import partial
 from copy import copy
+from puddlestuff.util import to_string
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
@@ -360,8 +361,11 @@ class ReleaseWidget(QTreeWidget):
             i.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             i.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
             return i
-
-        for albuminfo, tracks in sorted(releases):
+        
+        sortfunc = lambda element: u''.join(
+                        [to_string(element[0]['artist']).lower(),
+                         to_string(element[0]['album']).lower()])
+        for albuminfo, tracks in sorted(releases, key=sortfunc):
             artist = albuminfo['artist']
             album = albuminfo['album']
             parent = ParentItem(albuminfo)

@@ -428,9 +428,11 @@ def progress(func, pstring, maximum, threadfin = None):
     def s(*args):
         parent = args[0]
         win = ProgressWin(parent, maximum, pstring)
-        win.show()
+        if maximum > 1:
+            win.show()
         if len(args) > 1:
             f = func(*args)
+            
         else:
             f = func()
         parent.showmessage = True

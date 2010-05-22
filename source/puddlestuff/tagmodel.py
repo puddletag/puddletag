@@ -990,9 +990,12 @@ class TagTable(QTableView):
         return False
 
     isempty = property(_isEmpty)
+    
+    def deleteSelectedWithoutMessage(self):
+        self.deleteSelected(showmsg = False)
 
-    def deleteSelected(self, delfiles=True, ifgone = False):
-        if delfiles:
+    def deleteSelected(self, delfiles=True, ifgone = False, showmsg = True):
+        if delfiles and showmsg:
             result = QMessageBox.question (self, "puddletag",
                         "Are you sure you want to delete the selected files?",
                         "&Yes", "&No","", 1, 1)
