@@ -221,6 +221,9 @@ class TagModel(QAbstractTableModel):
         self.sortOrder = (0, Qt.AscendingOrder)
         self.saveModification = True
         self._filtered = []
+        self.previewMode = False
+        self._prevhighlight = []
+        
         if taginfo is not None:
             self.taginfo = unique(taginfo)
             self.sort(*self.sortOrder)
@@ -229,7 +232,9 @@ class TagModel(QAbstractTableModel):
             self.reset()
         for z in self.taginfo:
             z.preview = {}
+            z.previewundo = {}
             z.undo = {}
+            z.color = None
             if not hasattr(z, 'library'):
                 z.library = None
         self.undolevel = 0
@@ -240,7 +245,7 @@ class TagModel(QAbstractTableModel):
         top = self.index(self.rowCount(), 0)
         bottom = self.index(self.rowCount() -1, self.columnCount() -1)
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-        top, bottom)
+            top, bottom)
 
     def _getFontSize(self):
         return self._fontSize
@@ -395,6 +400,27 @@ class TagModel(QAbstractTableModel):
             except IndexError:
                 return QVariant()
         return QVariant(long(section + 1))
+    
+    def highlight(self, rows):
+        rows = rows[::]
+        hcolor = QPalette().color(QPalette.Mid)
+        nolight = set(self._prevhighlight).difference(rows)
+        self._prevhighlight = rows
+        rows.extend(nolight)
+        taginfo = self.taginfo
+
+        def set_color(row):
+            if row < len(taginfo):
+                if row in nolight:
+                    taginfo[row].color = None
+                else:
+                    taginfo[row].color = hcolor
+        [set_color(row) for row in rows]
+        if rows:
+            top = self.index(min(rows), 0)
+            bottom = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                top, bottom)
 
     def insertColumns(self, column, count, parent = QModelIndex(), data=None):
         self.beginInsertColumns (parent, column, column + count)
@@ -415,6 +441,8 @@ class TagModel(QAbstractTableModel):
         for z in taginfo:
             z.preview = {}
             z.undo = {}
+            z.previewundo = {}
+            z.color = None
             if not hasattr(z, 'library'):
                 z.library = None
 
@@ -607,6 +635,14 @@ class TagModel(QAbstractTableModel):
         """
         audio = self.taginfo[row]
 
+        if self.previewMode:
+            preview = audio.preview
+            undo = dict([(tag, copy(preview[tag])) if tag in preview
+                else (tag, []) for tag in tags])
+            audio.preview.update(tags)
+            audio.previewundo[self.undolevel] = undo
+            return
+
         if justrename:
             filetags = real_filetags(audio.revmapping, tags)
             undo = dict([(tag, copy(audio[tag])) if tag in audio
@@ -648,6 +684,10 @@ class TagModel(QAbstractTableModel):
                 previews.append(preview)
         if not rows:
             return
+        if not self.previewMode:
+            self._savedundolevel = self.undolevel
+            self.undolevel = 0
+            self.previewMode = True
         unsetrows = rows[len(previews):]
 
         if unsetrows:
@@ -701,7 +741,13 @@ class TagModel(QAbstractTableModel):
         rows = []
         edited = []
         for row, audio in enumerate(self.taginfo):
-            if level in audio.undo:
+            if self.previewMode:
+                undo_tags = audio.previewundo
+                if level in undo_tags:
+                    audio.preview.update(undo_tags[level])
+                    rows.append(row)
+                    del(undo_tags[level])
+            elif level in audio.undo:
                 if audio.library:
                     oldfiles.append(audio.tags.copy())
                 edited.append(self.setRowData(row, audio.undo[level]))
@@ -719,6 +765,8 @@ class TagModel(QAbstractTableModel):
         taginfo = self.taginfo
         if not rows:
             rows = [i for i,z in enumerate(taginfo) if z.preview]
+            self.previewMode = False
+            self.undolevel = self._savedundolevel
         for row in rows:
             taginfo[row].preview = {}
 
@@ -1207,6 +1255,14 @@ class TagTable(QTableView):
         elif not append:
             sortcolumn = self.horizontalHeader().sortIndicatorSection()
             QTableView.sortByColumn(self, sortcolumn)
+        
+        model = self.model()
+        for z in model.taginfo:
+            z.color = None
+        model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                    model.index(0,0), model.index(model.rowCount() -1,
+                    model.columnCount() -1))
+        self.selectionChanged()
 
     def load_tags(self, tags):
         self.fillTable(tags, False)
@@ -1344,9 +1400,13 @@ class TagTable(QTableView):
         want self.selectedRows updated without hassle."""
         if selected is not None and deselected is not None:
             QTableView.selectionChanged(self, selected, deselected)
+        
+        taginfo = self.model().taginfo
+        model = self.model()
 
         selectedRows = set()
         selectedColumns = set()
+        
         for z in self.selectedIndexes():
             selectedRows.add(z.row())
             selectedColumns.add(z.column())
@@ -1359,9 +1419,9 @@ class TagTable(QTableView):
                 self.emit(SIGNAL('filesselected'), True)
             else:
                 self.emit(SIGNAL('filesselected'), False)
+            model.highlight(self.selectedRows)
+            tags = [taginfo[row] for row in self.selectedRows]
 
-            tags =  [z for i,z in enumerate(self.model().taginfo) if i in
-                        selectedRows]
             self.emit(SIGNAL('tagselectionchanged'), tags,
                                         selectedRows, selectedColumns)
 
@@ -1447,7 +1507,6 @@ class TagTable(QTableView):
         select = lambda top, low, col: selection.append(
                         QItemSelectionRange(modelindex(top, col),
                                                     modelindex(low, col)))
-
         newindexes = {}
 
         while True:

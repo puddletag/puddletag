@@ -20,7 +20,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys, pdb
-from puddleobjects import unique, OKCancel, PuddleThread, PuddleConfig
+from puddleobjects import unique, OKCancel, PuddleThread, PuddleConfig, winsettings
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from collections import defaultdict
@@ -106,10 +106,12 @@ class TagListWidget(QWidget):
         self._text.setText(u', '.join(tags))
 
 class SourcePrefs(QDialog):
-    def __init__(self, controls, parent = None):
+    def __init__(self, title, controls, parent = None):
         QDialog.__init__(self, parent)
         vbox = QVBoxLayout()
         self._controls = []
+        winsettings(title, self)
+        self.setWindowTitle(u'Configure: ' + title)
         for desc, ctype, default in controls:
             if ctype == TEXT:
                 control = QLineEdit(default)
@@ -156,21 +158,46 @@ class SettingsDialog(QWidget):
     def __init__(self, parent = None, status = None):
         QWidget.__init__(self, parent)
         self.title = 'Tag Sources'
-        label = QLabel('&Display format for individual tracks.')
         cparser = PuddleConfig()
         text = cparser.get('tagsources', 'displayformat', '%track% - %title%')
+        enablesort = cparser.get('tagsources', 'sort', True)
+        sortorder = cparser.get('tagsources', 'sortorder', [u'artist', u'album'])
+        albumformat = cparser.get('tagsources', 'albumformat', '%artist% - %album%')
+        
+        label = QLabel('&Display format for individual tracks.')
         self._text = QLineEdit(text)
         label.setBuddy(self._text)
         vbox = QVBoxLayout()
         vbox.addWidget(label)
         vbox.addWidget(self._text)
+        
+        albumlabel = QLabel('Display format for &retrieved albums')
+        self._albumdisp = QLineEdit(albumformat)
+        albumlabel.setBuddy(self._albumdisp)
+        
+        vbox.addWidget(albumlabel)
+        vbox.addWidget(self._albumdisp)
 
         self._coverdir = QLineEdit(tagsources.COVERDIR)
-        label = QLabel('Directory to store album c&overs in.')
+        label = QLabel('Directory to store album &covers in.')
         label.setBuddy(self._coverdir)
 
-        vbox.addWidget(label)
-        vbox.addWidget(self._coverdir)
+        self._enablesort = QCheckBox('&Sort Retrieved Albums')
+        sortlabel = QLabel('Sort &order (comma separated &fields).')
+        self._sortorder = QLineEdit()
+        sortlabel.setBuddy(self._sortorder)
+        self.connect(self._enablesort, SIGNAL('stateChanged(int)'),
+            lambda state: self._sortorder.setEnabled(bool(state)))
+        self._sortorder.setText(', '.join(sortorder))
+        self._enablesort.setCheckState(Qt.Checked if enablesort 
+            else Qt.Unchecked)
+
+        vbox.addWidget(self._enablesort)
+        vbox.addWidget(sortlabel)
+        vbox.addWidget(self._sortorder)
+
+        #vbox.addWidget(label)
+        #vbox.addWidget(self._coverdir)
 
         vbox.addStretch()
         self.setLayout(vbox)
@@ -180,9 +207,25 @@ class SettingsDialog(QWidget):
         control.listbox.dispformat = text
         coverdir = unicode(self._coverdir.text())
         tagsources.set_coverdir(coverdir)
+
+        sortorder = [z.strip() for z in 
+                        unicode(self._sortorder.text()).split(',')]
+        enablesort = bool(self._enablesort.checkState())
+        if not enablesort:
+            control.listbox.sortOrder = []
+        else:
+            control.listbox.sortOrder = sortorder
+            control.listbox.sort()
+        
+        albumdisp = unicode(self._albumdisp.text())
+        control.listbox.albumformat = albumdisp
+
         cparser = PuddleConfig()
         cparser.set('tagsources', 'displayformat', text)
         cparser.set('tagsources', 'coverdir', coverdir)
+        cparser.set('tagsources', 'sort', enablesort)
+        cparser.set('tagsources', 'sortorder', sortorder)
+        cparser.set('tagsources', 'albumformat', albumdisp)
 
 class ChildItem(QTreeWidgetItem):
     def __init__(self, dispformat, track, albuminfo, *args):
@@ -225,13 +268,15 @@ def Item(dispformat, track, info):
                 track else ExactMatchItem(dispformat, track, info)
 
 class ParentItem(QTreeWidgetItem):
-    def __init__(self, albuminfo, *itemargs):
+    def __init__(self, albuminfo, dispformat, *itemargs):
         QTreeWidgetItem.__init__(self, *itemargs)
-        self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+        self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | 
+                        Qt.ItemIsDropEnabled )
         self.tracks = None
+        self._dispformat = '%artist% - %title%'
         self.setChildIndicatorPolicy(self.ShowIndicator)
         self.setIcon(0, QWidget().style().standardIcon(QStyle.SP_DirClosedIcon))
-        self.setInfo(albuminfo)
+        self.setInfo(albuminfo, dispformat)
 
     def addTracks(self, tracks, dispformat):
         self.takeChildren()
@@ -243,15 +288,27 @@ class ParentItem(QTreeWidgetItem):
         self.tracks = tracks
         return filter(None, [addChild(track) for track in tracks])
 
-    def setInfo(self, info):
+    def setInfo(self, info, dispformat=None):
         self.info = copy(info)
         artist = info['artist']
         album = info['album']
         self.artist = artist
         self.album = album
-        self.setText(0, u'%s - %s' % (artist, album))
         self.setToolTip(0, display_tag(info))
-        
+
+        if dispformat is not None:
+            self.dispformat = dispformat
+        else:
+            self.dispformat = self.dispformat
+    
+    def _setPattern(self, val):
+        self.setText(0, display(val, self.info))
+        self._dispformat = val
+
+    def _getPattern(self):
+        return self._dispformat
+
+    dispformat = property(_getPattern, _setPattern)
 
 class ReleaseWidget(QTreeWidget):
     def __init__(self, status, tagsource, parent = None):
@@ -270,6 +327,8 @@ class ReleaseWidget(QTreeWidget):
         self._status = status
         self._tagsource = tagsource
         self.tagstowrite = []
+        self.sortOrder = ['artist', 'album']
+        self._albumformat = '%artist% - %album%'
 
         connect = lambda signal, slot: self.connect(self, SIGNAL(signal), slot)
         connect('itemSelectionChanged()', self._selChanged)
@@ -361,14 +420,14 @@ class ReleaseWidget(QTreeWidget):
             i.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
             i.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
             return i
-        
+
         sortfunc = lambda element: u''.join(
-                        [to_string(element[0]['artist']).lower(),
-                         to_string(element[0]['album']).lower()])
+                        [to_string(element[0].get(key)).lower() for key in 
+                            self.sortOrder])
         for albuminfo, tracks in sorted(releases, key=sortfunc):
             artist = albuminfo['artist']
             album = albuminfo['album']
-            parent = ParentItem(albuminfo)
+            parent = ParentItem(albuminfo, self.albumformat)
             self.addTopLevelItem(parent)
             if tracks:
                 exact = parent.addTracks(tracks, self.dispformat)
@@ -401,6 +460,31 @@ class ReleaseWidget(QTreeWidget):
             iterator += 1
 
     dispformat = property(_getDispFormat, _setDispFormat)
+    
+    def _getAlbumFormat(self):
+        return self._albumformat
+
+    def _setAlbumFormat(self, val):
+        take = self.topLevelItem
+        for item in [take(row) for row in range(self.topLevelItemCount())]:
+            if item:
+                item.dispformat = val
+        self._albumformat = val
+
+    albumformat = property(_getAlbumFormat, _setAlbumFormat)
+
+    def sort(self):
+        if not self.sortOrder:
+            return
+        take = self.takeTopLevelItem
+        items = [take(0) for row in range(self.topLevelItemCount())]
+        self.clear()
+        sortfunc = lambda item: u''.join(
+                        [to_string(item.info.get(key)).lower() for key in 
+                            self.sortOrder])
+        for item in sorted(filter(None, items), key=sortfunc):
+            if item:
+                self.addTopLevelItem(item)
 
 class MainWin(QWidget):
     def __init__(self, status, parent = None):
@@ -439,6 +523,7 @@ class MainWin(QWidget):
         sourcebox.addWidget(sourcelabel)
         sourcebox.addWidget(self.sourcelist, 1)
         sourcebox.addWidget(preferences)
+        self._prefbutton = preferences
 
         self._searchparams = QLineEdit()
         tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
@@ -503,6 +588,10 @@ class MainWin(QWidget):
             self._config = self._tagsource.preferences
         else:
             self._config = self._configs[index]
+        if not self._config:
+            self._prefbutton.hide()
+        else:
+            self._prefbutton.show()
         self._lastindex = index
         self._taglist.setTags(self._tagstowrite[index])
 
@@ -566,7 +655,7 @@ class MainWin(QWidget):
         if hasattr(config, 'connect'):
             win = config(parent=self)
         else:
-            win = SourcePrefs(config, self)
+            win = SourcePrefs(self._tagsource.name, config, self)
         win.setModal(True)
         self.connect(win, SIGNAL('tagsourceprefs'), self._tagsource.applyPrefs)
         win.show()
@@ -589,6 +678,15 @@ class MainWin(QWidget):
         self._taglist.setTags(self._tagstowrite[index])
         df = settings.get('tagsources', 'displayformat', u'%track% - %title%')
         self.listbox.dispformat = df
+        enablesort = settings.get('tagsources', 'sort', True)
+        sortorder = settings.get('tagsources', 'sortorder', [u'artist', u'album'])
+        if enablesort:
+            self.listbox.sortOrder = sortorder
+        else:
+            self.listbox.sortOrder = []
+        albumformat = settings.get('tagsources', 'albumformat', 
+                                        '%artist% - %album%')
+        self.listbox.albumformat = albumformat
 
     def saveSettings(self):
         settings = PuddleConfig()

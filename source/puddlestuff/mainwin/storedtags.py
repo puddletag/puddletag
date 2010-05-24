@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -30,6 +31,8 @@ class StoredTags(QScrollArea):
         #self.connect(widget, SIGNAL('wheelEvent'), self._hScroll)
 
     def load(self, audios, selectedRows, selectedColumns):
+        if not self.isVisible():
+            return
         if hasattr(self, '_t') and self._t.isRunning():
             self._t.wait()
         locker = QMutexLocker(mutex)

@@ -457,8 +457,18 @@ class MainWin(QMainWindow):
     def writeTags(self, tagiter, rows=None):
         if not rows:
             rows = status['selectedrows']
-        setRowData = self._table.model().setRowData
+        model = self._table.model()
+        setRowData = model.setRowData
+        def fin():
+            model.undolevel += 1
+            self._table.selectionChanged()
+            if model.previewMode:
+                self.emit(SIGNAL('libfilesedited'), lib_updates)
         lib_updates = []
+
+        if model.previewMode:
+            [setRowData(row, f, undo=True) for row, f in izip(rows, tagiter)]
+            fin()
 
         def func():
             for row, f in izip(rows, tagiter):
@@ -474,17 +484,26 @@ class MainWin(QMainWindow):
                         yield m, 1
                     else:
                         yield m, len(rows)
-        def fin():
-            self._table.model().undolevel += 1
-            self._table.selectionChanged()
-            self.emit(SIGNAL('libfilesedited'), lib_updates)
+
         s = progress(func, 'Writing ', len(rows), fin)
         s(self)
 
     def writeOneToMany(self, d):
+        model = self._table.model()
         rows = status['selectedrows']
-        setRowData = self._table.model().setRowData
+        setRowData = model.setRowData
         lib_updates = []
+
+        def fin():
+            model.undolevel += 1
+            self._table.selectionChanged()
+            if model.previewMode:
+                self.emit(SIGNAL('libfilesedited'), lib_updates)
+
+        if model.previewMode:
+            [setRowData(row, d, undo=True) for row in rows]
+            fin()
+            return
 
         def func():
             for row in rows:
@@ -495,22 +514,39 @@ class MainWin(QMainWindow):
                     yield None
                 except (IOError, OSError), e:
                     yield e.filename, e.strerror, len(rows)
-        def fin():
-            self._table.model().undolevel += 1
-            self._table.selectionChanged()
-            self.emit(SIGNAL('libfilesedited'), lib_updates)
+
         s = progress(func, 'Writing ', len(rows), fin)
         s(self)
 
     def _writePreview(self):
         taginfo = self._table.model().taginfo
-        data = [z for z in enumerate(taginfo) if z[1].preview]
-        self.writeTags((z[1].preview for z in data), [z[0] for z in data])
+        def get(audio):
+            ret = audio.preview
+            audio.preview = {}
+            return ret
+        data = [(row, get(audio)) for row, audio in 
+                    enumerate(taginfo) if audio.preview]
+        self._table.model().previewMode = False
+        self.writeTags((z[1] for z in data), [z[0] for z in data])
 
     def _renameSelected(self, filenames):
         rows = status['selectedrows']
         files = status['selectedfiles']
-        setRowData = self._table.model().setRowData
+        model = self._table.model()
+        setRowData = model.setRowData
+        
+        def fin():
+            model.undolevel += 1
+            self._table.selectionChanged()
+
+        if model.previewMode:
+            for row, audio, filename in izip(rows, files, filenames):
+                tag = PATH
+                if tag in audio.mapping:
+                    tag = audio.mapping[tag]
+                setRowData(row, {tag: filename}, True, True)
+            fin()
+            return
 
         def func():
             for row, audio, filename in izip(rows, files, filenames):
@@ -520,16 +556,14 @@ class MainWin(QMainWindow):
                 try:
                     setRowData(row, {tag: filename}, True, True)
                     yield None
-                except (IOError, OSError), e:
-                    m = 'An error occured while renaming <b>%s</b>. (%s)' % (
-                            e.filename, e.strerror)
+                except EnvironmentError, e:
+                    m = 'An error occured while renaming <b>%s</b> to ' \
+                        '<b>%s</b>. (%s)' % (audio.filepath, filename, e.strerror)
                     if row == rows[-1]:
                         yield m, 1
                     else:
                         yield m, len(rows)
-        def fin():
-            self._table.model().undolevel += 1
-            self._table.selectionChanged()
+
         s = progress(func, 'Renaming ', len(rows), fin)
         s(self)
 

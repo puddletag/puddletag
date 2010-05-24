@@ -278,7 +278,7 @@ enabled=filesselected
 shortcut=Ctrl+Shift+C
 
 [shortcut41]
-name=No &Message Delete
+name=Delete &Without Confirmation
 command=deleteSelectedWithoutMessage
 control=table
 enabled=filesselected

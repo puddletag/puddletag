@@ -1,5 +1,5 @@
 [menu]
-&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,No &Message Delete,separator,&Refresh,&Clear,separator,&Exit
+&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
 &Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy Selection,Copy Complete &Tag,&Paste,Paste &Onto Selection,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,Select &Directory,separator,&Increase Font,&Decrease Font,separator,&Preferences
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions

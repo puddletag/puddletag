@@ -3,11 +3,13 @@ import re
 import parse_html
 import urllib2
 import codecs
-import sys, pdb
+import sys, pdb, re
 from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
 from puddlestuff.tagsources import write_log, set_status, RetrievalError
+from puddlestuff.constants import CHECKBOX
+from puddlestuff.puddleobjects import PuddleConfig
 
 release_order = ('year', 'type', 'label', 'catalog')
 search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=1&x=0&y=0'
@@ -89,8 +91,8 @@ def parse_review(soup):
         return {}
     review = text(review_td)
     #There are double-spaces in links and italics. Have to clean up.
-    review = review.replace(' . ', '. ')
-    review = review.replace('  ', ' ')
+    first_white = lambda match: match.groups()[0][0]
+    review = re.sub('(\s+)', first_white, review)
     return {'review': review}
 
 def print_track(track):
@@ -186,9 +188,14 @@ def to_file(data, name):
     f.write(data)
     f.close()
 
+
+
 class AllMusic(object):
-    def __init__(self, retrievecover=True):
-        self._getcover = retrievecover
+    name = 'AllMusic.com'
+    def __init__(self):
+        cparser = PuddleConfig()
+        self._getcover = cparser.get('amg', 'retrievecovers', True)
+        self.preferences = [['Retrieve Covers', CHECKBOX, self._getcover]]
 
     def search(self, audios=None, params=None):
         ret = []
@@ -241,6 +248,11 @@ class AllMusic(object):
             info.update(cover)
         return info, tracks
 
+    def applyPrefs(self, args):
+        self._getcover = args[0]
+        self.preferences[0][2] = self._getcover
+        cparser = PuddleConfig()
+        cparser.set('amg', 'retrievecovers', self._getcover)
 
 info = [AllMusic, None]
 name = 'AllMusic.com'

@@ -72,6 +72,7 @@ def get_all_releases(title):
     return artists, albums, albumlist
 
 class MusicBrainz(object):
+    name = 'Musicbrainz'
     def search(self, audios=None, params=None):
         ret = []
         check_matches = False

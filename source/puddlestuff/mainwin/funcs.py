@@ -30,28 +30,9 @@ def auto_numbering(parent=None):
     """Shows the autonumbering wizard and sets the tracks
         numbers should be filled in"""
     tags = status['selectedfiles']
-    def convert(num):
-        try:
-            return long(num)
-        except TypeError:
-            return 1
-
     numtracks = len(tags)
 
-    numbers = [tag['track'][0] for tag in tags if 'track' in tag]
-    if not numbers:
-        mintrack = 1
-        enablenumtracks = False
-    else:
-        mintrack = sorted(numbers, cmp=natcasecmp)[0]
-        if "/" in mintrack:
-            enablenumtracks = True
-            mintrack, numtracks = [convert(z) for z in mintrack.split("/", 2)]
-        else:
-            enablenumtracks = False
-            mintrack = convert(mintrack)
-
-    win = helperwin.TrackWindow(parent, mintrack, numtracks, enablenumtracks)
+    win = helperwin.TrackWindow(parent, 1, numtracks, False)
     win.setModal(True)
     t = partial(number_tracks, tags)
     win.connect(win, SIGNAL("newtracks"), t)
@@ -325,8 +306,8 @@ def tag_to_file():
     dirname = path.dirname
 
     def newfilename(f):
-        t = tf(pattern, f.filepath, True, f.ext)
-        return join(dirname(f.filepath), safe_name(t))
+        t = tf(pattern, f, True, f.ext)
+        return join(f.dirpath, safe_name(t))
 
     emit('renameselected', (newfilename(f) for f in files))
 

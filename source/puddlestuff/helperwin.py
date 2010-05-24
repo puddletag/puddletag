@@ -352,6 +352,17 @@ class StatusWidgetItem(QTableWidgetItem):
     status = property(_getstatus, _setstatus)
 
 
+class VerticalHeader(QHeaderView):
+    def __init__(self, parent = None):
+        QHeaderView.__init__(self, Qt.Vertical, parent)
+        self.setDefaultSectionSize(self.minimumSectionSize() + 4)
+        self.setMinimumSectionSize(1)
+
+        self.connect(self, SIGNAL('sectionResized(int,int,int)'), self._resize)
+
+    def _resize(self, row, oldsize, newsize):
+        self.setDefaultSectionSize(newsize)
+
 class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
@@ -368,6 +379,7 @@ class ExTags(QDialog):
         self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
 
         self.listbox = QTableWidget(0, 2, self)
+        self.listbox.setVerticalHeader(VerticalHeader())
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(True)
         self.listbox.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -632,8 +644,14 @@ class ExTags(QDialog):
 
     def _loadsingle(self, tags):
         items = []
-        for item, val in sorted(tags.usertags.items()):
-            [items.append([item, z]) for z in val]
+        d = tags.usertags.copy()
+        d.update(tags.preview)
+        for key, val in sorted(d.items()):
+            if not key.startswith('__'):
+                if isinstance(val, basestring):
+                    items.append([key, val])
+                else:
+                    [items.append([key, z]) for z in val]
         [self._settag(i, *item) for i, item in enumerate(items)]
         self.piclabel.lastfilename = tags.dirpath
         if '__library' not in tags:
