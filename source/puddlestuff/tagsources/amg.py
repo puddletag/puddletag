@@ -3,7 +3,7 @@ import re
 import parse_html
 import urllib2
 import codecs
-import sys, pdb, re
+import sys, pdb, re, time
 from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
@@ -128,12 +128,19 @@ def parse_albumpage(page):
     info.update(parse_rating(album_soup))
     info.update(parse_cover(album_soup))
     info.update(parse_review(album_soup))
+    if 'date' in info:
+        try:
+            date = time.strptime(info['date'], '%b %d, %Y')
+            info['date'] = time.strftime('%Y-%m-%d', date)
+        except ValueError:
+            date = time.strptime(info['date'], '%b %Y')
+            info['date'] = time.strftime('%Y-%m', date)
 
     releasetype = [parse_album_element(t) for t in album_soup.find_all('table', width="342", cellpadding="0", cellspacing="0")[0][1:]]
     return info, parse_tracks(album_soup)
 
 def parse_search_element(element):
-    ret = {'#albumurl' : album_url + element.element.attrib['onclick'][3:-1]}
+    ret = {'#albumurl' : album_url + element.element.attrib['onclick'][3:-2]}
     try:
         ret.update({'#play': element[3].find('a',
                         {'rel': 'track'}).element.attrib['href']})
@@ -141,6 +148,7 @@ def parse_search_element(element):
         pass
     ret.update([(field, text(z)) for field, z
                     in zip(search_order , element) if field])
+    ret['#extrainfo'] = [ret['album'] + u' at AllMusic.com', ret['#albumurl']]
     return ret
 
 def parse_searchpage(page, artist, album):
@@ -189,7 +197,6 @@ def to_file(data, name):
     f.close()
 
 
-
 class AllMusic(object):
     name = 'AllMusic.com'
     def __init__(self):
@@ -234,6 +241,7 @@ class AllMusic(object):
         return ret
 
     def retrieve(self, albuminfo):
+        #return albuminfo, []
         set_status('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Album URL - %s' % albuminfo['#albumurl'])

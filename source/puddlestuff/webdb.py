@@ -378,6 +378,10 @@ class ReleaseWidget(QTreeWidget):
         selected = self.selectedItems()
 
         toplevels = [z for z in selected if not z.parent()]
+        for item in toplevels:
+            if '#extrainfo' in item.info:
+                self.emit(SIGNAL('infoChanged'), u'<a href="%s">%s</a>' % (
+                    item.info['#extrainfo'][1], item.info['#extrainfo'][0]))
         if toplevels:
             children = [z for z in selected if z.parent() and z.parent() not in toplevels]
             [children.extend(self._children(parent)) for parent in toplevels]
@@ -389,6 +393,12 @@ class ReleaseWidget(QTreeWidget):
             tags = self.tagstowrite[::]            
             tracks = [strip(track, tags) for track in tracks]
         if tracks:
+            for tag in tracks:
+                if '#extrainfo' in tag:
+                    self.emit(SIGNAL('infoChanged'), u'<a href="%s">%s</a>' % (
+                        tag['#extrainfo'][1], tag['#extrainfo'][0]))
+                    break
+
             self.emit(SIGNAL('preview'),
                 tracks[:len(self._status['selectedrows'])])
 
@@ -559,6 +569,10 @@ class MainWin(QWidget):
                         lambda tags: self.emit(SIGNAL('setpreview'), tags))
         self.connect(status_obj, SIGNAL('logappend'),
                         lambda text: self.emit(SIGNAL('logappend'), text))
+        
+        infolabel = QLabel()
+        self.connect(self.listbox, SIGNAL('infoChanged'), infolabel.setText)
+        
         hbox = QHBoxLayout()
         hbox.addWidget(self._searchparams, 1)
         hbox.addWidget(self.getinfo, 0)
@@ -569,11 +583,13 @@ class MainWin(QWidget):
         vbox.addWidget(self.label)
         vbox.addWidget(self.listbox, 1)
         hbox = QHBoxLayout()
-        hbox.addWidget(self._taglist, 1)
+        hbox.addWidget(infolabel, 1)
         hbox.addStretch()
         hbox.addWidget(self._writebutton)
         hbox.addWidget(clear)
         vbox.addLayout(hbox)
+
+        vbox.addWidget(self._taglist)
 
         self.setLayout(vbox)
         self._changeSource(0)

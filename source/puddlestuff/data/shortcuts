@@ -271,7 +271,7 @@ enabled=filesselected
 shortcut=Ctrl+Shift+S
 
 [shortcut40]
-name=Copy Complete &Tag
+name=Copy All &Fields
 command=copy_whole
 control=mainwin
 enabled=filesselected
