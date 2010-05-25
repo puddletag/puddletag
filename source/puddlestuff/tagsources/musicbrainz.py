@@ -39,18 +39,31 @@ def get_tracks(r_id):
         artist = ''
     if release.getReleaseEventsAsDict():
         extra = {'date': min(release.getReleaseEventsAsDict().values())}
+        if not extra['date']:
+            del(extra['date'])
     else:
         extra = {}
     if release.tracks:
-        return [[{#'mbrainz_track_id': track.id,
+        year = release.getEarliestReleaseDate()
+        if year:
+            return [[{#'mbrainz_track_id': track.id,
                 'title': track.title,
                 'album': release.title,
-                'year': release.getEarliestReleaseDate(),
+                'year': year,
                 #'mbrainz_album_id': r_id,
                 #'mbrainz_artist_id': release.artist.id,
                 'track': unicode(i+1),
                 'artist': track.artist.name if track.artist else artist}
                     for i, track in enumerate(release.tracks)], extra]
+        else:
+            return [[{#'mbrainz_track_id': track.id,
+                    'title': track.title,
+                    'album': release.title,
+                    #'mbrainz_album_id': r_id,
+                    #'mbrainz_artist_id': release.artist.id,
+                    'track': unicode(i+1),
+                    'artist': track.artist.name if track.artist else artist}
+                        for i, track in enumerate(release.tracks)], extra]
     else:
         return [], extra
 
@@ -84,6 +97,8 @@ class MusicBrainz(object):
                 set_status(u'Retrieving Artist Info for <b>%s</b>' % artist)
                 write_log(u'Retrieving Artist Info for <b>%s</b>' % artist)
                 artist, artistid = artist_id(artist)
+                #pickle.dump([artist, artistid], open('artistid', 'wb'))
+                #artist, artistid = pickle.load(open('artistid', 'rb'))
                 write_log(u'ArtistID for %s = "%s"' % (artist, artistid))
             except WebServiceError, e:
                 write_log('<b>Error:</b> While retrieving %s: %s' % (
@@ -97,6 +112,8 @@ class MusicBrainz(object):
                 set_status(u'Retrieving releases for %s' % artist)
                 write_log(u'Retrieving releases for %s' % artist)
                 releases = get_releases(artistid)
+                #releases = pickle.load(open('releases', 'rb'))
+                #pickle.dump(releases, open('releases', 'wb'))
                 releases = [{'artist': artist,
                             'album': z[0],
                             '#albumid': z[1],
@@ -124,6 +141,8 @@ class MusicBrainz(object):
                     set_status('Retrieving tracks for %s - %s' % (artist, album))
                     write_log('Retrieving %s - %s: %s' % (artist, album, info['#albumid']))
                     tracks, tempinfo = get_tracks(info['#albumid'])
+                    #pickle.dump([tracks, tempinfo], open('tracks', 'wb'))
+                    #tracks, tempinfo = pickle.load(open('tracks', 'rb'))
                     info.update(tempinfo)
                     if check_matches:
                         for audio in albums[album]:
@@ -132,7 +151,7 @@ class MusicBrainz(object):
                                     track['#exact'] = audio
                                     continue
                     ret.append([info, tracks])
-                    matched.append(index)
+                    matched.append(index)                    
                 else:
                     allmatched = False
             if not allmatched:

@@ -329,12 +329,17 @@ class ReleaseWidget(QTreeWidget):
         self.tagstowrite = []
         self.sortOrder = ['artist', 'album']
         self._albumformat = '%artist% - %album%'
+        self.setSortOptions([['artist', 'album'], ['album', 'artist']])
 
         connect = lambda signal, slot: self.connect(self, SIGNAL(signal), slot)
         connect('itemSelectionChanged()', self._selChanged)
         connect('itemCollapsed (QTreeWidgetItem *)', self.setClosedIcon)
         connect('itemExpanded (QTreeWidgetItem *)', self.setOpenIcon)
-        connect('itemChanged (QTreeWidgetItem *,int)', self._setExactMatches)
+        connect('itemChanged (QTreeWidgetItem *, int)', self._setExactMatches)
+    
+    #def contextMenuEvent(self, event):
+        #self._menu.exec_(event.globalPos())
+        #event.accept()
 
     def setClosedIcon(self, item):
         item.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
@@ -483,18 +488,33 @@ class ReleaseWidget(QTreeWidget):
 
     albumformat = property(_getAlbumFormat, _setAlbumFormat)
 
-    def sort(self):
+    def sort(self, order=None):
         if not self.sortOrder:
             return
+        if order:
+            reverse = (order == self.sortOrder)
+            self.sortOrder = order
         take = self.takeTopLevelItem
         items = [take(0) for row in range(self.topLevelItemCount())]
         self.clear()
         sortfunc = lambda item: u''.join(
                         [to_string(item.info.get(key)).lower() for key in 
                             self.sortOrder])
-        for item in sorted(filter(None, items), key=sortfunc):
+        for item in sorted(filter(None, items), key=sortfunc, reverse=reverse):
             if item:
                 self.addTopLevelItem(item)
+    
+    def setSortOptions(self, options):
+        self.sortOptions = options
+        menu = QMenu(self)
+        menu.addAction('Sort By')
+        menu.addSeparator()
+        for option in self.sortOptions:
+            action = QAction(u'/'.join(option), menu)
+            self.connect(action, SIGNAL('triggered()'), 
+                lambda: self.sort(option))
+            menu.addAction(action)
+        self._menu = menu
 
 class MainWin(QWidget):
     def __init__(self, status, parent = None):
