@@ -238,8 +238,8 @@ class AllMusic(object):
             set_status(u'Searching for %s' % album)
             write_log(u'Searching for %s' % album)
             try:
-                searchpage = search(album)
-                #searchpage = open('search.htm').read()
+                #searchpage = search(album)
+                searchpage = open('search.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))
@@ -271,7 +271,6 @@ class AllMusic(object):
         write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
-        #url = 'file:///home/keith/album.htm'
         try:
             info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:

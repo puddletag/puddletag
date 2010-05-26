@@ -163,6 +163,9 @@ class SettingsDialog(QWidget):
         enablesort = cparser.get('tagsources', 'sort', True)
         sortorder = cparser.get('tagsources', 'sortorder', [u'artist', u'album'])
         albumformat = cparser.get('tagsources', 'albumformat', '%artist% - %album%')
+        artoptions = ['Replace existing art.',
+                      'Append to existing album art.',
+                      "Leave artwork unchanged."]
         
         label = QLabel('&Display format for individual tracks.')
         self._text = QLineEdit(text)
@@ -191,6 +194,8 @@ class SettingsDialog(QWidget):
         self._sortorder.setText(', '.join(sortorder))
         self._enablesort.setCheckState(Qt.Checked if enablesort 
             else Qt.Unchecked)
+        
+        #self._artwork = 
 
         vbox.addWidget(self._enablesort)
         vbox.addWidget(sortlabel)
@@ -211,11 +216,11 @@ class SettingsDialog(QWidget):
         sortorder = [z.strip() for z in 
                         unicode(self._sortorder.text()).split(',')]
         enablesort = bool(self._enablesort.checkState())
+
         if not enablesort:
             control.listbox.sortOrder = []
         else:
-            control.listbox.sortOrder = sortorder
-            control.listbox.sort()
+            control.listbox.sort(sortorder)
         
         albumdisp = unicode(self._albumdisp.text())
         control.listbox.albumformat = albumdisp
@@ -493,7 +498,7 @@ class ReleaseWidget(QTreeWidget):
     albumformat = property(_getAlbumFormat, _setAlbumFormat)
 
     def sort(self, order=None):
-        if (not self.sortOrder) or (self.topLevelItemCount()):
+        if (not self.sortOrder) or (not self.topLevelItemCount()):
             return
         reverse = (order == self.sortOrder)
         if order:
@@ -503,8 +508,9 @@ class ReleaseWidget(QTreeWidget):
         self.clear()
         sortfunc = lambda item: u''.join(
                         [to_string(item.info.get(key)).lower() for key in 
-                            self.sortOrder])
-        for item in sorted(filter(None, items), key=sortfunc, reverse=reverse):
+                            self.sortOrder]).lower()
+        values = [sortfunc(item) for item in items]
+        for item in sorted(items, key=sortfunc, reverse=reverse):
             if item:
                 self.addTopLevelItem(item)
     

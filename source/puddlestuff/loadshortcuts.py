@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from puddleobjects import PuddleConfig
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -5,6 +6,8 @@ import sys, pdb, resource,os
 from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
+
+__version__ = 1
 
 files = [open_resourcefile(filename)
             for filename in [':/caseconversion.action', ':/standard.action']]
@@ -14,18 +17,24 @@ ALWAYS = 'always'
 menu_path = os.path.join(SAVEDIR, 'menus')
 shortcut_path = os.path.join(SAVEDIR, 'shortcuts')
 
-def create_files():
-    if not os.path.exists(menu_path):
-        text = open_resourcefile(':/menus').read()
-        f = open(menu_path, 'w')
-        f.write(text)
-        f.close()
+def create_file(path, resource):
+    text = open_resourcefile(resource).read()
+    f = open(path, 'w')
+    f.write(text)
+    f.close()
 
-    if not os.path.exists(shortcut_path):
-        text = open_resourcefile(':/shortcuts').read()
-        f = open(shortcut_path, 'w')
-        f.write(text)
-        f.close()
+def check_file(path, resource):
+    if not os.path.exists(path):
+        create_file(path)
+    else:
+        cparser = PuddleConfig(path)
+        version = cparser.get('info', 'version', 0)
+        if version < __version__:
+            create_file(path, resource)
+
+def create_files():
+    check_file(menu_path, ':/menus')
+    check_file(shortcut_path, ':/shortcuts')
 
 def get_menus(section, filepath=None):
     cparser = PuddleConfig()
@@ -121,8 +130,9 @@ def get_actions(parent, filepath=None):
     setting = cparser.settings
     actions = []
     for section in cparser.sections():
-        values = dict([(str(k), v) for k,v in  setting[section].items()])
-        actions.append(create_action(parent, **values))
+        if section.startswith('shortcut'):
+            values = dict([(str(k), v) for k,v in  setting[section].items()])
+            actions.append(create_action(parent, **values))
     return actions
 
 if __name__ == '__main__':

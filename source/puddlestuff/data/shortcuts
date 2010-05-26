@@ -1,3 +1,6 @@
+[info]
+version=1
+
 [shortcut1]
 name=&Open Folder
 icon=:/open.png
