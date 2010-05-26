@@ -1,2 +1,31 @@
-Just tag sources and adding libraries are planned for now (over the next two weeks).
-
+Tagging needs it's own track/ tag window
+Cancel a tag lookup
+Tag lookup configurable to optionally ignore anything in () or [] {} in tag lookups
+Ability not to save artwork to tag, or to tag & file or just file or not at all. 
+Sortable tag lookup results.
+File loading chokes on certain character sets. Need to find out which.
+Tag sources for various albums incorrect. Example http://www.allmusic.com/cg/amg.dll?p=amg&sql=10:hxfpxqysldke
+Year fields not being converted.
+http://allmusic.com/cg/amg.dll?p=amg&sql=10:3zfqxqu5ldte Oct 1975-Jun 1976
+http://www.allmusic.com/cg/amg.dll?p=amg&sql=10:h9frxqe5ldde 1988
+The only big things I can think about are:
+Rhythmbox and mpd library support.
+Library stuff, like finding duplicates, maybe some stats (I hate that
+most programs don't provide good lib stats)
+Automatic tagging. Like trying one tag source after another if no
+matches are found.
+Loading only files matching pattern.
+The filesystem browser needs some updating. It needs to update the
+directory tree if it's changed. And keyboard-surfing should work too.
+A better console version. It shouldn't do much besides editing tags,
+running functions/actions.
+Integrating the logging thing with the whole app and having logs for
+most everything.
+Massive, massive code cleanup.
+Docs for everything that needs it like plugins and all the new stuff.
+Drag and drop album art (this seems like it'll be a cinch to implement).
+Alternating colours by album instead of row.
+Changing the search box so that each tag source can handle searches
+in it's specific way. Which means that you'll be able to do things
+like search a specific album page for allmusic or retrieve a specific
+album by musicbrainz id.

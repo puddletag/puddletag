@@ -32,7 +32,7 @@ try:
 except ImportError:
     allmusic = None
 import puddlestuff.tagsources as tagsources
-from puddlestuff.tagsources import RetrievalError, status_obj
+from puddlestuff.tagsources import RetrievalError, status_obj, write_log
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
@@ -234,8 +234,9 @@ class ChildItem(QTreeWidgetItem):
                         | Qt.ItemIsSelectable)
         self.setToolTip(0, display_tag(track))
         self.displaytrack = track
-        track = track.copy()
-        track.update(albuminfo)
+        info = albuminfo.copy()
+        info.update(track)
+        track = info
         self.track = track
         self.dispformat = dispformat
 
@@ -422,7 +423,11 @@ class ReleaseWidget(QTreeWidget):
                     continue
                 self.emit(SIGNAL("statusChanged"),
                             u'Retrieving: <b>%s</b>' % item.text(0))
-                ret[item] = self._tagsource.retrieve(item.info)
+                try:
+                    ret[item] = self._tagsource.retrieve(item.info)
+                except RetrievalError, e:
+                    self.emit(SIGNAL("statusChanged"), 
+                        u'An error occured: ' + unicode(e))
             return ret
         self.t = PuddleThread(func)
         self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
@@ -452,7 +457,6 @@ class ReleaseWidget(QTreeWidget):
 
     def updateStatus(self, val):
         if not val:
-            self.emit(SIGNAL("statusChanged"), 'An unexpected error occurred.')
             return
         for item, (info, tracks) in val.items():
             if item.tracks is not None:
@@ -489,10 +493,10 @@ class ReleaseWidget(QTreeWidget):
     albumformat = property(_getAlbumFormat, _setAlbumFormat)
 
     def sort(self, order=None):
-        if not self.sortOrder:
+        if (not self.sortOrder) or (self.topLevelItemCount()):
             return
+        reverse = (order == self.sortOrder)
         if order:
-            reverse = (order == self.sortOrder)
             self.sortOrder = order
         take = self.takeTopLevelItem
         items = [take(0) for row in range(self.topLevelItemCount())]

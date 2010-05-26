@@ -46,11 +46,12 @@ def find_a(tag, regex):
 def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
-def get_track(trackinfo):
+def get_track(trackinfo, various=False):
+    composer = 'artist' if various else 'composer'
     try:
         return {'track': text(trackinfo[2]),
                 'title': text(trackinfo[4]),
-                'composer': text(trackinfo[5]),
+                composer: text(trackinfo[5]),
                 '__length': text(trackinfo[6])}
     except IndexError:
         return None
@@ -99,8 +100,8 @@ def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
 
-def parse_tracks(soup):
-    return filter(None, [get_track(trackinfo) for trackinfo in
+def parse_tracks(soup, various=False):
+    return filter(None, [get_track(trackinfo, various) for trackinfo in
                     soup.find_all('tr', {'id':"trlink"})])
 
 keys = {'Release Date': 'date',
@@ -133,11 +134,16 @@ def parse_albumpage(page):
             date = time.strptime(info['date'], '%b %d, %Y')
             info['date'] = time.strftime('%Y-%m-%d', date)
         except ValueError:
-            date = time.strptime(info['date'], '%b %Y')
-            info['date'] = time.strftime('%Y-%m', date)
+            try:
+                date = time.strptime(info['date'], '%b %Y')
+                info['date'] = time.strftime('%Y-%m', date)
+            except ValueError:
+                pass
+    
+    various = (info['artist'] == 'Various Artists')
 
     releasetype = [parse_album_element(t) for t in album_soup.find_all('table', width="342", cellpadding="0", cellspacing="0")[0][1:]]
-    return info, parse_tracks(album_soup)
+    return info, parse_tracks(album_soup, various)
 
 def parse_search_element(element):
     ret = {'#albumurl' : album_url + element.element.attrib['onclick'][3:-2]}
@@ -171,6 +177,10 @@ def retrieve_album(url, coverurl=None):
             cover = retrieve_cover(info['#cover-url'])
         except KeyError:
             write_log('No cover found.')
+            cover = None
+        except urllib2.URLError, e:
+            write_log(u'Error: While retrieving cover %s - %s' % 
+                        (info['#cover-url'], unicode(e)))
             cover = None
     else:
         cover = None
@@ -208,36 +218,51 @@ class AllMusic(object):
         ret = []
         check_matches = False
         if not params:
-            params = split_by_tag(audios)
+            params = split_by_tag(audios, 'album', 'artist')
             check_matches = True
-        for artist, albums in params.items():
-            for album in albums:
-                set_status(u'Searching for %s - %s' % (artist, album))
-                write_log(u'Searching for %s - %s' % (artist, album))
-                try:
-                    searchpage = search(album)
-                    #searchpage = open('search.htm').read()
-                except urllib2.URLError, e:
-                    write_log(u'Error: While retrieving search page %s' % 
-                                unicode(e))
-                    raise RetrievalError(unicode(e))
-                write_log(u'Retrieved search results.')
-                matched, matches = parse_searchpage(searchpage, artist, album)
-                if matched and len(matches) == 1:
-                    info, tracks = self.retrieve(matches[0])
-                    set_status(u'Found match for: %s - %s' % 
-                                    (artist, info['album']))
-                    write_log(u'Found match for: %s - %s' % 
-                                    (artist, info['album']))
-                    if check_matches:
-                        for audio in albums[album]:
-                            for track in tracks:
-                                if equal(audio, track,  tags=['title']):
-                                    track['#exact'] = audio
-                                    continue
-                    ret.append([info, tracks])
+        else:
+            d = defaultdict(lambda:[])
+            for artist, albums in params.items():
+                [d[album].append(artist) for album in albums]
+            params = d
+        for album, artists in params.items():
+            if len(artists) > 1:
+                set_status(u'More than one artist found. Assuming artist=' \
+                            'Various Artists.' % album)
+                artist = 'Various Artists'
+            else:
+                if check_matches:
+                    artist = artists.keys()[0]
                 else:
-                    ret.extend([(z, []) for z in matches])
+                    artist = artists[0]
+            set_status(u'Searching for %s' % album)
+            write_log(u'Searching for %s' % album)
+            try:
+                searchpage = search(album)
+                #searchpage = open('search.htm').read()
+            except urllib2.URLError, e:
+                write_log(u'Error: While retrieving search page %s' % 
+                            unicode(e))
+                set_status(u'Error: While retrieving search page %s' % 
+                            unicode(e))
+                raise RetrievalError(unicode(e))
+            write_log(u'Retrieved search results.')
+            matched, matches = parse_searchpage(searchpage, artist, album)
+            if matched and len(matches) == 1:
+                info, tracks = self.retrieve(matches[0])
+                set_status(u'Found match for: %s - %s' % 
+                                (artist, info['album']))
+                write_log(u'Found match for: %s - %s' % 
+                                (artist, info['album']))
+                if check_matches:
+                    for audio in albums[album]:
+                        for track in tracks:
+                            if equal(audio, track,  tags=['title']):
+                                track['#exact'] = audio
+                                continue
+                ret.append([info, tracks])
+            else:
+                ret.extend([(z, []) for z in matches])
         return ret
 
     def retrieve(self, albuminfo):
@@ -246,6 +271,7 @@ class AllMusic(object):
         write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
+        #url = 'file:///home/keith/album.htm'
         try:
             info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:
