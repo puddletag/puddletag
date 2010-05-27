@@ -104,6 +104,10 @@ class TagListWidget(QWidget):
 
     def setTags(self, tags):
         self._text.setText(u', '.join(tags))
+        
+    def setToolTip(self, value):
+        QWidget.setToolTip(self, value)
+        self._text.setToolTip(value)
 
 class SourcePrefs(QDialog):
     def __init__(self, title, controls, parent = None):
@@ -588,6 +592,8 @@ class MainWin(QWidget):
         self.listbox = ReleaseWidget(status, self._tagsource)
 
         self._taglist = TagListWidget()
+        tooltip = 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.'
+        self._taglist.setToolTip(tooltip)
         self.connect(self._taglist, SIGNAL('tagschanged'), self._changeTags)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
         self.connect(status_obj, SIGNAL('statusChanged'), self.label.setText)

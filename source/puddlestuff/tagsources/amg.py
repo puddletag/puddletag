@@ -49,10 +49,11 @@ def find_all(regex, group):
 def get_track(trackinfo, various=False):
     composer = 'artist' if various else 'composer'
     try:
-        return {'track': text(trackinfo[2]),
-                'title': text(trackinfo[4]),
-                composer: text(trackinfo[5]),
-                '__length': text(trackinfo[6])}
+        values = [('track', text(trackinfo[2])),
+                  ('title', text(trackinfo[4])),
+                  (composer, text(trackinfo[5])),
+                  ('__length', text(trackinfo[6]))]
+        return dict([(key, value) for key, value in values if value])
     except IndexError:
         return None
 
@@ -100,11 +101,17 @@ def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
 
-def parse_tracks(soup, various=False):
+def parse_tracks(soup):
+    headers = [text(z) for z in soup.find_all('div', 
+        {'id':"content-list-title"})]
+    if u'Performer' in headers:
+        various = True
+    else:
+        various = False
     return filter(None, [get_track(trackinfo, various) for trackinfo in
                     soup.find_all('tr', {'id':"trlink"})])
 
-keys = {'Release Date': 'date',
+keys = {'Release Date': 'year',
         'Label': 'label',
         'Album': 'album',
         'Artist': 'artist',
@@ -129,21 +136,19 @@ def parse_albumpage(page):
     info.update(parse_rating(album_soup))
     info.update(parse_cover(album_soup))
     info.update(parse_review(album_soup))
-    if 'date' in info:
+    if 'year' in info:
         try:
-            date = time.strptime(info['date'], '%b %d, %Y')
-            info['date'] = time.strftime('%Y-%m-%d', date)
+            year = time.strptime(info['year'], '%b %d, %Y')
+            info['year'] = time.strftime('%Y-%m-%d', year)
         except ValueError:
             try:
-                date = time.strptime(info['date'], '%b %Y')
-                info['date'] = time.strftime('%Y-%m', date)
+                year = time.strptime(info['year'], '%b %Y')
+                info['year'] = time.strftime('%Y-%m', year)
             except ValueError:
                 pass
-    
-    various = (info['artist'] == 'Various Artists')
 
     releasetype = [parse_album_element(t) for t in album_soup.find_all('table', width="342", cellpadding="0", cellspacing="0")[0][1:]]
-    return info, parse_tracks(album_soup, various)
+    return info, parse_tracks(album_soup)
 
 def parse_search_element(element):
     ret = {'#albumurl' : album_url + element.element.attrib['onclick'][3:-2]}
@@ -228,7 +233,7 @@ class AllMusic(object):
         for album, artists in params.items():
             if len(artists) > 1:
                 set_status(u'More than one artist found. Assuming artist=' \
-                            'Various Artists.' % album)
+                            u'Various Artists.' % album)
                 artist = 'Various Artists'
             else:
                 if check_matches:
@@ -238,8 +243,8 @@ class AllMusic(object):
             set_status(u'Searching for %s' % album)
             write_log(u'Searching for %s' % album)
             try:
-                #searchpage = search(album)
-                searchpage = open('search.htm').read()
+                searchpage = search(album)
+                #searchpage = open('search.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))
@@ -289,8 +294,3 @@ class AllMusic(object):
 
 info = [AllMusic, None]
 name = 'AllMusic.com'
-
-if __name__ == '__main__':
-    x = AllMusic()
-    info, tracks = x.search(params = {'Corinne Bailey Rae': ['The Sea']})[0]
-    print info['mood']
