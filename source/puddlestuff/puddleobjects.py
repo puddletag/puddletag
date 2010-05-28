@@ -1137,7 +1137,6 @@ class PicWidget(QWidget):
             vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
         vbox.addStretch(1)
-        vbox.setSizeConstraint(hbox.SetMinAndMaxSize)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
