@@ -43,6 +43,56 @@ MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
 
+imagetypes = [
+    ('Other', 'O'),
+    ('File Icon', 'I'),
+    ('Other File Icon', 'OI'),
+    ('Cover (front)', 'CF'),
+    ('Cover (back)', 'CB'),
+    ('Leaflet page', 'LF'),
+    ('Media (e.g. label side of CD)', 'M'),
+    ('Lead artist', 'LA'),
+    ('Artist', 'A'),
+    ('Conductor', 'C'),
+    ('Band', 'B'),
+    ('Composer', 'CP'),
+    ('Lyricist', 'L'),
+    ('Recording Location', 'RL'),
+    ('During recording', 'DR'),
+    ('During performance', 'DP'),
+    ('Movie/video screen capture', 'MC'),
+    ('A bright coloured fish', 'F'), 
+    ('Illustration', 'P'),
+    ('Band/artist logotype', 'BL'),
+    ('Publisher/Studio logotype', 'PL')]
+
+class CoverButton(QPushButton):
+    def __init__(self, *args):
+        QPushButton.__init__(self, *args)
+        menu = QMenu(self)
+
+        triggered = SIGNAL('triggered()')
+        def create(title, short, index):
+            text = u'[%s] %s' % (short, title)
+            action = QAction(text, self)
+            self.connect(action, triggered, lambda: self.setCurrentIndex(index))
+            return action
+
+        actions = [create(title, short, index) for index, (title, short) 
+                    in enumerate(imagetypes)]
+
+        map(menu.addAction, actions)
+        self.setMenu(menu)
+        self.setCurrentIndex(3)
+    
+    def setCurrentIndex(self, index):
+        self.setText(imagetypes[index][1])
+        self.emit(SIGNAL('currentIndexChanged (int)'), index)
+        self._index = index
+    
+    def currentIndex(self):
+        return self._index
+
 class PuddleConfig(object):
     """Module that allows you to values from INI config files, similar to
     Qt's Settings module (Created it because PyQt4.4.3 has problems with
@@ -978,7 +1028,8 @@ class PicWidget(QWidget):
     showbuttons -> If True, the >> and << buttons are always shown. If False,
                     they are shown depending on context."""
 
-    def __init__ (self, images = None, imagetags = None, parent = None, readonly = None, buttons = False):
+    def __init__ (self, images = None, imagetags = None, parent = None, 
+        readonly = None, buttons = False):
         """Initialises the widget.
 
         images -> A list of images as described in the classes docstring.
@@ -989,38 +1040,53 @@ class PicWidget(QWidget):
                    If False, then these functions can be found by right clicking
                    on the picture."""
         QWidget.__init__(self, parent)
+
         self.lastfilename = u'~'
         #The picture.
         self.label = Label()
         self.label.setFrameStyle(QFrame.Box)
-        self.label.setMargin(0)
+        self.label.setMargin(10)
         self.label.setMinimumSize(150, 130)
-        self.label.setMaximumSize(150, 130)
         self.label.setAlignment(Qt.AlignCenter)
 
         #Description and picture type shit.
         self._image_desc = QLineEdit(self)
+        self._image_desc.setText('Enter a description')
+        self._image_desc.setToolTip(
+            '<p>Enter a description for the current cover.</p>'
+            '<p>For ID3 tags the description has to be different for each '
+            "cover as per the ID3 spec. If they don't differ then spaces "
+            'are appended to the description when the tag is saved.</p>')
         self.connect(self._image_desc, SIGNAL('textEdited (const QString&)'),
                     self.setDescription)
-        self._image_type = QComboBox(self)
-        self._image_type.addItems(IMAGETYPES)
-        self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
-                        self.setType)
         controls = QVBoxLayout()
 
-        dbox = QVBoxLayout()
-        label = QLabel('&Description')
-        label.setBuddy(self._image_desc)
-        dbox.addWidget(label)
-        dbox.addWidget(self._image_desc)
-        controls.addLayout(dbox)
-
-        dbox = QVBoxLayout()
-        label = QLabel('&Type')
-        label.setBuddy(self._image_type)
-        dbox.addWidget(label)
-        dbox.addWidget(self._image_type)
-        controls.addLayout(dbox)
+        if buttons:
+            dbox = QVBoxLayout()
+            label = QLabel('&Description')
+            label.setBuddy(self._image_desc)
+            dbox.addWidget(label)
+            dbox.addWidget(self._image_desc)
+            controls.addLayout(dbox)
+            self._image_type = QComboBox(self)
+            self._image_type.addItems(IMAGETYPES)
+            dbox = QVBoxLayout()
+            label = QLabel('&Type')
+            label.setBuddy(self._image_type)
+            dbox.addWidget(label)
+            dbox.addWidget(self._image_type)
+            controls.addLayout(dbox)
+        else:
+            self._image_type = CoverButton(self)
+            hbox = QHBoxLayout()
+            hbox.addWidget(self._image_desc, 1)
+            hbox.addWidget(self._image_type)
+            controls.addLayout(hbox)
+        self._image_type.setToolTip(
+            '<p>Select a cover type for the artwork.</p>')
+        self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
+                            self.setType)
+        
 
         self.showbuttons = True
 
@@ -1035,21 +1101,39 @@ class PicWidget(QWidget):
         self.connect(self.next, SIGNAL('clicked()'), self.nextImage)
         self.connect(self.prev, SIGNAL('clicked()'), self.prevImage)
 
-        movebuttons = QHBoxLayout()
         self._contextlabel = QLabel()
         self._contextlabel.setVisible(False)
-        movebuttons.addStretch()
-        movebuttons.addWidget(self.prev)
-        movebuttons.addWidget(self.next)
-        movebuttons.addWidget(self._contextlabel)
-        movebuttons.addStretch()
+        if buttons:
+            movebuttons = QHBoxLayout()
+            movebuttons.addStretch()
+            movebuttons.addWidget(self.prev)
+            movebuttons.addWidget(self.next)
+            movebuttons.addWidget(self._contextlabel)
+            movebuttons.addStretch()
+        else:
+            self.next.setArrowType(Qt.UpArrow)
+            self.prev.setArrowType(Qt.DownArrow)
+            movebuttons = QVBoxLayout()
+            movebuttons.addStretch()
+            movebuttons.addWidget(self.next)
+            movebuttons.addWidget(self.prev)
+            movebuttons.addStretch()
 
         vbox = QVBoxLayout()
-        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label); h.addStretch()
-        vbox.addLayout(h)
+        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label, 1)
+        if not buttons:
+            h.addLayout(movebuttons)
+            context_box = QHBoxLayout()
+            context_box.setAlignment(Qt.AlignHCenter)
+            context_box.addWidget(self._contextlabel)
+            vbox.addLayout(context_box)
+        h.addStretch()
+        vbox.addLayout(h, 1)
+        
         vbox.setMargin(0)
         vbox.addLayout(controls)
-        vbox.addLayout(movebuttons)
+        if buttons:
+            vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
@@ -1087,6 +1171,7 @@ class PicWidget(QWidget):
             self.editpic = QAction("&Change picture", self)
             self.label.addAction(self.editpic)
             signal = SIGNAL('triggered()')
+        vbox.addStretch()
 
         self.connect(self.addpic, signal, self.addImage)
         self.connect(self.removepic, signal, self.removeImage)
@@ -1217,24 +1302,23 @@ class PicWidget(QWidget):
             self._image_type.setEnabled(False)
         self.pixmap = QPixmap.fromImage(image)
         self.win.setImage(self.pixmap)
-        self.label.setPixmap(self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio))
-        try:
-            self._image_desc.blockSignals(True)
-            self._image_desc.setText(self.images[num]['description'])
-        except KeyError:
-            pass
+        #self.label.setPixmap(self.pixmap)
+
+        self._image_desc.blockSignals(True)
+        desc = self.images[num].get('description', 'Enter a description')
+        self._image_desc.setText(desc)
         self._image_desc.blockSignals(False)
         self._image_type.blockSignals(True)
         try:
             self._image_type.setCurrentIndex(self.images[num]['imagetype'])
         except KeyError:
             self._image_type.setCurrentIndex(3)
-            pass
         self._image_type.blockSignals(False)
         self._currentImage = num
         self.context = unicode(num + 1) + '/' + unicode(len(self.images))
-        self.label.setFrameStyle(QFrame.NoFrame)
+        self.label.setFrameStyle(QFrame.NoFrame)        
         self.enableButtons()
+        self.resizeEvent()
 
     currentImage = property(_getCurrentImage, _setCurrentImage,"""Get or set the index of
     the current image. If the index isn't valid
@@ -1349,6 +1433,16 @@ class PicWidget(QWidget):
         for z in others:
             tags[z](False)
         self._itags = itags
+    
+    def resizeEvent(self, event=None):
+        if event is not None:
+            QWidget.resizeEvent(self, event)
+        if self.pixmap:
+            pixmap = self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio)
+            self.label.setPixmap(pixmap)
+        ##print self.label.size()
+        ##self.pixmap.setPixmap(self.pixmap.scaled(self.label.size(), 
+            ##Qt.KeepAspectRatio))
 
 
 class PicWin(QDialog):

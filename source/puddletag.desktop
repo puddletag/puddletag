@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=puddletag
+Comment=A tag editor for Linux.
+TryExec=puddletag
+Exec=puddletag
+Icon=puddletag
+GenericName=Tag Editor
+Categories=AudioVideo;Music;AudioVideoEditing;Qt;

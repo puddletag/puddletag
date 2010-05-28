@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, sys, os, sip
@@ -181,6 +182,9 @@ class FrameCombo(QGroupBox):
             elif combo.currentImage > 1: #<keep> is 0, so everything else.
                 tags['__image'] = combo.images[2:]
 
+        images = self._status['images']
+        if images is not None:
+            tags['__image'] = images
         for tag, combo in combos.items():
             if tag == '__image':
                 continue
