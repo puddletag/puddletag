@@ -16,11 +16,15 @@ class ArtworkWidget(QWidget):
         vbox.addWidget(self.picwidget)
         self.setLayout(vbox)
         status['images'] = self.images
+        self._audios = []
 
     def fill(self, audios, *args):
         self.picwidget.setImages(None)
         self.init()
         if not audios:
+            return
+        if not self.isVisible():
+            self._audios = audios
             return
         images = []
         imagetags = set()
@@ -60,5 +64,11 @@ class ArtworkWidget(QWidget):
         elif self.picwidget.currentImage > 1: #<keep> is 0, so everything else.
             images = self.picwidget.images[2:]
         return images
+
+    def showEvent(self, event):
+        QWidget.showEvent(self, event)
+        if self._audios:
+            self.fill(self._audios)
+            self._audios = []
 
 control = ('Artwork', ArtworkWidget, LEFTDOCK, False)

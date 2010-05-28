@@ -421,12 +421,15 @@ class ExTags(QDialog):
         vbox.setMargin(0)
         vbox.addWidget(self.piclabel)
         vbox.addStretch()
+        vbox.addStrut(0)
         imageframe.setLayout(vbox)
 
         hbox = QHBoxLayout()
         hbox.addWidget(listframe, 1)
         hbox.addSpacing(4)
-        hbox.addWidget(imageframe, 0)
+        hbox.addWidget(imageframe)
+        #imageframe.setMaximumWidth(270)
+        hbox.addStrut(1)
 
         layout = QVBoxLayout()
         layout.addLayout(hbox)

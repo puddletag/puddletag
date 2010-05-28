@@ -1046,7 +1046,9 @@ class PicWidget(QWidget):
         self.label = Label()
         self.label.setFrameStyle(QFrame.Box)
         self.label.setMargin(10)
-        self.label.setMinimumSize(150, 130)
+        self.label.setMinimumSize(200, 170)
+        if buttons:
+            self.label.setMaximumSize(200, 170)
         self.label.setAlignment(Qt.AlignCenter)
 
         #Description and picture type shit.
@@ -1086,7 +1088,6 @@ class PicWidget(QWidget):
             '<p>Select a cover type for the artwork.</p>')
         self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
                             self.setType)
-        
 
         self.showbuttons = True
 
@@ -1135,11 +1136,15 @@ class PicWidget(QWidget):
         if buttons:
             vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
+        vbox.addStretch(1)
+        vbox.setSizeConstraint(hbox.SetMinAndMaxSize)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
+        hbox.addStrut(12)
+        hbox.setSizeConstraint(hbox.SetMinAndMaxSize)
         self.setLayout(hbox)
 
         if buttons:
@@ -1171,7 +1176,6 @@ class PicWidget(QWidget):
             self.editpic = QAction("&Change picture", self)
             self.label.addAction(self.editpic)
             signal = SIGNAL('triggered()')
-        vbox.addStretch()
 
         self.connect(self.addpic, signal, self.addImage)
         self.connect(self.removepic, signal, self.removeImage)
@@ -1438,11 +1442,10 @@ class PicWidget(QWidget):
         if event is not None:
             QWidget.resizeEvent(self, event)
         if self.pixmap:
-            pixmap = self.pixmap.scaled(self.label.size(), Qt.KeepAspectRatio)
+            pixmap = self.pixmap.scaled(self.label.width() - 10, 
+                self.label.height() - 10, Qt.KeepAspectRatio)
+            self.label.resize(self.label.width(), pixmap.height() + 10)
             self.label.setPixmap(pixmap)
-        ##print self.label.size()
-        ##self.pixmap.setPixmap(self.pixmap.scaled(self.label.size(), 
-            ##Qt.KeepAspectRatio))
 
 
 class PicWin(QDialog):
