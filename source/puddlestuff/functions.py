@@ -366,7 +366,7 @@ def replacetokens(text, dictionary):
         l = [text[:start]]
         end = start
     else:
-        return
+        return u''
     while match:
         start = match.start()
         l.append(text[end:start])
@@ -380,17 +380,25 @@ def replacetokens(text, dictionary):
     l.append(text[end:])
     return u''.join(l)
 
-
 def replaceWithReg(text, expr, rep):
     """Replace with RegExp, "RegReplace $0: RegExp $1, with $2"
 &Regular Expression, text
 w&ith, text"""
-    match = re.search(expr, text)
+    if not (rep and expr):
+        return
+    try:
+        match = re.search(expr, text)
+    except re.error, e:
+        raise findfunc.FuncError(unicode(e))
     if match:
         groups = match.groups()
         if groups:
             d = dict(enumerate(groups))
-            return findfunc.parsefunc(replacetokens(rep, d), {})
+            try:
+                return findfunc.parsefunc(replacetokens(rep, d), {})
+            except Exception, e:
+                pdb.set_trace()
+                return findfunc.parsefunc(replacetokens(rep, d), {})
         else:
             return findfunc.parsefunc(re.sub(expr, rep, text), {})
     else:

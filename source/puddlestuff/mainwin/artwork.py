@@ -22,10 +22,12 @@ class ArtworkWidget(QWidget):
         self.picwidget.setImages(None)
         self.init()
         if not audios:
+            self.picwidget.setEnabled(False)
             return
         if not self.isVisible():
             self._audios = audios
             return
+        self.picwidget.setEnabled(True)
         images = []
         imagetags = set()
         for audio in audios:
@@ -43,9 +45,9 @@ class ArtworkWidget(QWidget):
         images = commonimages(images)
         if images == 0:
             self.picwidget.setImageTags(imagetags)
-            self.picwidget.context = 'Cover Varies'
             self.picwidget.currentImage = 0
-        elif images == None:
+            self.picwidget.context = 'Cover Varies'
+        elif images is None:
             self.picwidget.currentImage = 1
         else:
             self.picwidget.setImageTags(imagetags)

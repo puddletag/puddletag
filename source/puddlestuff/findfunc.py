@@ -199,7 +199,7 @@ def parsefunc(text, audio):
             else:
                 raise e
         except FuncError, e:
-            message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (tok[0], message)
+            message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (tok[0], e.message)
             raise ParseError(message)
 
     content = Forward()

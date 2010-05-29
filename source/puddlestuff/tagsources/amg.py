@@ -23,8 +23,10 @@ spanmap = {'Genre': 'genre',
            'Themes': 'theme',
            'Moods': 'mood'}
 
+first_white = lambda match: match.groups()[0][0]
+
 def create_search(terms):
-    return search_adress % terms.replace(' ', '+')
+    return search_adress % urllib2.quote(terms)
 
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:
@@ -58,7 +60,7 @@ def get_track(trackinfo, various=False):
         return None
 
 def parse_album_element(element):
-    return dict([(k, z.all_recursive_text()) for k, z in
+    return dict([(k, text(z)) for k, z in
                     zip(release_order, element)])
 
 def parse_cover(soup):
@@ -93,7 +95,7 @@ def parse_review(soup):
         return {}
     review = text(review_td)
     #There are double-spaces in links and italics. Have to clean up.
-    first_white = lambda match: match.groups()[0][0]
+    
     review = re.sub('(\s+)', first_white, review)
     return {'review': review}
 
@@ -204,7 +206,8 @@ def search(album):
     return urllib2.urlopen(search_url).read()
 
 def text(z):
-    return z.all_recursive_text().strip()
+    text = z.all_recursive_text().strip()
+    return re.sub('(\s+)', first_white, text)
 
 def to_file(data, name):
     f = open(name, 'w')
