@@ -23,6 +23,8 @@ spanmap = {'Genre': 'genre',
            'Themes': 'theme',
            'Moods': 'mood'}
 
+sqlre = re.compile('sql=(.*)')
+
 first_white = lambda match: match.groups()[0][0]
 
 def create_search(terms):
@@ -52,7 +54,7 @@ def get_track(trackinfo, various=False):
     composer = 'artist' if various else 'composer'
     try:
         values = [('track', text(trackinfo[2])),
-                  ('title', text(trackinfo[4])),
+                  ('title', trackinfo[4][0].all_text().strip()),
                   (composer, text(trackinfo[5])),
                   ('__length', text(trackinfo[6]))]
         return dict([(key, value) for key, value in values if value])
@@ -60,7 +62,7 @@ def get_track(trackinfo, various=False):
         return None
 
 def parse_album_element(element):
-    return dict([(k, text(z)) for k, z in
+    ret =  dict([(k, text(z)) for k, z in
                     zip(release_order, element)])
 
 def parse_cover(soup):
@@ -162,6 +164,11 @@ def parse_search_element(element):
     ret.update([(field, text(z)) for field, z
                     in zip(search_order , element) if field])
     ret['#extrainfo'] = [ret['album'] + u' at AllMusic.com', ret['#albumurl']]
+    try:
+        ret['amgsqlid'] = sqlre.search(ret['#albumurl']).groups()[0]
+    except:
+        print ret
+        pass
     return ret
 
 def parse_searchpage(page, artist, album):
@@ -178,6 +185,7 @@ def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
     album_page = urllib2.urlopen(url).read()
     info, tracks = parse_albumpage(album_page)
+    info['amgsqlid'] = sqlre.search(url).groups()[0]
     if coverurl:
         try:
             write_log('Retrieving Cover - %s'  % info['#cover-url'])
@@ -247,6 +255,7 @@ class AllMusic(object):
             write_log(u'Searching for %s' % album)
             try:
                 searchpage = search(album)
+                #to_file(searchpage, 'search.htm')
                 #searchpage = open('search.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
