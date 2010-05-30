@@ -26,7 +26,11 @@ spanmap = {'Genre': 'genre',
             'Label': 'label',
             'Album': 'album',
             'Artist': 'artist',
-            'Featured Artist': 'artist'}
+            'Featured Artist': 'artist',
+            'Performer': 'performer',
+            'Title': 'title',
+            'Composer': 'composer',
+            'Time': '__length'}
 
 sqlre = re.compile('sql=(.*)')
 
@@ -55,16 +59,11 @@ def find_a(tag, regex):
 def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
-def get_track(trackinfo, various=False):
-    composer = 'artist' if various else 'composer'
-    try:
-        values = [('track', text(trackinfo[2])),
-                  ('title', trackinfo[4][0].all_text().strip()),
-                  (composer, text(trackinfo[5])),
-                  ('__length', text(trackinfo[6]))]
-        return dict([(key, value) for key, value in values if value])
-    except IndexError:
-        return None
+def get_track(trackinfo, keys, various=False):
+    values = filter(None, map(text, trackinfo.find_all('td', {'class':'cell'})))
+    if len(values) > len(keys):
+        keys = ['track'] + keys
+    return dict(zip(keys, values))
 
 def parse_album_element(element):
     ret =  dict([(k, text(z)) for k, z in
@@ -109,16 +108,6 @@ def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
 
-def parse_tracks(soup):
-    headers = [text(z) for z in soup.find_all('div', 
-        {'id':"content-list-title"})]
-    if u'Performer' in headers:
-        various = True
-    else:
-        various = False
-    return filter(None, [get_track(trackinfo, various) for trackinfo in
-                    soup.find_all('tr', {'id':"trlink"})])
-
 keys = {'Release Date': 'year',
         'Label': 'label',
         'Album': 'album',
@@ -142,8 +131,7 @@ def parse_albumpage(page):
             else:
                 values = filter(None, map(text, item.find_all('td')))
                 middle = len(values) / 2
-                fields = [keys[key] if key in spanmap else key 
-                    for key in values[:middle]]
+                fields = [spanmap.get(key, key) for key in values[:middle]]
                 info.update(zip(fields, values[middle:]))
 
     info.update(parse_rating(album_soup))
@@ -192,6 +180,21 @@ def parse_searchpage(page, artist, album):
             return True, ret
         else:
             return False, albums
+
+def parse_tracks(soup):
+    headers = [text(z) for z in soup.find('table', {'id': 'ExpansionTable1'}
+                ).find_all('td', {'class': 'passive'})]
+    if u'Performer' in headers:
+        various = True
+    else:
+        various = False
+    keys = [spanmap.get(key, key) for key in headers]
+    tracks = filter(None, [get_track(trackinfo, keys, various) for trackinfo in
+                    soup.find_all('tr', {'id':"trlink"})])
+    for number, track in enumerate(tracks):
+        if 'track' not in track:
+            track['track'] = unicode(number + 1)
+    return tracks
 
 def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
@@ -325,6 +328,7 @@ class AllMusic(object):
             write_log(u'Error: While retrieving album URL %s - %s' % 
                         (url, unicode(e)))
             raise RetrievalError(unicode(e))
+        cover = {'__image': [{'data': open('cover.jpg').read()}]}
         if cover:
             info.update(cover)
         return info, tracks
@@ -339,7 +343,6 @@ info = [AllMusic, None]
 name = 'AllMusic.com'
 
 if __name__ == '__main__':
-    filename = 'uriah.htm'
     page = urllib2.urlopen(filename).read()
-    print parse_albumpage(page)[0]
+    print parse_albumpage(page)[1]
     

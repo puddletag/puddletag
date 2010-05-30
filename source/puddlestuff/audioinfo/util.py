@@ -114,7 +114,7 @@ def commonimages(imagedicts):
         return None
     return x
 
-def commontags(audios):
+def commontags(audios, usepreview=True):
     images = []
     imagetags = set()
     combined = {}
