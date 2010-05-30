@@ -303,6 +303,7 @@ class MockTag(object):
         return self._tags[PATH]
 
     def _setfilepath(self,  val):
+        val = to_string(val)
         self._tags.update({PATH: val,
                            DIRPATH: path.dirname(val),
                            FILENAME: path.basename(val),
@@ -310,6 +311,7 @@ class MockTag(object):
 
     def _setext(self,  val):
         if val:
+            val = to_string(val)
             self.filepath = u'%s%s%s' % (path.splitext(self.filepath)[0],
                                      path.extsep, val)
         else:
@@ -322,7 +324,7 @@ class MockTag(object):
         return self._tags[FILENAME]
 
     def _setfilename(self, val):
-        self.filepath = os.path.join(self.dirpath, val)
+        self.filepath = os.path.join(self.dirpath, to_string(val))
 
     def _getdirpath(self):
         return self._tags[DIRPATH]

@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 import sys, os, unittest, time, pdb, shutil
 from os import path
 from PyQt4.QtCore import *
@@ -19,7 +19,7 @@ Visit the puddletag website (<a href="http://puddletag.sourceforge.net">http://p
 Licensed under GPLv2 (<a href="www.gnu.org/licenses/gpl-2.0.html">www.gnu.org/licenses/gpl-2.0.html</a>).
 '''
 
-thanks = """<b>Evan Devetsis</b> for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.<br /><br />
+thanks = """<b>Evan Devetzis</b> for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.<br /><br />
 
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).<br /><br />
 

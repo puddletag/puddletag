@@ -37,7 +37,7 @@ from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
 from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
-
+import traceback
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
@@ -430,7 +430,7 @@ def gettag(f):
         print e.strerror, f
         return
     except Exception, e:
-        print e, f
+        traceback.print_exc()
         return
 
 def gettaglist():

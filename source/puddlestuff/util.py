@@ -43,13 +43,13 @@ def rename_file(audio, tags):
     oldfilename = audio.filepath
 
     if PATH in tags:
-        audio.filepath = tags[PATH]
+        audio.filepath = to_string(tags[PATH])
         returntag = PATH
     elif FILENAME in tags:
-        audio.filename = tags[FILENAME]
+        audio.filename = to_string(tags[FILENAME])
         returntag = FILENAME
     elif EXTENSION in tags:
-        audio.ext = tags[EXTENSION]
+        audio.ext = to_string(tags[EXTENSION])
         returntag = EXTENSION
     else:
         return

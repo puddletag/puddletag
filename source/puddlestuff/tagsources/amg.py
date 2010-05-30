@@ -28,7 +28,7 @@ sqlre = re.compile('sql=(.*)')
 first_white = lambda match: match.groups()[0][0]
 
 def create_search(terms):
-    return search_adress % urllib2.quote(terms)
+    return search_adress % re.sub('(\s+)', u'%20', terms)
 
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:
@@ -179,13 +179,20 @@ def parse_searchpage(page, artist, album):
     if ret:
         return True, ret
     else:
-        return False, albums
+        ret = [album for album in albums if equal(d, album, False)]
+        if ret:
+            return True, ret
+        else:
+            return False, albums
 
 def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
     album_page = urllib2.urlopen(url).read()
     info, tracks = parse_albumpage(album_page)
-    info['amgsqlid'] = sqlre.search(url).groups()[0]
+    try:
+        info['amgsqlid'] = sqlre.search(url).groups()[0]
+    except AttributeError:
+        pass
     if coverurl:
         try:
             write_log('Retrieving Cover - %s'  % info['#cover-url'])
@@ -211,7 +218,7 @@ def retrieve_cover(url):
 def search(album):
     search_url = create_search(album)
     write_log(u'Search URL - %s' % search_url)
-    return urllib2.urlopen(search_url).read()
+    return urllib2.urlopen(search_url.encode('utf8')).read()
 
 def text(z):
     text = z.all_recursive_text().strip()
@@ -244,8 +251,8 @@ class AllMusic(object):
         for album, artists in params.items():
             if len(artists) > 1:
                 set_status(u'More than one artist found. Assuming artist=' \
-                            u'Various Artists.' % album)
-                artist = 'Various Artists'
+                            u'Various Artists.')
+                artist = u'Various Artists'
             else:
                 if check_matches:
                     artist = artists.keys()[0]
@@ -256,7 +263,7 @@ class AllMusic(object):
             try:
                 searchpage = search(album)
                 #to_file(searchpage, 'search.htm')
-                #searchpage = open('search.htm').read()
+                #searchpage = open('unicodesearch.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))
@@ -272,18 +279,34 @@ class AllMusic(object):
                 write_log(u'Found match for: %s - %s' % 
                                 (artist, info['album']))
                 if check_matches:
-                    for audio in albums[album]:
+                    if artist == u'Various Artists':
+                        tags = ('artist', 'title')
+                        audios = []
+                        [audios.extend(z) for z in artists.values()]
+                    else:
+                        tags = ('title',)
+                        audios = artists[artist]
+                    for audio in audios:
                         for track in tracks:
-                            if equal(audio, track,  tags=['title']):
+                            if equal(audio, track, tags=tags):
                                 track['#exact'] = audio
                                 continue
                 ret.append([info, tracks])
+            elif matched:
+                set_status(u'Ambiguous matches found for: %s - %s' % 
+                                (artist, album))
+                write_log(u'Ambiguous matches found for: %s - %s' % 
+                                (artist, album))
+                ret.extend([(z, []) for z in matches])
             else:
+                set_status(u'No matches found for: %s - %s' % 
+                                (artist, album))
+                write_log(u'No matches found for: %s - %s' % 
+                                (artist, album))
                 ret.extend([(z, []) for z in matches])
         return ret
 
     def retrieve(self, albuminfo):
-        #return albuminfo, []
         set_status('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Album URL - %s' % albuminfo['#albumurl'])
