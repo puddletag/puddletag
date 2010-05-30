@@ -657,12 +657,16 @@ class ExTags(QDialog):
                     [items.append([key, z]) for z in val]
         [self._settag(i, *item) for i, item in enumerate(items)]
         self.piclabel.lastfilename = tags.dirpath
-        if '__library' not in tags:
+        if not tags.library:
             self.piclabel.setImageTags(tags.IMAGETAGS)
             if tags.IMAGETAGS:
+                if '__image' in tags.preview:
+                    images = tags.preview['__image']
+                else:
+                    images = tags.images
                 self.piclabel.setEnabled(True)
-                if tags.images:
-                    self.piclabel.setImages(deepcopy(tags.images))
+                if images:
+                    self.piclabel.setImages(deepcopy(images))
                 else:
                     self.piclabel.setImages(None)
         self._checkListBox()

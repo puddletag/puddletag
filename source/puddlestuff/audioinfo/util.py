@@ -122,12 +122,25 @@ def commontags(audios, usepreview=True):
     images = []
     imagetags = set()
     for audio in audios:
+        if usepreview:
+            preview = audio.preview.copy()
+        else:
+            preview = {}
         if audio.IMAGETAGS:
-            images.append(audio['__image'] if audio['__image'] else {})
+            if usepreview:
+                images.append(preview.get('__image', {}))
+            else:
+                images.append(audio['__image'] if audio['__image'] else {})
         else:
             images.append({})
         imagetags = imagetags.union(audio.IMAGETAGS)
         audio = stringtags(audio.usertags)
+
+        if usepreview:
+            if '__image' in preview:
+                del(preview['__image'])
+            audio.update(stringtags(usertags(preview)))
+
         for tag, value in audio.items():
             if tag in combined:
                 if combined[tag] == value:

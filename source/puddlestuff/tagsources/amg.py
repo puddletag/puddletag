@@ -328,7 +328,6 @@ class AllMusic(object):
             write_log(u'Error: While retrieving album URL %s - %s' % 
                         (url, unicode(e)))
             raise RetrievalError(unicode(e))
-        cover = {'__image': [{'data': open('cover.jpg').read()}]}
         if cover:
             info.update(cover)
         return info, tracks

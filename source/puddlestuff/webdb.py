@@ -402,11 +402,9 @@ class ReleaseWidget(QTreeWidget):
             [children.extend(self._children(parent)) for parent in toplevels]
         else:
             children = selected
-
-        tracks = [child.track for child in children]
-        if self.tagstowrite:
-            tags = self.tagstowrite[::]            
-            tracks = [strip(track, tags) for track in tracks]
+        
+        tags = self.tagstowrite[::]
+        tracks = [strip(child.track, tags) for child in children]
         if tracks:
             for tag in tracks:
                 if '#extrainfo' in tag:
