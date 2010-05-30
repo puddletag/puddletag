@@ -21,7 +21,12 @@ album_url = 'http://www.allmusic.com/cg/amg.dll?p=amg&sql='
 spanmap = {'Genre': 'genre',
            'Styles': 'style',
            'Themes': 'theme',
-           'Moods': 'mood'}
+           'Moods': 'mood',
+           'Release Date': 'year',
+            'Label': 'label',
+            'Album': 'album',
+            'Artist': 'artist',
+            'Featured Artist': 'artist'}
 
 sqlre = re.compile('sql=(.*)')
 
@@ -97,7 +102,6 @@ def parse_review(soup):
         return {}
     review = text(review_td)
     #There are double-spaces in links and italics. Have to clean up.
-    
     review = re.sub('(\s+)', first_white, review)
     return {'review': review}
 
@@ -119,6 +123,7 @@ keys = {'Release Date': 'year',
         'Label': 'label',
         'Album': 'album',
         'Artist': 'artist',
+        'Featured Artist': 'artist',
         'Genre': parselist,
         'Moods': parselist,
         'Styles': parselist,
@@ -135,8 +140,12 @@ def parse_albumpage(page):
             if callable(keys[key]):                
                 info.update(keys[key](item))
             else:
-                key, val = filter(None, map(text, item.find_all('td')))
-                info[keys[key]] = val
+                values = filter(None, map(text, item.find_all('td')))
+                middle = len(values) / 2
+                fields = [keys[key] if key in spanmap else key 
+                    for key in values[:middle]]
+                info.update(zip(fields, values[middle:]))
+
     info.update(parse_rating(album_soup))
     info.update(parse_cover(album_soup))
     info.update(parse_review(album_soup))
@@ -151,7 +160,6 @@ def parse_albumpage(page):
             except ValueError:
                 pass
 
-    releasetype = [parse_album_element(t) for t in album_soup.find_all('table', width="342", cellpadding="0", cellspacing="0")[0][1:]]
     return info, parse_tracks(album_soup)
 
 def parse_search_element(element):
@@ -329,3 +337,9 @@ class AllMusic(object):
 
 info = [AllMusic, None]
 name = 'AllMusic.com'
+
+if __name__ == '__main__':
+    filename = 'uriah.htm'
+    page = urllib2.urlopen(filename).read()
+    print parse_albumpage(page)[0]
+    
