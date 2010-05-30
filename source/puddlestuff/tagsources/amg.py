@@ -60,10 +60,15 @@ def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
 def get_track(trackinfo, keys, various=False):
-    values = filter(None, map(text, trackinfo.find_all('td', {'class':'cell'})))
-    if len(values) > len(keys):
-        keys = ['track'] + keys
-    return dict(zip(keys, values))
+    values = map(text, trackinfo.find_all('td', {'class':'cell'}))
+    if not values:
+        return {}
+    #pdb.set_trace()
+    try:
+        track = int(values[0])
+        return dict(zip(['track'] + keys, values))
+    except ValueError:
+        return dict(zip(keys, values))
 
 def parse_album_element(element):
     ret =  dict([(k, text(z)) for k, z in
@@ -191,9 +196,6 @@ def parse_tracks(soup):
     keys = [spanmap.get(key, key) for key in headers]
     tracks = filter(None, [get_track(trackinfo, keys, various) for trackinfo in
                     soup.find_all('tr', {'id':"trlink"})])
-    for number, track in enumerate(tracks):
-        if 'track' not in track:
-            track['track'] = unicode(number + 1)
     return tracks
 
 def retrieve_album(url, coverurl=None):
@@ -343,5 +345,5 @@ name = 'AllMusic.com'
 
 if __name__ == '__main__':
     page = urllib2.urlopen(filename).read()
-    print parse_albumpage(page)[1]
+    [print_track(t) for t in parse_albumpage(page)[1]]
     
