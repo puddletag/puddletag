@@ -625,7 +625,7 @@ class ExTags(QDialog):
             self._loadsingle(audio)
         else:
             self.setWindowTitle('Different files.')
-            common, numvalues, imagetags = commontags(audios)
+            common, numvalues, imagetags = commontags(audios, usepreview=True)
             images = common['__image']
             del(common['__image'])
             for i, key in enumerate(common):
