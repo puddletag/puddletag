@@ -201,8 +201,11 @@ def parse_searchpage(page, artist, album):
             return False, albums
 
 def parse_tracks(soup):
-    headers = [text(z) for z in soup.find('table', {'id': 'ExpansionTable1'}
-                ).find_all('td', {'class': 'passive'})]
+    try:
+        headers = [text(z) for z in soup.find('table', {'id': 'ExpansionTable1'}
+                    ).find_all('td', {'class': 'passive'})]
+    except AttributeError:
+        return []
     if u'Performer' in headers:
         various = True
     else:
@@ -290,8 +293,8 @@ class AllMusic(object):
             write_log(u'Searching for %s' % album)
             try:
                 searchpage = search(album)
-                to_file(searchpage, 'search1.htm')
-                #searchpage = open('/home/keith/spainsearch.htm').read()
+                #to_file(searchpage, 'search1.htm')
+                #searchpage = open('spainsearch.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))
@@ -347,7 +350,9 @@ class AllMusic(object):
             raise RetrievalError(unicode(e))
         if cover:
             info.update(cover)
-        return info, tracks
+        albuminfo = albuminfo.copy()
+        albuminfo.update(info)
+        return albuminfo, tracks
 
     def applyPrefs(self, args):
         self._getcover = args[0]
