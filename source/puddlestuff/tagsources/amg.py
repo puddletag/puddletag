@@ -27,10 +27,11 @@ spanmap = {'Genre': 'genre',
             'Album': 'album',
             'Artist': 'artist',
             'Featured Artist': 'artist',
-            'Performer': 'performer',
+            'Performer': 'artist',
             'Title': 'title',
             'Composer': 'composer',
-            'Time': '__length'}
+            'Time': '__length',
+            'Year': 'year'}
 
 sqlre = re.compile('sql=(.*)')
 
@@ -60,15 +61,22 @@ def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
 def get_track(trackinfo, keys, various=False):
-    values = map(text, trackinfo.find_all('td', {'class':'cell'}))
-    if not values:
+    tags =  trackinfo.find_all('td', {'class':'cell'})
+    if not tags:
         return {}
-    #pdb.set_trace()
+    values = []
+    for tag in tags:
+        if text(tag):
+            values.append(text(tag))
+        else:
+            if not tag.img:
+                values.append('')
     try:
         track = int(values[0])
-        return dict(zip(['track'] + keys, values))
+        return dict([(key, value) for key, value in zip(['track'] + keys, 
+            values) if value])
     except ValueError:
-        return dict(zip(keys, values))
+        return dict([(key, value) for key, value in zip(keys, values)])
 
 def parse_album_element(element):
     ret =  dict([(k, text(z)) for k, z in
@@ -104,10 +112,10 @@ def parse_review(soup):
         review_td = [x for x in soup.find_all('td', valign="top", colspan="2")][0]
     except IndexError:
         return {}
-    review = text(review_td)
-    #There are double-spaces in links and italics. Have to clean up.
-    review = re.sub('(\s+)', first_white, review)
-    return {'review': review}
+    #review = text(review_td)
+    ##There are double-spaces in links and italics. Have to clean up.
+    #review = re.sub('(\s+)', first_white, review)
+    return {'review': review_td.string.strip()}
 
 def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
@@ -124,7 +132,7 @@ keys = {'Release Date': 'year',
         'Themes': parselist,
         'Rating': parse_rating}
 
-def parse_albumpage(page):
+def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
     artist_group = album_soup.find_all('td', 'artist')
     info = {}
@@ -152,6 +160,12 @@ def parse_albumpage(page):
                 info['year'] = time.strftime('%Y-%m', year)
             except ValueError:
                 pass
+    
+    if artist and 'artist' not in info:
+        info['artist'] = artist
+    
+    if album and 'album' not in info:
+        info['album'] = album
 
     return info, parse_tracks(album_soup)
 
@@ -163,7 +177,7 @@ def parse_search_element(element):
     except AttributeError:
         pass
     ret.update([(field, text(z)) for field, z
-                    in zip(search_order , element) if field])
+                    in zip(search_order, element) if field])
     ret['#extrainfo'] = [ret['album'] + u' at AllMusic.com', ret['#albumurl']]
     try:
         ret['amgsqlid'] = sqlre.search(ret['#albumurl']).groups()[0]
@@ -201,6 +215,7 @@ def parse_tracks(soup):
 def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
     album_page = urllib2.urlopen(url).read()
+    to_file(album_page, 'album1.htm')
     info, tracks = parse_albumpage(album_page)
     try:
         info['amgsqlid'] = sqlre.search(url).groups()[0]
@@ -275,22 +290,22 @@ class AllMusic(object):
             write_log(u'Searching for %s' % album)
             try:
                 searchpage = search(album)
-                #to_file(searchpage, 'search.htm')
-                #searchpage = open('unicodesearch.htm').read()
+                to_file(searchpage, 'search1.htm')
+                #searchpage = open('/home/keith/spainsearch.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))
                 set_status(u'Error: While retrieving search page %s' % 
                             unicode(e))
                 raise RetrievalError(unicode(e))
-            write_log(u'Retrieved search results.')
+            write_log(u'Retrieved search results.')           
             matched, matches = parse_searchpage(searchpage, artist, album)
             if matched and len(matches) == 1:
                 info, tracks = self.retrieve(matches[0])
                 set_status(u'Found match for: %s - %s' % 
-                                (artist, info['album']))
+                                (artist, album))
                 write_log(u'Found match for: %s - %s' % 
-                                (artist, info['album']))
+                                (artist, album))
                 if check_matches:
                     if artist == u'Various Artists':
                         tags = ('artist', 'title')
