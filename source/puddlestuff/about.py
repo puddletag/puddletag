@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 import cPickle as pickle
 import mutagen, pyparsing, puddlestuff
 from puddlestuff.puddleobjects import OKCancel
-
+import puddlestuff.resource
 
 desc  = '''puddletag is a tag editor for Linux loosely based on the Windows program Mp3tag.
 
@@ -19,16 +19,15 @@ Visit the puddletag website (<a href="http://puddletag.sourceforge.net">http://p
 Licensed under GPLv2 (<a href="www.gnu.org/licenses/gpl-2.0.html">www.gnu.org/licenses/gpl-2.0.html</a>).
 '''
 
-thanks = """<b>Evan Devetzis</b> for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.<br /><br />
+thanks = """<b>Evan Devetzis</b> for his many, many awesome ideas and putting up with more bugs than humanly possible.<br /><br />
 
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).<br /><br />
 
-<b>Paul McGuire</b> for PyParsing and for being generally helpful.<br />
+<b>Paul McGuire</b> for PyParsing.<br />
 <b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (It. Is. Awesome).<br />
 <b>Phil Thomson</b> and everyone responsible for PyQt4.<br />
 <b>Michael Foord</b> and <b>Nicola Larosa</b> for ConfigObj (seriously, they should replace ConfigParser with this).<br />
 The <b>Oxygen team</b> for the Oxygen icons."""
-
 
 class ScrollLabel(QWidget):
     def __init__(self, text, alignment = Qt.AlignCenter, parent=None):
@@ -53,17 +52,23 @@ class AboutPuddletag(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setWindowTitle('About puddletag')
+        icon = QLabel()
+        icon.setPixmap(QPixmap(':/appicon.png').scaled(48,48))
         lib_versions = ', '.join(['<b>PyQt  %s' % PYQT_VERSION_STR,
                                      'Mutagen %s' % mutagen.version_string,
                                      'Pyparsing %s</b>' %pyparsing.__version__])
-        label = QLabel('<h2>puddletag %s</h2> %s' % (puddlestuff.version_string, lib_versions))
+        label = QLabel('<h2>puddletag %s</h2> %s' % (puddlestuff.version_string,
+            lib_versions))
 
         tab = QTabWidget()
         tab.addTab(ScrollLabel(desc), '&About')
         tab.addTab(ScrollLabel(thanks, Qt.AlignLeft), '&Thanks')
 
         vbox = QVBoxLayout()
-        vbox.addWidget(label)
+        version_layout = QHBoxLayout()
+        version_layout.addWidget(icon)
+        version_layout.addWidget(label, 1)
+        vbox.addLayout(version_layout)
         vbox.addWidget(tab, 1)
         ok = OKCancel()
         ok.cancel.setVisible(False)

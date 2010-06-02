@@ -203,7 +203,7 @@ class ImportWindow(QDialog):
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
                 'OpenFolder',QDir.homePath()))
-        if not filename:
+        if filename:
             try:
                 f = open(filename)
             except (IOError, OSError), detail:
@@ -223,7 +223,8 @@ class ImportWindow(QDialog):
             self.fillTags()
             self.show()
             self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
-            self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),self.fillTags)
+            self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),
+                self.fillTags)
 
     def openClipBoard(self):
         text = unicode(QApplication.clipboard().text())

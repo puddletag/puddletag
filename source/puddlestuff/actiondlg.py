@@ -58,10 +58,12 @@ class ScrollLabel(QScrollArea):
         else:
             QScrollArea.wheelEvent(self, e)
 
+READONLY = list(READONLY) + ['__path', '__dirpath', ]
+
 def displaytags(tags):
     if tags:
         s = "<b>%s</b>: %s<br /> "
-        return "".join([s % (z,v) for z,v in tags.items() if
+        return "".join([s % (z,v) for z,v in sorted(tags.items()) if
                             z not in READONLY])[:-2]
     else:
         return '<b>No change.</b>'
@@ -87,19 +89,22 @@ class FunctionDialog(QWidget):
 
         if showcombo:
             self.tagcombo = QComboBox()
+            tooltip = "Fields that will get written to.<br /><br />"\
+                      "Enter a list of comma-seperated fields eg. <b>artist, title, album</b>"
+            self.tagcombo.setToolTip(tooltip)
             self.tagcombo.setEditable(True)
             self.tagcombo.addItems(['__all'] + sorted(INFOTAGS) + showcombo)
             self._combotags = showcombo
             if defaulttags:
-                index = self.tagcombo.findText(" | ".join(defaulttags))
+                index = self.tagcombo.findText(" , ".join(defaulttags))
                 if index != -1:
                     self.tagcombo.setCurrentIndex(index)
                 else:
-                    self.tagcombo.insertItem(0, " | ".join(defaulttags))
+                    self.tagcombo.insertItem(0, ", ".join(defaulttags))
                     self.tagcombo.setCurrentIndex(0)
             self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
-            self.vbox.addWidget(QLabel("Tags"))
+            self.vbox.addWidget(QLabel("Fields"))
             self.vbox.addWidget(self.tagcombo)
         self.example = example
         self._text =text
@@ -182,7 +187,7 @@ class FunctionDialog(QWidget):
         [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
         if hasattr(self, "tagcombo"):
-            tags = [x for x in [z.strip().lower() for z in unicode(self.tagcombo.currentText()).split("|")] if z != ""]
+            tags = [x for x in [z.strip().lower() for z in unicode(self.tagcombo.currentText()).split(",")] if z != ""]
             self.func.setTag(tags)
             return newargs + tags
         else:

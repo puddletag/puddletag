@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from copy import deepcopy
@@ -25,7 +26,7 @@ class DirView(QTreeView):
         self.setModel(dirmodel)
         [self.hideColumn(column) for column in range(1,4)]
 
-        self.header().setStretchLastSection(True)
+        #self.header().setStretchLastSection(True)
         self.header().hide()
         self.subfolders = subfolders
         self.setSelectionMode(self.ExtendedSelection)
@@ -38,6 +39,9 @@ class DirView(QTreeView):
         self._dropaction = Qt.MoveAction
 
         self._select = True
+        
+        self.connect(self, SIGNAL('expanded(const QModelIndex &)'),
+            lambda discarded: self.resizeColumnToContents(0))
 
     def loadSettings(self):
         t = PuddleConfig()
