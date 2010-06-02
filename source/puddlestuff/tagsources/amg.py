@@ -60,7 +60,7 @@ def find_a(tag, regex):
 def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
-def get_track(trackinfo, keys, various=False):
+def get_track(trackinfo, keys):
     tags =  trackinfo.find_all('td', {'class':'cell'})
     if not tags:
         return {}
@@ -206,19 +206,15 @@ def parse_tracks(soup):
                     ).find_all('td', {'class': 'passive'})]
     except AttributeError:
         return []
-    if u'Performer' in headers:
-        various = True
-    else:
-        various = False
     keys = [spanmap.get(key, key) for key in headers]
-    tracks = filter(None, [get_track(trackinfo, keys, various) for trackinfo in
+    tracks = filter(None, [get_track(trackinfo, keys) for trackinfo in
                     soup.find_all('tr', {'id':"trlink"})])
     return tracks
 
 def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
     album_page = urllib2.urlopen(url).read()
-    to_file(album_page, 'album1.htm')
+    #to_file(album_page, 'album1.htm')
     info, tracks = parse_albumpage(album_page)
     try:
         info['amgsqlid'] = sqlre.search(url).groups()[0]

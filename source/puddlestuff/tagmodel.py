@@ -114,6 +114,8 @@ class Properties(QDialog):
                     ('Length', u'4:22')])]
         """
         QDialog.__init__(self,parent)
+        winsettings('fileinfo', self)
+        self.setWindowTitle('File Properties')
         self._load(info)
 
     def _load(self, info):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #flac.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -21,12 +22,12 @@
 from mutagen.flac import FLAC, Picture
 import util
 from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
-                    getfilename, getinfo, FILENAME, PATH, INFOTAGS)
+                    getfilename, getinfo, FILENAME, PATH, INFOTAGS, str_filesize)
 import ogg
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
-              'modified')
+              'modified', 'bitspersample')
 
 try:
     from puddlestuff.image import imageproperties
@@ -49,6 +50,22 @@ class TempTag(ogg.Tag):
         self.images = None
         if filename is not None:
             self.link(filename)
+    
+    def _info(self):
+        info = self._mutfile.info
+        fileinfo = [('Path', self.filepath),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self.filename),
+                    ('Modified', self.modified)]
+
+        ogginfo = [('Bitrate', self.bitrate),
+                ('Frequency', self.frequency),
+                ('Bits Per Sample', self.bitspersample),
+                ('Channels', unicode(info.channels)),
+                ('Length', self.length)]
+        return [('File', fileinfo), ('FLAC Info', ogginfo)]
+
+    info = property(_info)
 
     def delete(self):
         self.images = []
@@ -69,7 +86,8 @@ class TempTag(ogg.Tag):
 
         info = audio.info
         self._tags.update({u"__frequency": strfrequency(info.sample_rate),
-                    u"__length": strlength(info.length)})
+                    u"__length": strlength(info.length),
+                    u'__bitspersample': unicode(info.bits_per_sample)})
         try:
             self._tags[u"__bitrate"] = strbitrate(info.bitrate)
         except AttributeError:
