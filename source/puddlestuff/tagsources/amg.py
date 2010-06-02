@@ -188,9 +188,22 @@ def parse_search_element(element):
 
 def parse_searchpage(page, artist, album):
     soup = parse_html.SoupWrapper(parse_html.parse(page))
-    albums = [parse_search_element(z) for z in soup.find_all('td', {'class':'visible', 'id': 'trlink'})]
-    d = {'artist': artist, 'album': album}
-    ret = [album for album in albums if equal(d, album, True)]
+    albums = [parse_search_element(z) for z in 
+        soup.find_all('td', {'class':'visible', 'id': 'trlink'})]
+    
+    d = {}
+    if artist and album:
+        d = {'artist': artist, 'album': album}
+        ret = [album for album in albums if equal(d, album, True)]
+    elif album:
+        d = {'album': album}
+        ret = [album for album in albums if equal(d, album, True, ['album'])]
+        if not ret:
+            ret = [album for album in albums if 
+                equal(d, album, False, ['album'])]
+    else:
+        ret = []
+
     if ret:
         return True, ret
     else:
@@ -205,7 +218,7 @@ def parse_tracks(soup):
         headers = [text(z) for z in soup.find('table', {'id': 'ExpansionTable1'}
                     ).find_all('td', {'class': 'passive'})]
     except AttributeError:
-        return []
+        return None
     keys = [spanmap.get(key, key) for key in headers]
     tracks = filter(None, [get_track(trackinfo, keys) for trackinfo in
                     soup.find_all('tr', {'id':"trlink"})])

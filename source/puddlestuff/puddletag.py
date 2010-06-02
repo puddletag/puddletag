@@ -24,6 +24,7 @@ from audioinfo import lnglength, strlength, PATH, str_filesize
 from errno import EEXIST
 from operator import itemgetter
 from collections import defaultdict
+import constants
 
 pyqtRemoveInputHook()
 
@@ -418,10 +419,14 @@ class MainWin(QMainWindow):
     def savePlayList(self):
         tags = self._table.model().taginfo
         settings = PuddleConfig()
+        try:
+            dirname = self._lastdir[0]
+        except IndexError:
+            dirname = constants.HOMEDIR
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
         default = findfunc.tagtofilename(filepattern, tags[0])
         f = unicode(QFileDialog.getSaveFileName(self,
-                'Save Playlist', os.path.join(self._lastdir[0], default)))
+                'Save Playlist', os.path.join(dirname, default)))
         if f:
             if settings.get('playlist', 'extinfo', 1, True):
                 pattern = settings.get('playlist', 'extpattern','%artist% - %title%')

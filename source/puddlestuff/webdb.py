@@ -287,6 +287,7 @@ class ParentItem(QTreeWidgetItem):
         self.setChildIndicatorPolicy(self.ShowIndicator)
         self.setIcon(0, QWidget().style().standardIcon(QStyle.SP_DirClosedIcon))
         self.setInfo(albuminfo, dispformat)
+        self.hasTracks = True
 
     def addTracks(self, tracks, dispformat):
         self.takeChildren()
@@ -346,6 +347,7 @@ class ReleaseWidget(QTreeWidget):
         connect('itemCollapsed (QTreeWidgetItem *)', self.setClosedIcon)
         connect('itemExpanded (QTreeWidgetItem *)', self.setOpenIcon)
         connect('itemChanged (QTreeWidgetItem *, int)', self._setExactMatches)
+        connect('itemClicked (QTreeWidgetItem *, int)', self._selChanged)
     
     #def contextMenuEvent(self, event):
         #self._menu.exec_(event.globalPos())
@@ -370,7 +372,8 @@ class ReleaseWidget(QTreeWidget):
                 child = parent.child
                 [child(row).setSelected(False) for row in
                     range(parent.childCount())]
-            toretrieve = [item for item in toplevels if item.tracks is None]
+            toretrieve = [item for item in toplevels if item.tracks is None
+                and item.hasTracks]
             if toretrieve:
                 self.gettracks(toplevels)
                 return
@@ -392,7 +395,16 @@ class ReleaseWidget(QTreeWidget):
         rowindex = self.indexOfTopLevelItem
         selected = self.selectedItems()
 
+        tags = self.tagstowrite[::]
+
         toplevels = [z for z in selected if not z.parent()]
+        if len(toplevels) == 1 and (not toplevels[0].hasTracks):
+            copytag =  toplevels[0].info.copy
+            tracks = [strip(copytag(), tags) for z in 
+                self._status['selectedrows']]
+            self.emit(SIGNAL('preview'), tracks)
+            return
+
         for item in toplevels:
             if '#extrainfo' in item.info:
                 self.emit(SIGNAL('infoChanged'), u'<a href="%s">%s</a>' % (
@@ -403,7 +415,6 @@ class ReleaseWidget(QTreeWidget):
         else:
             children = selected
         
-        tags = self.tagstowrite[::]
         tracks = [strip(child.track, tags) for child in children]
         if tracks:
             for tag in tracks:
@@ -426,7 +437,7 @@ class ReleaseWidget(QTreeWidget):
         def func():
             ret = {}
             for item in items:
-                if item.tracks is not None:
+                if item.hasTracks and (item.tracks is not None):
                     continue
                 self.emit(SIGNAL("statusChanged"),
                             u'Retrieving: <b>%s</b>' % item.text(0))
@@ -461,6 +472,8 @@ class ReleaseWidget(QTreeWidget):
                 if exact:
                     [self._setExactMatches(item) for item in exact]
                     self.emit(SIGNAL('exactMatches'), True)
+            elif tracks is None:
+                parent.hasTracks = False
 
     def updateStatus(self, val):
         if not val:
@@ -469,7 +482,11 @@ class ReleaseWidget(QTreeWidget):
             if item.tracks is not None:
                 continue
             item.setInfo(info)
-            item.addTracks(tracks, self.dispformat)
+            if tracks is None:
+                item.hasTracks = False
+            else:
+                item.addTracks(tracks, self.dispformat)
+            
         self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
         self._selectedTracks()
 

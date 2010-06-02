@@ -1456,6 +1456,7 @@ class PicWin(QDialog):
         If you don't want to load an image when the class
         is created, let pixmap = None and call setImage later."""
         QDialog.__init__(self, parent)
+        self.setWindowTitle('Album Art')
         self.label = Label()
 
         vbox = QVBoxLayout()
