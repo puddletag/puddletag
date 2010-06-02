@@ -1,5 +1,5 @@
 [info]
-version=
+version=3
 
 [shortcut1]
 name=&Open Folder
@@ -60,7 +60,7 @@ enabled=filesselected
 
 [shortcut8]
 name=&File->Tag
-shortcut=Ctrl+F
+shortcut=Ctrl+T
 command=filename_to_tag
 control=mainwin
 icon=:/filetotag.png
@@ -157,7 +157,7 @@ name=&Tag->File
 control=mainwin
 enabled=filesselected
 command=tag_to_file
-shortcut=Ctrl+T
+shortcut=Ctrl+F
 icon=:/tagtofile.png
 status=tfstatus
 

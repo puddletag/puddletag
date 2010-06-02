@@ -25,7 +25,7 @@ def create_file(path, resource):
 
 def check_file(path, resource):
     if not os.path.exists(path):
-        create_file(path)
+        create_file(path, resource)
     else:
         cparser = PuddleConfig(path)
         version = cparser.get('info', 'version', 0)
