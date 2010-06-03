@@ -475,6 +475,7 @@ class MainWin(QMainWindow):
         if model.previewMode:
             [setRowData(row, f, undo=True) for row, f in izip(rows, tagiter)]
             fin()
+            return
 
         def func():
             for row, f in izip(rows, tagiter):

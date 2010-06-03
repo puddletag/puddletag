@@ -42,10 +42,7 @@ def rename_file(audio, tags):
     otherwise {} is returned."""
     oldfilename = audio.filepath
 
-    if PATH in tags:
-        audio.filepath = to_string(tags[PATH])
-        returntag = PATH
-    elif FILENAME in tags:
+    if FILENAME in tags:
         audio.filename = to_string(tags[FILENAME])
         returntag = FILENAME
     elif EXTENSION in tags:
@@ -116,11 +113,11 @@ def write(audio, tags, save_mtime = True):
                                         if key in audio.IMAGETAGS]))
             tags['__image'] = [audio.image(**z) for z in images]
 
-    filetags = real_filetags(audio.revmapping, tags)
+    filetags = real_filetags(audio.mapping, audio.revmapping, tags)
     try:
         if filetags:
             rename_file(audio, filetags)
-        audio.update(tags)
+        audio.update(without_file(audio.mapping, tags))
         audio.save()
     except EnvironmentError:
         audio.update(undo)
@@ -133,9 +130,12 @@ def write(audio, tags, save_mtime = True):
                     audio.modified)
     return undo
 
-def real_filetags(revmapping, tags):
-    if revmapping:
-        return dict([(revmapping[key], tags[key]) if key in revmapping
-            else (key, tags[key]) for key in FILETAGS if key in tags])
-    else:
-        return dict([(key, tags[key]) for key in FILETAGS if key in tags])
+def real_filetags(mapping, revmapping, tags):
+    filefields = [mapping.get(key, key) for key in FILETAGS]
+    return dict([(revmapping.get(key, key), tags[key]) for key in filefields
+        if key in tags])
+
+def without_file(mapping, tags):
+    filefields = [mapping.get(key, key) for key in FILETAGS]
+    return dict([(key, tags[key]) for key in tags if key not in filefields])
+

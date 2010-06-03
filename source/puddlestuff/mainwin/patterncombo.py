@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
@@ -8,6 +9,7 @@ def load_patterns(filepath=None):
     settings = PuddleConfig(filepath)
     return [settings.get('editor', 'patterns',
                             ['%artist% - $num(%track%,2) - %title%',
+                            '%artist% - %album% - $num(%track%,2) - %title%',
                             '%artist% - %title%', '%artist% - %album%',
                             '%artist% - Track %track%', '%artist% - %title%']),
            settings.get('editor', 'index', 0, True)]
@@ -97,33 +99,31 @@ class SettingsWin(QFrame):
         cparser.setSection('editor', 'patterns', patterns)
 
     def addPattern(self):
-        self.listbox.addItem("")
+        l = self.listbox.item
+        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
         row = self.listbox.currentRow()
-        self.listbox.setCurrentRow(self.listbox.count() - 1)
-        self.listbox.clearSelection()
-        self._add = True
-        self.editItem(True, row)
-        self.listbox.setFocus()
+        if row < 0:
+            row = 0
+        (text, ok) = QInputDialog().getItem(self, 'puddletag', 
+            'Enter a pattern', patterns, row)
+        if ok:
+            self.listbox.addItem(text)
+            self.listbox.setCurrentRow(self.listbox.count() - 1)
 
     def _doubleClicked(self, item):
         self.editItem()
 
-    def editItem(self, add = False, row = None):
+    def editItem(self, row=None):
         if row is None:
             row = self.listbox.currentRow()
-        if not add and row < 0:
-            return
         l = self.listbox.item
-        items = [unicode(l(z).text()) for z in range(self.listbox.count())]
-        (text, ok) = QInputDialog().getItem (self, 'puddletag', 'Enter a pattern', items, row)
+        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        (text, ok) = QInputDialog().getItem (self, 'puddletag', 
+            'Enter a pattern', patterns, row)
         if ok:
             item = l(row)
-            self.listbox.setItemSelected(item, True)
             item.setText(text)
-        else:
-            if self._add:
-                self.listbox.takeItem(self.listbox.count() - 1)
-                self._add = False
+            self.listbox.setItemSelected(item, True)
 
     def applySettings(self, control):
         item = self.listbox.item
