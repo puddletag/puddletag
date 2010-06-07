@@ -2,14 +2,14 @@
 import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from puddlestuff.constants import LEFTDOCK
+from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PicWidget
 from puddlestuff.audioinfo.util import commonimages
 
 class ArtworkWidget(QWidget):
     def __init__(self, parent=None, status = None):
         QWidget.__init__(self, parent)
-        self.receives = [('tagselectionchanged', self.fill)]
+        self.receives = [(SELECTIONCHANGED, self.fill)]
         self.emits = []
         self.picwidget = PicWidget()
         vbox = QVBoxLayout()
@@ -17,8 +17,10 @@ class ArtworkWidget(QWidget):
         self.setLayout(vbox)
         status['images'] = self.images
         self._audios = []
+        self._status = status
 
-    def fill(self, audios, *args):
+    def fill(self):
+        audios = self._status['selectedfiles']
         self.picwidget.setImages(None)
         self.init()
         if not audios:

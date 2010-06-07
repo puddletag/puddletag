@@ -7,7 +7,17 @@ from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
 pyqtRemoveInputHook()
-from puddlestuff.constants import LEFTDOCK
+from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
+import time
+
+def timemethod(method):
+    def f(*args, **kwargs):
+        name = method.__name__
+        t = time.time()
+        ret = method(*args, **kwargs)
+        print name, time.time() - t
+        return ret
+    return f
 
 def loadsettings(filepath = None):
     settings = PuddleConfig()
@@ -44,6 +54,14 @@ def savesettings(d, filepath=None):
         settings.set(unicode(row), 'tags', [z[1] for z in rowtags])
         settings.set(unicode(row), 'titles', [z[0] for z in rowtags])
 
+class Thread(QThread):
+    def __init__(self, values, parent=None):
+        self._values = values
+        QThread.__init__(self, parent)
+
+    def run(self):
+        self.emit(SIGNAL('update'), self._values)
+
 class FrameCombo(QGroupBox):
     """A group box with combos that allow to edit
     tags individually if so inclined.
@@ -61,7 +79,7 @@ class FrameCombo(QGroupBox):
         self.settingsdialog = SettingsWin
         QGroupBox.__init__(self,parent)
         self.emits = ['onetomany']
-        self.receives = [('tagselectionchanged', self.fillCombos)]
+        self.receives = [(SELECTIONCHANGED, self.fillCombos)]
         self.combos = {}
         self.labels = {}
         self._status = status
@@ -74,38 +92,20 @@ class FrameCombo(QGroupBox):
                 self.combos[z].clear()
             self.combos[z].setEnabled(False)
 
-    def fillCombos(self, audios, *args):
+    def fillCombos(self, *args):
+        audios = self._status['selectedfiles']
+        t = time.time()
         combos = self.combos
-        for z in combos:
-            if z  == "__image":
-                combos[z].setImages(None)
-            else:
-                combos[z].clear()
-            combos[z].setEnabled(False)
 
         if not audios:
+            for combo in combos.values():
+                combo.clear()
+                combo.setEnabled(False)
             return
 
-        self.initCombos()
-
-        #pdb.set_trace()
-        tags = dict([(tag,[]) for tag in combos if tag != '__image'])
-        images = []
-        imagetags = set()
+        self.initCombos(True)
+        tags = dict([(tag, set()) for tag in combos])
         for audio in audios:
-            try:
-                imagetags = imagetags.union(audio.IMAGETAGS)
-            except AttributeError:
-                pass
-            if ('__image' in combos):
-                if '__image' in audio.preview:
-                    value = audio.preview['__image']
-                else:
-                    value = audio['__image'] if audio['__image'] else {}
-                if audio.IMAGETAGS:
-                    images.append(value)
-                else:
-                    images.append({})
             for tag in tags:
                 try:
                     if tag in audio.preview:
@@ -113,60 +113,30 @@ class FrameCombo(QGroupBox):
                     else:
                         value = audio[tag]
                     if isinstance(value, basestring):
-                        tags[tag].append(value)
+                        tags[tag].add(value)
                     else:
-                        tags[tag].append("\\\\".join(value))
+                        tags[tag].add("\\\\".join(value))
                 except KeyError:
                     tags[tag].append("")
 
-        if '__image' in combos:
-            combos['__image'].lastfilename = audios[0].filepath
-            images = commonimages(images)
-            if images == 0:
-                combos['__image'].setImageTags(imagetags)
-                combos['__image'].context = 'Cover Varies'
-                combos['__image'].currentImage = 0
-            elif images == None:
-                combos['__image'].currentImage = 1
-            else:
-                combos['__image'].setImageTags(imagetags)
-                try:
-                    combos['__image'].images.extend(images)
-                    combos['__image'].currentImage = 2
-                except:
-                    pdb.set_trace()
-                    combos['__image'].images.extend(images)
-                    combos['__image'].currentImage = 2
-
-
-        for z in tags:
-            tags[z] = list(set(tags[z]))
-        #Add values to combos
-        for tagset in tags:
-            [combos[tagset].addItem(unicode(z)) for z in sorted(tags[tagset])
-                    if combos.has_key(tagset)]
-
-        for combo in combos.values():
-            combo.setEnabled(True)
-            #If a combo has more than 3 items it's not more than one artist, so we
-            #set it to the defaultvalue.
-            try:
-                if (combo.count() > 3) or (combo.count() < 2):
-                    combo.setCurrentIndex(0)
-                else:
+        for field, values in tags.iteritems():
+            if field in combos:
+                combo = combos[field]
+                values = sorted(values)
+                combo.addItems(["<keep>", "<blank>"] + values)
+                if len(values) == 1:
                     combo.setCurrentIndex(2)
-            except AttributeError:
-                pass
+                else:
+                    combo.setCurrentIndex(0)
 
-        #There are already prefefined genres so I have to check
-        #the selected file's one is there.
         if 'genre' in tags and len(tags['genre']) == 1:
             combo = combos['genre']
-            index = combo.findText(tags['genre'][0])
+            values = sorted(tags['genre'])
+            index = combo.findText(values[0])
             if index > -1:
                 combo.setCurrentIndex(index)
             else:
-                combo.setEditText(tags['genre'][0])
+                combo.setEditText(values[0])
         else:
             combos['genre'].setCurrentIndex(0)
 
@@ -174,13 +144,6 @@ class FrameCombo(QGroupBox):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
         combos = self.combos
         tags = {}
-        if '__image' in combos:
-            combo = combos['__image']
-            images = None
-            if combo.currentImage == 1: #<blank>
-                images = []
-            elif combo.currentImage > 1: #<keep> is 0, so everything else.
-                tags['__image'] = combo.images[2:]
 
         images = self._status['images']
         if images is not None:
@@ -244,47 +207,34 @@ class FrameCombo(QGroupBox):
             widgetbox.setMargin(0)
             for tag in tags:
                 tagval = tag[1]
-                self.labels[tagval] = QLabel(tag[0])
-                if tagval == '__image':
-                    self.labels[tagval].hide()
-                    pic = PicWidget()
-                    pic.next.setVisible(True)
-                    pic.prev.setVisible(True)
-                    pic.showbuttons = True
-                    pic._image_desc.setEnabled(False)
-                    pic._image_type.setEnabled(False)
-                    self.combos[tagval] = pic
-                else:
-                    self.combos[tagval] = QComboBox()
-                    self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
-                self.labels[tagval].setBuddy(self.combos[tagval])
-                labelbox.addWidget(self.labels[tagval])
-                widgetbox.addWidget(self.combos[tagval])
-                self._hboxes.append((labelbox, self.labels[tagval]))
-                self._hboxes.append((widgetbox, self.combos[tagval]))
+                label = QLabel(tag[0])
+                combo = QComboBox()
+                combo.setEditable(True)
+                #combo.setInsertPolicy(QComboBox.NoInsert)
+                label.setBuddy(combo)
+                labelbox.addWidget(label)
+                widgetbox.addWidget(combo)
+                self._hboxes.append((labelbox, label))
+                self._hboxes.append((widgetbox, label))
+                self.labels[tagval] = label
+                self.combos[tagval] = combo
             vbox.addLayout(labelbox)
             vbox.addLayout(widgetbox)
-        vbox.addStrut(0)
+        #vbox.addStrut(0)
         self.setLayout(vbox)
         QApplication.processEvents()
         self.setMaximumHeight(self.sizeHint().height())
 
-    def initCombos(self):
+    def initCombos(self, enable=False):
         """Clears the comboboxes and adds two items, <keep> and <blank>.
         If <keep> is selected and the tags in the combos are saved,
         then they remain unchanged. If <blank> is selected, then the tag is removed"""
-        for combo in self.combos:
-            if combo  == "__image":
-                pics = self.combos[combo].loadPics(':/keep.png', ':/blank.png')
-                self.combos[combo].setImages(pics)
-                self.combos[combo].readonly = [0,1]
-            else:
-                self.combos[combo].clear()
-                self.combos[combo].setEditable(True)
-                self.combos[combo].addItems(["<keep>", "<blank>"])
-                self.combos[combo].setEnabled(False)
+        for combo in self.combos.values():
+            combo.clear()
+            combo.setEnabled(enable)
 
         if 'genre' in self.combos:
+            pass
             self.combos['genre'].addItems(self._status['genres'])
 
     def reloadCombos(self, tags):

@@ -38,6 +38,7 @@ from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
 import traceback
+import time
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
@@ -535,6 +536,15 @@ def progress(func, pstring, maximum, threadfin = None):
         parent.connect(parent._t, SIGNAL('error(QString, int)'), parent._threadexit)
         parent._t.start()
     return s
+
+def timemethod(method):
+    def f(*args, **kwargs):
+        name = method.__name__
+        t = time.time()
+        ret = method(*args, **kwargs)
+        print name, time.time() - t
+        return ret
+    return f
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""

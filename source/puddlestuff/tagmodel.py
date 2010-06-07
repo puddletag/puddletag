@@ -31,7 +31,7 @@ from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                            HeaderSetting, getfiles, ProgressWin, PuddleStatus,
                            PuddleThread, progress, PuddleConfig, singleerror,
-                           winsettings, issubfolder)
+                           winsettings, issubfolder, timemethod)
 from musiclib import MusicLibError
 import time, re
 from errno import EEXIST
@@ -39,6 +39,7 @@ import traceback
 from itertools import izip
 from collections import defaultdict
 from util import write, rename_file, real_filetags
+from constants import SELECTIONCHANGED
 
 status = {}
 
@@ -352,10 +353,8 @@ class TagModel(QAbstractTableModel):
             except (KeyError, IndexError):
                 return QVariant()
         elif role == Qt.BackgroundColorRole:
-            try:
+            if self.taginfo[row].color:
                 return QVariant(self.taginfo[row].color)
-            except AttributeError:
-                return QVariant()
         elif role == Qt.FontRole:
             tag = self.headerdata[index.column()][1]
             f = QFont()
@@ -646,7 +645,7 @@ class TagModel(QAbstractTableModel):
             return
 
         if justrename:
-            filetags = real_filetags(audio.revmapping, tags)
+            filetags = real_filetags(audio.mapping, audio.revmapping, tags)
             undo = dict([(tag, copy(audio[tag])) if tag in audio
                 else (tag, []) for tag in tags])
             rename_file(audio, filetags)
@@ -923,7 +922,7 @@ class TagTable(QTableView):
             separator.setSeparator(True)
             return separator
 
-        self.emits = ['dirschanged', 'tagselectionchanged', 'filesloaded',
+        self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
                       'viewfilled', 'filesselected', 'enableUndo',
                       'playlistchanged', 'deletedfromlib', 'libfilesedited']
         self.receives = [('loadFiles', self.loadFiles),
@@ -1422,10 +1421,7 @@ class TagTable(QTableView):
             else:
                 self.emit(SIGNAL('filesselected'), False)
             model.highlight(self.selectedRows)
-            tags = [taginfo[row] for row in self.selectedRows]
-
-            self.emit(SIGNAL('tagselectionchanged'), tags,
-                                        selectedRows, selectedColumns)
+            self.emit(SIGNAL(SELECTIONCHANGED))
 
     def saveSelection(self):
         self._currentcol = self.currentColumnSelection()

@@ -48,6 +48,9 @@ def rename_file(audio, tags):
     elif EXTENSION in tags:
         audio.ext = to_string(tags[EXTENSION])
         returntag = EXTENSION
+    elif PATH in tags:
+        returntag = PATH
+        audio.filepath = tags[PATH]
     else:
         return
 

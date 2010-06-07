@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, SIGNAL
 from PyQt4.QtGui import QWidget
 from os.path import dirname, join
 #Paths
@@ -37,3 +37,6 @@ READONLY = ('__bitrate', '__frequency', "__length",
             "__modified", "__size", "__created", "__library")
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
 INFOTAGS = FILETAGS + list(READONLY)
+
+#SIGNALS
+SELECTIONCHANGED = "tagselectionchanged"

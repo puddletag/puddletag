@@ -167,27 +167,19 @@ class SettingsDialog(QWidget):
         enablesort = cparser.get('tagsources', 'sort', True)
         sortorder = cparser.get('tagsources', 'sortorder', [u'artist', u'album'])
         albumformat = cparser.get('tagsources', 'albumformat', '%artist% - %album%')
-        artoptions = ['Replace existing art.',
-                      'Append to existing album art.',
-                      "Leave artwork unchanged."]
+        artoptions = cparser.get('tagsource', 'artoptions'
+            ['Replace existing album art.', 'Append to existing album art.',
+                "Leave artwork unchanged."])
+        saveart = cparser.get('tagsources', 'saveart', False)
+        coverdir = cparser.get('tagsources', 'coverdir', False)
         
         label = QLabel('&Display format for individual tracks.')
         self._text = QLineEdit(text)
         label.setBuddy(self._text)
-        vbox = QVBoxLayout()
-        vbox.addWidget(label)
-        vbox.addWidget(self._text)
         
         albumlabel = QLabel('Display format for &retrieved albums')
         self._albumdisp = QLineEdit(albumformat)
         albumlabel.setBuddy(self._albumdisp)
-        
-        vbox.addWidget(albumlabel)
-        vbox.addWidget(self._albumdisp)
-
-        self._coverdir = QLineEdit(tagsources.COVERDIR)
-        label = QLabel('Directory to store album &covers in.')
-        label.setBuddy(self._coverdir)
 
         self._enablesort = QCheckBox('&Sort Retrieved Albums')
         sortlabel = QLabel('Sort &order (comma separated &fields).')
@@ -198,15 +190,31 @@ class SettingsDialog(QWidget):
         self._sortorder.setText(', '.join(sortorder))
         self._enablesort.setCheckState(Qt.Checked if enablesort 
             else Qt.Unchecked)
+
+        self._savecover = QCheckBox('Save album art.')
         
-        #self._artwork = 
+        coverlabel = QLabel("&Directory to save retrieved album art "
+            "(it will be created if it doesn't exist)")
+        self._coverdir = QLineEdit(tagsource.COVERDIR)
+        coverlabel.setBuddy(self._coverdir)
+        
+        self.connect(self._savecover, SIGNAL('stateChanged(int)'),
+            lambda state: self._coverlabel.setEnabled(bool(state)))
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(label)
+        vbox.addWidget(self._text)
+        
+        vbox.addWidget(albumlabel)
+        vbox.addWidget(self._albumdisp)
+        
+        vbox.addWidget(self._savecover)
+        vbox.addWidget(coverlabel)
+        vbox.addWidget(self._coverdir)
 
         vbox.addWidget(self._enablesort)
         vbox.addWidget(sortlabel)
         vbox.addWidget(self._sortorder)
-
-        #vbox.addWidget(label)
-        #vbox.addWidget(self._coverdir)
 
         vbox.addStretch()
         self.setLayout(vbox)
@@ -228,6 +236,12 @@ class SettingsDialog(QWidget):
         
         albumdisp = unicode(self._albumdisp.text())
         control.listbox.albumformat = albumdisp
+        
+        savecover = bool(self._saveart.checkState())
+        coverdir = unicode(self._coverdir.text())
+        
+        tagsources.set_coverdir(coverdir)
+        tagsources.set_savecovers(savecover)
 
         cparser = PuddleConfig()
         cparser.set('tagsources', 'displayformat', text)
@@ -235,6 +249,8 @@ class SettingsDialog(QWidget):
         cparser.set('tagsources', 'sort', enablesort)
         cparser.set('tagsources', 'sortorder', sortorder)
         cparser.set('tagsources', 'albumformat', albumdisp)
+        cparser.set('tagsources', 'savecover', savecover)
+        cparser.set('tagsources', 'coverdir', coverdir)
 
 class ChildItem(QTreeWidgetItem):
     def __init__(self, dispformat, track, albuminfo, *args):

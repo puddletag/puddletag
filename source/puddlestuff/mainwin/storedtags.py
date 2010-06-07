@@ -2,7 +2,7 @@
 import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from puddlestuff.constants import LEFTDOCK
+from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PuddleThread, natcasecmp
 from puddlestuff import audioinfo
 import pdb
@@ -13,13 +13,14 @@ class StoredTags(QScrollArea):
     def __init__(self, parent=None, status = None):
         QScrollArea.__init__(self, parent)
         self.emits = []
-        self.receives = self.receives = [('tagselectionchanged', self.load)]
+        self.receives = self.receives = [(SELECTIONCHANGED, self.load)]
         self._labels = []
         font = QFont()
         font.setBold(True)
         self._boldfont = font
         self._init()
         self.setWidgetResizable(True)
+        self._status = status
 
     def _init(self):
         widget = QWidget()
@@ -30,7 +31,8 @@ class StoredTags(QScrollArea):
         self.setWidget(widget)
         #self.connect(widget, SIGNAL('wheelEvent'), self._hScroll)
 
-    def load(self, audios, selectedRows, selectedColumns):
+    def load(self):
+        audios = self._status['selectedfiles']
         if not self.isVisible():
             return
         if hasattr(self, '_t') and self._t.isRunning():

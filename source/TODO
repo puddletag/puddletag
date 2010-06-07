@@ -2,12 +2,7 @@ Tagging needs it's own track/ tag window
 Cancel a tag lookup
 Tag lookup configurable to optionally ignore anything in () or [] {} in tag lookups
 Ability not to save artwork to tag, or to tag & file or just file or not at all. 
-Sortable tag lookup results.
 File loading chokes on certain character sets. Need to find out which.
-Tag sources for various albums incorrect. Example http://www.allmusic.com/cg/amg.dll?p=amg&sql=10:hxfpxqysldke
-Year fields not being converted.
-http://allmusic.com/cg/amg.dll?p=amg&sql=10:3zfqxqu5ldte Oct 1975-Jun 1976
-http://www.allmusic.com/cg/amg.dll?p=amg&sql=10:h9frxqe5ldde 1988
 The only big things I can think about are:
 Rhythmbox and mpd library support.
 Library stuff, like finding duplicates, maybe some stats (I hate that
