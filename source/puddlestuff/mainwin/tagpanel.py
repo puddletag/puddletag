@@ -182,16 +182,15 @@ class FrameCombo(QGroupBox):
         >>>rows = {0:[0], 1:[1], 2:[2], 3[3,4,6],4:[5]
         >>>f = FrameCombo()
         >>>f.setCombo(tags,rows)"""
+        #pdb.set_trace()
         if self.combos:
             vbox = self.layout()
             for box, control in self._hboxes:
                 box.removeWidget(control)
                 sip.delete(control)
-                QApplication.processEvents()
                 if not box.count():
                     vbox.removeItem(box)
                     sip.delete(box)
-                QApplication.processEvents()
         else:
             vbox = QVBoxLayout()
             vbox.setMargin(0)
@@ -207,20 +206,18 @@ class FrameCombo(QGroupBox):
             widgetbox.setMargin(0)
             for tag in tags:
                 tagval = tag[1]
-                label = QLabel(tag[0])
-                combo = QComboBox()
-                combo.setEditable(True)
-                #combo.setInsertPolicy(QComboBox.NoInsert)
-                label.setBuddy(combo)
-                labelbox.addWidget(label)
-                widgetbox.addWidget(combo)
-                self._hboxes.append((labelbox, label))
-                self._hboxes.append((widgetbox, label))
-                self.labels[tagval] = label
-                self.combos[tagval] = combo
+                self.labels[tagval] = QLabel(tag[0])
+                self.combos[tagval] = QComboBox()
+                self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
+                self.combos[tagval].setEditable(True)
+                self.labels[tagval].setBuddy(self.combos[tagval])
+                labelbox.addWidget(self.labels[tagval])
+                widgetbox.addWidget(self.combos[tagval])
+                self._hboxes.append((labelbox, self.labels[tagval]))
+                self._hboxes.append((widgetbox, self.combos[tagval]))
             vbox.addLayout(labelbox)
             vbox.addLayout(widgetbox)
-        #vbox.addStrut(0)
+        vbox.addStrut(0)
         self.setLayout(vbox)
         QApplication.processEvents()
         self.setMaximumHeight(self.sizeHint().height())

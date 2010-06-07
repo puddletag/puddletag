@@ -167,7 +167,7 @@ class SettingsDialog(QWidget):
         enablesort = cparser.get('tagsources', 'sort', True)
         sortorder = cparser.get('tagsources', 'sortorder', [u'artist', u'album'])
         albumformat = cparser.get('tagsources', 'albumformat', '%artist% - %album%')
-        artoptions = cparser.get('tagsource', 'artoptions'
+        artoptions = cparser.get('tagsource', 'artoptions',
             ['Replace existing album art.', 'Append to existing album art.',
                 "Leave artwork unchanged."])
         saveart = cparser.get('tagsources', 'saveart', False)
@@ -195,11 +195,11 @@ class SettingsDialog(QWidget):
         
         coverlabel = QLabel("&Directory to save retrieved album art "
             "(it will be created if it doesn't exist)")
-        self._coverdir = QLineEdit(tagsource.COVERDIR)
+        self._coverdir = QLineEdit(tagsources.COVERDIR)
         coverlabel.setBuddy(self._coverdir)
         
         self.connect(self._savecover, SIGNAL('stateChanged(int)'),
-            lambda state: self._coverlabel.setEnabled(bool(state)))
+            lambda state: self._coverdir.setEnabled(bool(state)))
         
         vbox = QVBoxLayout()
         vbox.addWidget(label)
@@ -208,9 +208,9 @@ class SettingsDialog(QWidget):
         vbox.addWidget(albumlabel)
         vbox.addWidget(self._albumdisp)
         
-        vbox.addWidget(self._savecover)
-        vbox.addWidget(coverlabel)
-        vbox.addWidget(self._coverdir)
+        #vbox.addWidget(self._savecover)
+        #vbox.addWidget(coverlabel)
+        #vbox.addWidget(self._coverdir)
 
         vbox.addWidget(self._enablesort)
         vbox.addWidget(sortlabel)
@@ -237,7 +237,7 @@ class SettingsDialog(QWidget):
         albumdisp = unicode(self._albumdisp.text())
         control.listbox.albumformat = albumdisp
         
-        savecover = bool(self._saveart.checkState())
+        savecover = bool(self._savecover.checkState())
         coverdir = unicode(self._coverdir.text())
         
         tagsources.set_coverdir(coverdir)
