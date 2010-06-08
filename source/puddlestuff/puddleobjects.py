@@ -38,7 +38,7 @@ from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
 import traceback
-import time
+import time, re
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
                         QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
@@ -355,16 +355,13 @@ class compare:
         except: return s
     def natsort_key(self, s):
         "Used internally to get a tuple by which s is sorted."
-        import re
         return map(self.try_int, re.findall(r'(\d+|\D+)', s))
     def natcmp(self, a, b):
         "Natural string comparison, case sensitive."
         return cmp(self.natsort_key(a), self.natsort_key(b))
     def natcasecmp(self, a, b):
         "Natural string comparison, ignores case."
-        a = list(a)
-        b = list(b)
-        return self.natcmp("".join(a).lower(), "".join(b).lower())
+        return self.natcmp(u"".join(a).lower(), u"".join(b).lower())
 
 natcasecmp = compare().natcasecmp
 

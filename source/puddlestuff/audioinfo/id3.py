@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 sys.path.insert(1, '/home/keith/Documents/python/puddletag/puddlestuff/audioinfo')
 import mutagen.id3 as id3
@@ -633,13 +634,6 @@ class Tag(TagBase):
                 self._tags.update(create_userurl(key, value))
             else:
                 self._tags.update(create_usertext(key, value))
-
-
-    def get(self, key):
-        try:
-            return self[key]
-        except KeyError:
-            return None
 
 
 filetype = (PuddleID3FileType, Tag, 'ID3')

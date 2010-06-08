@@ -406,7 +406,7 @@ class TagModel(QAbstractTableModel):
         rows = rows[::]
         hcolor = QPalette().color(QPalette.Mid)
         nolight = set(self._prevhighlight).difference(rows)
-        self._prevhighlight = rows
+        self._prevhighlight = rows[::]
         rows.extend(nolight)
         taginfo = self.taginfo
 
@@ -485,6 +485,7 @@ class TagModel(QAbstractTableModel):
             self._filtered = []
             self.reset()
             self.sort(*self.sortOrder)
+            [setattr(z, 'color', None) for z in self.taginfo if z.color]
             self.undolevel = 0
 
     def removeColumns(self, column, count, parent = QModelIndex()):
@@ -654,7 +655,8 @@ class TagModel(QAbstractTableModel):
             audio.undo[self.undolevel] = undo
         else:
             artist = audio.sget('artist')
-            audio.undo[self.undolevel] = write(audio, tags)
+            audio.undo[self.undolevel] = write(audio, tags, 
+                self.saveModification)
             if audio.library:
                 return (artist, tags)
 
@@ -705,7 +707,8 @@ class TagModel(QAbstractTableModel):
         if row < (self.rowCount() - 1) and row >= 0:
            return self.index(row + 1, column)
 
-    def sort(self,column, order = Qt.DescendingOrder):
+    def sort(self, column, order = Qt.DescendingOrder):
+        self.emit(SIGNAL('aboutToSort'))
         self.sortOrder = (column, order)
         try:
             tag = self.headerdata[column][1]
@@ -714,11 +717,13 @@ class TagModel(QAbstractTableModel):
                 tag = self.headerdata[0][1]
             else:
                 return
+        f = lambda audio: audio.get(tag, '')
         if order == Qt.AscendingOrder:
-            self.taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag))
+            self.taginfo.sort(natcasecmp, f)
         else:
-            self.taginfo = sorted(self.taginfo, natcasecmp, itemgetter(tag), True)
+            self.taginfo.sort(natcasecmp, f, True)
         self.reset()
+        self.emit(SIGNAL('sorted'))
 
     def supportedDropActions(self):
         return Qt.CopyAction
@@ -819,6 +824,8 @@ class TableHeader(QHeaderView):
         self.setClickable(True)
         self.setHighlightSections(True)
         self.setMovable(True)
+        self.setSortIndicatorShown(True)
+        self.setSortIndicator(0, Qt.AscendingOrder)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -830,7 +837,6 @@ class TableHeader(QHeaderView):
         if event.button == Qt.RightButton:
             self.contextMenuEvent(event)
             return
-        self.emit(SIGNAL('saveSelection'))
         QHeaderView.mousePressEvent(self, event)
 
     def setTitles(self):
@@ -875,11 +881,13 @@ class TagTable(QTableView):
             headerdata = []
         header = TableHeader(Qt.Horizontal, headerdata, self)
         header.setSortIndicatorShown(True)
-        header.setStretchLastSection(True)
+        self.setSortingEnabled(True)
+        self._savedSelection = False
+        #header.setStretchLastSection(True)
 
         self.setVerticalHeader(VerticalHeader(Qt.Vertical))
 
-        self.connect(header, SIGNAL("sectionClicked(int)"), self.sortByColumn)
+        #self.connect(header, SIGNAL("sectionClicked(int)"), self.sortByColumn)
         #header.setSortIndicator(0, Qt.AscendingOrder)
         self.setHorizontalHeader(header)
         self.setDragEnabled(True)
@@ -1253,13 +1261,8 @@ class TagTable(QTableView):
             self.clearSelection()
             self.restoreReloadSelection(*self._restore)
             self._restore = False
-        elif not append:
-            sortcolumn = self.horizontalHeader().sortIndicatorSection()
-            QTableView.sortByColumn(self, sortcolumn)
-        
+
         model = self.model()
-        for z in model.taginfo:
-            z.color = None
         model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                     model.index(0,0), model.index(model.rowCount() -1,
                     model.columnCount() -1))
@@ -1325,15 +1328,6 @@ class TagTable(QTableView):
             selection = QItemSelection(topLeft, bottomRight);
             self.selectionModel().select(selection, QItemSelectionModel.Select)
 
-    def selectAll(self):
-        model = self.model()
-        topLeft = model.index(0, 0);
-        bottomRight = model.index(model.rowCount()-1, model.columnCount()-1)
-
-        selection = QItemSelection(topLeft, bottomRight);
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
-
-
     def selectCorner(self):
         topLeft = self.model().index(0, 0)
         selection = QItemSelection(topLeft, topLeft)
@@ -1342,12 +1336,13 @@ class TagTable(QTableView):
 
     def setModel(self, model):
         QTableView.setModel(self, model)
-        #For less typing and that the model doesn't have to be accessed directly
         self.updateRow = model.setRowData
         self.connect(model, SIGNAL('modelReset'), self.selectionChanged)
-        self.connect(model, SIGNAL('modelReset'), self.selectCorner)
         self.connect(model, SETDATAERROR, self.writeError)
         self.connect(model, SIGNAL('fileChanged()'), self.selectionChanged)
+        self.connect(model, SIGNAL('aboutToSort'), self.saveBeforeReset)
+        self.connect(model, SIGNAL('sorted'), self.restoreSort)
+        #self.connect(model, SIGNAL('modelReset()'), self.restoreAfterReset)
 
     def currentRowSelection(self):
         """Returns a dictionary with the currently selected rows as keys.
@@ -1401,7 +1396,6 @@ class TagTable(QTableView):
         want self.selectedRows updated without hassle."""
         if selected is not None and deselected is not None:
             QTableView.selectionChanged(self, selected, deselected)
-        
         taginfo = self.model().taginfo
         model = self.model()
 
@@ -1422,6 +1416,17 @@ class TagTable(QTableView):
                 self.emit(SIGNAL('filesselected'), False)
             model.highlight(self.selectedRows)
             self.emit(SIGNAL(SELECTIONCHANGED))
+
+    def saveBeforeReset(self):
+        self.setCursor(Qt.BusyCursor)
+        self._savedSelection = self.saveSelection()
+    
+    def restoreSort(self):
+        self.setCursor(Qt.ArrowCursor)
+        if self._savedSelection:
+            self.restoreSelection(*self._savedSelection)
+            self._savedSelection = None
+            return
 
     def saveSelection(self):
         self._currentcol = self.currentColumnSelection()
@@ -1520,6 +1525,7 @@ class TagTable(QTableView):
 
         for col, rows in groups.items():
             [select(min(row), max(row), col) for row in rows]
+        self.selectionModel().clear()
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
     def removeFolders(self, dirs, valid = True):

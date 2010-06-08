@@ -357,6 +357,7 @@ class ReleaseWidget(QTreeWidget):
         self.sortOrder = ['artist', 'album']
         self._albumformat = '%artist% - %album%'
         self.setSortOptions([['artist', 'album'], ['album', 'artist']])
+        self._emitselected = False
 
         connect = lambda signal, slot: self.connect(self, SIGNAL(signal), slot)
         connect('itemSelectionChanged()', self._selChanged)
@@ -381,6 +382,7 @@ class ReleaseWidget(QTreeWidget):
             return
 
     def _selChanged(self):
+        self._emitselected = True
         rowindex = self.indexOfTopLevelItem
         toplevels = [z for z in self.selectedItems() if not z.parent()]
         if toplevels:
@@ -408,6 +410,8 @@ class ReleaseWidget(QTreeWidget):
         return [child(row) for row in xrange(item.childCount())]
 
     def _selectedTracks(self):
+        if not self._emitselected:
+            return
         rowindex = self.indexOfTopLevelItem
         selected = self.selectedItems()
 
@@ -430,6 +434,7 @@ class ReleaseWidget(QTreeWidget):
             [children.extend(self._children(parent)) for parent in toplevels]
         else:
             children = selected
+        self._emitselected = False
         
         tracks = [strip(child.track, tags) for child in children]
         if tracks:
@@ -505,6 +510,7 @@ class ReleaseWidget(QTreeWidget):
             
         self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
         self._selectedTracks()
+        self._emitselected = False
 
     def _getDispFormat(self):
         return self._dispformat

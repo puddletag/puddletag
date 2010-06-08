@@ -389,16 +389,10 @@ class MockTag(object):
             return self._tags.keys()
         else:
             revmapping = self.revmapping
+            get = self.mapping.get
             mapping = self.mapping
-            ret = []
-            for key in self._tags:
-                if key in mapping:
-                    ret.append(mapping[key])
-                elif key in revmapping:
-                    pass
-                else:
-                    ret.append(key)
-            return ret
+            return [get(key, key) for key in self._tags if 
+                (key in mapping) or (key not in revmapping)]
 
     def values(self):
         return [self[key] for key in self]
@@ -432,11 +426,8 @@ class MockTag(object):
 
     usertags = property(_usertags)
 
-    def get(self, key):
-        try:
-            return self[key]
-        except KeyError:
-            return None
+    def get(self, key, default=None):
+        return self[key] if key in self else default
 
     def real(self, key):
         if key in self.revmapping:
