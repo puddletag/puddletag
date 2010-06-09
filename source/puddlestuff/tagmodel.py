@@ -489,9 +489,6 @@ class TagModel(QAbstractTableModel):
             self.undolevel = 0
 
     def removeColumns(self, column, count, parent = QModelIndex()):
-        """This function only allows removal of one column at a time.
-        For some reason, it just clears the columns otherwise.
-        So for now, this seems to work."""
         self.beginRemoveColumns(QModelIndex(), column, column + count - 1)
         del(self.headerdata[column: column+count])
         self.endRemoveColumns()

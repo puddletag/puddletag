@@ -14,13 +14,17 @@ class ArtworkWidget(QWidget):
         self.picwidget = PicWidget()
         vbox = QVBoxLayout()
         vbox.addWidget(self.picwidget)
+        hbox = QHBoxLayout()
+        hbox.addStrut(1)
+        vbox.addLayout(hbox)
         self.setLayout(vbox)
         status['images'] = self.images
         self._audios = []
         self._status = status
 
-    def fill(self):
-        audios = self._status['selectedfiles']
+    def fill(self, audios=None):
+        if audios is None:
+            audios = self._status['selectedfiles']
         self.picwidget.setImages(None)
         self.init()
         if not audios:

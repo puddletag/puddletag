@@ -13,6 +13,7 @@ from puddlestuff.audioinfo.util import (strlength, strbitrate, strfrequency, use
 from itertools import imap
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
+import tags
 
 class Tag(audioinfo.MockTag):
     """Use as base for all tag classes."""
@@ -102,10 +103,20 @@ class TestWidget(QWidget):
         load1000button = QPushButton('Load 1000')
         self.connect(load1000button, SIGNAL('clicked()'), self._load1000)
         self._status = status
+        
+        save_tags = QPushButton('Save Files')
+        self.connect(save_tags, SIGNAL('clicked()'), self._saveTags)
+        self._status = status
+        
+        load_many = QPushButton('Load Many')
+        self.connect(load_many, SIGNAL('clicked()'), self._loadMany)
+        self._status = status
 
         box = QVBoxLayout()
         box.addWidget(button)
         box.addWidget(load1000button)
+        box.addWidget(save_tags)
+        box.addWidget(load_many)
         self.setLayout(box)
 
     def _changePreview(self):
@@ -118,8 +129,23 @@ class TestWidget(QWidget):
     
     def _load1000(self):
         table = PuddleDock._controls['table']
-        import tags
         table.model().load(map(Tag, tags.tags))
         table.model().saveModification = False
+    
+    def _loadMany(self):
+        model = PuddleDock._controls['table'].model()
+        num, ok = QInputDialog.getInt(self, 'puddletag', 
+            'Enter the number of files to fill the file-view with.', 10)
+        if num:
+            #pdb.set_trace()
+            model.load(map(Tag, tags.tags[:num]))
+            model.saveModification = False
+
+    def _saveTags(self):
+        files = self._status['allfiles']
+        f = open('savedfiles', 'w')
+        f.write(u'# -*- coding: utf-8 -*-\ntags = [%s]' % 
+            u',\n'.join((unicode(z.tags) for z in files)).decode('utf8'))
+        f.close()
 
 control = ('Puddle Testing', TestWidget, RIGHTDOCK, False)

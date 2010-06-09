@@ -116,7 +116,7 @@ def getfunc(text, audio):
     if not isinstance(text, unicode):
         text = unicode(text, 'utf8')
 
-    funcpattern = re.compile(r'[^\\]\$[a-zA-Z_0-9]+\(')
+    funcpattern = re.compile(r'[^\\]?\$[a-zA-Z_0-9]+\(')
 
     addspace = False
     #pat doesn't match if the text starts with the pattern, because there isn't
@@ -128,6 +128,7 @@ def getfunc(text, audio):
     start = 0
     #Get the functions
     #Got this from comp.lang.python
+    #pdb.set_trace()
     while 1:
         match = funcpattern.search(text, start)
         if match is None: break
@@ -144,8 +145,13 @@ def getfunc(text, audio):
             break
         #Replace a function with its parsed text
         torep = text[match.start(0) + 1: idx]
+        if not torep.startswith(u'$'):
+            torep = text[match.start(0): idx]
+        toparse = torep
+        if funcpattern.search(torep[1:]):
+            toparse = u'$' + getfunc(torep[1:], audio)
         try:
-            replacetext = parsefunc(text[match.start(0) + 1: idx], audio)
+            replacetext = parsefunc(toparse, audio)
         except ParseError, e:
             return e.message
         text = text.replace(torep, replacetext)
@@ -378,7 +384,7 @@ def tagtotag(pattern, text, expression):
     """See filenametotag for an implementation example and explanation.
 
     pattern is a string with position of each token in text
-    text is the text to me matched
+    text is the text to be matched
     expression is a pyparsing object (i.e. what a token look like)
 
     >>>tagtotag('$1 - $2', 'Artist - Title', Literal('$').suppress() + Word(nums))

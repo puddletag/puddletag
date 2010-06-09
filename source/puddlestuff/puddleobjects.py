@@ -1047,6 +1047,9 @@ class PicWidget(QWidget):
                    If False, then these functions can be found by right clicking
                    on the picture."""
         QWidget.__init__(self, parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.sizePolicy().setVerticalStretch(0)
+        self.sizePolicy().setHorizontalStretch(3)
 
         self.lastfilename = u'~'
         #The picture.
@@ -1057,6 +1060,7 @@ class PicWidget(QWidget):
         if buttons:
             self.label.setMaximumSize(200, 170)
         self.label.setAlignment(Qt.AlignCenter)
+        #self.label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
         #Description and picture type shit.
         self._image_desc = QLineEdit(self)
@@ -1128,7 +1132,7 @@ class PicWidget(QWidget):
             movebuttons.addStretch()
 
         vbox = QVBoxLayout()
-        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label, 1)
+        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label,1)
         if not buttons:
             h.addLayout(movebuttons)
             context_box = QHBoxLayout()
@@ -1136,14 +1140,14 @@ class PicWidget(QWidget):
             context_box.addWidget(self._contextlabel)
             vbox.addLayout(context_box)
         h.addStretch()
-        vbox.addLayout(h, 1)
+        vbox.addLayout(h)
         
         vbox.setMargin(0)
         vbox.addLayout(controls)
         if buttons:
             vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
-        vbox.addStretch(1)
+        #vbox.addStretch()
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
