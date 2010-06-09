@@ -107,6 +107,8 @@ def setmodtime(filepath, atime, mtime):
 def commonimages(imagedicts):
     if imagedicts:
         x = imagedicts[0]
+    else:
+        x = None
     for image in imagedicts[1:]:
         if image != x:
             return 0
@@ -128,11 +130,14 @@ def commontags(audios, usepreview=False):
             preview = {}
         if audio.IMAGETAGS:
             if usepreview:
-                images.append(preview.get('__image', {}))
+                image = preview.get('__image', [])
+                if not image:
+                    image = audio['__image'] if audio['__image'] else []
             else:
-                images.append(audio['__image'] if audio['__image'] else {})
+                image = audio['__image'] if audio['__image'] else []
         else:
-            images.append({})
+            image = []
+        images.append(image)
         imagetags = imagetags.union(audio.IMAGETAGS)
         audio = stringtags(audio.usertags)
 
