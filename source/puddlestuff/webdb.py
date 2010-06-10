@@ -357,7 +357,6 @@ class ReleaseWidget(QTreeWidget):
         self.sortOrder = ['artist', 'album']
         self._albumformat = '%artist% - %album%'
         self.setSortOptions([['artist', 'album'], ['album', 'artist']])
-        self._emitselected = False
 
         connect = lambda signal, slot: self.connect(self, SIGNAL(signal), slot)
         connect('itemSelectionChanged()', self._selChanged)
@@ -377,12 +376,12 @@ class ReleaseWidget(QTreeWidget):
         item.setIcon(0, self.style().standardIcon(QStyle.SP_DirOpenIcon))
         try:
             if item.tracks is None:
-                self.gettracks([item])
+                self.gettracks([item], lambda items: self.updateStatus(items,
+                    False))
         except AttributeError:
             return
 
     def _selChanged(self):
-        self._emitselected = True
         rowindex = self.indexOfTopLevelItem
         toplevels = [z for z in self.selectedItems() if not z.parent()]
         if toplevels:
@@ -410,8 +409,6 @@ class ReleaseWidget(QTreeWidget):
         return [child(row) for row in xrange(item.childCount())]
 
     def _selectedTracks(self):
-        if not self._emitselected:
-            return
         rowindex = self.indexOfTopLevelItem
         selected = self.selectedItems()
 
@@ -434,8 +431,7 @@ class ReleaseWidget(QTreeWidget):
             [children.extend(self._children(parent)) for parent in toplevels]
         else:
             children = selected
-        self._emitselected = False
-        
+                
         tracks = [strip(child.track, tags) for child in children]
         if tracks:
             for tag in tracks:
@@ -447,7 +443,7 @@ class ReleaseWidget(QTreeWidget):
             self.emit(SIGNAL('preview'),
                 tracks[:len(self._status['selectedrows'])])
 
-    def gettracks(self, items):
+    def gettracks(self, items, fin = None):
         try:
             while self.t.isRunning():
                 pass
@@ -469,11 +465,15 @@ class ReleaseWidget(QTreeWidget):
                         u'An error occured: ' + unicode(e))
             return ret
         self.t = PuddleThread(func)
-        self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
+        if fin is None:
+            self.connect(self.t, SIGNAL("threadfinished"), self.updateStatus)
+        else:
+            self.connect(self.t, SIGNAL("threadfinished"), fin)
         self.t.start()
 
     def setReleases(self, releases):
         self.clear()
+        self.emit(SIGNAL('infoChanged'), '')
         def item(text):
             i = QTreeWidgetItem([text])
             i.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
@@ -496,7 +496,7 @@ class ReleaseWidget(QTreeWidget):
             elif tracks is None:
                 parent.hasTracks = False
 
-    def updateStatus(self, val):
+    def updateStatus(self, val, updateselection=True):
         if not val:
             return
         for item, (info, tracks) in val.items():
@@ -507,10 +507,9 @@ class ReleaseWidget(QTreeWidget):
                 item.hasTracks = False
             else:
                 item.addTracks(tracks, self.dispformat)
-            
         self.emit(SIGNAL("statusChanged"), "Track retrieval successful.")
-        self._selectedTracks()
-        self._emitselected = False
+        if updateselection:
+            self._selectedTracks()
 
     def _getDispFormat(self):
         return self._dispformat

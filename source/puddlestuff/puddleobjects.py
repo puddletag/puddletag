@@ -1582,6 +1582,7 @@ class PuddleCombo(QWidget):
 
     def save(self):
         values = [unicode(self.combo.itemText(index)) for index in xrange(self.combo.count())]
+        values.append(unicode(self.combo.currentText()))
         cparser = PuddleConfig(self.filename)
         cparser.setSection(self.name, 'values', values)
 
@@ -1590,6 +1591,11 @@ class PuddleCombo(QWidget):
 
     def _editTextChanged(self, text):
         self.emit(SIGNAL('editTextChanged(const QString&)'), text)
+    
+    def closeEvent(self, event):
+        QWidget.closeEvent(self, event)
+
+        self.save()
 
 class PuddleDock(QDockWidget):
     """A normal QDockWidget that emits a 'visibilitychanged' signal

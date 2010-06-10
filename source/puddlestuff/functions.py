@@ -106,17 +106,17 @@ def div(text,text1):
 
 
 def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
-    '''Remove brackets from (ft), Brackets remove: $0
-    Feat &String, text,  ft
-    O&pening bracket, text, "("
-    C&losing bracket, text, ")"'''
-    #Removes parenthesis from feat string
-    #say if you had a title string "Booty (ft the boot man)"
-    #featFormat would return "Booty ft the boot man"
-    #In the same way "Booty (ft the boot man"
-    #would give "Booty ft the boot man"
-    #but "Booty ft the boot man)" would remain unchanged.
-    #the opening and closing parens can be changed to whatever.
+    #'''Remove brackets from (ft), Brackets remove: $0
+    #Feat &String, text,  ft
+    #O&pening bracket, text, "("
+    #C&losing bracket, text, ")"'''
+    ##Removes parenthesis from feat string
+    ##say if you had a title string "Booty (ft the boot man)"
+    ##featFormat would return "Booty ft the boot man"
+    ##In the same way "Booty (ft the boot man"
+    ##would give "Booty ft the boot man"
+    ##but "Booty ft the boot man)" would remain unchanged.
+    ##the opening and closing parens can be changed to whatever.
     textli = list(text)
     start = text.find(ftstring)
     if start == -1: return text
@@ -145,8 +145,8 @@ def formatValue(tags, pattern):
     return findfunc.tagtofilename(pattern, tags)
 
 def ftArtist(tags, ftval = " ft "):
-    '''Get FT Artist, "FT Artist: $0, String: $1"
-Featuring &String, text, " ft "'''
+    #'''Get FT Artist, "FT Artist: $0, String: $1"
+#Featuring &String, text, " ft "'''
 
     try:
         text = tags["artist"]
@@ -157,9 +157,9 @@ Featuring &String, text, " ft "'''
         return(text[:index])
 
 def ftTitle(tags, ftval = " ft ", replacetext = None):
-    '''Get FT Title, "FT Title: $0, String: $1"
-Featuring &String, text, " ft "
-&Text to append, text, " ft "'''
+    #'''Get FT Title, "FT Title: $0, String: $1"
+#Featuring &String, text, " ft "
+#&Text to append, text, " ft "'''
     if replacetext == None:
         replacetext = ftval
     try:

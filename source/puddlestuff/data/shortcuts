@@ -1,5 +1,5 @@
 [info]
-version=3
+version=5
 
 [shortcut1]
 name=&Open Folder
@@ -82,6 +82,7 @@ icon=:/track.png
 command=auto_numbering
 control=mainwin
 enabled=filesselected
+shortcut=Ctrl+K
 
 [shortcut11]
 name=&Clear
@@ -239,6 +240,7 @@ name=E&xtended Tags
 command=extended_tags
 control=mainwin
 enabled=filesselected
+shortcut=Ctrl+E
 
 [shortcut34]
 name=&Delete
