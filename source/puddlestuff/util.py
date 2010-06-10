@@ -6,6 +6,7 @@ from copy import copy
 from audioinfo import FILETAGS, setmodtime, PATH, FILENAME, EXTENSION
 from errno import EEXIST
 import os, pdb
+from puddleobjects import safe_name
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -43,10 +44,10 @@ def rename_file(audio, tags):
     oldfilename = audio.filepath
 
     if FILENAME in tags:
-        audio.filename = to_string(tags[FILENAME])
+        audio.filename = safe_name(to_string(tags[FILENAME]))
         returntag = FILENAME
     elif EXTENSION in tags:
-        audio.ext = to_string(tags[EXTENSION])
+        audio.ext = safe_name(to_string(tags[EXTENSION]))
         returntag = EXTENSION
     elif PATH in tags:
         returntag = PATH

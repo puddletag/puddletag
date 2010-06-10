@@ -598,6 +598,9 @@ class TagModel(QAbstractTableModel):
             tag = self.headerdata[column][1]
             currentfile = self.taginfo[index.row()]
             newvalue = unicode(value.toString())
+            realtag = currentfile.mapping.get(tag, tag)
+            if realtag in FILETAGS and tag not in [FILENAME, EXTENSION]:
+                return False
 
             try:
                 ret = self.setRowData(index.row(), {tag: newvalue})
