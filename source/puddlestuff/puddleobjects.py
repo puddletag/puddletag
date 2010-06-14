@@ -1365,6 +1365,8 @@ class PicWidget(QWidget):
                 tempfilename = os.path.splitext(self.lastfilename)[0] + u'.jpg'
             filename = filedlg.getSaveFileName(self,
                 'Save as...',self.lastfilename, u';;'.join(sorted(filters)))
+            if not filename:
+                return
             filt = unicode(filedlg.selectedNameFilter())
             if not self.pixmap.save(filename):
                 QMessageBox.critical(self, 'Error - puddletag', u'I was unable'
