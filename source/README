@@ -1,33 +1,45 @@
-puddletag is a tag editor for LInux loosely based on the awesome Windows program Mptag. It does basic tag editing like any other tag editing like any other tag editor out there, but with a table based layout that allows you too see and edit many tags at once. Things like renaming files using its tag and retrieving tags via a filename is made easy.
+What it is
+puddletag is a tag editor for Linux loosely based on the Windows program Mp3tag. Basically it uses a table layout so that all the tags you want to edit by hand are visible and easily editable. However, puddletag excels at automating repetitive task like extracting tag information from filenames, renaming files based on their tags by using patterns(that you define, not crappy, uneditable ones).
 
-Supported formats are: id3v1 and id3v2 (.mp3), APEv2 (.ape), AAC (.m4a, .mp4), VorbisComments (.flac, .ogg though album art is supported for FLAC files only).
+But wait, there's more...
+There're functions, which can do things like replace text, trim, change the case of any tag, etc. Actions can automate repetitive tasks, and then theres importing music libraries (though only QuodLibet is supported for now), automatic retrieval of tags via musicbrainz and more, so fire it up and explore.
 
-But there's more...
-There's functions, which can do things like replace text, trim, change the case of any tag, etc. Actions can automate repetitive tasks, and then theres importing music libraries (though only QuodLibet is supported for now), automatic retrieval of tags via musicbrainz and more, so fire it up and explore.
+Supported formats include: id3v1, id3v2 (mp3), AAC (mp4, m4a, etc.), VorbisComments (ogg, flac) and APEv2 (ape).
 
-Requirements
-	At least Python2.5.
-	PyQt4 (python-pyqt4 for most Linux distributions) for the GUI (puddletag was developed with PyQt4.5 though it may work with previous versions)
-	PyParsing (python-parsing in some distros, python-pyparsing in others) is used for parsing.
-	Mutagen (python-mutagen) takes care of reading/writing tags.
-	ConfigObj (python-configobj in most distros) is used to read/write settings.
-	python-musicbrainz2 for musicbrainz support.
+Why it is
+Everything else sucked for various reasons and Mp3tag was the only reason I kept an XP partition around.
 
-	In order to use the QuodLibet library you need QuodLIbet installed.
-	And to edit/view FLAC album art the Python Imaging Library (usually python-imaging as a distro package) is required.
+How it's different
+Besides being buggier than Mp3tag (to be addressed), puddletag does a lot of things differently. Just browse the screenshots section to get an overview.
 
-License:
-	GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html
+What you need 
+At least Python 2.5.
+PyQt4 (4.5 or greater) for the GUI.
+PyParsing (>1.4) takes care of the parsing...
+Mutagen (> 1.17 recommended, 1.14 required), tags and...
+ConfigObj takes care of saving settings.
+python-musicbrainz2 for MusicBrainz support.
 
-Where to get it.
-	There's a download link it at http://puddletag.sourceforge.net or alternatively, using svn
-	svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+The following are recommended. 
+The Python Imaging Library in order to edit/view FLAC cover art.
+QuodLibet must be installed in order to edit a QuodLibet library.
 
-How to run it.
-	Unzip the tarball and cd into the puddletag directory. In it you can run the puddletag executable using ./puddletag. Although it will install (using setup.py) this is not recommended as the results may not be satisfactory.
+For Debian-based distros, use the following to install the dependencies. sudo aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
 
-Release schedule.
-	I don't adhere to a strict release schedule so releases are released when they are released. In the past this has been about once a month. Swing by the puddletag website http://puddletag.sourceforge.net for updates.
+How to get it
+Download it from SourceForge or check it out using svn: 
 
-Contact info
-    For bug reports and feature requests visit the issue tracker that's being outsourced to Google Code (http://code.google.com/p/puddletag/issues). For anything else send me and email at concentricpuddle@gmail.com (I'll reply to an email if needed, but give it a week before you can assume it's been caught by the spam filter.)
+svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+
+(Do NOT install from svn!)
+
+Install it by running python setup.py install as root in the unzipped directory, then you can find it in the Multimedia (Sounds, etc. for GNOME) menu. Alternatively just run it by typing ./puddletag in the unzipped folder. Once it's running, check out the tutorial and Tag Reference pages.
+
+License
+GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html.
+
+Updates
+Swing by the website monthly (or daily if you want) for updates. 
+
+Support
+Bugs go to the issue tracker at Google Code. Feature requests, and thing of general concern go on the forum. For anything else I can be contacted via email at concentricpuddle@gmail.com (it'll probably take a couple of days before I answer though.)
