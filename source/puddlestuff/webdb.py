@@ -449,6 +449,7 @@ class ReleaseWidget(QTreeWidget):
                 pass
         except AttributeError:
             pass
+        self.setEnabled(False)
         self.emit(SIGNAL("statusChanged"), "Retrieving album tracks...")
         QApplication.processEvents()
         def func():
@@ -497,6 +498,7 @@ class ReleaseWidget(QTreeWidget):
                 parent.hasTracks = False
 
     def updateStatus(self, val, updateselection=True):
+        self.setEnabled(True)
         if not val:
             return
         for item, (info, tracks) in val.items():

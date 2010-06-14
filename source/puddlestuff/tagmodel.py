@@ -1569,9 +1569,8 @@ class TagTable(QTableView):
                             for index in self.selectedIndexes()])
         for row, audio in enumerate(model.taginfo):
             dirpath = audio.dirpath
-            if [d for d in dirpaths if (d == dirpath) or
-                    issubfolder(d, dirpath)]:
-                index = modelindex(row, dirpaths[d])
+            if dirpath in dirpaths:
+                index = modelindex(row, dirpaths[dirpath])
                 merge(QItemSelection(index, index), QItemSelectionModel.Select)
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
