@@ -1,12 +1,12 @@
 [info]
-version=5
+version=6
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
 &Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,Select &Directory,separator,&Increase Font,&Decrease Font,separator,&Preferences
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
-&Tools=Autonumbering &Wizard...,&Import Music Library...,&Duplicate finder...
+&Tools=Autonumbering &Wizard...,&Import Music Library...#,In &Library
 &Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing #,separator,&Lock Layout
 #Ab&out=About &Qt,
 
@@ -18,7 +18,7 @@ order=&File,&Edit,&Convert,&Actions,&Tools,&Windows #,Ab&out
 &Edit=&Save,&Undo
 &Convert=widget-patterncombo,&File->Tag,&Tag->File,&Format
 &Action=&Actions,&QuickActions,&Functions
-&Tools=Autonumbering &Wizard...,&Text File->Tag,&Rename Directories
+&Tools=Autonumbering &Wizard...,&Text File->Tag,&Rename Directories,In &Library
 
 [toolbarattrs]
 order=&File,&Edit,&Convert,&Action,&Tools

@@ -107,6 +107,7 @@ class SettingsWin(QFrame):
         (text, ok) = QInputDialog().getItem(self, 'puddletag', 
             'Enter a pattern', patterns, row)
         if ok:
+            self.listbox.clearSelection()
             self.listbox.addItem(text)
             self.listbox.setCurrentRow(self.listbox.count() - 1)
 

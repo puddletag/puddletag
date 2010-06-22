@@ -10,7 +10,7 @@ Why it is
 Everything else sucked for various reasons and Mp3tag was the only reason I kept an XP partition around.
 
 How it's different
-Besides being buggier than Mp3tag (to be addressed), puddletag does a lot of things differently. Just browse the screenshots section to get an overview.
+Besides being buggier than Mp3tag (to be addressed), puddletag does a lot of things differently.
 
 What you need 
 At least Python 2.5.
@@ -27,19 +27,15 @@ QuodLibet must be installed in order to edit a QuodLibet library.
 For Debian-based distros, use the following to install the dependencies. sudo aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
 
 How to get it
-Download it from SourceForge or check it out using svn: 
+Download it from SourceForge (at http://puddletag.sourceforge.net).
 
-svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
-
-(Do NOT install from svn!)
-
-Install it by running python setup.py install as root in the unzipped directory, then you can find it in the Multimedia (Sounds, etc. for GNOME) menu. Alternatively just run it by typing ./puddletag in the unzipped folder. Once it's running, check out the tutorial and Tag Reference pages.
+Install it by running "python setup.py install" as root in the unzipped directory. The puddletag menu item can then be found under the Multimedia Menu.
 
 License
 GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html.
 
 Updates
-Swing by the website monthly (or daily if you want) for updates. 
+Swing by the website (http://puddletag.sourceforge.net) monthly for updates. 
 
 Support
-Bugs go to the issue tracker at Google Code. Feature requests, and thing of general concern go on the forum. For anything else I can be contacted via email at concentricpuddle@gmail.com (it'll probably take a couple of days before I answer though.)
+Visit the puddletag website (http://puddletag.sourceforge.net) for links to the forum and bug tracker.

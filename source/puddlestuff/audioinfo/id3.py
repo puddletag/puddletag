@@ -25,6 +25,7 @@ import imghdr
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
+v1_option = 2
 
 class PuddleID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
@@ -49,6 +50,12 @@ class PuddleID3FileType(mutagen.mp3.MP3):
 
     def load(self, filename, ID3 = PuddleID3, **kwargs):
         mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
+
+def get_factory(func, frame):
+    return lambda: func(frame)
+
+def set_factory(func, frame):
+    return lambda value: func(frame, value)
 
 def create_text(title, value):
     frame = revtext_frames[title](3, value)
@@ -172,8 +179,8 @@ def create_usertext(title, value):
 def usertext_handler(frames):
     d = {}
     for frame in frames:
-        frame.get_value = lambda: get_text(frame)
-        frame.set_value = partial(set_text, frame)
+        frame.get_value = get_factory(get_text, frame)
+        frame.set_value = set_factory(set_text, frame)
         d[frame.desc] = frame
     return d
 
@@ -254,8 +261,8 @@ def create_userurl(title, value):
 def userurl_handler(frames):
     d = {}
     for frame in frames:
-        frame.get_value = partial(get_url, frame)
-        frame.set_value = partial(set_url, frame)
+        frame.get_value = get_factory(get_url, frame)
+        frame.set_value = set_factory(set_url, frame)
         d[u'www:'+ frame.desc] = frame
     return d
 
@@ -593,7 +600,7 @@ class Tag(TagBase):
                 continue
 
         audio.tags.filename = self.filepath
-        audio.tags.save(v1 = 2)
+        audio.tags.save(v1=v1_option)
         self._originaltags = audio.keys()
 
     @setdeco

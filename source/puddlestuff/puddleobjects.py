@@ -1059,6 +1059,8 @@ class PicWidget(QWidget):
         self.label.setMinimumSize(200, 170)
         if buttons:
             self.label.setMaximumSize(200, 170)
+        else:
+            self.setMaximumSize(400,400)
         self.label.setAlignment(Qt.AlignCenter)
         #self.label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
@@ -1456,9 +1458,8 @@ class PicWidget(QWidget):
         if event is not None:
             QWidget.resizeEvent(self, event)
         if self.pixmap:
-            pixmap = self.pixmap.scaled(self.label.width() - 10, 
-                self.label.height() - 10, Qt.KeepAspectRatio)
-            self.label.resize(self.label.width(), pixmap.height() + 10)
+            pixmap = self.pixmap.scaled(self.label.width(), 
+                self.label.height(), Qt.KeepAspectRatio)
             self.label.setPixmap(pixmap)
 
 

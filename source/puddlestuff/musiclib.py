@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from os import path
@@ -101,12 +102,14 @@ class LibChooseDialog(QDialog):
         else:
             dialog = partial(LibraryDialog, library)
             self.emit(SIGNAL('adddock'), 'Music Library', dialog, RIGHTDOCK)
+            
             self.close()
 
 class LibraryDialog(QWidget):
     def __init__(self, library=None, parent=None, status = None):
         QWidget.__init__(self, parent)
         self._library = library
+        status['library'] = library
         self.emits = ['loadtags']
         self.tree = LibraryTree(library)
         emit = lambda signal: lambda *args: self.emit(SIGNAL(signal), *args)

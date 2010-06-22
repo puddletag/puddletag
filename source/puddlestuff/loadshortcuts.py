@@ -7,7 +7,7 @@ from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
 
-__version__ = 5
+__version__ = 6
 
 files = [open_resourcefile(filename)
             for filename in [':/caseconversion.action', ':/standard.action']]
@@ -92,11 +92,14 @@ def toolbar(groups, actions, controls=None):
                 toolbar.addAction(actions[texts.index(action)])
             elif action in controls:
                 toolbar.addWidget(controls[action])
+            else:
+                print action
         toolbar.addSeparator()
     return toolbar
 
 def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
-                    tooltip=None, shortcut=None, checked=None, status=None):
+                    tooltip=None, shortcut=None, status=None, 
+                    togglecheck=None, checkstate=None):
     if icon:
         action = QAction(QIcon(icon), name, win)
     else:
@@ -111,10 +114,13 @@ def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
 
     if tooltip:
         action.setToolTip(tooltip)
+    
+    if togglecheck is not None:
+        action.setCheckable(True)
+        checked = int(checkstate)
+        action.setChecked(bool(checked))
 
-    if checked:
-        action.setCheckState(True)
-
+    action.togglecheck = togglecheck
     action.enabled = enabled
     action.command = command
     action.control = control

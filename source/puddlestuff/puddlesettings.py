@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #puddlesettings.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -284,6 +285,34 @@ class TagMappings(QWidget):
         table.setCurrentItem(item)
         table.editItem(item)
 
+class Tags(QWidget):
+    def __init__(self, parent = None):
+        QWidget.__init__(self, parent)
+
+        v1_options = ['Remove ID3v1 tag.',
+            'Update ID3v1 tag if present.',
+            'Create ID3v1 tag if present. Otherwise update.']
+        self._v1_combo = QComboBox()
+        self._v1_combo.addItems(v1_options)
+        
+        v1_label = QLabel('When saving ID3&v2 tags:')
+        v1_label.setBuddy(self._v1_combo)
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(v1_label)
+        vbox.addWidget(self._v1_combo)
+        vbox.addStretch()
+        self.setLayout(vbox)
+
+        cparser = PuddleConfig()
+        index = cparser.get('id3tags', 'v1_option', 2)
+        self._v1_combo.setCurrentIndex(index)
+
+    def applySettings(self, control=None):
+        cparser = PuddleConfig()
+        v1_option = self._v1_combo.currentIndex()
+        cparser.set('id3tags', 'v1_option', v1_option)
+        audioinfo.id3.v1_option = v1_option
 
 class ListModel(QAbstractListModel):
     def __init__(self, options):
@@ -407,7 +436,8 @@ class SettingsDialog(QDialog):
              1: ('Mappings', TagMappings(), None),
              2: ('Playlist', Playlist(), None),
              3: ('Extended Tags Colors', ColorEdit(), None),
-             4: ('Genres', genres.Genres(status=status), None)}
+             4: ('Genres', genres.Genres(status=status), None),
+             5: ('Tags', Tags(), None)}
         i = len(d)
         for control in controls:
             if hasattr(control, SETTINGSWIN):

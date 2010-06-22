@@ -72,6 +72,8 @@ def loadsettings(filepath=None):
     checked = settings.get('tableheader', 'enabled', range(len(tags)), True)
     fontsize = settings.get('table', 'fontsize', 0, True)
     rowsize = settings.get('table', 'rowsize', -1, True)
+    v1_option = settings.get('id3tags', 'v1_option', 2)
+    audioinfo.id3.v1_option = v1_option
     return (zip(titles, tags), checked), fontsize, rowsize
 
 def caseless(tag, audio):
@@ -226,7 +228,10 @@ class TagModel(QAbstractTableModel):
         self._filtered = []
         self.previewMode = False
         self._prevhighlight = []
-        
+        self._permah = []
+        self.permaColor = QColor(Qt.green)
+        self._colored = []
+
         if taginfo is not None:
             self.taginfo = unique(taginfo)
             self.sort(*self.sortOrder)
@@ -413,9 +418,13 @@ class TagModel(QAbstractTableModel):
         def set_color(row):
             if row < len(taginfo):
                 if row in nolight:
-                    taginfo[row].color = None
+                    if taginfo[row] in self._colored:
+                        taginfo[row].color = self.permaColor
+                    else:
+                        taginfo[row].color = None
                 else:
                     taginfo[row].color = hcolor
+
         [set_color(row) for row in rows]
         if rows:
             top = self.index(min(rows), 0)
@@ -487,6 +496,46 @@ class TagModel(QAbstractTableModel):
             self.sort(*self.sortOrder)
             [setattr(z, 'color', None) for z in self.taginfo if z.color]
             self.undolevel = 0
+
+    def permaHighlight(self, rows):
+        rows = rows[::]
+        hcolor = self.permaColor
+        nolight = set(self._permah).difference(rows)
+        self._permah = rows[::]
+        rows.extend(nolight)
+        taginfo = self.taginfo
+
+        def set_color(row):
+            if row < len(taginfo):
+                if row in nolight:
+                    taginfo[row].color = None
+                else:
+                    taginfo[row].color = hcolor
+        [set_color(row) for row in rows]
+        if rows:
+            top = self.index(min(rows), 0)
+            bottom = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                top, bottom)
+    
+    def setColors(self, tags):
+        for f in self._colored:
+            f.color = None
+        for tag in tags:
+            tag.color = self.permaColor
+        index = self.taginfo.index
+        def row_index(tag):
+            try:
+                return index(tag)
+            except ValueError:
+                return len(self.taginfo)
+        rows = map(row_index, tags + self._colored)
+        if rows:
+            top = self.index(min(rows), 0)
+            bottom = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                top, bottom)
+        self._colored = tags
 
     def removeColumns(self, column, count, parent = QModelIndex()):
         self.beginRemoveColumns(QModelIndex(), column, column + count - 1)
@@ -750,8 +799,12 @@ class TagModel(QAbstractTableModel):
             if self.previewMode:
                 undo_tags = audio.previewundo
                 if level in undo_tags:
-                    audio.preview.update(undo_tags[level])
+                    preview = audio.preview
+                    preview.update(undo_tags[level])
                     rows.append(row)
+                    for key in preview.keys():
+                        if not preview[key]:
+                            del(preview[key])
                     del(undo_tags[level])
             elif level in audio.undo:
                 if audio.library:
@@ -937,7 +990,8 @@ class TagTable(QTableView):
                          ('removeFolders', self.removeFolders),
                          ('filter', self.applyFilter),
                          ('setpreview', self.setTestData),
-                         ('loadtags', self.load_tags)]
+                         ('loadtags', self.load_tags),
+                         ('highlight', self.highlight)]
         self.gensettings = [('Su&bfolders', True),
                             ('Show &gridlines', True),
                             ('Show &row numbers', True),
@@ -1170,6 +1224,8 @@ class TagTable(QTableView):
         else:
             self.emit(SIGNAL('viewfilled'), False)
 
+    def highlight(self, rows):
+        self.model().setColors(rows)
 
     def invertSelection(self):
         model = self.model()

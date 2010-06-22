@@ -13,6 +13,7 @@ from puddlestuff.audioinfo import stringtags
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
+from puddlestuff.util import split_by_tag
 
 status = {}
 
@@ -124,6 +125,27 @@ def format(parent=None, preview = None):
         val = tf(pattern, audio)
         ret.append(dict([(tag, val) for tag in s]))
     emit('writeselected', ret)
+
+def in_lib(state, parent=None):
+    if state:
+        if not status['library']:
+            print 'no lib loaded'
+            return
+        files = status['allfiles']
+        lib = status['library']
+        libartists = status['library'].artists
+        to_highlight = []
+        for artist, tracks in split_by_tag(files, 'artist', None).items():
+            if artist in libartists:
+                libtracks = lib.get_tracks('artist', artist)
+                titles = [track['title'][0].lower() 
+                    if 'title' in track else '' for track in libtracks]
+                for track in tracks:
+                    if track.get('title', [u''])[0].lower() in titles:
+                        to_highlight.append(track)
+        emit('highlight', to_highlight)
+    else:
+        emit('highlight', [])
 
 def load_musiclib(parent=None):
     m = puddlestuff.musiclib.LibChooseDialog()
@@ -358,7 +380,7 @@ def update_status(enable = True):
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
                 'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
-                'adddock']
+                'adddock', 'highlight']
 obj.receives = [('filesselected', update_status),
                 ('patternchanged', update_status)]
 
@@ -367,5 +389,5 @@ def emit_received(signal):
         obj.emit(SIGNAL(signal), *args)
     return emit
 
-def emit(sig, value):
-    obj.emit(SIGNAL(sig), value)
+def emit(sig, *args):
+    obj.emit(SIGNAL(sig), *args)

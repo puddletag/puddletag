@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 import sys, os, unittest, time, pdb, shutil
 from os import path
 from PyQt4.QtCore import *
@@ -133,6 +133,7 @@ class Tag(MockTag):
         self._libtags.write()
         if (newartist != oldartist) or (newalbum != oldalbum):
             self.library.update(oldartist, oldalbum, libtags)
+        self.library.edited = True
 
     def sget(self, key):
         return self[key] if self.get(key) else ''
@@ -156,6 +157,7 @@ class Tag(MockTag):
 
 class QuodLibet(object):
     def __init__(self, filepath, config = None):
+        self.edited = False
         self._tracks = pickle.load(open(filepath, 'rb'))
         if not config:
             config = os.path.join(os.path.dirname(filepath), u'config')
@@ -187,7 +189,9 @@ class QuodLibet(object):
             if maintag == 'artist':
                 tracks = []
                 [tracks.extend(z) for z in self._cached[mainval].values()]
-                return map(lambda track: Tag(self, track), tracks)
+                return [Tag(self, track) for track in tracks if 
+                    os.path.exists(track['~filename'])]
+
             def getvalue(track):
                 if track.get(maintag) == mainval:
                     return Tag(self, track)
@@ -210,7 +214,10 @@ class QuodLibet(object):
         return self._cached[artist].keys()
 
     def save(self):
-        pickle.dump(self._tracks, open(self._filepath, 'wb'))
+        if not self.edited:
+            return
+        filepath = self._filepath + u'.puddletag'
+        pickle.dump(self._tracks, open(filepath, 'wb'))
 
     def delete(self, track):
         artist = to_string(track['artist'])

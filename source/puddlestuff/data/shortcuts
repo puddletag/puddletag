@@ -1,5 +1,5 @@
 [info]
-version=5
+version=6
 
 [shortcut1]
 name=&Open Folder
@@ -288,3 +288,11 @@ command=deleteSelectedWithoutMessage
 control=table
 enabled=filesselected
 shortcut=Shift+Delete
+
+#[shortcut42]
+#name=In &Library
+#command=in_lib
+#checkstate=0
+#control=mainwin
+#enabled=filesloaded
+#togglecheck=filesloaded

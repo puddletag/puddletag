@@ -67,9 +67,13 @@ def rename_file(audio, tags):
     return returntag
 
 def split_by_tag(tracks, main='artist', secondary='album'):
-    ret = defaultdict(lambda: defaultdict(lambda: []))
-    [ret[to_string(track.get(main))][to_string(track.get(secondary))].append(track)
-        for track in tracks]
+    if secondary:
+        ret = defaultdict(lambda: defaultdict(lambda: []))
+        [ret[to_string(track.get(main))]
+            [to_string(track.get(secondary))].append(track) for track in tracks]
+    else:
+        ret = defaultdict(lambda: [])
+        [ret[to_string(track.get(main))].append(track) for track in tracks]
     return ret
 
 def to_string(value):

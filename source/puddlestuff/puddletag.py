@@ -11,6 +11,8 @@ import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
 import mainwin.artwork
+#import puddlestuff.webdbold
+#puddlestuff.webdb = puddlestuff.webdbold
 import puddlestuff.webdb
 import loadshortcuts as ls
 import m3u, findfunc, genres
@@ -151,12 +153,22 @@ def connect_actions(actions, controls):
             print 'No enable signal found for', action.text()
             action.setEnabled(False)
             continue
+        if action.togglecheck and action.togglecheck in emits:
+            if action.togglecheck in ENABLESIGNALS:
+                [connect(c, ENABLESIGNALS[action.togglecheck], action.setEnabled)
+                    for c in emits[action.togglecheck]]
+            else:
+                [connect(c, SIGNAL(action.togglecheck), action.setEnabled)
+                    for c in emits[action.togglecheck]]
         command = action.command
         if action.control == 'mainwin' and hasattr(mainfuncs, command):
             f = getattr(mainfuncs, command)
             if 'parent' in f.func_code.co_varnames:
                 f = partial(f, parent=c)
-            connect(action, TRIGGERED, f)
+            if action.togglecheck:
+                connect(action, SIGNAL('toggled(bool)'), f)
+            else:
+                connect(action, TRIGGERED, f)
             continue
         elif action.control in controls:
             c = controls[action.control]
