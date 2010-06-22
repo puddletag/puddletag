@@ -356,7 +356,7 @@ only as &whole word, check'''
             raise findfunc.FuncError(unicode(e))
     return text
 
-def replacetokens(text, dictionary):
+def replacetokens(text, dictionary, default=u''):
 
     pat = re.compile('\$\d+')
     start = 0
@@ -366,7 +366,7 @@ def replacetokens(text, dictionary):
         l = [text[:start]]
         end = start
     else:
-        return u''
+        return default
     while match:
         start = match.start()
         l.append(text[end:start])
@@ -383,9 +383,9 @@ def replacetokens(text, dictionary):
 def replaceWithReg(text, expr, rep):
     """Replace with RegExp, "RegReplace $0: RegExp $1, with $2"
 &Regular Expression, text
-w&ith, text"""
-    if not (rep and expr):
-        return
+Replace &matches with:, text"""
+    if not expr:
+        return text
     try:
         match = re.search(expr, text)
     except re.error, e:
@@ -394,11 +394,8 @@ w&ith, text"""
         groups = match.groups()
         if groups:
             d = dict(enumerate(groups))
-            try:
-                return findfunc.parsefunc(replacetokens(rep, d), {})
-            except Exception, e:
-                pdb.set_trace()
-                return findfunc.parsefunc(replacetokens(rep, d), {})
+            replacetext = findfunc.parsefunc(replacetokens(rep, d, rep), {})
+            return re.sub(expr, replacetext, text)
         else:
             return findfunc.parsefunc(re.sub(expr, rep, text), {})
     else:

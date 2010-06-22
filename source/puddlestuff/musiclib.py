@@ -51,6 +51,14 @@ class LibChooseDialog(QDialog):
             except AttributeError: author = 'Anonymous author.'
 
             self.libattrs.append({'name': name, 'desc':desc, 'author': author, 'module': lib})
+        
+        if not self.libattrs:
+            QMessageBox.critical(parent, 'No libraries found',
+                """No supported music libraries were found. Most likely is 
+                that the required dependencies aren't installed. Visit the 
+                puddletag website, <a href='http://puddletag.sourceforge.net'>
+                puddletag.sourceforge.net</a> for more details.""")
+            return
 
         self.listbox.addItems([z['name'] for z in self.libattrs])
         self.stackwidgets = [z['module'].InitWidget() for z in  self.libattrs]

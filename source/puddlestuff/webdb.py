@@ -450,6 +450,7 @@ class MainWin(QWidget):
 
     def _clear(self):
         self.emit(SIGNAL('clearpreview'))
+        self._writebutton.setEnabled(False)
 
     def _changeSource(self, index):
         self._tagsource = self._tagsources[index]
@@ -471,12 +472,8 @@ class MainWin(QWidget):
         self._tagstowrite[self._lastindex] = tags
 
     def _enableWrite(self, value = None):
-        if value is None:
-            value = self.listbox.selectedItems()
-        if value:
-            self._writebutton.setEnabled(True)
-        else:
-            self._writebutton.setEnabled(False)
+        #if value:
+        self._writebutton.setEnabled(True)
 
     def _write(self):
         self.emit(SIGNAL('writepreview'))

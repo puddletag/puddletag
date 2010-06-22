@@ -597,6 +597,7 @@ class ReleaseWidget(QTreeView):
                         u'<a href="%s">%s</a>' % (url, desc))
                     break
         self.emitTracks(tracks)
+        self.emit(SIGNAL('itemSelectionChanged()'))
 
     def _setCollapsedFlag(self, index):
         item = index.internalPointer()
