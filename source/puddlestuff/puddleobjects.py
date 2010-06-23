@@ -1061,10 +1061,10 @@ class PicWidget(QWidget):
         self.label.setMinimumSize(200, 170)
         if buttons:
             self.label.setMaximumSize(200, 170)
-        else:
-            self.setMaximumSize(400,400)
+        #else:
+            #self.setMaximumSize(400,400)
         self.label.setAlignment(Qt.AlignCenter)
-        #self.label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        #self.label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         #Description and picture type shit.
         self._image_desc = QLineEdit(self)
@@ -1320,6 +1320,7 @@ class PicWidget(QWidget):
             self._image_type.setEnabled(False)
         self.pixmap = QPixmap.fromImage(image)
         self.win.setImage(self.pixmap)
+        #pdb.set_trace()
         #self.label.setPixmap(self.pixmap)
 
         self._image_desc.blockSignals(True)
@@ -1460,8 +1461,18 @@ class PicWidget(QWidget):
         if event is not None:
             QWidget.resizeEvent(self, event)
         if self.pixmap:
-            pixmap = self.pixmap.scaled(self.label.width(), 
-                self.label.height(), Qt.KeepAspectRatio)
+            labelheight = self.label.height()
+            labelwidth = self.label.width()
+            ratio = labelheight / float(labelwidth)
+
+            maxheight = int(labelheight / ratio)
+            maxwidth = int(labelwidth * ratio)
+
+            if maxwidth > maxheight:
+                pixmap = self.pixmap.scaledToHeight(maxheight - 10)
+            else:
+                pixmap = self.pixmap.scaledToWidth(maxwidth - 10)
+
             self.label.setPixmap(pixmap)
 
 
@@ -1533,7 +1544,7 @@ class ProgressWin(QDialog):
         if self.ptext:
             self.pbar.setTextVisible(False)
             self.label.setText(self.ptext + unicode(value) + ' of ' +
-                                        unicode(self.pbar.maximum()) + ' ...')
+                                        unicode(self.pbar.maximum()) + '...')
         self.pbar.setValue(value)
         self.blockSignals(False)
         if value >= self.pbar.maximum():

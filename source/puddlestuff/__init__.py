@@ -12,4 +12,4 @@ try:
         info.stdout.read()).groups()[0])
     print u'puddletag Version: %s, Revision: %s' % (version_string, revision)
 except EnvironmentError:
-    revision = 176
+    revision = 179
