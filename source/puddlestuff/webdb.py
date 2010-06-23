@@ -354,7 +354,6 @@ class MainWin(QWidget):
         self.settingsdialog = SettingsDialog
         self.emits = ['writepreview', 'setpreview', 'clearpreview',
                       'logappend']
-        self.receives = []
         self.setWindowTitle("Tag Sources")
         self._status = status
         if allmusic:
@@ -447,6 +446,8 @@ class MainWin(QWidget):
 
         self.setLayout(vbox)
         self._changeSource(0)
+        
+        self.receives = [('previewModeChanged', self._writebutton.setEnabled)]
 
     def _clear(self):
         self.emit(SIGNAL('clearpreview'))
@@ -472,7 +473,6 @@ class MainWin(QWidget):
         self._tagstowrite[self._lastindex] = tags
 
     def _enableWrite(self, value = None):
-        #if value:
         self._writebutton.setEnabled(True)
 
     def _write(self):

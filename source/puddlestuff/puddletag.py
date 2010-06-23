@@ -545,6 +545,8 @@ class MainWin(QMainWindow):
             return ret
         data = [(row, get(audio)) for row, audio in 
                     enumerate(taginfo) if audio.preview]
+        if not data:
+            return
         self._table.model().previewMode = False
         self.writeTags((z[1] for z in data), [z[0] for z in data])
 

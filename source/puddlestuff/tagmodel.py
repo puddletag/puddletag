@@ -226,7 +226,7 @@ class TagModel(QAbstractTableModel):
         self.sortOrder = (0, Qt.AscendingOrder)
         self.saveModification = True
         self._filtered = []
-        self.previewMode = False
+        self._previewMode = False
         self._prevhighlight = []
         self._permah = []
         self.permaColor = QColor(Qt.green)
@@ -259,6 +259,15 @@ class TagModel(QAbstractTableModel):
         return self._fontSize
 
     fontSize = property(_getFontSize, _setFontSize)
+
+    def _get_previewMode(self):
+        return self._previewMode
+    
+    def _set_previewMode(self, value):
+        self._previewMode = value
+        self.emit(SIGNAL('previewModeChanged'), value)
+    
+    previewMode = property(_get_previewMode, _set_previewMode)
 
     def _getUndoLevel(self):
         return self._undolevel
@@ -825,6 +834,8 @@ class TagModel(QAbstractTableModel):
         if not rows:
             rows = [i for i,z in enumerate(taginfo) if z.preview]
             self.previewMode = False
+            if not rows:
+                return
             self.undolevel = self._savedundolevel
         for row in rows:
             taginfo[row].preview = {}
@@ -985,7 +996,8 @@ class TagTable(QTableView):
 
         self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
                       'viewfilled', 'filesselected', 'enableUndo',
-                      'playlistchanged', 'deletedfromlib', 'libfilesedited']
+                      'playlistchanged', 'deletedfromlib', 'libfilesedited',
+                      'previewModeChanged']
         self.receives = [('loadFiles', self.loadFiles),
                          ('removeFolders', self.removeFolders),
                          ('filter', self.applyFilter),
@@ -1398,6 +1410,8 @@ class TagTable(QTableView):
         self.connect(model, SIGNAL('fileChanged()'), self.selectionChanged)
         self.connect(model, SIGNAL('aboutToSort'), self.saveBeforeReset)
         self.connect(model, SIGNAL('sorted'), self.restoreSort)
+        self.connect(model, SIGNAL('previewModeChanged'), 
+            SIGNAL('previewModeChanged'))
         #self.connect(model, SIGNAL('modelReset()'), self.restoreAfterReset)
 
     def currentRowSelection(self):
