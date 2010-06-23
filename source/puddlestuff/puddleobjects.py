@@ -428,6 +428,8 @@ def gettag(f):
         print e.strerror, f
         return
     except Exception, e:
+        print u'An error occured.'
+        print f
         traceback.print_exc()
         return
 
