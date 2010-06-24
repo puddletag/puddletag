@@ -43,7 +43,8 @@ def loadmapping(filepath):
     try:
         lines = open(filepath, 'r').read().split('\n')
     except (IOError, OSError):
-        return {'VorbisComment': {'tracknumber': 'track'}}
+        return {'VorbisComment': {'tracknumber': 'track',
+            'date': 'year'}}
     mappings = {}
     for l in lines:
         tags = [z.strip() for z in l.split(',')]

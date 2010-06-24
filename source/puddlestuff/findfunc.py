@@ -35,6 +35,8 @@ numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 
+NOT_ALL = ['__filepath', '__dirpath', '__ext', '__bitrate']
+
 class ParseError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
@@ -264,16 +266,17 @@ def runAction(funcs, audio):
     for func in funcs:
         tag = func.tag
         val = {}
-        if tag[0] == "__all":
-            tag = audio.keys()
+        if tag[0] == u"__all":
+            tag = [key for key in audio.keys() if key not in NOT_ALL]
         for z in tag:
             try:
                 t = audio.get(z)
-                ret = func.runFunction(t if t else '', audio = audio)
+                ret = func.runFunction(t if t else u'', audio = audio)
                 if isinstance(ret, basestring) or not ret:
                     val[z] = ret
                 else:
                     val.update(ret)
+                    break
             except KeyError:
                 """The tag doesn't exist or is empty.
                 In either case we do nothing"""
@@ -298,7 +301,7 @@ def runQuickAction(funcs, audio, tag):
     for func in funcs:
         val = {}
         if tag[0] == "__all":
-            tag = audio.keys()
+            tag = [key for key in audio.keys() if key not in NOT_ALL]
         for z in tag:
             try:
                 val[z] = func.runFunction(tags[z], audio = audio)

@@ -74,7 +74,8 @@ class FunctionDialog(QWidget):
     signals = {TEXT: SIGNAL('editTextChanged(const QString&)'),
                 COMBO : SIGNAL('currentIndexChanged(int)'),
                 CHECKBOX : SIGNAL('stateChanged(int)')}
-    def __init__(self, funcname, showcombo = False, userargs = None, defaulttags = None, parent = None, example = None, text = None):
+    def __init__(self, funcname, showcombo = False, userargs = None, 
+        defaulttags = None, parent = None, example = None, text = None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
         userargs is the default values you want to fill the controls in the dialog with[make sure they don't exceed the number of arguments of funcname]."""
@@ -104,8 +105,9 @@ class FunctionDialog(QWidget):
                     self.tagcombo.setCurrentIndex(0)
             self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
-            self.vbox.addWidget(QLabel("Fields"))
-            self.vbox.addWidget(self.tagcombo)
+            if self.func.function.__name__ != 'move':
+                self.vbox.addWidget(QLabel("Fields"))
+                self.vbox.addWidget(self.tagcombo)
         self.example = example
         self._text =text
 

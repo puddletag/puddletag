@@ -478,15 +478,21 @@ class ExTags(QDialog):
 
     def removeTag(self):
         l = self.listbox
-        row = l.currentRow()
         l.setSortingEnabled(False)
+        rows = []
         for i in self.listbox.selectedItems():
             row = l.row(i)
+            rows.append(row)
             i.status = REMOVE
             i.status = REMOVE
         l.setSortingEnabled(True)
         self.filechanged = True
         self._checkListBox()
+        if rows:
+            row = max(rows)
+            self.listbox.clearSelection()
+            if row + 1 < self.listbox.rowCount():
+                self.listbox.selectRow(row + 1)
 
     def closeMe(self):
         self.canceled = True
@@ -589,6 +595,7 @@ class ExTags(QDialog):
             self._settag(rowcount, tag, value, ADD)
         self._checkListBox()
         self.filechanged = True
+        self.listbox.clear
 
     def listtotag(self):
         gettag = self._tag

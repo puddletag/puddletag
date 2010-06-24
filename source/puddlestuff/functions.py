@@ -140,7 +140,7 @@ def finddups(tracks, key = 'title', method=None):
     return dupes(li, method)
 
 def formatValue(tags, pattern):
-    """Format Value, Format $0 using $1
+    """Format value, Format $0 using $1
 &Format string, text"""
     return findfunc.tagtofilename(pattern, tags)
 
@@ -256,8 +256,8 @@ def mod(text,text1):
         return
 
 def move(tags, pattern):
-    """Move file (Beta), Move file using $1
-&Directory format string, text"""
+    """Tag to filename, Tag->File: $1
+&Pattern, text"""
     tf = findfunc.tagtofilename
     if pattern.startswith(u'/'):
         subdirs = pattern.split(u'/')
@@ -458,7 +458,7 @@ def testfunction(tags, t_text, p_pattern, n_number):
     return u'Passed'
 
 def texttotag(tags, text, text1, text2):
-    """Text to Tag, "Tag to Tag: $0 -> $1, $2"
+    """Text to Tag, "Text to Tag: $0 -> $1, $2"
 &Text, text
 &Pattern, text
 &Output, text"""
@@ -473,7 +473,7 @@ def texttotag(tags, text, text1, text2):
     return ''
 
 def titleCase(text, ctype = None, characters = None):
-    '''Case Conversion, "Convert Case: $0: $1"
+    '''Case conversion, "Convert Case: $0: $1"
 &Type, combo, Mixed Case,UPPER CASE,lower case
 "For &Mixed Case, after any of:", text, "., !"'''
     if characters is None:

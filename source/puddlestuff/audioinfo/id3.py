@@ -617,7 +617,6 @@ class Tag(TagBase):
             setattr(self, self._hash[key], value)
             return
 
-
         if key not in INFOTAGS and isempty(value):
             del(self[key])
             return
