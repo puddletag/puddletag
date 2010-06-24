@@ -3,7 +3,7 @@ from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
 from copy import copy
-from audioinfo import FILETAGS, setmodtime, PATH, FILENAME, EXTENSION
+from audioinfo import FILETAGS, setmodtime, PATH, FILENAME, EXTENSION, MockTag
 from errno import EEXIST
 import os, pdb
 from puddleobjects import safe_name
@@ -41,29 +41,30 @@ def rename_file(audio, tags):
 
     If successful, tags is returned(with the new filename as a key)
     otherwise {} is returned."""
-    oldfilename = audio.filepath
+    test_audio = MockTag()
+    test_audio.filepath = audio.filepath
+    
 
     if FILENAME in tags:
-        audio.filename = safe_name(to_string(tags[FILENAME]))
+        test_audio.filename = safe_name(to_string(tags[FILENAME]))
         returntag = FILENAME
     elif EXTENSION in tags:
-        audio.ext = safe_name(to_string(tags[EXTENSION]))
+        test_audio.ext = safe_name(to_string(tags[EXTENSION]))
         returntag = EXTENSION
     elif PATH in tags:
         returntag = PATH
-        audio.filepath = tags[PATH]
+        test_audio.filepath = tags[PATH]
     else:
         return
 
-    newfilename = audio.filepath
-    if newfilename != oldfilename:
-        try:
-            if os.path.exists(newfilename):
-                raise IOError(EEXIST, os.strerror(EEXIST), newfilename)
-            os.rename(oldfilename, newfilename)
-        except EnvironmentError:
-            audio.filepath = oldfilename
-            raise
+    newfilename = test_audio.filepath
+    if newfilename != audio.filepath:
+        if os.path.exists(newfilename):
+            raise IOError(EEXIST, os.strerror(EEXIST), newfilename)
+        elif not os.path.exists(test_audio.dirpath):
+            os.makedirs(test_audio.dirpath)
+        os.rename(audio.filepath, newfilename)
+        audio.filepath = newfilename
     return returntag
 
 def split_by_tag(tracks, main='artist', secondary='album'):
@@ -140,8 +141,7 @@ def write(audio, tags, save_mtime = True):
 
 def real_filetags(mapping, revmapping, tags):
     filefields = [mapping.get(key, key) for key in FILETAGS]
-    return dict([(revmapping.get(key, key), tags[key]) for key in filefields
-        if key in tags])
+    return dict([(revmapping.get(key, key), tags[key]) for key in filefields if key in tags])
 
 def without_file(mapping, tags):
     filefields = [mapping.get(key, key) for key in FILETAGS]

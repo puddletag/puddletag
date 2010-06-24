@@ -623,9 +623,15 @@ class Tag(TagBase):
             return
 
         if isinstance(value, (basestring, int, long)):
-            value = [unicode(value)]
+            if isinstance(value, str):
+                value = [unicode(value, 'utf8')]
+            elif not isinstance(value, unicode):
+                value = [unicode(value)]
+            else:
+                value = [value]
         else:
-            value = [unicode(z) for z in value]
+            value = [unicode(z, 'utf8') if isinstance(z, str)
+                else z for z in value]
 
         if key in self._tags:
             self._tags[key].set_value(value)

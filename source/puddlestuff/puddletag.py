@@ -182,7 +182,8 @@ def help_menu(parent):
     about = QAction('About puddletag', parent)
     about_qt = QAction('About Qt', parent)
     about_qt.connect(about_qt, SIGNAL('triggered()'), QApplication.aboutQt)
-    about.connect(about, SIGNAL('triggered()'), mainfuncs.show_about)
+    about.connect(about, SIGNAL('triggered()'), 
+        partial(mainfuncs.show_about, parent))
     menu.addAction(about)
     menu.addAction(about_qt)
     return menu

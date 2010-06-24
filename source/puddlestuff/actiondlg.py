@@ -58,7 +58,7 @@ class ScrollLabel(QScrollArea):
         else:
             QScrollArea.wheelEvent(self, e)
 
-READONLY = list(READONLY) + ['__path', '__dirpath', ]
+READONLY = list(READONLY) + ['__dirpath', ]
 
 def displaytags(tags):
     if tags:
@@ -304,7 +304,10 @@ class CreateFunction(QDialog):
         if not text:
             self.exlabel.setText('')
         else:
-            self.exlabel.setText(text)
+            if isinstance(text, basestring):
+                self.exlabel.setText(text)
+            else:
+                self.exlabel.setText(displaytags(text))
         QApplication.processEvents()
 
 class CreateAction(QDialog):

@@ -316,6 +316,8 @@ class MockTag(object):
         self._info = {}
         if filename:
             self.link(filename)
+        else:
+            self._tags = {}
 
     def _getfilepath(self):
         return self._tags[PATH]

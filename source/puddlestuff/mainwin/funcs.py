@@ -14,6 +14,7 @@ from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
 from puddlestuff.util import split_by_tag
+import puddlestuff.functions as functions
 
 status = {}
 
@@ -308,7 +309,10 @@ def run_func(selectedfiles, func):
                 else:
                     val = function(tags[tag] if tag in tags else '', rowtags)
                 if val is not None:
-                    tags[tag] = val
+                    if isinstance(val, basestring):
+                        tags[tag] = val
+                    else:
+                        tags.update(val)
             yield tags
     emit('writeselected', tagiter())
 
@@ -332,6 +336,16 @@ def tag_to_file():
         return join(f.dirpath, safe_name(t))
 
     emit('renameselected', (newfilename(f) for f in files))
+
+def tag_to_file():
+    pattern = status['patterntext']
+    files = status['selectedfiles']
+
+    tf = functions.move
+    join = path.join
+    dirname = path.dirname
+
+    emit('renameselected', (tf(f, pattern)['__path'] for f in files))
 
 def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath
@@ -359,8 +373,8 @@ def update_status(enable = True):
     x = findfunc.filenametotag(pattern, path.basename(tag.filepath), True)
     emit('ftstatus', display_tag(x))
 
-    newfilename = (tf(pattern, tag, True, tag.ext))
-    newfilename = path.join(path.dirname(tag.filepath), safe_name(newfilename))
+    newfilename = functions.move(tag, pattern)['__path']
+    #newfilename = path.join(path.dirname(tag.filepath), safe_name(newfilename))
     emit('tfstatus', u"New Filename: <b>%s</b>" % newfilename)
 
     oldir = path.dirname(tag.dirpath)

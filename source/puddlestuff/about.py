@@ -57,8 +57,13 @@ class AboutPuddletag(QDialog):
         lib_versions = ', '.join(['<b>PyQt  %s' % PYQT_VERSION_STR,
                                      'Mutagen %s' % mutagen.version_string,
                                      'Pyparsing %s</b>' %pyparsing.__version__])
-        label = QLabel('<h2>puddletag %s</h2> %s' % (puddlestuff.version_string,
-            lib_versions))
+        if puddlestuff.revision:
+            version = '<h2>puddletag %s (Revision %s)</h2> %s' % (
+                puddlestuff.version_string, puddlestuff.revision, lib_versions)
+        else:
+            version = '<h2>puddletag %s</h2> %s' % (puddlestuff.version_string,
+                lib_versions)
+        label = QLabel(version)
 
         tab = QTabWidget()
         tab.addTab(ScrollLabel(desc), '&About')

@@ -49,7 +49,7 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from puddleobjects import PuddleConfig
+from puddleobjects import PuddleConfig, safe_name
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time
 import plugins
 true = u'1'
@@ -254,6 +254,29 @@ def mod(text,text1):
         return unicode((D(text) % D(text1).normalize()))
     except decimal.InvalidOperation:
         return
+
+def move(tags, pattern):
+    """Move file (Beta), Move file using $1
+&Directory format string, text"""
+    tf = findfunc.tagtofilename
+    if pattern.startswith(u'/'):
+        subdirs = pattern.split(u'/')
+        newdirs =  [safe_name(tf(d, tags)) for d in subdirs[1:-1]]
+        newdirs.append(safe_name(tf(subdirs[-1], tags, True)))
+        newdirs.insert(0, u'/')
+        return {'__path': os.path.join(*newdirs)}
+    else:
+        subdirs = pattern.split(u'/')
+        newdirs =  [safe_name(tf(d, tags)) for d in subdirs[:-1]]
+        newdirs.append(safe_name(tf(subdirs[-1], tags, True)))
+        count = pattern.count('/')
+        if count:
+            parent = tags['__dirpath'].split(u'/')[:-count]
+        else:
+            parent = tags['__dirpath'].split(u'/')
+        if not parent[0]:
+            parent.insert(0, u'/')
+        return {'__path': os.path.join(*(parent + newdirs))}
 
 def mul(text, text1):
     D = decimal.Decimal
@@ -507,6 +530,7 @@ functions = {"add": add,
             "lower": lower,
             "mid": mid,
             "mod": mod,
+            "move": move,
             "mul": mul,
             "neql": neql,
             "not_": not_,

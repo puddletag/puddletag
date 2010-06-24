@@ -269,12 +269,17 @@ def runAction(funcs, audio):
         for z in tag:
             try:
                 t = audio.get(z)
-                val[z] = func.runFunction(t if t else '', audio = audio)
+                ret = func.runFunction(t if t else '', audio = audio)
+                if isinstance(ret, basestring) or not ret:
+                    val[z] = ret
+                else:
+                    val.update(ret)
             except KeyError:
                 """The tag doesn't exist or is empty.
                 In either case we do nothing"""
             except ParseError, e:
-                message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (func.funcname, e.message)
+                message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
+                    func.funcname, e.message)
                 raise ParseError(message)
         val = dict([z for z in val.items() if z[1]])
         if val:
