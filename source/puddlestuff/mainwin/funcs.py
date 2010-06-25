@@ -149,7 +149,15 @@ def in_lib(state, parent=None):
         emit('highlight', [])
 
 def load_musiclib(parent=None):
-    m = puddlestuff.musiclib.LibChooseDialog()
+    try:
+        m = puddlestuff.musiclib.LibChooseDialog()
+    except puddlestuff.musiclib.MusicLibError:
+        QMessageBox.critical(parent, 'No libraries found',
+            "No supported music libraries were found. Most likely "
+            "the required dependencies aren't installed. Visit the "
+            "puddletag website, <a href='http://puddletag.sourceforge.net'>"
+            "puddletag.sourceforge.net</a> for more details.")
+        return
     m.setModal(True)
     obj.connect(m, SIGNAL('adddock'), emit_received('adddock'))
     m.show()
@@ -271,26 +279,27 @@ def run_action(parent=None, quickaction=False):
         win.connect(win, SIGNAL("donewithmyshit"), func)
     win.show()
 
-def run_function(parent=None):
+def run_function(parent=None, prevfunc=None):
 
     selectedfiles = status['selectedfiles']
-    prevfunc = status['prevfunc']
+    if not prevfunc:
+        prevfunc = status['prevfunc']
 
     example = selectedfiles[0]
     text = example.get('title')
     if prevfunc:
-        f = actiondlg.CreateFunction(prevfunc=prevfunc, parent=self,
-                                        showcombo=False, example=example,
-                                        text=text)
+        f = actiondlg.CreateFunction(prevfunc=prevfunc, parent=parent,
+            showcombo=False, example=example, text=text)
     else:
         f = actiondlg.CreateFunction(parent=parent, showcombo=False,
-                                        example=example, text=text)
+            example=example, text=text)
 
     f.connect(f, SIGNAL("valschanged"), partial(run_func, selectedfiles))
     f.setModal(True)
     f.show()
 
 def run_func(selectedfiles, func):
+    status['prevfunc'] = func
     selectedtags = status['selectedtags']
     if func.function.func_code.co_varnames[0] == 'tags':
         useaudio = True
@@ -317,6 +326,11 @@ def run_func(selectedfiles, func):
     emit('writeselected', tagiter())
 
 run_quick_action = lambda parent=None: run_action(parent, True)
+
+def search_replace(parent=None):
+    function = puddlestuff.findfunc.Function('replace')
+    function.args = [u'', u'', False, False]
+    run_function(parent, function)
 
 def show_about(parent=None):
     win = about.AboutPuddletag(parent)

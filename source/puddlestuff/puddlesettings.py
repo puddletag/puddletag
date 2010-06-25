@@ -290,12 +290,14 @@ class Tags(QWidget):
         QWidget.__init__(self, parent)
 
         v1_options = ['Remove ID3v1 tag.',
-            'Update ID3v1 tag if present.',
-            'Create ID3v1 tag if present. Otherwise update.']
+            "Update the ID3v1 tag's values only if an ID3v1 tag is present.",
+            "Create an ID3v1 tag if it's not found present. "
+                "Otherwise update it."]
         self._v1_combo = QComboBox()
         self._v1_combo.addItems(v1_options)
         
-        v1_label = QLabel('When saving ID3&v2 tags:')
+        v1_label = QLabel('puddletag writes only ID3v2 tags. What should be '
+            'done with the ID3v1 tag?')
         v1_label.setBuddy(self._v1_combo)
         
         vbox = QVBoxLayout()

@@ -1,12 +1,12 @@
 [info]
-version=6
+version=7
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
 &Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Remove Tag,separator,Select &All,&Invert Selection,&Select Column,Select &Directory,separator,&Increase Font,&Decrease Font,separator,&Preferences
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
-&Tools=Autonumbering &Wizard...,&Import Music Library...#,In &Library
+&Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...
 &Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing #,separator,&Lock Layout
 #Ab&out=About &Qt,
 

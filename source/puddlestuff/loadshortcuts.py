@@ -7,7 +7,7 @@ from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
 
-__version__ = 6
+__version__ = 7
 
 files = [open_resourcefile(filename)
             for filename in [':/caseconversion.action', ':/standard.action']]
@@ -92,8 +92,6 @@ def toolbar(groups, actions, controls=None):
                 toolbar.addAction(actions[texts.index(action)])
             elif action in controls:
                 toolbar.addWidget(controls[action])
-            else:
-                print action
         toolbar.addSeparator()
     return toolbar
 

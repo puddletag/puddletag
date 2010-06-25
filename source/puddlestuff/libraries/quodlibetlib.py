@@ -17,6 +17,7 @@ from functools import partial
 from puddlestuff.constants import HOMEDIR
 from collections import defaultdict
 from puddlestuff.util import to_string
+import shutil
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
@@ -218,6 +219,8 @@ class QuodLibet(object):
             return
         filepath = self._filepath + u'.puddletag'
         pickle.dump(self._tracks, open(filepath, 'wb'))
+        shutil.copy(filepath, self._filepath)
+        os.remove(filepath)
 
     def delete(self, track):
         artist = to_string(track['artist'])

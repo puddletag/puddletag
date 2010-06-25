@@ -1,5 +1,5 @@
 [info]
-version=6
+version=7
 
 [shortcut1]
 name=&Open Folder
@@ -296,3 +296,10 @@ shortcut=Shift+Delete
 #control=mainwin
 #enabled=filesloaded
 #togglecheck=filesloaded
+
+[shortcut43]
+name=Replace...
+command=search_replace
+control=mainwin
+enabled=filesselected
+shortcut=Ctrl+H
