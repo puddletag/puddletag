@@ -388,7 +388,7 @@ class ExTags(QDialog):
         header.setSortIndicatorShown (True)
         header.setStretchLastSection (True)
         header.setSortIndicator (0, Qt.AscendingOrder)
-        self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
+        self.listbox.setHorizontalHeaderLabels(['Field', 'Value'])
 
         self.listbox.verticalHeader().setVisible(False)
         self.piclabel = PicWidget(buttons = True)
@@ -588,14 +588,18 @@ class ExTags(QDialog):
             tag = tags[tag.lower()]
         if prevtag is not None:
             if duplicate:
+                row = rowcount
                 self._settag(rowcount, tag, value, ADD)
             else:
-                self._settag(self.listbox.currentRow(), tag, value, EDIT)
+                row = self.listbox.currentRow()
+                self._settag(row, tag, value, EDIT)
+                if row +1< rowcount:
+                    self.listbox.selectRow(row + 1)
         else:
             self._settag(rowcount, tag, value, ADD)
         self._checkListBox()
         self.filechanged = True
-        self.listbox.clear
+        self.listbox.clearSelection()
 
     def listtotag(self):
         gettag = self._tag

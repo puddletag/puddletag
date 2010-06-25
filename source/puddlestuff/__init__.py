@@ -7,9 +7,9 @@ version = (0,9,1)
 try:
     filedir = dirname(dirname(__file__))
     info = subprocess.Popen(['svn', 'info', filedir], 
-        stdout=subprocess.PIPE)
+        stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     revision = int(re.search(u'Revision: (\d+)', 
         info.stdout.read()).groups()[0])
     print u'puddletag Version: %s, Revision: %s' % (version_string, revision)
-except EnvironmentError:
+except (EnvironmentError, AttributeError):
     revision = None
