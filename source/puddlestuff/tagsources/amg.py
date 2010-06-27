@@ -61,22 +61,28 @@ def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
 def get_track(trackinfo, keys):
+    
     tags =  trackinfo.find_all('td', {'class':'cell'})
     if not tags:
         return {}
+    keys = keys[len(keys) - len(tags):]
     values = []
     for tag in tags:
         if text(tag):
             values.append(text(tag))
         else:
-            if not tag.img:
-                values.append('')
+            values.append('')
     try:
         track = int(values[0])
-        return dict([(key, value) for key, value in zip(['track'] + keys, 
-            values) if value])
+        if not keys[0]:
+            return dict([(key, value) for key, value in 
+                zip(['track'] + keys[1:], values) if value])
+        else:
+            return dict([(key, value) for key, value in zip(['track'] + keys, 
+                values) if value])
     except ValueError:
-        return dict([(key, value) for key, value in zip(keys, values)])
+        return dict([(key, value) for key, value in zip(keys, values)
+            if key or value])
 
 def parse_album_element(element):
     ret =  dict([(k, text(z)) for k, z in
@@ -215,13 +221,13 @@ def parse_searchpage(page, artist, album):
 
 def parse_tracks(soup):
     try:
-        headers = [text(z) for z in soup.find('table', {'id': 'ExpansionTable1'}
-                    ).find_all('td', {'class': 'passive'})]
+        table = soup.find('table', {'id': 'ExpansionTable1'})
+        headers = [text(z) for z in table.find_all('td', 
+            {'id':"content-list-title"})]
     except AttributeError:
         return None
     keys = [spanmap.get(key, key) for key in headers]
-    tracks = filter(None, [get_track(trackinfo, keys) for trackinfo in
-                    soup.find_all('tr', {'id':"trlink"})])
+    tracks = filter(None, [get_track(trackinfo, keys) for trackinfo in table.find_all('tr')])
     return tracks
 
 def retrieve_album(url, coverurl=None):
@@ -351,6 +357,7 @@ class AllMusic(object):
         write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
+        
         try:
             info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:
@@ -361,6 +368,7 @@ class AllMusic(object):
             info.update(cover)
         albuminfo = albuminfo.copy()
         albuminfo.update(info)
+        print tracks
         return albuminfo, tracks
 
     def applyPrefs(self, args):
@@ -373,6 +381,7 @@ info = [AllMusic, None]
 name = 'AllMusic.com'
 
 if __name__ == '__main__':
-    page = urllib2.urlopen(filename).read()
-    [print_track(t) for t in parse_albumpage(page)[1]]
+    print retrieve_album('file:///home/keith/fandango.htm')
+    #page = urllib2.urlopen(filename).read()
+    #[print_track(t) for t in parse_albumpage(page)[1]]
     
