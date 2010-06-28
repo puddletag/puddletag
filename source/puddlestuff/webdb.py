@@ -27,6 +27,7 @@ from PyQt4.QtGui import *
 from collections import defaultdict
 import plugins
 import puddlestuff.tagsources.musicbrainz as mbrainz
+import puddlestuff.tagsources.freedb as freedb
 #import puddlestuff.tagsources.amazonsource as amazon
 try:
     import puddlestuff.tagsources.amg as allmusic
@@ -357,9 +358,9 @@ class MainWin(QWidget):
         self.setWindowTitle("Tag Sources")
         self._status = status
         if allmusic:
-            tagsources = [mbrainz, allmusic]
+            tagsources = [mbrainz, freedb, allmusic]
         else:
-            tagsources = [mbrainz]
+            tagsources = [mbrainz, freedb]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
         self._configs = [module.info[1] for module in tagsources]

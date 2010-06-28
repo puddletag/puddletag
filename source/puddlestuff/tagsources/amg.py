@@ -188,7 +188,6 @@ def parse_search_element(element):
     try:
         ret['amgsqlid'] = sqlre.search(ret['#albumurl']).groups()[0]
     except:
-        print ret
         pass
     return ret
 
@@ -357,7 +356,6 @@ class AllMusic(object):
         write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
-        
         try:
             info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:
@@ -368,7 +366,6 @@ class AllMusic(object):
             info.update(cover)
         albuminfo = albuminfo.copy()
         albuminfo.update(info)
-        print tracks
         return albuminfo, tracks
 
     def applyPrefs(self, args):
@@ -381,7 +378,6 @@ info = [AllMusic, None]
 name = 'AllMusic.com'
 
 if __name__ == '__main__':
-    print retrieve_album('file:///home/keith/fandango.htm')
     #page = urllib2.urlopen(filename).read()
     #[print_track(t) for t in parse_albumpage(page)[1]]
     

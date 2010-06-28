@@ -350,6 +350,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
                     u'An error occured: ' + unicode(e))
+                self.emit(SIGNAL('retrievalDone'))
                 return
 
         item.retrieving = True
@@ -435,6 +436,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
                     u'An error occured: ' + unicode(e))
+                self.emit(SIGNAL('retrievalDone'))
                 return None
 
         def finished(val):
