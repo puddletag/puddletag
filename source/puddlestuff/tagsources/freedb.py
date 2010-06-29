@@ -94,7 +94,6 @@ def search(tracklist):
 
 def search_by_id(discid):
     try:
-        pdb.set_trace()
         stat, discs = CDDB.query(discid, **CLIENTINFO)
     except EnvironmentError, e:
         raise RetrievalError(e.strerror)

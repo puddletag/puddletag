@@ -378,6 +378,5 @@ info = [AllMusic, None]
 name = 'AllMusic.com'
 
 if __name__ == '__main__':
-    #page = urllib2.urlopen(filename).read()
-    #[print_track(t) for t in parse_albumpage(page)[1]]
-    
+    page = urllib2.urlopen(filename).read()
+    [print_track(t) for t in parse_albumpage(page)[1]]
