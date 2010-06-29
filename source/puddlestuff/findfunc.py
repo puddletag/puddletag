@@ -250,7 +250,7 @@ def replacevars(text, dictionary):
         start = match.end(0)
     else:
         append(text[start:])
-    return ''.join(l)
+    return u''.join(l)
 
 
 def runAction(funcs, audio):
