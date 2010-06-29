@@ -121,6 +121,8 @@ class FreeDB(object):
     def search(self, audios=None, params=None):
         if audios:
             return search(audios)
+        else:
+            return []
 
     def retrieve(self, info):
         return retrieve_from_info(info)

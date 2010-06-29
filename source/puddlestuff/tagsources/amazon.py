@@ -1,262 +1,236 @@
 # -*- coding: utf-8 -*-
-"""Python wrapper
-
-
-for Amazon web APIs
-
-This module allows you to access Amazon's web APIs,
-to do things like search Amazon and get the rc programmatically.
-Described here:
-  http://www.amazon.com/webservices
-
-You need a Amazon-provided license key to use these services.
-Follow the link above to get one.  These functions will look in
-several places (in this order) for the license key:
-- the "license_key" argument of each function
-- the module-level LICENSE_KEY variable (call setLicense once to set it)
-- an environment variable called AMAZON_LICENSE_KEY
-- a file called ".amazonkey" in the current directory
-- a file called "amazonkey.txt" in the current directory
-- a file called ".amazonkey" in your home directory
-- a file called "amazonkey.txt" in your home directory
-- a file called ".amazonkey" in the same directory as amazon.py
-- a file called "amazonkey.txt" in the same directory as amazon.py
-
-Sample usage:
->>> import amazon
->>> amazon.setLicense('...') # must get your own key!
->>> pythonBooks = amazon.searchByKeyword('Python')
->>> pythonBooks[0].ProductName
-u'Learning Python (Help for Programmers)'
->>> pythonBooks[0].URL
-...
->>> pythonBooks[0].OurPrice
-...
-
-Other available functions:
-- browseBestSellers
-- searchByASIN
-- searchByUPC
-- searchByAuthor
-- searchByArtist
-- searchByActor
-- searchByDirector
-- searchByManufacturer
-- searchByListMania
-- searchSimilar
-- searchByWishlist
-
-Other usage notes:
-- Most functions can take product_line as well, see source for possible values
-- All functions can take type="lite" to get less detail in results
-- All functions can take page=N to get second, third, fourth page of results
-- All functions can take license_key="XYZ", instead of setting it globally
-- All functions can take http_proxy="http://x/y/z" which overrides your system setting
-"""
-
-__author__ = "Mark Pilgrim (f8dy@diveintomark.org)"
-__version__ = "0.64.1"
-__cvsversion__ = "$Revision: 1.6 $"[11:-2]
-__date__ = "$Date: 2008-04-29 19:48:09 $"[7:-2]
-__copyright__ = "Copyright (c) 2002 Mark Pilgrim"
-__license__ = "Python"
-# Powersearch and return object type fix by Joseph Reagle <geek@goatee.net>
-
-# Locale support by Michael Josephson <mike@josephson.org>
-
-# Modification to _contentsOf to strip trailing whitespace when loading Amazon key
-# from a file submitted by Patrick Phalen.
-
-# Support for specifying locale and associates ID as search parameters and 
-# internationalisation fix for the SalesRank integer conversion by
-# Christian Theune <ct@gocept.com>, gocept gmbh & co. kg
-
-# Support for BlendedSearch contributed by Alex Choo
-
+import urllib2, urllib
+import hmac
+import hashlib
+import base64
+import time, pdb, os, re
 from xml.dom import minidom
-import os, sys, getopt, cgi, urllib, string
-try:
-    import timeoutsocket # http://www.timo-tasi.org/python/timeoutsocket.py
-    timeoutsocket.setDefaultSocketTimeout(10)
-except ImportError:
-    pass
+from puddlestuff.util import split_by_tag
+from puddlestuff.tagsources import write_log, set_status, RetrievalError
+from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
+from puddlestuff.puddleobjects import PuddleConfig
 
-LICENSE_KEY = None
-ASSOCIATE = "webservices-20"
-HTTP_PROXY = None
-LOCALE = "us"
+SMALLIMAGE = '#smallimage'
+MEDIUMIMAGE = '#mediumimage'
+LARGEIMAGE = '#largeimage'
 
-# don't touch the rest of these constants
-class AmazonError(Exception): pass
-class NoLicenseKey(Exception): pass
-_amazonfile1 = ".amazonkey"
-_amazonfile2 = "amazonkey.txt"
-_licenseLocations = (
-    (lambda key: key, 'passed to the function in license_key variable'),
-    (lambda key: LICENSE_KEY, 'module-level LICENSE_KEY variable (call setLicense to set it)'),
-    (lambda key: os.environ.get('AMAZON_LICENSE_KEY', None), 'an environment variable called AMAZON_LICENSE_KEY'),
-    (lambda key: _contentsOf(os.getcwd(), _amazonfile1), '%s in the current directory' % _amazonfile1),
-    (lambda key: _contentsOf(os.getcwd(), _amazonfile2), '%s in the current directory' % _amazonfile2),
-    (lambda key: _contentsOf(os.environ.get('HOME', ''), _amazonfile1), '%s in your home directory' % _amazonfile1),
-    (lambda key: _contentsOf(os.environ.get('HOME', ''), _amazonfile2), '%s in your home directory' % _amazonfile2),
-    (lambda key: _contentsOf(_getScriptDir(), _amazonfile1), '%s in the amazon.py directory' % _amazonfile1),
-    (lambda key: _contentsOf(_getScriptDir(), _amazonfile2), '%s in the amazon.py directory' % _amazonfile2)
-    )
-_supportedLocales = {
-        "us" : (None, "ecs.amazonaws.com"),   
-        "uk" : ("uk", "ecs.amazonaws.co.uk"),
-        "de" : ("de", "ecs.amazonaws.de"),
-        "jp" : ("jp", "ecs.amazonaws.jp")
-    }
+image_types = [SMALLIMAGE, MEDIUMIMAGE, LARGEIMAGE]
 
-## administrative functions
-def version():
-    print """PyAmazon %(__version__)s
-%(__copyright__)s
-released %(__date__)s
-""" % globals()
+XMLKEYS = {
+    'Artist': 'artist',
+    'Label': 'label',
+    'ReleaseDate': 'year',
+    'Title': 'album',
+    "Publisher": 'publisher'}
 
-def setAssociate(associate):
-    global ASSOCIATE
-    ASSOCIATE=associate
+IMAGEKEYS = {'SmallImage': SMALLIMAGE,
+    'MediumImage': MEDIUMIMAGE,
+    'LargeImage': LARGEIMAGE}
 
-def getAssociate(override=None):
-    return override or ASSOCIATE
+def urlopen(url):
+    try:
+        return urllib2.urlopen(url).read()
+    except urllib2.URLError, e:
+        msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+        raise RetrievalError(msg)
 
-## utility functions
+def get_text(node):
+    return node.firstChild.data
 
-def _checkLocaleSupported(locale):
-    if not _supportedLocales.has_key(locale):
-        raise AmazonError, ("Unsupported locale. Locale must be one of: %s" %
-            string.join(_supportedLocales, ", "))
+def check_binding(node):
+    binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
+    return binding == u'Audio CD'
 
-def setLocale(locale):
-    """set locale"""
-    global LOCALE
-    _checkLocaleSupported(locale)
-    LOCALE = locale
+def get_asin(node):
+    return node.getElementsByTagName(u'ASIN')[0].firstChild.data
 
-def getLocale(locale=None):
-    """get locale"""
-    return locale or LOCALE
+def get_image_url(node):
+    return node.getElementsByTagName(u'URL')[0].firstChild.data
 
-def setLicense(license_key):
-    """set license key"""
-    global LICENSE_KEY
-    LICENSE_KEY = license_key
+def page_url(node):
+    return node.getElementsByTagName(u'DetailPageURL')[0].firstChild.data
 
-def getLicense(license_key = None):
-    """get license key
+def aws_url(aws_access_key_id, secret, query_dictionary):
+    query_dictionary["AWSAccessKeyId"] = aws_access_key_id
+    query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", 
+        time.gmtime())
+    #query_pairs = map(
+            #lambda (k,v): (k + "=" + urllib2.quote(v)),
+            #query_dictionary.items())
+    items = [(key, value.encode('utf8')) for key, value in 
+        query_dictionary.items()]
+    query = urllib.urlencode(sorted(items))
+    #query_pairs.sort()
+    #query = "&".join(query_pairs)
+    hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
+                    + query, hashlib.sha256)
+    signature = urllib2.quote(base64.b64encode(hm.digest()))
 
-    license key can come from any number of locations;
-    see module docs for search order"""
-    for get, location in _licenseLocations:
-        rc = get(license_key)
-        if rc: return rc
-    raise NoLicenseKey, 'get a license key at http://www.amazon.com/webservices'
+    query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
+        query, signature)
+    return query
 
-def setProxy(http_proxy):
-    """set HTTP proxy"""
-    global HTTP_PROXY
-    HTTP_PROXY = http_proxy
-
-def getProxy(http_proxy = None):
-    """get HTTP proxy"""
-    return http_proxy or HTTP_PROXY
-
-def getProxies(http_proxy = None):
-    http_proxy = getProxy(http_proxy)
-    if http_proxy:
-        proxies = {"http": http_proxy}
+def check_matches(albums, artist=None, album_name=None):
+    if artist and album_name:
+        album_name = album_name.lower()
+        artist = artist.lower()
+        return [album for album in albums if 
+            album['album'].lower() == album_name and 
+            album['artist'].lower() == artist]
+    elif artist:
+        artist = artist.lower()
+        return [album for album in albums if album['artist'] == artist]
+    elif album_name:
+        album_name = album_name.lower()
+        return [album for album in albums if album['album'] == album_name]
     else:
-        proxies = None
-    return proxies
+        return albums
 
-def _contentsOf(dirname, filename):
-    filename = os.path.join(dirname, filename)
-    if not os.path.exists(filename): return None
-    fsock = open(filename)
-    contents =  fsock.read().strip()
-    fsock.close()
-    return contents
-
-def _getScriptDir():
-    if __name__ == '__main__':
-        return os.path.abspath(os.path.dirname(sys.argv[0]))
-    else:
-        return os.path.abspath(os.path.dirname(sys.modules[__name__].__file__))
-
-class Bag: pass
-
-def unmarshal(element):
-    results = []
-    rc = Bag()
-    largeImageElements = [e for e in element.getElementsByTagName("LargeImage") if isinstance(e, minidom.Element)]
-    if largeImageElements:
-        for largeImageElement in largeImageElements:
-            parent = largeImageElement.parentNode
-            detailUrls = [e for e in parent.getElementsByTagName("DetailPageURL") if isinstance(e, minidom.Element)]
-            if len(detailUrls) == 1:
-              detailUrl = detailUrls[0].firstChild.data
-            else:
-              detailUrl = None
-            url = largeImageElement.getElementsByTagName("URL")[0].firstChild.data
-            # Skip any duplicated images
-            if hasattr(rc, url):
+def parse_album_xml(text, album=None):
+    doc = minidom.parseString(text)
+    album_item = doc.getElementsByTagName('Item')[0]
+    tracklist = album_item.getElementsByTagName('Tracks')[0]
+    tracks = []
+    discs = [disc for disc in tracklist.childNodes if 
+        not disc.nodeType == disc.TEXT_NODE]
+    if not (len(discs) > 1 and album):
+        album = None
+    for discnum, disc in enumerate(discs):
+        for track_node in disc.childNodes:
+            if track_node.nodeType == track_node.TEXT_NODE:
                 continue
-            setattr(rc, url, "")
-            results.append((url, detailUrl))
-    return results
+            title = get_text(track_node)
+            tracknumber = track_node.attributes['Number'].value
+            if album:
+                tracks.append({'track': tracknumber, 'title': title,
+                    'album': u'%s (Disc %s)' % (album, discnum + 1)})
+            else:
+                tracks.append({'track': tracknumber, 'title': title})
+    return tracks
 
-def buildURL(artist, album, license_key, locale):
-    _checkLocaleSupported(locale)
-    url = "http://" + _supportedLocales[locale][1] + "/onca/xml?Service=AWSECommerceService"
-    url += "&AWSAccessKeyId=%s" % license_key.strip()
-    url += "&Operation=ItemSearch"
-    url += "&SearchIndex=Music"
-    if artist and len(artist):
-        url += "&Artist=%s" % (urllib.quote(artist))
-    if album and len(album):
-        url += "&Keywords=%s" % (urllib.quote(album))
-    # just return the image information
-    url += "&ResponseGroup=Images,Small"
-    return url
+def parse_xml(text):
+    doc = minidom.parseString(text)
+    items = doc.getElementsByTagName('Item')
+    ret = []
+    for item in items:
+        info = {}
+        for attrib in item.getElementsByTagName('ItemAttributes'):
+            if not check_binding(attrib):
+                continue
+            for child in attrib.childNodes:
+                if child.nodeType == child.TEXT_NODE:
+                    continue
+                if child.tagName in XMLKEYS:
+                    text_node = child.firstChild
+                    if text_node.nodeType == text_node.TEXT_NODE:
+                        info[XMLKEYS[child.tagName]] = text_node.data
+        if not info:
+            continue
+        for key in IMAGEKEYS:
+            image_items = item.getElementsByTagName(key)
+            if image_items:
+                info[IMAGEKEYS[key]] = get_image_url(image_items[0])
+        info['#extrainfo'] = ('Album at Amazon', page_url(item))
+        info['#asin'] = get_asin(item)
+        ret.append(info)
+    return ret
 
+def retrieve_album(info, image=MEDIUMIMAGE):
+    query_pairs = {
+        "Operation": u"ItemLookup",
+        "Service":u"AWSECommerceService",
+        'ItemId': info['#asin'],
+        'ResponseGroup': u'Tracks'}
+    url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
+        'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
 
-## main functions
+    write_log(u'Retrieving XML: %s - %s' % (info['artist'], info['album']))
+    xml = urlopen(url)
 
+    tracks = parse_album_xml(xml, info['album'])
 
-def search(artist, album, license_key = None, http_proxy = None, locale = None, associate = None):
-    """search Amazon
+    if image in image_types:
+        url = info[image]
+        write_log(u'Retrieving cover: %s' % url)
+        info.update({'__image': retrieve_cover(url)})
+    return tracks
 
-    You need a license key to call this function; see
-    http://www.amazon.com/webservices
-    to get one.  Then you can either pass it to
-    this function every time, or set it globally; see the module docs for details.
+def retrieve_cover(url):
+    data = urlopen(url)
+    return [{'data': data}]
 
-    Parameters:
-    Read the Amazon Associates Web Service API (http://developer.amazonwebservices.com/connect/kbcategory.jspa?categoryID=118)
-    """
-
-    license_key = getLicense(license_key)
-    locale = getLocale(locale)
-    associate = getAssociate(associate)
-    url = buildURL(artist, album, license_key, locale)
-    proxies = getProxies(http_proxy)
-    u = urllib.FancyURLopener(proxies)
-    usock = u.open(url)
-    xmldoc = minidom.parse(usock)
-
-    #from xml.dom.ext import PrettyPrint
-    #PrettyPrint(xmldoc)
-
-    usock.close()
-    data = unmarshal(xmldoc)
-
-    if hasattr(data, 'ErrorMsg'):
-        raise AmazonError, data.ErrorMsg
+def search(artist=None, album=None):
+    if artist and album:
+        keywords = u' '.join([artist, album])
+    elif artist:
+        keywords = artist
     else:
-        return data
+        keywords = album
 
-def searchByKeyword(artist, album, license_key=None, http_proxy=None, locale=None, associate=None):
-    return search(artist, album, license_key, http_proxy, locale, associate)
+    write_log(u'Retrieving search results for keywords: %s' % keywords)
+    keywords = re.sub('(\s+)', u'%20', keywords)
+    query_pairs = {
+            "Operation": u"ItemSearch",
+            'SearchIndex': u'Music',
+            "ResponseGroup":u"ItemAttributes,Images",
+            "Service":u"AWSECommerceService",
+            'ItemPage': u'1',
+            'Keywords': keywords}
+    url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
+        'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
+    xml = urlopen(url)
+    return parse_xml(xml)
+
+class Amazon(object):
+    name = 'Amazon'
+    def __init__(self):
+
+        cparser = PuddleConfig()
+        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
+        self._getcover = cparser.get('amazon', 'retrievecovers', 
+            True)
+        self.covertype = image_types[cparser.get('amazon', 'covertype', 1)]
+
+        self.preferences = [['Retrieve Cover', CHECKBOX, self._getcover],
+            ['Cover size to retrieve', COMBO, 
+                [['Small', 'Medium', 'Large'], 1]]]
+        
+    def search(self, audios=None, params=None):
+        ret = []
+        for artist, albums in split_by_tag(audios).items():
+            for album in albums:
+                retrieved_albums = search(artist, album)
+                matches = check_matches(retrieved_albums, artist, album)
+                if len(matches) == 1:
+                    info = matches[0]
+                    if self._getcover:
+                        info, tracks = self.retrieve(info)
+                    ret.append([info, tracks])
+                else:
+                    ret.extend([[info, []] for info in retrieved_albums])
+        return ret
+    
+    def retrieve(self, info):
+        if self._getcover:
+            return info, retrieve_album(info['#asin'], self.covertype)
+        else:
+            return info, retrieve_album(info['#asin'], None)
+    
+    def applyPrefs(self, args):
+        self._getcover = args[0]
+        self.covertype = image_types[args[1]]
+        self.preferences[0][2] = self._getcover
+        self.preferences[1][2][1] = args[1]
+        cparser = PuddleConfig()
+        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
+        cparser.set('amazon', 'retrievecovers', self._getcover)
+        cparser.set('amazon', 'covertype', args[1])
+
+
+#print search(u'OutKast', u'SpeakerBoxxx')
+info = [Amazon, None]
+name = 'Amazon'
+
+##u'Service=AWSECommerceService&AWSAccessKeyId=AKIAJ3KBYRUYQN5PVQGA&Operation=ItemSearch&SearchIndex=Music&Keywords=Alicia&ItemPage=1&ResponseGroup=ItemAttributes,Small,Images'
+##print aws_url(key, lic, query_pairs)
+#print len(parse_xml(open('search.xml','r').read()))

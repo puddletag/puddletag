@@ -28,7 +28,7 @@ from collections import defaultdict
 import plugins
 import puddlestuff.tagsources.musicbrainz as mbrainz
 import puddlestuff.tagsources.freedb as freedb
-#import puddlestuff.tagsources.amazonsource as amazon
+import puddlestuff.tagsources.amazon as amazon
 try:
     import puddlestuff.tagsources.amg as allmusic
 except ImportError:
@@ -131,7 +131,8 @@ class SourcePrefs(QDialog):
                 vbox.addWidget(control)
             elif ctype == COMBO:
                 control = QComboBox()
-                control.addItems(default)
+                control.addItems(default[0])
+                control.setCurrentIndex(default[1])
                 label = QLabel(desc)
                 label.setBuddy(control)
                 vbox.addWidget(label)
@@ -358,9 +359,9 @@ class MainWin(QWidget):
         self.setWindowTitle("Tag Sources")
         self._status = status
         if allmusic:
-            tagsources = [mbrainz, freedb, allmusic]
+            tagsources = [mbrainz, freedb, amazon, allmusic]
         else:
-            tagsources = [mbrainz, freedb]
+            tagsources = [mbrainz, freedb, amazon]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
         self._configs = [module.info[1] for module in tagsources]
@@ -534,7 +535,10 @@ class MainWin(QWidget):
             self.label.setText(retval)
         else:
             self.listbox.setReleases(retval)
-            self.label.setText(u'Searching complete.')
+            if retval:
+                self.label.setText(u'Searching complete.')
+            else:
+                self.label.setText(u'No matching albums were found.')
             self.listbox.emit(SIGNAL('infoChanged'), '')
 
     def loadSettings(self):
