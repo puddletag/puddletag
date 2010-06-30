@@ -231,9 +231,9 @@ def parse_tracks(soup):
 
 def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
-    #album_page = urlopen(url)
+    album_page = urlopen(url)
     #to_file(album_page, 'retr.htm')
-    album_page = open('album.htm', 'r').read()
+    #album_page = open('album.htm', 'r').read()
     info, tracks = parse_albumpage(album_page)
     try:
         info['amgsqlid'] = sqlre.search(url).groups()[0]
@@ -318,9 +318,9 @@ class AllMusic(object):
             set_status(u'Searching for %s' % album)
             write_log(u'Searching for %s' % album)
             try:
-                #searchpage = search(album)
+                searchpage = search(album)
                 #to_file(searchpage, 'search1.htm')
-                searchpage = open('spainsearch.htm').read()
+                #searchpage = open('spainsearch.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))
