@@ -6,7 +6,7 @@ import base64
 import time, pdb, os, re
 from xml.dom import minidom
 from puddlestuff.util import split_by_tag
-from puddlestuff.tagsources import write_log, set_status, RetrievalError
+from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen, parse_searchstring
 from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
 
@@ -26,13 +26,6 @@ XMLKEYS = {
 IMAGEKEYS = {'SmallImage': SMALLIMAGE,
     'MediumImage': MEDIUMIMAGE,
     'LargeImage': LARGEIMAGE}
-
-def urlopen(url):
-    try:
-        return urllib2.urlopen(url).read()
-    except urllib2.URLError, e:
-        msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
-        raise RetrievalError(msg)
 
 def get_text(node):
     return node.firstChild.data
@@ -136,18 +129,28 @@ def parse_xml(text):
     return ret
 
 def retrieve_album(info, image=MEDIUMIMAGE):
+    if isinstance(info, basestring):
+        asin = info
+    else:
+        asin = info['#asin']
     query_pairs = {
         "Operation": u"ItemLookup",
         "Service":u"AWSECommerceService",
-        'ItemId': info['#asin'],
+        'ItemId': asin,
         'ResponseGroup': u'Tracks'}
     url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
         'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
 
-    write_log(u'Retrieving XML: %s - %s' % (info['artist'], info['album']))
+    if isinstance(info, basestring):
+        write_log(u'Retrieving using ASIN: %s' % asin)
+    else:
+        write_log(u'Retrieving XML: %s - %s' % (info['artist'], info['album']))
     xml = urlopen(url)
-
-    tracks = parse_album_xml(xml, info['album'])
+    
+    if isinstance(info, basestring):
+        tracks = parse_album_xml(xml)
+    else:
+        tracks = parse_album_xml(xml, info['album'])
 
     if image in image_types:
         url = info[image]
@@ -166,9 +169,11 @@ def search(artist=None, album=None):
         keywords = artist
     else:
         keywords = album
+    keywords = re.sub('(\s+)', u'+', keywords)
+    return keyword_search(keywords)
 
+def keyword_search(keywords):
     write_log(u'Retrieving search results for keywords: %s' % keywords)
-    keywords = re.sub('(\s+)', u'%20', keywords)
     query_pairs = {
             "Operation": u"ItemSearch",
             'SearchIndex': u'Music',
@@ -179,6 +184,9 @@ def search(artist=None, album=None):
     url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
         'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
     xml = urlopen(url)
+    f = open('searchxml.xml', 'w')
+    f.write(xml)
+    f.close()
     return parse_xml(xml)
 
 class Amazon(object):
@@ -194,10 +202,10 @@ class Amazon(object):
         self.preferences = [['Retrieve Cover', CHECKBOX, self._getcover],
             ['Cover size to retrieve', COMBO, 
                 [['Small', 'Medium', 'Large'], 1]]]
-        
-    def search(self, audios=None, params=None):
+    
+    def _search(self, d):
         ret = []
-        for artist, albums in split_by_tag(audios).items():
+        for artist, albums in d.items():
             for album in albums:
                 retrieved_albums = search(artist, album)
                 matches = check_matches(retrieved_albums, artist, album)
@@ -209,6 +217,12 @@ class Amazon(object):
                 else:
                     ret.extend([[info, []] for info in retrieved_albums])
         return ret
+    
+    def keyword_search(self, text):
+        return self._search(parse_searchstring(text))
+        
+    def search(self, audios=None, params=None):
+        return self._search(split_by_tag(audios))
     
     def retrieve(self, info):
         if self._getcover:

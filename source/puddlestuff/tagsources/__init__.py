@@ -4,6 +4,8 @@ from puddlestuff.puddleobjects import PuddleConfig
 from os.path import join, exists
 import os
 from PyQt4.QtCore import QObject, SIGNAL
+from collections import defaultdict
+import urllib2, socket
 
 all = ['musicbrainz']
 class RetrievalError(Exception):
@@ -46,3 +48,22 @@ def set_status(msg):
 
 def write_log(text):
     status_obj.emit(SIGNAL('logappend'), text)
+    
+def parse_searchstring(text):
+    params = defaultdict(lambda:[])
+    try:
+        text = [z.split(';') for z in text.split(u'|') if z]
+        [params[z.strip()].append(v.strip()) for z, v in text]
+    except ValueError:
+        raise RetrievalError('<b>Error parsing artist/album combinations.</b>')
+    return params
+
+def urlopen(url):
+    try:
+        return urllib2.urlopen(url).read()
+    except urllib2.URLError, e:
+        msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+        raise RetrievalError(msg)
+    except socket.error:
+        msg = u'%s (%s)' % (e.strerror, e.errno)
+        raise RetrievalError(msg)

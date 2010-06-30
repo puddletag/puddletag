@@ -157,11 +157,9 @@ class RootItem(object):
         return self.itemData[0]
 
     def parent(self):
-        return self.parentItem
+        return None
 
     def row(self):
-        if self.parentItem:
-            return self.parentItem.childItems.index(self)
         return 0
     
     def sort(self, order=None, reverse=False):
@@ -204,6 +202,14 @@ class TreeItem(RootItem):
             return [get_track(item) for item in self.childItems]
         else:
             return None
+    
+    def parent(self):
+        return self.parentItem
+
+    def row(self):
+        if self.parentItem:
+            return self.parentItem.childItems.index(self)
+        return 0
 
 class ChildItem(RootItem):   
     def __init__(self, data, pattern, parent=None):
@@ -233,6 +239,14 @@ class ChildItem(RootItem):
             del(track['__numtracks'])
         track.update(self.itemData.copy())
         return track
+    
+    def parent(self):
+        return self.parentItem
+
+    def row(self):
+        if self.parentItem:
+            return self.parentItem.childItems.index(self)
+        return 0
 
 class TreeModel(QtCore.QAbstractItemModel):
     def __init__(self, data = None, album_pattern=None, 

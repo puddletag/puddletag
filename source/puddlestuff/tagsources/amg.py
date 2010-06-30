@@ -7,7 +7,7 @@ import sys, pdb, re, time
 from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
-from puddlestuff.tagsources import write_log, set_status, RetrievalError
+from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen
 from puddlestuff.constants import CHECKBOX
 from puddlestuff.puddleobjects import PuddleConfig
 
@@ -16,7 +16,7 @@ search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=
 
 search_order = (None, 'year', 'artist', None, 'album', None, 'label', 
                     None, 'genre')
-album_url = 'http://www.allmusic.com/cg/amg.dll?p=amg&sql='
+album_url = u'http://www.allmusic.com/cg/amg.dll?p=amg&sql='
 
 spanmap = {'Genre': 'genre',
            'Styles': 'style',
@@ -231,8 +231,9 @@ def parse_tracks(soup):
 
 def retrieve_album(url, coverurl=None):
     write_log('Opening Album Page - %s' % url)
-    album_page = urllib2.urlopen(url).read()
-    #to_file(album_page, 'album1.htm')
+    #album_page = urlopen(url)
+    #to_file(album_page, 'retr.htm')
+    album_page = open('album.htm', 'r').read()
     info, tracks = parse_albumpage(album_page)
     try:
         info['amgsqlid'] = sqlre.search(url).groups()[0]
@@ -254,7 +255,7 @@ def retrieve_album(url, coverurl=None):
     return info, tracks, cover
 
 def retrieve_cover(url):
-    cover = urllib2.urlopen(url).read()
+    cover = urlopen(url)
     f = open('cover.jpg', 'w')
     f.write(cover)
     f.close()
@@ -281,6 +282,17 @@ class AllMusic(object):
         cparser = PuddleConfig()
         self._getcover = cparser.get('amg', 'retrievecovers', True)
         self.preferences = [['Retrieve Covers', CHECKBOX, self._getcover]]
+    
+    def keyword_search(self, text):
+        if text.startswith(u':id'):
+            url = album_url + text[len(':id'):].strip()
+            info, tracks, cover = retrieve_album(url, self._getcover)
+            if cover:
+                info.update(cover)
+            return [(info, tracks)]
+        else:
+            params = parse_searchstring(text)
+            self.search(None, params)
 
     def search(self, audios=None, params=None):
         ret = []
@@ -306,9 +318,9 @@ class AllMusic(object):
             set_status(u'Searching for %s' % album)
             write_log(u'Searching for %s' % album)
             try:
-                searchpage = search(album)
+                #searchpage = search(album)
                 #to_file(searchpage, 'search1.htm')
-                #searchpage = open('spainsearch.htm').read()
+                searchpage = open('spainsearch.htm').read()
             except urllib2.URLError, e:
                 write_log(u'Error: While retrieving search page %s' % 
                             unicode(e))

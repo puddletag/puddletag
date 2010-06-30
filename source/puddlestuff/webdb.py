@@ -487,26 +487,17 @@ class MainWin(QWidget):
     def getInfo(self):
         tags = self._status['selectedfiles']
         self.label.setText('Retrieving album info.')
+        text = None
         if self._searchparams.text():
             text = unicode(self._searchparams.text())
-            params = defaultdict(lambda:[])
-            try:
-                text = [z.split(';') for z in text.split(u'|') if z]
-                [params[z.strip()].append(v.strip()) for z, v in text]
-            except ValueError:
-                self.label.setText('<b>Error parsing artist/album combinations.</b>')
-                self.getinfo.setEnabled(True)
-                return
-        else:
-            if not tags:
-                self.label.setText('<b>Select some files or enter search paramaters.</b>')
-                return
-            params = None
+        elif not tags:
+            self.label.setText('<b>Select some files or enter search paramaters.</b>')
+            return
 
         def retrieve():
             try:
-                if params:
-                    return self._tagsource.search(params=params)
+                if text:
+                    return self._tagsource.keyword_search(text)
                 else:
                     return self._tagsource.search(audios=tags)
             except RetrievalError, e:
