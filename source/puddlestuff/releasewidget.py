@@ -67,9 +67,13 @@ def get_tagsources():
     from puddlestuff.tagsources import exampletagsource, musicbrainz
     return exampletagsource.info[0](), musicbrainz.info[0]()
 
-def strip(audio, taglist, reverse = False):
+def strip(audio, taglist, reverse = False, mapping=None):
     if not taglist:
-        return dict([(key, audio[key]) for key in audio if 
+        if mapping:
+            return dict([(mapping.get(key, key), audio[key]) for 
+                key in audio if not key.startswith('#')])
+        else:
+            return dict([(key, audio[key]) for key in audio if 
                         not key.startswith('#')])
     tags = taglist[::]
     if tags and tags[0].startswith('~'):
@@ -78,11 +82,19 @@ def strip(audio, taglist, reverse = False):
     else:
         reverse = False
     if reverse:
-        return dict([(key, audio[key]) for key in audio if key not in
-                        tags and not key.startswith('#')])
+        if mapping:
+            return dict([(mapping.get(key, key), audio[key]) for key in audio if key not in
+                tags and not key.startswith('#')])
+        else:
+            return dict([(key, audio[key]) for key in audio if key not in
+                tags and not key.startswith('#')])
     else:
-        return dict([(key, audio[key]) for key in taglist if key in audio and
-            not key.startswith('#')])
+        if mapping:
+            return dict([(mapping.get(key, key), audio[key]) for 
+                key in taglist if key in audio and not key.startswith('#')])
+        else:
+            return dict([(key, audio[key]) for key in taglist if 
+                key in audio and not key.startswith('#')])
 
     """Used to display tags in in a human parseable format."""
     if not tag:
@@ -98,7 +110,7 @@ def strip(audio, taglist, reverse = False):
         sorted(tag.items() + d.items()) if z not in no_disp_fields and not
         z.startswith('#')])
 
-def tooltip(tag):
+def tooltip(tag, mapping):
     """Used to display tags in in a human parseable format."""
     if not tag:
         return "<b>Error in pattern</b>"
@@ -108,10 +120,15 @@ def tooltip(tag):
         d = {'#images': unicode(len(tag['__image']))}
     else:
         d = {}
-    
-    return "<br />".join([s % (z, tostr(v)) for z, v in
-        sorted(tag.items() + d.items()) if z not in no_disp_fields and not
-        z.startswith('#')])
+
+    if mapping:
+        return "<br />".join([s % (mapping.get(z,z), tostr(v)) for z, v in
+            sorted(tag.items() + d.items()) if z not in no_disp_fields and not
+            z.startswith('#')])
+    else:
+        return "<br />".join([s % (z, tostr(v)) for z, v in
+            sorted(tag.items() + d.items()) if z not in no_disp_fields and not
+            z.startswith('#')])
 
 class Header(QHeaderView):
     def __init__(self, parent = None):
@@ -253,6 +270,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         track_pattern='%track% - %title%', tagsource=None, parent=None):
         QtCore.QAbstractItemModel.__init__(self, parent)
         
+        self.mapping = {}
         rootData = map(QtCore.QVariant, ['Retrieved Albums'])
         self.rootItem = RootItem(rootData)
         
@@ -335,7 +353,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             return QVariant(item.data(index.column()))
         elif role == Qt.ToolTipRole:
             item = index.internalPointer()
-            return QVariant(tooltip(item.itemData))
+            return QVariant(tooltip(item.itemData, self.mapping))
         elif role == Qt.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
@@ -521,6 +539,7 @@ class ReleaseWidget(QTreeView):
         self.tagsToWrite = []
         self.reEmitTracks = self.selectionChanged
         self.lastSortIndex = 0
+        self.mapping = {'artist':'keith'}
 
         header = Header(self)
         self.connect(header, SIGNAL('sortChanged'), self.sort)
@@ -562,12 +581,13 @@ class ReleaseWidget(QTreeView):
         else:
             for track in tracks:
                 self.emit(SIGNAL('preview'), 
-                    {track['#exact']: strip(track, to_write)})
+                    {track['#exact']: strip(track, to_write, 
+                        mapping =self.mapping)})
     
     def emitTracks(self, tracks):
         tags = self.tagsToWrite
         tracks = map(dict, tracks)
-        tracks = [strip(track, tags) for track in tracks]
+        tracks = [strip(track, tags, mapping=self.mapping) for track in tracks]
         if tracks:
             self.emit(SIGNAL('preview'), 
                 tracks[:len(self._status['selectedrows'])])
@@ -577,7 +597,8 @@ class ReleaseWidget(QTreeView):
     
     def exactChanged(self, item):
         if item.checked:
-            track = strip(item.itemData, self.tagsToWrite)
+            track = strip(item.itemData, self.tagsToWrite, 
+                mapping = self.mapping)
             self.emit(SIGNAL('preview'), {item.itemData['#exact']: track})
         else:
             self.emit(SIGNAL('preview'), {item.itemData['#exact']: {}})
@@ -593,7 +614,7 @@ class ReleaseWidget(QTreeView):
             items[0].hasTracks is not None):
             copytag = items[0].itemData.copy
             tags = self.tagsToWrite
-            tracks = [strip(copytag(), tags) for z in 
+            tracks = [strip(copytag(), tags, mapping=self.mapping) for z in 
                 self._status['selectedrows']]
         else:
             singles = []
@@ -640,6 +661,7 @@ class ReleaseWidget(QTreeView):
         modelconnect('retrieving', lambda: self.setEnabled(False))
         modelconnect('retrievalDone', lambda: self.setEnabled(True))
         model.tagsource = self.tagSource
+        model.mapping = self.mapping
     
     def setReleases(self, releases):
         self.model().setupModelData(releases)
@@ -652,6 +674,10 @@ class ReleaseWidget(QTreeView):
         self.model().sort()
         if order in self.header().sortOptions:
             self.lastSortIndex = self.header().sortOptions.index(order)
+    
+    def setMapping(self, mapping):
+        self.model().mapping = mapping
+        self.mapping = mapping
 
 
 if __name__ == "__main__":

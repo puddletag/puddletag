@@ -19,6 +19,14 @@ COVERDIR = cparser.get('tagsources', 'coverdir', COVERDIR)
 SAVECOVERS = False
 status_obj = QObject()
 
+mapping = {}
+
+def set_mapping(m):
+    global mapping
+
+    mapping.clear()
+    mapping.update(m)
+
 if not exists(COVERDIR):
     os.mkdir(COVERDIR)
 

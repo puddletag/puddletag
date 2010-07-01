@@ -42,6 +42,7 @@ from functools import partial
 from copy import copy
 from puddlestuff.util import to_string
 from releasewidget import ReleaseWidget
+import puddlestuff.audioinfo as audioinfo
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
@@ -357,6 +358,7 @@ class MainWin(QWidget):
         self.emits = ['writepreview', 'setpreview', 'clearpreview',
                       'logappend']
         self.setWindowTitle("Tag Sources")
+        self.mapping = audioinfo.mapping
         self._status = status
         if allmusic:
             tagsources = [mbrainz, freedb, amazon, allmusic]
@@ -445,7 +447,6 @@ class MainWin(QWidget):
         vbox.addLayout(hbox)
 
         vbox.addWidget(self._taglist)
-
         self.setLayout(vbox)
         self._changeSource(0)
         
@@ -472,6 +473,10 @@ class MainWin(QWidget):
             self._prefbutton.show()
         self._lastindex = index
         self._taglist.setTags(self._tagstowrite[index])
+        if self._tagsource.name in self.mapping:
+            self.listbox.setMapping(self.mapping[self._tagsource.name])
+        else:
+            self.listbox.setMapping({})
 
     def _changeTags(self, tags):
         self.listbox.tagsToWrite = tags
@@ -559,7 +564,9 @@ class MainWin(QWidget):
 
         sortindex = settings.get('tagsources', 'lastsort', 0)
         self.listbox.sort(sort_options[sortindex])
-
+        
+        filepath = os.path.join(SAVEDIR, 'mappings')
+        self.setMapping(audioinfo.loadmapping(filepath))
 
     def saveSettings(self):
         settings = PuddleConfig()
@@ -568,6 +575,13 @@ class MainWin(QWidget):
         for i, name in enumerate(self._sourcenames):
             settings.set('tagsourcetags', name , self._tagstowrite[i])
         settings.set('tagsources', 'lastsort', self.listbox.lastSortIndex)
+    
+    def setMapping(self, mapping):
+        self.mapping = mapping
+        if self._tagsource.name in mapping:
+            self.listbox.setMapping(mapping[self._tagsource.name])
+        else:
+            self.listbox.setMapping({})
 
 control = ('Tag Sources', MainWin, RIGHTDOCK, False)
 

@@ -74,7 +74,8 @@ def loadsettings(filepath=None):
     rowsize = settings.get('table', 'rowsize', -1, True)
     v1_option = settings.get('id3tags', 'v1_option', 2)
     audioinfo.id3.v1_option = v1_option
-    return (zip(titles, tags), checked), fontsize, rowsize
+    filespec = u';'.join(settings.get('table', 'filespec', []))
+    return (zip(titles, tags), checked), fontsize, rowsize, filespec
 
 def caseless(tag, audio):
     if tag in audio:
@@ -150,7 +151,7 @@ class ColumnSettings(HeaderSetting):
     """A dialog that allows you to edit the header of a TagTable widget."""
     title = 'Columns'
     def __init__(self, parent = None, showok = False, status=None):
-        (self.tags, checked), fontsize, rowsize = loadsettings()
+        (self.tags, checked), fontsize, rowsize, filespec = loadsettings()
         HeaderSetting.__init__(self, self.tags, parent, showok, True)
         if showok:
             winsettings('columnsettings', self)
@@ -969,6 +970,7 @@ class TagTable(QTableView):
         self._selectedColumns = []
         self._select = True
         self._playlist = False
+        self.filespec = ''
         self.contextMenu = None
         self.setHorizontalScrollMode(self.ScrollPerPixel)
 
@@ -1018,6 +1020,7 @@ class TagTable(QTableView):
         status['selectedtags'] = self._getSelectedTags
         status['alltags'] = lambda: self.model().taginfo
         status['allfiles'] = lambda: self.model().taginfo
+        status['table'] = self
 
     def _setFontSize(self, size):
         self.model().fontSize = size
@@ -1302,7 +1305,8 @@ class TagTable(QTableView):
             self.dirs.extend(dirs)
         else:
             self.dirs = dirs
-        files = files + getfiles(dirs, subfolders)
+        print self.filespec
+        files = files + getfiles(dirs, subfolders, self.filespec)
         #[files.extend(z[1]) for z in getfiles(dirs, subfolders)]
 
         tags = []
@@ -1345,7 +1349,7 @@ class TagTable(QTableView):
         QTableView.sortByColumn(self, sortcolumn)
 
     def loadSettings(self):
-        (tags, checked), fontsize, rowsize = loadsettings()
+        (tags, checked), fontsize, rowsize, self.filespec = loadsettings()
         self.setHeaderTags([z for i, z in enumerate(tags) if i in checked])
         if fontsize:
             self.fontSize = fontsize

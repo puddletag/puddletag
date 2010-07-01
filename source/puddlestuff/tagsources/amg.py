@@ -7,7 +7,7 @@ import sys, pdb, re, time, os
 from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
-from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen
+from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen, parse_searchstring
 from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
 

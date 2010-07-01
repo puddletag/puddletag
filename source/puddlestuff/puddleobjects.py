@@ -387,7 +387,8 @@ def dupes(l, method = None):
                 groups.append([i])
     return [z for z in groups if len(z) > 1]
 
-def getfiles(files, subfolders = False):
+def getfiles(files, subfolders = False, pattern = ''):
+    #pattern = u'*.ogg'
     def recursedir(folder, subfolders):
         if subfolders:
             #TODO: This really fucks up when reading files with malformed
@@ -416,7 +417,12 @@ def getfiles(files, subfolders = False):
         while dirnames and subfolders:
             [files.extend(recursedir(d, True)) for d in dirnames]
             dirnames = [z for z in files if os.path.isdir(z)]
-    return files
+    if not (pattern or pattern.strip()):
+        return files
+    else:
+        regexp = u'|'.join(map(translate_filename_pattern, pattern.split(u';')))
+        match = re.compile(regexp).match
+        return filter(match, files)
 
 def gettags(files):
     return (gettag(audio) for audio in files)
@@ -432,6 +438,45 @@ def gettag(f):
         print f
         traceback.print_exc()
         return
+
+def translate_filename_pattern(pat):
+    """Translate a shell PATTERN to a regular expression.
+
+    There is no way to quote meta-characters.
+    """
+    #from fnmatch.py with slight modification
+    pat = pat.strip()
+    i, n = 0, len(pat)
+    res = ''
+    while i < n:
+        c = pat[i]
+        i = i+1
+        if c == '*':
+            res = res + '.*'
+        elif c == '?':
+            res = res + '.'
+        elif c == '[':
+            j = i
+            if j < n and pat[j] == '!':
+                j = j+1
+            if j < n and pat[j] == ']':
+                j = j+1
+            while j < n and pat[j] != ']':
+                j = j+1
+            if j >= n:
+                res = res + '\\['
+            else:
+                stuff = pat[i:j].replace('\\','\\\\')
+                i = j+1
+                if stuff[0] == '!':
+                    stuff = '^' + stuff[1:]
+                elif stuff[0] == '^':
+                    stuff = '\\' + stuff
+                res = '%s[%s]' % (res, stuff)
+        else:
+            res = res + re.escape(c)
+    #return res + '\Z(?ms)'
+    return res + '\Z'
 
 def gettaglist():
     cparser = PuddleConfig()

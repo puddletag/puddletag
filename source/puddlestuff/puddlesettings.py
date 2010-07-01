@@ -210,8 +210,13 @@ class TagMappings(QWidget):
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
         hbox.addLayout(buttons, 0)
-        self.setLayout(hbox)
+        
         self._setMappings(self._mappings)
+        label = QLabel('<b>A restart is required to apply these settings.</b>')
+        vbox = QVBoxLayout()
+        vbox.addLayout(hbox, 1)
+        vbox.addWidget(label)
+        self.setLayout(vbox)
 
     def _setMappings(self, mappings):
         self._table.clearContents()
@@ -288,6 +293,10 @@ class TagMappings(QWidget):
 class Tags(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
+        
+        self._filespec = QLineEdit()
+        speclabel = QLabel('&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")')
+        speclabel.setBuddy(self._filespec)
 
         v1_options = ['Remove ID3v1 tag.',
             "Update the ID3v1 tag's values only if an ID3v1 tag is present.",
@@ -296,11 +305,15 @@ class Tags(QWidget):
         self._v1_combo = QComboBox()
         self._v1_combo.addItems(v1_options)
         
-        v1_label = QLabel('puddletag writes only ID3v2 tags. What should be '
+        v1_label = QLabel('puddletag writes only &ID3v2 tags. What should be '
             'done with the ID3v1 tag?')
         v1_label.setBuddy(self._v1_combo)
         
         vbox = QVBoxLayout()
+        
+        vbox.addWidget(speclabel)
+        vbox.addWidget(self._filespec)
+        
         vbox.addWidget(v1_label)
         vbox.addWidget(self._v1_combo)
         vbox.addStretch()
@@ -309,12 +322,20 @@ class Tags(QWidget):
         cparser = PuddleConfig()
         index = cparser.get('id3tags', 'v1_option', 2)
         self._v1_combo.setCurrentIndex(index)
+        filespec = u';'.join(cparser.get('table', 'filespec', []))
+        self._filespec.setText(filespec)
 
     def applySettings(self, control=None):
         cparser = PuddleConfig()
         v1_option = self._v1_combo.currentIndex()
         cparser.set('id3tags', 'v1_option', v1_option)
         audioinfo.id3.v1_option = v1_option
+
+        filespec = unicode(self._filespec.text())
+        control.filespec = filespec
+        filespec = [z.strip() for z in filespec.split(';')]
+        cparser.set('table', 'filespec', filespec)
+
 
 class ListModel(QAbstractListModel):
     def __init__(self, options):
@@ -439,7 +460,7 @@ class SettingsDialog(QDialog):
              2: ('Playlist', Playlist(), None),
              3: ('Extended Tags Colors', ColorEdit(), None),
              4: ('Genres', genres.Genres(status=status), None),
-             5: ('Tags', Tags(), None)}
+             5: ('Tags', Tags(), status['table'])}
         i = len(d)
         for control in controls:
             if hasattr(control, SETTINGSWIN):
