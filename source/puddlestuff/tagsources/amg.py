@@ -3,12 +3,12 @@ import re
 import parse_html
 import urllib2
 import codecs
-import sys, pdb, re, time
+import sys, pdb, re, time, os
 from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
 from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen
-from puddlestuff.constants import CHECKBOX
+from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
 
 release_order = ('year', 'type', 'label', 'catalog')
@@ -36,6 +36,16 @@ spanmap = {'Genre': 'genre',
 sqlre = re.compile('sql=(.*)')
 
 first_white = lambda match: match.groups()[0][0]
+
+def find_id(tracks, field=None):
+    for track in tracks:
+        if field in track:
+            value = track[field]
+            if isinstance(value, basestring):
+                return value
+            else:
+                return value[0]
+
 
 def create_search(terms):
     return search_adress % re.sub('(\s+)', u'%20', terms)
@@ -175,7 +185,7 @@ def parse_albumpage(page, artist=None, album=None):
 
     return info, parse_tracks(album_soup)
 
-def parse_search_element(element):
+def parse_search_element(element, id_field = None):
     ret = {'#albumurl' : album_url + element.element.attrib['onclick'][3:-2]}
     try:
         ret.update({'#play': element[3].find('a',
@@ -186,14 +196,15 @@ def parse_search_element(element):
                     in zip(search_order, element) if field])
     ret['#extrainfo'] = [ret['album'] + u' at AllMusic.com', ret['#albumurl']]
     try:
-        ret['amgsqlid'] = sqlre.search(ret['#albumurl']).groups()[0]
+        if id_field:
+            ret[sql_field] = sqlre.search(ret['#albumurl']).groups()[0]
     except:
         pass
     return ret
 
-def parse_searchpage(page, artist, album):
+def parse_searchpage(page, artist, album, id_field):
     soup = parse_html.SoupWrapper(parse_html.parse(page))
-    albums = [parse_search_element(z) for z in 
+    albums = [parse_search_element(z, id_field) for z in 
         soup.find_all('td', {'class':'visible', 'id': 'trlink'})]
     
     d = {}
@@ -229,14 +240,15 @@ def parse_tracks(soup):
     tracks = filter(None, [get_track(trackinfo, keys) for trackinfo in table.find_all('tr')])
     return tracks
 
-def retrieve_album(url, coverurl=None):
+def retrieve_album(url, coverurl=None, id_field=None):
     write_log('Opening Album Page - %s' % url)
     album_page = urlopen(url)
     #to_file(album_page, 'retr.htm')
     #album_page = open('album.htm', 'r').read()
     info, tracks = parse_albumpage(album_page)
     try:
-        info['amgsqlid'] = sqlre.search(url).groups()[0]
+        if id_field:
+            info[id_field] = sqlre.search(url).groups()[0]
     except AttributeError:
         pass
     if coverurl:
@@ -256,9 +268,6 @@ def retrieve_album(url, coverurl=None):
 
 def retrieve_cover(url):
     cover = urlopen(url)
-    f = open('cover.jpg', 'w')
-    f.write(cover)
-    f.close()
     return {'__image': [{'data': cover}]}
 
 def search(album):
@@ -278,21 +287,31 @@ def to_file(data, name):
 
 class AllMusic(object):
     name = 'AllMusic.com'
+    tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>By prefacing the search text with <b>:id</b> you can search for an albums using it's AllMusic sql id eg. <b>:id 10:nstlgr7nth</b> (extraneous spaces are discarded.)<li></ul>"
     def __init__(self):
         cparser = PuddleConfig()
+        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
         self._getcover = cparser.get('amg', 'retrievecovers', True)
-        self.preferences = [['Retrieve Covers', CHECKBOX, self._getcover]]
+        self._useid = cparser.get('amg', 'useid', True)
+        self._id_field = cparser.get('amg', 'idfield', 'amgsqlid')
+        self.preferences = [['Retrieve Covers', CHECKBOX, self._getcover],
+            ['Use AMG SQL ID to retrieve albums:', CHECKBOX, self._useid],
+            ['AMG SQL ID field (leave empty to disable.)', TEXT, self._id_field]]
     
     def keyword_search(self, text):
         if text.startswith(u':id'):
             url = album_url + text[len(':id'):].strip()
-            info, tracks, cover = retrieve_album(url, self._getcover)
+            if self._useid:
+                info, tracks, cover = retrieve_album(url, self._getcover, 
+                    self._id_field)
+            else:
+                info, tracks, cover = retrieve_album(url, self._getcover)
             if cover:
                 info.update(cover)
             return [(info, tracks)]
         else:
             params = parse_searchstring(text)
-            self.search(None, params)
+            return self.search(None, params)
 
     def search(self, audios=None, params=None):
         ret = []
@@ -315,6 +334,14 @@ class AllMusic(object):
                     artist = artists.keys()[0]
                 else:
                     artist = artists[0]
+            if check_matches and self._useid:
+                tracks = []
+                [tracks.extend(z) for z in artists.values()]
+                album_id = find_id(tracks, self._id_field)
+                if album_id:
+                    write_log(u'Found Album ID %s' % album_id)
+                    ret.extend(self.keyword_search(u':id %s' % album_id))
+                    continue
             set_status(u'Searching for %s' % album)
             write_log(u'Searching for %s' % album)
             try:
@@ -327,8 +354,9 @@ class AllMusic(object):
                 set_status(u'Error: While retrieving search page %s' % 
                             unicode(e))
                 raise RetrievalError(unicode(e))
-            write_log(u'Retrieved search results.')           
-            matched, matches = parse_searchpage(searchpage, artist, album)
+            write_log(u'Retrieved search results.')
+            matched, matches = parse_searchpage(searchpage, artist, album,
+                self._id_field)
             if matched and len(matches) == 1:
                 info, tracks = self.retrieve(matches[0])
                 set_status(u'Found match for: %s - %s' % 
@@ -369,7 +397,11 @@ class AllMusic(object):
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
         try:
-            info, tracks, cover = retrieve_album(url, self._getcover)
+            if self._useid:
+                info, tracks, cover = retrieve_album(url, self._getcover,
+                    self._id_field)
+            else:
+                info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving album URL %s - %s' % 
                         (url, unicode(e)))
@@ -383,8 +415,16 @@ class AllMusic(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.preferences[0][2] = self._getcover
+        self._useid = args[1]
+        self.preferences[1][2] = self._getcover
+        self._id_field = args[2]
+        self.preferences[2][2] = self._id_field
+        
         cparser = PuddleConfig()
+        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
         cparser.set('amg', 'retrievecovers', self._getcover)
+        cparser.set('amg', 'useid', self._useid)
+        cparser.set('amg', 'idfield', self._id_field)
 
 info = [AllMusic, None]
 name = 'AllMusic.com'

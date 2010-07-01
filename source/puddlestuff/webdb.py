@@ -389,8 +389,8 @@ class MainWin(QWidget):
         self._prefbutton = preferences
 
         self._searchparams = QLineEdit()
-        tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
-        self._searchparams.setToolTip(tooltip)
+        self._tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
+        self._searchparams.setToolTip(self._tooltip)
 
         self.getinfo = QPushButton("&Search")
         self.getinfo.setDefault(True)
@@ -457,6 +457,10 @@ class MainWin(QWidget):
 
     def _changeSource(self, index):
         self._tagsource = self._tagsources[index]
+        if hasattr(self._tagsource, 'tooltip'):
+            self._searchparams.setToolTip(self._tagsource.tooltip)
+        else:
+            self._searchparams.setToolTip(self._tooltip)
         self.listbox.tagSource = self._tagsource
         if hasattr(self._tagsource, 'preferences'):
             self._config = self._tagsource.preferences

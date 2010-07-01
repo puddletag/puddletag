@@ -126,6 +126,7 @@ def split_by_tag(tracks, main='artist', secondary='album'):
 
 class FreeDB(object):
     name = 'FreeDB'
+    tooltip = '<b>FreeDB does not support searching via text.</b>'
     def keyword_search(self, text):
         raise RetrievalError('Keyword search not supported.')
     
