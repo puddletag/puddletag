@@ -194,7 +194,10 @@ class TagMappings(QWidget):
         self._mappings = audioinfo.mapping
 
         QWidget.__init__(self, parent)
+        tooltip = '''<ul><li>Tag is the format that the mapping applies to. One of <b>ID3, APEv2, MP4, or VorbisComment</b>. </li><li>Fields will be mapped from Source to Target, meaning that if Source is found in a tag, it'll be editable in puddletag using Target.</li><li>Eg. For <b>Tag=VorbisComment, Source=organization, and Target=publisher</b> means that writing to the publisher field for VorbisComments in puddletag will in actuality write to the organization field.</li><li>Mappings for tag sources are also supported, just use the name of the tag source as Tag, eg. <b>Tag=MusicBrainz, Source=artist,Target=performer</b>.</li></ul>'''
+        
         self._table = QTableWidget()
+        self._table.setToolTip(tooltip)
         self._table.setColumnCount(3)
         self._table.setHorizontalHeaderLabels(['Tag', 'Source', 'Target'])
         header = self._table.horizontalHeader()

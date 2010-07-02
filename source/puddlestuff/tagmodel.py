@@ -1305,7 +1305,6 @@ class TagTable(QTableView):
             self.dirs.extend(dirs)
         else:
             self.dirs = dirs
-        print self.filespec
         files = files + getfiles(dirs, subfolders, self.filespec)
         #[files.extend(z[1]) for z in getfiles(dirs, subfolders)]
 

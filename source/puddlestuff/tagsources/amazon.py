@@ -184,9 +184,9 @@ def keyword_search(keywords):
     url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
         'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
     xml = urlopen(url)
-    f = open('searchxml.xml', 'w')
-    f.write(xml)
-    f.close()
+    #f = open('searchxml.xml', 'w')
+    #f.write(xml)
+    #f.close()
     return parse_xml(xml)
 
 class Amazon(object):
@@ -226,9 +226,9 @@ class Amazon(object):
     
     def retrieve(self, info):
         if self._getcover:
-            return info, retrieve_album(info['#asin'], self.covertype)
+            return info, retrieve_album(info, self.covertype)
         else:
-            return info, retrieve_album(info['#asin'], None)
+            return info, retrieve_album(info, None)
     
     def applyPrefs(self, args):
         self._getcover = args[0]
