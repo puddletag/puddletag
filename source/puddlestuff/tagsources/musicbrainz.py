@@ -177,12 +177,13 @@ class MusicBrainz(object):
 
             if check_matches and self._artist_field:
                 write_log(u'Checking tracks for Artist ID.')
-                pdb.set_trace()
                 artist_id = find_id(all_tracks, self._artist_field)
                 if not artist_id:
                     write_log(u'No Artist ID found in tracks.')
                 else:
                     artist_id = u'http://musicbrainz.org/artist/%s' % artist_id
+            else:
+                artist_id = None
             if not artist_id:
                 artist, artist_id = artist_search(artist)
             if not artist_id:
