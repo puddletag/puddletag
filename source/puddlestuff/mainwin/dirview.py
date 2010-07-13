@@ -92,6 +92,7 @@ class DirView(QTreeView):
             self.selectionModel().clear()
             QApplication.processEvents()
             self._load = load
+            qmutex.unlock()
             return
         qmutex.lock()
         self.setEnabled(False)

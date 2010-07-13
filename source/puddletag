@@ -24,27 +24,45 @@
 #psyco.full()
 import sys, os
 _libs = [('mutagen', '(usually python-mutagen or just mutagen)', 
-                    'http://code.google.com/p/quodlibet/wiki/Mutagen'),
+            'http://code.google.com/p/mutagen/'),
          ('configobj', '(usually python-configobj)', 
             'http://code.google.com/p/configobj/'),
          ('pyparsing', '(python-pyparsing or python-parsing in most distros)',
             'http://pyparsing.wikispaces.com/'),
          ('musicbrainz2', '(python-musicbrainz2 in most distros)', 
             'http://musicbrainz2.org/doc/PythonMusicBrainz2'),
-         ('PyQt4', '(python-qt4 in most)', 
+         ('PyQt4', '(python-qt4 usually)', 
             'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
+_recommended = [
+    ('Image', 'Installing the python imaging library is '
+        'recommended in order to view/edit FLAC cover art.',
+        'python-imaging in most distros',
+        'http://www.pythonware.com/products/pil/'),
+    ('quodlibet', 'Installing QuodLibet is '
+        'recommended in order to view/edit QuodLibet music libraries.',
+        'quodlibet almost everywhere',
+        'quodlibet url')]
 
 def check_libs():
     found = True
     msg = "Error: %s module wasn't found, please check that it's installed " \
-            "properly. You can download it from you distro's repository" \
-            " %s or from the website %s"
+            "properly. Download it from your distro's repository" \
+            " %s or directly from %s \n"
     for lib in _libs:
         try:
             __import__(lib[0])
         except ImportError:
             print msg % lib
             found = False
+
+    msg = "Error: %s module wasn't found. %s. Please check that it's " \
+        "installed properly. You can download it from your distro's " \
+        "repository (%s), or download directly from %s.\n"
+    for lib in _recommended:
+        try:
+            __import__(lib[0])
+        except ImportError:
+            print msg % lib
     if not found:
        sys.exit(0)
 
@@ -85,7 +103,6 @@ else:
     filename = None
 
 if __name__ == '__main__':
-    check_libs()
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(":/appicon.png"))
     pixmap = QPixmap(':/puddlelogo.png')

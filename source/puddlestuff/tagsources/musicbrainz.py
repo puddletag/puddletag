@@ -117,7 +117,7 @@ def artist_search(artist):
         return (None, None)
 
 class MusicBrainz(object):
-    name = 'Musicbrainz'
+    name = 'MusicBrainz'
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>Retrieving all albums by an artist using their MusicBrainz Artist ID is possible by prefacing your search with <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b> (extraneous spaces around the ID are discarded.)</li><li>In the same way an album can be retrieved using it's MusicBrainz ID by prefacing the search text with <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"
     def __init__(self):
         cparser = PuddleConfig()
@@ -269,7 +269,7 @@ class MusicBrainz(object):
         cparser.set('musicbrainz', 'trackfield', values[2])
 
 info = [MusicBrainz, None]
-name = 'Musicbrainz'
+name = 'MusicBrainz'
 
 if __name__ == '__main__':
     from exampletags import tags

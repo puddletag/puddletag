@@ -289,13 +289,13 @@ control=table
 enabled=filesselected
 shortcut=Shift+Delete
 
-#[shortcut42]
-#name=In &Library
-#command=in_lib
-#checkstate=0
-#control=mainwin
-#enabled=filesloaded
-#togglecheck=filesloaded
+[shortcut42]
+name=In &Library
+command=in_lib
+checkstate=0
+control=mainwin
+enabled=filesloaded
+togglecheck=filesloaded
 
 [shortcut43]
 name=Replace...

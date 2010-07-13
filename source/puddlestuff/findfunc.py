@@ -230,7 +230,7 @@ def removeSpaces(text):
         text = text.replace(char, '')
     return text.lower()
 
-_varpat = re.compile('%(\w+)%')
+_varpat = re.compile('%([\w ]+)%')
 def replacevars(text, dictionary):
     """Replaces the tags in pattern with their corresponding value in audio.
 

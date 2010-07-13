@@ -165,9 +165,7 @@ FUNCS = {'title': (gettext, settext),
         'bpm': (getint, setint)}
 
 class Tag(util.MockTag):
-    """Class for AAC(mp4) tags.
-
-    Do not use unicode! It's fucked."""
+    """Class for AAC tags."""
 
     mapping = {}
     revmapping = {}
@@ -225,7 +223,7 @@ class Tag(util.MockTag):
             self._tags[key] = FUNCS[key][1](value)
         except KeyError:
             #User defined tags.
-            self._freeform[key] = '----:net.sf.puddletag:%s' % key
+            self._freeform[key] = '----:com.apple.iTunes:%s' % key
             self._tags[key] = settext(value)
 
     def delete(self):

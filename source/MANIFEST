@@ -52,5 +52,9 @@ puddlestuff/mainwin/tagpanel.py
 puddlestuff/mainwin/artwork.py
 puddlestuff/tagsources/__init__.py
 puddlestuff/tagsources/amg.py
+puddlestuff/tagsources/amazon.py
+puddlestuff/tagsources/CDDB.py
+puddlestuff/tagsources/freedb.py
 puddlestuff/tagsources/musicbrainz.py
 puddlestuff/tagsources/parse_html.py
+

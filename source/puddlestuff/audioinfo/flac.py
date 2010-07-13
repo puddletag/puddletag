@@ -58,7 +58,7 @@ class TempTag(ogg.Tag):
                     ('Filename', self.filename),
                     ('Modified', self.modified)]
 
-        ogginfo = [('Bitrate', self.bitrate),
+        ogginfo = [('Bitrate', 'Lossless'),
                 ('Frequency', self.frequency),
                 ('Bits Per Sample', self.bitspersample),
                 ('Channels', unicode(info.channels)),

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re, pdb
 from functools import partial
 from copy import copy
@@ -59,10 +60,3 @@ def pprint(text, args):
     args = copy(args)
     f = partial(func, d=args)
     return pattern.sub(f, text)
-
-if __name__ == '__main__':
-    text = '$1 - %5( first ) $4'
-    j = {1: 'keith',
-        2: 'the great',
-        4: 'i am'}
-    print pprint(text, j)
