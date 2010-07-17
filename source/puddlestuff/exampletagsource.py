@@ -29,8 +29,8 @@ from puddlestuff.audioinfo import stringtags
 
 properties = {'type': TAGSOURCE}
 
-musicdir = '/mnt/variable/Music'
-dirs = [unicode(z, 'utf8') for z in os.listdir(musicdir)]
+#musicdir = '/mnt/variable/Music'
+#dirs = [unicode(z, 'utf8') for z in os.listdir(musicdir)]
 try:
     image = [{'data': open(os.path.join(HOMEDIR, 'flux/image.jpg'), 'rb').read()}]
 except:
