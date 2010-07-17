@@ -118,6 +118,7 @@ def artist_search(artist):
 
 class MusicBrainz(object):
     name = 'MusicBrainz'
+    group_by = ['artist', 'album']
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>Retrieving all albums by an artist using their MusicBrainz Artist ID is possible by prefacing your search with <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b> (extraneous spaces around the ID are discarded.)</li><li>In the same way an album can be retrieved using it's MusicBrainz ID by prefacing the search text with <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"
     def __init__(self):
         cparser = PuddleConfig()
@@ -152,7 +153,7 @@ class MusicBrainz(object):
                 return [(info, []) for info in releases]
 
         elif s.startswith(':b'):
-            r_id = 'http://musicbrainz.org/release/' + s[len(':a'):].strip()
+            r_id = u'http://musicbrainz.org/release/' + s[len(':a'):].strip()
             try:
                 tracks, info = get_tracks(r_id)
             except WebServiceError, e:
@@ -161,91 +162,59 @@ class MusicBrainz(object):
                 raise RetrievalError(unicode(e))
             return [(info, tracks)]
         else:
-            return self.search(None, parse_searchstring(s))
+            params = parse_searchstring(s)
+            if not params: 
+                return
+            artist = params[0][0]
+            albums = [params[0][1]]
+            return self.search(artist, albums)
 
-    def search(self, audios=None, params=None):
+    def search(self, artist, albums):
         ret = []
-        check_matches = False
-        if not params:
-            params = split_by_tag(audios)
-            check_matches = True
-        for artist, albums in params.items():
-            all_tracks = None
-            if check_matches:
-                all_tracks = []
-                [all_tracks.extend(z) for z in albums.values()]
-
-            if check_matches and self._artist_field:
-                write_log(u'Checking tracks for Artist ID.')
-                artist_id = find_id(all_tracks, self._artist_field)
-                if not artist_id:
-                    write_log(u'No Artist ID found in tracks.')
-                else:
-                    artist_id = u'http://musicbrainz.org/artist/%s' % artist_id
+        if self._artist_field and hasattr(albums, 'values'):
+            write_log(u'Checking tracks for Artist ID.')
+            tracks = []
+            [tracks.extend(z) for z in albums.values()]
+            artist_id = find_id(tracks, self._artist_field)
+            if not artist_id:
+                write_log(u'No Artist ID found in tracks.')
             else:
-                artist_id = None
-            if not artist_id:
-                artist, artist_id = artist_search(artist)
-            if not artist_id:
-                write_log(u'No Artist ID found.' % artist)
-                set_status(u'No Artist ID found.' % artist)
-                continue
-            write_log(u'Found Artist ID for %s = "%s"' % (artist, artist_id))
-            try:
-                set_status(u'Retrieving releases for %s' % artist)
-                write_log(u'Retrieving releases for %s' % artist)
-                releases = get_releases(artist_id)
+                artist_id = u'http://musicbrainz.org/artist/%s' % artist_id
+        else:
+            artist_id = None
+        if not artist_id:
+            artist, artist_id = artist_search(artist)
+        if not artist_id:
+            write_log(u'No Artist ID found.' % artist)
+            return []
+        write_log(u'Found Artist ID for %s = "%s"' % (artist, artist_id))
+        try:
+            #set_status(u'Retrieving releases for %s' % artist)
+            write_log(u'Retrieving releases for %s' % artist)
+            releases = get_releases(artist_id)
+            if self._artist_field:
+                releases = [{'artist': artist,
+                            'album': z[0],
+                            '#albumid': z[1],
+                            '#artistid': artist_id} for z in releases]
                 if self._artist_field:
-                    releases = [{'artist': artist,
-                                'album': z[0],
-                                '#albumid': z[1],
-                                '#artistid': artist_id} for z in releases]
-                    if self._artist_field:
-                        v = extractUuid(artist_id)
-                        [z.update({self._artist_field: v})
-                            for z in releases]
-                    if self._album_field:
-                        [z.update({self._album_field: extractUuid(z['#albumid'])})
-                            for z in releases]
-            except WebServiceError, e:
-                write_log('<b>Error:</b> While retrieving %s: %s' % (
-                            artist_id, unicode(e)))
-                raise RetrievalError(unicode(e))
-            if not releases:
-                set_status(u'No albums found for %s.' % artist)
-                write_log(u'No releases found for %s.' % artist)
-                continue
-            else:
-                write_log(u"MusicBrainz ID's for %s releases \n%s" % (artist,
-                    u'\n'.join([u'%s - %s' % (z['album'], z['#albumid']) 
-                    for z in releases])))
-                set_status(u'Releases found for %s' % artist)
-            lowered = [z['album'].lower() for z in releases]
-            matched = []
-            allmatched = True
-            for album in albums:
-                if album.lower() in lowered:
-                    index = lowered.index(album.lower())
-                    info = releases[index]
-                    set_status('Retrieving tracks for %s - %s' % (artist, album))
-                    write_log('Retrieving %s - %s: %s' % (artist, album, info['#albumid']))
-                    tracks, tempinfo = get_tracks(info['#albumid'], 
-                        self._track_field)
-                    info.update(tempinfo)
-                    if check_matches:
-                        for audio in albums[album]:
-                            for track in tracks:
-                                if equal(audio, track,  tags=['title']):
-                                    track['#exact'] = audio
-                                    continue
-                    ret.append([info, tracks])
-                    matched.append(index)
-                else:
-                    allmatched = False
-            if not allmatched:
-                [ret.append([info, []]) for i, info in enumerate(releases)
-                    if i not in matched]
-        return ret
+                    v = extractUuid(artist_id)
+                    [z.update({self._artist_field: v})
+                        for z in releases]
+                if self._album_field:
+                    [z.update({self._album_field: extractUuid(z['#albumid'])})
+                        for z in releases]
+        except WebServiceError, e:
+            write_log('<b>Error:</b> While retrieving %s: %s' % (
+                        artist_id, unicode(e)))
+            raise RetrievalError(unicode(e))
+        if not releases:
+            write_log(u'No releases found for %s.' % artist)
+        else:
+            write_log(u"MusicBrainz ID's for %s releases \n%s" % (artist,
+                u'\n'.join([u'%s - %s' % (z['album'], z['#albumid']) 
+                for z in releases])))
+        return [(info, []) for info in releases]
 
     def retrieve(self, info):
         a_id = info['#artistid']

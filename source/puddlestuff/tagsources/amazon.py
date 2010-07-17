@@ -191,6 +191,7 @@ def keyword_search(keywords):
 
 class Amazon(object):
     name = 'Amazon'
+    group_by = [u'artist', u'album']
     def __init__(self):
 
         cparser = PuddleConfig()
@@ -202,27 +203,24 @@ class Amazon(object):
         self.preferences = [['Retrieve Cover', CHECKBOX, self._getcover],
             ['Cover size to retrieve', COMBO, 
                 [['Small', 'Medium', 'Large'], 1]]]
-    
-    def _search(self, d):
-        ret = []
-        for artist, albums in d.items():
-            for album in albums:
-                retrieved_albums = search(artist, album)
-                matches = check_matches(retrieved_albums, artist, album)
-                if len(matches) == 1:
-                    info = matches[0]
-                    if self._getcover:
-                        info, tracks = self.retrieve(info)
-                    ret.append([info, tracks])
-                else:
-                    ret.extend([[info, []] for info in retrieved_albums])
-        return ret
-    
+
     def keyword_search(self, text):
-        return self._search(parse_searchstring(text))
-        
-    def search(self, audios=None, params=None):
-        return self._search(split_by_tag(audios))
+        params = parse_searchstring(text)
+        artists = [params[0][0]]
+        album = params[0][1]
+        return self.search(album, artists)
+    
+    def search(self, album, artists):
+        if len(artists) > 1:
+            artist = u'Various Artists'
+        else:
+            artist = artists[0]
+        retrieved_albums = search(artist, album)
+        matches = check_matches(retrieved_albums, artist, album)
+        if len(matches) == 1:
+            return [(info, [])]
+        else:
+            return [(info, []) for info in retrieved_albums]
     
     def retrieve(self, info):
         if self._getcover:

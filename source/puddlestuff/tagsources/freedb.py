@@ -107,10 +107,7 @@ def search_by_id(discid):
         raise RetrievalError(e.strerror)
     if stat not in [200, 211]:
         return []
-    if stat == 200 or len(discs) == 1:
-        info, tracks = retrieve(discs[0]['category'], discs[0]['disc_id'])
-        return [(info, tracks)]
-    elif discs:
+    if discs:
         return [(convert_info(info), []) for info in discs]
     return []
 
@@ -126,13 +123,14 @@ def split_by_tag(tracks, main='artist', secondary='album'):
 
 class FreeDB(object):
     name = 'FreeDB'
-    tooltip = '<b>FreeDB does not support searching via text.</b>'
+    tooltip = u'<b>FreeDB does not support searching via text.</b>'
+    group_by = ['album', None]
     def keyword_search(self, text):
-        raise RetrievalError('Keyword search not supported.')
+        raise RetrievalError(u'Keyword search not supported.')
     
-    def search(self, audios=None, params=None):
-        if audios:
-            return search(audios)
+    def search(self, album, files):
+        if files:
+            return search(files)
         else:
             return []
 

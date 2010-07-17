@@ -287,7 +287,8 @@ def to_file(data, name):
 
 class AllMusic(object):
     name = 'AllMusic.com'
-    tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>By prefacing the search text with <b>:id</b> you can search for an albums using it's AllMusic sql id eg. <b>:id 10:nstlgr7nth</b> (extraneous spaces are discarded.)<li></ul>"
+    tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>By prefacing the search text with <b>:id</b> you can search for an albums using it's AllMusic sql id eg. <b>:id 10:nstlgr7nth</b> (extraneous spaces are discarded.)<li></ul>"
+    group_by = [u'album', 'artist']
     def __init__(self):
         cparser = PuddleConfig()
         cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
@@ -311,84 +312,47 @@ class AllMusic(object):
             return [(info, tracks)]
         else:
             params = parse_searchstring(text)
-            return self.search(None, params)
+            artists = [params[0][0]]
+            album = params[0][1]
+            return self.search(album, artists)
 
-    def search(self, audios=None, params=None):
+    def search(self, album, artists):
         ret = []
         check_matches = False
-        if not params:
-            params = split_by_tag(audios, 'album', 'artist')
-            check_matches = True
+        if len(artists) > 1:
+            artist = u'Various Artists'
         else:
-            d = defaultdict(lambda:[])
-            for artist, albums in params.items():
-                [d[album].append(artist) for album in albums]
-            params = d
-        for album, artists in params.items():
-            if len(artists) > 1:
-                set_status(u'More than one artist found. Assuming artist=' \
-                            u'Various Artists.')
-                artist = u'Various Artists'
-            else:
-                if check_matches:
-                    artist = artists.keys()[0]
-                else:
-                    artist = artists[0]
-            if check_matches and self._useid:
-                tracks = []
-                [tracks.extend(z) for z in artists.values()]
-                album_id = find_id(tracks, self._id_field)
-                if album_id:
-                    write_log(u'Found Album ID %s' % album_id)
-                    ret.extend(self.keyword_search(u':id %s' % album_id))
-                    continue
-            set_status(u'Searching for %s' % album)
-            write_log(u'Searching for %s' % album)
-            try:
-                searchpage = search(album)
-                #to_file(searchpage, 'search1.htm')
-                #searchpage = open('spainsearch.htm').read()
-            except urllib2.URLError, e:
-                write_log(u'Error: While retrieving search page %s' % 
-                            unicode(e))
-                set_status(u'Error: While retrieving search page %s' % 
-                            unicode(e))
-                raise RetrievalError(unicode(e))
-            write_log(u'Retrieved search results.')
-            matched, matches = parse_searchpage(searchpage, artist, album,
-                self._id_field)
-            if matched and len(matches) == 1:
-                info, tracks = self.retrieve(matches[0])
-                set_status(u'Found match for: %s - %s' % 
-                                (artist, album))
-                write_log(u'Found match for: %s - %s' % 
-                                (artist, album))
-                if check_matches:
-                    if artist == u'Various Artists':
-                        tags = ('artist', 'title')
-                        audios = []
-                        [audios.extend(z) for z in artists.values()]
-                    else:
-                        tags = ('title',)
-                        audios = artists[artist]
-                    for audio in audios:
-                        for track in tracks:
-                            if equal(audio, track, tags=tags):
-                                track['#exact'] = audio
-                                continue
-                ret.append([info, tracks])
-            elif matched:
-                set_status(u'Ambiguous matches found for: %s - %s' % 
-                                (artist, album))
-                write_log(u'Ambiguous matches found for: %s - %s' % 
-                                (artist, album))
-                ret.extend([(z, []) for z in matches])
-            else:
-                set_status(u'No matches found for: %s - %s' % 
-                                (artist, album))
-                write_log(u'No matches found for: %s - %s' % 
-                                (artist, album))
-                ret.extend([(z, []) for z in matches])
+            artist = artists[0]
+        if self._useid and hasattr(artists, 'values'):
+            tracks = []
+            [tracks.extend(z) for z in artists.values()]
+            album_id = find_id(tracks, self._id_field)
+            if album_id:
+                write_log(u'Found Album ID %s' % album_id)
+                return self.keyword_search(u':id %s' % album_id)
+
+        write_log(u'Searching for %s' % album)
+        try:
+            searchpage = search(album)
+            #to_file(searchpage, 'search3.htm')
+            #searchpage = open('spainsearch.htm').read()
+        except urllib2.URLError, e:
+            write_log(u'Error: While retrieving search page %s' % 
+                        unicode(e))
+            raise RetrievalError(unicode(e))
+        write_log(u'Retrieved search results.')
+        matched, matches = parse_searchpage(searchpage, artist, album,
+            self._id_field)
+        if matched and len(matches) == 1:
+            ret = [(matches[0], [])]
+        elif matched:
+            write_log(u'Ambiguous matches found for: %s - %s' % 
+                            (artist, album))
+            ret.extend([(z, []) for z in matches])
+        else:
+            write_log(u'No matches found for: %s - %s' % 
+                            (artist, album))
+            ret.extend([(z, []) for z in matches])
         return ret
 
     def retrieve(self, albuminfo):

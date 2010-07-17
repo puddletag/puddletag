@@ -40,7 +40,7 @@ pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
 from functools import partial
 from copy import copy
-from puddlestuff.util import to_string
+from puddlestuff.util import to_string, split_by_tag
 from releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
 
@@ -391,7 +391,7 @@ class MainWin(QWidget):
         self._prefbutton = preferences
 
         self._searchparams = QLineEdit()
-        self._tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
+        self._tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li><li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
         self._searchparams.setToolTip(self._tooltip)
 
         self.getinfo = QPushButton("&Search")
@@ -494,25 +494,34 @@ class MainWin(QWidget):
         self._clear()
 
     def getInfo(self):
-        tags = self._status['selectedfiles']
+        files = self._status['selectedfiles']
+        if self._tagsource.group_by:
+            group = split_by_tag(files, *self._tagsource.group_by)
         self.label.setText('Retrieving album info.')
         text = None
         if self._searchparams.text():
             text = unicode(self._searchparams.text())
-        elif not tags:
+        elif not files:
             self.label.setText('<b>Select some files or enter search paramaters.</b>')
             return
 
-        def retrieve():
+        def search():
             try:
+                ret = []
                 if text:
                     return self._tagsource.keyword_search(text)
                 else:
-                    return self._tagsource.search(audios=tags)
+                    if self._tagsource.group_by:
+                        for primary in group:
+                            ret.extend(self._tagsource.search(
+                                primary, group[primary]))
+                        return ret
+                    else:
+                        return self._tagsource.search(files)
             except RetrievalError, e:
                 return 'An error occured: %s' % unicode(e)
         self.getinfo.setEnabled(False)
-        self._t = PuddleThread(retrieve)
+        self._t = PuddleThread(search)
         self.connect(self._t, SIGNAL('threadfinished'), self.setInfo)
         self._writebutton.setEnabled(False)
         self._t.start()

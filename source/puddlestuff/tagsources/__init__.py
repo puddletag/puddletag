@@ -58,13 +58,12 @@ def write_log(text):
     status_obj.emit(SIGNAL('logappend'), text)
     
 def parse_searchstring(text):
-    params = defaultdict(lambda:[])
     try:
         text = [z.split(';') for z in text.split(u'|') if z]
-        [params[z.strip()].append(v.strip()) for z, v in text]
+        return [(z.strip(), v.strip()) for z, v in text]
     except ValueError:
         raise RetrievalError('<b>Error parsing artist/album combinations.</b>')
-    return params
+    return []
 
 def urlopen(url):
     try:
