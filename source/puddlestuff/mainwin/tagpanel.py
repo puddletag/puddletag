@@ -123,7 +123,7 @@ class FrameCombo(QGroupBox):
             if field in combos:
                 combo = combos[field]
                 values = sorted(values)
-                combo.addItems(["<keep>", "<blank>"] + values)
+                combo.addItems(values)
                 if len(values) == 1:
                     combo.setCurrentIndex(2)
                 else:
@@ -229,6 +229,7 @@ class FrameCombo(QGroupBox):
         for combo in self.combos.values():
             combo.clear()
             combo.setEnabled(enable)
+            combo.addItems(["<keep>", "<blank>"])
 
         if 'genre' in self.combos:
             pass

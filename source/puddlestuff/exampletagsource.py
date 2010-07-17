@@ -51,6 +51,7 @@ def equal(audio1, audio2, play=False, tags=('artist', 'album')):
 class Example(object):
     name = 'Example'
     group_by = ['artist', 'album']
+    counter = 0
 
     def __init__(self):
         object.__init__(self)
@@ -62,8 +63,8 @@ class Example(object):
     def search(self, artist, albums):
         ret = []
         matches = {}
-        set_status(u'Retrieving %s - ' % artist)
-        write_log(u'Retrieving %s ' % artist)
+        #set_status(u'Searching %s - %s' % (artist, albums[0]))
+        ##write_log(u'Retrieving %s %s' % (artist, albums[0]))
         artist = artist.encode('utf8')
         albumtuple = [z.split(' - ', 1) for z in self._dirs 
             if z.startswith(artist) and ' - ' in z]
@@ -72,11 +73,11 @@ class Example(object):
         for z in albumtuple:
             if len(z) > 1:
                 releases.append(z[1])
-        if not releases:
-            set_status('No releases found')
-            write_log('No releases found for %s' % artist)
-        else:
-            write_log('Found albums %s' % u', '.join(releases))
+        #if not releases:
+            #set_status('No releases found')
+            #write_log('No releases found for %s' % artist)
+        #else:
+            #write_log('Found albums <b>%s</b>' % u', '.join(releases))
         artist = artist.decode('utf8')
         matched = []
         low_releases = [z.lower() for z in releases]
@@ -91,15 +92,20 @@ class Example(object):
         return [(get_info(album), []) for album in releases]
 
     def retrieve(self, info):
-        artist = info['artist']
-        album = info['album']
+        if False:
+            artist = 'Alicia Keys'
+            album = 'As I Am'
+        else:
+            artist = info['artist']
+            album = info['album']
+            self.counter += 1
         dirpath = u'%s/%s - %s' % (self.musicdir, artist, album)
         files = []
         for f in gettags(getfiles(dirpath)):
             if f:
-                tag = stringtags(f.usertags)
+                #tag = stringtags(f.usertags)
                 #tag['__image'] = image
-                files.append(tag)
+                files.append(f.usertags)
         return info, files
 
     def applyPrefs(self, values):
