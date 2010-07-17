@@ -11,8 +11,7 @@ from puddlestuff.constants import SAVEDIR, RIGHTDOCK
 from puddlestuff.puddleobjects import (ListBox, ListButtons, OKCancel, 
     PuddleConfig, PuddleThread, ratio, winsettings)
 import puddlestuff.resource
-from puddlestuff.tagsources import (amg, musicbrainz, freedb, amazon, 
-    RetrievalError, status_obj, set_status)
+from puddlestuff.tagsources import RetrievalError, status_obj, set_status
 from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.webdb import strip
 
@@ -39,8 +38,16 @@ USE_BEST = 0
 DO_NOTHING = 1
 RETRY = 2
 
-tagsources = [z.info[0]() for z in 
-    [exampletagsource, qltagsource, amg, musicbrainz, freedb, amazon]]
+#tagsources = [z.info[0]() for z in 
+    #[exampletagsource, qltagsource, amg, musicbrainz, freedb, amazon]]
+#tagsources = [z.info[0]() for z in tagsources]
+
+def to_list(value):
+    if isinstance(value, (str, int, long)):
+        value = [unicode(value)]
+    elif isinstance(value, unicode):
+        value = [value]
+    return value
 
 def combine(fields, info, retrieved, old_tracks):
     new_tracks = []
@@ -49,13 +56,14 @@ def combine(fields, info, retrieved, old_tracks):
         info_copy.update(track)
         new_tracks.append(strip(info_copy, fields))
     if len(retrieved) > len(old_tracks):
-        old_tracks = new_tracks[len(old_tracks):]
+        old_tracks.extend(retrieved[len(old_tracks):])
     for old, new in zip(old_tracks, new_tracks):
         for key in old.keys() + new.keys():
             if key in new and key in old:
-                old[key].extend(new[key])
+                old[key] = to_list(old[key])
+                old[key].extend(to_list(new[key]))
             elif key in new:
-                old[key] = new[key]
+                old[key] = to_list(new[key])
     return old_tracks
 
 def config_str(config):
@@ -95,7 +103,6 @@ def find_best(matches, files, minimum=0.7):
             scores[min(totals)] = match
     
     max_ratio = max(scores)
-    #pdb.set_trace()
     if max_ratio > minimum:
         return [scores[max_ratio]]
 
@@ -145,7 +152,7 @@ def match_files(files, tracks, minimum = 0.7):
         return ret
 
 def merge_tracks(tracks, newtracks):
-    if tracks is None:
+    if not tracks:
         return newtracks
     if newtracks is None:
         return tracks
@@ -231,13 +238,12 @@ def parse_single_match(matches, tagsource, operation, fields, tracks):
 def insert_status(msg):
     set_status(u':insert%s' % msg)
 
-def search(configs, audios):
+def search(tagsources, configs, audios):
     set_status('<b>Initializing...</b>')
     tag_groups = split_by_tag(audios, 'album', 'artist')
 
     source_names = dict([(z.name, z) for z in 
         tagsources])
-    
 
     for album, artists in tag_groups.items():
         if len(artists) == 1:
@@ -252,8 +258,8 @@ def search(configs, audios):
             tagsource = source_names[config[0]]
             set_status(u'Polling <b>%s<b>: ' % config[0])
             group = split_by_tag(files, *tagsource.group_by)
-            result = tagsource.search(group.keys()[0], 
-                group.values()[0].keys())
+            field = group.keys()[0]
+            result = tagsource.search(field, group[field])
             if result:
                 results.append([tagsource, result, files, config])
                 if len(result) == 1:
@@ -280,7 +286,7 @@ def save_configs(name, configs, filename=CONFIG):
         cparser.set(section, 'many_match', config[4])
 
 class MassTagConfig(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, tagsources, parent=None):
         super(MassTagConfig, self).__init__(parent)
         
         self.setWindowTitle('Mass Tagging')
@@ -460,9 +466,8 @@ class Retriever(QWidget):
         start = QPushButton('&Start')
         configure = QPushButton('&Configure')
         self._log = QTextEdit()
-        self.tagsources = tagsources
+        self.tagsources = status['initialized_tagsources']
         self._status = status
-        
 
         self.connect(status_obj, SIGNAL('statusChanged'), self._appendLog)
         self.connect(status_obj, SIGNAL('logappend'), self._appendLog)
@@ -491,7 +496,7 @@ class Retriever(QWidget):
             self._log.append(text)
     
     def configure(self):
-        win = MassTagConfig(self)
+        win = MassTagConfig(self.tagsources, self)
         win.setModal(True)
         self.connect(win, SIGNAL('configsChanged'), self._setConfigs)
         win.show()
@@ -515,7 +520,7 @@ class Retriever(QWidget):
         files = self._status['selectedfiles']
         def method():
             try:
-                for result in search(self._configs, files):
+                for result in search(self.tagsources, self._configs, files):
                     if not self.wasCanceled:
                         try:
                             matched = match_files(*retrieve(result))

@@ -26,15 +26,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from collections import defaultdict
 import plugins
-import puddlestuff.tagsources.musicbrainz as mbrainz
-import puddlestuff.tagsources.freedb as freedb
-import puddlestuff.tagsources.amazon as amazon
-try:
-    import puddlestuff.tagsources.amg as allmusic
-except ImportError:
-    allmusic = None
 import puddlestuff.tagsources as tagsources
-from puddlestuff.tagsources import RetrievalError, status_obj, write_log
+from puddlestuff.tagsources import (RetrievalError, status_obj, write_log, 
+    tagsources)
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
@@ -360,12 +354,9 @@ class MainWin(QWidget):
         self.setWindowTitle("Tag Sources")
         self.mapping = audioinfo.mapping
         self._status = status
-        if allmusic:
-            tagsources = [mbrainz, freedb, amazon, allmusic]
-        else:
-            tagsources = [mbrainz, freedb, amazon]
         tagsources.extend(plugins.tagsources)
         self._tagsources = [module.info[0]() for module in tagsources]
+        status['initialized_tagsources'] = self._tagsources
         self._configs = [module.info[1] for module in tagsources]
         self._tagsource = self._tagsources[0]
         self._tagstowrite = [[] for z in self._tagsources]

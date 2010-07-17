@@ -243,9 +243,10 @@ def parse_tracks(soup):
 def retrieve_album(url, coverurl=None, id_field=None):
     write_log('Opening Album Page - %s' % url)
     album_page = urlopen(url)
-    #to_file(album_page, 'retr.htm')
+    #to_file(album_page, 'notracks.htm')
     #album_page = open('album.htm', 'r').read()
     info, tracks = parse_albumpage(album_page)
+    info['#albumurl'] = url
     try:
         if id_field:
             info[id_field] = sqlre.search(url).groups()[0]

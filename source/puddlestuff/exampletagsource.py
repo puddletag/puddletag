@@ -83,12 +83,12 @@ class Example(object):
         low_releases = [z.lower() for z in releases]
         for album in albums:
             info = {'album': album, 'artist': artist}
-            info['#extrainfo'] = ('Home Folder', u'file:///home/keith')
+            info['#extrainfo'] = ('Home Folder', u'file://' + HOMEDIR)
             if album.lower() in low_releases:
                 if album.lower() in low_releases:
                     return [(info, [])]
         get_info = lambda album: {'artist': artist, 'album': album,
-            u'#extrainfo': ('Home Folder', u'file:///home/keith')}
+            u'#extrainfo': ('Home Folder', u'file:///' + HOMEDIR)}
         return [(get_info(album), []) for album in releases]
 
     def retrieve(self, info):

@@ -320,7 +320,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def _set_trackPattern(self, value):
         self._trackPattern = value
         for row, parent_item in enumerate(self.rootItem.childItems):
-            if parent_item.childItems:
+            if parent_item.childItems and parent.hasTracks:
                 for track in parent_item.childItems:
                     track.dispPattern = value
                 parent = self.index(row, 0, QModelIndex())
@@ -459,7 +459,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def retrieve(self, index, fin_func=None):
         item = index.internalPointer()
         if (not self.tagsource) or (item not in self.rootItem.childItems) or \
-            item.childItems:
+            (item.childItems) or not item.hasTracks:
             return
         self.emit(SIGNAL('retrieving'))
         def retrieval_func():
@@ -610,8 +610,9 @@ class ReleaseWidget(QTreeView):
         isTrack = model.isTrack
 
         items = [index.internalPointer() for index in self.selectedIndexes()]
-        if len(items) == 1 and not (isTrack(items[0]) or 
-            items[0].hasTracks is not None):
+        pdb.set_trace()
+        if len(items) == 1 and not isTrack(items[0]) \
+            and not items[0].hasTracks:
             copytag = items[0].itemData.copy
             tags = self.tagsToWrite
             tracks = [strip(copytag(), tags, mapping=self.mapping) for z in 

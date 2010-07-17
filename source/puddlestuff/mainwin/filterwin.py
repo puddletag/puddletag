@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtGui import QWidget, QLabel, QComboBox, QLineEdit, QHBoxLayout
 from PyQt4.QtCore import SIGNAL
 from puddlestuff.puddleobjects import gettaglist
@@ -9,7 +10,7 @@ class FilterView(QWidget):
         self.emits = ['filter']
         self.receives = []
         hbox = QHBoxLayout()
-        hbox.addWidget(QLabel("Tag:"))
+        hbox.addWidget(QLabel("Field:"))
         self._tags = QComboBox()
         self._tags.addItems(['None', '__all'] + gettaglist())
         self._tags.setEditable(True)

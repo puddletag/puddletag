@@ -48,7 +48,7 @@ def convert_info(info):
     return info
 
 def convert_tracks(disc):
-    return [{'track': unicode(track + 1), 'title': title} for track, title 
+    return [{'track': [unicode(track + 1)], 'title': [title]} for track, title 
         in sorted(disc.items())]
 
 def query(category, discid, xcode='utf8:utf8'):

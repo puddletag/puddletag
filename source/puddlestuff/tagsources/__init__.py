@@ -8,8 +8,10 @@ from collections import defaultdict
 import urllib2, socket
 
 all = ['musicbrainz']
+
 class RetrievalError(Exception):
     pass
+
 
 cover_pattern = u'%artist% - %album%'
 
@@ -74,3 +76,11 @@ def urlopen(url):
     except socket.error:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
+
+import musicbrainz, amazon, freedb
+try:
+    import amg
+    tagsources = [musicbrainz, amazon, freedb, amg]
+except ImportError:
+    allmusic = None
+    tagsources = [musicbrainz, amazon, freedb]
