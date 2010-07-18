@@ -610,7 +610,6 @@ class ReleaseWidget(QTreeView):
         isTrack = model.isTrack
 
         items = [index.internalPointer() for index in self.selectedIndexes()]
-        pdb.set_trace()
         if len(items) == 1 and not isTrack(items[0]) \
             and not items[0].hasTracks:
             copytag = items[0].itemData.copy
