@@ -53,7 +53,7 @@ def display_tag(tag):
                     z.startswith('#')])
 
 def display(pattern, tags):
-    return replacevars(getfunc(pattern, tags), tags)
+    return replacevars(getfunc(pattern, tags), audioinfo.stringtags(tags))
 
 def strip(audio, taglist, reverse = False):
     if not taglist:

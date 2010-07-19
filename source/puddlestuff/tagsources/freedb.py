@@ -17,16 +17,19 @@ CLIENTINFO = {'client_name': "puddletag", 'client_version': '0.9.2' }
 
 def sumdigits(n): return sum(map(long, str(n)))
 
-def sort_func(audio):
-    track = audio.get('track', [u'1'])[0]
-    try:
-        return int(track)
-    except:
-        return 0
+def sort_func(key, default):
+    def func(audio):
+        track = audio.get(key, [default])[0]
+        try:
+            return int(track)
+        except:
+            return 0
+    return func
 
 def calculate_discid(album):
     #from quodlibet's cddb plugin by Michael Urman
-    album = sorted(album, key=sort_func)
+    album = sorted(album, key=sort_func('__filename', u''))
+    album = sorted(album, key=sort_func('track', u'1'))
     lengths = [audioinfo.lnglength(song.length) for song in album]
     total_time = 0
     offsets = []

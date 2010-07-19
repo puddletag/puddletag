@@ -35,6 +35,7 @@ from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 from puddlestuff.findfunc import replacevars, getfunc
 from functools import partial
 from puddlestuff.util import to_string
+from puddlestuff.audioinfo import stringtags
 
 CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -49,7 +50,7 @@ no_disp_fields = [u'__numtracks', u'__image']
 
 pyqtRemoveInputHook()
 def inline_display(pattern, tags):
-    return replacevars(getfunc(pattern, tags), tags)
+    return replacevars(getfunc(pattern, tags), stringtags(tags))
 
 def fillItem(item, info, tracks, trackpattern):
     item.itemData = info
