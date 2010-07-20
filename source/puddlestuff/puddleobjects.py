@@ -527,7 +527,6 @@ def progress(func, pstring, maximum, threadfin = None):
             win.show()
         if len(args) > 1:
             f = func(*args)
-            
         else:
             f = func()
         parent.showmessage = True

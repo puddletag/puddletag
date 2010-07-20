@@ -4,7 +4,7 @@ from PyQt4.QtCore import *
 from copy import deepcopy
 import os, shutil, pdb, mutex
 from puddlestuff.puddleobjects import PuddleConfig, PuddleThread
-from puddlestuff.constants import LEFTDOCK
+from puddlestuff.constants import LEFTDOCK, HOMEDIR
 mutex = mutex.mutex()
 qmutex = QMutex()
 
@@ -37,6 +37,7 @@ class DirView(QTreeView):
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self._dropaction = Qt.MoveAction
+        self._threadRunning = False
 
         self._select = True
         
@@ -44,10 +45,8 @@ class DirView(QTreeView):
             lambda discarded: self.resizeColumnToContents(0))
 
     def loadSettings(self):
-        t = PuddleConfig()
-        settings = QSettings(t.filename, QSettings.IniFormat)
-        d = settings.value('main/lastfolder',
-                                        QVariant(QDir.homePath())).toString()
+        cparser = PuddleConfig()
+        d = cparser.get('main', 'lastfolder', HOMEDIR)
         index = self.model().index(d)
         while index.isValid():
             self.expand(index)
@@ -81,20 +80,19 @@ class DirView(QTreeView):
         mutex.lock(lambda x: self._t.start(), None)
 
     def selectDirs(self, dirlist):
+        if self._threadRunning:
+            return
         if not self._select:
             self._select = True
-            qmutex.unlock()
             return
         load = self._load
         self._load = False
         if not dirlist:
             self._load = False
             self.selectionModel().clear()
-            QApplication.processEvents()
             self._load = load
-            qmutex.unlock()
             return
-        qmutex.lock()
+        self._threadRunning = True
         self.setEnabled(False)
         self.selectionModel().clear()
         selectindex = self.selectionModel().select
@@ -124,7 +122,7 @@ class DirView(QTreeView):
             self.blockSignals(False)
             self.setEnabled(True)
             self._load = load
-            qmutex.unlock()
+            self._threadRunning = False
         self._dirthread = PuddleThread(func)
         self.connect(self._dirthread, SIGNAL('threadfinished'), finished)
         self._dirthread.start()

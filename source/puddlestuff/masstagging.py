@@ -55,16 +55,7 @@ def combine(fields, info, retrieved, old_tracks):
         info_copy = info.copy()
         info_copy.update(track)
         new_tracks.append(strip(info_copy, fields))
-    if len(retrieved) > len(old_tracks):
-        old_tracks.extend(retrieved[len(old_tracks):])
-    for old, new in zip(old_tracks, new_tracks):
-        for key in old.keys() + new.keys():
-            if key in new and key in old:
-                old[key] = to_list(old[key])
-                old[key].extend(to_list(new[key]))
-            elif key in new:
-                old[key] = to_list(new[key])
-    return old_tracks
+    return merge_tracks(old_tracks, new_tracks)
 
 def config_str(config):
     return config[0]
@@ -82,7 +73,7 @@ def create_buddy(text, control):
 def fields_from_text(text):
     if not text:
         return []
-    return filter(None, map(string.strip, text.split(',')))
+    return filter(None, map(string.strip, text.split(u',')))
 
 def find_best(matches, files, minimum=0.7):
     group = split_by_tag(files, 'album', 'artist')
@@ -151,16 +142,22 @@ def match_files(files, tracks, minimum = 0.7):
                 ret[f] = scores[max_ratio]
         return ret
 
-def merge_tracks(tracks, newtracks):
-    if not tracks:
+def merge_tracks(old_tracks, newtracks):
+    if not old_tracks:
         return newtracks
-    if newtracks is None:
-        return tracks
-    for track, newtrack in zip(tracks, newtracks):
-        merge_track(track, newtrack)
-    if len(newtracks) > len(tracks):
-        tracks.extend(newtracks[len(tracks):])
-    return tracks
+    if not newtracks:
+        return old_tracks
+
+    for old, new in zip(old_tracks, new_tracks):
+        for key in old.keys() + new.keys():
+            if key in new and key in old:
+                old[key] = to_list(old[key])
+                old[key].extend(to_list(new[key]))
+            elif key in new:
+                old[key] = to_list(new[key])
+    if len(new_tracks) > len(old_tracks):
+        old_tracks.extend(new_tracks[len(old_tracks):])
+    return old_tracks
 
 def retrieve(results):
     tracks = []
@@ -458,13 +455,15 @@ class Retriever(QWidget):
     def __init__(self, parent=None, status=None):
         super(Retriever, self).__init__(parent)
         self.receives = []
-        self.emits = ['setpreview']
+        self.emits = ['setpreview', 'clearpreview']
         self.wasCanceled = False
         
         self.setWindowTitle('Mass Tagging')
         winsettings('masstaglog', self)
         start = QPushButton('&Start')
         configure = QPushButton('&Configure')
+        write = QPushButton('&Write')
+        clear = QPushButton('Clear &Preview')
         self._log = QTextEdit()
         self.tagsources = status['initialized_tagsources']
         self._status = status
@@ -474,17 +473,21 @@ class Retriever(QWidget):
         
         self.connect(start, SIGNAL('clicked()'), self.lookup)
         self.connect(configure, SIGNAL('clicked()'), self.configure)
+        self.connect(write, SIGNAL('clicked()'), self.writePreview)
+        self.connect(clear, SIGNAL('clicked()'), self.clearPreview)
         
         buttons = QHBoxLayout()
         buttons.addWidget(start)
         buttons.addWidget(configure)
         buttons.addStretch()
+        buttons.addWidget(write)
+        buttons.addWidget(clear)
         
         layout = QVBoxLayout()
         layout.addLayout(buttons)
         layout.addWidget(self._log)
         self.setLayout(layout)
-        
+
         self._configs = load_config()
     
     def _appendLog(self, text):
@@ -494,6 +497,9 @@ class Retriever(QWidget):
             self._log.insertHtml(text)
         else:
             self._log.append(text)
+    
+    def clearPreview(self):
+        self.emit(SIGNAL('clearpreview'))
     
     def configure(self):
         win = MassTagConfig(self.tagsources, self)
@@ -534,6 +540,9 @@ class Retriever(QWidget):
         thread.start()
         while thread.isRunning():
             QApplication.processEvents()
+    
+    def writePreview(self):
+        self.emit(SIGNAL('writepreview'))
         
 
 control = ('Mass Tagging', Retriever, RIGHTDOCK, False)

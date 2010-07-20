@@ -271,7 +271,7 @@ class SettingsDialog(QWidget):
         
         coverlabel = QLabel("&Directory to save retrieved album art "
             "(it will be created if it doesn't exist)")
-        self._coverdir = QLineEdit(tagsources.COVERDIR)
+        self._coverdir = QLineEdit()
         coverlabel.setBuddy(self._coverdir)
         
         self.connect(self._savecover, SIGNAL('stateChanged(int)'),
@@ -308,8 +308,8 @@ class SettingsDialog(QWidget):
         savecover = bool(self._savecover.checkState())
         coverdir = unicode(self._coverdir.text())
         
-        tagsources.set_coverdir(coverdir)
-        tagsources.set_savecovers(savecover)
+        #tagsources.set_coverdir(coverdir)
+        #tagsources.set_savecovers(savecover)
         
         sort_combo = self._sortoptions
         sort_options_text = [unicode(sort_combo.itemText(i)) for i in 

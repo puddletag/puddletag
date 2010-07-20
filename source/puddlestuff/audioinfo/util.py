@@ -329,6 +329,8 @@ class MockTag(object):
                            DIRPATH: path.dirname(val),
                            FILENAME: path.basename(val),
                            EXTENSION: path.splitext(val)[1][1:]})
+        if hasattr(self, '_mutfile'):
+            self._mutfile.filename = val
 
     def _setext(self,  val):
         if val:

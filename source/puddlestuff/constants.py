@@ -7,6 +7,7 @@ from os.path import dirname, join
 HOMEDIR = os.getenv('HOME')
 SAVEDIR = join(HOMEDIR,'.puddletag')
 CONFIG = join(SAVEDIR, 'puddletag.conf')
+QT_CONFIG = join(SAVEDIR, 'qt.conf')
 PLUGINDIR = join(SAVEDIR, 'plugins')
 PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')

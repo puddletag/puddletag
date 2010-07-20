@@ -30,7 +30,10 @@ def set_mapping(m):
     mapping.update(m)
 
 if not exists(COVERDIR):
-    os.mkdir(COVERDIR)
+    try:
+        os.mkdir(COVERDIR)
+    except EnvironmentError:
+        pass
 
 def save_cover(info, data, filetype):
     filename = findfunc.tagtofilename(pattern, info, True, filetype)

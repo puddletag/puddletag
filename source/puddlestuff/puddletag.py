@@ -323,9 +323,9 @@ class MainWin(QMainWindow):
                 control.saveSettings()
 
         cparser = PuddleConfig()
-        settings = QSettings(cparser.filename, QSettings.IniFormat)
+        settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         if self._lastdir:
-            settings.setValue("main/lastfolder", QVariant(self._lastdir[0]))
+            cparser.set('main', 'lastfolder', self._lastdir[0])
         cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', QVariant(self.saveState()))
 
@@ -397,7 +397,7 @@ class MainWin(QMainWindow):
 
     def restoreSettings(self):
         cparser = PuddleConfig()
-        settings = QSettings(cparser.filename, QSettings.IniFormat)
+        settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         gensettings = {}
         controls = PuddleDock._controls.values()
         for control in controls:
@@ -411,8 +411,7 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 0)
 
         home = os.getenv('HOME')
-        self._lastdir = [unicode(settings.value('main/lastfolder',
-                                        QVariant(home)).toString())]
+        self._lastdir = [cparser.get('main', 'lastfolder', constants.HOMEDIR)]
 
         filepath = os.path.join(cparser.savedir, 'mappings')
         audioinfo.setmapping(audioinfo.loadmapping(filepath))
