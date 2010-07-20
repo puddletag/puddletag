@@ -59,34 +59,51 @@ class Tag(util.MockTag):
 
     format = "Windows Media Audio"
 
-    __translate = {
-        "WM/AlbumTitle": "album",
-        "Title": "title",
-        "Author": "artist",
-        "WM/AlbumArtist": "albumartist",
-        "WM/Composer": "composer",
-        "WM/Writer": "lyricist",
-        "WM/Conductor": "conductor",
-        "WM/ModifiedBy": "remixer",
-        "WM/Producer": "producer",
-        "WM/ContentGroupDescription": "grouping",
-        "WM/SubTitle": "discsubtitle",
-        "WM/TrackNumber": "track",
-        "WM/PartOfSet": "discnumber",
-        "WM/BeatsPerMinute": "bpm",
-        "WM/Copyright": "copyright",
-        "WM/ISRC": "isrc",
-        "WM/Mood": "mood",
-        "WM/EncodedBy": "encodedby",
-        "MusicBrainz/Track Id": "musicbrainz_trackid",
-        "MusicBrainz/Album Id": "musicbrainz_albumid",
-        "MusicBrainz/Artist Id": "musicbrainz_artistid",
-        "MusicBrainz/Album Artist Id": "musicbrainz_albumartistid",
-        "MusicBrainz/TRM Id": "musicbrainz_trmid",
-        "MusicIP/PUID": "musicip_puid",
-        "WM/Year": "year",
+    __rtranslate = {
+        'album': 'WM/AlbumTitle',
+        'title': 'Title',
+        'artist': 'Author',
+        'albumartist': 'WM/AlbumArtist',
+        'year': 'WM/Year',
+        'composer': 'WM/Composer',
+        # FIXME performer
+        'lyricist': 'WM/Writer',
+        'conductor': 'WM/Conductor',
+        'remixer': 'WM/ModifiedBy',
+        # FIXME engineer
+        'engineer': 'WM/Producer',
+        'grouping': 'WM/ContentGroupDescription',
+        'subtitle': 'WM/SubTitle',
+        'album_subtitle': 'WM/SetSubTitle',
+        'track': 'WM/TrackNumber',
+        'discnumber': 'WM/PartOfSet',
+        # FIXME compilation
+        'comment:': 'Description',
+        'genre': 'WM/Genre',
+        'bpm': 'WM/BeatsPerMinute',
+        'mood': 'WM/Mood',
+        'isrc': 'WM/ISRC',
+        'copyright': 'WM/Copyright',
+        'lyrics': 'WM/Lyrics',
+        # FIXME media, catalognumber, barcode
+        'label': 'WM/Publisher',
+        'encodedby': 'WM/EncodedBy',
+        'albumsort': 'WM/AlbumSortOrder',
+        'albumartistsort': 'WM/AlbumArtistSortOrder',
+        'artistsort': 'WM/ArtistSortOrder',
+        'titlesort': 'WM/TitleSortOrder',
+        'musicbrainz_trackid': 'MusicBrainz/Track Id',
+        'musicbrainz_albumid': 'MusicBrainz/Album Id',
+        'musicbrainz_artistid': 'MusicBrainz/Artist Id',
+        'musicbrainz_albumartistid': 'MusicBrainz/Album Artist Id',
+        'musicbrainz_trmid': 'MusicBrainz/TRM Id',
+        'musicbrainz_discid': 'MusicBrainz/Disc Id',
+        'musicip_puid': 'MusicIP/PUID',
+        'releasestatus': 'MusicBrainz/Album Status',
+        'releasetype': 'MusicBrainz/Album Type',
+        'releasecountry': 'MusicBrainz/Album Release Country',
     }
-    __rtranslate = dict([(v, k) for k, v in __translate.iteritems()])
+    __translate = dict([(v, k) for k, v in __rtranslate.iteritems()])
 
     @getdeco
     def __getitem__(self, key):

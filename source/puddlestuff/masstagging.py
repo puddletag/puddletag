@@ -142,10 +142,10 @@ def match_files(files, tracks, minimum = 0.7):
                 ret[f] = scores[max_ratio]
         return ret
 
-def merge_tracks(old_tracks, newtracks):
+def merge_tracks(old_tracks, new_tracks):
     if not old_tracks:
-        return newtracks
-    if not newtracks:
+        return new_tracks
+    if not new_tracks:
         return old_tracks
 
     for old, new in zip(old_tracks, new_tracks):
@@ -437,7 +437,7 @@ class ConfigEdit(QDialog):
         single_match = self._single_match.currentIndex()
         many_matches = self._many_match.currentIndex()
         fields = fields_from_text(unicode(self._fields.text()))
-        print (source, no_match, single_match, fields, many_matches)
+        #print (source, no_match, single_match, fields, many_matches)
         self.close()
         self.emit(SIGNAL('sourceChanged'), source, no_match, single_match, 
             fields, many_matches)

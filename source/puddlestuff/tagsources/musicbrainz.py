@@ -192,18 +192,17 @@ class MusicBrainz(object):
             #set_status(u'Retrieving releases for %s' % artist)
             write_log(u'Retrieving releases for %s' % artist)
             releases = get_releases(artist_id)
+            releases = [{'artist': artist,
+                        'album': z[0],
+                        '#albumid': z[1],
+                        '#artistid': artist_id} for z in releases]
             if self._artist_field:
-                releases = [{'artist': artist,
-                            'album': z[0],
-                            '#albumid': z[1],
-                            '#artistid': artist_id} for z in releases]
-                if self._artist_field:
-                    v = extractUuid(artist_id)
-                    [z.update({self._artist_field: v})
-                        for z in releases]
-                if self._album_field:
-                    [z.update({self._album_field: extractUuid(z['#albumid'])})
-                        for z in releases]
+                v = extractUuid(artist_id)
+                [z.update({self._artist_field: v})
+                    for z in releases]
+            if self._album_field:
+                [z.update({self._album_field: extractUuid(z['#albumid'])})
+                    for z in releases]
         except WebServiceError, e:
             write_log('<b>Error:</b> While retrieving %s: %s' % (
                         artist_id, unicode(e)))

@@ -1551,6 +1551,8 @@ class PicWin(QDialog):
 class ProgressWin(QDialog):
     def __init__(self, parent=None, maximum = 100, progresstext = '', showcancel = True):
         QDialog.__init__(self, parent)
+        self._infunc = False
+        self._cached = 0
         self.setModal(True)
         self.setWindowTitle("Please Wait...")
 
@@ -1584,13 +1586,16 @@ class ProgressWin(QDialog):
         self.setValue(1)
 
     def setValue(self, value):
-        self.blockSignals(True)
+        if self._infunc:
+            return
+        self._infunc = True
         if self.ptext:
             self.pbar.setTextVisible(False)
             self.label.setText(self.ptext + unicode(value) + ' of ' +
                                         unicode(self.pbar.maximum()) + '...')
         self.pbar.setValue(value)
-        self.blockSignals(False)
+        self._infunc = False
+        #QApplication.processEvents()
         if value >= self.pbar.maximum():
             self.close()
 
