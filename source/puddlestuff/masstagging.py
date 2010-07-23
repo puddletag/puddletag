@@ -203,8 +203,12 @@ def retrieve(results):
                 break
     ret = []
     for track in tracks:
-        ret.append(dict([(key, list(set(to_list(value)))) for 
-            key, value in track.items()]))
+        try:
+            ret.append(dict([(key, list(set(to_list(value)))) for 
+                key, value in track.items()]))
+        except:
+            print track
+            raise
     return files, ret
 
 def replace(fields, info, retrieved, old_tracks):
