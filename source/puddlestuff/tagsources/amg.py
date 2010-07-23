@@ -336,7 +336,7 @@ class AllMusic(object):
         try:
             searchpage = search(album)
             #to_file(searchpage, 'search3.htm')
-            #searchpage = open('spainsearch.htm').read()
+            #searchpage = open('outkastsearch.html').read()
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving search page %s' % 
                         unicode(e))

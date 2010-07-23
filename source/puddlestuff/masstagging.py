@@ -119,6 +119,7 @@ def load_config(filename = CONFIG):
 def match_files(files, tracks, minimum = 0.7):
     with_tracknums = filter(lambda f: u'track' in f, files)
     source_tracknums = filter(lambda f: u'track' in f, tracks)
+    #pdb.set_trace()
 
     if len(with_tracknums) == len(files) == len(source_tracknums):
         tracks = dict([(track['track'][0], track) for track in tracks])
@@ -137,9 +138,10 @@ def match_files(files, tracks, minimum = 0.7):
                     track.get(key, [u'b'])[0].lower()) 
                     for key in keys]
                 scores[min(totals)] = track
-            max_ratio = max(scores)
-            if max_ratio > minimum and f not in ret:
-                ret[f] = scores[max_ratio]
+            if scores:
+                max_ratio = max(scores)
+                if max_ratio > minimum and f not in ret:
+                    ret[f] = scores[max_ratio]
         return ret
 
 def merge_tracks(old_tracks, new_tracks):
@@ -201,7 +203,7 @@ def retrieve(results):
                 break
     ret = []
     for track in tracks:
-        ret.append(dict([(key, list(set(value))) for 
+        ret.append(dict([(key, list(set(to_list(value)))) for 
             key, value in track.items()]))
     return files, ret
 
@@ -466,6 +468,8 @@ class Retriever(QWidget):
         clear = QPushButton('Clear &Preview')
         self._log = QTextEdit()
         self.tagsources = status['initialized_tagsources']
+        #[self.tagsources.append(z.info[0]()) for z 
+            #in [exampletagsource, qltagsource]]
         self._status = status
 
         self.connect(status_obj, SIGNAL('statusChanged'), self._appendLog)
@@ -531,15 +535,19 @@ class Retriever(QWidget):
                         try:
                             matched = match_files(*retrieve(result))
                             thread.emit(SIGNAL('setpreview'), matched)
-                        except RetrievalError:
-                            pass
+                        except RetrievalError, e:
+                            self._appendLog(u'Error: %s' % unicode(e))
             except RetrievalError:
                 return
-        thread = PuddleThread(method)
+        
+        def finished(value):
+            self._appendLog('<b>Lookup completed.</b>')
+        
+        thread = PuddleThread(method, self)
         self.connect(thread, SIGNAL('setpreview'), SIGNAL('setpreview'))
+        self.connect(thread, SIGNAL('threadfinished'), finished)
+        
         thread.start()
-        while thread.isRunning():
-            QApplication.processEvents()
     
     def writePreview(self):
         self.emit(SIGNAL('writepreview'))
