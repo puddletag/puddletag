@@ -203,12 +203,8 @@ def retrieve(results):
                 break
     ret = []
     for track in tracks:
-        try:
-            ret.append(dict([(key, list(set(to_list(value)))) for 
-                key, value in track.items()]))
-        except:
-            print track
-            raise
+        ret.append(dict([(key, remove_dupes(value)) for 
+            key, value in track.items()]))
     return files, ret
 
 def replace(fields, info, retrieved, old_tracks):
@@ -221,6 +217,14 @@ def replace(fields, info, retrieved, old_tracks):
         old_tracks = new_tracks[len(old_tracks):]
     [old.update(new) for old, new in zip(old_tracks, new_tracks)]
     return old_tracks
+
+def remove_dupes(value):
+    value = to_list(value)
+    try:
+        value = list(set(value))
+    except TypeError:
+        'Unhashable type like dictionary for pictures.'
+    return value
 
 def parse_single_match(matches, tagsource, operation, fields, tracks):
     source_info, source_tracks = tagsource.retrieve(matches[0][0])
