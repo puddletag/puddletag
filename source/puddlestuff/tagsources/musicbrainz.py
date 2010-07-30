@@ -59,7 +59,8 @@ def get_tracks(r_id, track_field=None):
                 'title': track.title,
                 'album': release.title,
                 'track': unicode(i+1),
-                'artist': track.artist.name if track.artist else artist}
+                'artist': track.artist.name if track.artist else artist,
+                'puid': track.getPuids()}
                     for i, track in enumerate(release.tracks)], extra]
         else:
             return [[{
@@ -67,7 +68,8 @@ def get_tracks(r_id, track_field=None):
                 'title': track.title,
                 'album': release.title,
                 'track': unicode(i+1),
-                'artist': track.artist.name if track.artist else artist}
+                'artist': track.artist.name if track.artist else artist,
+                'puid': track.getPuids()}
                     for i, track in enumerate(release.tracks)], extra]
     else:
         return [], extra
