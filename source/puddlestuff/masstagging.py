@@ -12,11 +12,11 @@ from puddlestuff.findfunc import filenametotag
 from puddlestuff.puddleobjects import (ListBox, ListButtons, OKCancel, 
     PuddleConfig, PuddleThread, ratio, winsettings)
 import puddlestuff.resource
-from puddlestuff.tagsources import RetrievalError, status_obj, set_status
+from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.webdb import strip
 
-#import exampletagsource, qltagsourcee
+#import exampletagsource, qltagsource
 
 #pyqtRemoveInputHook()
 
@@ -44,6 +44,11 @@ TRACK_BOUND = 'track'
 PATTERN = 'pattern'
 SOURCE_CONFIGS = 'source_configs'
 FIELDS = 'fields'
+JFDI = 'jfdi'
+
+status_obj = QObject()
+
+def set_status(msg): status_obj.emit(SIGNAL('statusChanged'), msg)
 
 def to_list(value):
     if isinstance(value, (str, int, long)):
@@ -111,6 +116,7 @@ def load_config(filename = CONFIG):
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
     pattern = cparser.get(info_section, PATTERN, 
         '%artist% - %album%/%track% - %title%')
+    jfdi = cparser.get(info_section, JFDI, True)
     
     configs = []
     for num in range(numsources):
@@ -125,12 +131,13 @@ def load_config(filename = CONFIG):
 
     return {SOURCE_CONFIGS: configs, PATTERN: pattern, 
         ALBUM_BOUND: album_bound, TRACK_BOUND: track_bound,
-        FIELDS: match_fields}
+        FIELDS: match_fields, JFDI: jfdi}
 
-def match_files(files, tracks, minimum = 0.7, keys = None):
+def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False):
     if not keys:
         keys = ['artist', 'title']
     ret = {}
+    unmatched = []
     for f in files:
         scores = {}
         for track in tracks:
@@ -142,6 +149,18 @@ def match_files(files, tracks, minimum = 0.7, keys = None):
             max_ratio = max(scores)
             if max_ratio > minimum and f['__file'] not in ret:
                 ret[f['__file']] = scores[max_ratio]
+    if jfdi:
+        sort_func = lambda f: f.filepath
+        audios = sorted([f['__file'] for f in files], key = sort_func)
+        sort_func = lambda t: to_string(t['track']) if 'track' in t \
+            else to_string(t.get('title'))
+        tracks = sorted(tracks, key = sort_func)
+
+        for audio, retrieved in zip(audios, tracks):
+            if audio in ret:
+                continue
+            else:
+                ret[audio] = retrieved
     return ret
 
 def merge_tracks(old_tracks, new_tracks):
@@ -300,7 +319,7 @@ def save_configs(name, configs, filename=CONFIG):
     info_section = 'info'
     
     cparser.set(info_section, 'name', name)
-    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS]:
+    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS, JFDI]:
         cparser.set(info_section, key, configs[key])
     
     cparser.set(info_section, 'numsources', len(configs[SOURCE_CONFIGS]))
@@ -360,6 +379,8 @@ class MassTagConfig(QDialog):
         self.trackBound = QSpinBox()
         self.trackBound.setRange(0,100)
         self.trackBound.setValue(80)
+        
+        self.jfdi = QCheckBox('JFDI')
 
         self.grid.addWidget(self.listbox,0, 0)
         self.grid.setRowStretch(0, 1)
@@ -372,6 +393,7 @@ class MassTagConfig(QDialog):
             self.matchFields, QVBoxLayout()), 3, 0, 1, 2)
         self.grid.addLayout(create_buddy('Minimum percentage required for '
             'track match.', self.trackBound), 4, 0, 1, 2)
+        self.grid.addWidget(self.jfdi, 5, 0, 1, 2)
         
         self.setLayout(self.grid)
         
@@ -390,7 +412,7 @@ class MassTagConfig(QDialog):
             self.editClicked)
         connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
 
-        self.grid.addLayout(self.okcancel,5,0,1,2)
+        self.grid.addLayout(self.okcancel, 6, 0, 1, 2)
 
         self._setConfigs(load_config())
         self.enableListButtons(self.listbox.currentRow())
@@ -453,7 +475,8 @@ class MassTagConfig(QDialog):
             PATTERN: unicode(self.pattern.text()),
             ALBUM_BOUND: self.albumBound.value(),
             TRACK_BOUND: self.trackBound.value(),
-            FIELDS: fields}
+            FIELDS: fields,
+            JFDI: True if self.jfdi.checkState() == Qt.Checked else False}
         save_configs('masstagging', configs)
         self.emit(SIGNAL('configsChanged'), configs)
         self.close()
@@ -473,6 +496,8 @@ class MassTagConfig(QDialog):
         self.pattern.setText(configs[PATTERN])
         self.matchFields.setText(u', '.join(configs[FIELDS]))
         self.trackBound.setValue(configs[TRACK_BOUND])
+        self.jfdi.setCheckState(Qt.Checked if configs[JFDI] else
+            Qt.Unchecked)
 
 class ConfigEdit(QDialog):
     def __init__(self, tagsources, previous=None, parent=None):
@@ -615,6 +640,7 @@ class Retriever(QWidget):
         album_bound = self._configs[ALBUM_BOUND] / 100.0
         track_bound = self._configs[TRACK_BOUND] / 100.0
         track_fields = self._configs[FIELDS]
+        jfdi = self._configs[JFDI]
         def method():
             try:
                 results = search(self.tagsources, source_configs, 
@@ -624,7 +650,7 @@ class Retriever(QWidget):
                         try:
                             retrieved = retrieve(result, album_bound)
                             matched = match_files(retrieved[0], retrieved[1], 
-                                track_bound, track_fields)
+                                track_bound, track_fields, jfdi)
                             thread.emit(SIGNAL('setpreview'), matched)
                         except RetrievalError, e:
                             self._appendLog(u'<b>Error: %s</b>' % unicode(e))
