@@ -321,11 +321,11 @@ def split_files(audios, pattern):
             if pattern:
                 tag = filenametotag(pattern, f.filepath, True)
                 if tag:
-                    tag.update(f.usertags)
+                    tag.update(f.tags.copy())
                 else:
-                    tag = f.usertags.copy()
+                    tag = f.tags.copy()
             else:
-                tag = f.usertags.copy()
+                tag = f.tags.copy()
             tag['__file'] = f
             tags.append(tag)
         tag_groups.append(tags)
