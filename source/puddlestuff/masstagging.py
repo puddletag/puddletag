@@ -8,6 +8,7 @@ from PyQt4.QtGui import *
 import string
 
 from puddlestuff.constants import SAVEDIR, RIGHTDOCK
+from puddlestuff.findfunc import filenametotag
 from puddlestuff.puddleobjects import (ListBox, ListButtons, OKCancel, 
     PuddleConfig, PuddleThread, ratio, winsettings)
 import puddlestuff.resource
@@ -17,7 +18,7 @@ from puddlestuff.webdb import strip
 
 #import exampletagsource, qltagsource
 
-pyqtRemoveInputHook()
+#pyqtRemoveInputHook()
 
 CONFIG = os.path.join(SAVEDIR, 'masstagging.conf')
 
@@ -38,9 +39,11 @@ USE_BEST = 0
 DO_NOTHING = 1
 RETRY = 2
 
-#tagsources = [z.info[0]() for z in 
-    #[exampletagsource, qltagsource, amg, musicbrainz, freedb, amazon]]
-#tagsources = [z.info[0]() for z in tagsources]
+ALBUM_BOUND = 'album'
+TRACK_BOUND = 'track'
+PATTERN = 'pattern'
+SOURCE_CONFIGS = 'source_configs'
+FIELDS = 'fields'
 
 def to_list(value):
     if isinstance(value, (str, int, long)):
@@ -60,11 +63,12 @@ def combine(fields, info, retrieved, old_tracks):
 def config_str(config):
     return config[0]
 
-def create_buddy(text, control):
+def create_buddy(text, control, hbox=None):
     label = QLabel(text)
     label.setBuddy(control)
 
-    hbox = QHBoxLayout()
+    if not hbox:
+        hbox = QHBoxLayout()
     hbox.addWidget(label)
     hbox.addWidget(control, 1)
     
@@ -97,11 +101,16 @@ def find_best(matches, files, minimum=0.7):
     if max_ratio > minimum:
         return [scores[max_ratio]]
 
-
 def load_config(filename = CONFIG):
     cparser = PuddleConfig(filename)
-    name = cparser.get('info', 'name', '')
-    numsources = cparser.get('info', 'numsources', 0)
+    info_section = 'info'
+    name = cparser.get(info_section, 'name', '')
+    numsources = cparser.get(info_section, 'numsources', 0)
+    album_bound = cparser.get(info_section, ALBUM_BOUND, 70)
+    track_bound = cparser.get(info_section, TRACK_BOUND, 80)
+    match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
+    pattern = cparser.get(info_section, PATTERN, 
+        '%artist% - %album%/%track% - %title%')
     
     configs = []
     for num in range(numsources):
@@ -114,41 +123,38 @@ def load_config(filename = CONFIG):
         many = get('many_match', 0)
         configs.append([source, no, single, fields, many])
 
-    return configs
+    return {SOURCE_CONFIGS: configs, PATTERN: pattern, 
+        ALBUM_BOUND: album_bound, TRACK_BOUND: track_bound,
+        FIELDS: match_fields}
 
-def match_files(files, tracks, minimum = 0.7):
-    with_tracknums = filter(lambda f: u'track' in f, files)
-    source_tracknums = filter(lambda f: u'track' in f, tracks)
-    #pdb.set_trace()
-
-    if len(with_tracknums) == len(files) == len(source_tracknums):
-        tracks = dict([(track['track'][0], track) for track in tracks])
-        return dict([(f, tracks[f['track'][0]]) for f in files if 
-            f['track'][0] in tracks])
-    else:
-        source_tracknums = dict([(track['track'][0], track) for 
-            track in source_tracknums])
-        ret = dict([(f, tracks[f['track'][0]]) for f in with_tracknums if 
-            f['track'][0] in with_tracknums])
+def match_files(files, tracks, minimum = 0.7, keys = None):
+    if not keys:
         keys = ['artist', 'title']
-        for f in files:
-            scores = {}
-            for track in tracks:
-                totals = [ratio(f.get(key, [u'a'])[0].lower(), 
-                    track.get(key, [u'b'])[0].lower()) 
-                    for key in keys]
-                scores[min(totals)] = track
-            if scores:
-                max_ratio = max(scores)
-                if max_ratio > minimum and f not in ret:
-                    ret[f] = scores[max_ratio]
-        return ret
+    ret = {}
+    for f in files:
+        scores = {}
+        for track in tracks:
+            totals = [ratio(to_list(f.get(key, u'a'))[0].lower(), 
+                to_list(track.get(key, u'b'))[0].lower()) 
+                for key in keys]
+            scores[min(totals)] = track
+        if scores:
+            max_ratio = max(scores)
+            if max_ratio > minimum and f['__file'] not in ret:
+                ret[f['__file']] = scores[max_ratio]
+    return ret
 
 def merge_tracks(old_tracks, new_tracks):
     if not old_tracks:
         return new_tracks
     if not new_tracks:
         return old_tracks
+    
+    sort_func = lambda track: to_string(track['track']) if 'track' in \
+        track else to_string(track.get('title', u''))
+        
+    old_tracks = sorted(old_tracks, key=sort_func)
+    new_tracks = sorted(new_tracks, key=sort_func)
 
     for old, new in zip(old_tracks, new_tracks):
         for key in old.keys() + new.keys():
@@ -161,7 +167,7 @@ def merge_tracks(old_tracks, new_tracks):
         old_tracks.extend(new_tracks[len(old_tracks):])
     return old_tracks
 
-def retrieve(results):
+def retrieve(results, album_bound = 0.7):
     tracks = []
     info = {}
     for tagsource, matches, files, config in results:
@@ -185,7 +191,7 @@ def retrieve(results):
             elif operation == USE_BEST:
                 set_status('<b>%s</b>: Inexact matches found, using best.' % 
                     tagsource.name)
-                matches = find_best(matches, files)
+                matches = find_best(matches, files, album_bound)
                 if not matches:
                     set_status('<b>%s</b>: No match found within bounds.' % 
                     tagsource.name)
@@ -245,19 +251,28 @@ def parse_single_match(matches, tagsource, operation, fields, tracks):
 def insert_status(msg):
     set_status(u':insert%s' % msg)
 
-def search(tagsources, configs, audios):
+def search(tagsources, configs, audios, 
+    pattern = '%dummy% - %album%/%artist% - %track% - %title%'):
+
     set_status('<b>Initializing...</b>')
-    tag_groups = split_by_tag(audios, 'album', 'artist')
+    tag_groups = split_files(audios, pattern)
 
     source_names = dict([(z.name, z) for z in 
         tagsources])
 
-    for album, artists in tag_groups.items():
+    for group in tag_groups:
+        album_groups = split_by_tag(group, 'album', 'artist').items()
+        if len(album_groups) == 1:
+            album, artists = album_groups[0]
+        else:
+            [tag_groups.extend(z[1].values()) for z in album_groups]
+            continue
         if len(artists) == 1:
             artist = to_string(artists.keys()[0])
         else:
             artist = u'Various Artists'
-        set_status(u'<br />Starting search for: <b>%s - %s</b>' % (artist, album))
+        set_status(u'<br />Starting search for: <b>%s - %s</b>' % (
+            artist, album))
         files = []
         results = []
         [files.extend(z) for z in artists.values()]
@@ -280,17 +295,41 @@ def search(tagsources, configs, audios):
 
 def save_configs(name, configs, filename=CONFIG):
     cparser = PuddleConfig(filename)
+    info_section = 'info'
     
-    cparser.set('info', 'name', name)
-    cparser.set('info', 'numsources', len(configs))
+    cparser.set(info_section, 'name', name)
+    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS]:
+        cparser.set(info_section, key, configs[key])
     
-    for num, config in enumerate(configs):
+    cparser.set(info_section, 'numsources', len(configs[SOURCE_CONFIGS]))
+    
+    for num, config in enumerate(configs[SOURCE_CONFIGS]):
         section = 'config%s' % num
         cparser.set(section, 'source', config[0])
         cparser.set(section, 'no_match', config[1])
         cparser.set(section, 'single_match', config[2])
         cparser.set(section, 'fields', u','.join(config[3]))
         cparser.set(section, 'many_match', config[4])
+
+def split_files(audios, pattern):
+    dir_groups = split_by_tag(audios, '__dirpath', None)
+    tag_groups = []
+
+    for dirpath, files in dir_groups.items():
+        tags = []
+        for f in files:
+            if pattern:
+                tag = filenametotag(pattern, f.filepath, True)
+                if tag:
+                    tag.update(f.usertags)
+                else:
+                    tag = f.usertags.copy()
+            else:
+                tag = f.usertags.copy()
+            tag['__file'] = f
+            tags.append(tag)
+        tag_groups.append(tags)
+    return tag_groups
 
 class MassTagConfig(QDialog):
     def __init__(self, tagsources, parent=None):
@@ -308,10 +347,30 @@ class MassTagConfig(QDialog):
         self.grid = QGridLayout()
 
         self.buttonlist = ListButtons()
+        
+        self.pattern = QLineEdit()
+        
+        self.albumBound = QSpinBox()
+        self.albumBound.setRange(0,100)
+        self.albumBound.setValue(70)
+        
+        self.matchFields = QLineEdit('artist, title')
+        self.trackBound = QSpinBox()
+        self.trackBound.setRange(0,100)
+        self.trackBound.setValue(80)
 
         self.grid.addWidget(self.listbox,0, 0)
         self.grid.setRowStretch(0, 1)
-        self.grid.addLayout(self.buttonlist, 0,1)
+        self.grid.addLayout(self.buttonlist, 0, 1)
+        self.grid.addLayout(create_buddy('Pattern to match filenames against.',
+            self.pattern, QVBoxLayout()), 1, 0, 1, 2)
+        self.grid.addLayout(create_buddy('Minimum percentage required for '
+            'best matches.', self.albumBound), 2, 0, 1, 2)
+        self.grid.addLayout(create_buddy('Match tracks using fields: ',
+            self.matchFields, QVBoxLayout()), 3, 0, 1, 2)
+        self.grid.addLayout(create_buddy('Minimum percentage required for '
+            'track match.', self.trackBound), 4, 0, 1, 2)
+        
         self.setLayout(self.grid)
         
         connect = lambda control, signal, slot: self.connect(
@@ -329,8 +388,8 @@ class MassTagConfig(QDialog):
             self.editClicked)
         connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
 
-        self.grid.addLayout(self.okcancel,1,0,1,2)
-        
+        self.grid.addLayout(self.okcancel,5,0,1,2)
+
         self._setConfigs(load_config())
         self.enableListButtons(self.listbox.currentRow())
 
@@ -385,8 +444,16 @@ class MassTagConfig(QDialog):
         self.listbox.moveUp(self._configs)
     
     def okClicked(self):
-        save_configs('masstagging', self._configs)
-        self.emit(SIGNAL('configsChanged'), self._configs)
+        fields = [z.strip() for z in 
+            unicode(self.matchFields.text()).split(',')]
+        configs = {
+            SOURCE_CONFIGS: self._configs,
+            PATTERN: unicode(self.pattern.text()),
+            ALBUM_BOUND: self.albumBound.value(),
+            TRACK_BOUND: self.trackBound.value(),
+            FIELDS: fields}
+        save_configs('masstagging', configs)
+        self.emit(SIGNAL('configsChanged'), configs)
         self.close()
     
     def remove(self):
@@ -397,8 +464,13 @@ class MassTagConfig(QDialog):
         self.listbox.takeItem(row)
     
     def _setConfigs(self, configs):
-        self._configs = configs
-        [self.listbox.addItem(config_str(config)) for config in configs]
+        self._configs = configs[SOURCE_CONFIGS]
+        [self.listbox.addItem(config_str(config)) for config 
+            in self._configs]
+        self.albumBound.setValue(configs[ALBUM_BOUND])
+        self.pattern.setText(configs[PATTERN])
+        self.matchFields.setText(u', '.join(configs[FIELDS]))
+        self.trackBound.setValue(configs[TRACK_BOUND])
 
 class ConfigEdit(QDialog):
     def __init__(self, tagsources, previous=None, parent=None):
@@ -536,15 +608,24 @@ class Retriever(QWidget):
     
     def _start(self):
         files = self._status['selectedfiles']
+        source_configs = self._configs[SOURCE_CONFIGS]
+        pattern = self._configs[PATTERN]
+        album_bound = self._configs[ALBUM_BOUND] / 100.0
+        track_bound = self._configs[TRACK_BOUND] / 100.0
+        track_fields = self._configs[FIELDS]
         def method():
             try:
-                for result in search(self.tagsources, self._configs, files):
+                results = search(self.tagsources, source_configs, 
+                    files, pattern)
+                for result in results:
                     if not self.wasCanceled:
                         try:
-                            matched = match_files(*retrieve(result))
+                            retrieved = retrieve(result, album_bound)
+                            matched = match_files(retrieved[0], retrieved[1], 
+                                track_bound, track_fields)
                             thread.emit(SIGNAL('setpreview'), matched)
                         except RetrievalError, e:
-                            self._appendLog(u'Error: %s' % unicode(e))
+                            self._appendLog(u'<b>Error: %s</b>' % unicode(e))
             except RetrievalError:
                 return
         
@@ -554,7 +635,7 @@ class Retriever(QWidget):
         thread = PuddleThread(method, self)
         self.connect(thread, SIGNAL('setpreview'), SIGNAL('setpreview'))
         self.connect(thread, SIGNAL('threadfinished'), finished)
-        
+
         thread.start()
     
     def writePreview(self):

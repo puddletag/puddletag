@@ -11,8 +11,7 @@ from puddlestuff.constants import TAGSOURCE
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagsources import RetrievalError
 
-CLIENTINFO = {'client_name': "puddletag", 'client_version': '0.9.2' }
-#properties = {'type': TAGSOURCE}
+CLIENTINFO = {'client_name': "puddletag", 'client_version': '0.9.3' }
 
 
 def sumdigits(n): return sum(map(long, str(n)))
@@ -30,7 +29,7 @@ def calculate_discid(album):
     #from quodlibet's cddb plugin by Michael Urman
     album = sorted(album, key=sort_func('__filename', u''))
     album = sorted(album, key=sort_func('track', u'1'))
-    lengths = [audioinfo.lnglength(song.length) for song in album]
+    lengths = [audioinfo.lnglength(song['__length']) for song in album]
     total_time = 0
     offsets = []
     for length in lengths:

@@ -74,8 +74,20 @@ def filenametotag(pattern, filename, checkext = False):
     if checkext:
         filename = os.path.splitext(filename)[0]
 
+
     e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
-    mydict = tagtotag(pattern, filename, e)
+    patterns = filter(None, pattern.split(u'/'))
+    filenames = filename.split(u'/')[-len(patterns):]
+    mydict = {}
+    for pattern, filename in zip(patterns, filenames):
+        new_fields = tagtotag(pattern, filename, e)
+        if not new_fields:
+            continue
+        for key in new_fields:
+            if key in mydict:
+                mydict[key] += new_fields[key]
+            else:
+                mydict[key] = new_fields[key]
     if mydict:
         if mydict.has_key("dummy"):
             del(mydict["dummy"])
@@ -417,7 +429,7 @@ def tagtotag(pattern, text, expression):
         tags = re.search(pattern, text).groups()
     except AttributeError:
         #No matches were found
-        return
+        return  u''
     mydict={}
     for i in range(len(tags)):
         if mydict.has_key(taglist[i]):

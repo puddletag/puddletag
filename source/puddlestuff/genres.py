@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource, os, audioinfo
@@ -8,7 +9,8 @@ def load_genres(filepath=None):
         cparser = PuddleConfig()
         filepath = os.path.join(cparser.savedir, 'genres')
     try:
-        return [unicode(z.strip()) for z in open(filepath, 'r').readlines()]
+        return [unicode(z.strip(), 'utf8') for z in 
+            open(filepath, 'r').readlines()]
     except (IOError, OSError):
         return audioinfo.GENRES[::]
 

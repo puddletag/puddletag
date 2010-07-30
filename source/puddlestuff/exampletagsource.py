@@ -49,7 +49,7 @@ def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     return True
 
 class Example(object):
-    name = 'Example'
+    name = 'NewExample'
     group_by = ['artist', 'album']
     counter = 0
 
@@ -120,7 +120,7 @@ class Example(object):
         self._dirs = [z for z in os.listdir(musicdir) if isdir(join(musicdir,z))]
 
 info = [Example, None]
-name = 'Example'
+name = 'NewExample'
 
 if __name__ == '__main__':
     x = Example()

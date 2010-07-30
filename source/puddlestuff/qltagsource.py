@@ -29,14 +29,6 @@ from puddlestuff.libraries.quodlibetlib import QuodLibet
 
 properties = {'type': TAGSOURCE}
 
-musicdir = '/mnt/variable/Music'
-dirs = [unicode(z, 'utf8') for z in os.listdir(musicdir)]
-try:
-    image = [{'data': open(os.path.join(HOMEDIR, 'flux/image.jpg'), 'rb').read()}]
-except:
-    image = {}
-    raise
-
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:
         if (key in audio1) and (key in audio2):

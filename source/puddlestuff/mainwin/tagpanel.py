@@ -162,10 +162,12 @@ class FrameCombo(QGroupBox):
         self.emit(SIGNAL('onetomany'), tags)
         if 'genre' in combos:
             combo = combos['genre']
-            genre = unicode(combo.currentText())
+            
             genres = self._status['genres']
-            if genre not in genres:
-                self._status['genres'] = genres + [genre]
+            new_genres = filter(None, unicode(combo.currentText()).split('\\\\'))
+
+            [genres.append(genre) for genre in new_genres 
+                if genre not in genres]
 
     def setCombos(self, rowtags):
         """Creates a vertical column of comboboxes.
