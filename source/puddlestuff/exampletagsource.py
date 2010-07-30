@@ -106,7 +106,7 @@ class Example(object):
                 #tag = stringtags(f.usertags)
                 #tag['__image'] = image
                 files.append(f.usertags)
-        return info, files
+        return info, None
 
     def applyPrefs(self, values):
         musicdir = values[0]

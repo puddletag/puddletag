@@ -16,7 +16,7 @@ from puddlestuff.tagsources import RetrievalError, status_obj, set_status
 from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.webdb import strip
 
-#import exampletagsource, qltagsource
+#import exampletagsource, qltagsourcee
 
 #pyqtRemoveInputHook()
 
@@ -201,7 +201,7 @@ def retrieve(results, album_bound = 0.7):
             set_status('<b>%s</b>: Retrieving album.' % 
                     tagsource.name)
             stop, tracks, source_info = parse_single_match(matches, tagsource, 
-                config[2], fields, tracks)
+                config[2], fields, tracks, files)
             info.update(source_info)
             if stop:
                 set_status('<b>%s</b>: Stopping.' % 
@@ -232,8 +232,10 @@ def remove_dupes(value):
         'Unhashable type like dictionary for pictures.'
     return value
 
-def parse_single_match(matches, tagsource, operation, fields, tracks):
+def parse_single_match(matches, tagsource, operation, fields, tracks, files):
     source_info, source_tracks = tagsource.retrieve(matches[0][0])
+    if source_tracks is None:
+        source_tracks = [source_info.copy() for z in files]
     source_tracks = merge_tracks(matches[0][1], source_tracks)
     stop = False
     if operation == COMBINE_CONTINUE:
