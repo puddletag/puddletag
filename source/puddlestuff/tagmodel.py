@@ -265,6 +265,13 @@ class TagModel(QAbstractTableModel):
         return self._previewMode
     
     def _set_previewMode(self, value):
+        if not value:
+            rows = [row for row, audio in enumerate(self.taginfo) 
+                if audio.preview]
+            self.setTestData(rows, [{} for z in rows])
+            self.undolevel = self._savedundolevel
+        else:
+            self._savedundolevel = self.undolevel
         self._previewMode = value
         self.emit(SIGNAL('previewModeChanged'), value)
     
@@ -724,17 +731,7 @@ class TagModel(QAbstractTableModel):
         the model without writing tags.
 
         rows is the rows that you want to change
-        previews -> is the tags that are to be shown.
-
-        If you want want to write the values that you showed
-        call unsetData with write = True.
-
-        However, if you just want to return to the previous
-        view, call unsetData with write = False, and if you want,
-        the rows you want to return to normal.
-
-        Note, that if the user changed anything during this
-        process, then those changes are left alone."""
+        previews -> is the tags that are to be shown."""
         taginfo = self.taginfo
         if rows and (not previews):
             index = taginfo.index
@@ -997,22 +994,27 @@ class TagTable(QTableView):
             return separator
 
         self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
-                      'viewfilled', 'filesselected', 'enableUndo',
-                      'playlistchanged', 'deletedfromlib', 'libfilesedited',
-                      'previewModeChanged']
-        self.receives = [('loadFiles', self.loadFiles),
-                         ('removeFolders', self.removeFolders),
-                         ('filter', self.applyFilter),
-                         ('setpreview', self.setTestData),
-                         ('loadtags', self.load_tags),
-                         ('highlight', self.highlight)]
-        self.gensettings = [('Su&bfolders', True),
-                            ('Show &gridlines', True),
-                            ('Show &row numbers', True),
-                            ('Automatically resize columns to contents',
-                                                                    False),
-                            ('&Preserve file modification times', True),
-                            ('Program to &play files with:', 'xmms')]
+            'viewfilled', 'filesselected', 'enableUndo',
+            'playlistchanged', 'deletedfromlib', 'libfilesedited',
+            'previewModeChanged']
+        self.receives = [
+            ('loadFiles', self.loadFiles),
+            ('removeFolders', self.removeFolders),
+            ('filter', self.applyFilter),
+            ('setpreview', self.setTestData),
+            ('loadtags', self.load_tags),
+            ('highlight', self.highlight),
+            ('enable_preview_mode', partial(self.previewMode, True)),
+            ('disable_preview_mode', partial(self.previewMode, False)),
+            ]
+        self.gensettings = [
+            ('Su&bfolders', True),
+            ('Show &gridlines', True),
+            ('Show &row numbers', True),
+            ('Automatically resize columns to contents', False),
+            ('&Preserve file modification times', True),
+            ('Program to &play files with:', 'amarok -p')
+            ]
 
         status['selectedrows'] = self._getSelectedRows
         status['selectedfiles'] = self._selectedTags
@@ -1370,6 +1372,9 @@ class TagTable(QTableView):
                 else:
                     QMessageBox.critical(self,"Error", u"I couldn't play the selected files, because the music player you defined (<b>%s</b>) does not exist." \
                                         % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
+    
+    def previewMode(self, value):
+        self.model().previewMode = value
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()

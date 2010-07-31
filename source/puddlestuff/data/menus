@@ -1,5 +1,5 @@
 [info]
-version=8
+version=9
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
@@ -7,11 +7,12 @@ version=8
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
 &Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...#,In &Library
+&Preview Mode=Enabl&e Preview Mode,Clear Selected &Files,
 &Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging #,separator,&Lock Layout
 #Ab&out=About &Qt,
 
 [menuattrs]
-order=&File,&Edit,&Convert,&Actions,&Tools,&Windows #,Ab&out
+order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode, &Windows #,Ab&out
 
 [toolbar]
 &File=&Open Folder,&Add Folder,&Refresh

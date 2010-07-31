@@ -10,10 +10,8 @@ from PyQt4.QtGui import *
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
-import mainwin.artwork
+import mainwin.previews, mainwin.artwork
 import puddlestuff.masstagging
-#import puddlestuff.webdbold
-#puddlestuff.webdb = puddlestuff.webdbold
 import puddlestuff.webdb
 import loadshortcuts as ls
 import m3u, findfunc, genres
@@ -55,6 +53,7 @@ FILESSELECTED: SIGNAL('filesselected')}
 status = PuddleStatus()
 mainfuncs.status = status
 tagmodel.status = status
+mainwin.previews.set_status(status)
 
 def create_tool_windows(parent):
     """Creates the dock widgets for the main window (parent) using
@@ -113,7 +112,8 @@ def connect_controls(controls):
     for c in controls:
         for signal, slot in c.receives:
             if signal in emits:
-                #print signal
+                #if signal == 'enable_preview_mode':
+                    #pdb.set_trace()
                 [connect(i, SIGNAL(signal), slot) for i in emits[signal]]
 
 def connect_control(control, controls):
@@ -195,19 +195,19 @@ class MainWin(QMainWindow):
         QMainWindow.__init__(self)
         self.emits = ['loadFiles', 'always', 'dirsmoved', 'libfilesedited']
         self.receives = [('writeselected', self.writeTags),
-                          ('filesloaded', self._filesLoaded),
-                          ('viewfilled', self._viewFilled),
-                          ('filesselected', self._filesSelected),
-                          ('renamedirs', self.renameDirs),
-                          ('filesloaded', self.updateTotalStats),
-                          ('filesselected', self.updateSelectedStats),
-                          ('onetomany', self.writeOneToMany),
-                          ('dirschanged', self._dirChanged),
-                          ('writepreview', self._writePreview),
-                          ('clearpreview', self._clearPreview),
-                          ('renameselected', self._renameSelected),
-                          ('playlistchanged', self._dirChanged),
-                          ('adddock', self.addDock)]
+            ('filesloaded', self._filesLoaded),
+            ('viewfilled', self._viewFilled),
+            ('filesselected', self._filesSelected),
+            ('renamedirs', self.renameDirs),
+            ('filesloaded', self.updateTotalStats),
+            ('filesselected', self.updateSelectedStats),
+            ('onetomany', self.writeOneToMany),
+            ('dirschanged', self._dirChanged),
+            ('writepreview', self._writePreview),
+            ('clearpreview', self._clearPreview),
+            ('renameselected', self._renameSelected),
+            ('playlistchanged', self._dirChanged),
+            ('adddock', self.addDock)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
 
@@ -230,7 +230,9 @@ class MainWin(QMainWindow):
 
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
-        menubar, winmenu = ls.menubar(menus, actions + winactions)
+        previewactions = mainwin.previews.create_actions(self)
+        menubar, winmenu = ls.menubar(menus, 
+            actions + winactions + previewactions)
         if winmenu:
             winmenu.addSeparator()
             self._winmenu = winmenu
@@ -421,7 +423,7 @@ class MainWin(QMainWindow):
         h.restoreState(settings.value('table/header').toByteArray())
         self.restoreState(settings.value('main/state').toByteArray())
 
-        connect_controls(controls)
+        connect_controls(controls + [mainwin.previews.obj])
 
         winsettings('mainwin', self)
         if cparser.get("main", "maximized", True):

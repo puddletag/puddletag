@@ -63,7 +63,7 @@ def copy_whole():
     tags = []
     def usertags(f):
         ret = f.usertags
-        if f.images:
+        if hasattr(f, 'images') and f.images:
             ret.update({'__image': f.images})
         return ret
     tags = [usertags(f) for f in status['selectedfiles']]
@@ -207,17 +207,20 @@ def paste():
     while len(tags) < len(rows):
         tags.extend(clip)
     tags.extend(clip)
-    emit('writeselected', (tag for tag in tags))
+    emit('writeselected', tags)
 
 def paste_onto():
     data = QApplication.clipboard().mimeData().data(
                 'application/x-puddletag-tags').data()
     if not data:
         return
-    clip = eval(data.decode('utf8'), {"__builtins__":None},{})
+    clip = eval(data.decode('utf8'), {"__builtins__":None}, {})
     selected = status['selectedtags']
+    tags = []
+    while len(tags) < len(selected):
+        tags.extend(clip)
     emit('writeselected', (dict(zip(s, cliptag.values()))
-                            for s, cliptag in izip(selected, clip)))
+                            for s, cliptag in izip(selected, tags)))
 
 def rename_dirs(parent=None):
     """Changes the directory of the currently selected files, to
