@@ -669,6 +669,8 @@ class TagModel(QAbstractTableModel):
                 return False
 
             try:
+                if tag not in FILETAGS:
+                    newvalue = filter(None, newvalue.split(u'\\'))
                 ret = self.setRowData(index.row(), {tag: newvalue})
                 if currentfile.library:
                     self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
