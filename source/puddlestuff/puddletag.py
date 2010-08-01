@@ -536,7 +536,12 @@ class MainWin(QMainWindow):
                         lib_updates.append(update)
                     yield None
                 except (IOError, OSError), e:
-                    yield e.filename, e.strerror, len(rows)
+                    m = 'An error occured while writing to <b>%s</b>. (%s)' % (
+                            e.filename, e.strerror)
+                    if row == rows[-1]:
+                        yield m, 1
+                    else:
+                        yield m, len(rows)
 
         s = progress(func, 'Writing ', len(rows), fin)
         s(self)
