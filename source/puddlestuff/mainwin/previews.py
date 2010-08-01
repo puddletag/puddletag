@@ -18,34 +18,35 @@ import puddlestuff.functions as functions
 
 status = {}
 
+_previews = []
+
+ENABLED = u'Enabl&e Preview Mode'
+DISABLED = u'Disabl&e Preview Mode'
+
 def toggle_preview_display(action, value):
     if value:
-        action.setText('Disabl&e Preview Mode')
-        if not action.isChecked():
-            action.blockSignals(True)
-            action.setChecked(True)
-            action.blockSignals(False)
+        action.setText(DISABLED)
     else:
-        action.setText('Enabl&e Preview Mode')
-        if action.isChecked():
-            action.blockSignals(True)
-            action.setChecked(False)
-            action.blockSignals(False)
+        action.setText(ENABLED)
+        global _previews
+        _previews = []
 
-def toggle_preview_mode(value):
-    if value:
+def toggle_preview_mode():
+    action = QObject().sender()
+    if action.text() == ENABLED:
         emit('enable_preview_mode')
     else:
         emit('disable_preview_mode')
 
 def clear_selected():
-    emit('setpreview', [{} for z in status['selectedrows']])
+    files = status['selectedfiles']
+    _previews.append(dict([(f, f.preview) for f in files]))
+    emit('setpreview', [{} for f in files])
 
 def create_actions(parent):
-    enable_preview = QAction('Enabl&e Preview Mode', parent)
-    enable_preview.setCheckable(True)
+    enable_preview = QAction(ENABLED, parent)
     enable_preview.setShortcut('Ctrl+Shift+P')
-    obj.connect(enable_preview, SIGNAL('toggled(bool)'), toggle_preview_mode)
+    obj.connect(enable_preview, SIGNAL('triggered()'), toggle_preview_mode)
     obj.receives.append(['previewModeChanged', 
         partial(toggle_preview_display, enable_preview)])
     
@@ -53,14 +54,28 @@ def create_actions(parent):
     clear_selection.setShortcut('Ctrl+Shift+F')
     obj.connect(clear_selection, SIGNAL('triggered()'), clear_selected)
     
-    return [enable_preview, clear_selection]
+    write = QAction('&Write Previews', parent)
+    write.setShortcut('Ctrl+W')
+    
+    obj.connect(write, SIGNAL('triggered()'), lambda: emit('writepreview'))
+    
+    revert = QAction('&Undo Last Clear', parent)
+    revert.setShortcut('Ctrl+Shift+Z')
+    obj.connect(revert, SIGNAL('triggered()'), undo_last)
+    
+    return [enable_preview, clear_selection, write, revert]
 
 def set_status(stat):
     global status
     status = stat
 
+def undo_last():
+    if _previews:
+        emit('setpreview', _previews.pop())
+
 obj = QObject()
-obj.emits = ['enable_preview_mode', 'disable_preview_mode', 'setpreview']
+obj.emits = ['enable_preview_mode', 'disable_preview_mode', 'setpreview',
+    'writepreview']
 obj.receives = []
 
 

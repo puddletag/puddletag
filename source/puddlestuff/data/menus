@@ -7,7 +7,7 @@ version=9
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
 &Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...#,In &Library
-&Preview Mode=Enabl&e Preview Mode,Clear Selected &Files,
+&Preview Mode=Enabl&e Preview Mode,&Undo Last Clear,&Write Previews,Clear Selected &Files,
 &Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging #,separator,&Lock Layout
 #Ab&out=About &Qt,
 

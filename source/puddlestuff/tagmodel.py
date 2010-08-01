@@ -744,9 +744,7 @@ class TagModel(QAbstractTableModel):
         if not rows:
             return
         if not self.previewMode:
-            self._savedundolevel = self.undolevel
-            self.undolevel = 0
-            self.previewMode = True
+            return
         unsetrows = rows[len(previews):]
 
         if unsetrows:
@@ -827,14 +825,11 @@ class TagModel(QAbstractTableModel):
             self.undolevel -= 1
 
     def unSetTestData(self, rows = None):
-        """See testData for info on how to use this function."""
         taginfo = self.taginfo
         if not rows:
             rows = [i for i,z in enumerate(taginfo) if z.preview]
-            self.previewMode = False
             if not rows:
                 return
-            self.undolevel = self._savedundolevel
         for row in rows:
             taginfo[row].preview = {}
 

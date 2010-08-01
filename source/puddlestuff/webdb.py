@@ -350,7 +350,8 @@ class MainWin(QWidget):
         QWidget.__init__(self, parent)
         self.settingsdialog = SettingsDialog
         self.emits = ['writepreview', 'setpreview', 'clearpreview',
-                      'logappend']
+            'enable_preview_mode', 'logappend']
+        self.receives = []
         self.setWindowTitle("Tag Sources")
         self.mapping = audioinfo.mapping
         self._status = status
@@ -392,7 +393,6 @@ class MainWin(QWidget):
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
         self._writebutton = QPushButton('&Write')
-        self._writebutton.setEnabled(False)
         clear = QPushButton("Clea&r preview")
 
         self.connect(self._writebutton, SIGNAL("clicked()"), self._write)
@@ -409,14 +409,13 @@ class MainWin(QWidget):
         self.connect(self._taglist, SIGNAL('tagschanged'), self._changeTags)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
         self.connect(status_obj, SIGNAL('statusChanged'), self.label.setText)
-        self.connect(self.listbox, SIGNAL('itemSelectionChanged()'),
-                        self._enableWrite)
-        self.connect(self.listbox, SIGNAL('exactMatches'),
-                        self._enableWrite)
-        self.connect(self.listbox, SIGNAL('preview'),
-                        lambda tags: self.emit(SIGNAL('setpreview'), tags))
-        self.connect(status_obj, SIGNAL('logappend'),
-                        lambda text: self.emit(SIGNAL('logappend'), text))
+        
+        def emit_preview(tags):
+            self.emit(SIGNAL('enable_preview_mode'))
+            self.emit(SIGNAL('setpreview'), tags)
+        self.connect(self.listbox, SIGNAL('preview'), emit_preview)
+        
+        self.connect(status_obj, SIGNAL('logappend'), SIGNAL('logappend'))
         
         infolabel = QLabel()
         self.connect(self.listbox, SIGNAL('infoChanged'), infolabel.setText)
@@ -440,12 +439,9 @@ class MainWin(QWidget):
         vbox.addWidget(self._taglist)
         self.setLayout(vbox)
         self._changeSource(0)
-        
-        self.receives = [('previewModeChanged', self._writebutton.setEnabled)]
 
     def _clear(self):
         self.emit(SIGNAL('clearpreview'))
-        self._writebutton.setEnabled(False)
 
     def _changeSource(self, index):
         self._tagsource = self._tagsources[index]
@@ -473,9 +469,6 @@ class MainWin(QWidget):
         self.listbox.tagsToWrite = tags
         self.listbox.reEmitTracks()
         self._tagstowrite[self._lastindex] = tags
-
-    def _enableWrite(self, value = None):
-        self._writebutton.setEnabled(True)
 
     def _write(self):
         self.emit(SIGNAL('writepreview'))
@@ -514,7 +507,6 @@ class MainWin(QWidget):
         self.getinfo.setEnabled(False)
         self._t = PuddleThread(search)
         self.connect(self._t, SIGNAL('threadfinished'), self.setInfo)
-        self._writebutton.setEnabled(False)
         self._t.start()
 
     def configure(self):

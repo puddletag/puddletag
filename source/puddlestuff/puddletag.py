@@ -344,8 +344,19 @@ class MainWin(QMainWindow):
         statusbar.addPermanentWidget(statuslabel, 1)
         self._totalstats = QLabel('00 (00:00:00 | 00 MB)')
         self._selectedstats = QLabel('00 (00:00:00 | 00 MB)')
+        preview_status = QLabel('Preview Mode: Off')
+        statusbar.addPermanentWidget(preview_status, 0)
         statusbar.addPermanentWidget(self._selectedstats, 0)
         statusbar.addPermanentWidget(self._totalstats, 0)
+        
+        def set_preview_status(value):
+            if value:
+                preview_status.setText('<b>Preview Mode: On</b>')
+            else:
+                preview_status.setText('Preview Mode: Off')
+        
+        self.connect(self._table.model(), SIGNAL('previewModeChanged'),
+            set_preview_status)
         statusbar.setMaximumHeight(statusbar.height())
         self.connect(statusbar,SIGNAL("messageChanged (const QString&)"),
                                             statuslabel.setText)

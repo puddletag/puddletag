@@ -13,7 +13,7 @@ from puddlestuff.puddleobjects import PuddleConfig
 
 RELEASETYPES = (brainzmodel.Release.TYPE_OFFICIAL)
 RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
-                                        releaseEvents=True)
+    releaseEvents=True)
 ARTIST_INCLUDES = ws.ArtistIncludes(releases=[brainzmodel.Release.TYPE_OFFICIAL])
 
 CONNECTIONERROR = "Could not connect to Musicbrainz server." \

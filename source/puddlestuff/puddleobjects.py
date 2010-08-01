@@ -1261,7 +1261,7 @@ class PicWidget(QWidget):
             self._contextlabel.setVisible(True)
 
     def _getContext(self):
-        return self._contextlabel.Text()
+        return self._contextlabel.text()
 
     context = property(_getContext, _setContext)
 
@@ -1430,6 +1430,7 @@ class PicWidget(QWidget):
         self._image_type.setEnabled(False)
         [action.setEnabled(False) for action in
                     (self.editpic, self.savepic, self.removepic)]
+        self.context = u'No Images'
 
 
     def setImages(self, images, imagetags = None):

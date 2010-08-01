@@ -506,10 +506,11 @@ class ExTags(QDialog):
         if not self.filechanged:
             return
         tags = self.listtotag()
-        if not self.piclabel.images:
-            tags['__image'] = []
-        else:
-            tags["__image"] = self.piclabel.images
+        if self.piclabel.context != u'Cover Varies':
+            if not self.piclabel.images:
+                tags['__image'] = []
+            else:
+                tags["__image"] = self.piclabel.images
         newtags = [z for z in tags if z not in self._taglist]
         if newtags and newtags != ['__image']:
             settaglist(newtags + self._taglist)

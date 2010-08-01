@@ -127,7 +127,7 @@ def tooltip(tag, mapping):
             z.startswith('#')])
     else:
         return "<br />".join([s % (z, tostr(v)) for z, v in
-            sorted(tag.items() + d.items()) if z not in no_disp_fields and not
+            sorted(tag.items() + d.items()) if v and z not in no_disp_fields and not
             z.startswith('#')])
 
 class Header(QHeaderView):

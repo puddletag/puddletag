@@ -564,7 +564,8 @@ class Retriever(QWidget):
     def __init__(self, parent=None, status=None):
         super(Retriever, self).__init__(parent)
         self.receives = []
-        self.emits = ['setpreview', 'clearpreview']
+        self.emits = ['setpreview', 'clearpreview', 'enable_preview_mode',
+            'writepreview']
         self.wasCanceled = False
         
         self.setWindowTitle('Mass Tagging')
@@ -641,6 +642,7 @@ class Retriever(QWidget):
         track_bound = self._configs[TRACK_BOUND] / 100.0
         track_fields = self._configs[FIELDS]
         jfdi = self._configs[JFDI]
+        self.emit(SIGNAL('enable_preview_mode'))
         def method():
             try:
                 results = search(self.tagsources, source_configs, 
