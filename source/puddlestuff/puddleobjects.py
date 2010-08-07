@@ -420,9 +420,7 @@ def getfiles(files, subfolders = False, pattern = ''):
     if not (pattern or pattern.strip()):
         return files
     else:
-        regexp = u'|'.join(map(translate_filename_pattern, pattern.split(u';')))
-        match = re.compile(regexp).match
-        return filter(match, files)
+        return fnmatch(pattern, files)
 
 def gettags(files):
     return (gettag(audio) for audio in files)
@@ -477,6 +475,15 @@ def translate_filename_pattern(pat):
             res = res + re.escape(c)
     #return res + '\Z(?ms)'
     return res + '\Z'
+
+def fnmatch(pattern, files, matchcase=False):
+    regexp = u'|'.join(map(translate_filename_pattern, 
+        [z.strip() for z in pattern.split(u';')]))
+    if matchcase:
+        match = re.compile(regexp).match
+    else:
+        match = re.compile(regexp, re.I).match
+    return filter(match, files)
 
 def gettaglist():
     cparser = PuddleConfig()

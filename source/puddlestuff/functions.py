@@ -49,7 +49,7 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from puddleobjects import PuddleConfig, safe_name
+from puddleobjects import PuddleConfig, safe_name, fnmatch
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time
 import findfunc
 true = u'1'
@@ -143,6 +143,8 @@ def formatValue(tags, pattern):
     """Format value, Format $0 using $1
 &Format string, text"""
     return findfunc.tagtofilename(pattern, tags)
+
+format_value = formatValue
 
 def ftArtist(tags, ftval = " ft "):
     #'''Get FT Artist, "FT Artist: $0, String: $1"
@@ -244,28 +246,22 @@ def _load_image(filename):
         traceback.print_exc()
         pass
 
-def load_images(tags, filenames, desc, matchcase):
-    '''Load Artwork, "Artwork: Filenames='$2', Description='$2', Case Sensitive=$3"
-&Filenames to check (;-separated), text
+def load_images(tags, filepatterns, desc, matchcase):
+    '''Load Artwork, "Artwork: Filenames='$1', Description='$2', Case Sensitive=$3"
+"&Filenames to check (;-separated, shell wildcards [eg. *] allowed)", text
 &Default description (can be pattern):, text
 Match filename's &case:, check'''
     dirpath = tags['__dirpath']
     files = os.listdir(dirpath)
-    filenames = [z.strip() for z in filenames.split(u';')]
-    if not matchcase:
-        filenames = [z.lower() for z in filenames]
-        lowered_files = [z.lower() for z in files]
-    else:
-        lowered_files = files
     images = []
-    for f in filenames:
-        if f in lowered_files:
-            index = lowered_files.index(f)
-            image = _load_image(os.path.join(dirpath, files[index]))
-            if not image:
-                continue
-            image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
-            images.append(image)
+    pictures = fnmatch(filepatterns, files, matchcase)
+    for pic in pictures:
+        image = _load_image(os.path.join(dirpath, pic))
+        if not image:
+            continue
+        image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
+        image[audioinfo.IMAGETYPE] = 3
+        images.append(image)
     if images:
         return {'__image': images}
 
