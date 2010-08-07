@@ -27,6 +27,8 @@ from operator import itemgetter
 from collections import defaultdict
 import constants
 
+import puddlestuff.findfunc, puddlestuff.tagsources
+
 pyqtRemoveInputHook()
 
 #Signals used in enabling/disabling actions.
@@ -190,6 +192,12 @@ def help_menu(parent):
     menu.addAction(about_qt)
     return menu
 
+def load_plugins():
+    from puddlestuff.pluginloader import load_plugins
+    plugins = load_plugins()
+    puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
+    puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
+
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -210,6 +218,7 @@ class MainWin(QMainWindow):
             ('adddock', self.addDock)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
+        load_plugins()
 
         self.setWindowTitle("puddletag")
         self.setDockNestingEnabled(True)

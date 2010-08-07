@@ -369,9 +369,9 @@ class TagModel(QAbstractTableModel):
                     val = audio[tag]
 
                 if isinstance(val, basestring):
-                    return QVariant(val)
+                    return QVariant(val.replace(u'\n', u' '))
                 else:
-                    return QVariant('\\\\'.join(val))
+                    return QVariant('\\\\'.join(val).replace(u'\n', u' '))
             except (KeyError, IndexError):
                 return QVariant()
         elif role == Qt.BackgroundColorRole:
@@ -953,6 +953,7 @@ class TagTable(QTableView):
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self.setAlternatingRowColors(True)
+        self.setWordWrap(False)
         self.showmsg = True
         self._currentcol = {}
         self._currentrow = {}
@@ -967,6 +968,7 @@ class TagTable(QTableView):
         self.filespec = ''
         self.contextMenu = None
         self.setHorizontalScrollMode(self.ScrollPerPixel)
+        
 
         model = TagModel(headerdata)
         self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)

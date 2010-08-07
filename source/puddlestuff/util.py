@@ -7,6 +7,7 @@ from audioinfo import FILETAGS, setmodtime, PATH, FILENAME, EXTENSION, MockTag
 from errno import EEXIST
 import os, pdb
 from puddleobjects import safe_name
+from puddlestuff.constants import CHECKBOX
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -147,3 +148,23 @@ def without_file(mapping, tags):
     filefields = [mapping.get(key, key) for key in FILETAGS]
     return dict([(key, tags[key]) for key in tags if key not in filefields])
 
+class PluginFunction(object):
+    def __init__(self, name, function, pprint, args=None, desc=None):
+        self.name = name
+        self.function = function
+        self.func_code = function.func_code
+        self.print_string = pprint
+        self.desc = desc
+        self.args = args
+        if not args:
+            return
+        newargs = []
+        for arg in args:
+            arg = list(arg)
+            if arg[1] == CHECKBOX:
+                arg[2] = unicode(bool(arg[2]))
+            newargs.append(arg)
+        self.args = newargs
+
+    def __call__(self, *args):
+        return self.function(*args)

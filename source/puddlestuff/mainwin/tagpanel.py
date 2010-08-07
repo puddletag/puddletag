@@ -185,6 +185,12 @@ class FrameCombo(QGroupBox):
         >>>f = FrameCombo()
         >>>f.setCombo(tags,rows)"""
         #pdb.set_trace()
+        class Combo(QComboBox):
+            def focusOutEvent(self, event):
+                text = self.currentText()
+                super(Combo, self).focusOutEvent(event)
+                self.setEditText(text)
+
         if self.combos:
             vbox = self.layout()
             for box, control in self._hboxes:
@@ -209,7 +215,7 @@ class FrameCombo(QGroupBox):
             for tag in tags:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
-                self.combos[tagval] = QComboBox()
+                self.combos[tagval] = Combo()
                 self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
                 self.combos[tagval].setEditable(True)
                 self.labels[tagval].setBuddy(self.combos[tagval])

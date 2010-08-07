@@ -1544,9 +1544,15 @@ class PicWin(QDialog):
         self.connect(self.label, SIGNAL('clicked()'), self.close)
 
     def setImage(self, pixmap):
-        self.label.setPixmap(pixmap)
+        
+        screensize = QDesktopWidget().availableGeometry()
+        screen_side = screensize.height() **2 + screensize.width() ** 2
+        pix_side = pixmap.height() **2 + pixmap.width() ** 2
+        if pix_side > screen_side:
+            pixmap = pixmap.scaled(screensize.size())
         self.setMaximumSize(pixmap.size())
         self.setMinimumSize(pixmap.size())
+        self.label.setPixmap(pixmap)
         self.resize(pixmap.size())
 
 class ProgressWin(QDialog):

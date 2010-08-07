@@ -44,7 +44,9 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource, os
 from copy import copy
-from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig, winsettings
+from puddleobjects import ListButtons, OKCancel, HeaderSetting
+from puddleobjects import ListBox, PuddleConfig, winsettings
+from puddlestuff.pluginloader import PluginConfig
 import pdb
 import audioinfo.util
 import genres
@@ -463,7 +465,8 @@ class SettingsDialog(QDialog):
              2: ('Playlist', Playlist(), None),
              3: ('Extended Tags Colors', ColorEdit(), None),
              4: ('Genres', genres.Genres(status=status), None),
-             5: ('Tags', Tags(), status['table'])}
+             5: ('Tags', Tags(), status['table']),
+             6: ('Plugins', PluginConfig(), None)}
         i = len(d)
         for control in controls:
             if hasattr(control, SETTINGSWIN):

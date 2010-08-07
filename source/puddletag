@@ -37,11 +37,7 @@ _recommended = [
     ('Image', 'Installing the python imaging library is '
         'recommended in order to view/edit FLAC cover art.',
         'python-imaging in most distros',
-        'http://www.pythonware.com/products/pil/'),
-    ('quodlibet', 'Installing QuodLibet is '
-        'recommended in order to view/edit QuodLibet music libraries.',
-        'quodlibet almost everywhere',
-        'quodlibet url')]
+        'http://www.pythonware.com/products/pil/')]
 
 def check_libs():
     found = True
@@ -77,6 +73,8 @@ from puddlestuff.puddletag import MainWin
 pyqtRemoveInputHook()
 __version__ = "0.8.8"
 import logging
+import stacktracer
+stacktracer.trace_start('/home/keith/Desktop/trace.html')
 
 try:
   if sys.argv[1] == '--debug':

@@ -1,74 +1,136 @@
+# -*- coding: utf-8 -*-
 import os, traceback, sys
-from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.plugins import Function
-from puddlestuff.constants import FORMATFUNCTIONS, FUNCTIONS, TAGSOURCE
-from os.path import splitext
+from puddlestuff.puddleobjects import PuddleConfig, winsettings
+from puddlestuff.constants import FUNCTIONS, TAGSOURCE, SAVEDIR
+from os.path import splitext, exists
 
-plugindir = os.path.join(PuddleConfig().savedir, u'plugins')
-dirpath = os.path.dirname(__file__)
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
-if not dirpath:
-    dirpath = '.'
-thisfile = __file__
+NAME = 'name'
+AUTHOR = 'author'
+DESC = 'description'
+PT_VERSION = 'puddletag_version'
+VERSION = 'version'
+INFO_SECTION = 'info'
+MODULE_NAME = 'module'
 
-class PuddleFunction:
-    pass
+PLUGIN_DIRS = [os.path.join(SAVEDIR, u'plugins')]
 
-def import_py(filename):
-    name = splitext(filename)[0]
-    module = __import__(name)
-    return name, module
+PROPERTIES = [NAME, AUTHOR, DESC, PT_VERSION, VERSION]
 
-def import_dir(dirname):
-    module = __import__(dirname)
-    return dirname, module
+def get_plugins(plugindir):
+    infos = []
+    for module in os.listdir(plugindir):
+        info_path = os.path.join(plugindir, module, 'info')
+        if not exists(info_path):
+            continue
+        cparser = PuddleConfig(info_path)
+        values = [cparser.get(INFO_SECTION, prop, '') for prop in PROPERTIES]
+        if len(filter(None, values)) < len(PROPERTIES):
+            continue
+        d = dict(zip(PROPERTIES, values))
+        d[MODULE_NAME] = module
+        infos.append(d)
+    return infos
 
-def import_(filename):
-    if filename.endswith('.py'):
-        return import_py(filename)
-    elif os.path.isdir(filename):
-        return import_dir(filename)
-    else:
-        raise Exception(u'%s is not a valid plugin.' % filename)
-
-def get_funcs(module):
-    if hasattr(module, 'functions'):
-        return module.functions
-    functions = []
-    for funcname in dir(module):
-        func = getattr(module, funcname)
-        if callable(func):
-            functions.append(func)
-        elif isinstance(func, PuddleFunction):
-            functions.append(func)
-    return functions
-
-def plugin_type(module):
-    return module.properties.get('type')
-
-def load_plugs():
-    functions = []
+def load_plugins(plugins=None):
+    [sys.path.insert(0, d) for d in PLUGIN_DIRS]
+    cparser = PuddleConfig()
+    to_load = cparser.get('plugins', 'to_load', [])
+    functions = {}
     tagsources = []
     join = os.path.join
-    for filename in os.listdir(dirpath):
-        if (filename == u'__init__.py') or (filename == u'__init__.pyc'):
+    if plugins is None:
+        plugins = []
+        [plugins.extend(get_plugins(d)) for d in PLUGIN_DIRS]
+
+    for plugin in plugins:
+        if plugin[MODULE_NAME] not in to_load:
             continue
         try:
-            name, module = import_(filename)
-            ptype = plugin_type(module)
-            if ptype == FUNCTIONS:
-                functions.extend(get_funcs(module))
-            elif ptype == TAGSOURCE:
-                tagsources.append(module)
+            module = __import__(plugin[MODULE_NAME])
         except:
-            if filename.endswith('.pyc'):
-                continue
+            print u'Failed to load plugin: %s', plugin['name']
             traceback.print_exc()
             continue
+        if hasattr(module, 'functions'):
+            functions.update(module.functions)
+
+        if hasattr(module, 'tagsources'):
+            tagsources.extend(module.tagsources)
+    for d in PLUGIN_DIRS:
+        del(sys.path[0])
+
     return {FUNCTIONS: functions, TAGSOURCE: tagsources}
 
-plugs = load_plugs()
+class InfoWidget(QLabel):
+    def __init__(self, info=None, parent=None):
+        super(InfoWidget, self).__init__(parent)
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.setWordWrap(True)
+        if info:
+            self.changeInfo(info)
+    
+    def changeInfo(self, info):
+        labels = ['Name', 'Author', 'Description', 'Version']
+        properties = [NAME, AUTHOR, DESC, VERSION]
+        
+        text = u'<br />'.join([u'<b>%s:</b> %s' % (disp, info[prop]) for 
+            disp, prop in zip(labels, properties)])
+        self.setText(text)
 
-functions = {}
-[functions.update(z) for z in plugs[FUNCTIONS]]
-tagsources = plugs[TAGSOURCE]
+class PluginConfig(QDialog):
+    def __init__(self, parent = None):
+        super(PluginConfig, self).__init__(parent)
+        winsettings('pluginconfig', self)
+        self._listbox = QListWidget()
+        info_display = InfoWidget()
+        
+        hbox = QHBoxLayout()
+        hbox.addWidget(self._listbox, 0)
+        hbox.addWidget(info_display, 1)
+        
+        vbox = QVBoxLayout()
+        vbox.addLayout(hbox)
+        vbox.addWidget(
+            QLabel('<b>Loading/unloading plugins requires a restart.</b>'))
+        self.setLayout(vbox)
+
+        plugins = []
+        [plugins.extend(get_plugins(d)) for d in PLUGIN_DIRS]
+        
+        cparser = PuddleConfig()
+        to_load = cparser.get('plugins', 'to_load', [])
+        for plugin in plugins:
+            item = QListWidgetItem()
+            item.setText(plugin[NAME])
+            if plugin[MODULE_NAME] in to_load:
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckState(Qt.Unchecked)
+            item.plugin = plugin
+            self._listbox.addItem(item)
+        
+        self.connect(self._listbox, 
+            SIGNAL('currentItemChanged(QListWidgetItem*, QListWidgetItem *)'),
+            lambda item, previous: info_display.changeInfo(item.plugin))
+    
+    def get_to_load(self):
+        to_load = []
+        for row in range(self._listbox.count()):
+            item = self._listbox.item(row)
+            if item.checkState() == Qt.Checked:
+                to_load.append(item.plugin[MODULE_NAME])
+        return to_load
+    
+    def applySettings(self, control=None):
+        to_load = self.get_to_load()
+        cparser = PuddleConfig()
+        cparser.set('plugins', 'to_load', to_load)
+
+if __name__ == '__main__':
+    app = QApplication([])
+    win = PluginConfig()
+    win.show()
+    app.exec_()

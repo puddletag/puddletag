@@ -109,7 +109,7 @@ def filename_to_tag():
     tags = status['selectedfiles']
     pattern = status['patterntext']
 
-    x = [findfunc.filenametotag(pattern, path.basename(tag.filepath), True)
+    x = [findfunc.filenametotag(pattern, tag.filepath, True)
                 for tag in tags]
     emit('writeselected', x)
 
@@ -387,7 +387,7 @@ def update_status(enable = True):
         return
     tag = files[0]
 
-    x = findfunc.filenametotag(pattern, path.basename(tag.filepath), True)
+    x = findfunc.filenametotag(pattern, tag.filepath, True)
     emit('ftstatus', display_tag(x))
 
     newfilename = functions.move(tag, pattern)['__path']

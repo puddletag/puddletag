@@ -12,7 +12,6 @@ all = ['musicbrainz']
 class RetrievalError(Exception):
     pass
 
-
 cover_pattern = u'%artist% - %album%'
 
 COVERDIR = join(SAVEDIR, 'covers')
@@ -83,7 +82,7 @@ def urlopen(url):
 import musicbrainz, amazon, freedb
 try:
     import amg
-    tagsources = [musicbrainz, amazon, freedb, amg]
+    tagsources = [z.info for z in [musicbrainz, amazon, freedb, amg]]
 except ImportError:
     allmusic = None
-    tagsources = [musicbrainz, amazon, freedb]
+    tagsources = [z.info for z in [musicbrainz, amazon, freedb]]

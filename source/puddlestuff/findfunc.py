@@ -30,12 +30,12 @@ except ImportError:
     sys.exit(0)
 from puddlesettings import PuddleConfig
 from funcprint import pprint
-import plugins
+from puddlestuff.util import PluginFunction
 numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 
-NOT_ALL = ['__filepath', '__dirpath', '__ext', '__bitrate']
+NOT_ALL = audioinfo.INFOTAGS
 
 class ParseError(Exception):
     def __init__(self, message):
@@ -296,7 +296,7 @@ def runAction(funcs, audio):
                 message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
                     func.funcname, e.message)
                 raise ParseError(message)
-        val = dict([z for z in val.items() if z[1]])
+        val = dict([z for z in val.items() if z[1] is not None])
         if val:
             [changed.add(z) for z in val]
             audio.update(val)
@@ -323,7 +323,7 @@ def runQuickAction(funcs, audio, tag):
                 except KeyError:
                     """The tag doesn't exist or is empty.
                     In either case we do nothing"""
-        val = dict([z for z in val.items() if z[1]])
+        val = dict([z for z in val.items() if z[1] is not None])
         if val:
             tags.update(val)
     return dict([(z, tags[z]) for z in tag if z in tags])
@@ -457,7 +457,7 @@ class Function:
         """funcname must be either a function or string(which is the functions name)."""
         if type(funcname) is str:
             self.function = functions[funcname]
-        elif isinstance(funcname, plugins.Function):
+        elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
             self.doc = [','.join([funcname.name, funcname.print_string])] + [','.join(z) for z in funcname.args]
             self.info = [funcname.name, funcname.print_string]

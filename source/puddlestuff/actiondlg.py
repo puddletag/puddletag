@@ -33,8 +33,7 @@ from puddleobjects import PuddleConfig, PuddleCombo
 from audioinfo import REVTAGS, INFOTAGS, READONLY
 from functools import partial
 from constants import TEXT, COMBO, CHECKBOX
-import plugins
-from util import open_resourcefile
+from util import open_resourcefile, PluginFunction
 
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
@@ -146,7 +145,7 @@ class FunctionDialog(QWidget):
             elif ctype == 'check':
                 self.retval.append(control.checkState)
                 if defaultarg:
-                    if defaultarg[2] == "True":
+                    if defaultarg[0] == "True":
                         control.setCheckState(Qt.Checked)
                     else:
                         control.setCheckState(Qt.Unchecked)
@@ -231,7 +230,7 @@ class CreateFunction(QDialog):
         self.realfuncs = []
         #Get all the function from the functions module.
         for z, funcname in functions.functions.items():
-            if isinstance(funcname, plugins.Function):
+            if isinstance(funcname, PluginFunction):
                 self.realfuncs.append(funcname)
             elif callable(funcname) and (not (funcname.__name__.startswith("__") or (funcname.__doc__ is None))):
                 self.realfuncs.append(z)

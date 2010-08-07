@@ -51,7 +51,7 @@ This line is further split into three parts
 
 from puddleobjects import PuddleConfig, safe_name
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time
-import plugins
+import findfunc
 true = u'1'
 false = u'0'
 path = os.path
@@ -470,7 +470,7 @@ def texttotag(tags, text, text1, text2):
         for key in d:
             output = output.replace(u'%' + unicode(key), unicode(d[key]))
         return findfunc.tagtofilename(output, tags)
-    return ''
+    return None
 
 def titleCase(text, ctype = None, characters = None):
     '''Case conversion, "Convert Case: $0: $1"
@@ -553,6 +553,3 @@ functions = {"add": add,
             "true": true,
             "upper": upper,
             "validate": validate}
-functions.update(plugins.functions)
-
-import findfunc

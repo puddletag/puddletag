@@ -37,7 +37,6 @@ class StoredTags(QScrollArea):
             return
         if hasattr(self, '_t') and self._t.isRunning():
             self._t.wait()
-        locker = QMutexLocker(mutex)
         if audios:
             filepath = audios[0].filepath
         else:
@@ -53,21 +52,24 @@ class StoredTags(QScrollArea):
                 tags = audio.usertags
             except AttributeError:
                 tags = audio
-            sortedvals = [[(key, val) for val in tags[key]]
-                                    for key in sorted(tags, cmp = natcasecmp)]
+            
+            sortedvals = [[(key, val) for val in tags[key]] if 
+                not isinstance(tags[key], basestring) else [(key, tags[key])]
+                for key in sorted(tags, cmp = natcasecmp)]
             values = []
             [values.extend(v) for v in sortedvals]
             return values
 
         def _load(values):
-            if self._t.isRunning():
-                return
+            locker = QMutexLocker(mutex)
             self._init()
             if not values:
                 return
             grid = self._grid
             for row, (tag, value) in enumerate(values):
-                grid.addWidget(QLabel(u'%s:' % tag), row, 0)
+                field = QLabel(u'%s:' % tag)
+                field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+                grid.addWidget(field, row, 0)
                 vlabel = QLabel(value)
                 vlabel.setFont(self._boldfont)
                 grid.addWidget(vlabel, row, 1)

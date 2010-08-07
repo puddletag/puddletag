@@ -25,7 +25,6 @@ from puddleobjects import (unique, OKCancel, PuddleThread, PuddleConfig,
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from collections import defaultdict
-import plugins
 import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import (RetrievalError, status_obj, write_log, 
     tagsources)
@@ -355,13 +354,12 @@ class MainWin(QWidget):
         self.setWindowTitle("Tag Sources")
         self.mapping = audioinfo.mapping
         self._status = status
-        tagsources.extend(plugins.tagsources)
-        self._tagsources = [module.info[0]() for module in tagsources]
+        self._tagsources = [info[0]() for info in tagsources]
         status['initialized_tagsources'] = self._tagsources
-        self._configs = [module.info[1] for module in tagsources]
+        self._configs = [info[1] for info in tagsources]
         self._tagsource = self._tagsources[0]
         self._tagstowrite = [[] for z in self._tagsources]
-        self._sourcenames = [z.name for z in tagsources]
+        self._sourcenames = [z.name for z in self._tagsources]
         self._lastindex = 0
 
         self.sourcelist = QComboBox()
