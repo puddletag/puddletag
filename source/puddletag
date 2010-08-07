@@ -73,8 +73,6 @@ from puddlestuff.puddletag import MainWin
 pyqtRemoveInputHook()
 __version__ = "0.8.8"
 import logging
-import stacktracer
-stacktracer.trace_start('/home/keith/Desktop/trace.html')
 
 try:
   if sys.argv[1] == '--debug':
