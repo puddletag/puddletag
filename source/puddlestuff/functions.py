@@ -237,6 +237,38 @@ def libstuff(dirname):
             files.append(tag)
     return files
 
+def _load_image(filename):
+    try:
+        return {'data': open(filename, 'rb').read()}
+    except EnvironmentError:
+        traceback.print_exc()
+        pass
+
+def load_images(tags, filenames, desc, matchcase):
+    '''Load Artwork, "Artwork: Filenames='$2', Description='$2', Case Sensitive=$3"
+&Filenames to check (;-separated), text
+&Default description (can be pattern):, text
+Match filename's &case:, check'''
+    dirpath = tags['__dirpath']
+    files = os.listdir(dirpath)
+    filenames = [z.strip() for z in filenames.split(u';')]
+    if not matchcase:
+        filenames = [z.lower() for z in filenames]
+        lowered_files = [z.lower() for z in files]
+    else:
+        lowered_files = files
+    images = []
+    for f in filenames:
+        if f in lowered_files:
+            index = lowered_files.index(f)
+            image = _load_image(os.path.join(dirpath, files[index]))
+            if not image:
+                continue
+            image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
+            images.append(image)
+    if images:
+        return {'__image': images}
+
 def lower(text):
     return string.lower(text)
 
@@ -507,6 +539,7 @@ def validate(text, to):
 
 functions = {"add": add,
             "and": and_,
+            'artwork': load_images,
             "caps": caps,
             "caps2": caps2,
             "caps3": caps3,
@@ -533,7 +566,7 @@ functions = {"add": add,
             "move": move,
             "mul": mul,
             "neql": neql,
-            "not_": not_,
+            "not": not_,
             "num": num,
             "odd": odd,
             "or": or_,

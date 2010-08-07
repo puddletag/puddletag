@@ -331,7 +331,7 @@ name = u'Quodlibet'
 if __name__ == '__main__':
     #unittest.main()
     import time
-    lib = QuodLibet('/home/keith/.quodlibet/songs')
+    lib = QuodLibet('')
     pdb.set_trace()
     t = time.time()
     i = 0

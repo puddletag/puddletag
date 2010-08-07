@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 import csv, os
 from PyQt4.QtGui import QFileDialog, QApplication
 from PyQt4.QtCore import SIGNAL
 import sys
-sys.path.insert(1,'/home/keith/Documents/python/puddletag')
 from puddlestuff.findfunc import tagtofilename
 from puddlestuff.audioinfo.util import lnglength
 import puddlestuff.audioinfo as audioinfo

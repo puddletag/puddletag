@@ -210,6 +210,10 @@ class FunctionDialog(QWidget):
             else:
                 text = self._text
             try:
+                if self.func.funcname == 'Load Artwork':
+                    self.emit(SIGNAL('updateExample'), 
+                        'No preview for is shown for this function.')
+                    return
                 val = self.func.runFunction(text, audio)
             except findfunc.ParseError, e:
                 val = u'SYNTAX ERROR: %s' % (e.message)

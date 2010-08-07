@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(1, '/home/keith/Documents/python/puddletag/puddlestuff/audioinfo')
 import mutagen.id3 as id3
 import unittest, pdb
 import mutagen

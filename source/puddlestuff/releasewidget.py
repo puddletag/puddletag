@@ -539,7 +539,7 @@ class ReleaseWidget(QTreeView):
         self.tagsToWrite = []
         self.reEmitTracks = self.selectionChanged
         self.lastSortIndex = 0
-        self.mapping = {'artist':'keith'}
+        self.mapping = {}
 
         header = Header(self)
         self.connect(header, SIGNAL('sortChanged'), self.sort)

@@ -135,6 +135,6 @@ control = ('patterncombo', PatternCombo, False)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    win = PatternCombo(['keith', 'the', 'grea'])
+    win = PatternCombo(['one', 'the', 'three'])
     win.show()
     app.exec_()

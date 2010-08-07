@@ -1642,7 +1642,9 @@ class PuddleCombo(QWidget):
             default = []
         cparser.filename = self.filename
         items = cparser.load(self.name, 'values', default)
-        self.combo.addItems(items)
+        newitems = []
+        [newitems.append(z) for z in items if z not in newitems]
+        self.combo.addItems(newitems)
         self.connect(self.combo, SIGNAL('editTextChanged(const QString&)'),
                         self._editTextChanged)
 
