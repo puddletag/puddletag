@@ -30,7 +30,7 @@ GENRES = sorted(TCON.GENRES)
 
 
 
-e = {'mp3': id3.filetype,
+extensions = {'mp3': id3.filetype,
     'flac': flac.filetype,
     'ogg': ogg.filetype,
     'mp4': mp4.filetype,
@@ -66,7 +66,7 @@ def setmapping(m):
     mapping = m
     for z in mapping:
         revmapping[z] = dict([(value,key) for key, value in mapping[z].items()])
-    for z in e.values():
+    for z in extensions.values():
         try:
             if z[2] in mapping:
                 z[1].mapping = mapping[z[2]]
@@ -108,7 +108,7 @@ def Tag(filename):
     fileobj = file(filename, "rb")
     ext = splitext(filename)
     try:
-        return e[ext][1](filename)
+        return extensions[ext][1](filename)
     except KeyError:
         pass
 

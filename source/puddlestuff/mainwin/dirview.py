@@ -47,10 +47,23 @@ class DirView(QTreeView):
     def loadSettings(self):
         cparser = PuddleConfig()
         d = cparser.get('main', 'lastfolder', HOMEDIR)
-        index = self.model().index(d)
-        while index.isValid():
-            self.expand(index)
-            index = index.parent()
+
+        def expand_thread_func():
+            index = self.model().index(d)
+            parents = []
+            while index.isValid():
+                parents.append(index)
+                index = index.parent()
+            return parents
+        
+        def expandindexes(indexes):
+            self.setEnabled(False)
+            [self.expand(index) for index in indexes]
+            self.setEnabled(True)
+        
+        thread = PuddleThread(expand_thread_func, self)
+        thread.connect(thread, SIGNAL('threadfinished'), expandindexes)
+        thread.start()
 
     def clearSelection(self, *args):
         self.blockSignals(True)
@@ -115,18 +128,20 @@ class DirView(QTreeView):
             return (toselect, toexpand)
 
         def finished(val):
+            qmutex.lock()
             select = val[0]
             expand = val[1]
             [selectindex(z, QItemSelectionModel.Select) for z in select]
-            self.scrollTo(select[0], self.PositionAtCenter)
+            self.scrollTo(select[0])
             [self.expand(z) for z in expand]
             self.blockSignals(False)
             self.setEnabled(True)
             self._load = load
             self._threadRunning = False
-        self._dirthread = PuddleThread(func)
-        self.connect(self._dirthread, SIGNAL('threadfinished'), finished)
-        self._dirthread.start()
+            qmutex.unlock()
+        dirthread = PuddleThread(func, self)
+        self.connect(dirthread, SIGNAL('threadfinished'), finished)
+        dirthread.start()
 
     def selectionChanged(self, selected, deselected):
         QTreeView.selectionChanged(self, selected, deselected)

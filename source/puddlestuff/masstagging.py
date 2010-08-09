@@ -656,8 +656,12 @@ class Retriever(QWidget):
                             thread.emit(SIGNAL('setpreview'), matched)
                         except RetrievalError, e:
                             self._appendLog(u'<b>Error: %s</b>' % unicode(e))
-            except RetrievalError:
-                return
+            except RetrievalError, e:
+                self._appendLog(u'<b>Error: %s</b>' % unicode(e))
+                self._appendLog(u'<b>Stopping</b>')
+            #except Exception, e:
+                #self._appendLog(u'<b>An unexpected error occurred.')
+                #raise e
         
         def finished(value):
             self._appendLog('<b>Lookup completed.</b>')

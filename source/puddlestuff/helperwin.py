@@ -68,7 +68,7 @@ class TrackWindow(QDialog):
         self._padlength.setMinimum(1)
         vbox.addLayout(hbox(label, self._padlength))
 
-        self._separator = QCheckBox("Add track &separator ['/']")
+        self._separator = QCheckBox("Add track &separator ['/']: Number of tracks")
         self._numtracks = QSpinBox()
         self._numtracks.setEnabled(False)
         if numtracks:
@@ -98,8 +98,10 @@ class TrackWindow(QDialog):
         section = 'autonumbering'
         self._start.setValue(cparser.get(section, 'start', 1))
         self._separator.setCheckState(cparser.get(section, 'separator', Qt.Unchecked))
-        self._numtracks.setValue(cparser.get(section, 'numtracks', -1))
+        self._numtracks.setValue(cparser.get(section, 'numtracks', 1))
         self._padlength.setValue(cparser.get(section, 'padlength',1))
+        self._restart_numbering.setCheckState(cparser.get(section, 'restart',
+            Qt.Unchecked))
 
     def setEdit(self, val):
         #print val
@@ -127,7 +129,9 @@ class TrackWindow(QDialog):
         cparser.set(section, 'start', self._start.value())
         cparser.set(section, 'separator', self._separator.checkState())
         cparser.set(section, 'numtracks', self._numtracks.value())
+        cparser.set(section, 'restart', self._restart_numbering.checkState())
         cparser.set(section, 'padlength', self._padlength.value())
+        
 
 class ImportWindow(QDialog):
     """Dialog that allows you to import a file to tags.

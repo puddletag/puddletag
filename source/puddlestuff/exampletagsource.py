@@ -25,12 +25,9 @@ from puddlestuff.constants import TAGSOURCE, HOMEDIR, TEXT, COMBO, CHECKBOX
 from puddlestuff.util import matching, split_by_tag
 from puddlestuff.tagsources import set_status, write_log
 from puddlestuff.audioinfo import stringtags
-#print 'example2'
 
 properties = {'type': TAGSOURCE}
 
-#musicdir = '/mnt/variable/Music'
-#dirs = [unicode(z, 'utf8') for z in os.listdir(musicdir)]
 try:
     image = [{'data': open(os.path.join(HOMEDIR, 'flux/image.jpg'), 'rb').read()}]
 except:

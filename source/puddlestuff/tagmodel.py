@@ -26,6 +26,7 @@ from operator import itemgetter
 from copy import copy, deepcopy
 from subprocess import Popen
 from os import path
+import audioinfo
 from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
                         usertags, setmodtime, FILETAGS, READONLY)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
@@ -94,6 +95,45 @@ def tag_in_file(tag, audio):
         return [z for z in audio if z.lower() == smalltag][0]
     except IndexError:
         return None
+
+def _Tag(model):
+    splitext = path.splitext
+    extensions = audioinfo.extensions
+    options = audioinfo.options
+    
+    def ReplacementTag(filename):
+        fileobj = file(filename, "rb")
+        ext = splitext(filename)
+        try:
+            return extensions[ext][1](filename)
+        except KeyError:
+            pass
+
+        try:
+            header = fileobj.read(128)
+            results = [Kind[0].score(filename, fileobj, header) for Kind in options]
+        finally:
+            fileobj.close()
+        results = zip(results, options)
+        results.sort()
+        score, Kind = results[-1]
+        class ModelTag(Kind[1]):
+
+            def __setitem__(self, key, value):
+                if model.previewMode:
+                    self.preview[key] = value
+                else:
+                    super(ModelTag, self).__setitem__(key, value)
+            
+            def __getitem__(self, key):
+                if model.previewMode and key in self.preview:
+                    return self.preview[key]
+                else:
+                    return super(ModelTag, self).__getitem__(key)
+
+        if score > 0: return ModelTag(filename)
+        else: return None
+    return ReplacementTag
 
 class Properties(QDialog):
     def __init__(self, info, parent=None):
@@ -232,6 +272,7 @@ class TagModel(QAbstractTableModel):
         self._permah = []
         self.permaColor = QColor(Qt.green)
         self._colored = []
+        audioinfo.Tag = _Tag(self)
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -707,9 +748,9 @@ class TagModel(QAbstractTableModel):
 
         if self.previewMode:
             preview = audio.preview
-            undo = dict([(tag, copy(preview[tag])) if tag in preview
+            undo = dict([(tag, copy(audio[tag])) if tag in audio
                 else (tag, []) for tag in tags])
-            audio.preview.update(tags)
+            audio.update(tags)
             audio.previewundo[self.undolevel] = undo
             return
 

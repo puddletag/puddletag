@@ -637,7 +637,7 @@ class Tag(TagBase):
             if key in write_frames:
                 self._tags.update(write_frames[key](value))
             elif key == u'comment':
-                frame = create_comment('', value)
+                frame = {'comment': create_comment('', value)['comment:']}
                 self._tags.update(frame)
             elif key.startswith('comment:'):
                 self._tags.update(create_comment(key[len('comment:'):], value))

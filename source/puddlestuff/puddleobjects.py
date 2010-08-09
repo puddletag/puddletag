@@ -546,18 +546,18 @@ def progress(func, pstring, maximum, threadfin = None):
                     temp = f.next()
                     if temp is not None:
                         #temp[0] is the error message, temp[1] the num files
-                        parent._t.emit(SIGNAL('error(QString, int)'),
+                        thread.emit(SIGNAL('error(QString, int)'),
                                                     temp[0], temp[1])
                         err = True
                         break
                     else:
-                        parent._t.emit(SIGNAL('win(int)'), i)
+                        thread.emit(SIGNAL('win(int)'), i)
                 except StopIteration:
                     break
                 i += 1
 
             if not err:
-                parent._t.emit(SIGNAL('win(int)'), -1)
+                thread.emit(SIGNAL('win(int)'), -1)
 
         def threadexit(*args):
             if args[0] == -1:
@@ -571,20 +571,19 @@ def progress(func, pstring, maximum, threadfin = None):
                     if ret is True:
                         parent.showmessage = False
                     elif ret is False:
-                        parent._t.emit(SIGNAL('win(int)'), -1)
+                        thread.emit(SIGNAL('win(int)'), -1)
                         return
                 if not win.isVisible():
                     win.show()
-                while parent._t.isRunning():
+                while thread.isRunning():
                     pass
-                parent._t.start()
+                thread.start()
             win.setValue(win.value + 1)
 
-        parent._t = PuddleThread(threadfunc)
-        parent._threadexit = threadexit
-        parent.connect(parent._t, SIGNAL('win(int)'), parent._threadexit)
-        parent.connect(parent._t, SIGNAL('error(QString, int)'), parent._threadexit)
-        parent._t.start()
+        thread = PuddleThread(threadfunc, parent)
+        thread.connect(thread, SIGNAL('win(int)'), threadexit)
+        thread.connect(thread, SIGNAL('error(QString, int)'), threadexit)
+        thread.start()
     return s
 
 def timemethod(method):
@@ -1723,6 +1722,7 @@ class PuddleThread(QThread):
         self.command = command
 
     def run(self):
+        print 'thread', self.command, time.time()
         try:
             self.retval = self.command()
         except StopIteration:

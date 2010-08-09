@@ -5,7 +5,7 @@ from PyQt4.QtGui import *
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PuddleThread, natcasecmp
 from puddlestuff import audioinfo
-import pdb
+import pdb, time
 
 mutex = QMutex()
 
@@ -21,6 +21,7 @@ class StoredTags(QScrollArea):
         self._init()
         self.setWidgetResizable(True)
         self._status = status
+        self._loading = False
 
     def _init(self):
         widget = QWidget()
@@ -35,8 +36,6 @@ class StoredTags(QScrollArea):
         audios = self._status['selectedfiles']
         if not self.isVisible():
             return
-        if hasattr(self, '_t') and self._t.isRunning():
-            self._t.wait()
         if audios:
             filepath = audios[0].filepath
         else:
@@ -44,6 +43,7 @@ class StoredTags(QScrollArea):
             return
 
         def retrieve_tag():
+            print 'retrieving', time.time()
             try:
                 audio = audioinfo.Tag(filepath)
             except (OSError, IOError), e:
@@ -52,7 +52,7 @@ class StoredTags(QScrollArea):
                 tags = audio.usertags
             except AttributeError:
                 tags = audio
-            
+
             sortedvals = [[(key, val) for val in tags[key]] if 
                 not isinstance(tags[key], basestring) else [(key, tags[key])]
                 for key in sorted(tags, cmp = natcasecmp)]
@@ -61,9 +61,13 @@ class StoredTags(QScrollArea):
             return values
 
         def _load(values):
-            locker = QMutexLocker(mutex)
+            print 'loading', time.time()
+            while self._loading:
+                QApplication.processEvents()
+            self._loading = True
             self._init()
             if not values:
+                self._loading = False
                 return
             grid = self._grid
             for row, (tag, value) in enumerate(values):
@@ -77,10 +81,12 @@ class StoredTags(QScrollArea):
             vbox.addStretch()
             grid.addLayout(vbox,row + 1,0, -1, -1)
             grid.setRowStretch(row + 1, 1)
+            self._loading = False
 
-        self._t = PuddleThread(retrieve_tag)
-        self._t.connect(self._t, SIGNAL('threadfinished'), _load)
-        self._t.start()
+        thread = PuddleThread(retrieve_tag, self)
+        thread.connect(thread, SIGNAL('threadfinished'), _load)
+        print 'starting thread', time.time()
+        thread.start()
 
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
