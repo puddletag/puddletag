@@ -38,10 +38,7 @@ class ArtworkWidget(QWidget):
         imagetags = set()
         for audio in audios:
             imagetags = imagetags.union(audio.IMAGETAGS)
-            if '__image' in audio.preview:
-                value = audio.preview['__image']
-            else:
-                value = audio['__image'] if audio['__image'] else {}
+            value = audio['__image'] if audio['__image'] else {}
             if audio.IMAGETAGS:
                 images.append(value)
             else:

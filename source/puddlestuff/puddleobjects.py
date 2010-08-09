@@ -1722,7 +1722,7 @@ class PuddleThread(QThread):
         self.command = command
 
     def run(self):
-        print 'thread', self.command, time.time()
+        #print 'thread', self.command, time.time()
         try:
             self.retval = self.command()
         except StopIteration:

@@ -43,7 +43,7 @@ class StoredTags(QScrollArea):
             return
 
         def retrieve_tag():
-            print 'retrieving', time.time()
+            #print 'retrieving', time.time()
             try:
                 audio = audioinfo.Tag(filepath)
             except (OSError, IOError), e:
@@ -61,7 +61,7 @@ class StoredTags(QScrollArea):
             return values
 
         def _load(values):
-            print 'loading', time.time()
+            #print 'loading', time.time()
             while self._loading:
                 QApplication.processEvents()
             self._loading = True
@@ -85,7 +85,7 @@ class StoredTags(QScrollArea):
 
         thread = PuddleThread(retrieve_tag, self)
         thread.connect(thread, SIGNAL('threadfinished'), _load)
-        print 'starting thread', time.time()
+        #print 'starting thread', time.time()
         thread.start()
 
     def wheelEvent(self, e):

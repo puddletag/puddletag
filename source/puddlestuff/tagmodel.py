@@ -28,7 +28,7 @@ from subprocess import Popen
 from os import path
 import audioinfo
 from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
-                        usertags, setmodtime, FILETAGS, READONLY)
+    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                            HeaderSetting, getfiles, ProgressWin, PuddleStatus,
                            PuddleThread, progress, PuddleConfig, singleerror,
@@ -117,21 +117,125 @@ def _Tag(model):
         results = zip(results, options)
         results.sort()
         score, Kind = results[-1]
-        class ModelTag(Kind[1]):
-
-            def __setitem__(self, key, value):
-                if model.previewMode:
-                    self.preview[key] = value
+        
+        class PreviewTag(Kind[1]):
+            def __init__(self, *args, **kwargs):
+                self.preview = {}
+                super(PreviewTag, self).__init__(*args, **kwargs)
+            
+            def _getfilepath(self):
+                if model.previewMode and PATH in self.preview:
+                    return self.preview[PATH]
                 else:
-                    super(ModelTag, self).__setitem__(key, value)
+                    return Kind[1].filepath.fget(self)
+
+            def _setfilepath(self,  val):
+                if model.previewMode:
+                    self.preview.update({PATH: val,
+                        DIRPATH: path.dirname(val),
+                        FILENAME: path.basename(val),
+                        EXTENSION: path.splitext(val)[1][1:]})
+                else:
+                    Kind[1].filepath.fset(self, val)
+
+            def _setext(self,  val):
+                if modelpreviewMode:
+                    if val:
+                        val = to_string(val)
+                        self.filepath = u'%s%s%s' % (path.splitext(
+                            self.filepath)[0], path.extsep, val)
+                    else:
+                        self.filepath = path.splitext(self.filepath)[0]
+                else:
+                    Kind[1].ext.fset(self, val)
+
+            def _getext(self):
+                if model.previewMode and EXTENSION in self.preview:
+                    return self.preview[EXTENSION]
+                else:
+                    Kind[1].ext.fget(self)
+
+            def _getfilename(self):
+                if model.previewMode and FILENAME in self.preview:
+                    return self.preview[FILENAME]
+                else:
+                    return Kind[1].filename.fget(self)
+
+            def _setfilename(self, val):
+                self.filepath = os.path.join(self.dirpath, to_string(val))
+
+            def _getdirpath(self):
+                if model.previewMode and DIRPATH in self.preview:
+                    return self.preview[DIRPATH]
+                else:
+                    return Kind[1].dirpath.fget(self)
+
+            def _setdirpath(self, val):
+                self.filepath = os.path.join(val,  self.filename)
+
+            filepath = property(_getfilepath, _setfilepath)
+            dirpath = property(_getdirpath, _setdirpath)
+            ext = property(_getext, _setext)
+            filename = property(_getfilename, _setfilename)
+            
+            def _get_images(self):
+                if not self.IMAGETAGS:
+                    return []
+                if model.previewMode and '__image' in self.preview:
+                    return self.preview['__image']
+                else:
+                    return Kind[1].images.fget(self)
+            
+            def _set_images(self, value):
+                if not self.IMAGETAGS:
+                    return
+                if model.previewMode:
+                    self.preview['__image'] = value
+                else:
+                    Kind[1].images.fset(self, value)
+            
+            images = property(_get_images, _set_images)
+
+            def clear(self):
+                self.preview.clear()
+                super(PreviewTag, self).clear()
+
+            def __delitem__(self, key):
+                if key in INFOTAGS:
+                    return
+                if model.previewMode and key in self.preview:
+                    del(self.preview[key])
+                else:
+                    super(PreviewTag, self).__delitem__(key)
             
             def __getitem__(self, key):
                 if model.previewMode and key in self.preview:
                     return self.preview[key]
                 else:
-                    return super(ModelTag, self).__getitem__(key)
+                    return super(PreviewTag, self).__getitem__(key)
 
-        if score > 0: return ModelTag(filename)
+            def keys(self):
+                keys = super(PreviewTag, self).keys()
+                if model.previewMode and self.preview:
+                    [keys.append(key) for key in self.preview 
+                        if key not in keys]
+                return keys
+
+            def __len__(self):
+                return len(self.keys())
+                
+            def realvalue(self, key):
+                return Kind[1].__getitem__(self, key)
+            
+            def __setitem__(self, key, value):
+                if model.previewMode:
+                    self.preview[key] = value
+                    if key in FILETAGS:
+                        setattr(self, self._hash[key], value)
+                else:
+                    super(PreviewTag, self).__setitem__(key, value)
+
+        if score > 0: return PreviewTag(filename)
         else: return None
     return ReplacementTag
 
@@ -395,6 +499,12 @@ class TagModel(QAbstractTableModel):
 
     def columnCount(self, index=QModelIndex()):
         return len(self.headerdata)
+    
+    def _toString(self, val):
+        if isinstance(val, basestring):
+            return val.replace(u'\n', u' ')
+        else:
+            return '\\\\'.join(val).replace(u'\n', u' ')
 
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
@@ -404,15 +514,20 @@ class TagModel(QAbstractTableModel):
             try:
                 audio = self.taginfo[row]
                 tag = self.headerdata[index.column()][1]
-                if tag in audio.preview:
-                    val = audio.preview[tag]
-                else:
-                    val = audio[tag]
+                val = self._toString(audio[tag])
 
-                if isinstance(val, basestring):
-                    return QVariant(val.replace(u'\n', u' '))
-                else:
-                    return QVariant('\\\\'.join(val).replace(u'\n', u' '))
+                if role == Qt.ToolTipRole and self.previewMode and \
+                    audio.preview and tag in audio.preview:
+                    try:
+                        real = self._toString(audio.realvalue(tag))
+                        if not real:
+                            real = u'<blank>'
+                    except KeyError:
+                        real = u'<blank>'
+                    tooltip = u'Preview: %s\nReal: %s' % (
+                        val, self._toString(real))
+                    return QVariant(tooltip)
+                return QVariant(val)
             except (KeyError, IndexError):
                 return QVariant()
         elif role == Qt.BackgroundColorRole:
