@@ -39,7 +39,7 @@ from errno import EEXIST
 import traceback
 from itertools import izip
 from collections import defaultdict
-from util import write, rename_file, real_filetags
+from util import write, rename_file, real_filetags, to_string
 from constants import SELECTIONCHANGED
 
 status = {}
@@ -127,7 +127,11 @@ def _Tag(model):
                 if model.previewMode and PATH in self.preview:
                     return self.preview[PATH]
                 else:
+                    #try:
                     return Kind[1].filepath.fget(self)
+                    #except:
+                        #pdb.set_trace()
+                        #return Kind[1].filepath.fget(self)
 
             def _setfilepath(self,  val):
                 if model.previewMode:
@@ -139,7 +143,7 @@ def _Tag(model):
                     Kind[1].filepath.fset(self, val)
 
             def _setext(self,  val):
-                if modelpreviewMode:
+                if model.previewMode:
                     if val:
                         val = to_string(val)
                         self.filepath = u'%s%s%s' % (path.splitext(
