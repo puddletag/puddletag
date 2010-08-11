@@ -52,6 +52,9 @@ This line is further split into three parts
 from puddleobjects import PuddleConfig, safe_name, fnmatch
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time
 import findfunc
+
+FuncError = findfunc.FuncError
+ParseError = findfunc.ParseError
 true = u'1'
 false = u'0'
 path = os.path

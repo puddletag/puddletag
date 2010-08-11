@@ -21,7 +21,6 @@
 
 
 import audioinfo, os, pdb, sys, string, re
-from functions import functions
 from decimal import Decimal, InvalidOperation
 try:
     from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, CharsNotIn, White
@@ -43,6 +42,8 @@ class ParseError(Exception):
         self.message = message
 
 class FuncError(ParseError): pass
+
+from functions import functions
 
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename

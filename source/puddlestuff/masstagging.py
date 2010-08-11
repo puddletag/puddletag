@@ -380,7 +380,8 @@ class MassTagConfig(QDialog):
         self.trackBound.setRange(0,100)
         self.trackBound.setValue(80)
         
-        self.jfdi = QCheckBox('JFDI')
+        self.jfdi = QCheckBox('Brute force unmatched files.')
+        self.jfdi.setToolTip("If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by track number and corresponding (unmatched) tracks will matched.")
 
         self.grid.addWidget(self.listbox,0, 0)
         self.grid.setRowStretch(0, 1)
@@ -570,7 +571,7 @@ class Retriever(QWidget):
         
         self.setWindowTitle('Mass Tagging')
         winsettings('masstaglog', self)
-        start = QPushButton('&Start')
+        self._startButton = QPushButton('&Start')
         configure = QPushButton('&Configure')
         write = QPushButton('&Write')
         clear = QPushButton('Clear &Preview')
@@ -583,13 +584,13 @@ class Retriever(QWidget):
         self.connect(status_obj, SIGNAL('statusChanged'), self._appendLog)
         self.connect(status_obj, SIGNAL('logappend'), self._appendLog)
         
-        self.connect(start, SIGNAL('clicked()'), self.lookup)
+        self.connect(self._startButton, SIGNAL('clicked()'), self.lookup)
         self.connect(configure, SIGNAL('clicked()'), self.configure)
         self.connect(write, SIGNAL('clicked()'), self.writePreview)
         self.connect(clear, SIGNAL('clicked()'), self.clearPreview)
         
         buttons = QHBoxLayout()
-        buttons.addWidget(start)
+        buttons.addWidget(self._startButton)
         buttons.addWidget(configure)
         buttons.addStretch()
         buttons.addWidget(write)
@@ -621,14 +622,13 @@ class Retriever(QWidget):
     
     def lookup(self):
         button = self.sender()
-        if button.text() != '&Stop':
+        if self._startButton.text() != '&Stop':
             self.wasCanceled = False
             self._log.clear()
-            button.setText('&Stop')
+            self._startButton.setText('&Stop')
             self._start()
-            button.setText('&Start')
         else:
-            button.setText('&Start')
+            self._startButton.setText('&Start')
             self.wasCanceled = True
     
     def _setConfigs(self, configs):
@@ -659,12 +659,10 @@ class Retriever(QWidget):
             except RetrievalError, e:
                 self._appendLog(u'<b>Error: %s</b>' % unicode(e))
                 self._appendLog(u'<b>Stopping</b>')
-            #except Exception, e:
-                #self._appendLog(u'<b>An unexpected error occurred.')
-                #raise e
         
         def finished(value):
             self._appendLog('<b>Lookup completed.</b>')
+            self._startButton.setText('&Start')
         
         thread = PuddleThread(method, self)
         self.connect(thread, SIGNAL('setpreview'), SIGNAL('setpreview'))

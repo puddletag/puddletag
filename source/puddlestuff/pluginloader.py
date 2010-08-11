@@ -20,6 +20,8 @@ PLUGIN_DIRS = [os.path.join(SAVEDIR, u'plugins')]
 PROPERTIES = [NAME, AUTHOR, DESC, PT_VERSION, VERSION]
 
 def get_plugins(plugindir):
+    if not os.path.exists(plugindir):
+        os.makedirs(plugindir)
     infos = []
     for module in os.listdir(plugindir):
         info_path = os.path.join(plugindir, module, 'info')

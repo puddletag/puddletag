@@ -1,3 +1,16 @@
+11 August 2010 (0.9.3)
+  New Features:
+      WavPack, MusePack, and basic WMA support (only common fields, not including artwork are supported.)
+      Masstagging, which'll allow you to tag files from multiple tag sources automatically.
+      Preview Mode, wherein you can do all your editing and write to files only once.
+      A 'Load Artwork' Function with which you can load artwork from the file's directory.
+      The plugin interface is now public for functions. Tag sources will be available in the next release.
+  Bugs:
+      Some Tag Panel Bugs, including entries being replaced if an autocompletion was found of differing case. Genres always being Acapella and when adding entries like Blues\\Rock not being separated properly. And puddletag crashing on loading non-ASCII genres.
+      Copy/Paste not working correctly sometimes.
+      (Sorry that this one slipped by.) Saving artwork using Extended tags would clear the artwork instead if the cover differed between files.
+      Duplicate entries in comboboxes for the Functions dialog are now removed.
+
 4 July 2010 (0.9.2)
   New features:      
     FreeDB and Amazon tag sources were added.
