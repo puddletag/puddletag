@@ -157,7 +157,7 @@ def _Tag(model):
                 if model.previewMode and EXTENSION in self.preview:
                     return self.preview[EXTENSION]
                 else:
-                    Kind[1].ext.fget(self)
+                    return Kind[1].ext.fget(self)
 
             def _getfilename(self):
                 if model.previewMode and FILENAME in self.preview:
@@ -1255,6 +1255,11 @@ class TagTable(QTableView):
                 except (OSError, IOError), e:
                     yield "There was an error deleting the tag of %s: <b>%s</b>" % (
                                 e.filename, e.strerror), len(self.selectedRows)
+                except NotImplementedError, e:
+                    f = self.model().taginfo[row]
+                    yield "There was an error deleting the tag of %s: " \
+                        "<b>Tag deletion isn't supported for %s files.</b>" % (
+                            f.filename, f.ext), len(self.selectedRows)
             self.model().undolevel += 1
             self.selectionChanged()
 
