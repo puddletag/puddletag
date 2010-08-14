@@ -216,7 +216,10 @@ def isdigit(text):
         return false
 
 def left(text, n):
-    n = int(n)
+    try:
+        n = int(n)
+    except TypeError:
+        raise FuncError('Integer expected')
     return text[:n]
 
 def len_(text):

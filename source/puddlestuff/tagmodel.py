@@ -28,7 +28,7 @@ from subprocess import Popen
 from os import path
 import audioinfo
 from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
-    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS)
+    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
                            HeaderSetting, getfiles, ProgressWin, PuddleStatus,
                            PuddleThread, progress, PuddleConfig, singleerror,
@@ -123,65 +123,6 @@ def _Tag(model):
                 self.preview = {}
                 super(PreviewTag, self).__init__(*args, **kwargs)
             
-            def _getfilepath(self):
-                if model.previewMode and PATH in self.preview:
-                    return self.preview[PATH]
-                else:
-                    #try:
-                    return Kind[1].filepath.fget(self)
-                    #except:
-                        #pdb.set_trace()
-                        #return Kind[1].filepath.fget(self)
-
-            def _setfilepath(self,  val):
-                if model.previewMode:
-                    self.preview.update({PATH: val,
-                        DIRPATH: path.dirname(val),
-                        FILENAME: path.basename(val),
-                        EXTENSION: path.splitext(val)[1][1:]})
-                else:
-                    Kind[1].filepath.fset(self, val)
-
-            def _setext(self,  val):
-                if model.previewMode:
-                    if val:
-                        val = to_string(val)
-                        self.filepath = u'%s%s%s' % (path.splitext(
-                            self.filepath)[0], path.extsep, val)
-                    else:
-                        self.filepath = path.splitext(self.filepath)[0]
-                else:
-                    Kind[1].ext.fset(self, val)
-
-            def _getext(self):
-                if model.previewMode and EXTENSION in self.preview:
-                    return self.preview[EXTENSION]
-                else:
-                    return Kind[1].ext.fget(self)
-
-            def _getfilename(self):
-                if model.previewMode and FILENAME in self.preview:
-                    return self.preview[FILENAME]
-                else:
-                    return Kind[1].filename.fget(self)
-
-            def _setfilename(self, val):
-                self.filepath = os.path.join(self.dirpath, to_string(val))
-
-            def _getdirpath(self):
-                if model.previewMode and DIRPATH in self.preview:
-                    return self.preview[DIRPATH]
-                else:
-                    return Kind[1].dirpath.fget(self)
-
-            def _setdirpath(self, val):
-                self.filepath = os.path.join(val,  self.filename)
-
-            filepath = property(_getfilepath, _setfilepath)
-            dirpath = property(_getdirpath, _setdirpath)
-            ext = property(_getext, _setext)
-            filename = property(_getfilename, _setfilename)
-            
             def _get_images(self):
                 if not self.IMAGETAGS:
                     return []
@@ -212,6 +153,16 @@ def _Tag(model):
                 else:
                     super(PreviewTag, self).__delitem__(key)
             
+            def delete(self):
+                if self.preview:
+                    preview = self.preview
+                    self.preview = {}
+                try:
+                    Kind[1].delete(self)
+                except:
+                    self.preview = preview
+                    raise
+
             def __getitem__(self, key):
                 if model.previewMode and key in self.preview:
                     return self.preview[key]
@@ -233,11 +184,50 @@ def _Tag(model):
             
             def __setitem__(self, key, value):
                 if model.previewMode:
-                    self.preview[key] = value
                     if key in FILETAGS:
-                        setattr(self, self._hash[key], value)
+                        test_audio = audioinfo.MockTag()
+                        test_audio.filepath = self[PATH]
+
+                        if key == FILENAME:
+                            test_audio.filename = safe_name(to_string(value))
+                        elif key == EXTENSION:
+                            test_audio.ext = safe_name(to_string(value))
+                        elif key == PATH:
+                            test_audio.filepath = value
+                        
+                        new_values = {FILENAME: test_audio.filename,
+                            PATH: test_audio.filepath,
+                            EXTENSION: test_audio.ext,
+                            DIRNAME: test_audio.dirname,
+                            DIRPATH: test_audio.dirpath}
+                        
+                        self.preview.update(new_values)
+
+                    elif key not in READONLY:
+                        if not value:
+                            self.preview
+                        if self[key] != value:
+                            self.preview[key] = value
+
+                    for k, v in self.preview.items():
+                        if self.realvalue(k) == v:
+                            del(self.preview[k])
                 else:
                     super(PreviewTag, self).__setitem__(key, value)
+            
+            def remove_from_preview(self, key):
+                if key == EXTENSION:
+                    del(self.preview[key])
+                elif key == FILENAME:
+                    for k in [FILENAME, EXTENSION, PATH]:
+                        if k in self.preview:
+                            del(self.preview[k])
+                elif key in FILETAGS:
+                    for k in FILETAGS:
+                        if k in self.preview:
+                            del(self.preview[k])
+                else:
+                    del(self.preview[key])
 
         if score > 0: return PreviewTag(filename)
         else: return None
@@ -966,12 +956,8 @@ class TagModel(QAbstractTableModel):
             if self.previewMode:
                 undo_tags = audio.previewundo
                 if level in undo_tags:
-                    preview = audio.preview
-                    preview.update(undo_tags[level])
+                    audio.update(undo_tags[level])
                     rows.append(row)
-                    for key in preview.keys():
-                        if not preview[key]:
-                            del(preview[key])
                     del(undo_tags[level])
             elif level in audio.undo:
                 if audio.library:
@@ -1128,7 +1114,6 @@ class TagTable(QTableView):
         self.filespec = ''
         self.contextMenu = None
         self.setHorizontalScrollMode(self.ScrollPerPixel)
-        
 
         model = TagModel(headerdata)
         self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)
@@ -1246,6 +1231,10 @@ class TagTable(QTableView):
         self.emit(SIGNAL('dirschanged'), [])
 
     def removeTags(self):
+        if self.model().previewMode:
+            QMessageBox.information(self, 'puddletag',
+                'Disable Preview Mode first to enable deleting of tags.')
+            return
         deltag = self.model().deleteTag
         def func():
             for row in self.selectedRows:
@@ -1299,7 +1288,7 @@ class TagTable(QTableView):
         selectedRows = self.selectedRows
         removeRows = self.model().removeRows
         curindex = self.currentIndex()
-        last = curindex.row(), curindex.column()
+        last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
         libtags = []
         def func():
             temprows = selectedRows[::]
@@ -1324,8 +1313,8 @@ class TagTable(QTableView):
             index = self.model().index(*last)
             if libtags:
                 self.emit(SIGNAL('deletedfromlib'), libtags)
-            #selection = QItemSelection(index, index)
-            self.setCurrentIndex(index)
+            if index.isValid():
+                self.setCurrentIndex(index)
         s = progress(func, 'Deleting ', len(selectedRows), fin)
         if self.parentWidget():
             s(self.parentWidget())

@@ -32,10 +32,11 @@ PATH = u"__path"
 FILENAME = u"__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
+DIRNAME = '__dirname'
 READONLY = ('__bitrate', '__frequency', "__length", "__modified",
             "__size", "__created", "__library", '__accessed', '__filetype',
             '__channels', '__version', '__titlegain', '__albumgain')
-FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
+FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME]
 INFOTAGS = FILETAGS + list(READONLY)
 
 
@@ -313,6 +314,12 @@ def to_string(value):
 
 class MockTag(object):
     """Use as base for all tag classes."""
+    _hash = {PATH: 'filepath',
+            FILENAME:'filename',
+            EXTENSION: 'ext',
+            DIRPATH: 'dirpath',
+            DIRNAME: 'dirname'}
+            
     def __init__(self, filename = None):
         self._info = {}
         if filename:
@@ -328,7 +335,8 @@ class MockTag(object):
         self._tags.update({PATH: val,
                            DIRPATH: path.dirname(val),
                            FILENAME: path.basename(val),
-                           EXTENSION: path.splitext(val)[1][1:]})
+                           EXTENSION: path.splitext(val)[1][1:],
+                           DIRNAME: path.basename(path.dirname(val))})
         if hasattr(self, '_mutfile'):
             self._mutfile.filename = val
 
@@ -354,9 +362,17 @@ class MockTag(object):
 
     def _setdirpath(self, val):
         self.filepath = os.path.join(val,  self.filename)
-
+        self._tags[DIRNAME] = os.path.basename(val)
+    
+    def _getdirname(self):
+        return os.path.basename(self.dirpath)
+    
+    def _setdirname(self, value):
+        self.dirpath = os.path.join(os.path.dirname(self.dirpath), value)
+    
     filepath = property(_getfilepath, _setfilepath)
     dirpath = property(_getdirpath, _setdirpath)
+    dirname = property(_getdirname, _setdirname)
     ext = property(_getext, _setext)
     filename = property(_getfilename, _setfilename)
 

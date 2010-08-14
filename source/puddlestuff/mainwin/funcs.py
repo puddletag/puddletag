@@ -225,6 +225,10 @@ def paste_onto():
 def rename_dirs(parent=None):
     """Changes the directory of the currently selected files, to
     one as per the pattern in self.patterncombo."""
+    if status['table'].model().previewMode:
+        QMessageBox.information(parent, 'puddletag',
+            'Disable Preview Mode first to enable renaming of directories.')
+        return
 
     tagtofilename = findfunc.tagtofilename
 

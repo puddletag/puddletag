@@ -18,7 +18,7 @@ TextFrame = mutagen.id3.TextFrame
 ID3  = mutagen.id3.ID3
 from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
                     setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
-                    READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize)
+                    READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize, DIRNAME)
 import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
@@ -449,11 +449,6 @@ class Tag(TagBase):
                                                         util.IMAGETYPE)
     mapping = {}
     revmapping = {}
-
-    _hash = {PATH: 'filepath',
-             FILENAME:'filename',
-             EXTENSION: 'ext',
-             DIRPATH: 'dirpath'}
 
     @getdeco
     def __getitem__(self,key):

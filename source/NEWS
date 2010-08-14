@@ -5,6 +5,7 @@
       Preview Mode, wherein you can do all your editing and write to files only once.
       A 'Load Artwork' Function with which you can load artwork from the file's directory.
       The plugin interface is now public for functions. Tag sources will be available in the next release.
+      Converting filenames to tags can now take the directory name into account.
   Bugs:
       Some Tag Panel Bugs, including entries being replaced if an autocompletion was found of differing case. Genres always being Acapella and when adding entries like Blues\\Rock not being separated properly. And puddletag crashing on loading non-ASCII genres.
       Copy/Paste not working correctly sometimes.

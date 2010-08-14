@@ -32,6 +32,16 @@ class PatternCombo(QComboBox):
                                         unicode(text))
         self.connect(self, SIGNAL('editTextChanged ( const QString &)'),
                      pchange)
+        
+        shortcut = QShortcut(self)
+        shortcut.setKey('F8')
+        shortcut.setContext(Qt.ApplicationShortcut)
+        def set_focus():
+            if self.hasFocus():
+                status['table'].setFocus()
+            else:
+                self.setFocus()
+        self.connect(shortcut, SIGNAL('activated()'), set_focus)
 
     def setItems(self, texts):
         self.clear()

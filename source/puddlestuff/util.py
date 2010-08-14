@@ -45,16 +45,16 @@ def rename_file(audio, tags):
     test_audio = MockTag()
     test_audio.filepath = audio.filepath
     
-
-    if FILENAME in tags:
+    
+    if PATH in tags:
+        returntag = PATH
+        test_audio.filepath = tags[PATH]
+    elif FILENAME in tags:
         test_audio.filename = safe_name(to_string(tags[FILENAME]))
         returntag = FILENAME
     elif EXTENSION in tags:
         test_audio.ext = safe_name(to_string(tags[EXTENSION]))
         returntag = EXTENSION
-    elif PATH in tags:
-        returntag = PATH
-        test_audio.filepath = tags[PATH]
     else:
         return
 
