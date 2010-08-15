@@ -535,9 +535,12 @@ def titleCase(text, ctype = None, characters = None):
 def upper(text):
     return text.upper()
 
-def validate(text, to):
+def validate(text, to=None, chars=None):
     from puddleobjects import safe_name
-    return safe_name(text, to)
+    if chars is None:
+        return safe_name(text, to=to)
+    else:
+        return safe_name(text, chars, to=to)
 
 functions = {"add": add,
             "and": and_,

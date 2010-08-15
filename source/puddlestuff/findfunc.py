@@ -137,46 +137,34 @@ def getfunc(text, audio):
     #pat doesn't match if the text starts with the pattern, because there isn't
     #a character in front of the function
     if text.startswith("$"):
-        text = " " + text
+        text = u" " + text
         addspace = True
-
+    
+    parser = function_parser(text, audio)
+    
     start = 0
-    #Get the functions
-    #Got this from comp.lang.python
-    #pdb.set_trace()
-    while 1:
-        match = funcpattern.search(text, start)
-        if match is None: break
-        idx = match.end(0)
-        num_brackets_open = 1
-        try:
-            while num_brackets_open > 0:
-                if text[idx] == ')':
-                    num_brackets_open -= 1
-                elif text[idx] == '(':
-                    num_brackets_open += 1
-                idx += 1  # Check for end-of-text!
-        except IndexError:
+    ret = []
+    while True:
+        match = funcpattern.search(text)
+        if not match:
+            ret.append(text)
             break
-        #Replace a function with its parsed text
-        torep = text[match.start(0) + 1: idx]
-        if not torep.startswith(u'$'):
-            torep = text[match.start(0): idx]
-        toparse = torep
-        if funcpattern.search(torep[1:]):
-            toparse = u'$' + getfunc(torep[1:], audio)
-        try:
-            replacetext = parsefunc(toparse, audio)
-        except ParseError, e:
-            return e.message
-        text = text.replace(torep, replacetext)
-        idx += len(replacetext) - len(torep)
-        start = idx + 1
-    if addspace:
-        return text[1:]
-    return text
+        start = match.start(0)
+        if text[start] != u'$':
+            start += 1
+        ret.append(text[:start])
+        text = text[start:]
+        end = parser.scanString(text).next()[2]
+        ret.append(parser.transformString(text[:end]))
+        text = text[end:]
+        start = end
 
-def parsefunc(text, audio):
+    ret = u''.join(ret)
+    if addspace:
+        return ret[1:]
+    return ret
+
+def function_parser(text, audio):
     """Parses a function in the form $name(arguments)
     the function $name from the functions module is called
     with the arguments."""
@@ -225,9 +213,12 @@ def parsefunc(text, audio):
 
     content = Forward()
     expression = (funcstart + ZeroOrMore(delimitedList(content)) + Literal(")").suppress())
+    content << (expression| identifier | integer )
     expression.setParseAction(callfunc)
-    content << (expression | identifier | integer)
-    return content.transformString(text)
+    return content
+
+def parsefunc(text, audio):
+    return function_parser(text, audio).transformString(text)
 
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):

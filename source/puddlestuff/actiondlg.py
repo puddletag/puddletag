@@ -39,10 +39,11 @@ class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
         QScrollArea.__init__(self, parent)
         label = QLabel()
-        self.setText = label.setText
+        #self.setText = label.setText
         self.setWidget(label)
         self.setText(text)
         self.text = label.text
+        label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         self.setFrameStyle(QFrame.NoFrame)
         self.setWidgetResizable(True)
         self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
@@ -50,12 +51,19 @@ class ScrollLabel(QScrollArea):
 
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
-        if not self.verticalScrollBar().isVisible() and h.isVisible():
+        if h.isVisible():
             numsteps = e.delta() / 5
             h.setValue(h.value() - numsteps)
             e.accept()
         else:
             QScrollArea.wheelEvent(self, e)
+    
+    def setText(self, text):
+        label = self.widget()
+        label.setText(text)
+        height = label.sizeHint().height()
+        self.setMaximumHeight(height)
+        self.setMinimumHeight(height)
 
 READONLY = list(READONLY) + ['__dirpath', ]
 
@@ -266,7 +274,7 @@ class CreateFunction(QDialog):
             self.showcombo = gettaglist()
         else:
             self.showcombo = showcombo
-        self.exlabel = QLabel('')
+        self.exlabel = ScrollLabel('')
 
         if prevfunc is not None:
             index = self.functions.findText(prevfunc.funcname)
@@ -356,8 +364,10 @@ class CreateAction(QDialog):
             self.listbox.addItems([function.description() for function in self.functions])
 
         if example:
-            self._examplelabel = QLabel('')
+            self._examplelabel = ScrollLabel('')
             self.grid.addWidget(self._examplelabel,1,0)
+            self.grid.setRowStretch(0,1)
+            self.grid.setRowStretch(1,0)
             self._example = example
             self.updateExample()
             self.grid.addLayout(self.okcancel,2,0,1,2)
@@ -471,7 +481,7 @@ class ActionWindow(QDialog):
         self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.enableOK)
 
         if example:
-            self._examplelabel = QLabel('')
+            self._examplelabel = ScrollLabel('')
             self.grid.addWidget(self._examplelabel, 1, 0, 1,-1)
             self.grid.setRowStretch(1, 0)
             self._example = example
