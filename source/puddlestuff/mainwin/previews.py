@@ -1,24 +1,13 @@
 # -*- coding: utf-8 -*-
-import puddlestuff.findfunc as findfunc
-from puddlestuff.puddleobjects import dircmp, safe_name, natcasecmp, LongInfoMessage
-import puddlestuff.actiondlg as actiondlg
+from puddlestuff.puddleobjects import PuddleConfig
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import os, pdb
-path = os.path
-import puddlestuff.helperwin as helperwin
 from functools import partial
-from itertools import izip
-from puddlestuff.audioinfo import stringtags
-from operator import itemgetter
-import puddlestuff.musiclib, puddlestuff.about as about
-import traceback
-from puddlestuff.util import split_by_tag
-import puddlestuff.functions as functions
 
 status = {}
 
 _previews = []
+_sort_action = None
 
 ENABLED = u'Enabl&e Preview Mode'
 DISABLED = u'Disabl&e Preview Mode'
@@ -63,11 +52,41 @@ def create_actions(parent):
     revert.setShortcut('Ctrl+Shift+Z')
     obj.connect(revert, SIGNAL('triggered()'), undo_last)
     
-    return [enable_preview, clear_selection, write, revert]
+    sort = QAction('&Sort Selected', parent)
+    obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
+    
+    cparser = PuddleConfig()
+    options = cparser.get('table', 'sortoptions', ['__dirpath, album, track'])
+    global _sort_action
+    _sort_action = sort
+    sort_actions = set_sort_options(options)
+
+    return [enable_preview, clear_selection, write, revert, sort] + sort_actions
+
+def set_sort_options(options):
+    parent = _sort_action.parentWidget()
+    menu = QMenu(parent)
+    sort_actions = []
+    options = [[z.strip() for z in option.split(u',')] for option in options]
+    for option in options:
+        action = QAction(u'/'.join(option), parent)
+        action.sortOption = option
+        menu.addAction(action)
+        obj.connect(action, SIGNAL('triggered()'), sort_by_fields)
+        sort_actions.append(action)
+    _sort_action.setMenu(menu)
+    status['sort_actions'] = sort_actions
+    return sort_actions
+
+def sort_by_fields():
+    options = QObject().sender().sortOption
+    status['table'].model().sortByFields(options, 
+        status['selectedfiles'], status['selectedrows'])
 
 def set_status(stat):
     global status
     status = stat
+    
 
 def undo_last():
     if _previews:

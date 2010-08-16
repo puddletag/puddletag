@@ -930,6 +930,21 @@ class TagModel(QAbstractTableModel):
             self.taginfo.sort(natcasecmp, f, True)
         self.reset()
         self.emit(SIGNAL('sorted'))
+    
+    def sortByFields(self, fields, files=None, rows=None):
+        self.emit(SIGNAL('aboutToSort'))
+        if files and rows:
+            for field in fields:
+                f = lambda audio: audio.get(field, '')
+                files.sort(natcasecmp, f)
+            for index, row in enumerate(rows):
+                self.taginfo[row] = files[index]
+        else:
+            for field in fields:
+                f = lambda audio: audio.get(field, '')
+                self.taginfo.sort(natcasecmp, f)
+        self.reset()
+        self.emit(SIGNAL('sorted'))
 
     def supportedDropActions(self):
         return Qt.CopyAction

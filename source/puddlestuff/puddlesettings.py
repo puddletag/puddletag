@@ -46,6 +46,7 @@ import sys, resource, os
 from copy import copy
 from puddleobjects import ListButtons, OKCancel, HeaderSetting
 from puddleobjects import ListBox, PuddleConfig, winsettings
+from shortcutsettings import ActionEditorDialog
 from puddlestuff.pluginloader import PluginConfig
 import pdb
 import audioinfo.util
@@ -128,8 +129,37 @@ class GeneralSettings(QWidget):
             widget = create_control(desc, val)
             vbox.addWidget(widget)
             self._controls.append(widget)
+
+        edit_sort_options = QPushButton('&Edit sort options')
+        
+        self.connect(edit_sort_options, SIGNAL('clicked()'), 
+            self.editSortOptions)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(edit_sort_options)
+        hbox.addStretch()
+        
+        vbox.addLayout(hbox)
         vbox.addStretch()
+        
         self.setLayout(vbox)
+        
+    def editSortOptions(self):
+        cparser = PuddleConfig()
+        options = cparser.get('table', 'sortoptions', 
+            ['__dirpath, album, track'])
+        #options = [[z.strip() for z in option.split(u',')] 
+            #for option in options]
+        from puddlestuff.webdb import SortOptionEditor
+        win = SortOptionEditor(options, self)
+        self.connect(win, SIGNAL('options'), self.applySortOptions)
+        win.show()
+    
+    def applySortOptions(self, options):
+        import puddlestuff.mainwin.previews
+        puddlestuff.mainwin.previews.set_sort_options(options)
+        cparser = PuddleConfig()
+        cparser.set('table', 'sortoptions', options)
 
     def applySettings(self, controls):
         vals =  dict([c.settingValue for c in self._controls])
@@ -450,7 +480,6 @@ class ColorEdit(QWidget):
         cparser.set('extendedtags', 'edit', colors[1])
         cparser.set('extendedtags', 'remove', colors[2])
 
-
 SETTINGSWIN = 'settingsdialog'
 
 class SettingsDialog(QDialog):
@@ -466,7 +495,8 @@ class SettingsDialog(QDialog):
              3: ('Extended Tags Colors', ColorEdit(), None),
              4: ('Genres', genres.Genres(status=status), None),
              5: ('Tags', Tags(), status['table']),
-             6: ('Plugins', PluginConfig(), None)}
+             6: ('Plugins', PluginConfig(), None),
+             7: ('Shortcuts', ActionEditorDialog(status['actions']), None)}
         i = len(d)
         for control in controls:
             if hasattr(control, SETTINGSWIN):

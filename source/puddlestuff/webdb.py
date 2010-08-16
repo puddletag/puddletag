@@ -169,7 +169,7 @@ class SortOptionEditor(QDialog):
 
         self.listbox.addItems(options)
         hbox = QHBoxLayout()
-        hbox.addWidget(self.listbox,1)
+        hbox.addWidget(self.listbox, 1)
 
         hbox.addLayout(buttons)
         

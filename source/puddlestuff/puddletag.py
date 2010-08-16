@@ -25,7 +25,7 @@ from audioinfo import lnglength, strlength, PATH, str_filesize
 from errno import EEXIST
 from operator import itemgetter
 from collections import defaultdict
-import constants
+import constants, shortcutsettings
 
 import puddlestuff.findfunc, puddlestuff.tagsources
 
@@ -114,8 +114,6 @@ def connect_controls(controls):
     for c in controls:
         for signal, slot in c.receives:
             if signal in emits:
-                #if signal == 'enable_preview_mode':
-                    #pdb.set_trace()
                 [connect(i, SIGNAL(signal), slot) for i in emits[signal]]
 
 def connect_control(control, controls):
@@ -181,6 +179,14 @@ def connect_actions(actions, controls):
             else:
                 print action.command, 'slot not found for', action.text()
 
+def connect_action_shortcuts(actions):
+    cparser = PuddleConfig()
+    cparser.filename = ls.menu_path
+    for action in actions:
+        shortcut = cparser.get('shortcuts', unicode(action.text()), '')
+        if shortcut:
+            action.setShortcut(shortcut)
+
 def help_menu(parent):
     menu = QMenu('Help', parent)
     about = QAction('About puddletag', parent)
@@ -242,6 +248,7 @@ class MainWin(QMainWindow):
         previewactions = mainwin.previews.create_actions(self)
         menubar, winmenu = ls.menubar(menus, 
             actions + winactions + previewactions)
+        
         if winmenu:
             winmenu.addSeparator()
             self._winmenu = winmenu
@@ -260,7 +267,10 @@ class MainWin(QMainWindow):
         self.addToolBar(toolbar)
 
         connect_actions(actions, controls)
+        connect_action_shortcuts(actions + previewactions)
         create_context_menus(controls, actions)
+        status['actions'] = actions + winactions + previewactions
+        shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
 
         self.restoreSettings()
         self.emit(SIGNAL('always'), True)

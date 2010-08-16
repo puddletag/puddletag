@@ -88,7 +88,8 @@ class FunctionDialog(QWidget):
         defaulttags = None, parent = None, example = None, text = None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
-        userargs is the default values you want to fill the controls in the dialog with[make sure they don't exceed the number of arguments of funcname]."""
+        userargs is the default values you want to fill the controls in the dialog with
+        [make sure they don't exceed the number of arguments of funcname]."""
         QWidget.__init__(self,parent)
         identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
         tags = delimitedList(identifier)
@@ -99,25 +100,29 @@ class FunctionDialog(QWidget):
         self._combotags = []
 
         if showcombo:
-            self.tagcombo = QComboBox()
-            tooltip = "Fields that will get written to.<br /><br />"\
-                      "Enter a list of comma-seperated fields eg. <b>artist, title, album</b>"
-            self.tagcombo.setToolTip(tooltip)
-            self.tagcombo.setEditable(True)
-            self.tagcombo.addItems(['__all'] + sorted(INFOTAGS) + showcombo)
-            self._combotags = showcombo
-            if defaulttags:
-                index = self.tagcombo.findText(" , ".join(defaulttags))
-                if index != -1:
-                    self.tagcombo.setCurrentIndex(index)
-                else:
-                    self.tagcombo.insertItem(0, ", ".join(defaulttags))
-                    self.tagcombo.setCurrentIndex(0)
-            self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
+            fields = ['__all'] + sorted(INFOTAGS) + showcombo
+        else:
+            fields = ['__selected', '__all'] + sorted(INFOTAGS)
 
-            if self.func.function.__name__ != 'move':
-                self.vbox.addWidget(QLabel("Fields"))
-                self.vbox.addWidget(self.tagcombo)
+        self.tagcombo = QComboBox()
+        tooltip = "Fields that will get written to.<br /><br />"\
+                    "Enter a list of comma-seperated fields eg. <b>artist, title, album</b>"
+        self.tagcombo.setToolTip(tooltip)
+        self.tagcombo.setEditable(True)
+        self.tagcombo.addItems(fields)
+        self._combotags = showcombo
+        if defaulttags:
+            index = self.tagcombo.findText(" , ".join(defaulttags))
+            if index != -1:
+                self.tagcombo.setCurrentIndex(index)
+            else:
+                self.tagcombo.insertItem(0, ", ".join(defaulttags))
+                self.tagcombo.setCurrentIndex(0)
+        self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
+
+        if self.func.function.__name__ not in ['move', 'load_images']:
+            self.vbox.addWidget(QLabel("Fields"))
+            self.vbox.addWidget(self.tagcombo)
         self.example = example
         self._text =text
 
@@ -211,9 +216,12 @@ class FunctionDialog(QWidget):
             audio = self.example.stringtags()
             if not self._text:
                 try:
-                    text = audio.get(self.func.tag[0])
                     if self.func.tag == [u'__all']:
                         text = 'Some random text, courtesy of puddletag.'
+                    elif self.func.tag[0] == [u'__selected']:
+                        text = audio.get(self.showcombo.keys()[0])
+                    else:
+                        text = audio.get(self.func.tag[0])
                 except IndexError:
                     text = ''
                 if not text:
