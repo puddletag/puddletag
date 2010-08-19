@@ -187,12 +187,12 @@ def function_parser(audio):
             message = e.message
             if message.endswith(u'given)'):
                 start = message.find(u'takes')
-                message = u'SYNTAX ERROR: %s %s' % (tokens.funcname, message[start:])
+                message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, message[start:])
                 raise ParseError(message)
             else:
                 raise e
         except FuncError, e:
-            message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (tokens.funcname, e.message)
+            message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, e.message)
             raise ParseError(message)
         
         return functions[tokens.funcname](*args)

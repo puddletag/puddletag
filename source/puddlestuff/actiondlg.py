@@ -235,7 +235,7 @@ class FunctionDialog(QWidget):
                     return
                 val = self.func.runFunction(text, audio)
             except findfunc.ParseError, e:
-                val = u'SYNTAX ERROR: %s' % (e.message)
+                val = u'<b>%s</b>' % (e.message)
             if val:
                 self.emit(SIGNAL('updateExample'), val)
             else:

@@ -88,7 +88,7 @@ def cut():
 def display_tag(tag):
     """Used to display tags in the status bar in a human parseable format."""
     if not tag:
-        return "<b>Error in pattern</b>"
+        return "<b>Error: Pattern does not match filename.</b>"
     s = "%s: <b>%s</b>, "
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     return "".join([s % (z, tostr(v)) for z, v in tag.items()])[:-2]
@@ -399,24 +399,34 @@ def update_status(enable = True):
 
     x = findfunc.filenametotag(pattern, tag.filepath, True)
     emit('ftstatus', display_tag(x))
-
-    newfilename = functions.move(tag, pattern)['__path']
-    #newfilename = path.join(path.dirname(tag.filepath), safe_name(newfilename))
-    emit('tfstatus', u"New Filename: <b>%s</b>" % newfilename)
+    
+    try:
+        newfilename = functions.move(tag, pattern)['__path']
+        emit('tfstatus', u"New Filename: <b>%s</b>" % newfilename)
+    except findfunc.ParseError, e:
+        emit('tfstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
 
     oldir = path.dirname(tag.dirpath)
-    newfolder = path.join(oldir, path.basename(safe_name(tf(pattern, tag))))
-    dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (tag.dirpath, newfolder)
-    emit('renamedirstatus', dirstatus)
+    try:
+        newfolder = path.join(oldir, path.basename(
+            safe_name(tf(pattern, tag))))
+        dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (
+            tag.dirpath, newfolder)
+        emit('renamedirstatus', dirstatus)
+    except findfunc.ParseError, e:
+        emit('renamedirstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
 
     selected = status['selectedtags']
     if not selected:
         emit('formatstatus', display_tag(''))
     else:
         selected = selected[0]
+    try:
         val = tf(pattern, tag)
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
+    except findfunc.ParseError, e:
+        emit('formatstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
