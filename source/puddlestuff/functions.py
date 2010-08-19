@@ -51,10 +51,7 @@ This line is further split into three parts
 
 from puddleobjects import PuddleConfig, safe_name, fnmatch
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time
-import findfunc
 
-FuncError = findfunc.FuncError
-ParseError = findfunc.ParseError
 true = u'1'
 false = u'0'
 path = os.path
@@ -541,6 +538,12 @@ def validate(text, to=None, chars=None):
         return safe_name(text, to=to)
     else:
         return safe_name(text, chars, to=to)
+        
+validFilenameChars = "-_.!()[]{}&~+^ %s%s%s" % (string.ascii_letters, string.digits, os.path.sep)
+
+def removeDisallowedFilenameChars(t_filename):
+    cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
+    return u''.join(c for c in cleanedFilename if c in validFilenameChars)
 
 functions = {"add": add,
             "and": and_,
@@ -590,4 +593,9 @@ functions = {"add": add,
             "titleCase": titleCase,
             "true": true,
             "upper": upper,
-            "validate": validate}
+            "validate": validate,
+            'to_ascii': removeDisallowedFilenameChars}
+
+import findfunc
+FuncError = findfunc.FuncError
+ParseError = findfunc.ParseError

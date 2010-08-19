@@ -10,7 +10,7 @@ import string
 from puddlestuff.constants import SAVEDIR, RIGHTDOCK
 from puddlestuff.findfunc import filenametotag
 from puddlestuff.puddleobjects import (ListBox, ListButtons, OKCancel, 
-    PuddleConfig, PuddleThread, ratio, winsettings)
+    PuddleConfig, PuddleThread, ratio, winsettings, natcasecmp)
 import puddlestuff.resource
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import split_by_tag, to_string
@@ -151,10 +151,10 @@ def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False):
                 ret[f['__file']] = scores[max_ratio]
     if jfdi:
         sort_func = lambda f: f.filepath
-        audios = sorted([f['__file'] for f in files], key = sort_func)
+        audios = sorted([f['__file'] for f in files], natcasecmp, sort_func)
         sort_func = lambda t: to_string(t['track']) if 'track' in t \
             else to_string(t.get('title'))
-        tracks = sorted(tracks, key = sort_func)
+        tracks = sorted(tracks, natcasecmp, sort_func)
 
         for audio, retrieved in zip(audios, tracks):
             if audio in ret:
@@ -172,8 +172,8 @@ def merge_tracks(old_tracks, new_tracks):
     sort_func = lambda track: to_string(track['track']) if 'track' in \
         track else to_string(track.get('title', u''))
         
-    old_tracks = sorted(old_tracks, key=sort_func)
-    new_tracks = sorted(new_tracks, key=sort_func)
+    old_tracks = sorted(old_tracks, natcasecmp,  sort_func)
+    new_tracks = sorted(new_tracks, natcasecmp,  sort_func)
 
     for old, new in zip(old_tracks, new_tracks):
         for key in old.keys() + new.keys():

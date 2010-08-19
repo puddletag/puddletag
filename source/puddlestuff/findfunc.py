@@ -23,7 +23,7 @@
 import audioinfo, os, pdb, sys, string, re
 from decimal import Decimal, InvalidOperation
 try:
-    from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, CharsNotIn, White
+    from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, CharsNotIn, White, originalTextFor, nestedExpr, Optional, commaSeparatedList
 except ImportError:
     sys.stderr.write("The PyParsing module wasn't found. Did you install it correctly?\n")
     sys.exit(0)
@@ -131,55 +131,38 @@ def getfunc(text, audio):
     if not isinstance(text, unicode):
         text = unicode(text, 'utf8')
 
-    funcpattern = re.compile(r'[^\\]?\$[a-zA-Z_0-9]+\(')
+    return function_parser(audio).transformString(text)
 
-    addspace = False
-    #pat doesn't match if the text starts with the pattern, because there isn't
-    #a character in front of the function
-    if text.startswith("$"):
-        text = u" " + text
-        addspace = True
-    
-    parser = function_parser(text, audio)
-    
-    start = 0
-    ret = []
-    while True:
-        match = funcpattern.search(text)
-        if not match:
-            ret.append(text)
-            break
-        start = match.start(0)
-        if text[start] != u'$':
-            start += 1
-        ret.append(text[:start])
-        text = text[start:]
-        end = parser.scanString(text).next()[2]
-        ret.append(parser.transformString(text[:end]))
-        text = text[end:]
-        start = end
-
-    ret = u''.join(ret)
-    if addspace:
-        return ret[1:]
-    return ret
-
-def function_parser(text, audio):
+def function_parser(audio):
     """Parses a function in the form $name(arguments)
     the function $name from the functions module is called
     with the arguments."""
+    
+    ident = Word(alphas+'_', alphanums+'_')
 
-    identifier = QuotedString('"') | Combine(ZeroOrMore("\$") + ZeroOrMore(White()) + CharsNotIn(',)'))
-    integer = Word(nums)
-    funcstart = NotAny("\\") + Combine(Literal("$").suppress() +
-                    OneOrMore(Word("_" + alphanums)) + Literal("(").suppress())
+    funcIdent = Combine('$' + ident.copy()('funcname'))
+    funcMacro = funcIdent + originalTextFor(nestedExpr())('args')
+    funcMacro.leaveWhitespace()
+    #def strip(s, l, tok):
+        #print s, l, tok
+        #return s.strip()
+    strip = lambda s, l, tok: tok[0].strip()
+    arglist = Optional(delimitedList(QuotedString('"') | 
+        CharsNotIn(u',').setParseAction(strip)))
 
-    def callfunc(s,loc,tok):
-        arguments = tok[1:]
-        if tok[0] in functions:
-            function = functions[tok[0]]
-        else:
-            return ''
+    def replaceNestedMacros(tokens):
+        if funcMacro.searchString(tokens.args):
+            tokens['args'] = funcMacro.transformString(tokens.args)
+        
+        if tokens.funcname not in functions:
+            return u''
+        function = functions[tokens.funcname]
+        
+        if tokens.args == u'()':
+            return function()
+
+        arguments = arglist.parseString(tokens.args[1:-1]).asList()
+        
         varnames = function.func_code.co_varnames
         if varnames[0] == 'tags':
             arguments.insert(0, audio)
@@ -194,7 +177,8 @@ def function_parser(text, audio):
                     else:
                         topass.append(float(arg))
                 except ValueError:
-                    raise ParseError('SYNTAX ERROR: %s expects a number at argument %d.' % (tok[0], no))
+                    message = 'SYNTAX ERROR: %s expects a number at argument %d.'
+                    raise ParseError(message % (tokens.funcname, no))
             else:
                 topass.append(arg)
         try:
@@ -203,22 +187,22 @@ def function_parser(text, audio):
             message = e.message
             if message.endswith(u'given)'):
                 start = message.find(u'takes')
-                message = u'SYNTAX ERROR: %s %s' % (tok[0], message[start:])
+                message = u'SYNTAX ERROR: %s %s' % (tokens.funcname, message[start:])
                 raise ParseError(message)
             else:
                 raise e
         except FuncError, e:
-            message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (tok[0], e.message)
+            message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (tokens.funcname, e.message)
             raise ParseError(message)
+        
+        return functions[tokens.funcname](*args)
 
-    content = Forward()
-    expression = (funcstart + ZeroOrMore(delimitedList(content)) + Literal(")").suppress())
-    content << (expression| identifier | integer )
-    expression.setParseAction(callfunc)
-    return content
+    funcMacro.setParseAction(replaceNestedMacros)
+
+    return funcMacro
 
 def parsefunc(text, audio):
-    return function_parser(text, audio).transformString(text)
+    return function_parser(audio).transformString(text)
 
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
