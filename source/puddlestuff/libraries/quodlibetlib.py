@@ -48,9 +48,9 @@ revmapping = dict([(key, timefunc(key)) for key in timetags])
 revmapping.update({'track': lambda value: {'tracknumber': value},
                 '__bitrate' : lambda value: {'~#bitrate': lngfrequency(value)},
                 '__length': lambda value: {'~#length': lnglength(value)},
-                '_playcount': lambda value: {'~#playcount': long(value)},
+                '_playcount': lambda value: {'~#playcount': int(value)},
                 '_rating': lambda value: {'~#rating': float(value)},
-                '_skipcount': lambda value: {'~#skipcount': long(value)},
+                '_skipcount': lambda value: {'~#skipcount': int(value)},
                 '__mountpoint': lambda value: {'~mountpoint': value},
                 '__modified': lambda value : {'~#mtime': lngtime(value)},
                 '__path': lambda value : {'~filename': value.encode('utf8')}})
@@ -124,11 +124,11 @@ class Tag(MockTag):
             return
         libtags = self._libtags
         tags = self._tags
-        newartist = tags['artist'][0] if tags.get('artist') else u''
-        oldartist = libtags['artist'] if libtags.get('artist') else u''
+        newartist = tags.get('artist', [u''])
+        oldartist = libtags.get('artist', u'')
 
-        newalbum = tags['album'][0] if tags.get('album') else u''
-        oldalbum = libtags['album'] if libtags.get('album') else u''
+        newalbum = tags.get('album', [u''])[0]
+        oldalbum = libtags.get('album', u'')
 
         self._libtags.update(self._tolibformat())
         self._libtags.write()
@@ -219,8 +219,8 @@ class QuodLibet(object):
             return
         filepath = self._filepath + u'.puddletag'
         pickle.dump(self._tracks, open(filepath, 'wb'))
-        shutil.copy(filepath, self._filepath)
-        os.remove(filepath)
+        os.rename(self._filepath, self._filepath +  u'.bak')
+        os.rename(filepath, self._filepath)
 
     def delete(self, track):
         artist = to_string(track['artist'])

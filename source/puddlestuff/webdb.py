@@ -25,7 +25,7 @@ from puddleobjects import (unique, OKCancel, PuddleThread, PuddleConfig,
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from collections import defaultdict
-import puddlestuff.tagsources as tagsources
+#import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import (RetrievalError, status_obj, write_log, 
     tagsources)
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR

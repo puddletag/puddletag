@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import pdb, os
+import pdb, os, glob, string, sys
+sys.path.insert(0, '/home/keith/Documents/python/puddletag')
 
+from copy import deepcopy
 from functools import partial
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import string
 
 from puddlestuff.constants import SAVEDIR, RIGHTDOCK
 from puddlestuff.findfunc import filenametotag
@@ -16,7 +17,11 @@ from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.webdb import strip
 
-#import exampletagsource, qltagsource
+import exampletagsource, qltagsource
+
+mutex = QMutex()
+
+PROFILEDIR = os.path.join(SAVEDIR, 'masstagging')
 
 #pyqtRemoveInputHook()
 
@@ -45,6 +50,7 @@ PATTERN = 'pattern'
 SOURCE_CONFIGS = 'source_configs'
 FIELDS = 'fields'
 JFDI = 'jfdi'
+NAME = 'name'
 
 status_obj = QObject()
 
@@ -109,7 +115,7 @@ def find_best(matches, files, minimum=0.7):
 def load_config(filename = CONFIG):
     cparser = PuddleConfig(filename)
     info_section = 'info'
-    name = cparser.get(info_section, 'name', '')
+    name = cparser.get(info_section, NAME, '')
     numsources = cparser.get(info_section, 'numsources', 0)
     album_bound = cparser.get(info_section, ALBUM_BOUND, 70)
     track_bound = cparser.get(info_section, TRACK_BOUND, 80)
@@ -131,7 +137,23 @@ def load_config(filename = CONFIG):
 
     return {SOURCE_CONFIGS: configs, PATTERN: pattern, 
         ALBUM_BOUND: album_bound, TRACK_BOUND: track_bound,
-        FIELDS: match_fields, JFDI: jfdi}
+        FIELDS: match_fields, JFDI: jfdi, NAME: name}
+
+def load_profiles(self, dirpath = PROFILEDIR):
+    profiles = [load_config(conf) for conf in glob.glob(dirpath + u'/*.conf')]
+    try:
+        order = open(os.path.join(dirpath, 'order'), 'r').read().split('\n')
+    except EnvironmentError:
+        return profiles
+
+    order = [z.strip() for z in order]
+    first = []
+    last=[]
+    names = dict([(profile[NAME], profile) for profile in profiles])
+    profiles = [names[name] for name in order if name in names]
+    profiles.extend([names[name] for name in names if name not in order])
+
+    return profiles
 
 def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False):
     if not keys:
@@ -314,11 +336,11 @@ def search(tagsources, configs, audios,
                 insert_status(u'No albums found')
         yield results
 
-def save_configs(name, configs, filename=CONFIG):
+def save_configs(configs, filename=CONFIG):
     cparser = PuddleConfig(filename)
     info_section = 'info'
     
-    cparser.set(info_section, 'name', name)
+    cparser.set(info_section, NAME, configs[NAME])
     for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS, JFDI]:
         cparser.set(info_section, key, configs[key])
     
@@ -352,14 +374,21 @@ def split_files(audios, pattern):
         tag_groups.append(tags)
     return tag_groups
 
-class MassTagConfig(QDialog):
-    def __init__(self, tagsources, parent=None):
-        super(MassTagConfig, self).__init__(parent)
+class ProfileEdit(QDialog):
+    def __init__(self, tagsources, configs=None, parent=None):
+        super(ProfileEdit, self).__init__(parent)
         
-        self.setWindowTitle('Mass Tagging')
-        winsettings('masstagging', self)
+        self.setWindowTitle('Edit Profile')
+        winsettings('profile', self)
         self._configs = []
         self.tagsources = tagsources
+        
+        self._name = QLineEdit('Masstagging Profile')
+        namelayout = QHBoxLayout()
+        namelabel = QLabel('&Name:')
+        namelabel.setBuddy(self._name)
+        namelayout.addWidget(namelabel)
+        namelayout.addWidget(self._name)
         
         self.listbox = ListBox()
 
@@ -382,19 +411,21 @@ class MassTagConfig(QDialog):
         
         self.jfdi = QCheckBox('Brute force unmatched files.')
         self.jfdi.setToolTip("If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by track number and corresponding (unmatched) tracks will matched.")
-
-        self.grid.addWidget(self.listbox,0, 0)
-        self.grid.setRowStretch(0, 1)
-        self.grid.addLayout(self.buttonlist, 0, 1)
+        
+        
+        self.grid.addLayout(namelayout, 0, 0, 1, 2)
+        self.grid.addWidget(self.listbox, 1, 0)
+        self.grid.setRowStretch(1, 1)
+        self.grid.addLayout(self.buttonlist, 1, 1)
         self.grid.addLayout(create_buddy('Pattern to match filenames against.',
-            self.pattern, QVBoxLayout()), 1, 0, 1, 2)
+            self.pattern, QVBoxLayout()), 2, 0, 1, 2)
         self.grid.addLayout(create_buddy('Minimum percentage required for '
-            'best matches.', self.albumBound), 2, 0, 1, 2)
+            'best matches.', self.albumBound), 3, 0, 1, 2)
         self.grid.addLayout(create_buddy('Match tracks using fields: ',
-            self.matchFields, QVBoxLayout()), 3, 0, 1, 2)
+            self.matchFields, QVBoxLayout()), 4, 0, 1, 2)
         self.grid.addLayout(create_buddy('Minimum percentage required for '
-            'track match.', self.trackBound), 4, 0, 1, 2)
-        self.grid.addWidget(self.jfdi, 5, 0, 1, 2)
+            'track match.', self.trackBound), 5, 0, 1, 2)
+        self.grid.addWidget(self.jfdi, 6, 0, 1, 2)
         
         self.setLayout(self.grid)
         
@@ -413,9 +444,10 @@ class MassTagConfig(QDialog):
             self.editClicked)
         connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
 
-        self.grid.addLayout(self.okcancel, 6, 0, 1, 2)
+        self.grid.addLayout(self.okcancel, 7, 0, 1, 2)
 
-        self._setConfigs(load_config())
+        if configs is not None:
+            self.setConfigs(configs)
         self.enableListButtons(self.listbox.currentRow())
 
     def addClicked(self):
@@ -477,9 +509,9 @@ class MassTagConfig(QDialog):
             ALBUM_BOUND: self.albumBound.value(),
             TRACK_BOUND: self.trackBound.value(),
             FIELDS: fields,
-            JFDI: True if self.jfdi.checkState() == Qt.Checked else False}
-        save_configs('masstagging', configs)
-        self.emit(SIGNAL('configsChanged'), configs)
+            JFDI: True if self.jfdi.checkState() == Qt.Checked else False,
+            NAME: unicode(self._name.text())}
+        self.emit(SIGNAL('profileChanged'), configs)
         self.close()
     
     def remove(self):
@@ -489,7 +521,7 @@ class MassTagConfig(QDialog):
         del(self._configs[row])
         self.listbox.takeItem(row)
     
-    def _setConfigs(self, configs):
+    def setConfigs(self, configs):
         self._configs = configs[SOURCE_CONFIGS]
         [self.listbox.addItem(config_str(config)) for config 
             in self._configs]
@@ -499,6 +531,7 @@ class MassTagConfig(QDialog):
         self.trackBound.setValue(configs[TRACK_BOUND])
         self.jfdi.setCheckState(Qt.Checked if configs[JFDI] else
             Qt.Unchecked)
+        self._name.setText(configs[NAME])
 
 class ConfigEdit(QDialog):
     def __init__(self, tagsources, previous=None, parent=None):
@@ -561,6 +594,152 @@ class ConfigEdit(QDialog):
         self._fields.setText(u', '.join(fields))
         self._many_match.setCurrentIndex(no_match)
 
+class Config(QDialog):
+    def __init__(self, tagsources, profiles=None, parent = None):
+        super(Config, self).__init__(parent)
+        
+        self.setWindowTitle('Configure Mass Tagging')
+        winsettings('masstagging', self)
+        
+        self.listbox = ListBox()
+        self.tagsources = tagsources
+
+        okcancel = OKCancel()
+        okcancel.ok.setDefault(True)
+
+        self.buttonlist = ListButtons()
+        
+        connect = lambda control, signal, slot: self.connect(
+            control, SIGNAL(signal), slot)
+
+        connect(okcancel, "ok" , self.okClicked)
+        connect(okcancel, "cancel",self.close)
+        connect(self.buttonlist, "add", self.addClicked)
+        connect(self.buttonlist, "edit", self.editClicked)
+        connect(self.buttonlist, "moveup", self.moveUp)
+        connect(self.buttonlist, "movedown", self.moveDown)
+        connect(self.buttonlist, "remove", self.remove)
+        connect(self.buttonlist, "duplicate", self.dupClicked)
+        connect(self.listbox, "itemDoubleClicked (QListWidgetItem *)",
+            self.editClicked)
+        connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
+
+        self.enableListButtons(self.listbox.currentRow())
+        
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        
+        layout.addWidget(QLabel('Profiles'))
+        
+        list_layout = QHBoxLayout()
+        list_layout.addWidget(self.listbox, 1)
+        list_layout.addLayout(self.buttonlist)
+        
+        layout.addLayout(list_layout)
+        layout.addLayout(okcancel)
+        if profiles is not None:
+            self.setProfiles(profiles)
+    
+    def addClicked(self):
+        win = ProfileEdit(self.tagsources, parent=self)
+        win.setModal(True)
+        self.connect(win, SIGNAL('profileChanged'), self._addProfile)
+        win.show()
+    
+    def _addProfile(self, config):
+        row = self.listbox.count()
+        self.listbox.addItem(config[NAME])
+        self._profiles.append(config)
+    
+    def dupClicked(self):
+        row = self.listbox.currentRow()
+        if row == -1:
+            return
+        win = ProfileEdit(self.tagsources, deepcopy(self._profiles[row]), self)
+        win.setModal(True)
+        self.connect(win, SIGNAL('profileChanged'), self._addProfile)
+        win.show()
+    
+    def editClicked(self, item=None):
+        if item:
+            row = self.listbox.row(item)
+        else:
+            row = self.listbox.currentRow()
+        
+        if row == -1:
+            return
+        win = ProfileEdit(self.tagsources, self._profiles[row], self)
+        win.setModal(True)
+        self.connect(win, SIGNAL('profileChanged'), 
+            partial(self._editProfile, row))
+        win.show()
+    
+    def _editProfile(self, row, profile):
+        self._profiles[row] = profile
+        self.listbox.item(row).setText(profile[NAME])
+    
+    def enableListButtons(self, val):
+        if val == -1:
+            [button.setEnabled(False) for button in self.buttonlist.widgets[1:]]
+        else:
+            [button.setEnabled(True) for button in self.buttonlist.widgets[1:]]
+    
+    def moveDown(self):
+        self.listbox.moveDown(self._profiles)
+    
+    def moveUp(self):
+        self.listbox.moveUp(self._profiles)
+    
+    def okClicked(self):
+        self.emit(SIGNAL('profilesChanged'), self._profiles)
+        self.saveProfiles(os.path.join(SAVEDIR, 'masstagging'), self._profiles)
+        self.close()
+    
+    def remove(self):
+        row = self.listbox.currentRow()
+        if row == -1:
+            return
+        del(self._profiles[row])
+        self.listbox.takeItem(row)
+    
+    def loadProfiles(self, dirpath = None):
+        self._profiles = []
+        if not dirpath:
+            dirpath = os.path.join(SAVEDIR, u'masstagging')
+        for conf in glob.glob(dirpath + u'/*.conf'):
+            self._profiles.append(load_config(conf))
+        for profile in self._profiles:
+            self.listbox.addItem(profile[NAME])
+    
+    def setProfiles(self, profiles):
+        self._profiles = profiles
+        for profile in self._profiles:
+            self.listbox.addItem(profile[NAME])
+    
+    def saveProfiles(self, dirpath, profiles):
+        filenames = {}
+        order = []
+        for profile in profiles:
+            filename = profile[NAME] + u'.conf'
+            i = 0
+            while filename in filenames:
+                filename = u'%s_%d%s' (profile[NAME], i, u'.conf')
+                i += 1
+            filenames[filename] = profile
+            order.append(profile[NAME])
+        files = glob.glob(os.path.join(dirpath, '*.conf'))
+        for f in files:
+            if f not in filenames:
+                try:
+                    os.remove(f)
+                except EnvironmentError:
+                    pass
+        for filename, profile in filenames.items():
+            save_configs(profile, os.path.join(dirpath, filename))
+        f = open(os.path.join(dirpath, 'order'), 'w')
+        f.write(u'\n'.join(order))
+        f.close()
+
 class Retriever(QWidget):
     def __init__(self, parent=None, status=None):
         super(Retriever, self).__init__(parent)
@@ -577,13 +756,16 @@ class Retriever(QWidget):
         clear = QPushButton('Clear &Preview')
         self._log = QTextEdit()
         self.tagsources = status['initialized_tagsources']
-        #[self.tagsources.append(z.info[0]()) for z 
-            #in [exampletagsource, qltagsource]]
+        
+        self._curProfile = QComboBox()
+        
+
         self._status = status
 
         self.connect(status_obj, SIGNAL('statusChanged'), self._appendLog)
         self.connect(status_obj, SIGNAL('logappend'), self._appendLog)
-        
+        self.connect(self._curProfile, SIGNAL('currentIndexChanged(int)'),
+            self.changeProfile)
         self.connect(self._startButton, SIGNAL('clicked()'), self.lookup)
         self.connect(configure, SIGNAL('clicked()'), self.configure)
         self.connect(write, SIGNAL('clicked()'), self.writePreview)
@@ -596,28 +778,40 @@ class Retriever(QWidget):
         buttons.addWidget(write)
         buttons.addWidget(clear)
         
+        combo = QHBoxLayout()
+        label = QLabel('&Profile:')
+        label.setBuddy(self._curProfile)
+        combo.addWidget(label)
+        combo.addWidget(self._curProfile, 1)
+        
         layout = QVBoxLayout()
         layout.addLayout(buttons)
+        layout.addLayout(combo)
+        
         layout.addWidget(self._log)
         self.setLayout(layout)
-
-        self._configs = load_config()
+        self.loadProfiles()
     
     def _appendLog(self, text):
+        mutex.lock()
         if text.startswith(u':insert'):
             text = text[len(u':insert'):]
             self._log.textCursor().setPosition(len(self._log.toPlainText()))
             self._log.insertHtml(text)
         else:
             self._log.append(text)
+        mutex.unlock()
+    
+    def changeProfile(self, index):
+        self._configs = self._profiles[index]
     
     def clearPreview(self):
         self.emit(SIGNAL('clearpreview'))
     
     def configure(self):
-        win = MassTagConfig(self.tagsources, self)
+        win = Config(self.tagsources, self._profiles, self)
         win.setModal(True)
-        self.connect(win, SIGNAL('configsChanged'), self._setConfigs)
+        self.connect(win, SIGNAL('profilesChanged'), self.setProfiles)
         win.show()
     
     def lookup(self):
@@ -631,8 +825,28 @@ class Retriever(QWidget):
             self._startButton.setText('&Start')
             self.wasCanceled = True
     
+    def loadProfiles(self):
+        self.setProfiles(load_profiles(PROFILEDIR))
+    
     def _setConfigs(self, configs):
         self._configs = configs
+    
+    def setProfiles(self, profiles):
+        self._profiles = profiles
+        self.disconnect(self._curProfile, SIGNAL('currentIndexChanged(int)'),
+            self.changeProfile)
+        old = self._curProfile.currentText()
+        self._curProfile.clear()
+        self._curProfile.addItems([profile[NAME] for profile in profiles])
+        index = self._curProfile.findText(old)
+        if index != -1:
+            self._curProfile.setCurrentIndex(index)
+            self._configs = profiles[index]
+        else:
+            self._curProfile.setCurrentIndex(0)
+            self._configs = profiles[0]
+        self.connect(self._curProfile, SIGNAL('currentIndexChanged(int)'),
+            self.changeProfile)
     
     def _start(self):
         files = self._status['selectedfiles']
@@ -678,13 +892,20 @@ control = ('Mass Tagging', Retriever, RIGHTDOCK, False)
 
 if __name__ == '__main__':
     from puddlestuff import audioinfo
-    
-    import time
-    #previous = ('FreeDB', 1, 2, [True, ['artist', 'title']], 1)
+
+    tagsources = [z[0]() for z in puddlestuff.tagsources.tagsources]
+    tagsources.extend([z.info[0]() for z in 
+        [exampletagsource, qltagsource]])
+    status = {}
+    status['initialized_tagsources'] = tagsources
+    status['selectedfiles'] = []
     
     app = QApplication([])
+    #win = Config(tagsources)
+    #win.loadProfiles()
     #win = ConfigEdit(tagsources, previous)
     #win = MassTagging()
-    win = Retriever(tagsources)
+    win = Retriever(status = status)
+    win.loadProfiles()
     win.show()
     app.exec_()

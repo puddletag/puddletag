@@ -523,7 +523,7 @@ def validate(text, to=None, chars=None):
     else:
         return safe_name(text, chars, to=to)
         
-validFilenameChars = "-_.!()[]{}&~+^ %s%s%s" % (string.ascii_letters, string.digits, os.path.sep)
+validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (string.ascii_letters, string.digits, os.path.sep)
 
 def removeDisallowedFilenameChars(t_filename):
     cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
@@ -539,9 +539,7 @@ functions = {"add": add,
             "div": div,
             "featFormat": featFormat,
             "find": find,
-            "formatValue": formatValue,
-            "ftArtist": ftArtist,
-            "ftTitle": ftTitle,
+            "format": formatValue,
             "geql": geql,
             "grtr": grtr,
             "hasformat": hasformat,

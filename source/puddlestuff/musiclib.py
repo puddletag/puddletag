@@ -152,13 +152,12 @@ class LibraryDialog(QWidget):
     def saveSettings(self):
         p = ProgressWin(self, 0, showcancel = False)
         p.setWindowTitle('Saving music library...')
+        thread = PuddleThread(self._library.save, self)
         p.show()
-        t = PuddleThread(self._library.save)
-        t.start()
-        while t.isRunning():
+        self.connect(thread, SIGNAL('finished()'), p.close)
+        thread.start()
+        while thread.isRunning():
             QApplication.processEvents()
-        p.close()
-
 
 class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):

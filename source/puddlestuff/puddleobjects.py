@@ -1572,6 +1572,7 @@ class ProgressWin(QDialog):
         self.ptext = progresstext
 
         self.pbar = QProgressBar(self)
+
         self.pbar.setRange(0, maximum)
 
         self.label = QLabel()
@@ -1595,8 +1596,15 @@ class ProgressWin(QDialog):
         self.wasCanceled = False
         self.connect(self, SIGNAL('rejected()'), self.cancel)
         self.connect(cancel, SIGNAL('clicked()'), self.cancel)
-
-        self.setValue(1)
+        
+        if maximum > 0:
+            self.setValue(1)
+        else:
+            timer = QTimer(self)
+            timer.setInterval(100)
+            update = lambda: self.setValue(self.pbar.value() + 1)
+            self.connect(timer, SIGNAL('timeout()'), update)
+            timer.start()
 
     def setValue(self, value):
         if self._infunc:
@@ -1605,11 +1613,10 @@ class ProgressWin(QDialog):
         if self.ptext:
             self.pbar.setTextVisible(False)
             self.label.setText(self.ptext + unicode(value) + ' of ' +
-                                        unicode(self.pbar.maximum()) + '...')
+                unicode(self.pbar.maximum()) + '...')
         self.pbar.setValue(value)
         self._infunc = False
-        #QApplication.processEvents()
-        if value >= self.pbar.maximum():
+        if self.pbar.maximum() and value >= self.pbar.maximum():
             self.close()
 
     def cancel(self):
