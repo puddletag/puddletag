@@ -52,6 +52,15 @@ FIELDS = 'fields'
 JFDI = 'jfdi'
 NAME = 'name'
 
+DEFAULT_PROFILE = {
+    ALBUM_BOUND: 50, 
+    SOURCE_CONFIGS: [[u'MusicBrainz', 0, 0, [], 0]], 
+    TRACK_BOUND: 80, 
+    PATTERN: u'%artist% - %album%/%track% - %title%', 
+    NAME: u'Default', 
+    JFDI: True, 
+    FIELDS: [u'artist', u'title']}
+
 status_obj = QObject()
 
 def set_status(msg): status_obj.emit(SIGNAL('statusChanged'), msg)
@@ -149,6 +158,7 @@ def load_profiles(self, dirpath = PROFILEDIR):
     order = [z.strip() for z in order]
     first = []
     last=[]
+    
     names = dict([(profile[NAME], profile) for profile in profiles])
     profiles = [names[name] for name in order if name in names]
     profiles.extend([names[name] for name in names if name not in order])
@@ -790,7 +800,6 @@ class Retriever(QWidget):
         
         layout.addWidget(self._log)
         self.setLayout(layout)
-        self.loadProfiles()
     
     def _appendLog(self, text):
         mutex.lock()
@@ -825,7 +834,9 @@ class Retriever(QWidget):
             self._startButton.setText('&Start')
             self.wasCanceled = True
     
-    def loadProfiles(self):
+    def loadSettings(self):
+        if not os.path.exists(PROFILEDIR):
+            os.mkdir(PROFILEDIR)
         self.setProfiles(load_profiles(PROFILEDIR))
     
     def _setConfigs(self, configs):
@@ -833,6 +844,9 @@ class Retriever(QWidget):
     
     def setProfiles(self, profiles):
         self._profiles = profiles
+        if not profiles:
+            self._curProfile.clear()
+            return
         self.disconnect(self._curProfile, SIGNAL('currentIndexChanged(int)'),
             self.changeProfile)
         old = self._curProfile.currentText()
