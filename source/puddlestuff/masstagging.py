@@ -17,7 +17,7 @@ from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.webdb import strip
 
-import exampletagsource, qltagsource
+#import exampletagsource, qltagsource
 
 mutex = QMutex()
 
