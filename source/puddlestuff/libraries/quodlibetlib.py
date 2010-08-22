@@ -57,13 +57,14 @@ revmapping.update({'track': lambda value: {'tracknumber': value},
 
 class Tag(MockTag):
     """Use as base for all tag classes."""
-    mapping = audioinfo.mapping['puddletag'] if 'puddletag' in audioinfo.mapping else {}
-    revmapping = audioinfo.revmapping['puddletag'] if 'puddletag' in audioinfo.revmapping else {}
+    mapping = audioinfo.mapping.get('puddletag', {})
+    revmapping = audioinfo.revmapping.get('puddletag', {})
     IMAGETAGS = ()
     _hash = {PATH: 'filepath',
             FILENAME:'filename',
             EXTENSION: 'ext',
             DIRPATH: 'dirpath'}
+
     def __init__(self, libclass, libtags):
         MockTag.__init__(self)
         self.library = libclass

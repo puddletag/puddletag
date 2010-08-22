@@ -291,14 +291,15 @@ class AllMusic(object):
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>By prefacing the search text with <b>:id</b> you can search for an albums using it's AllMusic sql id eg. <b>:id 10:nstlgr7nth</b> (extraneous spaces are discarded.)<li></ul>"
     group_by = [u'album', 'artist']
     def __init__(self):
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        self._getcover = cparser.get('amg', 'retrievecovers', True)
-        self._useid = cparser.get('amg', 'useid', True)
-        self._id_field = cparser.get('amg', 'idfield', 'amgsqlid')
-        self.preferences = [['Retrieve Covers', CHECKBOX, self._getcover],
-            ['Use AMG SQL ID to retrieve albums:', CHECKBOX, self._useid],
-            ['AMG SQL ID field (leave empty to disable.)', TEXT, self._id_field]]
+        super(AllMusic, self).__init__()
+        self._getcover = True
+        self._useid = True
+        self._id_field = 'amgsqlid'
+        self.preferences = [
+            ['Retrieve Covers', CHECKBOX, True],
+            ['Use SQL ID to retrieve albums:', CHECKBOX, self._useid],
+            ['Field to use for SQL ID:', TEXT, self._id_field]
+            ]
     
     def keyword_search(self, text):
         if text.startswith(u':id'):
@@ -384,12 +385,6 @@ class AllMusic(object):
         self.preferences[1][2] = self._getcover
         self._id_field = args[2]
         self.preferences[2][2] = self._id_field
-        
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        cparser.set('amg', 'retrievecovers', self._getcover)
-        cparser.set('amg', 'useid', self._useid)
-        cparser.set('amg', 'idfield', self._id_field)
 
 info = [AllMusic, None]
 name = 'AllMusic.com'

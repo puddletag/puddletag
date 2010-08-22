@@ -123,11 +123,10 @@ class MusicBrainz(object):
     group_by = ['artist', 'album']
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>Retrieving all albums by an artist using their MusicBrainz Artist ID is possible by prefacing your search with <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b> (extraneous spaces around the ID are discarded.)</li><li>In the same way an album can be retrieved using it's MusicBrainz ID by prefacing the search text with <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"
     def __init__(self):
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        self._artist_field = cparser.get('musicbrainz', 'artistfield', '')
-        self._album_field = cparser.get('musicbrainz', 'albumfield', '')
-        self._track_field = cparser.get('musicbrainz', 'trackfield', '')
+        super(MusicBrainz, self).__init__()
+        self._artist_field = ''
+        self._album_field = ''
+        self._track_field = ''
         self.preferences = [
             [u'Field to write MusicBrainz Artist ID to (leave empty'
                 u' to disable.):', TEXT, self._artist_field],
@@ -223,20 +222,9 @@ class MusicBrainz(object):
         return info, get_tracks(r_id)[0]
     
     def applyPrefs(self, values):
-
         self._artist_field = values[0]
         self._album_field = values[1]
         self._track_field = values[2]
-        
-        self.preferences[0][2] = values[0]
-        self.preferences[1][2] = values[1]
-        self.preferences[2][2] = values[2]
-
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        cparser.set('musicbrainz', 'artistfield', values[0])
-        cparser.set('musicbrainz', 'albumfield', values[1])
-        cparser.set('musicbrainz', 'trackfield', values[2])
 
 info = [MusicBrainz, None]
 name = 'MusicBrainz'

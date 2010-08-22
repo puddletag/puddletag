@@ -117,9 +117,12 @@ def find_best(matches, files, minimum=0.7):
         if len(totals) == len(d):
             scores[min(totals)] = match
     
-    max_ratio = max(scores)
-    if max_ratio > minimum:
-        return [scores[max_ratio]]
+    if scores:
+        max_ratio = max(scores)
+        if max_ratio > minimum:
+            return [scores[max_ratio]]
+    else:
+        return []
 
 def load_config(filename = CONFIG):
     cparser = PuddleConfig(filename)

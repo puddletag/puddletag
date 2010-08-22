@@ -32,10 +32,12 @@ from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
 from functools import partial
-from copy import copy
+from copy import copy, deepcopy
 from puddlestuff.util import to_string, split_by_tag
 from releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
+
+TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
@@ -230,8 +232,7 @@ class SettingsDialog(QWidget):
     def __init__(self, parent = None, status = None):
         QWidget.__init__(self, parent)
         self.title = 'Tag Sources'
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
+        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
         text = cparser.get('tagsources', 'trackpattern', '%track% - %title%')
 
         sortoptions = cparser.get('tagsources', 'sortoptions', 
@@ -344,6 +345,13 @@ class SettingsDialog(QWidget):
             index = 0
         self._sortoptions.setCurrentIndex(index)
 
+def load_source_prefs(name, preferences):
+    cparser = PuddleConfig(TAGSOURCE_CONFIG)
+    return [cparser.get(name, option[0], option[2]) if 
+        option[1] != COMBO else 
+        cparser.get(name, option[0], option[2][1]) for 
+        option in preferences]
+
 class MainWin(QWidget):
     def __init__(self, status, parent = None):
         QWidget.__init__(self, parent)
@@ -355,6 +363,9 @@ class MainWin(QWidget):
         self.mapping = audioinfo.mapping
         self._status = status
         self._tagsources = [info[0]() for info in tagsources]
+        [z.applyPrefs(load_source_prefs(z.name, z.preferences)) 
+            for z in self._tagsources if
+            hasattr(z, 'preferences') and not isinstance(z, QWidget)]
         status['initialized_tagsources'] = self._tagsources
         self._configs = [info[1] for info in tagsources]
         self._tagsource = self._tagsources[0]
@@ -437,6 +448,13 @@ class MainWin(QWidget):
         vbox.addWidget(self._taglist)
         self.setLayout(vbox)
         self._changeSource(0)
+        
+    def _applyPrefs(self, prefs):
+        self._tagsource.applyPrefs(prefs)
+        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+        name = self._tagsource.name
+        for section, value in zip(self._tagsource.preferences, prefs):
+            cparser.set(name, section[0], value)
 
     def _clear(self):
         self.emit(SIGNAL('clearpreview'))
@@ -514,9 +532,16 @@ class MainWin(QWidget):
         if hasattr(config, 'connect'):
             win = config(parent=self)
         else:
-            win = SourcePrefs(self._tagsource.name, config, self)
+            defaults = load_source_prefs(self._tagsource.name, config)
+            prefs = deepcopy(config)
+            for pref, value in zip(prefs, defaults):
+                if pref[1] != COMBO:
+                    pref[2] = value
+                else:
+                    pref[2][1] = value
+            win = SourcePrefs(self._tagsource.name, prefs, self)
         win.setModal(True)
-        self.connect(win, SIGNAL('tagsourceprefs'), self._tagsource.applyPrefs)
+        self.connect(win, SIGNAL('tagsourceprefs'), self._applyPrefs)
         win.show()
 
     def setInfo(self, retval):

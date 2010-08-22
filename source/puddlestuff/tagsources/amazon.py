@@ -193,16 +193,14 @@ class Amazon(object):
     name = 'Amazon'
     group_by = [u'artist', u'album']
     def __init__(self):
-
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        self._getcover = cparser.get('amazon', 'retrievecovers', 
-            True)
-        self.covertype = image_types[cparser.get('amazon', 'covertype', 1)]
-
-        self.preferences = [['Retrieve Cover', CHECKBOX, self._getcover],
+        super(Amazon, self).__init__()
+        self._getcover = True
+        self.covertype = 1
+        self.preferences = [
+            ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO, 
-                [['Small', 'Medium', 'Large'], 1]]]
+                [['Small', 'Medium', 'Large'], 1]]
+            ]
 
     def keyword_search(self, text):
         params = parse_searchstring(text)
@@ -231,12 +229,6 @@ class Amazon(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
-        self.preferences[0][2] = self._getcover
-        self.preferences[1][2][1] = args[1]
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        cparser.set('amazon', 'retrievecovers', self._getcover)
-        cparser.set('amazon', 'covertype', args[1])
 
 
 #print search(u'OutKast', u'SpeakerBoxxx')

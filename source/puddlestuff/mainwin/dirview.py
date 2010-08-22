@@ -2,8 +2,9 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from copy import deepcopy
+from functools import partial
 import os, shutil, pdb, mutex
-from puddlestuff.puddleobjects import PuddleConfig, PuddleThread
+from puddlestuff.puddleobjects import PuddleConfig, PuddleThread, issubfolder
 from puddlestuff.constants import LEFTDOCK, HOMEDIR
 mutex = mutex.mutex()
 qmutex = QMutex()
@@ -43,33 +44,23 @@ class DirView(QTreeView):
         
         self.connect(self, SIGNAL('expanded(const QModelIndex &)'),
             lambda discarded: self.resizeColumnToContents(0))
-
-    def loadSettings(self):
-        cparser = PuddleConfig()
-        d = cparser.get('main', 'lastfolder', HOMEDIR)
-
-        def expand_thread_func():
-            index = self.model().index(d)
-            parents = []
-            while index.isValid():
-                parents.append(index)
-                index = index.parent()
-            return parents
         
-        def expandindexes(indexes):
-            self.setEnabled(False)
-            [self.expand(index) for index in indexes]
-            self.setEnabled(True)
-        
-        thread = PuddleThread(expand_thread_func, self)
-        thread.connect(thread, SIGNAL('threadfinished'), expandindexes)
-        thread.start()
 
     def clearSelection(self, *args):
         self.blockSignals(True)
         self.selectionModel().clearSelection()
         self.blockSignals(False)
         self.emit(SIGNAL('removeFolders'), [], True)
+    
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+        refresh = QAction('Refresh', self)
+        menu.addAction(refresh)
+        index = self.indexAt(event.pos())
+        self.connect(refresh, SIGNAL('triggered()'), 
+            lambda: self.model().refresh(index))
+        menu.exec_(event.globalPos())
+        super(DirView, self).contextMenuEvent(event)
 
     def dirMoved(self, dirs):
         l = self._load
@@ -92,6 +83,33 @@ class DirView(QTreeView):
             qmutex.unlock()
         self.connect(thread, SIGNAL('threadfinished'), finished)
         thread.start()
+
+    def loadSettings(self):
+        cparser = PuddleConfig()
+        d = cparser.get('main', 'lastfolder', HOMEDIR)
+
+        def expand_thread_func():
+            index = self.model().index(d)
+            parents = []
+            while index.isValid():
+                parents.append(index)
+                index = index.parent()
+            return parents
+        
+        def expandindexes(indexes):
+            self.setEnabled(False)
+            [self.expand(index) for index in indexes]
+            self.setEnabled(True)
+        
+        thread = PuddleThread(expand_thread_func, self)
+        thread.connect(thread, SIGNAL('threadfinished'), expandindexes)
+        thread.start()
+    
+    def mousePressEvent(self, event):
+        if event.buttons() == Qt.RightButton:
+            return
+        else:
+            super(DirView, self).mousePressEvent(event)
 
     def selectDirs(self, dirlist):
         if self._threadRunning:
@@ -117,6 +135,8 @@ class DirView(QTreeView):
             toselect = []
             toexpand = []
             for d in dirlist:
+                if not os.path.exists(d):
+                    continue
                 index = getindex(d)
                 toselect.append(index)
                 i = parent(index)
