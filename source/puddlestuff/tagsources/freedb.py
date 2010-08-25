@@ -139,8 +139,7 @@ class FreeDB(object):
     def retrieve(self, info):
         return retrieve_from_info(info)
 
-info = [FreeDB, None]
-name = 'FreeDB'
+info = FreeDB
 
 if __name__ == '__main__':
     import puddlestuff.audioinfo as audioinfo

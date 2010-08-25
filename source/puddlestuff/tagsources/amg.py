@@ -386,8 +386,7 @@ class AllMusic(object):
         self._id_field = args[2]
         self.preferences[2][2] = self._id_field
 
-info = [AllMusic, None]
-name = 'AllMusic.com'
+info = AllMusic
 
 if __name__ == '__main__':
     page = urllib2.urlopen(filename).read()

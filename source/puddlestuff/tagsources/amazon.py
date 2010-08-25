@@ -232,8 +232,7 @@ class Amazon(object):
 
 
 #print search(u'OutKast', u'SpeakerBoxxx')
-info = [Amazon, None]
-name = 'Amazon'
+info = Amazon
 
 ##u'Service=AWSECommerceService&AWSAccessKeyId=AKIAJ3KBYRUYQN5PVQGA&Operation=ItemSearch&SearchIndex=Music&Keywords=Alicia&ItemPage=1&ResponseGroup=ItemAttributes,Small,Images'
 ##print aws_url(key, lic, query_pairs)

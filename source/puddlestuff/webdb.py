@@ -362,12 +362,13 @@ class MainWin(QWidget):
         self.setWindowTitle("Tag Sources")
         self.mapping = audioinfo.mapping
         self._status = status
-        self._tagsources = [info[0]() for info in tagsources]
+        self._tagsources = [z() for z in tagsources]
         [z.applyPrefs(load_source_prefs(z.name, z.preferences)) 
             for z in self._tagsources if
             hasattr(z, 'preferences') and not isinstance(z, QWidget)]
         status['initialized_tagsources'] = self._tagsources
-        self._configs = [info[1] for info in tagsources]
+        self._configs = [z.preferences if hasattr(z, 'preferences') else None
+            for z in tagsources]
         self._tagsource = self._tagsources[0]
         self._tagstowrite = [[] for z in self._tagsources]
         self._sourcenames = [z.name for z in self._tagsources]

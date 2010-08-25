@@ -28,7 +28,7 @@ options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype,
 from mutagen.id3 import TCON
 GENRES = sorted(TCON.GENRES)
 
-
+AbstractTag = MockTag
 
 extensions = {'mp3': id3.filetype,
     'flac': flac.filetype,

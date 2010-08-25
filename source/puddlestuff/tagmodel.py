@@ -96,10 +96,124 @@ def tag_in_file(tag, audio):
     except IndexError:
         return None
 
+def model_tag(model, base = audioinfo.AbstractTag):
+    class ModelTag(base):
+        def __init__(self, *args, **kwargs):
+            self.preview = {}
+            super(ModelTag, self).__init__(*args, **kwargs)
+        
+        def _get_images(self):
+            if not self.IMAGETAGS:
+                return []
+            if model.previewMode and '__image' in self.preview:
+                return self.preview['__image']
+            else:
+                return base.images.fget(self)
+        
+        def _set_images(self, value):
+            if not self.IMAGETAGS:
+                return
+            if model.previewMode:
+                self.preview['__image'] = value
+            else:
+                base.images.fset(self, value)
+        
+        images = property(_get_images, _set_images)
+
+        def clear(self):
+            self.preview.clear()
+            super(ModelTag, self).clear()
+
+        def __delitem__(self, key):
+            if key in INFOTAGS:
+                return
+            if model.previewMode and key in self.preview:
+                del(self.preview[key])
+            else:
+                super(ModelTag, self).__delitem__(key)
+        
+        def delete(self):
+            if self.preview:
+                preview = self.preview
+                self.preview = {}
+            try:
+                base.delete(self)
+            except:
+                self.preview = preview
+                raise
+
+        def __getitem__(self, key):
+            if model.previewMode and key in self.preview:
+                return self.preview[key]
+            else:
+                return super(ModelTag, self).__getitem__(key)
+
+        def keys(self):
+            keys = super(ModelTag, self).keys()
+            if model.previewMode and self.preview:
+                [keys.append(key) for key in self.preview 
+                    if key not in keys]
+            return keys
+
+        def __len__(self):
+            return len(self.keys())
+            
+        def realvalue(self, key):
+            return base.__getitem__(self, key)
+        
+        def __setitem__(self, key, value):
+            if model.previewMode:
+                if key in FILETAGS:
+                    test_audio = audioinfo.MockTag()
+                    test_audio.filepath = self[PATH]
+
+                    if key == FILENAME:
+                        test_audio.filename = safe_name(to_string(value))
+                    elif key == EXTENSION:
+                        test_audio.ext = safe_name(to_string(value))
+                    elif key == PATH:
+                        test_audio.filepath = value
+                    
+                    new_values = {FILENAME: test_audio.filename,
+                        PATH: test_audio.filepath,
+                        EXTENSION: test_audio.ext,
+                        DIRNAME: test_audio.dirname,
+                        DIRPATH: test_audio.dirpath}
+                    
+                    self.preview.update(new_values)
+
+                elif key not in READONLY:
+                    if not value:
+                        self.preview
+                    if self[key] != value:
+                        self.preview[key] = value
+
+                for k, v in self.preview.items():
+                    if self.realvalue(k) == v:
+                        del(self.preview[k])
+            else:
+                super(ModelTag, self).__setitem__(key, value)
+        
+        def remove_from_preview(self, key):
+            if key == EXTENSION:
+                del(self.preview[key])
+            elif key == FILENAME:
+                for k in [FILENAME, EXTENSION, PATH]:
+                    if k in self.preview:
+                        del(self.preview[k])
+            elif key in FILETAGS:
+                for k in FILETAGS:
+                    if k in self.preview:
+                        del(self.preview[k])
+            else:
+                del(self.preview[key])
+    return ModelTag
+
 def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
-    options = audioinfo.options
+    options = [(Kind[0], model_tag(model, Kind[1]), Kind[2]) for Kind 
+        in audioinfo.options]
     
     def ReplacementTag(filename):
         fileobj = file(filename, "rb")
@@ -117,119 +231,8 @@ def _Tag(model):
         results = zip(results, options)
         results.sort()
         score, Kind = results[-1]
-        
-        class PreviewTag(Kind[1]):
-            def __init__(self, *args, **kwargs):
-                self.preview = {}
-                super(PreviewTag, self).__init__(*args, **kwargs)
-            
-            def _get_images(self):
-                if not self.IMAGETAGS:
-                    return []
-                if model.previewMode and '__image' in self.preview:
-                    return self.preview['__image']
-                else:
-                    return Kind[1].images.fget(self)
-            
-            def _set_images(self, value):
-                if not self.IMAGETAGS:
-                    return
-                if model.previewMode:
-                    self.preview['__image'] = value
-                else:
-                    Kind[1].images.fset(self, value)
-            
-            images = property(_get_images, _set_images)
 
-            def clear(self):
-                self.preview.clear()
-                super(PreviewTag, self).clear()
-
-            def __delitem__(self, key):
-                if key in INFOTAGS:
-                    return
-                if model.previewMode and key in self.preview:
-                    del(self.preview[key])
-                else:
-                    super(PreviewTag, self).__delitem__(key)
-            
-            def delete(self):
-                if self.preview:
-                    preview = self.preview
-                    self.preview = {}
-                try:
-                    Kind[1].delete(self)
-                except:
-                    self.preview = preview
-                    raise
-
-            def __getitem__(self, key):
-                if model.previewMode and key in self.preview:
-                    return self.preview[key]
-                else:
-                    return super(PreviewTag, self).__getitem__(key)
-
-            def keys(self):
-                keys = super(PreviewTag, self).keys()
-                if model.previewMode and self.preview:
-                    [keys.append(key) for key in self.preview 
-                        if key not in keys]
-                return keys
-
-            def __len__(self):
-                return len(self.keys())
-                
-            def realvalue(self, key):
-                return Kind[1].__getitem__(self, key)
-            
-            def __setitem__(self, key, value):
-                if model.previewMode:
-                    if key in FILETAGS:
-                        test_audio = audioinfo.MockTag()
-                        test_audio.filepath = self[PATH]
-
-                        if key == FILENAME:
-                            test_audio.filename = safe_name(to_string(value))
-                        elif key == EXTENSION:
-                            test_audio.ext = safe_name(to_string(value))
-                        elif key == PATH:
-                            test_audio.filepath = value
-                        
-                        new_values = {FILENAME: test_audio.filename,
-                            PATH: test_audio.filepath,
-                            EXTENSION: test_audio.ext,
-                            DIRNAME: test_audio.dirname,
-                            DIRPATH: test_audio.dirpath}
-                        
-                        self.preview.update(new_values)
-
-                    elif key not in READONLY:
-                        if not value:
-                            self.preview
-                        if self[key] != value:
-                            self.preview[key] = value
-
-                    for k, v in self.preview.items():
-                        if self.realvalue(k) == v:
-                            del(self.preview[k])
-                else:
-                    super(PreviewTag, self).__setitem__(key, value)
-            
-            def remove_from_preview(self, key):
-                if key == EXTENSION:
-                    del(self.preview[key])
-                elif key == FILENAME:
-                    for k in [FILENAME, EXTENSION, PATH]:
-                        if k in self.preview:
-                            del(self.preview[k])
-                elif key in FILETAGS:
-                    for k in FILETAGS:
-                        if k in self.preview:
-                            del(self.preview[k])
-                else:
-                    del(self.preview[key])
-
-        if score > 0: return PreviewTag(filename)
+        if score > 0: return Kind[1](filename)
         else: return None
     return ReplacementTag
 
@@ -371,6 +374,7 @@ class TagModel(QAbstractTableModel):
         self.permaColor = QColor(Qt.green)
         self._colored = []
         audioinfo.Tag = _Tag(self)
+        audioinfo.model_tag = partial(model_tag, self)
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -822,7 +826,7 @@ class TagModel(QAbstractTableModel):
                 if tag not in FILETAGS:
                     newvalue = filter(None, newvalue.split(u'\\'))
                 ret = self.setRowData(index.row(), {tag: newvalue})
-                if currentfile.library:
+                if not self.previewMode and currentfile.library:
                     self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
                 self.undolevel += 1
             except EnvironmentError, detail:

@@ -116,8 +116,7 @@ class Example(object):
         musicdir = musicdir.encode('utf8')
         self._dirs = [z for z in os.listdir(musicdir) if isdir(join(musicdir,z))]
 
-info = [Example, None]
-name = 'NewExample'
+info = Example
 
 if __name__ == '__main__':
     x = Example()

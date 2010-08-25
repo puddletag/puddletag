@@ -226,8 +226,7 @@ class MusicBrainz(object):
         self._album_field = values[1]
         self._track_field = values[2]
 
-info = [MusicBrainz, None]
-name = 'MusicBrainz'
+info = MusicBrainz
 
 if __name__ == '__main__':
     from exampletags import tags

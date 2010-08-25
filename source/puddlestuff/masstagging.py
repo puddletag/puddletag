@@ -412,19 +412,21 @@ class ProfileEdit(QDialog):
         self.buttonlist = ListButtons()
         
         self.pattern = QLineEdit()
+        self.pattern.setToolTip("<p>If no tag information is found in a file, the tags retrieved using this pattern will be used instead.</p>")
         
         self.albumBound = QSpinBox()
+        self.albumBound.setToolTip("<p>The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.</p>")
         self.albumBound.setRange(0,100)
         self.albumBound.setValue(70)
         
         self.matchFields = QLineEdit('artist, title')
+        self.matchFields.setToolTip('<p>The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it\'ll be considered to match.</p>')
         self.trackBound = QSpinBox()
         self.trackBound.setRange(0,100)
         self.trackBound.setValue(80)
         
         self.jfdi = QCheckBox('Brute force unmatched files.')
-        self.jfdi.setToolTip("If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by track number and corresponding (unmatched) tracks will matched.")
-        
+        self.jfdi.setToolTip("<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>")
         
         self.grid.addLayout(namelayout, 0, 0, 1, 2)
         self.grid.addWidget(self.listbox, 1, 0)
@@ -563,16 +565,18 @@ class ConfigEdit(QDialog):
         layout.addLayout(create_buddy('&If no matches found:', self._no_match))
         
         self._single_match = QComboBox()
+        self._single_match.setToolTip('Say FreeDB returned the following <b>artist=Linkin, album=Meteora, genre=Rock</b> and MusicBrainz <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b>. <br /><br /> Combining them means that fields with differing values will be combined, in this case "genre". The resulting tag will be <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap, Rock</b> (ie. genre will have two values, Rap and Rock and not the singular "Rap, Rock".)<br /><br />Choosing to replace fields will result in the following tag <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rock</b> (since FreeDB was run first, it\'s genre field takes precedence, but since it contained no title field MusicBrainz\'s was used.)')
         self._single_match.addItems(SINGLE_MATCH_OPTIONS)
         layout.addLayout(create_buddy('&If single match found:', 
             self._single_match))
         
         self._fields = QLineEdit()
-        tooltip = 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.'
+        tooltip = 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer,__image</b> will write all fields but the composer and __image fields.'
         self._fields.setToolTip(tooltip)
         layout.addLayout(create_buddy('Fields:', self._fields))
         
         self._many_match = QComboBox()
+        self._many_match.setToolTip("Choose the course of action if an exact match wasn't found. See the tooltip in the previous dialog for an explanation of <b>Use best match</b>.")
         self._many_match.addItems(AMBIGIOUS_MATCH_OPTIONS)
         layout.addLayout(create_buddy('&If ambiguous matches found:', 
             self._many_match))
@@ -894,6 +898,7 @@ class Retriever(QWidget):
         def finished(value):
             self._appendLog('<b>Lookup completed.</b>')
             self._startButton.setText('&Start')
+            self.wasCanceled = False
         
         thread = PuddleThread(method, self)
         self.connect(thread, SIGNAL('setpreview'), SIGNAL('setpreview'))

@@ -5,10 +5,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import cPickle as pickle
 from puddlestuff.audioinfo.util import (FILENAME, DIRPATH, PATH, EXTENSION, READONLY,
-                            FILETAGS, INFOTAGS, stringtags, getinfo, strlength,
-                            MockTag, isempty, lngtime, lngfrequency,
-                            lnglength, setdeco, getdeco)
+    FILETAGS, INFOTAGS, stringtags, getinfo, strlength, MockTag, isempty, 
+    lngtime, lngfrequency, lnglength, setdeco, getdeco)
 import puddlestuff.audioinfo as audioinfo
+model_tag = audioinfo.model_tag
 from puddlestuff.musiclib import MusicLibError
 ATTRIBUTES = ('bitrate', 'length', 'modified')
 import quodlibet.config
@@ -18,6 +18,7 @@ from puddlestuff.constants import HOMEDIR
 from collections import defaultdict
 from puddlestuff.util import to_string
 import shutil
+from itertools import ifilter
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
@@ -156,6 +157,8 @@ class Tag(MockTag):
         if '__size' in libtags:
             del(libtags['__size'])
         return libtags
+
+Tag = audioinfo.model_tag(Tag)
 
 class QuodLibet(object):
     def __init__(self, filepath, config = None):
