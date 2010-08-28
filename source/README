@@ -5,7 +5,7 @@ The usual tag editor features are supported like extracting tag information from
 
 Then there're functions, which can do things like replace text, trim, change the case of tag values, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using MusicBrainz, FreeDB or Amazon (though it's only good for cover art) and more, but I've reached my comma quota.
 
-Supported formats: id3v1, id3v2 (mp3), AAC (mp4, m4a, etc.), VorbisComments (ogg, flac) and APEv2 (ape).
+Supported formats: id3v1, id3v2 (mp3), AAC (mp4, m4a, etc.), VorbisComments (ogg, flac) and APEv2 (ape), Musepack (mpc) and WavPack (wv).
 
 Why it is
 Everything else sucked for various reasons and Mp3tag was the only reason I kept an XP partition around.
@@ -17,7 +17,7 @@ What you need
 At least Python 2.5.
 PyQt4 (4.5 or greater) for the GUI.
 PyParsing (>1.4) takes care of the parsing...
-Mutagen (> 1.17 recommended, 1.14 required), tags and...
+Mutagen (1.20 recommended, 1.14 required), tags and...
 ConfigObj takes care of saving settings.
 python-musicbrainz2 for MusicBrainz support.
 
@@ -30,7 +30,7 @@ For Debian-based distros, use the following to install the dependencies. sudo ap
 How to get it
 Download it from SourceForge (at http://puddletag.sourceforge.net).
 
-Install it by running "python setup.py install" as root in the unzipped directory. The puddletag menu item can then be found under the Multimedia Menu.
+Install it by running "python setup.py install" as root in the unzipped directory. The puddletag menu item can then be found under the Multimedia Menu. Or just run it from the extracted directory by entering 'python puddletag' at your terminal.
 
 For those with strong constitutions, you can also check it out using svn (keep in mind that it's broken 80% of the time.)
 

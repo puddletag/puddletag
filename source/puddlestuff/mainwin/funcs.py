@@ -308,7 +308,10 @@ def run_function(parent=None, prevfunc=None):
 def run_func(selectedfiles, func):
     status['prevfunc'] = func
     selectedtags = status['selectedtags']
-    if func.function.func_code.co_varnames[0] == 'tags':
+    
+    varnames = func.function.func_code.co_varnames
+    
+    if varnames and ((varnames[0] == 'tags') or (varnames[-1] == 'tags')):
         useaudio = True
     else:
         useaudio = False

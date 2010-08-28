@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
-import urllib2, urllib
-import hmac
-import hashlib
-import base64
-import time, pdb, os, re
+#Example tutorial for writing a tag source plugin using Amazon's webservice API.
+
+#The important stuff is at the bottom in the Amazon class.
+#Comments (or you've created a tag source you'd like
+#to share) can be directed at concentricpuddle@gmail.com
+
+#Imports and constants.
+#-----------------------------------------------------------
+import base64, hmac, hashlib, os, re, time, urllib2, urllib
+
 from xml.dom import minidom
-from puddlestuff.util import split_by_tag
-from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen, parse_searchstring
+
 from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
-from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.tagsources import (write_log, set_status, RetrievalError, 
+    urlopen, parse_searchstring)
+from puddlestuff.audioinfo import DATA
+
 
 SMALLIMAGE = '#smallimage'
 MEDIUMIMAGE = '#mediumimage'
@@ -27,14 +34,19 @@ IMAGEKEYS = {'SmallImage': SMALLIMAGE,
     'MediumImage': MEDIUMIMAGE,
     'LargeImage': LARGEIMAGE}
 
+#----------------------------------------
+
 def get_text(node):
+    """Returns the textual data in a node."""
     return node.firstChild.data
 
 def check_binding(node):
+    """Checks whether a returned item as an Audio CD."""
     binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
     return binding == u'Audio CD'
 
 def get_asin(node):
+    """Retrieves the ASIN of a node."""
     return node.getElementsByTagName(u'ASIN')[0].firstChild.data
 
 def get_image_url(node):
@@ -44,19 +56,17 @@ def page_url(node):
     return node.getElementsByTagName(u'DetailPageURL')[0].firstChild.data
 
 def aws_url(aws_access_key_id, secret, query_dictionary):
+    """Creates the query url that'll be used to query Amazon's service."""
     query_dictionary["AWSAccessKeyId"] = aws_access_key_id
     query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", 
         time.gmtime())
-    #query_pairs = map(
-            #lambda (k,v): (k + "=" + urllib2.quote(v)),
-            #query_dictionary.items())
+    
     items = [(key, value.encode('utf8')) for key, value in 
         query_dictionary.items()]
     query = urllib.urlencode(sorted(items))
-    #query_pairs.sort()
-    #query = "&".join(query_pairs)
+    
     hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
-                    + query, hashlib.sha256)
+        + query, hashlib.sha256)
     signature = urllib2.quote(base64.b64encode(hm.digest()))
 
     query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
@@ -64,6 +74,8 @@ def aws_url(aws_access_key_id, secret, query_dictionary):
     return query
 
 def check_matches(albums, artist=None, album_name=None):
+    """Returns any album in albums with the same matching artist and 
+    album_name's. If no matches are found, original list is returned."""
     if artist and album_name:
         album_name = album_name.lower()
         artist = artist.lower()
@@ -80,6 +92,7 @@ def check_matches(albums, artist=None, album_name=None):
         return albums
 
 def parse_album_xml(text, album=None):
+    """Parses the retrieved xml for an album and get's the track listing."""
     doc = minidom.parseString(text)
     album_item = doc.getElementsByTagName('Item')[0]
     tracklist = album_item.getElementsByTagName('Tracks')[0]
@@ -101,7 +114,10 @@ def parse_album_xml(text, album=None):
                 tracks.append({'track': tracknumber, 'title': title})
     return tracks
 
-def parse_xml(text):
+def parse_search_xml(text):
+    """Parses the xml retrieved after entering a search query. Returns a
+    list of the albums found.
+    """
     doc = minidom.parseString(text)
     items = doc.getElementsByTagName('Item')
     ret = []
@@ -129,10 +145,14 @@ def parse_xml(text):
     return ret
 
 def retrieve_album(info, image=MEDIUMIMAGE):
+    """Retrieves album from the information in info. 
+    image must be either one of image_types or None. 
+    If None, no image is retrieved."""
     if isinstance(info, basestring):
         asin = info
     else:
         asin = info['#asin']
+
     query_pairs = {
         "Operation": u"ItemLookup",
         "Service":u"AWSECommerceService",
@@ -160,11 +180,11 @@ def retrieve_album(info, image=MEDIUMIMAGE):
 
 def retrieve_cover(url):
     data = urlopen(url)
-    return [{'data': data}]
+    return [{DATA: data}]
 
 def search(artist=None, album=None):
     if artist and album:
-        keywords = u' '.join([artist, album])
+        keywords = u'+'.join([artist, album])
     elif artist:
         keywords = artist
     else:
@@ -184,18 +204,75 @@ def keyword_search(keywords):
     url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
         'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
     xml = urlopen(url)
-    #f = open('searchxml.xml', 'w')
-    #f.write(xml)
-    #f.close()
-    return parse_xml(xml)
+    return parse_search_xml(xml)
 
+#A couple of things you should be aware of.
+#If you're retrieving urls use puddlestuff.tagsources.urlopen instead of the
+#generic urllib functions. When I implement some progress bars, proxies, etc
+#your tag sources will benefit automatically. Pass it your url and 
+#it'll return your data.
+
+#Raise puddlestuff.tagsources.RetrievalError if an error occurs. It
+#accepts a message the only argument (may be html).
+
+#Images must be a list of  dictonaries with the 
+#following keys (all from puddlestuff.audioinfo):
+#DATA: Required. The images string data.
+#MIMETYPE: either 'image/jpg' or 'image/png'
+#DESCRIPTION: the image's description
+#IMAGETYPE: Index of the element corresponding to audioinfo.IMAGETYPES
+
+#The only thing required is just a Tag Source object, which'll be the interface
+#to puddletag.
 class Amazon(object):
-    name = 'Amazon'
-    group_by = [u'artist', u'album']
+    #The name attribute is required.
+    name = 'Amazon Example'
+    #group_by specifies how the tag sources wants files to be grouped.
+    #in this case they'll be grouped by album first and then by artists.
+    
+    #The values passed to Object.search will be album (a string) 
+    #and dictionary containing the different artists as keys and
+    #a list of tags (dictionaries) as the values.
+    group_by = [u'album', u'artist']
+    
+    #So for these values the values passed to Object.search may be
+    #(u"Give Up", artist={u'The Postal Service': [track listing...]})
+    
+    #Each element of track listing is a dictionary of field: value keys
+    #containing file-specific info., eg. 
+    # {'track': [u'10'], 'title': [u'Natural Anthem'], '__length': u'5:07'}
+    # values are usually lists and "builtin" values are strings.
+    #All strings are unicode, so don't worry about conversions.
+
+    #__init__ should not accept any arguments.
     def __init__(self):
         super(Amazon, self).__init__()
         self._getcover = True
         self.covertype = 1
+        
+        #Object.preferences is a list of lists definining the the controls 
+        #that'll be used to created the Tag Source's config dialog.
+        
+        #Currently, there are three types of controls: TEXT, COMBO and CHECKBOX
+        #which correspond to a QLineEdit, QComboBox and QCheckBox respectively.
+        
+        #Each control requires three arguments in order to be created.
+        #1. Some descriptive text that's shown in a label.
+        #2. The control type, either TEXT, COMBO or CHECKBOX
+        #3. For TEXT this argument is the default text. It's not required.
+        #   For COMBO, the default argument is a list containing a list
+        #   of strings as the first item. 
+        #   And the default index as the second item. eg. [['text1', 'text2'], 1]
+        #   Checkboxes can either be checked or not so 
+        #   default arguments must either True or False.
+        
+        #When the user has finished editing, the Object.applyPrefs will be
+        #called with a list of values correcsponding to the order
+        #in which the were defined.
+        #The value returned will be either True or False for CHECKBOX.
+        #For TEXT, it'll be just the text and for COMBO it'll be the index
+        #the user's selected.
+
         self.preferences = [
             ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO, 
@@ -203,16 +280,57 @@ class Amazon(object):
             ]
 
     def keyword_search(self, text):
+        """Searches for albums by keywords, text."""
+        #Should search for the keywords in text.
+        #This method is optional, but recommended.
+        
+        #The format artist1;album1|artist2;album2 should be accepted.
+        #Use the parse_searchstring method to separate text
+        #into a list of artist album pairs as in:
+        # [(artist1, album1), (artist2, album2)]
         params = parse_searchstring(text)
         artists = [params[0][0]]
         album = params[0][1]
+
         return self.search(album, artists)
     
     def search(self, album, artists):
+        #Required.
+        #See group_by's explanation for an overview of the arguments
+        #that'll be passed to this function.
+        
+        #It should return a list consisting of (albuminfo, tracklisting) pairs.
+        #albuminfo is a dictionary containing information applicable to
+        #the whole album name like 
+        #{'artist': [u'The Postal Service'], 'album': [u'Give Up'], 
+        #    'year': u'2003'}
+        #Values can be either strings or lists, but all strings must be
+        #unicode!
+        
+        #Any key starting with '#' will be considered source specific and
+        #will not be changed under any circumstances. Use them to store
+        #any info that'll be used later to retrieve tracks.
+
+        #Tracks use the same format as albums, but contain info specific to a
+        #a track eg. [
+        #    {'title': u'The District Sleeps tonight', 'track': u'1'},
+        #    {'title': u'Such Great Heights', u'2'}
+        #    .....
+        #    ]
+        
+        #Return An empty list (info, []) if the tag source
+        #doesn't include tracks with a lookup. Tracks can later
+        #be retrieved at the user's request.
+        
+        #Do the same even if an exact match was found, but an extra
+        #lookup is required to retrieve tracks.
+
         if len(artists) > 1:
             artist = u'Various Artists'
         else:
             artist = artists[0]
+
+        
         retrieved_albums = search(artist, album)
         matches = check_matches(retrieved_albums, artist, album)
         if len(matches) == 1:
@@ -221,6 +339,11 @@ class Amazon(object):
             return [(info, []) for info in retrieved_albums]
     
     def retrieve(self, info):
+        #Required. Will retrieve track listing using
+        #info previously obtained from Object.search.
+        
+        #Should return albuminfo (many tag sources return more info on 
+        #the second lookup) and tracklisting.
         if self._getcover:
             return info, retrieve_album(info, self.covertype)
         else:
@@ -231,9 +354,6 @@ class Amazon(object):
         self.covertype = image_types[args[1]]
 
 
-#print search(u'OutKast', u'SpeakerBoxxx')
+#Required in order to let your tagsource be loaded.
+tagsources = [Amazon]
 info = Amazon
-
-##u'Service=AWSECommerceService&AWSAccessKeyId=AKIAJ3KBYRUYQN5PVQGA&Operation=ItemSearch&SearchIndex=Music&Keywords=Alicia&ItemPage=1&ResponseGroup=ItemAttributes,Small,Images'
-##print aws_url(key, lic, query_pairs)
-#print len(parse_xml(open('search.xml','r').read()))

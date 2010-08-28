@@ -481,6 +481,11 @@ class MainWin(QWidget):
             self.listbox.setMapping(self.mapping[self._tagsource.name])
         else:
             self.listbox.setMapping({})
+        
+        if hasattr(self._tagsource, 'keyword_search'):
+            self._searchparams.setEnabled(True)
+        else:
+            self._searchparams.setEnabled(False)
 
     def _changeTags(self, tags):
         self.listbox.tagsToWrite = tags
@@ -500,7 +505,7 @@ class MainWin(QWidget):
             group = split_by_tag(files, *self._tagsource.group_by)
         self.label.setText('Retrieving album info.')
         text = None
-        if self._searchparams.text():
+        if self._searchparams.text() and self._searchparams.isEnabled():
             text = unicode(self._searchparams.text())
         elif not files:
             self.label.setText('<b>Select some files or enter search paramaters.</b>')

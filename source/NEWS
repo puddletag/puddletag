@@ -1,3 +1,22 @@
+25 August 2010 - 0.9.4
+  New Features:
+    Profiles were added to MassTagging, which means now you can do a configuration once and use that forever.
+    Renaming files is now possible within Preview Mode.
+    A new Function called 'Remove Fields' that does exactly that.
+    A new scripting function (contributed by Erik Reckase) that'll convert unicode strings to ASCII.
+    The plugin interface for tag sources is now public. See the docs [here](extending.html).
+    Right click on any directory. Click the refresh button to refresh it.
+    You can now change the shortcut for any menu item. Edit->Preferences->Shortcuts to configure.
+    Also, you can now sort selected tracks using predefined fields. Some defaults are in Tools->Sort Selected. Configure using the 'Edit sort options' button in Preferences.
+    I've finally added a <a href="rss.xml" target="_parent">RSS Feed</a> to the website.
+
+  Bugs:
+    Some bugs related to Preview Mode not working correctly.
+    A bunch of others that aren't really worth mentioning.
+
+  Changes:
+    I've changed the way Tag Sources store their settings, so you'll need to reconfigure them.
+
 11 August 2010 (0.9.3)
   New Features:
       WavPack, MusePack, and basic WMA support (only common fields, not including artwork are supported.)

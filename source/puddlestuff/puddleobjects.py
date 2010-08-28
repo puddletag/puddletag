@@ -428,10 +428,7 @@ def gettags(files):
 def gettag(f):
     try:
         return audioinfo.Tag(f)
-    except (IOError, OSError), e:
-        print e.strerror, f
-        return
-    except Exception, e:
+    except:
         print u'An error occured.'
         print f
         traceback.print_exc()

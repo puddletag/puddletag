@@ -126,7 +126,11 @@ def finddups(tracks, key = 'title', method=None):
 def formatValue(tags, pattern):
     """Format value, Format $0 using $1
 &Format string, text"""
-    return findfunc.tagtofilename(pattern, tags)
+    ret = findfunc.tagtofilename(pattern, tags)
+    if not ret:
+        return
+    else:
+        return ret
 
 format_value = formatValue
 
@@ -349,6 +353,10 @@ def re_escape(rex):
         if ch in r'^$[]\+*?.(){},|' : escaped = escaped + '\\' + ch
         else: escaped = escaped + ch
     return escaped
+
+def remove_fields():
+    '''Remove Fields, <blank> $0'''
+    return u''
 
 def replace(text, word, replaceword, matchcase = False, whole = False, chars = None):
     '''Replace, "Replace $0: '$1' -> '$2', Match Case: $3, Words Only: $4"
@@ -573,6 +581,7 @@ functions = {"add": add,
             'testfunction': testfunction,
             "time": time,
             "titleCase": titleCase,
+            'remove_fields': remove_fields,
             "true": true,
             "upper": upper,
             "validate": validate,

@@ -465,6 +465,8 @@ class Function:
         varnames = self.function.func_code.co_varnames
         if isinstance(arg1, (list,tuple)):
             arg1 = arg1[0]
+        if not varnames:
+            return self.function()
         if varnames[-1] == 'tags':
             return self.function(*([arg1] + self.args + [audio]))
         elif varnames[0] == 'tags':

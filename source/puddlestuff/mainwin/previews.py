@@ -56,7 +56,9 @@ def create_actions(parent):
     obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
     
     cparser = PuddleConfig()
-    options = cparser.get('table', 'sortoptions', ['__dirpath, album, track'])
+    options = cparser.get('table', 'sortoptions', 
+        ['__filename,track,__dirpath','track, album', 
+            '__filename,album,__dirpath'])
     global _sort_action
     _sort_action = sort
     sort_actions = set_sort_options(options)

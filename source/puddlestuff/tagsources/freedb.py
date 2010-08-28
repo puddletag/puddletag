@@ -127,8 +127,6 @@ class FreeDB(object):
     name = 'FreeDB'
     tooltip = u'<b>FreeDB does not support searching via text.</b>'
     group_by = ['album', None]
-    def keyword_search(self, text):
-        raise RetrievalError(u'Keyword search not supported.')
     
     def search(self, album, files):
         if files:

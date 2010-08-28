@@ -147,7 +147,8 @@ class GeneralSettings(QWidget):
     def editSortOptions(self):
         cparser = PuddleConfig()
         options = cparser.get('table', 'sortoptions', 
-            ['__dirpath, album, track'])
+            ['__filename,track,__dirpath','track, album', 
+            '__filename,album,__dirpath'])
         #options = [[z.strip() for z in option.split(u',')] 
             #for option in options]
         from puddlestuff.webdb import SortOptionEditor

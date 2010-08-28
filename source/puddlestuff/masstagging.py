@@ -411,7 +411,7 @@ class ProfileEdit(QDialog):
 
         self.buttonlist = ListButtons()
         
-        self.pattern = QLineEdit()
+        self.pattern = QLineEdit('%artist% - %album%/%track% - %title%')
         self.pattern.setToolTip("<p>If no tag information is found in a file, the tags retrieved using this pattern will be used instead.</p>")
         
         self.albumBound = QSpinBox()

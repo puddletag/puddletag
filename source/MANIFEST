@@ -29,6 +29,7 @@ puddlestuff/puddletag.py
 puddlestuff/quodlibetlib.py
 puddlestuff/resource.py
 puddlestuff/releasewidget.py
+puddlestuff/shortcutsettings.py
 puddlestuff/tagmodel.py
 puddlestuff/util.py
 puddlestuff/webdb.py
