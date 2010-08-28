@@ -1,5 +1,5 @@
 [info]
-version=11
+version=12
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
@@ -25,7 +25,7 @@ order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode, &Windows #,Ab&out
 order=&File,&Edit,&Convert,&Action,&Tools
 
 [table]
-order=&Play,E&xtended Tags,&Remove Tag,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Delete,separator,&Properties
+order=&Sort Selected,separator,&Play,E&xtended Tags,&Remove Tag,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Delete,separator,&Properties
 
 [winshortcuts]
 Filter=F3

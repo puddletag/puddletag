@@ -320,12 +320,13 @@ class TreeModel(QtCore.QAbstractItemModel):
     def _set_trackPattern(self, value):
         self._trackPattern = value
         for row, parent_item in enumerate(self.rootItem.childItems):
-            if parent_item.childItems and parent.hasTracks:
+            if parent_item.childItems and parent_item.hasTracks:
                 for track in parent_item.childItems:
                     track.dispPattern = value
-                parent = self.index(row, 0, QModelIndex())
-                top = self.index(0,0, parent)
-                bottom = self.index(self.rowCount(parent) - 1, 0, parent)
+                parent_index = self.index(row, 0, QModelIndex())
+                top = self.index(0,0, parent_index)
+                bottom = self.index(self.rowCount(parent_index)
+                    - 1, 0, parent_index)
                 self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
                         'QModelIndex&)'), top, bottom)
 

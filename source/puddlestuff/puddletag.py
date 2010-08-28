@@ -268,7 +268,7 @@ class MainWin(QMainWindow):
 
         connect_actions(actions, controls)
         connect_action_shortcuts(actions + previewactions)
-        create_context_menus(controls, actions)
+        create_context_menus(controls, actions+previewactions)
         status['actions'] = actions + winactions + previewactions
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
 
