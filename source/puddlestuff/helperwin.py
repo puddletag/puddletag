@@ -221,8 +221,8 @@ class ImportWindow(QDialog):
                     self.close()
                 return
 
-            self.lines = f.readlines()
-            self.file.setPlainText("".join(self.lines))
+            self.lines = [z.decode('utf8') for z in f.readlines()]
+            self.file.setPlainText(u"".join(self.lines))
             self.setLines()
             self.fillTags()
             self.show()

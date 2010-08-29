@@ -358,8 +358,14 @@ class AllMusic(object):
         return ret
 
     def retrieve(self, albuminfo):
-        set_status('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
-        write_log('Retrieving %s - %s' % (albuminfo['artist'], albuminfo['album']))
+        try:
+            artist = albuminfo['artist']
+            album = albuminfo['album']
+            set_status('Retrieving %s - %s' % (artist, album))
+            write_log('Retrieving %s - %s' % (artist, album))
+        except KeyError:
+            set_status('Retrieving album.')
+            write_log('Retrieving album')
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
         try:
@@ -380,11 +386,8 @@ class AllMusic(object):
 
     def applyPrefs(self, args):
         self._getcover = args[0]
-        self.preferences[0][2] = self._getcover
         self._useid = args[1]
-        self.preferences[1][2] = self._getcover
         self._id_field = args[2]
-        self.preferences[2][2] = self._id_field
 
 info = AllMusic
 

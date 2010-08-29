@@ -1,5 +1,5 @@
 [info]
-version=12
+version=13
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit

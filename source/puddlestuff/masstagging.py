@@ -51,6 +51,7 @@ SOURCE_CONFIGS = 'source_configs'
 FIELDS = 'fields'
 JFDI = 'jfdi'
 NAME = 'name'
+DESC = 'description'
 
 DEFAULT_PROFILE = {
     ALBUM_BOUND: 50, 
@@ -59,7 +60,8 @@ DEFAULT_PROFILE = {
     PATTERN: u'%artist% - %album%/%track% - %title%', 
     NAME: u'Default', 
     JFDI: True, 
-    FIELDS: [u'artist', u'title']}
+    FIELDS: [u'artist', u'title'],
+    DESC: u''}
 
 status_obj = QObject()
 
@@ -135,6 +137,7 @@ def load_config(filename = CONFIG):
     pattern = cparser.get(info_section, PATTERN, 
         '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
+    desc = cparser.get(info_section, DESC, u'')
     
     configs = []
     for num in range(numsources):
@@ -149,7 +152,7 @@ def load_config(filename = CONFIG):
 
     return {SOURCE_CONFIGS: configs, PATTERN: pattern, 
         ALBUM_BOUND: album_bound, TRACK_BOUND: track_bound,
-        FIELDS: match_fields, JFDI: jfdi, NAME: name}
+        FIELDS: match_fields, JFDI: jfdi, NAME: name, DESC: desc}
 
 def load_profiles(self, dirpath = PROFILEDIR):
     profiles = [load_config(conf) for conf in glob.glob(dirpath + u'/*.conf')]
@@ -354,7 +357,7 @@ def save_configs(configs, filename=CONFIG):
     info_section = 'info'
     
     cparser.set(info_section, NAME, configs[NAME])
-    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS, JFDI]:
+    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS, JFDI, DESC]:
         cparser.set(info_section, key, configs[key])
     
     cparser.set(info_section, 'numsources', len(configs[SOURCE_CONFIGS]))
@@ -403,6 +406,13 @@ class ProfileEdit(QDialog):
         namelayout.addWidget(namelabel)
         namelayout.addWidget(self._name)
         
+        self._desc = QLineEdit()
+        desclabel = QLabel('&Description')
+        desclabel.setBuddy(self._desc)
+        desclayout = QHBoxLayout()
+        desclayout.addWidget(desclabel)
+        desclayout.addWidget(self._desc, 1)
+        
         self.listbox = ListBox()
 
         self.okcancel = OKCancel()
@@ -429,18 +439,20 @@ class ProfileEdit(QDialog):
         self.jfdi.setToolTip("<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>")
         
         self.grid.addLayout(namelayout, 0, 0, 1, 2)
-        self.grid.addWidget(self.listbox, 1, 0)
-        self.grid.setRowStretch(1, 1)
-        self.grid.addLayout(self.buttonlist, 1, 1)
+        self.grid.addLayout(desclayout, 1, 0, 1, 2)
+        self.grid.addWidget(self.listbox, 2, 0)
+        self.grid.setRowStretch(2, 1)
+        self.grid.addLayout(self.buttonlist, 2, 1)
         self.grid.addLayout(create_buddy('Pattern to match filenames against.',
-            self.pattern, QVBoxLayout()), 2, 0, 1, 2)
+            self.pattern, QVBoxLayout()), 3, 0, 1, 2)
         self.grid.addLayout(create_buddy('Minimum percentage required for '
-            'best matches.', self.albumBound), 3, 0, 1, 2)
+            'best matches.', self.albumBound), 4, 0, 1, 2)
         self.grid.addLayout(create_buddy('Match tracks using fields: ',
-            self.matchFields, QVBoxLayout()), 4, 0, 1, 2)
+            self.matchFields, QVBoxLayout()), 5, 0, 1, 2)
         self.grid.addLayout(create_buddy('Minimum percentage required for '
-            'track match.', self.trackBound), 5, 0, 1, 2)
-        self.grid.addWidget(self.jfdi, 6, 0, 1, 2)
+            'track match.', self.trackBound), 6, 0, 1, 2)
+        self.grid.addWidget(self.jfdi, 7, 0, 1, 2)
+        self.grid.addLayout(self.okcancel, 8, 0, 1, 2)
         
         self.setLayout(self.grid)
         
@@ -458,8 +470,6 @@ class ProfileEdit(QDialog):
         connect(self.listbox, "itemDoubleClicked (QListWidgetItem *)",
             self.editClicked)
         connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
-
-        self.grid.addLayout(self.okcancel, 7, 0, 1, 2)
 
         if configs is not None:
             self.setConfigs(configs)
@@ -525,7 +535,8 @@ class ProfileEdit(QDialog):
             TRACK_BOUND: self.trackBound.value(),
             FIELDS: fields,
             JFDI: True if self.jfdi.checkState() == Qt.Checked else False,
-            NAME: unicode(self._name.text())}
+            NAME: unicode(self._name.text()),
+            DESC: unicode(self._desc.text())}
         self.emit(SIGNAL('profileChanged'), configs)
         self.close()
     
@@ -547,6 +558,7 @@ class ProfileEdit(QDialog):
         self.jfdi.setCheckState(Qt.Checked if configs[JFDI] else
             Qt.Unchecked)
         self._name.setText(configs[NAME])
+        self._desc.setTExt(configs[DESC])
 
 class ConfigEdit(QDialog):
     def __init__(self, tagsources, previous=None, parent=None):
@@ -860,12 +872,13 @@ class Retriever(QWidget):
         self._curProfile.clear()
         self._curProfile.addItems([profile[NAME] for profile in profiles])
         index = self._curProfile.findText(old)
-        if index != -1:
-            self._curProfile.setCurrentIndex(index)
-            self._configs = profiles[index]
-        else:
-            self._curProfile.setCurrentIndex(0)
-            self._configs = profiles[0]
+        if index == -1:
+            index = 0
+        self._curProfile.setCurrentIndex(index)
+        self._configs = profiles[index]
+        
+        if profiles[index].get(DESC):
+            self._curProfile.setToolTip(profiles[index][DESC])
         self.connect(self._curProfile, SIGNAL('currentIndexChanged(int)'),
             self.changeProfile)
     

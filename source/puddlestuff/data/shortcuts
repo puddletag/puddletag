@@ -1,5 +1,5 @@
 [info]
-version=12
+version=13
 
 [shortcut1]
 name=&Open Folder
@@ -55,7 +55,7 @@ name=&Play
 shortcut=Ctrl+P
 command=playFiles
 control=table
-tooltip=Play selected files in music player.
+tooltip=Plays the selected files in the predefined music player.
 enabled=filesselected
 
 [shortcut8]
@@ -65,7 +65,7 @@ command=filename_to_tag
 control=mainwin
 icon=:/filetotag.png
 enabled=filesselected
-tooltip=Convert fillename to tag using the pattern
+tooltip=Convert filename to tag using the pattern.
 status = ftstatus
 
 [shortcut9]
