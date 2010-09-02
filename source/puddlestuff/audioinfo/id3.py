@@ -125,9 +125,10 @@ text_frames ={
     id3.TYER: 'year'}
 
 try:
-    text_frames.update({id3.TCMP: "itunescompilationflag",
-                        id3.TSO2: "itunesalbumsortorder",
-                        id3.TSOC: "itunescomposersortorder"})
+    text_frames.update({
+        id3.TCMP: "itunescompilationflag",
+        id3.TSO2: "itunesalbumsortorder",
+        id3.TSOC: "itunescomposersortorder"})
 except AttributeError:
     pass
 

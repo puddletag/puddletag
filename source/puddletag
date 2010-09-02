@@ -99,6 +99,13 @@ else:
     filename = None
 
 if __name__ == '__main__':
+    from puddlestuff import version_string, revision
+    if revision:
+        print u'puddletag Version: %s, Revision: %s' % (
+            version_string, revision)
+    else:
+        print u'puddletag Version: %s' % version_string
+
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(":/appicon.png"))
     pixmap = QPixmap(':/puddlelogo.png')

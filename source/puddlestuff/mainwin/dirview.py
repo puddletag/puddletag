@@ -4,8 +4,9 @@ from PyQt4.QtCore import *
 from copy import deepcopy
 from functools import partial
 import os, shutil, pdb, mutex
-from puddlestuff.puddleobjects import PuddleConfig, PuddleThread, issubfolder
-from puddlestuff.constants import LEFTDOCK, HOMEDIR
+from puddlestuff.puddleobjects import (PuddleConfig, PuddleThread, 
+    issubfolder, PuddleHeader)
+from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 mutex = mutex.mutex()
 qmutex = QMutex()
 
@@ -22,12 +23,13 @@ class DirView(QTreeView):
         dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
         dirmodel.setReadOnly(False)
         dirmodel.setLazyChildCount(False)
+        header = PuddleHeader(Qt.Horizontal, self)
+        self.setHeader(header)
         self.header().setResizeMode(QHeaderView.ResizeToContents)
 
         self.setModel(dirmodel)
         [self.hideColumn(column) for column in range(1,4)]
 
-        #self.header().setStretchLastSection(True)
         self.header().hide()
         self.subfolders = subfolders
         self.setSelectionMode(self.ExtendedSelection)
@@ -54,8 +56,17 @@ class DirView(QTreeView):
     
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        refresh = QAction('Refresh', self)
+        refresh = QAction('Refresh Directory', self)
+        
+        header = self.header()
+        if self.header().isHidden():
+            show_header = QAction('Show Header', self)
+            self.connect(show_header, SIGNAL('triggered()'), header.show)
+        else:
+            show_header = QAction('Hide Header', self)
+            self.connect(show_header, SIGNAL('triggered()'), header.hide)
         menu.addAction(refresh)
+        menu.addAction(show_header)
         index = self.indexAt(event.pos())
         self.connect(refresh, SIGNAL('triggered()'), 
             lambda: self.model().refresh(index))
@@ -85,6 +96,12 @@ class DirView(QTreeView):
         thread.start()
 
     def loadSettings(self):
+        settings = QSettings(QT_CONFIG, QSettings.IniFormat)
+        header = self.header()
+        header.restoreState(settings.value('dirview/header').toByteArray())
+        hide = settings.value('dirview/hide', QVariant(True)).toBool()
+        self.setHeaderHidden(hide)
+        
         cparser = PuddleConfig()
         d = cparser.get('main', 'lastfolder', HOMEDIR)
 
@@ -163,6 +180,12 @@ class DirView(QTreeView):
         dirthread = PuddleThread(func, self)
         self.connect(dirthread, SIGNAL('threadfinished'), finished)
         dirthread.start()
+    
+    def saveSettings(self):
+        settings = QSettings(QT_CONFIG, QSettings.IniFormat)
+        settings.setValue('dirview/header', 
+            QVariant(self.header().saveState()))
+        settings.setValue('dirview/hide', QVariant(self.isHeaderHidden()))
 
     def selectionChanged(self, selected, deselected):
         QTreeView.selectionChanged(self, selected, deselected)

@@ -56,11 +56,15 @@ class ArtworkWidget(QWidget):
             self.picwidget.setImageTags(imagetags)
             self.picwidget.images.extend(images)
             self.picwidget.currentImage = 2
+        if not imagetags:
+            self.setEnabled(False)
+        else:
+            self.setEnabled(True)
 
     def init(self):
         pics = self.picwidget.loadPics(':/keep.png', ':/blank.png')
         self.picwidget.setImages(pics)
-        self.picwidget.readonly = [0,1]
+        self.picwidget.readonly = [0, 1]
     
     def images(self):
         images = None

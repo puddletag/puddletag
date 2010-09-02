@@ -375,6 +375,7 @@ class TagModel(QAbstractTableModel):
         self._colored = []
         audioinfo.Tag = _Tag(self)
         audioinfo.model_tag = partial(model_tag, self)
+        self.showToolTip = True
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -514,16 +515,21 @@ class TagModel(QAbstractTableModel):
                 tag = self.headerdata[index.column()][1]
                 val = self._toString(audio[tag])
 
-                if role == Qt.ToolTipRole and self.previewMode and \
-                    audio.preview and tag in audio.preview:
-                    try:
-                        real = self._toString(audio.realvalue(tag))
-                        if not real:
+                if role == Qt.ToolTipRole:
+                    if not self.showToolTip:
+                        return QVariant()
+                    if self.previewMode and \
+                        audio.preview and tag in audio.preview:
+                        try:
+                            real = self._toString(audio.realvalue(tag))
+                            if not real:
+                                real = u'<blank>'
+                        except KeyError:
                             real = u'<blank>'
-                    except KeyError:
-                        real = u'<blank>'
-                    tooltip = u'Preview: %s\nReal: %s' % (
-                        val, self._toString(real))
+                        tooltip = u'Preview: %s\nReal: %s' % (
+                            val, self._toString(real))
+                    else:
+                        tooltip = val
                     return QVariant(tooltip)
                 return QVariant(val)
             except (KeyError, IndexError):
@@ -1173,6 +1179,7 @@ class TagTable(QTableView):
         self.gensettings = [
             ('Su&bfolders', True),
             ('Show &gridlines', True),
+            ('Show tooltips in file-view:', True),
             ('Show &row numbers', True),
             ('Automatically resize columns to contents', False),
             ('&Preserve file modification times', True),
@@ -1229,7 +1236,7 @@ class TagTable(QTableView):
             self.autoresize = d['Automatically resize columns to contents']
             self.saveModification = d['&Preserve file modification times']
             self.playcommand = d['Program to &play files with:'].split(' ')
-
+            self.model().showToolTip = d['Show tooltips in file-view:']
 
     autoresize = property(_getResize, _setResize)
 
@@ -1546,6 +1553,11 @@ class TagTable(QTableView):
                                         % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
     
     def previewMode(self, value):
+        if not value:
+            ret = QMessageBox.question(self, 'puddletag', 
+                'Do you want to exit Preview Mode?', QMessageBox.Ok, QMessageBox.No)
+            if ret != QMessageBox.Ok:
+                return
         self.model().previewMode = value
 
     def reloadFiles(self, filenames = None):

@@ -1063,6 +1063,26 @@ class LongInfoMessage(QDialog):
         self.close()
         self.accept()
 
+class ArtworkLabel(QLabel):
+    def __init__(self, *args, **kwargs):
+        super(ArtworkLabel, self).__init__(*args, **kwargs)
+        self.setAcceptDrops(True)
+    
+    def dragEnterEvent(self, event):
+        mime = event.mimeData()
+        if mime.hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+        super(ArtworkLabel, self).dragEnterEvent(event)
+    
+    def dropEvent(self, event):
+        mime = event.mimeData()
+        if mime.hasUrls():
+            filenames = [unicode(z.path()) for z in mime.urls()]
+            self.emit(SIGNAL('newImages'), *filenames)
+        super(ArtworkLabel, self).dropEvent(event)
+
 class PicWidget(QWidget):
     """A widget that shows a file's pictures.
 
@@ -1102,15 +1122,18 @@ class PicWidget(QWidget):
 
         self.lastfilename = u'~'
         #The picture.
-        self.label = Label()
+        self.label = ArtworkLabel()
         self.label.setFrameStyle(QFrame.Box)
         self.label.setMargin(10)
         self.label.setMinimumSize(200, 170)
         if buttons:
             self.label.setMaximumSize(200, 170)
+        self._itags = []
         #else:
             #self.setMaximumSize(400,400)
         self.label.setAlignment(Qt.AlignCenter)
+        self.connect(self.label, SIGNAL('newImages'), 
+            lambda *filenames: self.addImages(self.loadPics(*filenames)))
         #self.label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         #Description and picture type shit.
@@ -1310,6 +1333,17 @@ class PicWidget(QWidget):
                     self.images.append(pic)
                     self.currentImage = len(self.images) - 1
             self.emit(SIGNAL('imageChanged'))
+    
+    def addImages(self, images):
+        if not self._itags:
+            return
+        if self.images:
+            index = len(self.images)
+            self.images.extend(images)
+            self.currentImage = index
+        else:
+            self.setImages(images)
+        self.emit(SIGNAL('imageChanged'))
 
     def close(self):
         self.win.close()
@@ -1701,6 +1735,53 @@ class PuddleDock(QDockWidget):
     def setVisible(self, visible):
         QDockWidget.setVisible(self, visible)
         self.emit(SIGNAL('visibilitychanged'), visible)
+
+class PuddleHeader(QHeaderView):
+    def __init__(self, orientation = Qt.Horizontal, parent = None):
+        if parent:
+            super(PuddleHeader, self).__init__(orientation, parent)
+        else:
+            super(PuddleHeader, self).__init__()
+        
+        self.setSortIndicatorShown(True)
+        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setMovable(True)
+        self.setClickable(True)
+    
+    def getMenu(self, actions = None):
+        model = self.model()
+
+        def create_action(section):
+            title = model.headerData(section, self.orientation()).toString()
+            action = QAction(title, self)
+            action.setCheckable(True)
+            def change_visibility(value):
+                if value:
+                    self.showSection(section)
+                else:
+                    self.hideSection(section)
+            if self.isSectionHidden(section):
+                action.setChecked(False)
+            else:
+                action.setChecked(True)
+            self.connect(action, SIGNAL('toggled(bool)'), change_visibility)
+            return action
+
+        header_actions = [create_action(section) 
+            for section in range(self.count())]
+            
+        menu = QMenu(self)
+        if actions:
+            [menu.addAction(a) for a in actions]
+            menu.addSeperator()
+        [menu.addAction(a) for a in header_actions]
+        return menu
+    
+    def contextMenuEvent(self, event):
+        menu = self.getMenu()
+        menu.exec_(event.globalPos())
+        
+    
 
 class PuddleStatus(object):
     _status = {}

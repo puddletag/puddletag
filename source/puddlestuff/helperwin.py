@@ -356,6 +356,12 @@ class StatusWidgetItem(QTableWidgetItem):
 
     status = property(_getstatus, _setstatus)
 
+class ExTagsTable(QTableWidget):
+    def keyPressEvent(self, event):
+        super(ExTagsTable, self).keyPressEvent(event)
+        if event.key() == Qt.Key_Delete:
+            self.emit(SIGNAL('deletePressed'))
+
 
 class VerticalHeader(QHeaderView):
     def __init__(self, parent = None):
@@ -383,7 +389,9 @@ class ExTags(QDialog):
         remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
         self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
 
-        self.listbox = QTableWidget(0, 2, self)
+        self.listbox = ExTagsTable(0, 2, self)
+        self.connect(self.listbox, SIGNAL('deletePressed'),
+            self.removeTag)
         self.listbox.setVerticalHeader(VerticalHeader())
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(True)
@@ -476,6 +484,11 @@ class ExTags(QDialog):
             self.listbox.setEnabled(True)
             self.listbuttons.edit.setEnabled(True)
             self.listbuttons.remove.setEnabled(True)
+    
+    def _deletePressed(self, item):
+        if self.listbox.deletePressed:
+            self.listbox.deletePressed = False
+            self.removeTag()
 
     def _imageChanged(self):
         self.filechanged = True

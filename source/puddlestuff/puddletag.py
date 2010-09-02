@@ -204,10 +204,20 @@ def load_plugins():
     puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
     puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
 
+class PreviewLabel(QLabel):
+    def __init__(self, *args, **kwargs):
+        super(PreviewLabel, self).__init__(*args, **kwargs)
+        self._enabled = False
+    
+    def mouseDoubleClickEvent(self, event):
+        self._enabled = not self._enabled
+        self.emit(SIGNAL('valueChanged'), self._enabled)
+
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        self.emits = ['loadFiles', 'always', 'dirsmoved', 'libfilesedited']
+        self.emits = ['loadFiles', 'always', 'dirsmoved', 'libfilesedited',
+            'enable_preview_mode', 'disable_preview_mode']
         self.receives = [('writeselected', self.writeTags),
             ('filesloaded', self._filesLoaded),
             ('viewfilled', self._viewFilled),
@@ -363,7 +373,7 @@ class MainWin(QMainWindow):
         statusbar.addPermanentWidget(statuslabel, 1)
         self._totalstats = QLabel('00 (00:00:00 | 00 MB)')
         self._selectedstats = QLabel('00 (00:00:00 | 00 MB)')
-        preview_status = QLabel('Preview Mode: Off')
+        preview_status = PreviewLabel('Preview Mode: Off')
         statusbar.addPermanentWidget(preview_status, 0)
         statusbar.addPermanentWidget(self._selectedstats, 0)
         statusbar.addPermanentWidget(self._totalstats, 0)
@@ -374,6 +384,14 @@ class MainWin(QMainWindow):
             else:
                 preview_status.setText('Preview Mode: Off')
         
+        def change_preview(value):
+            if value:
+                self.emit(SIGNAL('enable_preview_mode'))
+            else:
+                self.emit(SIGNAL('disable_preview_mode'))
+        
+        self.connect(preview_status, SIGNAL('valueChanged'),
+            change_preview)
         self.connect(self._table.model(), SIGNAL('previewModeChanged'),
             set_preview_status)
         statusbar.setMaximumHeight(statusbar.height())

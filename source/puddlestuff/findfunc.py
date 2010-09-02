@@ -22,11 +22,10 @@
 
 import audioinfo, os, pdb, sys, string, re
 from decimal import Decimal, InvalidOperation
-try:
-    from pyparsing import Word, alphas,Literal, OneOrMore,NotAny, alphanums, nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, CharsNotIn, White, originalTextFor, nestedExpr, Optional, commaSeparatedList
-except ImportError:
-    sys.stderr.write("The PyParsing module wasn't found. Did you install it correctly?\n")
-    sys.exit(0)
+from pyparsing import (Word, alphas,Literal, OneOrMore, NotAny, alphanums, 
+    nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, 
+    CharsNotIn, White, originalTextFor, nestedExpr, 
+    Optional, commaSeparatedList)
 from puddlesettings import PuddleConfig
 from funcprint import pprint
 from puddlestuff.util import PluginFunction
