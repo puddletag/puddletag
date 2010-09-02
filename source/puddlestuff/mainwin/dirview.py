@@ -169,9 +169,11 @@ class DirView(QTreeView):
             select = val[0]
             expand = val[1]
             [selectindex(z, QItemSelectionModel.Select) for z in select]
-            self.setCurrentIndex(select[0])
-            self.scrollTo(select[0])
-            [self.expand(z) for z in expand]
+            if select:
+                self.setCurrentIndex(select[0])
+                self.scrollTo(select[0])
+            if expand:
+                [self.expand(z) for z in expand]
             self.blockSignals(False)
             self.setEnabled(True)
             self._load = load
