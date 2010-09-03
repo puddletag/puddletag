@@ -168,10 +168,10 @@ class DirView(QTreeView):
             qmutex.lock()
             select = val[0]
             expand = val[1]
-            [selectindex(z, QItemSelectionModel.Select) for z in select]
             if select:
                 self.setCurrentIndex(select[0])
                 self.scrollTo(select[0])
+            [selectindex(z, QItemSelectionModel.Select) for z in select]
             if expand:
                 [self.expand(z) for z in expand]
             self.blockSignals(False)

@@ -5,7 +5,7 @@ from os.path import join, exists
 import os
 from PyQt4.QtCore import QObject, SIGNAL
 from collections import defaultdict
-import urllib2, socket
+import urllib2, socket, urllib
 
 all = ['musicbrainz']
 
@@ -63,15 +63,22 @@ def write_log(text):
     
 def parse_searchstring(text):
     try:
-        text = [z.split(';') for z in text.split(u'|') if z]
+        text = [z.split(u';') for z in text.split(u'|') if z]
         return [(z.strip(), v.strip()) for z, v in text]
     except ValueError:
         raise RetrievalError('<b>Error parsing artist/album combinations.</b>')
     return []
 
+def set_useragent(agent):
+    class MyOpener(urllib.FancyURLopener):
+        version = agent
+    global _urlopen
+    _urlopen = MyOpener().open
+
+_urlopen = urllib2.urlopen
 def urlopen(url):
     try:
-        return urllib2.urlopen(url).read()
+        return _urlopen(url).read()
     except urllib2.URLError, e:
         msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         raise RetrievalError(msg)

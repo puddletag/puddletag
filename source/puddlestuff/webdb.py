@@ -27,7 +27,7 @@ from PyQt4.QtGui import *
 from collections import defaultdict
 #import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import (RetrievalError, status_obj, write_log, 
-    tagsources)
+    tagsources, set_useragent)
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
@@ -245,9 +245,10 @@ class SettingsDialog(QWidget):
         
         albumformat = cparser.get('tagsources', 'albumpattern',
             u'%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
-        artoptions = cparser.get('tagsource', 'artoptions',
+        artoptions = cparser.get('tagsources', 'artoptions',
             ['Replace existing album art.', 'Append to existing album art.',
                 "Leave artwork unchanged."])
+        useragent = cparser.get('tagsources', 'useragent', '')
 
         saveart = cparser.get('tagsources', 'saveart', False)
         coverdir = cparser.get('tagsources', 'coverdir', False)
@@ -266,6 +267,10 @@ class SettingsDialog(QWidget):
         sortlabel.setBuddy(self._sortoptions)
         editoptions = QPushButton('&Edit')
         self.connect(editoptions, SIGNAL('clicked()'), self._editOptions)
+        
+        ua_label = QLabel('User-Agent to use for screen scraping.')
+        self._ua = QTextEdit()
+        self._ua.setText(useragent)
 
         self._savecover = QCheckBox('Save album art.')
         
@@ -293,6 +298,9 @@ class SettingsDialog(QWidget):
         sortbox.addWidget(self._sortoptions, 1)
         sortbox.addWidget(editoptions)
         vbox.addLayout(sortbox)
+        
+        vbox.addWidget(ua_label)
+        vbox.addWidget(self._ua)
 
         vbox.addStretch()
         self.setLayout(vbox)
@@ -318,6 +326,9 @@ class SettingsDialog(QWidget):
         control.listbox.setSortOptions(sort_options)
 
         control.listbox.sort(sort_options[sort_combo.currentIndex()])
+        
+        useragent = unicode(self._ua.toPlainText())
+        set_useragent(useragent)
 
         cparser = PuddleConfig()
         cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
@@ -327,6 +338,7 @@ class SettingsDialog(QWidget):
         cparser.set('tagsources', 'savecover', savecover)
         cparser.set('tagsources', 'coverdir', coverdir)
         cparser.set('tagsources', 'sortoptions', sort_options_text)
+        cparser.set('tagsources', 'useragent', useragent)
     
     def _editOptions(self):
         text = self._sortoptions.itemText
@@ -357,7 +369,7 @@ class MainWin(QWidget):
         QWidget.__init__(self, parent)
         self.settingsdialog = SettingsDialog
         self.emits = ['writepreview', 'setpreview', 'clearpreview',
-            'enable_preview_mode', 'logappend']
+            'enable_preview_mode', 'logappend', 'disable_preview_mode']
         self.receives = []
         self.setWindowTitle("Tag Sources")
         self.mapping = audioinfo.mapping
@@ -412,6 +424,7 @@ class MainWin(QWidget):
                             "metadata.")
 
         self.listbox = ReleaseWidget(status, self._tagsource)
+        self._existing = QCheckBox('Update empty fields only.')
 
         self._taglist = TagListWidget()
         tooltip = 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.'
@@ -420,10 +433,7 @@ class MainWin(QWidget):
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
         self.connect(status_obj, SIGNAL('statusChanged'), self.label.setText)
         
-        def emit_preview(tags):
-            self.emit(SIGNAL('enable_preview_mode'))
-            self.emit(SIGNAL('setpreview'), tags)
-        self.connect(self.listbox, SIGNAL('preview'), emit_preview)
+        self.connect(self.listbox, SIGNAL('preview'), self.emit_preview)
         
         self.connect(status_obj, SIGNAL('logappend'), SIGNAL('logappend'))
         
@@ -437,6 +447,9 @@ class MainWin(QWidget):
         vbox = QVBoxLayout()
         vbox.addLayout(sourcebox)
         vbox.addLayout(hbox)
+        
+        vbox.addWidget(self._existing)
+        
         vbox.addWidget(self.label)
         vbox.addWidget(self.listbox, 1)
         hbox = QHBoxLayout()
@@ -458,7 +471,7 @@ class MainWin(QWidget):
             cparser.set(name, section[0], value)
 
     def _clear(self):
-        self.emit(SIGNAL('clearpreview'))
+        self.emit(SIGNAL('disable_preview_mode'))
 
     def _changeSource(self, index):
         self._tagsource = self._tagsources[index]
@@ -498,6 +511,22 @@ class MainWin(QWidget):
 
     def closeEvent(self, e):
         self._clear()
+    
+    def emit_preview(self, tags):
+        if self._existing.checkState() != Qt.Checked:
+            self.emit(SIGNAL('enable_preview_mode'))
+            self.emit(SIGNAL('setpreview'), tags)
+        else:
+            files = self._status['selectedfiles']
+            previews = []
+            for f, r in zip(files, tags):
+                temp = {}
+                for field in r:
+                    if field not in f:
+                        temp[field] = r[field]
+                previews.append(temp)
+            self.emit(SIGNAL('enable_preview_mode'))
+            self.emit(SIGNAL('setpreview'), previews)
 
     def getInfo(self):
         files = self._status['selectedfiles']
@@ -588,6 +617,14 @@ class MainWin(QWidget):
         
         filepath = os.path.join(SAVEDIR, 'mappings')
         self.setMapping(audioinfo.loadmapping(filepath))
+        
+        useragent = settings.get('tagsources', 'useragent', '')
+        if useragent:
+            set_useragent(useragent)
+        
+        checkstate = settings.get('tagsources', 'existing', False)
+        self._existing.setCheckState(Qt.Checked if checkstate 
+            else Qt.Unchecked)
 
     def saveSettings(self):
         settings = PuddleConfig()
@@ -596,6 +633,8 @@ class MainWin(QWidget):
         for i, name in enumerate(self._sourcenames):
             settings.set('tagsourcetags', name , self._tagstowrite[i])
         settings.set('tagsources', 'lastsort', self.listbox.lastSortIndex)
+        settings.set('tagsources', 'existing', True if 
+            self._existing.checkState() == Qt.Checked else False)
     
     def setMapping(self, mapping):
         self.mapping = mapping

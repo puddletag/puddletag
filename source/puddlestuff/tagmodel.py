@@ -1554,10 +1554,18 @@ class TagTable(QTableView):
     
     def previewMode(self, value):
         if not value:
-            ret = QMessageBox.question(self, 'puddletag', 
-                'Do you want to exit Preview Mode?', QMessageBox.Ok, QMessageBox.No)
-            if ret != QMessageBox.Ok:
-                return
+            previews = False
+            for z in self.model().taginfo:
+                if z.preview:
+                    previews = True
+                    continue
+
+            if previews:
+                ret = QMessageBox.question(self, 'puddletag', 
+                    'Do you want to exit Preview Mode?', 
+                    QMessageBox.Ok, QMessageBox.No)
+                if ret != QMessageBox.Ok:
+                    return
         self.model().previewMode = value
 
     def reloadFiles(self, filenames = None):

@@ -52,6 +52,7 @@ FIELDS = 'fields'
 JFDI = 'jfdi'
 NAME = 'name'
 DESC = 'description'
+EXISTING_ONLY = 'field_exists'
 
 DEFAULT_PROFILE = {
     ALBUM_BOUND: 50, 
@@ -61,7 +62,8 @@ DEFAULT_PROFILE = {
     NAME: u'Default', 
     JFDI: True, 
     FIELDS: [u'artist', u'title'],
-    DESC: u''}
+    DESC: u'',
+    EXISTING_ONLY: False}
 
 status_obj = QObject()
 
@@ -138,6 +140,7 @@ def load_config(filename = CONFIG):
         '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
     desc = cparser.get(info_section, DESC, u'')
+    existing = cparser.get(info_section, EXISTING_ONLY, u'')
     
     configs = []
     for num in range(numsources):
@@ -152,7 +155,8 @@ def load_config(filename = CONFIG):
 
     return {SOURCE_CONFIGS: configs, PATTERN: pattern, 
         ALBUM_BOUND: album_bound, TRACK_BOUND: track_bound,
-        FIELDS: match_fields, JFDI: jfdi, NAME: name, DESC: desc}
+        FIELDS: match_fields, JFDI: jfdi, NAME: name, DESC: desc,
+        EXISTING_ONLY: existing}
 
 def load_profiles(self, dirpath = PROFILEDIR):
     profiles = [load_config(conf) for conf in glob.glob(dirpath + u'/*.conf')]
@@ -171,7 +175,7 @@ def load_profiles(self, dirpath = PROFILEDIR):
 
     return profiles
 
-def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False):
+def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False, existing=False):
     if not keys:
         keys = ['artist', 'title']
     ret = {}
@@ -199,7 +203,6 @@ def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False):
                 continue
             else:
                 ret[audio] = retrieved
-    return ret
 
 def merge_tracks(old_tracks, new_tracks):
     if not old_tracks:
@@ -357,7 +360,8 @@ def save_configs(configs, filename=CONFIG):
     info_section = 'info'
     
     cparser.set(info_section, NAME, configs[NAME])
-    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS, JFDI, DESC]:
+    for key in [ALBUM_BOUND, PATTERN, TRACK_BOUND, FIELDS, JFDI, DESC, 
+        EXISTING_ONLY]:
         cparser.set(info_section, key, configs[key])
     
     cparser.set(info_section, 'numsources', len(configs[SOURCE_CONFIGS]))
@@ -438,6 +442,8 @@ class ProfileEdit(QDialog):
         self.jfdi = QCheckBox('Brute force unmatched files.')
         self.jfdi.setToolTip("<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>")
         
+        self.existing = QCheckBox(u'Update empty fields only.')
+        
         self.grid.addLayout(namelayout, 0, 0, 1, 2)
         self.grid.addLayout(desclayout, 1, 0, 1, 2)
         self.grid.addWidget(self.listbox, 2, 0)
@@ -452,7 +458,8 @@ class ProfileEdit(QDialog):
         self.grid.addLayout(create_buddy('Minimum percentage required for '
             'track match.', self.trackBound), 6, 0, 1, 2)
         self.grid.addWidget(self.jfdi, 7, 0, 1, 2)
-        self.grid.addLayout(self.okcancel, 8, 0, 1, 2)
+        self.grid.addWidget(self.existing, 8, 0, 1, 2)
+        self.grid.addLayout(self.okcancel, 9, 0, 1, 2)
         
         self.setLayout(self.grid)
         
@@ -536,7 +543,9 @@ class ProfileEdit(QDialog):
             FIELDS: fields,
             JFDI: True if self.jfdi.checkState() == Qt.Checked else False,
             NAME: unicode(self._name.text()),
-            DESC: unicode(self._desc.text())}
+            DESC: unicode(self._desc.text()),
+            EXISTING_ONLY: True if self.existing.checkState() == Qt.Checked \
+                else False}
         self.emit(SIGNAL('profileChanged'), configs)
         self.close()
     
@@ -558,7 +567,9 @@ class ProfileEdit(QDialog):
         self.jfdi.setCheckState(Qt.Checked if configs[JFDI] else
             Qt.Unchecked)
         self._name.setText(configs[NAME])
-        self._desc.setTExt(configs[DESC])
+        self._desc.setText(configs[DESC])
+        self.existing.setCheckState(Qt.Checked if 
+            configs[EXISTING_ONLY] else Qt.Unchecked)
 
 class ConfigEdit(QDialog):
     def __init__(self, tagsources, previous=None, parent=None):
@@ -774,7 +785,7 @@ class Retriever(QWidget):
         super(Retriever, self).__init__(parent)
         self.receives = []
         self.emits = ['setpreview', 'clearpreview', 'enable_preview_mode',
-            'writepreview']
+            'writepreview', 'disable_preview_mode']
         self.wasCanceled = False
         
         self.setWindowTitle('Mass Tagging')
@@ -787,7 +798,6 @@ class Retriever(QWidget):
         self.tagsources = status['initialized_tagsources']
         
         self._curProfile = QComboBox()
-        
 
         self._status = status
 
@@ -834,7 +844,7 @@ class Retriever(QWidget):
         self._configs = self._profiles[index]
     
     def clearPreview(self):
-        self.emit(SIGNAL('clearpreview'))
+        self.emit(SIGNAL('disable_preview_mode'))
     
     def configure(self):
         win = Config(self.tagsources, self._profiles, self)
@@ -890,6 +900,7 @@ class Retriever(QWidget):
         track_bound = self._configs[TRACK_BOUND] / 100.0
         track_fields = self._configs[FIELDS]
         jfdi = self._configs[JFDI]
+        existing = self._configs[EXISTING_ONLY]
         self.emit(SIGNAL('enable_preview_mode'))
         def method():
             try:
@@ -900,7 +911,7 @@ class Retriever(QWidget):
                         try:
                             retrieved = retrieve(result, album_bound)
                             matched = match_files(retrieved[0], retrieved[1], 
-                                track_bound, track_fields, jfdi)
+                                track_bound, track_fields, jfdi, existing)
                             thread.emit(SIGNAL('setpreview'), matched)
                         except RetrievalError, e:
                             self._appendLog(u'<b>Error: %s</b>' % unicode(e))
