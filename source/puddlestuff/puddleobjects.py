@@ -544,7 +544,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     if temp is not None:
                         #temp[0] is the error message, temp[1] the num files
                         thread.emit(SIGNAL('error(QString, int)'),
-                                                    temp[0], temp[1])
+                            temp[0], temp[1])
                         err = True
                         break
                     else:

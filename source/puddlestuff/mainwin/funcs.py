@@ -20,7 +20,14 @@ status = {}
 
 def applyaction(files, funcs):
     r = findfunc.runAction
-    emit('writeselected', (r(funcs, f) for f in files))
+    state = {'numfiles': len(files)}
+    state['files'] = files
+    def func():
+        for i, f in enumerate(files):
+            state['filenum'] = i
+            value = r(funcs, f, state)
+            yield value
+    emit('writeaction', func(), None, state)
 
 def applyquickaction(files, funcs):
     qa = findfunc.runQuickAction
@@ -433,8 +440,8 @@ def update_status(enable = True):
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
-                'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
-                'adddock', 'highlight']
+    'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
+    'adddock', 'highlight', 'writeaction']
 obj.receives = [('filesselected', update_status),
                 ('patternchanged', update_status)]
 

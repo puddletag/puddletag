@@ -33,8 +33,9 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from puddleobjects import PuddleConfig, safe_name, fnmatch
+from puddleobjects import PuddleConfig, safe_name, fnmatch, dircmp
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time, unicodedata
+from operator import itemgetter
 
 true = u'1'
 false = u'0'
@@ -358,6 +359,17 @@ def remove_fields():
     '''Remove Fields, <blank> $0'''
     return u''
 
+def rename_dirs(tags, state, pattern):
+    '''Rename Directory, "Rename dir: $1"
+&Pattern:, text'''
+    dirname = safe_name(format_value(tags, pattern))
+    old_path = tags['__dirpath']
+    dirpath = path.join(path.dirname(old_path), dirname)
+    if 'rename_dirs' in state:
+        state['rename_dirs'][old_path] = dirpath
+    else:
+        state['rename_dirs'] = {old_path: dirpath}
+
 def replace(text, word, replaceword, matchcase = False, whole = False, chars = None):
     '''Replace, "Replace $0: '$1' -> '$2', Match Case: $3, Words Only: $4"
 &Replace, text
@@ -571,6 +583,7 @@ functions = {"add": add,
             "rand": rand,
             "re": re,
             "re_escape": re_escape,
+            'renamedir': rename_dirs,
             "replace": replace,
             "replaceWithReg": replaceWithReg,
             "right": right,

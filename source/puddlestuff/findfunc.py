@@ -142,9 +142,7 @@ def function_parser(audio):
     funcIdent = Combine('$' + ident.copy()('funcname'))
     funcMacro = funcIdent + originalTextFor(nestedExpr())('args')
     funcMacro.leaveWhitespace()
-    #def strip(s, l, tok):
-        #print s, l, tok
-        #return s.strip()
+
     strip = lambda s, l, tok: tok[0].strip()
     arglist = Optional(delimitedList(QuotedString('"') | 
         CharsNotIn(u',').setParseAction(strip)))
@@ -239,14 +237,20 @@ def replacevars(text, dictionary):
         append(text[start:])
     return u''.join(l)
 
+def run_action(funcs, files):
+    state = {}
+    
 
-def runAction(funcs, audio):
+def runAction(funcs, audio, state = None):
     """Runs an action on audio
 
     funcs can be a list of Function objects or a filename of an action file (see getAction).
     audio must dictionary-like object."""
     if isinstance(funcs, basestring):
         funcs = getAction(funcs)[0]
+    
+    if state is None:
+        state = {}
 
     audio = stringtags(audio)
     changed = set()
@@ -254,11 +258,11 @@ def runAction(funcs, audio):
         tag = func.tag
         val = {}
         if tag[0] == u"__all":
-            tag = [key for key in audio.keys() if key not in NOT_ALL]
+            tag = [key for key in audio if key not in NOT_ALL]
         for z in tag:
             try:
-                t = audio.get(z)
-                ret = func.runFunction(t if t else u'', audio = audio)
+                t = audio.get(z, u'')
+                ret = func.runFunction(t, audio, state)
                 if isinstance(ret, basestring) or not ret:
                     val[z] = ret
                 else:
@@ -434,7 +438,7 @@ class Function:
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
-            self.doc = [','.join([funcname.name, funcname.print_string])] + [','.join(z) for z in funcname.args]
+            self.doc = [u','.join([funcname.name, funcname.print_string])] + [','.join(z) for z in funcname.args]
             self.info = [funcname.name, funcname.print_string]
         else:
             self.function = funcname
@@ -460,21 +464,35 @@ class Function:
     def setArgs(self, args):
         self.args = args
 
-    def runFunction (self, arg1 = None, audio = None):
-        varnames = self.function.func_code.co_varnames
-        if isinstance(arg1, (list,tuple)):
-            arg1 = arg1[0]
+    def runFunction (self, text = None, audio = None, state = None):
+        function = self.function
+        varnames = function.func_code.co_varnames
+        
         if not varnames:
-            return self.function()
+            return function()
+        
+        if state is None:
+            state = {}
+        
+        if isinstance(text, (list,tuple)):
+            text = text[0]
+        
+        arguments = self.args[::]
+        
         if varnames[-1] == 'tags':
-            return self.function(*([arg1] + self.args + [audio]))
+            arguments.insert(0, text)
+            arguments.insert(-1, audio)
         elif varnames[0] == 'tags':
-            return self.function(*([audio] + self.args))
+            arguments.insert(0, audio)
         else:
-            return self.function(*([arg1] + self.args))
+            arguments.insert(0, text)
+
+        if 'state' in varnames:
+            arguments.insert(varnames.index('state'), state)
+        return function(*arguments)
 
     def description(self):
-        d = [", ".join(self.tag)] + self.args
+        d = [u", ".join(self.tag)] + self.args
         return pprint(self.info[1], d)
 
     def setTag(self, tag):

@@ -231,7 +231,8 @@ class MainWin(QMainWindow):
             ('clearpreview', self._clearPreview),
             ('renameselected', self._renameSelected),
             ('playlistchanged', self._dirChanged),
-            ('adddock', self.addDock)]
+            ('adddock', self.addDock),
+            ('writeaction', self.writeAction)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
         load_plugins()
@@ -524,7 +525,7 @@ class MainWin(QMainWindow):
     def updateTotalStats(self, *args):
         self._totalstats.setText(self._updateStatus(status['alltags']))
 
-    def writeTags(self, tagiter, rows=None):
+    def _write(self, tagiter, rows=None):
         if not rows:
             rows = status['selectedrows']
         model = self._table.model()
@@ -555,8 +556,23 @@ class MainWin(QMainWindow):
                         yield m, 1
                     else:
                         yield m, len(rows)
+        
+        return func, fin, rows
 
+    def writeTags(self, tagiter, rows=None):
+        func, fin, rows = self._write(tagiter, rows)
         s = progress(func, 'Writing ', len(rows), fin)
+        s(self)
+    
+    def writeAction(self, tagiter, rows=None, state=None):
+        if state is None:
+            state = {}
+        func, fin, rows = self._write(tagiter, rows)
+        def finished():
+            fin()
+            if 'rename_dirs' in state:
+                self.renameDirs(state['rename_dirs'].items())
+        s = progress(func, 'Writing ', len(rows), finished)
         s(self)
 
     def writeOneToMany(self, d):

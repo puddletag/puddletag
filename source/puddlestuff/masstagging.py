@@ -203,6 +203,16 @@ def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False, existing=
                 continue
             else:
                 ret[audio] = retrieved
+    
+    if existing:
+        previews = []
+        for f, r in ret.items():
+            temp = {}
+            for field in r:
+                if field not in f:
+                    temp[field] = r[field]
+            ret[f] = temp
+    return ret
 
 def merge_tracks(old_tracks, new_tracks):
     if not old_tracks:
