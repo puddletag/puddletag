@@ -563,15 +563,17 @@ class MainWin(QMainWindow):
         ret = self._write(tagiter, rows)
         if ret is None:
             return
-        else:
-            func, fin, rows = ret
-            s = progress(func, 'Writing ', len(rows), fin)
-            s(self)
+        func, fin, rows = ret
+        s = progress(func, 'Writing ', len(rows), fin)
+        s(self)
     
     def writeAction(self, tagiter, rows=None, state=None):
         if state is None:
             state = {}
-        func, fin, rows = self._write(tagiter, rows)
+        ret = self._write(tagiter, rows)
+        if ret is None:
+            return
+        func, fin, rows = ret
         def finished():
             fin()
             if 'rename_dirs' in state:

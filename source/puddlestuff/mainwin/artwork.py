@@ -46,20 +46,20 @@ class ArtworkWidget(QWidget):
 
         self.picwidget.lastfilename = audios[0].filepath
         images = commonimages(images)
+        self.picwidget.setImageTags(imagetags)
         if images == 0:
-            self.picwidget.setImageTags(imagetags)
             self.picwidget.currentImage = 0
             self.picwidget.context = 'Cover Varies'
         elif images is None:
             self.picwidget.currentImage = 1
         else:
-            self.picwidget.setImageTags(imagetags)
             self.picwidget.images.extend(images)
             self.picwidget.currentImage = 2
-        if not imagetags:
-            self.setEnabled(False)
-        else:
+
+        if imagetags:
             self.setEnabled(True)
+        else:
+            self.setEnabled(False)
 
     def init(self):
         pics = self.picwidget.loadPics(':/keep.png', ':/blank.png')
