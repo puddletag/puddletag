@@ -296,11 +296,18 @@ def run_action(parent=None, quickaction=False):
 def run_function(parent=None, prevfunc=None):
 
     selectedfiles = status['selectedfiles']
+    
     if not prevfunc:
         prevfunc = status['prevfunc']
 
     example = selectedfiles[0]
-    text = example.get('title')
+    try:
+        selected_file = status['selectedtags'][0]
+        key = selected_file.keys()[0]
+        text = selected_file[key]
+    except IndexError:
+        text = example.get('title')
+
     if prevfunc:
         f = actiondlg.CreateFunction(prevfunc=prevfunc, parent=parent,
             showcombo=False, example=example, text=text)

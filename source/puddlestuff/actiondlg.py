@@ -124,7 +124,7 @@ class FunctionDialog(QWidget):
             self.vbox.addWidget(QLabel("Fields"))
             self.vbox.addWidget(self.tagcombo)
         self.example = example
-        self._text =text
+        self._text = text
 
         self.textcombos = []
         #Loop that creates all the controls

@@ -100,6 +100,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
     class ModelTag(base):
         def __init__(self, *args, **kwargs):
             self.preview = {}
+            self.edited = None
             super(ModelTag, self).__init__(*args, **kwargs)
         
         def _get_images(self):
@@ -164,27 +165,12 @@ def model_tag(model, base = audioinfo.AbstractTag):
         def __setitem__(self, key, value):
             if model.previewMode:
                 if key in FILETAGS:
-                    test_audio = audioinfo.MockTag()
-                    test_audio.filepath = self[PATH]
+                    value = to_string(value)
 
-                    if key == FILENAME:
-                        test_audio.filename = safe_name(to_string(value))
-                    elif key == EXTENSION:
-                        test_audio.ext = safe_name(to_string(value))
-                    elif key == PATH:
-                        test_audio.filepath = value
-                    
-                    new_values = {FILENAME: test_audio.filename,
-                        PATH: test_audio.filepath,
-                        EXTENSION: test_audio.ext,
-                        DIRNAME: test_audio.dirname,
-                        DIRPATH: test_audio.dirpath}
-                    
-                    self.preview.update(new_values)
-
-                elif key not in READONLY:
-                    if not value:
-                        self.preview
+                if key not in READONLY:
+                    if not value and key in self.preview:
+                        del(self.preview[key])
+                        return
                     if self[key] != value:
                         self.preview[key] = value
 
@@ -1179,7 +1165,7 @@ class TagTable(QTableView):
         self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
             'viewfilled', 'filesselected', 'enableUndo',
             'playlistchanged', 'deletedfromlib', 'libfilesedited',
-            'previewModeChanged', 'dirsmoved']
+            'previewModeChanged']
         self.receives = [
             ('loadFiles', self.loadFiles),
             ('removeFolders', self.removeFolders),
@@ -1254,16 +1240,17 @@ class TagTable(QTableView):
 
     autoresize = property(_getResize, _setResize)
 
-    def changeFolder(self, olddir, newdir):
-      try:
-        for i, d in enumerate(self.dirs[::]):
-            if d == olddir:
-                self.dirs[i] = newdir
-            elif d.startswith(olddir):
-                self.dirs[i] = newdir + d[len(olddir):]
-      except IndexError:
-        pass
-      self.model().changeFolder(olddir, newdir)
+    def changeFolder(self, olddir, newdir, updatemodel=True):
+        try:
+            for i, d in enumerate(self.dirs[::]):
+                if d == olddir:
+                    self.dirs[i] = newdir
+                elif d.startswith(olddir):
+                    self.dirs[i] = newdir + d[len(olddir):]
+        except IndexError:
+            pass
+        if updatemodel:
+            self.model().changeFolder(olddir, newdir)
 
     def clearAll(self):
         self.model().taginfo = []
@@ -1519,7 +1506,7 @@ class TagTable(QTableView):
     def _loadFilesDone(self, tags, append, filepath):
         self.fillTable(tags, append)
         if not filepath:
-            self.emit(SIGNAL('dirschanged'), self.dirs)
+            self.emit(SIGNAL('dirschanged'), self.dirs[::])
         else:
             self.emit(SIGNAL('playlistchanged'), filepath)
         self.emit(SIGNAL('filesloaded'), True)
@@ -1537,7 +1524,7 @@ class TagTable(QTableView):
     def load_tags(self, tags):
         self.fillTable(tags, False)
         self.dirs = []
-        self.emit(SIGNAL('dirschanged'), self.dirs)
+        self.emit(SIGNAL('dirschanged'), self.dirs[::])
         self.emit(SIGNAL('filesloaded'), True)
         sortcolumn = self.horizontalHeader().sortIndicatorSection()
         QTableView.sortByColumn(self, sortcolumn)

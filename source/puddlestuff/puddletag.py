@@ -240,6 +240,7 @@ class MainWin(QMainWindow):
         self.setWindowTitle("puddletag")
         self.setDockNestingEnabled(True)
         self._table = TagTable()
+        self.connect(self._table, SIGNAL('dirsmoved'), self.updateDirs)
         win = QSplitter()
 
         layout = QVBoxLayout()
@@ -307,23 +308,26 @@ class MainWin(QMainWindow):
         self._table.model().unSetTestData()
 
     def _dirChanged(self, dirs):
-        if isinstance(dirs, basestring):
-            self.setWindowTitle(u'puddletag: %s' % dirs)
-            return
         if not dirs:
             self.setWindowTitle('puddletag')
-            self._lastdir = dirs
+            self._lastdir = []
             return
+        
+        if isinstance(dirs, basestring):
+            dirs = [dirs]
+
         if self._lastdir:
             initial = self._lastdir[0]
         else:
             initial = None
-        if initial in dirs and len(dirs) > 1:
+        
+        if initial not in dirs:
+            initial = dirs[0]
+        
+        if len(dirs) > 1:
             self.setWindowTitle(u'puddletag: %s + others' % initial)
-        elif initial not in dirs and len(dirs) == 1:
-            self.setWindowTitle(u'puddletag: %s' % dirs[0])
-        elif initial not in dirs and len(dirs) > 1:
-            self.setWindowTitle(u'puddletag: %s + others' % dirs[0])
+        else:
+            self.setWindowTitle(u'puddletag: %s' % initial)
         self._lastdir = dirs
 
     def _getDir(self):
@@ -671,12 +675,15 @@ class MainWin(QMainWindow):
         self._table.saveSelection()
         showmessage = True
         dirs = sorted(dirs, dircmp, itemgetter(0))
+        print self.last
         for index, (olddir, newdir) in enumerate(dirs):
             try:
                 if os.path.exists(newdir) and (olddir != newdir):
                     raise IOError(EEXIST, os.strerror(EEXIST), newdir)
                 os.rename(olddir, newdir)
                 self._table.changeFolder(olddir, newdir)
+                if self._lastdir and olddir in self._lastdir:
+                    self._lastdir[self._lastdir.index(oldir)] = newdir
             except (IOError, OSError), detail:
                 msg = u"I couldn't rename: <i>%s</i> to <b>%s</b> (%s)" % (olddir, newdir, unicode(detail.strerror))
                 if index == len(dirs) - 1:
@@ -690,7 +697,20 @@ class MainWin(QMainWindow):
                     elif ret is False:
                         break
         self.emit(SIGNAL('dirsmoved'), dirs)
+        self._dirChanged(self._lastdir)
         self._table.restoreSelection()
+    
+    def updateDirs(self, dirs):
+        if self._lastdir:
+            last = self._lastdir[::]
+        else:
+            last = None
+        for index, (olddir, newdir) in enumerate(dirs):
+            self._table.changeFolder(olddir, newdir, False)
+            if last and olddir in last:
+                last[last.index(olddir)] = newdir
+        self.emit(SIGNAL('dirsmoved'), dirs)
+        self._dirChanged(last)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
