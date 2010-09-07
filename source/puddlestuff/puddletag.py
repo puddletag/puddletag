@@ -560,9 +560,13 @@ class MainWin(QMainWindow):
         return func, fin, rows
 
     def writeTags(self, tagiter, rows=None):
-        func, fin, rows = self._write(tagiter, rows)
-        s = progress(func, 'Writing ', len(rows), fin)
-        s(self)
+        ret = self._write(tagiter, rows)
+        if ret is None:
+            return
+        else:
+            func, fin, rows = ret
+            s = progress(func, 'Writing ', len(rows), fin)
+            s(self)
     
     def writeAction(self, tagiter, rows=None, state=None):
         if state is None:
