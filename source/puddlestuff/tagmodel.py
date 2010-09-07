@@ -486,8 +486,8 @@ class TagModel(QAbstractTableModel):
         for i, audio in tags:
             if audio.dirpath == olddir:
                 audio.dirpath = newdir
-            else: #Newdir is a parent
-                audio.dirpath = newdir + audio.dirpath[len(olddir):]
+            elif issubfolder(olddir, audio.dirpath): #Newdir is a parent
+                audio.dirpath = os.path.join(newdir, audio.dirname)
             if audio.library:
                 audio.save(True)
         rows = [z[0] for z in tags]
@@ -743,6 +743,11 @@ class TagModel(QAbstractTableModel):
         del(self.taginfo[position])
         self.endRemoveRows()
         return True
+    
+    def renameDir(self, oldpath, newpath):
+        os.rename(oldpath, newpath)
+        self.changeFolder(oldpath, newpath)
+        self.emit(SIGNAL('dirsmoved'), [[oldpath, newpath]])
 
     def renameFile(self, row, tags):
         """If tags(a dictionary) contains a PATH key, then the file
@@ -825,13 +830,13 @@ class TagModel(QAbstractTableModel):
             currentfile = self.taginfo[index.row()]
             newvalue = unicode(value.toString())
             realtag = currentfile.mapping.get(tag, tag)
-            if realtag in FILETAGS and tag not in [FILENAME, EXTENSION]:
+            if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
                 return False
 
             try:
                 if tag not in FILETAGS:
                     newvalue = filter(None, newvalue.split(u'\\'))
-                ret = self.setRowData(index.row(), {tag: newvalue})
+                ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
                 if not self.previewMode and currentfile.library:
                     self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
                 self.undolevel += 1
@@ -875,18 +880,27 @@ class TagModel(QAbstractTableModel):
 
         if justrename:
             filetags = real_filetags(audio.mapping, audio.revmapping, tags)
-            undo = dict([(tag, copy(audio[tag])) if tag in audio
-                else (tag, []) for tag in tags])
+            undo = dict([(field, copy(audio.get(field, []))) 
+                for field in tags if 
+                tags.get(field, u'') != audio.get(field, u'')])
             rename_file(audio, filetags)
             if audio.library:
                 audio.save(True)
-            audio.undo[self.undolevel] = undo
+            if undo:
+                audio.undo[self.undolevel] = undo
         else:
             artist = audio.sget('artist')
-            audio.undo[self.undolevel] = write(audio, tags, 
-                self.saveModification)
+            undo_val = write(audio, tags, self.saveModification)
+            if undo:
+                audio.undo[self.undolevel] = undo_val
             if audio.library:
                 return (artist, tags)
+        
+        if '__dirname' in tags:
+            newdir = os.path.join(os.path.dirname(audio.dirpath), 
+                tags['__dirname'])
+            if newdir != audio.dirpath:
+                self.renameDir(audio.dirpath, newdir)
 
     def setTestData(self, rows, previews=None):
         """A method that allows you to change the visible data of
@@ -1165,7 +1179,7 @@ class TagTable(QTableView):
         self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
             'viewfilled', 'filesselected', 'enableUndo',
             'playlistchanged', 'deletedfromlib', 'libfilesedited',
-            'previewModeChanged']
+            'previewModeChanged', 'dirsmoved']
         self.receives = [
             ('loadFiles', self.loadFiles),
             ('removeFolders', self.removeFolders),
@@ -1612,6 +1626,7 @@ class TagTable(QTableView):
         self.connect(model, SIGNAL('sorted'), self.restoreSort)
         self.connect(model, SIGNAL('previewModeChanged'), 
             SIGNAL('previewModeChanged'))
+        self.connect(model, SIGNAL('dirsmoved'), SIGNAL('dirsmoved'))
         #self.connect(model, SIGNAL('modelReset()'), self.restoreAfterReset)
 
     def currentRowSelection(self):

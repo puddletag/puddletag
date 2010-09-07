@@ -448,8 +448,6 @@ class MainWin(QWidget):
         vbox.addLayout(sourcebox)
         vbox.addLayout(hbox)
         
-        vbox.addWidget(self._existing)
-        
         vbox.addWidget(self.label)
         vbox.addWidget(self.listbox, 1)
         hbox = QHBoxLayout()
@@ -460,6 +458,7 @@ class MainWin(QWidget):
         vbox.addLayout(hbox)
 
         vbox.addWidget(self._taglist)
+        vbox.addWidget(self._existing)
         self.setLayout(vbox)
         self._changeSource(0)
         

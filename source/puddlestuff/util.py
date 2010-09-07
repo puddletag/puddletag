@@ -107,8 +107,9 @@ def write(audio, tags, save_mtime = True):
         preview = audio.preview
         audio.preview = {}
 
-    undo = dict([(tag, copy(audio[tag])) if tag in audio
-                    else (tag, []) for tag in tags])
+    undo = dict([(field, copy(audio.get(field, []))) 
+                for field in tags if 
+                tags.get(field, u'') != audio.get(field, u'')])
 
     oldimages = None
     if '__image' in tags:
@@ -116,7 +117,6 @@ def write(audio, tags, save_mtime = True):
             del(tags['__image'])
         else:
             oldimages = audio['__image']
-            undo['__image'] = oldimages
             images = []
             for z in tags['__image']:
                 images.append(dict([(key,val) for key,val in z.items()

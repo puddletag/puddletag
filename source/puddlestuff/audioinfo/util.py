@@ -280,7 +280,9 @@ def getdeco(func):
 def setdeco(func):
     def f(self, key, value):
         mapping = self.revmapping
-        if key in mapping:
+        if key.lower() in mapping:
+            return func(self, mapping[key.lower()], value)
+        elif key in mapping:
             return func(self, mapping[key], value)
         return func(self, key, value)
     return f

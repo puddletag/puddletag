@@ -459,6 +459,15 @@ Replace &matches with:, text"""
     else:
         return
 
+
+validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (
+    string.ascii_letters, string.digits, os.path.sep)
+
+#Contributed by erik reckase
+def removeDisallowedFilenameChars(t_filename):
+    cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
+    return u''.join(c for c in cleanedFilename if c in validFilenameChars)
+
 def right(text,n):
     try:
         n = int(n)
@@ -542,12 +551,6 @@ def validate(text, to=None, chars=None):
         return safe_name(text, to=to)
     else:
         return safe_name(text, chars, to=to)
-        
-validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (string.ascii_letters, string.digits, os.path.sep)
-
-def removeDisallowedFilenameChars(t_filename):
-    cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
-    return u''.join(c for c in cleanedFilename if c in validFilenameChars)
 
 functions = {"add": add,
             "and": and_,
@@ -583,7 +586,6 @@ functions = {"add": add,
             "rand": rand,
             "re": re,
             "re_escape": re_escape,
-            'renamedir': rename_dirs,
             "replace": replace,
             "replaceWithReg": replaceWithReg,
             "right": right,

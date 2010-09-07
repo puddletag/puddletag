@@ -406,7 +406,42 @@ def popm_handler(frames):
         frame.get_value = get_value
         frame.set_value = set_value
         frame.frames = frames
-    return {'popularitimeter': frame}
+    return {'popularimeter': frame}
+
+def create_ufid(key, value):
+    if not isinstance(value, basestring):
+        try:
+            value = value[0]
+        except IndexError:
+            return {}
+    if isinstance(value, unicode):
+        value = value.decode('utf8')
+    owner = key[len('ufid:'):]
+    frame = id3.UFID(owner, value)
+    frame.get_value = partial(get_ufid, frame)
+    frame.set_value = partial(set_ufid, frame)
+    return {u'ufid:' + frame.owner: frame}
+
+def set_ufid(frame, value):
+    if not isinstance(value, basestring):
+        try:
+            value = value[0]
+        except IndexError:
+            return {}
+    if isinstance(value, unicode):
+        value = value.decode('utf8')
+    frame.data = value
+
+def get_ufid(frame):
+    return [frame.data.encode('utf8')]
+
+def ufid_handler(frames):
+    d = {}
+    for frame in frames:
+        frame.get_value = get_factory(get_ufid, frame)
+        frame.set_value = set_factory(set_ufid, frame)
+        d['ufid:' + frame.owner] = frame
+    return d
 
 write_frames.update({'playcount': create_playcount,
                      'popularitimeter': create_popm})
@@ -426,11 +461,12 @@ frames.update([(key, uurl_handler(title)) for key, title in
 frames.update([(key, paired_handler(title)) for key, title in
                 paired_textframes.items()])
 
-frames.update({mutagen.id3.WXXX: userurl_handler,
-               mutagen.id3.TXXX: usertext_handler,
-               mutagen.id3.COMM: comment_handler,
+frames.update({id3.WXXX: userurl_handler,
+               id3.TXXX: usertext_handler,
+               id3.COMM: comment_handler,
                id3.PCNT: playcount_handler,
-               id3.POPM: popm_handler})
+               id3.POPM: popm_handler,
+               id3.UFID: ufid_handler})
 
 revframes = dict([(val, key) for key, val in frames.items()])
 
@@ -447,7 +483,7 @@ def handle(f):
 
 class Tag(TagBase):
     IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
-                                                        util.IMAGETYPE)
+        util.IMAGETYPE)
     mapping = {}
     revmapping = {}
 
@@ -468,7 +504,7 @@ class Tag(TagBase):
                 #This is a bit of a bother since there will never be a KeyError exception
                 #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
                 #if a key doesn't exist.
-                return ""
+                return u""
 
     def delete(self):
         self._mutfile.delete()
@@ -563,8 +599,8 @@ class Tag(TagBase):
         audio = self._mutfile
         util.MockTag.save(self)
 
-
-        userkeys = self.usertags.keys()
+        #pdb.set_trace()
+        userkeys = [self.revmapping.get(key, key) for key in self.usertags.keys()]
         frames = []
         [frames.append(frame) if not hasattr(frame, 'frames') else
             frames.extend(frame.frames) for key, frame in self._tags.items()
@@ -588,11 +624,13 @@ class Tag(TagBase):
         else:
             toremove.extend(images)
 
+        #pdb.set_trace()
         for z in set(toremove):
             try:
                 del(audio[z])
             except KeyError:
                 continue
+        #pdb.set_trace()
 
         audio.tags.filename = self.filepath
         audio.tags.save(v1=v1_option)
@@ -639,6 +677,8 @@ class Tag(TagBase):
                 self._tags.update(create_comment(key[len('comment:'):], value))
             elif key.startswith('www:'):
                 self._tags.update(create_userurl(key, value))
+            elif key.startswith('ufid:'):
+                self._tags.update(create_ufid(key, value))
             else:
                 self._tags.update(create_usertext(key, value))
 

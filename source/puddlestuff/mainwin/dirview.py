@@ -81,6 +81,7 @@ class DirView(QTreeView):
         getindex = model.index
         parents = set([os.path.dirname(z[0]) for z in dirs])
         thread = PuddleThread(lambda: [getindex(z[0]) for z in dirs], self)
+        selected = self.selectedIndexes()
         def finished(indexes):
             qmutex.lock()
             for p in parents:
@@ -89,7 +90,8 @@ class DirView(QTreeView):
                     model.refresh(i)
                     self.expand(i)
             for idx, (olddir,newdir) in zip(indexes, dirs):
-                selectindex(getindex(newdir), QItemSelectionModel.Select)
+                if idx in selected:
+                    selectindex(getindex(newdir), QItemSelectionModel.Select)
             self._load = l
             qmutex.unlock()
         self.connect(thread, SIGNAL('threadfinished'), finished)

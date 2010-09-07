@@ -1082,6 +1082,11 @@ class ArtworkLabel(QLabel):
             filenames = [unicode(z.path()) for z in mime.urls()]
             self.emit(SIGNAL('newImages'), *filenames)
         super(ArtworkLabel, self).dropEvent(event)
+    
+    def mouseReleaseEvent(self, event):
+      if event.button() == Qt.LeftButton:
+        self.emit(SIGNAL("clicked()"))
+      QLabel.mousePressEvent(self, event)
 
 class PicWidget(QWidget):
     """A widget that shows a file's pictures.

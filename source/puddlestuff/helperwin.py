@@ -609,10 +609,14 @@ class ExTags(QDialog):
                 row = rowcount
                 self._settag(rowcount, tag, value, ADD)
             else:
-                row = self.listbox.currentRow()
-                self._settag(row, tag, value, EDIT)
-                if row +1< rowcount:
-                    self.listbox.selectRow(row + 1)
+                if tag == prevtag[0]:
+                    row = self.listbox.currentRow()
+                    self._settag(row, tag, value, EDIT)
+                    if row +1< rowcount:
+                        self.listbox.selectRow(row + 1)
+                else:
+                    self.removeTag()
+                    self._settag(rowcount, tag, value, ADD)
         else:
             self._settag(rowcount, tag, value, ADD)
         self._checkListBox()
