@@ -675,7 +675,6 @@ class MainWin(QMainWindow):
         self._table.saveSelection()
         showmessage = True
         dirs = sorted(dirs, dircmp, itemgetter(0))
-        print self.last
         for index, (olddir, newdir) in enumerate(dirs):
             try:
                 if os.path.exists(newdir) and (olddir != newdir):

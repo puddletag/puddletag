@@ -1106,7 +1106,6 @@ class TagTable(QTableView):
     def __init__(self, headerdata = None, parent = None):
         QTableView.__init__(self,parent)
         self.settingsdialog = ColumnSettings
-        self.saveModification = True
         if not headerdata:
             headerdata = []
         header = TableHeader(Qt.Horizontal, headerdata, self)
@@ -1234,7 +1233,7 @@ class TagTable(QTableView):
             self.setShowGrid(d['Show &gridlines'])
             self.verticalHeader().setVisible(d['Show &row numbers'])
             self.autoresize = d['Automatically resize columns to contents']
-            self.saveModification = d['&Preserve file modification times']
+            self.model().saveModification = d['&Preserve file modification times']
             self.playcommand = d['Program to &play files with:'].split(' ')
             self.model().showToolTip = d['Show tooltips in file-view:']
 
