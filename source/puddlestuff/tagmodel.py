@@ -208,7 +208,8 @@ def _Tag(model):
         from audioinfo import apev2
         filetype = [z for z in options if z[2] == 'ID3'][0]
         if write_apev2:
-            filetype[1] = combine(audioinfo._id3_type[1], apev2.filetype[1])
+            filetype[1] = model_tag(model, 
+                combine(audioinfo._id3_type[1], apev2.filetype[1]))
         else:
             filetype[1] = model_tag(model, audioinfo._id3_type[1])
     
