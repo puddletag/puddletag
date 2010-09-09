@@ -345,21 +345,36 @@ class Tags(QWidget):
             'done with the ID3v1 tag?')
         v1_label.setBuddy(self._v1_combo)
         
+        self._apev2 = QCheckBox('Write APEv2')
+        
+        layout = QVBoxLayout()
         vbox = QVBoxLayout()
         
-        vbox.addWidget(speclabel)
-        vbox.addWidget(self._filespec)
+        layout.addWidget(speclabel)
+        layout.addWidget(self._filespec)
         
         vbox.addWidget(v1_label)
         vbox.addWidget(self._v1_combo)
+        
+        vbox.addWidget(self._apev2)
+        
         vbox.addStretch()
-        self.setLayout(vbox)
+        
+        group = QGroupBox('ID3')
+        group.setLayout(vbox)
+
+        layout.addWidget(group)
+        self.setLayout(layout)
 
         cparser = PuddleConfig()
         index = cparser.get('id3tags', 'v1_option', 2)
         self._v1_combo.setCurrentIndex(index)
         filespec = u';'.join(cparser.get('table', 'filespec', []))
         self._filespec.setText(filespec)
+        
+        write_ape = index = cparser.get('id3tags', 'write_ape', False)
+        
+        self._apev2.setChecked(write_ape)
 
     def applySettings(self, control=None):
         cparser = PuddleConfig()
@@ -371,7 +386,9 @@ class Tags(QWidget):
         control.filespec = filespec
         filespec = [z.strip() for z in filespec.split(';')]
         cparser.set('table', 'filespec', filespec)
-
+        
+        cparser.set('id3tags', 'write_ape', self._apev2.isChecked())
+        audioinfo.set_id3_options(self._apev2.isChecked())
 
 class ListModel(QAbstractListModel):
     def __init__(self, options):

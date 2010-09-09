@@ -22,7 +22,7 @@
 from mutagen.flac import FLAC, Picture
 import util
 from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
-                    getfilename, getinfo, FILENAME, PATH, INFOTAGS, str_filesize)
+    getfilename, getinfo, FILENAME, PATH, INFOTAGS, str_filesize)
 import ogg
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -103,7 +103,11 @@ class TempTag(ogg.Tag):
 if IMAGETAGS:
     class Tag(TempTag):
         IMAGETAGS = IMAGETAGS
-        def image(self, data, description = '', mime = '', imagetype=0):
+        def _picture(self, image):
+            data = image[util.DATA]
+            description = image.get(util.DESCRIPTION, '')
+            mime = image.get(util.MIMETYPE)
+            imagetype = image.get(util.IMAGETYPE, 3)
             props = imageproperties(data = data)
             props['type'] = imagetype
             props['desc'] = description
@@ -121,7 +125,10 @@ if IMAGETAGS:
             return []
 
         def _setImages(self, images):
-            self._images = images
+            if images:
+                self._images = map(self._picture, images)
+            else:
+                self._images = []
 
         def __getitem__(self, key):
             if key == '__image':
@@ -131,7 +138,7 @@ if IMAGETAGS:
 
         def __setitem__(self, key, value):
             if key == '__image':
-                self._images = value
+                self.images = value
                 return
             TempTag.__setitem__(self, key, value)
 

@@ -23,8 +23,8 @@ from mutagen.apev2 import APEv2File
 
 import util
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
-                getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
-                FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
+    getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY, DIRNAME,
+    FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
               'modified', 'filetype')
 
@@ -41,7 +41,8 @@ def get_class(mutagen_file, base_function, attrib_fields):
         _hash = {PATH: 'filepath',
             FILENAME:'filename',
             EXTENSION: 'ext',
-            DIRPATH: 'dirpath'}
+            DIRPATH: 'dirpath',
+            DIRNAME: 'dirname'}
 
         @getdeco
         def __getitem__(self,key):
@@ -59,6 +60,10 @@ def get_class(mutagen_file, base_function, attrib_fields):
 
         @setdeco
         def __setitem__(self, key, value):
+            
+            if key == '__image':
+                return
+
             if isinstance(key, (int, long)):
                 self._tags[key] = value
                 return
@@ -73,6 +78,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
             elif key not in INFOTAGS and isempty(value):
                 del(self[key])
                 return
+
 
             if (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
                 self._tags[key] = [unicode(value)]
@@ -110,8 +116,12 @@ def get_class(mutagen_file, base_function, attrib_fields):
         def link(self, filename, x = None):
             """Links the audio, filename
             returns self if successful, None otherwise."""
-
-            tags, audio = self._init_info(filename, mutagen_file)
+            try:
+                tags, audio = self._init_info(filename, mutagen_file)
+            except mutagen.apev2.APENoHeaderError:
+                audio = mutagen_file()
+                tags, audio = self._init_info(filename, None)
+                audio.filename = tags['__filepath']
 
             if audio is None:
                 return
@@ -143,7 +153,6 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 del(audio[z])
             audio.tags.update(newtag)
             audio.save()
-
     
     return Tag
 

@@ -17,14 +17,15 @@ TimeStampTextFrame = mutagen.id3.TimeStampTextFrame
 TextFrame = mutagen.id3.TextFrame
 ID3  = mutagen.id3.ID3
 from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
-                    setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
-                    READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize, DIRNAME)
+    setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
+    READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize, DIRNAME)
 import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
 v1_option = 2
+apev2_option = False
 
 class PuddleID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
@@ -512,7 +513,11 @@ class Tag(TagBase):
             del(self._tags[z])
         self.images = []
 
-    def image(self, data, description = '', mime = '', imagetype=0):
+    def _picture(self, image):
+        data = image[util.DATA]
+        description = image.get(util.DESCRIPTION, '')
+        mime = image.get(util.MIMETYPE)
+        imagetype = image.get(util.IMAGETYPE, 3)
         if not mime:
             t = imghdr.what(None, data)
             if t:
@@ -527,7 +532,10 @@ class Tag(TagBase):
         return []
 
     def _setImages(self, images):
-        self._images = images
+        if images:
+            self._images = map(self._picture, images)
+        else:
+            self._images = []
 
     images = property(_getImages, _setImages)
 
@@ -644,7 +652,7 @@ class Tag(TagBase):
             self._tags[key] = value
             return
         elif key == '__image':
-            self._images = value
+            self.images = value
             return
         elif key in FILETAGS:
             setattr(self, self._hash[key], value)
@@ -683,4 +691,4 @@ class Tag(TagBase):
                 self._tags.update(create_usertext(key, value))
 
 
-filetype = (PuddleID3FileType, Tag, 'ID3')
+filetype = [PuddleID3FileType, Tag, 'ID3']

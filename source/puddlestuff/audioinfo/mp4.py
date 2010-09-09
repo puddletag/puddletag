@@ -20,11 +20,11 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import util
+import util,imghdr
 from util import (usertags, strlength, strbitrate, READONLY, isempty,
-                    getfilename, strfrequency, getinfo, FILENAME, PATH,
-                    INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
-                    FILETAGS, str_filesize)
+    getfilename, strfrequency, getinfo, FILENAME, PATH,
+    INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
+    FILETAGS, str_filesize)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
@@ -232,15 +232,22 @@ class Tag(util.MockTag):
             del(self._tags[z])
         self.images = []
 
-    def image(self, data, mime, **kwargs):
-        if mime.lower().endswith(u'png'):
+    def _picture(self, image):
+        data = image[util.DATA]
+        mime = imghdr.what(None, data)
+        if mime == 'png':
             format = MP4Cover.FORMAT_PNG
-        else:
+        elif mime == 'jpeg':
             format = MP4Cover.FORMAT_JPEG
+        else:
+            return
         return MP4Cover(data, format)
 
     def _setImages(self, images):
-        self._images = images
+        if images:
+            self._images = filter(None, map(self._picture, images))
+        else:
+            self._images = []
 
     def _getImages(self):
         temp = []
@@ -285,7 +292,7 @@ class Tag(util.MockTag):
         if audio.tags: #Not empty
             keys = audio.keys()
             try:
-                self.images = audio['covr']
+                self._images = audio['covr']
                 keys.remove('covr')
             except KeyError:
                 pass

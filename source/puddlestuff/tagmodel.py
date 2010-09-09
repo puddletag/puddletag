@@ -63,19 +63,21 @@ def loadsettings(filepath=None):
     if filepath:
         settings.filename = filepath
     titles = settings.get('tableheader', 'titles',
-                            ['Filename', 'Artist', 'Title', 'Album', 'Track',
-                                'Length', 'Year', 'Bitrate', 'Genre',
-                                'Comment', 'Dirpath'])
+        ['Filename', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 
+            'Bitrate', 'Genre', 'Comment', 'Dirpath'])
     tags = settings.get('tableheader', 'tags',
-                        ['__filename', 'artist', 'title',
-                            'album', 'track', '__length', 'year', '__bitrate',
-                            'genre', 'comment', '__dirpath'])
+        ['__filename', 'artist', 'title','album', 'track', 
+        '__length', 'year', '__bitrate','genre', 'comment', '__dirpath'])
     checked = settings.get('tableheader', 'enabled', range(len(tags)), True)
     fontsize = settings.get('table', 'fontsize', 0, True)
     rowsize = settings.get('table', 'rowsize', -1, True)
     v1_option = settings.get('id3tags', 'v1_option', 2)
     audioinfo.id3.v1_option = v1_option
     filespec = u';'.join(settings.get('table', 'filespec', []))
+    
+    write_ape = index = settings.get('id3tags', 'write_ape', False)
+    audioinfo.set_id3_options(write_ape)
+    
     return (zip(titles, tags), checked), fontsize, rowsize, filespec
 
 def caseless(tag, audio):
@@ -198,8 +200,19 @@ def model_tag(model, base = audioinfo.AbstractTag):
 def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
-    options = [(Kind[0], model_tag(model, Kind[1]), Kind[2]) for Kind 
+    options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind 
         in audioinfo.options]
+    
+    def set_id3_options(write_apev2):
+        from audioinfo.combine import combine
+        from audioinfo import apev2
+        filetype = [z for z in options if z[2] == 'ID3'][0]
+        if write_apev2:
+            filetype[1] = combine(audioinfo._id3_type[1], apev2.filetype[1])
+        else:
+            filetype[1] = audioinfo._id3_type[1]
+    
+    audioinfo.set_id3_options = set_id3_options
     
     def ReplacementTag(filename):
         fileobj = file(filename, "rb")
@@ -1037,6 +1050,9 @@ class TagDelegate(QItemDelegate):
 
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.EditRole).toString()
+        font = editor.font()
+        font.setPointSize(index.model().fontSize)
+        editor.setFont(font)
         editor.setText(text)
 
     def setModelData(self, editor, model, index):

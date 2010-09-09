@@ -24,7 +24,7 @@ import mutagen, time, pdb, calendar, os
 from util import *
 import id3, flac, ogg, apev2, mp4, wma, musepack, wavpack
 options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, 
-    mp4.filetype, wavpack.filetype, musepack.filetype, wma.filetype, )
+    mp4.filetype, wavpack.filetype, musepack.filetype, wma.filetype)
 from mutagen.id3 import TCON
 GENRES = sorted(TCON.GENRES)
 
@@ -39,6 +39,8 @@ extensions = {'mp3': id3.filetype,
     'wma': wma.filetype,
     'mpc': musepack.filetype,
     'wv': wavpack.filetype}
+
+_id3_type = id3.filetype
 
 mapping = {}
 revmapping = {}
@@ -78,6 +80,13 @@ def setmapping(m):
             pass
 
 setmapping({'VorbisComment': {'tracknumber': 'track'}})
+
+def set_id3_options(write_apev2):
+    from combine import combine
+    if write_apev2:
+        id3.filetype[1] = combine(_id3_type[1], apev2.filetype[1])
+    else:
+        id3.filetype[1] = _id3_type[1]
 
 def Tag(filename):
     """Class that operates on audio tags.

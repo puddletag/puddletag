@@ -113,15 +113,10 @@ def write(audio, tags, save_mtime = True):
 
     oldimages = None
     if '__image' in tags:
-        if not hasattr(audio, 'image'):
+        if not audio.IMAGETAGS:
             del(tags['__image'])
         else:
             oldimages = audio['__image']
-            images = []
-            for z in tags['__image']:
-                images.append(dict([(key,val) for key,val in z.items()
-                                        if key in audio.IMAGETAGS]))
-            tags['__image'] = [audio.image(**z) for z in images]
 
     filetags = real_filetags(audio.mapping, audio.revmapping, tags)
     try:

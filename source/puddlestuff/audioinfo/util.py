@@ -89,7 +89,7 @@ TAGS = {'TALB': 'album',
         'TSOT': 'titlesortorder',
         'TSRC': 'isrc',
         'TSSE': 'encodingsettings',
-        'TSST': 'setsubtitle',}
+        'TSST': 'setsubtitle'}
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
 
 
@@ -382,18 +382,21 @@ class MockTag(object):
         tags = self._tags
         [setattr(self, z, tags['__%s' % z]) for z in attrs]
 
-    def _init_info(self, filename, filetype):
+    def _init_info(self, filename, filetype=None):
         self._tags = {}
         filename = getfilename(filename)
         self.filepath = filename
-        audio = filetype(filename)
+        if filetype is not None:
+            audio = filetype(filename)
+        else:
+            audio = None
         tags = getinfo(filename)
         return tags, audio
 
     def update(self, dictionary=None, **kwargs):
         if dictionary is None:
             return
-        if isinstance(dictionary, (dict, MockTag)):
+        if hasattr(dictionary, 'items'):
             for key, value in dictionary.items():
                 self[key] = value
         else:
