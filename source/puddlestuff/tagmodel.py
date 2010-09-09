@@ -210,7 +210,7 @@ def _Tag(model):
         if write_apev2:
             filetype[1] = combine(audioinfo._id3_type[1], apev2.filetype[1])
         else:
-            filetype[1] = audioinfo._id3_type[1]
+            filetype[1] = model_tag(model, audioinfo._id3_type[1])
     
     audioinfo.set_id3_options = set_id3_options
     
