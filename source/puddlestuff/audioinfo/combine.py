@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from util import *
 
-def combine(first, second):
+def combine(first, second = None):
+    
     class Combined(MockTag):
         mapping = {}
         revmapping = {}
@@ -11,22 +12,26 @@ def combine(first, second):
             try:
                 return getattr(self._first, val)
             except AttributeError:
-                return getattr(self._second, val)
+                if self._second:
+                    return getattr(self._second, val)
         
         def __init__(self, filename = None):
             self._first = first(filename)
-            self._second = second(filename)
+            if self._second:
+                self._second = second(filename)
         
         def _getfilepath(self):
             return self._first.filepath
 
         def _setfilepath(self,  val):
             self._first.filepath = val
-            self._second.filepath = val
+            if self._second:
+                self._second.filepath = val
 
         def _setext(self,  val):
             self._first.ext = val
-            self._second.ext = val
+            if self._second:
+                self._second.ext = val
 
         def _getext(self):
             return self._first.ext
@@ -43,14 +48,16 @@ def combine(first, second):
 
         def _setdirpath(self, val):
             self._first.dirpath = val
-            self._second.dirpath = val
+            if self._second:
+                self._second.dirpath = val
         
         def _getdirname(self):
             return self._first.dirname
         
         def _setdirname(self, val):
             self._first.dirname = val
-            self._second.dirname = val
+            if self._second:
+                self._second.dirname = val
         
         filepath = property(_getfilepath, _setfilepath)
         dirpath = property(_getdirpath, _setdirpath)
@@ -68,17 +75,20 @@ def combine(first, second):
         
         def link(self, filename):
             self._first = first.link(self, filename)
-            self._second = second.link(self, filename)
+            if self._second:
+                self._second = second.link(self, filename)
             
             return self._first or self._second
         
         def delete(self):
             self._first.delete()
-            self._second.delete()
+            if self._second:
+                self._second.delete()
 
         def update(self, dictionary=None, **kwargs):
             self._first.update(dictionary, **kwargs)
-            self._second.update(dictionary, **kwargs)
+            if self._second:
+                self._second.update(dictionary, **kwargs)
 
         def __delitem__(self, key):
             try:
@@ -86,17 +96,22 @@ def combine(first, second):
             except KeyError:
                 pass
             
-            try:
-                del(self._second[key])
-            except KeyError:
-                pass
+            if self._second:
+                try:
+                    del(self._second[key])
+                except KeyError:
+                    pass
 
         def clear(self):
             self._first.clear()
-            self._second.clear()
+            if self._second:
+                self._second.clear()
 
         def keys(self):
-            return list(set(self._first.keys()).union(self._second.keys()))
+            if self._second:
+                return list(set(self._first.keys()).union(self._second.keys()))
+            else:
+                return self._first.keys()
 
         def values(self):
             return [self[key] for key in self]
@@ -122,10 +137,11 @@ def combine(first, second):
             return stringtags(self)
 
         def save(self):
-            self._first.update(self._second)
-            self._second.update(self._first)
+            if self._second:
+                self._first.update(self._second)
+                self._second.update(self._first)
+                self._second.save()
             self._first.save()
-            self._second.save()
 
         def _usertags(self):
             return usertags(self)
@@ -138,7 +154,8 @@ def combine(first, second):
         def real(self, key):
             if key in self._first.revmapping:
                 return self._first.real(key)
-            elif key in self._second.revmapping:
+            
+            if self._second and key in self._second.revmapping:
                 return self._second.real(key)
             return key
 
@@ -152,26 +169,33 @@ def combine(first, second):
             if key == '__image':
                 if self._first.IMAGETAGS and self._first.images:
                     return self._first.images
-                elif self._second.IMAGETAGS and self._second.images:
+                elif self._second and self._second.IMAGETAGS and self._second.images:
                     return self._second.images
                 else:
                     return []
             elif key == '__filetype':
-                return u'%s, %s'  % (self._first.filetype, self._second.filetype)
+                if self._second:
+                    return u'%s, %s'  % (self._first.filetype, 
+                        self._second.filetype)
+                else:
+                    return self._first.filetype
 
-            if key in self._first.keys():
+            if key in self._first:
                 return self._first[key]
-            else:
+            elif self._second and key in self._second
                 return self._second[key]
+            else:
+                self._first[key]
         
         def __setitem__(self, key, value):
             self._first[key] = value
-            self._second[key] = value
+            if self._second:
+                self._second[key] = value
         
         def _get_images(self):
             if self._first.IMAGETAGS and self._first.images:
                 return self._first.images
-            elif self._second.IMAGESTAGS:
+            elif self._second and self._second.IMAGESTAGS:
                 return self._second.images
             else:
                 return []
@@ -180,8 +204,9 @@ def combine(first, second):
             if self._first.IMAGETAGS:
                 self._first.images = val
             
-            if self._second.IMAGETAGS:
-                self._second.images = val
+            if self._second:
+                if self._second.IMAGETAGS:
+                    self._second.images = val
         
         images = property(_get_images, _set_images)
         
