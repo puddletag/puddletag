@@ -260,7 +260,7 @@ Match filename's &case:, check'''
 def lower(text):
     return string.lower(text)
 
-def meta(m_tags, field, sep=u','):
+def meta_sep(m_tags, field, sep=u', '):
     value = m_tags.get(field)
     if value is None:
         return None
@@ -269,17 +269,19 @@ def meta(m_tags, field, sep=u','):
     else:
         return sep.join(value)
 
-def meta_n(m_tags, field, n_index):
+def meta(m_tags, field, n_index=None):
     value = m_tags.get(field)
     if value is None:
         return None
-    elif isinstance(value, basestring):
-        return value
-    else:
+    if n_index is not None:
         try:
             return value[n_index]
         except IndexError:
-            return None
+            return u''
+    else:
+        if isinstance(value, basestring):
+            return value
+        return u', '.join(value)
 
 def mid(text, n, i):
     try:
@@ -595,8 +597,8 @@ functions = {"add": add,
             "leql": leql,
             "less": less,
             "lower": lower,
+            'meta_sep': meta_sep,
             'meta': meta,
-            'meta_n': meta_n,
             "mid": mid,
             "mod": mod,
             "move": move,
