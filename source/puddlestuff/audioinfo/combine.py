@@ -182,7 +182,7 @@ def combine(first, second = None):
 
             if key in self._first:
                 return self._first[key]
-            elif self._second and key in self._second
+            elif self._second and key in self._second:
                 return self._second[key]
             else:
                 self._first[key]
