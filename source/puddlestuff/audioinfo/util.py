@@ -174,7 +174,7 @@ def stringtags(tag, leaveNone = False):
             continue
 
         if leaveNone and ((not v) or (len(v) == 1 and not v[0])):
-            newtag[i] = ''
+            newtag[i] = u''
             continue
         elif (not v) or (len(v) == 1 and not v[0]):
             continue
@@ -271,9 +271,10 @@ def getdeco(func):
     def f(self, key):
         mapping = self.revmapping
         if key in mapping:
-            return func(self, mapping[key])
-        elif key in self.mapping:
-            return ''
+            try:
+                return func(self, mapping[key])
+            except KeyError:
+                pass
         return func(self, key)
     return f
 
@@ -419,11 +420,8 @@ class MockTag(object):
         if not self.mapping:
             return self._tags.keys()
         else:
-            revmapping = self.revmapping
             get = self.mapping.get
-            mapping = self.mapping
-            return [get(key, key) for key in self._tags if 
-                (key in mapping) or (key not in revmapping)]
+            return [get(key, key) for key in self._tags]
 
     def values(self):
         return [self[key] for key in self]

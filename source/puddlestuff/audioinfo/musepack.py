@@ -38,7 +38,7 @@ def base_tags(info):
         u'__bitrate': u'%s kb/s' % info.bitrate,
         u'__version': unicode(info.version),
         u'__channels': unicode(info.channels),
-        u'__filetype': u'MusePack'}
+        u'__filetype': u'MusePack (APEv2)'}
     try:
         tags.update({
             u'__titlegain': info.title_gain,

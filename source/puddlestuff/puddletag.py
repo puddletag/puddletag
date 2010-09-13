@@ -232,7 +232,8 @@ class MainWin(QMainWindow):
             ('renameselected', self._renameSelected),
             ('playlistchanged', self._dirChanged),
             ('adddock', self.addDock),
-            ('writeaction', self.writeAction)]
+            ('writeaction', self.writeAction),
+            ('onetomanypreview', self.writeSinglePreview)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
         load_plugins()
@@ -537,7 +538,7 @@ class MainWin(QMainWindow):
         def fin():
             model.undolevel += 1
             self._table.selectionChanged()
-            if model.previewMode:
+            if not model.previewMode:
                 self.emit(SIGNAL('libfilesedited'), lib_updates)
         lib_updates = []
 
@@ -594,7 +595,7 @@ class MainWin(QMainWindow):
         def fin():
             model.undolevel += 1
             self._table.selectionChanged()
-            if model.previewMode:
+            if not model.previewMode:
                 self.emit(SIGNAL('libfilesedited'), lib_updates)
 
         if model.previewMode:
@@ -619,6 +620,19 @@ class MainWin(QMainWindow):
 
         s = progress(func, 'Writing ', len(rows), fin)
         s(self)
+    
+    def writeSinglePreview(self, d):
+        model = self._table.model()
+        rows = status['selectedrows']
+        setRowData = model.setRowData
+
+        [setRowData(row, d, undo=False) for row in rows]
+        columns = filter(None, map(model.columns.get, d))
+        if columns:
+            start = model.index(min(rows), min(columns))
+            end = model.index(max(rows), max(columns))
+            model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                start, end)
 
     def _writePreview(self):
         taginfo = self._table.model().taginfo
@@ -682,7 +696,7 @@ class MainWin(QMainWindow):
                 os.rename(olddir, newdir)
                 self._table.changeFolder(olddir, newdir)
                 if self._lastdir and olddir in self._lastdir:
-                    self._lastdir[self._lastdir.index(oldir)] = newdir
+                    self._lastdir[self._lastdir.index(olddir)] = newdir
             except (IOError, OSError), detail:
                 msg = u"I couldn't rename: <i>%s</i> to <b>%s</b> (%s)" % (olddir, newdir, unicode(detail.strerror))
                 if index == len(dirs) - 1:

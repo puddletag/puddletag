@@ -52,24 +52,9 @@ class Tag(util.MockTag):
     mapping = {}
     revmapping = {}
 
-    _hash = {PATH: 'filepath',
-             FILENAME:'filename',
-             EXTENSION: 'ext',
-             DIRPATH: 'dirpath'}
-
     @getdeco
     def __getitem__(self, key):
-        """Get the tag value from self._tags. There is a slight
-        caveat in that this method will never return a KeyError exception.
-        Rather it'll return ''."""
-
-        try:
-            return self._tags[key]
-        except KeyError:
-            #This is a bit of a bother since there will never be a KeyError exception
-            #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
-            #if a key doesn't exist.
-            return ""
+        return self._tags[key]
 
     @setdeco
     def __setitem__(self,key,value):

@@ -22,9 +22,10 @@
 
 import mutagen, time, pdb, calendar, os
 from util import *
-import id3, flac, ogg, apev2, mp4, wma, musepack, wavpack
+import id3, flac, ogg, apev2, mp4, wma, musepack, wavpack, monkeysaudio
 options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, 
-    mp4.filetype, wavpack.filetype, musepack.filetype, wma.filetype)
+    mp4.filetype, wavpack.filetype, musepack.filetype, wma.filetype,
+    monkeysaudio.filetype)
 from mutagen.id3 import TCON
 GENRES = sorted(TCON.GENRES)
 
@@ -35,7 +36,8 @@ extensions = {'mp3': id3.filetype,
     'ogg': ogg.filetype,
     'mp4': mp4.filetype,
     'm4a': mp4.filetype,
-    'ape': apev2.filetype,
+    'ape': monkeysaudio.filetype,
+    'apl': monkeysaudio.filetype,
     'wma': wma.filetype,
     'mpc': musepack.filetype,
     'wv': wavpack.filetype}

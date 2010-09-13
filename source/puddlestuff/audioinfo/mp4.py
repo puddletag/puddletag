@@ -182,9 +182,6 @@ class Tag(util.MockTag):
 
     @getdeco
     def __getitem__(self,key):
-        """Get the tag value from self._tags. There is a slight
-        caveat in that this method will never return a KeyError exception.
-        Rather it'll return ''."""
         if key == '__image':
             return self.images
 
@@ -194,11 +191,7 @@ class Tag(util.MockTag):
         try:
             return FUNCS[key][0](self._tags[key])
         except KeyError:
-            try:
-                #First, check if a freeform user defined tag exists.
-                return gettext(self._tags[key])
-            except KeyError:
-                return ""
+            return gettext(self._tags[key])
     @setdeco
     def __setitem__(self, key, value):
         if isinstance(key, (int, long)):

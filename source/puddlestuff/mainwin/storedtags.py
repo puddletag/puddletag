@@ -22,6 +22,7 @@ class StoredTags(QScrollArea):
         self.setWidgetResizable(True)
         self._status = status
         self._loading = False
+        self._lastfilepath = None
 
     def _init(self):
         widget = QWidget()
@@ -38,12 +39,14 @@ class StoredTags(QScrollArea):
             return
         if audios:
             filepath = audios[0].filepath
+            if self._status['previewmode'] and filepath == self._lastfilepath:
+                return
+            self._lastfilepath = filepath
         else:
             self._init()
             return
 
         def retrieve_tag():
-            #print 'retrieving', time.time()
             try:
                 audio = audioinfo.Tag(filepath)
             except (OSError, IOError), e:

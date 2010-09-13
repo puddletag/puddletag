@@ -30,9 +30,8 @@ import audioinfo
 from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
     usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
-                           HeaderSetting, getfiles, ProgressWin, PuddleStatus,
-                           PuddleThread, progress, PuddleConfig, singleerror,
-                           winsettings, issubfolder, timemethod)
+    HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
+    progress, PuddleConfig, singleerror, winsettings, issubfolder, timemethod)
 from musiclib import MusicLibError
 import time, re
 from errno import EEXIST
@@ -195,6 +194,12 @@ def model_tag(model, base = audioinfo.AbstractTag):
                         del(self.preview[k])
             else:
                 del(self.preview[key])
+        
+        def update(self, *args, **kwargs):
+            if model.previewMode:
+                self.preview.update(*args, **kwargs)
+            else:
+                super(ModelTag, self).update(*args, **kwargs)
     return ModelTag
 
 def _Tag(model):
@@ -376,6 +381,7 @@ class TagModel(QAbstractTableModel):
         audioinfo.Tag = _Tag(self)
         audioinfo.model_tag = partial(model_tag, self)
         self.showToolTip = True
+        status['previewmode'] = False
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -392,6 +398,10 @@ class TagModel(QAbstractTableModel):
                 z.library = None
         self.undolevel = 0
         self._fontSize = QFont().pointSize()
+        
+        self.columns = dict([(field, i) for i, 
+            (title, field) in enumerate(headerdata)])
+        print self.columns
 
     def _setFontSize(self, size):
         self._fontSize = size
@@ -417,6 +427,7 @@ class TagModel(QAbstractTableModel):
         else:
             self._savedundolevel = self.undolevel
         self._previewMode = value
+        status['previewmode'] = True
         self.emit(SIGNAL('previewModeChanged'), value)
     
     previewMode = property(_get_previewMode, _set_previewMode)
@@ -847,17 +858,21 @@ class TagModel(QAbstractTableModel):
                 return False
             self.emit(SIGNAL('fileChanged()'))
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        index, index)
+                index, index)
             return True
         return False
 
     def setHeaderData(self, section, orientation, value, role = Qt.EditRole):
         if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
             self.headerdata[section] = value
+        self.columns = dict([(field, i) for i, (title, field) in 
+            enumerate(self.headerdata)])
         self.emit(SIGNAL("headerDataChanged (Qt::Orientation,int,int)"), orientation, section, section)
 
     def setHeader(self, tags):
         self.headerdata = tags
+        self.columns = dict([(field, i) for i, (title, field) in 
+            enumerate(self.headerdata)])
         self.reset()
 
     def setRowData(self,row, tags, undo = False, justrename = False):
@@ -1233,15 +1248,15 @@ class TagTable(QTableView):
             self.resizeColumnsToContents()
 
     def _getSelectedTags(self):
-        htags = [z[1] for z in self.model().headerdata]
+        columns = dict([(v,k) for k,v in self.model().columns.items()])
         rows = self.currentRowSelection()
         audios = self.selectedTags
 
-        ret = []
-        for f, row in zip(audios, sorted(rows)):
-            tags = (htags[column] for column in rows[row])
-            ret.append(dict([(tag, f[tag]) for tag  in tags]))
-        return ret
+        def get_selected(f, row):
+            selected = (columns[column] for column in rows[row])
+            return ((field, f.get(field, u'')) for field in selected)
+        
+        return map(dict, (get_selected(*z) for z in zip(audios, sorted(rows))))
 
     def applyGenSettings(self, d, startlevel=None):
         self.saveSelection()

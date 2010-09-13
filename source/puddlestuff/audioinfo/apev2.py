@@ -26,7 +26,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY, DIRNAME,
     FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
-              'modified', 'filetype')
+    'modified', 'filetype')
 
 dispname = 'APEv2'
 
@@ -46,17 +46,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
 
         @getdeco
         def __getitem__(self,key):
-            """Get the tag value from self._tags. There is a slight
-            caveat in that this method will never return a KeyError exception.
-            Rather it'll return an empty string (u'')."""
-
-            try:
-                return self._tags[key]
-            except KeyError:
-                #This is a bit of a bother since there will never be a KeyError exception
-                #But its needed for the sort method in tagmodel.TagModel, because it fails
-                #if a key doesn't exist.
-                return u""
+            return self._tags[key]
 
         @setdeco
         def __setitem__(self, key, value):
@@ -143,7 +133,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
             audio = self._mutfile
 
             newtag = {}
-            for tag, value in usertags(self).items():
+            for tag, value in usertags(self._tags).items():
                 try:
                     newtag[tag] = [z.encode('utf8') for z in value]
                 except AttributeError:
@@ -153,7 +143,6 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 del(audio[z])
             audio.tags.update(newtag)
             audio.save()
-    
     return Tag
 
 def base_tags(info):

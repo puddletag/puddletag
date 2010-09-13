@@ -372,7 +372,7 @@ class Tags(QWidget):
         filespec = u';'.join(cparser.get('table', 'filespec', []))
         self._filespec.setText(filespec)
         
-        write_ape = index = cparser.get('id3tags', 'write_ape', False)
+        write_ape = cparser.get('id3tags', 'write_ape', False)
         
         self._apev2.setChecked(write_ape)
 

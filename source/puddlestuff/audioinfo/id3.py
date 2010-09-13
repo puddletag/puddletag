@@ -445,7 +445,7 @@ def ufid_handler(frames):
     return d
 
 write_frames.update({'playcount': create_playcount,
-                     'popularitimeter': create_popm})
+                     'popularimeter': create_popm})
 
 frames = dict([(key, text_handler(title)) for key,
                     title in text_frames.items()])
@@ -499,13 +499,7 @@ class Tag(TagBase):
         elif key in INFOTAGS or isinstance(key, (int,long)):
             return self._tags[key]
         else:
-            try:
-                return self._tags[key].get_value()
-            except KeyError:
-                #This is a bit of a bother since there will never be a KeyError exception
-                #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
-                #if a key doesn't exist.
-                return u""
+            return self._tags[key].get_value()
 
     def delete(self):
         self._mutfile.delete()

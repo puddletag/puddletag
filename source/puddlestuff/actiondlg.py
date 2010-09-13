@@ -35,6 +35,20 @@ from functools import partial
 from constants import TEXT, COMBO, CHECKBOX
 from util import open_resourcefile, PluginFunction
 
+READONLY = list(READONLY) + ['__dirpath', ]
+
+def displaytags(tags):
+    if tags:
+        s = u"<b>%s</b>: %s<br /> "
+        ret = u"".join([s % (z, v) if isinstance(v, basestring) else 
+            u'\\\\'.join(v) for z,v in sorted(tags.items()) 
+            if z not in READONLY and z != u'__image'])[:-2]
+        if u'__image' in tags:
+            ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
+        return ret
+    else:
+        return '<b>No change.</b>'
+
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
         QScrollArea.__init__(self, parent)
@@ -64,19 +78,6 @@ class ScrollLabel(QScrollArea):
         height = label.sizeHint().height()
         self.setMaximumHeight(height)
         self.setMinimumHeight(height)
-
-READONLY = list(READONLY) + ['__dirpath', ]
-
-def displaytags(tags):
-    if tags:
-        s = u"<b>%s</b>: %s<br /> "
-        ret = u"".join([s % (z,v) for z,v in sorted(tags.items()) if
-                            z not in READONLY and z != u'__image'])[:-2]
-        if u'__image' in tags:
-            ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
-        return ret
-    else:
-        return '<b>No change.</b>'
 
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."

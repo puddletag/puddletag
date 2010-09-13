@@ -334,7 +334,7 @@ def run_func(selectedfiles, func):
 
     def tagiter():
         for s, f in izip(selectedtags, selectedfiles):
-            selected = stringtags(s)
+            selected = stringtags(s, True)
             fields = set()
             for key in func.tag:
                 if key == u'__selected':

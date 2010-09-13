@@ -32,8 +32,10 @@ from puddlestuff.util import PluginFunction
 numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
+from copy import deepcopy
 
 NOT_ALL = audioinfo.INFOTAGS
+FILETAGS = audioinfo.FILETAGS
 
 class ParseError(Exception):
     def __init__(self, message):
@@ -123,19 +125,17 @@ def getfunc(text, audio):
     Function must be of the form $name(args)
     Returns the text unmodified if unsuccesful,"""
 
-    #This function exists because I couldn't figure out
-    #how to get PyParsing to leave alone anything but the function
-    #without a lot of buggy work.
-    #So, if you have a way to do that, send me a mail at concentricpuddle@gmail.com
     if not isinstance(text, unicode):
         text = unicode(text, 'utf8')
 
     return function_parser(audio).transformString(text)
 
-def function_parser(audio):
+def function_parser(m_audio, audio=None):
     """Parses a function in the form $name(arguments)
     the function $name from the functions module is called
     with the arguments."""
+    if audio is None:
+        audio = stringtags(m_audio)
     
     ident = Word(alphas+'_', alphanums+'_')
 
@@ -161,8 +161,12 @@ def function_parser(audio):
         arguments = arglist.parseString(tokens.args[1:-1]).asList()
         
         varnames = function.func_code.co_varnames
-        if varnames[0] == 'tags':
-            arguments.insert(0, audio)
+        
+        for i,v in enumerate(varnames):
+            if v == 'tags':
+                arguments.insert(i, audio)
+            elif v == 'm_tags':
+                arguments.insert(i, m_audio)
         topass = []
         for no, (arg, param) in enumerate(zip(arguments, varnames)):
             if param.startswith('t_') or param.startswith('text'):
@@ -179,7 +183,10 @@ def function_parser(audio):
             else:
                 topass.append(arg)
         try:
-            return function(*topass)
+            ret = function(*topass)
+            if ret is None:
+                return u''
+            return ret
         except TypeError, e:
             message = e.message
             if message.endswith(u'given)'):
@@ -191,8 +198,6 @@ def function_parser(audio):
         except FuncError, e:
             message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, e.message)
             raise ParseError(message)
-        
-        return functions[tokens.funcname](*args)
 
     funcMacro.setParseAction(replaceNestedMacros)
 
@@ -223,6 +228,8 @@ def replacevars(text, dictionary):
 
     >>>replacevars('%artist% - %title%', {'artist':'Artist', 'title':'Title"}
     Artist - Title."""
+    
+    dictionary = stringtags(dictionary)
     start = 0
     l = []
     append = l.append
@@ -237,9 +244,6 @@ def replacevars(text, dictionary):
         append(text[start:])
     return u''.join(l)
 
-def run_action(funcs, files):
-    state = {}
-    
 
 def runAction(funcs, audio, state = None):
     """Runs an action on audio
@@ -252,33 +256,45 @@ def runAction(funcs, audio, state = None):
     if state is None:
         state = {}
 
-    audio = stringtags(audio)
+    audio_str = stringtags(audio)
+    audio = deepcopy(audio.tags)
+    
+    filt = lambda x: x is not None
     changed = set()
     for func in funcs:
-        tag = func.tag
-        val = {}
-        if tag[0] == u"__all":
-            tag = [key for key in audio if key not in NOT_ALL]
-        for z in tag:
+        fields = func.tag
+        ret = {}
+        if fields[0] == u"__all":
+            fields = [key for key in audio if key not in NOT_ALL]
+        for field in fields:
             try:
-                t = audio.get(z, u'')
-                ret = func.runFunction(t, audio, state)
-                if isinstance(ret, basestring) or not ret:
-                    val[z] = ret
+                val = audio.get(field, u'')
+
+                if isinstance(val, basestring):
+                    temp = func.runFunction(val, audio, state, audio_str)
                 else:
-                    val.update(ret)
+                    temp = [func.runFunction(v, audio, state, audio_str) 
+                        for v in val]
+                if isinstance(temp, basestring) or not temp:
+                    ret[field] = temp
+                elif isinstance(temp[0], basestring):
+                    if field in FILETAGS:
+                        ret[field] = temp[0]
+                    else:
+                        ret[field] = temp
+                elif hasattr(temp[0], 'items'):
+                    [ret.update(z) for z in ret]
                     break
-            except KeyError:
-                """The tag doesn't exist or is empty.
-                In either case we do nothing"""
+                else:
+                    ret[field] = temp[0]
             except ParseError, e:
                 message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
                     func.funcname, e.message)
                 raise ParseError(message)
-        val = dict([z for z in val.items() if z[1] is not None])
-        if val:
-            [changed.add(z) for z in val]
-            audio.update(val)
+        ret = dict([z for z in ret.items() if filter(filt, z[1])])
+        if ret:
+            [changed.add(z) for z in ret]
+            audio.update(ret)
     return dict([(z,audio[z]) for z in changed])
 
 def runQuickAction(funcs, audio, tag):
@@ -370,7 +386,6 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
         tags = audioinfo.Tag(filename)
         if not tags:
             return 0
-    tags = stringtags(tags)
 
     if not addext:
         return replacevars(getfunc(pattern, tags), tags)
@@ -464,12 +479,15 @@ class Function:
     def setArgs(self, args):
         self.args = args
 
-    def runFunction (self, text = None, audio = None, state = None):
+    def runFunction (self, text=None, m_tags=None, state=None, tags=None):
         function = self.function
         varnames = function.func_code.co_varnames
         
         if not varnames:
             return function()
+        
+        if tags is None:
+            tags = stringtags(m_tags)
         
         if state is None:
             state = {}
@@ -481,9 +499,14 @@ class Function:
         
         if varnames[-1] == 'tags':
             arguments.insert(0, text)
-            arguments.insert(-1, audio)
+            arguments.insert(-1, tags)
         elif varnames[0] == 'tags':
-            arguments.insert(0, audio)
+            arguments.insert(0, tags)
+        elif varnames[-1] == 'm_tags':
+            arguments.insert(0, text)
+            arguments.insert(-1, m_tags)
+        elif varnames[0] == 'm_tags':
+            arguments.insert(0, m_tags)
         else:
             arguments.insert(0, text)
 

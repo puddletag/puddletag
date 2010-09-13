@@ -9,6 +9,9 @@ import puddlestuff.resource as resource
 pyqtRemoveInputHook()
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 import time
+from functools import partial
+
+TEXTEDITED = SIGNAL('textEdited(const QString&)')
 
 def timemethod(method):
     def f(*args, **kwargs):
@@ -80,17 +83,41 @@ class FrameCombo(QGroupBox):
         QGroupBox.__init__(self,parent)
         self.emits = ['onetomany']
         self.receives = [(SELECTIONCHANGED, self.fillCombos)]
+            #('enable_preview_mode', self._enablePreview),
+            #('disable_preview_mode', self._disablePreview)]
         self.combos = {}
         self.labels = {}
         self._status = status
+    
+    def _disablePreview(self):
+        for field, combo in self.combos.items():
+            self.disconnect(combo.lineEdit(), TEXTEDITED, self._funcs[field])
+        self._funcs = []
 
     def disableCombos(self):
         for z in self.combos:
-            if z  == "__image":
-                self.combos[z].setImages(None)
-            else:
-                self.combos[z].clear()
+            self.combos[z].clear()
             self.combos[z].setEnabled(False)
+    
+    def _enablePreview(self):
+        def get_func(field, combo):
+            func = partial(self._emitChange, field)
+            edit = QLineEdit()
+            combo.setLineEdit(edit)
+            self.connect(edit, TEXTEDITED, func)
+            return field, func
+        self._funcs = dict([get_func(*i) for i in self.combos.items()])
+    
+    def _emitChange(self, field, text):
+        text = unicode(text)
+        if text == u"<blank>": value = []
+        elif text == u"<keep>": return
+        else:
+            if field in INFOTAGS:
+                value = text
+            else:
+                value = text.split(u"\\\\")
+        self.emit(SIGNAL('onetomanypreview'), {field: text})
 
     def fillCombos(self, *args):
         audios = self._status['selectedfiles']
@@ -115,9 +142,9 @@ class FrameCombo(QGroupBox):
                     if isinstance(value, basestring):
                         tags[tag].add(value)
                     else:
-                        tags[tag].add("\\\\".join(value))
+                        tags[tag].add(u"\\\\".join(value))
                 except KeyError:
-                    tags[tag].append("")
+                    tags[tag].add(u"")
 
         for field, values in tags.iteritems():
             if field in combos:
@@ -149,16 +176,14 @@ class FrameCombo(QGroupBox):
         if images is not None:
             tags['__image'] = images
         for tag, combo in combos.items():
-            if tag == '__image':
-                continue
             curtext = unicode(combo.currentText())
-            if curtext == "<blank>": tags[tag] = []
-            elif curtext == "<keep>": pass
+            if curtext == u"<blank>": tags[tag] = []
+            elif curtext == "u<keep>": pass
             else:
                 if tag in INFOTAGS:
                     tags[tag] = curtext
                 else:
-                    tags[tag] = curtext.split("\\\\")
+                    tags[tag] = curtext.split(u"\\\\")
         self.emit(SIGNAL('onetomany'), tags)
         if 'genre' in combos:
             combo = combos['genre']

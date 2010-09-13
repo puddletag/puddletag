@@ -37,7 +37,7 @@ def base_tags(info):
         u'__version': unicode(info.version),
         u'__channels': unicode(info.channels),
         u'__bitrate': u'0 kb/s',
-        u'__filetype': 'WavPack'}
+        u'__filetype': u'WavPack (APEv2)'}
 
 base = get_class(WavPack, base_tags, ATTRIBUTES)
 
