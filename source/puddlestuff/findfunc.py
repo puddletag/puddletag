@@ -291,7 +291,6 @@ def runAction(funcs, audio, state = None, quick_action=None):
                 message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
                     func.funcname, e.message)
                 raise ParseError(message)
-        print ret
         ret = dict([z for z in ret.items() if filter(filt, z[1])])
         if ret:
             [changed.add(z) for z in ret]

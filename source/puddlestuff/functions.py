@@ -124,10 +124,10 @@ def finddups(tracks, key = 'title', method=None):
             li.append(None)
     return dupes(li, method)
 
-def formatValue(tags, pattern):
+def formatValue(m_tags, pattern):
     """Format value, Format $0 using $1
 &Format string, text"""
-    ret = findfunc.tagtofilename(pattern, tags)
+    ret = findfunc.tagtofilename(pattern, m_tags)
     if not ret:
         return
     else:
