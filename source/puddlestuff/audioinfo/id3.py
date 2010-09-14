@@ -551,7 +551,7 @@ class Tag(TagBase):
                 self._images = x
 
         info = audio.info
-        self._tags.update( {u"__frequency": strfrequency(info.sample_rate),
+        self._tags.update({u"__frequency": strfrequency(info.sample_rate),
                       u"__length": strlength(info.length),
                       u"__bitrate": strbitrate(info.bitrate)})
         self._tags.update(tags)

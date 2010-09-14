@@ -170,7 +170,7 @@ def stringtags(tag, leaveNone = False):
         if i in INFOTAGS:
             newtag[i] = v
             continue
-        if isinstance(i, int):
+        if isinstance(i, int) or hasattr(v, 'items'):
             continue
 
         if leaveNone and ((not v) or (len(v) == 1 and not v[0])):
@@ -315,6 +315,53 @@ def to_string(value):
     else:
         return to_string(value[0])
 
+class CaselessDict(dict):
+    def __init__(self, other=None):
+        self._keys = {}
+        if other:
+            # Doesn't do keyword args
+            if isinstance(other, dict):
+                for k,v in other.items():
+                    dict.__setitem__(self, k.lower(), v)
+            else:
+                for k,v in other:
+                    dict.__setitem__(self, k.lower(), v)
+
+    def __getitem__(self, key):
+        return dict.__getitem__(self, self._keys[key.lower()])
+
+    def __setitem__(self, key, value):
+        low = key.lower()
+        if low in self._keys:
+            dict.__delitem__(self, self._keys[low])
+        self._keys[low] = key
+        dict.__setitem__(self, key, value)
+
+    def __contains__(self, key):
+        return key.lower() in self._keys
+
+    def has_key(self, key):
+        return key.lower() in self._keys
+
+    def get(self, key, def_val=None):
+        if key in self:
+            return self[key]
+        else:
+            return def_val
+
+    def update(self, other):
+        for k,v in other.items():
+            self[k] = v
+
+    def fromkeys(self, iterable, value=None):
+        d = CaselessDict()
+        for k in iterable:
+            d[k] = value
+        return d
+    
+    def __delitem__(self, key):
+        dict.__delitem__(self, self._keys[key.lower()])
+
 class MockTag(object):
     """Use as base for all tag classes."""
     _hash = {PATH: 'filepath',
@@ -329,6 +376,7 @@ class MockTag(object):
             self.link(filename)
         else:
             self._tags = {}
+            #self._tags = CaselessDict()
 
     def _getfilepath(self):
         return self._tags[PATH]
@@ -384,6 +432,7 @@ class MockTag(object):
         [setattr(self, z, tags['__%s' % z]) for z in attrs]
 
     def _init_info(self, filename, filetype=None):
+        #self._tags = CaselessDict()
         self._tags = {}
         filename = getfilename(filename)
         self.filepath = filename
