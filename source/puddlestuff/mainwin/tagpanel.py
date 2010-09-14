@@ -178,12 +178,13 @@ class FrameCombo(QGroupBox):
         for tag, combo in combos.items():
             curtext = unicode(combo.currentText())
             if curtext == u"<blank>": tags[tag] = []
-            elif curtext == "u<keep>": pass
+            elif curtext == u"<keep>": pass
             else:
                 if tag in INFOTAGS:
                     tags[tag] = curtext
                 else:
                     tags[tag] = curtext.split(u"\\\\")
+        
         self.emit(SIGNAL('onetomany'), tags)
         if 'genre' in combos:
             combo = combos['genre']
