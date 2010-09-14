@@ -3,6 +3,9 @@ import os
 from PyQt4.QtCore import Qt, SIGNAL
 from PyQt4.QtGui import QWidget
 from os.path import dirname, join
+
+SEPARATOR = u'\\\\'
+
 #Paths
 HOMEDIR = os.getenv('HOME')
 SAVEDIR = join(HOMEDIR,'.puddletag')

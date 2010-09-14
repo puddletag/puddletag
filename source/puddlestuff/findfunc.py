@@ -245,7 +245,7 @@ def replacevars(text, dictionary):
     return u''.join(l)
 
 
-def runAction(funcs, audio, state = None):
+def runAction(funcs, audio, state = None, quick_action=None):
     """Runs an action on audio
 
     funcs can be a list of Function objects or a filename of an action file (see getAction).
@@ -262,20 +262,20 @@ def runAction(funcs, audio, state = None):
     filt = lambda x: x is not None
     changed = set()
     for func in funcs:
-        fields = func.tag
+        if quick_action is None:
+            fields = func.tag
+        else:
+            fields = quick_action
         ret = {}
         if fields[0] == u"__all":
             fields = [key for key in audio if key not in NOT_ALL]
         for field in fields:
             try:
                 val = audio.get(field, u'')
-
-                if isinstance(val, basestring):
-                    temp = func.runFunction(val, audio, state, audio_str)
-                else:
-                    temp = [func.runFunction(v, audio, state, audio_str) 
-                        for v in val]
-                if isinstance(temp, basestring) or not temp:
+                temp = func.runFunction(val, audio, state, audio_str)
+                if temp is None:
+                    continue
+                if isinstance(temp, basestring):
                     ret[field] = temp
                 elif isinstance(temp[0], basestring):
                     if field in FILETAGS:
@@ -291,6 +291,7 @@ def runAction(funcs, audio, state = None):
                 message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
                     func.funcname, e.message)
                 raise ParseError(message)
+        print ret
         ret = dict([z for z in ret.items() if filter(filt, z[1])])
         if ret:
             [changed.add(z) for z in ret]
@@ -298,30 +299,9 @@ def runAction(funcs, audio, state = None):
     return dict([(z,audio[z]) for z in changed])
 
 def runQuickAction(funcs, audio, tag):
-    """Same as runAction, except that all funcs are applied not in the values stored
-    but on audio[tag]."""
-    if isinstance(funcs, basestring):
-        funcs = getAction(funcs)[0]
-
-    audio = stringtags(audio)
-    tags = {}
-    for func in funcs:
-        val = {}
-        if tag[0] == "__all":
-            tag = [key for key in audio.keys() if key not in NOT_ALL]
-        for z in tag:
-            try:
-                val[z] = func.runFunction(tags[z], audio = audio)
-            except KeyError:
-                try:
-                    val[z] = func.runFunction(audio[z], audio = audio)
-                except KeyError:
-                    """The tag doesn't exist or is empty.
-                    In either case we do nothing"""
-        val = dict([z for z in val.items() if z[1] is not None])
-        if val:
-            tags.update(val)
-    return dict([(z, tags[z]) for z in tag if z in tags])
+    """Same as runAction, except that all funcs are 
+    applied not in the values stored but on audio[tag]."""
+    return runAction(funcs, audio, None, tag)
 
 def saveAction(filename, actionname, funcs):
     """Saves an action to filename.
@@ -492,27 +472,35 @@ class Function:
         if state is None:
             state = {}
         
-        if isinstance(text, (list,tuple)):
-            text = text[0]
-        
         arguments = self.args[::]
+        first_text = False
         
         if varnames[-1] == 'tags':
-            arguments.insert(0, text)
+            first_text = True
             arguments.insert(-1, tags)
         elif varnames[0] == 'tags':
             arguments.insert(0, tags)
         elif varnames[-1] == 'm_tags':
-            arguments.insert(0, text)
+            first_text = True
             arguments.insert(-1, m_tags)
         elif varnames[0] == 'm_tags':
             arguments.insert(0, m_tags)
         else:
-            arguments.insert(0, text)
+            first_text = True
+        
+        if first_text:
+            arguments.insert(0, u'')
 
         if 'state' in varnames:
             arguments.insert(varnames.index('state'), state)
-        return function(*arguments)
+        
+        if first_text:
+            if isinstance(text, basestring):
+                return function(text, *arguments[1:])
+            else:
+                return [function(v, *arguments[1:]) for v in text]
+        else:
+            return function(*arguments)
 
     def description(self):
         d = [u", ".join(self.tag)] + self.args

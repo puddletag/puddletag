@@ -25,23 +25,27 @@ from PyQt4 import QtGui, QtCore
 import sys, findfunc, pdb, os, resource, string, functions
 from copy import copy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
-                        QuotedString, Literal, NotAny, nums
+        QuotedString, Literal, NotAny, nums
 import cPickle as pickle
 from puddleobjects import ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist
 from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
-from audioinfo import REVTAGS, INFOTAGS, READONLY
+from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags
 from functools import partial
-from constants import TEXT, COMBO, CHECKBOX
+from constants import TEXT, COMBO, CHECKBOX, SEPARATOR
 from util import open_resourcefile, PluginFunction
 
 READONLY = list(READONLY) + ['__dirpath', ]
 
 def displaytags(tags):
     if tags:
+        if isinstance(tags, basestring):
+            return tags
+        elif not hasattr(tags, 'items'):
+            return SEPARATOR.join(tags)
         s = u"<b>%s</b>: %s<br /> "
         ret = u"".join([s % (z, v) if isinstance(v, basestring) else 
-            u'\\\\'.join(v) for z,v in sorted(tags.items()) 
+            SEPARATOR.join(v) for z,v in sorted(tags.items()) 
             if z not in READONLY and z != u'__image'])[:-2]
         if u'__image' in tags:
             ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
@@ -214,18 +218,16 @@ class FunctionDialog(QWidget):
     def showexample(self, *args, **kwargs):
         self.argValues()
         if self.example is not None:
-            audio = self.example.stringtags()
+            audio = self.example
             if not self._text:
                 try:
                     if self.func.tag == [u'__all']:
-                        text = 'Some random text, courtesy of puddletag.'
+                        text = 'Some placeholder text, courtesy of puddletag.'
                     elif self.func.tag[0] == [u'__selected']:
-                        text = audio.get(self.showcombo.keys()[0])
+                        text = audio.get(self.showcombo.keys()[0], u'')
                     else:
-                        text = audio.get(self.func.tag[0])
+                        text = audio.get(self.func.tag[0], u'')
                 except IndexError:
-                    text = ''
-                if not text:
                     text = u''
             else:
                 text = self._text
@@ -237,10 +239,10 @@ class FunctionDialog(QWidget):
                 val = self.func.runFunction(text, audio)
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
-            if val:
+            if val is not None:
                 self.emit(SIGNAL('updateExample'), val)
             else:
-                self.emit(SIGNAL('updateExample'), '')
+                self.emit(SIGNAL('updateExample'), u'')
 
 class CreateFunction(QDialog):
     """A dialog to allow the creation of functions using only one window and a QStackedWidget.
@@ -314,13 +316,14 @@ class CreateFunction(QDialog):
         if it doesn't exist already."""
         self.stack.setFrameStyle(QFrame.Box)
         if index not in self.mydict:
-            what = FunctionDialog(self.realfuncs[index], self.showcombo, defaultargs, defaulttags, example = self.example, text=self._text)
+            what = FunctionDialog(self.realfuncs[index], self.showcombo, 
+                defaultargs, defaulttags, example=self.example, text=self._text)
             self.mydict.update({index: what})
             self.stack.addWidget(what)
             if self.example:
                 self.connect(what, SIGNAL('updateExample'), self.updateExample)
-                what.showexample()
         self.stack.setCurrentWidget(self.mydict[index])
+        self.mydict[index].showexample()
         self.setMinimumHeight(self.sizeHint().height())
         if self.sizeHint().width() > self.width():
             self.setMinimumWidth(self.sizeHint().width())
@@ -329,10 +332,7 @@ class CreateFunction(QDialog):
         if not text:
             self.exlabel.setText('')
         else:
-            if isinstance(text, basestring):
-                self.exlabel.setText(text)
-            else:
-                self.exlabel.setText(displaytags(text))
+            self.exlabel.setText(displaytags(text))
         QApplication.processEvents()
 
 class CreateAction(QDialog):

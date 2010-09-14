@@ -333,26 +333,23 @@ def run_func(selectedfiles, func):
     function = func.runFunction
 
     def tagiter():
-        for s, f in izip(selectedtags, selectedfiles):
-            selected = stringtags(s, True)
+        for selected, f in izip(selectedtags, selectedfiles):
             fields = set()
             for key in func.tag:
                 if key == u'__selected':
                     [fields.add(z) for z in selected.keys()]
                 else:
                     fields.add(key)
-            rowtags = f.stringtags()
+            rowtags = f.tags
+            ret = {}
             for field in fields:
-                if useaudio:
-                    val = function(rowtags, rowtags)
-                else:
-                    val = function(selected.get(field, u''), rowtags)
+                val = function(rowtags.get(field, u''), rowtags)
                 if val is not None:
-                    if isinstance(val, basestring):
-                        selected[field] = val
+                    if hasattr(val, 'items'):
+                        ret.update(val)
                     else:
-                        selected.update(val)
-            yield selected
+                        ret[field] = val
+            yield ret
     emit('writeselected', tagiter())
 
 run_quick_action = lambda parent=None: run_action(parent, True)
