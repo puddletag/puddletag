@@ -521,7 +521,7 @@ Replace &matches with:, text"""
         if groups:
             d = dict(enumerate(groups))
             replacetext = findfunc.parsefunc(rep, {}, d)
-            replacetext = replacetokens(replacetext, d, rep)
+            replacetext = replacetokens(replacetext, d, replacetext)
             return re.sub(expr, replacetext, text)
     else:
         return

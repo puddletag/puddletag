@@ -146,10 +146,11 @@ def function_parser(m_audio, audio=None, dictionary=None):
     rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
     
     def replace_token(tokens):
-        if dictionary and tokens.num in dictionary:
-            if not dictionary[tokens.num]:
+        index = int(tokens.num)
+        if dictionary and index in dictionary:
+            if not dictionary[index]:
                 return u'""'
-            return dictionary[tokens.num]
+            return dictionary[index]
         return u''
     
     rx_tok.setParseAction(replace_token)
