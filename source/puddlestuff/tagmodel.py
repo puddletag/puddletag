@@ -135,14 +135,9 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 super(ModelTag, self).__delitem__(key)
         
         def delete(self):
-            if self.preview:
-                preview = self.preview
-                self.preview = {}
-            try:
-                base.delete(self)
-            except:
-                self.preview = preview
-                raise
+            if model.previewMode:
+                return
+            base.delete(self)
 
         def __getitem__(self, key):
             if model.previewMode and key in self.preview:

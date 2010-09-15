@@ -30,12 +30,21 @@ import cPickle as pickle
 from puddleobjects import ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist
 from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
-from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags
+from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
 from functools import partial
 from constants import TEXT, COMBO, CHECKBOX, SEPARATOR
 from util import open_resourcefile, PluginFunction
 
 READONLY = list(READONLY) + ['__dirpath', ]
+
+def to_str(v):
+    if isempty(v):
+        return u'&lt;blank&gt;'
+    elif isinstance(v, basestring):
+        return v
+    else:
+        return SEPARATOR.join(v)
+        
 
 def displaytags(tags):
     if tags:
@@ -44,9 +53,7 @@ def displaytags(tags):
         elif not hasattr(tags, 'items'):
             return SEPARATOR.join(filter(lambda x: x is not None, tags))
         s = u"<b>%s</b>: %s<br /> "
-        ret = u"".join([s % (z, v) if isinstance(v, basestring) else 
-            SEPARATOR.join(v) for z,v in sorted(tags.items()) 
-            if z not in READONLY and z != u'__image'])[:-2]
+        ret = u"".join([s % (z, to_str(v)) for z, v in sorted(tags.items()) if z not in READONLY and z != u'__image'])[:-2]
         if u'__image' in tags:
             ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
         return ret
@@ -125,7 +132,7 @@ class FunctionDialog(QWidget):
                 self.tagcombo.setCurrentIndex(0)
         self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
-        if self.func.function.__name__ not in ['move', 'load_images']:
+        if self.func.function not in functions.no_fields:
             self.vbox.addWidget(QLabel("Fields"))
             self.vbox.addWidget(self.tagcombo)
         self.example = example
@@ -210,7 +217,10 @@ class FunctionDialog(QWidget):
         self.func.setArgs(newargs)
         if hasattr(self, "tagcombo"):
             tags = [x for x in [z.strip().lower() for z in unicode(self.tagcombo.currentText()).split(",")] if z != ""]
-            self.func.setTag(tags)
+            if self.func.function in functions.no_fields:
+                self.func.setTag(['just nothing to do with this'])
+            else:
+                self.func.setTag(tags)
             return newargs + tags
         else:
             return newargs + [""]

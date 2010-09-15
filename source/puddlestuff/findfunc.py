@@ -257,9 +257,11 @@ def runAction(funcs, audio, state = None, quick_action=None):
         state = {}
 
     audio_str = stringtags(audio)
-    audio = deepcopy(audio.tags)
+    if hasattr(audio, 'tags'):
+        audio = deepcopy(audio.tags)
+    else:
+        audio = deepcopy(audio)
     
-    filt = lambda x: x is not None
     changed = set()
     for func in funcs:
         if quick_action is None:
@@ -277,21 +279,24 @@ def runAction(funcs, audio, state = None, quick_action=None):
                     continue
                 if isinstance(temp, basestring):
                     ret[field] = temp
+                elif hasattr(temp, 'items'):
+                    ret.update(temp)
+                    break
+                elif hasattr(temp[0], 'items'):
+                    [ret.update(z) for z in temp]
+                    break
                 elif isinstance(temp[0], basestring):
                     if field in FILETAGS:
                         ret[field] = temp[0]
                     else:
                         ret[field] = temp
-                elif hasattr(temp[0], 'items'):
-                    [ret.update(z) for z in ret]
-                    break
                 else:
                     ret[field] = temp[0]
             except ParseError, e:
                 message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
                     func.funcname, e.message)
                 raise ParseError(message)
-        ret = dict([z for z in ret.items() if filter(filt, z[1])])
+        ret = dict([z for z in ret.items() if z[1] is not None])
         if ret:
             [changed.add(z) for z in ret]
             audio.update(ret)
@@ -494,7 +499,7 @@ class Function:
             arguments.insert(varnames.index('state'), state)
         
         if first_text:
-            if isinstance(text, basestring):
+            if isinstance(text, basestring) or varnames[0].startswith('m_'):
                 return function(text, *arguments[1:])
             else:
                 return [function(v, *arguments[1:]) for v in text]

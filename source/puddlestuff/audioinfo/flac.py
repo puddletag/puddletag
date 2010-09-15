@@ -120,8 +120,8 @@ if IMAGETAGS:
         def _getImages(self):
             if self._images:
                 return [{'data': image.data, 'description': image.desc,
-                        'mime': image.mime, 'imagetype': image.type}
-                                                for image in self._images]
+                            'mime': image.mime, 'imagetype': image.type}
+                            for image in self._images]
             return []
 
         def _setImages(self, images):
@@ -162,7 +162,6 @@ if IMAGETAGS:
             audio.clear_pictures()
             [audio.add_picture(z) for z in self._images]
             audio.update(newtag)
-
             audio.save()
 else:
     Tag = TempTag

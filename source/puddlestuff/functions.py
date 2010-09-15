@@ -89,8 +89,11 @@ def div(text,text1):
     except decimal.InvalidOperation:
         return
 
+def export_cover(tags, pattern):
+    dirpath = tags['__dirpath']
 
-def featFormat(text, ftstring = "ft", opening = "(", closing = ")"):
+
+def featFormat(text, ftstring = u"ft", opening = u"(", closing = u")"):
     #'''Remove brackets from (ft), Brackets remove: $0
     #Feat &String, text,  ft
     #O&pening bracket, text, "("
@@ -194,6 +197,17 @@ def iflonger(a, b, text, text1):
     except TypeError:
         return
 
+def import_text(m_tags, pattern):
+    '''Import text file, "Text File: $0, '$1'"
+&Pattern (can be relative path), text, lyrics.txt'''
+    dirpath = m_tags['__dirpath']
+    pattern = os.path.normpath(os.path.join(dirpath, pattern))
+    filename = os.path.splitext(move(m_tags, pattern)['__path'])[0]
+    try:
+        return open(filename, 'r').read().decode('utf8')
+    except EnvironmentError:
+        return
+
 def isdigit(text):
     try:
         decimal.Decimal(text)
@@ -238,27 +252,46 @@ def _load_image(filename):
         traceback.print_exc()
         pass
 
-def load_images(tags, filepatterns, desc, matchcase):
+def load_images(tags, filepatterns, desc, matchcase,state=None):
     '''Load Artwork, "Artwork: Filenames='$1', Description='$2', Case Sensitive=$3"
 "&Filenames to check (;-separated, shell wildcards [eg. *] allowed)", text
 &Default description (can be pattern):, text
 Match filename's &case:, check'''
+    if state is None:
+        state = {}
     dirpath = tags['__dirpath']
-    files = os.listdir(dirpath)
+    key = u'image_dirpath' + dirpath
+    if key in state:
+        files = state[key]
+    else:
+        files = os.listdir(dirpath)
     images = []
     pictures = fnmatch(filepatterns, files, matchcase)
     for pic in pictures:
         image = _load_image(os.path.join(dirpath, pic))
-        if not image:
-            continue
-        image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
-        image[audioinfo.IMAGETYPE] = 3
+        key = 'loaded_image' + pic
+        if key in state:
+            image = deepcopy(state[key])
+        else:
+            if not image:
+                continue
+            image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
+            image[audioinfo.IMAGETYPE] = 3
         images.append(image)
+
     if images:
         return {'__image': images}
 
 def lower(text):
     return string.lower(text)
+
+def merge_values(m_text, separator=u';'):
+    '''Merge multiple values, "Merge values: $0, sep='$1'"
+&Separator, text, ;'''
+    if isinstance(m_text, basestring):
+        return m_text
+    else:
+        return separator.join(m_text)
 
 def meta_sep(m_tags, field, sep=u', '):
     value = m_tags.get(field)
@@ -382,6 +415,15 @@ def remove_fields():
     '''Remove Fields, <blank> $0'''
     return u''
 
+def remove_except(tags, fields):
+    '''Remove fields except, "Remove fields except: $1"
+&Field list (; separated):, text, '''
+    fields = [field for field in fields.split(u';')]
+    ret = dict([(field.strip(), u'') for field in audioinfo.usertags(tags)
+        if field not in fields])
+    if ret:
+        return ret
+
 def rename_dirs(tags, state, pattern):
     '''Rename Directory, "Rename dir: $1"
 &Pattern:, text'''
@@ -462,7 +504,7 @@ def replacetokens(text, dictionary, default=u''):
     return u''.join(l)
 
 def replaceWithReg(text, expr, rep):
-    """Replace with RegExp, "RegReplace $0: RegExp $1, with $2"
+    """Replace with RegExp, "RegReplace $0: RegExp '$1', with '$2'"
 &Regular Expression, text
 Replace &matches with:, text"""
     if not expr:
@@ -485,7 +527,7 @@ Replace &matches with:, text"""
 validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (
     string.ascii_letters, string.digits, os.path.sep)
 
-#Contributed by erik reckase
+#Contributed by Erik Reckase
 def removeDisallowedFilenameChars(t_filename):
     cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
     return u''.join(c for c in cleanedFilename if c in validFilenameChars)
@@ -498,6 +540,17 @@ def right(text,n):
     if n == 0:
         return u''
     return text[-int(n):]
+
+def split_by_sep(m_text, sep):
+    """Split by separator, "Split by separator $0: sep='$1'"
+&Separator, text, ;"""
+    if isinstance(m_text, basestring):
+        return m_text
+    else:
+        ret = []
+        for t in m_text:
+            ret.extend(t.split(sep))
+        return ret
 
 def strip(text):
     '''Trim whitespace, Trim $0'''
@@ -590,12 +643,14 @@ functions = {"add": add,
             "hasformat": hasformat,
             "if": if_,
             "iflonger": iflonger,
+            'import_text': import_text,
             "isdigit": isdigit,
             "left": left,
             "len": len_,
             "leql": leql,
             "less": less,
             "lower": lower,
+            'merge_values': merge_values,
             'meta_sep': meta_sep,
             'meta': meta,
             "mid": mid,
@@ -610,9 +665,11 @@ functions = {"add": add,
             "rand": rand,
             "re": re,
             "re_escape": re_escape,
+            'remove_except': remove_except,
             "replace": replace,
             "replaceWithReg": replaceWithReg,
             "right": right,
+            'split_by_sep': split_by_sep,
             "string": string,
             "strip": strip,
             "sub": sub,
@@ -625,6 +682,8 @@ functions = {"add": add,
             "upper": upper,
             "validate": validate,
             'to_ascii': removeDisallowedFilenameChars}
+
+no_fields = (load_images, remove_except, move)
 
 import findfunc
 FuncError = findfunc.FuncError

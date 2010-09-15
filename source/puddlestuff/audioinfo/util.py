@@ -258,7 +258,6 @@ def writeable(tags):
 def isempty(value):
     if isinstance(value, (int, long)):
         return False
-
     if not value:
         return True
 
