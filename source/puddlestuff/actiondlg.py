@@ -42,7 +42,7 @@ def displaytags(tags):
         if isinstance(tags, basestring):
             return tags
         elif not hasattr(tags, 'items'):
-            return SEPARATOR.join(tags)
+            return SEPARATOR.join(filter(lambda x: x is not None, tags))
         s = u"<b>%s</b>: %s<br /> "
         ret = u"".join([s % (z, v) if isinstance(v, basestring) else 
             SEPARATOR.join(v) for z,v in sorted(tags.items()) 
@@ -330,7 +330,7 @@ class CreateFunction(QDialog):
 
     def updateExample(self, text):
         if not text:
-            self.exlabel.setText('')
+            self.exlabel.setText(u'')
         else:
             self.exlabel.setText(displaytags(text))
         QApplication.processEvents()

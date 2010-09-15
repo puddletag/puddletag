@@ -471,14 +471,13 @@ Replace &matches with:, text"""
         match = re.search(expr, text)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
+
     if match:
-        groups = match.groups()
+        groups = [match.group()]
         if groups:
             d = dict(enumerate(groups))
             replacetext = findfunc.parsefunc(replacetokens(rep, d, rep), {})
             return re.sub(expr, replacetext, text)
-        else:
-            return findfunc.parsefunc(re.sub(expr, rep, text), {})
     else:
         return
 
