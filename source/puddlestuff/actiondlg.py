@@ -189,8 +189,7 @@ class FunctionDialog(QWidget):
                 label.setBuddy(control)
                 self.vbox.addWidget(label)
 
-            if self.example is not None:
-                control.connect(control, self.signals[ctype], self.showexample)
+            control.connect(control, self.signals[ctype], self.showexample)
 
             self.vbox.addWidget(control)
         self.vbox.addStretch()
@@ -311,10 +310,11 @@ class CreateFunction(QDialog):
         self.vbox.addLayout(self.okcancel)
         self.setLayout(self.vbox)
 
-    def okClicked(self):
+    def okClicked(self, close=True):
         w = self.stack.currentWidget()
         w.argValues()
-        self.close()
+        if close:
+            self.close()
         if self.showcombo:
             newtags = [z for z in w.func.tag if z not in self.showcombo]
             if newtags:
@@ -330,8 +330,7 @@ class CreateFunction(QDialog):
                 defaultargs, defaulttags, example=self.example, text=self._text)
             self.mydict.update({index: what})
             self.stack.addWidget(what)
-            if self.example:
-                self.connect(what, SIGNAL('updateExample'), self.updateExample)
+            self.connect(what, SIGNAL('updateExample'), self.updateExample)
         self.stack.setCurrentWidget(self.mydict[index])
         self.mydict[index].showexample()
         self.setMinimumHeight(self.sizeHint().height())

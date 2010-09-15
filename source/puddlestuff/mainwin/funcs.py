@@ -338,6 +338,9 @@ def run_func(selectedfiles, func):
             for key in func.tag:
                 if key == u'__selected':
                     [fields.add(z) for z in selected.keys()]
+                elif key == u'__all':
+                    fields = f.usertags
+                    break
                 else:
                     fields.add(key)
             rowtags = f.tags

@@ -10,6 +10,7 @@ from PyQt4.QtGui import *
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
+import mainwin.action_dialogs
 import mainwin.previews, mainwin.artwork
 import puddlestuff.masstagging
 import puddlestuff.webdb
@@ -67,11 +68,12 @@ def create_tool_windows(parent):
     docks = []
     cparser = PuddleConfig()
     cparser.filename = ls.menu_path
-    for z in (mainwin.tagpanel.control, mainwin.dirview.control,
-                mainwin.patterncombo.control, mainwin.filterwin.control,
-                puddlestuff.webdb.control, mainwin.storedtags.control,
-                mainwin.logdialog.control, mainwin.artwork.control,
-                puddlestuff.masstagging.control):
+    controls = [z.control for z in (mainwin.tagpanel, mainwin.dirview,
+        mainwin.patterncombo, mainwin.filterwin, puddlestuff.webdb, 
+        mainwin.storedtags, mainwin.logdialog, mainwin.artwork,
+        puddlestuff.masstagging)]
+    controls.extend(mainwin.action_dialogs.controls)
+    for z in controls:
         name = z[0]
         try:
             if not z[2]:
@@ -568,6 +570,7 @@ class MainWin(QMainWindow):
         ret = self._write(tagiter, rows)
         if ret is None:
             return
+        
         func, fin, rows = ret
         s = progress(func, 'Writing ', len(rows), fin)
         s(self)
