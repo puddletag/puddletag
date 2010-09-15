@@ -515,10 +515,13 @@ Replace &matches with:, text"""
         raise findfunc.FuncError(unicode(e))
 
     if match:
-        groups = [match.group()]
+        groups = match.groups()
+        if not groups:
+            groups = [match.group()]
         if groups:
             d = dict(enumerate(groups))
-            replacetext = findfunc.parsefunc(replacetokens(rep, d, rep), {})
+            replacetext = findfunc.parsefunc(rep, {}, d)
+            replacetext = replacetokens(replacetext, d, rep)
             return re.sub(expr, replacetext, text)
     else:
         return

@@ -130,7 +130,7 @@ def getfunc(text, audio):
 
     return function_parser(audio).transformString(text)
 
-def function_parser(m_audio, audio=None):
+def function_parser(m_audio, audio=None, dictionary=None):
     """Parses a function in the form $name(arguments)
     the function $name from the functions module is called
     with the arguments."""
@@ -142,10 +142,25 @@ def function_parser(m_audio, audio=None):
     funcIdent = Combine('$' + ident.copy()('funcname'))
     funcMacro = funcIdent + originalTextFor(nestedExpr())('args')
     funcMacro.leaveWhitespace()
+    
+    rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
+    
+    def replace_token(tokens):
+        if dictionary and tokens.num in dictionary:
+            if not dictionary[tokens.num]:
+                return u'""'
+            return dictionary[tokens.num]
+        return u''
+    
+    rx_tok.setParseAction(replace_token)
 
     strip = lambda s, l, tok: tok[0].strip()
-    arglist = Optional(delimitedList(QuotedString('"') | 
-        CharsNotIn(u',').setParseAction(strip)))
+    if dictionary:
+        arglist = Optional(delimitedList(QuotedString('"') | rx_tok |
+            CharsNotIn(u',').setParseAction(strip) ))
+    else:
+        arglist = Optional(delimitedList(QuotedString('"') |
+            CharsNotIn(u',').setParseAction(strip) ))
 
     def replaceNestedMacros(tokens):
         if funcMacro.searchString(tokens.args):
@@ -156,7 +171,16 @@ def function_parser(m_audio, audio=None):
         function = functions[tokens.funcname]
         
         if tokens.args == u'()':
-            return function()
+            try:
+                return function()
+            except TypeError, e:
+                message = e.message
+                if message.endswith(u'given)'):
+                    start = message.find(u'takes')
+                    message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, message[start:])
+                    raise ParseError(message)
+                else:
+                    raise e
 
         arguments = arglist.parseString(tokens.args[1:-1]).asList()
         
@@ -203,8 +227,8 @@ def function_parser(m_audio, audio=None):
 
     return funcMacro
 
-def parsefunc(text, audio):
-    return function_parser(audio).transformString(text)
+def parsefunc(text, audio, d=None):
+    return function_parser(audio, None, d).transformString(text)
 
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
@@ -272,30 +296,25 @@ def runAction(funcs, audio, state = None, quick_action=None):
         if fields[0] == u"__all":
             fields = [key for key in audio if key not in NOT_ALL]
         for field in fields:
-            try:
-                val = audio.get(field, u'')
-                temp = func.runFunction(val, audio, state, audio_str)
-                if temp is None:
-                    continue
-                if isinstance(temp, basestring):
-                    ret[field] = temp
-                elif hasattr(temp, 'items'):
-                    ret.update(temp)
-                    break
-                elif hasattr(temp[0], 'items'):
-                    [ret.update(z) for z in temp]
-                    break
-                elif isinstance(temp[0], basestring):
-                    if field in FILETAGS:
-                        ret[field] = temp[0]
-                    else:
-                        ret[field] = temp
-                else:
+            val = audio.get(field, u'')
+            temp = func.runFunction(val, audio, state, audio_str)
+            if temp is None:
+                continue
+            if isinstance(temp, basestring):
+                ret[field] = temp
+            elif hasattr(temp, 'items'):
+                ret.update(temp)
+                break
+            elif hasattr(temp[0], 'items'):
+                [ret.update(z) for z in temp]
+                break
+            elif isinstance(temp[0], basestring):
+                if field in FILETAGS:
                     ret[field] = temp[0]
-            except ParseError, e:
-                message = u'SYNTAX ERROR IN FUNCTION <b>%s</b>: %s' % (
-                    func.funcname, e.message)
-                raise ParseError(message)
+                else:
+                    ret[field] = temp
+            else:
+                ret[field] = temp[0]
         ret = dict([z for z in ret.items() if z[1] is not None])
         if ret:
             [changed.add(z) for z in ret]
