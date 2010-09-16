@@ -509,7 +509,9 @@ class Tag(TagBase):
 
     def _picture(self, image):
         data = image[util.DATA]
-        description = image.get(util.DESCRIPTION, '')
+        description = image.get(util.DESCRIPTION)
+        if not description:
+            description = u''
         mime = image.get(util.MIMETYPE)
         imagetype = image.get(util.IMAGETYPE, 3)
         if not mime:

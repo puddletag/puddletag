@@ -609,7 +609,7 @@ class HeaderSetting(QDialog):
         if showedits:
             self.vboxgrid.addWidget(QLabel("Name"),0,0)
             self.vboxgrid.addWidget(self.textname,0,1)
-            self.vboxgrid.addWidget(QLabel("Tag"), 1,0)
+            self.vboxgrid.addWidget(QLabel("Field"), 1,0)
             self.vboxgrid.addWidget(self.tag,1,1)
             self.vboxgrid.addLayout(self.buttonlist,2,0)
         else:

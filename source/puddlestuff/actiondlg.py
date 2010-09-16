@@ -53,7 +53,8 @@ def displaytags(tags):
         elif not hasattr(tags, 'items'):
             return SEPARATOR.join(filter(lambda x: x is not None, tags))
         s = u"<b>%s</b>: %s<br /> "
-        ret = u"".join([s % (z, to_str(v)) for z, v in sorted(tags.items()) if z not in READONLY and z != u'__image'])[:-2]
+        ret = u"".join([s % (z, to_str(v)) for z, v in sorted(tags.items()) 
+            if z not in READONLY and z != u'__image'])[:-2]
         if u'__image' in tags:
             ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
         return ret

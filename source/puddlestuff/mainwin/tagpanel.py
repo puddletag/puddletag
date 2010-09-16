@@ -345,8 +345,8 @@ class SettingsWin(QWidget):
     title = 'Tag Panel'
     def __init__(self, parent = None, status=None):
         QDialog.__init__(self, parent)
-        self._table = PuddleTable(['Title', 'Tag', 'Row'],
-                                        ['Title', 'tag', unicode(0)], self)
+        self._table = PuddleTable(['Title', 'Field', 'Row'],
+                                        ['Title', 'field', unicode(0)], self)
         buttons = ListButtons()
         buttons.connectToWidget(self._table, add=self.add, edit=self.edit,
                     moveup=self._table.moveUp, movedown=self._table.moveDown,

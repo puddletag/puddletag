@@ -44,7 +44,7 @@ class ParseError(Exception):
 
 class FuncError(ParseError): pass
 
-from functions import functions
+from functions import functions, no_fields
 
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename

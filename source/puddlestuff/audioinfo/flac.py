@@ -23,7 +23,7 @@ from mutagen.flac import FLAC, Picture
 import util
 from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
     getfilename, getinfo, FILENAME, PATH, INFOTAGS, str_filesize)
-import ogg
+import ogg, pdb
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
@@ -105,7 +105,9 @@ if IMAGETAGS:
         IMAGETAGS = IMAGETAGS
         def _picture(self, image):
             data = image[util.DATA]
-            description = image.get(util.DESCRIPTION, '')
+            description = image.get(util.DESCRIPTION)
+            if not description:
+                description = u''
             mime = image.get(util.MIMETYPE)
             imagetype = image.get(util.IMAGETYPE, 3)
             props = imageproperties(data = data)

@@ -654,11 +654,12 @@ class TagModel(QAbstractTableModel):
 
         if append:
             column = self.sortOrder[0]
-            tag = self.headerdata[column][1]
+            field = self.headerdata[column][1]
+            getter = lambda audio: audio.get(field, u'')
             if self.sortOrder[1] == Qt.AscendingOrder:
-                taginfo = sorted(taginfo, natcasecmp, itemgetter(tag))
+                taginfo = sorted(taginfo, natcasecmp, getter)
             else:
-                taginfo = sorted(taginfo, natcasecmp, itemgetter(tag), True)
+                taginfo = sorted(taginfo, natcasecmp, getter, True)
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
                                     not in filenames])
