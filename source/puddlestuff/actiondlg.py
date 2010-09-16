@@ -251,7 +251,7 @@ class FunctionDialog(QWidget):
             if val is not None:
                 self.emit(SIGNAL('updateExample'), val)
             else:
-                self.emit(SIGNAL('updateExample'), u'')
+                self.emit(SIGNAL('updateExample'), u'<b>No change</b>')
 
 class CreateFunction(QDialog):
     """A dialog to allow the creation of functions using only one window and a QStackedWidget.

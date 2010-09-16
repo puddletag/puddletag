@@ -36,6 +36,7 @@ This line is further split into three parts
 from puddleobjects import PuddleConfig, safe_name, fnmatch, dircmp
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time, unicodedata
 from operator import itemgetter
+from copy import deepcopy
 
 true = u'1'
 false = u'0'
@@ -252,11 +253,12 @@ def _load_image(filename):
         traceback.print_exc()
         pass
 
-def load_images(tags, filepatterns, desc, matchcase,state=None):
+def load_images(m_tags, filepatterns, desc, matchcase,state=None):
     '''Load Artwork, "Artwork: Filenames='$1', Description='$2', Case Sensitive=$3"
 "&Filenames to check (;-separated, shell wildcards [eg. *] allowed)", text
 &Default description (can be pattern):, text
 Match filename's &case:, check'''
+    tags = m_tags
     if state is None:
         state = {}
     dirpath = tags['__dirpath']
@@ -277,6 +279,7 @@ Match filename's &case:, check'''
                 continue
             image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
             image[audioinfo.IMAGETYPE] = 3
+            state[key] = image
         images.append(image)
 
     if images:
@@ -510,7 +513,7 @@ Replace &matches with:, text"""
     if not expr:
         return text
     try:
-        match = re.search(expr, text)
+        match = re.search(expr, text, re.I)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
 
@@ -525,6 +528,34 @@ Replace &matches with:, text"""
             return re.sub(expr, replacetext, text)
     else:
         return
+
+#def replaceWithReg(text, expr, rep):
+    #"""Replace with RegExp, "RegReplace $0: RegExp '$1', with '$2'"
+#&Regular Expression, text
+#Replace &matches with:, text"""
+    #if not expr:
+        #return text
+    #try:
+        #match = re.search(expr, text, re.I)
+    #except re.error, e:
+        #raise findfunc.FuncError(unicode(e))
+    #ret = []
+
+    #for match in re.finditer(expr, text, re.I):
+        ##print "'%s'" % match.group()
+        ##print match.groups()
+        #if not match.group():
+            #continue
+        #pdb.set_trace()
+        #if match.group() == u''.join(match.groups()):
+            #d = enumerate(match.groups())
+        #else:
+            #d = {0: match.group()}
+        #substr = text[match.start(0): match.end(0)]
+        #replacetext = findfunc.parsefunc(rep, {}, d)
+        #replacetext = replacetokens(replacetext, d, replacetext)
+        #ret.append(re.sub(expr, replacetext, substr))
+    #return u''.join(ret)
 
 
 validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (
