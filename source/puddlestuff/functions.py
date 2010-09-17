@@ -289,7 +289,7 @@ def lower(text):
     return string.lower(text)
 
 def merge_values(m_text, separator=u';'):
-    '''Merge multiple values, "Merge values: $0, sep='$1'"
+    '''Merge field, "Merge field: $0, sep='$1'"
 &Separator, text, ;'''
     if isinstance(m_text, basestring):
         return m_text
@@ -419,11 +419,13 @@ def remove_fields():
     return u''
 
 def remove_except(tags, fields):
-    '''Remove fields except, "Remove fields except: $1"
+    '''Remove all fields except, "Remove fields except: $1"
 &Field list (; separated):, text, '''
     fields = [field for field in fields.split(u';')]
     ret = dict([(field.strip(), u'') for field in audioinfo.usertags(tags)
         if field not in fields])
+    if '__image' not in fields:
+        ret['__image'] = []
     if ret:
         return ret
 
@@ -576,7 +578,7 @@ def right(text,n):
     return text[-int(n):]
 
 def split_by_sep(m_text, sep):
-    """Split by separator, "Split by separator $0: sep='$1'"
+    """Split fields using separator, "Split using separator $0: sep='$1'"
 &Separator, text, ;"""
     if isinstance(m_text, basestring):
         return m_text
