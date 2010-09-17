@@ -880,6 +880,8 @@ class TagModel(QAbstractTableModel):
         the file is just renamed i.e not tags are written.
         """
         audio = self.taginfo[row]
+        print u'to_write', tags
+        print u'file:', audio.tags
 
         if self.previewMode:
             preview = audio.preview
