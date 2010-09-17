@@ -33,9 +33,17 @@ numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 from copy import deepcopy
+from constants import ACTIONDIR
+import glob
+from collections import defaultdict
+from functools import partial
 
-NOT_ALL = audioinfo.INFOTAGS
+NOT_ALL = audioinfo.INFOTAGS + ['__image']
 FILETAGS = audioinfo.FILETAGS
+FUNC_NAME = 'func_name'
+FIELDS = 'fields'
+FUNC_MODULE = 'module'
+ARGS = 'arguments'
 
 class ParseError(Exception):
     def __init__(self, message):
@@ -45,6 +53,19 @@ class ParseError(Exception):
 class FuncError(ParseError): pass
 
 from functions import functions, no_fields
+
+def convert_actions(dirpath, new_dir):
+    backup = os.path.join(dirpath, 'actions.bak')
+    if not os.path.exists(backup):
+        os.mkdir(backup)
+    if not os.path.exists(new_dir):
+        os.mkdir(new_dir)
+    path_join = os.path.join
+    basename = os.path.basename
+    for filename in glob.glob(path_join(dirpath, '*.action')):
+        funcs, name = get_old_action(filename)
+        os.rename(filename, path_join(backup, basename(filename)))
+        save_action(path_join(new_dir, basename(filename)), name, funcs)
 
 def filenametotag(pattern, filename, checkext = False):
     """Retrieves tag values from your filename
@@ -96,7 +117,7 @@ def filenametotag(pattern, filename, checkext = False):
         return mydict
     return {}
 
-def getAction(filename):
+def get_old_action(filename):
     """Gets the action from filename, where filename is either a string or
     file-like object.
 
@@ -113,10 +134,28 @@ def getAction(filename):
     f.close()
     return [funcs, name]
 
-def getActionFromName(name):
-    actionpath = os.path.join(os.getenv('HOME'),'.puddletag', removeSpaces(name) + '.action')
-    funcs = getAction(actionpath)
-    return funcs
+def load_action(filename):
+    modules = defaultdict(lambda: defaultdict(lambda: {}))
+    for function in functions.values():
+        modules[function.__module__][function.__name__] = function
+    cparser = PuddleConfig(filename)
+    funcs = []
+    name = cparser.get('info', 'name', u'')
+    for section in cparser.sections():
+        if section.startswith(u'Func'):
+            get = partial(cparser.get, section)
+            func_name = get(FUNC_NAME, u'')
+            fields = get(FIELDS, [])
+            func_module = get(FUNC_MODULE, u'')
+            arguments = get(ARGS, [])
+            func = Function(modules[func_module][func_name], fields)
+            func.args = arguments
+            funcs.append(func)
+    return [funcs, name]
+
+def load_action_from_name(name):
+    filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
+    return get_action(filename)
 
 def getfunc(text, audio):
     """Parses text and replaces all functions
@@ -327,6 +366,18 @@ def runQuickAction(funcs, audio, tag):
     applied not in the values stored but on audio[tag]."""
     return runAction(funcs, audio, None, tag)
 
+def save_action(filename, name, funcs):
+    f = open(filename, 'w')
+    f.close()
+    cparser = PuddleConfig(filename)
+    cparser.set('info', 'name', name)
+    set_value = lambda i, key, value: cparser.set('Func%d' % i, key, value)
+    for i, func in enumerate(funcs):
+        set_value(i, FIELDS, func.tag)
+        set_value(i, FUNC_NAME, func.function.__name__)
+        set_value(i, FUNC_MODULE, func.function.__module__)
+        set_value(i, ARGS, func.args)
+
 def saveAction(filename, actionname, funcs):
     """Saves an action to filename.
 
@@ -451,7 +502,7 @@ class Function:
 
     See the functions module for more info."""
 
-    def __init__(self, funcname):
+    def __init__(self, funcname, fields=None):
         """funcname must be either a function or string(which is the functions name)."""
         if type(funcname) is str:
             self.function = functions[funcname]
@@ -465,7 +516,10 @@ class Function:
         self.reInit()
 
         self.funcname = self.info[0]
-        self.tag = ""
+        if fields is not None:
+            self.tag = fields
+        else:
+            self.tag = ''
 
     def reInit(self):
         #Since this class gets pickled in ActionWindow, the class is never 'destroyed'

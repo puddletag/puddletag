@@ -1,249 +1,32 @@
-VStandard
-p1
-.(lp1
-(ipuddlestuff.findfunc
-Function
-p2
-(dp3
-S'function'
-p4
-cpuddlestuff.functions
-replace
-p5
-sS'info'
-p6
-(lp7
-S'Replace'
-p8
-aS"Replace '$0': '$1' -> '$2'"
-p9
-asS'doc'
-p10
-(lp11
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p12
-aS'&Replace, QLineEdit'
-p13
-aS'w&ith:, QLineEdit'
-p14
-aS'Match c&ase:, QCheckBox'
-p15
-aS'only as &whole word, QCheckBox'
-p16
-asS'args'
-p17
-(lp18
-V%20
-p19
-aV 
-aI00
-aI00
-asS'funcname'
-p20
-S'Replace'
-p21
-sS'tag'
-p22
-(lp23
-V__all
-p24
-asba(ipuddlestuff.findfunc
-Function
-p25
-(dp26
-g4
-g5
-sg6
-(lp27
-S'Replace'
-p28
-aS"Replace '$0': '$1' -> '$2'"
-p29
-asg10
-(lp30
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p31
-aS'&Replace, QLineEdit'
-p32
-aS'w&ith:, QLineEdit'
-p33
-aS'Match c&ase:, QCheckBox'
-p34
-aS'only as &whole word, QCheckBox'
-p35
-asg17
-(lp36
-V_
-aV 
-aI00
-aI00
-asg20
-S'Replace'
-p37
-sg22
-(lp38
-V__all
-p39
-asba(ipuddlestuff.findfunc
-Function
-p40
-(dp41
-g4
-g5
-sg6
-(lp42
-S'Replace'
-p43
-aS"Replace '$0': '$1' -> '$2'"
-p44
-asg10
-(lp45
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p46
-aS'&Replace, QLineEdit'
-p47
-aS'w&ith:, QLineEdit'
-p48
-aS'Match c&ase:, QCheckBox'
-p49
-aS'only as &whole word, QCheckBox'
-p50
-asg17
-(lp51
-VDj
-p52
-aVDJ
-p53
-aI00
-aI01
-asg20
-S'Replace'
-p54
-sg22
-(lp55
-V__all
-p56
-asba(ipuddlestuff.findfunc
-Function
-p57
-(dp58
-g4
-g5
-sg6
-(lp59
-S'Replace'
-p60
-aS"Replace '$0': '$1' -> '$2'"
-p61
-asg10
-(lp62
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p63
-aS'&Replace, QLineEdit'
-p64
-aS'w&ith:, QLineEdit'
-p65
-aS'Match c&ase:, QCheckBox'
-p66
-aS'only as &whole word, QCheckBox'
-p67
-asg17
-(lp68
-VMc
-p69
-aVMC
-p70
-aI00
-aI01
-asg20
-S'Replace'
-p71
-sg22
-(lp72
-V__all
-p73
-asba(ipuddlestuff.findfunc
-Function
-p74
-(dp75
-S'function'
-p76
-g5
-sS'info'
-p77
-(lp78
-S'Replace'
-p79
-aS"Replace '$0': '$1' -> '$2'"
-p80
-asS'doc'
-p81
-(lp82
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p83
-aS'&Replace, QLineEdit'
-p84
-aS'w&ith:, QLineEdit'
-p85
-aS'Match c&ase:, QCheckBox'
-p86
-aS'only as &whole word, QCheckBox'
-p87
-asS'args'
-p88
-(lp89
-VFeat
-p90
-aVfeat
-p91
-aI00
-aI01
-asS'funcname'
-p92
-S'Replace'
-p93
-sS'tag'
-p94
-(lp95
-V__all
-p96
-asba(ipuddlestuff.findfunc
-Function
-p97
-(dp98
-g76
-g5
-sg77
-(lp99
-S'Replace'
-p100
-aS"Replace '$0': '$1' -> '$2'"
-p101
-asg81
-(lp102
-S'Replace, "Replace \'$0\': \'$1\' -> \'$2\'"'
-p103
-aS'&Replace, QLineEdit'
-p104
-aS'w&ith:, QLineEdit'
-p105
-aS'Match c&ase:, QCheckBox'
-p106
-aS'only as &whole word, QCheckBox'
-p107
-asg88
-(lp108
-VVs
-p109
-aVvs
-p110
-aI00
-aI01
-asg92
-S'Replace'
-p111
-sg94
-(lp112
-V__all
-p113
-asba.
+[info]
+name = Standard
+[Func0]
+fields = __all,
+func_name = replace
+module = puddlestuff.functions
+arguments = %20, " ", False, False
+[Func1]
+fields = __all,
+func_name = replace
+module = puddlestuff.functions
+arguments = _, " ", False, False
+[Func2]
+fields = __all,
+func_name = replace
+module = puddlestuff.functions
+arguments = Dj, DJ, False, True
+[Func3]
+fields = __all,
+func_name = replace
+module = puddlestuff.functions
+arguments = Mc, MC, False, True
+[Func4]
+fields = __all,
+func_name = replace
+module = puddlestuff.functions
+arguments = Feat, feat, False, True
+[Func5]
+fields = __all,
+func_name = replace
+module = puddlestuff.functions
+arguments = Vs, vs, False, True

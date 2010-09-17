@@ -104,7 +104,12 @@ if IMAGETAGS:
     class Tag(TempTag):
         IMAGETAGS = IMAGETAGS
         def _picture(self, image):
-            data = image[util.DATA]
+            try:
+                data = image[util.DATA]
+            except:
+                import pdb
+                pdb.set_trace()
+                data = image[util.DATA]
             description = image.get(util.DESCRIPTION)
             if not description:
                 description = u''

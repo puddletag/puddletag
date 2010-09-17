@@ -1,45 +1,7 @@
-VCase Conversion
-p1
-.(lp1
-(ipuddlestuff.findfunc
-Function
-p2
-(dp3
-S'function'
-p4
-cpuddlestuff.functions
-titleCase
-p5
-sS'info'
-p6
-(lp7
-S'Case Conversion'
-p8
-aS'$0: $1'
-p9
-asS'doc'
-p10
-(lp11
-S'Case Conversion, "$0: $1"'
-p12
-aS'&Type, QComboBox, Mixed Case,UPPER CASE,lower case'
-p13
-aS'"For &Mixed Case, after any of:", QLineEdit, "., !"'
-p14
-asS'args'
-p15
-(lp16
-VMixed Case
-p17
-aV., !
-p18
-asS'funcname'
-p19
-S'Case Conversion'
-p20
-sS'tag'
-p21
-(lp22
-V__all
-p23
-asba.
+[info]
+name = Case Conversion
+[Func0]
+fields = __all,
+func_name = titleCase
+module = puddlestuff.functions
+arguments = Mixed Case, "., !"

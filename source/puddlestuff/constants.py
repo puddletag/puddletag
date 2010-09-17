@@ -14,6 +14,7 @@ QT_CONFIG = join(SAVEDIR, 'qt.conf')
 PLUGINDIR = join(SAVEDIR, 'plugins')
 PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
+ACTIONDIR = join(SAVEDIR, 'actions')
 
 #Values used for controls in creating functions in actiondlg
 TEXT = 'text'

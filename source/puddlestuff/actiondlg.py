@@ -27,12 +27,13 @@ from copy import copy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
         QuotedString, Literal, NotAny, nums
 import cPickle as pickle
-from puddleobjects import ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist
+from puddleobjects import (ListBox, OKCancel, ListButtons, 
+    winsettings, gettaglist, settaglist, safe_name)
 from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
 from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
 from functools import partial
-from constants import TEXT, COMBO, CHECKBOX, SEPARATOR
+from constants import TEXT, COMBO, CHECKBOX, SEPARATOR, SAVEDIR, ACTIONDIR
 from util import open_resourcefile, PluginFunction
 
 READONLY = list(READONLY) + ['__dirpath', ]
@@ -462,6 +463,7 @@ class ActionWindow(QDialog):
         self._quickaction = quickaction
         self.listbox = ListBox()
         self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listbox.setEditTriggers(QAbstractItemView.EditKeyPressed)
         self.example = example
 
         self.funcs = self.loadActions()
@@ -470,11 +472,13 @@ class ActionWindow(QDialog):
         for z in self.funcs:
             func_name = self.funcs[z][1]
             item = QListWidgetItem(func_name)
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
             if func_name in to_check:
                 item.setCheckState(Qt.Checked)
             else:
                 item.setCheckState(Qt.Unchecked)
             self.listbox.addItem(item)
+
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
@@ -497,6 +501,7 @@ class ActionWindow(QDialog):
         self.connect(self.buttonlist, SIGNAL("duplicate"), self.duplicate)
         self.connect(self.listbox, SIGNAL("itemDoubleClicked (QListWidgetItem *)"), self.edit)
         self.connect(self.listbox, SIGNAL("currentRowChanged(int)"), self.enableListButtons)
+        self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.renameAction)
         self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.enableOK)
 
         if example:
@@ -520,14 +525,17 @@ class ActionWindow(QDialog):
 
     def remove(self):
         cparser = PuddleConfig()
-        filedir = os.path.dirname(cparser.filename)
         listbox = self.listbox
         rows = sorted([listbox.row(item) for item in listbox.selectedItems()])
         for row in rows:
-            name = self.funcs[row][1]
-            filename = os.path.join(filedir, self.removeSpaces(name) + u'.action')
+            filename = self.funcs[row][2]
             os.rename(filename, filename + '.deleted')
         self.listbox.removeSelected(self.funcs)
+        
+        funcs = {}
+        for i, key in enumerate(sorted(self.funcs)):
+            funcs[i] = self.funcs[key]
+        self.funcs = funcs
 
     def enableListButtons(self, val):
         if val == -1:
@@ -544,29 +552,62 @@ class ActionWindow(QDialog):
             self.okcancel.ok.setEnabled(True)
         else:
             self.okcancel.ok.setEnabled(False)
+    
+    def renameAction(self, item):
+        row = self.listbox.row(item)
+        name = unicode(item.text())
+        if name != self.funcs[row][1]:
+            self.saveAction(name, self.funcs[row][0], self.funcs[row][2])
 
     def loadActions(self):
-        funcs = {}
-
-        cparser = PuddleConfig()
-        firstrun = cparser.load('puddleactions', 'firstrun', 0, True)
-        filedir = os.path.dirname(cparser.filename)
         from glob import glob
-        files = glob(os.path.join(filedir, u'*.action'))
-        if not firstrun and not files:
-            import StringIO
-            files = [open_resourcefile(filename)
-                        for filename in [':/caseconversion.action', ':/standard.action']]
-            cparser.setSection('puddleactions', 'firstrun',1)
+        basename = os.path.basename
 
-            for i, f in enumerate(files):
-                funcs[i] = findfunc.getAction(f)
-                self.saveAction(funcs[i][1], funcs[i][0])
-        else:
-            order = cparser.load('puddleactions', 'order', [])
-            files = [z for z in order if z in files] + [z for z in files if z not in order]
-            for i, f in enumerate(files):
-                funcs[i] = findfunc.getAction(f)
+        funcs = {}
+        cparser = PuddleConfig()
+        set_value = partial(cparser.set, 'puddleactions')
+        get_value = partial(cparser.get, 'puddleactions')
+        
+        firstrun = get_value('firstrun', True)
+        set_value('firstrun', False)
+        convert = get_value('convert', True)
+        order = get_value('order', [])
+
+        if convert:
+            set_value('convert', False)
+            findfunc.convert_actions(SAVEDIR, ACTIONDIR)
+            if order:
+                old_order = dict([(basename(z), i) for i,z in  
+                    enumerate(order)])
+                files = glob(os.path.join(ACTIONDIR, u'*.action'))
+                order = {}
+                for f in files:
+                    try:
+                        order[old_order[basename(f)]] = f
+                    except KeyError:
+                        pass
+                order = [z[1] for z in sorted(order.items())]
+                set_value('order', order)
+
+        files = glob(os.path.join(ACTIONDIR, u'*.action'))
+        if firstrun and not files:
+            filenames = [':/caseconversion.action', ':/standard.action']
+            files = map(open_resourcefile, filenames)
+            set_value('firstrun', False)
+
+            for fileobj, filename in zip(files, filenames):
+                filename = os.path.join(ACTIONDIR, filename[2:])
+                f = open(filename, 'w')
+                f.write(fileobj.read())
+                f.close()
+            files = glob(os.path.join(ACTIONDIR, u'*.action'))
+
+        files = [z for z in order if z in files] + \
+            [z for z in files if z not in order]
+
+        for i, f in enumerate(files):
+            action = findfunc.load_action(f)
+            funcs[i] = [action[0], action[1], f]
         return funcs
 
     def updateExample(self, *args):
@@ -595,17 +636,24 @@ class ActionWindow(QDialog):
             text = text.replace(char, '')
         return text.lower()
 
-    def saveAction(self, name, funcs):
+    def saveAction(self, name, funcs, filename=None):
         cparser = PuddleConfig()
-        filedir = os.path.dirname(cparser.filename)
-        filename = os.path.join(filedir, self.removeSpaces(name) + u'.action')
-        findfunc.saveAction(filename, name, funcs)
+        if not filename:
+            filename = os.path.join(ACTIONDIR, safe_name(name) + u'.action')
+            base = os.path.splitext(filename)[0]
+            i = 0
+            while os.path.exists(filename):
+                filename = u"%s_%d" % (base, i) + u'.action'
+                i += 1
+        findfunc.save_action(filename, name, funcs)
+        return filename
 
     def add(self):
         (text, ok) = QInputDialog.getText (self, "New Configuration", "Enter a name for the new action.", QLineEdit.Normal)
         if (ok is True) and (text != ""):
             item = QListWidgetItem(text)
             item.setCheckState(Qt.Unchecked)
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
             self.listbox.addItem(item)
         else:
             return
@@ -617,8 +665,8 @@ class ActionWindow(QDialog):
 
     def addBuddy(self, funcs):
         name = unicode(self.listbox.item(self.listbox.count() - 1).text())
-        self.funcs.update({self.listbox.count() - 1: [funcs, name]})
-        self.saveAction(name, funcs)
+        filename = self.saveAction(name, funcs)
+        self.funcs.update({self.listbox.count() - 1: [funcs, name, filename]})
 
     def edit(self):
         win = CreateAction(self, self.funcs[self.listbox.currentRow()][0], example = self.example)
@@ -627,24 +675,24 @@ class ActionWindow(QDialog):
         self.connect(win, SIGNAL("donewithmyshit"), self.editBuddy)
 
     def editBuddy(self, funcs):
-        self.saveAction(self.funcs[self.listbox.currentRow()][1], funcs)
-        self.funcs[self.listbox.currentRow()][0] = funcs
+        row = self.listbox.currentRow()
+        self.saveAction(self.funcs[row][1], funcs, self.funcs[row][2])
+        self.funcs[row][0] = funcs
         self.updateExample()
 
     def close(self):
-        order = [unicode(self.listbox.item(row).text()) for row in
-                                                xrange(self.listbox.count())]
+        funcs = self.funcs
         cparser = PuddleConfig()
-        filedir = os.path.dirname(cparser.filename)
-        filenames = [os.path.join(filedir,self.removeSpaces(z) + u'.action') for z in order]
-        cparser.setSection('puddleactions', 'order', filenames)
+        order = [funcs[index][2] for index in sorted(funcs)]
+        cparser.set('puddleactions', 'order', order)
         QDialog.close(self)
 
     def okClicked(self):
         """When clicked, save the current contents of the listbox and the associated functions"""
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
-        selectedrows = [i for i,z in enumerate(items) if z.checkState() == Qt.Checked]
+        selectedrows = [i for i,z in enumerate(items) if 
+            z.checkState() == Qt.Checked]
         tempfuncs = [self.funcs[row][0] for row in selectedrows]
         names = [self.funcs[row][1] for row in selectedrows]
         funcs = []
@@ -675,9 +723,11 @@ class ActionWindow(QDialog):
     def duplicateBuddy(self, name, funcs):
         item = QListWidgetItem(name)
         item.setCheckState(Qt.Unchecked)
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.listbox.addItem(item)
-        self.funcs.update({self.listbox.count() - 1: [funcs, name]})
-        self.saveAction(name, funcs)
+        filename = self.saveAction(name, funcs)
+        self.funcs.update({self.listbox.count() - 1: [funcs, name, filename]})
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
