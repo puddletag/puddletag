@@ -270,20 +270,19 @@ def getdeco(func):
     def f(self, key):
         mapping = self.revmapping
         if key in mapping:
-            try:
-                return func(self, mapping[key])
-            except KeyError:
-                pass
+            return func(self, mapping[key])
+        elif key in self.mapping:
+            raise KeyError(key)
         return func(self, key)
     return f
 
 def setdeco(func):
     def f(self, key, value):
         mapping = self.revmapping
-        if key.lower() in mapping:
-            return func(self, mapping[key.lower()], value)
-        elif key in mapping:
+        if key in mapping:
             return func(self, mapping[key], value)
+        elif key in self.mapping:
+            return
         return func(self, key, value)
     return f
 
@@ -382,11 +381,12 @@ class MockTag(object):
 
     def _setfilepath(self,  val):
         val = to_string(val)
-        self._tags.update({PATH: val,
-                           DIRPATH: path.dirname(val),
-                           FILENAME: path.basename(val),
-                           EXTENSION: path.splitext(val)[1][1:],
-                           DIRNAME: path.basename(path.dirname(val))})
+        self._tags.update({
+            PATH: val,
+            DIRPATH: path.dirname(val),
+            FILENAME: path.basename(val),
+            EXTENSION: path.splitext(val)[1][1:],
+            DIRNAME: path.basename(path.dirname(val))})
         if hasattr(self, '_mutfile'):
             self._mutfile.filename = val
 
@@ -394,7 +394,7 @@ class MockTag(object):
         if val:
             val = to_string(val)
             self.filepath = u'%s%s%s' % (path.splitext(self.filepath)[0],
-                                     path.extsep, val)
+                path.extsep, val)
         else:
             self.filepath = path.splitext(self.filepath)[0]
 

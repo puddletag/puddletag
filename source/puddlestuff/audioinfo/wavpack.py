@@ -57,4 +57,4 @@ class Tag(base):
     
     info = property(_info)
 
-filetype = (WavPack, Tag, 'WavPack')
+filetype = (WavPack, Tag, 'APEv2')

@@ -121,7 +121,6 @@ class FrameCombo(QGroupBox):
 
     def fillCombos(self, *args):
         audios = self._status['selectedfiles']
-        t = time.time()
         combos = self.combos
 
         if not audios:
@@ -135,10 +134,7 @@ class FrameCombo(QGroupBox):
         for audio in audios:
             for tag in tags:
                 try:
-                    if tag in audio.preview:
-                        value = audio.preview[tag]
-                    else:
-                        value = audio[tag]
+                    value = audio[tag]
                     if isinstance(value, basestring):
                         tags[tag].add(value)
                     else:

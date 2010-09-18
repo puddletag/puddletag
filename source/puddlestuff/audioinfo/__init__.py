@@ -58,9 +58,9 @@ def loadmapping(filepath):
         tags = [z.strip() for z in l.split(',')]
         if len(tags) == 3: #Tag, Source, Target
             try:
-                mappings[tags[0]].update({tags[1].lower(): tags[2].lower()})
+                mappings[tags[0]].update({tags[1]: tags[2]})
             except KeyError:
-                mappings[tags[0]] = ({tags[1].lower(): tags[2].lower()})
+                mappings[tags[0]] = ({tags[1]: tags[2]})
     return mappings
 
 def setmapping(m):

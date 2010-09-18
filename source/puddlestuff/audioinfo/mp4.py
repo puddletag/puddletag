@@ -181,7 +181,7 @@ class Tag(util.MockTag):
         return tag
 
     @getdeco
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         if key == '__image':
             return self.images
 
@@ -273,6 +273,7 @@ class Tag(util.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
+
         self._images = []
         tags, audio = self._init_info(filename, MP4)
 
@@ -375,4 +376,4 @@ class Tag(util.MockTag):
         audio.update(newtag)
         audio.save()
 
-filetype = (MP4, Tag, 'AAC')
+filetype = (MP4, Tag, 'MP4')

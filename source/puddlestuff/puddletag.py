@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
-import mainwin.action_dialogs
+import mainwin.action_dialogs, mainwin.tagtools
 import mainwin.previews, mainwin.artwork
 import puddlestuff.masstagging
 import puddlestuff.webdb
@@ -57,6 +57,7 @@ status = PuddleStatus()
 mainfuncs.status = status
 tagmodel.status = status
 mainwin.previews.set_status(status)
+mainwin.tagtools.set_status(status)
 
 def create_tool_windows(parent):
     """Creates the dock widgets for the main window (parent) using
@@ -261,8 +262,9 @@ class MainWin(QMainWindow):
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
         previewactions = mainwin.previews.create_actions(self)
-        menubar, winmenu = ls.menubar(menus, 
-            actions + winactions + previewactions)
+        tag_actions = mainwin.tagtools.create_actions(self)
+        all_actions = actions + winactions + previewactions + tag_actions
+        menubar, winmenu = ls.menubar(menus, all_actions)
         
         if winmenu:
             winmenu.addSeparator()
@@ -277,14 +279,14 @@ class MainWin(QMainWindow):
         controls = PuddleDock._controls
 
         toolgroup = ls.get_menus('toolbar')
-        toolbar = ls.toolbar(toolgroup, actions, controls)
+        toolbar = ls.toolbar(toolgroup, all_actions, controls)
         toolbar.setObjectName('Toolbar')
         self.addToolBar(toolbar)
 
         connect_actions(actions, controls)
-        connect_action_shortcuts(actions + previewactions)
-        create_context_menus(controls, actions+previewactions)
-        status['actions'] = actions + winactions + previewactions
+        connect_action_shortcuts(all_actions)
+        create_context_menus(controls, all_actions)
+        status['actions'] = all_actions
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
 
         self.restoreSettings()

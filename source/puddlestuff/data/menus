@@ -7,12 +7,13 @@ version=14
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions
 &Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...,&Sort Selected
-&Preview Mode=Enabl&e Preview Mode,&Undo Last Clear,&Write Previews,Clear Selected &Files,
+&Preview Mode=Enabl&e Preview Mode,&Undo Last Clear,&Write Previews,Clear Selected &Files
+Ta&g Tools=Add ID3,Add APEv2,separator
 &Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging,separator,Functions #,separator,&Lock Layout
 #Ab&out=About &Qt,
 
 [menuattrs]
-order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode, &Windows #,Ab&out
+order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode,Ta&g Tools,&Windows
 
 [toolbar]
 &File=&Open Folder,&Add Folder,&Refresh

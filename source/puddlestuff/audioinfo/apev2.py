@@ -28,8 +28,6 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
     'modified', 'filetype')
 
-dispname = 'APEv2'
-
 def get_class(mutagen_file, base_function, attrib_fields):
     class Tag(util.MockTag):
         """Tag class for APEv2 files.
@@ -91,10 +89,16 @@ def get_class(mutagen_file, base_function, attrib_fields):
                         ('Size', str_filesize(int(self.size))),
                         ('Filename', self.filename),
                         ('Modified', self.modified)]
-            apeinfo = [('Channels', unicode(info.channels)),
-                    ('Length', self.length),
-                    ('Version', unicode(info.version))]
-            return [('File', fileinfo), ("%s Info" % filetype, apeinfo)]
+            apeinfo = [('Length', self.length)]
+            attr = {
+                'Channels': 'channels',
+                'Version': 'version'}
+            for k, v in attr.items():
+                try:
+                    apeinfo.append([k, unicode(getattr(info, v))])
+                except AttributeError:
+                    continue
+            return [('File', fileinfo), ("%s Info" % self.filetype, apeinfo)]
 
         info = property(_info)
 

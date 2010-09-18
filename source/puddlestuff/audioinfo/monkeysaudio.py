@@ -45,4 +45,4 @@ class Tag(base):
     
     info = property(_info)
 
-filetype = (MonkeysAudio, Tag, 'Monkeys Audio')
+filetype = (MonkeysAudio, Tag, 'APEv2')

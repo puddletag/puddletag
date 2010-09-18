@@ -25,8 +25,8 @@ import util
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
                 getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
                 FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
-ATTRIBUTES = ('length', 'accessed', 'size', 'created',
-              'modified', 'frequency', 'bitrate', 'version', 'channels')
+ATTRIBUTES = ('length', 'accessed', 'size', 'created', 'filetype',
+    'modified', 'frequency', 'bitrate', 'version', 'channels')
 
 from apev2 import get_class
 
@@ -65,4 +65,4 @@ class Tag(base):
     
     info = property(_info)
 
-filetype = (Musepack, Tag, 'Musepack')
+filetype = (Musepack, Tag, 'APEv2')

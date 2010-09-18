@@ -200,20 +200,14 @@ def model_tag(model, base = audioinfo.AbstractTag):
 def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
+    #from audioinfo.combine import combine
     options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind 
         in audioinfo.options]
     
     def set_id3_options(write_apev2):
-        from audioinfo.combine import combine
-        from audioinfo import apev2
-        filetype = [z for z in options if z[2] == 'ID3'][0]
-        if write_apev2:
-            filetype[1] = model_tag(model, 
-                combine(audioinfo._id3_type[1], apev2.filetype[1]))
-        else:
-            filetype[1] = model_tag(model, audioinfo._id3_type[1])
+        pass
     
-    audioinfo.set_id3_options = set_id3_options
+    #audioinfo.set_id3_options = set_id3_options
     
     def ReplacementTag(filename):
         fileobj = file(filename, "rb")
@@ -396,7 +390,6 @@ class TagModel(QAbstractTableModel):
         
         self.columns = dict([(field, i) for i, 
             (title, field) in enumerate(headerdata)])
-        print self.columns
 
     def _setFontSize(self, size):
         self._fontSize = size
@@ -431,7 +424,6 @@ class TagModel(QAbstractTableModel):
         return self._undolevel
 
     def _setUndoLevel(self, value):
-        #print value
         if value == 0:
             self.emit(ENABLEUNDO, False)
         else:
@@ -880,8 +872,6 @@ class TagModel(QAbstractTableModel):
         the file is just renamed i.e not tags are written.
         """
         audio = self.taginfo[row]
-        print u'to_write', tags
-        print u'file:', audio.tags
 
         if self.previewMode:
             preview = audio.preview

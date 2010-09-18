@@ -22,9 +22,9 @@
 import util
 from mutagen.oggvorbis import OggVorbis
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
-                  getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-                  READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-                  getdeco, setdeco, str_filesize)
+    getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
+    READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
+    getdeco, setdeco, str_filesize)
 from copy import copy
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
