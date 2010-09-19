@@ -1,5 +1,5 @@
 [info]
-version=14
+version=15
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
@@ -8,12 +8,12 @@ version=14
 &Actions=&Actions,&QuickActions,&Functions
 &Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...,&Sort Selected
 &Preview Mode=Enabl&e Preview Mode,&Undo Last Clear,&Write Previews,Clear Selected &Files
-Ta&g Tools=Add ID3,Add APEv2,separator
+Ta&g Tools (Experimental)=Add ID3,Add APEv2,separator,Remove ID3, Remove APEv2
 &Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging,separator,Functions #,separator,&Lock Layout
 #Ab&out=About &Qt,
 
 [menuattrs]
-order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode,Ta&g Tools,&Windows
+order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode,Ta&g Tools (Experimental),&Windows
 
 [toolbar]
 &File=&Open Folder,&Add Folder,&Refresh

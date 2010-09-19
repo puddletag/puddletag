@@ -468,8 +468,10 @@ class MockTag(object):
         if not self.mapping:
             return self._tags.keys()
         else:
-            get = self.mapping.get
-            return [get(key, key) for key in self._tags]
+            mapping = self.mapping
+            revmapping = self.revmapping
+            return [mapping.get(k, k) for k in self._tags
+                if not(k in revmapping and k not in mapping)]
 
     def values(self):
         return [self[key] for key in self]

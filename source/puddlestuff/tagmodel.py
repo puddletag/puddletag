@@ -134,10 +134,10 @@ def model_tag(model, base = audioinfo.AbstractTag):
             else:
                 super(ModelTag, self).__delitem__(key)
         
-        def delete(self):
+        def delete(self, tag=None):
             if model.previewMode:
                 return
-            base.delete(self)
+            base.delete(self, tag)
 
         def __getitem__(self, key):
             if model.previewMode and key in self.preview:
@@ -200,18 +200,15 @@ def model_tag(model, base = audioinfo.AbstractTag):
 def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
-    #from audioinfo.combine import combine
-    options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind 
+    from audioinfo.combine import combine
+    options = [[Kind[0], model_tag(model, combine(Kind[1])), Kind[2]] for Kind 
         in audioinfo.options]
-    
-    def set_id3_options(write_apev2):
-        pass
-    
-    #audioinfo.set_id3_options = set_id3_options
+    filetypes = dict([(z[0],z) for z in options])
+    extensions = dict([(k, filetypes[v[0]]) for k, v in extensions.items()])
     
     def ReplacementTag(filename):
         fileobj = file(filename, "rb")
-        ext = splitext(filename)
+        ext = splitext(filename)[1][1:]
         try:
             return extensions[ext][1](filename)
         except KeyError:

@@ -31,7 +31,8 @@ GENRES = sorted(TCON.GENRES)
 
 AbstractTag = MockTag
 
-extensions = {'mp3': id3.filetype,
+extensions = {
+    'mp3': id3.filetype,
     'flac': flac.filetype,
     'ogg': ogg.filetype,
     'mp4': mp4.filetype,

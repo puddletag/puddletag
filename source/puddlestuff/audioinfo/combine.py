@@ -102,10 +102,18 @@ def combine(first, *others):
 
         def __contains__(self, key):
             return key in self.keys()
-        
-        def delete(self):
-            self._first.delete()
-            self._set(lambda z: z.delete())
+
+        def delete(self, tag=None):
+            if tag is None:
+                self._first.delete()
+                self._set(lambda z: z.delete())
+            else:
+                if tag in self._filetypes:
+                    audio = self._filetypes[tag]
+                    audio.delete()
+                    del(self._filetypes[tag])
+                    self._others.remove(audio)
+                    
 
         def __delitem__(self, key):
             try:
@@ -188,7 +196,7 @@ def combine(first, *others):
         def remove(self, filetype):
             if filetype in self._filetypes:
                 tag = self._filetypes[filetype]
-                self._other.remove(tag)
+                self._others.remove(tag)
                 del(self._filetypes[filetype])
 
         def save(self):
