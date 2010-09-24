@@ -323,8 +323,7 @@ def runAction(funcs, audio, state = None, quick_action=None):
     
     if state is None:
         state = {}
-
-    audio_str = stringtags(audio)
+   
     if hasattr(audio, 'tags'):
         audio = deepcopy(audio.tags)
     else:
@@ -341,7 +340,7 @@ def runAction(funcs, audio, state = None, quick_action=None):
             fields = [key for key in audio if key not in NOT_ALL]
         for field in fields:
             val = audio.get(field, u'')
-            temp = func.runFunction(val, audio, state, audio_str)
+            temp = func.runFunction(val, audio, state)
             if temp is None:
                 continue
             if isinstance(temp, basestring):
@@ -363,7 +362,7 @@ def runAction(funcs, audio, state = None, quick_action=None):
         if ret:
             [changed.add(z) for z in ret]
             audio.update(ret)
-    return dict([(z,audio[z]) for z in changed])
+    return dict([(z, audio[z]) for z in changed])
 
 def runQuickAction(funcs, audio, tag):
     """Same as runAction, except that all funcs are 
