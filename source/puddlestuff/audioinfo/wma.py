@@ -173,7 +173,7 @@ class Tag(util.MockTag):
         for name, values in audio.tags.items():
             try: name = self.__translate[name]
             except KeyError: continue
-            self._tags[name] = "\n".join(map(unicode, values))
+            self._tags[name] = u"\n".join(map(unicode, values))
 
         info = audio.info
         self._tags.update({u"__frequency": strfrequency(info.sample_rate),

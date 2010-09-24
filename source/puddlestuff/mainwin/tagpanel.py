@@ -7,7 +7,7 @@ from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
 pyqtRemoveInputHook()
-from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
+from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP
 import time
 from functools import partial
 
@@ -110,8 +110,8 @@ class FrameCombo(QGroupBox):
     
     def _emitChange(self, field, text):
         text = unicode(text)
-        if text == u"<blank>": value = []
-        elif text == u"<keep>": return
+        if text == BLANK: value = []
+        elif text == KEEP: return
         else:
             if field in INFOTAGS:
                 value = text
@@ -173,8 +173,8 @@ class FrameCombo(QGroupBox):
             tags['__image'] = images
         for tag, combo in combos.items():
             curtext = unicode(combo.currentText())
-            if curtext == u"<blank>": tags[tag] = []
-            elif curtext == u"<keep>": pass
+            if curtext == BLANK: tags[tag] = []
+            elif curtext == KEEP: pass
             else:
                 if tag in INFOTAGS:
                     tags[tag] = curtext
@@ -258,7 +258,7 @@ class FrameCombo(QGroupBox):
         for combo in self.combos.values():
             combo.clear()
             combo.setEnabled(enable)
-            combo.addItems(["<keep>", "<blank>"])
+            combo.addItems([KEEP, BLANK])
 
         if 'genre' in self.combos:
             pass

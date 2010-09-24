@@ -508,56 +508,45 @@ def replacetokens(text, dictionary, default=u''):
     l.append(text[end:])
     return u''.join(l)
 
-def replaceWithReg(text, expr, rep):
+def replaceWithReg(text, expr, rep, matchcase=True):
     """Replace with RegExp, "RegReplace $0: RegExp '$1', with '$2'"
 &Regular Expression, text
-Replace &matches with:, text"""
+Replace &matches with:, text
+Match &Case, check"""
+    t = time.time()
     if not expr:
         return text
     try:
         match = re.search(expr, text, re.I)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
+    ret = []
+    unmatched = 0
+    append = ret.append
+    
+    if not matchcase:
+        matches = re.finditer(expr, text, re.I)
+    else:
+        matches = re.finditer(expr, text)
 
-    if match:
+    for match in matches:
+        group = match.group()
         groups = match.groups()
-        if not groups:
-            groups = [match.group()]
+        if not group:
+            continue
         if groups:
             d = dict(enumerate(groups))
-            replacetext = findfunc.parsefunc(rep, {}, d)
-            replacetext = replacetokens(replacetext, d, replacetext)
-            return re.sub(expr, replacetext, text)
-    else:
-        return
+        else:
+            d = {0: group}
 
-#def replaceWithReg(text, expr, rep):
-    #"""Replace with RegExp, "RegReplace $0: RegExp '$1', with '$2'"
-#&Regular Expression, text
-#Replace &matches with:, text"""
-    #if not expr:
-        #return text
-    #try:
-        #match = re.search(expr, text, re.I)
-    #except re.error, e:
-        #raise findfunc.FuncError(unicode(e))
-    #ret = []
+        replacetext = findfunc.parsefunc(rep, {}, d)
+        replacetext = replacetokens(replacetext, d, replacetext)
 
-    #for match in re.finditer(expr, text, re.I):
-        ##print "'%s'" % match.group()
-        ##print match.groups()
-        #if not match.group():
-            #continue
-        #pdb.set_trace()
-        #if match.group() == u''.join(match.groups()):
-            #d = enumerate(match.groups())
-        #else:
-            #d = {0: match.group()}
-        #substr = text[match.start(0): match.end(0)]
-        #replacetext = findfunc.parsefunc(rep, {}, d)
-        #replacetext = replacetokens(replacetext, d, replacetext)
-        #ret.append(re.sub(expr, replacetext, substr))
-    #return u''.join(ret)
+        append(text[unmatched:match.start(0)])
+        unmatched = match.end(0)
+        append(replacetext)
+    ret.append(text[unmatched:])
+    return u''.join(ret)
 
 
 validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (

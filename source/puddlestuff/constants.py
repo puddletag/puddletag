@@ -16,6 +16,10 @@ PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
 ACTIONDIR = join(SAVEDIR, 'actions')
 
+#Misc
+BLANK = u'<blank>'
+KEEP = u'<keep>'
+
 #Values used for controls in creating functions in actiondlg
 TEXT = 'text'
 COMBO = 'combo'
@@ -39,7 +43,8 @@ FILENAME = u"__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
 READONLY = ('__bitrate', '__frequency', "__length",
-            "__modified", "__size", "__created", "__library")
+    "__modified", "__size", "__created", "__library")
+IMAGE = '__image'
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
 INFOTAGS = FILETAGS + list(READONLY)
 

@@ -33,19 +33,26 @@ from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
 from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
 from functools import partial
-from constants import TEXT, COMBO, CHECKBOX, SEPARATOR, SAVEDIR, ACTIONDIR
+from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
+    SAVEDIR, ACTIONDIR, BLANK)
 from util import open_resourcefile, PluginFunction
 
 READONLY = list(READONLY) + ['__dirpath', ]
 
+def _escape_text(txt):
+    result = txt
+    result = result.replace(u"&", u"&amp;")
+    result = result.replace(u"<", u"&lt;")
+    result = result.replace(u">", u"&gt;")
+    return result
+
 def to_str(v):
     if isempty(v):
-        return u'&lt;blank&gt;'
+        return _escape_text(BLANK)
     elif isinstance(v, basestring):
-        return v
+        return _escape_text(v)
     else:
-        return SEPARATOR.join(v)
-        
+        return _escape_text(SEPARATOR.join(v))
 
 def displaytags(tags):
     if tags:
@@ -66,7 +73,6 @@ class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
         QScrollArea.__init__(self, parent)
         label = QLabel()
-        #self.setText = label.setText
         self.setWidget(label)
         self.setText(text)
         self.text = label.text

@@ -137,7 +137,11 @@ def get_old_action(filename):
 def load_action(filename):
     modules = defaultdict(lambda: defaultdict(lambda: {}))
     for function in functions.values():
-        modules[function.__module__][function.__name__] = function
+        if isinstance(function, PluginFunction):
+            f = function.function
+            modules[f.__module__][f.__name__] = function
+        else:
+            modules[function.__module__][function.__name__] = function
     cparser = PuddleConfig(filename)
     funcs = []
     name = cparser.get('info', 'name', u'')
