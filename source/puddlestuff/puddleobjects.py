@@ -1454,8 +1454,10 @@ class PicWidget(QWidget):
             filedlg.setNameFilters(filters.keys())
             if self.lastfilename:
                 tempfilename = os.path.splitext(self.lastfilename)[0] + u'.jpg'
+            else:
+                tempfilename = ''
             filename = filedlg.getSaveFileName(self,
-                'Save as...',self.lastfilename, u';;'.join(sorted(filters)))
+                'Save as...', tempfilename , u';;'.join(sorted(filters)))
             if not filename:
                 return
             filt = unicode(filedlg.selectedNameFilter())
