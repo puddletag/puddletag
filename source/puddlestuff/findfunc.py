@@ -33,7 +33,7 @@ numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 from copy import deepcopy
-from constants import ACTIONDIR
+from constants import ACTIONDIR, CHECKBOX
 import glob
 from collections import defaultdict
 from functools import partial
@@ -153,7 +153,16 @@ def load_action(filename):
             func_module = get(FUNC_MODULE, u'')
             arguments = get(ARGS, [])
             func = Function(modules[func_module][func_name], fields)
-            func.args = arguments
+            newargs = []
+            for i, (control, arg) in enumerate(zip(func.controls, arguments)):
+                if control == CHECKBOX:
+                    if arg == u'False':
+                        newargs.append(False)
+                    else:
+                        newargs.append(True)
+                else:
+                    newargs.append(arg)
+            func.args = newargs
             funcs.append(func)
     return [funcs, name]
 
@@ -523,6 +532,8 @@ class Function:
             self.tag = fields
         else:
             self.tag = ''
+        
+        self.controls = self._getControls()
 
     def reInit(self):
         #Since this class gets pickled in ActionWindow, the class is never 'destroyed'
@@ -586,6 +597,12 @@ class Function:
     def description(self):
         d = [u", ".join(self.tag)] + self.args
         return pprint(self.info[1], d)
+        
+    def _getControls(self):
+        identifier = QuotedString('"') | CharsNotIn(',')
+        arglist = delimitedList(identifier)
+        docstr = self.doc[1:]
+        return [(arglist.parseString(line)[1]).strip() for line in docstr]
 
     def setTag(self, tag):
         self.tag = tag
