@@ -33,7 +33,7 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from puddleobjects import PuddleConfig, safe_name, fnmatch, dircmp
+from puddleobjects import PuddleConfig, safe_name, fnmatch, dircmp, natcasecmp
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time, unicodedata
 from operator import itemgetter
 from copy import deepcopy
@@ -508,8 +508,8 @@ def replacetokens(text, dictionary, default=u''):
     l.append(text[end:])
     return u''.join(l)
 
-def replaceWithReg(text, expr, rep, matchcase=True):
-    """Replace with RegExp, "RegReplace $0: RegExp '$1', with '$2'"
+def replaceWithReg(text, expr, rep, matchcase=False):
+    """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"
 &Regular Expression, text
 Replace &matches with:, text
 Match &Case, check"""
@@ -520,6 +520,7 @@ Match &Case, check"""
         match = re.search(expr, text, re.I)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
+
     ret = []
     unmatched = 0
     append = ret.append
@@ -557,6 +558,27 @@ def removeDisallowedFilenameChars(t_filename):
     cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
     return u''.join(c for c in cleanedFilename if c in validFilenameChars)
 
+def remove_dupes(m_text, matchcase=False):
+    """Remove duplicate values, "Remove Dupes: $0, Match Case $1"
+Match &Case, check"""
+    text = m_text
+    if isinstance(text, basestring):
+        return text
+
+    if matchcase:
+        ret = []
+        append = temp.append
+        [append(z) for z in text if z not in ret]
+        return ret
+    else:
+        ret = []
+        lowered = set()
+        for z in text:
+            if z.lower() not in lowered:
+                lowered.add(z.lower())
+                ret.append(z)
+	return ret
+
 def right(text,n):
     try:
         n = int(n)
@@ -565,6 +587,22 @@ def right(text,n):
     if n == 0:
         return u''
     return text[-int(n):]
+
+def sort_field(m_text, order='Ascending', matchcase=False):
+    """Sort values, "Sort $0, order='$1', Match Case='$2'"
+&Order, combo, Ascending, Descending,
+Match &Case, check"""
+    text = m_text
+    if not matchcase:
+        cmp = natcasecmp
+    else:
+        cmp = None
+    if isinstance(text, basestring):
+        return text
+    if order == u'Ascending':
+        return sorted(text, cmp)
+    else:
+        return sorted(text, cmp, reverse=True)
 
 def split_by_sep(m_text, sep):
     """Split fields using separator, "Split using separator $0: sep='$1'"
@@ -682,6 +720,7 @@ functions = {"add": add,
             "mod": mod,
             "move": move,
             "mul": mul,
+            'remove_dupes': remove_dupes,
             "neql": neql,
             "not": not_,
             "num": num,
@@ -693,6 +732,7 @@ functions = {"add": add,
             "replace": replace,
             "replaceWithReg": replaceWithReg,
             "right": right,
+            'sort': sort_field,
             'split_by_sep': split_by_sep,
             "strip": strip,
             "sub": sub,

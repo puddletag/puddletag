@@ -590,7 +590,12 @@ class Function:
             if isinstance(text, basestring) or varnames[0].startswith('m_'):
                 return function(text, *arguments[1:])
             else:
-                return [function(v, *arguments[1:]) for v in text]
+                ret = (function(v, *arguments[1:]) for v in text)
+                temp = []
+                append = temp.append
+                [append(z) for z in ret if z not in temp]
+                return temp
+		  
         else:
             return function(*arguments)
 
