@@ -332,6 +332,8 @@ def runAction(funcs, audio, state = None, quick_action=None):
     
     if state is None:
         state = {}
+
+    r_tags = audio
    
     if hasattr(audio, 'tags'):
         audio = deepcopy(audio.tags)
@@ -349,7 +351,7 @@ def runAction(funcs, audio, state = None, quick_action=None):
             fields = [key for key in audio if key not in NOT_ALL]
         for field in fields:
             val = audio.get(field, u'')
-            temp = func.runFunction(val, audio, state)
+            temp = func.runFunction(val, audio, state, None, r_tags)
             if temp is None:
                 continue
             if isinstance(temp, basestring):
@@ -551,7 +553,7 @@ class Function:
     def setArgs(self, args):
         self.args = args
 
-    def runFunction (self, text=None, m_tags=None, state=None, tags=None):
+    def runFunction (self, text=None, m_tags=None, state=None, tags=None, r_tags=None):
         function = self.function
         varnames = function.func_code.co_varnames
         
@@ -585,6 +587,10 @@ class Function:
 
         if 'state' in varnames:
             arguments.insert(varnames.index('state'), state)
+
+        if r_tags:
+            if 'r_tags' in varnames:
+                arguments.insert(varnames.index('r_tags'), r_tags)
         
         if first_text:
             if isinstance(text, basestring) or varnames[0].startswith('m_'):

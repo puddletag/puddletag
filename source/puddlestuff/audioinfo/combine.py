@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from util import *
+from puddlestuff.audioinfo import TAG_TYPES
 
 def combine(first, *others):
     
@@ -113,7 +114,6 @@ def combine(first, *others):
                     audio.delete()
                     del(self._filetypes[tag])
                     self._others.remove(audio)
-                    
 
         def __delitem__(self, key):
             try:
@@ -144,9 +144,13 @@ def combine(first, *others):
             elif key == '__filetype':
                 if self._others:
                     return u'%s, %s'  % (self._first.filetype, 
-                        ', '.join([z.filetype for z in self._others]))
+                        u', '.join([z.filetype for z in self._others]))
                 else:
-                    return self._first.filetype
+                    try:
+                        return self._first.filetype
+                    except:
+                        pdb.set_trace()
+                        return self._first.filetype
 
             if key in self._first:
                 return self._first[key]
@@ -194,6 +198,9 @@ def combine(first, *others):
             return key
         
         def remove(self, filetype):
+            c = TAG_TYPES[filetype]
+            if isinstance(self._first, c):
+                self._first.delete()
             if filetype in self._filetypes:
                 tag = self._filetypes[filetype]
                 self._others.remove(tag)

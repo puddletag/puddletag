@@ -26,7 +26,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
                 getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
                 FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
-              'modified', 'frequency', 'bitrate')
+    'modified', 'frequency', 'bitrate', 'filetype')
 
 from apev2 import get_class
 

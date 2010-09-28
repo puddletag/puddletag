@@ -28,7 +28,8 @@ from subprocess import Popen
 from os import path
 import audioinfo
 from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
-    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME)
+    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
+    EXTENSION)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
     progress, PuddleConfig, singleerror, winsettings, issubfolder, timemethod)
@@ -880,9 +881,17 @@ class TagModel(QAbstractTableModel):
 
         if justrename:
             filetags = real_filetags(audio.mapping, audio.revmapping, tags)
-            undo = dict([(field, copy(audio.get(field, []))) 
-                for field in tags if 
-                tags.get(field, u'') != audio.get(field, u'')])
+            file_hash = {
+                PATH: 'filepath',
+                FILENAME:'filename',
+                EXTENSION: 'ext',
+                DIRPATH: 'dirpath',
+                DIRNAME: 'dirname'}
+            undo = {}
+            for key in filetags:
+                if key in file_hash:
+                    undo[key] = getattr(audio, file_hash[key])
+
             rename_file(audio, filetags)
             if audio.library:
                 audio.save(True)

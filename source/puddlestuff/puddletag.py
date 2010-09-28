@@ -262,8 +262,8 @@ class MainWin(QMainWindow):
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
         previewactions = mainwin.previews.create_actions(self)
-        tag_actions = mainwin.tagtools.create_actions(self)
-        all_actions = actions + winactions + previewactions + tag_actions
+        #tag_actions = mainwin.tagtools.create_actions(self)
+        all_actions = actions + winactions + previewactions
         menubar, winmenu = ls.menubar(menus, all_actions)
         
         if winmenu:

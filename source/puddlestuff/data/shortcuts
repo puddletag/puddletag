@@ -1,5 +1,5 @@
 [info]
-version=15
+version=16
 
 [shortcut1]
 name=&Open Folder
@@ -303,3 +303,27 @@ command=search_replace
 control=mainwin
 enabled=filesselected
 shortcut=Ctrl+H
+
+[shortcut44]
+name=Add ID3 Tag
+command=add_id3
+control=mainwin
+enabled=filesselected
+
+[shortcut45]
+name=Add APEv2 Tag
+command=add_apev2
+control=mainwin
+enabled=filesselected
+
+[shortcut46]
+name=Remove ID3 Tag
+command=remove_id3
+control=mainwin
+enabled=filesselected
+
+[shortcut47]
+name=Remove APEv2 Tag
+command=remove_apev2
+control=mainwin
+enabled=filesselected

@@ -334,27 +334,38 @@ def mod(text,text1):
     except decimal.InvalidOperation:
         return
 
-def move(tags, pattern):
+def move(m_tags, pattern, r_tags):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
+    
+    tags = m_tags
     tf = findfunc.tagtofilename
-    if pattern.startswith(u'/'):
+
+    if os.path.isabs(pattern):
+        
+        new_name = lambda d: safe_name(tf(d, tags))
         subdirs = pattern.split(u'/')
-        newdirs =  [safe_name(tf(d, tags)) for d in subdirs[1:-1]]
+        newdirs = map(new_name, subdirs[1:-1])
         newdirs.append(safe_name(tf(subdirs[-1], tags, True)))
         newdirs.insert(0, u'/')
         return {'__path': os.path.join(*newdirs)}
     else:
+
+        new_name = lambda d: safe_name(tf(d, tags)).encode('utf8')
         subdirs = pattern.split(u'/')
-        newdirs =  [safe_name(tf(d, tags)) for d in subdirs[:-1]]
-        newdirs.append(safe_name(tf(subdirs[-1], tags, True)))
-        count = pattern.count('/')
+        count = pattern.count(u'/')
+        
+        newdirs = map(new_name, subdirs[:-1])
+        newdirs.append(safe_name(tf(subdirs[-1], tags, True)).encode('utf8'))
+
+        dirpath = r_tags.dirpath
+
         if count:
-            parent = tags['__dirpath'].split(u'/')[:-count]
+            parent = dirpath.split('/')[:-count]
         else:
-            parent = tags['__dirpath'].split(u'/')
+            parent = dirpath.split('/')
         if not parent[0]:
-            parent.insert(0, u'/')
+            parent.insert(0, '/')
         return {'__path': os.path.join(*(parent + newdirs))}
 
 def mul(text, text1):

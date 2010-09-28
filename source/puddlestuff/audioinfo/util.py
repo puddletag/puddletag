@@ -36,6 +36,7 @@ DIRNAME = '__dirname'
 READONLY = ('__bitrate', '__frequency', "__length", "__modified",
             "__size", "__created", "__library", '__accessed', '__filetype',
             '__channels', '__version', '__titlegain', '__albumgain')
+IMAGES = '__image'
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME]
 INFOTAGS = FILETAGS + list(READONLY)
 
@@ -93,11 +94,12 @@ TAGS = {'TALB': 'album',
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
 
 
-IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)', 'Cover (back)',
-'Leaflet page','Media (e.g. label side of CD)','Lead artist','Artist',
-'Conductor', 'Band', 'Composer','Lyricist', 'Recording Location', 'During recording',
-'During performance', 'Movie/video screen capture', 'A bright coloured fish', 'Illustration',
-'Band/artist logotype', 'Publisher/Studio logotype']
+IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (front)',
+    'Cover (back)', 'Leaflet page', 'Media (e.g. label side of CD)',
+    'Lead artist', 'Artist', 'Conductor', 'Band', 'Composer','Lyricist',
+    'Recording Location', 'During recording', 'During performance',
+    'Movie/video screen capture', 'A bright coloured fish', 'Illustration',
+    'Band/artist logotype', 'Publisher/Studio logotype']
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
 
@@ -132,11 +134,11 @@ def commontags(audios, usepreview=False):
             preview = {}
         if audio.IMAGETAGS:
             if usepreview:
-                image = preview.get('__image', [])
+                image = preview.get(IMAGES, [])
                 if not image:
-                    image = audio['__image'] if audio['__image'] else []
+                    image = audio[IMAGES] if audio[IMAGES] else []
             else:
-                image = audio['__image'] if audio['__image'] else []
+                image = audio[IMAGES] if audio[IMAGES] else []
         else:
             image = []
         images.append(image)
@@ -144,8 +146,8 @@ def commontags(audios, usepreview=False):
         audio = stringtags(audio.usertags)
 
         if usepreview:
-            if '__image' in preview:
-                del(preview['__image'])
+            if IMAGES in preview:
+                del(preview[IMAGES])
             audio.update(stringtags(usertags(preview)))
 
         for tag, value in audio.items():
@@ -155,7 +157,7 @@ def commontags(audios, usepreview=False):
             else:
                 combined[tag] = value
                 tags[tag] = 1
-    combined['__image'] = commonimages(images)
+    combined[IMAGES] = commonimages(images)
     return combined, tags, imagetags
 
 def stringtags(tag, leaveNone = False):
@@ -228,10 +230,7 @@ def lngtime(value):
     return calendar.timegm(time.strptime(value, '%Y-%m-%d %H:%M:%S'))
 
 def getfilename(filename):
-    try:
-        return unicode(path.realpath(filename), 'utf8')
-    except:
-        return path.realpath(filename)
+    return path.realpath(filename)
 
 def getinfo(filename):
     fileinfo = stat(filename)
@@ -303,15 +302,25 @@ def str_filesize(size):
     val = max(valid)
     return '%.2f %s' % (size/(1024.0**val), _sizes[val])
 
-def to_string(value):
+def to_string(value, errors='strict'):
     if not value:
         return u''
     elif isinstance(value, str):
-        return value.decode('utf8')
+        return value.decode('utf8', errors)
     elif isinstance(value, unicode):
         return value
     else:
         return to_string(value[0])
+
+def path_to_string(value):
+    if not value:
+        return ''
+    elif isinstance(value, str):
+        return value
+    elif isinstance(value, unicode):
+        return value.encode('utf8')
+    else:
+        return path_to_string(value[0])
 
 class CaselessDict(dict):
     def __init__(self, other=None):
@@ -370,6 +379,7 @@ class MockTag(object):
             
     def __init__(self, filename = None):
         self._info = {}
+        self._filepath = ''
         if filename:
             self.link(filename)
         else:
@@ -377,10 +387,11 @@ class MockTag(object):
             #self._tags = CaselessDict()
 
     def _getfilepath(self):
-        return self._tags[PATH]
+        return self._filepath
 
     def _setfilepath(self,  val):
-        val = to_string(val)
+        self._filepath = path_to_string(val)
+        val = to_string(val, 'replace')
         self._tags.update({
             PATH: val,
             DIRPATH: path.dirname(val),
@@ -388,37 +399,39 @@ class MockTag(object):
             EXTENSION: path.splitext(val)[1][1:],
             DIRNAME: path.basename(path.dirname(val))})
         if hasattr(self, '_mutfile'):
-            self._mutfile.filename = val
+            self._mutfile.filename = self._filepath
 
     def _setext(self,  val):
         if val:
-            val = to_string(val)
-            self.filepath = u'%s%s%s' % (path.splitext(self.filepath)[0],
+            val = path_to_string(val)
+            self.filepath = '%s%s%s' % (path.splitext(self.filepath)[0],
                 path.extsep, val)
         else:
             self.filepath = path.splitext(self.filepath)[0]
 
     def _getext(self):
-        return self._tags[EXTENSION]
+        return path.splitext(self.filepath)[1][1:]
 
     def _getfilename(self):
-        return self._tags[FILENAME]
+        return path.basename(self.filepath)
 
     def _setfilename(self, val):
-        self.filepath = os.path.join(self.dirpath, to_string(val))
+        val = path_to_string(val)
+        self.filepath = path.join(self.dirpath, val)
 
     def _getdirpath(self):
-        return self._tags[DIRPATH]
+        return path.dirname(self.filepath)
 
     def _setdirpath(self, val):
-        self.filepath = os.path.join(val,  self.filename)
-        self._tags[DIRNAME] = os.path.basename(val)
+        val = path_to_string(val)
+        self.filepath = path.join(val, self.filename)
     
     def _getdirname(self):
-        return os.path.basename(self.dirpath)
+        return path.basename(self.dirpath)
     
     def _setdirname(self, value):
-        self.dirpath = os.path.join(os.path.dirname(self.dirpath), value)
+        value = path_to_string(value)
+        self.dirpath = path.join(path.dirname(self.dirpath), value)
     
     filepath = property(_getfilepath, _setfilepath)
     dirpath = property(_getdirpath, _setdirpath)

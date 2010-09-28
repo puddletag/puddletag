@@ -28,7 +28,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
 from copy import copy
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
-              'modified')
+    'modified', 'filetype')
 
 class Tag(util.MockTag):
     """Ogg Tag class.
@@ -180,10 +180,10 @@ class Tag(util.MockTag):
                     u"__length": strlength(info.length),
                     u"__bitrate": strbitrate(info.bitrate)})
         self._tags.update(tags)
+        self._tags['__filetype'] = 'WMA'
         self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
-        self.filetype = 'Windows Media Audio'
-        self._tags['__filetype'] = self.filetype
+        
         return self
 
     def save(self):

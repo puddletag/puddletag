@@ -3,7 +3,8 @@ from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
 from copy import copy
-from audioinfo import FILETAGS, setmodtime, PATH, FILENAME, EXTENSION, MockTag
+from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
+    EXTENSION, MockTag, DIRPATH, DIRNAME)
 from errno import EEXIST
 import os, pdb
 from puddleobjects import safe_name
@@ -108,8 +109,8 @@ def write(audio, tags, save_mtime = True):
         audio.preview = {}
 
     undo = dict([(field, copy(audio.get(field, []))) 
-                for field in tags if 
-                tags.get(field, u'') != audio.get(field, u'')])
+        for field in tags if
+        tags.get(field, u'') != audio.get(field, u'')])
 
     oldimages = None
     if '__image' in tags:
@@ -121,7 +122,17 @@ def write(audio, tags, save_mtime = True):
     filetags = real_filetags(audio.mapping, audio.revmapping, tags)
     try:
         if filetags:
+            file_hash = {
+                PATH: 'filepath',
+                FILENAME:'filename',
+                EXTENSION: 'ext',
+                DIRPATH: 'dirpath',
+                DIRNAME: 'dirname'}
+            for key in filetags:
+                if key in file_hash:
+                    undo[key] = getattr(audio, file_hash[key])
             rename_file(audio, filetags)
+            
         audio.update(without_file(audio.mapping, tags))
         audio.save()
     except EnvironmentError:

@@ -139,7 +139,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
             newtag = {}
             for tag, value in usertags(self._tags).items():
                 try:
-                    newtag[tag] = [z.encode('utf8') for z in value]
+                    newtag[tag] = value
                 except AttributeError:
                     pass
             toremove = [z for z in audio if z not in newtag and audio[z].kind == 0]

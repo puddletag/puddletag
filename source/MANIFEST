@@ -41,8 +41,10 @@ puddlestuff/audioinfo/mp4.py
 puddlestuff/audioinfo/ogg.py
 puddlestuff/audioinfo/util.py
 puddlestuff/audioinfo/musepack.py
+puddlestuff/audioinfo/monkeysaudio.py
 puddlestuff/audioinfo/wavpack.py
 puddlestuff/audioinfo/wma.py
+puddlestuff/audioinfo/combine.py
 puddlestuff/libraries/__init__.py
 puddlestuff/libraries/quodlibetlib.py
 puddlestuff/mainwin/__init__.py
@@ -54,6 +56,8 @@ puddlestuff/mainwin/patterncombo.py
 puddlestuff/mainwin/storedtags.py
 puddlestuff/mainwin/tagpanel.py
 puddlestuff/mainwin/artwork.py
+puddlestuff/mainwin/action_dialogs.py
+puddlestuff/mainwin/tagtools.py
 puddlestuff/masstagging.py
 puddlestuff/mainwin/previews.py
 puddlestuff/tagsources/__init__.py

@@ -49,8 +49,10 @@ def _escape_text(txt):
 def to_str(v):
     if isempty(v):
         return _escape_text(BLANK)
-    elif isinstance(v, basestring):
+    elif isinstance(v, unicode):
         return _escape_text(v)
+    elif isinstance(v, str):
+        return _escape_text(v.decode('utf8', 'replace'))
     else:
         return _escape_text(SEPARATOR.join(v))
 
@@ -253,7 +255,7 @@ class FunctionDialog(QWidget):
                     self.emit(SIGNAL('updateExample'), 
                         'No preview for is shown for this function.')
                     return
-                val = self.func.runFunction(text, audio)
+                val = self.func.runFunction(text, audio, r_tags=audio)
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
             if val is not None:

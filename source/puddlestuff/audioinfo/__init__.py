@@ -45,6 +45,8 @@ extensions = {
 
 _id3_type = id3.filetype
 
+TAG_TYPES = dict([(z[2], z[1]) for z in extensions.values()])
+
 mapping = {}
 revmapping = {}
 
@@ -56,7 +58,7 @@ def loadmapping(filepath):
             'date': 'year'}}
     mappings = {}
     for l in lines:
-        tags = [z.strip() for z in l.split(',')]
+        tags = [z.strip() for z in l.split(u',')]
         if len(tags) == 3: #Tag, Source, Target
             try:
                 mappings[tags[0]].update({tags[1]: tags[2]})
@@ -82,7 +84,7 @@ def setmapping(m):
         except IndexError:
             pass
 
-setmapping({'VorbisComment': {'tracknumber': 'track'}})
+setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
 
 def set_id3_options(write_apev2):
     from combine import combine

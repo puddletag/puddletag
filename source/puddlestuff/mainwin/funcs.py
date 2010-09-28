@@ -9,12 +9,13 @@ path = os.path
 import puddlestuff.helperwin as helperwin
 from functools import partial
 from itertools import izip
-from puddlestuff.audioinfo import stringtags
+from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
 from puddlestuff.util import split_by_tag
 import puddlestuff.functions as functions
+from tagtools import *
 
 status = {}
 
@@ -116,8 +117,8 @@ def filename_to_tag():
     tags = status['selectedfiles']
     pattern = status['patterntext']
 
-    x = [findfunc.filenametotag(pattern, tag.filepath, True)
-                for tag in tags]
+    x = [findfunc.filenametotag(pattern, tag[FILEPATH], True)
+        for tag in tags]
     emit('writeselected', x)
 
 def format(parent=None, preview = None):
@@ -188,16 +189,16 @@ def number_tracks(tags, start, numtracks, restartdirs, padlength):
         folders = {}
         taglist = []
         for tag in tags:
-            folder = tag.dirpath
+            folder = tag[DIRPATH]
             if folder in folders:
                 folders[folder] += 1
             else:
                 folders[folder] = start
             taglist.append({"track": _pad(unicode(folders[folder]) + num,
-                                            padlength)})
+                padlength)})
     else:
         taglist = [{"track": _pad(unicode(z) + num, padlength)}
-                            for z in range(start, start + len(tags) + 1)]
+            for z in range(start, start + len(tags) + 1)]
 
     emit('writeselected', taglist)
 
@@ -206,7 +207,7 @@ def paste():
     if not rows:
         return
     data = QApplication.clipboard().mimeData().data(
-                'application/x-puddletag-tags').data()
+        'application/x-puddletag-tags').data()
     if not data:
         return
     clip = eval(data.decode('utf8'), {"__builtins__":None},{})
@@ -218,7 +219,7 @@ def paste():
 
 def paste_onto():
     data = QApplication.clipboard().mimeData().data(
-                'application/x-puddletag-tags').data()
+        'application/x-puddletag-tags').data()
     if not data:
         return
     clip = eval(data.decode('utf8'), {"__builtins__":None}, {})
@@ -256,11 +257,12 @@ def rename_dirs(parent=None):
     #the new and the old filename, so I bolded the new and italicised the old.
     title = u"<b>Are you sure you want to rename the following directories?</b>"
     dirs = []
-    newname = lambda x: basename(safe_name(tagtofilename(pattern, x)))
-    msg = ''
+    newname = lambda x: basename(safe_name(tagtofilename(pattern, x)).encode('utf8'))
+    msg = u''
     for d, f in newdirs.items():
         newfolder = path.join(dirname(d), newname(f))
-        msg += u'%s -> <b>%s</b><br /><br />' % (d, newfolder)
+        msg += u'%s -> <b>%s</b><br /><br />' % (
+            f[DIRPATH], newfolder.decode('utf8', 'replace'))
         dirs.append([d, newfolder])
 
     msg = msg[:-len('<br /><br />')]
@@ -371,32 +373,16 @@ def tag_to_file():
     pattern = status['patterntext']
     files = status['selectedfiles']
 
-    tf = findfunc.tagtofilename
-    join = path.join
-    dirname = path.dirname
-
-    def newfilename(f):
-        t = tf(pattern, f, True, f.ext)
-        return join(f.dirpath, safe_name(t))
-
-    emit('renameselected', (newfilename(f) for f in files))
-
-def tag_to_file():
-    pattern = status['patterntext']
-    files = status['selectedfiles']
-
     tf = functions.move
-    join = path.join
-    dirname = path.dirname
 
-    emit('renameselected', (tf(f, pattern)['__path'] for f in files))
+    emit('renameselected', (tf(f, pattern, f)['__path'] for f in files))
 
 def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath
 
     filedlg = QFileDialog()
     filename = unicode(filedlg.getOpenFileName(parent, 'Select text file',
-                        dirpath))
+        dirpath))
 
     if filename:
         win = helperwin.ImportWindow(parent, filename)
@@ -409,17 +395,18 @@ def text_file_to_tag(parent=None):
 def update_status(enable = True):
     files = status['selectedfiles']
     pattern = status['patterntext']
-    tf = findfunc.tagtofilename
+    tf = lambda *args: findfunc.tagtofilename(*args).encode('utf8')
     if not files:
         return
     tag = files[0]
 
-    x = findfunc.filenametotag(pattern, tag.filepath, True)
+    x = findfunc.filenametotag(pattern, tag[PATH], True)
     emit('ftstatus', display_tag(x))
     
     try:
-        newfilename = functions.move(tag, pattern)['__path']
-        emit('tfstatus', u"New Filename: <b>%s</b>" % newfilename)
+        newfilename = functions.move(tag, pattern, tag)['__path']
+        emit('tfstatus', u"New Filename: <b>%s</b>" % \
+            newfilename.decode('utf8', 'replace'))
     except findfunc.ParseError, e:
         emit('tfstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
 
@@ -428,7 +415,7 @@ def update_status(enable = True):
         newfolder = path.join(oldir, path.basename(
             safe_name(tf(pattern, tag))))
         dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (
-            tag.dirpath, newfolder)
+            tag[DIRPATH], newfolder.decode('utf8'))
         emit('renamedirstatus', dirstatus)
     except findfunc.ParseError, e:
         emit('renamedirstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
@@ -439,7 +426,7 @@ def update_status(enable = True):
     else:
         selected = selected[0]
     try:
-        val = tf(pattern, tag)
+        val = tf(pattern, tag).decode('utf8')
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError, e:
