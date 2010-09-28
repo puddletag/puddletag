@@ -443,60 +443,84 @@ class StatusWidgetItem(QTableWidgetItem):
 
 class ColorEdit(QWidget):
     def __init__(self, parent = None):
-        cparser = PuddleConfig()
-        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [0,255,0], True))
-        edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [255,255,0], True))
-        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
-        colors = (add, edit, remove)
-
         QWidget.__init__(self, parent)
+        cparser = PuddleConfig()
+        get_color = lambda key, default: QColor.fromRgb(
+            *cparser.get('extendedtags', key, default, True))
+        add = get_color('add', [0,255,0])
+        edit = get_color('edit', [255,255,0])
+        remove = get_color('remove', [255,0,0])
 
-        self.listbox = QTableWidget(0, 2, self)
+        get_color = lambda key, default: QColor.fromRgb(
+            *cparser.get('table', key, default, True))
+
+        preview = get_color('preview_color', [192, 255, 192])
+        selection_default = QPalette().color(QPalette.Mid).getRgb()[:-1]
+        
+        selection = get_color('selected_color', selection_default)
+        
+        colors = (add, edit, remove, preview, selection)
+
+        label = QLabel('<p>Below are the backgrounds used for various ' \
+            'controls in puddletag. <br \>Double click the desired action ' \
+            'to change its colour.</p>')
+
+        self.listbox = QTableWidget(0, 1, self)
+        self.listbox.setEditTriggers(QAbstractItemView.NoEditTriggers)
         header = self.listbox.horizontalHeader()
-        self.listbox.setSortingEnabled(True)
+        self.listbox.setSortingEnabled(False)
         header.setVisible(True)
-        header.setSortIndicatorShown (True)
         header.setStretchLastSection (True)
-        header.setSortIndicator (0, Qt.AscendingOrder)
-        self.listbox.setHorizontalHeaderLabels(['Tag', 'Value'])
-        self.listbox.setRowCount(3)
+        self.listbox.setHorizontalHeaderLabels(['Action'])
+        self.listbox.setRowCount(len(colors))
 
-        for i, z in enumerate([('Added', add), ('Edited', edit), ('Removed', remove)]):
+        titles = [
+            ('Row selected in file-view.', selection),
+            ('Row colour for files with previews.', preview),
+            ('Field added in Extended Tags.', add),
+            ('Field edited in Extended Tags.', edit),
+            ('Field removed in Extended Tags.', remove),]
+
+        for i, z in enumerate(titles):
             self.listbox.setItem(i, 0, StatusWidgetItem(*z))
-            self.listbox.setItem(i, 1, StatusWidgetItem('Double click to edit', z[1]))
 
         vbox = QVBoxLayout()
+        vbox.addWidget(label)
         vbox.addWidget(self.listbox)
         self.setLayout(vbox)
         self.connect(self.listbox, SIGNAL('cellDoubleClicked(int,int)'), self.edit)
-
 
     def edit(self, row, column):
         self._status = (row, self.listbox.item(row, column).background())
         win = QColorDialog(self)
         win.setCurrentColor(self.listbox.item(row, column).background().color())
-        self.connect(win, SIGNAL('currentColorChanged(const QColor&)'), self.intermediateColor)
+        self.connect(win, SIGNAL('currentColorChanged(const QColor&)'),
+            self.intermediateColor)
         self.connect(win, SIGNAL('rejected()'), self.setColor)
         win.open()
 
     def setColor(self):
         row = self._status[0]
         self.listbox.item(row, 0).setBackground(self._status[1])
-        self.listbox.item(row, 1).setBackground(self._status[1])
 
     def intermediateColor(self, color):
         row = self._status[0]
         if color.isValid():
             self.listbox.item(row, 0).setBackground(QBrush(color))
-            self.listbox.item(row, 1).setBackground(QBrush(color))
 
     def applySettings(self, control=None):
         cparser = PuddleConfig()
-        x = lambda c: (c.red(), c.green(), c.blue())
-        colors = [x(self.listbox.item(z,0).background().color()) for z in range(self.listbox.rowCount())]
-        cparser.set('extendedtags', 'add', colors[0])
-        cparser.set('extendedtags', 'edit', colors[1])
-        cparser.set('extendedtags', 'remove', colors[2])
+        x = lambda c: c.getRgb()[:-1]
+        colors = [x(self.listbox.item(z,0).background().color())
+            for z in range(self.listbox.rowCount())]
+        cparser.set('table', 'selected_color', colors[0])
+        cparser.set('table', 'preview_color', colors[1])
+        cparser.set('extendedtags', 'add', colors[2])
+        cparser.set('extendedtags', 'edit', colors[3])
+        cparser.set('extendedtags', 'remove', colors[4])
+
+        control.model().selectionBackground = QColor.fromRgb(*colors[0])
+        control.model().previewBackground = QColor.fromRgb(*colors[1])
 
 SETTINGSWIN = 'settingsdialog'
 
@@ -510,7 +534,7 @@ class SettingsDialog(QDialog):
         d = {0: ('General', GeneralSettings(controls), controls),
              1: ('Mappings', TagMappings(), None),
              2: ('Playlist', Playlist(), None),
-             3: ('Extended Tags Colors', ColorEdit(), None),
+             3: ('Colours', ColorEdit(), status['table']),
              4: ('Genres', genres.Genres(status=status), None),
              5: ('Tags', Tags(), status['table']),
              6: ('Plugins', PluginConfig(), None),

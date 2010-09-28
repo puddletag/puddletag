@@ -78,7 +78,7 @@ def loadsettings(filepath=None):
     write_ape = index = settings.get('id3tags', 'write_ape', False)
     audioinfo.set_id3_options(write_ape)
     
-    return (zip(titles, tags), checked), fontsize, rowsize, filespec
+    return ((zip(titles, tags), checked), fontsize, rowsize, filespec)
 
 def caseless(tag, audio):
     if tag in audio:
@@ -279,7 +279,6 @@ class Properties(QDialog):
         vbox.addLayout(hbox)
         self.setLayout(vbox)
 
-
 class ColumnSettings(HeaderSetting):
     """A dialog that allows you to edit the header of a TagTable widget."""
     title = 'Columns'
@@ -369,6 +368,8 @@ class TagModel(QAbstractTableModel):
         audioinfo.model_tag = partial(model_tag, self)
         self.showToolTip = True
         status['previewmode'] = False
+        self._previewBackground = None
+        self._selectionBackground = None
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -401,6 +402,20 @@ class TagModel(QAbstractTableModel):
 
     fontSize = property(_getFontSize, _setFontSize)
 
+    def _get_pBg(self):
+        return self._previewBackground
+
+    def _set_pBg(self, val):
+        self._previewBackground = val
+        rows = [i for i,z in enumerate(self.taginfo) if z.preview]
+        if rows:
+            top = self.index(min(rows), 0)
+            bottom = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                top, bottom)
+
+    previewBackground = property(_get_pBg, _set_pBg)
+
     def _get_previewMode(self):
         return self._previewMode
     
@@ -415,8 +430,22 @@ class TagModel(QAbstractTableModel):
         self._previewMode = value
         status['previewmode'] = True
         self.emit(SIGNAL('previewModeChanged'), value)
-    
+
     previewMode = property(_get_previewMode, _set_previewMode)
+
+    def _get_sBg(self):
+        return self._selectionBackground
+
+    def _set_sBg(self, val):
+        self._selectionBackground = val
+        rows = [i for i,z in enumerate(self.taginfo) if z.color]
+        if rows:
+            top = self.index(min(rows), 0)
+            bottom = self.index(max(rows), self.columnCount() - 1)
+            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                top, bottom)
+
+    selectionBackground = property(_get_sBg, _set_sBg)
 
     def _getUndoLevel(self):
         return self._undolevel
@@ -531,8 +560,11 @@ class TagModel(QAbstractTableModel):
             except (KeyError, IndexError):
                 return QVariant()
         elif role == Qt.BackgroundColorRole:
-            if self.taginfo[row].color:
-                return QVariant(self.taginfo[row].color)
+            audio = self.taginfo[row]
+            if audio.color:
+                return QVariant(audio.color)
+            elif self.previewMode and audio.preview:
+                return QVariant(self.previewBackground)
         elif role == Qt.FontRole:
             tag = self.headerdata[index.column()][1]
             f = QFont()
@@ -582,7 +614,7 @@ class TagModel(QAbstractTableModel):
     
     def highlight(self, rows):
         rows = rows[::]
-        hcolor = QPalette().color(QPalette.Mid)
+        hcolor = self.selectionBackground
         nolight = set(self._prevhighlight).difference(rows)
         self._prevhighlight = rows[::]
         rows.extend(nolight)
@@ -1555,12 +1587,20 @@ class TagTable(QTableView):
         QTableView.sortByColumn(self, sortcolumn)
 
     def loadSettings(self):
-        (tags, checked), fontsize, rowsize, self.filespec = loadsettings()
+        ((tags, checked), fontsize, rowsize, self.filespec) = loadsettings()
         self.setHeaderTags([z for i, z in enumerate(tags) if i in checked])
         if fontsize:
             self.fontSize = fontsize
         if rowsize > -1:
             self.verticalHeader().setDefaultSectionSize(rowsize)
+
+        cparser = PuddleConfig()
+        preview_color = cparser.get('table', 'preview_color', [192, 255, 192], True)
+        default = QPalette().color(QPalette.Mid).getRgb()[:-1]
+        selection_color = cparser.get('table', 'selected_color', default, True)
+
+        self.model().previewBackground = QColor.fromRgb(*preview_color)
+        self.model().selectionBackground = QColor.fromRgb(*selection_color)
 
     def playFiles(self):
         """Play the selected files using the player specified in self.playcommand"""
