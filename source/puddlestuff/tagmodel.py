@@ -528,7 +528,7 @@ class TagModel(QAbstractTableModel):
         if isinstance(val, basestring):
             return val.replace(u'\n', u' ')
         else:
-            return '\\\\'.join(val).replace(u'\n', u' ')
+            return u'\\\\'.join(val).replace(u'\n', u' ')
 
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
@@ -862,18 +862,12 @@ class TagModel(QAbstractTableModel):
             if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
                 return False
 
-            try:
-                if tag not in FILETAGS:
-                    newvalue = filter(None, newvalue.split(u'\\'))
-                ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
-                if not self.previewMode and currentfile.library:
-                    self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
-                self.undolevel += 1
-            except EnvironmentError, detail:
-                self.emit(SETDATAERROR, u"An error occurred while writing to"
-                    " <b>%s</b>: (%s)" % (currentfile.filepath,
-                                            detail.strerror))
-                return False
+            if tag not in FILETAGS:
+                newvalue = filter(None, newvalue.split(u'\\'))
+            ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
+            if not self.previewMode and currentfile.library:
+                self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
+            self.undolevel += 1
             self.emit(SIGNAL('fileChanged()'))
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                 index, index)
@@ -1079,16 +1073,17 @@ class TagDelegate(QItemDelegate):
 
     def createEditor(self,parent,option,index):
         editor = QLineEdit(parent)
+        editor.returnPressed = False
+        editor.writeError = False
         editor.setFrame(False)
         editor.installEventFilter(self)
         return editor
 
-    def keyPressEvent(self, event):
-        QItemDelegate.keyPressEvent(self, event)
-
-    def commitAndCloseEditor(self):
-        editor = self.sender()
-        self.emit(SIGNAL("closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)"), editor, QItemDelegate.EditNextItem)
+    def eventFilter(self, editor, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() in (Qt.Key_Return, Qt.Key_Enter):
+                editor.returnPressed = True
+        return QItemDelegate.eventFilter(self, editor, event)
 
     def setEditorData(self, editor, index):
         text = index.model().data(index, Qt.EditRole).toString()
@@ -1098,7 +1093,10 @@ class TagDelegate(QItemDelegate):
         editor.setText(text)
 
     def setModelData(self, editor, model, index):
-        model.setData(index, QVariant(editor.text()))
+        try:
+            model.setData(index, QVariant(editor.text()))
+        except EnvironmentError, e:
+            editor.writeError = e
 
 
 class TableHeader(QHeaderView):
@@ -1313,6 +1311,31 @@ class TagTable(QTableView):
         self.model().taginfo = []
         self.model().reset()
         self.emit(SIGNAL('dirschanged'), [])
+
+    def closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
+
+        if editor.writeError:
+            model = self.model()
+            currentfile = model.taginfo[self.currentIndex().row()]
+            QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+            model.emit(SETDATAERROR,
+                u"An error occurred while writing to" " <b>%s</b>: (%s)" % (
+                    currentfile[PATH], editor.writeError.strerror))
+            return
+        
+        if not editor.returnPressed:
+            QTableView.closeEditor(self, editor, hint)
+        else:
+            index = self.currentIndex()
+            if index.row() < self.rowCount() - 1:
+                QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+                newindex = self.model().index(index.row() + 1, index.column())
+                self.setCurrentIndex(newindex)
+                self.edit(newindex)
+            else:
+                QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+
+            
 
     def removeTags(self):
         if self.model().previewMode:
