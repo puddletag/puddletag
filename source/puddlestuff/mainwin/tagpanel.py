@@ -7,11 +7,12 @@ from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
 pyqtRemoveInputHook()
-from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP
+from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
 import time
 from functools import partial
 
 TEXTEDITED = SIGNAL('textEdited(const QString&)')
+EDITFINISHED = SIGNAL('editingFinished()')
 
 def timemethod(method):
     def f(*args, **kwargs):
@@ -81,13 +82,14 @@ class FrameCombo(QGroupBox):
     def __init__(self,tags = None,parent= None, status=None):
         self.settingsdialog = SettingsWin
         QGroupBox.__init__(self,parent)
-        self.emits = ['onetomany']
-        self.receives = [(SELECTIONCHANGED, self.fillCombos)]
-            #('enable_preview_mode', self._enablePreview),
-            #('disable_preview_mode', self._disablePreview)]
+        self.emits = ['onetomany', 'onetomanypreview']
+        self.receives = [(SELECTIONCHANGED, self.fillCombos),
+            ('enable_preview_mode', self._enablePreview),
+            ('disable_preview_mode', self._disablePreview)]
         self.combos = {}
         self.labels = {}
         self._status = status
+        self._originalValues = {}
     
     def _disablePreview(self):
         for field, combo in self.combos.items():
@@ -104,7 +106,11 @@ class FrameCombo(QGroupBox):
             func = partial(self._emitChange, field)
             edit = QLineEdit()
             combo.setLineEdit(edit)
+            completer = combo.completer()
+            completer.setCaseSensitivity(Qt.CaseSensitive)
+            completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
             self.connect(edit, TEXTEDITED, func)
+            self.connect(edit, EDITFINISHED, self.save)
             return field, func
         self._funcs = dict([get_func(*i) for i in self.combos.items()])
     
@@ -116,7 +122,7 @@ class FrameCombo(QGroupBox):
             if field in INFOTAGS:
                 value = text
             else:
-                value = text.split(u"\\\\")
+                value = text.split(SEPARATOR)
         self.emit(SIGNAL('onetomanypreview'), {field: text})
 
     def fillCombos(self, *args):
@@ -138,7 +144,7 @@ class FrameCombo(QGroupBox):
                     if isinstance(value, basestring):
                         tags[tag].add(value)
                     else:
-                        tags[tag].add(u"\\\\".join(value))
+                        tags[tag].add(SEPARATOR.join(value))
                 except KeyError:
                     tags[tag].add(u"")
 
@@ -163,6 +169,10 @@ class FrameCombo(QGroupBox):
         else:
             combos['genre'].setCurrentIndex(0)
 
+        self._originalValues = dict([(field, unicode(combo.currentText()))
+            for field, combo in self.combos.items()])
+        self._originalValues['__image'] = self._status['images']
+
     def save(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""
         combos = self.combos
@@ -171,22 +181,36 @@ class FrameCombo(QGroupBox):
         images = self._status['images']
         if images is not None:
             tags['__image'] = images
-        for tag, combo in combos.items():
+        originals = {}
+        for field, combo in combos.items():
             curtext = unicode(combo.currentText())
-            if curtext == BLANK: tags[tag] = []
-            elif curtext == KEEP: pass
+            if self._originalValues[field] == curtext:
+                continue
+            originals[field] = curtext
+            if curtext == BLANK: tags[field] = []
+            elif curtext == KEEP: continue
             else:
-                if tag in INFOTAGS:
-                    tags[tag] = curtext
+                if field in INFOTAGS:
+                    tags[field] = curtext
                 else:
-                    tags[tag] = curtext.split(u"\\\\")
-        
+                    tags[field] = curtext.split(SEPARATOR)
+
+        if '__image' in tags:
+            if self._originalValues['__image'] == tags['__image']:
+                del(tags['__image'])
+            else:
+                originals['__image'] = tags['__image']
+
+        if not tags:
+            return
+
+        self._originalValues.update(originals)
         self.emit(SIGNAL('onetomany'), tags)
         if 'genre' in combos:
             combo = combos['genre']
             
             genres = self._status['genres']
-            new_genres = filter(None, unicode(combo.currentText()).split('\\\\'))
+            new_genres = filter(None, unicode(combo.currentText()).split(SEPARATOR))
 
             [genres.append(genre) for genre in new_genres 
                 if genre not in genres]

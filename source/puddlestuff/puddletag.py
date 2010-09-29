@@ -631,7 +631,7 @@ class MainWin(QMainWindow):
         rows = status['selectedrows']
         setRowData = model.setRowData
 
-        [setRowData(row, d, undo=False) for row in rows]
+        [setRowData(row, d, undo=False, temp=True) for row in rows]
         columns = filter(None, map(model.columns.get, d))
         if columns:
             start = model.index(min(rows), min(columns))

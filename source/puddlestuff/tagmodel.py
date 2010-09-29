@@ -40,7 +40,7 @@ import traceback
 from itertools import izip
 from collections import defaultdict
 from util import write, rename_file, real_filetags, to_string
-from constants import SELECTIONCHANGED
+from constants import SELECTIONCHANGED, SEPARATOR
 
 status = {}
 
@@ -48,6 +48,8 @@ SETDATAERROR = SIGNAL("setDataError")
 LIBRARY = '__library'
 ENABLEUNDO = SIGNAL('enableUndo')
 HIGHLIGHTCOLOR = Qt.green
+SHIFT_RETURN = 2
+RETURN_ONLY = 1
 
 def commontag(tag, tags):
     x = defaultdict(lambda: [])
@@ -370,6 +372,8 @@ class TagModel(QAbstractTableModel):
         status['previewmode'] = False
         self._previewBackground = None
         self._selectionBackground = None
+        self._undo = defaultdict(lambda: {})
+        self._previewUndo = defaultdict(lambda: {})
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -382,6 +386,7 @@ class TagModel(QAbstractTableModel):
             z.previewundo = {}
             z.undo = {}
             z.color = None
+            z._temp = {}
             if not hasattr(z, 'library'):
                 z.library = None
         self.undolevel = 0
@@ -425,10 +430,11 @@ class TagModel(QAbstractTableModel):
                 if audio.preview]
             self.setTestData(rows, [{} for z in rows])
             self.undolevel = self._savedundolevel
+            self._previewUndo.clear()
         else:
             self._savedundolevel = self.undolevel
         self._previewMode = value
-        status['previewmode'] = True
+        status['previewmode'] = value
         self.emit(SIGNAL('previewModeChanged'), value)
 
     previewMode = property(_get_previewMode, _set_previewMode)
@@ -453,11 +459,21 @@ class TagModel(QAbstractTableModel):
     def _setUndoLevel(self, value):
         if value == 0:
             self.emit(ENABLEUNDO, False)
+            if self.previewMode:
+                self._previewUndo.clear()
+            else:
+                self._undo.clear()
         else:
             self.emit(ENABLEUNDO, True)
         self._undolevel = value
 
     undolevel = property(_getUndoLevel, _setUndoLevel)
+
+    def _addUndo(self, audio, undo):
+        if self.previewMode:
+            self._previewUndo[self.undolevel][audio] = undo
+        else:
+            self._undo[self.undolevel][audio] = undo
 
     def applyFilter(self, tags, pattern=None, matchcase=True):
         self.taginfo = self.taginfo + self._filtered
@@ -658,6 +674,7 @@ class TagModel(QAbstractTableModel):
             z.undo = {}
             z.previewundo = {}
             z.color = None
+            z._temp = {}
             if not hasattr(z, 'library'):
                 z.library = None
 
@@ -863,7 +880,9 @@ class TagModel(QAbstractTableModel):
                 return False
 
             if tag not in FILETAGS:
-                newvalue = filter(None, newvalue.split(u'\\'))
+                newvalue = filter(None, newvalue.split(SEPARATOR))
+            if newvalue == currentfile.get(tag, u''):
+                return False
             ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
             if not self.previewMode and currentfile.library:
                 self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
@@ -887,7 +906,7 @@ class TagModel(QAbstractTableModel):
             enumerate(self.headerdata)])
         self.reset()
 
-    def setRowData(self,row, tags, undo = False, justrename = False):
+    def setRowData(self,row, tags, undo = False, justrename = False, temp=False):
         """A function to update one row.
         row is the row, tags is a dictionary of tags.
 
@@ -897,12 +916,22 @@ class TagModel(QAbstractTableModel):
         """
         audio = self.taginfo[row]
 
+        temporary = temp
+
         if self.previewMode:
+            if temporary:
+                for field in tags:
+                    if field not in audio._temp:
+                        audio._temp[field] = audio.get(field, '')
             preview = audio.preview
-            undo = dict([(tag, copy(audio[tag])) if tag in audio
+            undo_val = dict([(tag, copy(audio[tag])) if tag in audio
                 else (tag, []) for tag in tags])
             audio.update(tags)
-            audio.previewundo[self.undolevel] = undo
+            if undo:
+                if audio._temp:
+                    undo_val.update(audio._temp)
+                    audio._temp = {}
+                self._addUndo(audio, undo_val)
             return
 
         if justrename:
@@ -913,21 +942,21 @@ class TagModel(QAbstractTableModel):
                 EXTENSION: 'ext',
                 DIRPATH: 'dirpath',
                 DIRNAME: 'dirname'}
-            undo = {}
+            undo_val = {}
             for key in filetags:
                 if key in file_hash:
-                    undo[key] = getattr(audio, file_hash[key])
+                    undo_val[key] = getattr(audio, file_hash[key])
 
             rename_file(audio, filetags)
             if audio.library:
                 audio.save(True)
-            if undo:
-                audio.undo[self.undolevel] = undo
+            if undo and undo_val:
+                self._addUndo(audio, undo_val)
         else:
             artist = audio.sget('artist')
             undo_val = write(audio, tags, self.saveModification)
             if undo:
-                audio.undo[self.undolevel] = undo_val
+                self._addUndo(audio, undo_val)
             if audio.library:
                 return (artist, tags)
         
@@ -1026,19 +1055,27 @@ class TagModel(QAbstractTableModel):
         newfiles = []
         rows = []
         edited = []
-        for row, audio in enumerate(self.taginfo):
+        if self.previewMode:
+            undo = self._previewUndo
+        else:
+            undo = self._undo
+        if level not in undo:
+            return
+
+        get_row = self.taginfo.index
+        
+        for audio, undo_tags in undo[level].items():
+            row = get_row(audio)
+            rows.append(row)
             if self.previewMode:
-                undo_tags = audio.previewundo
-                if level in undo_tags:
-                    audio.update(undo_tags[level])
-                    rows.append(row)
-                    del(undo_tags[level])
-            elif level in audio.undo:
+                audio.update(undo_tags)
+            else:
                 if audio.library:
-                    oldfiles.append(audio.tags.copy())
-                edited.append(self.setRowData(row, audio.undo[level]))
-                rows.append(row)
-                del(audio.undo[level])
+                    oldfiles.append(deepcopy(audio.tags))
+                edited.append(self.setRowData(row, undo_tags))
+            
+
+        del(undo[level])
         if rows:
             self.updateTable(rows)
             if edited:
@@ -1081,8 +1118,12 @@ class TagDelegate(QItemDelegate):
 
     def eventFilter(self, editor, event):
         if event.type() == QEvent.KeyPress:
+            
             if event.key() in (Qt.Key_Return, Qt.Key_Enter):
-                editor.returnPressed = True
+                if event.modifiers() == Qt.ShiftModifier:
+                    editor.returnPressed = SHIFT_RETURN
+                else:
+                    editor.returnPressed = RETURN_ONLY
         return QItemDelegate.eventFilter(self, editor, event)
 
     def setEditorData(self, editor, index):
@@ -1327,9 +1368,19 @@ class TagTable(QTableView):
             QTableView.closeEditor(self, editor, hint)
         else:
             index = self.currentIndex()
-            if index.row() < self.rowCount() - 1:
+            newindex = None
+
+            if editor.returnPressed == RETURN_ONLY:
+                if index.row() < self.rowCount() - 1:
+                    newindex = self.model().index(index.row() + 1,
+                        index.column())
+            elif editor.returnPressed == SHIFT_RETURN:
+                if index.row() > 0:
+                    newindex = self.model().index(index.row() - 1,
+                        index.column())
+
+            if newindex:
                 QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
-                newindex = self.model().index(index.row() + 1, index.column())
                 self.setCurrentIndex(newindex)
                 self.edit(newindex)
             else:
