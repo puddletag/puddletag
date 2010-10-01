@@ -77,7 +77,7 @@ def loadsettings(filepath=None):
     audioinfo.id3.v1_option = v1_option
     filespec = u';'.join(settings.get('table', 'filespec', []))
     
-    write_ape = index = settings.get('id3tags', 'write_ape', False)
+    write_ape = settings.get('id3tags', 'write_ape', False)
     audioinfo.set_id3_options(write_ape)
     
     return ((zip(titles, tags), checked), fontsize, rowsize, filespec)
@@ -204,10 +204,25 @@ def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
     from audioinfo.combine import combine
-    options = [[Kind[0], model_tag(model, combine(Kind[1])), Kind[2]] for Kind 
+    from audioinfo import id3, apev2
+    
+    options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind
         in audioinfo.options]
     filetypes = dict([(z[0],z) for z in options])
     extensions = dict([(k, filetypes[v[0]]) for k, v in extensions.items()])
+
+    _id3 = extensions['mp3'][1]
+    
+    _id3_ape = model_tag(model, combine(id3.filetype[1], apev2.filetype[1]))
+
+    def set_id3_options(write_apev2):
+        id3_option = [z for z in options if z[2] == 'ID3'][0]
+        if write_apev2:
+            id3_option[1] = _id3_ape
+        else:
+            id3_option[1] = _id3
+
+    audioinfo.set_id3_options = set_id3_options
     
     def ReplacementTag(filename):
         fileobj = file(filename, "rb")
@@ -1700,12 +1715,12 @@ class TagTable(QTableView):
                     previews = True
                     continue
 
-            if previews:
-                ret = QMessageBox.question(self, 'puddletag', 
-                    'Do you want to exit Preview Mode?', 
-                    QMessageBox.Ok, QMessageBox.No)
-                if ret != QMessageBox.Ok:
-                    return
+            #if previews:
+                #ret = QMessageBox.question(self, 'puddletag', 
+                    #'Do you want to exit Preview Mode?', 
+                    #QMessageBox.Ok, QMessageBox.No)
+                #if ret != QMessageBox.Ok:
+                    #return
         self.model().previewMode = value
 
     def reloadFiles(self, filenames = None):

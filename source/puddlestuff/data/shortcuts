@@ -1,5 +1,5 @@
 [info]
-version=16
+version=17
 
 [shortcut1]
 name=&Open Folder
@@ -305,25 +305,25 @@ enabled=filesselected
 shortcut=Ctrl+H
 
 [shortcut44]
-name=Add ID3 Tag
-command=add_id3
+name=Remove ID3v1 Tag
+command=remove_id3v1
 control=mainwin
 enabled=filesselected
 
 [shortcut45]
-name=Add APEv2 Tag
-command=add_apev2
+name=Remove APEv2 Tag
+command=remove_apev2
 control=mainwin
 enabled=filesselected
 
 [shortcut46]
-name=Remove ID3 Tag
-command=remove_id3
+name=Remove ID3v2 Tag
+command=remove_id3v2
 control=mainwin
 enabled=filesselected
 
 [shortcut47]
-name=Remove APEv2 Tag
-command=remove_apev2
+name=Remove All ID3 Tags
+command=remove_id3
 control=mainwin
 enabled=filesselected

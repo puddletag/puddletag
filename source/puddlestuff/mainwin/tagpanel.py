@@ -384,7 +384,8 @@ class SettingsWin(QWidget):
         table = self._table
         if not texts:
             text = table.text
-            table.add(['Title', 'tag', max([text(row, 2) for row in table.rows])])
+            table.add(['Title', 'field',
+                max([text(row, 2) for row in table.rows]) + 1])
         else:
             table.add(texts)
         item = table.item(table.rowCount() - 1, 0)

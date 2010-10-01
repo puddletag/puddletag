@@ -37,6 +37,7 @@ from puddleobjects import PuddleConfig, safe_name, fnmatch, dircmp, natcasecmp
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time, unicodedata
 from operator import itemgetter
 from copy import deepcopy
+from functools import partial
 
 true = u'1'
 false = u'0'
@@ -198,12 +199,18 @@ def iflonger(a, b, text, text1):
     except TypeError:
         return
 
-def import_text(m_tags, pattern):
+def import_text(m_tags, pattern, r_tags):
     '''Import text file, "Text File: $0, '$1'"
 &Pattern (can be relative path), text, lyrics.txt'''
-    dirpath = m_tags['__dirpath']
-    pattern = os.path.normpath(os.path.join(dirpath, pattern))
-    filename = os.path.splitext(move(m_tags, pattern)['__path'])[0]
+    path = os.path
+    dirpath = r_tags.dirpath
+    if os.path.isabs(pattern):
+         filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
+         filename = path.normpath(filename)
+    else:
+        pattern = u'/' + pattern
+        filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
+        filename = path.normpath(path.join(dirpath, filename[1:]))
     try:
         return open(filename, 'r').read().decode('utf8')
     except EnvironmentError:
@@ -419,9 +426,9 @@ def rand():
     return unicode(random.random())
 
 def re_escape(rex):
-    escaped = ""
+    escaped = u""
     for ch in rex:
-        if ch in r'^$[]\+*?.(){},|' : escaped = escaped + '\\' + ch
+        if ch in r'^$[]\+*?.(){},|' : escaped = escaped + u'\\' + ch
         else: escaped = escaped + ch
     return escaped
 
@@ -439,6 +446,21 @@ def remove_except(tags, fields):
         ret['__image'] = []
     if ret:
         return ret
+
+import mutagen.id3, mutagen.apev2
+
+_tag_classes = {
+    'APEv2': mutagen.apev2.delete,
+    'ID3v1': partial(mutagen.id3.delete, v1=True, v2=False),
+    'ID3v2': partial(mutagen.id3.delete, v1=False, v2=True),
+    'All ID3': partial(mutagen.id3.delete, v1=True, v2=True)}
+    
+def remove_tag(r_tags, tag='APEv2'):
+    '''Remove Tag, "Remove $1 Tag"
+&Tag, combo, Base, APEv2, ID3v1, ID3v2, All ID3'''
+    
+    if tag in _tag_classes:
+        _tag_classes[tag](r_tags.filepath)
 
 def rename_dirs(tags, state, pattern):
     '''Rename Directory, "Rename dir: $1"
@@ -691,6 +713,28 @@ def titleCase(text, ctype = None, characters = None):
             pass
     return "".join(text)
 
+_update = {'APEv2': audioinfo.apev2.Tag, 'ID3': audioinfo.id3.Tag}
+def update_from_tag(r_tags, fields, tag='APEv2'):
+    '''Update from tag, "Update from $2, Fields: $1"
+&Field list (; separated):, text,
+&Tag, combo, APEv2, ID3'''
+    try:
+        tag = _update[tag]().link(r_tags.filepath)
+        if tag is None:
+            return
+    except EnvironmentError:
+        return
+    fields = filter(None, [z.strip() for z in fields.split(u';')])    
+    if not fields:
+        return tag.usertags
+    else:
+        if fields[0].startswith(u'~'):
+            return dict([(k,v) for k,v in tag.usertags.iteritems()
+                if k not in fields])
+        else:
+            return dict([(k,v) for k,v in tag.usertags.iteritems()
+                if k in fields])
+
 def upper(text):
     return text.upper()
 
@@ -740,6 +784,7 @@ functions = {"add": add,
             "rand": rand,
             "re_escape": re_escape,
             'remove_except': remove_except,
+            #'remove_tag': remove_tag,
             "replace": replace,
             "replaceWithReg": replaceWithReg,
             "right": right,
@@ -752,10 +797,12 @@ functions = {"add": add,
             "titleCase": titleCase,
             'remove_fields': remove_fields,
             "upper": upper,
+            'update_from_tag': update_from_tag,
             "validate": validate,
             'to_ascii': removeDisallowedFilenameChars}
 
-no_fields = (load_images, remove_except, move)
+no_fields = (load_images, remove_except, move, update_from_tag)
+no_preview = (load_images, remove_tag)
 
 import findfunc
 FuncError = findfunc.FuncError

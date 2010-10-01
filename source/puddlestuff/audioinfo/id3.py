@@ -24,6 +24,11 @@ import imghdr
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
+
+WRITE_V1 = 1
+WRITE_V2 = 2
+WRITE_BOTH = 3
+
 v1_option = 2
 apev2_option = False
 
@@ -567,6 +572,7 @@ class Tag(TagBase):
         self._set_attrs(ATTRIBUTES)
         self._mutfile = audio
         self._originaltags = audio.keys()
+        return self
 
     def _info(self):
         info = self._mutfile.info

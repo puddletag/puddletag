@@ -3,6 +3,7 @@ from puddlestuff.puddleobjects import PuddleConfig
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from functools import partial
+from itertools import izip
 
 status = {}
 
@@ -32,6 +33,18 @@ def clear_selected():
     _previews.append(dict([(f, f.preview) for f in files]))
     emit('setpreview', [{} for f in files])
 
+def clear_selected_cells():
+    files = status['selectedfiles']
+    selected = status['selectedtags']
+
+    _previews.append(dict([(f, f.preview) for f in files]))
+
+    ret = []
+    for fields, f in izip(selected, files):
+        ret.append(dict([(k,v) for k,v in f.preview.iteritems()
+            if k not in fields]))
+    emit('setpreview', ret)
+
 def create_actions(parent):
     enable_preview = QAction(ENABLED, parent)
     enable_preview.setShortcut('Ctrl+Shift+P')
@@ -54,6 +67,9 @@ def create_actions(parent):
     
     sort = QAction('&Sort Selected', parent)
     obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
+
+    clear_cells = QAction('Clear Selected &Cells', parent)
+    obj.connect(clear_cells, SIGNAL('triggered()'), clear_selected_cells)
     
     cparser = PuddleConfig()
     options = cparser.get('table', 'sortoptions', 
@@ -63,7 +79,8 @@ def create_actions(parent):
     _sort_action = sort
     sort_actions = set_sort_options(options)
 
-    return [enable_preview, clear_selection, write, revert, sort] + sort_actions
+    return [enable_preview, clear_selection, write, revert, sort,
+        clear_cells] + sort_actions
 
 def set_sort_options(options):
     parent = _sort_action.parentWidget()
@@ -98,7 +115,6 @@ obj = QObject()
 obj.emits = ['enable_preview_mode', 'disable_preview_mode', 'setpreview',
     'writepreview']
 obj.receives = []
-
 
 def emit(sig, *args):
     obj.emit(SIGNAL(sig), *args)

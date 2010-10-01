@@ -567,41 +567,28 @@ class Function:
             state = {}
         
         arguments = self.args[::]
-        first_text = False
-        
-        if varnames[-1] == 'tags':
-            first_text = True
-            arguments.insert(-1, tags)
-        elif varnames[0] == 'tags':
-            arguments.insert(0, tags)
-        elif varnames[-1] == 'm_tags':
-            first_text = True
-            arguments.insert(-1, m_tags)
-        elif varnames[0] == 'm_tags':
-            arguments.insert(0, m_tags)
-        else:
-            first_text = True
+        first_text = True
+
+        d = {'tags': tags, 'r_tags': r_tags, 'm_tags': m_tags, 'state':state}
+
+        offset = 0
+        for i, v in enumerate(varnames):
+            if v in d:
+                arguments.insert(i + offset, d[v])
+                offset += 1
+
+        if varnames[0] in d:
+            first_text = False
         
         if first_text:
-            arguments.insert(0, u'')
-
-        if 'state' in varnames:
-            arguments.insert(varnames.index('state'), state)
-
-        if r_tags:
-            if 'r_tags' in varnames:
-                arguments.insert(varnames.index('r_tags'), r_tags)
-        
-        if first_text:
-            if isinstance(text, basestring) or varnames[0].startswith('m_'):
-                return function(text, *arguments[1:])
+            if isinstance(text, basestring):
+                return function(text, *arguments)
             else:
-                ret = (function(v, *arguments[1:]) for v in text)
+                ret = (function(v, *arguments) for v in text)
                 temp = []
                 append = temp.append
                 [append(z) for z in ret if z not in temp]
                 return temp
-		  
         else:
             return function(*arguments)
 
