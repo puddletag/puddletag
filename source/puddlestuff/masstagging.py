@@ -596,7 +596,7 @@ class ConfigEdit(QDialog):
         self._no_match = QComboBox()
         self._no_match.setToolTip('<b>Continue</b>: The lookup for the current album continue unabated if no results were returned for this Tag Source.<br /><b>Stop:</b> The lookup the current album will stop and any previous results will be used.')
         self._no_match.addItems(NO_MATCH_OPTIONS)
-        layout.addLayout(create_buddy('&If no matches found:', self._no_match))
+        layout.addLayout(create_buddy('&If no results found:', self._no_match))
         
         self._single_match = QComboBox()
         self._single_match.setToolTip('Say FreeDB returned the following <b>artist=Linkin, album=Meteora, genre=Rock</b> and MusicBrainz <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b>. <br /><br /><b>Combining</b> them means that fields with differing values will be combined, in this case "genre". The resulting tag will be <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rock, Rap</b> (ie. genre will have two values, Rock and Rap. Not the singular "Rock, Rap".)<br /><br />Choosing to <b>replace</b> fields will result in the following tag <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b> (since Musicbrainz was last, it\'s genre field takes precedence)')
