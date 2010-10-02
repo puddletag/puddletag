@@ -60,6 +60,14 @@ def commontag(tag, tags):
             x[''].append(audio)
     return x
 
+def not_in_dirs(files, dirs):
+    if not dirs:
+        return files
+    for d in dirs:
+        if isinstance(d, unicode):
+            d = d.encode('utf8')
+        return [z for z in files if not z.startswith(d)]
+
 def loadsettings(filepath=None):
     settings = PuddleConfig()
     if filepath:
@@ -1610,13 +1618,7 @@ class TagTable(QTableView):
         elif isinstance(dirs, basestring):
             dirs = [dirs]
 
-        if dirs:
-            for d in dirs:
-                files = [z for z in files if not z.startswith(d)]
-
-        if self.dirs:
-            for d in self.dirs:
-                files = [z for z in files if not z.startswith(d)]
+        files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
 
         if append:
             self.saveSelection()

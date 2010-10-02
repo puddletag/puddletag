@@ -251,7 +251,7 @@ class FunctionDialog(QWidget):
             else:
                 text = self._text
             try:
-                if self.func.function in functions.no_fields:
+                if self.func.function in functions.no_preview:
                     self.emit(SIGNAL('updateExample'), 
                         'No preview for is shown for this function.')
                     return

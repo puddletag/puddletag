@@ -59,7 +59,7 @@ def display(pattern, tags):
 def strip(audio, taglist, reverse = False):
     if not taglist:
         return dict([(key, audio[key]) for key in audio if 
-                        not key.startswith('#')])
+            not key.startswith('#')])
     tags = taglist[::]
     if tags and tags[0].startswith('~'):
         reverse = True
@@ -96,10 +96,11 @@ class TagListWidget(QWidget):
         self.setLayout(layout)
 
     def tags(self, text=None):
-        if text is None:
-            return [z.strip() for z in unicode(self._text.text()).split(u',')]
+        if not text:
+            return filter(None, [z.strip() for z in
+                unicode(self._text.text()).split(u',')])
         else:
-            return [z.strip() for z in unicode(text).split(u',')]
+            return filter(None, [z.strip() for z in unicode(text).split(u',')])
 
     def emitTags(self, text=None):
         self.emit(SIGNAL('tagschanged'), self.tags(text))
