@@ -148,7 +148,10 @@ def model_tag(model, base = audioinfo.AbstractTag):
         def delete(self, tag=None):
             if model.previewMode:
                 return
-            base.delete(self, tag)
+            try:
+                base.delete(self, tag)
+            except TypeError:
+                base.delete(self)
 
         def __getitem__(self, key):
             if model.previewMode and key in self.preview:
@@ -616,13 +619,10 @@ class TagModel(QAbstractTableModel):
 
     def deleteTag(self, row):
         audio = self.taginfo[row]
-        uns = dict([(key, val) for key,val in audio.items()
-                            if isinstance(key, (int, long))])
         tags = audio.usertags
         tags['__image'] = audio['__image']
         audio.delete()
-        audio.undo[self.undolevel] = tags
-        audio.update(uns)
+        self._addUndo(audio, tags)
 
     def deleteTags(self, rows):
         [self.deleteTag(row) for row in rows]

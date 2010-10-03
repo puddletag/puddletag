@@ -11,8 +11,8 @@ all = ['remove_id3', 'remove_apev2']
 _delete = {
     'APEv2':apev2.delete,
     'ID3v1': partial(id3.delete, v1=True, v2=False),
-    'ID3v1': partial(id3.delete, v1=False, v2=True),
-    'ID3': partial(id3.delete, v1=True, v2=True),
+    'ID3v2': partial(id3.delete, v1=False, v2=True),
+    'ID3': partial(id3.delete),
     }
 
 status = {}
