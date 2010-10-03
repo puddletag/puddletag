@@ -117,7 +117,7 @@ def filename_to_tag():
     tags = status['selectedfiles']
     pattern = status['patterntext']
 
-    x = [findfunc.filenametotag(pattern, tag[FILEPATH], True)
+    x = [findfunc.filenametotag(pattern, tag[PATH], True)
         for tag in tags]
     emit('writeselected', x)
 
