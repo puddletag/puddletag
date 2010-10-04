@@ -1460,7 +1460,7 @@ class TagTable(QTableView):
     def deleteSelected(self, delfiles=True, ifgone = False, showmsg = True):
         showmsg = confirmations.should_show('delete_files')
         if delfiles and showmsg:
-            result = QMessageBox.question (self, "puddletag",
+            result = QMessageBox.question(self, "puddletag",
                 "Are you sure you want to delete the selected files?",
                 "&Yes", "&No","", 1, 1)
         else:
@@ -1730,7 +1730,7 @@ class TagTable(QTableView):
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()
         files = [z.filepath for z in self.model().taginfo if z.dirpath
-                        not in self.dirs]
+            not in self.dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
         if self._playlist:
             self.loadFiles(files, self.dirs, False, self.subFolders)

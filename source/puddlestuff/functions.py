@@ -260,16 +260,16 @@ def _load_image(filename):
         traceback.print_exc()
         pass
 
-def load_images(m_tags, filepatterns, desc, matchcase,state=None):
+def load_images(r_tags, filepatterns, desc, matchcase,state=None):
     '''Load Artwork, "Artwork: Filenames='$1', Description='$2', Case Sensitive=$3"
 "&Filenames to check (;-separated, shell wildcards [eg. *] allowed)", text
 &Default description (can be pattern):, text
 Match filename's &case:, check'''
-    tags = m_tags
+    tags = r_tags
     if state is None:
         state = {}
-    dirpath = tags['__dirpath']
-    key = u'image_dirpath' + dirpath
+    dirpath = tags.dirpath
+    key = 'image_dirpath' + dirpath
     if key in state:
         files = state[key]
     else:

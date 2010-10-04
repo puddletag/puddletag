@@ -555,7 +555,7 @@ class Function:
 
     def runFunction (self, text=None, m_tags=None, state=None, tags=None, r_tags=None):
         function = self.function
-        varnames = function.func_code.co_varnames
+        varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
         
         if not varnames:
             return function()
@@ -591,6 +591,7 @@ class Function:
                 return temp
         else:
             return function(*arguments)
+
 
     def description(self):
         d = [u", ".join(self.tag)] + self.args

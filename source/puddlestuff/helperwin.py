@@ -253,20 +253,6 @@ class ImportWindow(QDialog):
         for z in self.lines.split("\n"):
             self.dicttags.append(findfunc.filenametotag(unicode(self.patterncombo.currentText()),z,False))
         if self.dicttags:
-            #append = self.tags.insertPlainText
-            #setbg = self.tags.setTextBackgroundColor
-            #i = 0
-            #base = QPalette().color(QPalette.Base)
-            #alt = QPalette().color(QPalette.AlternateBase)
-            #for z in self.dicttags:
-                #if i:
-                    #setbg(base)
-                    #i = 0
-                #else:
-                    #i = 1
-                    #setbg(alt)
-                #text = u"%s\n" % formattag(z)
-                #append(text)
             self.tags.setHtml("<br/>".join([formattag(z) for z in self.dicttags]))
 
     def doStuff(self):
@@ -333,7 +319,7 @@ class EditTag(QDialog):
         self.emit(SIGNAL("donewithmyshit"), unicode(self.tagcombo.currentText()), unicode(self.value.toPlainText()), self.prevtag)
 
 class StatusWidgetItem(QTableWidgetItem):
-    def __init__(self, text = None, status = None, colors = None):
+    def __init__(self, text = None, status = None, colors = None, preview=False):
         QTableWidgetItem.__init__(self)
         self._color = colors
         if text:
@@ -342,11 +328,22 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(self._color[status])
         self._status = status
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        #self.preview = preview
 
-    def _getstatus(self):
+    def _get_preview(self):
+        return self.font().bold()
+
+    def _set_preview(self, value):
+        font = self.font()
+        font.setBold(value)
+        self.setFont(font)
+
+    preview = property(_get_preview, _set_preview)
+
+    def _get_status(self):
         return self._status
 
-    def _setstatus(self, status):
+    def _set_status(self, status):
         if status and status in self._color:
             self.setBackground(self._color[status])
             self._status = status
@@ -354,7 +351,8 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(QTableWidgetItem().background())
             self._status = None
 
-    status = property(_getstatus, _setstatus)
+    status = property(_get_status, _set_status)
+
 
 class ExTagsTable(QTableWidget):
     def keyPressEvent(self, event):
@@ -453,7 +451,7 @@ class ExTags(QDialog):
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
         self.connect(self.listbox, SIGNAL("itemDoubleClicked(QTableWidgetItem *)"), self.editTag)
         self.connect(self.okcancel, SIGNAL("ok"),self.OK)
-
+        
         clicked = SIGNAL('clicked()')
         self.connect(self.listbuttons, SIGNAL('edit'), self.editTag)
         self.connect(self.listbuttons.add, clicked, self.addTag)
