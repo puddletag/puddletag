@@ -199,6 +199,21 @@ def iflonger(a, b, text, text1):
     except TypeError:
         return
 
+#def image_to_file(m_tags, pattern, addext=True, r_tags):
+    #'''Export cover to file, 'Cover->File: $1
+#&Filename, text, %album%
+#Add E&xtension, check, True'''
+    #if path.isabs(pattern):
+         #filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
+         #filename = path.normpath(filename)
+    #else:
+        #pattern = u'/' + pattern
+        #filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
+        #filename = path.normpath(path.join(dirpath, filename[1:]))
+
+    #for 
+    
+
 def import_text(m_tags, pattern, r_tags):
     '''Import text file, "Text File: $0, '$1'"
 &Pattern (can be relative path), text, lyrics.txt'''
@@ -761,6 +776,7 @@ functions = {"add": add,
             "hasformat": hasformat,
             "if": if_,
             "iflonger": iflonger,
+            #'image_to_file': image_to_file,
             'import_text': import_text,
             "isdigit": isdigit,
             "left": left,

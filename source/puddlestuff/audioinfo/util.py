@@ -120,43 +120,28 @@ def commonimages(imagedicts):
         return None
     return x
 
-def commontags(audios, usepreview=False):
+def commontags(audios):
     images = []
-    imagetags = set()
     combined = {}
     tags = {}
     images = []
     imagetags = set()
     for audio in audios:
-        if usepreview:
-            preview = audio.preview.copy()
-        else:
-            preview = {}
         if audio.IMAGETAGS:
-            if usepreview:
-                image = preview.get(IMAGES, [])
-                if not image:
-                    image = audio[IMAGES] if audio[IMAGES] else []
-            else:
-                image = audio[IMAGES] if audio[IMAGES] else []
+            image = audio[IMAGES] if audio[IMAGES] else []
         else:
             image = []
         images.append(image)
         imagetags = imagetags.union(audio.IMAGETAGS)
-        audio = stringtags(audio.usertags)
+        audio = audio.usertags
 
-        if usepreview:
-            if IMAGES in preview:
-                del(preview[IMAGES])
-            audio.update(stringtags(usertags(preview)))
-
-        for tag, value in audio.items():
-            if tag in combined:
-                if combined[tag] == value:
-                    tags[tag] += 1
+        for field, value in audio.items():
+            if field in combined:
+                if combined[field] == value:
+                    tags[field] += 1
             else:
-                combined[tag] = value
-                tags[tag] = 1
+                combined[field] = value
+                tags[field] = 1
     combined[IMAGES] = commonimages(images)
     return combined, tags, imagetags
 

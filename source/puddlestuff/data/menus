@@ -1,5 +1,5 @@
 [info]
-version=17
+version=18
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
@@ -9,7 +9,7 @@ version=17
 &Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...,&Sort Selected
 &Preview Mode=Enabl&e Preview Mode,&Undo Last Clear,&Write Previews,Clear Selected &Files, Clear Selected &Cells
 Ta&g Tools (Experimental)=Remove APEv2 Tag, Remove All ID3 Tags, Remove ID3v1 Tag, Remove ID3v2 Tag
-&Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging,separator,Functions #,separator,&Lock Layout
+&Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging,separator,Functions,Actions #,separator,&Lock Layout
 #Ab&out=About &Qt,
 
 [menuattrs]

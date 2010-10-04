@@ -321,6 +321,7 @@ class EditTag(QDialog):
 class StatusWidgetItem(QTableWidgetItem):
     def __init__(self, text = None, status = None, colors = None, preview=False):
         QTableWidgetItem.__init__(self)
+        self.preview = preview
         self._color = colors
         if text:
             self.setText(text)
@@ -328,7 +329,7 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(self._color[status])
         self._status = status
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        #self.preview = preview
+        
 
     def _get_preview(self):
         return self.font().bold()
@@ -376,11 +377,12 @@ class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
     In addition, the file's image tag is shown."""
-    def __init__(self, parent = None, row=None, files=None):
+    def __init__(self, parent = None, row=None, files=None, preview_mode=False):
         QDialog.__init__(self, parent)
         winsettings('extendedtags', self)
         cparser = PuddleConfig()
         self._taglist = gettaglist()
+        self.previewMode = preview_mode
 
         add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [255,255,0], True))
         edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [0,255,0], True))
@@ -536,7 +538,7 @@ class ExTags(QDialog):
         self.close()
 
     def addTag(self):
-        win = EditTag(parent = self, taglist = self._taglist)
+        win = EditTag(parent=self, taglist=self._taglist)
         win.setModal(True)
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
@@ -551,7 +553,7 @@ class ExTags(QDialog):
         else:
             return (tag, value)
 
-    def _settag(self, row, tag, value, status = None):
+    def _settag(self, row, tag, value, status=None, preview=False):
         l = self.listbox
         l.setSortingEnabled(False)
         if row >= l.rowCount():
@@ -560,9 +562,9 @@ class ExTags(QDialog):
             if l.item(row, 0).status:
                 status = l.item(row, 0).status
         
-        tagitem = StatusWidgetItem(tag, status, self._colors)
+        tagitem = StatusWidgetItem(tag, status, self._colors, preview)
         l.setItem(row, 0, tagitem)
-        valitem = StatusWidgetItem(value, status, self._colors)
+        valitem = StatusWidgetItem(value, status, self._colors, preview)
         l.setItem(row, 1, valitem)
         l.setSortingEnabled(True)
 
@@ -605,18 +607,18 @@ class ExTags(QDialog):
         if prevtag is not None:
             if duplicate:
                 row = rowcount
-                self._settag(rowcount, tag, value, ADD)
+                self._settag(rowcount, tag, value, ADD, self.previewMode)
             else:
                 if tag == prevtag[0]:
                     row = self.listbox.currentRow()
-                    self._settag(row, tag, value, EDIT)
+                    self._settag(row, tag, value, EDIT, self.previewMode)
                     if row +1< rowcount:
                         self.listbox.selectRow(row + 1)
                 else:
                     self.removeTag()
-                    self._settag(rowcount, tag, value, ADD)
+                    self._settag(rowcount, tag, value, ADD, self.previewMode)
         else:
-            self._settag(rowcount, tag, value, ADD)
+            self._settag(rowcount, tag, value, ADD, self.previewMode)
         self._checkListBox()
         self.filechanged = True
         self.listbox.clearSelection()
@@ -657,14 +659,29 @@ class ExTags(QDialog):
             self._loadsingle(audio)
         else:
             self.setWindowTitle('Different files.')
-            common, numvalues, imagetags = commontags(audios, usepreview=True)
+            common, numvalues, imagetags = commontags(audios)
             images = common['__image']
             del(common['__image'])
-            for i, key in enumerate(common):
-                if numvalues[key] != len(audios):
-                    self._settag(i, key, '<keep>')
+            previews = set(audios[0].preview)
+            for audio in audios:
+                previews = previews.intersection(audio.preview)
+            row = 0
+            for field, values in common.iteritems():
+                if field in previews:
+                    preview = True
                 else:
-                    self._settag(i, key, common[key])
+                    preview = False
+                if numvalues[field] != len(audios):
+                    self._settag(row, field, '<keep>')
+                    row += 1
+                else:
+                    if isinstance(values, basestring):
+                        self._settag(i, field, values, None, preview)
+                        row += 1
+                    else:
+                        for v in values:
+                            self._settag(row, field, v, None, preview)
+                            row += 1
             if images:
                 self.piclabel.setImageTags(imagetags)
                 self.piclabel.setEnabled(True)
@@ -680,13 +697,16 @@ class ExTags(QDialog):
     def _loadsingle(self, tags):
         items = []
         d = tags.usertags.copy()
-        d.update(tags.preview)
+        
         for key, val in sorted(d.items()):
-            if not key.startswith('__'):
-                if isinstance(val, basestring):
-                    items.append([key, val])
-                else:
-                    [items.append([key, z]) for z in val]
+            if key in tags.preview:
+                preview = True
+            else:
+                preview = False
+            if isinstance(val, basestring):
+                items.append([key, val, None, preview])
+            else:
+                [items.append([key, z, None, preview]) for z in val]
         [self._settag(i, *item) for i, item in enumerate(items)]
         self.piclabel.lastfilename = tags.dirpath
         if not tags.library:

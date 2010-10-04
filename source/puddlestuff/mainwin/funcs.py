@@ -105,7 +105,8 @@ def display_tag(tag):
 def extended_tags(parent=None):
     rows = status['selectedrows']
     if len(rows) == 1:
-        win = helperwin.ExTags(parent, rows[0], status['alltags'])
+        win = helperwin.ExTags(parent, rows[0], status['alltags'],
+            status['previewmode'])
     else:
         win = helperwin.ExTags(files = status['selectedfiles'], parent=parent)
     x = lambda val: emit('onetomany', val)

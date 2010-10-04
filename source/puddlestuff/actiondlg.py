@@ -512,17 +512,17 @@ class ActionWindow(QDialog):
         self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.renameAction)
         self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.enableOK)
 
-        if example:
-            self._examplelabel = ScrollLabel('')
-            self.grid.addWidget(self._examplelabel, 1, 0, 1,-1)
-            self.grid.setRowStretch(1, 0)
-            self._example = example
-            self.connect(self.listbox, SIGNAL('itemChanged (QListWidgetItem *)'),
-                                self.updateExample)
-            self.grid.addLayout(self.okcancel,2,0,1,2)
-            self.updateExample()
-        else:
-            self.grid.addLayout(self.okcancel,1,0,1,2)
+        #if example:
+        self._examplelabel = ScrollLabel('')
+        self.grid.addWidget(self._examplelabel, 1, 0, 1,-1)
+        self.grid.setRowStretch(1, 0)
+        self._example = example
+        if example is None:
+            self._examplelabel.hide()
+        self.connect(self.listbox, SIGNAL('itemChanged (QListWidgetItem *)'),
+            self.updateExample)
+        self.grid.addLayout(self.okcancel,2,0,1,2)
+        self.updateExample()
         self.enableOK(None)
 
     def moveUp(self):
@@ -619,6 +619,9 @@ class ActionWindow(QDialog):
         return funcs
 
     def updateExample(self, *args):
+        if self._example is None:
+            self._examplelabel.hide()
+            return
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
         selectedrows = [i for i,z in enumerate(items) if z.checkState() == Qt.Checked]
@@ -695,7 +698,7 @@ class ActionWindow(QDialog):
         cparser.set('puddleactions', 'order', order)
         QDialog.close(self)
 
-    def okClicked(self):
+    def okClicked(self, close=True):
         """When clicked, save the current contents of the listbox and the associated functions"""
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
@@ -707,7 +710,8 @@ class ActionWindow(QDialog):
         [funcs.extend(func) for func in tempfuncs]
         cparser = PuddleConfig()
         cparser.set('actions', 'checked', names)
-        self.close()
+        if close:
+            self.close()
         self.emit(SIGNAL("donewithmyshit"), funcs)
 
     def duplicate(self):
