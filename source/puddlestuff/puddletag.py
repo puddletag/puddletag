@@ -29,6 +29,7 @@ from collections import defaultdict
 import constants, shortcutsettings
 
 import puddlestuff.findfunc, puddlestuff.tagsources
+import puddlestuff.confirmations as confirmations
 
 pyqtRemoveInputHook()
 
@@ -58,6 +59,10 @@ mainfuncs.status = status
 tagmodel.status = status
 mainwin.previews.set_status(status)
 mainwin.tagtools.set_status(status)
+
+confirmations.add('rename_dirs', True, 'Confirm when renaming directories.')
+confirmations.add('preview_mode', True, 'Confirm when exiting preview mode.')
+confirmations.add('delete_files', True, 'Confirm when deleting files.')
 
 def create_tool_windows(parent):
     """Creates the dock widgets for the main window (parent) using
@@ -489,6 +494,7 @@ class MainWin(QMainWindow):
         QApplication.processEvents()
         for control, val in gensettings.items():
             control.applyGenSettings(val, 1)
+        confirmations.load()
 
     def savePlayList(self):
         tags = self._table.model().taginfo

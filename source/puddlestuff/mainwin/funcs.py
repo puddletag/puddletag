@@ -16,6 +16,7 @@ import traceback
 from puddlestuff.util import split_by_tag
 import puddlestuff.functions as functions
 from tagtools import *
+import puddlestuff.confirmations as confirmations
 
 status = {}
 
@@ -91,7 +92,7 @@ def cut():
     QApplication.clipboard().setMimeData(mime)
 
     emit('writeselected', (dict([(z, "") for z in s])
-                                    for s in selected))
+        for s in selected))
 
 def display_tag(tag):
     """Used to display tags in the status bar in a human parseable format."""
@@ -267,9 +268,10 @@ def rename_dirs(parent=None):
 
     msg = msg[:-len('<br /><br />')]
 
-    info = LongInfoMessage('Rename dirs?', title, msg, parent)
-    if not info.exec_():
-        return
+    if confirmations.should_show('rename_dirs'):
+        info = LongInfoMessage('Rename dirs?', title, msg, parent)
+        if not info.exec_():
+            return
     dirs = sorted(dirs, dircmp, itemgetter(0))
     emit('renamedirs', dirs)
 

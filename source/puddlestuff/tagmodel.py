@@ -41,6 +41,7 @@ from itertools import izip
 from collections import defaultdict
 from util import write, rename_file, real_filetags, to_string
 from constants import SELECTIONCHANGED, SEPARATOR
+import puddlestuff.confirmations as confirmations
 
 status = {}
 
@@ -560,8 +561,8 @@ class TagModel(QAbstractTableModel):
         rows = [z[0] for z in tags]
         if rows:
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                        self.index(min(rows), 0), self.index(max(rows),
-                                                    self.columnCount() - 1))
+                self.index(min(rows), 0), self.index(max(rows),
+                self.columnCount() - 1))
 
     def columnCount(self, index=QModelIndex()):
         return len(self.headerdata)
@@ -1457,10 +1458,11 @@ class TagTable(QTableView):
         self.deleteSelected(showmsg = False)
 
     def deleteSelected(self, delfiles=True, ifgone = False, showmsg = True):
+        showmsg = confirmations.should_show('delete_files')
         if delfiles and showmsg:
             result = QMessageBox.question (self, "puddletag",
-                        "Are you sure you want to delete the selected files?",
-                        "&Yes", "&No","", 1, 1)
+                "Are you sure you want to delete the selected files?",
+                "&Yes", "&No","", 1, 1)
         else:
             result = 0
         if result != 0:
@@ -1717,12 +1719,12 @@ class TagTable(QTableView):
                     previews = True
                     continue
 
-            #if previews:
-                #ret = QMessageBox.question(self, 'puddletag', 
-                    #'Do you want to exit Preview Mode?', 
-                    #QMessageBox.Ok, QMessageBox.No)
-                #if ret != QMessageBox.Ok:
-                    #return
+            if confirmations.should_show('preview_mode') and previews:
+                ret = QMessageBox.question(self, 'puddletag',
+                    'Do you want to exit Preview Mode?',
+                    QMessageBox.Ok, QMessageBox.No)
+                if ret != QMessageBox.Ok:
+                    return
         self.model().previewMode = value
 
     def reloadFiles(self, filenames = None):

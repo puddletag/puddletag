@@ -50,7 +50,7 @@ from shortcutsettings import ActionEditorDialog
 from puddlestuff.pluginloader import PluginConfig
 import pdb
 import audioinfo.util
-import genres
+import genres, confirmations
 
 def load_gen_settings(setlist, extras=False):
     settings = PuddleConfig()
@@ -531,14 +531,19 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("puddletag settings")
         winsettings('settingswin', self)
 
-        d = {0: ('General', GeneralSettings(controls), controls),
-             1: ('Mappings', TagMappings(), None),
-             2: ('Playlist', Playlist(), None),
-             3: ('Colours', ColorEdit(), status['table']),
-             4: ('Genres', genres.Genres(status=status), None),
-             5: ('Tags', Tags(), status['table']),
-             6: ('Plugins', PluginConfig(), None),
-             7: ('Shortcuts', ActionEditorDialog(status['actions']), None)}
+        built_in = [
+            ('General', GeneralSettings(controls), controls),
+            ('Confirmations', confirmations.Settings(), None),
+            ('Mappings', TagMappings(), None),
+            ('Playlist', Playlist(), None),
+            ('Colours', ColorEdit(), status['table']),
+            ('Genres', genres.Genres(status=status), None),
+            ('Tags', Tags(), status['table']),
+            ('Plugins', PluginConfig(), None),
+            ('Shortcuts', ActionEditorDialog(status['actions']), None),]
+
+        d = dict(enumerate(built_in))
+            
         i = len(d)
         for control in controls:
             if hasattr(control, SETTINGSWIN):
