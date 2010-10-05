@@ -138,6 +138,18 @@ def model_tag(model, base = audioinfo.AbstractTag):
             self.preview.clear()
             super(ModelTag, self).clear()
 
+        def clean(self):
+            for k, v in self.preview.items():
+                real = self.realvalue(k, u'')
+                if not isinstance(real, basestring):
+                    real = u''.join(real)
+
+                if not isinstance(v, basestring):
+                    v = u''.join(v)
+
+                if real == v:
+                    del(self.preview[k])
+
         def __delitem__(self, key):
             if key in INFOTAGS:
                 return
@@ -170,8 +182,13 @@ def model_tag(model, base = audioinfo.AbstractTag):
         def __len__(self):
             return len(self.keys())
             
-        def realvalue(self, key):
-            return base.__getitem__(self, key)
+        def realvalue(self, key, default=None):
+            try:
+                return base.__getitem__(self, key)
+            except KeyError:
+                if default is not None:
+                    return default
+                raise
         
         def __setitem__(self, key, value):
             if model.previewMode:
@@ -182,12 +199,18 @@ def model_tag(model, base = audioinfo.AbstractTag):
                     if not value and key in self.preview:
                         del(self.preview[key])
                         return
-                    if self[key] != value:
-                        self.preview[key] = value
 
-                for k, v in self.preview.items():
-                    if self.realvalue(k) == v:
-                        del(self.preview[k])
+                    real = self.realvalue(key, u'')
+                    if not isinstance(real, basestring):
+                        real = u''.join(real)
+
+                    if not isinstance(text_value, basestring):
+                        text_value = u''.join(v)
+
+                    if real == text_value:
+                        del(self.preview[key])
+                    else:
+                        self.preview[key] == value
             else:
                 super(ModelTag, self).__setitem__(key, value)
         
@@ -208,6 +231,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
         def update(self, *args, **kwargs):
             if model.previewMode:
                 self.preview.update(*args, **kwargs)
+                self.clean()
             else:
                 super(ModelTag, self).update(*args, **kwargs)
     return ModelTag
@@ -594,8 +618,11 @@ class TagModel(QAbstractTableModel):
                                 real = u'<blank>'
                         except KeyError:
                             real = u'<blank>'
-                        tooltip = u'Preview: %s\nReal: %s' % (
-                            val, self._toString(real))
+                        if real != val:
+                            tooltip = u'Preview: %s\nReal: %s' % (
+                                val, self._toString(real))
+                        else:
+                            tooltip = val
                     else:
                         tooltip = val
                     return QVariant(tooltip)
@@ -609,11 +636,14 @@ class TagModel(QAbstractTableModel):
             elif self.previewMode and audio.preview:
                 return QVariant(self.previewBackground)
         elif role == Qt.FontRole:
-            tag = self.headerdata[index.column()][1]
+            field = self.headerdata[index.column()][1]
             f = QFont()
             if f.pointSize() != self.fontSize:
                 f.setPointSize(self.fontSize)
-            if tag in self.taginfo[row].preview:
+            audio = self.taginfo[row]
+            if field in audio.preview:
+                #real = audio.realvalue(field, u'')
+                #if self._toString(audio[field]) != self._toString(real):
                 f.setBold(True)
             return QVariant(f)
         return QVariant()
@@ -1014,7 +1044,7 @@ class TagModel(QAbstractTableModel):
         if unsetrows:
             self.unSetTestData(rows = unsetrows)
         for row, preview in zip(rows, previews):
-            taginfo[row].preview = preview
+            taginfo[row].update(preview)
         firstindex = self.index(min(rows), 0)
         lastindex = self.index(max(rows),self.columnCount() - 1)
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),

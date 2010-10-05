@@ -676,7 +676,7 @@ class ExTags(QDialog):
                     row += 1
                 else:
                     if isinstance(values, basestring):
-                        self._settag(i, field, values, None, preview)
+                        self._settag(row, field, values, None, preview)
                         row += 1
                     else:
                         for v in values:

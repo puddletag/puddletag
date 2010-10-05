@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import puddlestuff.findfunc as findfunc
-from puddlestuff.puddleobjects import dircmp, safe_name, natcasecmp, LongInfoMessage
+from puddlestuff.puddleobjects import (dircmp, safe_name, natcasecmp,
+    LongInfoMessage, PuddleConfig, PuddleDock)
 import puddlestuff.actiondlg as actiondlg
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -296,6 +297,11 @@ def run_action(parent=None, quickaction=False):
     else:
         func = partial(applyaction, files)
         win.connect(win, SIGNAL("donewithmyshit"), func)
+    action_tool = PuddleDock._controls['Actions']
+    parent.connect(win, SIGNAL('actionOrderChanged'),
+        action_tool.updateOrder)
+    parent.connect(win, SIGNAL('checkedChanged'),
+        action_tool.updateChecked)
     win.show()
 
 def run_function(parent=None, prevfunc=None):

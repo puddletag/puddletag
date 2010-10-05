@@ -487,7 +487,6 @@ class ActionWindow(QDialog):
                 item.setCheckState(Qt.Unchecked)
             self.listbox.addItem(item)
 
-
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
         self.grid = QGridLayout()
@@ -661,7 +660,7 @@ class ActionWindow(QDialog):
 
     def add(self):
         (text, ok) = QInputDialog.getText (self, "New Configuration", "Enter a name for the new action.", QLineEdit.Normal)
-        if (ok is True) and (text != ""):
+        if (ok is True) and text:
             item = QListWidgetItem(text)
             item.setCheckState(Qt.Unchecked)
             item.setFlags(item.flags() | Qt.ItemIsEditable)
@@ -691,27 +690,47 @@ class ActionWindow(QDialog):
         self.funcs[row][0] = funcs
         self.updateExample()
 
-    def close(self):
-        funcs = self.funcs
-        cparser = PuddleConfig()
-        order = [funcs[index][2] for index in sorted(funcs)]
-        cparser.set('puddleactions', 'order', order)
-        QDialog.close(self)
-
-    def okClicked(self, close=True):
-        """When clicked, save the current contents of the listbox and the associated functions"""
-        l = self.listbox
-        items = [l.item(z) for z in range(l.count())]
-        selectedrows = [i for i,z in enumerate(items) if 
-            z.checkState() == Qt.Checked]
+    def checked(self):
+        selectedrows = self.checkedRows()
         tempfuncs = [self.funcs[row][0] for row in selectedrows]
         names = [self.funcs[row][1] for row in selectedrows]
         funcs = []
         [funcs.extend(func) for func in tempfuncs]
+        return names, funcs
+
+    def checkedRows(self):
+        l = self.listbox
+        items = [l.item(z) for z in range(l.count())]
+        checked = [i for i,z in enumerate(items) if
+            z.checkState() == Qt.Checked]
+        return checked
+
+    def saveChecked(self):
+        cparser = PuddleConfig()
+        cparser.set('actions', 'checked', self.checked()[0])
+
+    def saveOrder(self):
+        funcs = self.funcs
+        cparser = PuddleConfig()
+        order = [funcs[index][2] for index in sorted(funcs)]
+        lastorder = cparser.get('puddleactions', 'order', [])
+        if lastorder == order:
+            return
+        cparser.set('puddleactions', 'order', order)
+        self.emit(SIGNAL('actionOrderChanged'))
+
+    def close(self):
+        self.saveOrder()
+        QDialog.close(self)
+
+    def okClicked(self, close=True):
+        """When clicked, save the current contents of the listbox and the associated functions"""
+        names, funcs = self.checked()
         cparser = PuddleConfig()
         cparser.set('actions', 'checked', names)
         if close:
             self.close()
+        self.emit(SIGNAL('checkedChanged'), self.checkedRows())
         self.emit(SIGNAL("donewithmyshit"), funcs)
 
     def duplicate(self):
