@@ -92,9 +92,13 @@ class FrameCombo(QGroupBox):
         self._originalValues = {}
     
     def _disablePreview(self):
+        
         for field, combo in self.combos.items():
-            self.disconnect(combo.lineEdit(), TEXTEDITED, self._funcs[field])
-        self._funcs = []
+            try:
+                self.disconnect(combo.lineEdit(), TEXTEDITED, self._funcs[field])
+            except KeyError:
+                break
+        self._funcs = {}
 
     def disableCombos(self):
         for z in self.combos:

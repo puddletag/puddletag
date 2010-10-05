@@ -4,6 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from functools import partial
 from itertools import izip
+from copy import deepcopy
 
 status = {}
 
@@ -30,7 +31,7 @@ def toggle_preview_mode():
 
 def clear_selected():
     files = status['selectedfiles']
-    _previews.append(dict([(f, f.preview) for f in files]))
+    _previews.append(dict([(f, deepcopy(f.preview)) for f in files]))
     emit('setpreview', [{} for f in files])
 
 def clear_selected_cells():
@@ -105,7 +106,6 @@ def sort_by_fields():
 def set_status(stat):
     global status
     status = stat
-    
 
 def undo_last():
     if _previews:

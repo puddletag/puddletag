@@ -477,9 +477,17 @@ class TagModel(QAbstractTableModel):
     
     def _set_previewMode(self, value):
         if not value:
-            rows = [row for row, audio in enumerate(self.taginfo) 
-                if audio.preview]
-            self.setTestData(rows, [{} for z in rows])
+            rows = []
+            for row, audio in enumerate(self.taginfo):
+                if audio.preview:
+                    audio.preview = {}
+                    rows.append(row)
+            if rows:
+                top = self.index(min(rows), 0)
+                bottom = self.index(max(rows), self.columnCount() - 1)
+                self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                    top, bottom)
+
             self.undolevel = self._savedundolevel
             self._previewUndo.clear()
         else:
@@ -1044,6 +1052,7 @@ class TagModel(QAbstractTableModel):
         if unsetrows:
             self.unSetTestData(rows = unsetrows)
         for row, preview in zip(rows, previews):
+            taginfo[row].preview.clear()
             taginfo[row].update(preview)
         firstindex = self.index(min(rows), 0)
         lastindex = self.index(max(rows),self.columnCount() - 1)
