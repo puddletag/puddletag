@@ -166,6 +166,24 @@ def model_tag(model, base = audioinfo.AbstractTag):
             except TypeError:
                 base.delete(self)
 
+        def equal_fields(self):
+            if not (model.previewMode and self.preview):
+                return []
+            ret = []
+            for k, v in self.preview.items():
+                if k == '__image':
+                    continue
+                real = self.realvalue(k, u'')
+                if not isinstance(real, basestring):
+                    real = u''.join(real)
+
+                if not isinstance(v, basestring):
+                    v = u''.join(v)
+
+                if real == v:
+                    ret.append(k)
+            return ret
+
         def __getitem__(self, key):
             if model.previewMode and key in self.preview:
                 return self.preview[key]
@@ -199,18 +217,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
                     if not value and key in self.preview:
                         del(self.preview[key])
                         return
-
-                    real = self.realvalue(key, u'')
-                    if not isinstance(real, basestring):
-                        real = u''.join(real)
-
-                    if not isinstance(text_value, basestring):
-                        text_value = u''.join(v)
-
-                    if real == text_value:
-                        del(self.preview[key])
-                    else:
-                        self.preview[key] == value
+                    self.preview[key] == value
             else:
                 super(ModelTag, self).__setitem__(key, value)
         
@@ -231,7 +238,6 @@ def model_tag(model, base = audioinfo.AbstractTag):
         def update(self, *args, **kwargs):
             if model.previewMode:
                 self.preview.update(*args, **kwargs)
-                self.clean()
             else:
                 super(ModelTag, self).update(*args, **kwargs)
     return ModelTag
@@ -650,9 +656,11 @@ class TagModel(QAbstractTableModel):
                 f.setPointSize(self.fontSize)
             audio = self.taginfo[row]
             if field in audio.preview:
-                #real = audio.realvalue(field, u'')
-                #if self._toString(audio[field]) != self._toString(real):
-                f.setBold(True)
+                real = audio.realvalue(field, u'')
+                if self._toString(audio[field]) != self._toString(real):
+                    f.setBold(True)
+                else:
+                    f.setItalic(True)
             return QVariant(f)
         return QVariant()
 

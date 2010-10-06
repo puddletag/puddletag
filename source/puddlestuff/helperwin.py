@@ -30,6 +30,9 @@ from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButton
                             PicWidget, winsettings, PuddleConfig)
 from copy import deepcopy
 ADD, EDIT, REMOVE = (1, 2, 3)
+UNCHANGED = 0
+BOLD = 1
+ITALICS = 2
 from audioinfo import commontags, INFOTAGS, REVTAGS
 
 class TrackWindow(QDialog):
@@ -663,14 +666,18 @@ class ExTags(QDialog):
             images = common['__image']
             del(common['__image'])
             previews = set(audios[0].preview)
-            for audio in audios:
+            italics = set(audios[0].equal_fields())
+            for audio in audios[1:]:
                 previews = previews.intersection(audio.preview)
+                italics = italics.intersection(audio.equal_fields())
             row = 0
             for field, values in common.iteritems():
-                if field in previews:
-                    preview = True
+                if field in italics:
+                    preview = UNCHANGED
+                elif field in previews:
+                    preview = BOLD
                 else:
-                    preview = False
+                    preview = UNCHANGED
                 if numvalues[field] != len(audios):
                     self._settag(row, field, '<keep>')
                     row += 1
@@ -697,12 +704,15 @@ class ExTags(QDialog):
     def _loadsingle(self, tags):
         items = []
         d = tags.usertags.copy()
+        italics = tags.equal_fields()
         
         for key, val in sorted(d.items()):
-            if key in tags.preview:
-                preview = True
+            if key in italics:
+                preview = UNCHANGED
+            elif key in tags.preview:
+                preview = BOLD
             else:
-                preview = False
+                preview = UNCHANGED
             if isinstance(val, basestring):
                 items.append([key, val, None, preview])
             else:
