@@ -209,7 +209,7 @@ class MusicBrainz(object):
     def retrieve(self, info):
         a_id = info['#artistid']
         r_id = info['#albumid']
-        return info, get_tracks(r_id)[0]
+        return info, get_tracks(r_id, self._track_field)[0]
 
 info = MusicBrainz
 
