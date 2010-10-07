@@ -529,7 +529,7 @@ class Tag(TagBase):
         if self._images:
             return [{'data': image.data, 'description': image.desc,
                     'mime': image.mime, 'imagetype': image.type}
-                                            for image in self._images]
+                        for image in self._images]
         return []
 
     def _setImages(self, images):
@@ -576,9 +576,9 @@ class Tag(TagBase):
 
     def _info(self):
         info = self._mutfile.info
-        fileinfo = [('Path', self.filepath),
+        fileinfo = [('Path', self[PATH]),
                     ('Size', str_filesize(int(self.size))),
-                    ('Filename', self.filename),
+                    ('Filename', self[FILENAME]),
                     ('Modified', self.modified)]
         try:
             version = self._mutfile.tags.version

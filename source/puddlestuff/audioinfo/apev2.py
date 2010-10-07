@@ -85,9 +85,9 @@ def get_class(mutagen_file, base_function, attrib_fields):
 
         def _info(self):
             info = self._mutfile.info
-            fileinfo = [('Path', self.filepath),
+            fileinfo = [('Path', self[PATH]),
                         ('Size', str_filesize(int(self.size))),
-                        ('Filename', self.filename),
+                        ('Filename', self[FILENAME]),
                         ('Modified', self.modified)]
             apeinfo = [('Length', self.length)]
             attr = {

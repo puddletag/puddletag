@@ -23,8 +23,8 @@ from mutagen.wavpack import WavPack
 
 import util
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
-                getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
-                FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
+    getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
+    FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
     'modified', 'frequency', 'bitrate', 'filetype')
 
@@ -45,9 +45,9 @@ class Tag(base):
 
     def _info(self):
         info = self._mutfile.info
-        fileinfo = [('Path', self.filepath),
+        fileinfo = [('Path', self[ATH]),
                     ('Size', str_filesize(int(self.size))),
-                    ('Filename', self.filename),
+                    ('Filename', self[FILENAME]),
                     ('Modified', self.modified)]
         wpinfo = [('Frequency', self.frequency),
                   ('Channels', unicode(info.channels)),

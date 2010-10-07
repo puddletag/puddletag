@@ -27,13 +27,13 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButtons, ListButtons,
-                            PicWidget, winsettings, PuddleConfig)
+    PicWidget, winsettings, PuddleConfig)
 from copy import deepcopy
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
 BOLD = 1
 ITALICS = 2
-from audioinfo import commontags, INFOTAGS, REVTAGS
+from audioinfo import commontags, INFOTAGS, REVTAGS, PATH
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -732,7 +732,7 @@ class ExTags(QDialog):
                 else:
                     self.piclabel.setImages(None)
         self._checkListBox()
-        self.setWindowTitle(tags.filepath)
+        self.setWindowTitle(tags[PATH])
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

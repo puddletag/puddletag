@@ -16,6 +16,7 @@ import puddlestuff.resource
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import split_by_tag, to_string
 from puddlestuff.webdb import strip
+from audioinfo import PATH
 
 #import exampletagsource, qltagsource
 
@@ -192,7 +193,7 @@ def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False, existing=
             if max_ratio > minimum and f['__file'] not in ret:
                 ret[f['__file']] = scores[max_ratio]
     if jfdi:
-        sort_func = lambda f: f.filepath
+        sort_func = lambda f: f['__filepath']
         audios = sorted([f['__file'] for f in files], natcasecmp, sort_func)
         sort_func = lambda t: to_string(t['track']) if 'track' in t \
             else to_string(t.get('title'))
@@ -392,7 +393,7 @@ def split_files(audios, pattern):
         tags = []
         for f in files:
             if pattern:
-                tag = filenametotag(pattern, f.filepath, True)
+                tag = filenametotag(pattern, f[PATH], True)
                 if tag:
                     tag.update(f.tags.copy())
                 else:

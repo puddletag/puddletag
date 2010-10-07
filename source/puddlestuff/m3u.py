@@ -100,7 +100,7 @@ def readm3u(path):
     return mp3Files
 
 def exportm3u(tags, tofile, format = None, reldir = False):
-    header = [u'#EXTM3U']
+    header = ['#EXTM3U']
 
     if reldir:
         reldir = os.path.dirname(os.path.realpath(tofile))
@@ -109,16 +109,16 @@ def exportm3u(tags, tofile, format = None, reldir = False):
         filenames = [f.filepath for f in tags]
 
     if format is None:
-        text = u'\n'.join(header + filenames)
+        text = '\n'.join(header + filenames)
     else:
         text = header
-        extinfo = (u'#EXTINF: %s, %s' % (unicode(lnglength(f.length)),
-                                tagtofilename(format, f, True)) for f in tags)
+        extinfo = ('#EXTINF: %s, %s' % (str(lnglength(f.length)),
+            tagtofilename(format, f, True).encode('utf8')) for f in tags)
         [text.extend([z,y]) for z,y in zip(extinfo, filenames)]
-        text = u'\n'.join(text)
+        text = '\n'.join(text)
 
     playlist = open(tofile, 'w')
-    playlist.write(text.encode('utf8'))
+    playlist.write(text)
     playlist.close()
 
 if __name__ == '__main__':

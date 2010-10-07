@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys, os
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
-                                       progress, PuddleStatus, errormsg, dircmp)
+    progress, PuddleStatus, errormsg, dircmp)
 import tagmodel
 from tagmodel import TagTable
 from PyQt4.QtCore import *
@@ -326,13 +326,18 @@ class MainWin(QMainWindow):
         if isinstance(dirs, basestring):
             dirs = [dirs]
 
+        dirs = [d.encode('utf8') if isinstance(d, unicode) else d for d in dirs]
+
         if self._lastdir:
             initial = self._lastdir[0]
         else:
             initial = None
-        
+
         if initial not in dirs:
             initial = dirs[0]
+
+        if isinstance(initial, str):
+            initial = initial.decode('utf8', 'replace')
         
         if len(dirs) > 1:
             self.setWindowTitle(u'puddletag: %s + others' % initial)
@@ -371,7 +376,7 @@ class MainWin(QMainWindow):
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         if self._lastdir:
-            cparser.set('main', 'lastfolder', self._lastdir[0])
+            cparser.set('main', 'lastfolder', unicode(self._lastdir[0], 'utf8'))
         cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', QVariant(self.saveState()))
 
@@ -452,8 +457,8 @@ class MainWin(QMainWindow):
 
             filename = os.path.realpath(filename)
 
-            if isinstance(filename, str):
-                filename = unicode(filename, 'utf8')
+            if isinstance(filename, unicode):
+                filename = filename.encode('utf8')
         self.emit(SIGNAL('loadFiles'), None, [filename], append)
 
     def openPrefs(self):
@@ -476,7 +481,8 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 0)
 
         home = os.getenv('HOME')
-        self._lastdir = [cparser.get('main', 'lastfolder', constants.HOMEDIR)]
+        self._lastdir = [cparser.get('main', 'lastfolder',
+            constants.HOMEDIR).encode('utf8')]
 
         filepath = os.path.join(cparser.savedir, 'mappings')
         audioinfo.setmapping(audioinfo.loadmapping(filepath))
@@ -687,7 +693,7 @@ class MainWin(QMainWindow):
                     yield None
                 except EnvironmentError, e:
                     m = 'An error occured while renaming <b>%s</b> to ' \
-                        '<b>%s</b>. (%s)' % (audio.filepath, filename, e.strerror)
+                        '<b>%s</b>. (%s)' % (audio[PATH], filename, e.strerror)
                     if row == rows[-1]:
                         yield m, 1
                     else:

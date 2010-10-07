@@ -326,6 +326,7 @@ class Properties(QDialog):
                 property.setTextInteractionFlags(interaction)
                 framegrid.addWidget(property, row, 0)
                 propvalue = QLabel(u'<b>%s</b>' % value[1])
+
                 propvalue.setTextInteractionFlags(interaction)
                 framegrid.addWidget(propvalue, row, 1)
             frame.setLayout(framegrid)
@@ -584,10 +585,12 @@ class TagModel(QAbstractTableModel):
         i.e. All children of olddir will now become children of newdir
 
         No actual moving is done though."""
+        if isinstance(olddir, unicode):
+            olddir = olddir.encode('utf8')
 
         folder = itemgetter(DIRPATH)
         tags = [(i, z) for i, z in enumerate(self.taginfo)
-                    if z.dirpath.startswith(olddir)]
+            if z.dirpath.startswith(olddir)]
         libtags = []
         for i, audio in tags:
             if audio.dirpath == olddir:
@@ -771,7 +774,7 @@ class TagModel(QAbstractTableModel):
                 taginfo = sorted(taginfo, natcasecmp, getter, True)
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
-                                    not in filenames])
+                not in filenames])
 
             first = self.rowCount()
             self.beginInsertRows(QModelIndex(), first, first + len(taginfo) - 1)
@@ -864,37 +867,6 @@ class TagModel(QAbstractTableModel):
         os.rename(oldpath, newpath)
         self.changeFolder(oldpath, newpath)
         self.emit(SIGNAL('dirsmoved'), [[oldpath, newpath]])
-
-    def renameFile(self, row, tags):
-        """If tags(a dictionary) contains a PATH key, then the file
-        in self.taginfo[row] is renamed based on that.
-
-        If successful, tags is returned(with the new filename as a key)
-        otherwise {} is returned."""
-        currentfile = self.taginfo[row]
-        oldfilename = currentfile.filepath
-
-        if PATH in tags:
-            currentfile.filepath = tags[PATH]
-        elif FILENAME in tags:
-            currentfile.filename = tags[FILENAME]
-        elif EXTENSION in tags:
-            currentfile.ext = tags[EXTENSION]
-        else:
-            return
-
-        newfilename = currentfile.filepath
-        if newfilename != oldfilename:
-            try:
-                if os.path.exists(newfilename) and newfilename != oldfilename:
-                    raise IOError(EEXIST, os.strerror(EEXIST), oldfilename)
-                os.rename(oldfilename, newfilename)
-            #I don't want to handle the error, but at the same time I want to know
-            #which file the error occured at.
-            except (IOError, OSError), detail:
-                currentfile.filename = oldfilename
-                self.emit(SIGNAL('fileError'), currentfile)
-                raise detail
 
     def reset(self):
         #Sometimes, (actually all the time on my box, but it may be different on yours)
@@ -1030,9 +1002,12 @@ class TagModel(QAbstractTableModel):
             if audio.library:
                 return (artist, tags)
         
-        if '__dirname' in tags:
-            newdir = os.path.join(os.path.dirname(audio.dirpath), 
-                tags['__dirname'])
+        if DIRNAME in tags:
+            newdir = tags[DIRNAME]
+            newdir = newdir.encode('utf8') if isinstance(newdir, unicode) \
+                else newdir
+            newdir = os.path.join(os.path.dirname(audio.dirpath),
+                newdir)
             if newdir != audio.dirpath:
                 self.renameDir(audio.dirpath, newdir)
 
@@ -1573,13 +1548,16 @@ class TagTable(QTableView):
         if event.buttons() != Qt.LeftButton:
            return
         mimeData = QMimeData()
-        plainText = ""
+        plainText = u""
         tags= []
         if hasattr(self, "selectedRows"):
             selectedRows = self.selectedRows[::]
         else:
             return
-        pnt = QPoint(*self.StartPosition)
+        try:
+            pnt = QPoint(*self.StartPosition)
+        except AttributeError:
+            return
         if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
             return
         filenames = [z.filepath for z in self.selectedTags]
@@ -1654,7 +1632,7 @@ class TagTable(QTableView):
         QTableView.keyPressEvent(self, event)
 
     def loadFiles(self, files=None, dirs=None, append=False, subfolders=None,
-                    filepath=None):
+                filepath=None):
         assert files or dirs, 'Either files or dirs (or both) must be specified.'
 
         if subfolders is None:
@@ -1666,6 +1644,9 @@ class TagTable(QTableView):
             dirs = []
         elif isinstance(dirs, basestring):
             dirs = [dirs]
+
+        dirs = [z.encode('utf8') if isinstance(z, unicode) else
+            z for z in dirs]
 
         files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
 
@@ -1684,6 +1665,7 @@ class TagTable(QTableView):
             self.dirs.extend(dirs)
         else:
             self.dirs = dirs
+        print dirs
         files = files + getfiles(dirs, subfolders, self.filespec)
         #[files.extend(z[1]) for z in getfiles(dirs, subfolders)]
 
@@ -1746,17 +1728,24 @@ class TagTable(QTableView):
         """Play the selected files using the player specified in self.playcommand"""
         if not self.selectedRows: return
         if hasattr(self, "playcommand"):
-            li = copy(self.playcommand)
+            li = []
+            for z in self.playcommand:
+                if isinstance(z, unicode):
+                    li.append(z.encode('utf8'))
+                else:
+                    li.append(z)
+                
             li.extend([z.filepath for z in self.selectedTags])
+
             try:
                 Popen(li)
             except (OSError), detail:
                 if detail.errno != 2:
                     QMessageBox.critical(self,"Error", u"I couldn't play the selected files: (<b>%s</b>) <br />Does the music player you defined (<b>%s</b>) exist?" % \
-                                        (detail.strerror, u" ".join(self.playcommand)), QMessageBox.Ok, QMessageBox.NoButton)
+                        (detail.strerror, u" ".join(self.playcommand)), QMessageBox.Ok, QMessageBox.NoButton)
                 else:
                     QMessageBox.critical(self,"Error", u"I couldn't play the selected files, because the music player you defined (<b>%s</b>) does not exist." \
-                                        % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
+                            % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
     
     def previewMode(self, value):
         if not value:
@@ -1776,14 +1765,16 @@ class TagTable(QTableView):
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()
+        dirs = [d.encode('utf8') if isinstance(d, unicode) else d
+            for d in self.dirs]
         files = [z.filepath for z in self.model().taginfo if z.dirpath
-            not in self.dirs]
+            not in dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
         if self._playlist:
-            self.loadFiles(files, self.dirs, False, self.subFolders)
+            self.loadFiles(files, dirs, False, self.subFolders)
         else:
-            self.loadFiles(files, self.dirs, False, self.subFolders,
-                            self._playlist)
+            self.loadFiles(files, dirs, False, self.subFolders,
+                self._playlist)
         self.model().load(libfiles, append = True)
 
     def rowTags(self,row, stringtags = False):
@@ -1935,8 +1926,8 @@ class TagTable(QTableView):
         getrow = lambda x: filenames.index(x.filepath)
         selection = QItemSelection()
         select = lambda top, low, col: selection.append(
-                        QItemSelectionRange(modelindex(top, col),
-                                                    modelindex(low, col)))
+            QItemSelectionRange(modelindex(top, col),
+                modelindex(low, col)))
 
         newindexes = {}
         while True:

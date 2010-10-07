@@ -390,14 +390,17 @@ def dupes(l, method = None):
 def getfiles(files, subfolders = False, pattern = ''):
     #pattern = u'*.ogg'
     def recursedir(folder, subfolders):
+        if isinstance(folder, unicode):
+            folder = folder.encode('utf8')
         if subfolders:
             #TODO: This really fucks up when reading files with malformed
             #unicode filenames.
             files = []
             [[files.append(path.join(z[0], y)) for y in z[2]]
-                                            for z in os.walk(folder.encode('utf8'))]
+                for z in os.walk(folder)]
         else:
-            files = os.walk(folder.encode('utf8')).next()[2]
+            
+            files = os.walk(folder).next()[2]
             files = [path.join(folder, f) for f in files]
         return files
 

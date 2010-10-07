@@ -81,8 +81,9 @@ class DirView(QTreeView):
         getindex = model.index
         parents = set([os.path.dirname(z[0]) for z in dirs])
         thread = PuddleThread(lambda: [getindex(z[0]) for z in dirs], self)
-        selected = map(unicode, map(model.filePath, 
-            self.selectedIndexes()))
+        def get_str(f):
+            return model.filePath(f).toUtf8().data()
+        selected = map(get_str, self.selectedIndexes())
         def finished(indexes):
             qmutex.lock()
             for p in parents:
@@ -92,7 +93,13 @@ class DirView(QTreeView):
                     self.expand(i)
             for idx, (olddir,newdir) in zip(indexes, dirs):
                 if olddir in selected:
+                    if isinstance(newdir, str):
+                        try:
+                            newdir = unicode(newdir, 'utf8')
+                        except (UnicodeEncodeError, UnicodeDecodeError):
+                            pass
                     selectindex(getindex(newdir), QItemSelectionModel.Select)
+
             self._load = l
             qmutex.unlock()
         self.connect(thread, SIGNAL('threadfinished'), finished)
@@ -157,6 +164,11 @@ class DirView(QTreeView):
             for d in dirlist:
                 if not os.path.exists(d):
                     continue
+                if isinstance(d, str):
+                    try:
+                        d = unicode(d, 'utf8')
+                    except (UnicodeEncodeError, UnicodeDecodeError):
+                        pass
                 index = getindex(d)
                 toselect.append(index)
                 i = parent(index)
@@ -198,8 +210,8 @@ class DirView(QTreeView):
             self._lastselection = len(self.selectedIndexes())
             return
         getfilename = self.model().filePath
-        dirs = list(set([unicode(getfilename(i)) for i in selected.indexes()]))
-        old = list(set([unicode(getfilename(i)) for i in deselected.indexes()]))
+        dirs = list(set([unicode(getfilename(i)).encode('utf8') for i in selected.indexes()]))
+        old = list(set([unicode(getfilename(i)).encode('utf8') for i in deselected.indexes()]))
         if self._lastselection:
             if len(old) == self._lastselection:
                 append = False
