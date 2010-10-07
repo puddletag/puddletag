@@ -24,7 +24,7 @@ setup(name='puddletag',
                   ],
     scripts = ['puddletag'],
     #shortcuts=['puddletag.desktop'],
-    data_files=[('share/icons/', ('puddletag.png',)),
+    data_files=[('share/pixmaps/', ('puddletag.png',)),
                 ('share/applications', ('puddletag.desktop',))]
     #package_dir={'puddlestuff.data': 'puddlestuff/data'},
     #package_data={'puddlestuff.data': ['puddlestuff/data/shortcuts', 'puddlestuff/data/menus']}

@@ -77,17 +77,16 @@ class Tag(MockTag):
                 tags.update(mapping[key](value))
             else:
                 tags[key] = [value]
+        del(tags['~filename'])
         self._tags = tags
         self._set_attrs(ATTRIBUTES)
-        self.filepath = tags[PATH]
+        self.filepath = libtags['~filename']
         info = getinfo(self.filepath)
         self.size = info['__size']
         self._tags['__size'] = self.size
         self.accessed = info['__accessed']
         self._tags['__accessed'] = self.accessed
-        self.filepath = libtags['~filename']
-
-    filepath = property(_getfilepath, _setfilepath)
+        
 
     @getdeco
     def __getitem__(self, key):
@@ -142,6 +141,7 @@ class Tag(MockTag):
                 continue
             else:
                 libtags[key] = value
+        libtags['~filename'] = self.filepath
         if '__accessed' in libtags:
             del(libtags['__accessed'])
 
@@ -165,18 +165,16 @@ class QuodLibet(object):
         cached = defaultdict(lambda: defaultdict(lambda: []))
         for track in self._tracks:
             if track.get('artist'):
-                cached[track['artist']][track['album'] if 'album'
-                    in track else ''].append(track)
+                cached[track['artist']][track.get('album', u'')].append(track)
             else:
-                cached[''][track['album'] if 'album'
-                    in track else ''].append(track)
+                cached[u''][track.get(album, u'')].append(track)
         self._cached = cached
 
     def get_tracks(self, maintag, mainval, secondary=None, secvalue=None):
         if secondary and secvalue:
             if secondary == 'album' and maintag == 'artist':
                 return map(lambda track : Tag(self, track),
-                                self._cached[mainval][secvalue])
+                    self._cached[mainval][secvalue])
             def getvalue(track):
                 if (track.get(maintag) == mainval) and (
                     track.get(secondary) == secvalue):
@@ -194,13 +192,13 @@ class QuodLibet(object):
 
         return filter(getvalue, self._tracks)
 
-    def distinct_values(self, tag):
-        return set([track[tag] if tag in track else '' for track in self._tracks])
+    def distinct_values(self, field):
+        return set([track.get(field, u'') for track in self._tracks])
 
-    def distinct_children(self, tag, value, childtag):
-        return set([track[childtag] if childtag in track else '' for track in
-                    self._tracks if (tag in track) and (track[tag] == value)])
-
+    def distinct_children(self, parent, value, child):
+        return set([track.get(child, u'') for track in
+            self._tracks if track.get(parent, u'') == value])
+            
     def _artists(self):
         return self._cached.keys()
 
@@ -256,15 +254,38 @@ class QuodLibet(object):
             del(cached[artist][album])
         if not cached[artist]:
             del(cached[artist])
-        trackartist = track['artist'] if track.get('artist') else u''
-        trackalbum = track['album'] if track.get('album') else u''
+        trackartist = track.get('artist', u'')
+        trackalbum = track.get('album', u'')
         cached[trackartist][trackalbum].append(track)
+
+class DirModel(QDirModel):
+    
+    def data(self, index, role=Qt.DisplayRole):
+        if (role == Qt.DisplayRole and index.column() == 0):
+            path = QDir.toNativeSeparators(self.filePath(index))
+            if path.endsWith(QDir.separator()):
+                path.chop(1)
+            return path
+        return QDirModel.data(self, index, role)
+
+class DirLineEdit(QLineEdit):
+    def __init__(self, *args, **kwargs):
+        super(DirLineEdit, self).__init__(*args, **kwargs)
+        completer = QCompleter()
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        dirfilter = QDir.AllEntries | QDir.NoDotAndDotDot | QDir.Hidden
+        sortflags = QDir.DirsFirst | QDir.IgnoreCase
+        
+        dirmodel = QDirModel(['*'], dirfilter, sortflags, completer)
+        completer.setModel(dirmodel)
+        self.setCompleter(completer)
+        
 
 class InitWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.dbpath = QLineEdit(os.path.join(HOMEDIR, u".quodlibet/songs"))
-        self.configpath = QLineEdit(os.path.join(HOMEDIR, u".quodlibet/config"))
+        self.dbpath = DirLineEdit(os.path.join(HOMEDIR, u".quodlibet/songs"))
+        self.configpath = DirLineEdit(os.path.join(HOMEDIR, u".quodlibet/config"))
 
         vbox = QVBoxLayout()
         def label(text, control):
@@ -273,6 +294,7 @@ class InitWidget(QWidget):
             return l
 
         vbox.addWidget(label('&Library Path', self.dbpath))
+        
 
         hbox = QHBoxLayout()
         select_db = QPushButton("...")
@@ -293,9 +315,6 @@ class InitWidget(QWidget):
 
         vbox.addStretch(1)
         self.setLayout(vbox)
-        self.dbpath.selectAll()
-        self.configpath.selectAll()
-        self.dbpath.setFocus()
 
     def select_db(self):
         filedlg = QFileDialog()

@@ -12,6 +12,7 @@ from puddlestuff.constants import RIGHTDOCK
 from collections import defaultdict
 import puddlestuff.libraries as libraries
 from functools import partial
+from puddlestuff.util import to_string
 
 class MusicLibError(Exception):
     def __init__(self, number, stringvalue):
@@ -150,14 +151,7 @@ class LibraryDialog(QWidget):
         self.tree.search(unicode(self.searchtext.text()))
 
     def saveSettings(self):
-        p = ProgressWin(self, 0, showcancel = False)
-        p.setWindowTitle('Saving music library...')
-        thread = PuddleThread(self._library.save, self)
-        p.show()
-        self.connect(thread, SIGNAL('finished()'), p.close)
-        thread.start()
-        while thread.isRunning():
-            QApplication.processEvents()
+        self._library.save()
 
 class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):
@@ -272,9 +266,9 @@ class LibraryTree(QTreeWidget):
         if self._searchtracks:
             return
         self.blockSignals(True)
-        artists = [tag['artist'][0] if 'artist' in tag else artist
-                    for artist, tag in data]
-        self.update_deleted(artists = [z[0] for z in data])
+        
+        artists = [tag.get('artist', [artist])[0] for artist, tag in data]
+        self.update_deleted(artists = [to_string(z[0]) for z in data])
         lib_artists = self.library.artists
         get_albums = self.library.get_albums
         index = self.indexOfTopLevelItem
