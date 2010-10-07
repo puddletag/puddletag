@@ -59,8 +59,7 @@ def get_tracks(r_id, track_field=None):
                 'title': track.title,
                 'album': release.title,
                 'track': unicode(i+1),
-                'artist': track.artist.name if track.artist else artist,
-                'puid': track.getPuids()}
+                'artist': track.artist.name if track.artist else artist}
                     for i, track in enumerate(release.tracks)], extra]
         else:
             return [[{
@@ -68,8 +67,7 @@ def get_tracks(r_id, track_field=None):
                 'title': track.title,
                 'album': release.title,
                 'track': unicode(i+1),
-                'artist': track.artist.name if track.artist else artist,
-                'puid': track.getPuids()}
+                'artist': track.artist.name if track.artist else artist}
                     for i, track in enumerate(release.tracks)], extra]
     else:
         return [], extra
@@ -124,17 +122,9 @@ class MusicBrainz(object):
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>Retrieving all albums by an artist using their MusicBrainz Artist ID is possible by prefacing your search with <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b> (extraneous spaces around the ID are discarded.)</li><li>In the same way an album can be retrieved using it's MusicBrainz ID by prefacing the search text with <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"
     def __init__(self):
         super(MusicBrainz, self).__init__()
-        self._artist_field = ''
-        self._album_field = ''
-        self._track_field = ''
-        self.preferences = [
-            [u'Field to write MusicBrainz Artist ID to (leave empty'
-                u' to disable.):', TEXT, self._artist_field],
-            [u'Field to write MusicBrainz Album ID to (leave empty'
-                u' to disable.):', TEXT, self._album_field],
-            [u'Field to write MusicBrainz Track ID to (leave empty'
-                u' to disable.):', TEXT, self._track_field]]
-
+        self._artist_field = 'mbrainz_artist_id'
+        self._album_field = 'mbrainz_album_id'
+        self._track_field = 'mbrainz_track_id'
 
     def keyword_search(self, s):
         if s.startswith(u':a'):
@@ -220,11 +210,6 @@ class MusicBrainz(object):
         a_id = info['#artistid']
         r_id = info['#albumid']
         return info, get_tracks(r_id)[0]
-    
-    def applyPrefs(self, values):
-        self._artist_field = values[0]
-        self._album_field = values[1]
-        self._track_field = values[2]
 
 info = MusicBrainz
 

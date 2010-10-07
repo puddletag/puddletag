@@ -484,8 +484,28 @@ class MainWin(QMainWindow):
         self._lastdir = [cparser.get('main', 'lastfolder',
             constants.HOMEDIR).encode('utf8')]
 
+        mapping = {
+            u'VorbisComment':
+                {u'date': u'year',
+                u'tracknumber': u'track',
+                u'musicbrainz_albumid': u'mbrainz_album_id',
+                u'musicbrainz_artistid': u'mbrainz_artist_id',
+                u'musicbrainz_trackid': u'mbrainz_track_id'},
+            u'MP4':
+                {u'MusicBrainz Track Id': u'mbrainz_track_id',
+                u'MusicBrainz Artist Id': u'mbrainz_artist_id',
+                u'MusicBrainz Album Id': u'mbrainz_album_id'},
+            u'ID3':
+                {u'ufid:http://musicbrainz.org': u'mbrainz_track_id',
+                u'MusicBrainz Album ID': u'mbrainz_album_id',
+                u'MusicBrainz Artist ID': u'mbrainz_artist_id'},
+            u'APEv2':
+                {u'musicbrainz_albumid': u'mbrainz_album_id',
+                u'musicbrainz_artistid': u'mbrainz_artist_id',
+                u'musicbrainz_trackid': u'mbrainz_track_id'}}
+
         filepath = os.path.join(cparser.savedir, 'mappings')
-        audioinfo.setmapping(audioinfo.loadmapping(filepath))
+        audioinfo.setmapping(audioinfo.loadmapping(filepath, mapping))
         status['genres'] = genres.load_genres()
 
         h = self._table.horizontalHeader()

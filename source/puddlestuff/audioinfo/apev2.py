@@ -20,8 +20,7 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from mutagen.apev2 import APEv2File
-
-import util
+import util, pdb
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY, DIRNAME,
     FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
@@ -137,9 +136,11 @@ def get_class(mutagen_file, base_function, attrib_fields):
             audio = self._mutfile
 
             newtag = {}
-            for tag, value in usertags(self._tags).items():
+            for field, value in usertags(self._tags).items():
                 try:
-                    newtag[tag] = value
+                    if isinstance(field, unicode):
+                        field = field.encode('utf8')
+                    newtag[field] = value
                 except AttributeError:
                     pass
             toremove = [z for z in audio if z not in newtag and audio[z].kind == 0]
@@ -147,6 +148,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 del(audio[z])
             audio.tags.update(newtag)
             audio.save()
+
     return Tag
 
 def base_tags(info):

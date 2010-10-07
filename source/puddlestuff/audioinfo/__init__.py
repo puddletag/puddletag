@@ -50,12 +50,14 @@ TAG_TYPES = dict([(z[2], z[1]) for z in extensions.values()])
 mapping = {}
 revmapping = {}
 
-def loadmapping(filepath):
+def loadmapping(filepath, default=None):
     try:
         lines = open(filepath, 'r').read().split('\n')
     except (IOError, OSError):
-        return {'VorbisComment': {'tracknumber': 'track',
-            'date': 'year'}}
+        if default:
+            return default
+        else:
+            return {}
     mappings = {}
     for l in lines:
         tags = [z.strip() for z in l.split(u',')]

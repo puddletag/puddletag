@@ -41,7 +41,7 @@ mapping.update({'tracknumber': lambda value: {'track': [value]},
                 '~#skipcount': lambda value: {'_skipcount': [unicode(value)]},
                 '~mountpoint': lambda value: {'__mountpoint': value},
                 '~#mtime': lambda value : {'__modified': strtime(value)},
-                '~filename': lambda value : {'__path': value.decode('utf8')}})
+                })
 
 timetags = ['__added', '__lastplayed', '__laststarted',]
 timefunc = lambda key: lambda value : {'~#%s' % key[2:]: lngtime(value)}
@@ -54,7 +54,7 @@ revmapping.update({'track': lambda value: {'tracknumber': value},
                 '_skipcount': lambda value: {'~#skipcount': int(value)},
                 '__mountpoint': lambda value: {'~mountpoint': value},
                 '__modified': lambda value : {'~#mtime': lngtime(value)},
-                '__path': lambda value : {'~filename': value.encode('utf8')}})
+                })
 
 class Tag(MockTag):
     """Use as base for all tag classes."""
@@ -85,16 +85,7 @@ class Tag(MockTag):
         self._tags['__size'] = self.size
         self.accessed = info['__accessed']
         self._tags['__accessed'] = self.accessed
-
-    def _getfilepath(self):
-        return self._tags[PATH]
-
-    def _setfilepath(self,  val):
-        self._libtags['~filename'] = val.encode('utf8')
-        self._tags.update({PATH: val,
-                           DIRPATH: path.dirname(val),
-                           FILENAME: path.basename(val),
-                           EXTENSION: path.splitext(val)[1][1:]})
+        self.filepath = libtags['~filename']
 
     filepath = property(_getfilepath, _setfilepath)
 

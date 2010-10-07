@@ -246,7 +246,7 @@ class TagMappings(QWidget):
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
         hbox.addLayout(buttons, 0)
-        
+
         self._setMappings(self._mappings)
         label = QLabel('<b>A restart is required to apply these settings.</b>')
         vbox = QVBoxLayout()
