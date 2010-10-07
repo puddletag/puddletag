@@ -193,7 +193,7 @@ def match_files(files, tracks, minimum = 0.7, keys = None, jfdi=False, existing=
             if max_ratio > minimum and f['__file'] not in ret:
                 ret[f['__file']] = scores[max_ratio]
     if jfdi:
-        sort_func = lambda f: f['__filepath']
+        sort_func = lambda f: f[PATH]
         audios = sorted([f['__file'] for f in files], natcasecmp, sort_func)
         sort_func = lambda t: to_string(t['track']) if 'track' in t \
             else to_string(t.get('title'))
