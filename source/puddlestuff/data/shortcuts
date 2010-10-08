@@ -1,5 +1,5 @@
 [info]
-version=18
+version=19
 
 [shortcut1]
 name=&Open Folder
@@ -304,21 +304,9 @@ control=mainwin
 enabled=filesselected
 shortcut=Ctrl+H
 
-[shortcut44]
-name=Remove ID3v1 Tag
-command=remove_id3v1
-control=mainwin
-enabled=filesselected
-
 [shortcut45]
 name=Remove APEv2 Tag
 command=remove_apev2
-control=mainwin
-enabled=filesselected
-
-[shortcut46]
-name=Remove ID3v2 Tag
-command=remove_id3v2
 control=mainwin
 enabled=filesselected
 

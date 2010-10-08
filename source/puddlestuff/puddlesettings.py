@@ -298,8 +298,8 @@ class TagMappings(QWidget):
         itemtext = lambda row, column: unicode(item(row, column).text())
         for row in range(self._table.rowCount()):
             tag = itemtext(row, 0)
-            original = itemtext(row, 1).lower()
-            other = itemtext(row, 2).lower()
+            original = itemtext(row, 1)
+            other = itemtext(row, 2)
             text.append((tag, original, other))
             if tag in mappings:
                 mappings[tag].update({other: original})
@@ -356,7 +356,7 @@ class Tags(QWidget):
         vbox.addWidget(v1_label)
         vbox.addWidget(self._v1_combo)
         
-        vbox.addWidget(self._apev2)
+        #vbox.addWidget(self._apev2)
         
         vbox.addStretch()
         
@@ -386,8 +386,9 @@ class Tags(QWidget):
         control.filespec = filespec
         filespec = [z.strip() for z in filespec.split(';')]
         cparser.set('table', 'filespec', filespec)
-        
-        cparser.set('id3tags', 'write_ape', self._apev2.isChecked())
+
+        cparser.set('id3tags', 'write_ape', False)
+        #cparser.set('id3tags', 'write_ape', self._apev2.isChecked())
         audioinfo.set_id3_options(self._apev2.isChecked())
 
 class ListModel(QAbstractListModel):

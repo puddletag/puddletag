@@ -76,20 +76,22 @@ def aws_url(aws_access_key_id, secret, query_dictionary):
 def check_matches(albums, artist=None, album_name=None):
     """Returns any album in albums with the same matching artist and 
     album_name's. If no matches are found, original list is returned."""
+    ret = []
     if artist and album_name:
         album_name = album_name.lower()
         artist = artist.lower()
-        return [album for album in albums if 
+        
+        ret = [album for album in albums if
             album['album'].lower() == album_name and 
             album['artist'].lower() == artist]
     elif artist:
         artist = artist.lower()
-        return [album for album in albums if album['artist'] == artist]
+        ret = [album for album in albums if album['artist'] == artist]
     elif album_name:
         album_name = album_name.lower()
-        return [album for album in albums if album['album'] == album_name]
-    else:
-        return albums
+        ret = [album for album in albums if album['album'] == album_name]
+    
+    return ret if ret else albums
 
 def parse_album_xml(text, album=None):
     """Parses the retrieved xml for an album and get's the track listing."""
@@ -141,6 +143,7 @@ def parse_search_xml(text):
                 info[IMAGEKEYS[key]] = get_image_url(image_items[0])
         info['#extrainfo'] = ('Album at Amazon', page_url(item))
         info['#asin'] = get_asin(item)
+        info['asin'] = info['#asin']
         ret.append(info)
     return ret
 
@@ -226,7 +229,7 @@ def keyword_search(keywords):
 #to puddletag.
 class Amazon(object):
     #The name attribute is required.
-    name = 'Amazon Example'
+    name = 'Amazon'
     #group_by specifies how the tag sources wants files to be grouped.
     #in this case they'll be grouped by album first and then by artists.
     
@@ -333,10 +336,7 @@ class Amazon(object):
         
         retrieved_albums = search(artist, album)
         matches = check_matches(retrieved_albums, artist, album)
-        if len(matches) == 1:
-            return [(info, [])]
-        else:
-            return [(info, []) for info in retrieved_albums]
+        return [(info, []) for info in matches]
     
     def retrieve(self, info):
         #Required. Will retrieve track listing using

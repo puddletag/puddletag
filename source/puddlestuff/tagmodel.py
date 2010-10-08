@@ -1437,7 +1437,7 @@ class TagTable(QTableView):
     def removeTags(self):
         if self.model().previewMode:
             QMessageBox.information(self, 'puddletag',
-                'Disable Preview Mode first to enable deleting of tags.')
+                'Disable Preview Mode first to enable tag deletion.')
             return
         deltag = self.model().deleteTag
         def func():

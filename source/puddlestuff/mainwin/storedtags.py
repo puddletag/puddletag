@@ -56,7 +56,7 @@ class StoredTags(QScrollArea):
             except AttributeError:
                 tags = audio
 
-            sortedvals = [[(key, val) for val in tags[key]] if 
+            sortedvals = [[(key, val) for val in tags[key]] if
                 not isinstance(tags[key], basestring) else [(key, tags[key])]
                 for key in sorted(tags, cmp = natcasecmp)]
             values = []
