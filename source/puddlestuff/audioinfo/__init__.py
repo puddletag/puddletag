@@ -31,6 +31,22 @@ GENRES = sorted(TCON.GENRES)
 
 AbstractTag = MockTag
 
+FIELDS = [
+    'album', 'albumsortorder', 'arranger', 'artist', 'audiodelay',
+    'audiolength', 'audiosize', 'author', 'bpm', 'comment', 'composer',
+    'conductor', 'copyright', 'date', 'discnumber', 'encodedby',
+    'encodingsettings', 'encodingtime', 'filename', 'fileowner', 'filetype',
+    'genre', 'grouping', 'initialkey', 'involvedpeople', 'isrc',
+    'itunesalbumsortorder', 'itunescompilationflag', 'itunescomposersortorder',
+    'language', 'lyricist', 'mediatype', 'mood', 'musiciancredits',
+    'organization', 'originalalbum', 'originalartist', 'originalreleasetime',
+    'originalyear', 'peformersortorder', 'performer', 'popularimeter',
+    'producednotice', 'radioowner', 'radiostationname', 'recordingdates',
+    'releasetime', 'setsubtitle', 'taggingtime', 'time', 'title',
+    'titlesortorder', 'track', 'ufid', 'version', 'wwwartist',
+    'wwwcommercialinfo', 'wwwcopyright', 'wwwfileinfo', 'wwwpayment',
+    'wwwpublisher', 'wwwradio', 'wwwsource', 'year']
+
 extensions = {
     'mp3': id3.filetype,
     'flac': flac.filetype,

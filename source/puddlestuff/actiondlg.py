@@ -122,9 +122,9 @@ class FunctionDialog(QWidget):
         self._combotags = []
 
         if showcombo:
-            fields = ['__all'] + sorted(INFOTAGS) + showcombo
+            fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
         else:
-            fields = ['__selected', '__all'] + sorted(INFOTAGS)
+            fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
 
         self.tagcombo = QComboBox()
         tooltip = "Fields that will get written to.<br /><br />"\
