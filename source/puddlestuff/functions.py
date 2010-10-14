@@ -33,7 +33,8 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from puddleobjects import PuddleConfig, safe_name, fnmatch, dircmp, natcasecmp
+from puddleobjects import (PuddleConfig, safe_name, fnmatch,
+    dircmp, natcasecmp, encode_fn, decode_fn)
 import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time, unicodedata
 from operator import itemgetter
 from copy import deepcopy
@@ -373,12 +374,12 @@ def move(m_tags, pattern, r_tags):
         return {'__path': os.path.join(*newdirs)}
     else:
 
-        new_name = lambda d: safe_name(tf(d, tags)).encode('utf8')
+        new_name = lambda d: encode_fn(safe_name(tf(d, tags)))
         subdirs = pattern.split(u'/')
         count = pattern.count(u'/')
         
         newdirs = map(new_name, subdirs[:-1])
-        newdirs.append(safe_name(tf(subdirs[-1], tags, True)).encode('utf8'))
+        newdirs.append(encode_fn(safe_name(tf(subdirs[-1], tags, True))))
 
         dirpath = r_tags.dirpath
 

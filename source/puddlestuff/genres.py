@@ -2,14 +2,15 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource, os, audioinfo
-from puddleobjects import ListButtons, OKCancel, HeaderSetting, ListBox, PuddleConfig, savewinsize, winsettings
+from puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
+    PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
 
 def load_genres(filepath=None):
     if not filepath:
         cparser = PuddleConfig()
         filepath = os.path.join(cparser.savedir, 'genres')
     try:
-        return [unicode(z.strip(), 'utf8') for z in 
+        return [unicode(z.strip(), 'utf8') for z in
             open(filepath, 'r').readlines()]
     except (IOError, OSError):
         return audioinfo.GENRES[::]

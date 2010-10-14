@@ -20,13 +20,14 @@
 #Foundation, Inc., 51  Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import mutagen, time, pdb, calendar, os, logging
+import mutagen, time, pdb, calendar, os, logging, sys
 from errno import ENOENT
 from decimal import Decimal
 from copy import copy, deepcopy
 from os import path, stat
 
 from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
+
 
 PATH = u"__path"
 FILENAME = u"__filename"
@@ -144,6 +145,20 @@ def commontags(audios):
                 tags[field] = 1
     combined[IMAGES] = commonimages(images)
     return combined, tags, imagetags
+
+
+FS_ENC = sys.getfilesystemencoding()
+def encode_fn(filename):
+    if isinstance(filename, str):
+        return filename
+    else:
+        return filename.encode(FS_ENC)
+
+def decode_fn(filename, errors='replace'):
+    if isinstance(filename, unicode):
+        return filename
+    else:
+        return filename.decode(FS_ENC, errors)
 
 def stringtags(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.
@@ -300,10 +315,8 @@ def to_string(value, errors='strict'):
 def path_to_string(value):
     if not value:
         return ''
-    elif isinstance(value, str):
-        return value
-    elif isinstance(value, unicode):
-        return value.encode('utf8')
+    elif isinstance(value, basestring):
+        return encode_fn(value)
     else:
         return path_to_string(value[0])
 

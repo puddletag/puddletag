@@ -2,9 +2,9 @@
 Version=1.0
 Type=Application
 Name=puddletag
-Comment=A tag editor for Linux.
+Comment=An audio tagger for GNU/Linux similar to Mp3tag for Windows.
 TryExec=puddletag
 Exec=puddletag
 Icon=puddletag
 GenericName=Tag Editor
-Categories=AudioVideo;Music;AudioVideoEditing;Qt;
+Categories=AudioVideo;Qt;

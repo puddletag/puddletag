@@ -82,7 +82,7 @@ class DirView(QTreeView):
         parents = set([os.path.dirname(z[0]) for z in dirs])
         thread = PuddleThread(lambda: [getindex(z[0]) for z in dirs], self)
         def get_str(f):
-            return model.filePath(f).toUtf8().data()
+            return model.filePath(f).toLocal8Bit().data()
         selected = map(get_str, self.selectedIndexes())
         def finished(indexes):
             qmutex.lock()
@@ -94,10 +94,7 @@ class DirView(QTreeView):
             for idx, (olddir,newdir) in zip(indexes, dirs):
                 if olddir in selected:
                     if isinstance(newdir, str):
-                        try:
-                            newdir = unicode(newdir, 'utf8')
-                        except (UnicodeEncodeError, UnicodeDecodeError):
-                            pass
+                        newdir = QString.fromLocal8Bit(newdir)
                     selectindex(getindex(newdir), QItemSelectionModel.Select)
 
             self._load = l
@@ -210,8 +207,10 @@ class DirView(QTreeView):
             self._lastselection = len(self.selectedIndexes())
             return
         getfilename = self.model().filePath
-        dirs = list(set([unicode(getfilename(i)).encode('utf8') for i in selected.indexes()]))
-        old = list(set([unicode(getfilename(i)).encode('utf8') for i in deselected.indexes()]))
+        dirs = list(set([getfilename(i).toLocal8Bit().data() for
+            i in selected.indexes()]))
+        old = list(set([getfilename(i).toLocal8Bit().data() for
+            i in deselected.indexes()]))
         if self._lastselection:
             if len(old) == self._lastselection:
                 append = False

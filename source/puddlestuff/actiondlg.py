@@ -128,7 +128,7 @@ class FunctionDialog(QWidget):
 
         self.tagcombo = QComboBox()
         tooltip = "Fields that will get written to.<br /><br />"\
-                    "Enter a list of comma-seperated fields eg. <b>artist, title, album</b>"
+            "Enter a list of comma-separated fields eg. <b>artist, title, album</b>"
         self.tagcombo.setToolTip(tooltip)
         self.tagcombo.setEditable(True)
         self.tagcombo.addItems(fields)
@@ -170,7 +170,7 @@ class FunctionDialog(QWidget):
                 self.retval.append(control.currentText)
                 if defaultarg:
                     control.addItems(defaultarg)
-                    if userargs:
+                    if userargs and argno < len(userargs):
                         index = control.findText(userargs[argno])
                         control.setCurrentIndex(index)
             elif ctype == 'text':
@@ -178,7 +178,7 @@ class FunctionDialog(QWidget):
                 self.retval.append(control.combo.currentText)
                 if defaultarg:
                     control.combo.setEditText(defaultarg[0])
-                if userargs:
+                if userargs and argno < len(userargs):
                     control.combo.setEditText(userargs[argno])
             elif ctype == 'check':
                 self.retval.append(control.checkState)
@@ -187,11 +187,12 @@ class FunctionDialog(QWidget):
                         control.setCheckState(Qt.Checked)
                     else:
                         control.setCheckState(Qt.Unchecked)
-                if userargs:
+                if userargs and argno < len(userargs):
                     if userargs[argno]:
                         control.setCheckState(Qt.Checked)
                     else:
                         control.setCheckState(Qt.Unchecked)
+                    
                 control.setText(args[0])
 
             if ctype != 'check':

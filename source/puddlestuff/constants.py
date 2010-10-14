@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
+import os, sys
 from PyQt4.QtCore import Qt, SIGNAL
 from PyQt4.QtGui import QWidget
 from os.path import dirname, join
 
 SEPARATOR = u'\\\\'
+
+FS_ENC = sys.getfilesystemencoding()
 
 #Paths
 HOMEDIR = os.getenv('HOME')

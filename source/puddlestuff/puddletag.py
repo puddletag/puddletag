@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys, os
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
-    progress, PuddleStatus, errormsg, dircmp)
+    progress, PuddleStatus, errormsg, dircmp, encode_fn)
 import tagmodel
 from tagmodel import TagTable
 from PyQt4.QtCore import *
@@ -326,7 +326,7 @@ class MainWin(QMainWindow):
         if isinstance(dirs, basestring):
             dirs = [dirs]
 
-        dirs = [d.encode('utf8') if isinstance(d, unicode) else d for d in dirs]
+        dirs = [encode_fn(d) for d in dirs]
 
         if self._lastdir:
             initial = self._lastdir[0]
@@ -458,7 +458,7 @@ class MainWin(QMainWindow):
             filename = os.path.realpath(filename)
 
             if isinstance(filename, unicode):
-                filename = filename.encode('utf8')
+                filename = encode_fn(filename)
         self.emit(SIGNAL('loadFiles'), None, [filename], append)
 
     def openPrefs(self):
@@ -481,8 +481,8 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 0)
 
         home = os.getenv('HOME')
-        self._lastdir = [cparser.get('main', 'lastfolder',
-            constants.HOMEDIR).encode('utf8')]
+        self._lastdir = [encode_fn(cparser.get(
+            'main', 'lastfolder', constants.HOMEDIR))]
 
         mapping = {
             u'VorbisComment':

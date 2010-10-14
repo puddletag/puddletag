@@ -33,7 +33,8 @@ from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
 import audioinfo
-from audioinfo import IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE
+from audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE,
+    encode_fn, decode_fn)
 from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
@@ -41,7 +42,7 @@ import traceback
 import time, re
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
-                        QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
+    QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
 
 imagetypes = [
@@ -390,8 +391,7 @@ def dupes(l, method = None):
 def getfiles(files, subfolders = False, pattern = ''):
     #pattern = u'*.ogg'
     def recursedir(folder, subfolders):
-        if isinstance(folder, unicode):
-            folder = folder.encode('utf8')
+        folder = encode_fn(folder)
         if subfolders:
             #TODO: This really fucks up when reading files with malformed
             #unicode filenames.
@@ -490,7 +490,6 @@ def gettaglist():
     filename = os.path.join(cparser.savedir, 'usertags')
     try:
         lines = sorted(set([z.strip() for z in open(filename, 'r').read().split('\n')]))
-
     except (IOError, OSError):
         lines = audioinfo.FIELDS[::]
     return lines

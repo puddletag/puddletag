@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import puddlestuff.findfunc as findfunc
 from puddlestuff.puddleobjects import (dircmp, safe_name, natcasecmp,
-    LongInfoMessage, PuddleConfig, PuddleDock)
+    LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
 import puddlestuff.actiondlg as actiondlg
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -260,7 +260,7 @@ def rename_dirs(parent=None):
     #the new and the old filename, so I bolded the new and italicised the old.
     title = u"<b>Are you sure you want to rename the following directories?</b>"
     dirs = []
-    newname = lambda x: basename(safe_name(tagtofilename(pattern, x)).encode('utf8'))
+    newname = lambda x: encode_fn(basename(safe_name(tagtofilename(pattern, x))))
     msg = u''
     for d, f in newdirs.items():
         newfolder = path.join(dirname(d), newname(f))
@@ -404,7 +404,7 @@ def text_file_to_tag(parent=None):
 def update_status(enable = True):
     files = status['selectedfiles']
     pattern = status['patterntext']
-    tf = lambda *args: findfunc.tagtofilename(*args).encode('utf8')
+    tf = lambda *args: encode_fn(findfunc.tagtofilename(*args))
     if not files:
         return
     tag = files[0]

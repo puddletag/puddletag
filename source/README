@@ -1,46 +1,71 @@
 What it is
-puddletag is a audio tag editor for Linux somewhat like the Windows program Mp3tag. Unlike most Linux taggers, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
-    
+=========
+puddletag is a audio tag editor for GNU/Linux similar to Windows program Mp3tag (http://www.mp3tag.de). Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
+
 The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns (that you define, not crappy, uneditable ones).
 
-Then there're functions, which can do things like replace text, trim, change the case of tag values, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using MusicBrainz, FreeDB or Amazon (though it's only good for cover art) and more, but I've reached my comma quota.
+Then there're Functions, which can do things like replace text, trim, change the case of tags, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using MusicBrainz, FreeDB or Amazon (though it's only good for cover art) and more, but I've reached my comma quota.
 
-Supported formats: id3v1, id3v2 (mp3), AAC (mp4, m4a, etc.), VorbisComments (ogg, flac) and APEv2 (ape), Musepack (mpc) and WavPack (wv).
+Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
 
 Why it is
-Everything else sucked for various reasons and Mp3tag was the only reason I kept an XP partition around.
+=========
+Keeping an XP partition just for Mp3tag just wasn't feasible anymore.
 
 How it's different
-Besides being buggier than Mp3tag (to be addressed), puddletag does a lot of things differently. If you've used Mp3tag before, you'll notice the difference immediately. However, for those that haven't, don't worry about it.
+==================
+To Mp3tag, not that much. It has more or less the same UI and functionality. You'll feel right at home here for the most part. However, puddletag isn't a clone, so check the skim the docs section on the puddletag website (puddletag.sourceforge.net) for more details.
 
-What you need 
-At least Python 2.5.
-PyQt4 (4.5 or greater) for the GUI.
-PyParsing (>1.4) takes care of the parsing...
-Mutagen (1.20 recommended, 1.14 required), tags and...
-ConfigObj takes care of saving settings.
-python-musicbrainz2 for MusicBrainz support.
+What you need
+=============
 
-The following are recommended. 
-The Python Imaging Library in order to edit/view FLAC cover art.
-QuodLibet must be installed in order to edit a QuodLibet library.
+   At least Python 2.5 available from http://python.org
+   PyQt4 (4.5 or greater)(http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
+   PyParsing (&ge;1.5.1) (http://pyparsing.wikispaces.com) takes care of the parsing...
+   Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
+   ConfigObj (http://code.google.com/p/configobj/) takes care of saving settings.
+   python-musicbrainz2 (http://musicbrainz.org/doc/python-musicbrainz2) is required for MusicBrainz support.
 
-For Debian-based distros, use the following to install the dependencies. sudo aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
+The following are recommended
 
-How to get it
-Download it from SourceForge (at http://puddletag.sourceforge.net).
+   The Python Imaging Library (http://www.pythonware.com/products/pil/) in order to edit/view FLAC cover art.
+   QuodLibet must be installed in order to edit a QuodLibet library.
 
-Install it by running "python setup.py install" as root in the unzipped directory. The puddletag menu item can then be found under the Multimedia Menu. Or just run it from the extracted directory by entering 'python puddletag' at your terminal.
 
-For those with strong constitutions, you can also check it out using svn (keep in mind that it's broken 80% of the time.)
+Downloading/Installing
+======================
 
-        svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+Installing from source:
+
+    Install the dependencies listed above.
+    For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
+    Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore any words before the parenthesis and the next two.)
+    Unzip it.
+    You can run puddletag from that directory by typing ./puddletag in your console.
+    Alternatively install it by running python setup.py install as root in the unzipped directory.
+    puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run desktop-file-install puddletag.desktop as root in the unzipped directory.
+
+
+Installing from the Debian package.
+
+   This Debian package has been created on and for Ubuntu 10.04. It will most likely not work on other distros. If it does, hit me up at concentricpuddle@gmail.com to tell me about it.
+   Download the package from http://puddletag.sourceforge.net.
+   Run as root dpkg -i /path/to/puddletag_0.9.5-1_all.deb.
+   Install dependencies using your favourite tool, note that python-imaging is recommended and not a hard dependency.
+   Run puddletag from your Multimedia menu.
+
+Development builds are available via svn (I'm not great about keeping it stable, so use at own risk):
+
+    svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
 
 License
-puddletag is free as in free by being licencsed under GPLv2, which you can find at www.gnu.org/licenses/gpl-2.0.html.
+=======
+puddletag licensed under the GPLv2, which you can find in its entirety at http://www.gnu.org/licenses/gpl-2.0.html
 
 Updates
-Swing by the website (http://puddletag.sourceforge.net) monthly for updates. 
+=======
+Release usually go out about once a month. Subscribe to the RSS feed at the website if you want to be updated.
 
 Support
-Visit the puddletag website (http://puddletag.sourceforge.net) for links to the forum and bug tracker.
+=======
+Bugs go to the issue tracker at Google Code (http://code.google.com/p/puddletag/issues). Feature requests and things of general concern go on the forum (http://sourceforge.net/apps/phpbb/puddletag). For anything else I can be contacted via email at concentricpuddle@gmail.com.

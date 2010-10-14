@@ -41,7 +41,8 @@ _recommended = [
 
 def check_libs():
     found = True
-    msg = "Error: %s module wasn't found, please check that it's installed " \
+    errors = []
+    msg = "Error: The %s module wasn't found. Please check that it's installed " \
             "properly. Download it from your distro's repository" \
             " %s or directly from %s \n"
     for lib in _libs:
@@ -49,16 +50,28 @@ def check_libs():
             __import__(lib[0])
         except ImportError:
             print msg % lib
+            errors.append(msg % lib)
             found = False
 
     msg = "Error: %s module wasn't found. %s. Please check that it's " \
         "installed properly. You can download it from your distro's " \
         "repository (%s), or download directly from %s.\n"
+    
     for lib in _recommended:
         try:
             __import__(lib[0])
         except ImportError:
+            errors.append(msg % lib)
             print msg % lib
+
+    try:
+        if not found:
+            from PyQt4.QtGui import QApplication, QMessageBox
+            app = QApplication([])
+            QMessageBox.critical(None, 'puddletag', '\n'.join(errors))
+    except:
+        pass
+    
     if not found:
        sys.exit(0)
 
@@ -71,7 +84,7 @@ from PyQt4.QtCore import pyqtRemoveInputHook
 import pdb
 from puddlestuff.puddletag import MainWin
 pyqtRemoveInputHook()
-__version__ = "0.8.8"
+__version__ = "0.9.6"
 import logging
 
 try:

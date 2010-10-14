@@ -108,9 +108,11 @@ def write(audio, tags, save_mtime = True):
         preview = audio.preview
         audio.preview = {}
 
+    filetags = real_filetags(audio.mapping, audio.revmapping, tags)
     undo = dict([(field, copy(audio.get(field, []))) 
         for field in tags if
-        tags.get(field, u'') != audio.get(field, u'')])
+            (field not in filetags and 
+                tags.get(field, u'') != audio.get(field, u''))])
 
     oldimages = None
     if '__image' in tags:

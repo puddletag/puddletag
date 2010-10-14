@@ -32,7 +32,8 @@ from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
     EXTENSION)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
-    progress, PuddleConfig, singleerror, winsettings, issubfolder, timemethod)
+    progress, PuddleConfig, singleerror, winsettings, issubfolder,
+    timemethod, encode_fn, decode_fn)
 from musiclib import MusicLibError
 import time, re
 from errno import EEXIST
@@ -65,8 +66,7 @@ def not_in_dirs(files, dirs):
     if not dirs:
         return files
     for d in dirs:
-        if isinstance(d, unicode):
-            d = d.encode('utf8')
+        d = encode_fn(d)
         return [z for z in files if not z.startswith(d)]
 
 def loadsettings(filepath=None):
@@ -585,8 +585,8 @@ class TagModel(QAbstractTableModel):
         i.e. All children of olddir will now become children of newdir
 
         No actual moving is done though."""
-        if isinstance(olddir, unicode):
-            olddir = olddir.encode('utf8')
+
+        olddir = encode_fn(olddir)
 
         folder = itemgetter(DIRPATH)
         tags = [(i, z) for i, z in enumerate(self.taginfo)
@@ -1004,8 +1004,7 @@ class TagModel(QAbstractTableModel):
         
         if DIRNAME in tags:
             newdir = tags[DIRNAME]
-            newdir = newdir.encode('utf8') if isinstance(newdir, unicode) \
-                else newdir
+            newdir = encode_fn(newdir)
             newdir = os.path.join(os.path.dirname(audio.dirpath),
                 newdir)
             if newdir != audio.dirpath:
@@ -1645,8 +1644,7 @@ class TagTable(QTableView):
         elif isinstance(dirs, basestring):
             dirs = [dirs]
 
-        dirs = [z.encode('utf8') if isinstance(z, unicode) else
-            z for z in dirs]
+        dirs = map(encode_fn, dirs)
 
         files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
 
@@ -1727,12 +1725,8 @@ class TagTable(QTableView):
         """Play the selected files using the player specified in self.playcommand"""
         if not self.selectedRows: return
         if hasattr(self, "playcommand"):
-            li = []
-            for z in self.playcommand:
-                if isinstance(z, unicode):
-                    li.append(z.encode('utf8'))
-                else:
-                    li.append(z)
+            
+            li = map(encode_fn, self.playcommand)
                 
             li.extend([z.filepath for z in self.selectedTags])
 
@@ -1764,8 +1758,7 @@ class TagTable(QTableView):
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()
-        dirs = [d.encode('utf8') if isinstance(d, unicode) else d
-            for d in self.dirs]
+        dirs = map(encode_fn, self.dirs)
         files = [z.filepath for z in self.model().taginfo if z.dirpath
             not in dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]

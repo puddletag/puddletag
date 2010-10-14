@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
 import sys, puddlestuff
-
-setup(name='puddletag',
+setup(
+    name='puddletag',
       version=puddlestuff.version_string,
       author='concentricpuddle',
       author_email='concentricpuddle@gmail.com',
       url='http://puddletag.sourceforge.net',
       download_url='https://sourceforge.net/projects/puddletag/files/latest',
-      description='A tag editor for Linux based on Mp3tag.',
+      description='An audio tagger for GNU/Linux similar to Mp3tag for Windows.',
       packages = ['puddlestuff', 'puddlestuff.mainwin',
                     'puddlestuff.libraries', 'puddlestuff.audioinfo',
                     'puddlestuff.tagsources'],
@@ -23,9 +23,6 @@ setup(name='puddletag',
                    'Topic :: Tagging',
                   ],
     scripts = ['puddletag'],
-    #shortcuts=['puddletag.desktop'],
     data_files=[('share/pixmaps/', ('puddletag.png',)),
                 ('share/applications', ('puddletag.desktop',))]
-    #package_dir={'puddlestuff.data': 'puddlestuff/data'},
-    #package_data={'puddlestuff.data': ['puddlestuff/data/shortcuts', 'puddlestuff/data/menus']}
      )

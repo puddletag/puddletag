@@ -20,8 +20,11 @@ CONNECTIONERROR = "Could not connect to Musicbrainz server." \
                   "(Check your net connection)"
 q = Query()
 
-def artist_id(artist):
-    results = q.getArtists(ArtistFilter(artist, limit = 1))
+def artist_id(artist, lucene=False):
+    if lucene:
+        results = q.getArtists(ArtistFilter(query=artist, limit = 1))
+    else:
+        results = q.getArtists(ArtistFilter(artist, limit = 1))
     if results:
         return (results[0].artist.name, results[0].artist.id)
 
