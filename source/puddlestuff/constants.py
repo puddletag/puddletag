@@ -27,6 +27,7 @@ TEXT = 'text'
 COMBO = 'combo'
 CHECKBOX = 'check'
 TAGLIST = 'taglist'
+SPINBOX = 'spinbox'
 
 #Plugin contstants
 FORMATFUNCTIONS = 'FORMATFUNCTIONS'

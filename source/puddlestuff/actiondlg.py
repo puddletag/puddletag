@@ -36,6 +36,7 @@ from functools import partial
 from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
     SAVEDIR, ACTIONDIR, BLANK)
 from util import open_resourcefile, PluginFunction
+import functions_dialogs
 
 READONLY = list(READONLY) + ['__dirpath', ]
 
@@ -99,7 +100,7 @@ class ScrollLabel(QScrollArea):
         height = label.sizeHint().height()
         self.setMaximumHeight(height)
         self.setMinimumHeight(height)
-
+        
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
     controls = {'text': PuddleCombo, 'combo': QComboBox, 'check': QCheckBox}
@@ -119,7 +120,7 @@ class FunctionDialog(QWidget):
         docstr = self.func.doc[1:]
         self.vbox = QVBoxLayout()
         self.retval = []
-        self._combotags = []
+        self._combotags = []        
 
         if showcombo:
             fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
@@ -147,6 +148,35 @@ class FunctionDialog(QWidget):
             self.vbox.addWidget(self.tagcombo)
         self.example = example
         self._text = text
+
+        if self.func.function in functions_dialogs.dialogs:
+            vbox = QVBoxLayout()
+            vbox.addWidget(self.tagcombo)
+            self.widget = functions_dialogs.dialogs[self.func.function](self)
+            vbox.addWidget(self.widget)
+            vbox.addStretch()
+            self.setLayout(vbox)
+            self.setMinimumSize(self.sizeHint())
+
+            arguments = []
+            for argno, line in enumerate(docstr):
+                ctype = tags.parseString(line)[1]
+                if ctype in ['combo', 'text']:
+                    if userargs and argno < len(userargs):
+                        arguments.append(userargs[argno])
+                elif ctype == 'check':
+                    if userargs and argno < len(userargs):
+                        if userargs[argno] is True or userargs[argno] == 'True':
+                            arguments.append(True)
+                        else:
+                            arguments.append(False)
+                elif ctype == 'spinbox':
+                    arguments.append(int(userargs[argno]))
+            if arguments:
+                self.widget.setArguments(*arguments)
+            return
+        else:
+            self.widget = None
 
         self.textcombos = []
         #Loop that creates all the controls
@@ -211,29 +241,33 @@ class FunctionDialog(QWidget):
         """Returns the values in the windows controls.
         The last argument is the tags value.
         Also sets self.func's arg and tag values."""
-        newargs = []
-        for method in self.retval:
-            if method.__name__ == 'checkState':
-                if method() == Qt.Checked:
-                    newargs.append(True)
-                elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
-                    newargs.append(False)
-            else:
-                if isinstance(method(), (int, long)):
-                    newargs.append(method())
-                else:
-                    newargs.append(unicode(method()))
-        [z.save() for z in self.textcombos]
-        self.func.setArgs(newargs)
-        if hasattr(self, "tagcombo"):
-            tags = [x for x in [z.strip().lower() for z in unicode(self.tagcombo.currentText()).split(",")] if z != ""]
-            if self.func.function in functions.no_fields:
-                self.func.setTag(['just nothing to do with this'])
-            else:
-                self.func.setTag(tags)
-            return newargs + tags
+
+        if self.widget:
+            newargs = self.widget.arguments()
         else:
-            return newargs + [""]
+            newargs = []
+            for method in self.retval:
+                if method.__name__ == 'checkState':
+                    if method() == Qt.Checked:
+                        newargs.append(True)
+                    elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
+                        newargs.append(False)
+                else:
+                    if isinstance(method(), (int, long)):
+                        newargs.append(method())
+                    else:
+                        newargs.append(unicode(method()))
+            [z.save() for z in self.textcombos]
+        self.func.setArgs(newargs)
+
+        fields = [x for x in [z.strip().lower() for z in
+            unicode(self.tagcombo.currentText()).split(",")] if z != ""]
+
+        if self.func.function in functions.no_fields:
+            self.func.setTag(['just nothing to do with this'])
+        else:
+            self.func.setTag(fields)
+        return newargs + fields
 
     def showexample(self, *args, **kwargs):
         self.argValues()
@@ -256,7 +290,7 @@ class FunctionDialog(QWidget):
                     self.emit(SIGNAL('updateExample'), 
                         'No preview for is shown for this function.')
                     return
-                val = self.func.runFunction(text, audio, r_tags=audio)
+                val = self.func.runFunction(text, audio, r_tags=audio, state={})
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
             if val is not None:
@@ -397,7 +431,7 @@ class CreateAction(QDialog):
             self.grid.addWidget(self._examplelabel,1,0)
             self.grid.setRowStretch(0,1)
             self.grid.setRowStretch(1,0)
-            self._example = example
+            self.example = example
             self.updateExample()
             self.grid.addLayout(self.okcancel,2,0,1,2)
         else:
@@ -405,7 +439,7 @@ class CreateAction(QDialog):
 
     def updateExample(self):
         try:
-            tags = runAction(self.functions, self._example)
+            tags = runAction(self.functions, self.example)
             self._examplelabel.setText(displaytags(tags))
         except findfunc.ParseError, e:
             self._examplelabel.setText(e.message)
@@ -516,7 +550,6 @@ class ActionWindow(QDialog):
         self._examplelabel = ScrollLabel('')
         self.grid.addWidget(self._examplelabel, 1, 0, 1,-1)
         self.grid.setRowStretch(1, 0)
-        self._example = example
         if example is None:
             self._examplelabel.hide()
         self.connect(self.listbox, SIGNAL('itemChanged (QListWidgetItem *)'),
@@ -619,7 +652,7 @@ class ActionWindow(QDialog):
         return funcs
 
     def updateExample(self, *args):
-        if self._example is None:
+        if self.example is None:
             self._examplelabel.hide()
             return
         l = self.listbox
@@ -631,9 +664,14 @@ class ActionWindow(QDialog):
             [funcs.extend(func) for func in tempfuncs]
             try:
                 if self._quickaction:
-                    tags = runQuickAction(funcs, self._example, self._quickaction)
+                    tags = runQuickAction(funcs, self.example, {}, self._quickaction)
                 else:
-                    tags = runAction(funcs, self._example)
+                    try:
+                        tags = runAction(funcs, self.example, {})
+                    except:
+                        pdb.set_trace()
+                        tags = runAction(funcs, self.example, {})
+
                 self._examplelabel.show()
                 self._examplelabel.setText(displaytags(tags))
             except findfunc.ParseError, e:

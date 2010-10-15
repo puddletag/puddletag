@@ -51,6 +51,39 @@ def add(text,text1):
     except decimal.InvalidOperation:
         return
 
+_padding = u'0'
+def _pad(text, numlen):
+    if len(text) < numlen:
+        text = _padding * ((numlen - len(text)) / len(_padding)) + text
+    return text
+
+def autonumbering(r_tags, minimum=1, restart=False, padding=1, state=None):
+    '''Autonumbering, "Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3"
+oi,spinbox,1
+aoeu,check, False
+au,spinbox,1'''
+    if 'autonumbering' not in state:
+        state['autonumbering'] = {}
+    
+    dir_list = state['autonumbering']
+    
+    if restart:
+        key = r_tags.dirpath
+    else:
+        key = 'temp'
+
+    if key in dir_list:
+        dir_list[key] += 1
+    else:
+        dir_list[key] = minimum
+
+    tracknum = unicode(dir_list[key])
+
+    if padding > 1:
+        return _pad(tracknum, padding)
+    else:
+        return tracknum
+
 def check_truth(text):
     return 0 if ((not text) or (text == u'0')) else 1
 
@@ -764,6 +797,7 @@ def validate(text, to=None, chars=None):
 functions = {"add": add,
             "and": and_,
             'artwork': load_images,
+            'autonumbering': autonumbering,
             "caps": caps,
             "caps2": caps2,
             "caps3": caps3,
@@ -819,7 +853,7 @@ functions = {"add": add,
             'to_ascii': removeDisallowedFilenameChars}
 
 no_fields = (load_images, remove_except, move, update_from_tag)
-no_preview = (load_images, remove_tag)
+no_preview = (autonumbering, load_images, remove_tag)
 
 import findfunc
 FuncError = findfunc.FuncError

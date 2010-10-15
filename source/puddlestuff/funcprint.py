@@ -25,13 +25,20 @@ def perfunc(match, d):
 
 def func(match, d):
     matchtext = match.group()
-    if matchtext.startswith('\\'):
+    if matchtext.startswith(u'\\'):
         return matchtext[1:]
     try:
         number = int(matchtext[1:])
         if number >= len(d):
-            return ''
-        if not isinstance(d[number], basestring):
+            return u''
+
+        if d[number] is False:
+            d[number] = u'No'
+        elif d[number] is True:
+            d[number] = u'Yes'
+        elif isinstance(d[number], (int, long)):
+            d[number] = unicode(d[number])
+        elif not isinstance(d[number], basestring):
             if d[number]:
                 d[number] = u'Yes'
             else:
@@ -41,7 +48,13 @@ def func(match, d):
         number = int(re.search('(\d+)', matchtext).group())
         if number >= len(d):
             return ''
-        if not isinstance(d[number], basestring):
+        if d[number] is False:
+            d[number] = u'Yes'
+        elif d[number] is True:
+            d[number] = u'No'
+        elif isinstance(d[number], (int, long)):
+            d[number] = unicode(d[number])
+        elif not isinstance(d[number], basestring):
             if d[number]:
                 d[number] = u'Yes'
             else:

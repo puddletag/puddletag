@@ -33,7 +33,7 @@ numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 from copy import deepcopy
-from constants import ACTIONDIR, CHECKBOX
+from constants import ACTIONDIR, CHECKBOX, SPINBOX
 import glob
 from collections import defaultdict
 from functools import partial
@@ -160,9 +160,14 @@ def load_action(filename):
                         newargs.append(False)
                     else:
                         newargs.append(True)
+                elif control == SPINBOX:
+                    newargs.append(int(arg))
                 else:
                     newargs.append(arg)
-            func.args = newargs
+            if func.controls:
+                func.args = newargs
+            else:
+                func.args = arguments
             funcs.append(func)
     return [funcs, name]
 

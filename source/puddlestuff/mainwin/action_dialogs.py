@@ -30,9 +30,9 @@ class ActionDialog(ActionWindow):
 
     def _update(self):
         try:
-            self._example = self._status['selectedfiles'][0]
+            self.example = self._status['selectedfiles'][0]
         except IndexError:
-            self._example = None
+            self.example = None
         self.updateExample()
 
     def updateChecked(self, rows):

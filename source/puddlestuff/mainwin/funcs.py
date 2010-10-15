@@ -342,6 +342,7 @@ def run_func(selectedfiles, func):
         useaudio = False
 
     function = func.runFunction
+    state = {}
 
     def tagiter():
         for selected, f in izip(selectedtags, selectedfiles):
@@ -357,7 +358,7 @@ def run_func(selectedfiles, func):
             rowtags = f.tags
             ret = {}
             for field in fields:
-                val = function(rowtags.get(field, u''), rowtags, r_tags=f)
+                val = function(rowtags.get(field, u''), rowtags, state, r_tags=f)
                 if val is not None:
                     if hasattr(val, 'items'):
                         ret.update(val)
