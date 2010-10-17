@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+## -*- coding: utf-8 -*-
 #tagmodel.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -29,7 +29,7 @@ from os import path
 import audioinfo
 from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
     usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
-    EXTENSION)
+    EXTENSION, CaselessDict)
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
     progress, PuddleConfig, singleerror, winsettings, issubfolder,
@@ -112,7 +112,7 @@ def tag_in_file(tag, audio):
 def model_tag(model, base = audioinfo.AbstractTag):
     class ModelTag(base):
         def __init__(self, *args, **kwargs):
-            self.preview = {}
+            self.preview = CaselessDict()
             self.edited = None
             super(ModelTag, self).__init__(*args, **kwargs)
         

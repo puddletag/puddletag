@@ -132,6 +132,7 @@ class FunctionDialog(QWidget):
             "Enter a list of comma-separated fields eg. <b>artist, title, album</b>"
         self.tagcombo.setToolTip(tooltip)
         self.tagcombo.setEditable(True)
+        self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
         self.tagcombo.addItems(fields)
         self._combotags = showcombo
         if defaulttags:

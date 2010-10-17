@@ -337,8 +337,6 @@ class CaselessDict(dict):
 
     def __setitem__(self, key, value):
         low = key.lower()
-        if low in self._keys:
-            dict.__delitem__(self, self._keys[low])
         self._keys[low] = key
         dict.__setitem__(self, key, value)
 
@@ -381,8 +379,8 @@ class MockTag(object):
         if filename:
             self.link(filename)
         else:
-            self._tags = {}
-            #self._tags = CaselessDict()
+            #self._tags = {}
+            self._tags = CaselessDict()
 
     def _getfilepath(self):
         return self._filepath

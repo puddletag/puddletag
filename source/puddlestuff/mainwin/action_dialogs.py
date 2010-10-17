@@ -74,9 +74,10 @@ class FunctionDialog(CreateFunction):
         self.okcancel.cancel.hide()
         self._apply = QPushButton('Appl&y')
         write = lambda func: run_func(self._status['selectedfiles'], func)
-        self.connect(self._apply, SIGNAL('clicked()'), 
+        self.connect(self._apply, SIGNAL('clicked()'),
             partial(self.okClicked, False))
         self.connect(self, SIGNAL('valschanged'), write)
+        self.disconnect(self.okcancel, SIGNAL('cancel'), self.close)
         
         hbox = QHBoxLayout()
         hbox.addStretch()
@@ -98,6 +99,9 @@ class FunctionDialog(CreateFunction):
         widget.example = f
 
         widget.showexample()
+
+    def reject(self):
+        pass
 
 
 controls = [
