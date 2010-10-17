@@ -171,7 +171,8 @@ class FunctionDialog(QWidget):
                         else:
                             arguments.append(False)
                 elif ctype == 'spinbox':
-                    arguments.append(int(userargs[argno]))
+                    if userargs and argno < len(userargs):
+                        arguments.append(int(userargs[argno]))
             if arguments:
                 self.widget.setArguments(*arguments)
             return
