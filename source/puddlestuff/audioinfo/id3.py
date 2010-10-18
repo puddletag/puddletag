@@ -369,8 +369,10 @@ def create_popm(values):
     return {}
 
 def get_popm(frame):
+    if not hasattr(frame, 'count'):
+        frame.count = 0
     return u':'.join([frame.email, unicode(frame.rating),
-                unicode(frame.count)])
+        unicode(frame.count)])
 
 def to_string(value):
     if isinstance(value, str):

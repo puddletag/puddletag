@@ -97,7 +97,6 @@ def filenametotag(pattern, filename, checkext = False):
     if checkext:
         filename = os.path.splitext(filename)[0]
 
-
     e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
     patterns = filter(None, pattern.split(u'/'))
     filenames = filename.split(u'/')[-len(patterns):]

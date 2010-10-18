@@ -1158,7 +1158,7 @@ class TagDelegate(QItemDelegate):
         editor.returnPressed = False
         editor.writeError = False
         editor.setFrame(False)
-        editor.installEventFilter(self)
+        #editor.installEventFilter(self)
         return editor
 
     def eventFilter(self, editor, event):

@@ -40,6 +40,8 @@ from operator import itemgetter
 from copy import deepcopy
 from functools import partial
 
+PATH = audioinfo.PATH
+
 true = u'1'
 false = u'0'
 path = os.path
@@ -152,6 +154,11 @@ def featFormat(text, ftstring = u"ft", opening = u"(", closing = u")"):
             del textli[closeparen]
             return "".join(textli)
     return text
+
+def filenametotag(m_tags, pattern):
+    """Filename to Tag, File->Tag '$1'
+&Pattern, text"""
+    return findfunc.filenametotag(pattern, m_tags[PATH], True)
 
 def finddups(tracks, key = 'title', method=None):
     from puddleobjects import dupes
@@ -804,6 +811,7 @@ functions = {"add": add,
             "char": char,
             "div": div,
             "featFormat": featFormat,
+            'filenametotag': filenametotag,
             "find": find,
             "format": formatValue,
             "geql": geql,
@@ -852,7 +860,7 @@ functions = {"add": add,
             "validate": validate,
             'to_ascii': removeDisallowedFilenameChars}
 
-no_fields = (load_images, remove_except, move, update_from_tag)
+no_fields = (filenametotag, load_images, remove_except, move, update_from_tag)
 no_preview = (autonumbering, load_images, remove_tag)
 
 import findfunc

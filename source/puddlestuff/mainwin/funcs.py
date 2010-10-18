@@ -447,7 +447,7 @@ obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
     'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
     'adddock', 'highlight', 'writeaction']
 obj.receives = [('filesselected', update_status),
-                ('patternchanged', update_status)]
+    ('patternchanged', update_status)]
 
 def emit_received(signal):
     def emit(*args):
