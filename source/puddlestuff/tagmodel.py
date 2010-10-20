@@ -1292,8 +1292,6 @@ class TagTable(QTableView):
         if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
             delegate = TagDelegate(self)
             self.setItemDelegate(delegate)
-        else:
-            delattr(self, 'closeEditor')
         self.subFolders = False
 
         def sep():
