@@ -7,7 +7,7 @@ from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME)
 from errno import EEXIST
 import os, pdb
-from puddleobjects import safe_name
+from puddleobjects import safe_name, open_resourcefile
 from puddlestuff.constants import CHECKBOX
 
 ARTIST = 'artist'
@@ -31,11 +31,6 @@ def matching(audios, listing):
     if len(audios) == len(ret):
         return ret, True
     return ret, False
-
-def open_resourcefile(filename):
-    f = QFile(filename)
-    f.open(QIODevice.ReadOnly | QIODevice.Text)
-    return StringIO(f.readAll())
 
 def rename_file(audio, tags):
     """If tags(a dictionary) contains a PATH key, then the file

@@ -43,6 +43,7 @@ from collections import defaultdict
 from util import write, rename_file, real_filetags, to_string
 from constants import SELECTIONCHANGED, SEPARATOR
 import puddlestuff.confirmations as confirmations
+import logging
 
 status = {}
 
@@ -1149,34 +1150,28 @@ class TagModel(QAbstractTableModel):
         self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
                                         firstindex, lastindex)
 
-class TagDelegate(QItemDelegate):
-    def __init__(self,parent=None):
-        QItemDelegate.__init__(self,parent)
-
-    def createEditor(self,parent,option,index):
+class TagDelegate(QStyledItemDelegate):
+    def createEditor(self, parent, option, index):
+        logging.debug('Creating editor')
         editor = QLineEdit(parent)
         editor.returnPressed = False
         editor.writeError = False
         editor.setFrame(False)
-        #editor.installEventFilter(self)
+        font = editor.font()
+        font.setPointSize(index.model().fontSize)
+        editor.setFont(font)
+        
+        logging.debug('Closing editor.')
         return editor
 
     def eventFilter(self, editor, event):
-        if event.type() == QEvent.KeyPress:
-            
+        if event.type() == QEvent.KeyPress:            
             if event.key() in (Qt.Key_Return, Qt.Key_Enter):
                 if event.modifiers() == Qt.ShiftModifier:
                     editor.returnPressed = SHIFT_RETURN
                 else:
                     editor.returnPressed = RETURN_ONLY
-        return QItemDelegate.eventFilter(self, editor, event)
-
-    def setEditorData(self, editor, index):
-        text = index.model().data(index, Qt.EditRole).toString()
-        font = editor.font()
-        font.setPointSize(index.model().fontSize)
-        editor.setFont(font)
-        editor.setText(text)
+        return QStyledItemDelegate.eventFilter(self, editor, event)
 
     def setModelData(self, editor, model, index):
         try:
@@ -1294,8 +1289,11 @@ class TagTable(QTableView):
             self.emit(SIGNAL('libfilesedited'), *args))
         self.undo = model.undo
 
-        delegate = TagDelegate(self)
-        self.setItemDelegate(delegate)
+        if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
+            delegate = TagDelegate(self)
+            self.setItemDelegate(delegate)
+        else:
+            delattr(self, 'closeEditor')
         self.subFolders = False
 
         def sep():
@@ -1399,6 +1397,9 @@ class TagTable(QTableView):
         self.emit(SIGNAL('dirschanged'), [])
 
     def closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
+        if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+            QTableView.closeEditor(self, editor, hint)
+            return
 
         if editor.writeError:
             model = self.model()

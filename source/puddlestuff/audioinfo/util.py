@@ -458,7 +458,6 @@ class MockTag(object):
             for key, value in dictionary.items():
                 self[key] = value
         else:
-            logging.debug(unicode(dictionary))
             for key, value in dictionary:
                 self[key] = value
 

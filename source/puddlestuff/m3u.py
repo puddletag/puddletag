@@ -6,6 +6,7 @@ import sys
 from puddlestuff.findfunc import tagtofilename
 from puddlestuff.audioinfo.util import lnglength
 import puddlestuff.audioinfo as audioinfo
+from puddlestuff.puddleobjects import encode_fn, decode_fn
 
 from os.path import abspath, dirname, normcase, normpath, splitdrive, realpath
 from os.path import join as path_join, commonprefix
@@ -93,7 +94,7 @@ def readm3u(path):
             continue
         else:
             # store rule
-            mp3Files.append(unicode(normpath(realpath(row[0])), 'utf8'))
+            mp3Files.append(normpath(realpath(row[0])))
 
     fileHandle.close()
     os.chdir(olddir)
@@ -113,7 +114,7 @@ def exportm3u(tags, tofile, format = None, reldir = False):
     else:
         text = header
         extinfo = ('#EXTINF: %s, %s' % (str(lnglength(f.length)),
-            tagtofilename(format, f, True).encode('utf8')) for f in tags)
+            encode_fn(tagtofilename(format, f, True))) for f in tags)
         [text.extend([z,y]) for z,y in zip(extinfo, filenames)]
         text = '\n'.join(text)
 

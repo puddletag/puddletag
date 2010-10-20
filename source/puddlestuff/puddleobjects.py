@@ -40,6 +40,10 @@ path = os.path
 from configobj import ConfigObj
 import traceback
 import time, re
+from glob import glob
+from constants import ACTIONDIR
+from PyQt4.QtCore import QFile, QIODevice
+from StringIO import StringIO
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
     QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
@@ -193,6 +197,17 @@ def removeslash(x):
     while x.endswith('/'):
         return removeslash(x[:-1])
     return x
+
+def create_buddy(text, control, hbox=None):
+    label = QLabel(text)
+    label.setBuddy(control)
+
+    if not hbox:
+        hbox = QHBoxLayout()
+    hbox.addWidget(label)
+    hbox.addWidget(control, 1)
+
+    return hbox
 
 def dircmp(a, b):
     """Compare function to sort directories via parent.
@@ -501,6 +516,63 @@ def settaglist(tags):
     text = '\n'.join(sorted([z for z in tags if not z.startswith('__')]))
     f.write(text)
     f.close()
+
+def load_actions():
+    import findfunc
+    basename = os.path.basename
+
+    funcs = {}
+    cparser = PuddleConfig()
+    set_value = partial(cparser.set, 'puddleactions')
+    get_value = partial(cparser.get, 'puddleactions')
+
+    firstrun = get_value('firstrun', True)
+    set_value('firstrun', False)
+    convert = get_value('convert', True)
+    order = get_value('order', [])
+
+    if convert:
+        set_value('convert', False)
+        findfunc.convert_actions(SAVEDIR, ACTIONDIR)
+        if order:
+            old_order = dict([(basename(z), i) for i,z in
+                enumerate(order)])
+            files = glob(os.path.join(ACTIONDIR, u'*.action'))
+            order = {}
+            for f in files:
+                try:
+                    order[old_order[basename(f)]] = f
+                except KeyError:
+                    pass
+            order = [z[1] for z in sorted(order.items())]
+            set_value('order', order)
+
+    files = glob(os.path.join(ACTIONDIR, u'*.action'))
+    if firstrun and not files:
+        filenames = [':/caseconversion.action', ':/standard.action']
+        files = map(open_resourcefile, filenames)
+        set_value('firstrun', False)
+
+        for fileobj, filename in zip(files, filenames):
+            filename = os.path.join(ACTIONDIR, filename[2:])
+            f = open(filename, 'w')
+            f.write(fileobj.read())
+            f.close()
+        files = glob(os.path.join(ACTIONDIR, u'*.action'))
+
+    files = [z for z in order if z in files] + \
+        [z for z in files if z not in order]
+
+    funcs = []
+    for f in files:
+        action = findfunc.load_action(f)
+        funcs.append([action[0], action[1], f])
+    return funcs
+
+def open_resourcefile(filename):
+    f = QFile(filename)
+    f.open(QIODevice.ReadOnly | QIODevice.Text)
+    return StringIO(f.readAll())
 
 def progress(func, pstring, maximum, threadfin = None):
     """To be used for functions that need a threaded progressbar.
@@ -863,6 +935,10 @@ class ListBox(QListWidget):
             self.insertItem(group, item)
 
         [self.setItemSelected(self.item(row + 1), True) for row in rows]
+
+    def selectedItems(self):
+        return filter(lambda item: item.isSelected(),
+            map(self.item, xrange(self.count())))
 
 class ListButtons(QVBoxLayout):
     """A Layout that contains five buttons usually

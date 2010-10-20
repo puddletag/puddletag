@@ -30,6 +30,7 @@ import constants, shortcutsettings
 
 import puddlestuff.findfunc, puddlestuff.tagsources
 import puddlestuff.confirmations as confirmations
+#import action_shortcuts
 
 pyqtRemoveInputHook()
 
@@ -267,6 +268,7 @@ class MainWin(QMainWindow):
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
         previewactions = mainwin.previews.create_actions(self)
+        #actions_shortcuts = action_shortcuts.create_shortcuts(self)
         #tag_actions = mainwin.tagtools.create_actions(self)
         all_actions = actions + winactions + previewactions
         menubar, winmenu = ls.menubar(menus, all_actions)
@@ -530,7 +532,7 @@ class MainWin(QMainWindow):
         except IndexError:
             dirname = constants.HOMEDIR
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
-        default = findfunc.tagtofilename(filepattern, tags[0])
+        default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
         f = unicode(QFileDialog.getSaveFileName(self,
                 'Save Playlist', os.path.join(dirname, default)))
         if f:

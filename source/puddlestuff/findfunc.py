@@ -151,7 +151,12 @@ def load_action(filename):
             fields = get(FIELDS, [])
             func_module = get(FUNC_MODULE, u'')
             arguments = get(ARGS, [])
-            func = Function(modules[func_module][func_name], fields)
+            try:
+                func = Function(modules[func_module][func_name], fields)
+            except IndexError:
+                #import traceback
+                #traceback.print_exc()
+                continue
             newargs = []
             for i, (control, arg) in enumerate(zip(func.controls, arguments)):
                 if control == CHECKBOX:

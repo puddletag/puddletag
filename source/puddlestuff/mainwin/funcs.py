@@ -21,7 +21,9 @@ import puddlestuff.confirmations as confirmations
 
 status = {}
 
-def applyaction(files, funcs):
+def applyaction(files=None, funcs=None):
+    if files is None:
+        files = status['selectedfiles']
     r = findfunc.runAction
     state = {'numfiles': len(files)}
     state['files'] = files
