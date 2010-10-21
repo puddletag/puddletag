@@ -356,15 +356,16 @@ class ColumnSettings(HeaderSetting):
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
         if not checked:
             checked = []
-        [z.setCheckState(Qt.Checked) if i in checked else z.setCheckState(Qt.Unchecked)
-                                for i,z in enumerate(items)]
+        [z.setCheckState(Qt.Checked) if i in checked
+            else z.setCheckState(Qt.Unchecked) for i,z in enumerate(items)]
 
     def applySettings(self, control = None):
         row = self.listbox.currentRow()
         if row > -1:
             self.tags[row][0] = unicode(self.textname.text())
             self.tags[row][1] = unicode(self.tag.text())
-        checked = [z for z in range(self.listbox.count()) if self.listbox.item(z).checkState()]
+        checked = [z for z in range(self.listbox.count()) if
+            self.listbox.item(z).checkState()]
         titles = [z[0] for z in self.tags]
         tags = [z[1] for z in self.tags]
         cparser = PuddleConfig()
@@ -1290,8 +1291,10 @@ class TagTable(QTableView):
         self.undo = model.undo
 
         if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
+            self.closeEditor = self._closeEditor
             delegate = TagDelegate(self)
             self.setItemDelegate(delegate)
+            
         self.subFolders = False
 
         def sep():
@@ -1394,10 +1397,10 @@ class TagTable(QTableView):
         self.model().reset()
         self.emit(SIGNAL('dirschanged'), [])
 
-    def closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
+    def _closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
+        print 'called'
         if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
-            QTableView.closeEditor(self, editor, hint)
-            return
+            return QTableView.closeEditor(self, editor, hint)
 
         if editor.writeError:
             model = self.model()
