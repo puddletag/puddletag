@@ -196,6 +196,9 @@ class ActionEditorDialog(QWidget):
     
         super(ActionEditorDialog, self).__init__(parent)
         self.actions = actions
+
+        help = QLabel(u'<b>Double click a cell in the Shortcut Column' \
+            u' to <br />modify the key sequence.</b>')
         
         self.actionTable = QTableWidget(self)
         self.actionTable.setColumnCount(2)
@@ -233,6 +236,7 @@ class ActionEditorDialog(QWidget):
         self.actionTable.resizeColumnsToContents()
                 
         mainLayout = QVBoxLayout()
+        mainLayout.addWidget(help)
         mainLayout.setMargin(8)
         mainLayout.setSpacing(8)
         mainLayout.addWidget(self.actionTable)

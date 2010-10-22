@@ -51,16 +51,20 @@ def menubar(menus, actions):
     texts = [unicode(action.text()) for action in actions]
     menubar = QMenuBar()
     winmenu = None
+    _menus = {}
     for title, actionlist in menus:
         menu = menubar.addMenu(title)
+        _menus[title] = [menu]
         if title == u'&Windows':
             winmenu = menu
         for action in actionlist:
             if action in texts:
-                menu.addAction(actions[texts.index(action)])
+                shortcut = actions[texts.index(action)]
+                menu.addAction(shortcut)
+                _menus[title].append(shortcut)
             elif action == SEPARATOR:
                 menu.addSeparator()
-    return menubar, winmenu
+    return menubar, winmenu, _menus
 
 def context_menu(section, actions, filepath=None):
     cparser = PuddleConfig(filepath)

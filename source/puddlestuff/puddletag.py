@@ -30,7 +30,7 @@ import constants, shortcutsettings
 
 import puddlestuff.findfunc, puddlestuff.tagsources
 import puddlestuff.confirmations as confirmations
-#import action_shortcuts
+import action_shortcuts
 
 pyqtRemoveInputHook()
 
@@ -258,9 +258,12 @@ class MainWin(QMainWindow):
         win.setLayout(layout)
         self.setCentralWidget(win)
 
-        PuddleDock._controls = {'table': self._table,
-                                'mainwin':self,
-                                'funcs': mainfuncs.obj}
+        PuddleDock._controls = {
+            'table': self._table,
+            'mainwin':self,
+            'funcs': mainfuncs.obj,}
+        status['mainwin'] = self
+                                
         ls.create_files()
         winactions, self._docks = create_tool_windows(self)
         self.createStatusBar()
@@ -268,11 +271,10 @@ class MainWin(QMainWindow):
         actions = ls.get_actions(self)
         menus = ls.get_menus('menu')
         previewactions = mainwin.previews.create_actions(self)
-        #actions_shortcuts = action_shortcuts.create_shortcuts(self)
-        #tag_actions = mainwin.tagtools.create_actions(self)
-        all_actions = actions + winactions + previewactions
-        menubar, winmenu = ls.menubar(menus, all_actions)
         
+        all_actions = actions + winactions + previewactions
+        menubar, winmenu, self._menus = ls.menubar(menus, all_actions)
+
         if winmenu:
             winmenu.addSeparator()
             self._winmenu = winmenu
@@ -299,12 +301,34 @@ class MainWin(QMainWindow):
         self.restoreSettings()
         self.emit(SIGNAL('always'), True)
 
+        global add_shortcuts
+        global remove_shortcuts
+        add_shortcuts = self.addShortcuts
+        remove_shortcuts = self.removeShortcuts
+
     def addDock(self, name, dialog, position):
         controls = PuddleDock._controls.values()
         dock = PuddleDock(name, dialog, self, status)
         self.addDockWidget(position, dock)
         self._winmenu.addAction(dock.toggleViewAction())
         connect_control(PuddleDock._controls[name], controls)
+
+    def addShortcuts(self, menu_title, actions, toolbar=False):
+        if not actions:
+            return
+            
+        if menu_title in self._menus:
+            menu = self._menus[menu_title][0]
+        else:
+            menu = QMenu(menu_title)
+            self._menus[menu_title] = menu
+            self.menuBar().insertMenu(self._menus['&Windows'][0], menu)
+
+        status['actions'].extend(actions)
+        map(menu.addAction, actions)
+
+        if toolbar:
+            map(self.toolbar.addAction, actions)
 
     def _status(self, controls):
         x = {}
@@ -467,7 +491,24 @@ class MainWin(QMainWindow):
         win = SettingsDialog(PuddleDock._controls.values(), self, status)
         win.show()
 
+    def removeShortcuts(self, menu_title, actions):
+        if menu_title in self._menus:
+            menu = self._menus[menu_title][0]
+        if actions:
+            children = dict([(unicode(z.text()), z) for z in menu.actions()])
+            for action in actions:
+                if isinstance(action, basestring):
+                    action = children[action]
+                menu.removeAction(action)
+
     def restoreSettings(self):
+        scts = action_shortcuts.create_action_shortcuts(
+            mainwin.funcs.applyaction, self)
+
+        self.addShortcuts('&Actions', scts)
+
+        connect_actions(scts, PuddleDock._controls)
+        
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         gensettings = {}

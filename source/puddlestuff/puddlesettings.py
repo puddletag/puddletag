@@ -51,6 +51,7 @@ from puddlestuff.pluginloader import PluginConfig
 import pdb
 import audioinfo.util
 import genres, confirmations
+from action_shortcuts import ShortcutEditor
 
 def load_gen_settings(setlist, extras=False):
     settings = PuddleConfig()
@@ -541,7 +542,8 @@ class SettingsDialog(QDialog):
             ('Genres', genres.Genres(status=status), None),
             ('Tags', Tags(), status['table']),
             ('Plugins', PluginConfig(), None),
-            ('Shortcuts', ActionEditorDialog(status['actions']), None),]
+            ('Shortcuts', ActionEditorDialog(status['actions']), None),
+            ('Action Shortcuts', ShortcutEditor(True), status['mainwin']),]
 
         d = dict(enumerate(built_in))
             

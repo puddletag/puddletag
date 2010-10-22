@@ -1398,10 +1398,6 @@ class TagTable(QTableView):
         self.emit(SIGNAL('dirschanged'), [])
 
     def _closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
-        print 'called'
-        if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
-            return QTableView.closeEditor(self, editor, hint)
-
         if editor.writeError:
             model = self.model()
             currentfile = model.taginfo[self.currentIndex().row()]

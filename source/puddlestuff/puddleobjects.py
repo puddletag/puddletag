@@ -831,6 +831,9 @@ class ListBox(QListWidget):
         self.editButton = None
         self.setSelectionMode(self.ExtendedSelection)
 
+    def items(self):
+        return map(self.item, xrange(self.count()))
+
     def selectionChanged(self, selected, deselected):
         if self.editButton:
             if len(self.selectedItems()) == 1:

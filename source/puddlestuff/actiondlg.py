@@ -509,6 +509,7 @@ class ActionWindow(QDialog):
         self.listbox = ListBox()
         self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.listbox.setEditTriggers(QAbstractItemView.EditKeyPressed)
+
         self.example = example
 
         self.funcs = self.loadActions()
@@ -526,6 +527,8 @@ class ActionWindow(QDialog):
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
+        create_shortcut = QPushButton('Create &Shortcut')
+        self.okcancel.insertWidget(0, create_shortcut)
         self.grid = QGridLayout()
 
         self.buttonlist = ListButtons()
@@ -535,18 +538,21 @@ class ActionWindow(QDialog):
         self.grid.addLayout(self.buttonlist, 0,1)
         self.setLayout(self.grid)
 
-        self.connect(self.okcancel, SIGNAL("ok") , self.okClicked)
-        self.connect(self.okcancel, SIGNAL("cancel"),self.close)
-        self.connect(self.buttonlist, SIGNAL("add"), self.add)
-        self.connect(self.buttonlist, SIGNAL("edit"), self.edit)
-        self.connect(self.buttonlist, SIGNAL("moveup"), self.moveUp)
-        self.connect(self.buttonlist, SIGNAL("movedown"), self.moveDown)
-        self.connect(self.buttonlist, SIGNAL("remove"), self.remove)
-        self.connect(self.buttonlist, SIGNAL("duplicate"), self.duplicate)
-        self.connect(self.listbox, SIGNAL("itemDoubleClicked (QListWidgetItem *)"), self.edit)
-        self.connect(self.listbox, SIGNAL("currentRowChanged(int)"), self.enableListButtons)
-        self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.renameAction)
-        self.connect(self.listbox, SIGNAL("itemChanged(QListWidgetItem *)"), self.enableOK)
+        connect = lambda obj, sig, slot: self.connect(obj, SIGNAL(sig), slot)
+
+        connect(self.okcancel, "ok" , self.okClicked)
+        connect(self.okcancel, "cancel",self.close)
+        connect(self.buttonlist, "add", self.add)
+        connect(self.buttonlist, "edit", self.edit)
+        connect(self.buttonlist, "moveup", self.moveUp)
+        connect(self.buttonlist, "movedown", self.moveDown)
+        connect(self.buttonlist, "remove", self.remove)
+        connect(self.buttonlist, "duplicate", self.duplicate)
+        connect(self.listbox, "itemDoubleClicked (QListWidgetItem *)", self.edit)
+        connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
+        connect(self.listbox, "itemChanged(QListWidgetItem *)", self.renameAction)
+        connect(self.listbox, "itemChanged(QListWidgetItem *)", self.enableOK)
+        connect(create_shortcut, 'clicked()', self.createShortcut)
 
         #if example:
         self._examplelabel = ScrollLabel('')
@@ -559,6 +565,16 @@ class ActionWindow(QDialog):
         self.grid.addLayout(self.okcancel,2,0,1,2)
         self.updateExample()
         self.enableOK(None)
+
+    def createShortcut(self):
+        funcs = self.checked()[1]
+        (name, ok) = QInputDialog().getText(self, 'puddletag',
+            'Enter a name for the shortcut.')
+        
+        if name and ok:
+            name = unicode(name)
+            from puddlestuff.action_shortcuts import create_action_shortcut
+            create_action_shortcut(name, funcs, add=True)
 
     def moveUp(self):
         self.listbox.moveUp(self.funcs)
