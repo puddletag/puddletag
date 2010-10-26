@@ -932,8 +932,6 @@ class TagModel(QAbstractTableModel):
                 self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
             self.undolevel += 1
             self.emit(SIGNAL('fileChanged()'))
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                index, index)
             return True
         return False
 
@@ -966,7 +964,7 @@ class TagModel(QAbstractTableModel):
             if temporary:
                 for field in tags:
                     if field not in audio._temp:
-                        audio._temp[field] = audio.get(field, '')
+                        audio._temp[field] = audio.get(field, u'')
             preview = audio.preview
             undo_val = dict([(tag, copy(audio[tag])) if tag in audio
                 else (tag, []) for tag in tags])
