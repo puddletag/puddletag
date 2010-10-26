@@ -22,7 +22,7 @@
 from mutagen.flac import FLAC, Picture
 import util
 from util import (strlength, strbitrate, strfrequency, IMAGETYPES, usertags,
-    getfilename, getinfo, FILENAME, PATH, INFOTAGS, str_filesize)
+    getfilename, getinfo, FILENAME, PATH, INFOTAGS, str_filesize, get_mime)
 import ogg, pdb
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -30,12 +30,14 @@ ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
               'modified', 'bitspersample')
 
 try:
-    from puddlestuff.image import imageproperties
-    IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
-                    util.IMAGETYPE)
+    from puddlestuff.image import imageproperties, image_size
+    if imageproperties is not None:
+        IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
+                        util.IMAGETYPE)
+    else:
+        IMAGETAGS = None
 except ImportError:
     IMAGETAGS = None
-
 
 class TempTag(ogg.Tag):
     """Flac Tag Class.
@@ -104,21 +106,22 @@ if IMAGETAGS:
     class Tag(TempTag):
         IMAGETAGS = IMAGETAGS
         def _picture(self, image):
-            try:
-                data = image[util.DATA]
-            except:
-                import pdb
-                pdb.set_trace()
-                data = image[util.DATA]
+            data = image[util.DATA]
             description = image.get(util.DESCRIPTION)
             if not description:
                 description = u''
+
             mime = image.get(util.MIMETYPE)
+            if mime is None:
+                mime = get_mime(data)
             imagetype = image.get(util.IMAGETYPE, 3)
-            props = imageproperties(data = data)
+
+            props = imageproperties(data=data)
             props['type'] = imagetype
             props['desc'] = description
             props['width'], props['height'] = props['size']
+            props['mime'] = mime
+            
             args = dict([(z, props[z]) for z in PICARGS])
             p = Picture()
             [setattr(p, z, props[z]) for z in PICARGS]
@@ -127,8 +130,8 @@ if IMAGETAGS:
         def _getImages(self):
             if self._images:
                 return [{'data': image.data, 'description': image.desc,
-                            'mime': image.mime, 'imagetype': image.type}
-                            for image in self._images]
+                    'mime': image.mime, 'imagetype': image.type}
+                        for image in self._images]
             return []
 
         def _setImages(self, images):

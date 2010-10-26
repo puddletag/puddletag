@@ -39,7 +39,7 @@ Installing from source:
 
     Install the dependencies listed above.
     For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
-    Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore any words before the parenthesis and the next two.)
+    Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore everything on this line.)
     Unzip it.
     You can run puddletag from that directory by typing ./puddletag in your console.
     Alternatively install it by running python setup.py install as root in the unzipped directory.

@@ -20,7 +20,7 @@
 #Foundation, Inc., 51  Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import mutagen, time, pdb, calendar, os, logging, sys
+import mutagen, time, pdb, calendar, os, logging, sys, imghdr
 from errno import ENOENT
 from decimal import Decimal
 from copy import copy, deepcopy
@@ -319,6 +319,9 @@ def path_to_string(value):
         return encode_fn(value)
     else:
         return path_to_string(value[0])
+
+def get_mime(data):
+    return 'image/' + imghdr.what(None, data)
 
 class CaselessDict(dict):
     def __init__(self, other=None):

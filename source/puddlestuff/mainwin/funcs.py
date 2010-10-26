@@ -10,7 +10,7 @@ path = os.path
 import puddlestuff.helperwin as helperwin
 from functools import partial
 from itertools import izip
-from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION
+from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
@@ -94,7 +94,7 @@ def cut():
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
-    emit('writeselected', (dict([(z, "") for z in s])
+    emit('writeselected', (dict([(z, "") for z in s if z not in FILETAGS])
         for s in selected))
 
 def display_tag(tag):

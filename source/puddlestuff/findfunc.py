@@ -614,6 +614,7 @@ class Function:
 
     def setTag(self, tag):
         self.tag = tag
+        self.fields = tag
 
     def addArg(self, arg):
         if self.function.func_code.co_argcount > len(self.args) + 1:

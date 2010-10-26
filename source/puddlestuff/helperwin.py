@@ -34,6 +34,7 @@ UNCHANGED = 0
 BOLD = 1
 ITALICS = 2
 from audioinfo import commontags, INFOTAGS, REVTAGS, PATH
+from functools import partial
 
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
@@ -44,8 +45,11 @@ class TrackWindow(QDialog):
     was specified then the to value is an empty string ('')"""
     def __init__(self, parent=None, minval=0, numtracks = 0, enablenumtracks = False):
         QDialog.__init__(self,parent)
-        self.setWindowTitle("Autonumbering Wizard")
+        #tr = partial(QApplication.translate, "Autonumbering Wizard")
+        self.setWindowTitle(self.tr("Autonumbering Wizard"))
         winsettings('autonumbering', self)
+
+        tr = self.tr
 
         def hbox(*widgets):
             box = QHBoxLayout()
@@ -54,8 +58,8 @@ class TrackWindow(QDialog):
             return box
 
         vbox = QVBoxLayout()
-
-        startlabel = QLabel("&Start: ")
+        
+        startlabel = QLabel(self.tr("&Start: "))
         self._start = QSpinBox()
         startlabel.setBuddy(self._start)
         self._start.setValue(minval)
@@ -63,7 +67,7 @@ class TrackWindow(QDialog):
 
         vbox.addLayout(hbox(startlabel, self._start))
 
-        label = QLabel('Max length after padding with zeroes: ')
+        label = QLabel(tr('Max length after padding with zeroes: '))
         self._padlength = QSpinBox()
         label.setBuddy(self._padlength)
         self._padlength.setValue(1)
@@ -71,12 +75,12 @@ class TrackWindow(QDialog):
         self._padlength.setMinimum(1)
         vbox.addLayout(hbox(label, self._padlength))
 
-        self._separator = QCheckBox("Add track &separator ['/']: Number of tracks")
+        self._separator = QCheckBox(tr("Add track &separator ['/']: Number of tracks"))
         self._numtracks = QSpinBox()
         self._numtracks.setEnabled(False)
         if numtracks:
             self._numtracks.setValue(numtracks)
-        self._restart_numbering = QCheckBox("&Restart numbering at each directory.")
+        self._restart_numbering = QCheckBox(tr("&Restart numbering at each directory."))
 
         vbox.addLayout(hbox(self._separator, self._numtracks))
         vbox.addWidget(self._restart_numbering)

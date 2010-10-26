@@ -1764,9 +1764,12 @@ class PuddleCombo(QWidget):
         hbox.addWidget(self.combo)
         hbox.addWidget(self.remove)
         self.setLayout(hbox)
-
-
+        
         self.combo.setEditable(True)
+
+        self.setEditText = self.combo.setEditText
+        self.currentText = self.combo.currentText
+        
         self.name = name
         cparser = PuddleConfig()
         self.filename = os.path.join(os.path.dirname(cparser.filename), 'combos')

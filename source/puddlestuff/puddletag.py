@@ -321,7 +321,7 @@ class MainWin(QMainWindow):
             menu = self._menus[menu_title][0]
         else:
             menu = QMenu(menu_title)
-            self._menus[menu_title] = menu
+            self._menus[menu_title] = [menu] + actions
             self.menuBar().insertMenu(self._menus['&Windows'][0], menu)
 
         status['actions'].extend(actions)

@@ -3,6 +3,20 @@ from PyQt4.QtGui import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
     QVBoxLayout, QWidget)
 from PyQt4.QtCore import SIGNAL
 
+def sanitize(type_, value, default=None):
+    if type_ is int:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+    elif type_ is bool:
+        if value is True or value == 'True':
+            return True
+        else:
+            return False
+    else:
+        return value
+
 class AutoNumbering(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
@@ -37,21 +51,21 @@ class AutoNumbering(QWidget):
         vbox.addStretch()
 
         self.setLayout(vbox)
-        
 
     def setArguments(self, *args):
-        minimum = args[0]
-        restart = args[1]
-        padding = args[2]
+        minimum = sanitize(int, args[0], 0)
+        restart = sanitize(bool, args[1], True)
+        padding = sanitize(int, args[2], 1)
 
         self._start.setValue(minimum)
         self._restart_numbering.setChecked(restart)
         self._padlength.setValue(padding)
 
     def arguments(self):
-        x = [self._start.value(),
-                self._restart_numbering.isChecked(),
-                self._padlength.value()]
+        x = [
+            self._start.value(),
+            self._restart_numbering.isChecked(),
+            self._padlength.value()]
         return x
 
 from functions import autonumbering

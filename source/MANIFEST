@@ -11,6 +11,7 @@ puddletag.png
 puddlestuff/__init__.py
 puddlestuff/about.py
 puddlestuff/actiondlg.py
+puddlestuff/action_shortcuts.py
 puddlestuff/confirmations.py
 puddlestuff/constants.py
 puddlestuff/findfunc.py

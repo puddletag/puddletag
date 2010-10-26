@@ -27,7 +27,7 @@ from copy import copy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
         QuotedString, Literal, NotAny, nums
 import cPickle as pickle
-from puddleobjects import (ListBox, OKCancel, ListButtons, 
+from puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
     winsettings, gettaglist, settaglist, safe_name)
 from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
@@ -39,6 +39,7 @@ from util import open_resourcefile, PluginFunction
 import functions_dialogs
 
 READONLY = list(READONLY) + ['__dirpath', ]
+FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
 
 def _escape_text(txt):
     result = txt
@@ -103,12 +104,17 @@ class ScrollLabel(QScrollArea):
         
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
-    controls = {'text': PuddleCombo, 'combo': QComboBox, 'check': QCheckBox}
-    signals = {TEXT: SIGNAL('editTextChanged(const QString&)'),
-                COMBO : SIGNAL('currentIndexChanged(int)'),
-                CHECKBOX : SIGNAL('stateChanged(int)')}
+
+    _controls = {'text': PuddleCombo, 'combo': QComboBox, 'check': QCheckBox}
+    
+    signals = {
+        TEXT: SIGNAL('editTextChanged(const QString&)'),
+        COMBO : SIGNAL('currentIndexChanged(int)'),
+        CHECKBOX : SIGNAL('stateChanged(int)'),
+        }
+
     def __init__(self, funcname, showcombo = False, userargs = None, 
-        defaulttags = None, parent = None, example = None, text = None):
+        default_fields = None, parent = None, example = None, text = None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
         userargs is the default values you want to fill the controls in the dialog with
@@ -127,7 +133,7 @@ class FunctionDialog(QWidget):
         else:
             fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
 
-        self.tagcombo = QComboBox()
+        self.tagcombo = QComboBox(self)
         tooltip = "Fields that will get written to.<br /><br />"\
             "Enter a list of comma-separated fields eg. <b>artist, title, album</b>"
         self.tagcombo.setToolTip(tooltip)
@@ -135,13 +141,7 @@ class FunctionDialog(QWidget):
         self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
         self.tagcombo.addItems(fields)
         self._combotags = showcombo
-        if defaulttags:
-            index = self.tagcombo.findText(" , ".join(defaulttags))
-            if index != -1:
-                self.tagcombo.setCurrentIndex(index)
-            else:
-                self.tagcombo.insertItem(0, ", ".join(defaulttags))
-                self.tagcombo.setCurrentIndex(0)
+        
         self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
         if self.func.function not in functions.no_fields:
@@ -159,82 +159,32 @@ class FunctionDialog(QWidget):
             self.setLayout(vbox)
             self.setMinimumSize(self.sizeHint())
 
-            arguments = []
-            for argno, line in enumerate(docstr):
-                ctype = tags.parseString(line)[1]
-                if ctype in ['combo', 'text']:
-                    if userargs and argno < len(userargs):
-                        arguments.append(userargs[argno])
-                elif ctype == 'check':
-                    if userargs and argno < len(userargs):
-                        if userargs[argno] is True or userargs[argno] == 'True':
-                            arguments.append(True)
-                        else:
-                            arguments.append(False)
-                elif ctype == 'spinbox':
-                    if userargs and argno < len(userargs):
-                        arguments.append(int(userargs[argno]))
-            if arguments:
-                self.widget.setArguments(*arguments)
+            self.setArguments(default_fields, userargs)
             return
         else:
             self.widget = None
 
         self.textcombos = []
         #Loop that creates all the controls
+        self.controls = []
         for argno, line in enumerate(docstr):
             args = tags.parseString(line)
+            label = args[0]
             ctype = args[1]
-            #Get the control
+            default = args[2:]
+            
+            control, func, label = self._createControl(label, ctype, default)
 
-            if ctype == 'text':
-                control = self.controls['text'](args[0], parent = self)
-            else:
-                control = self.controls[ctype](self)
+            self.retval.append(func)
+            self.controls.append(control)
+            self.connect(control, self.signals[ctype], self.showexample)
 
-            defaultarg = args[2:]
-
-            #Create the controls with their default values
-            #if default values have been defined, we set them.
-            #self.retval contains the method to be called when we get
-            #the value of the control
-            if ctype == 'combo':
-                self.retval.append(control.currentText)
-                if defaultarg:
-                    control.addItems(defaultarg)
-                    if userargs and argno < len(userargs):
-                        index = control.findText(userargs[argno])
-                        control.setCurrentIndex(index)
-            elif ctype == 'text':
-                self.textcombos.append(control)
-                self.retval.append(control.combo.currentText)
-                if defaultarg:
-                    control.combo.setEditText(defaultarg[0])
-                if userargs and argno < len(userargs):
-                    control.combo.setEditText(userargs[argno])
-            elif ctype == 'check':
-                self.retval.append(control.checkState)
-                if defaultarg:
-                    if defaultarg[0] == "True":
-                        control.setCheckState(Qt.Checked)
-                    else:
-                        control.setCheckState(Qt.Unchecked)
-                if userargs and argno < len(userargs):
-                    if userargs[argno]:
-                        control.setCheckState(Qt.Checked)
-                    else:
-                        control.setCheckState(Qt.Unchecked)
-                    
-                control.setText(args[0])
-
-            if ctype != 'check':
-                label = QLabel(args[0])
-                label.setBuddy(control)
+            if label:
                 self.vbox.addWidget(label)
-
-            control.connect(control, self.signals[ctype], self.showexample)
-
             self.vbox.addWidget(control)
+
+        self.setArguments(default_fields, userargs)
+            
         self.vbox.addStretch()
         self.setLayout(self.vbox)
         self.setMinimumSize(self.sizeHint())
@@ -271,6 +221,61 @@ class FunctionDialog(QWidget):
             self.func.setTag(fields)
         return newargs + fields
 
+    def _createControl(self, label, ctype, default=None):
+        if ctype == 'text':
+            control = self._controls['text'](label, parent = self)
+        else:
+            control = self._controls[ctype](self)
+
+        if ctype == 'combo':
+            func = control.currentText
+            if default:
+                control.addItems(default)
+        elif ctype == 'text':
+            self.textcombos.append(control)
+            func = control.currentText
+            if default:
+                control.setEditText(default[0])
+        elif ctype == 'check':
+            func = control.checkState
+            if default:
+                if default[0] == "True" or default[0] is True:
+                    control.setChecked(True)
+                else:
+                    control.setChecked(False)
+            control.setText(label)
+
+        if ctype != 'check':
+            label = QLabel(label)
+            label.setBuddy(control)
+        else:
+            label = None
+
+        return control, func, label
+
+    def loadSettings(self, filename=None):
+        if filename is None:
+            filename = FUNC_SETTINGS
+        cparser = PuddleConfig(filename)
+        function = self.func.function
+        section = '%s_%s' % (function.__module__, function.__name__)
+        arguments = cparser.get(section, 'arguments', [])
+        fields = cparser.get(section, 'fields', [])
+        if not fields:
+            fields = None
+        self.setArguments(fields, arguments)
+
+    def saveSettings(self, filename=None):
+        if not filename:
+            filename = FUNC_SETTINGS
+        function = self.func.function
+        section = '%s_%s' % (function.__module__, function.__name__)
+
+        cparser = PuddleConfig(filename)
+        args = self.argValues()
+        cparser.set(section, 'arguments', self.func.args)
+        cparser.set(section, 'fields', self.func.tag)
+
     def showexample(self, *args, **kwargs):
         self.argValues()
         if self.example is not None:
@@ -299,6 +304,50 @@ class FunctionDialog(QWidget):
                 self.emit(SIGNAL('updateExample'), val)
             else:
                 self.emit(SIGNAL('updateExample'), u'<b>No change</b>')
+
+    def _sanitize(self, ctype, value):
+        if ctype in ['combo', 'text']:
+            return value
+        elif ctype == 'check':
+            if value is True or value == 'True':
+                return True
+            else:
+                return False
+        elif ctype == 'spinbox':
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return 0
+
+    def setArguments(self, fields=None, args=None):
+        if fields is not None:
+            text = u', '.join(fields)
+            index = self.tagcombo.findText(text)
+            if index != -1:
+                self.tagcombo.setCurrentIndex(index)
+            else:
+                self.tagcombo.insertItem(0, text)
+                self.tagcombo.setCurrentIndex(0)
+            self.tagcombo.setEditText(text)
+
+        if not args:
+            return
+
+        if self.widget:
+            self.widget.setArguments(*args)
+            return
+
+        for argument, control in zip(args, self.controls):
+            if isinstance(control, QComboBox):
+                index = control.findText(argument)
+                if index != -1:
+                    control.setCurrentIndex(index)
+            elif isinstance(control, PuddleCombo):
+                control.setEditText(argument)
+            elif isinstance(control, QCheckBox):
+                control.setChecked(self._sanitize('check', argument))
+            elif isinstance(control, QSpinBox):
+                control.setValue(self._sanitize('spinbox', argument))
 
 class CreateFunction(QDialog):
     """A dialog to allow the creation of functions using only one window and a QStackedWidget.
@@ -357,6 +406,24 @@ class CreateFunction(QDialog):
         self.vbox.addLayout(self.okcancel)
         self.setLayout(self.vbox)
 
+    def createWindow(self, index, fields = None, args = None):
+        """Creates a Function dialog in the stack window
+        if it doesn't exist already."""
+        self.stack.setFrameStyle(QFrame.Box)
+        if index not in self.mydict:
+            what = FunctionDialog(self.realfuncs[index], self.showcombo, 
+                fields, args, example=self.example, text=self._text)
+            if args is None:
+                what.loadSettings()
+            self.mydict.update({index: what})
+            self.stack.addWidget(what)
+            self.connect(what, SIGNAL('updateExample'), self.updateExample)
+        self.stack.setCurrentWidget(self.mydict[index])
+        self.mydict[index].showexample()
+        self.setMinimumHeight(self.sizeHint().height())
+        if self.sizeHint().width() > self.width():
+            self.setMinimumWidth(self.sizeHint().width())
+
     def okClicked(self, close=True):
         w = self.stack.currentWidget()
         w.argValues()
@@ -366,23 +433,9 @@ class CreateFunction(QDialog):
             newtags = [z for z in w.func.tag if z not in self.showcombo]
             if newtags:
                 settaglist(sorted(newtags + self.showcombo))
+        for widget in self.mydict.values():
+            widget.saveSettings()
         self.emit(SIGNAL("valschanged"), w.func)
-
-    def createWindow(self, index, defaultargs = None, defaulttags = None):
-        """Creates a Function dialog in the stack window
-        if it doesn't exist already."""
-        self.stack.setFrameStyle(QFrame.Box)
-        if index not in self.mydict:
-            what = FunctionDialog(self.realfuncs[index], self.showcombo, 
-                defaultargs, defaulttags, example=self.example, text=self._text)
-            self.mydict.update({index: what})
-            self.stack.addWidget(what)
-            self.connect(what, SIGNAL('updateExample'), self.updateExample)
-        self.stack.setCurrentWidget(self.mydict[index])
-        self.mydict[index].showexample()
-        self.setMinimumHeight(self.sizeHint().height())
-        if self.sizeHint().width() > self.width():
-            self.setMinimumWidth(self.sizeHint().width())
 
     def updateExample(self, text):
         if not text:

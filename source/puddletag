@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
 
 from PyQt4.QtGui import QApplication, QFont, QPixmap, QSplashScreen, QIcon
-from PyQt4.QtCore import pyqtRemoveInputHook
+from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator
 import pdb
 from puddlestuff.puddletag import MainWin
 pyqtRemoveInputHook()
@@ -120,6 +120,11 @@ if __name__ == '__main__':
         print u'puddletag Version: %s' % version_string
 
     app = QApplication(sys.argv)
+    qtTranslator = QTranslator()
+    if qtTranslator.load("puddletag_afr"):
+        print 'here'
+        app.installTranslator(qtTranslator)
+
     app.setWindowIcon(QIcon(":/appicon.png"))
     pixmap = QPixmap(':/puddlelogo.png')
     splash = QSplashScreen(pixmap)
