@@ -12,28 +12,34 @@ from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
 
 release_order = ('year', 'type', 'label', 'catalog')
-search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=1&x=0&y=0'
+#search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=1&x=0&y=0'
+#search_adress = 'http://www.allmusic.com/search/album/%s'
+search_adress = 'http://www.allmusic.com/search?search_term=%s&search_type=album&x=0&y=0'
+search_adress = 'http://www.allmusic.com/search/album/%s'
 
 search_order = (None, 'year', 'artist', None, 'album', None, 'label', 
                     None, 'genre')
-album_url = u'http://www.allmusic.com/cg/amg.dll?p=amg&sql='
 
-spanmap = {'Genre': 'genre',
-           'Styles': 'style',
-           'Themes': 'theme',
-           'Moods': 'mood',
-           'Release Date': 'year',
-            'Label': 'label',
-            'Album': 'album',
-            'Artist': 'artist',
-            'Featured Artist': 'artist',
-            'Performer': 'artist',
-            'Title': 'title',
-            'Composer': 'composer',
-            'Time': '__length',
-            'Year': 'year'}
+album_url = u'http://www.allmusic.com/album/'
 
-sqlre = re.compile('sql=(.*)')
+spanmap = {
+    'Genre': 'genre',
+    'Styles': 'style',
+    'Style': 'style',
+    'Themes': 'theme',
+    'Moods': 'mood',
+    'Release Date': 'year',
+    'Label': 'label',
+    'Album': 'album',
+    'Artist': 'artist',
+    'Featured Artist': 'artist',
+    'Performer': 'artist',
+    'Title': 'title',
+    'Composer': 'composer',
+    'Time': '__length',
+    'Year': 'year'}
+
+sqlre = re.compile('(r\d+)$')
 
 first_white = lambda match: match.groups()[0][0]
 
@@ -46,6 +52,20 @@ def find_id(tracks, field=None):
             else:
                 return value[0]
 
+def convert_year(info):
+    if 'year' not in info:
+        return {}
+
+    try:
+        year = time.strptime(info['year'], '%b %d, %Y')
+        return {'year': time.strftime('%Y-%m-%d', year)}
+    except ValueError:
+        try:
+            year = time.strptime(info['year'], '%b %Y')
+            return {'year': time.strftime('%Y-%m', year)}
+        except ValueError:
+            return {}
+    return {}
 
 def create_search(terms):
     return search_adress % re.sub('(\s+)', u'%20', terms)
@@ -117,66 +137,75 @@ def parselist(item):
 
 def parse_rating(soup):
     try:
-        rating = soup.find_all('td', {'class': 'rating-stars'})[0][0]\
-                .element.attrib['title'][0]
+        img = soup.find('img', {'alt': re.compile('star_rating\(\d+\)')})
+        rating = re.search('star_rating\((\d+)\)', img.element.attrib['alt']).groups()[0]
     except IndexError:
         return {}
     return {'rating': rating}
 
 def parse_review(soup):
     try:
-        review_td = [x for x in soup.find_all('td', valign="top", colspan="2")][0]
-    except IndexError:
+        review_td = soup.find_all('div', {'id': 'review'})[0]
+        author = review_td.find('p', {'class':'author'}).string.strip()
+        review = review_td.find('p', {'class':'text'}).string.strip()
+        review = review.encode('latin1').decode('utf8')
+    except (IndexError, AttributeError):
         return {}
     #review = text(review_td)
     ##There are double-spaces in links and italics. Have to clean up.
     #review = re.sub('(\s+)', first_white, review)
-    return {'review': review_td.string.strip()}
+    return {'review': '%s\n\n%s' % (author, review)}
 
 def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
 
-keys = {'Release Date': 'year',
-        'Label': 'label',
-        'Album': 'album',
-        'Artist': 'artist',
-        'Featured Artist': 'artist',
-        'Genre': parselist,
-        'Moods': parselist,
-        'Styles': parselist,
-        'Themes': parselist,
-        'Rating': parse_rating}
+keys = {
+    'Release Date': 'year',
+    'Label': 'label',
+    'Album': 'album',
+    'Artist': 'artist',
+    'Featured Artist': 'artist',
+    'Genre': parselist,
+    'Moods': parselist,
+    'Styles': parselist,
+    'Themes': parselist,
+    'Rating': parse_rating}
 
 def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
-    artist_group = album_soup.find_all('td', 'artist')
+    artist_group = album_soup.find('div', {'class': 'left-sidebar'})
+
+    find = artist_group.find_all
+
     info = {}
-    for item in artist_group:
-        key = item.find('span').all_text().strip()
-        if key in keys:
-            if callable(keys[key]):                
-                info.update(keys[key](item))
-            else:
-                values = filter(None, map(text, item.find_all('td')))
-                middle = len(values) / 2
-                fields = [spanmap.get(key, key) for key in values[:middle]]
-                info.update(zip(fields, values[middle:]))
+    values = find('p')
+
+    for field in find('h3'):
+        if field.element.attrib:
+            continue
+
+        value = field.element.getnext()
+        if value.tag != 'p':
+            break
+        value = value.text_content().strip()
+        field = field.string.strip()
+
+    #Get Genres
+    styles = artist_group.find_all('div', {'id': 'genre-style'})
+    for style in styles:
+        for g in style.find_all('div', re.compile('half-column$')):
+            field = g.find('h3').string.strip()
+            values = [z.string.strip() for z in g.find('ul').find_all('li')]
+            info[field] = values
 
     info.update(parse_rating(album_soup))
-    info.update(parse_cover(album_soup))
     info.update(parse_review(album_soup))
-    if 'year' in info:
-        try:
-            year = time.strptime(info['year'], '%b %d, %Y')
-            info['year'] = time.strftime('%Y-%m-%d', year)
-        except ValueError:
-            try:
-                year = time.strptime(info['year'], '%b %Y')
-                info['year'] = time.strftime('%Y-%m', year)
-            except ValueError:
-                pass
-    
+    info.update(convert_year(info))
+    info.update(parse_cover(album_soup))
+
+    info = dict([(spanmap.get(k, k), v) for k, v in info.iteritems()])
+
     if artist and 'artist' not in info:
         info['artist'] = artist
     
@@ -185,28 +214,41 @@ def parse_albumpage(page, artist=None, album=None):
 
     return info, parse_tracks(album_soup)
 
-def parse_search_element(element, id_field = None):
-    ret = {'#albumurl' : album_url + element.element.attrib['onclick'][3:-2]}
-    try:
-        ret.update({'#play': element[3].find('a',
-                        {'rel': 'track'}).element.attrib['href']})
-    except AttributeError:
-        pass
-    ret.update([(field, text(z)) for field, z
-                    in zip(search_order, element) if field])
-    ret['#extrainfo'] = [ret['album'] + u' at AllMusic.com', ret['#albumurl']]
+def parse_search_element(element, fields, id_field = None):
+    ret = {}
+    for td, field in zip(element.find_all('td'), fields):
+        if field == 'title':
+            ret['#albumurl'] = td.find('a').element.attrib['href']
+        elif not field:
+            try:
+                ret.update({'#play': td.find(
+                    'a', {'rel': 'sample'}).element.attrib['href']})
+            except AttributeError:
+                pass
+            continue
+        ret[field] = td.string.strip()
+
+    ret['#extrainfo'] = [ret['title'] + u' at AllMusic.com', ret['#albumurl']]
     try:
         if id_field:
-            ret[sql_field] = sqlre.search(ret['#albumurl']).groups()[0]
-    except:
+            ret[id_field] = sqlre.search(ret['#albumurl']).groups()[0]
+    except AttributeError:
         pass
+    if 'relevance' in ret:
+        del(ret['relevance'])
+
+    if 'title' in ret:
+        ret['album'] = ret['title']
+        del(ret['title'])
     return ret
 
 def parse_searchpage(page, artist, album, id_field):
     soup = parse_html.SoupWrapper(parse_html.parse(page))
-    albums = [parse_search_element(z, id_field) for z in 
-        soup.find_all('td', {'class':'visible', 'id': 'trlink'})]
-    
+    results = soup.find('table', {'class': 'search-results'})
+    fields = [z.string.strip().lower() for z in results.find('tr').find_all('th')]
+    albums = [parse_search_element(z, fields, id_field) for z in
+        results.find_all('tr')[1:]]
+
     d = {}
     if artist and album:
         d = {'artist': artist, 'album': album}
@@ -229,22 +271,56 @@ def parse_searchpage(page, artist, album, id_field):
         else:
             return False, albums
 
-def parse_tracks(soup):
+def parse_track_table(table, discnum=None):
     try:
-        table = soup.find('table', {'id': 'ExpansionTable1'})
-        headers = [text(z) for z in table.find_all('td', 
-            {'id':"content-list-title"})]
+        headers = [th.string.strip() for th in table.tr.find_all('th')]
     except AttributeError:
-        return None
+        return {}
+
     keys = [spanmap.get(key, key) for key in headers]
-    tracks = filter(None, [get_track(trackinfo, keys) for trackinfo in table.find_all('tr')])
+
+    tracks = []
+
+    for tr in table.find_all('tr', {'id': 'trlink'}):
+        track = {}
+        if discnum:
+            track['discnumber'] = discnum
+        for field, td in zip(headers, tr.find_all('td')):
+            if not field:
+                try:
+                    value = unicode(int(td.string.strip()))
+                    field = 'track'
+                except (TypeError, ValueError):
+                    continue
+            else:
+                value = td.string.strip()
+            track[spanmap.get(field, field)] = value
+        if not track:
+            continue
+        tracks.append(track)
     return tracks
 
+def parse_tracks(soup):
+    track_div = soup.find('div', {'id': 'tracks'})
+    discs = [re.search('\d+$', z.string.strip()).group()
+        for z in track_div.find_all('p', {'id': 'discnum'})]
+    track_tables = soup.find_all('table', {'id': 'ExpansionTable'})
+    if discs:
+        tracks = []
+        [tracks.extend(parse_track_table(t, d)) for t,d in
+            zip(track_tables, discs)]
+        return tracks
+    else:
+        return parse_track_table(track_tables[0])
+
 def retrieve_album(url, coverurl=None, id_field=None):
-    write_log('Opening Album Page - %s' % url)
-    album_page = urlopen(url)
-    #to_file(album_page, 'notracks.htm')
-    #album_page = open('album.htm', 'r').read()
+    try:
+        write_log('Opening Album Page - %s' % (url + '/review', ))
+        album_page = urlopen(url + '/review', False)
+    except EnvironmentError:
+        write_log('Opening Album Page - %s' % url)
+        album_page = urlopen(url)
+    #to_file(album_page, 'album.htm')
     info, tracks = parse_albumpage(album_page)
     info['#albumurl'] = url
     try:
@@ -324,7 +400,8 @@ class AllMusic(object):
         if len(artists) > 1:
             artist = u'Various Artists'
         else:
-            artist = artists[0]
+            artist = artists.keys()[0]
+            
         if self._useid and hasattr(artists, 'values'):
             tracks = []
             [tracks.extend(z) for z in artists.values()]
@@ -337,7 +414,7 @@ class AllMusic(object):
         try:
             searchpage = search(album)
             #to_file(searchpage, 'search3.htm')
-            #searchpage = open('outkastsearch.html').read()
+            #searchpage = open('search3.htm').read()
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving search page %s' % 
                         unicode(e))
@@ -390,7 +467,3 @@ class AllMusic(object):
         self._id_field = args[2]
 
 info = AllMusic
-
-if __name__ == '__main__':
-    page = urllib2.urlopen(filename).read()
-    [print_track(t) for t in parse_albumpage(page)[1]]

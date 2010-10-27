@@ -76,13 +76,18 @@ def set_useragent(agent):
     _urlopen = MyOpener().open
 
 _urlopen = urllib2.urlopen
-def urlopen(url):
+def urlopen(url, mask=True):
+    if not mask:
+        return _urlopen(url).read()
     try:
         return _urlopen(url).read()
     except urllib2.URLError, e:
         msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         raise RetrievalError(msg)
     except socket.error:
+        msg = u'%s (%s)' % (e.strerror, e.errno)
+        raise RetrievalError(msg)
+    except EnvironmentError, e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 

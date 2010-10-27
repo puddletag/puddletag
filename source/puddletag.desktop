@@ -6,5 +6,5 @@ Comment=An audio tagger for GNU/Linux similar to Mp3tag for Windows.
 TryExec=puddletag
 Exec=puddletag
 Icon=puddletag
-GenericName=Tag Editor
+GenericName=Audio Tag Editor
 Categories=AudioVideo;Qt;
