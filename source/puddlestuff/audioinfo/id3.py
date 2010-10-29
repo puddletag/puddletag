@@ -280,8 +280,8 @@ paired_textframes = {
 def create_paired(key, value):
     frame = revpaired_frames[key](3)
     if set_paired(frame, value):
-        frame.get_value = lambda: get_paired(frame)
-        frame.set_value = partial(set_paired, frame)
+        frame.get_value = get_factory(get_paired, frame)
+        frame.set_value = set_factory(set_paired, frame)
         return {key: frame}
     return {}
 
@@ -451,6 +451,53 @@ def ufid_handler(frames):
         d['ufid:' + frame.owner] = frame
     return d
 
+def _parse_rgain(value):
+    if not isinstance(value, basestring):
+        try:
+            value = value[0]
+        except IndexError:
+            return
+
+    if isinstance(value, unicode):
+        value = value.decode('utf8')
+
+    values = [z.strip() for z in value.split(':')]
+    channel, gain, peak = values
+    channel = int(channel)
+    gain = float(gain)
+    peak = float(peak)
+    return channel, gain, peak
+
+def create_rgain(key, value):
+    desc = key[len('rgain:'):]
+    try:
+        channel, gain, peak = _parse_rgain(value)
+    except TypeError, ValueError:
+        return {}
+
+    return {'rgain:' + desc: id3.RVA2(desc, channel, gain, peak)}
+
+def set_rgain(frame, value):
+    try:
+        channel, gain, peak = _parse_rgain(value)
+    except TypeError, ValueError:
+        return {}
+    frame.channel = channel
+    frame.gain = gain
+    frame.peak = peak
+
+def get_rgain(frame):
+    return u':'.join(map(unicode, [frame.channel, frame.gain, frame.peak]))
+
+def rgain_handler(frames):
+    d = {}
+    for f in frames:
+        f.get_value = get_factory(get_rgain, f)
+        f.set_value = set_factory(set_rgain, f)
+        d['rgain:' + f.desc] = f
+    return d
+    
+
 write_frames.update({'playcount': create_playcount,
                      'popularimeter': create_popm})
 
@@ -474,7 +521,8 @@ frames.update({id3.WXXX: userurl_handler,
                id3.COMM: comment_handler,
                id3.PCNT: playcount_handler,
                id3.POPM: popm_handler,
-               id3.UFID: ufid_handler})
+               id3.UFID: ufid_handler,
+               id3.RVA2: rgain_handler,})
 
 revframes = dict([(val, key) for key, val in frames.items()])
 

@@ -281,11 +281,14 @@ class EditTag(QDialog):
     def __init__(self, tag = None, parent = None, taglist = None, edit=True):
 
         QDialog.__init__(self, parent)
+        self.setWindowTitle('Edit Field')
+        winsettings('edit_field', self)
         self.vbox = QVBoxLayout()
 
-        label = QLabel("Tag")
+        label = QLabel("&Field")
         self.tagcombo = QComboBox()
         self.tagcombo.setEditable(True)
+        label.setBuddy(self.tagcombo)
         if not taglist:
             self.tagcombo.addItems(gettaglist())
         else:
@@ -293,8 +296,9 @@ class EditTag(QDialog):
 
         #Get the previous tag
         self.prevtag = tag
-        label1 = QLabel("Value")
+        label1 = QLabel("&Value")
         self.value = QTextEdit()
+        label1.setBuddy(self.value)
         okcancel = OKCancel()
         okcancel.ok.setText('A&dd')
         if tag is not None:
@@ -336,7 +340,6 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(self._color[status])
         self._status = status
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        
 
     def _get_preview(self):
         return self.font().bold()

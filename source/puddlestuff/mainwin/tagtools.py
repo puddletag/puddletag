@@ -6,6 +6,7 @@ from functools import partial
 import traceback
 from mutagen import id3, apev2
 import puddlestuff.audioinfo as audioinfo
+from puddlestuff.puddleobjects import progress
 
 id3_tag = audioinfo.id3.Tag
 ape_tag = audioinfo.apev2.Tag
@@ -32,13 +33,27 @@ def _remove_tag(f, tag):
         traceback.print_exc()
         return
 
-def remove_tag(tag, parent=None):
+def remove_tag(tag, parent):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
             'Disable Preview Mode first to enable tag deletion.')
         return
     files = status['selectedfiles']
-    [_remove_tag(f, tag) for f in files]
+
+    def func():
+        for f in files:
+            try:
+                _remove_tag(f, tag)
+            except (IOError, OSError), e:
+                m = 'An error occured while writing to <b>%s</b>. (%s)' % (
+                    e.filename, e.strerror)
+                if row == rows[-1]:
+                    yield m, 1
+                else:
+                    yield m, len(rows)
+
+    s = progress(func, 'Removing %s tag: ' % tag, len(files))
+    s(parent)
 
 remove_apev2 = lambda parent=None: remove_tag('APEv2', parent)
 remove_id3 = lambda parent=None: remove_tag('ID3', parent)
