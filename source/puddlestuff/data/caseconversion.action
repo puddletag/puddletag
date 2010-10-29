@@ -1,7 +1,7 @@
 [info]
 name = Case Conversion
 [Func0]
-fields = __all,
+fields = artist, album, title
 func_name = titleCase
 module = puddlestuff.functions
 arguments = Mixed Case, "., !"

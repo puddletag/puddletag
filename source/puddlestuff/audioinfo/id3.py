@@ -475,7 +475,11 @@ def create_rgain(key, value):
     except TypeError, ValueError:
         return {}
 
-    return {'rgain:' + desc: id3.RVA2(desc, channel, gain, peak)}
+    frame = id3.RVA2(desc, channel, gain, peak)
+    frame.get_value = get_factory(get_rgain, frame)
+    frame.set_value = set_factory(set_rgain, frame)
+
+    return {'rgain:' + desc: frame}
 
 def set_rgain(frame, value):
     try:
@@ -739,6 +743,8 @@ class Tag(TagBase):
                 self._tags.update(create_userurl(key, value))
             elif key.startswith('ufid:'):
                 self._tags.update(create_ufid(key, value))
+            elif key.startswith('rgain:'):
+                self._tags.update(create_rgain(key, value))
             else:
                 self._tags.update(create_usertext(key, value))
 

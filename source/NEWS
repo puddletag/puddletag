@@ -1,3 +1,15 @@
+30 October 2010 - 0.9.7
+    New Features:
+        The Autonumbering wizard is now a Function.
+        Fields are now case-insensitive. Which means that if a file contains a field named 'album', writing to 'ALBUM' will rename 'album' to 'ALBUM'.
+        You can add your actions as shortcuts to the Actions menu. See the tooltip for Create Shortcut in Actions dialog for details.
+    Bugs:
+        Just a couple were fixed, but nothing noteworthy.
+    Changes:
+        Filenames are now written using the filesystem's encoding instead of UTF-8 (though you should be using UTF-8 anyway ;).
+        A new logo cause the old one was getting a bit long in the tooth.
+        Functions now save their state.
+
 13 October 2010 - 0.9.6
     Major bug fixed where the fields weren't being shown in the Functions dialog.
 
