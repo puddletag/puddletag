@@ -78,7 +78,6 @@ def check_libs():
 if __name__ == '__main__':
     check_libs()
 
-
 from PyQt4.QtGui import QApplication, QFont, QPixmap, QSplashScreen, QIcon
 from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator
 import pdb
@@ -87,31 +86,64 @@ pyqtRemoveInputHook()
 __version__ = "0.9.7"
 import logging
 
-try:
-  if sys.argv[1] == '--debug':
-    logging.basicConfig(stream=sys.stderr,
-                        level=logging.DEBUG)
-    del(sys.argv[1])
-except IndexError:
-  pass
+def create_log():
+    join = os.path.join
+    rename = os.rename
+    exists = os.path.exists
+    
+    from puddlestuff.constants import SAVEDIR
 
-size = None
+    for i in reversed(range(1, 5)):
+        filename = join(SAVEDIR, 'log%d.log' % i)
+        if exists(filename):
+            rename(filename, join(SAVEDIR, 'log%d.log' % (i + 1)))
 
-for i, arg in enumerate(sys.argv):
-    if arg.startswith('--fontsize'):
-        try:
-            size = int(sys.argv[i + 1])
-        except IndexError:
-            print 'No fontsize specified.'
-        except ValueError:
-            print 'Invalid fontsize specified.'
+    log_file = join(SAVEDIR, 'log.log')
+    if exists(log_file):
+        rename(log_file, join(SAVEDIR, 'log1.log'))
 
-if len(sys.argv) > 1:
-    filename = sys.argv[-1]
-else:
-    filename = None
+
+    class stdout(object):
+        def __init__(self, old_write, new_write):
+            self._old_write = old_write
+            self._new_write = new_write
+
+        def write(self, text):
+            self._old_write(text)
+            try:
+                self._new_write(text)
+            except:
+                pass
+
+    f = open(log_file, 'w')
+    sys.stdout = stdout(sys.stdout.write, f.write)
+    sys.stderr = stdout(sys.stderr.write, f.write)
 
 if __name__ == '__main__':
+    create_log()
+    try:
+        if sys.argv[1] == '--debug':
+            logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+            del(sys.argv[1])
+    except IndexError:
+        pass
+
+    size = None
+
+    for i, arg in enumerate(sys.argv):
+        if arg.startswith('--fontsize'):
+            try:
+                size = int(sys.argv[i + 1])
+            except IndexError:
+                print 'No fontsize specified.'
+            except ValueError:
+                print 'Invalid fontsize specified.'
+
+    if len(sys.argv) > 1:
+        filename = sys.argv[-1]
+    else:
+        filename = None
+
     from puddlestuff import version_string, revision
     if revision:
         print u'puddletag Version: %s, Revision: %s' % (

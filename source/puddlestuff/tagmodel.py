@@ -1569,11 +1569,9 @@ class TagTable(QTableView):
                 #self.deleteSelected(False, True)
 
     def mousePressEvent(self, event):
-        QTableView.mousePressEvent(self, event)
-        if event.buttons()  == Qt.RightButton and self.model().taginfo:
-            self.contextMenuEvent(event)
         if event.buttons() == Qt.LeftButton:
             self.StartPosition = [event.pos().x(), event.pos().y()]
+        QTableView.mousePressEvent(self, event)
 
     def fillTable(self, tags, append=False):
         """Clears the table and fills it with metadata in tags.

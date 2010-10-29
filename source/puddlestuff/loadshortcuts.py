@@ -7,7 +7,7 @@ from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
 
-__version__ = 19
+__version__ = 20
 
 files = [open_resourcefile(filename)
             for filename in [':/caseconversion.action', ':/standard.action']]

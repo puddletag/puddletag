@@ -26,7 +26,7 @@ class ActionDialog(ActionWindow):
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._apply)
-        self.grid.addLayout(hbox, 3,0,1,2)
+        self.grid.addLayout(hbox, 2,0,1,1)
 
     def _update(self):
         try:

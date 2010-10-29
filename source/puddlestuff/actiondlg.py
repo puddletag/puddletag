@@ -147,6 +147,8 @@ class FunctionDialog(QWidget):
         if self.func.function not in functions.no_fields:
             self.vbox.addWidget(QLabel("Fields"))
             self.vbox.addWidget(self.tagcombo)
+        else:
+            self.tagcombo.setVisible(False)
         self.example = example
         self._text = text
 

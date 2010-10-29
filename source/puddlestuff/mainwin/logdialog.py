@@ -2,6 +2,10 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from puddlestuff.constants import RIGHTDOCK
+import sys
+
+mutex = QMutex()
+
 
 class LogDialog(QWidget):
     def __init__(self, parent=None, status=None):
@@ -10,6 +14,7 @@ class LogDialog(QWidget):
         self.receives = [('logappend', self.appendText)]
 
         self._text = QTextEdit()
+        self._text.setWordWrapMode(QTextOption.NoWrap)
 
         copy = QPushButton('&Copy')
         clear = QPushButton('&Clear')
@@ -28,21 +33,21 @@ class LogDialog(QWidget):
         vbox.addLayout(hbox)
         self.setLayout(vbox)
 
+    def appendText(self, text):
+        self._text.append(text)
+
     def _clear(self):
         self._text.setPlainText('')
+
+    def _copy(self):
+        text = self._text.toPlainText()
+        QApplication.clipboard().setText(text)
 
     def setText(self, text, html=True):
         if html:
             self._text.setHtml(text)
         else:
             self._text.setPlaintext(text)
-
-    def appendText(self, text):
-        self._text.append(text)
-
-    def _copy(self):
-        text = self._text.toPlainText()
-        QApplication.clipboard().setText(text)
 
 control = ('Logs', LogDialog, RIGHTDOCK, False)
 
