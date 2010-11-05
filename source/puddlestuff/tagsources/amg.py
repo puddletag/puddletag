@@ -148,6 +148,8 @@ def parse_review(soup):
         review_td = soup.find_all('div', {'id': 'review'})[0]
         author = review_td.find('p', {'class':'author'}).string.strip()
         review = review_td.find('p', {'class':'text'}).string.strip()
+        if not review.strip():
+            raise IndexError
         review = review.encode('latin1').decode('utf8')
     except (IndexError, AttributeError):
         return {}
@@ -195,7 +197,11 @@ def parse_albumpage(page, artist=None, album=None):
     styles = artist_group.find_all('div', {'id': 'genre-style'})
     for style in styles:
         for g in style.find_all('div', re.compile('half-column$')):
-            field = g.find('h3').string.strip()
+            try:
+                field = g.find('h3').string.strip()
+            except AttributeError:
+                #Sometimes the leave an extra empty field
+                continue
             values = [z.string.strip() for z in g.find('ul').find_all('li')]
             info[field] = values
 
@@ -211,6 +217,9 @@ def parse_albumpage(page, artist=None, album=None):
     
     if album and 'album' not in info:
         info['album'] = album
+
+    if ('#extrainfo' not in info) and ('#albumurl' in info) and ('album' in info):
+        info['#extrainfo'] = [info['album'] + u' at AllMusic.com', info['#albumurl']]
 
     return info, parse_tracks(album_soup)
 
@@ -467,3 +476,7 @@ class AllMusic(object):
         self._id_field = args[2]
 
 info = AllMusic
+
+if __name__ == '__main__':
+    f = open(sys.argv[1], 'r').read()
+    print parse_albumpage(f)
