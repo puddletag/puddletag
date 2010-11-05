@@ -79,12 +79,9 @@ if __name__ == '__main__':
     check_libs()
 
 from PyQt4.QtGui import QApplication, QFont, QPixmap, QSplashScreen, QIcon
-from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator
-import pdb
-from puddlestuff.puddletag import MainWin
+from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator, QLocale
+import pdb, logging
 pyqtRemoveInputHook()
-__version__ = "0.9.7"
-import logging
 
 def create_log():
     join = os.path.join
@@ -120,6 +117,15 @@ def create_log():
     sys.stderr = stdout(sys.stderr.write, f.write)
 
 if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    qtTranslator = QTranslator()
+
+    locale = QLocale.system().name()
+    #locale = 'afr'
+    if qtTranslator.load("puddletag_" + locale, os.path.dirname(__file__)):
+        app.installTranslator(qtTranslator)
+        print 'Loaded Translation'
+    
     create_log()
     try:
         if sys.argv[1] == '--debug':
@@ -144,18 +150,12 @@ if __name__ == '__main__':
     else:
         filename = None
 
-    from puddlestuff import version_string, revision
+    from puddlestuff import version_string, revision, resource
     if revision:
         print u'puddletag Version: %s, Revision: %s' % (
             version_string, revision)
     else:
         print u'puddletag Version: %s' % version_string
-
-    app = QApplication(sys.argv)
-    qtTranslator = QTranslator()
-    if qtTranslator.load("puddletag_afr"):
-        print 'here'
-        app.installTranslator(qtTranslator)
 
     app.setWindowIcon(QIcon(":/appicon.png"))
     pixmap = QPixmap(':/puddlelogo.png')
@@ -169,6 +169,7 @@ if __name__ == '__main__':
         app.setFont(font)
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
+    from puddlestuff.puddletag import MainWin
     win = MainWin()
     splash.close()
     win.setVisible(True)

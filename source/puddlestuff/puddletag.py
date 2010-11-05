@@ -61,9 +61,9 @@ tagmodel.status = status
 mainwin.previews.set_status(status)
 mainwin.tagtools.set_status(status)
 
-confirmations.add('rename_dirs', True, 'Confirm when renaming directories.')
-confirmations.add('preview_mode', True, 'Confirm when exiting preview mode.')
-confirmations.add('delete_files', True, 'Confirm when deleting files.')
+confirmations.add('rename_dirs', True, QApplication.translate("Confirmations", 'Confirm when renaming directories.'))
+confirmations.add('preview_mode', True, QApplication.translate("Confirmations", 'Confirm when exiting preview mode.'))
+confirmations.add('delete_files', True, QApplication.translate("Confirmations", 'Confirm when deleting files.'))
 
 def create_tool_windows(parent):
     """Creates the dock widgets for the main window (parent) using
@@ -94,6 +94,7 @@ def create_tool_windows(parent):
         p.setVisible(z[3])
         docks.append(p)
         action = p.toggleViewAction()
+        action.setText(name)
         scut = cparser.get('winshortcuts', name, '')
         if scut:
             action.setShortcut(scut)
@@ -197,9 +198,9 @@ def connect_action_shortcuts(actions):
             action.setShortcut(shortcut)
 
 def help_menu(parent):
-    menu = QMenu('Help', parent)
-    about = QAction('About puddletag', parent)
-    about_qt = QAction('About Qt', parent)
+    menu = QMenu(QApplication.translate("Menus", 'Help'), parent)
+    about = QAction(QApplication.translate("Menus", 'About puddletag'), parent)
+    about_qt = QAction(QApplication.translate("Menus", 'About Qt'), parent)
     about_qt.connect(about_qt, SIGNAL('triggered()'), QApplication.aboutQt)
     about.connect(about, SIGNAL('triggered()'), 
         partial(mainfuncs.show_about, parent))
@@ -279,7 +280,7 @@ class MainWin(QMainWindow):
             winmenu.addSeparator()
             self._winmenu = winmenu
         else:
-            self._winmenu = QMenu('&Windows', self)
+            self._winmenu = QMenu(QApplication.translate("Settings", '&Windows'), self)
             menubar.addMenu(self._winmenu)
         self.setMenuBar(menubar)
         menubar.addMenu(help_menu(self))
@@ -289,7 +290,7 @@ class MainWin(QMainWindow):
 
         toolgroup = ls.get_menus('toolbar')
         toolbar = ls.toolbar(toolgroup, all_actions, controls)
-        toolbar.setObjectName('Toolbar')
+        toolbar.setObjectName(QApplication.translate("Menus", 'Toolbar'))
         self.addToolBar(toolbar)
 
         connect_actions(actions, controls)
@@ -366,9 +367,9 @@ class MainWin(QMainWindow):
             initial = initial.decode('utf8', 'replace')
         
         if len(dirs) > 1:
-            self.setWindowTitle(u'puddletag: %s + others' % initial)
+            self.setWindowTitle(QApplication.translate("Main Window", 'puddletag: %1 + others').arg(initial))
         else:
-            self.setWindowTitle(u'puddletag: %s' % initial)
+            self.setWindowTitle(QApplication.translate("Main Window", 'puddletag: %1').arg(initial))
         self._lastdir = dirs
 
     def _getDir(self):
@@ -376,7 +377,7 @@ class MainWin(QMainWindow):
         filedlg = QFileDialog()
         filedlg.setFileMode(filedlg.DirectoryOnly)
         filename = unicode(filedlg.getExistingDirectory(self,
-            'Import directory.', dirname ,QFileDialog.ShowDirsOnly))
+            QApplication.translate("Main Window", 'Import directory...'), dirname ,QFileDialog.ShowDirsOnly))
         return filename
 
     def appendDir(self, filename=None):
@@ -419,16 +420,16 @@ class MainWin(QMainWindow):
         statusbar.addPermanentWidget(statuslabel, 1)
         self._totalstats = QLabel('00 (00:00:00 | 00 MB)')
         self._selectedstats = QLabel('00 (00:00:00 | 00 MB)')
-        preview_status = PreviewLabel('Preview Mode: Off')
+        preview_status = PreviewLabel(QApplication.translate("Previews", 'Preview Mode: Off'))
         statusbar.addPermanentWidget(preview_status, 0)
         statusbar.addPermanentWidget(self._selectedstats, 0)
         statusbar.addPermanentWidget(self._totalstats, 0)
         
         def set_preview_status(value):
             if value:
-                preview_status.setText('<b>Preview Mode: On</b>')
+                preview_status.setText(QApplication.translate("Previews", '<b>Preview Mode: On</b>'))
             else:
-                preview_status.setText('Preview Mode: Off')
+                preview_status.setText(QApplication.translate("Previews", 'Preview Mode: Off'))
         
         def change_preview(value):
             if value:
@@ -442,28 +443,27 @@ class MainWin(QMainWindow):
             set_preview_status)
         statusbar.setMaximumHeight(statusbar.height())
         self.connect(statusbar,SIGNAL("messageChanged (const QString&)"),
-                                            statuslabel.setText)
+            statuslabel.setText)
 
     def loadPlayList(self):
         filedlg = QFileDialog()
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         filename = unicode(filedlg.getOpenFileName(self,
-            'Select m3u file', ))
+            QApplication.translate("Playlist", QApplication.translate("Playlist", 'Select m3u file...')), ))
         if not filename:
             return
         try:
             files = m3u.readm3u(filename)
             self.emit(SIGNAL('loadFiles'), files, None, None, None, filename)
         except (OSError, IOError), e:
-            QMessageBox.information(self._table, 'Error',
-                   'Could not read file: <b>%s</b><br />%s' % (filename,
-                    e.strerror),
-                    QMessageBox.Ok, QMessageBox.NoButton)
+            QMessageBox.information(self._table,
+                QApplication.translate("Defaults", 'Error'),
+                QApplication.translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror),
+                QMessageBox.Ok, QMessageBox.NoButton)
         except Exception, e:
-            QMessageBox.information(self._table, 'Error',
-                   'Could not read file: <b>%s</b><br />%s' % (filename,
-                    unicode(e)),
-                    QMessageBox.Ok)
+            QMessageBox.information(self._table, QApplication.translate("Defaults", 'Error'),
+                QApplication.translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(unicode(e)),
+                QMessageBox.Ok)
 
     def openDir(self, filename=None, append=False):
         """Opens a folder. If filename != None, then
@@ -523,7 +523,7 @@ class MainWin(QMainWindow):
         for control, val in gensettings.items():
             control.applyGenSettings(val, 0)
 
-        home = os.getenv('HOME')
+        
         self._lastdir = [encode_fn(cparser.get(
             'main', 'lastfolder', constants.HOMEDIR))]
 
@@ -575,7 +575,7 @@ class MainWin(QMainWindow):
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
         default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
         f = unicode(QFileDialog.getSaveFileName(self,
-                'Save Playlist', os.path.join(dirname, default)))
+            QApplication.translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default)))
         if f:
             if settings.get('playlist', 'extinfo', 1, True):
                 pattern = settings.get('playlist', 'extpattern','%artist% - %title%')
@@ -634,8 +634,9 @@ class MainWin(QMainWindow):
                         lib_updates.append(update)
                     yield None
                 except (IOError, OSError), e:
-                    m = 'An error occured while writing to <b>%s</b>. (%s)' % (
-                            e.filename, e.strerror)
+                    filename = model.taginfo[row][PATH]
+                    m = unicode(QApplication.translate("Defaults",
+                        'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                     if row == rows[-1]:
                         yield m, 1
                     else:
@@ -649,7 +650,7 @@ class MainWin(QMainWindow):
             return
         
         func, fin, rows = ret
-        s = progress(func, 'Writing ', len(rows), fin)
+        s = progress(func, QApplication.translate("Defaults", 'Writing '), len(rows), fin)
         s(self)
     
     def writeAction(self, tagiter, rows=None, state=None):
@@ -663,7 +664,7 @@ class MainWin(QMainWindow):
             fin()
             if 'rename_dirs' in state:
                 self.renameDirs(state['rename_dirs'].items())
-        s = progress(func, 'Writing ', len(rows), finished)
+        s = progress(func, QApplication.translate("Defaults", 'Writing '), len(rows), finished)
         s(self)
 
     def writeOneToMany(self, d):
@@ -691,14 +692,15 @@ class MainWin(QMainWindow):
                         lib_updates.append(update)
                     yield None
                 except (IOError, OSError), e:
-                    m = 'An error occured while writing to <b>%s</b>. (%s)' % (
-                            e.filename, e.strerror)
+                    filename = model.taginfo[row][PATH]
+                    m = unicode(QApplication.translate("Defaults",
+                        'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                     if row == rows[-1]:
                         yield m, 1
                     else:
                         yield m, len(rows)
 
-        s = progress(func, 'Writing ', len(rows), fin)
+        s = progress(func, QApplication.translate("Defaults", 'Writing '), len(rows), fin)
         s(self)
     
     def writeSinglePreview(self, d):
@@ -755,14 +757,15 @@ class MainWin(QMainWindow):
                     setRowData(row, {tag: filename}, True, True)
                     yield None
                 except EnvironmentError, e:
-                    m = 'An error occured while renaming <b>%s</b> to ' \
-                        '<b>%s</b>. (%s)' % (audio[PATH], filename, e.strerror)
+                    m = unicode(QApplication.translate("Dir Renaming",
+                        'An error occured while renaming <b>%1</b> to ' \
+                        '<b>%2</b>. (%3)').arg(audio[PATH]).arg(filename).arg(e.strerror))
                     if row == rows[-1]:
                         yield m, 1
                     else:
                         yield m, len(rows)
 
-        s = progress(func, 'Renaming ', len(rows), fin)
+        s = progress(func, QApplication.translate("Dir Renaming", 'Renaming '), len(rows), fin)
         s(self)
 
     def renameDirs(self, dirs):
@@ -778,7 +781,7 @@ class MainWin(QMainWindow):
                 if self._lastdir and olddir in self._lastdir:
                     self._lastdir[self._lastdir.index(olddir)] = newdir
             except (IOError, OSError), detail:
-                msg = u"I couldn't rename: <i>%s</i> to <b>%s</b> (%s)" % (olddir, newdir, unicode(detail.strerror))
+                msg = unicode(QApplication.translate("Dir Renaming", "I couldn't rename: <i>%1</i> to <b>%2</b> (%3)").arg(olddir).arg(newdir).arg(detail.strerror))
                 if index == len(dirs) - 1:
                     dirlen = 1
                 else:

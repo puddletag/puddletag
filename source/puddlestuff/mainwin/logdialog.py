@@ -16,8 +16,8 @@ class LogDialog(QWidget):
         self._text = QTextEdit()
         self._text.setWordWrapMode(QTextOption.NoWrap)
 
-        copy = QPushButton('&Copy')
-        clear = QPushButton('&Clear')
+        copy = QPushButton(QApplication.translate("Logs", '&Copy'))
+        clear = QPushButton(QApplication.translate("Logs", '&Clear'))
 
         self.connect(copy, SIGNAL('clicked()'), self._copy)
         self.connect(clear, SIGNAL('clicked()'), self._clear)

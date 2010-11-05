@@ -365,16 +365,20 @@ class PuddleTable(QTableWidget):
 TABLEWIDGETBG = QTableWidgetItem().background()
 RED = QBrush(Qt.red)
 
+TITLE = QApplication.translate("Defaults", 'Title')
+FIELD = QApplication.translate("Defaults", 'Field')
+ROW = QApplication.translate("Tag Panel Settings", 'Row')
+
 class SettingsWin(QWidget):
     title = 'Tag Panel'
     def __init__(self, parent = None, status=None):
         QDialog.__init__(self, parent)
-        self._table = PuddleTable(['Title', 'Field', 'Row'],
-                                        ['Title', 'field', unicode(0)], self)
+        self._table = PuddleTable([TITLE, FIELD, ROW],
+            [TITLE, FIELD, unicode(0)], self)
         buttons = ListButtons()
         buttons.connectToWidget(self._table, add=self.add, edit=self.edit,
-                    moveup=self._table.moveUp, movedown=self._table.moveDown,
-                    duplicate=self.duplicate)
+            moveup=self._table.moveUp, movedown=self._table.moveDown,
+            duplicate=self.duplicate)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
@@ -388,7 +392,7 @@ class SettingsWin(QWidget):
         table = self._table
         if not texts:
             text = table.text
-            table.add(['Title', 'field',
+            table.add([TITLE, FIELD.lower(),
                 max([text(row, 2) for row in table.rows]) + 1])
         else:
             table.add(texts)

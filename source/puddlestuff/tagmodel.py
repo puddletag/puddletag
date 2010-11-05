@@ -312,7 +312,7 @@ class Properties(QDialog):
         """
         QDialog.__init__(self,parent)
         winsettings('fileinfo', self)
-        self.setWindowTitle('File Properties')
+        self.setWindowTitle(QApplication.translate("Shortcut Settings", 'File Properties'))
         self._load(info)
 
     def _load(self, info):
@@ -342,7 +342,7 @@ class Properties(QDialog):
 
 class ColumnSettings(HeaderSetting):
     """A dialog that allows you to edit the header of a TagTable widget."""
-    title = 'Columns'
+    title = QApplication.translate("Column Settings", 'Columns')
     def __init__(self, parent = None, showok = False, status=None):
         (self.tags, checked), fontsize, rowsize, filespec = loadsettings()
         HeaderSetting.__init__(self, self.tags, parent, showok, True)
@@ -351,7 +351,7 @@ class ColumnSettings(HeaderSetting):
         self.buttonlist.moveup.hide()
         self.buttonlist.movedown.hide()
         self.setWindowFlags(Qt.Widget)
-        label = QLabel('Adjust visibility of columns.')
+        label = QLabel(QApplication.translate("Column Settings", 'Adjust visibility of columns.'))
         self.grid.addWidget(label, 0, 0)
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
         if not checked:
@@ -634,12 +634,11 @@ class TagModel(QAbstractTableModel):
                         try:
                             real = self._toString(audio.realvalue(tag))
                             if not real:
-                                real = u'<blank>'
+                                real = BLANK
                         except KeyError:
-                            real = u'<blank>'
+                            real = BLANK
                         if real != val:
-                            tooltip = u'Preview: %s\nReal: %s' % (
-                                val, self._toString(real))
+                            tooltip = QApplication.translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real))
                         else:
                             tooltip = val
                     else:
@@ -844,10 +843,10 @@ class TagModel(QAbstractTableModel):
     def removeFolders(self, folders, v = True):
         if v:
             f = [i for i, tag in enumerate(self.taginfo) if tag.dirpath
-                            not in folders and not tag.library]
+                not in folders and not tag.library]
         else:
             f = [i for i, tag in enumerate(self.taginfo) if tag.dirpath
-                                in folders and not tag.library]
+                in folders and not tag.library]
         while f:
             try:
                 self.removeRows(f[0])
@@ -1151,7 +1150,7 @@ class TagModel(QAbstractTableModel):
 
 class TagDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
-        logging.debug('Creating editor')
+        #logging.debug('Creating editor')
         editor = QLineEdit(parent)
         editor.returnPressed = False
         editor.writeError = False
@@ -1160,7 +1159,7 @@ class TagDelegate(QStyledItemDelegate):
         font.setPointSize(index.model().fontSize)
         editor.setFont(font)
         
-        logging.debug('Closing editor.')
+        #logging.debug('Closing editor.')
         return editor
 
     def eventFilter(self, editor, event):
@@ -1195,7 +1194,7 @@ class TableHeader(QHeaderView):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        settings = menu.addAction("&Select Columns")
+        settings = menu.addAction(QApplication.translate("Column Settings", "&Select Columns"))
         self.connect(settings, SIGNAL('triggered()'), self.setTitles)
         menu.exec_(event.globalPos())
 
@@ -1401,8 +1400,9 @@ class TagTable(QTableView):
             currentfile = model.taginfo[self.currentIndex().row()]
             QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
             model.emit(SETDATAERROR,
-                u"An error occurred while writing to" " <b>%s</b>: (%s)" % (
-                    currentfile[PATH], editor.writeError.strerror))
+                QApplication.translate("Table",
+                    "An error occurred while writing to <b>%s</b>: (%s)").arg(
+                        currentfile[PATH]).arg(editor.writeError.strerror))
             return
         
         if not editor.returnPressed:
@@ -1432,7 +1432,7 @@ class TagTable(QTableView):
     def removeTags(self):
         if self.model().previewMode:
             QMessageBox.information(self, 'puddletag',
-                'Disable Preview Mode first to enable tag deletion.')
+                QApplication.translate("Table", 'Disable Preview Mode first to enable tag deletion.'))
             return
         deltag = self.model().deleteTag
         def func():
@@ -1441,17 +1441,21 @@ class TagTable(QTableView):
                     deltag(row)
                     yield None
                 except (OSError, IOError), e:
-                    yield "There was an error deleting the tag of %s: <b>%s</b>" % (
-                                e.filename, e.strerror), len(self.selectedRows)
+                    yield QApplication.translate("Table",
+                        "An error occurred while deleting the tag of %1: <b>%2</b>"
+                            ).arg(e.filename).arg(e.strerror).arg(len(self.selectedRows))
                 except NotImplementedError, e:
                     f = self.model().taginfo[row]
-                    yield "There was an error deleting the tag of %s: " \
-                        "<b>Tag deletion isn't supported for %s files.</b>" % (
-                            f.filename, f.ext), len(self.selectedRows)
+                    filename = f[PATH]
+                    ext = f[EXTENSION]
+                    rowlen = len(self.selectedRows)
+                    yield QApplication.translate("Table", "There was an error deleting the tag of %1: "
+                        "<b>Tag deletion isn't supported for %2 files.</b>").arg(
+                            filename).arg(ext).arg(rowlen)
             self.model().undolevel += 1
             self.selectionChanged()
 
-        f = progress(func, 'Deleting tag... ', len(self.selectedRows))
+        f = progress(func, QApplication.translate("Table", 'Deleting tag... '), len(self.selectedRows))
         f(self)
 
     def columnCount(self):
@@ -1478,8 +1482,9 @@ class TagTable(QTableView):
         showmsg = confirmations.should_show('delete_files')
         if delfiles and showmsg:
             result = QMessageBox.question(self, "puddletag",
-                "Are you sure you want to delete the selected files?",
-                "&Yes", "&No","", 1, 1)
+                QApplication.translate("Table", "Are you sure you want to delete the selected files?"),
+                QApplication.translate("Defaults", "&Yes"),
+                QApplication.translate("Defaults", "&No"), "", 1, 1)
         else:
             result = 0
         if result != 0:
@@ -1515,7 +1520,7 @@ class TagTable(QTableView):
                 self.emit(SIGNAL('deletedfromlib'), libtags)
             if index.isValid():
                 self.setCurrentIndex(index)
-        s = progress(func, 'Deleting ', len(selectedRows), fin)
+        s = progress(func, QApplication.translate("Table", 'Deleting '), len(selectedRows), fin)
         if self.parentWidget():
             s(self.parentWidget())
         else:
@@ -1670,7 +1675,7 @@ class TagTable(QTableView):
                     tags.append(tag)
                 yield None
 
-        s = progress(what, 'Loading ', len(files), finished)
+        s = progress(what, QApplication.translate("Defaults", 'Loading '), len(files), finished)
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):
@@ -1728,11 +1733,16 @@ class TagTable(QTableView):
                 Popen(li)
             except (OSError), detail:
                 if detail.errno != 2:
-                    QMessageBox.critical(self,"Error", u"I couldn't play the selected files: (<b>%s</b>) <br />Does the music player you defined (<b>%s</b>) exist?" % \
-                        (detail.strerror, u" ".join(self.playcommand)), QMessageBox.Ok, QMessageBox.NoButton)
+                    QMessageBox.critical(self, QApplication.translate("Defaults", "Error"),
+                        QApplication.translate("Table",
+                                "An error occurred while trying to play the selected files: <b>%1</b> "
+                                "<br />Does the music player you defined (<b>%2</b>)"
+                                " exist?").arg(detail.strerror).arg(" ".join(self.playcommand)),
+                            QMessageBox.Ok, QMessageBox.NoButton)
                 else:
-                    QMessageBox.critical(self,"Error", u"I couldn't play the selected files, because the music player you defined (<b>%s</b>) does not exist." \
-                            % u" ".join(self.playcommand), QMessageBox.Ok, QMessageBox.NoButton)
+                    QMessageBox.critical(self, QApplication.translate("Defaults", "Error"),
+                        QApplication.translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(" ".join(self.playcommand),
+                            QMessageBox.Ok, QMessageBox.NoButton))
     
     def previewMode(self, value):
         if not value:
@@ -1744,7 +1754,7 @@ class TagTable(QTableView):
 
             if confirmations.should_show('preview_mode') and previews:
                 ret = QMessageBox.question(self, 'puddletag',
-                    'Do you want to exit Preview Mode?',
+                    QApplication.translate("Previews", 'Do you want to exit Preview Mode?'),
                     QMessageBox.Ok, QMessageBox.No)
                 if ret != QMessageBox.Ok:
                     return

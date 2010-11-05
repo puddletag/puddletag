@@ -165,11 +165,11 @@ def load_musiclib(parent=None):
     try:
         m = puddlestuff.musiclib.LibChooseDialog()
     except puddlestuff.musiclib.MusicLibError:
-        QMessageBox.critical(parent, 'No libraries found',
-            "No supported music libraries were found. Most likely "
+        QMessageBox.critical(parent, QApplication.translate("MusicLib", 'No libraries found'),
+           QApplication.translate("MusicLib", "No supported music libraries were found. Most likely "
             "the required dependencies aren't installed. Visit the "
             "puddletag website, <a href='http://puddletag.sourceforge.net'>"
-            "puddletag.sourceforge.net</a> for more details.")
+            "puddletag.sourceforge.net</a> for more details."))
         return
     m.setModal(True)
     obj.connect(m, SIGNAL('adddock'), emit_received('adddock'))
@@ -240,7 +240,7 @@ def rename_dirs(parent=None):
     one as per the pattern in self.patterncombo."""
     if status['table'].model().previewMode:
         QMessageBox.information(parent, 'puddletag',
-            'Disable Preview Mode first to enable renaming of directories.')
+            QApplication.translate("Dir Renaming", 'Disable Preview Mode first to enable renaming of directories.'))
         return
 
     tagtofilename = findfunc.tagtofilename
@@ -260,7 +260,7 @@ def rename_dirs(parent=None):
 
     #Create the msgbox, I like that there'd be a difference between
     #the new and the old filename, so I bolded the new and italicised the old.
-    title = u"<b>Are you sure you want to rename the following directories?</b>"
+    title = unicode(QApplication.translate("Dir Renaming", "<b>Are you sure you want to rename the following directories?</b>"))
     dirs = []
     newname = lambda x: encode_fn(basename(safe_name(tagtofilename(pattern, x))))
     msg = u''
@@ -273,7 +273,7 @@ def rename_dirs(parent=None):
     msg = msg[:-len('<br /><br />')]
 
     if confirmations.should_show('rename_dirs'):
-        info = LongInfoMessage('Rename dirs?', title, msg, parent)
+        info = LongInfoMessage(unicode(QApplication.translate("Dir Renaming", 'Rename dirs?')), title, msg, parent)
         if not info.exec_():
             return
     dirs = sorted(dirs, dircmp, itemgetter(0))
@@ -392,17 +392,15 @@ def tag_to_file():
 def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath
 
-    filedlg = QFileDialog()
-    filename = unicode(filedlg.getOpenFileName(parent, 'Select text file',
-        dirpath))
-
-    if filename:
-        win = helperwin.ImportWindow(parent, filename)
-        win.setModal(True)
-        win.patterncombo.addItems(status['patterns'])
-        x = lambda taglist: emit('writeselected', taglist)
-        win.connect(win, SIGNAL("Newtags"), x)
-        win.show()
+    win = helperwin.ImportWindow(parent)
+    if win.openFile():
+        win.close()
+        return
+    win.setModal(True)
+    win.patterncombo.addItems(status['patterns'])
+    x = lambda taglist: emit('writeselected', taglist)
+    win.connect(win, SIGNAL("Newtags"), x)
+    win.show()
 
 def update_status(enable = True):
     files = status['selectedfiles']
@@ -414,23 +412,24 @@ def update_status(enable = True):
 
     x = findfunc.filenametotag(pattern, tag[PATH], True)
     emit('ftstatus', display_tag(x))
+
+    SYNTAX_ERROR = QApplication.translate("Status Bar", u"<b>SYNTAX ERROR: %s</b>")
     
     try:
         newfilename = functions.move(tag, pattern, tag)['__path']
-        emit('tfstatus', u"New Filename: <b>%s</b>" % \
-            newfilename.decode('utf8', 'replace'))
+        emit('tfstatus', QApplication.translate("Status Bar", "New Filename: <b>%1</b>").arg(newfilename.decode('utf8', 'replace')))
     except findfunc.ParseError, e:
-        emit('tfstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
+        emit('tfstatus', SYNTAX_ERROR % e.message)
 
     oldir = path.dirname(tag.dirpath)
     try:
         newfolder = path.join(oldir, path.basename(
             safe_name(tf(pattern, tag))))
-        dirstatus = u"Rename: <b>%s</b> to: <i>%s</i>" % (
-            tag[DIRPATH], newfolder.decode('utf8'))
+        dirstatus = QApplication.translate("Dir Renaming",
+            "Rename: <b>%1</b> to: <i>%2</i>").arg(tag[DIRPATH]).arg(newfolder.decode('utf8'))
         emit('renamedirstatus', dirstatus)
     except findfunc.ParseError, e:
-        emit('renamedirstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
+        emit('renamedirstatus', SYNTAX_ERROR % e.message)
 
     selected = status['selectedtags']
     if not selected:
@@ -442,7 +441,7 @@ def update_status(enable = True):
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError, e:
-        emit('formatstatus', u"<b>SYNTAX ERROR: %s</b>" % e.message)
+        emit('formatstatus', SYNTAX_ERROR % e.message)
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',

@@ -11,8 +11,8 @@ status = {}
 _previews = []
 _sort_action = None
 
-ENABLED = u'Enabl&e Preview Mode'
-DISABLED = u'Disabl&e Preview Mode'
+ENABLED = QApplication.translate("Previews", u'Enabl&e Preview Mode')
+DISABLED = QApplication.translate("Previews", u'Disabl&e Preview Mode')
 
 def toggle_preview_display(action, value):
     if value:
@@ -53,23 +53,23 @@ def create_actions(parent):
     obj.receives.append(['previewModeChanged', 
         partial(toggle_preview_display, enable_preview)])
     
-    clear_selection = QAction('Clear Selected &Files', parent)
+    clear_selection = QAction(QApplication.translate("Menus", 'Clear Selected &Files'), parent)
     clear_selection.setShortcut('Ctrl+Shift+F')
     obj.connect(clear_selection, SIGNAL('triggered()'), clear_selected)
     
-    write = QAction('&Write Previews', parent)
+    write = QAction(QApplication.translate("Menus", '&Write Previews'), parent)
     write.setShortcut('Ctrl+W')
     
     obj.connect(write, SIGNAL('triggered()'), lambda: emit('writepreview'))
     
-    revert = QAction('&Undo Last Clear', parent)
+    revert = QAction(QApplication.translate("Menus", '&Undo Last Clear'), parent)
     revert.setShortcut('Ctrl+Shift+Z')
     obj.connect(revert, SIGNAL('triggered()'), undo_last)
     
-    sort = QAction('&Sort Selected', parent)
+    sort = QAction(QApplication.translate("Menus", '&Sort Selected'), parent)
     obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
 
-    clear_cells = QAction('Clear Selected &Cells', parent)
+    clear_cells = QAction(QApplication.translate("Menus", 'Clear Selected &Cells'), parent)
     obj.connect(clear_cells, SIGNAL('triggered()'), clear_selected_cells)
     
     cparser = PuddleConfig()

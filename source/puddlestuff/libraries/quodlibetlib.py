@@ -293,21 +293,20 @@ class InitWidget(QWidget):
             l.setBuddy(control)
             return l
 
-        vbox.addWidget(label('&Library Path', self.dbpath))
-        
+        vbox.addWidget(label(QApplication.translate("QuodLibet", '&Library Path'), self.dbpath))
 
         hbox = QHBoxLayout()
-        select_db = QPushButton("...")
+        select_db = QPushButton(QApplication.translate("QuodLibet", "..."))
         self.connect(select_db, SIGNAL('clicked()'), self.select_db)
         hbox.addWidget(self.dbpath)
         hbox.addWidget(select_db)
         vbox.addLayout(hbox)
 
         vbox.addStretch()
-        vbox.addWidget(label('&Config Path', self.configpath))
+        vbox.addWidget(label(QApplication.translate("QuodLibet", '&Config Path'), self.configpath))
 
         hbox = QHBoxLayout()
-        select_config = QPushButton("...")
+        select_config = QPushButton(QApplication.translate("QuodLibet", "..."))
         self.connect(select_config, SIGNAL('clicked()'), self.select_config)
         hbox.addWidget(self.configpath)
         hbox.addWidget(select_config)
@@ -319,26 +318,30 @@ class InitWidget(QWidget):
     def select_db(self):
         filedlg = QFileDialog()
         filename = filedlg.getOpenFileName(self,
-            'Select Quodlibet database file.', self.dbpath.text())
+            QApplication.translate("QuodLibet", 'Select QuodLibet library file...'),
+            self.dbpath.text())
         if filename:
             self.dbpath.setText(filename)
 
     def select_config(self):
         filedlg = QFileDialog()
         filename = filedlg.getOpenFileName(self,
-            'Select Quodlibet config file.', self.configpath.text())
+            QApplication.translate("QuodLibet", 'Select QuodLibet config file...'),
+            self.configpath.text())
         if filename:
             self.configpath.setText(filename)
 
     def library(self):
-        dbpath = unicode(self.dbpath.text())
-        configpath = unicode(self.configpath.text())
+        dbpath = self.dbpath.text().toLocal8Bit()
+        configpath = self.configpath.text().toLocal8Bit()
         try:
             return QuodLibet(dbpath, configpath)
         except (IOError, OSError), e:
-            raise MusicLibError(0, u'%s (%s)' % (e.strerror, e.filename))
+            raise MusicLibError(0, QApplication.translate(
+                "QuodLibet", '%1 (%2)').arg(e.strerror).arg(e.filename))
         except (pickle.UnpicklingError, EOFError):
-            raise MusicLibError(0, u'%s is an invalid QuodLibet music library file.' % dbpath)
+            raise MusicLibError(0, QApplication.translate("QuodLibet",
+                '%1 is an invalid QuodLibet music library file.').arg(dbpath))
 
 name = u'Quodlibet'
 

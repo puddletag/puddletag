@@ -49,17 +49,22 @@ def get_menus(section, filepath=None):
 
 def menubar(menus, actions):
     texts = [unicode(action.text()) for action in actions]
+
     menubar = QMenuBar()
     winmenu = None
     _menus = {}
     for title, actionlist in menus:
-        menu = menubar.addMenu(title)
+        menu = menubar.addMenu(QApplication.translate("Menus", title))
         _menus[title] = [menu]
         if title == u'&Windows':
             winmenu = menu
+            tr_section = 'Dialogs'
+        else:
+            tr_section = 'Menus'
         for action in actionlist:
             if action in texts:
                 shortcut = actions[texts.index(action)]
+                shortcut.setText(QApplication.translate(tr_section, action))
                 menu.addAction(shortcut)
                 _menus[title].append(shortcut)
             elif action == SEPARATOR:

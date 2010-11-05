@@ -181,33 +181,6 @@ def formatValue(m_tags, pattern):
 
 format_value = formatValue
 
-def ftArtist(tags, ftval = " ft "):
-    #'''Get FT Artist, "FT Artist: $0, String: $1"
-#Featuring &String, text, " ft "'''
-
-    try:
-        text = tags["artist"]
-    except KeyError:
-        return
-    index = text.find(ftval)
-    if index != -1:
-        return(text[:index])
-
-def ftTitle(tags, ftval = " ft ", replacetext = None):
-    #'''Get FT Title, "FT Title: $0, String: $1"
-#Featuring &String, text, " ft "
-#&Text to append, text, " ft "'''
-    if replacetext == None:
-        replacetext = ftval
-    try:
-        text = tags["artist"]
-    except KeyError:
-        return
-    title = tags.get('title') if tags.get('title') else ''
-    index = text.find(ftval)
-    if index != -1:
-        return title + replacetext + text[index + len(ftval):]
-
 def geql(text,text1):
     if text >= text1:
         return true

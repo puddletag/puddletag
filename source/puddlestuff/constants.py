@@ -1,12 +1,22 @@
 # -*- coding: utf-8 -*-
 import os, sys
 from PyQt4.QtCore import Qt, SIGNAL
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QWidget, QApplication
 from os.path import dirname, join
+
+SYNTAX_ERROR = unicode(QApplication.translate('Defaults', 'SYNTAX ERROR in $%s: %s'))
+SYNTAX_ARG_ERROR = unicode(QApplication.translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.'))
 
 SEPARATOR = u'\\\\'
 
 FS_ENC = sys.getfilesystemencoding()
+
+YES = unicode(QApplication.translate('Defaults', 'Yes'))
+NO = unicode(QApplication.translate('Defaults', 'No'))
+
+VARIOUS = unicode(QApplication.translate('Defaults', u'Various Artists'))
+
+MUSICBRAINZ  = unicode(QApplication.translate('Defaults', 'MusicBrainz'))
 
 #Paths
 HOMEDIR = os.getenv('HOME')
@@ -19,8 +29,8 @@ DATADIR = join(dirname(__file__), 'data')
 ACTIONDIR = join(SAVEDIR, 'actions')
 
 #Misc
-BLANK = u'<blank>'
-KEEP = u'<keep>'
+BLANK = unicode(QApplication.translate('Defaults', '<blank>'))
+KEEP = unicode(QApplication.translate('Defaults', '<keep>'))
 
 #Values used for controls in creating functions in actiondlg
 TEXT = 'text'

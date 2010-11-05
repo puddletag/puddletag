@@ -36,7 +36,7 @@ def _remove_tag(f, tag):
 def remove_tag(tag, parent):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
-            'Disable Preview Mode first to enable tag deletion.')
+            QApplication.translate("Previews", 'Disable Preview Mode first to enable tag deletion.'))
         return
     files = status['selectedfiles']
 
@@ -45,14 +45,15 @@ def remove_tag(tag, parent):
             try:
                 _remove_tag(f, tag)
             except (IOError, OSError), e:
-                m = 'An error occured while writing to <b>%s</b>. (%s)' % (
-                    e.filename, e.strerror)
+                filename = f[audioinfo.PATH]
+                m = unicode(QApplication.translate("Defaults",
+                    'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1
                 else:
                     yield m, len(rows)
 
-    s = progress(func, 'Removing %s tag: ' % tag, len(files))
+    s = progress(func, QApplication.translate("Tag Tools", 'Removing %s tag: ') % tag, len(files))
     s(parent)
 
 remove_apev2 = lambda parent=None: remove_tag('APEv2', parent)

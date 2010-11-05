@@ -19,40 +19,39 @@ To Mp3tag, not that much. It has more or less the same UI and functionality. You
 What you need
 =============
 
-   At least Python 2.5 available from http://python.org
-   PyQt4 (4.5 or greater)(http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
-   PyParsing (&ge;1.5.1) (http://pyparsing.wikispaces.com) takes care of the parsing...
-   Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
-   ConfigObj (http://code.google.com/p/configobj/) takes care of saving settings.
-   python-musicbrainz2 (http://musicbrainz.org/doc/python-musicbrainz2) is required for MusicBrainz support.
+    At least Python 2.5 available from http://python.org
+    PyQt4 (4.5 or greater)(http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
+    PyParsing (&ge;1.5.1) (http://pyparsing.wikispaces.com) takes care of the parsing...
+    Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
+    ConfigObj (http://code.google.com/p/configobj/) takes care of saving settings.
+    python-musicbrainz2 (http://musicbrainz.org/doc/python-musicbrainz2) is required for MusicBrainz support.
 
-The following are recommended
-
-   The Python Imaging Library (http://www.pythonware.com/products/pil/) in order to edit/view FLAC cover art.
-   QuodLibet must be installed in order to edit a QuodLibet library.
+    The following are recommended
+      QuodLibet must be installed in order to edit a QuodLibet library.
 
 
 Downloading/Installing
 ======================
 
-Installing from source:
+From source:
 
     Install the dependencies listed above.
-    For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
+      For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
     Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore everything on this line.)
     Unzip it.
     You can run puddletag from that directory by typing ./puddletag in your console.
     Alternatively install it by running python setup.py install as root in the unzipped directory.
-    puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run desktop-file-install puddletag.desktop as root in the unzipped directory.
+    puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run 'desktop-file-install puddletag.desktop' as root in the unzipped directory.
 
 
 Installing from the Debian package.
 
-   This Debian package has been created on and for Ubuntu 10.04. It will most likely not work on other distros. If it does, hit me up at concentricpuddle@gmail.com to tell me about it.
-   Download the package from http://puddletag.sourceforge.net.
-   Run as root dpkg -i /path/to/puddletag_0.9.5-1_all.deb.
-   Install dependencies using your favourite tool, note that python-imaging is recommended and not a hard dependency.
-   Run puddletag from your Multimedia menu.
+    This Debian package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze too.
+    Download the package from http://puddletag.sourceforge.net.
+    Install using your distros preferred method (usually double clicking should suffice). Or:
+    Run as root dpkg -i /path/to/puddletag-deb.
+    Install dependencies using your favourite tool.
+    Run puddletag from your Multimedia menu.
 
 Development builds are available via svn (I'm not great about keeping it stable, so use at own risk):
 

@@ -2,6 +2,7 @@
 import re, pdb
 from functools import partial
 from copy import copy
+from constants import YES, NO
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
 
 def perfunc(match, d):
@@ -33,32 +34,32 @@ def func(match, d):
             return u''
 
         if d[number] is False:
-            d[number] = u'No'
+            d[number] = NO
         elif d[number] is True:
-            d[number] = u'Yes'
+            d[number] = YES
         elif isinstance(d[number], (int, long)):
             d[number] = unicode(d[number])
         elif not isinstance(d[number], basestring):
             if d[number]:
-                d[number] = u'Yes'
+                d[number] = YES
             else:
-                d[number] = u'No'
+                d[number] = NO
         return d[number]
     except ValueError:
         number = int(re.search('(\d+)', matchtext).group())
         if number >= len(d):
             return ''
         if d[number] is False:
-            d[number] = u'Yes'
+            d[number] = YES
         elif d[number] is True:
-            d[number] = u'No'
+            d[number] = NO
         elif isinstance(d[number], (int, long)):
             d[number] = unicode(d[number])
         elif not isinstance(d[number], basestring):
             if d[number]:
-                d[number] = u'Yes'
+                d[number] = YES
             else:
-                d[number] = u'No'
+                d[number] = NO
         text = re.search(r'%\d+\((.+)\)', matchtext).group(1)
         permatch = pattern.search(text)
         if permatch:

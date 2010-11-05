@@ -36,6 +36,8 @@ ITALICS = 2
 from audioinfo import commontags, INFOTAGS, REVTAGS, PATH
 from functools import partial
 
+tr = QApplication.trUtf8
+
 class TrackWindow(QDialog):
     """Dialog that allows automatic numbering of tracks.
     Number the tracks in range(start, end)
@@ -45,11 +47,10 @@ class TrackWindow(QDialog):
     was specified then the to value is an empty string ('')"""
     def __init__(self, parent=None, minval=0, numtracks = 0, enablenumtracks = False):
         QDialog.__init__(self,parent)
-        #tr = partial(QApplication.translate, "Autonumbering Wizard")
-        self.setWindowTitle(self.tr("Autonumbering Wizard"))
+        #tr = partial(QApplication.trUtf8, "Autonumbering Wizard")
+        
+        self.setWindowTitle(QApplication.translate('Autonumbering Wizard', "Autonumbering Wizard"))
         winsettings('autonumbering', self)
-
-        tr = self.tr
 
         def hbox(*widgets):
             box = QHBoxLayout()
@@ -59,7 +60,7 @@ class TrackWindow(QDialog):
 
         vbox = QVBoxLayout()
         
-        startlabel = QLabel(self.tr("&Start: "))
+        startlabel = QLabel(QApplication.translate('Autonumbering Wizard', "Start: "))
         self._start = QSpinBox()
         startlabel.setBuddy(self._start)
         self._start.setValue(minval)
@@ -67,7 +68,7 @@ class TrackWindow(QDialog):
 
         vbox.addLayout(hbox(startlabel, self._start))
 
-        label = QLabel(tr('Max length after padding with zeroes: '))
+        label = QLabel(QApplication.translate('Autonumbering Wizard', 'Max length after padding with zeroes: '))
         self._padlength = QSpinBox()
         label.setBuddy(self._padlength)
         self._padlength.setValue(1)
@@ -75,12 +76,12 @@ class TrackWindow(QDialog):
         self._padlength.setMinimum(1)
         vbox.addLayout(hbox(label, self._padlength))
 
-        self._separator = QCheckBox(tr("Add track &separator ['/']: Number of tracks"))
+        self._separator = QCheckBox(QApplication.translate('Autonumbering Wizard', "Add track &separator ['/']: Number of tracks"))
         self._numtracks = QSpinBox()
         self._numtracks.setEnabled(False)
         if numtracks:
             self._numtracks.setValue(numtracks)
-        self._restart_numbering = QCheckBox(tr("&Restart numbering at each directory."))
+        self._restart_numbering = QCheckBox(QApplication.translate('Autonumbering Wizard', "&Restart numbering at each directory."))
 
         vbox.addLayout(hbox(self._separator, self._numtracks))
         vbox.addWidget(self._restart_numbering)
@@ -147,15 +148,16 @@ class ImportWindow(QDialog):
     the...new tags."""
     def __init__(self,parent = None, filename = None, clipboard = None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle("Import tags from file")
+        
+        self.setWindowTitle(QApplication.translate('Text File -> Tag', "Import tags from file"))
         winsettings('importwin', self)
 
         self.grid = QGridLayout()
 
-        self.label = QLabel("Text")
+        self.label = QLabel(QApplication.translate('Text File -> Tag', "Text"))
         self.grid.addWidget(self.label,0,0)
 
-        self.label = QLabel("Tag preview")
+        self.label = QLabel(QApplication.translate('Text File -> Tag', "Tag preview"))
         self.grid.addWidget(self.label,0,2)
 
 
@@ -179,8 +181,8 @@ class ImportWindow(QDialog):
         self.ok = okcancel.ok
         self.cancel = okcancel.cancel
 
-        self.openfile = QPushButton("&Select File")
-        getclip = QPushButton("&Paste Clipboard")
+        self.openfile = QPushButton(QApplication.translate('Text File -> Tag', "&Select File"))
+        getclip = QPushButton(QApplication.translate('Text File -> Tag', "&Paste Clipboard"))
         self.connect(getclip, SIGNAL('clicked()'), self.openClipBoard)
 
         self.hbox.addWidget(self.openfile)
@@ -213,29 +215,31 @@ class ImportWindow(QDialog):
         if not filename:
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
-                'OpenFolder',QDir.homePath()))
-        if filename:
-            try:
-                f = open(filename)
-            except (IOError, OSError), detail:
-                ret = QMessageBox.question(self, "Error", u"I couldn't load the file:" + \
-                    "<b>%s</b> <br /> . Do you want to choose another?" % filename,
-                        "&Yes, choose another", "&No, close this window.")
-                if ret == 0:
-                    self.openFile()
-                    return
-                else:
-                    self.close()
-                return
+                'OpenFolder', QDir.homePath()))
 
-            self.lines = [z.decode('utf8') for z in f.readlines()]
-            self.file.setPlainText(u"".join(self.lines))
-            self.setLines()
-            self.fillTags()
-            self.show()
-            self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
-            self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),
-                self.fillTags)
+        if not filename:
+            return True
+        try:
+            f = open(filename)
+        except (IOError, OSError), detail:
+            errormsg = QApplication.translate('Text File -> Tag', "The file <b>%1</b> couldn't be loaded.<br /> Do you want to choose another?")
+            ret = QMessageBox.question(self, QApplication.translate('Text File -> Tag', "Error"),
+                QApplication.translate('Text File -> Tag', errormsg.arg(filename)),
+                QApplication.translate('Text File -> Tag', "&Yes"),
+                QApplication.translate('Text File -> Tag', "&No"))
+            if ret == 0:
+                return self.openFile()
+            else:
+                return detail
+
+        self.lines = [z.decode('utf8') for z in f.readlines()]
+        self.file.setPlainText(u"".join(self.lines))
+        self.setLines()
+        self.fillTags()
+        self.show()
+        self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
+        self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),
+            self.fillTags)
 
     def openClipBoard(self):
         text = unicode(QApplication.clipboard().text())
@@ -281,11 +285,11 @@ class EditTag(QDialog):
     def __init__(self, tag = None, parent = None, taglist = None, edit=True):
 
         QDialog.__init__(self, parent)
-        self.setWindowTitle('Edit Field')
+        self.setWindowTitle(QApplication.translate('Edit Field', 'Edit Field'))
         winsettings('edit_field', self)
         self.vbox = QVBoxLayout()
 
-        label = QLabel("&Field")
+        label = QLabel(QApplication.translate('Edit Field', "&Field"))
         self.tagcombo = QComboBox()
         self.tagcombo.setEditable(True)
         label.setBuddy(self.tagcombo)
@@ -296,11 +300,11 @@ class EditTag(QDialog):
 
         #Get the previous tag
         self.prevtag = tag
-        label1 = QLabel("&Value")
+        label1 = QLabel(QApplication.translate('Edit Field', "&Value"))
         self.value = QTextEdit()
         label1.setBuddy(self.value)
         okcancel = OKCancel()
-        okcancel.ok.setText('A&dd')
+        okcancel.ok.setText(QApplication.translate('Edit Field', 'A&dd'))
         if tag is not None:
             x = self.tagcombo.findText(tag[0])
 
@@ -310,7 +314,7 @@ class EditTag(QDialog):
                 self.tagcombo.setEditText(tag[0])
             self.value.setPlainText(tag[1])
             if edit:
-                okcancel.ok.setText('E&dit')
+                okcancel.ok.setText(QApplication.translate('Edit Field', 'E&dit'))
 
         [self.vbox.addWidget(z) for z in [label, self.tagcombo, label1, self.value]]
         
@@ -410,7 +414,9 @@ class ExTags(QDialog):
         header.setSortIndicatorShown (True)
         header.setStretchLastSection (True)
         header.setSortIndicator (0, Qt.AscendingOrder)
-        self.listbox.setHorizontalHeaderLabels(['Field', 'Value'])
+        self.listbox.setHorizontalHeaderLabels([
+            QApplication.translate('Extended Tags','Field'),
+            QApplication.translate('Extended Tags', 'Value')])
 
         self.listbox.verticalHeader().setVisible(False)
         self.piclabel = PicWidget(buttons = True)
@@ -668,7 +674,7 @@ class ExTags(QDialog):
             self.setWindowTitle(audios[0].filepath)
             self._loadsingle(audio)
         else:
-            self.setWindowTitle('Different files.')
+            self.setWindowTitle(QApplication.translate('Extended Tags', 'Different files.'))
             common, numvalues, imagetags = commontags(audios)
             images = common['__image']
             del(common['__image'])

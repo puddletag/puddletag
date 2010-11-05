@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from puddlestuff.actiondlg import ActionWindow, CreateFunction
 from puddlestuff.constants import RIGHTDOCK, SELECTIONCHANGED
-from PyQt4.QtGui import QPushButton, QHBoxLayout, QListWidgetItem
+from PyQt4.QtGui import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
 from PyQt4.QtCore import SIGNAL, Qt
 from puddlestuff.mainwin.funcs import run_func, applyaction
 from puddlestuff.puddleobjects import PuddleConfig
@@ -18,7 +18,7 @@ class ActionDialog(ActionWindow):
         super(ActionDialog, self).__init__(*args, **kwargs)
         self.okcancel.ok.hide()
         self.okcancel.cancel.hide()
-        self._apply = QPushButton('Appl&y')
+        self._apply = QPushButton(QApplication.translate("Defaults", 'Appl&y'))
         write = lambda funcs: applyaction(self._status['selectedfiles'], funcs)
         self.connect(self._apply, SIGNAL('clicked()'),
             partial(self.okClicked, False))
@@ -26,7 +26,7 @@ class ActionDialog(ActionWindow):
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._apply)
-        self.grid.addLayout(hbox, 2,0,1,1)
+        self.grid.addLayout(hbox, 2, 0, 1, 1)
 
     def _update(self):
         try:
@@ -72,7 +72,7 @@ class FunctionDialog(CreateFunction):
         super(FunctionDialog, self).__init__(*args, **kwargs)
         self.okcancel.ok.hide()
         self.okcancel.cancel.hide()
-        self._apply = QPushButton('Appl&y')
+        self._apply = QPushButton(QApplication.translate("Defaults", 'Appl&y'))
         write = lambda func: run_func(self._status['selectedfiles'], func)
         self.connect(self._apply, SIGNAL('clicked()'),
             partial(self.okClicked, False))

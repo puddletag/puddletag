@@ -71,15 +71,16 @@ def save_gen_settings(setlist):
 
 class SettingsCheckBox(QCheckBox):
     def __init__(self, default=None, text=None, parent=None):
-        QCheckBox.__init__(self, text, parent)
+        QCheckBox.__init__(self, QApplication.translate("GenSettings", text), parent)
 
         self.settingValue = default
+        self._text = text
 
     def _value(self):
         if self.checkState() == Qt.Checked:
-            return unicode(self.text()), True
+            return self._text, True
         else:
-            return unicode(self.text()), False
+            return self._text, False
 
     def _setValue(self, value):
         if value:
@@ -95,7 +96,7 @@ class SettingsLineEdit(QWidget):
         vbox = QVBoxLayout()
         vbox.setMargin(0)
         self._text = QLineEdit(default)
-        label = QLabel(desc)
+        label = QLabel(QApplication.translate("GenSettings", desc))
         self._desc = desc
         label.setBuddy(self._text)
         vbox.addWidget(label)
@@ -131,7 +132,7 @@ class GeneralSettings(QWidget):
             vbox.addWidget(widget)
             self._controls.append(widget)
 
-        edit_sort_options = QPushButton('&Edit sort options')
+        edit_sort_options = QPushButton(QApplication.translate("GenSettings", '&Edit sort options'))
         
         self.connect(edit_sort_options, SIGNAL('clicked()'), 
             self.editSortOptions)
@@ -187,23 +188,23 @@ class Playlist(QWidget):
         hbox.addSpacing(10)
         hbox.addWidget(self.extpattern)
 
-        self.extinfo = QCheckBox('&Write extended info', self)
+        self.extinfo = QCheckBox(QApplication.translate("Playlist Settings", '&Write extended info'), self)
         self.connect(self.extinfo, SIGNAL('stateChanged(int)'), self.extpattern.setEnabled)
         self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo',1, True)))
         self.extpattern.setEnabled(self.extinfo.checkState())
 
-        self.reldir = QCheckBox('Entries &relative to working directory')
+        self.reldir = QCheckBox(QApplication.translate("Playlist Settings", 'Entries &relative to working directory'))
         self.reldir.setCheckState(inttocheck(cparser.load('playlist', 'reldir',0, True)))
 
 
         self.filename = QLineEdit()
         self.filename.setText(cparser.load('playlist', 'filepattern','puddletag.m3u'))
-        label = QLabel('&Filename pattern.')
+        label = QLabel(QApplication.translate("Playlist Settings", '&Filename pattern.'))
         label.setBuddy(self.filename)
 
         vbox = QVBoxLayout()
         [vbox.addWidget(z) for z in (self.extinfo, self.reldir,
-                                        label, self.filename)]
+            label, self.filename)]
         vbox.insertLayout(1, hbox)
         vbox.addStretch()
         vbox.insertSpacing(2, 5)
@@ -228,12 +229,15 @@ class TagMappings(QWidget):
         self._mappings = audioinfo.mapping
 
         QWidget.__init__(self, parent)
-        tooltip = '''<ul><li>Tag is the format that the mapping applies to. One of <b>ID3, APEv2, MP4, or VorbisComment</b>. </li><li>Fields will be mapped from Source to Target, meaning that if Source is found in a tag, it'll be editable in puddletag using Target.</li><li>Eg. For <b>Tag=VorbisComment, Source=organization, and Target=publisher</b> means that writing to the publisher field for VorbisComments in puddletag will in actuality write to the organization field.</li><li>Mappings for tag sources are also supported, just use the name of the tag source as Tag, eg. <b>Tag=MusicBrainz, Source=artist,Target=performer</b>.</li></ul>'''
+        tooltip = QApplication.translate("Mapping Settings", '''<ul><li>Tag is the format that the mapping applies to. One of <b>ID3, APEv2, MP4, or VorbisComment</b>. </li><li>Fields will be mapped from Source to Target, meaning that if Source is found in a tag, it'll be editable in puddletag using Target.</li><li>Eg. For <b>Tag=VorbisComment, Source=organization, and Target=publisher</b> means that writing to the publisher field for VorbisComments in puddletag will in actuality write to the organization field.</li><li>Mappings for tag sources are also supported, just use the name of the tag source as Tag, eg. <b>Tag=MusicBrainz, Source=artist,Target=performer</b>.</li></ul>''')
         
         self._table = QTableWidget()
         self._table.setToolTip(tooltip)
         self._table.setColumnCount(3)
-        self._table.setHorizontalHeaderLabels(['Tag', 'Source', 'Target'])
+        self._table.setHorizontalHeaderLabels([
+            QApplication.translate("Mapping Settings", 'Tag'),
+            QApplication.translate("Mapping Settings", 'Source'),
+            QApplication.translate("Mapping Settings", 'Target')])
         header = self._table.horizontalHeader()
         header.setVisible(True)
         self._table.verticalHeader().setVisible(False)
@@ -249,7 +253,7 @@ class TagMappings(QWidget):
         hbox.addLayout(buttons, 0)
 
         self._setMappings(self._mappings)
-        label = QLabel('<b>A restart is required to apply these settings.</b>')
+        label = QLabel(QApplication.translate("Mapping Settings", '<b>A restart is required to apply these settings.</b>'))
         vbox = QVBoxLayout()
         vbox.addLayout(hbox, 1)
         vbox.addWidget(label)
@@ -280,7 +284,10 @@ class TagMappings(QWidget):
         table = self._table
         row = table.rowCount()
         table.insertRow(row)
-        for column, v in enumerate(['Tag', 'Source', 'Target']):
+        for column, v in enumerate([
+            QApplication.translate("Mapping Settings", 'Tag'),
+            QApplication.translate("Mapping Settings", 'Source'),
+            QApplication.translate("Mapping Settings", 'Target')]):
             table.setItem(row, column, QTableWidgetItem(v))
         item = table.item(row, 0)
         table.setCurrentItem(item)
@@ -332,21 +339,19 @@ class Tags(QWidget):
         QWidget.__init__(self, parent)
         
         self._filespec = QLineEdit()
-        speclabel = QLabel('&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")')
+        speclabel = QLabel(QApplication.translate("Mapping Settings", '&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")'))
         speclabel.setBuddy(self._filespec)
 
-        v1_options = ['Remove ID3v1 tag.',
-            "Update the ID3v1 tag's values only if an ID3v1 tag is present.",
-            "Create an ID3v1 tag if it's not found present. "
-                "Otherwise update it."]
+        v1_options = [QApplication.translate("Mapping Settings", 'Remove ID3v1 tag.'),
+            QApplication.translate("Mapping Settings", "Update the ID3v1 tag's values only if an ID3v1 tag is present."),
+            QApplication.translate("Mapping Settings", "Create an ID3v1 tag if it's not present. Otherwise update it.")]
         self._v1_combo = QComboBox()
         self._v1_combo.addItems(v1_options)
         
-        v1_label = QLabel('puddletag writes only &ID3v2 tags. What should be '
-            'done with the ID3v1 tag?')
+        v1_label = QLabel(QApplication.translate("Mapping Settings", 'puddletag writes only &ID3v2 tags. What should be done with the ID3v1 tag?'))
         v1_label.setBuddy(self._v1_combo)
         
-        self._apev2 = QCheckBox('Write APEv2')
+        self._apev2 = QCheckBox(QApplication.translate("Mapping Settings", 'Write APEv2'))
         
         layout = QVBoxLayout()
         vbox = QVBoxLayout()
@@ -463,9 +468,10 @@ class ColorEdit(QWidget):
         
         colors = (add, edit, remove, preview, selection)
 
-        label = QLabel('<p>Below are the backgrounds used for various ' \
+        label = QLabel(QApplication.translate("Colour Settings",
+            '<p>Below are the backgrounds used for various ' \
             'controls in puddletag. <br \>Double click the desired action ' \
-            'to change its colour.</p>')
+            'to change its colour.</p>'))
 
         self.listbox = QTableWidget(0, 1, self)
         self.listbox.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -477,11 +483,11 @@ class ColorEdit(QWidget):
         self.listbox.setRowCount(len(colors))
 
         titles = [
-            ('Row selected in file-view.', selection),
-            ('Row colour for files with previews.', preview),
-            ('Field added in Extended Tags.', add),
-            ('Field edited in Extended Tags.', edit),
-            ('Field removed in Extended Tags.', remove),]
+            (QApplication.translate("Colour Settings", 'Row selected in file-view.'), selection),
+            (QApplication.translate("Colour Settings", 'Row colour for files with previews.'), preview),
+            (QApplication.translate("Colour Settings", 'Field added in Extended Tags.'), add),
+            (QApplication.translate("Colour Settings", 'Field edited in Extended Tags.'), edit),
+            (QApplication.translate("Colour Settings", 'Field removed in Extended Tags.'), remove),]
 
         for i, z in enumerate(titles):
             self.listbox.setItem(i, 0, StatusWidgetItem(*z))
@@ -534,16 +540,16 @@ class SettingsDialog(QDialog):
         winsettings('settingswin', self)
 
         built_in = [
-            ('General', GeneralSettings(controls), controls),
-            ('Confirmations', confirmations.Settings(), None),
-            ('Mappings', TagMappings(), None),
-            ('Playlist', Playlist(), None),
-            ('Colours', ColorEdit(), status['table']),
-            ('Genres', genres.Genres(status=status), None),
-            ('Tags', Tags(), status['table']),
-            ('Plugins', PluginConfig(), None),
-            ('Shortcuts', ActionEditorDialog(status['actions']), None),
-            ('Action Shortcuts', ShortcutEditor(True), status['mainwin']),]
+            (QApplication.translate("Settings", 'General'), GeneralSettings(controls), controls),
+            (QApplication.translate("Settings", 'Confirmations'), confirmations.Settings(), None),
+            (QApplication.translate("Settings", 'Mappings'), TagMappings(), None),
+            (QApplication.translate("Settings", 'Playlist'), Playlist(), None),
+            (QApplication.translate("Settings", 'Colours'), ColorEdit(), status['table']),
+            (QApplication.translate("Settings", 'Genres'), genres.Genres(status=status), None),
+            (QApplication.translate("Settings", 'Tags'), Tags(), status['table']),
+            (QApplication.translate("Settings", 'Plugins'), PluginConfig(), None),
+            (QApplication.translate("Settings", 'Shortcuts'), ActionEditorDialog(status['actions']), None),
+            (QApplication.translate("Settings", 'Action Shortcuts'), ShortcutEditor(True), status['mainwin']),]
 
         d = dict(enumerate(built_in))
             

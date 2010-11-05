@@ -197,13 +197,14 @@ class ActionEditorDialog(QWidget):
         super(ActionEditorDialog, self).__init__(parent)
         self.actions = actions
 
-        help = QLabel(u'<b>Double click a cell in the Shortcut Column' \
-            u' to <br />modify the key sequence.</b>')
+        help = QLabel(QApplication.translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column' \
+            u' to <br />modify the key sequence.</b>'))
         
         self.actionTable = QTableWidget(self)
         self.actionTable.setColumnCount(2)
         self.actionTable.setHorizontalHeaderLabels(
-            [self.tr("Description"), self.tr("Shortcut")]
+            [QApplication.translate("Shortcut Settings", "Description"),
+            QApplication.translate("Shortcut Settings", "Shortcut")]
             )
         self.actionTable.horizontalHeader().setStretchLastSection(True)
         self.actionTable.verticalHeader().hide()
@@ -242,7 +243,7 @@ class ActionEditorDialog(QWidget):
         mainLayout.addWidget(self.actionTable)
         self.setLayout(mainLayout)
         
-        self.setWindowTitle(self.tr("Edit Shortcuts"))
+        self.setWindowTitle(QApplication.translate("Shortcut Settings", "Edit Shortcuts"))
     
     def applySettings(self, control=None):
     

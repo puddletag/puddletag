@@ -78,7 +78,7 @@ class SettingsWin(QFrame):
         self.setLayout(hbox)
 
         vbox = QVBoxLayout()
-        sortlistbox = QPushButton('&Sort')
+        sortlistbox = QPushButton(QApplication.translate("Pattern Settings", '&Sort'))
         self._sortOrder = Qt.AscendingOrder
         connect(sortlistbox, 'clicked()', self._sortListBox)
         vbox.addWidget(sortlistbox)
@@ -115,7 +115,7 @@ class SettingsWin(QFrame):
         if row < 0:
             row = 0
         (text, ok) = QInputDialog().getItem(self, 'puddletag', 
-            'Enter a pattern', patterns, row)
+            QApplication.translate("Pattern Settings", 'Enter a pattern'), patterns, row)
         if ok:
             self.listbox.clearSelection()
             self.listbox.addItem(text)
@@ -130,7 +130,8 @@ class SettingsWin(QFrame):
         l = self.listbox.item
         patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem (self, 'puddletag', 
-            'Enter a pattern', patterns, row)
+            QApplication.translate("Pattern Settings", 'Enter a pattern'),
+            patterns, row)
         if ok:
             item = l(row)
             item.setText(text)

@@ -29,7 +29,7 @@ class LibChooseDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
         self.listbox = QListWidget()
-        self.setWindowTitle('Import Music Library')
+        self.setWindowTitle(QApplication.translate('MusicLib', 'Import Music Library'))
         winsettings('importmusiclib', self)
 
         self.libattrs = []
@@ -38,18 +38,18 @@ class LibChooseDialog(QDialog):
                 lib =  __import__('puddlestuff.libraries.%s' % libname,
                                     fromlist=['puddlestuff', 'libraries'])
                 if not hasattr(lib, 'InitWidget'):
-                    raise Exception(u'Invalid library')
+                    raise Exception(str(QApplication.translate('Masstagging', 'Invalid library')))
             except Exception, detail:
-                sys.stderr.write(u'Error loading %s: %s\n' % (libname, unicode(detail)))
+                sys.stderr.write(QApplication.translate('MusicLib',  'Error loading %1: %2\n').arg(libname).arg(unicode(detail)))
                 continue
             try: name = lib.name
-            except AttributeError: name = 'Anonymous Database'
+            except AttributeError: name = QApplication.translate('MusicLib', 'Anonymous Library')
 
             try: desc = lib.description
-            except AttributeError: desc = 'Description was left out.'
+            except AttributeError: desc = QApplication.translate('Masstagging', 'Description was left out.')
 
             try: author = lib.author
-            except AttributeError: author = 'Anonymous author.'
+            except AttributeError: author = QApplication.translate('MusicLib',  'Anonymous author.')
 
             self.libattrs.append({'name': name, 'desc':desc, 'author': author, 'module': lib})
         
@@ -100,12 +100,12 @@ class LibChooseDialog(QDialog):
         p.close()
         QApplication.processEvents()
         if isinstance(library, basestring):
-            QMessageBox.critical(self, u"Error", u'I encountered an error while loading the %s library: <b>%s</b>' \
-                            % (unicode(self.currentlib['name']), library),
-                            QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
+            QMessageBox.critical(self, QApplication.translate('Defaults', "Error"),
+            QApplication.translate('MusicLib', 'I encountered an error while loading the %1 library: <b>%2</b>').arg(self.currentlib['name']).arg(library),
+            QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
         else:
             dialog = partial(LibraryDialog, library)
-            self.emit(SIGNAL('adddock'), 'Music Library', dialog, RIGHTDOCK)
+            self.emit(SIGNAL('adddock'), QApplication.translate('MusicLib', 'Music Library'), dialog, RIGHTDOCK)
             
             self.close()
 
@@ -123,9 +123,9 @@ class LibraryDialog(QWidget):
         hbox = QHBoxLayout()
 
 
-        searchlabel = QLabel('&Search')
+        searchlabel = QLabel(QApplication.translate('MusicLib', '&Search'))
         self.searchtext = QLineEdit()
-        searchbutton = QPushButton('&Go')
+        searchbutton = QPushButton(QApplication.translate('MusicLib', '&Go'))
         self.connect(self.searchtext, SIGNAL('returnPressed()'),
                 self.searchTree)
         self.connect(searchbutton, SIGNAL('clicked()'),
@@ -157,7 +157,7 @@ class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):
         QTreeWidget.__init__(self, parent)
         self.library = library
-        self.setHeaderLabels(["Library Artists"])
+        self.setHeaderLabels([QApplication.translate('MusicLib', "Library Artists")])
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSortingEnabled(True)
         self.sortItems(0, Qt.AscendingOrder)
@@ -209,7 +209,7 @@ class LibraryTree(QTreeWidget):
         else:
             _libget = self.library.get_tracks
             album_tracks = lambda artist, album: _libget('artist',
-                                artist, 'album', album)
+                artist, 'album', album)
             artist_tracks = lambda artist: _libget('artist', artist)
 
         total = []
@@ -321,9 +321,9 @@ class LibraryTree(QTreeWidget):
 obj = QObject()
 obj.emits = ['adddock']
 obj.receives = []
-name = 'Music Library'
+name = unicode(QApplication.translate('MusicLib', 'Music Library'))
 
-control = ('Music Library', LibraryDialog, RIGHTDOCK, False)
+control = (unicode(QApplication.translate('MusicLib', 'Music Library')), LibraryDialog, RIGHTDOCK, False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

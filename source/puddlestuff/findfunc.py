@@ -33,7 +33,7 @@ numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 from copy import deepcopy
-from constants import ACTIONDIR, CHECKBOX, SPINBOX
+from constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
 import glob
 from collections import defaultdict
 from functools import partial
@@ -239,7 +239,7 @@ def function_parser(m_audio, audio=None, dictionary=None):
                 message = e.message
                 if message.endswith(u'given)'):
                     start = message.find(u'takes')
-                    message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, message[start:])
+                    message = SYNTAX_ERROR % (tokens.funcname, message[start:])
                     raise ParseError(message)
                 else:
                     raise e
@@ -264,8 +264,7 @@ def function_parser(m_audio, audio=None, dictionary=None):
                     else:
                         topass.append(float(arg))
                 except ValueError:
-                    message = 'SYNTAX ERROR: %s expects a number at argument %d.'
-                    raise ParseError(message % (tokens.funcname, no))
+                    raise ParseError(SYNTAX_ARG_ERROR % (tokens.funcname, no))
             else:
                 topass.append(arg)
         try:
@@ -277,12 +276,12 @@ def function_parser(m_audio, audio=None, dictionary=None):
             message = e.message
             if message.endswith(u'given)'):
                 start = message.find(u'takes')
-                message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, message[start:])
+                message = SYNTAX_ERROR % (tokens.funcname, message[start:])
                 raise ParseError(message)
             else:
                 raise e
         except FuncError, e:
-            message = u'SYNTAX ERROR in $%s: %s' % (tokens.funcname, e.message)
+            message = SYNTAX_ERROR % (tokens.funcname, e.message)
             raise ParseError(message)
 
     funcMacro.setParseAction(replaceNestedMacros)

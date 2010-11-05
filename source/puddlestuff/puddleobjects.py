@@ -50,27 +50,27 @@ MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
 from functools import partial
 
 imagetypes = [
-    ('Other', 'O'),
-    ('File Icon', 'I'),
-    ('Other File Icon', 'OI'),
-    ('Cover (front)', 'CF'),
-    ('Cover (back)', 'CB'),
-    ('Leaflet page', 'LF'),
-    ('Media (e.g. label side of CD)', 'M'),
-    ('Lead artist', 'LA'),
-    ('Artist', 'A'),
-    ('Conductor', 'C'),
-    ('Band', 'B'),
-    ('Composer', 'CP'),
-    ('Lyricist', 'L'),
-    ('Recording Location', 'RL'),
-    ('During recording', 'DR'),
-    ('During performance', 'DP'),
-    ('Movie/video screen capture', 'MC'),
-    ('A bright coloured fish', 'F'), 
-    ('Illustration', 'P'),
-    ('Band/artist logotype', 'BL'),
-    ('Publisher/Studio logotype', 'PL')]
+    (unicode(QApplication.translate('Cover Type', 'Other')), unicode(QApplication.translate("Cover Type", 'O'))),
+    (unicode(QApplication.translate('Cover Type', 'File Icon')), unicode(QApplication.translate("Cover Type", 'I'))),
+    (unicode(QApplication.translate('Cover Type', 'Other File Icon')), unicode(QApplication.translate("Cover Type", 'OI'))),
+    (unicode(QApplication.translate('Cover Type', 'Cover (front)')), unicode(QApplication.translate("Cover Type", 'CF'))),
+    (unicode(QApplication.translate('Cover Type', 'Cover (back)')), unicode(QApplication.translate("Cover Type", 'CB'))),
+    (unicode(QApplication.translate('Cover Type', 'Leaflet page')), unicode(QApplication.translate("Cover Type", 'LF'))),
+    (unicode(QApplication.translate('Cover Type', 'Media (e.g. label side of CD)')), unicode(QApplication.translate("Cover Type", 'M'))),
+    (unicode(QApplication.translate('Cover Type', 'Lead artist')), unicode(QApplication.translate("Cover Type", 'LA'))),
+    (unicode(QApplication.translate('Cover Type', 'Artist')), unicode(QApplication.translate("Cover Type", 'A'))),
+    (unicode(QApplication.translate('Cover Type', 'Conductor')), unicode(QApplication.translate("Cover Type", 'C'))),
+    (unicode(QApplication.translate('Cover Type', 'Band')), unicode(QApplication.translate("Cover Type", 'B'))),
+    (unicode(QApplication.translate("Cover Type", 'Composer')), unicode(QApplication.translate("Cover Type", 'CP'))),
+    (unicode(QApplication.translate("Cover Type", 'Lyricist')), unicode(QApplication.translate("Cover Type", 'L'))),
+    (unicode(QApplication.translate("Cover Type", 'Recording Location')), unicode(QApplication.translate("Cover Type", 'RL'))),
+    (unicode(QApplication.translate("Cover Type", 'During recording')), unicode(QApplication.translate("Cover Type", 'DR'))),
+    (unicode(QApplication.translate("Cover Type", 'During performance')), unicode(QApplication.translate("Cover Type", 'DP'))),
+    (unicode(QApplication.translate("Cover Type", 'Movie/video screen capture')), unicode(QApplication.translate("Cover Type", 'MC'))),
+    (unicode(QApplication.translate("Cover Type", 'A bright coloured fish')), unicode(QApplication.translate("Cover Type", 'F'))),
+    (unicode(QApplication.translate("Cover Type", 'Illustration')), unicode(QApplication.translate("Cover Type", 'P'))),
+    (unicode(QApplication.translate("Cover Type", 'Band/artist logotype')), unicode(QApplication.translate("Cover Type", 'BL'))),
+    (unicode(QApplication.translate("Cover Type", 'Publisher/Studio logotype')), unicode(QApplication.translate("Cover Type", 'PL')))]
 
 class CoverButton(QPushButton):
     def __init__(self, *args):
@@ -266,8 +266,9 @@ def errormsg(parent, msg, maximum):
         False if No.
         None if just yes."""
     if maximum > 1:
-        mb = QMessageBox('Error', msg + u"<br /> Do you want to continue?",
-                                                 *(MSGARGS + (parent, )))
+        mb = QMessageBox(QApplication.translate("Defaults", 'Error'),
+            msg + QApplication.translate("Defaults", "<br /> Do you want to continue?"),
+            *(MSGARGS + (parent, )))
         ret = mb.exec_()
         if ret == QMessageBox.No:
             return False
@@ -681,9 +682,9 @@ class HeaderSetting(QDialog):
         self.buttonlist = ListButtons()
         self.buttonlist.edit.setVisible(False)
         if showedits:
-            self.vboxgrid.addWidget(QLabel("Name"),0,0)
+            self.vboxgrid.addWidget(QLabel(QApplication.translate("Column Settings", "Title")),0,0)
             self.vboxgrid.addWidget(self.textname,0,1)
-            self.vboxgrid.addWidget(QLabel("Field"), 1,0)
+            self.vboxgrid.addWidget(QLabel(QApplication.translate("Defaults", "Field")), 1,0)
             self.vboxgrid.addWidget(self.tag,1,1)
             self.vboxgrid.addLayout(self.buttonlist,2,0)
         else:
@@ -957,22 +958,22 @@ class ListButtons(QVBoxLayout):
         QVBoxLayout.__init__(self, parent)
         self.add = QToolButton()
         self.add.setIcon(QIcon(':/filenew.png'))
-        self.add.setToolTip('Add')
+        self.add.setToolTip(QApplication.translate("List Buttons", 'Add'))
         self.remove = QToolButton()
         self.remove.setIcon(QIcon(':/remove.png'))
-        self.remove.setToolTip('Remove')
+        self.remove.setToolTip(QApplication.translate("List Buttons", 'Remove'))
         self.moveup = QToolButton()
         self.moveup.setArrowType(Qt.UpArrow)
-        self.moveup.setToolTip('Move Up')
+        self.moveup.setToolTip(QApplication.translate("List Buttons", 'Move Up'))
         self.movedown = QToolButton()
         self.movedown.setArrowType(Qt.DownArrow)
-        self.movedown.setToolTip('Move Down')
+        self.movedown.setToolTip(QApplication.translate("List Buttons", 'Move Down'))
         self.edit = QToolButton()
         self.edit.setIcon(QIcon(':/edit.png'))
-        self.edit.setToolTip('Edit')
+        self.edit.setToolTip(QApplication.translate("List Buttons", 'Edit'))
         self.duplicate = QToolButton()
         self.duplicate.setIcon(QIcon(':/duplicate.png'))
-        self.duplicate.setToolTip('Duplicate')
+        self.duplicate.setToolTip(QApplication.translate("List Buttons", 'Duplicate'))
 
         self.widgets = [self.add, self.edit, self.duplicate,
                         self.remove, self.moveup, self.movedown]
@@ -1027,8 +1028,8 @@ class ListButtons(QVBoxLayout):
 class MoveButtons(QWidget):
     def __init__(self, arrayname, index = 0, orientation = HORIZONTAL, parent = None):
         QWidget.__init__(self, parent)
-        self.next = QPushButton('&>>')
-        self.prev = QPushButton('&<<')
+        self.next = QPushButton(QApplication.translate("List Buttons", '&>>'))
+        self.prev = QPushButton(QApplication.translate("List Buttons", '&<<'))
         if orientation == VERTICAL:
             box = QVBoxLayout()
             box.addWidget(self.next, 0)
@@ -1201,6 +1202,9 @@ class PicWidget(QWidget):
         buttons -> If True, then the Add, Edit, etc. Buttons are shown.
                    If False, then these functions can be found by right clicking
                    on the picture."""
+
+        self._contextFormat = QApplication.translate("Artwork Context", '%1/%2')
+        
         QWidget.__init__(self, parent)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.sizePolicy().setVerticalStretch(0)
@@ -1224,19 +1228,20 @@ class PicWidget(QWidget):
 
         #Description and picture type shit.
         self._image_desc = QLineEdit(self)
-        self._image_desc.setText('Enter a description')
+        self._image_desc.setText(QApplication.translate("Artwork", 'Enter a description'))
         self._image_desc.setToolTip(
+            QApplication.translate("Artwork",
             '<p>Enter a description for the current cover.</p>'
             '<p>For ID3 tags the description has to be different for each '
             "cover as per the ID3 spec. If they don't differ then spaces "
-            'are appended to the description when the tag is saved.</p>')
+            'are appended to the description when the tag is saved.</p>'))
         self.connect(self._image_desc, SIGNAL('textEdited (const QString&)'),
-                    self.setDescription)
+            self.setDescription)
         controls = QVBoxLayout()
 
         if buttons:
             dbox = QVBoxLayout()
-            label = QLabel('&Description')
+            label = QLabel(QApplication.translate("Artwork", '&Description'))
             label.setBuddy(self._image_desc)
             dbox.addWidget(label)
             dbox.addWidget(self._image_desc)
@@ -1244,7 +1249,7 @@ class PicWidget(QWidget):
             self._image_type = QComboBox(self)
             self._image_type.addItems(IMAGETYPES)
             dbox = QVBoxLayout()
-            label = QLabel('&Type')
+            label = QLabel(QApplication.translate("Artwork", '&Type'))
             label.setBuddy(self._image_type)
             dbox.addWidget(label)
             dbox.addWidget(self._image_type)
@@ -1256,7 +1261,7 @@ class PicWidget(QWidget):
             hbox.addWidget(self._image_type)
             controls.addLayout(hbox)
         self._image_type.setToolTip(
-            '<p>Select a cover type for the artwork.</p>')
+            QApplication.translate("Artwork", '<p>Select a cover type for the artwork.</p>'))
         self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
                             self.setType)
 
@@ -1334,16 +1339,16 @@ class PicWidget(QWidget):
 
         else:
             self.label.setContextMenuPolicy(Qt.ActionsContextMenu)
-            self.savepic = QAction("&Save picture", self)
+            self.savepic = QAction(QApplication.translate("Artwork", "&Save cover to file"), self)
             self.label.addAction(self.savepic)
 
-            self.addpic = QAction("&Add picture", self)
+            self.addpic = QAction(QApplication.translate("Artwork", "&Add cover"), self)
             self.label.addAction(self.addpic)
 
-            self.removepic = QAction("&Remove picture", self)
+            self.removepic = QAction(QApplication.translate("Artwork", "&Remove cover"), self)
             self.label.addAction(self.removepic)
 
-            self.editpic = QAction("&Change picture", self)
+            self.editpic = QAction(QApplication.translate("Artwork", "&Change cover"), self)
             self.label.addAction(self.editpic)
             signal = SIGNAL('triggered()')
 
@@ -1369,7 +1374,7 @@ class PicWidget(QWidget):
             self._contextlabel.setVisible(False)
             self._contextlabel.setText('')
         else:
-            self._contextlabel.setText(text)
+            self._contextlabel.setText(QApplication.translate("Artwork Context", text))
             self._contextlabel.setVisible(True)
 
     def _getContext(self):
@@ -1400,7 +1405,8 @@ class PicWidget(QWidget):
         if not filename:
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
-                    'Select Image...', self.lastfilename, "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
+                QApplication.translate("Artwork", 'Select Image...'), self.lastfilename,
+                QApplication.translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)")))
 
         if not filename:
             return
@@ -1491,7 +1497,7 @@ class PicWidget(QWidget):
         #self.label.setPixmap(self.pixmap)
 
         self._image_desc.blockSignals(True)
-        desc = self.images[num].get('description', 'Enter a description')
+        desc = self.images[num].get('description', QApplication.translate("Artwork", 'Enter a description'))
         self._image_desc.setText(desc)
         self._image_desc.blockSignals(False)
         self._image_type.blockSignals(True)
@@ -1501,7 +1507,7 @@ class PicWidget(QWidget):
             self._image_type.setCurrentIndex(3)
         self._image_type.blockSignals(False)
         self._currentImage = num
-        self.context = unicode(num + 1) + '/' + unicode(len(self.images))
+        self.context = unicode(self._contextFormat.arg(unicode(num + 1)).arg(unicode(len(self.images))))
         self.label.setFrameStyle(QFrame.NoFrame)        
         self.enableButtons()
         self.resizeEvent()
@@ -1528,8 +1534,6 @@ class PicWidget(QWidget):
     def saveToFile(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
-        filters = {'PNG(*.png)': 'PNG',
-                   'JPEG(*.jpg)': 'JPG'}
         if self.currentImage > -1:
             filedlg = QFileDialog()
             filedlg.setNameFilters(filters.keys())
@@ -1538,13 +1542,14 @@ class PicWidget(QWidget):
             else:
                 tempfilename = ''
             filename = filedlg.getSaveFileName(self,
-                'Save as...', tempfilename , u';;'.join(sorted(filters)))
+                QApplication.translate("Artwork", 'Save as...'), tempfilename,
+                QApplication.translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
             if not filename:
                 return
             filt = unicode(filedlg.selectedNameFilter())
             if not self.pixmap.save(filename):
-                QMessageBox.critical(self, 'Error - puddletag', u'I was unable'
-                    u' to write to <b>%s</b>.' % unicode(filename))
+                QMessageBox.critical(self, QApplication.translate("Defaults", 'Error'),
+                    QApplication.translate("Artwork", 'Writing to <b>%1</b> failed.').arg(filename))
 
     def setNone(self):
         self.label.setFrameStyle(QFrame.Box)
@@ -1599,7 +1604,8 @@ class PicWidget(QWidget):
                         raise e
                 pic = {'data': data, 'height': image.height(),
                     'width': image.width(), 'size': len(data),
-                    'mime': 'image/jpeg', 'description': 'Enter description',
+                    'mime': 'image/jpeg',
+                    'description': unicode(QApplication.translate("Artwork", 'Enter description')),
                     'imagetype': 3}
                 images.append(pic)
         return images
@@ -1686,7 +1692,9 @@ class ProgressWin(QDialog):
         self._infunc = False
         self._cached = 0
         self.setModal(True)
-        self.setWindowTitle("Please Wait...")
+        self.setWindowTitle(QApplication.translate("Progress Dialog", "Please Wait..."))
+        self._format = QApplication.translate("Progress Dialog",
+            '%1%2 of %3...')
 
         self.ptext = progresstext
 
@@ -1701,7 +1709,7 @@ class ProgressWin(QDialog):
             self.pbar.setTextVisible(False)
             self.label.setVisible(False)
 
-        cancel = QPushButton('Cancel')
+        cancel = QPushButton(QApplication.translate("Defaults", 'Cancel'))
         cbox = QHBoxLayout()
         cbox.addStretch()
         cbox.addWidget(cancel)
@@ -1731,8 +1739,8 @@ class ProgressWin(QDialog):
         self._infunc = True
         if self.ptext:
             self.pbar.setTextVisible(False)
-            self.label.setText(self.ptext + unicode(value) + ' of ' +
-                unicode(self.pbar.maximum()) + '...')
+            self.label.setText(
+                self._format.arg(self.ptext).arg(value).arg(self.pbar.maximum()))
         self.pbar.setValue(value)
         self._infunc = False
         if self.pbar.maximum() and value >= self.pbar.maximum():
@@ -1757,7 +1765,7 @@ class PuddleCombo(QWidget):
 
         self.remove = QToolButton()
         self.remove.setIcon(QIcon(':/remove.png'))
-        self.remove.setToolTip('Remove current item.')
+        self.remove.setToolTip(QApplication.translate("Combo Box", 'Remove current item.'))
         self.remove.setIconSize(QSize(13, 13))
         self.connect(self.remove, SIGNAL('clicked()'), (self.removeCurrent))
 
@@ -1781,7 +1789,7 @@ class PuddleCombo(QWidget):
         [newitems.append(z) for z in items if z not in newitems]
         self.combo.addItems(newitems)
         self.connect(self.combo, SIGNAL('editTextChanged(const QString&)'),
-                        self._editTextChanged)
+                self._editTextChanged)
 
     def load(self, name = None, default = None):
         if name:
@@ -1814,7 +1822,7 @@ class PuddleDock(QDockWidget):
     _controls = {}
 
     def __init__(self, title, control=None, parent=None, status=None):
-        QDockWidget.__init__(self, title, parent)
+        QDockWidget.__init__(self, QApplication.translate("Dialogs", title), parent)
         self.title = title
         if control:
             control = control(status=status)

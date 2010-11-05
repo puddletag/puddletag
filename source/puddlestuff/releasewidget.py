@@ -43,8 +43,6 @@ NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
 default_albumpattern = u'%artist% - %album% $if(%__numtracks%, '\
     u'[%__numtracks%], "")'
 
-#for album in val.values():  print [dict([(k,v) for k,v in z.items() if k != '__image']) for z in album[1]]
-data = [[{'album': u'As I Am', 'artist': u'Alicia Keys'}, [{'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'1', 'title': u'Piano & 1(intro)', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'2', 'title': u'Girlfriend', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'3', 'title': u"How Come U Don't Call Me Anymore?", 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'4', 'title': u"Fallin'", 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'5', 'title': u'Troubles', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'6', 'title': u'Rock Wit U', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'7', 'title': u"A Woman's Worth", 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'8', 'title': u'Jane Doe', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'9', 'title': u'Goodbye', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'10', 'title': u'The Life', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'11', 'title': u'Mr. Man ft Jeremy Cozier', 'genre': u'Commercial'}, {u'comment': u'                            ', 'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'title': u'Never Felt This Way(Interlude)', 'track': u'12', 'artist': u'Alicia Keys', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'13', 'title': u'Butterflies', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'14', 'title': u'Why Do I Feel So Sad', 'genre': u'Commercial'}, {'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'artist': u'Alicia Keys', 'track': u'15', 'title': u'Caged Bird', 'genre': u'Commercial'}, {u'comment': u'                            ', 'album': u'Songs In A Minor', 'performer': u'Alicia Keys', 'title': u'Track 16', 'track': u'16', 'artist': u'Alicia Keys', 'genre': u'Commercial'}]], [{'album': u'As i Am (The Super Edition)', 'artist': u'Alicia Keys'}, []], [{'album': u'No One (Remixes)', 'artist': u'Alicia Keys'}, []], [{'album': u'Songs In A Minor', 'artist': u'Alicia Keys'}, []], [{'album': u'The Diary Of Alicia Keys', 'artist': u'Alicia Keys'}, []], [{'album': u'The Element Of Freedom', 'artist': u'Alicia Keys'}, []], [{'album': u'The Element Of Freedom (Bonus Tracks)', 'artist': u'Alicia Keys'}, []], [{'album': u'Unplugged', 'artist': u'Alicia Keys'}, []]]
 no_disp_fields = [u'__numtracks', u'__image']
 
 pyqtRemoveInputHook()
@@ -98,22 +96,22 @@ def strip(audio, taglist, reverse = False, mapping=None):
 
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return "<b>Error in pattern</b>"
-    s = "<b>%s</b>: %s"
+        return QApplication.translate("WebDB", "<b>Error in pattern</b>")
+    s = u"<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
         d = {'#images': unicode(len(tag['__image']))}
     else:
         d = {}
     
-    return "<br />".join([s % (z, tostr(v)) for z, v in
+    return u"<br />".join([s % (z, tostr(v)) for z, v in
         sorted(tag.items() + d.items()) if z not in no_disp_fields and not
         z.startswith('#')])
 
 def tooltip(tag, mapping):
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return "<b>Error in pattern</b>"
+        return QApplication.translate("WebDB", "<b>Error in pattern</b>")
     s = "<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
@@ -271,7 +269,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         QtCore.QAbstractItemModel.__init__(self, parent)
         
         self.mapping = {}
-        rootData = map(QtCore.QVariant, ['Retrieved Albums'])
+        rootData = map(QtCore.QVariant, [QApplication.translate("WebDB", 'Retrieved Albums')])
         self.rootItem = RootItem(rootData)
         
         self._albumPattern = ''
@@ -382,13 +380,13 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
-                    u'An error occured: ' + unicode(e))
+                    QApplication.translate("WebDB", 'An error occured: ').arg(unicode(e)))
                 self.emit(SIGNAL('retrievalDone'))
                 return
 
         item.retrieving = True
         thread = PuddleThread(fetch_func, self)
-        self.emit(SIGNAL("statusChanged"), "Retrieving album tracks...")
+        self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieving album tracks..."))
         thread.start()
         while thread.isRunning():
             QApplication.processEvents()
@@ -398,7 +396,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return
             info, tracks = val
             fillItem(item, info, tracks, self.trackPattern)
-            self.emit(SIGNAL("statusChanged"), "Retrieving complete.")
+            self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieval complete."))
             item.retrieving = False
         self.emit(SIGNAL('retrievalDone'))
 
@@ -468,7 +466,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
-                    u'An error occured: ' + unicode(e))
+                    QApplication.translate("WebDB", 'An error occured: ').arg(unicode(e)))
                 self.emit(SIGNAL('retrievalDone'))
                 return None
 
@@ -480,13 +478,13 @@ class TreeModel(QtCore.QAbstractItemModel):
             item.retrieving = False
             self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
                 'QModelIndex&)'), index, index)
-            self.emit(SIGNAL("statusChanged"), "Retrieval complete.")
+            self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieval complete."))
             self.emit(SIGNAL('retrievalDone'))
             if fin_func:
                 fin_func()
 
         item.retrieving = True
-        self.emit(SIGNAL("statusChanged"), "Retrieving album tracks...")
+        self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieving tracks..."))
         thread = PuddleThread(retrieval_func, parent=self)
         thread.connect(thread, SIGNAL('threadfinished'), finished)
         thread.start()
@@ -679,7 +677,6 @@ class ReleaseWidget(QTreeView):
     def setMapping(self, mapping):
         self.model().mapping = mapping
         self.mapping = mapping
-
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

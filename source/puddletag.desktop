@@ -2,7 +2,6 @@
 Version=1.0
 Type=Application
 Name=puddletag
-Comment=An audio tagger for GNU/Linux similar to Mp3tag for Windows.
 TryExec=puddletag
 Exec=puddletag
 Icon=puddletag

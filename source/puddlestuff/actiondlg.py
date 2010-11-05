@@ -71,7 +71,7 @@ def displaytags(tags):
             ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
         return ret
     else:
-        return '<b>No change.</b>'
+        return unicode(QApplication.translate('Functions', '<b>No change.</b>'))
 
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
@@ -134,8 +134,7 @@ class FunctionDialog(QWidget):
             fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
 
         self.tagcombo = QComboBox(self)
-        tooltip = "Fields that will get written to.<br /><br />"\
-            "Enter a list of comma-separated fields eg. <b>artist, title, album</b>"
+        tooltip = QApplication.translate('Functions', "Fields that will get written to.<br /><br /> Enter a list of comma-separated fields eg. <b>artist, title, album</b>")
         self.tagcombo.setToolTip(tooltip)
         self.tagcombo.setEditable(True)
         self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
@@ -145,8 +144,10 @@ class FunctionDialog(QWidget):
         self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
         if self.func.function not in functions.no_fields:
-            self.vbox.addWidget(QLabel("Fields"))
+            label = QLabel(QApplication.translate('Defaults', "&Fields"))
+            self.vbox.addWidget(label)
             self.vbox.addWidget(self.tagcombo)
+            label.setBuddy(self.tagcombo)
         else:
             self.tagcombo.setVisible(False)
         self.example = example
@@ -285,7 +286,7 @@ class FunctionDialog(QWidget):
             if not self._text:
                 try:
                     if self.func.tag == [u'__all']:
-                        text = 'Some placeholder text, courtesy of puddletag.'
+                        text = unicode(QApplication.translate('Functions', 'Some placeholder text, courtesy of puddletag.'))
                     elif self.func.tag[0] == [u'__selected']:
                         text = audio.get(self.showcombo.keys()[0], u'')
                     else:
@@ -297,7 +298,7 @@ class FunctionDialog(QWidget):
             try:
                 if self.func.function in functions.no_preview:
                     self.emit(SIGNAL('updateExample'), 
-                        'No preview for is shown for this function.')
+                        unicode(QApplication.translate('Functions', 'No preview for is shown for this function.')))
                     return
                 val = self.func.runFunction(text, audio, r_tags=audio, state={})
             except findfunc.ParseError, e:
@@ -305,7 +306,7 @@ class FunctionDialog(QWidget):
             if val is not None:
                 self.emit(SIGNAL('updateExample'), val)
             else:
-                self.emit(SIGNAL('updateExample'), u'<b>No change</b>')
+                self.emit(SIGNAL('updateExample'), unicode(QApplication.translate('Functions', u'<b>No change</b>')))
 
     def _sanitize(self, ctype, value):
         if ctype in ['combo', 'text']:
@@ -359,7 +360,9 @@ class CreateFunction(QDialog):
         Each item should be in the form (DisplayName, tagname) as used in audioinfo.
         prevfunc is a Function object that is to be edited."""
         QDialog.__init__(self,parent)
+        self.setWindowTitle(QApplication.translate('Functions', "Functions"))
         winsettings('createfunction', self)
+
         self.realfuncs = []
         #Get all the function from the functions module.
         for z, funcname in functions.functions.items():
@@ -385,7 +388,7 @@ class CreateFunction(QDialog):
         self.setMinimumHeight(self.sizeHint().height())
         self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
         self.connect(self.okcancel, SIGNAL('cancel'), self.close)
-        self.setWindowTitle("Format")
+        
         self.example = example
         self._text = text
         if showcombo:
@@ -453,7 +456,7 @@ class CreateAction(QDialog):
         Each item should be in the form (DisplayName, tagname as used in audioinfo).
         prevfunction is the previous function that is to be edited."""
         QDialog.__init__(self, parent)
-        self.setWindowTitle("Modify Action")
+        self.setWindowTitle(QApplication.translate('Actions', "Modify Action"))
         winsettings('editaction', self)
         self.grid = QGridLayout()
 
@@ -558,7 +561,7 @@ class ActionWindow(QDialog):
     def __init__(self, parent = None, example = None, quickaction = None):
         """tags are the tags to be shown in the FunctionDialog"""
         QDialog.__init__(self,parent)
-        self.setWindowTitle("Actions")
+        self.setWindowTitle(QApplication.translate('Actions', "Actions"))
         winsettings('actions', self)
         self._quickaction = quickaction
         self.listbox = ListBox()
@@ -582,7 +585,8 @@ class ActionWindow(QDialog):
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
-        create_shortcut = QPushButton('Create &Shortcut')
+        create_shortcut = QPushButton(QApplication.translate('Actions', 'Create &Shortcut'))
+        create_shortcut.setToolTip(QApplication.translate('Actions', 'Creates a shortcut for the checked actions on the Actions menu. Use the <b>Action Shortcuts</b> tab in Edit->Preferences to modify the shortcut.'))
         self.okcancel.insertWidget(0, create_shortcut)
         self.grid = QGridLayout()
 
@@ -624,7 +628,7 @@ class ActionWindow(QDialog):
     def createShortcut(self):
         funcs = self.checked()[1]
         (name, ok) = QInputDialog().getText(self, 'puddletag',
-            'Enter a name for the shortcut.')
+            QApplication.translate('Actions', 'Enter a name for the shortcut.'))
         
         if name and ok:
             name = unicode(name)
@@ -771,7 +775,7 @@ class ActionWindow(QDialog):
         return filename
 
     def add(self):
-        (text, ok) = QInputDialog.getText (self, "New Configuration", "Enter a name for the new action.", QLineEdit.Normal)
+        (text, ok) = QInputDialog.getText (self, QApplication.translate('Actions', "New Action"), QApplication.translate('Actions', "Enter a name for the new action."), QLineEdit.Normal)
         if (ok is True) and text:
             item = QListWidgetItem(text)
             item.setCheckState(Qt.Unchecked)
@@ -780,7 +784,7 @@ class ActionWindow(QDialog):
         else:
             return
         win = CreateAction(self, example = self.example)
-        win.setWindowTitle("Edit Action: " + self.listbox.item(self.listbox.count() - 1).text())
+        win.setWindowTitle(QApplication.translate('Actions', "Edit Action: ") + self.listbox.item(self.listbox.count() - 1).text())
         win.setModal(True)
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.addBuddy)
@@ -792,7 +796,7 @@ class ActionWindow(QDialog):
 
     def edit(self):
         win = CreateAction(self, self.funcs[self.listbox.currentRow()][0], example = self.example)
-        win.setWindowTitle("Edit Action: " + self.listbox.currentItem().text())
+        win.setWindowTitle(QApplication.translate('Actions', "Edit Action: ") + self.listbox.currentItem().text())
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editBuddy)
 
@@ -851,14 +855,14 @@ class ActionWindow(QDialog):
             return
         row = l.currentRow()
         oldname = self.funcs[row][1]
-        (text, ok) = QInputDialog.getText (self, "Copy %s action" % oldname,
-                        "Enter a name for the new action.", QLineEdit.Normal)
+        (text, ok) = QInputDialog.getText (self, QApplication.translate('Actions', "Copy %1 action").arg(oldname),
+            QApplication.translate('Actions', "Enter a name for the new action."), QLineEdit.Normal)
         if not (ok and text):
             return
         funcs = copy(self.funcs[row][0])
         name = unicode(text)
         win = CreateAction(self, funcs, example = self.example)
-        win.setWindowTitle("Edit Action: %s" % name)
+        win.setWindowTitle(QApplication.translate('Actions', "Edit Action: %s") % name)
         win.show()
         dupebuddy = partial(self.duplicateBuddy, name)
         self.connect(win, SIGNAL("donewithmyshit"), dupebuddy)
