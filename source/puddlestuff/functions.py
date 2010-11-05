@@ -130,8 +130,8 @@ def div(text,text1):
 # Contributed by Stjujsckij Nickolaj
 def enconvert(text, enc_name):
     ''' Convert from non-standard encoding, "Field: $0 -> To Encoding: $1"
-    &Encoding, combo, cp1250, cp1251, cp1252, 1253, 1254, 1255, 1256, 1257, 1258'''
-    return text.encode(enc_name, 'replace').decode(enc_name, 'replace')
+&Encoding, combo, cp1250, cp1251, cp1252, cp1253, cp1254, cp1255, cp1256, cp1257, cp1258'''
+    return text.encode("cp1252", 'replace').decode(enc_name, 'replace')
 
 def export_cover(tags, pattern):
     dirpath = tags['__dirpath']

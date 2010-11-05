@@ -66,7 +66,7 @@ def displaytags(tags):
             return SEPARATOR.join(filter(lambda x: x is not None, tags))
         s = u"<b>%s</b>: %s<br />"
         ret = u"".join([s % (z, to_str(v)) for z, v in sorted(tags.items()) 
-            if z not in READONLY and z != u'__image'])[:-2]
+            if z not in READONLY and z != '__image'])[:-2]
         if u'__image' in tags:
             ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
         return ret
@@ -283,21 +283,14 @@ class FunctionDialog(QWidget):
         self.argValues()
         if self.example is not None:
             audio = self.example
-            if not self._text:
-                try:
-                    field = findfunc.parse_field_list(self.func.tag,
-                        audio, self.showcombo.keys())
-                    text = audio.get(field, u'')
-                except IndexError:
-                    text = u''
-            else:
-                text = self._text
             try:
                 if self.func.function in functions.no_preview:
                     self.emit(SIGNAL('updateExample'), 
                         unicode(QApplication.translate('Functions', 'No preview for is shown for this function.')))
                     return
-                val = self.func.runFunction(text, audio, r_tags=audio, state={})
+                fields = findfunc.parse_field_list(self.func.tag,
+                    audio, self._combotags)
+                val = findfunc.runAction([self.func], audio, {}, fields)
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
             if val is not None:

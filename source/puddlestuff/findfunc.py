@@ -321,8 +321,6 @@ def parse_field_list(fields, audio, selected=None):
             fields.remove('__selected')
         if selected:
             fields.extend(selected)
-    print sorted(list(set(fields)))
-
     return list(set(fields))
 
 # This function is from name2id3 by  Kristian Kvilekval
@@ -385,12 +383,10 @@ def runAction(funcs, audio, state = None, quick_action=None):
     changed = set()
     for func in funcs:
         if quick_action is None:
-            fields = func.tag[::]
+            fields = parse_field_list(func.tag, audio)
         else:
             fields = quick_action[::]
         ret = {}
-
-        fields = parse_field_list(fields, audio)
 
         for field in fields:
             val = audio.get(field, u'')
