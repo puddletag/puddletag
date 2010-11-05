@@ -120,19 +120,32 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     qtTranslator = QTranslator()
 
-    locale = QLocale.system().name()
-    #locale = 'afr'
-    if qtTranslator.load("puddletag_" + locale, os.path.dirname(__file__)):
-        app.installTranslator(qtTranslator)
-        print 'Loaded Translation'
+    if '--langfile' in sys.argv:
+        index = sys.argv.index('--langfile')
+        langfile = sys.argv[index + 1]
+        if not langfile.endswith('.qm'):
+            print 'Invalid translation file.'
+            langargs = None
+        else:
+            langargs = langfile, os.path.dirname(langfile)
+        del(sys.argv[index])
+        del(sys.argv[index])
+    else:
+        langargs = None
+
+    if not langargs:
+        locale = QLocale.system().name()
+        langargs = "puddletag_" + locale,  os.path.dirname(__file__)
+
+    if langargs:
+        if qtTranslator.load(*langargs):
+            app.installTranslator(qtTranslator)
+            print 'Loaded Translation'
     
     create_log()
-    try:
-        if sys.argv[1] == '--debug':
-            logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-            del(sys.argv[1])
-    except IndexError:
-        pass
+    if '--debug' in sys.argv:
+        sys.argv.remove('--debug')
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     size = None
 

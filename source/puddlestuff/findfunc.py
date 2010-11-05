@@ -291,6 +291,40 @@ def function_parser(m_audio, audio=None, dictionary=None):
 def parsefunc(text, audio, d=None):
     return function_parser(audio, None, d).transformString(text)
 
+def parse_field_list(fields, audio, selected=None):
+    fields = fields[::]
+    not_fields = [i for i, z in enumerate(fields) if z.startswith('~')]
+
+    if not_fields:
+        index = not_fields[0]
+        not_fields = fields[index:]
+        not_fields[0] = not_fields[0][1:]
+        while '__all' in not_fields:
+            not_fields.remove('__all')
+
+        if '__selected' in not_fields:
+            if selected:
+                not_fields.extend(selected)
+            while '__selected' in not_fields:
+                not_fields.remove('__selected')
+        fields = fields[:index]
+        fields.extend([key for key in audio if key not in
+            not_fields and key not in NOT_ALL])
+
+    if '__all' in fields:
+        while '__all' in fields:
+            fields.remove('__all')
+        fields.extend([key for key in audio if key not in NOT_ALL])
+
+    if '__selected' in fields:
+        while '__selected' in fields:
+            fields.remove('__selected')
+        if selected:
+            fields.extend(selected)
+    print sorted(list(set(fields)))
+
+    return list(set(fields))
+
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
     """Escape regular expression special characters"""
@@ -351,12 +385,13 @@ def runAction(funcs, audio, state = None, quick_action=None):
     changed = set()
     for func in funcs:
         if quick_action is None:
-            fields = func.tag
+            fields = func.tag[::]
         else:
-            fields = quick_action
+            fields = quick_action[::]
         ret = {}
-        if fields[0] == u"__all":
-            fields = [key for key in audio if key not in NOT_ALL]
+
+        fields = parse_field_list(fields, audio)
+
         for field in fields:
             val = audio.get(field, u'')
             temp = func.runFunction(val, audio, state, None, r_tags)

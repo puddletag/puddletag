@@ -215,8 +215,8 @@ class FunctionDialog(QWidget):
             [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
 
-        fields = [x for x in [z.strip().lower() for z in
-            unicode(self.tagcombo.currentText()).split(",")] if z != ""]
+        fields = [z.strip() for z in
+            unicode(self.tagcombo.currentText()).split(",") if z]
 
         if self.func.function in functions.no_fields:
             self.func.setTag(['just nothing to do with this'])
@@ -285,12 +285,9 @@ class FunctionDialog(QWidget):
             audio = self.example
             if not self._text:
                 try:
-                    if self.func.tag == [u'__all']:
-                        text = unicode(QApplication.translate('Functions', 'Some placeholder text, courtesy of puddletag.'))
-                    elif self.func.tag[0] == [u'__selected']:
-                        text = audio.get(self.showcombo.keys()[0], u'')
-                    else:
-                        text = audio.get(self.func.tag[0], u'')
+                    field = findfunc.parse_field_list(self.func.tag,
+                        audio, self.showcombo.keys())
+                    text = audio.get(field, u'')
                 except IndexError:
                     text = u''
             else:
@@ -743,11 +740,7 @@ class ActionWindow(QDialog):
                 if self._quickaction:
                     tags = runQuickAction(funcs, self.example, {}, self._quickaction)
                 else:
-                    try:
-                        tags = runAction(funcs, self.example, {})
-                    except:
-                        pdb.set_trace()
-                        tags = runAction(funcs, self.example, {})
+                    tags = runAction(funcs, self.example, {})
 
                 self._examplelabel.show()
                 self._examplelabel.setText(displaytags(tags))

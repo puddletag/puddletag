@@ -14,7 +14,6 @@ from puddlestuff.puddleobjects import PuddleConfig
 release_order = ('year', 'type', 'label', 'catalog')
 #search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=1&x=0&y=0'
 #search_adress = 'http://www.allmusic.com/search/album/%s'
-search_adress = 'http://www.allmusic.com/search?search_term=%s&search_type=album&x=0&y=0'
 search_adress = 'http://www.allmusic.com/search/album/%s'
 
 search_order = (None, 'year', 'artist', None, 'album', None, 'label', 
@@ -37,6 +36,7 @@ spanmap = {
     'Title': 'title',
     'Composer': 'composer',
     'Time': '__length',
+    'Type': 'type',
     'Year': 'year'}
 
 sqlre = re.compile('(r\d+)$')
@@ -192,6 +192,7 @@ def parse_albumpage(page, artist=None, album=None):
             break
         value = value.text_content().strip()
         field = field.string.strip()
+        info[field] = value
 
     #Get Genres
     styles = artist_group.find_all('div', {'id': 'genre-style'})
@@ -324,7 +325,7 @@ def parse_tracks(soup):
 
 def retrieve_album(url, coverurl=None, id_field=None):
     try:
-        write_log('Opening Album Page - %s' % (url + '/review', ))
+        write_log('Opening Review Page - %s' % (url + '/review', ))
         album_page = urlopen(url + '/review', False)
     except EnvironmentError:
         write_log('Opening Album Page - %s' % url)
@@ -346,7 +347,7 @@ def retrieve_album(url, coverurl=None, id_field=None):
             cover = None
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving cover %s - %s' % 
-                        (info['#cover-url'], unicode(e)))
+                (info['#cover-url'], unicode(e)))
             cover = None
     else:
         cover = None
@@ -379,10 +380,10 @@ class AllMusic(object):
         super(AllMusic, self).__init__()
         self._getcover = True
         self._useid = True
-        self._id_field = 'amgsqlid'
+        self._id_field = 'amgalbumid'
         self.preferences = [
             ['Retrieve Covers', CHECKBOX, True],
-            ['Use SQL ID to retrieve albums:', CHECKBOX, self._useid],
+            ['Use AllMusic Album ID to retrieve albums:', CHECKBOX, self._useid],
             ['Field to use for SQL ID:', TEXT, self._id_field]
             ]
     
@@ -415,7 +416,7 @@ class AllMusic(object):
             tracks = []
             [tracks.extend(z) for z in artists.values()]
             album_id = find_id(tracks, self._id_field)
-            if album_id:
+            if album_id and albumid.startswith('r'):
                 write_log(u'Found Album ID %s' % album_id)
                 return self.keyword_search(u':id %s' % album_id)
 

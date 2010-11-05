@@ -348,15 +348,7 @@ def run_func(selectedfiles, func):
 
     def tagiter():
         for selected, f in izip(selectedtags, selectedfiles):
-            fields = set()
-            for key in func.tag:
-                if key == u'__selected':
-                    [fields.add(z) for z in selected.keys()]
-                elif key == u'__all':
-                    fields = f.usertags
-                    break
-                else:
-                    fields.add(key)
+            fields = findfunc.parse_field_list(func.tag, f, selected.keys())
             rowtags = f.tags
             ret = {}
             for field in fields:

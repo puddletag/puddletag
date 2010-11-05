@@ -42,7 +42,7 @@ TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return "<b>Error in pattern</b>"
+        return QApplication.translate("WebDB", "<b>Error in pattern</b>")
     s = "<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
@@ -82,7 +82,7 @@ class TagListWidget(QWidget):
         if not tags:
             tags = []
         label = QLabel()
-        label.setText('&Fields')
+        label.setText(QApplication.translate("Defaults", '&Fields'))
         self._text = QLineEdit(u', '.join(tags))
         label.setBuddy(self._text)
 
@@ -118,7 +118,7 @@ class SourcePrefs(QDialog):
         vbox = QVBoxLayout()
         self._controls = []
         winsettings(title, self)
-        self.setWindowTitle(u'Configure: ' + title)
+        self.setWindowTitle(QApplication.translate("WebDB", 'Configure: %1').arg(title))
         for desc, ctype, default in controls:
             if ctype == TEXT:
                 control = QLineEdit(default)
@@ -198,9 +198,10 @@ class SortOptionEditor(QDialog):
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
-        (text, ok) = QInputDialog().getItem(self, 'Add', 
-            'Enter a sorting option (a comma-separated list of fields.'
-            'Eg. "artist, title")', patterns, row)
+        (text, ok) = QInputDialog().getItem(self,
+            QApplication.translate("WebDB", 'Add sort option'),
+            QApplication.translate("WebDB", 'Enter a sorting option (a comma-separated list of fields.'
+            'Eg. "artist, title")'), patterns, row)
         if ok:
             self.listbox.clearSelection()
             self.listbox.addItem(text)
@@ -214,9 +215,10 @@ class SortOptionEditor(QDialog):
             row = self.listbox.currentRow()
         l = self.listbox.item
         patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
-        (text, ok) = QInputDialog().getItem(self, 'Edit', 
-            'Enter a sorting option (a comma-separated list of fields.'
-            'Eg. "artist, title")', patterns, row)
+        (text, ok) = QInputDialog().getItem(self,
+            QApplication.translate("WebDB", 'Edit sort option'),
+            QApplication.translate("WebDB", 'Enter a sorting option (a comma-separated list of fields.'
+            'Eg. "artist, title")'), patterns, row)
         if ok:
             item = l(row)
             item.setText(text)
@@ -254,29 +256,29 @@ class SettingsDialog(QWidget):
         saveart = cparser.get('tagsources', 'saveart', False)
         coverdir = cparser.get('tagsources', 'coverdir', False)
         
-        label = QLabel('&Display format for individual tracks.')
+        label = QLabel(QApplication.translate("WebDB Settings", '&Display format for individual tracks.'))
         self._text = QLineEdit(text)
         label.setBuddy(self._text)
         
-        albumlabel = QLabel('Display format for &retrieved albums')
+        albumlabel = QLabel(QApplication.translate("WebDB Settings", 'Display format for &retrieved albums'))
         self._albumdisp = QLineEdit(albumformat)
         albumlabel.setBuddy(self._albumdisp)
 
-        sortlabel = QLabel('Sort retrieved albums using order:')
+        sortlabel = QLabel(QApplication.translate("WebDB Settings", 'Sort retrieved albums using order:'))
         self._sortoptions = QComboBox()
         self._sortoptions.addItems(sortoptions)
         sortlabel.setBuddy(self._sortoptions)
-        editoptions = QPushButton('&Edit')
+        editoptions = QPushButton(QApplication.translate("Defaults", '&Edit'))
         self.connect(editoptions, SIGNAL('clicked()'), self._editOptions)
         
-        ua_label = QLabel('User-Agent to use for screen scraping.')
+        ua_label = QLabel(QApplication.translate("WebDB Settings", 'User-Agent to use for screen scraping.'))
         self._ua = QTextEdit()
         self._ua.setText(useragent)
 
-        self._savecover = QCheckBox('Save album art.')
+        self._savecover = QCheckBox(QApplication.translate("WebDB Settings", 'Save album art.'))
         
-        coverlabel = QLabel("&Directory to save retrieved album art "
-            "(it will be created if it doesn't exist)")
+        coverlabel = QLabel(QApplication.translate("WebDB Settings", "&Directory to save retrieved album art "
+            "(it will be created if it doesn't exist)"))
         self._coverdir = QLineEdit()
         coverlabel.setBuddy(self._coverdir)
         
@@ -391,12 +393,12 @@ class MainWin(QWidget):
         self.sourcelist.addItems(self._sourcenames)
         self.connect(self.sourcelist, SIGNAL('currentIndexChanged (int)'),
                         self._changeSource)
-        sourcelabel = QLabel('Sour&ce: ')
+        sourcelabel = QLabel(QApplication.translate("WebDB", 'Sour&ce: '))
         sourcelabel.setBuddy(self.sourcelist)
 
         preferences = QToolButton()
         preferences.setIcon(QIcon(':/preferences.png'))
-        preferences.setToolTip('Configure')
+        preferences.setToolTip(QApplication.translate("WebDB", 'Configure'))
         self.connect(preferences, SIGNAL('clicked()'), self.configure)
 
         sourcebox = QHBoxLayout()
@@ -406,29 +408,29 @@ class MainWin(QWidget):
         self._prefbutton = preferences
 
         self._searchparams = QLineEdit()
-        self._tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li><li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>"
+        self._tooltip = QApplication.translate("WebDB", "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li><li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>")
         self._searchparams.setToolTip(self._tooltip)
 
-        self.getinfo = QPushButton("&Search")
+        self.getinfo = QPushButton(QApplication.translate("WebDB", "&Search"))
         self.getinfo.setDefault(True)
         self.getinfo.setAutoDefault(True)
         self.connect(self._searchparams, SIGNAL('returnPressed()'), self.getInfo)
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
-        self._writebutton = QPushButton('&Write')
-        clear = QPushButton("Clea&r preview")
+        self._writebutton = QPushButton(QApplication.translate("WebDB", '&Write'))
+        clear = QPushButton(QApplication.translate("Previews", "Clea&r preview"))
 
         self.connect(self._writebutton, SIGNAL("clicked()"), self._write)
         self.connect(clear, SIGNAL("clicked()"), self._clear)
 
-        self.label = QLabel("Select files and click on Search to retrieve "
-                            "metadata.")
+        self.label = QLabel(QApplication.translate("WebDB", "Select files and click on Search to retrieve "
+            "metadata."))
 
         self.listbox = ReleaseWidget(status, self._tagsource)
-        self._existing = QCheckBox('Update empty fields only.')
+        self._existing = QCheckBox(QApplication.translate("WebDB", 'Update empty fields only.'))
 
         self._taglist = TagListWidget()
-        tooltip = 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.'
+        tooltip = QApplication.translate("WebDB", 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.')
         self._taglist.setToolTip(tooltip)
         self.connect(self._taglist, SIGNAL('tagschanged'), self._changeTags)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
@@ -507,7 +509,7 @@ class MainWin(QWidget):
 
     def _write(self):
         self.emit(SIGNAL('writepreview'))
-        self.label.setText("<b>Tags were written.</b>")
+        self.label.setText(QApplication.translate("WebDB", "<b>Tags were written.</b>"))
 
     def closeEvent(self, e):
         self._clear()
@@ -532,12 +534,12 @@ class MainWin(QWidget):
         files = self._status['selectedfiles']
         if self._tagsource.group_by:
             group = split_by_tag(files, *self._tagsource.group_by)
-        self.label.setText('Retrieving album info.')
+        self.label.setText(QApplication.translate("WebDB", 'Retrieving album info.'))
         text = None
         if self._searchparams.text() and self._searchparams.isEnabled():
             text = unicode(self._searchparams.text())
         elif not files:
-            self.label.setText('<b>Select some files or enter search paramaters.</b>')
+            self.label.setText(QApplication.translate("WebDB", '<b>Select some files or enter search paramaters.</b>'))
             return
 
         def search():
@@ -586,9 +588,9 @@ class MainWin(QWidget):
         else:
             self.listbox.setReleases(retval)
             if retval:
-                self.label.setText(u'Searching complete.')
+                self.label.setText(QApplication.translate("WebDB", 'Searching complete.'))
             else:
-                self.label.setText(u'No matching albums were found.')
+                self.label.setText(QApplication.translate("WebDB", 'No matching albums were found.'))
             self.listbox.emit(SIGNAL('infoChanged'), '')
 
     def loadSettings(self):

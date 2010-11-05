@@ -127,33 +127,14 @@ def div(text,text1):
     except decimal.InvalidOperation:
         return
 
+# Contributed by Stjujsckij Nickolaj
+def enconvert(text, enc_name):
+    ''' Convert from non-standard encoding, "Field: $0 -> To Encoding: $1"
+    &Encoding, combo, cp1250, cp1251, cp1252, 1253, 1254, 1255, 1256, 1257, 1258'''
+    return text.encode(enc_name, 'replace').decode(enc_name, 'replace')
+
 def export_cover(tags, pattern):
     dirpath = tags['__dirpath']
-
-
-def featFormat(text, ftstring = u"ft", opening = u"(", closing = u")"):
-    #'''Remove brackets from (ft), Brackets remove: $0
-    #Feat &String, text,  ft
-    #O&pening bracket, text, "("
-    #C&losing bracket, text, ")"'''
-    ##Removes parenthesis from feat string
-    ##say if you had a title string "Booty (ft the boot man)"
-    ##featFormat would return "Booty ft the boot man"
-    ##In the same way "Booty (ft the boot man"
-    ##would give "Booty ft the boot man"
-    ##but "Booty ft the boot man)" would remain unchanged.
-    ##the opening and closing parens can be changed to whatever.
-    textli = list(text)
-    start = text.find(ftstring)
-    if start == -1: return text
-    if start != 0:
-        if text[start -1] == opening:
-            del (textli[start - 1])
-            closeparen = "".join(textli).find(closing, start)
-            if closeparen == -1: return "".join(textli)
-            del textli[closeparen]
-            return "".join(textli)
-    return text
 
 def filenametotag(m_tags, pattern):
     """Filename to Tag, File->Tag '$1'
@@ -783,7 +764,7 @@ functions = {"add": add,
             "caps3": caps3,
             "char": char,
             "div": div,
-            "featFormat": featFormat,
+            "enconvert": enconvert,
             'filenametotag': filenametotag,
             "find": find,
             "format": formatValue,

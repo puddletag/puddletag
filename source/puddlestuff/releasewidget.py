@@ -380,7 +380,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
-                    QApplication.translate("WebDB", 'An error occured: ').arg(unicode(e)))
+                    QApplication.translate("WebDB", 'An error occured: %1').arg(unicode(e)))
                 self.emit(SIGNAL('retrievalDone'))
                 return
 
@@ -466,7 +466,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
-                    QApplication.translate("WebDB", 'An error occured: ').arg(unicode(e)))
+                    QApplication.translate("WebDB", 'An error occured: %1').arg(unicode(e)))
                 self.emit(SIGNAL('retrievalDone'))
                 return None
 
