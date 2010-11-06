@@ -410,7 +410,10 @@ class AllMusic(object):
         if len(artists) > 1:
             artist = u'Various Artists'
         else:
-            artist = artists.keys()[0]
+            if hasattr(artists, 'items'):
+                artist = artists.keys()[0]
+            else:
+                artist = artists[0]
             
         if self._useid and hasattr(artists, 'values'):
             tracks = []

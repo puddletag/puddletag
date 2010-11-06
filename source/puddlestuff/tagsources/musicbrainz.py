@@ -8,16 +8,26 @@ from collections import defaultdict
 import cPickle as pickle
 from puddlestuff.tagsources import RetrievalError, write_log, set_status, parse_searchstring
 from puddlestuff.util import split_by_tag
-from puddlestuff.constants import TEXT, SAVEDIR
+from puddlestuff.constants import CHECKBOX, SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
 
-RELEASETYPES = (brainzmodel.Release.TYPE_OFFICIAL)
+Release = brainzmodel.Release
+RELEASETYPES = (Release.TYPE_OFFICIAL)
 RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
-    releaseEvents=True)
-ARTIST_INCLUDES = ws.ArtistIncludes(releases=[brainzmodel.Release.TYPE_OFFICIAL])
+    releaseEvents=True, labels=True, ratings=True, isrcs=True)
+
+ARTIST_INCLUDES = ws.ArtistIncludes(ratings=True,
+    releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
+    trackRelations=True, artistRelations=True)
+
+ARTIST_ID = 'mbrainz_artist_id'
+ALBUM_ID = 'mbrainz_album_id'
+PUID = 'musicip_puid'
+TRACK_ID = 'mbrainz_track_id'
+COUNTRY = 'mbrainz_country'
 
 CONNECTIONERROR = "Could not connect to Musicbrainz server." \
-                  "(Check your net connection)"
+    "(Check your net connection)"
 q = Query()
 
 def artist_id(artist, lucene=False):
@@ -28,59 +38,42 @@ def artist_id(artist, lucene=False):
     if results:
         return (results[0].artist.name, results[0].artist.id)
 
-def equal(audio1, audio2, play=False, tags=('artist', 'album')):
-    for key in tags:
-        if (key in audio1) and (key in audio2):
-            if u''.join(audio1[key]).lower() != u''.join(audio2[key]).lower():
-                return False
-        else:
-            return False
-    return True
-
-def get_tracks(r_id, track_field=None):
-    release = q.getReleaseById(r_id, RELEASEINCLUDES)
-    if release:
-        artist = release.artist.name
-    else:
-        artist = ''
-    if release.getReleaseEventsAsDict():
-        extra = {'date': min(release.getReleaseEventsAsDict().values())}
-        if not extra['date']:
-            del(extra['date'])
-    else:
-        extra = {}
-    if artist:
-        extra['artist'] = artist
-    extra['album'] = release.title
+def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
+    #f = open('/tmp/mbrainz/release1', 'rb')
+    #release = pickle.load(f)
+    #f.close()
+    release = q.getReleaseById(release_id, RELEASEINCLUDES)
+    info = release_to_dict(release)
+    #f = open('/tmp/mbrainz/release1', 'wb')
+    #pickle.dump(release, f)
+    #f.close()
 
     if release.tracks:
-        year = release.getEarliestReleaseDate()
-        if year:
-            extra.update({'year': year})
-        if not track_field:
-            return [[{
+        tracks = []
+        for num, track in enumerate(release.tracks):
+            track = {
+                track_id: extractUuid(track.id),
                 'title': track.title,
-                'album': release.title,
-                'track': unicode(i+1),
-                'artist': track.artist.name if track.artist else artist}
-                    for i, track in enumerate(release.tracks)], extra]
-        else:
-            return [[{
-                track_field: extractUuid(track.id),
-                'title': track.title,
-                'album': release.title,
-                'track': unicode(i+1),
-                'artist': track.artist.name if track.artist else artist}
-                    for i, track in enumerate(release.tracks)], extra]
-    else:
-        return [], extra
+                'track': unicode(num + 1),
+                'artist': track.artist.name if track.artist else None,
+                'rating': unicode(track.rating.value) if track.rating.value is not None else None,
+                'isrcs': track.isrcs}
+            tracks.append(dict((k,v) for k,v in track.items() if v))
 
-def get_releases(artistid, return_name=False):
-    artist = q.getArtistById(artistid, ARTIST_INCLUDES)
-    if return_name:
-        return [(z.title, z.id) for z in artist.releases], artist.name
-    else:
-        return [(z.title, z.id) for z in artist.releases]
+        if puids:
+            for track in tracks:
+                track.update(get_puid(track[TRACK_ID]))
+        return info, tracks
+    return info, []
+
+def artist_releases(artistid):
+    ret = q.getArtistById(artistid, ARTIST_INCLUDES).releases
+    #f = open('/tmp/mbrainz/artist', 'wb')
+    #pickle.dump(ret, f)
+    #f.close()
+    #ret = pickle.load(open('/tmp/mbrainz/artist', 'rb'))
+    #pdb.set_trace()
+    return ret
 
 def get_all_releases(title):
     tmp = ReleaseFilter(releaseTypes=RELEASETYPES,title=title)
@@ -94,6 +87,18 @@ def get_all_releases(title):
         albums[r.artist.id][r.title] = r.id
         albumlist[r.artist.name].append((r.title, []))
     return artists, albums, albumlist
+
+def get_puid(track_id):
+    includes = ws.TrackIncludes(puids=True, ratings=True)
+    track = q.getTrackById(track_id, includes)
+    #track = pickle.load(open('/tmp/mbrainz/' + track_id, 'rb'))
+    #f = open('/tmp/mbrainz/' + track_id, 'wb')
+    #pickle.dump(track, f)
+    #f.close()
+    track = {
+        'musicip_puid': track.puids,
+        'rating': unicode(track.rating.value) if track.rating.value is not None else None}
+    return dict((k,v) for k,v in track.items() if v)
 
 def find_id(tracks, field=None):
     if not field:
@@ -119,106 +124,136 @@ def artist_search(artist):
     except ValueError:
         return (None, None)
 
+def find_releases(artists=None, album=None):
+    if artists and album and len(artists) > 1:
+        ret = VA_search(album)
+        if ret:
+            return ret
+
+    if artists is not None:
+        artist = artists[0]
+    else:
+        artist = None
+
+    q = Query()
+    r_filter = ws.ReleaseFilter(artistName=artist, title=album,
+        releaseTypes=(Release.TYPE_OFFICIAL,))
+
+    #f = open('/tmp/mbrainz/ratatat', 'rb')
+    releases = q.getReleases(filter=r_filter)
+    #releases = pickle.load(f)
+    #f.close()
+
+    return map(release_to_dict, releases)
+
+def release_to_dict(release):
+    if hasattr(release, 'release'):
+        r = release.release
+    else:
+        r = release
+    
+    album = {
+        'artist': r.artist.name if r.artist else None,
+        ARTIST_ID: extractUuid(r.artist.id) if r.artist else None,
+        'album': r.title,
+        ALBUM_ID: extractUuid(r.id),
+        '#artist_id': r.artist.id if r.artist else None,
+        '#album_id': r.id,
+        'asin': r.asin}
+
+    if r.releaseEvents:
+        e = r.releaseEvents[0]
+        album.update({
+            'year': e.date,
+            COUNTRY: e.country,
+            'barcode': e.barcode,
+            'label': e.label.name})
+
+    return dict((k,v) for k,v in album.iteritems() if v)
+
+def VA_search(album):
+    q = Query()
+    r_filter = ws.ReleaseFilter(artistName=artist, title=album,
+        releaseTypes=(Release.TYPE_COMPILATION, Release.TYPE_OFFICIAL))
+
+    return map(release_to_dict, q.getReleases(filter=r_filter))
+
 class MusicBrainz(object):
     name = 'MusicBrainz'
-    group_by = ['artist', 'album']
+    group_by = ['album', 'artist']
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>Retrieving all albums by an artist using their MusicBrainz Artist ID is possible by prefacing your search with <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b> (extraneous spaces around the ID are discarded.)</li><li>In the same way an album can be retrieved using it's MusicBrainz ID by prefacing the search text with <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"
     def __init__(self):
         super(MusicBrainz, self).__init__()
-        self._artist_field = 'mbrainz_artist_id'
-        self._album_field = 'mbrainz_album_id'
-        self._track_field = 'mbrainz_track_id'
+        self._puids = False
+
+        self.preferences = [
+                ['Retrieve PUID (Requires a lookup for each track)',
+                    CHECKBOX, self._puids]]
 
     def keyword_search(self, s):
         if s.startswith(u':a'):
-            artistid = 'http://musicbrainz.org/artist/' + s[len(':a'):].strip()
+            artist_id = s[len(':a'):].strip()
             try:
-                releases, artist = get_releases(artistid, True)
+                return [(release_to_dict(r), []) for r in artist_releases(artist_id)]
             except WebServiceError, e:
                 write_log('<b>Error:</b> While retrieving %s: %s' % (
-                                artistid, unicode(e)))
+                    artistid, unicode(e)))
                 raise RetrievalError(unicode(e))
-            return [(info, tracks)]
-            if releases:
-                releases = [{'artist': artist,
-                            'album': z[0],
-                            '#albumid': z[1],
-                            '#artistid': artistid} for z in releases]
-                return [(info, []) for info in releases]
 
-        elif s.startswith(':b'):
-            r_id = u'http://musicbrainz.org/release/' + s[len(':a'):].strip()
+        elif s.startswith(u':b'):
+            r_id = s[len(u':b'):].strip()
             try:
-                tracks, info = get_tracks(r_id)
+                return [retrieve_tracks(r_id)]
             except WebServiceError, e:
-                write_log('<b>Error:</b> While retrieving %s: %s' % (
-                                artistid, unicode(e)))
+                write_log("<b>Error:</b> While retrieving Album ID %s (%s)" % (
+                    r_id, unicode(e)))
                 raise RetrievalError(unicode(e))
-            return [(info, tracks)]
         else:
             params = parse_searchstring(s)
             if not params: 
                 return
             artist = params[0][0]
-            albums = [params[0][1]]
-            return self.search(artist, albums)
+            album = params[0][1]
+            return self.search(album, [artist])
 
-    def search(self, artist, albums):
+    def search(self, album, artists):
         ret = []
-        if self._artist_field and hasattr(albums, 'values'):
-            write_log(u'Checking tracks for Artist ID.')
+        if hasattr(artists, 'values'):
+            write_log(u'Checking tracks for MusicBrainz Album ID.')
             tracks = []
-            [tracks.extend(z) for z in albums.values()]
-            artist_id = find_id(tracks, self._artist_field)
-            if not artist_id:
-                write_log(u'No Artist ID found in tracks.')
+            [tracks.extend(z) for z in artists.values()]
+            album_id = find_id(tracks, ALBUM_ID)
+            if not album_id:
+                write_log(u'No Album ID found in tracks.')
             else:
-                artist_id = u'http://musicbrainz.org/artist/%s' % artist_id
-        else:
-            artist_id = None
-        if not artist_id:
-            artist, artist_id = artist_search(artist)
-        if not artist_id:
-            write_log(u'No Artist ID found.' % artist)
-            return []
-        write_log(u'Found Artist ID for %s = "%s"' % (artist, artist_id))
+                write_log(u'Found Album ID: %s' % album_id)
+                try:
+                    return [retrieve_tracks(album_id)]
+                except WebServiceError, e:
+                    write_log('<b>Error:</b> While retrieving %s: %s' % (
+                        artist_id, unicode(e)))
+                    raise RetrievalError(unicode(e))
+                
+
+        write_log(u'Searching for album: %s ' % album)
         try:
-            #set_status(u'Retrieving releases for %s' % artist)
-            write_log(u'Retrieving releases for %s' % artist)
-            releases = get_releases(artist_id)
-            releases = [{'artist': artist,
-                        'album': z[0],
-                        '#albumid': z[1],
-                        '#artistid': artist_id} for z in releases]
-            if self._artist_field:
-                v = extractUuid(artist_id)
-                [z.update({self._artist_field: v})
-                    for z in releases]
-            if self._album_field:
-                [z.update({self._album_field: extractUuid(z['#albumid'])})
-                    for z in releases]
+            return [(info, []) for info in find_releases(artists, album)]
         except WebServiceError, e:
             write_log('<b>Error:</b> While retrieving %s: %s' % (
-                        artist_id, unicode(e)))
+                artist_id, unicode(e)))
             raise RetrievalError(unicode(e))
-        if not releases:
-            write_log(u'No releases found for %s.' % artist)
-        else:
-            write_log(u"MusicBrainz ID's for %s releases \n%s" % (artist,
-                u'\n'.join([u'%s - %s' % (z['album'], z['#albumid']) 
-                for z in releases])))
-        return [(info, []) for info in releases]
 
     def retrieve(self, info):
-        a_id = info['#artistid']
-        r_id = info['#albumid']
-        return info, get_tracks(r_id, self._track_field)[0]
+        return retrieve_tracks(info['#album_id'], self._puids)
+
+    def applyPrefs(self, value):
+        self._puids = value[0]
 
 info = MusicBrainz
 
 if __name__ == '__main__':
-    from exampletags import tags
-    x = MusicBrainz(params = dict([('Linkin Park', 'Minutes To Midnight'), (u"Beyonc\xe9" ,"B'day")]))
-    print x.search(tags)
-    #pickle.dump(x, open('mbrainz', 'wb'))
-    print sorted(retrieve([('Linkin Park', 'Minutes To Midnight'), (u"Beyonc\xe9" ,"B'day")]).items())
+    #import pickle
+    #releases = pickle.load(open('/tmp/mbrainz/releases', 'rb'))
+    #print map(release_to_dict, releases)
+    x = find_releases(['Ratatat'], 'Classics')
+    print retrieve_tracks(x[0][ALBUM_ID], True)
