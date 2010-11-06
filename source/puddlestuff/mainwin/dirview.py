@@ -75,7 +75,6 @@ class DirView(QTreeView):
         super(DirView, self).contextMenuEvent(event)
 
     def dirMoved(self, dirs):
-        l = self._load
         self._load = False
         model = self.model()
         selectindex = self.selectionModel().select
@@ -98,7 +97,7 @@ class DirView(QTreeView):
                         newdir = QString.fromLocal8Bit(newdir)
                     selectindex(getindex(newdir), QItemSelectionModel.Select)
 
-            self._load = l
+            self._load = True
             qmutex.unlock()
         self.connect(thread, SIGNAL('threadfinished'), finished)
         thread.start()

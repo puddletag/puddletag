@@ -86,10 +86,10 @@ class FunctionDialog(CreateFunction):
 
     def _update(self):
         try:
-            f = self._status['selectedfiles'][0]
+            f, field = self._status['firstselection']
         except IndexError:
             return
-        field = self._status['selectedtags'][0].keys()[0]
+        field = field.keys()[0]
         self.example = f
         self._text = f.get(field, u'')
         

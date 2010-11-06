@@ -905,7 +905,7 @@ class TagModel(QAbstractTableModel):
             firstindex = self.index(min(rows), 0)
             lastindex = self.index(max(rows), self.columnCount() - 1)
             self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                            firstindex, lastindex)
+                firstindex, lastindex)
 
     def rowCount(self, index = QModelIndex()):
         return len(self.taginfo)
@@ -1002,8 +1002,7 @@ class TagModel(QAbstractTableModel):
                 return (artist, tags)
         
         if DIRNAME in tags:
-            newdir = tags[DIRNAME]
-            newdir = encode_fn(newdir)
+            newdir = safe_name(encode_fn(tags[DIRNAME]))
             newdir = os.path.join(os.path.dirname(audio.dirpath),
                 newdir)
             if newdir != audio.dirpath:
@@ -1325,6 +1324,7 @@ class TagTable(QTableView):
 
         status['selectedrows'] = self._getSelectedRows
         status['selectedfiles'] = self._selectedTags
+        status['firstselection'] = self._firstSelection
         status['selectedcolumns'] = self._getSelectedColumns
         status['selectedtags'] = self._getSelectedTags
         status['alltags'] = lambda: self.model().taginfo
@@ -1363,6 +1363,22 @@ class TagTable(QTableView):
             return ((field, f.get(field, u'')) for field in selected)
         
         return map(dict, (get_selected(*z) for z in zip(audios, sorted(rows))))
+
+    def _firstSelection(self):
+        if not self.selectedRows:
+            raise IndexError
+
+        get_index = self.model().index
+        isselected = self.selectionModel().isSelected
+
+        field_mapping = dict([(v,k) for k,v in self.model().columns.items()])
+        row = min(self.selectedRows)
+        fields = [field_mapping[c] for c in range(self.columnCount())
+            if isselected(get_index(row, c))]
+
+        audio = self.model().taginfo[row]
+        
+        return audio, dict((field, audio.get(field, u'')) for field in fields)
 
     def applyGenSettings(self, d, startlevel=None):
         self.saveSelection()

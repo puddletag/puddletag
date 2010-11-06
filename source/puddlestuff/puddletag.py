@@ -30,7 +30,7 @@ import constants, shortcutsettings
 
 import puddlestuff.findfunc, puddlestuff.tagsources
 import puddlestuff.confirmations as confirmations
-import action_shortcuts
+import action_shortcuts, traceback
 
 pyqtRemoveInputHook()
 
@@ -633,6 +633,7 @@ class MainWin(QMainWindow):
                         lib_updates.append(update)
                     yield None
                 except (IOError, OSError), e:
+                    traceback.print_exc()
                     filename = model.taginfo[row][PATH]
                     m = unicode(QApplication.translate("Defaults",
                         'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror))

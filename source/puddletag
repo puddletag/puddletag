@@ -89,6 +89,8 @@ def create_log():
     exists = os.path.exists
     
     from puddlestuff.constants import SAVEDIR
+    if not os.path.exists(SAVEDIR):
+        os.mkdir(SAVEDIR)
 
     for i in reversed(range(1, 5)):
         filename = join(SAVEDIR, 'log%d.log' % i)

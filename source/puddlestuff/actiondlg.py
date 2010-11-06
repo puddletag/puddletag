@@ -437,7 +437,6 @@ class CreateFunction(QDialog):
             self.exlabel.setText(u'')
         else:
             self.exlabel.setText(displaytags(text))
-        QApplication.processEvents()
 
 class CreateAction(QDialog):
     "An action is defined as a collection of functions. This dialog serves the purpose of creating an action"
