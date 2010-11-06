@@ -297,9 +297,9 @@ class MainWin(QMainWindow):
         connect_action_shortcuts(all_actions)
         create_context_menus(controls, all_actions)
         status['actions'] = all_actions
-        shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
 
         self.restoreSettings()
+        shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
         self.emit(SIGNAL('always'), True)
 
         global add_shortcuts
@@ -522,7 +522,6 @@ class MainWin(QMainWindow):
 
         for control, val in gensettings.items():
             control.applyGenSettings(val, 0)
-
         
         self._lastdir = [encode_fn(cparser.get(
             'main', 'lastfolder', constants.HOMEDIR))]

@@ -622,8 +622,10 @@ class ActionWindow(QDialog):
         
         if name and ok:
             name = unicode(name)
-            from puddlestuff.action_shortcuts import create_action_shortcut
+            from puddlestuff.action_shortcuts import create_action_shortcut, save_shortcut
             create_action_shortcut(name, funcs, add=True)
+            save_shortcut(name,
+                [self.funcs[row][2] for row in self.checkedRows()])
 
     def moveUp(self):
         self.listbox.moveUp(self.funcs)

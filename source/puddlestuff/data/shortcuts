@@ -1,5 +1,5 @@
 [info]
-version=20
+version=21
 
 [shortcut1]
 name=&Open Folder
@@ -167,14 +167,14 @@ name=&Increase Font
 enabled=always
 command=increaseFont
 control=table
-shortcut=Ctrl++
+shortcut=Ctrl+Shift++
 
 [shortcut24]
 name=&Decrease Font
 enabled=always
 command=decreaseFont
 control=table
-shortcut=Ctrl+-
+shortcut=Ctrl+Shift+-
 
 [shortcut25]
 name=&Clipboard->Tag
@@ -310,8 +310,22 @@ command=remove_apev2
 control=mainwin
 enabled=filesselected
 
-[shortcut47]
+[shortcut46]
 name=Remove All ID3 Tags
 command=remove_id3
 control=mainwin
 enabled=filesselected
+
+[shortcut47]
+name=Move Selected &Up
+command=moveUp
+control=table
+enabled=filesselected
+shortcut=Ctrl++
+
+[shortcut48]
+name=Move Selected Do&wn
+command=moveDown
+control=table
+enabled=filesselected
+shortcut=Ctrl+-

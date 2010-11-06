@@ -239,11 +239,20 @@ def dircmp1(a, b):
     else:
         return 0
 
-def issubfolder(parent, child):
+def issubfolder(parent, child, level = 1):
     parent, child = removeslash(parent), removeslash(child)
-    if parent in child and dirlevels(parent) + 1 == dirlevels(child):
-        return True
-    return False
+    if isinstance(parent, unicode):
+        sep = unicode(os.path.sep)
+    else:
+        sep = os.path.sep
+    if level is not None:
+        if child.startswith(parent + sep) and dirlevels(parent) + level == dirlevels(child):
+            return True
+        return False
+    else:
+        if child.startswith(parent + sep) and dirlevels(parent) < dirlevels(child):
+            return True
+        return False
 
 HORIZONTAL = 1
 VERTICAL = 0

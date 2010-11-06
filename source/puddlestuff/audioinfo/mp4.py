@@ -20,7 +20,7 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import util,imghdr
+import util, imghdr, pdb
 from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
@@ -194,6 +194,7 @@ class Tag(util.MockTag):
             return FUNCS[key][0](self._tags[key])
         except KeyError:
             return gettext(self._tags[key])
+
     @setdeco
     def __setitem__(self, key, value):
         if isinstance(key, (int, long)):
@@ -277,6 +278,7 @@ class Tag(util.MockTag):
         returns self if successful, None otherwise."""
 
         self._images = []
+        self._errors = set()
         tags, audio = self._init_info(filename, MP4)
 
         if audio is None:
@@ -311,14 +313,19 @@ class Tag(util.MockTag):
                 else:
                     tag = key[key.find(':', key.find(':') +1) + 1:]
                     self._freeform[tag] = key
-                    self._tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
+                    try:
+                        self._tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
+                    except UnicodeDecodeError:
+                        self._errors.add(tag)
+                        
 
         info = audio.info
-        self._tags.update( {u"__frequency": strfrequency(info.sample_rate),
-                    u"__length": strlength(info.length),
-                    u"__bitrate": strbitrate(info.bitrate),
-                    u'__channels': unicode(info.channels),
-                    u'__bitspersample': unicode(info.bits_per_sample)})
+        self._tags.update({
+            u"__frequency": strfrequency(info.sample_rate),
+            u"__length": strlength(info.length),
+            u"__bitrate": strbitrate(info.bitrate),
+            u'__channels': unicode(info.channels),
+            u'__bitspersample': unicode(info.bits_per_sample)})
         self._tags.update(tags)
         self.filetype = 'MP4'
         self._tags['__filetype'] = self.filetype
@@ -344,7 +351,7 @@ class Tag(util.MockTag):
 
         newtag = {}
         tuples = (('track', ['trkn', 'totaltracks']),
-                  ('disc', ['disk', 'totaldiscs']))
+            ('disc', ['disk', 'totaldiscs']))
         tags = self._tags
         for tag, values in tuples:
             if tag in tags:
@@ -352,7 +359,7 @@ class Tag(util.MockTag):
                 if values[1] in tags:
                     total = tags[values[1]]
                     newtag[values[0]] = [(int(t), int(total)) for t, total in
-                                                            zip(denom, total)]
+                        zip(denom, total)]
                 else:
                     newtag[values[0]] = [(int(z), 0) for z in denom]
             elif values[1] in tags:
@@ -361,7 +368,7 @@ class Tag(util.MockTag):
 
         tags = usertags(self._tags)
         tags = [(z, tags[z]) for z in tags
-                    if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
+            if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
 
         for tag, value in tags:
             try:
@@ -372,7 +379,8 @@ class Tag(util.MockTag):
         if self.images:
             newtag['covr'] = self._images
 
-        toremove = [z for z in audio.keys() if z not in newtag]
+        toremove = [z for z in audio.keys() if
+            z not in newtag and z not in self._errors]
         for key in toremove:
             del(audio[key])
         audio.update(newtag)

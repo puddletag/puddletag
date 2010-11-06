@@ -218,7 +218,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
                     if not value and key in self.preview:
                         del(self.preview[key])
                         return
-                    self.preview[key] == value
+                    self.preview[key] = value
             else:
                 super(ModelTag, self).__setitem__(key, value)
         
@@ -1720,6 +1720,54 @@ class TagTable(QTableView):
         self.model().previewBackground = QColor.fromRgb(*preview_color)
         self.model().selectionBackground = QColor.fromRgb(*selection_color)
 
+    def moveDown(self, rows=None):
+        if rows is None:
+            rows = self.selectedRows[::]
+
+        taginfo = self.model().taginfo
+
+        self.saveSelection()
+        self._select = False
+
+        for row in reversed(rows):
+            if row >= self.rowCount() - 1:
+                continue
+            old = taginfo[row]
+            new = taginfo[row + 1]
+            taginfo[row + 1] = old
+            taginfo[row] = new
+            
+        getindex = self.model().index
+        self.model().emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+            getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
+
+        self.restoreSelection()
+        self._select = True
+
+    def moveUp(self, rows=None):
+        if rows is None:
+            rows = self.selectedRows[::]
+
+        taginfo = self.model().taginfo
+
+        self.saveSelection()
+        self._select = False
+
+        for i, row in enumerate(rows):
+            if row <= 0:
+                continue
+            old = taginfo[row]
+            new = taginfo[row - 1]
+            taginfo[row] = new
+            taginfo[row - 1] = old
+
+        getindex = self.model().index
+        self.model().emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+            getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
+
+        self.restoreSelection()
+        self._select = True
+
     def playFiles(self):
         """Play the selected files using the player specified in self.playcommand"""
         if not self.selectedRows: return
@@ -1871,9 +1919,10 @@ class TagTable(QTableView):
             selectedColumns.add(z.column())
         self.selectedRows = sorted(list(selectedRows))
         self.selectedColumns = sorted(list(selectedColumns))
-        self.emit(SIGNAL('itemSelectionChanged()'))
+        
 
         if self._select:
+            self.emit(SIGNAL('itemSelectionChanged()'))
             if self.selectedRows:
                 self.emit(SIGNAL('filesselected'), True)
             else:
@@ -1972,8 +2021,8 @@ class TagTable(QTableView):
         modelindex = self.model().index
         selection = QItemSelection()
         select = lambda top, low, col: selection.append(
-                        QItemSelectionRange(modelindex(top, col),
-                                                    modelindex(low, col)))
+            QItemSelectionRange(modelindex(top, col),
+                modelindex(low, col)))
         newindexes = {}
 
         while True:
@@ -1991,6 +2040,7 @@ class TagTable(QTableView):
             [select(min(row), max(row), col) for row in rows]
         self.selectionModel().clear()
         self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.model().highlight(self.selectedRows)
 
     def removeFolders(self, dirs, valid = True):
         if dirs:
@@ -2029,13 +2079,31 @@ class TagTable(QTableView):
         merge = selection.merge
         taginfo = model.taginfo
 
-        dirpaths = dict([(taginfo[index.row()].dirpath, index.column())
-                            for index in self.selectedIndexes()])
-        for row, audio in enumerate(model.taginfo):
-            dirpath = audio.dirpath
-            if dirpath in dirpaths:
-                index = modelindex(row, dirpaths[dirpath])
-                merge(QItemSelection(index, index), QItemSelectionModel.Select)
+        selected = defaultdict(lambda: [])
+
+        [selected[taginfo[index.row()].dirpath].append(index.column())
+            for index in self.selectedIndexes()]
+
+        dirpaths = defaultdict(lambda: set())
+
+        for row, f in enumerate(taginfo):
+            dirpaths[f.dirpath].add(row)
+
+        to_select = {}
+
+        for d, columns in selected.iteritems():
+            if len(columns) == len(dirpaths[d]):                
+                for subdir in [z for z in dirpaths if issubfolder(d, z, 1)]:
+                    for row in dirpaths[subdir]:
+                        to_select[row] = columns[-1]
+            else:
+                for row in dirpaths[d]:
+                    to_select[row] = columns[-1]
+        
+        for row, column in to_select.iteritems():
+            index = modelindex(row, column)
+            merge(QItemSelection(index, index), QItemSelectionModel.Select)
+
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
     def showProperties(self):

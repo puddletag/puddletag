@@ -15,8 +15,9 @@ class DirView(QTreeView):
 
     def __init__(self, parent = None, subfolders = False, status=None):
         QTreeView.__init__(self,parent)
-        self.receives = [('dirschanged', self.selectDirs),
-                         ('dirsmoved', self.dirMoved)]
+        self.receives = [
+            ('dirschanged', self.selectDirs),
+            ('dirsmoved', self.dirMoved),]
         self.emits = ['loadFiles', 'removeFolders']
         dirmodel = QDirModel()
         dirmodel.setSorting(QDir.IgnoreCase)

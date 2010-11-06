@@ -78,16 +78,11 @@ def load_settings(filename=None, actions=None):
             shortcuts.append([name, filenames])
     return actions, shortcuts
 
-def save_shortcut(name, funcs):
+def save_shortcut(name, filenames):
     cparser = PuddleConfig(FILENAME)
     section = SHORTCUT_SECTION + unicode(len(cparser.sections()))
-    cparser.set(section, NAME, item.actionName)
-    cparser.set(section, FILENAMES, item.filenames)
-
-    from puddlestuff.mainwin.funcs import applyaction
-
-    shortcuts = create_action_shortcuts(applyaction, control)
-    add_shortcuts('&Actions', shortcuts)
+    cparser.set(section, NAME, name)
+    cparser.set(section, FILENAMES, filenames)
 
 class Editor(QDialog):
     def __init__(self, title='Add Action', actions=None, parent=None):
@@ -210,6 +205,9 @@ class ShortcutEditor(QWidget):
     def applySettings(self, control):
         from puddlestuff.puddletag import remove_shortcuts, add_shortcuts
         remove_shortcuts('&Actions', self._names)
+
+        f = open(FILENAME, 'w')
+        f.close()
         
         cparser = PuddleConfig(FILENAME)
         for i, item in enumerate(self._listbox.items()):

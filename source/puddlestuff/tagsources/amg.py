@@ -139,7 +139,7 @@ def parse_rating(soup):
     try:
         img = soup.find('img', {'alt': re.compile('star_rating\(\d+\)')})
         rating = re.search('star_rating\((\d+)\)', img.element.attrib['alt']).groups()[0]
-    except IndexError:
+    except (IndexError, AttributeError):
         return {}
     return {'rating': rating}
 

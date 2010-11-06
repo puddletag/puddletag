@@ -154,3 +154,5 @@ def Tag(filename):
     score, Kind = results[-1]
     if score > 0: return Kind[1](filename)
     else: return None
+
+_Tag = Tag
