@@ -398,6 +398,8 @@ def runAction(funcs, audio, state = None, quick_action=None):
             elif hasattr(temp, 'items'):
                 ret.update(temp)
                 break
+            elif not temp:
+                continue
             elif hasattr(temp[0], 'items'):
                 [ret.update(z) for z in temp]
                 break

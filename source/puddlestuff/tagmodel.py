@@ -41,7 +41,7 @@ import traceback
 from itertools import izip
 from collections import defaultdict
 from util import write, rename_file, real_filetags, to_string
-from constants import SELECTIONCHANGED, SEPARATOR
+from constants import SELECTIONCHANGED, SEPARATOR, BLANK
 import puddlestuff.confirmations as confirmations
 import logging
 
@@ -1112,6 +1112,9 @@ class TagModel(QAbstractTableModel):
             rows.append(row)
             if self.previewMode:
                 audio.update(undo_tags)
+                for k, v in undo_tags.iteritems():
+                    if v == [] and k in audio.preview:
+                        del(audio.preview[k])
             else:
                 if audio.library:
                     oldfiles.append(deepcopy(audio.tags))
@@ -1662,6 +1665,14 @@ class TagTable(QTableView):
         dirs = map(encode_fn, dirs)
 
         files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
+
+        if subfolders:
+            new_dirs = []
+            for i, d in enumerate(dirs):
+                if not [z for z in dirs if issubfolder(z, d, None)]:
+                    new_dirs.append(d)
+
+            dirs = new_dirs
 
         if append:
             self.saveSelection()
