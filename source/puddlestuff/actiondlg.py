@@ -574,9 +574,9 @@ class ActionWindow(QDialog):
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
-        create_shortcut = QPushButton(QApplication.translate('Actions', 'Create &Shortcut'))
-        create_shortcut.setToolTip(QApplication.translate('Actions', 'Creates a shortcut for the checked actions on the Actions menu. Use the <b>Action Shortcuts</b> tab in Edit->Preferences to modify the shortcut.'))
-        self.okcancel.insertWidget(0, create_shortcut)
+        self.shortcutButton = QPushButton(QApplication.translate('Actions', 'Assign &Shortcut'))
+        self.shortcutButton.setToolTip(QApplication.translate('Actions', 'Creates a shortcut for the checked actions on the Actions menu. Use the <b>Action Shortcuts</b> tab in Edit->Preferences to modify the shortcut.'))
+        self.okcancel.insertWidget(0, self.shortcutButton)
         self.grid = QGridLayout()
 
         self.buttonlist = ListButtons()
@@ -600,9 +600,8 @@ class ActionWindow(QDialog):
         connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
         connect(self.listbox, "itemChanged(QListWidgetItem *)", self.renameAction)
         connect(self.listbox, "itemChanged(QListWidgetItem *)", self.enableOK)
-        connect(create_shortcut, 'clicked()', self.createShortcut)
+        connect(self.shortcutButton, 'clicked()', self.createShortcut)
 
-        #if example:
         self._examplelabel = ScrollLabel('')
         self.grid.addWidget(self._examplelabel, 1, 0, 1,-1)
         self.grid.setRowStretch(1, 0)
@@ -615,9 +614,10 @@ class ActionWindow(QDialog):
         self.enableOK(None)
 
     def createShortcut(self):
-        funcs = self.checked()[1]
+        names, funcs = self.checked()
         (name, ok) = QInputDialog().getText(self, 'puddletag',
-            QApplication.translate('Actions', 'Enter a name for the shortcut.'))
+            QApplication.translate('Actions', 'Enter a name for the shortcut.'),
+                QLineEdit.Normal, names[0])
         
         if name and ok:
             name = unicode(name)
@@ -659,8 +659,10 @@ class ActionWindow(QDialog):
                     item(row).checkState() == Qt.Checked]
         if enable:
             self.okcancel.ok.setEnabled(True)
+            self.shortcutButton.setEnabled(True)
         else:
             self.okcancel.ok.setEnabled(False)
+            self.shortcutButton.setEnabled(False)
     
     def renameAction(self, item):
         row = self.listbox.row(item)

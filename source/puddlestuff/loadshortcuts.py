@@ -7,7 +7,7 @@ from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
 
-__version__ = 21
+__version__ = 22
 
 files = [open_resourcefile(filename)
     for filename in [':/caseconversion.action', ':/standard.action']]
@@ -29,7 +29,6 @@ def check_file(path, resource):
     else:
         cparser = PuddleConfig(path)
         version = cparser.get('info', 'version', 0)
-        print version, __version__
         if version < __version__:
             create_file(path, resource)
 

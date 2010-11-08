@@ -164,10 +164,10 @@ def release_to_dict(release):
     if r.releaseEvents:
         e = r.releaseEvents[0]
         album.update({
-            'year': e.date,
-            COUNTRY: e.country,
-            'barcode': e.barcode,
-            'label': e.label.name})
+            'year': e.date if hasattr(e, 'date') else None,
+            COUNTRY: e.country if hasattr(e, 'country') else None,
+            'barcode': e.barcode if hasattr(e, 'barcode') else None,
+            'label': e.label.name if e.label else None})
 
     return dict((k,v) for k,v in album.iteritems() if v)
 

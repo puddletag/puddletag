@@ -419,7 +419,7 @@ class AllMusic(object):
             tracks = []
             [tracks.extend(z) for z in artists.values()]
             album_id = find_id(tracks, self._id_field)
-            if album_id and albumid.startswith('r'):
+            if album_id and album_id.startswith('r'):
                 write_log(u'Found Album ID %s' % album_id)
                 return self.keyword_search(u':id %s' % album_id)
 

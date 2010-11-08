@@ -1,5 +1,5 @@
 [info]
-version=21
+version=22
 
 [shortcut1]
 name=&Open Folder
@@ -269,11 +269,11 @@ control=mainwin
 enabled=always
 
 [shortcut39]
-name=Select &Directory
-command=selectAllInFolder
+name=Select &Next Directory
+command=selectDir
 control=table
 enabled=filesselected
-shortcut=Ctrl+Shift+S
+shortcut=Ctrl+N
 
 [shortcut40]
 name=Copy All &Fields
@@ -329,3 +329,11 @@ command=moveDown
 control=table
 enabled=filesselected
 shortcut=Ctrl+-
+
+[shortcut49]
+name=Select &Previous Directory
+command=selectPrevDir
+control=table
+enabled=filesselected
+shortcut=Ctrl+Shift+N
+tooltip=Select all files belonging in the directory those selected. Otherwise selects all the files in the previous directory.

@@ -2099,7 +2099,32 @@ class TagTable(QTableView):
         rowsize = self.verticalHeader().defaultSectionSize()
         cparser.set('table', 'rowsize', rowsize)
 
-    def selectAllInFolder(self):
+    def nextDir(self, dirpaths, previous=False):
+        taginfo = self.model().taginfo
+        row = self.currentIndex().row()
+        column = self.currentIndex().column()
+        i = 0
+        d = taginfo[row].dirpath
+        while True:
+            try:
+                if d != taginfo[row + i].dirpath:
+                    new_dir = taginfo[row + i].dirpath
+                    break
+            except IndexError:
+                return
+            if not previous:
+                i += 1
+                if row + i >= len(taginfo):
+                    row = 0 - i
+            else:
+                i -= 1
+
+        return dict((row, column) for row in dirpaths[new_dir])
+
+    def selectPrevDir(self):
+        return self.selectDir(True)
+
+    def selectDir(self, previous=False):
         model = self.model()
         modelindex = model.index
         selection = QItemSelection()
@@ -2107,22 +2132,32 @@ class TagTable(QTableView):
         taginfo = model.taginfo
 
         selected = defaultdict(lambda: [])
+        selected_rows = set()
 
-        [selected[taginfo[index.row()].dirpath].append(index.column())
-            for index in self.selectedIndexes()]
+        for index in self.selectedIndexes():
+            if index.row() not in selected_rows:
+                selected[taginfo[index.row()].dirpath].append(index.column())
+                selected_rows.add(index.row())
 
         dirpaths = defaultdict(lambda: set())
 
+        dirs_sorted = []
+
         for row, f in enumerate(taginfo):
             dirpaths[f.dirpath].add(row)
+            dirs_sorted.append(f.dirpath)
 
         to_select = {}
 
         for d, columns in selected.iteritems():
-            if len(columns) == len(dirpaths[d]):                
-                for subdir in [z for z in dirpaths if issubfolder(d, z, 1)]:
-                    for row in dirpaths[subdir]:
-                        to_select[row] = columns[-1]
+            if len(columns) == len(dirpaths[d]) and len(selected) == 1:
+                to_select = self.nextDir(dirpaths, previous)
+                if to_select:
+                    self.selectionModel().clearSelection()
+                    self.setCurrentIndex(
+                        modelindex(min(to_select), min(to_select.values())))
+                else:
+                    return
             else:
                 for row in dirpaths[d]:
                     to_select[row] = columns[-1]
