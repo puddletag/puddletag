@@ -39,10 +39,11 @@ CHECKBOX = 'check'
 TAGLIST = 'taglist'
 SPINBOX = 'spinbox'
 
-#Plugin contstants
+#Plugin constants
 FORMATFUNCTIONS = 'FORMATFUNCTIONS'
 FUNCTIONS = 'FUNCTIONS'
 TAGSOURCE = 'TAGSOURCE'
+DIALOGS = 'DIALOGS'
 
 #Dock Positions
 LEFTDOCK = Qt.LeftDockWidgetArea

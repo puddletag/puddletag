@@ -620,9 +620,14 @@ class ActionWindow(QDialog):
                 QLineEdit.Normal, names[0])
         
         if name and ok:
+            (shortcut, ok) = QInputDialog().getText(self, 'puddletag',
+            QApplication.translate('Actions', 'Assign a key sequence to the shortcut?.'))
             name = unicode(name)
             from puddlestuff.action_shortcuts import create_action_shortcut, save_shortcut
-            create_action_shortcut(name, funcs, add=True)
+            if ok and shortcut:
+                create_action_shortcut(name, funcs, shortcut, add=True)
+            else:
+                create_action_shortcut(name, funcs, add=True)
             save_shortcut(name,
                 [self.funcs[row][2] for row in self.checkedRows()])
 

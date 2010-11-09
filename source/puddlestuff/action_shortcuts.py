@@ -9,21 +9,25 @@ from puddlestuff.constants import ACTIONDIR
 from functools import partial
 from findfunc import load_action
 import pdb
+import puddlestuff.puddletag
+from puddlestuff.shortcutsettings import ActionEditorDialog
 
 FILENAME = os.path.join(ACTIONDIR, 'action_shortcuts')
+
+save_shortcuts = lambda: ActionEditorDialog.saveSettings(puddlestuff.puddletag.status['actions'])
 
 NAME = 'name'
 FILENAMES = 'filenames'
 SHORTCUT_SECTION = 'Shortcut'
 
-def create_action_shortcut(name, funcs, method=None, parent=None, add=False):
+def create_action_shortcut(name, funcs, scut_key=None, method=None, parent=None, add=False):
     if not method:
         from puddlestuff.mainwin.funcs import applyaction
         method = applyaction
     if not parent:
-        import puddlestuff.puddletag
         parent = puddlestuff.puddletag.status['mainwin']
     shortcut = QAction(name, parent)
+
     shortcut.enabled = 'filesselected'
     shortcut.control = None
     shortcut.command = None
@@ -35,6 +39,9 @@ def create_action_shortcut(name, funcs, method=None, parent=None, add=False):
     if add:
         from puddlestuff.puddletag import add_shortcuts
         add_shortcuts('&Actions', [shortcut])
+    if scut_key:
+        shortcut.setShortcut(scut_key)
+        save_shortcuts()
     return shortcut
 
 def create_action_shortcuts(method, parent=None):

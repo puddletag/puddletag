@@ -105,8 +105,7 @@ def toolbar(groups, actions, controls=None):
     return toolbar
 
 def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
-                    tooltip=None, shortcut=None, status=None, 
-                    togglecheck=None, checkstate=None):
+    tooltip=None, shortcut=None, status=None, togglecheck=None, checkstate=None):
     if icon:
         action = QAction(QIcon(icon), name, win)
     else:

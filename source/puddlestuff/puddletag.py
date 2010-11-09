@@ -65,7 +65,7 @@ confirmations.add('rename_dirs', True, QApplication.translate("Confirmations", '
 confirmations.add('preview_mode', True, QApplication.translate("Confirmations", 'Confirm when exiting preview mode.'))
 confirmations.add('delete_files', True, QApplication.translate("Confirmations", 'Confirm when deleting files.'))
 
-def create_tool_windows(parent):
+def create_tool_windows(parent, extra=None):
     """Creates the dock widgets for the main window (parent) using
     the modules stored in puddlestuff/mainwin.
 
@@ -80,6 +80,8 @@ def create_tool_windows(parent):
         mainwin.storedtags, mainwin.logdialog, mainwin.artwork,
         puddlestuff.masstagging)]
     controls.extend(mainwin.action_dialogs.controls)
+    if extra:
+        controls.extend(extra)
     for z in controls:
         name = z[0]
         try:
@@ -213,6 +215,7 @@ def load_plugins():
     plugins = load_plugins()
     puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
     puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
+    return plugins[constants.DIALOGS]
 
 class PreviewLabel(QLabel):
     def __init__(self, *args, **kwargs):
@@ -246,7 +249,7 @@ class MainWin(QMainWindow):
             ('onetomanypreview', self.writeSinglePreview)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
-        load_plugins()
+        plugin_dialogs = load_plugins()
 
         self.setWindowTitle("puddletag")
         self.setDockNestingEnabled(True)
@@ -266,7 +269,7 @@ class MainWin(QMainWindow):
         status['mainwin'] = self
                                 
         ls.create_files()
-        winactions, self._docks = create_tool_windows(self)
+        winactions, self._docks = create_tool_windows(self, plugin_dialogs)
         self.createStatusBar()
 
         actions = ls.get_actions(self)
@@ -275,6 +278,9 @@ class MainWin(QMainWindow):
         
         all_actions = actions + winactions + previewactions
         menubar, winmenu, self._menus = ls.menubar(menus, all_actions)
+        
+        temp_winactions = winmenu.actions()
+        [winmenu.addAction(a) for a in winactions if a not in temp_winactions]
 
         if winmenu:
             winmenu.addSeparator()
@@ -343,6 +349,10 @@ class MainWin(QMainWindow):
 
     def _clearPreview(self):
         self._table.model().unSetTestData()
+
+    def createShortcut(self, text, slot, *args,**kwargs):
+        action = ls.create_action(self, text, None, slot)
+        connect_actions([action], PuddleDock._controls)
 
     def _dirChanged(self, dirs):
         if not dirs:

@@ -594,7 +594,7 @@ class ConfigEdit(QDialog):
         
         self._source = QComboBox()
         self._source.addItems([source.name for source in tagsources])
-        layout.addLayout(create_buddy(QApplication.translate('Profile Editor', '&Source', self._source)))
+        layout.addLayout(create_buddy(QApplication.translate('Profile Editor', '&Source'), self._source))
         
         self._no_match = QComboBox()
         self._no_match.setToolTip(QApplication.translate('Profile Editor', '<b>Continue</b>: The lookup for the current album continue unabated if no results were returned for this Tag Source.<br /><b>Stop:</b> The lookup the current album will stop and any previous results will be used.'))
@@ -846,6 +846,8 @@ class Retriever(QWidget):
     
     def _appendLog(self, text):
         mutex.lock()
+        if not isinstance(text, unicode):
+            text = unicode(text, 'utf8', 'replace')
         if text.startswith(u':insert'):
             text = text[len(u':insert'):]
             self._log.textCursor().setPosition(len(self._log.toPlainText()))
