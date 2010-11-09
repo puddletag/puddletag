@@ -31,22 +31,11 @@ import constants, shortcutsettings
 import puddlestuff.findfunc, puddlestuff.tagsources
 import puddlestuff.confirmations as confirmations
 import action_shortcuts, traceback
+import plugins
 
 pyqtRemoveInputHook()
 
-#Signals used in enabling/disabling actions.
-#An actions default state is to be disabled.
-#and action can use these signals to enable
-#itself. See the loadshortcuts module for more info.
-ALWAYS = 'always'
-FILESLOADED = 'filesloaded'
-VIEWFILLED = 'viewfilled'
-FILESSELECTED = 'filesselected'
-
-ENABLESIGNALS = {ALWAYS: SIGNAL('always'),
-FILESLOADED: SIGNAL('filesloaded'),
-VIEWFILLED: SIGNAL('viewfilled'),
-FILESSELECTED: SIGNAL('filesselected')}
+from constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGNALS
 
 #A global variable that hold the status of
 #various puddletag statuses.
@@ -60,6 +49,7 @@ mainfuncs.status = status
 tagmodel.status = status
 mainwin.previews.set_status(status)
 mainwin.tagtools.set_status(status)
+plugins.status = status
 
 confirmations.add('rename_dirs', True, QApplication.translate("Confirmations", 'Confirm when renaming directories.'))
 confirmations.add('preview_mode', True, QApplication.translate("Confirmations", 'Confirm when exiting preview mode.'))
@@ -229,6 +219,13 @@ class PreviewLabel(QLabel):
 class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
+
+        global add_shortcuts
+        global remove_shortcuts
+        add_shortcuts = self.addShortcuts
+        remove_shortcuts = self.removeShortcuts
+        plugins.add_shortcuts = add_shortcuts
+        
         self.emits = ['loadFiles', 'always', 'dirsmoved', 'libfilesedited',
             'enable_preview_mode', 'disable_preview_mode']
         self.receives = [('writeselected', self.writeTags),
@@ -269,7 +266,8 @@ class MainWin(QMainWindow):
         status['mainwin'] = self
                                 
         ls.create_files()
-        winactions, self._docks = create_tool_windows(self, plugin_dialogs)
+        winactions, self._docks = create_tool_windows(self)
+        status['dialogs'] = PuddleDock._controls
         self.createStatusBar()
 
         actions = ls.get_actions(self)
@@ -293,6 +291,7 @@ class MainWin(QMainWindow):
         mainfuncs.connect_status(actions)
 
         controls = PuddleDock._controls
+        
 
         toolgroup = ls.get_menus('toolbar')
         toolbar = ls.toolbar(toolgroup, all_actions, controls)
@@ -308,17 +307,20 @@ class MainWin(QMainWindow):
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
         self.emit(SIGNAL('always'), True)
 
-        global add_shortcuts
-        global remove_shortcuts
-        add_shortcuts = self.addShortcuts
-        remove_shortcuts = self.removeShortcuts
+        for win in plugin_dialogs:
+            try:
+                self.addDock(*win)
+            except:
+                print "Error while loading Plugin dialog."
+                traceback.print_exc()
 
-    def addDock(self, name, dialog, position):
+    def addDock(self, name, dialog, position, visibility=True):
         controls = PuddleDock._controls.values()
         dock = PuddleDock(name, dialog, self, status)
         self.addDockWidget(position, dock)
         self._winmenu.addAction(dock.toggleViewAction())
         connect_control(PuddleDock._controls[name], controls)
+        dock.setVisible(visibility)
 
     def addShortcuts(self, menu_title, actions, toolbar=False):
         if not actions:
@@ -329,7 +331,7 @@ class MainWin(QMainWindow):
         else:
             menu = QMenu(menu_title)
             self._menus[menu_title] = [menu] + actions
-            self.menuBar().insertMenu(self._menus['&Windows'][0], menu)
+            self.menuBar().insertMenu(self._menus['&Windows'][0].menuAction(), menu)
 
         status['actions'].extend(actions)
         map(menu.addAction, actions)

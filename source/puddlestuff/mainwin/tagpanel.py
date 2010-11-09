@@ -10,6 +10,7 @@ pyqtRemoveInputHook()
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
 import time
 from functools import partial
+from puddlestuff.puddlesettings import SettingsError
 
 TEXTEDITED = SIGNAL('textEdited(const QString&)')
 EDITFINISHED = SIGNAL('editingFinished()')
@@ -402,6 +403,7 @@ class SettingsWin(QWidget):
 
     def fill(self):
         d = loadsettings()
+        self._old = d
         for row in d:
             for z in d[row]:
                 self._table.add(z + (unicode(row),))
@@ -414,15 +416,16 @@ class SettingsWin(QWidget):
             try:
                 l[2] = int(l[2])
             except ValueError:
-                return 'All row numbers should be integers.'
+                raise SettingsError('All row numbers must be integers.')
             try:
                 d[l[2]].append(l[:-1])
             except KeyError:
                 d[l[2]] = [l[:-1]]
-        d = dict([(i,d[v]) for i,v in enumerate(sorted(d))]) #consecutive rows
+        d = dict([(i, d[v]) for i, v in enumerate(sorted(d))]) #consecutive rows
+        if self._old == d:
+            return
         savesettings(d)
         control.setCombos(d)
-
 
     def edit(self):
         self._table.editItem(self._table.currentItem())

@@ -5,22 +5,37 @@ from PyQt4.QtGui import *
 from functools import partial
 from itertools import izip
 from copy import deepcopy
+from puddlestuff.constants import FILESSELECTED, FILESLOADED
+from puddlestuff.plugins import connect_shortcut
 
 status = {}
 
 _previews = []
 _sort_action = None
 
-ENABLED = QApplication.translate("Previews", u'Enabl&e Preview Mode')
-DISABLED = QApplication.translate("Previews", u'Disabl&e Preview Mode')
+ENABLED = QApplication.translate("Previews", 'Enabl&e Preview Mode')
+DISABLED = QApplication.translate("Previews", 'Disabl&e Preview Mode')
 
-def toggle_preview_display(action, value):
+class PreviewAction(QAction):
+    def setEnabled(self, value):
+        if status['previewmode'] and value:
+            super(PreviewAction, self).setEnabled(True)
+        else:
+            super(PreviewAction, self).setEnabled(False)
+
+def toggle_preview_display(action, preview_actions, value):
     if value:
         action.setText(DISABLED)
+        files = status['selectedfiles']
+        for p in preview_actions:
+            if files:
+                p.setEnabled(True)
     else:
         action.setText(ENABLED)
         global _previews
         _previews = []
+        for p in preview_actions:
+            p.setEnabled(False)
 
 def toggle_preview_mode():
     action = QObject().sender()
@@ -50,26 +65,24 @@ def create_actions(parent):
     enable_preview = QAction(ENABLED, parent)
     enable_preview.setShortcut('Ctrl+Shift+P')
     obj.connect(enable_preview, SIGNAL('triggered()'), toggle_preview_mode)
-    obj.receives.append(['previewModeChanged', 
-        partial(toggle_preview_display, enable_preview)])
-    
-    clear_selection = QAction(QApplication.translate("Menus", 'Clear Selected &Files'), parent)
+
+    clear_selection = PreviewAction(QApplication.translate("Menus", 'Clear Selected &Files'), parent)
     clear_selection.setShortcut('Ctrl+Shift+F')
     obj.connect(clear_selection, SIGNAL('triggered()'), clear_selected)
     
-    write = QAction(QApplication.translate("Menus", '&Write Previews'), parent)
+    write = PreviewAction(QApplication.translate("Menus", '&Write Previews'), parent)
     write.setShortcut('Ctrl+W')
     
     obj.connect(write, SIGNAL('triggered()'), lambda: emit('writepreview'))
     
-    revert = QAction(QApplication.translate("Menus", '&Undo Last Clear'), parent)
+    revert = PreviewAction(QApplication.translate("Menus", '&Undo Last Clear'), parent)
     revert.setShortcut('Ctrl+Shift+Z')
     obj.connect(revert, SIGNAL('triggered()'), undo_last)
     
-    sort = QAction(QApplication.translate("Menus", '&Sort Selected'), parent)
+    sort = PreviewAction(QApplication.translate("Menus", '&Sort Selected'), parent)
     obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
 
-    clear_cells = QAction(QApplication.translate("Menus", 'Clear Selected &Cells'), parent)
+    clear_cells = PreviewAction(QApplication.translate("Menus", 'Clear Selected &Cells'), parent)
     obj.connect(clear_cells, SIGNAL('triggered()'), clear_selected_cells)
     
     cparser = PuddleConfig()
@@ -79,6 +92,14 @@ def create_actions(parent):
     global _sort_action
     _sort_action = sort
     sort_actions = set_sort_options(options)
+
+    preview_actions = [clear_selection, write, revert, sort, clear_cells]
+
+    toggle = partial(toggle_preview_display, enable_preview, preview_actions)
+    
+    obj.receives.append(['previewModeChanged', toggle])
+
+    [connect_shortcut(z, FILESSELECTED) for z in preview_actions + sort_actions]
 
     return [enable_preview, clear_selection, write, revert, sort,
         clear_cells] + sort_actions

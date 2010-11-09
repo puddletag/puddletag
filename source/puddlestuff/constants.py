@@ -64,3 +64,18 @@ INFOTAGS = FILETAGS + list(READONLY)
 
 #SIGNALS
 SELECTIONCHANGED = "tagselectionchanged"
+
+#Signals used in enabling/disabling actions.
+#An actions default state is to be disabled.
+#and action can use these signals to enable
+#Signals used in enabling/disabling actions.
+#An actions default state is to be disabled.
+#and action can use these signals to enable
+#itself. See the loadshortcuts module for more info.
+ALWAYS = 'always'
+FILESLOADED = 'filesloaded'
+VIEWFILLED = 'viewfilled'
+FILESSELECTED = 'filesselected'
+
+ENABLESIGNALS = dict((k, SIGNAL(k)) for k in
+    [ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED])

@@ -52,6 +52,10 @@ import pdb
 import audioinfo.util
 import genres, confirmations
 from action_shortcuts import ShortcutEditor
+from copy import deepcopy
+
+class SettingsError(Exception):
+    pass
 
 def load_gen_settings(setlist, extras=False):
     settings = PuddleConfig()
@@ -226,6 +230,7 @@ class Playlist(QWidget):
 class TagMappings(QWidget):
     def __init__(self, parent = None):
         filename = os.path.join(PuddleConfig().savedir, 'mappings')
+        self._edited = deepcopy(audioinfo.mapping)
         self._mappings = audioinfo.mapping
 
         QWidget.__init__(self, parent)
@@ -337,21 +342,22 @@ class TagMappings(QWidget):
 class Tags(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
+        self._edited = False
         
         self._filespec = QLineEdit()
-        speclabel = QLabel(QApplication.translate("Mapping Settings", '&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")'))
+        speclabel = QLabel(QApplication.translate("Tag Settings", '&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")'))
         speclabel.setBuddy(self._filespec)
 
-        v1_options = [QApplication.translate("Mapping Settings", 'Remove ID3v1 tag.'),
-            QApplication.translate("Mapping Settings", "Update the ID3v1 tag's values only if an ID3v1 tag is present."),
-            QApplication.translate("Mapping Settings", "Create an ID3v1 tag if it's not present. Otherwise update it.")]
+        v1_options = [QApplication.translate("Tag Settings", 'Remove ID3v1 tag.'),
+            QApplication.translate("Tag Settings", "Update the ID3v1 tag's values only if an ID3v1 tag is present."),
+            QApplication.translate("Tag Settings", "Create an ID3v1 tag if it's not present. Otherwise update it.")]
         self._v1_combo = QComboBox()
         self._v1_combo.addItems(v1_options)
         
-        v1_label = QLabel(QApplication.translate("Mapping Settings", 'puddletag writes only &ID3v2 tags. What should be done with the ID3v1 tag?'))
+        v1_label = QLabel(QApplication.translate("Tag Settings", 'puddletag writes only &ID3v2 tags. What should be done with the ID3v1 tag?'))
         v1_label.setBuddy(self._v1_combo)
         
-        self._apev2 = QCheckBox(QApplication.translate("Mapping Settings", 'Write APEv2'))
+        self._apev2 = QCheckBox(QApplication.translate("Tag Settings", 'Write APEv2'))
         
         layout = QVBoxLayout()
         vbox = QVBoxLayout()
@@ -451,6 +457,7 @@ class StatusWidgetItem(QTableWidgetItem):
 class ColorEdit(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
+        self._edited = False
         cparser = PuddleConfig()
         get_color = lambda key, default: QColor.fromRgb(
             *cparser.get('extendedtags', key, default, True))
@@ -508,6 +515,7 @@ class ColorEdit(QWidget):
         win.open()
 
     def setColor(self):
+        self._edited = True
         row = self._status[0]
         self.listbox.item(row, 0).setBackground(self._status[1])
 
@@ -517,6 +525,8 @@ class ColorEdit(QWidget):
             self.listbox.item(row, 0).setBackground(QBrush(color))
 
     def applySettings(self, control=None):
+        if not self._edited:
+            return
         cparser = PuddleConfig()
         x = lambda c: c.getRgb()[:-1]
         colors = [x(self.listbox.item(z,0).background().color())
@@ -602,7 +612,12 @@ class SettingsDialog(QDialog):
 
     def saveSettings(self):
         for z in self._widgets.values():
-            z[1].applySettings(z[2])
+            try:
+                z[1].applySettings(z[2])
+            except SettingsError, e:
+                QMessageBox.warning(self, 'puddletag',
+                    QApplication.translate('Settings', 'An error occurred while saving the settings of <b>%1</b>: %2').arg(z[0]).arg(unicode(e)))
+                return
         self.close()
 
 if __name__ == "__main__":

@@ -31,6 +31,7 @@ class ActionEditorWidget(QLabel):
         palette.setBrush(palette.Base, palette.brush(palette.AlternateBase))
         self.setPalette(palette)
         self.valid = False
+        self.setFrameStyle(QFrame.Panel)
     
     def keyPressEvent(self, event):
     
@@ -106,12 +107,14 @@ class ActionEditorWidget(QLabel):
             color.setAlpha(127)
             painter.setPen(QPen(color))
             size = self.height() / 2.0
+
+            left = self.width() - 4
             
-            painter.drawRect(self.width() - size, size * 0.5, size, size)
-            painter.drawLine(self.width() - size * 0.75, size * 0.75,
-                             self.width() - size * 0.25, size * 1.25)
-            painter.drawLine(self.width() - size * 0.25, size * 0.75,
-                             self.width() - size * 0.75, size * 1.25)
+            painter.drawRect(left - size, size * 0.5, size, size)
+            painter.drawLine(left - size * 0.75, size * 0.75,
+                             left - size * 0.25, size * 1.25)
+            painter.drawLine(left - size * 0.25, size * 0.75,
+                             left - size * 0.75, size * 1.25)
             painter.end()
         
         QLabel.paintEvent(self, event)
@@ -128,6 +131,8 @@ class ActionEditorDelegate(QItemDelegate):
         QItemDelegate.__init__(self, parent)
     
     def createEditor(self, parent, option, index):
+
+        self._edited = index.data().toString()
     
         self.editor = ActionEditorWidget(index.data().toString(), parent)
         self.editor.installEventFilter(self)
@@ -178,7 +183,8 @@ class ActionEditorDelegate(QItemDelegate):
         editor.setText(index.data().toString())
     
     def setModelData(self, editor, model, index):
-    
+        if editor.text() != self._edited:
+            index.model().edited = True
         model.setData(index, QVariant(editor.text()))
     
     def updateEditorGeometry(self, editor, option, index):
@@ -201,6 +207,8 @@ class ActionEditorDialog(QWidget):
             u' to <br />modify the key sequence.</b>'))
         
         self.actionTable = QTableWidget(self)
+        self.actionTable.setSelectionBehavior(QTableWidget.SelectRows)
+        self.actionTable.setEditTriggers(QTableWidget.DoubleClicked)
         self.actionTable.setColumnCount(2)
         self.actionTable.setHorizontalHeaderLabels(
             [QApplication.translate("Shortcut Settings", "Description"),
@@ -223,12 +231,12 @@ class ActionEditorDialog(QWidget):
             
             item = QTableWidgetItem()
             item.setText(action.text())
-            item.setFlags(Qt.ItemIsEnabled)
+            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             self.actionTable.setItem(row, 0, item)
             
             item = QTableWidgetItem()
             item.setText(action.shortcut().toString())
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsEditable)
+            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable)
             item.oldShortcutText = item.text()
             self.actionTable.setItem(row, 1, item)
             
@@ -242,10 +250,15 @@ class ActionEditorDialog(QWidget):
         mainLayout.setSpacing(8)
         mainLayout.addWidget(self.actionTable)
         self.setLayout(mainLayout)
+        self._model = self.actionTable.model()
+        self._model.edited = False
+        self.actionTable.model().edited = False
         
         self.setWindowTitle(QApplication.translate("Shortcut Settings", "Edit Shortcuts"))
     
     def applySettings(self, control=None):
+        if not self._model.edited:
+            return
     
         row = 0
         for action in self.actions:
@@ -255,6 +268,7 @@ class ActionEditorDialog(QWidget):
                 action.setShortcut(QKeySequence(self.actionTable.item(row, 1).text()))
                 row += 1
         self.saveSettings(self.actions)
+        self._model.edited = False
     
     def _loadSettings(self, actions):
         
@@ -308,8 +322,8 @@ if __name__ == '__main__':
     #win = EditShortcut('Open', 'Ctrl+O')
     widget = QWidget()
     actions = ls.get_actions(widget)
-    ActionEditorDialog.loadSettings(actions)
-    win = ActionEditorDialog(actions, widget)
+    ActionEditorDialog._loadSettings(actions)
+    win = ActionEditorDialog(actions)
     #win.loadSettings(actions)
     win.show()
     app.exec_()
