@@ -28,7 +28,7 @@ from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
         QuotedString, Literal, NotAny, nums
 import cPickle as pickle
 from puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
-    winsettings, gettaglist, settaglist, safe_name)
+    winsettings, gettaglist, settaglist, safe_name, ShortcutEditor)
 from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
 from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
@@ -37,6 +37,7 @@ from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR,
     SAVEDIR, ACTIONDIR, BLANK)
 from util import open_resourcefile, PluginFunction
 import functions_dialogs
+from action_shortcuts import ShortcutEditor
 
 READONLY = list(READONLY) + ['__dirpath', ]
 FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
@@ -72,6 +73,85 @@ def displaytags(tags):
         return ret
     else:
         return unicode(QApplication.translate('Functions', '<b>No change.</b>'))
+
+class ShortcutDialog(QDialog):
+    def __init__(self, shortcuts=None, parent=None):
+        super(ShortcutDialog, self).__init__(parent)
+        self.setWindowTitle('puddletag')
+        self.ok = False
+        label = QLabel(QApplication.translate('Shortcut Editor', 'Enter a key sequence for the shortcut.'))
+        self._text = ShortcutEditor(shortcuts)
+
+        okcancel = OKCancel()
+        okcancel.cancel.setText(QApplication.translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
+        okcancel.ok.setEnabled(False)
+        
+        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
+        self.connect(okcancel, SIGNAL('cancel'), self.close)
+
+        self.connect(self._text, SIGNAL('validityChanged'),
+            okcancel.ok.setEnabled)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(label)
+        vbox.addWidget(self._text)
+        vbox.addLayout(okcancel)
+        vbox.addStretch()
+        self.setLayout(vbox)
+
+        self._shortcuts = shortcuts
+
+    def okClicked(self):
+        self.emit(SIGNAL('shortcutChanged'), unicode(self._text.text()))
+        self.ok = True
+        self.close()
+
+    def getShortcut(self):
+        self.exec_()
+        if self._text.valid:
+            return unicode(self._text.text()), self.ok
+        else:
+            return u'', self.ok
+
+class ShortcutName(QDialog):
+    def __init__(self, texts, default=u'', parent=None):
+        super(ShortcutName, self).__init__(parent)
+        self.setWindowTitle('puddletag')
+        self.ok = False
+        self._texts = texts
+        label = QLabel(QApplication.translate('Actions', 'Enter a name for the shortcut.'))
+        self._text = QLineEdit(default)
+
+        okcancel = OKCancel()
+        self._ok = okcancel.ok
+        self.enableOK(self._text.text())
+
+        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
+        self.connect(okcancel, SIGNAL('cancel'), self.close)
+
+        self.connect(self._text, SIGNAL('textChanged(const QString)'),
+            self.enableOK)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(label)
+        vbox.addWidget(self._text)
+        vbox.addLayout(okcancel)
+        vbox.addStretch()
+        self.setLayout(vbox)
+
+    def okClicked(self):
+        self.ok = True
+        self.close()
+
+    def enableOK(self, text):
+        if text and unicode(text) not in self._texts:
+            self._ok.setEnabled(True)
+        else:
+            self._ok.setEnabled(False)
+
+    def getText(self):
+        self.exec_()
+        return unicode(self._text.text()), self.ok
 
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
@@ -552,6 +632,7 @@ class ActionWindow(QDialog):
         QDialog.__init__(self,parent)
         self.setWindowTitle(QApplication.translate('Actions', "Actions"))
         winsettings('actions', self)
+        self._shortcuts = []
         self._quickaction = quickaction
         self.listbox = ListBox()
         self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -574,8 +655,16 @@ class ActionWindow(QDialog):
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
-        self.shortcutButton = QPushButton(QApplication.translate('Actions', 'Assign &Shortcut'))
-        self.shortcutButton.setToolTip(QApplication.translate('Actions', 'Creates a shortcut for the checked actions on the Actions menu. Use the <b>Action Shortcuts</b> tab in Edit->Preferences to modify the shortcut.'))
+        x = QAction(QApplication.translate('Actions', 'Assign &Shortcut'), self)
+        self.shortcutButton = QToolButton()
+        self.shortcutButton.setDefaultAction(x)
+        x.setToolTip(QApplication.translate('Actions', 'Creates a shortcut for the checked actions on the Actions menu. Use the <b>Action Shortcuts</b> tab in Edit->Preferences to modify the shortcut.'))
+        menu = QMenu(self)
+        edit_shortcuts = QAction(QApplication.translate('Actions', 'Edit Shortcuts'), menu)
+        self.connect(edit_shortcuts, SIGNAL('triggered()'), self.editShortcuts)
+        menu.addAction(edit_shortcuts)
+        self.shortcutButton.setMenu(menu)
+
         self.okcancel.insertWidget(0, self.shortcutButton)
         self.grid = QGridLayout()
 
@@ -615,21 +704,27 @@ class ActionWindow(QDialog):
 
     def createShortcut(self):
         names, funcs = self.checked()
-        (name, ok) = QInputDialog().getText(self, 'puddletag',
-            QApplication.translate('Actions', 'Enter a name for the shortcut.'),
-                QLineEdit.Normal, names[0])
+        (name, ok) = ShortcutName(self.shortcutNames(), names[0]).getText()
         
         if name and ok:
-            (shortcut, ok) = QInputDialog().getText(self, 'puddletag',
-            QApplication.translate('Actions', 'Assign a key sequence to the shortcut?.'))
+            import puddlestuff.puddletag
+            shortcuts = [unicode(z.shortcut().toString()) for z in
+                puddlestuff.puddletag.status['actions']]
+            (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
             name = unicode(name)
+            
             from puddlestuff.action_shortcuts import create_action_shortcut, save_shortcut
-            if ok and shortcut:
+            if shortcut and ok:
                 create_action_shortcut(name, funcs, shortcut, add=True)
             else:
                 create_action_shortcut(name, funcs, add=True)
             save_shortcut(name,
                 [self.funcs[row][2] for row in self.checkedRows()])
+
+    def editShortcuts(self):
+        win = ShortcutEditor(True, self, True)
+        win.setModal(True)
+        win.show()
 
     def moveUp(self):
         self.listbox.moveUp(self.funcs)
@@ -868,6 +963,10 @@ class ActionWindow(QDialog):
         self.listbox.addItem(item)
         filename = self.saveAction(name, funcs)
         self.funcs.update({self.listbox.count() - 1: [funcs, name, filename]})
+
+    def shortcutNames(self):
+        from action_shortcuts import load_settings
+        return [name for name, filename in load_settings()[1]]
         
 
 if __name__ == "__main__":

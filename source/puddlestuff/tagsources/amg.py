@@ -312,6 +312,8 @@ def parse_track_table(table, discnum=None):
 
 def parse_tracks(soup):
     track_div = soup.find('div', {'id': 'tracks'})
+    if track_div is None:
+        return {}
     discs = [re.search('\d+$', z.string.strip()).group()
         for z in track_div.find_all('p', {'id': 'discnum'})]
     track_tables = soup.find_all('table', {'id': 'ExpansionTable'})

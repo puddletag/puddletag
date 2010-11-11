@@ -304,7 +304,6 @@ class MainWin(QMainWindow):
         status['actions'] = all_actions
 
         self.restoreSettings()
-        shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
         self.emit(SIGNAL('always'), True)
 
         for win in plugin_dialogs:
@@ -322,7 +321,7 @@ class MainWin(QMainWindow):
         connect_control(PuddleDock._controls[name], controls)
         dock.setVisible(visibility)
 
-    def addShortcuts(self, menu_title, actions, toolbar=False):
+    def addShortcuts(self, menu_title, actions, toolbar=False, save=False):
         if not actions:
             return
             
@@ -338,6 +337,8 @@ class MainWin(QMainWindow):
 
         if toolbar:
             map(self.toolbar.addAction, actions)
+        if save:
+            shortcutsettings.ActionEditorDialog.saveSettings(status['actions'])
 
     def _status(self, controls):
         x = {}
@@ -575,6 +576,7 @@ class MainWin(QMainWindow):
         for control, val in gensettings.items():
             control.applyGenSettings(val, 1)
         confirmations.load()
+        shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
 
     def savePlayList(self):
         tags = self._table.model().taginfo

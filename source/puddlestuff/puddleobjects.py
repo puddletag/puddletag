@@ -44,10 +44,55 @@ from glob import glob
 from constants import ACTIONDIR
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
+import itertools
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
     QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
+
+mod_keys = {
+    Qt.ShiftModifier: u'Shift',
+    Qt.MetaModifier: u'Meta',
+    Qt.AltModifier: u'Alt',
+    Qt.ControlModifier: u'Ctrl',
+    Qt.NoModifier: u'',
+    Qt.KeypadModifier: u'',
+    Qt.GroupSwitchModifier: u'',}
+
+def keycmp(a, b):
+    if a == b:
+        return 0
+    if a == Qt.CTRL:
+        return -1
+    elif b == Qt.CTRL:
+        return 1
+
+    if a == Qt.SHIFT:
+        return -1
+    elif b == Qt.SHIFT:
+        return 1
+
+    if a == Qt.ALT:
+        return -1
+    elif b == Qt.ALT:
+        return 1
+
+    if a == Qt.META:
+        return -1
+    elif b == Qt.META:
+        return 1
+
+    return 0
+
+modifiers = {}
+for i in range(1,len(mod_keys)):
+    for keys in set(itertools.permutations(mod_keys, i)):
+        mod = keys[0]
+        for key in keys[1:]:
+            mod = mod | key
+        modifiers[int(mod)] = u'+'.join(mod_keys[key] for key in sorted(keys, cmp=keycmp) if mod_keys[key])
+
+mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
 
 imagetypes = [
     (unicode(QApplication.translate('Cover Type', 'Other')), unicode(QApplication.translate("Cover Type", 'O'))),
@@ -259,7 +304,7 @@ VERTICAL = 0
 
 def singleerror(parent, msg):
     QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok,
-                                                    QMessageBox.NoButton)
+        QMessageBox.NoButton)
 
 def errormsg(parent, msg, maximum):
     """Shows a messagebox containing an error message indicating that
@@ -1926,6 +1971,54 @@ class PuddleThread(QThread):
             self.emit(SIGNAL('threadfinished'), self.retval)
         else:
             self.emit(SIGNAL('threadfinished'), None)
+
+class ShortcutEditor(QLineEdit):
+    def __init__(self, shortcuts=None, *args, **kwargs):
+        QLineEdit.__init__(self, *args, **kwargs)
+        winsettings('shortcutcapture', self)
+
+        self.key = ""
+        self.modifiers = {}
+        self._valid = False
+        if shortcuts is None:
+            shortcuts = []
+        self._shortcuts = shortcuts
+
+    def clear(self):
+        super(ShortcutEditor, self).clear()
+        self.valid = False
+
+    def keyPressEvent(self, event):
+
+        text = u''
+
+        if event.modifiers():
+            text = modifiers[int(event.modifiers())]
+
+        if event.key() not in mod_keys:
+            if text:
+                text += u'+' + QKeySequence(event.key()).toString()
+            else:
+                text = QKeySequence(event.key()).toString()
+
+            if text and text not in self._shortcuts:
+                valid = True
+            else:
+                valid = False
+        else:
+            valid = False
+
+        self.setText(text)
+        self.valid = valid
+
+    def _getValid(self):
+        return self._valid
+
+    def _setValid(self, value):
+        self._valid = value
+        self.emit(SIGNAL('validityChanged'), value)
+
+    valid = property(_getValid, _setValid)
 
 
 if __name__ == '__main__':

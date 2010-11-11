@@ -558,8 +558,7 @@ class SettingsDialog(QDialog):
             (QApplication.translate("Settings", 'Genres'), genres.Genres(status=status), None),
             (QApplication.translate("Settings", 'Tags'), Tags(), status['table']),
             (QApplication.translate("Settings", 'Plugins'), PluginConfig(), None),
-            (QApplication.translate("Settings", 'Shortcuts'), ActionEditorDialog(status['actions']), None),
-            (QApplication.translate("Settings", 'Action Shortcuts'), ShortcutEditor(True), status['mainwin']),]
+            (QApplication.translate("Settings", 'Shortcuts'), ActionEditorDialog(status['actions']), None),]
 
         d = dict(enumerate(built_in))
             
