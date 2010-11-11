@@ -15,56 +15,31 @@ import puddlestuff.puddleobjects as puddleobjects
 
 FILENAME = os.path.join(ACTIONDIR, 'action_shortcuts')
 
-save_shortcuts = lambda: ActionEditorDialog.saveSettings(puddlestuff.puddletag.status['actions'])
-
 NAME = 'name'
 FILENAMES = 'filenames'
 SHORTCUT_SECTION = 'Shortcut'
 
-def create_action_shortcut(name, funcs, scut_key=None, method=None, parent=None, add=False):
+def create_action_shortcut(name, filenames, scut_key=None, method=None, parent=None, add=False):
+    
     if not method:
         from puddlestuff.mainwin.funcs import applyaction
         method = applyaction
+
     if not parent:
         parent = puddlestuff.puddletag.status['mainwin']
-    shortcut = QAction(name, parent)
 
-    shortcut.enabled = 'filesselected'
-    shortcut.control = None
-    shortcut.command = None
-    shortcut.togglecheck = None
-
-    shortcut.connect(shortcut, SIGNAL('triggered()'),
-        partial(method, funcs=funcs))
+    shortcut = Shortcut(name, filenames, method, parent, scut_key)
 
     if add:
         from puddlestuff.puddletag import add_shortcuts
-        add_shortcuts('&Actions', [shortcut])
-    if scut_key:
-        shortcut.setShortcut(scut_key)
-        save_shortcuts()
+        add_shortcuts('&Actions', [shortcut], save=bool(scut_key))
     return shortcut
 
 def create_action_shortcuts(method, parent=None):
     actions, shortcuts = load_settings()
     menu_shortcuts = []
     for name, filenames in shortcuts:
-        funcs = []
-        try:
-            for f in filenames:
-                funcs.extend(load_action(f)[0])
-        except EnvironmentError:
-            traceback.print_exc()
-            continue
-        shortcut = QAction(name, parent)
-        shortcut.enabled = 'filesselected'
-        shortcut.control = None
-        shortcut.command = None
-        shortcut.togglecheck = None
-        
-        shortcut.connect(shortcut, SIGNAL('triggered()'),
-            partial(method, funcs=funcs))
-        menu_shortcuts.append(shortcut)
+        menu_shortcuts.append(Shortcut(name, filenames, method, parent))
     return menu_shortcuts
 
 def get_shortcuts(default=None):
@@ -102,6 +77,45 @@ def save_shortcut(name, filenames):
     section = SHORTCUT_SECTION + unicode(len(cparser.sections()))
     cparser.set(section, NAME, name)
     cparser.set(section, FILENAMES, filenames)
+
+class Shortcut(QAction):
+    def __init__(self, name, filenames, method, parent, shortcut=u''):
+        super(Shortcut, self).__init__(name, parent)
+
+        self.enabled = 'filesselected'
+        self.control = None
+        self.command = None
+        self.togglecheck = None
+        self._method = method
+        
+        if shortcut:
+            self.setShortcut(shortcut)
+        self.filenames = filenames
+        self.funcs = self.get_funcs()
+        self.connect(self, SIGNAL('triggered()'), self.runAction)
+
+        watcher = QFileSystemWatcher(filter(os.path.exists, filenames), self)
+        self.connect(watcher, SIGNAL('fileChanged(const QString&)'),
+            self._checkFile)
+
+    def _checkFile(self, filename):
+        filename = filename.toLocal8Bit().data()
+        if not os.path.exists(filename):
+            self.filenames.remove(filename)
+        self.funcs = self.get_funcs()
+
+    def get_funcs(self, filenames=None):
+        if filenames is None:
+            filenames = self.filenames
+        funcs = []
+        for f in filenames:
+            if os.path.exists(f):
+                funcs.extend(load_action(f)[0])
+        return funcs
+
+    def runAction(self):
+        return self._method(funcs = self.funcs)
+        
 
 class Editor(QDialog):
     def __init__(self, title='Add Action', shortcut=u'', actions=None, names=None, shortcuts=None, parent=None):
@@ -210,8 +224,8 @@ class Editor(QDialog):
         self.setShortcut(shortcut)
         if filenames:
             for filename in filenames:
-                item = QListWidgetItem(names[filename])
-                item._action = [names[filename], filename]
+                item = QListWidgetItem(names.get(filename, QApplication.translate('Shortcuts', '(Deleted)')))
+                item._action = [names.get(filename, u''), filename]
                 self._newActionList.addItem(item)
 
     def setShortcut(self, text):

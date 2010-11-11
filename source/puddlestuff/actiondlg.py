@@ -37,7 +37,7 @@ from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR,
     SAVEDIR, ACTIONDIR, BLANK)
 from util import open_resourcefile, PluginFunction
 import functions_dialogs
-from action_shortcuts import ShortcutEditor
+from puddlestuff.puddleobjects import ShortcutEditor
 
 READONLY = list(READONLY) + ['__dirpath', ]
 FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
@@ -712,14 +712,14 @@ class ActionWindow(QDialog):
                 puddlestuff.puddletag.status['actions']]
             (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
             name = unicode(name)
+            filenames = [self.funcs[row][2] for row in self.checkedRows()]
             
             from puddlestuff.action_shortcuts import create_action_shortcut, save_shortcut
             if shortcut and ok:
-                create_action_shortcut(name, funcs, shortcut, add=True)
+                create_action_shortcut(name, filenames, shortcut, add=True)
             else:
-                create_action_shortcut(name, funcs, add=True)
-            save_shortcut(name,
-                [self.funcs[row][2] for row in self.checkedRows()])
+                create_action_shortcut(name, filenames, add=True)
+            save_shortcut(name, filenames)
 
     def editShortcuts(self):
         win = ShortcutEditor(True, self, True)
