@@ -32,6 +32,7 @@ import puddlestuff.findfunc, puddlestuff.tagsources
 import puddlestuff.confirmations as confirmations
 import action_shortcuts, traceback
 import plugins
+from copy import copy
 
 pyqtRemoveInputHook()
 
@@ -303,22 +304,23 @@ class MainWin(QMainWindow):
         create_context_menus(controls, all_actions)
         status['actions'] = all_actions
 
+        for win in plugin_dialogs:
+            #try:
+            self.addDock(*win, connect=False)
+            #except:
+                #print "Error while loading Plugin dialog."
+                #traceback.print_exc()
+
         self.restoreSettings()
         self.emit(SIGNAL('always'), True)
 
-        for win in plugin_dialogs:
-            try:
-                self.addDock(*win)
-            except:
-                print "Error while loading Plugin dialog."
-                traceback.print_exc()
-
-    def addDock(self, name, dialog, position, visibility=True):
+    def addDock(self, name, dialog, position, visibility=True, connect=True):
         controls = PuddleDock._controls.values()
         dock = PuddleDock(name, dialog, self, status)
         self.addDockWidget(position, dock)
         self._winmenu.addAction(dock.toggleViewAction())
-        connect_control(PuddleDock._controls[name], controls)
+        if connect:
+            connect_control(PuddleDock._controls[name], controls)
         dock.setVisible(visibility)
 
     def addShortcuts(self, menu_title, actions, toolbar=False, save=False):

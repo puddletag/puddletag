@@ -416,10 +416,10 @@ def runAction(funcs, audio, state = None, quick_action=None):
             audio.update(ret)
     return dict([(z, audio[z]) for z in changed])
 
-def runQuickAction(funcs, audio, tag):
+def runQuickAction(funcs, audio, state, tag):
     """Same as runAction, except that all funcs are 
     applied not in the values stored but on audio[tag]."""
-    return runAction(funcs, audio, None, tag)
+    return runAction(funcs, audio, state, tag)
 
 def save_action(filename, name, funcs):
     f = open(filename, 'w')

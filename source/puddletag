@@ -143,9 +143,9 @@ if __name__ == '__main__':
         if qtTranslator.load(*langargs):
             app.installTranslator(qtTranslator)
             print 'Loaded Translation'
-    
-    create_log()
+
     if '--debug' in sys.argv:
+        create_log()
         sys.argv.remove('--debug')
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 

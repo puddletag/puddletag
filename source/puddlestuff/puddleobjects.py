@@ -1030,7 +1030,7 @@ class ListButtons(QVBoxLayout):
         self.duplicate.setToolTip(QApplication.translate("List Buttons", 'Duplicate'))
 
         self.widgets = [self.add, self.edit, self.duplicate,
-                        self.remove, self.moveup, self.movedown]
+            self.remove, self.moveup, self.movedown]
         [self.addWidget(widget) for widget in self.widgets]
         self.insertStretch(4)
         self.insertSpacing(4,6)
@@ -1063,6 +1063,10 @@ class ListButtons(QVBoxLayout):
 
     def addClicked(self):
         self.emit(SIGNAL("add"))
+
+    def setEnabled(self, value):
+        [w.setEnabled(value) for w in self.widgets]
+        super(ListButtons, self).setEnabled(value)
 
     def removeClicked(self):
         self.emit(SIGNAL("remove"))

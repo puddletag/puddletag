@@ -486,10 +486,24 @@ class ExTags(QDialog):
         else:
             self.loadFiles(files)
 
-    def _prevnext(self, row):
-        if self.filechanged:
-            self.save()
-        self.loadFiles([self._files[row]])
+    def addTag(self):
+        win = EditTag(parent=self, taglist=self._taglist)
+        win.setModal(True)
+        win.show()
+        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+    
+    def closeEvent(self,event):
+        self.piclabel.close()
+        QDialog.closeEvent(self,event)
+
+    def closeMe(self):
+        self.canceled = True
+        self.close()
+
+    def _deletePressed(self, item):
+        if self.listbox.deletePressed:
+            self.listbox.deletePressed = False
+            self.removeTag()
 
     def _checkListBox(self):
         if self.listbox.rowCount() <= 0:
@@ -500,89 +514,9 @@ class ExTags(QDialog):
             self.listbox.setEnabled(True)
             self.listbuttons.edit.setEnabled(True)
             self.listbuttons.remove.setEnabled(True)
-    
-    def _deletePressed(self, item):
-        if self.listbox.deletePressed:
-            self.listbox.deletePressed = False
-            self.removeTag()
 
     def _imageChanged(self):
         self.filechanged = True
-
-    def removeTag(self):
-        l = self.listbox
-        l.setSortingEnabled(False)
-        rows = []
-        for i in self.listbox.selectedItems():
-            row = l.row(i)
-            rows.append(row)
-            i.status = REMOVE
-            i.status = REMOVE
-        l.setSortingEnabled(True)
-        self.filechanged = True
-        self._checkListBox()
-        if rows:
-            row = max(rows)
-            self.listbox.clearSelection()
-            if row + 1 < self.listbox.rowCount():
-                self.listbox.selectRow(row + 1)
-
-    def closeMe(self):
-        self.canceled = True
-        self.close()
-
-    def closeEvent(self,event):
-        self.piclabel.close()
-        QDialog.closeEvent(self,event)
-
-    def save(self):
-        if not self.filechanged:
-            return
-        tags = self.listtotag()
-        if self.piclabel.context != u'Cover Varies':
-            if not self.piclabel.images:
-                tags['__image'] = []
-            else:
-                tags["__image"] = self.piclabel.images
-        newtags = [z for z in tags if z not in self._taglist]
-        if newtags and newtags != ['__image']:
-            settaglist(newtags + self._taglist)
-        self.emit(SIGNAL('extendedtags'), tags)
-
-    def OK(self):
-        self.save()
-        self.close()
-
-    def addTag(self):
-        win = EditTag(parent=self, taglist=self._taglist)
-        win.setModal(True)
-        win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
-
-    def _tag(self, row, status = None):
-        getitem = self.listbox.item
-        item = getitem(row, 0)
-        tag = unicode(item.text())
-        value = unicode(getitem(row, 1).text())
-        if status:
-            return (tag, value, item.status)
-        else:
-            return (tag, value)
-
-    def _settag(self, row, tag, value, status=None, preview=False):
-        l = self.listbox
-        l.setSortingEnabled(False)
-        if row >= l.rowCount():
-            l.insertRow(row)
-        else:
-            if l.item(row, 0).status:
-                status = l.item(row, 0).status
-        
-        tagitem = StatusWidgetItem(tag, status, self._colors, preview)
-        l.setItem(row, 0, tagitem)
-        valitem = StatusWidgetItem(value, status, self._colors, preview)
-        l.setItem(row, 1, valitem)
-        l.setSortingEnabled(True)
 
     def duplicate(self):
         self.editTag(True)
@@ -746,6 +680,72 @@ class ExTags(QDialog):
                     self.piclabel.setImages(None)
         self._checkListBox()
         self.setWindowTitle(tags[PATH])
+
+    def OK(self):
+        self.save()
+        self.close()
+
+    def _prevnext(self, row):
+        if self.filechanged:
+            self.save()
+        self.loadFiles([self._files[row]])
+
+    def removeTag(self):
+        l = self.listbox
+        l.setSortingEnabled(False)
+        rows = []
+        for i in self.listbox.selectedItems():
+            row = l.row(i)
+            rows.append(row)
+            i.status = REMOVE
+            i.status = REMOVE
+        l.setSortingEnabled(True)
+        self.filechanged = True
+        self._checkListBox()
+        if rows:
+            row = max(rows)
+            self.listbox.clearSelection()
+            if row + 1 < self.listbox.rowCount():
+                self.listbox.selectRow(row + 1)
+
+    def save(self):
+        if not self.filechanged:
+            return
+        tags = self.listtotag()
+        if self.piclabel.context != u'Cover Varies':
+            if not self.piclabel.images:
+                tags['__image'] = []
+            else:
+                tags["__image"] = self.piclabel.images
+        newtags = [z for z in tags if z not in self._taglist]
+        if newtags and newtags != ['__image']:
+            settaglist(newtags + self._taglist)
+        self.emit(SIGNAL('extendedtags'), tags)
+
+    def _settag(self, row, tag, value, status=None, preview=False):
+        l = self.listbox
+        l.setSortingEnabled(False)
+        if row >= l.rowCount():
+            l.insertRow(row)
+        else:
+            if l.item(row, 0).status:
+                status = l.item(row, 0).status
+
+        tagitem = StatusWidgetItem(tag, status, self._colors, preview)
+        l.setItem(row, 0, tagitem)
+        valitem = StatusWidgetItem(value, status, self._colors, preview)
+        l.setItem(row, 1, valitem)
+        l.setSortingEnabled(True)
+
+    def _tag(self, row, status = None):
+        getitem = self.listbox.item
+        item = getitem(row, 0)
+        tag = unicode(item.text())
+        value = unicode(getitem(row, 1).text())
+        if status:
+            return (tag, value, item.status)
+        else:
+            return (tag, value)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1946,7 +1946,6 @@ class TagTable(QTableView):
             selectedColumns.add(z.column())
         self.selectedRows = sorted(list(selectedRows))
         self.selectedColumns = sorted(list(selectedColumns))
-        
 
         if self._select:
             self.emit(SIGNAL('itemSelectionChanged()'))
