@@ -722,7 +722,8 @@ class ActionWindow(QDialog):
             save_shortcut(name, filenames)
 
     def editShortcuts(self):
-        win = ShortcutEditor(True, self, True)
+        import action_shortcuts
+        win = action_shortcuts.ShortcutEditor(True, self, True)
         win.setModal(True)
         win.show()
 

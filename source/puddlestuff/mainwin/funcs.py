@@ -37,7 +37,8 @@ def applyaction(files=None, funcs=None):
 def applyquickaction(files, funcs):
     qa = findfunc.runQuickAction
     selected = status['selectedtags']
-    t = (qa(funcs, f, s.keys()) for f, s in izip(files, selected))
+    state = {}
+    t = (qa(funcs, f, state, s.keys()) for f, s in izip(files, selected))
     emit('writeselected', t)
 
 def auto_numbering(parent=None):

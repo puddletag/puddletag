@@ -515,6 +515,10 @@ class MainWin(QMainWindow):
                 if isinstance(action, basestring):
                     action = children[action]
                 menu.removeAction(action)
+                try:
+                    status['actions'].remove(action)
+                except ValueError:
+                    pass
 
     def restoreSettings(self):
         scts = action_shortcuts.create_action_shortcuts(

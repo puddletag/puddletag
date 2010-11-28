@@ -176,6 +176,11 @@ keys = {
 
 def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
+    charset = album_soup.find('meta', {'http-equiv': "Content-Type",
+        'content': "text/html"}).element.attrib['charset']
+    album_soup = parse_html.SoupWrapper(
+        parse_html.parse(page.decode(charset, 'replace')))
+
     artist_group = album_soup.find('div', {'class': 'left-sidebar'})
 
     find = artist_group.find_all
@@ -441,11 +446,11 @@ class AllMusic(object):
             ret = [(matches[0], [])]
         elif matched:
             write_log(u'Ambiguous matches found for: %s - %s' % 
-                            (artist, album))
+                (artist, album))
             ret.extend([(z, []) for z in matches])
         else:
             write_log(u'No matches found for: %s - %s' % 
-                            (artist, album))
+                (artist, album))
             ret.extend([(z, []) for z in matches])
         return ret
 
@@ -485,4 +490,7 @@ info = AllMusic
 
 if __name__ == '__main__':
     f = open(sys.argv[1], 'r').read()
-    print parse_albumpage(f)
+    x = parse_albumpage(f)
+    pdb.set_trace()
+    print x
+    

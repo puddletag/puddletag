@@ -45,13 +45,14 @@ def create_action_shortcuts(method, parent=None):
 def get_shortcuts(default=None):
     from puddlestuff.puddletag import status
     if status['actions']:
-        ret = [unicode(z.shortcut().toString()) for z in status['actions']]
+        ret = filter(None,
+            (unicode(z.shortcut().toString()) for z in status['actions']))
     else:
         ret = []
     if default:
-        return ret + default
+        return set(ret + default)
     else:
-        return ret
+        return set(ret)
 
 def load_settings(filename=None, actions=None):
     if filename is None:
@@ -235,6 +236,7 @@ class ShortcutEditor(QDialog):
     def __init__(self, load=False, parent=None, buttons=False):
         super(ShortcutEditor, self).__init__(parent)
         self._names = []
+        self._hotkeys = []
 
         self._listbox = ListBox()
 
@@ -267,7 +269,8 @@ class ShortcutEditor(QDialog):
             self.loadSettings()
 
     def _addShortcut(self):
-        shortcuts = get_shortcuts([i.shortcut for i in self._listbox.items()])
+        shortcuts = get_shortcuts().difference(self._hotkeys).union(
+            i.shortcut for i in self._listbox.items() if i.shortcut)
             
         win = Editor('Add Shortcut', u'', self._actions, self.names(), shortcuts, self)
         win.setModal(True)
@@ -313,8 +316,8 @@ class ShortcutEditor(QDialog):
             item = self._listbox.selectedItems()[0]
         except IndexError:
             return
-        shortcuts = [unicode(z.shortcut().text()) for z in get_shortcuts()] + \
-            [i.shortcut for i in self._listbox.items()]
+        shortcuts = get_shortcuts().difference(self._hotkeys).union(
+            i.shortcut for i in self._listbox.items() if i.shortcut)
         win = Editor('Duplicate Shortcut', u'', self._actions, self.names(), shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, u'')
         win.setModal(True)
@@ -326,7 +329,8 @@ class ShortcutEditor(QDialog):
             item = self._listbox.selectedItems()[0]
         except IndexError:
             return
-        shortcuts = get_shortcuts([i.shortcut for i in self._listbox.items()])
+        shortcuts = get_shortcuts().difference(self._hotkeys).union(
+            i.shortcut for i in self._listbox.items() if i.shortcut)
 
         names = self.names()
         names.remove(item.actionName)
@@ -345,6 +349,7 @@ class ShortcutEditor(QDialog):
 
     def loadSettings(self, filename=None, actions=None):
         self._names = []
+        self._hotkeys = []
 
         if filename is None:
             filename = os.path.join(ACTIONDIR, 'action_shortcuts')
@@ -369,7 +374,9 @@ class ShortcutEditor(QDialog):
                 name = cparser.get(section, NAME, 'Default')
                 self._names.append(name)
                 filenames = cparser.get(section, FILENAMES, [])
-                self.addShortcut(name, filenames, shortcuts.get(name, u''), select=False)
+                shortcut = shortcuts.get(name, u'')
+                self.addShortcut(name, filenames, shortcut, select=False)
+                self._hotkeys.append(shortcut)
 
     def names(self):
         return [item.actionName for item in self._listbox.items()]

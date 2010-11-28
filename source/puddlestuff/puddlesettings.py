@@ -457,7 +457,6 @@ class StatusWidgetItem(QTableWidgetItem):
 class ColorEdit(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
-        self._edited = False
         cparser = PuddleConfig()
         get_color = lambda key, default: QColor.fromRgb(
             *cparser.get('extendedtags', key, default, True))
@@ -515,7 +514,6 @@ class ColorEdit(QWidget):
         win.open()
 
     def setColor(self):
-        self._edited = True
         row = self._status[0]
         self.listbox.item(row, 0).setBackground(self._status[1])
 
@@ -525,8 +523,6 @@ class ColorEdit(QWidget):
             self.listbox.item(row, 0).setBackground(QBrush(color))
 
     def applySettings(self, control=None):
-        if not self._edited:
-            return
         cparser = PuddleConfig()
         x = lambda c: c.getRgb()[:-1]
         colors = [x(self.listbox.item(z,0).background().color())

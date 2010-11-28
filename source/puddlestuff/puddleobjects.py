@@ -2001,9 +2001,9 @@ class ShortcutEditor(QLineEdit):
 
         if event.key() not in mod_keys:
             if text:
-                text += u'+' + QKeySequence(event.key()).toString()
+                text += u'+' + unicode(QKeySequence(event.key()).toString())
             else:
-                text = QKeySequence(event.key()).toString()
+                text = unicode(QKeySequence(event.key()).toString())
 
             if text and text not in self._shortcuts:
                 valid = True
