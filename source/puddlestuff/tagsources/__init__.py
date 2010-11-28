@@ -7,7 +7,7 @@ from PyQt4.QtCore import QObject, SIGNAL
 from collections import defaultdict
 import urllib2, socket, urllib
 
-all = ['musicbrainz']
+all = ['musicbrainz', 'discogs', 'amazon']
 
 class RetrievalError(Exception):
     pass
@@ -91,10 +91,10 @@ def urlopen(url, mask=True):
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
-import musicbrainz, amazon, freedb
+import musicbrainz, amazon, freedb, discogs
 try:
     import amg
-    tagsources = [z.info for z in [musicbrainz, amazon, freedb, amg]]
+    tagsources = [z.info for z in [musicbrainz, amazon, freedb, amg, discogs]]
 except ImportError:
     allmusic = None
-    tagsources = [z.info for z in [musicbrainz, amazon, freedb]]
+    tagsources = [z.info for z in [musicbrainz, amazon, freedb, discogs]]
