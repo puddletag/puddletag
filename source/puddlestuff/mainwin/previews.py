@@ -79,7 +79,7 @@ def create_actions(parent):
     revert.setShortcut('Ctrl+Shift+Z')
     obj.connect(revert, SIGNAL('triggered()'), undo_last)
     
-    sort = QAction(QApplication.translate("Menus", '&Sort Selected'), parent)
+    sort = QAction(QApplication.translate("Menus", 'Sort &By'), parent)
     obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
 
     clear_cells = PreviewAction(QApplication.translate("Menus", 'Clear Selected &Cells'), parent)

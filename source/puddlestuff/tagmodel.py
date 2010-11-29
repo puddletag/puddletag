@@ -1746,7 +1746,13 @@ class TagTable(QTableView):
         sort_fields = cparser.get('table', 'sort_fields', [])
         reverse = cparser.get('table', 'sort_reverse', False, True)
 
-        model.sortByFields(sort_fields, reverse=reverse)
+        #print sort_fields, model.sortFields
+
+        if sort_fields:
+            model.sortByFields(sort_fields, reverse=reverse)
+        else:
+            h = self.horizontalHeader()
+            model.sort(h.sortIndicatorSection(), h.sortIndicatorOrder())
 
     def moveDown(self, rows=None):
         if rows is None:
