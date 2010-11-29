@@ -94,7 +94,7 @@ def readm3u(path):
             continue
         else:
             # store rule
-            mp3Files.append(normpath(realpath(row[0])))
+            mp3Files.append(normpath(abspath(','.join(row))))
 
     fileHandle.close()
     os.chdir(olddir)

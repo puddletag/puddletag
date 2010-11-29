@@ -284,6 +284,9 @@ class Tag(util.MockTag):
         if audio is None:
             return
 
+        revmap, mapping = self.revmapping, self.mapping
+        self.revmapping, self.mapping = {}, {}
+
         self._freeform = {} #Keys are tags as required by mutagen i.e. The '----'
                             #frames. Values are the tag as represented by puddletag.
 
@@ -317,7 +320,6 @@ class Tag(util.MockTag):
                         self._tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
                     except UnicodeDecodeError:
                         self._errors.add(tag)
-                        
 
         info = audio.info
         self._tags.update({
@@ -326,6 +328,7 @@ class Tag(util.MockTag):
             u"__bitrate": strbitrate(info.bitrate),
             u'__channels': unicode(info.channels),
             u'__bitspersample': unicode(info.bits_per_sample)})
+        self.revmapping, self.mapping = revmap, mapping
         self._tags.update(tags)
         self.filetype = 'MP4'
         self._tags['__filetype'] = self.filetype
