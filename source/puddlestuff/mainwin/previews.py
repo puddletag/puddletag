@@ -79,7 +79,7 @@ def create_actions(parent):
     revert.setShortcut('Ctrl+Shift+Z')
     obj.connect(revert, SIGNAL('triggered()'), undo_last)
     
-    sort = PreviewAction(QApplication.translate("Menus", '&Sort Selected'), parent)
+    sort = QAction(QApplication.translate("Menus", '&Sort Selected'), parent)
     obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
 
     clear_cells = PreviewAction(QApplication.translate("Menus", 'Clear Selected &Cells'), parent)
@@ -93,13 +93,13 @@ def create_actions(parent):
     _sort_action = sort
     sort_actions = set_sort_options(options)
 
-    preview_actions = [clear_selection, write, revert, sort, clear_cells]
+    preview_actions = [clear_selection, write, revert, clear_cells]
 
     toggle = partial(toggle_preview_display, enable_preview, preview_actions)
     
     obj.receives.append(['previewModeChanged', toggle])
 
-    [connect_shortcut(z, FILESSELECTED) for z in preview_actions + sort_actions]
+    [connect_shortcut(z, FILESSELECTED) for z in preview_actions]
 
     return [enable_preview, clear_selection, write, revert, sort,
         clear_cells] + sort_actions
@@ -121,8 +121,13 @@ def set_sort_options(options):
 
 def sort_by_fields():
     options = QObject().sender().sortOption
-    status['table'].model().sortByFields(options, 
-        status['selectedfiles'], status['selectedrows'])
+    files = status['selectedfiles']
+    model = status['table'].model()
+    if files and len(files) > 1:
+        model.sortByFields(options,
+            status['selectedfiles'], status['selectedrows'])
+    else:
+        model.sortByFields(options)
 
 def set_status(stat):
     global status

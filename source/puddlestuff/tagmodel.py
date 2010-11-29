@@ -434,10 +434,12 @@ class TagModel(QAbstractTableModel):
         self._selectionBackground = None
         self._undo = defaultdict(lambda: {})
         self._previewUndo = defaultdict(lambda: {})
+        self.sortFields = []
+        self.reverseSort = True
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
-            self.sort(*self.sortOrder)
+            self.sortByFields(self.sortFields, reverse=self.reverseSort)
         else:
             self.taginfo = []
             self.reset()
@@ -737,7 +739,7 @@ class TagModel(QAbstractTableModel):
         #self.emit(SIGNAL('modelReset')) #Because of the strange behaviour mentioned in reset.
         return True
 
-    def load(self,taginfo, headerdata=None, append = False):
+    def load(self, taginfo, headerdata=None, append = False):
         """Loads tags as in __init__.
         If append is true, then the tags are just appended."""
         if headerdata is not None:
@@ -752,27 +754,11 @@ class TagModel(QAbstractTableModel):
             if not hasattr(z, 'library'):
                 z.library = None
 
-            #if self.alternateAlbumColors:
-                #albums = commontag('album', taginfo)
-                #colors = [QPalette().base().color(), QPalette().alternateBase().color()]
-                #if hasattr(self, '_lasti'):
-                    #i = self._lasti
-                #else:
-                    #i = 0
-                #for tags in albums.values():
-                    #for tag in tags:
-                        #tag.color = colors[i]
-                    #i = 0 if i else 1
-                #self._lasti = i
-
         if append:
-            column = self.sortOrder[0]
-            field = self.headerdata[column][1]
-            getter = lambda audio: audio.get(field, u'')
-            if self.sortOrder[1] == Qt.AscendingOrder:
-                taginfo = sorted(taginfo, natcasecmp, getter)
-            else:
-                taginfo = sorted(taginfo, natcasecmp, getter, True)
+            for field in self.sortFields:
+                getter = lambda audio: audio.get(field, u'')
+                taginfo.sort(natcasecmp, getter, self.reverseSort)
+
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
                 not in filenames])
@@ -790,7 +776,7 @@ class TagModel(QAbstractTableModel):
             self.taginfo = taginfo
             self._filtered = []
             self.reset()
-            self.sort(*self.sortOrder)
+            self.sortByFields(self.sortFields, reverse=self.reverseSort)
             [setattr(z, 'color', None) for z in self.taginfo if z.color]
             self.undolevel = 0
 
@@ -1044,36 +1030,44 @@ class TagModel(QAbstractTableModel):
         if row < (self.rowCount() - 1) and row >= 0:
            return self.index(row + 1, column)
 
-    def sort(self, column, order = Qt.DescendingOrder):
-        self.emit(SIGNAL('aboutToSort'))
-        self.sortOrder = (column, order)
+    def sort(self, column, order=Qt.DescendingOrder):
         try:
-            tag = self.headerdata[column][1]
+            field = self.headerdata[column][1]
         except IndexError:
             if len(self.headerdata) >= 1:
-                tag = self.headerdata[0][1]
+                field = self.headerdata[0][1]
             else:
                 return
-        f = lambda audio: audio.get(tag, '')
-        if order == Qt.AscendingOrder:
-            self.taginfo.sort(natcasecmp, f)
+        if order == Qt.DescendingOrder:
+            self.sortByFields([field], reverse=True)
         else:
-            self.taginfo.sort(natcasecmp, f, True)
-        self.reset()
-        self.emit(SIGNAL('sorted'))
+            self.sortByFields([field], reverse=False)
     
-    def sortByFields(self, fields, files=None, rows=None):
+    def sortByFields(self, fields, files=None, rows=None, reverse=None):
         self.emit(SIGNAL('aboutToSort'))
+
+        if reverse is None and fields == self.sortFields:
+            reverse = not self.reverseSort
+        elif reverse is None:
+            reverse = False
+
         if files and rows:
             for field in fields:
-                f = lambda audio: audio.get(field, '')
-                files.sort(natcasecmp, f)
+                f = lambda audio: audio.get(field, u'')
+                files.sort(natcasecmp, f, reverse)
             for index, row in enumerate(rows):
                 self.taginfo[row] = files[index]
         else:
             for field in fields:
-                f = lambda audio: audio.get(field, '')
-                self.taginfo.sort(natcasecmp, f)
+                f = lambda audio: audio.get(field, u'')
+                try:
+                    self.taginfo.sort(natcasecmp, f, reverse)
+                except:
+                    pdb.set_trace()
+                    self.taginfo.sort(natcasecmp, f, reverse)
+
+        self.reverseSort = reverse
+        self.sortFields = fields
         self.reset()
         self.emit(SIGNAL('sorted'))
 
@@ -1744,8 +1738,15 @@ class TagTable(QTableView):
         default = QPalette().color(QPalette.Mid).getRgb()[:-1]
         selection_color = cparser.get('table', 'selected_color', default, True)
 
-        self.model().previewBackground = QColor.fromRgb(*preview_color)
-        self.model().selectionBackground = QColor.fromRgb(*selection_color)
+        model = self.model()
+
+        model.previewBackground = QColor.fromRgb(*preview_color)
+        model.selectionBackground = QColor.fromRgb(*selection_color)
+
+        sort_fields = cparser.get('table', 'sort_fields', [])
+        reverse = cparser.get('table', 'sort_reverse', False, True)
+
+        model.sortByFields(sort_fields, reverse=reverse)
 
     def moveDown(self, rows=None):
         if rows is None:
@@ -2097,6 +2098,8 @@ class TagTable(QTableView):
         cparser.set('table', 'fontsize', self.fontSize)
         rowsize = self.verticalHeader().defaultSectionSize()
         cparser.set('table', 'rowsize', rowsize)
+        cparser.set('table', 'sort_fields', self.model().sortFields)
+        cparser.set('table', 'sort_reverse', self.model().reverseSort)
 
     def nextDir(self, dirpaths, previous=False):
         taginfo = self.model().taginfo

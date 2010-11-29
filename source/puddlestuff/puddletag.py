@@ -527,9 +527,15 @@ class MainWin(QMainWindow):
         self.addShortcuts('&Actions', scts)
 
         connect_actions(scts, PuddleDock._controls)
-        
+
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
+
+        h = self._table.horizontalHeader()
+        h.restoreState(settings.value('table/header').toByteArray())
+        self.restoreState(settings.value('main/state').toByteArray())
+        
+        
         gensettings = {}
         controls = PuddleDock._controls.values()
         for control in controls:
@@ -568,10 +574,6 @@ class MainWin(QMainWindow):
         filepath = os.path.join(cparser.savedir, 'mappings')
         audioinfo.setmapping(audioinfo.loadmapping(filepath, mapping))
         status['genres'] = genres.load_genres()
-
-        h = self._table.horizontalHeader()
-        h.restoreState(settings.value('table/header').toByteArray())
-        self.restoreState(settings.value('main/state').toByteArray())
 
         connect_controls(controls + [mainwin.previews.obj])
 

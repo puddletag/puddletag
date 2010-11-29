@@ -70,67 +70,14 @@ def get_text(node):
     except AttributeError:
         return
 
-def check_binding(node):
-    """Checks whether a returned item as an Audio CD."""
-    binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
-    return binding == u'Audio CD'
-
-def get_asin(node):
-    """Retrieves the ASIN of a node."""
-    return node.getElementsByTagName(u'ASIN')[0].firstChild.data
-
-def get_image_url(node):
-    return node.getElementsByTagName(u'URL')[0].firstChild.data
-
-def page_url(node):
-    return node.getElementsByTagName(u'DetailPageURL')[0].firstChild.data
-
-def aws_url(aws_access_key_id, secret, query_dictionary):
-    """Creates the query url that'll be used to query Amazon's service."""
-    query_dictionary["AWSAccessKeyId"] = aws_access_key_id
-    query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
-        time.gmtime())
-
-    items = [(key, value.encode('utf8')) for key, value in
-        query_dictionary.items()]
-    query = urllib.urlencode(sorted(items))
-
-    hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
-        + query, hashlib.sha256)
-    signature = urllib2.quote(base64.b64encode(hm.digest()))
-
-    query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
-        query, signature)
-    return query
-
-def check_matches(albums, artist=None, album_name=None):
-    """Returns any album in albums with the same matching artist and
-    album_name's. If no matches are found, original list is returned."""
-    ret = []
-    if artist and album_name:
-        album_name = album_name.lower()
-        artist = artist.lower()
-
-        ret = [album for album in albums if
-            album['album'].lower() == album_name and
-            album['artist'].lower() == artist]
-    elif artist:
-        artist = artist.lower()
-        ret = [album for album in albums if album['artist'] == artist]
-    elif album_name:
-        album_name = album_name.lower()
-        ret = [album for album in albums if album['album'] == album_name]
-
-    return ret if ret else albums
-
 def keyword_search(keywords):
     write_log(u'Retrieving search results for keywords: %s' % keywords)
     url = search_url % urllib.quote_plus(keywords)
     #text = open('results.xml', 'r').read()
     text = urlopen(url)
-    page = open('results.xml', 'w')
-    page.write(text)
-    page.close()
+    #page = open('results.xml', 'w')
+    #page.write(text)
+    #page.close()
     return parse_search_xml(text)
 
 def parse_album_xml(text):
@@ -189,7 +136,7 @@ def parse_album_xml(text):
             if d['type'] == 'primary':
                 image_list.insert(0, (d['uri'], d['uri150']))
             else:
-                image_list.append(0, (d['uri'], d['uri150']))
+                image_list.append((d['uri'], d['uri150']))
         info['#cover-url'] = image_list
 
     tracklist = doc.getElementsByTagName('tracklist')[0]
