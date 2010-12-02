@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-
-import sys
-sys.path.insert(0, '/home/keith/Documents/python/puddletag')
-
 from pyparsing import QuotedString, Word, nums, printables
 import re, pdb, os
 
@@ -243,7 +239,6 @@ class Mp3TagSource(object):
     def retrieve(self, info):
         url = self.album_url + info['#url']
         write_log(u'Opening Album Page: %s' % url)
-        #url = 'file:///home/keith/Desktop/d_album.htm'
         page = get_encoding(urlopen(url), True)[1]
         new_info, tracks = parse_album_page(page, self.album_source)
         new_info.update(info)
