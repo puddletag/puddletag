@@ -579,9 +579,9 @@ Match &Case, check"""
         if not group:
             continue
         if groups:
-            d = dict(enumerate(groups))
+            d = dict((i + 1, g) for i, g in enumerate(groups))
         else:
-            d = {0: group}
+            d = {1: group}
 
         replacetext = findfunc.parsefunc(rep, {}, d)
         replacetext = replacetokens(replacetext, d, replacetext)

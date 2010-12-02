@@ -2,7 +2,7 @@
 from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
-from copy import copy
+from copy import copy, deepcopy
 from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME)
 from errno import EEXIST
@@ -12,6 +12,14 @@ from puddlestuff.constants import CHECKBOX
 
 ARTIST = 'artist'
 ALBUM = 'album'
+
+def convert_dict(d, keys):
+    d = deepcopy(d)
+    for key in keys:
+        if key in d:
+            d[keys[key]] = d[key]
+            del(d[key])
+    return d
 
 def equal(audio1, audio2, tags=('artist', 'album', 'title')):
     for key in tags:

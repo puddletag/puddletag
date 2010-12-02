@@ -27,7 +27,7 @@ from PyQt4.QtGui import *
 from collections import defaultdict
 #import puddlestuff.tagsources as tagsources
 from puddlestuff.tagsources import (RetrievalError, status_obj, write_log, 
-    tagsources, set_useragent)
+    tagsources, set_useragent, mp3tag)
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
 pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
@@ -38,6 +38,16 @@ from releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
 
 TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
+MTAG_SOURCE_DIR = os.path.join(SAVEDIR, 'mp3tag_sources')
+
+def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
+    import glob
+    files = glob.glob(os.path.join(dirpath, '*.src'))
+    classes = []
+    for f in files:
+        idents, search, album = mp3tag.open_script(f)
+        classes.append(mp3tag.Mp3TagSource(idents, search, album))
+    return classes
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
@@ -378,6 +388,7 @@ class MainWin(QWidget):
         self.mapping = audioinfo.mapping
         self._status = status
         self._tagsources = [z() for z in tagsources]
+        self._tagsources.extend(load_mp3tag_sources())
         [z.applyPrefs(load_source_prefs(z.name, z.preferences)) 
             for z in self._tagsources if
             hasattr(z, 'preferences') and not isinstance(z, QWidget)]

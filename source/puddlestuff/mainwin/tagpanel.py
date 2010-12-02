@@ -171,7 +171,7 @@ class FrameCombo(QGroupBox):
                 combo.setCurrentIndex(index)
             else:
                 combo.setEditText(values[0])
-        else:
+        elif 'genre' in tags:
             combos['genre'].setCurrentIndex(0)
 
         self._originalValues = dict([(field, unicode(combo.currentText()))

@@ -150,7 +150,7 @@ def parse_review(soup):
         review = review_td.find('p', {'class':'text'}).string.strip()
         if not review.strip():
             raise IndexError
-        review = review.encode('latin1').decode('utf8')
+        #review = review.encode('latin1').decode('utf8')
     except (IndexError, AttributeError):
         return {}
     #review = text(review_td)
