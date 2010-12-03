@@ -226,7 +226,7 @@ class Mp3TagSource(object):
         self.album_url = idents['albumurl']
 
     def keyword_search(self, text):
-        return self.search(artist)
+        return self.search(text)
 
     def search(self, artist, files=None):
         artist = re.sub('\s+', self._separator, artist)
