@@ -394,7 +394,7 @@ class MainWin(QWidget):
             hasattr(z, 'preferences') and not isinstance(z, QWidget)]
         status['initialized_tagsources'] = self._tagsources
         self._configs = [z.preferences if hasattr(z, 'preferences') else None
-            for z in tagsources]
+            for z in self._tagsources]
         self._tagsource = self._tagsources[0]
         self._tagstowrite = [[] for z in self._tagsources]
         self._sourcenames = [z.name for z in self._tagsources]
