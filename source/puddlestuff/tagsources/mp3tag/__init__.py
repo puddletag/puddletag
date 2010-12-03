@@ -2,20 +2,38 @@
 from pyparsing import QuotedString, Word, nums, printables
 import re, pdb, os
 
+import sys
+
 from puddlestuff.util import convert_dict as _convert_dict
-from puddlestuff.tagsources import urlopen, get_encoding, write_log
+from puddlestuff.tagsources import (urlopen, get_encoding,
+    write_log, retrieve_cover)
+from puddlestuff.constants import CHECKBOX
 from funcs import FUNCTIONS
+from copy import deepcopy
 
 def unquote(s, loc, tok):
+    """Doing this manually, because QuotedString's method removes \'s from
+    regular expressions."""
     tok = tok.pop()[1:-1]
     return tok.replace('\\"', '"')
 
+STRING = QuotedString('"', '\\', unquoteResults=False).setParseAction(unquote)
+NUMBER = Word(nums).setParseAction(lambda s,l,t: int(t.pop()))
+COVER = '#cover-url'
+
+ARGUMENT = STRING | NUMBER
+ARGUMENT.ignore(u'#' + Word(printables))
+
 MTAG_KEYS = {
-    '_length': 'length',
-    '_url': '#url'}
+    '_length': '__length',
+    '_url': '#url',
+    'coverurl': COVER,
+    'publisher': 'label',
+    'track temp': 'track'}
 
 def convert_value(value):
-    value = filter(None, [z.strip() for z in value.split('|')])
+    value = filter(None, (z.strip() for z in value.split(u'|')))
+    value = [v.replace(u'\\r\\n', u'\n') for v in value]
     if len(value) == 1:
         return value[0]
     return value
@@ -25,22 +43,16 @@ def convert_dict(d, keys = MTAG_KEYS):
         k,v in d.iteritems()) if z)
     return _convert_dict(d, keys)
 
-STRING = QuotedString('"', '\\', unquoteResults=False).setParseAction(unquote)
-NUMBER = Word(nums).setParseAction(lambda s,l,t: int(t.pop()))
-
-ARGUMENT = STRING | NUMBER
-ARGUMENT.ignore('#' + Word(printables))
-
 def find_idents(lines):
     ident_lines = {}
     idents = {}
     for i, line in enumerate(lines):
         line = line.strip()
-        if line.startswith('['):
+        if line.startswith(u'['):
             name, value = parse_ident(line)
             idents[name.lower()] = value
             ident_lines[i] = name.lower()
-        elif not line or line.startswith('#'):
+        elif not line or line.startswith(u'#'):
             continue
 
     values = sorted(ident_lines)
@@ -87,7 +99,7 @@ def parse_func(lineno, line):
     funcname = line.split(' ', 1)[0].strip()
     args = [z[0] for z in
     ARGUMENT.searchString(line[len(funcname):]).asList()]
-    if funcname and not funcname.startswith('#'):
+    if funcname and not funcname.startswith(u'#'):
         return funcname, lineno, args
 
 def parse_ident(line):
@@ -216,14 +228,25 @@ class Cursor(object):
 
 class Mp3TagSource(object):
     def __init__(self, idents, search_source, album_source):
+
+        self._get_cover = True
+        self.preferences = [
+            ['Retrieve Covers', CHECKBOX, self._get_cover]]
+            
         self.search_source = search_source
         self.album_source = album_source
         self._search_base = idents['indexurl']
         self._separator = idents['wordseperator']
         self.group_by = [idents['searchby'][1:-1], None]
-        self.name = idents['name']
+        self.name = idents['name'] + u' (Mp3tag)'
         self.indexformat = idents['indexformat']
         self.album_url = idents['albumurl']
+        self.tooltip = tooltip = """<p>Enter search keywords here. If empty,
+        the selected files are used.<br /><br />
+        Searches are done by <b>%s</b></p>""" % self.group_by[0]
+
+    def applyPrefs(self, args):
+        self._get_cover = args[0]
 
     def keyword_search(self, text):
         return self.search(text)
@@ -237,20 +260,29 @@ class Mp3TagSource(object):
         return [(info, []) for info in infos]
 
     def retrieve(self, info):
+        info = deepcopy(info)
         url = self.album_url + info['#url']
         write_log(u'Opening Album Page: %s' % url)
         page = get_encoding(urlopen(url), True)[1]
         new_info, tracks = parse_album_page(page, self.album_source)
-        new_info.update(info)
-        return new_info, tracks
+        info.update(new_info)
+        if self._get_cover and COVER in info:
+            cover_url = new_info[COVER]
+            if isinstance(cover_url, basestring):
+                info.update(retrieve_cover(cover_url))
+            else:
+                info.update(map(retrieve_cover, cover_url))
+        return info, tracks
 
 if __name__ == '__main__':
-    text = open('ratatat.htm', 'r').read()
+    text = open(sys.argv[1], 'r').read()
     import puddlestuff.tagsources
     encoding, text = puddlestuff.tagsources.get_encoding(text, True)
     
     idents, search, album = open_script('discogs_artist.src')
-    print parse_album_page(text, album)
+    value = parse_album_page(text, album)[0]['discogs_notes']
+    pdb.set_trace()
+    print convert_value(value)
     #source = find_idents(lines)[1]
     
     #print parse_search(idents['indexformat'], search, text)

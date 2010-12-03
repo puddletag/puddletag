@@ -21,7 +21,7 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys, pdb, os
 from puddleobjects import (unique, OKCancel, PuddleThread, PuddleConfig, 
-    winsettings, ListBox, ListButtons, OKCancel)
+    winsettings, ListBox, ListButtons, OKCancel, create_buddy)
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from collections import defaultdict
@@ -245,55 +245,38 @@ class SettingsDialog(QWidget):
     def __init__(self, parent = None, status = None):
         QWidget.__init__(self, parent)
         self.title = 'Tag Sources'
-        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
-        text = cparser.get('tagsources', 'trackpattern', '%track% - %title%')
 
-        sortoptions = cparser.get('tagsources', 'sortoptions', 
-            [u'artist, album', u'album, artist'])
-
-        try:
-            sortorder = cparser.get('tagsources', 'sortorder', 0)
-        except ValueError:
-            sortorder = 0
-        
-        albumformat = cparser.get('tagsources', 'albumpattern',
-            u'%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
-        artoptions = cparser.get('tagsources', 'artoptions',
-            ['Replace existing album art.', 'Append to existing album art.',
-                "Leave artwork unchanged."])
-        useragent = cparser.get('tagsources', 'useragent', '')
-
-        saveart = cparser.get('tagsources', 'saveart', False)
-        coverdir = cparser.get('tagsources', 'coverdir', False)
-        
         label = QLabel(QApplication.translate("WebDB Settings", '&Display format for individual tracks.'))
-        self._text = QLineEdit(text)
+        self._text = QLineEdit()
         label.setBuddy(self._text)
         
         albumlabel = QLabel(QApplication.translate("WebDB Settings", 'Display format for &retrieved albums'))
-        self._albumdisp = QLineEdit(albumformat)
+        self._albumdisp = QLineEdit()
         albumlabel.setBuddy(self._albumdisp)
 
         sortlabel = QLabel(QApplication.translate("WebDB Settings", 'Sort retrieved albums using order:'))
         self._sortoptions = QComboBox()
-        self._sortoptions.addItems(sortoptions)
         sortlabel.setBuddy(self._sortoptions)
         editoptions = QPushButton(QApplication.translate("Defaults", '&Edit'))
         self.connect(editoptions, SIGNAL('clicked()'), self._editOptions)
         
         ua_label = QLabel(QApplication.translate("WebDB Settings", 'User-Agent to use for screen scraping.'))
         self._ua = QTextEdit()
-        self._ua.setText(useragent)
 
-        self._savecover = QCheckBox(QApplication.translate("WebDB Settings", 'Save album art.'))
+        self.jfdi = QCheckBox(QApplication.translate('Profile Editor',
+            'Brute force unmatched files.'))
+        self.jfdi.setToolTip(QApplication.translate('Profile Editor',"<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>"))
+        self.matchFields = QLineEdit(u'artist, title')
+        self.matchFields.setToolTip(QApplication.translate('Profile Editor','<p>The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it\'ll be considered to match.</p>'))
+
+        self.albumBound = QSpinBox()
+        self.albumBound.setToolTip(QApplication.translate('Profile Editor',"<p>The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.</p>"))
+        self.albumBound.setRange(0,100)
+        self.albumBound.setValue(70)
         
-        coverlabel = QLabel(QApplication.translate("WebDB Settings", "&Directory to save retrieved album art "
-            "(it will be created if it doesn't exist)"))
-        self._coverdir = QLineEdit()
-        coverlabel.setBuddy(self._coverdir)
-        
-        self.connect(self._savecover, SIGNAL('stateChanged(int)'),
-            lambda state: self._coverdir.setEnabled(bool(state)))
+        self.trackBound = QSpinBox()
+        self.trackBound.setRange(0,100)
+        self.trackBound.setValue(80)
         
         vbox = QVBoxLayout()
         vbox.addWidget(label)
@@ -311,47 +294,97 @@ class SettingsDialog(QWidget):
         sortbox.addWidget(self._sortoptions, 1)
         sortbox.addWidget(editoptions)
         vbox.addLayout(sortbox)
-        
+
         vbox.addWidget(ua_label)
         vbox.addWidget(self._ua)
 
+        frame = QGroupBox(QApplication.translate(
+            'WebDB', 'Automatic retrieval options'))
+
+        auto_box = QVBoxLayout()
+        frame.setLayout(auto_box)
+
+        auto_box.addLayout(create_buddy(QApplication.translate('Profile Editor',
+                'Minimum &percentage required for album matches.'),
+            self.albumBound))
+        auto_box.addLayout(create_buddy(QApplication.translate('Profile Editor',
+                'Match tracks using &fields: '), self.matchFields))
+        auto_box.addLayout(create_buddy(QApplication.translate(
+                'Profile Editor','Minimum percentage required for track match.'),
+            self.trackBound))
+        auto_box.addWidget(self.jfdi)
+
+        vbox.addWidget(frame)
+
         vbox.addStretch()
         self.setLayout(vbox)
+        self.loadSettings()
 
     def applySettings(self, control):
+        listbox = control.listbox
         text = unicode(self._text.text())
-        control.listbox.trackPattern = text
-        coverdir = unicode(self._coverdir.text())
-        
+        listbox.trackPattern = text
+
         albumdisp = unicode(self._albumdisp.text())
-        control.listbox.albumPattern = albumdisp
-        
-        savecover = bool(self._savecover.checkState())
-        coverdir = unicode(self._coverdir.text())
-        
-        #tagsources.set_coverdir(coverdir)
-        #tagsources.set_savecovers(savecover)
-        
+        listbox.albumPattern = albumdisp
+
         sort_combo = self._sortoptions
         sort_options_text = [unicode(sort_combo.itemText(i)) for i in 
             range(sort_combo.count())]
         sort_options = split_strip(sort_options_text)
-        control.listbox.setSortOptions(sort_options)
+        listbox.setSortOptions(sort_options)
 
-        control.listbox.sort(sort_options[sort_combo.currentIndex()])
+        listbox.sort(sort_options[sort_combo.currentIndex()])
         
         useragent = unicode(self._ua.toPlainText())
         set_useragent(useragent)
 
-        cparser = PuddleConfig()
-        cparser.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        cparser.set('tagsources', 'trackpattern', text)
-        cparser.set('tagsources', 'coverdir', coverdir)
-        cparser.set('tagsources', 'albumpattern', albumdisp)
-        cparser.set('tagsources', 'savecover', savecover)
-        cparser.set('tagsources', 'coverdir', coverdir)
-        cparser.set('tagsources', 'sortoptions', sort_options_text)
-        cparser.set('tagsources', 'useragent', useragent)
+        listbox.jfdi = self.jfdi.isChecked()
+        listbox.matchFields = [z.strip() for z in
+            unicode(self.matchFields.text()).split(u',')]
+        listbox.albumBound = self.albumBound.value() / 100.0
+        listbox.trackBound = self.trackBound.value() / 100.0
+        
+        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+        set_value = lambda s,v: cparser.set('tagsources', s, v)
+        set_value('trackpattern', text)
+        set_value('albumpattern', albumdisp)
+        set_value('sortoptions', sort_options_text)
+        set_value('useragent', useragent)
+        set_value('album_bound', self.albumBound.value())
+        set_value('track_bound', self.trackBound.value())
+        set_value('jfdi', listbox.jfdi)
+        set_value('match_fields', listbox.matchFields)
+
+    def loadSettings(self):
+        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+
+        trackpattern = cparser.get('tagsources', 'trackpattern',
+            '%track% - %title%')
+
+        self._text.setText(trackpattern)
+
+        sortoptions = cparser.get('tagsources', 'sortoptions',
+            [u'artist, album', u'album, artist'])
+        self._sortoptions.clear()
+        self._sortoptions.addItems(sortoptions)
+
+        albumformat = cparser.get('tagsources', 'albumpattern',
+            u'%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
+        self._albumdisp.setText(albumformat)
+
+        self._ua.setText(cparser.get('tagsources', 'useragent', ''))
+
+        self.albumBound.setValue(
+            cparser.get('tagsources', 'album_bound', 70, True))
+        self.trackBound.setValue(
+            cparser.get('tagsources', 'track_bound', 80, True))
+        self.jfdi.setChecked(
+            bool(cparser.get('tagsources', 'jfdi', True, True)))
+
+        fields = cparser.get('tagsources', 'match_fields', ['artist' 'title'])
+        fields = u', '.join(z.strip() for z in fields)
+        self.matchFields.setText(fields)
     
     def _editOptions(self):
         text = self._sortoptions.itemText
@@ -438,7 +471,10 @@ class MainWin(QWidget):
             "metadata."))
 
         self.listbox = ReleaseWidget(status, self._tagsource)
-        self._existing = QCheckBox(QApplication.translate("WebDB", 'Update empty fields only.'))
+        self._existing = QCheckBox(QApplication.translate("WebDB",
+            'Update empty fields only.'))
+        self._auto = QCheckBox(QApplication.translate("WebDB",
+            'Automatically retrieve matches.'))
 
         self._taglist = TagListWidget()
         tooltip = QApplication.translate("WebDB", 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.')
@@ -448,7 +484,7 @@ class MainWin(QWidget):
         self.connect(status_obj, SIGNAL('statusChanged'), self.label.setText)
         
         self.connect(self.listbox, SIGNAL('preview'), self.emit_preview)
-        
+        self.connect(self.listbox, SIGNAL('exact'), self.emitExact)
         self.connect(status_obj, SIGNAL('logappend'), SIGNAL('logappend'))
         
         infolabel = QLabel()
@@ -473,6 +509,7 @@ class MainWin(QWidget):
 
         vbox.addWidget(self._taglist)
         vbox.addWidget(self._existing)
+        vbox.addWidget(self._auto)
         self.setLayout(vbox)
         self._changeSource(0)
         
@@ -526,7 +563,7 @@ class MainWin(QWidget):
         self._clear()
     
     def emit_preview(self, tags):
-        if self._existing.checkState() != Qt.Checked:
+        if not self._existing.isChecked():
             self.emit(SIGNAL('enable_preview_mode'))
             self.emit(SIGNAL('setpreview'), tags)
         else:
@@ -538,6 +575,22 @@ class MainWin(QWidget):
                     if field not in f:
                         temp[field] = r[field]
                 previews.append(temp)
+            self.emit(SIGNAL('enable_preview_mode'))
+            self.emit(SIGNAL('setpreview'), previews)
+
+    def emitExact(self, d):
+        if not self._existing.isChecked():
+            self.emit(SIGNAL('enable_preview_mode'))
+            self.emit(SIGNAL('setpreview'), d)
+        else:
+            previews = []
+            for f, r in d.items():
+                temp = {}
+                for field in r:
+                    if field not in f:
+                        temp[field] = r[field]
+                previews.append(temp)
+            pdb.set_trace()
             self.emit(SIGNAL('enable_preview_mode'))
             self.emit(SIGNAL('setpreview'), previews)
 
@@ -563,9 +616,9 @@ class MainWin(QWidget):
                         for primary in group:
                             ret.extend(self._tagsource.search(
                                 primary, group[primary]))
-                        return ret
+                        return ret, files
                     else:
-                        return self._tagsource.search(files)
+                        return self._tagsource.search(files), files
             except RetrievalError, e:
                 return 'An error occured: %s' % unicode(e)
         self.getinfo.setEnabled(False)
@@ -593,51 +646,63 @@ class MainWin(QWidget):
         win.show()
 
     def setInfo(self, retval):
+        releases, files = retval
         self.getinfo.setEnabled(True)
-        if isinstance(retval, basestring):
-            self.label.setText(retval)
+        if isinstance(releases, basestring):
+            self.label.setText(releases)
         else:
-            self.listbox.setReleases(retval)
-            if retval:
+            if releases:
                 self.label.setText(QApplication.translate("WebDB", 'Searching complete.'))
             else:
                 self.label.setText(QApplication.translate("WebDB", 'No matching albums were found.'))
+            if self._auto.isChecked():
+                self.listbox.setReleases(releases, files)
+            else:
+                self.listbox.setReleases(releases)
             self.listbox.emit(SIGNAL('infoChanged'), '')
 
     def loadSettings(self):
-        settings = PuddleConfig()
-        settings.filename = os.path.join(SAVEDIR, 'tagsources.conf')
-        source = settings.get('tagsources', 'lastsource', 'Musicbrainz')
+        settings = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+        get = lambda s, k, i=False: settings.get('tagsources', s, k, i)
+        
+        source = get('lastsource', 'Musicbrainz')
         self._tagstowrite = [settings.get('tagsourcetags', name , []) for
                                 name in self._sourcenames]
         index = self.sourcelist.findText(source)
         self.sourcelist.setCurrentIndex(index)
         self._taglist.setTags(self._tagstowrite[index])
-        df = settings.get('tagsources', 'trackpattern', u'%track% - %title%')
+        df = get('trackpattern', u'%track% - %title%')
         self.listbox.trackPattern = df
 
-        albumformat = settings.get('tagsources', 'albumpattern', 
+        albumformat = get('albumpattern',
             u'%artist% - %album%$if(%__numtracks%, [%__numtracks%], "")')
         self.listbox.albumPattern = albumformat
 
-        sort_options = settings.get('tagsources', 'sortoptions', 
+        sort_options = get('sortoptions',
             [u'artist, album', u'album, artist'])
         sort_options = split_strip(sort_options)
         self.listbox.setSortOptions(sort_options)
 
-        sortindex = settings.get('tagsources', 'lastsort', 0)
+        sortindex = get('lastsort', 0)
         self.listbox.sort(sort_options[sortindex])
         
         filepath = os.path.join(SAVEDIR, 'mappings')
         self.setMapping(audioinfo.loadmapping(filepath))
         
-        useragent = settings.get('tagsources', 'useragent', '')
+        useragent = get('useragent', '')
         if useragent:
             set_useragent(useragent)
         
-        checkstate = settings.get('tagsources', 'existing', False)
-        self._existing.setCheckState(Qt.Checked if checkstate 
-            else Qt.Unchecked)
+        checkstate = get('existing', False)
+        self._existing.setChecked(checkstate)
+
+        checkstate = get('autoretrieve', False)
+        self._auto.setChecked(checkstate)
+
+        self.listbox.albumBound = get('album_bound', 70, True) / 100.0
+        self.listbox.trackBound = get('track_bound', 80, True) / 100.0
+        self.listbox.jfdi = bool(get('jfdi', True, True))
+        self.listbox.matchFields = get('match_fields', ['artist' 'title'])
 
     def saveSettings(self):
         settings = PuddleConfig()
@@ -646,8 +711,8 @@ class MainWin(QWidget):
         for i, name in enumerate(self._sourcenames):
             settings.set('tagsourcetags', name , self._tagstowrite[i])
         settings.set('tagsources', 'lastsort', self.listbox.lastSortIndex)
-        settings.set('tagsources', 'existing', True if 
-            self._existing.checkState() == Qt.Checked else False)
+        settings.set('tagsources', 'existing', self._existing.isChecked())
+        settings.set('tagsources', 'autoretrieve', self._auto.isChecked())
     
     def setMapping(self, mapping):
         self.mapping = mapping

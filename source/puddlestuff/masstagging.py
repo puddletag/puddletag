@@ -465,7 +465,7 @@ class ProfileEdit(QDialog):
         self.grid.addLayout(self.buttonlist, 2, 1)
         self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Pattern to match filenames against.'),
             self.pattern, QVBoxLayout()), 3, 0, 1, 2)
-        self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Minimum percentage required for best matches.'),
+        self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Minimum percentage required for album matches.'),
             self.albumBound), 4, 0, 1, 2)
         self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Match tracks using fields: '),
             self.matchFields, QVBoxLayout()), 5, 0, 1, 2)

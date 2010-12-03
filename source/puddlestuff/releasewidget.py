@@ -540,6 +540,11 @@ class ReleaseWidget(QTreeView):
         self.lastSortIndex = 0
         self.mapping = {}
 
+        self.trackBound = 0.7
+        self.albumBound = 0.7
+        self.jfdi = True
+        self.matchFields = ['artist', 'title']
+
         header = Header(self)
         self.connect(header, SIGNAL('sortChanged'), self.sort)
         self.setHeader(header)
@@ -573,15 +578,21 @@ class ReleaseWidget(QTreeView):
     
     tagSource = property(_get_tagSource, _set_tagSource)
     
-    def emitExactMatches(self, tracks):
-        to_write = self.tagsToWrite
-        if hasattr(tracks, 'items'):
-            print 'has items'
-        else:
-            for track in tracks:
-                self.emit(SIGNAL('preview'), 
-                    {track['#exact']: strip(track, to_write, 
-                        mapping =self.mapping)})
+    def emitExactMatches(self, item, files):
+        if not item.hasTracks:
+            return
+        preview = {}
+        from puddlestuff.masstagging import match_files
+        tracks = item.tracks()
+        files = [{'__file': f} for f in files]
+        exact = match_files(files, tracks, self.trackBound, self.matchFields,
+            self.jfdi, False)
+        ret = {}
+        for f, t in exact.items():
+            t = strip(t, self.tagsToWrite, mapping=self.mapping)
+            ret[f] = t
+        self.emit(SIGNAL('exact'), ret)
+        return ret
     
     def emitTracks(self, tracks):
         tags = self.tagsToWrite
@@ -655,15 +666,38 @@ class ReleaseWidget(QTreeView):
         connect('collapsed (const QModelIndex&)', self._setCollapsedFlag)
         connect('clicked (const QModelIndex&)', func)
         self.connect(model, SIGNAL('statusChanged'), SIGNAL('statusChanged'))
-        self.connect(model, SIGNAL('exactMatches'), self.emitExactMatches)
         self.connect(model, SIGNAL('exactChanged'), self.exactChanged)
         modelconnect('retrieving', lambda: self.setEnabled(False))
         modelconnect('retrievalDone', lambda: self.setEnabled(True))
         model.tagsource = self.tagSource
         model.mapping = self.mapping
     
-    def setReleases(self, releases):
+    def setReleases(self, releases, files=None):
+        from puddlestuff.masstagging import find_best
         self.model().setupModelData(releases)
+        #FIXME: The expander isn't shown if I don't do this. However
+        #I can still click on it...Qt bug probably.
+        QApplication.processEvents()
+        
+        if files:
+            matches = find_best(releases, files, self.albumBound)
+            if not matches:
+                self.emit(SIGNAL('statusChanged'), QApplication.translate(
+                    'WebDB', 'No matching albums found'))
+            elif len(matches) > 1:
+                self.emit(SIGNAL('statusChanged'), QApplication.translate(
+                    'WebDB', 'More than one album matches. Not retrieving any.'))
+            else:
+                self.emit(SIGNAL('statusChanged'), QApplication.translate(
+                    'WebDB', 'Retrieving album.'))
+                model = self.model()
+                children = [z.itemData for z in model.rootItem.childItems]
+                if children:
+                    row = children.index(matches[0][0])
+                    index = model.index(row, 0, QModelIndex())
+                    x = lambda: self.emitExactMatches(
+                        model.rootItem.childItems[row], files)
+                    model.retrieve(index, x)
     
     def setSortOptions(self, options):
         self.header().sortOptions = options

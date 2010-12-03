@@ -39,7 +39,7 @@ from util import open_resourcefile, PluginFunction
 import functions_dialogs
 from puddlestuff.puddleobjects import ShortcutEditor
 
-READONLY = list(READONLY) + ['__dirpath', ]
+READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
 
 def _escape_text(txt):
@@ -157,6 +157,7 @@ class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
         QScrollArea.__init__(self, parent)
         label = QLabel()
+        label.setMargin(3)
         self.setWidget(label)
         self.setText(text)
         self.text = label.text

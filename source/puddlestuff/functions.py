@@ -41,6 +41,7 @@ from copy import deepcopy
 from functools import partial
 
 PATH = audioinfo.PATH
+DIRPATH = audioinfo.DIRPATH
 
 true = u'1'
 false = u'0'
@@ -194,21 +195,6 @@ def iflonger(a, b, text, text1):
     except TypeError:
         return
 
-#def image_to_file(m_tags, pattern, addext=True, r_tags):
-    #'''Export cover to file, 'Cover->File: $1
-#&Filename, text, %album%
-#Add E&xtension, check, True'''
-    #if path.isabs(pattern):
-         #filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
-         #filename = path.normpath(filename)
-    #else:
-        #pattern = u'/' + pattern
-        #filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
-        #filename = path.normpath(path.join(dirpath, filename[1:]))
-
-    #for 
-    
-
 def import_text(m_tags, pattern, r_tags):
     '''Import text file, "Text File: $0, '$1'"
 &Pattern (can be relative path), text, lyrics.txt'''
@@ -351,7 +337,7 @@ def mod(text,text1):
     except decimal.InvalidOperation:
         return
 
-def move(m_tags, pattern, r_tags):
+def move(m_tags, pattern, r_tags, ext=True):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
     
@@ -363,7 +349,7 @@ def move(m_tags, pattern, r_tags):
         new_name = lambda d: safe_name(tf(d, tags))
         subdirs = pattern.split(u'/')
         newdirs = map(new_name, subdirs[1:-1])
-        newdirs.append(safe_name(tf(subdirs[-1], tags, True)))
+        newdirs.append(safe_name(tf(subdirs[-1], tags, ext)))
         newdirs.insert(0, u'/')
         return {'__path': os.path.join(*newdirs)}
     else:
@@ -373,7 +359,7 @@ def move(m_tags, pattern, r_tags):
         count = pattern.count(u'/')
         
         newdirs = map(new_name, subdirs[:-1])
-        newdirs.append(encode_fn(safe_name(tf(subdirs[-1], tags, True))))
+        newdirs.append(encode_fn(safe_name(tf(subdirs[-1], tags, ext))))
 
         dirpath = r_tags.dirpath
 
@@ -675,6 +661,23 @@ def sub(text,text1):
     except decimal.InvalidOperation:
         return
 
+def tag_dir(m_tags, pattern, r_tags):
+    '''Tag to Dir, "Tag->Dir: $1"
+&Pattern (can be relative path), text, %artist% - %album%'''
+    path = os.path
+    dirpath = r_tags.dirpath
+    if pattern.endswith(u'/') and len(pattern) > 1:
+        pattern = pattern[:-1]
+    if os.path.isabs(pattern):
+        filename = path.splitext(move(m_tags, pattern, r_tags, False)['__path'])[0]
+        filename = path.normpath(filename)
+    else:
+        pattern = u'/' + pattern
+        filename = path.splitext(move(m_tags, pattern, r_tags, False)['__path'])[0]
+        filename = path.normpath(path.join(dirpath, os.path.pardir, filename[1:]))
+    if filename:
+        return {DIRPATH: filename}
+
 def testfunction(tags, t_text, p_pattern, n_number):
     text = u'%s - %s' % (tags['artist'], tags['title'])
     assert t_text == text
@@ -806,6 +809,7 @@ functions = {
     'split_by_sep': split_by_sep,
     "strip": strip,
     "sub": sub,
+    'tag_dir': tag_dir,
     "texttotag": texttotag,
     'testfunction': testfunction,
     "titleCase": titleCase,
@@ -815,7 +819,8 @@ functions = {
     "validate": validate,
     'to_ascii': removeDisallowedFilenameChars}
 
-no_fields = (filenametotag, load_images, remove_except, move, update_from_tag)
+no_fields = (filenametotag, load_images, move, remove_except, tag_dir,
+    update_from_tag)
 no_preview = (autonumbering, load_images, remove_tag)
 
 import findfunc

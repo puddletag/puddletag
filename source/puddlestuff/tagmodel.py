@@ -43,7 +43,7 @@ from collections import defaultdict
 from util import write, rename_file, real_filetags, to_string
 from constants import SELECTIONCHANGED, SEPARATOR, BLANK
 import puddlestuff.confirmations as confirmations
-import logging
+import logging, shutil
 
 status = {}
 
@@ -851,7 +851,7 @@ class TagModel(QAbstractTableModel):
         return True
     
     def renameDir(self, oldpath, newpath):
-        os.rename(oldpath, newpath)
+        shutil.move(oldpath, newpath)
         self.changeFolder(oldpath, newpath)
         self.emit(SIGNAL('dirsmoved'), [[oldpath, newpath]])
 
@@ -991,6 +991,10 @@ class TagModel(QAbstractTableModel):
             newdir = safe_name(encode_fn(tags[DIRNAME]))
             newdir = os.path.join(os.path.dirname(audio.dirpath),
                 newdir)
+            if newdir != audio.dirpath:
+                self.renameDir(audio.dirpath, newdir)
+        elif DIRPATH in tags:
+            newdir = encode_fn(tags[DIRPATH])
             if newdir != audio.dirpath:
                 self.renameDir(audio.dirpath, newdir)
 

@@ -38,17 +38,18 @@ def get_encoding(page, decode=False):
     else:
         return encoding
 
-def set_mapping(m):
-    global mapping
-
-    mapping.clear()
-    mapping.update(m)
-
-if not exists(COVERDIR):
+def parse_searchstring(text):
     try:
-        os.mkdir(COVERDIR)
-    except EnvironmentError:
-        pass
+        text = [z.split(u';') for z in text.split(u'|') if z]
+        return [(z.strip(), v.strip()) for z, v in text]
+    except ValueError:
+        raise RetrievalError('<b>Error parsing artist/album combinations.</b>')
+    return []
+
+def retrieve_cover(url):
+    write_log(u'Retrieving cover: %s' % url)
+    cover = urlopen(url)
+    return {'__image': [{'data': cover}]}
 
 def save_cover(info, data, filetype):
     filename = findfunc.tagtofilename(pattern, info, True, filetype)
@@ -71,19 +72,14 @@ def set_savecovers(value):
     global SAVECOVERS
     SAVECOVERS = value
 
+def set_mapping(m):
+    global mapping
+
+    mapping.clear()
+    mapping.update(m)
+
 def set_status(msg):
     status_obj.emit(SIGNAL('statusChanged'), msg)
-
-def write_log(text):
-    status_obj.emit(SIGNAL('logappend'), text)
-    
-def parse_searchstring(text):
-    try:
-        text = [z.split(u';') for z in text.split(u'|') if z]
-        return [(z.strip(), v.strip()) for z, v in text]
-    except ValueError:
-        raise RetrievalError('<b>Error parsing artist/album combinations.</b>')
-    return []
 
 def set_useragent(agent):
     class MyOpener(urllib.FancyURLopener):
@@ -94,7 +90,12 @@ def set_useragent(agent):
 _urlopen = urllib2.urlopen
 def urlopen(url, mask=True):
     if not mask:
-        return _urlopen(url).read()
+        page = _urlopen(url)
+        if page.code == 403:
+            raise RetrievalError('HTTPError 403: Forbidden')
+        elif page.code == 404:
+            raise RetrievalError("Page doesn't exist")
+        return page.read()
     try:
         return _urlopen(url).read()
     except urllib2.URLError, e:
@@ -107,6 +108,8 @@ def urlopen(url, mask=True):
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
+def write_log(text):
+    status_obj.emit(SIGNAL('logappend'), text)
 
 class MetaProcessor(SGMLParser):
     def reset(self):
@@ -122,6 +125,7 @@ class MetaProcessor(SGMLParser):
                 error = FoundEncoding()
                 error.encoding = encoding
                 raise error
+
 
 import musicbrainz, amazon, freedb, discogs
 try:

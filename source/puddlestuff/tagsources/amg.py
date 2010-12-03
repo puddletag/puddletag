@@ -7,18 +7,13 @@ import sys, pdb, re, time, os
 from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
-from puddlestuff.tagsources import write_log, set_status, RetrievalError, urlopen, parse_searchstring
+from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
+    urlopen, parse_searchstring, retrieve_cover, get_encoding)
 from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
 
 release_order = ('year', 'type', 'label', 'catalog')
-#search_adress = 'http://www.allmusic.com/cg/amg.dll?P=amg&sql=%s&opt1=2&samples=1&x=0&y=0'
-#search_adress = 'http://www.allmusic.com/search/album/%s'
 search_adress = 'http://www.allmusic.com/search/album/%s'
-
-search_order = (None, 'year', 'artist', None, 'album', None, 'label', 
-                    None, 'genre')
-
 album_url = u'http://www.allmusic.com/album/'
 
 spanmap = {
@@ -175,11 +170,8 @@ keys = {
     'Rating': parse_rating}
 
 def parse_albumpage(page, artist=None, album=None):
+    page = get_encoding(page, True)[1]
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
-    charset = album_soup.find('meta', {'http-equiv': "Content-Type",
-        'content': "text/html"}).element.attrib['charset']
-    album_soup = parse_html.SoupWrapper(
-        parse_html.parse(page.decode(charset, 'replace')))
 
     artist_group = album_soup.find('div', {'class': 'left-sidebar'})
 
@@ -359,10 +351,6 @@ def retrieve_album(url, coverurl=None, id_field=None):
     else:
         cover = None
     return info, tracks, cover
-
-def retrieve_cover(url):
-    cover = urlopen(url)
-    return {'__image': [{'data': cover}]}
 
 def search(album):
     search_url = create_search(album)
