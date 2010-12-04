@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+sys.path.insert(0, '/home/keith/Documents/python/puddletag')
 import re
 import parse_html
 import urllib2
@@ -23,6 +25,7 @@ spanmap = {
     'Themes': 'theme',
     'Moods': 'mood',
     'Release Date': 'year',
+    'Recording Date': 'recording_date',
     'Label': 'label',
     'Album': 'album',
     'Artist': 'artist',
@@ -32,7 +35,10 @@ spanmap = {
     'Composer': 'composer',
     'Time': '__length',
     'Type': 'type',
-    'Year': 'year'}
+    'Year': 'year',
+    'Performance': 'performance',
+    'Sound': 'sound',
+    'Rating': 'rating'}
 
 sqlre = re.compile('(r\d+)$')
 
@@ -46,6 +52,14 @@ def find_id(tracks, field=None):
                 return value
             else:
                 return value[0]
+
+white_replace = lambda match: match.group()[0]
+def convert(value):
+    text = value.strip()
+    text = re.sub('\s{2,}', white_replace, text)
+    if isinstance(text, str):
+        return unicode(text)
+    return text
 
 def convert_year(info):
     if 'year' not in info:
@@ -130,13 +144,13 @@ def parselist(item):
             d[key] = [text(li) for li in ul.find_all('li')]
     return d
 
-def parse_rating(soup):
+def parse_rating(soup, field='rating'):
     try:
         img = soup.find('img', {'alt': re.compile('star_rating\(\d+\)')})
         rating = re.search('star_rating\((\d+)\)', img.element.attrib['alt']).groups()[0]
     except (IndexError, AttributeError):
         return {}
-    return {'rating': rating}
+    return {field: rating}
 
 def parse_review(soup):
     try:
@@ -145,10 +159,8 @@ def parse_review(soup):
         review = review_td.find('p', {'class':'text'}).string.strip()
         if not review.strip():
             raise IndexError
-        #review = review.encode('latin1').decode('utf8')
     except (IndexError, AttributeError):
         return {}
-    #review = text(review_td)
     ##There are double-spaces in links and italics. Have to clean up.
     #review = re.sub('(\s+)', first_white, review)
     return {'review': '%s\n\n%s' % (author, review)}
@@ -156,18 +168,6 @@ def parse_review(soup):
 def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
-
-keys = {
-    'Release Date': 'year',
-    'Label': 'label',
-    'Album': 'album',
-    'Artist': 'artist',
-    'Featured Artist': 'artist',
-    'Genre': parselist,
-    'Moods': parselist,
-    'Styles': parselist,
-    'Themes': parselist,
-    'Rating': parse_rating}
 
 def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
@@ -186,7 +186,7 @@ def parse_albumpage(page, artist=None, album=None):
         value = field.element.getnext()
         if value.tag != 'p':
             break
-        value = value.text_content().strip()
+        value = convert(value.text_content())
         field = field.string.strip()
         info[field] = value
 
@@ -199,7 +199,11 @@ def parse_albumpage(page, artist=None, album=None):
             except AttributeError:
                 #Sometimes the leave an extra empty field
                 continue
-            values = [z.string.strip() for z in g.find('ul').find_all('li')]
+            try:
+                values = [convert(z.string) for z in g.find('ul').find_all('li')]
+            except AttributeError:
+                info.update(parse_rating(g, field))
+                continue
             info[field] = values
 
     info.update(parse_rating(album_soup))
@@ -207,7 +211,8 @@ def parse_albumpage(page, artist=None, album=None):
     info.update(convert_year(info))
     info.update(parse_cover(album_soup))
 
-    info = dict([(spanmap.get(k, k), v) for k, v in info.iteritems()])
+    info = dict((spanmap.get(k, k), v)
+        for k, v in info.iteritems() if v)
 
     if artist and 'artist' not in info:
         info['artist'] = artist
@@ -299,7 +304,7 @@ def parse_track_table(table, discnum=None):
                 except (TypeError, ValueError):
                     continue
             else:
-                value = td.string.strip()
+                value = convert(td.string)
             track[spanmap.get(field, field)] = value
         if not track:
             continue
@@ -414,7 +419,7 @@ class AllMusic(object):
             tracks = []
             [tracks.extend(z) for z in artists.values()]
             album_id = find_id(tracks, self._id_field)
-            if album_id and album_id.startswith('r'):
+            if album_id and (album_id.startswith('r') or album_id.startswith('w')):
                 write_log(u'Found Album ID %s' % album_id)
                 return self.keyword_search(u':id %s' % album_id)
 
@@ -478,8 +483,8 @@ class AllMusic(object):
 info = AllMusic
 
 if __name__ == '__main__':
-    f = open(sys.argv[1], 'r').read()
+    f = get_encoding(open(sys.argv[1], 'r').read(), True)[1]
     x = parse_albumpage(f)
-    pdb.set_trace()
+    #pdb.set_trace()
     print x
     

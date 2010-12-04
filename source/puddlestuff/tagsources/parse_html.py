@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 #this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
 #while we're at it, we also wrap url fetching.
