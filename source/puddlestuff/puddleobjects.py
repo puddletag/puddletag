@@ -1832,7 +1832,7 @@ class PuddleCombo(QWidget):
         self.combo = QComboBox()
 
         self.remove = QToolButton()
-        self.remove.setIcon(QIcon(':/remove.png'))
+        self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
         self.remove.setToolTip(QApplication.translate("Combo Box", 'Remove current item.'))
         self.remove.setIconSize(QSize(13, 13))
         self.connect(self.remove, SIGNAL('clicked()'), (self.removeCurrent))

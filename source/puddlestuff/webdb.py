@@ -610,7 +610,7 @@ class MainWin(QWidget):
             try:
                 ret = []
                 if text:
-                    return self._tagsource.keyword_search(text)
+                    return self._tagsource.keyword_search(text), None
                 else:
                     if self._tagsource.group_by:
                         for primary in group:
@@ -655,7 +655,7 @@ class MainWin(QWidget):
                 self.label.setText(QApplication.translate("WebDB", 'Searching complete.'))
             else:
                 self.label.setText(QApplication.translate("WebDB", 'No matching albums were found.'))
-            if self._auto.isChecked():
+            if files and self._auto.isChecked():
                 self.listbox.setReleases(releases, files)
             else:
                 self.listbox.setReleases(releases)
