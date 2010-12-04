@@ -2,7 +2,7 @@
 from puddlestuff.constants import SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from os.path import join, exists
-import os, re
+import os, re, pdb
 from PyQt4.QtCore import QObject, SIGNAL
 from collections import defaultdict
 import urllib2, socket, urllib
@@ -34,7 +34,7 @@ def get_encoding(page, decode=False):
         encoding = e.encoding.strip()
 
     if decode:
-        return encoding, page.decode(encoding) if encoding else None
+        return encoding, page.decode(encoding, 'replace') if encoding else page
     else:
         return encoding
 
@@ -89,15 +89,13 @@ def set_useragent(agent):
 
 _urlopen = urllib2.urlopen
 def urlopen(url, mask=True):
-    if not mask:
+    try:
         page = _urlopen(url)
         if page.code == 403:
             raise RetrievalError('HTTPError 403: Forbidden')
         elif page.code == 404:
             raise RetrievalError("Page doesn't exist")
         return page.read()
-    try:
-        return _urlopen(url).read()
     except urllib2.URLError, e:
         msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         raise RetrievalError(msg)
@@ -118,8 +116,16 @@ class MetaProcessor(SGMLParser):
         SGMLParser.reset(self)
 
     def start_meta(self, text):
+        text = [tuple([x.lower() for x in z]) for z in text]
         if text[0] == ('http-equiv', 'content-type'):
+            d = dict(text)
+            if 'charset' in d:
+                encoding = d['charset']
+                error = FoundEncoding()
+                error.encoding = encoding
+                raise error
             if text[1][0] == 'content':
+                pdb.set_trace()
                 encoding = re.search('charset.*=(.+)',
                     text[1][1]).group(1)
                 error = FoundEncoding()

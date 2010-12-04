@@ -1,5 +1,5 @@
 [info]
-version=23
+version=24
 
 [shortcut1]
 name=&Open Folder
@@ -9,6 +9,7 @@ command=openDir
 enabled=always
 tooltip=Select a directory to import into puddletag.
 shortcut=Ctrl+O
+icon_name=folder
 
 [shortcut2]
 name=&Add Folder
@@ -25,6 +26,7 @@ control=mainwin
 command=loadPlayList
 enabled=always
 tooltip=Import an m3u playlist into puddletag.
+icon_name=view-media-playlist
 
 [shortcut4]
 name=Sa&ve playlist
@@ -41,6 +43,7 @@ shortcut=F5
 tooltip=Refresh current file-view.
 icon=:/reload.png
 enabled=filesloaded
+icon_name=view-refresh
 
 [shortcut6]
 name=&Save
@@ -49,6 +52,7 @@ command=save
 shortcut=Ctrl+S
 icon=:/save.png
 enabled=filesselected
+icon_name=document-save
 
 [shortcut7]
 name=&Play
@@ -57,6 +61,7 @@ command=playFiles
 control=table
 tooltip=Plays the selected files in the predefined music player.
 enabled=filesselected
+icon_name=media-playback-start
 
 [shortcut8]
 name=&File->Tag
@@ -75,6 +80,7 @@ command=undo
 control=table
 enabled=enableUndo
 icon=:/undo.png
+icon_name=edit-undo
 
 [shortcut10]
 name=Autonumbering &Wizard...
@@ -116,6 +122,7 @@ command=run_action
 icon=:/action.png
 control=mainwin
 enabled=filesselected
+icon_name=keith
 
 [shortcut16]
 name=&Preferences
@@ -123,6 +130,7 @@ command=openPrefs
 control=mainwin
 enabled=always
 icon=:/preferences.png
+icon_name=configure
 
 [shortcut17]
 name=&Functions
@@ -152,6 +160,7 @@ control=mainwin
 enabled=always
 command=close
 shortcut=Ctrl+Q
+icon_name=application-exit
 
 [shortcut21]
 name=&Tag->File
@@ -188,6 +197,7 @@ enabled=viewfilled
 command=selectAll
 control=table
 shortcut=Ctrl+A
+icon_name=edit-select-all
 
 [shortcut27]
 name=&Invert Selection
@@ -210,6 +220,7 @@ control=mainwin
 shortcut=Ctrl+X
 enabled=filesselected
 icon=:/cut.png
+icon_name=edit-cut
 
 [shortcut30]
 name=&Copy Selection
@@ -226,6 +237,7 @@ control=mainwin
 shortcut=Ctrl+V,Shift+Ins
 enabled=filesselected
 icon=:/paste.png
+icon_name=edit-paste
 
 [shortcut32]
 name=&Remove Tag
@@ -234,6 +246,7 @@ control=table
 shortcut=Ctrl+R
 icon=:/remove.png
 enabled=filesselected
+icon_name=edit-delete
 
 [shortcut33]
 name=E&xtended Tags
@@ -249,6 +262,7 @@ control=table
 shortcut=Del
 icon=:/remove.png
 enabled=filesselected
+icon_name=edit-delete
 
 [shortcut35]
 name=&Properties
@@ -288,6 +302,7 @@ command=deleteSelectedWithoutMessage
 control=table
 enabled=filesselected
 shortcut=Shift+Delete
+icon_name=edit-delete
 
 [shortcut42]
 name=In &Library
@@ -303,6 +318,7 @@ command=search_replace
 control=mainwin
 enabled=filesselected
 shortcut=Ctrl+H
+icon_name=edit-find-replace
 
 [shortcut45]
 name=Remove APEv2 Tag

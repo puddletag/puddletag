@@ -646,11 +646,11 @@ class MainWin(QWidget):
         win.show()
 
     def setInfo(self, retval):
-        releases, files = retval
         self.getinfo.setEnabled(True)
-        if isinstance(releases, basestring):
-            self.label.setText(releases)
+        if isinstance(retval, basestring):
+            self.label.setText(retval)
         else:
+            releases, files = retval
             if releases:
                 self.label.setText(QApplication.translate("WebDB", 'Searching complete.'))
             else:

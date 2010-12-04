@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from puddleobjects import PuddleConfig
+from puddleobjects import PuddleConfig, get_icon
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb, resource,os
@@ -7,7 +7,7 @@ from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
 
-__version__ = 23
+__version__ = 24
 
 files = [open_resourcefile(filename)
     for filename in [':/caseconversion.action', ':/standard.action']]
@@ -105,9 +105,10 @@ def toolbar(groups, actions, controls=None):
     return toolbar
 
 def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
-    tooltip=None, shortcut=None, status=None, togglecheck=None, checkstate=None):
+    tooltip=None, shortcut=None, status=None, togglecheck=None,
+    checkstate=None, icon_name=None):
     if icon:
-        action = QAction(QIcon(icon), name, win)
+        action = QAction(get_icon(icon_name, icon), name, win)
     else:
         action = QAction(name, win)
     action.setEnabled(False)

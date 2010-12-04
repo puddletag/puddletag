@@ -170,7 +170,6 @@ keys = {
     'Rating': parse_rating}
 
 def parse_albumpage(page, artist=None, album=None):
-    page = get_encoding(page, True)[1]
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
 
     artist_group = album_soup.find('div', {'class': 'left-sidebar'})
@@ -329,7 +328,8 @@ def retrieve_album(url, coverurl=None, id_field=None):
     except EnvironmentError:
         write_log('Opening Album Page - %s' % url)
         album_page = urlopen(url)
-    #to_file(album_page, 'album.htm')
+    album_page = get_encoding(album_page, True)[1]
+    
     info, tracks = parse_albumpage(album_page)
     info['#albumurl'] = url
     try:
@@ -353,9 +353,9 @@ def retrieve_album(url, coverurl=None, id_field=None):
     return info, tracks, cover
 
 def search(album):
-    search_url = create_search(album)
+    search_url = create_search(album.replace('/', ' '))
     write_log(u'Search URL - %s' % search_url)
-    return urllib2.urlopen(search_url.encode('utf8')).read()
+    return urlopen(search_url.encode('utf8'))
 
 def text(z):
     text = z.all_recursive_text().strip()
@@ -421,13 +421,14 @@ class AllMusic(object):
         write_log(u'Searching for %s' % album)
         try:
             searchpage = search(album)
-            #to_file(searchpage, 'search3.htm')
-            #searchpage = open('search3.htm').read()
+            to_file(searchpage, 'search2.htm')
+            #searchpage = open('search2.htm').read()
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving search page %s' % 
                         unicode(e))
             raise RetrievalError(unicode(e))
         write_log(u'Retrieved search results.')
+        
         matched, matches = parse_searchpage(searchpage, artist, album,
             self._id_field)
         if matched and len(matches) == 1:

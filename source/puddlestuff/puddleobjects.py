@@ -302,6 +302,16 @@ def issubfolder(parent, child, level = 1):
 HORIZONTAL = 1
 VERTICAL = 0
 
+def get_icon(name, backup):
+    if not name and not backup:
+        return QIcon()
+    elif not name and backup:
+        return QIcon(backup)
+    try:
+        return QIcon.fromTheme(name, QIcon(backup))
+    except AttributeError:
+        return QIcon(backup_name)
+
 def singleerror(parent, msg):
     QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok,
         QMessageBox.NoButton)
@@ -1011,10 +1021,10 @@ class ListButtons(QVBoxLayout):
     def __init__(self, parent = None):
         QVBoxLayout.__init__(self, parent)
         self.add = QToolButton()
-        self.add.setIcon(QIcon(':/filenew.png'))
+        self.add.setIcon(get_icon('list-add', ':/filenew.png'))
         self.add.setToolTip(QApplication.translate("List Buttons", 'Add'))
         self.remove = QToolButton()
-        self.remove.setIcon(QIcon(':/remove.png'))
+        self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
         self.remove.setToolTip(QApplication.translate("List Buttons", 'Remove'))
         self.moveup = QToolButton()
         self.moveup.setArrowType(Qt.UpArrow)
@@ -1023,10 +1033,10 @@ class ListButtons(QVBoxLayout):
         self.movedown.setArrowType(Qt.DownArrow)
         self.movedown.setToolTip(QApplication.translate("List Buttons", 'Move Down'))
         self.edit = QToolButton()
-        self.edit.setIcon(QIcon(':/edit.png'))
+        self.edit.setIcon(get_icon('document-edit', ':/edit.png'))
         self.edit.setToolTip(QApplication.translate("List Buttons", 'Edit'))
         self.duplicate = QToolButton()
-        self.duplicate.setIcon(QIcon(':/duplicate.png'))
+        self.duplicate.setIcon(get_icon('edit-copy', ':/duplicate.png'))
         self.duplicate.setToolTip(QApplication.translate("List Buttons", 'Duplicate'))
 
         self.widgets = [self.add, self.edit, self.duplicate,

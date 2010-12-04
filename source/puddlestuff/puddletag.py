@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys, os
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
-    progress, PuddleStatus, errormsg, dircmp, encode_fn)
+    progress, PuddleStatus, errormsg, dircmp, encode_fn, get_icon)
 import tagmodel
 from tagmodel import TagTable
 from PyQt4.QtCore import *
@@ -192,7 +192,9 @@ def connect_action_shortcuts(actions):
 
 def help_menu(parent):
     menu = QMenu(QApplication.translate("Menus", 'Help'), parent)
-    about = QAction(QApplication.translate("Menus", 'About puddletag'), parent)
+    about_icon = get_icon('help-about', QIcon())
+    about = QAction(about_icon,
+        QApplication.translate("Menus", 'About puddletag'), parent)
     about_qt = QAction(QApplication.translate("Menus", 'About Qt'), parent)
     about_qt.connect(about_qt, SIGNAL('triggered()'), QApplication.aboutQt)
     about.connect(about, SIGNAL('triggered()'), 
