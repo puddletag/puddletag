@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0, '/home/keith/Documents/python/puddletag')
 import re
 import parse_html
 import urllib2
@@ -38,7 +37,8 @@ spanmap = {
     'Year': 'year',
     'Performance': 'performance',
     'Sound': 'sound',
-    'Rating': 'rating'}
+    'Rating': 'rating',
+    'AMG Album ID': 'amg_album_id'}
 
 sqlre = re.compile('(r\d+)$')
 
@@ -211,8 +211,7 @@ def parse_albumpage(page, artist=None, album=None):
     info.update(convert_year(info))
     info.update(parse_cover(album_soup))
 
-    info = dict((spanmap.get(k, k), v)
-        for k, v in info.iteritems() if v)
+    info = dict((spanmap.get(k, k), v) for k, v in info.iteritems() if v)
 
     if artist and 'artist' not in info:
         info['artist'] = artist
@@ -286,7 +285,7 @@ def parse_track_table(table, discnum=None):
     try:
         headers = [th.string.strip() for th in table.tr.find_all('th')]
     except AttributeError:
-        return {}
+        return None
 
     keys = [spanmap.get(key, key) for key in headers]
 
@@ -309,12 +308,14 @@ def parse_track_table(table, discnum=None):
         if not track:
             continue
         tracks.append(track)
+    if not tracks:
+        return None
     return tracks
 
 def parse_tracks(soup):
     track_div = soup.find('div', {'id': 'tracks'})
     if track_div is None:
-        return {}
+        return None
     discs = [re.search('\d+$', z.string.strip()).group()
         for z in track_div.find_all('p', {'id': 'discnum'})]
     track_tables = soup.find_all('table', {'id': 'ExpansionTable'})
@@ -322,7 +323,10 @@ def parse_tracks(soup):
         tracks = []
         [tracks.extend(parse_track_table(t, d)) for t,d in
             zip(track_tables, discs)]
-        return tracks
+        if tracks:
+            return tracks
+        else:
+            return None
     else:
         return parse_track_table(track_tables[0])
 
@@ -330,7 +334,7 @@ def retrieve_album(url, coverurl=None, id_field=None):
     try:
         write_log('Opening Review Page - %s' % (url + '/review', ))
         album_page = urlopen(url + '/review', False)
-    except EnvironmentError:
+    except (EnvironmentError, RetrievalError):
         write_log('Opening Album Page - %s' % url)
         album_page = urlopen(url)
     album_page = get_encoding(album_page, True)[1]
@@ -358,7 +362,7 @@ def retrieve_album(url, coverurl=None, id_field=None):
     return info, tracks, cover
 
 def search(album):
-    search_url = create_search(album.replace('/', ' '))
+    search_url = create_search(album.replace(u'/', u' '))
     write_log(u'Search URL - %s' % search_url)
     return urlopen(search_url.encode('utf8'))
 
@@ -426,7 +430,7 @@ class AllMusic(object):
         write_log(u'Searching for %s' % album)
         try:
             searchpage = search(album)
-            to_file(searchpage, 'search2.htm')
+            #to_file(searchpage, 'search2.htm')
             #searchpage = open('search2.htm').read()
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving search page %s' % 
