@@ -1,5 +1,5 @@
 [info]
-version=25
+version=26
 
 [shortcut1]
 name=&Open Folder
@@ -322,13 +322,13 @@ shortcut=Ctrl+H
 icon_name=edit-find-replace
 
 [shortcut45]
-name=Remove APEv2 Tag
+name=Remove &APEv2 Tag
 command=remove_apev2
 control=mainwin
 enabled=filesselected
 
 [shortcut46]
-name=Remove All ID3 Tags
+name=Remove All &ID3 Tags
 command=remove_id3
 control=mainwin
 enabled=filesselected
@@ -354,3 +354,15 @@ control=table
 enabled=filesselected
 shortcut=Ctrl+Shift+N
 tooltip=Select all files belonging in the directory those selected. Otherwise selects all the files in the previous directory.
+
+[shortcut50]
+name=Remove ID3v&2 Tag
+command=remove_id3v2
+control=mainwin
+enabled=filesselected
+
+[shortcut51]
+name=Remove ID3v&1 Tag
+command=remove_id3v1
+control=mainwin
+enabled=filesselected

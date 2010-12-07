@@ -27,7 +27,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButtons, ListButtons,
-    PicWidget, winsettings, PuddleConfig)
+    PicWidget, winsettings, PuddleConfig, get_icon)
 from copy import deepcopy
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
@@ -344,6 +344,7 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(self._color[status])
         self._status = status
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        self._original = (text, preview, status)
 
     def _get_preview(self):
         return self.font().bold()
@@ -360,6 +361,8 @@ class StatusWidgetItem(QTableWidgetItem):
 
     def _set_status(self, status):
         if status and status in self._color:
+            if self._status == ADD and status != REMOVE:
+                return
             self.setBackground(self._color[status])
             self._status = status
         else:
@@ -368,12 +371,14 @@ class StatusWidgetItem(QTableWidgetItem):
 
     status = property(_get_status, _set_status)
 
-
-class ExTagsTable(QTableWidget):
-    def keyPressEvent(self, event):
-        super(ExTagsTable, self).keyPressEvent(event)
-        if event.key() == Qt.Key_Delete:
-            self.emit(SIGNAL('deletePressed'))
+    def reset(self):
+        self.setText(self._original[0])
+        self.preview = self._original[1]
+        status = self._original[2]
+        if status == ADD:
+            self.status = REMOVE
+        else:
+            self.status = status
 
 
 class VerticalHeader(QHeaderView):
@@ -403,9 +408,7 @@ class ExTags(QDialog):
         remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
         self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
 
-        self.listbox = ExTagsTable(0, 2, self)
-        self.connect(self.listbox, SIGNAL('deletePressed'),
-            self.removeTag)
+        self.listbox = QTableWidget(0, 2, self)
         self.listbox.setVerticalHeader(VerticalHeader())
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(True)
@@ -434,6 +437,13 @@ class ExTags(QDialog):
         self.okcancel = OKCancel()
 
         self.listbuttons = ListButtons()
+        self._reset = QToolButton()
+        self._reset.setToolTip(QApplication.translate(
+            'Extended Tags',
+                'Resets the selected fields to their original value.'))
+        self._reset.setIcon(get_icon('edit-undo', ':/undo.png'))
+        self.listbuttons.layout().addWidget(self._reset)
+        self.connect(self._reset, SIGNAL('clicked()'), self.resetFields)
         self.listbuttons.moveup.hide()
         self.listbuttons.movedown.hide()
 
@@ -467,7 +477,10 @@ class ExTags(QDialog):
         self.setLayout(layout)
 
         self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
-        self.connect(self.listbox, SIGNAL("itemDoubleClicked(QTableWidgetItem *)"), self.editTag)
+        self.connect(self.listbox,
+            SIGNAL("itemDoubleClicked(QTableWidgetItem *)"), self.editTag)
+        self.connect(self.listbox,
+            SIGNAL("itemSelectionChanged()"), self._checkListBox)
         self.connect(self.okcancel, SIGNAL("ok"),self.OK)
         
         clicked = SIGNAL('clicked()')
@@ -510,10 +523,19 @@ class ExTags(QDialog):
             self.listbox.setEnabled(False)
             self.listbuttons.edit.setEnabled(False)
             self.listbuttons.remove.setEnabled(False)
+            self.listbuttons.duplicate.setEnabled(False)
+            self._reset.setEnabled(False)
         else:
             self.listbox.setEnabled(True)
-            self.listbuttons.edit.setEnabled(True)
-            self.listbuttons.remove.setEnabled(True)
+            self._reset.setEnabled(True)
+            if len(self.listbox.selectedItems()) / 2 > 1:
+                self.listbuttons.edit.setEnabled(False)
+                self.listbuttons.duplicate.setEnabled(False)
+            else:
+                self.listbuttons.edit.setEnabled(True)
+                self.listbuttons.remove.setEnabled(True)
+                self.listbuttons.duplicate.setEnabled(True)
+            
 
     def _imageChanged(self):
         self.filechanged = True
@@ -708,6 +730,26 @@ class ExTags(QDialog):
             if row + 1 < self.listbox.rowCount():
                 self.listbox.selectRow(row + 1)
 
+    def resetFields(self):
+        to_remove = {}
+        max_row = -1
+        for item in self.listbox.selectedItems():
+            item.reset()
+            row = self.listbox.row(item)
+            if row > max_row:
+                max_row = row
+            if item.status == REMOVE:
+                to_remove[row] = item
+
+        self.listbox.clearSelection()
+        if max_row != -1 and max_row + 1 < self.listbox.rowCount():
+            self.listbox.selectRow(max_row + 1)
+
+        for item in to_remove.values():
+            self.listbox.removeRow(self.listbox.row(item))
+        self._checkListBox()
+        
+
     def save(self):
         if not self.filechanged:
             return
@@ -727,14 +769,20 @@ class ExTags(QDialog):
         l.setSortingEnabled(False)
         if row >= l.rowCount():
             l.insertRow(row)
+            tagitem = StatusWidgetItem(tag, status, self._colors, preview)
+            l.setItem(row, 0, tagitem)
+            valitem = StatusWidgetItem(value, status, self._colors, preview)
+            l.setItem(row, 1, valitem)
         else:
-            if l.item(row, 0).status:
-                status = l.item(row, 0).status
+            tagitem = l.item(row, 0)
+            tagitem.setText(tag)
+            tagitem.status = status
 
-        tagitem = StatusWidgetItem(tag, status, self._colors, preview)
-        l.setItem(row, 0, tagitem)
-        valitem = StatusWidgetItem(value, status, self._colors, preview)
-        l.setItem(row, 1, valitem)
+            valitem = l.item(row, 1)
+            valitem.setText(value)
+            valitem.status = status
+ 
+        
         l.setSortingEnabled(True)
 
     def _tag(self, row, status = None):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import mutagen.id3 as id3
+from errno import EINVAL
 import unittest, pdb
 import mutagen
 from functools import partial
@@ -16,6 +17,7 @@ APIC = mutagen.id3.APIC
 TimeStampTextFrame = mutagen.id3.TimeStampTextFrame
 TextFrame = mutagen.id3.TextFrame
 ID3  = mutagen.id3.ID3
+MakeID3v1 = mutagen.id3.MakeID3v1
 from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
     setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
     READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize, DIRNAME)
@@ -291,7 +293,7 @@ def get_paired(frame):
 def set_paired(frame, text):
     if not isinstance(text, basestring):
         text = text[0]
-    value = [people.split(':') for people in text.split(';')]
+    value = [people.split(u':') for people in text.split(u';')]
     temp = []
     for pair in value:
         if len(pair) == 1:
@@ -329,7 +331,7 @@ def comment_handler(frames):
     for frame in frames:
         set_commentattrs(frame)
         if not frame.desc and 'comment' not in d:
-            d[u'comment'] = frame
+            d['comment'] = frame
         else:
             d[u'comment:' + frame.desc] = frame
     return d
@@ -547,6 +549,14 @@ class Tag(TagBase):
     mapping = {}
     revmapping = {}
 
+    def _get_filetype(self):
+        try:
+            return u'ID3v%s.%s' % self._mutfile.tags.version[:2]
+        except AttributeError:
+            return u'ID3'
+
+    filetype = property(_get_filetype)
+
     @getdeco
     def __getitem__(self,key):
         """Get the tag value. There is a slight
@@ -554,6 +564,8 @@ class Tag(TagBase):
         Rather it'll return ''."""
         if key == '__image':
             return self.images
+        if key == '__filetype':
+            return self.filetype
 
         elif key in INFOTAGS or isinstance(key, (int,long)):
             return self._tags[key]
@@ -616,11 +628,7 @@ class Tag(TagBase):
                       u"__length": strlength(info.length),
                       u"__bitrate": strbitrate(info.bitrate)})
         self._tags.update(tags)
-        try:
-            version = audio.tags.version
-            self.filetype = u'ID3v%s.%s' % audio.tags.version[:2]
-        except AttributeError:
-            self.filetype = u'ID3'
+        
         self._tags['__filetype'] = self.filetype
 
         self._set_attrs(ATTRIBUTES)

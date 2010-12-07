@@ -1026,6 +1026,7 @@ class ListButtons(QVBoxLayout):
         self.remove = QToolButton()
         self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
         self.remove.setToolTip(QApplication.translate("List Buttons", 'Remove'))
+        self.remove.setShortcut('Delete')
         self.moveup = QToolButton()
         self.moveup.setArrowType(Qt.UpArrow)
         self.moveup.setToolTip(QApplication.translate("List Buttons", 'Move Up'))

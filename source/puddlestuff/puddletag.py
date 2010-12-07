@@ -267,6 +267,7 @@ class MainWin(QMainWindow):
             'mainwin':self,
             'funcs': mainfuncs.obj,}
         status['mainwin'] = self
+        status['model'] = self._table.model()
                                 
         ls.create_files()
         winactions, self._docks = create_tool_windows(self)

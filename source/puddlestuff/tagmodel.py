@@ -670,11 +670,13 @@ class TagModel(QAbstractTableModel):
             return QVariant(f)
         return QVariant()
 
-    def deleteTag(self, row):
-        audio = self.taginfo[row]
+    def deleteTag(self, row=None, audio=None, delete=True):
+        if row is not None:
+            audio = self.taginfo[row]
         tags = audio.usertags
         tags['__image'] = audio['__image']
-        audio.delete()
+        if delete:
+            audio.delete()
         self._addUndo(audio, tags)
 
     def deleteTags(self, rows):
