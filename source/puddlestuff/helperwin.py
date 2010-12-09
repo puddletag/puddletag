@@ -29,6 +29,7 @@ import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButtons, ListButtons,
     PicWidget, winsettings, PuddleConfig, get_icon)
 from copy import deepcopy
+from puddlestuff.constants import HOMEDIR
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
 BOLD = 1
@@ -202,25 +203,29 @@ class ImportWindow(QDialog):
             self.openClipBoard()
             return
 
+        self.lastDir = HOMEDIR
+
         if filename is not None:
             self.openFile(filename)
-
 
     def setLines(self):
         self.lines = unicode(self.file.document().toPlainText())
         self.fillTags()
 
-    def openFile(self, filename=None):
+    def openFile(self, filename=None, dirpath=None):
         """Open the file and fills the textboxes."""
+        if not dirpath:
+            dirpath = self.lastDir
+
         if not filename:
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
-                'OpenFolder', QDir.homePath()))
+                'OpenFolder', dirpath))
 
         if not filename:
             return True
         try:
-            f = open(filename)
+            f = open(filename, 'r')
         except (IOError, OSError), detail:
             errormsg = QApplication.translate('Text File -> Tag', "The file <b>%1</b> couldn't be loaded.<br /> Do you want to choose another?")
             ret = QMessageBox.question(self, QApplication.translate('Text File -> Tag', "Error"),
@@ -240,6 +245,7 @@ class ImportWindow(QDialog):
         self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
         self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),
             self.fillTags)
+        self.lastDir = os.path.dirname(filename)
 
     def openClipBoard(self):
         text = unicode(QApplication.clipboard().text())
@@ -269,7 +275,8 @@ class ImportWindow(QDialog):
     def doStuff(self):
         """When I'm done, emit a signal with the updated tags."""
         self.close()
-        self.emit(SIGNAL("Newtags"), self.dicttags)
+        self.emit(SIGNAL("Newtags"), self.dicttags,
+            unicode(self.patterncombo.currentText()))
 
 class EditTag(QDialog):
     """Dialog that allows you to edit the value
@@ -781,7 +788,6 @@ class ExTags(QDialog):
             valitem = l.item(row, 1)
             valitem.setText(value)
             valitem.status = status
- 
         
         l.setSortingEnabled(True)
 

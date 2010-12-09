@@ -18,6 +18,7 @@ from puddlestuff.util import split_by_tag
 import puddlestuff.functions as functions
 from tagtools import *
 import puddlestuff.confirmations as confirmations
+from puddlestuff.constants import HOMEDIR
 
 status = {}
 
@@ -57,8 +58,21 @@ def clipboard_to_tag(parent=None):
     win = helperwin.ImportWindow(parent, clipboard = True)
     win.setModal(True)
     win.patterncombo.addItems(status['patterns'])
-    x = lambda taglist: emit('writeselected', taglist)
-    win.connect(win, SIGNAL("Newtags"), x)
+
+    cparser = PuddleConfig()
+    last_dir = cparser.get('importwindow', 'lastdir', HOMEDIR)
+    win.lastDir = last_dir
+    last_pattern = cparser.get('importwindow', 'lastpattern', u'')
+    if last_pattern:
+        win.patterncombo.setEditText(last_pattern)
+
+    def fin_edit(taglist, pattern):
+        cparser.set('importwindow', 'lastdir', win.lastDir)
+        cparser.set('importwindow', 'lastpattern', pattern)
+        emit('writeselected', taglist)
+    
+    win.connect(win, SIGNAL("Newtags"), fin_edit)
+    
     win.show()
 
 def connect_status(actions):
@@ -386,13 +400,24 @@ def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath
 
     win = helperwin.ImportWindow(parent)
-    if win.openFile():
+    cparser = PuddleConfig()
+    last_dir = cparser.get('importwindow', 'lastdir', HOMEDIR)
+    if win.openFile(dirpath=last_dir):
         win.close()
         return
     win.setModal(True)
     win.patterncombo.addItems(status['patterns'])
-    x = lambda taglist: emit('writeselected', taglist)
-    win.connect(win, SIGNAL("Newtags"), x)
+
+    last_pattern = cparser.get('importwindow', 'lastpattern', u'')
+    if last_pattern:
+        win.patterncombo.setEditText(last_pattern)
+
+    def fin_edit(taglist, pattern):
+        cparser.set('importwindow', 'lastdir', win.lastDir)
+        cparser.set('importwindow', 'lastpattern', pattern)
+        emit('writeselected', taglist)
+
+    win.connect(win, SIGNAL("Newtags"), fin_edit)
     win.show()
 
 def update_status(enable = True):

@@ -40,6 +40,7 @@ class PatternCombo(QComboBox):
             if self.hasFocus():
                 status['table'].setFocus()
             else:
+                self.lineEdit().selectAll()
                 self.setFocus()
         self.connect(shortcut, SIGNAL('activated()'), set_focus)
 

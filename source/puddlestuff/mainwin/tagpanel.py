@@ -59,6 +59,37 @@ def savesettings(d, filepath=None):
         settings.set(unicode(row), 'tags', [z[1] for z in rowtags])
         settings.set(unicode(row), 'titles', [z[0] for z in rowtags])
 
+class Combo(QComboBox):
+
+    def __init__(self, *args, **kwargs):
+        super(Combo, self).__init__(*args, **kwargs)
+        self._edited = False
+        def k(text): self._edited = True
+        pdb.set_trace()
+        self.connect(self, SIGNAL('editTextChanged(const QString&)'),
+            k)        
+
+    def setEditText(self, text):
+        print 'setText'
+        self._edited = False
+        super(Combo, self).setEditText(text)
+    
+    def focusOutEvent(self, event):
+        print self._edited
+        if not self._edited:
+            return super(Combo, self).focusOutEvent(event)
+        curtext = self.currentText()
+        index = self.findText(curtext,
+            Qt.MatchExactly | Qt.MatchFixedString | Qt.MatchCaseSensitive)
+        if index == -1:
+            index = self.findText(curtext, Qt.MatchExactly | Qt.MatchFixedString)
+        if index > 1:
+            if curtext == self.itemText(index):
+                self.removeItem(index)
+            self.insertItem(2, curtext)
+        self._edited = False
+        return super(Combo, self).focusOutEvent(event)
+
 class Thread(QThread):
     def __init__(self, values, parent=None):
         self._values = values
@@ -96,7 +127,9 @@ class FrameCombo(QGroupBox):
         
         for field, combo in self.combos.items():
             try:
-                self.disconnect(combo.lineEdit(), TEXTEDITED, self._funcs[field])
+                self.disconnect(combo.lineEdit(), TEXTEDITED,
+                    self._funcs[field])
+                self.disconnect(combo.lineEdit(), EDITFINISHED, self.save)
             except KeyError:
                 break
         self._funcs = {}
@@ -261,7 +294,7 @@ class FrameCombo(QGroupBox):
             for tag in tags:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
-                self.combos[tagval] = QComboBox()
+                self.combos[tagval] = QComboBox(self)
                 self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
                 self.combos[tagval].setEditable(True)
                 self.combos[tagval].completer().setCompletionMode(
@@ -279,6 +312,11 @@ class FrameCombo(QGroupBox):
         self.setLayout(vbox)
         QApplication.processEvents()
         self.setMaximumHeight(self.sizeHint().height())
+
+    def eventFilter(self, obj, event):
+        if isinstance(obj, QComboBox) and event.type() == QEvent.FocusOut:
+            return False
+        return QGroupBox.eventFilter(self, obj, event)
 
     def initCombos(self, enable=False):
         """Clears the comboboxes and adds two items, <keep> and <blank>.
@@ -321,7 +359,13 @@ class PuddleTable(QTableWidget):
             self.setItem(row, column, QTableWidgetItem(v))
 
     def remove(self):
-        self.removeRow(self.currentRow())
+        rows = self.selectedRows()
+        if not rows:
+            return
+        for i in range(len(rows)):
+            self.removeRow(rows[i])
+            rows = [z - 1 for z in rows]
+        self.emit(SIGNAL('itemSelectionChanged()'))
 
     def moveUp(self):
         row = self.currentRow()
@@ -363,38 +407,48 @@ class PuddleTable(QTableWidget):
     def text(self, row, column):
         return unicode(self.item(row, column).text())
 
+    def selectedRows(self):
+        return sorted(set(i.row() for i in self.selectedIndexes()))
+
 TABLEWIDGETBG = QTableWidgetItem().background()
 RED = QBrush(Qt.red)
 
-TITLE = QApplication.translate("Defaults", 'Title')
-FIELD = QApplication.translate("Defaults", 'Field')
-ROW = QApplication.translate("Tag Panel Settings", 'Row')
+TITLE = unicode(QApplication.translate("Defaults", 'Title'))
+FIELD = unicode(QApplication.translate("Defaults", 'Field'))
+ROW = unicode(QApplication.translate("Tag Panel Settings", 'Row'))
 
 class SettingsWin(QWidget):
     title = 'Tag Panel'
     def __init__(self, parent = None, status=None):
         QDialog.__init__(self, parent)
         self._table = PuddleTable([TITLE, FIELD, ROW],
-            [TITLE, FIELD, unicode(0)], self)
-        buttons = ListButtons()
-        buttons.connectToWidget(self._table, add=self.add, edit=self.edit,
-            moveup=self._table.moveUp, movedown=self._table.moveDown,
-            duplicate=self.duplicate)
+            [TITLE, FIELD, u'0'], self)
+        self._buttons = ListButtons()
+        self._buttons.connectToWidget(self._table, add=self.add,
+            edit=self.edit, moveup=self._table.moveUp,
+            movedown=self._table.moveDown, duplicate=self.duplicate)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
-        hbox.addLayout(buttons, 0)
+        hbox.addLayout(self._buttons, 0)
         self.setLayout(hbox)
 
-        self.connect(self._table, SIGNAL('cellChanged(int,int)'), self._checkItem)
+        self.connect(self._table, SIGNAL('cellChanged(int,int)'),
+            self._checkItem)
+        self.connect(self._table, SIGNAL('itemSelectionChanged()'),
+            self._enableButtons)
         self.fill()
 
     def add(self, texts = None):
         table = self._table
         if not texts:
             text = table.text
-            table.add([TITLE, FIELD.lower(),
-                max([text(row, 2) for row in table.rows]) + 1])
+            rows = []
+            for row in table.rows:
+                try: rows.append(int(text(row, 2)))
+                except (TypeError, ValueError): pass
+            row = unicode(max(rows) + 1) if rows else u'1'
+            table.add([TITLE, FIELD.lower(), row])
         else:
             table.add(texts)
         item = table.item(table.rowCount() - 1, 0)
@@ -439,6 +493,17 @@ class SettingsWin(QWidget):
             except ValueError:
                 i = table.item(row, column)
                 i.setBackground(RED)
+
+    def _enableButtons(self):
+        table = self._table
+        if table.rowCount() <= 0:
+            self._buttons.edit.setEnabled(False)
+            self._buttons.duplicate.setEnabled(False)
+            self._buttons.remove.setEnabled(False)
+        elif self._table.selectedRows():
+            self._buttons.edit.setEnabled(True)
+            self._buttons.duplicate.setEnabled(True)
+            self._buttons.remove.setEnabled(True)
 
     def duplicate(self):
         table = self._table

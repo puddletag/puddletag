@@ -56,21 +56,34 @@ class DirView(QTreeView):
         self.emit(SIGNAL('removeFolders'), [], True)
     
     def contextMenuEvent(self, event):
+
+        connect = lambda o,s: self.connect(o, SIGNAL('triggered()'), s)
+        
         menu = QMenu(self)
-        refresh = QAction('Refresh Directory', self)
+        refresh = QAction(QApplication.translate("Dirview",
+            'Refresh Directory'), self)
+
+        index = self.indexAt(event.pos())
+        connect(refresh, lambda: self.model().refresh(index))
         
         header = self.header()
         if self.header().isHidden():
-            show_header = QAction('Show Header', self)
-            self.connect(show_header, SIGNAL('triggered()'), header.show)
+            show_header = QAction(QApplication.translate("Dirview",
+                'Show Header'), self)
+            connect(show_header, header.show)
         else:
-            show_header = QAction('Hide Header', self)
-            self.connect(show_header, SIGNAL('triggered()'), header.hide)
+            show_header = QAction(QApplication.translate("Dirview",
+                'Hide Header'), self)
+            connect(show_header, header.hide)
+        
+        open_dir = QAction(QApplication.translate(
+            'Dirview', 'Open in File Manager'), self)
+        connect(open_dir, lambda: self.openExtern(index))
+        
         menu.addAction(refresh)
         menu.addAction(show_header)
-        index = self.indexAt(event.pos())
-        self.connect(refresh, SIGNAL('triggered()'), 
-            lambda: self.model().refresh(index))
+        menu.addAction(open_dir)
+
         menu.exec_(event.globalPos())
         super(DirView, self).contextMenuEvent(event)
 
@@ -134,6 +147,11 @@ class DirView(QTreeView):
             return
         else:
             super(DirView, self).mousePressEvent(event)
+
+    def openExtern(self, index):
+        if index.isValid():
+            filename = self.model().filePath(index)
+            QDesktopServices.openUrl(QUrl.fromLocalFile(filename))
 
     def selectDirs(self, dirlist):
         if self._threadRunning:
