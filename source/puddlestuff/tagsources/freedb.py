@@ -10,8 +10,10 @@ from collections import defaultdict
 from puddlestuff.constants import TAGSOURCE
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagsources import RetrievalError
+import puddlestuff
 
-CLIENTINFO = {'client_name': "puddletag", 'client_version': '0.9.8' }
+CLIENTINFO = {'client_name': "puddletag",
+    'client_version': puddlestuff.version_string}
 
 
 def sumdigits(n): return sum(map(long, str(n)))
@@ -48,9 +50,9 @@ def convert_info(info):
             info[keys[key]] = info[key]
             del(info[key])
     if '#discid' in info:
-        info['disc_id'] = info['#discid']
+        info['freedb_disc_id'] = info['#discid']
     if '#category' in info:
-        info['category'] = info['#category']
+        info['freedb_category'] = info['#category']
     return info
 
 def convert_tracks(disc):

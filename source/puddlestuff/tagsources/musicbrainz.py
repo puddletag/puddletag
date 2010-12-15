@@ -56,8 +56,8 @@ def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
                 'title': track.title,
                 'track': unicode(num + 1),
                 'artist': track.artist.name if track.artist else None,
-                'rating': unicode(track.rating.value) if track.rating.value is not None else None,
-                'isrcs': track.isrcs}
+                'mbrainz_rating': unicode(track.rating.value) if track.rating.value is not None else None,
+                'mbrainz_isrcs': track.isrcs}
             tracks.append(dict((k,v) for k,v in track.items() if v))
 
         if puids:
@@ -97,7 +97,7 @@ def get_puid(track_id):
     #f.close()
     track = {
         'musicip_puid': track.puids,
-        'rating': unicode(track.rating.value) if track.rating.value is not None else None}
+        'mbrainz_rating': unicode(track.rating.value) if track.rating.value is not None else None}
     return dict((k,v) for k,v in track.items() if v)
 
 def find_id(tracks, field=None):
@@ -139,10 +139,7 @@ def find_releases(artists=None, album=None):
     r_filter = ws.ReleaseFilter(artistName=artist, title=album,
         releaseTypes=(Release.TYPE_OFFICIAL,))
 
-    #f = open('/tmp/mbrainz/ratatat', 'rb')
     releases = q.getReleases(filter=r_filter)
-    #releases = pickle.load(f)
-    #f.close()
 
     return map(release_to_dict, releases)
 
@@ -181,7 +178,24 @@ def VA_search(album):
 class MusicBrainz(object):
     name = 'MusicBrainz'
     group_by = ['album', 'artist']
-    tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>For multiple artist/album combinations separate them with the '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>Retrieving all albums by an artist using their MusicBrainz Artist ID is possible by prefacing your search with <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b> (extraneous spaces around the ID are discarded.)</li><li>In the same way an album can be retrieved using it's MusicBrainz ID by prefacing the search text with <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"
+    tooltip = """<p>Enter search parameters here. If empty, the selected
+        files are used.</p>
+        <ul>
+        <li>Enter any text to search for an album. Eg. <b>Southernplayalisticadillacmuzik</b></li>
+        <li><b>artist;album</b> searches for a
+        specific album/artist combination.</li>
+        <li>For multiple artist/album combinations separate them with the
+        '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.
+        </li> <li>To list the albums by an artist leave off the album part,
+        but keep the semicolon (eg. <b>Ratatat;</b>).
+        For an album only leave the artist part as in <b>;Resurrection.</li>
+        <li>Retrieving all albums by an artist using their MusicBrainz
+        Artist ID is possible by prefacing your search with
+        <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b>
+        (extra spaces around the ID are discarded.)</li>
+        <li>In the same way an album can be retrieved using it's
+        MusicBrainz ID by prefacing the search text with
+        <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>"""
     def __init__(self):
         super(MusicBrainz, self).__init__()
         self._puids = False
@@ -209,7 +223,10 @@ class MusicBrainz(object):
                     r_id, unicode(e)))
                 raise RetrievalError(unicode(e))
         else:
-            params = parse_searchstring(s)
+            try:
+                params = parse_searchstring(s)
+            except RetrievalError:
+                return [(info, []) for info in find_releases(None, s)]
             if not params: 
                 return
             artist = params[0][0]
@@ -233,7 +250,6 @@ class MusicBrainz(object):
                     write_log('<b>Error:</b> While retrieving %s: %s' % (
                         artist_id, unicode(e)))
                     raise RetrievalError(unicode(e))
-                
 
         write_log(u'Searching for album: %s ' % album)
         try:

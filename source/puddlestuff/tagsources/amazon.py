@@ -247,6 +247,18 @@ class Amazon(object):
     # values are usually lists and "builtin" values are strings.
     #All strings are unicode, so don't worry about conversions.
 
+    tooltip = """<p>Enter search parameters here. If empty,
+        the selected files are used.</p>
+        <ul>
+        <li><b>artist;album</b>
+        searches for a specific album/artist combination.</li>
+        <li>To list the albums by an artist leave off the album part,
+        but keep the semicolon (eg. <b>Ratatat;</b>).
+        For a album only leave the artist part as in
+        <b>;Resurrection.</li>
+        <li>Enter any keywords to do search using those keywords.</li>
+        </ul>"""
+
     #__init__ should not accept any arguments.
     def __init__(self):
         super(Amazon, self).__init__()
@@ -291,10 +303,13 @@ class Amazon(object):
         #Use the parse_searchstring method to separate text
         #into a list of artist album pairs as in:
         # [(artist1, album1), (artist2, album2)]
-        params = parse_searchstring(text)
-        artists = [params[0][0]]
-        album = params[0][1]
-
+        try:
+            params = parse_searchstring(text)
+            artists = [params[0][0]]
+            album = params[0][1]
+        except RetrievalError:
+            album = text
+            artists = None
         return self.search(album, artists)
     
     def search(self, album, artists):
@@ -328,12 +343,14 @@ class Amazon(object):
         #Do the same even if an exact match was found, but an extra
         #lookup is required to retrieve tracks.
 
-        if len(artists) > 1:
-            artist = u'Various Artists'
+        if artists is not None:
+            if len(artists) > 1:
+                artist = u'Various Artists'
+            else:
+                artist = artists[0]
         else:
-            artist = artists[0]
+            artist = None
 
-        
         retrieved_albums = search(artist, album)
         matches = check_matches(retrieved_albums, artist, album)
         return [(info, []) for info in matches]

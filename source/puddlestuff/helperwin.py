@@ -352,6 +352,7 @@ class StatusWidgetItem(QTableWidgetItem):
         self._status = status
         self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         self._original = (text, preview, status)
+        self.linked = []
 
     def _get_preview(self):
         return self.font().bold()
@@ -386,6 +387,7 @@ class StatusWidgetItem(QTableWidgetItem):
             self.status = REMOVE
         else:
             self.status = status
+        self.linked = []
 
 
 class VerticalHeader(QHeaderView):
@@ -594,8 +596,15 @@ class ExTags(QDialog):
                     if row +1< rowcount:
                         self.listbox.selectRow(row + 1)
                 else:
-                    self.removeTag()
-                    self._settag(rowcount, tag, value, ADD, self.previewMode)
+                    cur_item = self.listbox.currentItem()
+                    self.resetFields([cur_item])
+                    self.listbox.setCurrentItem(cur_item,
+                        QItemSelectionModel.ClearAndSelect)
+                    self.listbox.selectRow(self.listbox.row(cur_item))
+                    self.removeTag()                    
+                    valitem = self._settag(rowcount, tag,
+                        value, ADD, self.previewMode)
+                    cur_item.linked = [valitem]
         else:
             self._settag(rowcount, tag, value, ADD, self.previewMode)
         self._checkListBox()
@@ -722,12 +731,16 @@ class ExTags(QDialog):
     def removeTag(self):
         l = self.listbox
         l.setSortingEnabled(False)
+        to_remove = {}
         rows = []
         for i in self.listbox.selectedItems():
             row = l.row(i)
+            if i.status == ADD:
+                to_remove[row] = i
             rows.append(row)
             i.status = REMOVE
             i.status = REMOVE
+        [l.removeRow(l.row(z)) for z in to_remove.values()]
         l.setSortingEnabled(True)
         self.filechanged = True
         self._checkListBox()
@@ -737,10 +750,20 @@ class ExTags(QDialog):
             if row + 1 < self.listbox.rowCount():
                 self.listbox.selectRow(row + 1)
 
-    def resetFields(self):
-        to_remove = {}
+    def resetFields(self, items=None):
+        box = self.listbox
+        to_remove = {} #Stores row: item values so that only one item
+                       #gets removed per row.
+        if items is None:
+            items = box.selectedItems()
+
         max_row = -1
-        for item in self.listbox.selectedItems():
+        for item in box.selectedItems():
+            for i in item.linked:
+                try:
+                    to_remove[box.row(i)] = i
+                except RuntimeError:
+                    pass
             item.reset()
             row = self.listbox.row(item)
             if row > max_row:
@@ -790,6 +813,7 @@ class ExTags(QDialog):
             valitem.status = status
         
         l.setSortingEnabled(True)
+        return valitem
 
     def _tag(self, row, status = None):
         getitem = self.listbox.item

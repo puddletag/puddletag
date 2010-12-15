@@ -113,7 +113,7 @@ text_frames ={
     id3.TORY: "originalyear",
     id3.TOWN: "fileowner",
     id3.TPE1: "artist",
-    id3.TPE2: "performer",
+    id3.TPE2: "albumartist",
     id3.TPE3: "conductor",
     id3.TPE4: "arranger",
     id3.TPOS: "discnumber",

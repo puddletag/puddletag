@@ -215,7 +215,20 @@ class FunctionDialog(QWidget):
             fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
 
         self.tagcombo = QComboBox(self)
-        tooltip = QApplication.translate('Functions', "Fields that will get written to.<br /><br /> Enter a list of comma-separated fields eg. <b>artist, title, album</b>")
+        tooltip = QApplication.translate('Functions', """<p>Fields that will
+            get written to.</p>
+
+            <ul>
+            <li>Enter a list of comma-separated fields
+            eg. <b>artist, title, album</b></li>
+            <li>Use <b>__selected</b> to write only to the selected cells.</li>
+            <li>Combinations like <b>__selected, artist, title</b> are
+                allowed.</li>
+            <li>But using <b>__selected</b> in Actions is <b>not</b>.</li>
+            <li>'~' will write to all the the fields, except what follows it
+            . Eg <b>~artist, title</b> will write to all but the artist and
+            title fields found in the selected files.<li>
+            </ul>""")
         self.tagcombo.setToolTip(tooltip)
         self.tagcombo.setEditable(True)
         self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
@@ -659,7 +672,10 @@ class ActionWindow(QDialog):
         x = QAction(QApplication.translate('Actions', 'Assign &Shortcut'), self)
         self.shortcutButton = QToolButton()
         self.shortcutButton.setDefaultAction(x)
-        x.setToolTip(QApplication.translate('Actions', 'Creates a shortcut for the checked actions on the Actions menu. Use the <b>Action Shortcuts</b> tab in Edit->Preferences to modify the shortcut.'))
+        x.setToolTip(QApplication.translate('Actions', '''<p>Creates a
+            shortcut for the checked actions on the Actions menu.
+            Use Edit Shortcuts (found by pressing down on this button)
+            to edit shortcuts after the fact.</p>'''))
         menu = QMenu(self)
         edit_shortcuts = QAction(QApplication.translate('Actions', 'Edit Shortcuts'), menu)
         self.connect(edit_shortcuts, SIGNAL('triggered()'), self.editShortcuts)

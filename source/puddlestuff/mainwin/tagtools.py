@@ -23,14 +23,13 @@ _delete = {
 status = {}
 
 def _remove_tag(f, tag):
-    
     try:
         if tag.startswith('ID3') and isinstance(f, id3_tag):
             status['model'].deleteTag(audio=f, delete=False)
             _delete[tag](f.filepath)
             f.link(f.filepath)
-        elif tag == 'APEv2' and isinstance(f, ape_tag):
-            status['model'].deleteTag(audio=f)
+        elif hasattr(f, 'apev2') and f.apev2:
+            status['model'].deleteTag(audio=f, delete=True)
             f.link(f.filepath)
         else:
             _delete[tag](f.filepath)

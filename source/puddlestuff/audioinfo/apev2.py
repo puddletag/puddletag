@@ -19,7 +19,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from mutagen.apev2 import APEv2File
+from mutagen.apev2 import APEv2File, APEBinaryValue
 import util, pdb
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY, DIRNAME,
@@ -35,6 +35,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
         IMAGETAGS = ()
         mapping = {}
         revmapping = {}
+        apev2=True
         _hash = {PATH: 'filepath',
             FILENAME:'filename',
             EXTENSION: 'ext',
@@ -70,7 +71,8 @@ def get_class(mutagen_file, base_function, attrib_fields):
             if (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
                 self._tags[key] = [unicode(value)]
             else:
-                self._tags[key] = [unicode(z) for z in value]
+                self._tags[key] = [z if isinstance(z, unicode)
+                    else unicode(z, 'utf8') for z in value]
 
         def copy(self):
             tag = Tag()
@@ -119,8 +121,12 @@ def get_class(mutagen_file, base_function, attrib_fields):
             if audio is None:
                 return
 
+            
             for z in audio:
-                self._tags[z.lower()] = audio.tags[z][:]
+                try:
+                    self._tags[z.lower()] = audio.tags[z][:]
+                except TypeError:
+                    pass
 
             self._tags.update(base_function(audio.info))
             self._tags.update(tags)

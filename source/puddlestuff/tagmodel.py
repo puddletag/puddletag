@@ -674,7 +674,10 @@ class TagModel(QAbstractTableModel):
         if row is not None:
             audio = self.taginfo[row]
         tags = audio.usertags
-        tags['__image'] = audio['__image']
+        try:
+            tags['__image'] = audio['__image']
+        except KeyError:
+            pass
         if delete:
             audio.delete()
         self._addUndo(audio, tags)
@@ -853,7 +856,7 @@ class TagModel(QAbstractTableModel):
         return True
     
     def renameDir(self, oldpath, newpath):
-        shutil.move(oldpath, newpath)
+        os.rename(oldpath, newpath)
         self.changeFolder(oldpath, newpath)
         self.emit(SIGNAL('dirsmoved'), [[oldpath, newpath]])
 

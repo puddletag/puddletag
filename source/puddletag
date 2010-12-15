@@ -142,7 +142,6 @@ if __name__ == '__main__':
     if langargs:
         if qtTranslator.load(*langargs):
             app.installTranslator(qtTranslator)
-            print 'Loaded Translation'
 
     if '--debug' in sys.argv:
         create_log()

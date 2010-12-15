@@ -30,11 +30,13 @@ ALBUM_KEYS = {
     'title': 'album',
     'uri': 'discogs_uri',
     'summary': 'discogs_summary',
-    'released': 'year'}
+    'released': 'year',
+    'notes': 'discogs_notes'}
 
 TRACK_KEYS = {
     'position': 'track',
-    'duration': '__length',}
+    'duration': '__length',
+    'notes': 'discogs_notes'}
 
 def convert_dict(d, keys=TRACK_KEYS):
     d = deepcopy(d)
@@ -237,72 +239,28 @@ def urlopen(url):
     except IOError:
         return data
 
-#A couple of things you should be aware of.
-#If you're retrieving urls use puddlestuff.tagsources.urlopen instead of the
-#generic urllib functions. When I implement some progress bars, proxies, etc
-#your tag sources will benefit automatically. Pass it your url and
-#it'll return your data.
 
-#Raise puddlestuff.tagsources.RetrievalError if an error occurs. It
-#accepts a message the only argument (may be html).
-
-#Images must be a list of  dictonaries with the
-#following keys (all from puddlestuff.audioinfo):
-#DATA: Required. The images string data.
-#MIMETYPE: either 'image/jpg' or 'image/png'
-#DESCRIPTION: the image's description
-#IMAGETYPE: Index of the element corresponding to audioinfo.IMAGETYPES
-
-#The only thing required is just a Tag Source object, which'll be the interface
-#to puddletag.
 class Discogs(object):
-    #The name attribute is required.
     name = 'Discogs.com'
-    #group_by specifies how the tag sources wants files to be grouped.
-    #in this case they'll be grouped by album first and then by artists.
-
-    #The values passed to Object.search will be album (a string)
-    #and dictionary containing the different artists as keys and
-    #a list of tags (dictionaries) as the values.
     group_by = [u'album', u'artist']
+    tooltip = """<p>Enter search parameters here. If empty,
+        the selected files are used.</p>
+        <ul>
+        <li><b>artist;album</b>
+        searches for a specific album/artist combination.</li>
+        <li>To list the albums by an artist leave off the album part,
+        but keep the semicolon (eg. <b>Ratatat;</b>).
+        For a album only leave the artist part as in
+        <b>;Resurrection.</li>
+        <li>Using <b>:r id</b> will retrieve the album with Discogs
+        ID <b>id</b>.</li>
+        <li>Enter any keywords to do search using those keywords.</li>
+        </ul>"""
 
-    #So for these values the values passed to Object.search may be
-    #(u"Give Up", artist={u'The Postal Service': [track listing...]})
-
-    #Each element of track listing is a dictionary of field: value keys
-    #containing file-specific info., eg.
-    # {'track': [u'10'], 'title': [u'Natural Anthem'], '__length': u'5:07'}
-    # values are usually lists and "builtin" values are strings.
-    #All strings are unicode, so don't worry about conversions.
-
-    #__init__ should not accept any arguments.
     def __init__(self):
         super(Discogs, self).__init__()
         self._getcover = True
         self.covertype = 1
-
-        #Object.preferences is a list of lists definining the the controls
-        #that'll be used to created the Tag Source's config dialog.
-
-        #Currently, there are three types of controls: TEXT, COMBO and CHECKBOX
-        #which correspond to a QLineEdit, QComboBox and QCheckBox respectively.
-
-        #Each control requires three arguments in order to be created.
-        #1. Some descriptive text that's shown in a label.
-        #2. The control type, either TEXT, COMBO or CHECKBOX
-        #3. For TEXT this argument is the default text. It's not required.
-        #   For COMBO, the default argument is a list containing a list
-        #   of strings as the first item.
-        #   And the default index as the second item. eg. [['text1', 'text2'], 1]
-        #   Checkboxes can either be checked or not so
-        #   default arguments must either True or False.
-
-        #When the user has finished editing, the Object.applyPrefs will be
-        #called with a list of values correcsponding to the order
-        #in which the were defined.
-        #The value returned will be either True or False for CHECKBOX.
-        #For TEXT, it'll be just the text and for COMBO it'll be the index
-        #the user's selected.
 
         self.preferences = [
             ['Retrieve Cover', CHECKBOX, True],
@@ -311,50 +269,25 @@ class Discogs(object):
             ]
 
     def keyword_search(self, text):
-        """Searches for albums by keywords, text."""
-        #Should search for the keywords in text.
-        #This method is optional, but recommended.
 
-        #The format artist1;album1|artist2;album2 should be accepted.
-        #Use the parse_searchstring method to separate text
-        #into a list of artist album pairs as in:
-        # [(artist1, album1), (artist2, album2)]
-        params = parse_searchstring(text)
+        if text.startswith(':r'):
+            r_id = text[len(':r'):].strip()
+            try:
+                int(r_id)
+                return [retrieve_album(r_id, self.covertype)]
+            except TypeError:
+                raise RetrievalError('Invalid Discogs Release ID')
+            
+        try:
+            params = parse_searchstring(text)
+        except RetrievalError:
+            return [(info, []) for info in keyword_search(text)]
+
         artists = [params[0][0]]
         album = params[0][1]
-
         return self.search(album, artists)
 
     def search(self, album, artists):
-        #Required.
-        #See group_by's explanation for an overview of the arguments
-        #that'll be passed to this function.
-
-        #It should return a list consisting of (albuminfo, tracklisting) pairs.
-        #albuminfo is a dictionary containing information applicable to
-        #the whole album name like
-        #{'artist': [u'The Postal Service'], 'album': [u'Give Up'],
-        #    'year': u'2003'}
-        #Values can be either strings or lists, but all strings must be
-        #unicode!
-
-        #Any key starting with '#' will be considered source specific and
-        #will not be changed under any circumstances. Use them to store
-        #any info that'll be used later to retrieve tracks.
-
-        #Tracks use the same format as albums, but contain info specific to a
-        #a track eg. [
-        #    {'title': u'The District Sleeps tonight', 'track': u'1'},
-        #    {'title': u'Such Great Heights', u'2'}
-        #    .....
-        #    ]
-
-        #Return An empty list (info, []) if the tag source
-        #doesn't include tracks with a lookup. Tracks can later
-        #be retrieved at the user's request.
-
-        #Do the same even if an exact match was found, but an extra
-        #lookup is required to retrieve tracks.
 
         if len(artists) > 1:
             artist = u'Various Artists'
@@ -366,11 +299,6 @@ class Discogs(object):
         return [(info, []) for info in matches]
 
     def retrieve(self, info):
-        #Required. Will retrieve track listing using
-        #info previously obtained from Object.search.
-
-        #Should return albuminfo (many tag sources return more info on
-        #the second lookup) and tracklisting.
         if self._getcover:
             return retrieve_album(info, self.covertype)
         else:
