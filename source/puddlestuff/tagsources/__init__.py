@@ -22,6 +22,7 @@ cparser = PuddleConfig()
 COVERDIR = cparser.get('tagsources', 'coverdir', COVERDIR)
 SAVECOVERS = False
 status_obj = QObject()
+user_agent = None
 
 mapping = {}
 
@@ -91,18 +92,15 @@ def set_status(msg):
     status_obj.emit(SIGNAL('statusChanged'), msg)
 
 def set_useragent(agent):
-    class MyOpener(urllib.FancyURLopener):
-        version = agent
-    global _urlopen
-    if not agent:
-        _urlopen = urllib2.urlopen
-    else:
-        _urlopen = MyOpener().open
+    global user_agent
+    user_agent = agent
 
-_urlopen = urllib2.urlopen
 def urlopen(url, mask=True):
     try:
-        page = _urlopen(url)
+        request = urllib2.Request(url)
+        if user_agent:
+            request.add_header('User-Agent', user_agent)
+        page = urllib2.build_opener().open(request)
         if page.code == 403:
             raise RetrievalError('HTTPError 403: Forbidden')
         elif page.code == 404:

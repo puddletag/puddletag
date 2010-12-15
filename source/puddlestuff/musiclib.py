@@ -25,6 +25,8 @@ errors = {
     2: "Library file load error",
     3: "Library file save error"}
 
+extralibs = []
+
 class LibChooseDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
@@ -52,6 +54,8 @@ class LibChooseDialog(QDialog):
             except AttributeError: author = QApplication.translate('MusicLib',  'Anonymous author.')
 
             self.libattrs.append({'name': name, 'desc':desc, 'author': author, 'module': lib})
+
+        self.libattrs.extend(extralibs)
         
         if not self.libattrs:
             raise MusicLibError(0, errors[0])

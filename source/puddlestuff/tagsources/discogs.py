@@ -14,6 +14,7 @@ from xml.dom import minidom
 from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring)
+import puddlestuff.tagsources
 from puddlestuff.audioinfo import DATA
 import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
@@ -223,6 +224,8 @@ def search(artist=None, album=None):
 def urlopen(url):
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
+    if puddlestuff.tagsources.user_agent:
+        request.add_header('User-Agent', puddlestuff.tagsources.user_agent)
     try:
         data = urllib2.urlopen(request).read()
     except urllib2.URLError, e:

@@ -27,6 +27,7 @@ PLUGINDIR = join(SAVEDIR, 'plugins')
 PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
 ACTIONDIR = join(SAVEDIR, 'actions')
+TRANSDIR = join(SAVEDIR, 'translations')
 
 #Misc
 BLANK = unicode(QApplication.translate('Defaults', '<blank>'))
@@ -44,6 +45,7 @@ FORMATFUNCTIONS = 'FORMATFUNCTIONS'
 FUNCTIONS = 'FUNCTIONS'
 TAGSOURCE = 'TAGSOURCE'
 DIALOGS = 'DIALOGS'
+MUSICLIBS = 'MUSICLIBS'
 
 #Dock Positions
 LEFTDOCK = Qt.LeftDockWidgetArea

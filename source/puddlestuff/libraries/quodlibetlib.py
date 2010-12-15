@@ -167,7 +167,7 @@ class QuodLibet(object):
             if track.get('artist'):
                 cached[track['artist']][track.get('album', u'')].append(track)
             else:
-                cached[u''][track.get(album, u'')].append(track)
+                cached[u''][track.get('album', u'')].append(track)
         self._cached = cached
 
     def get_tracks(self, maintag, mainval, secondary=None, secvalue=None):

@@ -209,6 +209,8 @@ def load_plugins():
     plugins = load_plugins()
     puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
     puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
+    puddlestuff.musiclib.extralibs = plugins[constants.MUSICLIBS]
+    
     return plugins[constants.DIALOGS]
 
 class PreviewLabel(QLabel):

@@ -121,6 +121,7 @@ def create_log():
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     qtTranslator = QTranslator()
+    from puddlestuff.constants import TRANSDIR
 
     if '--langfile' in sys.argv:
         index = sys.argv.index('--langfile')
@@ -136,8 +137,7 @@ if __name__ == '__main__':
         langargs = None
 
     if not langargs:
-        locale = QLocale.system().name()
-        langargs = "puddletag_" + locale,  os.path.dirname(__file__)
+        langargs = "puddletag_" + QLocale.system().name(),  TRANSDIR
 
     if langargs:
         if qtTranslator.load(*langargs):

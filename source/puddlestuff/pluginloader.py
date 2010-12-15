@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import os, traceback, sys
 from puddlestuff.puddleobjects import PuddleConfig, winsettings
-from puddlestuff.constants import FUNCTIONS, TAGSOURCE, SAVEDIR, DIALOGS
+from puddlestuff.constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
+    DIALOGS, MUSICLIBS)
 from os.path import splitext, exists
 
 from PyQt4.QtCore import *
@@ -43,6 +44,7 @@ def load_plugins(plugins=None):
     functions = {}
     tagsources = []
     dialogs = []
+    musiclibs = []
     join = os.path.join
     if plugins is None:
         plugins = []
@@ -65,10 +67,15 @@ def load_plugins(plugins=None):
 
         if hasattr(module, 'dialogs'):
             dialogs.extend(module.dialogs)
+
+        if hasattr(model, 'musiclibs'):
+            musiclibs.extend(module.musiclibs)
+        
     for d in PLUGIN_DIRS:
         del(sys.path[0])
 
-    return {FUNCTIONS: functions, TAGSOURCE: tagsources, DIALOGS: dialogs}
+    return {FUNCTIONS: functions, TAGSOURCE: tagsources, DIALOGS: dialogs,
+        MUSICLIBS: musiclibs}
 
 class InfoWidget(QLabel):
     def __init__(self, info=None, parent=None):
