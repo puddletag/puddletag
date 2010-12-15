@@ -98,7 +98,6 @@ def _if(cursor, text, ifnot=False):
             if num_if == 0:
                 cursor.next_cmd = i + cursor.cmd_index + 2
                 #print 'endif', cursor.source[i + cursor.cmd_index + 1]
-                #pdb.set_trace()
                 return True
             else:
                 num_if -= 1
@@ -147,12 +146,7 @@ def killtag(cursor, tag, repl=u' '):
         return
     else:
         leave, to_rep = cursor.line[:cursor.charno], cursor.line[cursor.charno:]
-        try:
-            cursor.all_lines[cursor.lineno] = leave + to_rep.replace(u'<%s>' % tag, repl)
-        except:
-            import pdb
-            pdb.set_trace()
-            print 'here'
+        cursor.all_lines[cursor.lineno] = leave + to_rep.replace(u'<%s>' % tag, repl)
 
 def movechar(cursor, num):
     cursor.charno = cursor.charno + num

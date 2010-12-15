@@ -285,7 +285,6 @@ class Mp3TagSource(object):
         return info, tracks
 
 if __name__ == '__main__':
-    text = open('/home/keith/Desktop/f.xml', 'r').read()
     #text = open(sys.argv[1], 'r').read()
     import puddlestuff.tagsources
     encoding, text = puddlestuff.tagsources.get_encoding(text, True)
