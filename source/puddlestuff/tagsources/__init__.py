@@ -26,12 +26,21 @@ status_obj = QObject()
 mapping = {}
 
 def get_encoding(page, decode=False):
-    parser = MetaProcessor()
     encoding = None
-    try:
-        parser.feed(page)
-    except FoundEncoding, e:
-        encoding = e.encoding.strip()
+    match = re.search('<\?xml(.+)\?>', page)
+    if match:
+        enc = re.search('''encoding(?:\s*)=(?:\s*)["'](.+)['"]''',
+            match.group(), re.I)
+        if enc:
+            encoding = enc.groups()[0]
+
+    if not encoding:
+        parser = MetaProcessor()
+        encoding = None
+        try:
+            parser.feed(page)
+        except FoundEncoding, e:
+            encoding = e.encoding.strip()
 
     if decode:
         return encoding, page.decode(encoding, 'replace') if encoding else page
@@ -85,7 +94,10 @@ def set_useragent(agent):
     class MyOpener(urllib.FancyURLopener):
         version = agent
     global _urlopen
-    _urlopen = MyOpener().open
+    if not agent:
+        _urlopen = urllib2.urlopen
+    else:
+        _urlopen = MyOpener().open
 
 _urlopen = urllib2.urlopen
 def urlopen(url, mask=True):
@@ -95,7 +107,11 @@ def urlopen(url, mask=True):
             raise RetrievalError('HTTPError 403: Forbidden')
         elif page.code == 404:
             raise RetrievalError("Page doesn't exist")
-        return page.read()
+        x = page.read()
+        f = open('/home/keith/Desktop/f.xml', 'w')
+        f.write(x)
+        f.close()
+        return x
     except urllib2.URLError, e:
         msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         raise RetrievalError(msg)
@@ -131,7 +147,6 @@ class MetaProcessor(SGMLParser):
                 error = FoundEncoding()
                 error.encoding = encoding
                 raise error
-
 
 import musicbrainz, amazon, freedb, discogs
 try:

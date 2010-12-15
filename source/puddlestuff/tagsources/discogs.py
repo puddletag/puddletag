@@ -7,7 +7,7 @@
 
 #Imports and constants.
 #-----------------------------------------------------------
-import base64, hmac, hashlib, os, re, time, urllib2, urllib
+import base64, hmac, hashlib, os, re, time, urllib2, urllib, xml
 
 from xml.dom import minidom
 
@@ -75,11 +75,8 @@ def get_text(node):
 def keyword_search(keywords):
     write_log(u'Retrieving search results for keywords: %s' % keywords)
     url = search_url % urllib.quote_plus(keywords)
-    #text = open('results.xml', 'r').read()
     text = urlopen(url)
-    #page = open('results.xml', 'w')
-    #page.write(text)
-    #page.close()
+    
     return parse_search_xml(text)
 
 def parse_album_xml(text):
@@ -149,7 +146,11 @@ def parse_search_xml(text):
     """Parses the xml retrieved after entering a search query. Returns a
     list of the albums found.
     """
-    doc = minidom.parseString(text)
+    try:
+        doc = minidom.parseString(text)
+    except xml.parsers.expat.ExpatError:
+        write_log(text)
+        raise RetrievalError('Invalid XML was returned. See log')
     exact = doc.getElementsByTagName('exactresults')
     results = []
     if exact:

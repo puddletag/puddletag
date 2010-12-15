@@ -215,25 +215,20 @@ def sayoutput(cursor, field):
     cursor.cache += cursor.output.get(field, u'')
 
 def sayregexp(cursor, rexp, separator=None, check=None):
-    #if rexp == r"\d\d?(?=(\.|-))":
-        #pdb.set_trace()
     if (check is not None) and (check not in cursor.line):
         return
-    if separator is not None:
-        #end = 0
-        for match in re.finditer(rexp, cursor.line[cursor.charno:]):
-            cursor.cache = separator + match.group()
-            #end = match.end()
-        #cursor.charno += end
+    if check:
+        line = cursor.line[cursor.charno: cursor.line.find(check, cursor.charno)]
     else:
-        try:
-            match = re.search(rexp, cursor.line[cursor.charno]).group()
-            if match:
-                cursor.cache += match.group()
-                #cursor.charno += match.end()
-        except:
-            pdb.set_trace()
-            cursor.cache += re.search(rexp, cursor.line).group()
+        line = cursor.line[cursor.charno:]
+    if separator is not None:
+        matches = [match.group() for match in
+            re.finditer(rexp, line)]
+        cursor.cache += separator.join(matches)
+    else:
+        match = re.search(rexp, line).group()
+        if match:
+            cursor.cache += match.group()
 
 def sayrest(cursor):
     cursor.log('Saying the rest of line from position %d.' % cursor.charno)

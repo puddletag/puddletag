@@ -2,7 +2,7 @@
 from pyparsing import QuotedString, Word, nums, printables
 import re, pdb, os
 
-import sys
+import sys, traceback
 
 from puddlestuff.util import convert_dict as _convert_dict
 from puddlestuff.tagsources import (urlopen, get_encoding,
@@ -10,6 +10,11 @@ from puddlestuff.tagsources import (urlopen, get_encoding,
 from puddlestuff.constants import CHECKBOX
 from funcs import FUNCTIONS
 from copy import deepcopy
+import codecs
+
+
+
+class ParseError(Exception): pass
 
 def unquote(s, loc, tok):
     """Doing this manually, because QuotedString's method removes \'s from
@@ -69,7 +74,10 @@ def find_idents(lines):
             else:
                 album_source = (lineno, lines[lineno + 1:])
 
-    offset = search_source[0]
+    try:
+        offset = search_source[0]
+    except:
+        raise ParseError('No search section found.')
     #Adding 2 to offset, because it's needed. I'm to lazy to go search for
     #why it is so.
     search_source = [(offset + i + 2, s) for i, s in
@@ -84,7 +92,7 @@ def find_idents(lines):
         filter(None, map(parser, album_source)))
 
 def open_script(filename):
-    f = open(filename, 'r')
+    f = codecs.open(filename, 'r', encoding='utf8')
     idents, search, album = find_idents(f.readlines())
     return idents, search, album
 
@@ -135,7 +143,7 @@ class Cursor(object):
         self.all_lines = text.split('\n')
         self.all_lowered = [z.lower() for z in self.all_lines]
         self.lineno = 0
-        self.charpos = 0
+        self.charno = 0
         self.cache = u''
         self.source = source_lines
         self.debug = False
@@ -201,6 +209,7 @@ class Cursor(object):
     def parse_page(self):
         self.next_cmd = 0
         self.cmd_index = 0
+        i = 1
 
         while self.next_cmd < len(self.source):
 
@@ -208,7 +217,8 @@ class Cursor(object):
             cmd, lineno, args = self.source[self.cmd_index]
             
             self.log(unicode(self.source[self.cmd_index]))
-            #if lineno > 417:
+            #if lineno == 29 or i >= 5:
+                #i+= 1
                 #print cmd, lineno, args
                 #pdb.set_trace()
             if not FUNCTIONS[cmd](self, *args):
@@ -275,12 +285,15 @@ class Mp3TagSource(object):
         return info, tracks
 
 if __name__ == '__main__':
-    text = open(sys.argv[1], 'r').read()
+    text = open('/home/keith/Desktop/f.xml', 'r').read()
+    #text = open(sys.argv[1], 'r').read()
     import puddlestuff.tagsources
     encoding, text = puddlestuff.tagsources.get_encoding(text, True)
-    
-    idents, search, album = open_script('discogs_artist.src')
-    value = parse_album_page(text, album)[0]['discogs_notes']
+
+    #pdb.set_trace()
+    #value = parse_search_page(idents['indexformat'], text, search)
+    value = parse_album_page(text, album)
+    print value
     pdb.set_trace()
     print convert_value(value)
     #source = find_idents(lines)[1]

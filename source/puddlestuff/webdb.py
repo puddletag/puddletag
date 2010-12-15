@@ -19,7 +19,7 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-import sys, pdb, os
+import sys, pdb, os, traceback
 from puddleobjects import (unique, OKCancel, PuddleThread, PuddleConfig, 
     winsettings, ListBox, ListButtons, OKCancel, create_buddy)
 from PyQt4.QtCore import *
@@ -45,8 +45,13 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
     files = glob.glob(os.path.join(dirpath, '*.src'))
     classes = []
     for f in files:
-        idents, search, album = mp3tag.open_script(f)
-        classes.append(mp3tag.Mp3TagSource(idents, search, album))
+        try:
+            idents, search, album = mp3tag.open_script(f)
+            classes.append(mp3tag.Mp3TagSource(idents, search, album))
+        except:
+            print "Couldn't load Mp3tag Tag Source %s" % f
+            traceback.print_exc()
+            continue
     return classes
 
 def display_tag(tag):
@@ -60,8 +65,8 @@ def display_tag(tag):
     else:
         d = {}
     return "<br />".join([s % (z, tostr(v)) for z, v in
-                    sorted(tag.items() + d.items()) if z != '__image' and not
-                    z.startswith('#')])
+        sorted(tag.items() + d.items()) if z != '__image' and not
+        z.startswith('#')])
 
 def display(pattern, tags):
     return replacevars(getfunc(pattern, tags), audioinfo.stringtags(tags))
