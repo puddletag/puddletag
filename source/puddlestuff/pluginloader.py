@@ -68,7 +68,7 @@ def load_plugins(plugins=None):
         if hasattr(module, 'dialogs'):
             dialogs.extend(module.dialogs)
 
-        if hasattr(model, 'musiclibs'):
+        if hasattr(module, 'musiclibs'):
             musiclibs.extend(module.musiclibs)
         
     for d in PLUGIN_DIRS:
