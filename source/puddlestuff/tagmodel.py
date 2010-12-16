@@ -1766,6 +1766,10 @@ class TagTable(QTableView):
     def moveDown(self, rows=None):
         if rows is None:
             rows = self.selectedRows[::]
+        if not rows:
+            return
+        elif max(rows) >= self.rowCount() -1:
+            return
 
         taginfo = self.model().taginfo
 
@@ -1790,6 +1794,11 @@ class TagTable(QTableView):
     def moveUp(self, rows=None):
         if rows is None:
             rows = self.selectedRows[::]
+
+        if not rows:
+            return
+        elif min(rows) <= 0:
+            return
 
         taginfo = self.model().taginfo
 

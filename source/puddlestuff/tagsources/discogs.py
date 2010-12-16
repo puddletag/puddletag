@@ -299,8 +299,7 @@ class Discogs(object):
             artist = [z for z in artists][0]
 
         retrieved_albums = search(artist, album)
-        matches = check_matches(retrieved_albums, artist, album)
-        return [(info, []) for info in matches]
+        return [(info, []) for info in retrieved_albums]
 
     def retrieve(self, info):
         if self._getcover:

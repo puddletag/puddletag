@@ -1,13 +1,13 @@
-12 December 2010 - 0.9.8
+16 December 2010 - 0.9.8
     New Features:
         Translations
         A new Function to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.
         MoveUp and MoveDown shortcuts that move the selected files Up/Down in file-view.
         The folowing fields were added to the MusicBrainz tag source:
-            mbrainz_rating, label, mbrainz_country, mbrainz_isrcs, musicip_puid, asin, barcode
+            mbrainz_rating, label, country, isrcs, musicip_puid, asin, barcode
         Select all in Dir has been removed. I've added two new menu items. Select Next in Dir and Select Previous Dir.
         Support for GUI plugins.
-        A Discogs Tag Source that uses Discogs.com's XML service. I'm not sure how complete this tag source is since Discogs.com's documentation is woefully impcomplete.
+        A Discogs Tag Source that uses Discogs.com's XML service. I'm not sure how complete this tag source is since Discogs.com's documentation is woefully impcomplete. Set a user-agent in order to use it.
         Tag->Dir
         Using Default theme icons.
     Changes:
