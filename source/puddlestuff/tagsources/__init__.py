@@ -26,7 +26,7 @@ user_agent = None
 
 mapping = {}
 
-def get_encoding(page, decode=False):
+def get_encoding(page, decode=False, default=None):
     encoding = None
     match = re.search('<\?xml(.+)\?>', page)
     if match:
@@ -37,11 +37,13 @@ def get_encoding(page, decode=False):
 
     if not encoding:
         parser = MetaProcessor()
-        encoding = None
         try:
             parser.feed(page)
         except FoundEncoding, e:
             encoding = e.encoding.strip()
+
+    if not encoding and default:
+        encoding = default
 
     if decode:
         return encoding, page.decode(encoding, 'replace') if encoding else page
@@ -135,7 +137,6 @@ class MetaProcessor(SGMLParser):
                 error.encoding = encoding
                 raise error
             if text[1][0] == 'content':
-                pdb.set_trace()
                 encoding = re.search('charset.*=(.+)',
                     text[1][1]).group(1)
                 error = FoundEncoding()

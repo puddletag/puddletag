@@ -47,29 +47,42 @@ def findinline(cursor, text, n=1, exit=None):
             return
         i += 1
 
-def findline(cursor, text, index=1, exit=None):
+def findline(cursor, text, index=1, exit=None, no_case=False):
     num_found = 1
-    for i, line in enumerate(cursor.lines):
-        if text in line:
-            if num_found == index:
-                cursor.log('Found %s at line %d\n' % (text, i))
-                cursor.lineno = cursor.lineno + i
-                cursor.charno = 0
-                return
-            else:
-                num_found += 1
+    if no_case:
+        text = text.lower()
+    if index < 0:
+        index = 0 - index
+        if no_case:
+            lines = reversed(cursor.all_lowered[:cursor.lineno])
+        else:
+            lines = reversed(cursor.all_lines[:cursor.lineno])
+        for i, line in enumerate(lines):
+            if text in line:
+                if num_found == index:
+                    cursor.log('Found %s at line %d\n' % (text, i))
+                    cursor.lineno = cursor.lineno - i - 1
+                    cursor.charno = 0
+                    return
+                else:
+                    num_found += 1
+    else:
+        if no_case:
+            lines = cursor.lowered
+        else:
+            lines = cursor.lines
+        for i, line in enumerate(lines):
+            if text in line:
+                if num_found == index:
+                    cursor.log('Found %s at line %d\n' % (text, i))
+                    cursor.lineno = cursor.lineno + i
+                    cursor.charno = 0
+                    return
+                else:
+                    num_found += 1
 
 def findlinenocase(cursor, text, num=1, exit=None):
-    text = text.lower()
-    i = 1
-    for line in cursor.lowered:
-        if text in line:
-            if i == num:
-                cursor.lineno = line
-                cursor.charno = 0
-                return
-            else:
-                i += 1
+     return findline(cursor, text, num, text, True)
 
 def gotochar(cursor, num):
     cursor.charno = num - 1
@@ -115,6 +128,7 @@ def joinlines(cursor, num):
     ret = cursor.lines[:num]
     cursor.all_lines[cursor.lineno] = u''.join(ret)
     del(cursor.all_lines[cursor.lineno: cursor.lineno + num])
+    cursor.lineno = cursor.lineno
 
 def joinuntil(cursor, text):
     ret = []
@@ -130,6 +144,7 @@ def joinuntil(cursor, text):
     cursor.all_lines[cursor.lineno] = u''.join(ret)
     del(cursor.all_lines[cursor.lineno + 1: cursor.lineno + len(ret)])
     cursor.all_lines.insert(cursor.lineno + len(ret) +1, append)
+    cursor.lineno = cursor.lineno
 
 def killtag(cursor, tag, repl=u' '):
     if repl:
@@ -142,11 +157,11 @@ def killtag(cursor, tag, repl=u' '):
         parser.feed(cursor.line)
         text = u'%s%s%s' % (u' ', repl.join(parser.pieces), u' ')
         cursor.log(cursor.line  + u' becomes ' + text + u'\n')
-        cursor.all_lines[cursor.lineno] = text
+        cursor.line = text
         return
     else:
         leave, to_rep = cursor.line[:cursor.charno], cursor.line[cursor.charno:]
-        cursor.all_lines[cursor.lineno] = leave + to_rep.replace(u'<%s>' % tag, repl)
+        cursor.line = leave + to_rep.replace(u'<%s>' % tag, repl)
 
 def movechar(cursor, num):
     cursor.charno = cursor.charno + num
@@ -163,6 +178,17 @@ def outputto(cursor, text):
             cursor.tracks.append(cursor.output)
         cursor.output = {}
         cursor.field = 'title'
+    elif text.lower() == 'tracks':
+        if cursor.field in cursor.output:
+            cursor.output[cursor.field] += cursor.cache
+        else:
+            cursor.output[cursor.field] = cursor.cache
+        field = cursor.field
+        cursor.cache = u''
+        cursor.tracks = {}
+        cursor.output = {}
+        cursor.field = 'title'
+        del(cursor.output[field])
     elif not cursor.num_loop:
         if cursor.output is not cursor.album:
             cursor.output = cursor.album
@@ -174,11 +200,11 @@ def outputto(cursor, text):
 
 def replace(cursor, s, repl):
     text = cursor.line[cursor.charno:].replace(s, repl)
-    cursor.all_lines[cursor.lineno] = cursor.line[:cursor.charno] + text
+    cursor.line = cursor.line[:cursor.charno] + text
 
 def regexpreplace(cursor, regexp, s):
     text = replaceWithReg(cursor.line[cursor.charno:], regexp, s)
-    cursor.all_lines[cursor.lineno] = cursor.line[:cursor.charno] + text
+    cursor.line = cursor.line[:cursor.charno] + text
 
 def say(cursor, text):
     cursor.log('say %s' % text)
@@ -288,7 +314,7 @@ def _while(cursor, condition, numtimes=None):
                 nested += 1
 
 def unspace(cursor):
-    cursor.all_lines[cursor.lineno] = cursor.line.strip()
+    cursor.line = cursor.line.strip()
     cursor.charno = 0
 
 class TagProcessor(SGMLParser):

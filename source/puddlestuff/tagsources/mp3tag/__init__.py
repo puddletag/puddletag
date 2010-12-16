@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyparsing import QuotedString, Word, nums, printables
+from pyparsing import QuotedString, Word, nums, printables, Optional, Combine
 import re, pdb, os
 
 import sys, traceback
@@ -12,8 +12,6 @@ from funcs import FUNCTIONS
 from copy import deepcopy
 import codecs
 
-
-
 class ParseError(Exception): pass
 
 def unquote(s, loc, tok):
@@ -22,8 +20,11 @@ def unquote(s, loc, tok):
     tok = tok.pop()[1:-1]
     return tok.replace('\\"', '"')
 
+def getnum(s, l,t):
+    return int(''.join(t))
+
 STRING = QuotedString('"', '\\', unquoteResults=False).setParseAction(unquote)
-NUMBER = Word(nums).setParseAction(lambda s,l,t: int(t.pop()))
+NUMBER = Combine(Optional('-') + Word(nums)).setParseAction(getnum)
 COVER = '#cover-url'
 
 ARGUMENT = STRING | NUMBER
@@ -96,11 +97,24 @@ def open_script(filename):
     idents, search, album = find_idents(f.readlines())
     return idents, search, album
 
-def parse_album_page(page, album_source):
+def parse_album_page(page, album_source, url=None):
     cursor = Cursor(page, album_source)
+    if url:
+        cursor.output = {'CurrentUrl': url}
     cursor.parse_page()
-    return (convert_dict(cursor.album),
-        filter(None, map(convert_dict, cursor.tracks)))
+    info = convert_dict(cursor.album)
+    if hasattr(cursor.tracks, 'items'):
+        tracks = []
+        for field, values in cursor.tracks.iteritems():
+            values = convert_value(values)
+            if tracks:
+                for d, v in zip(tracks, values):
+                    d[field] = v
+            else:
+                tracks = [{field: v} for v in values]
+    else:
+        tracks = filter(None, map(convert_dict, cursor.tracks))
+    return (info, tracks)
 
 def parse_func(lineno, line):
     line = line.strip()
@@ -121,9 +135,11 @@ def parse_lines(lines):
         else:
             print parse_func(line)
 
-def parse_search_page(indexformat, page, search_source):
+def parse_search_page(indexformat, page, search_source, url=None):
     fields = [z[1:-1] for z in indexformat.split('|')]
     cursor = Cursor(page, search_source)
+    if url:
+        cursor.output = {'CurrentUrl': url}
     cursor.parse_page()
 
     i = 0
@@ -142,7 +158,7 @@ class Cursor(object):
         self.text = text
         self.all_lines = text.split('\n')
         self.all_lowered = [z.lower() for z in self.all_lines]
-        self.lineno = 0
+        self._lineno = 0
         self.charno = 0
         self.cache = u''
         self.source = source_lines
@@ -152,6 +168,7 @@ class Cursor(object):
         self.album = {}
         self.num_loop = 0
         self.output = self.album
+        self.stop = False
 
     def _get_char(self):
         return self.line[self.charpos]
@@ -180,14 +197,18 @@ class Cursor(object):
 
     field = property(_get_field, _set_field)
 
-    def _get_line(self):
-        try:
-            return self.all_lines[self.lineno]
-        except:
-            pdb.set_trace()
-            return self.all_lines[self.lineno]
+    def _get_lineno(self):
+        return self._lineno
 
-    line = property(_get_line)
+    def _set_lineno(self, value):
+        self._lineno = value
+        try:
+            self.line = self.all_lines[self.lineno]
+        except IndexError:
+            self.stop = True
+            
+
+    lineno = property(_get_lineno, _set_lineno)
 
     def _get_lines(self):
         return self.all_lines[self.lineno:]
@@ -211,23 +232,28 @@ class Cursor(object):
         self.cmd_index = 0
         i = 1
 
-        while self.next_cmd < len(self.source):
+        while (not self.stop) and (self.next_cmd < len(self.source)):
 
             self.log(unicode(self.output))
             cmd, lineno, args = self.source[self.cmd_index]
             
             self.log(unicode(self.source[self.cmd_index]))
-            #if lineno == 29 or i >= 5:
-                #i+= 1
+            #if lineno > 126:
                 #print cmd, lineno, args
                 #pdb.set_trace()
+            
             if not FUNCTIONS[cmd](self, *args):
                 self.next_cmd += 1
             self.cmd_index = self.next_cmd
 
         self.output[self.field] = self.cache
+        
         if self.output is not self.album:
-            self.tracks.append(self.output)
+            try:
+                self.tracks.append(self.output)
+            except AttributeError:
+                self.tracks.update(self.output)
+        self.stop = False
 
     def to_command(self, name):
         for i, l in enumerate(self.source[self.lineo:]):
@@ -242,7 +268,7 @@ class Mp3TagSource(object):
         self._get_cover = True
         self.preferences = [
             ['Retrieve Covers', CHECKBOX, self._get_cover]]
-            
+
         self.search_source = search_source
         self.album_source = album_source
         self._search_base = idents['indexurl']
@@ -265,16 +291,16 @@ class Mp3TagSource(object):
         artist = re.sub('\s+', self._separator, artist)
         url = self._search_base % artist
         write_log(u'Opening Search Page: %s' % url)
-        page = get_encoding(urlopen(url), True)[1]
-        infos = parse_search_page(self.indexformat, page, self.search_source)
+        page = get_encoding(urlopen(url), True, 'utf8')[1]
+        infos = parse_search_page(self.indexformat, page, self.search_source, url)
         return [(info, []) for info in infos]
 
     def retrieve(self, info):
         info = deepcopy(info)
         url = self.album_url + info['#url']
         write_log(u'Opening Album Page: %s' % url)
-        page = get_encoding(urlopen(url), True)[1]
-        new_info, tracks = parse_album_page(page, self.album_source)
+        page = get_encoding(urlopen(url), True, 'utf8')[1]
+        new_info, tracks = parse_album_page(page, self.album_source, url)
         info.update(new_info)
         if self._get_cover and COVER in info:
             cover_url = new_info[COVER]
@@ -286,12 +312,13 @@ class Mp3TagSource(object):
 
 if __name__ == '__main__':
     #text = open(sys.argv[1], 'r').read()
+    text = open(sys.argv[1], 'r').read()
     import puddlestuff.tagsources
-    encoding, text = puddlestuff.tagsources.get_encoding(text, True)
+    encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
 
     #pdb.set_trace()
     #value = parse_search_page(idents['indexformat'], text, search)
-    value = parse_album_page(text, album)
+    value = parse_album_page(text, album, '/home/keith')
     print value
     pdb.set_trace()
     print convert_value(value)
