@@ -11,6 +11,7 @@ from puddlestuff.constants import CHECKBOX
 from funcs import FUNCTIONS
 from copy import deepcopy
 import codecs
+from htmlentitydefs import name2codepoint as n2cp
 
 class ParseError(Exception): pass
 
@@ -37,9 +38,15 @@ MTAG_KEYS = {
     'publisher': 'label',
     'track temp': 'track'}
 
+def convert_entities(s):
+    s = re.sub('&#(\d+);', lambda m: unichr(int(m.groups(0)[0])), s)
+    return re.sub('&(\w)+;',
+        lambda m: n2cp.get(m.groups(0), u'&%s;' % m.groups(0)[0]), s)
+    
+
 def convert_value(value):
     value = filter(None, (z.strip() for z in value.split(u'|')))
-    value = [v.replace(u'\\r\\n', u'\n') for v in value]
+    value = [convert_entities(v.replace(u'\\r\\n', u'\n')) for v in value]
     if len(value) == 1:
         return value[0]
     return value
@@ -156,7 +163,7 @@ def parse_search_page(indexformat, page, search_source, url=None):
 class Cursor(object):
     def __init__(self, text, source_lines):
         self.text = text
-        self.all_lines = text.split('\n')
+        self.all_lines = [z + u' ' for z in text.split('\n')] + [u' ']
         self.all_lowered = [z.lower() for z in self.all_lines]
         self._lineno = 0
         self.charno = 0
@@ -238,9 +245,12 @@ class Cursor(object):
             cmd, lineno, args = self.source[self.cmd_index]
             
             self.log(unicode(self.source[self.cmd_index]))
-            #if lineno > 126:
+            
+            #if i >= 26 and lineno >= 73:
                 #print cmd, lineno, args
                 #pdb.set_trace()
+            #elif lineno == 30:
+                #i += 1
             
             if not FUNCTIONS[cmd](self, *args):
                 self.next_cmd += 1
@@ -317,8 +327,10 @@ if __name__ == '__main__':
     encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
 
     #pdb.set_trace()
-    #value = parse_search_page(idents['indexformat'], text, search)
-    value = parse_album_page(text, album, '/home/keith')
+    idents, search, album = open_script(sys.argv[2])
+    value = parse_search_page(idents['indexformat'], text, search)
+    
+    #value = parse_album_page(text, album, 'url')
     print value
     pdb.set_trace()
     print convert_value(value)

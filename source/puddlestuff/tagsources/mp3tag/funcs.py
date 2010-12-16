@@ -46,6 +46,8 @@ def findinline(cursor, text, n=1, exit=None):
             cursor.charno += pos
             return
         i += 1
+    cursor.charno = len(cursor.line) - 1
+    return
 
 def findline(cursor, text, index=1, exit=None, no_case=False):
     num_found = 1
@@ -80,6 +82,8 @@ def findline(cursor, text, index=1, exit=None, no_case=False):
                     return
                 else:
                     num_found += 1
+
+    cursor.lineno = len(cursor.all_lines) - 1
 
 def findlinenocase(cursor, text, num=1, exit=None):
      return findline(cursor, text, num, text, True)
