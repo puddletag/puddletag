@@ -171,7 +171,6 @@ def print_track(track):
 
 def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
-
     artist_group = album_soup.find('div', {'class': 'left-sidebar'})
 
     find = artist_group.find_all
@@ -253,6 +252,7 @@ def parse_search_element(element, fields, id_field = None):
     return ret
 
 def parse_searchpage(page, artist, album, id_field):
+    page = get_encoding(page, True, 'utf8')[1]
     soup = parse_html.SoupWrapper(parse_html.parse(page))
     results = soup.find('table', {'class': 'search-results'})
     fields = [z.string.strip().lower() for z in results.find('tr').find_all('th')]
@@ -337,7 +337,7 @@ def retrieve_album(url, coverurl=None, id_field=None):
     except (EnvironmentError, RetrievalError):
         write_log('Opening Album Page - %s' % url)
         album_page = urlopen(url)
-    album_page = get_encoding(album_page, True)[1]
+    album_page = get_encoding(album_page, True, 'utf8')[1]
     
     info, tracks = parse_albumpage(album_page)
     info['#albumurl'] = url
@@ -430,8 +430,6 @@ class AllMusic(object):
         write_log(u'Searching for %s' % album)
         try:
             searchpage = search(album)
-            #to_file(searchpage, 'search2.htm')
-            #searchpage = open('search2.htm').read()
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving search page %s' % 
                         unicode(e))

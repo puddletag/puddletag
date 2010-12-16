@@ -107,7 +107,14 @@ def urlopen(url, mask=True):
             raise RetrievalError('HTTPError 403: Forbidden')
         elif page.code == 404:
             raise RetrievalError("Page doesn't exist")
-        return page.read()
+        filename = '/home/keith/a.html'
+        if os.path.exists(filename):
+            filename = '/home/keith/a1.html'
+        f = open(filename, 'w')
+        x = page.read()
+        f.write(x)
+        f.close()
+        return x
     except urllib2.URLError, e:
         msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         raise RetrievalError(msg)
