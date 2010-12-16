@@ -331,16 +331,16 @@ def run_function(parent=None, prevfunc=None):
     example = selectedfiles[0]
     try:
         selected_file = status['selectedtags'][0]
-        key = selected_file.keys()[0]
-        text = selected_file[key]
+        selected_fields = selected_file.keys()
+        text = selected_file[selected_fields[0]]
     except IndexError:
         text = example.get('title')
 
     if prevfunc:
         f = actiondlg.CreateFunction(prevfunc=prevfunc, parent=parent,
-            showcombo=False, example=example, text=text)
+            showcombo=selected_fields, example=example, text=text)
     else:
-        f = actiondlg.CreateFunction(parent=parent, showcombo=False,
+        f = actiondlg.CreateFunction(parent=parent, showcombo=selected_fields,
             example=example, text=text)
 
     f.connect(f, SIGNAL("valschanged"), partial(run_func, selectedfiles))

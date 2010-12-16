@@ -85,15 +85,18 @@ class FunctionDialog(CreateFunction):
         self.vbox.addLayout(hbox)
 
     def _update(self):
+        widget = self.stack.currentWidget()
         try:
-            f, field = self._status['firstselection']
+            f, selected = self._status['firstselection']
         except IndexError:
+            widget.emit(SIGNAL('updateExample'), u'')
             return
-        field = field.keys()[0]
+        
+        field = selected.keys()[0]
         self.example = f
         self._text = f.get(field, u'')
-        
-        widget = self.stack.currentWidget()
+
+        widget._combotags = selected.keys()
         
         widget._text = self._text
         widget.example = f
@@ -102,7 +105,6 @@ class FunctionDialog(CreateFunction):
 
     def reject(self):
         pass
-
 
 controls = [
     ("Functions", FunctionDialog, RIGHTDOCK, False),

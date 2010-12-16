@@ -382,8 +382,7 @@ class FunctionDialog(QWidget):
                     self.emit(SIGNAL('updateExample'), 
                         unicode(QApplication.translate('Functions', 'No preview for is shown for this function.')))
                     return
-                fields = findfunc.parse_field_list(self.func.tag,
-                    audio, self._combotags)
+                fields = findfunc.parse_field_list(self.func.tag, audio, self._combotags)
                 val = findfunc.runAction([self.func], audio, {}, fields)
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
@@ -475,10 +474,11 @@ class CreateFunction(QDialog):
         
         self.example = example
         self._text = text
-        if showcombo:
-            self.showcombo = gettaglist()
+        if showcombo is True or not showcombo:
+            self.showcombo = []
         else:
             self.showcombo = showcombo
+            
         self.exlabel = ScrollLabel('')
 
         if prevfunc is not None:
