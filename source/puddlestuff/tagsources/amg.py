@@ -371,10 +371,12 @@ def text(z):
     return re.sub('(\s+)', first_white, text)
 
 def to_file(data, name):
+    if os.path.exists(name):
+        return to_file(name + '_')
+        
     f = open(name, 'w')
     f.write(data)
     f.close()
-
 
 class AllMusic(object):
     name = 'AllMusic.com'

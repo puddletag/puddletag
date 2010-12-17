@@ -379,6 +379,11 @@ class StatusWidgetItem(QTableWidgetItem):
 
     status = property(_get_status, _set_status)
 
+    def __lt__(self, item):
+        if self.text().toUpper() < item.text().toUpper():
+            return True
+        return False
+
     def reset(self):
         self.setText(self._original[0])
         self.preview = self._original[1]

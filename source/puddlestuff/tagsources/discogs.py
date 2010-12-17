@@ -10,6 +10,7 @@
 import base64, hmac, hashlib, os, re, time, urllib2, urllib, xml
 
 from xml.dom import minidom
+import sys
 
 from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
@@ -113,10 +114,17 @@ def parse_album_xml(text):
         info['involvedpeople'] = u';'.join(u'%s:%s' % (e['name'], e['role'])
             for e in ex_artists)
 
-    info['genre'] = filter(None,
-        [get_text(z) for z in doc.getElementsByTagName('genres')[0].childNodes])
-    info['style'] = filter(None,
-        [get_text(z) for z in doc.getElementsByTagName('styles')[0].childNodes])
+    try:
+        info['genre'] = filter(None, [get_text(z) for z in
+            doc.getElementsByTagName('genres')[0].childNodes])
+    except IndexError:
+        pass
+
+    try:
+        info['style'] = filter(None, [get_text(z) for z in
+            doc.getElementsByTagName('styles')[0].childNodes])
+    except IndexError:
+        pass
 
     text_keys = ['notes', 'country', 'released', 'title']
 
@@ -221,6 +229,8 @@ def search(artist=None, album=None):
         keywords = album
     return keyword_search(keywords)
 
+
+#from puddlestuff.tagsources import to_file
 def urlopen(url):
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
@@ -314,6 +324,6 @@ class Discogs(object):
 info = Discogs
 
 if __name__ == '__main__':
-    print parse_album_xml(open('album.xml', 'r').read())
+    print parse_album_xml(open(sys.argv[1], 'r').read())
 
 #print keyword_search('Minutes to midnight')

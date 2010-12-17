@@ -97,6 +97,14 @@ def set_useragent(agent):
     global user_agent
     user_agent = agent
 
+def to_file(data, name):
+    if os.path.exists(name):
+        return to_file(data, name + '_')
+
+    f = open(name, 'w')
+    f.write(data)
+    f.close()
+
 def urlopen(url, mask=True):
     try:
         request = urllib2.Request(url)
@@ -109,7 +117,10 @@ def urlopen(url, mask=True):
             raise RetrievalError("Page doesn't exist")
         return page.read()
     except urllib2.URLError, e:
-        msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+        try:
+            msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+        except AttributeError:
+            msg = unicode(e)
         raise RetrievalError(msg)
     except socket.error:
         msg = u'%s (%s)' % (e.strerror, e.errno)

@@ -165,7 +165,7 @@ class Cursor(object):
         self.text = text
         self.all_lines = [z + u' ' for z in text.split('\n')] + [u' ']
         self.all_lowered = [z.lower() for z in self.all_lines]
-        self._lineno = 0
+        self.lineno = 0
         self.charno = 0
         self.cache = u''
         self.source = source_lines
