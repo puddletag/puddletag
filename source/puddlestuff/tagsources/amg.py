@@ -346,15 +346,25 @@ def parse_tracks(soup):
         return parse_track_table(track_tables[0])
 
 def retrieve_album(url, coverurl=None, id_field=None):
+    review = True
     try:
         write_log('Opening Review Page - %s' % (url + '/review', ))
         album_page = urlopen(url + '/review', False)
     except (EnvironmentError, RetrievalError):
         write_log('Opening Album Page - %s' % url)
         album_page = urlopen(url)
+        review = False
     album_page = get_encoding(album_page, True, 'utf8')[1]
     
+    
     info, tracks = parse_albumpage(album_page)
+    if not tracks and review:
+        write_log('Re-Opening Album Page - %s' % url)
+        album_page = urlopen(url)
+        album_page = get_encoding(album_page, True, 'utf8')[1]
+        new_info, tracks = parse_albumpage(album_page)
+        info.update(new_info)
+        
     info['#albumurl'] = url
     try:
         if id_field:
@@ -420,7 +430,10 @@ class AllMusic(object):
                 info.update(cover)
             return [(info, tracks)]
         else:
-            params = parse_searchstring(text)
+            try:
+                params = parse_searchstring(text)
+            except RetrievalError:
+                return self.search(text, [u''])
             artists = [params[0][0]]
             album = params[0][1]
             return self.search(album, artists)
