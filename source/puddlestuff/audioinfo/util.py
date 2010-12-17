@@ -340,8 +340,10 @@ class CaselessDict(dict):
 
     def __setitem__(self, key, value):
         low = key.lower()
-        self._keys[low] = key
         dict.__setitem__(self, key, value)
+        if self._keys.get(low, key) != key:
+            dict.__delitem__(self, self._keys[low])
+        self._keys[low] = key
 
     def __contains__(self, key):
         return key.lower() in self._keys
@@ -443,8 +445,7 @@ class MockTag(object):
         [setattr(self, z, tags['__%s' % z]) for z in attrs]
 
     def _init_info(self, filename, filetype=None):
-        #self._tags = CaselessDict()
-        self._tags = {}
+        self._tags = CaselessDict()
         filename = getfilename(filename)
         self.filepath = filename
         if filetype is not None:

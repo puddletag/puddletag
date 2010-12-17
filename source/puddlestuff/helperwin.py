@@ -299,6 +299,10 @@ class EditTag(QDialog):
         label = QLabel(QApplication.translate('Edit Field', "&Field"))
         self.tagcombo = QComboBox()
         self.tagcombo.setEditable(True)
+        completer = self.tagcombo.completer()
+        completer.setCaseSensitivity(Qt.CaseSensitive)
+        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.tagcombo.setCompleter(completer)
         label.setBuddy(self.tagcombo)
         if not taglist:
             self.tagcombo.addItems(gettaglist())
@@ -586,18 +590,14 @@ class ExTags(QDialog):
     def editTagBuddy(self, tag, value, prevtag = None, duplicate=False):
         item = self.listbox.item
         rowcount = self.listbox.rowCount()
-        tags = [unicode(item(row, 0).text()) for row in range(rowcount)]
-        tags = dict([(text.lower(), text) for text in tags])
-        if tag.lower() in tags:
-            tag = tags[tag.lower()]
         if prevtag is not None:
             if duplicate:
                 row = rowcount
-                self._settag(rowcount, tag, value, ADD, self.previewMode)
+                self._settag(rowcount, tag, value, ADD, self.previewMode, True)
             else:
                 if tag == prevtag[0]:
                     row = self.listbox.currentRow()
-                    self._settag(row, tag, value, EDIT, self.previewMode)
+                    self._settag(row, tag, value, EDIT, self.previewMode, True)
                     if row +1< rowcount:
                         self.listbox.selectRow(row + 1)
                 else:
@@ -608,10 +608,10 @@ class ExTags(QDialog):
                     self.listbox.selectRow(self.listbox.row(cur_item))
                     self.removeTag()                    
                     valitem = self._settag(rowcount, tag,
-                        value, ADD, self.previewMode)
+                        value, ADD, self.previewMode, True)
                     cur_item.linked = [valitem]
         else:
-            self._settag(rowcount, tag, value, ADD, self.previewMode)
+            self._settag(rowcount, tag, value, ADD, self.previewMode, True)
         self._checkListBox()
         self.filechanged = True
         self.listbox.clearSelection()
@@ -619,22 +619,24 @@ class ExTags(QDialog):
     def listtotag(self):
         gettag = self._tag
         tags = {}
-        listitems = [gettag(row, True) for row in xrange(self.listbox.rowCount())]
-        try:
-            for tag, val, status in listitems:
-                if status != REMOVE:
-                    if val == u'<keep>':
-                        continue
-                    if tag in tags:
-                        tags[tag].append(val)
-                    else:
-                        tags[tag] = [val]
+        lowered = {}
+        listitems = [gettag(row, True) for row
+            in xrange(self.listbox.rowCount())]
+
+        for field, val, status in listitems:
+            if status != REMOVE:
+                if val == u'<keep>':
+                    continue
+                l_field = field.lower()
+                if l_field in lowered:
+                    tags[lowered[l_field]].append(val)
                 else:
-                    if tag not in tags:
-                        tags[tag] = []
-        except Exception, e:
-            print listitems
-            raise e
+                    lowered[l_field] = field
+                    tags[field] = [val]
+            else:
+                if field.lower() not in lowered:
+                    tags[field] = []
+                    lowered[l_field] = field
         return tags
 
     def loadFiles(self, audios):
@@ -799,7 +801,7 @@ class ExTags(QDialog):
             settaglist(newtags + self._taglist)
         self.emit(SIGNAL('extendedtags'), tags)
 
-    def _settag(self, row, tag, value, status=None, preview=False):
+    def _settag(self, row, tag, value, status=None, preview=False, check=False):
         l = self.listbox
         l.setSortingEnabled(False)
         if row >= l.rowCount():
@@ -816,7 +818,18 @@ class ExTags(QDialog):
             valitem = l.item(row, 1)
             valitem.setText(value)
             valitem.status = status
-        
+
+        if check:
+            lowered_tag = tag.lower()
+            for row in xrange(l.rowCount()):
+                item = l.item(row, 0)
+                text = unicode(item.text())
+                if text != tag and text.lower() == lowered_tag:
+                    item.setText(tag)
+                    if item.status not in [ADD, REMOVE]:
+                        item.status = EDIT
+                        l.item(row, 1).status = EDIT
+
         l.setSortingEnabled(True)
         return valitem
 

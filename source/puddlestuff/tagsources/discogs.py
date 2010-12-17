@@ -103,9 +103,12 @@ def parse_album_xml(text):
             try:
                 info['discogs_format'] = format.attributes['name'].value
                 info['discs'] = format.attributes['qty'].value
+            except (AttributeError, IndexError, ValueError):
+                pass
+            try:
                 info['discogs_format_desc'] = filter(None,
                     [get_text(z) for z in format.childNodes[0].childNodes])
-            except (AttributeError, KeyError):
+            except (AttributeError, IndexError, ValueError):
                 continue
 
     extras = doc.getElementsByTagName('extraartists')

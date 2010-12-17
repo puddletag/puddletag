@@ -534,13 +534,23 @@ revframes = dict([(val, key) for key, val in frames.items()])
 
 def handle(f):
     d = defaultdict(lambda: [])
+    keys = {}
     for val in f.values():
         c = val.__class__
         if c in frames:
             d[frames[c]].append(val)
     ret = {}
     for func, val in d.items():
-        ret.update(func(val))
+        for k,v in func(val).items():
+            lower = k.lower()
+            if lower in keys:
+                try:
+                    ret[keys[lower]].append(v) if isinstance(v, basestring) \
+                        else ret[keys[lower]].extend(v)
+                except AttributeError: continue
+            else:
+                keys[lower] = k
+                ret[k] = v
     return ret
 
 class Tag(TagBase):
@@ -739,6 +749,8 @@ class Tag(TagBase):
 
         if key in self._tags:
             self._tags[key].set_value(value)
+            x = self._tags[key]
+            self._tags[key] = x
         else:
             if key in write_frames:
                 self._tags.update(write_frames[key](value))

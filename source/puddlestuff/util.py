@@ -137,7 +137,7 @@ def write(audio, tags, save_mtime = True):
                 if key in file_hash:
                     undo[key] = getattr(audio, file_hash[key])
             rename_file(audio, filetags)
-            
+
         audio.update(without_file(audio.mapping, tags))
         audio.save()
     except EnvironmentError:
