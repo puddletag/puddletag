@@ -38,7 +38,8 @@ spanmap = {
     'Performance': 'performance',
     'Sound': 'sound',
     'Rating': 'rating',
-    'AMG Album ID': 'amg_album_id'}
+    'AMG Album ID': 'amg_album_id',
+    'Performed By': 'performer'}
 
 sqlre = re.compile('(r\d+)$')
 
@@ -159,6 +160,7 @@ def parse_review(soup):
         review = review_td.find('p', {'class':'text'}).string.strip()
         if not review.strip():
             raise IndexError
+        review = re.sub('\s{2,}', ' ', review)
     except (IndexError, AttributeError):
         return {}
     ##There are double-spaces in links and italics. Have to clean up.
@@ -295,6 +297,16 @@ def parse_track_table(table, discnum=None):
         track = {}
         if discnum:
             track['discnumber'] = discnum
+        extra = tr.find('div', {'class': 'expand'})
+        if extra:
+            value = convert(extra.string)
+            try:
+                field, value = [z.strip() for z in value.split(u':')]
+                tracks[-1][spanmap.get(field, field)] = value
+            except (ValueError, TypeError):
+                tracks[-1][extra] = value
+            continue
+                
         for field, td in zip(headers, tr.find_all('td')):
             if not field:
                 try:
@@ -314,6 +326,9 @@ def parse_track_table(table, discnum=None):
 
 def parse_tracks(soup):
     track_div = soup.find('div', {'id': 'tracks'})
+    if track_div is None:
+        track_div = track_div = soup.find('div', {'id': 'performances'})
+
     if track_div is None:
         return None
     discs = [re.search('\d+$', z.string.strip()).group()
