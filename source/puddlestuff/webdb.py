@@ -487,6 +487,8 @@ class MainWin(QWidget):
         self._taglist.setToolTip(tooltip)
         self.connect(self._taglist, SIGNAL('tagschanged'), self._changeTags)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
+        self.connect(self.listbox, SIGNAL('retrieving'), partial(self.setEnabled, False))
+        self.connect(self.listbox, SIGNAL('retrievalDone'), partial(self.setEnabled, True))
         self.connect(status_obj, SIGNAL('statusChanged'), self.label.setText)
         
         self.connect(self.listbox, SIGNAL('preview'), self.emit_preview)

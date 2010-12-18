@@ -586,7 +586,10 @@ class CreateAction(QDialog):
 
     def updateExample(self):
         try:
-            tags = runAction(self.functions, self.example)
+            files = status['selectedfiles']
+            files = unicode(len(files)) if files else u'1'
+            state = {'__counter': u'1', '__total_files': files}
+            tags = runAction(self.functions, self.example, state)
             self._examplelabel.setText(displaytags(tags))
         except findfunc.ParseError, e:
             self._examplelabel.setText(e.message)

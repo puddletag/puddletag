@@ -19,6 +19,10 @@ import puddlestuff.tagsources
 from puddlestuff.audioinfo import DATA
 import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
+from puddlestuff.tagsources.musicbrainz import find_id
+
+
+R_ID = 'discogs_rid'
 
 api_key = 'c6e33897b6'
 search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=c6e33897b6'
@@ -178,7 +182,7 @@ def parse_search_xml(text):
     for result in results:
         info = node_to_dict(result)
         info['#r_id'] = re.search('\d+$', info['uri']).group()
-        info['discogs_rid'] = info['#r_id']
+        info[R_ID] = info['#r_id']
         info = convert_dict(info, ALBUM_KEYS)
         ret.append(info)
     return ret
@@ -190,22 +194,16 @@ def retrieve_album(info, image=LARGEIMAGE):
     if isinstance(info, (int, long)):
         r_id = unicode(info)
         info = {}
+        write_log(u'Retrieving using Release ID: %s' % r_id)
     elif isinstance(info, basestring):
         r_id = info
         info = {}
-    else:
-        r_id = info['#r_id']
-
-    if isinstance(info, basestring):
         write_log(u'Retrieving using Release ID: %s' % r_id)
     else:
+        r_id = info['#r_id']
         write_log(u'Retrieving album %s' % (info['album']))
     
     xml = urlopen(album_url % r_id)
-    #f = open('album.xml', 'w')
-    #f.write(xml)
-    #f.close()
-    #xml = open('.album.xml', 'r').read()
 
     ret = parse_album_xml(xml)
 
@@ -299,6 +297,7 @@ class Discogs(object):
             ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO,
                 [['Small', 'Large'], 1]],
+            ['Field to use for discogs_id', TEXT, R_ID],
             ['API Key (Stored as plain-text. Leave empty to use default.)',
                 TEXT, 'c6e33897b6'],
             ]
@@ -328,6 +327,17 @@ class Discogs(object):
         else:
             artist = [z for z in artists][0]
 
+        if hasattr(artists, 'values'):
+            write_log(u'Checking tracks for Discogs Album ID.')
+            tracks = []
+            [tracks.extend(z) for z in artists.values()]
+            album_id = find_id(tracks, R_ID)
+            if not album_id:
+                write_log(u'No Discogs ID found in tracks.')
+            else:
+                write_log(u'Found Discogs ID: %s' % album_id)
+                return [retrieve_album(album_id, self.covertype)]
+
         retrieved_albums = search(artist, album)
         return [(info, []) for info in retrieved_albums]
 
@@ -340,11 +350,13 @@ class Discogs(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
+        global R_ID
+        R_ID = args[2]
         global search_url
         global album_url
-        if args[2]:
-            search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[2]
-            album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[2]
+        if args[3]:
+            search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[3]
+            album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[3]
         else:
             search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + api_key
             album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + api_key

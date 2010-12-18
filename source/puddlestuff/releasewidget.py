@@ -667,6 +667,8 @@ class ReleaseWidget(QTreeView):
         connect('clicked (const QModelIndex&)', func)
         self.connect(model, SIGNAL('statusChanged'), SIGNAL('statusChanged'))
         self.connect(model, SIGNAL('exactChanged'), self.exactChanged)
+        modelconnect('retrieving', SIGNAL('retrieving'))
+        modelconnect('retrievalDone', SIGNAL('retrievalDone'))
         modelconnect('retrieving', lambda: self.setEnabled(False))
         modelconnect('retrievalDone', lambda: self.setEnabled(True))
         model.tagsource = self.tagSource
