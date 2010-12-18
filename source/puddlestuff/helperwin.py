@@ -636,7 +636,7 @@ class ExTags(QDialog):
             else:
                 if field.lower() not in lowered:
                     tags[field] = []
-                    lowered[l_field] = field
+                    lowered[field.lower()] = field
         return tags
 
     def loadFiles(self, audios):
