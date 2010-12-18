@@ -3,6 +3,9 @@
 import sys, os
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
     progress, PuddleStatus, errormsg, dircmp, encode_fn, get_icon)
+
+status = PuddleStatus()
+
 import tagmodel
 from tagmodel import TagTable
 from PyQt4.QtCore import *
@@ -45,7 +48,6 @@ from constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGN
 #modify only values that you've created or that are
 #intended to be modified. This rule may be enforced
 #in the future.
-status = PuddleStatus()
 mainfuncs.status = status
 tagmodel.status = status
 mainwin.previews.set_status(status)

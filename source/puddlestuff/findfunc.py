@@ -377,7 +377,7 @@ def runAction(funcs, audio, state = None, quick_action=None):
         state = {}
     if '__counter' not in state:
         state['__counter'] = 0
-    state['__counter'] = unicode(int(state['__counter'] + 1))
+    state['__counter'] = unicode(int(state['__counter']) + 1)
 
     r_tags = audio
    

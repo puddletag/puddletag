@@ -20,6 +20,7 @@ from puddlestuff.audioinfo import DATA
 import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
 
+api_key = 'c6e33897b6'
 search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=c6e33897b6'
 album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=c6e33897b6'
 
@@ -79,6 +80,7 @@ def keyword_search(keywords):
     keywords = re.sub('(\s+)', u'+', keywords)
     url = search_url % keywords
     text = urlopen(url)
+    print text
     return parse_search_xml(text)
 
 def parse_album_xml(text):
@@ -254,7 +256,10 @@ def urlopen(url):
     try:
         data = urllib2.urlopen(request).read()
     except urllib2.URLError, e:
-        msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+        try:
+            msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+        except AttributeError:
+            msg = unicode(e)
         raise RetrievalError(msg)
     except socket.error:
         msg = u'%s (%s)' % (e.strerror, e.errno)
@@ -295,7 +300,8 @@ class Discogs(object):
             ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO,
                 [['Small', 'Large'], 1]],
-            ['API Key', TEXT, 'c6e33897b6'],
+            ['API Key (Stored as plain-text. Leave empty to use default.)',
+                TEXT, 'c6e33897b6'],
             ]
 
     def keyword_search(self, text):
@@ -307,7 +313,6 @@ class Discogs(object):
                 return [retrieve_album(r_id, self.covertype)]
             except TypeError:
                 raise RetrievalError('Invalid Discogs Release ID')
-            
         try:
             params = parse_searchstring(text)
         except RetrievalError:
@@ -338,8 +343,12 @@ class Discogs(object):
         self.covertype = image_types[args[1]]
         global search_url
         global album_url
-        search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[2]
-        album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[2]
+        if args[2]:
+            search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[2]
+            album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[2]
+        else:
+            search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + api_key
+            album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + api_key
 
 info = Discogs
 

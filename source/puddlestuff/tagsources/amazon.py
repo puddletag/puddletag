@@ -16,6 +16,9 @@ from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.audioinfo import DATA
 
+default_access_key = 'AKIAJ3KBYRUYQN5PVQGA'
+default_secret_key = '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'
+
 access_key = 'AKIAJ3KBYRUYQN5PVQGA'
 secret_key = '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'
 
@@ -67,9 +70,12 @@ def aws_url(aws_access_key_id, secret, query_dictionary):
     items = [(key, value.encode('utf8')) for key, value in 
         query_dictionary.items()]
     query = urllib.urlencode(sorted(items))
-    
-    hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
-        + query, hashlib.sha256)
+
+    try:
+        hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
+            + query, hashlib.sha256)
+    except TypeError:
+        raise RetrievalError('Invalid Access or Secret Key')
     signature = urllib2.quote(base64.b64encode(hm.digest()))
 
     query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
@@ -293,10 +299,10 @@ class Amazon(object):
             ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO, 
                 [['Small', 'Medium', 'Large'], 1]],
-            ['Access Key (Stored as plain-text)',
-                TEXT, access_key],
-            ['Secret Key (Stored as plain-text)',
-                TEXT, secret_key],
+            ['Access Key (Stored as plain-text. Leave empty for default.)',
+                TEXT, u''],
+            ['Secret Key (Stored as plain-text. Leave empty for default.)',
+                TEXT, u''],
             ]
 
     def keyword_search(self, text):
@@ -376,8 +382,12 @@ class Amazon(object):
         self.covertype = image_types[args[1]]
         global access_key
         global secret_key
-        access_key = args[2]
-        secret_key = args[3]
+        if args[2]:
+            access_key = args[2]
+            secret_key = args[3]
+        else:
+            access_key = default_access_key
+            secret_key = default_secret_key
 
 
 #Required in order to let your tagsource be loaded.

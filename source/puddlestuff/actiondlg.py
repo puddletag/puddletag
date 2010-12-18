@@ -38,6 +38,7 @@ from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR,
 from util import open_resourcefile, PluginFunction
 import functions_dialogs
 from puddlestuff.puddleobjects import ShortcutEditor
+from puddletag import status
 
 READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
@@ -383,7 +384,10 @@ class FunctionDialog(QWidget):
                         unicode(QApplication.translate('Functions', 'No preview for is shown for this function.')))
                     return
                 fields = findfunc.parse_field_list(self.func.tag, audio, self._combotags)
-                val = findfunc.runAction([self.func], audio, {}, fields)
+                files = status['selectedfiles']
+                files = unicode(len(files)) if files else u'1'
+                state = {'__counter': u'1', '__total_files': files}
+                val = findfunc.runAction([self.func], audio, state, fields)
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
             if val is not None:
@@ -851,10 +855,13 @@ class ActionWindow(QDialog):
             funcs = []
             [funcs.extend(func) for func in tempfuncs]
             try:
+                files = status['selectedfiles']
+                files = unicode(len(files)) if files else u'1'
+                state = {'__counter': u'1', '__total_files': files}
                 if self._quickaction:
-                    tags = runQuickAction(funcs, self.example, {}, self._quickaction)
+                    tags = runQuickAction(funcs, self.example, state, self._quickaction)
                 else:
-                    tags = runAction(funcs, self.example, {})
+                    tags = runAction(funcs, self.example, state)
 
                 self._examplelabel.show()
                 self._examplelabel.setText(displaytags(tags))

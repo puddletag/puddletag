@@ -511,6 +511,10 @@ class AllMusic(object):
         self._getcover = args[0]
         self._useid = args[1]
         self._id_field = args[2]
+        if args[2]:
+            spanmap['AMG Album ID'] = self._useid
+        else:
+            spanmap['AMG Album ID'] = 'amg_album_id'
 
 info = AllMusic
 

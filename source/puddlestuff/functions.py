@@ -206,7 +206,7 @@ def import_text(m_tags, pattern, r_tags):
     else:
         pattern = u'/' + pattern
         filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
-        filename = path.normpath(path.join(dirpath, filename[1:]))
+        filename = path.normpath(path.join(dirpath, encode_fn(filename[1:])))
     try:
         return open(filename, 'r').read().decode('utf8')
     except EnvironmentError:
@@ -674,7 +674,8 @@ def tag_dir(m_tags, pattern, r_tags):
     else:
         pattern = u'/' + pattern
         filename = path.splitext(move(m_tags, pattern, r_tags, False)['__path'])[0]
-        filename = path.normpath(path.join(dirpath, os.path.pardir, filename[1:]))
+        filename = path.normpath(path.join(dirpath,
+            os.path.pardir, encode_fn(filename[1:])))
     if filename:
         return {DIRPATH: filename}
 
