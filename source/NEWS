@@ -1,3 +1,13 @@
+18 December 2010 - 0.9.9
+    A bug was discovered in Discogs that'd make it fail on the vast majority of albums (just not the ones I tested with). This release is to fix that. But I've included the following to:
+
+    New Features:
+        Discogs uses the Discogs ID field (which you can define) if it's found in your files.
+        You can use your own Amazon and Discogs API keys.
+        __counter and __total_files which you can use in Functions and Actions.
+    Fixes:
+        Case Sensitivity for field names is handled better.
+
 16 December 2010 - 0.9.8
     New Features:
         Translations
