@@ -80,7 +80,6 @@ def keyword_search(keywords):
     keywords = re.sub('(\s+)', u'+', keywords)
     url = search_url % keywords
     text = urlopen(url)
-    print text
     return parse_search_xml(text)
 
 def parse_album_xml(text):
