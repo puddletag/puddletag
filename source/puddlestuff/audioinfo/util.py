@@ -369,6 +369,7 @@ class CaselessDict(dict):
     
     def __delitem__(self, key):
         dict.__delitem__(self, self._keys[key.lower()])
+        del(self._keys[key.lower()])
 
 class MockTag(object):
     """Use as base for all tag classes."""

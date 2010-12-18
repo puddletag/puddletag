@@ -72,7 +72,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 self._tags[key] = [unicode(value)]
             else:
                 self._tags[key] = [z if isinstance(z, unicode)
-                    else unicode(z, 'utf8') for z in value]
+                    else unicode(z) for z in value]
 
         def copy(self):
             tag = Tag()

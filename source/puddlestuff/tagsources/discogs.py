@@ -7,12 +7,12 @@
 
 #Imports and constants.
 #-----------------------------------------------------------
-import base64, hmac, hashlib, os, re, time, urllib2, urllib, xml
+import base64, hmac, hashlib, os, re, time, urllib2, urllib, xml, re
 
 from xml.dom import minidom
 import sys
 
-from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
+from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring)
 import puddlestuff.tagsources
@@ -76,9 +76,9 @@ def get_text(node):
 
 def keyword_search(keywords):
     write_log(u'Retrieving search results for keywords: %s' % keywords)
-    url = search_url % urllib.quote_plus(keywords)
+    keywords = re.sub('(\s+)', u'+', keywords)
+    url = search_url % keywords
     text = urlopen(url)
-    
     return parse_search_xml(text)
 
 def parse_album_xml(text):
@@ -233,8 +233,20 @@ def search(artist=None, album=None):
     return keyword_search(keywords)
 
 
-#from puddlestuff.tagsources import to_file
+import urlparse
+
+def urlEncodeNonAscii(b):
+    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
+
+def iriToUri(iri):
+    parts= urlparse.urlparse(iri)
+    return urlparse.urlunparse(
+        part.encode('idna') if parti==1 else urlEncodeNonAscii(part.encode('utf-8'))
+        for parti, part in enumerate(parts)
+    )
+
 def urlopen(url):
+    url = iriToUri(url)    
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
     if puddlestuff.tagsources.user_agent:
@@ -282,7 +294,8 @@ class Discogs(object):
         self.preferences = [
             ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO,
-                [['Small', 'Large'], 1]]
+                [['Small', 'Large'], 1]],
+            ['API Key', TEXT, 'c6e33897b6'],
             ]
 
     def keyword_search(self, text):
@@ -323,6 +336,10 @@ class Discogs(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
+        global search_url
+        global album_url
+        search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[2]
+        album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[2]
 
 info = Discogs
 

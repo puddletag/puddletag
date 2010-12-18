@@ -26,19 +26,17 @@ def applyaction(files=None, funcs=None):
     if files is None:
         files = status['selectedfiles']
     r = findfunc.runAction
-    state = {'numfiles': len(files)}
-    state['files'] = files
+    state = {'__total_files': unicode(len(files))}
+    state['__files'] = files
     def func():
         for i, f in enumerate(files):
-            state['filenum'] = i
-            value = r(funcs, f, state)
-            yield value
+            yield r(funcs, f, state)
     emit('writeaction', func(), None, state)
 
 def applyquickaction(files, funcs):
     qa = findfunc.runQuickAction
     selected = status['selectedtags']
-    state = {}
+    state = {'__total_files': unicode(len(selected))}
     t = (qa(funcs, f, state, s.keys()) for f, s in izip(files, selected))
     emit('writeselected', t)
 
@@ -359,10 +357,11 @@ def run_func(selectedfiles, func):
         useaudio = False
 
     function = func.runFunction
-    state = {}
+    state = {'__total_files': unicode(len(selectedtags))}
 
     def tagiter():
-        for selected, f in izip(selectedtags, selectedfiles):
+        for i, (selected, f) in enumerate(izip(selectedtags, selectedfiles)):
+            state['__counter'] = unicode(i + 1)
             fields = findfunc.parse_field_list(func.tag, f, selected.keys())
             rowtags = f.tags
             ret = {}

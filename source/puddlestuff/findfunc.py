@@ -338,13 +338,16 @@ def removeSpaces(text):
     return text.lower()
 
 _varpat = re.compile('%([\w ]+)%')
-def replacevars(text, dictionary):
+def replacevars(text, dictionary, extra = None):
     """Replaces the tags in pattern with their corresponding value in audio.
 
     A tag is a string enclosed by percentages, .e.g. %tag%.
 
     >>>replacevars('%artist% - %title%', {'artist':'Artist', 'title':'Title"}
     Artist - Title."""
+
+    if extra is None:
+        extra = {}
     
     dictionary = stringtags(dictionary)
     start = 0
@@ -352,10 +355,10 @@ def replacevars(text, dictionary):
     append = l.append
     for match in _varpat.finditer(text):
         append(text[start: match.start(0)])
-        try:
-            append(dictionary[match.groups()[0]])
+        try: append(dictionary[match.groups()[0]])
         except KeyError:
-            pass
+            try: append(extra[match.groups()[0]])
+            except KeyError: pass
         start = match.end(0)
     else:
         append(text[start:])
@@ -372,6 +375,9 @@ def runAction(funcs, audio, state = None, quick_action=None):
     
     if state is None:
         state = {}
+    if '__counter' not in state:
+        state['__counter'] = 0
+    state['__counter'] = unicode(int(state['__counter'] + 1))
 
     r_tags = audio
    
@@ -444,7 +450,7 @@ def saveAction(filename, actionname, funcs):
     pickle.dump(actionname, fileobj)
     pickle.dump(funcs, fileobj)
 
-def tagtofilename(pattern, filename, addext=False, extension=None):
+def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     """
     tagtofilename sets the filename of an mp3 or ogg file
     according to the rule specified in pattern.
@@ -498,11 +504,11 @@ def tagtofilename(pattern, filename, addext=False, extension=None):
             return 0
 
     if not addext:
-        return replacevars(getfunc(pattern, tags), tags)
+        return replacevars(getfunc(pattern, tags), tags, state)
     elif addext and (extension is not None):
-        return replacevars(getfunc(pattern, tags), tags) + os.path.extsep + extension
+        return replacevars(getfunc(pattern, tags), tags, state) + os.path.extsep + extension
     else:
-        return replacevars(getfunc(pattern, tags), tags) + os.path.extsep + tags["__ext"]
+        return replacevars(getfunc(pattern, tags), tags, state) + os.path.extsep + tags["__ext"]
 
 def tagtotag(pattern, text, expression):
     """See filenametotag for an implementation example and explanation.

@@ -11,10 +11,13 @@ import base64, hmac, hashlib, os, re, time, urllib2, urllib
 
 from xml.dom import minidom
 
-from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR
+from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError, 
     urlopen, parse_searchstring)
 from puddlestuff.audioinfo import DATA
+
+access_key = 'AKIAJ3KBYRUYQN5PVQGA'
+secret_key = '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'
 
 
 SMALLIMAGE = '#smallimage'
@@ -161,8 +164,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         "Service":u"AWSECommerceService",
         'ItemId': asin,
         'ResponseGroup': u'Tracks'}
-    url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
-        'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
+    url = aws_url(access_key, secret_key, query_pairs)
 
     if isinstance(info, basestring):
         write_log(u'Retrieving using ASIN: %s' % asin)
@@ -204,8 +206,7 @@ def keyword_search(keywords):
             "Service":u"AWSECommerceService",
             'ItemPage': u'1',
             'Keywords': keywords}
-    url = aws_url('AKIAJ3KBYRUYQN5PVQGA', 
-        'vhzCFZHAz7Eo2cyDKwI5gKYbSvEL+RrLwsKfjvDt', query_pairs)
+    url = aws_url(access_key, secret_key, query_pairs)
     xml = urlopen(url)
     return parse_search_xml(xml)
 
@@ -291,7 +292,11 @@ class Amazon(object):
         self.preferences = [
             ['Retrieve Cover', CHECKBOX, True],
             ['Cover size to retrieve', COMBO, 
-                [['Small', 'Medium', 'Large'], 1]]
+                [['Small', 'Medium', 'Large'], 1]],
+            ['Access Key (Stored as plain-text)',
+                TEXT, access_key],
+            ['Secret Key (Stored as plain-text)',
+                TEXT, secret_key],
             ]
 
     def keyword_search(self, text):
@@ -369,6 +374,10 @@ class Amazon(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
+        global access_key
+        global secret_key
+        access_key = args[2]
+        secret_key = args[3]
 
 
 #Required in order to let your tagsource be loaded.
