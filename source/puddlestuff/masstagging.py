@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import pdb, os, glob, string, sys
-sys.path.insert(0, '/home/keith/Documents/python/puddletag')
+import pdb, os, glob, string, sys, traceback
 
 from copy import deepcopy
 from functools import partial
@@ -14,7 +13,7 @@ from puddlestuff.puddleobjects import (ListBox, ListButtons, OKCancel,
     PuddleConfig, PuddleThread, ratio, winsettings, natcasecmp)
 import puddlestuff.resource
 from puddlestuff.tagsources import RetrievalError
-from puddlestuff.util import split_by_tag, to_string
+from puddlestuff.util import split_by_tag, to_string, escape_html
 from puddlestuff.webdb import strip
 from audioinfo import PATH
 
@@ -352,13 +351,17 @@ def search(tagsources, configs, audios,
             artist = to_string(artists.keys()[0])
         else:
             artist = u'Various Artists'
-        set_status(QApplication.translate('Masstagging', u'<br />Starting search for: <b>%1 - %2</b>)').arg(artist).arg(album))
+
+        set_status(QApplication.translate('Masstagging', '<br />Starting album search.'))
+        set_status(QApplication.translate('Masstagging', 'artist: %1').arg(artist if artist else '<b>No artist found</b>'))
+        set_status(QApplication.translate('Masstagging', 'album: %1').arg(album if album else '<b>No album name found</b>'))
+
         files = []
         results = []
         [files.extend(z) for z in artists.values()]
         for config in configs:
             tagsource = source_names[config[0]]
-            set_status(QApplication.translate('Masstagging', u'Polling <b>%1<b>: ').arg(config[0]))
+            set_status(QApplication.translate('Masstagging', 'Polling <b>%1</b>: ').arg(config[0]))
             if not files:
                 continue
             group = split_by_tag(files, *tagsource.group_by)
@@ -367,12 +370,12 @@ def search(tagsources, configs, audios,
             if result:
                 results.append([tagsource, result, files, config])
                 if len(result) == 1:
-                    insert_status(QApplication.translate('Masstagging', u'Exact match found.'))
+                    insert_status(QApplication.translate('Masstagging', 'Exact match found.'))
                 else:
-                    insert_status(QApplication.translate('Masstagging', u'%1 albums found.').arg(unicode(len(result))))
+                    insert_status(QApplication.translate('Masstagging', '%1 albums found.').arg(unicode(len(result))))
             elif not result:
                 results.append([tagsource, [], files, config])
-                insert_status(QApplication.translate('Masstagging', u'No albums found'))
+                insert_status(QApplication.translate('Masstagging', 'No albums found'))
         yield results
 
 def save_configs(configs, filename=CONFIG):
@@ -856,11 +859,13 @@ class Retriever(QWidget):
             text = unicode(text, 'utf8', 'replace')
         if text.startswith(u':insert'):
             text = text[len(u':insert'):]
-            self._log.textCursor().setPosition(len(self._log.toPlainText()))
+            self._log.textCursor().setPosition(len(self._log.toPlainText()) - 1)
             self._log.insertHtml(text)
         else:
+            self._log.textCursor().setPosition(len(self._log.toPlainText()))
             self._log.append(text)
         mutex.unlock()
+        QApplication.processEvents()
     
     def changeProfile(self, index):
         self._configs = self._profiles[index]
@@ -917,6 +922,12 @@ class Retriever(QWidget):
     def _start(self):
         files = self._status['selectedfiles']
         source_configs = self._configs[SOURCE_CONFIGS]
+
+        if not source_configs:
+            set_status(QApplication.translate('Masstagging', '<b>No tag sources were added to this profile. Exiting.'))
+            self._startButton.setText(QApplication.translate('Masstagging', '&Start'))
+            return
+        
         pattern = self._configs[PATTERN]
         album_bound = self._configs[ALBUM_BOUND] / 100.0
         track_bound = self._configs[TRACK_BOUND] / 100.0
@@ -924,10 +935,12 @@ class Retriever(QWidget):
         jfdi = self._configs[JFDI]
         existing = self._configs[EXISTING_ONLY]
         self.emit(SIGNAL('enable_preview_mode'))
+        
         def method():
             try:
                 results = search(self.tagsources, source_configs, 
                     files, pattern)
+
                 for result in results:
                     if not self.wasCanceled:
                         try:
@@ -936,13 +949,18 @@ class Retriever(QWidget):
                                 track_bound, track_fields, jfdi, existing)
                             thread.emit(SIGNAL('setpreview'), matched)
                         except RetrievalError, e:
-                            self._appendLog(QApplication.translate('Masstagging', '<b>Error: %1</b>').arg(unicode(e)))
+                            set_status(QApplication.translate('Masstagging',
+                                '<b>Error:</b> %1').arg(escape_html(unicode(e))))
             except RetrievalError, e:
-                self._appendLog(QApplication.translate('Masstagging', '<b>Error: %1</b>').arg(unicode(e)))
-                self._appendLog(QApplication.translate('Masstagging', '<b>Stopping</b>'))
+                set_status(QApplication.translate('Masstagging',
+                    '<br /><b>Error:</b> %1').arg(escape_html(unicode(e))))
+                set_status(QApplication.translate('Masstagging',
+                    '<br /><b>Stopping due to error.</b>'))
+                return True
         
         def finished(value):
-            self._appendLog(QApplication.translate('Masstagging', '<b>Lookup completed.</b>'))
+            if not (value is True):
+                set_status(QApplication.translate('Masstagging', '<br /><b>Lookups completed.</b>'))
             self._startButton.setText(QApplication.translate('Masstagging', '&Start'))
             self.wasCanceled = False
         

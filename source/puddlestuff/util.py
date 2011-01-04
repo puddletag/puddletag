@@ -30,6 +30,13 @@ def equal(audio1, audio2, tags=('artist', 'album', 'title')):
             return False
     return True
 
+def escape_html(txt):
+    result = txt
+    result = result.replace(u"&", u"&amp;")
+    result = result.replace(u"<", u"&lt;")
+    result = result.replace(u">", u"&gt;")
+    return result
+
 def matching(audios, listing):
     ret = {}
     for audio in audios:

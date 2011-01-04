@@ -35,7 +35,7 @@ from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
 from functools import partial
 from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
     SAVEDIR, ACTIONDIR, BLANK)
-from util import open_resourcefile, PluginFunction
+from util import open_resourcefile, PluginFunction, escape_html
 import functions_dialogs
 from puddlestuff.puddleobjects import ShortcutEditor
 from puddletag import status
@@ -43,22 +43,15 @@ from puddletag import status
 READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
 
-def _escape_text(txt):
-    result = txt
-    result = result.replace(u"&", u"&amp;")
-    result = result.replace(u"<", u"&lt;")
-    result = result.replace(u">", u"&gt;")
-    return result
-
 def to_str(v):
     if isempty(v):
-        return _escape_text(BLANK)
+        return escape_html(BLANK)
     elif isinstance(v, unicode):
-        return _escape_text(v)
+        return escape_html(v)
     elif isinstance(v, str):
-        return _escape_text(v.decode('utf8', 'replace'))
+        return escape_html(v.decode('utf8', 'replace'))
     else:
-        return _escape_text(SEPARATOR.join(v))
+        return escape_html(SEPARATOR.join(v))
 
 def displaytags(tags):
     if tags:

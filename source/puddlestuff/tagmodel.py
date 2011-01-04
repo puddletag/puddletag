@@ -487,7 +487,7 @@ class TagModel(QAbstractTableModel):
         return self._previewMode
     
     def _set_previewMode(self, value):
-        if not value:
+        if not value and self._previewMode:
             rows = []
             for row, audio in enumerate(self.taginfo):
                 if audio.preview:
