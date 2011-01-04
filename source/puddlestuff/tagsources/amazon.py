@@ -7,7 +7,7 @@
 
 #Imports and constants.
 #-----------------------------------------------------------
-import base64, hmac, hashlib, os, re, time, urllib2, urllib
+import base64, hmac, hashlib, os, re, time, urllib2, urllib, pdb
 
 from xml.dom import minidom
 
@@ -106,7 +106,10 @@ def parse_album_xml(text, album=None):
     """Parses the retrieved xml for an album and get's the track listing."""
     doc = minidom.parseString(text)
     album_item = doc.getElementsByTagName('Item')[0]
-    tracklist = album_item.getElementsByTagName('Tracks')[0]
+    try:
+        tracklist = album_item.getElementsByTagName('Tracks')[0]
+    except IndexError:
+        raise RetrievalError('Invalid XML returned.')
     tracks = []
     discs = [disc for disc in tracklist.childNodes if 
         not disc.nodeType == disc.TEXT_NODE]

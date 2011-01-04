@@ -13,8 +13,12 @@ from puddlestuff.puddleobjects import PuddleConfig
 
 Release = brainzmodel.Release
 RELEASETYPES = (Release.TYPE_OFFICIAL)
-RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
-    releaseEvents=True, labels=True, ratings=True, isrcs=True)
+try:
+    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
+        releaseEvents=True, labels=True, ratings=True, isrcs=True)
+except (TypeError, ValueError):
+    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
+        releaseEvents=True, labels=True, ratings=True)
 
 ARTIST_INCLUDES = ws.ArtistIncludes(ratings=True,
     releases=[Release.TYPE_OFFICIAL], releaseRelations=True,

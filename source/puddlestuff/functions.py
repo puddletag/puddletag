@@ -264,6 +264,7 @@ Match filename's &case:, check'''
     tags = r_tags
     if state is None:
         state = {}
+    
     dirpath = tags.dirpath
     key = 'image_dirpath' + dirpath
     if key in state:
@@ -273,14 +274,18 @@ Match filename's &case:, check'''
     images = []
     pictures = fnmatch(filepatterns, files, matchcase)
     for pic in pictures:
-        image = _load_image(os.path.join(dirpath, pic))
-        key = 'loaded_image' + pic
+        filename = os.path.join(dirpath, pic)
+        key = 'loaded_image' + filename
         if key in state:
             image = deepcopy(state[key])
         else:
+            image = _load_image(filename)
             if not image:
                 continue
-            image[audioinfo.DESCRIPTION] = formatValue(tags, desc)
+            desc = formatValue(tags, desc)
+            if desc is None:
+                desc = u''
+            image[audioinfo.DESCRIPTION] = desc
             image[audioinfo.IMAGETYPE] = 3
             state[key] = image
         images.append(image)
@@ -657,7 +662,7 @@ def find(text, text1):
 def sub(text,text1):
     D = decimal.Decimal
     try:
-        return unicode((D(text) - D(text1)).normalize())
+        return  unicode(D(text) - D(text1))
     except decimal.InvalidOperation:
         return
 

@@ -616,7 +616,10 @@ class TagModel(QAbstractTableModel):
         if isinstance(val, basestring):
             return val.replace(u'\n', u' ')
         else:
-            return u'\\\\'.join(val).replace(u'\n', u' ')
+            try:
+                return u'\\\\'.join(val).replace(u'\n', u' ')
+            except TypeError:
+                return unicode(val)
 
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
@@ -1423,7 +1426,7 @@ class TagTable(QTableView):
             QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
             model.emit(SETDATAERROR,
                 QApplication.translate("Table",
-                    "An error occurred while writing to <b>%s</b>: (%s)").arg(
+                    "An error occurred while writing to <b>%1</b>: (%2)").arg(
                         currentfile[PATH]).arg(editor.writeError.strerror))
             return
         

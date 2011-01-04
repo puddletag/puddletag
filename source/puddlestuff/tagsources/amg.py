@@ -9,7 +9,7 @@ from functools import partial
 from collections import defaultdict
 from puddlestuff.util import split_by_tag
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
-    urlopen, parse_searchstring, retrieve_cover, get_encoding)
+    urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
 from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
 
@@ -389,7 +389,7 @@ def retrieve_album(url, coverurl=None, id_field=None):
 def search(album):
     search_url = create_search(album.replace(u'/', u' '))
     write_log(u'Search URL - %s' % search_url)
-    return urlopen(search_url.encode('utf8'))
+    return urlopen(iri_to_uri(search_url))
 
 def text(z):
     text = z.all_recursive_text().strip()

@@ -178,9 +178,10 @@ class RootItem(object):
         return 0
     
     def sort(self, order=None, reverse=False):
-        sortfunc = lambda item: u''.join([item.itemData.get(key, '') 
-            for key in order]).lower()
+        sortfunc = lambda item: u''.join([
+            to_string(item.itemData.get(key, u'')) for key in order]).lower()
         self.childItems.sort(None, sortfunc, reverse)
+        
 
 class TreeItem(RootItem):
     def __init__(self, data, pattern, parent=None):

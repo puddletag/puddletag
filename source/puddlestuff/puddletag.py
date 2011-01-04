@@ -734,6 +734,8 @@ class MainWin(QMainWindow):
         s(self)
     
     def writeSinglePreview(self, d):
+        if not status['previewmode']:
+            return
         model = self._table.model()
         rows = status['selectedrows']
         setRowData = model.setRowData

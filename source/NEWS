@@ -1,3 +1,6 @@
+20 December 2010 - 0.9.11
+    Another bug where the Tag Sources dialog would freeze when retrieving albums is fixed.
+
 18 December 2010 - 0.9.9
     A bug was discovered in Discogs that'd make it fail on the vast majority of albums (just not the ones I tested with). This release is to fix that. But I've included the following to:
 

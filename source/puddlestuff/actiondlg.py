@@ -211,7 +211,11 @@ class FunctionDialog(QWidget):
         self._combotags = []        
 
         if showcombo:
-            fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
+            try:
+                fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
+            except:
+                pdb.set_trace()
+                fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
         else:
             fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
 
@@ -617,7 +621,8 @@ class CreateAction(QDialog):
         self.connect(self.win, SIGNAL("valschanged"), self.addBuddy)
 
     def edit(self):
-        self.win = CreateFunction(self.functions[self.listbox.currentRow()], self, example = self.example)
+        self.win = CreateFunction(self.functions[self.listbox.currentRow()],
+            parent=self, example = self.example)
         self.win.setModal(True)
         self.win.show()
         self.connect(self.win, SIGNAL("valschanged"), self.editBuddy)
@@ -637,7 +642,8 @@ class CreateAction(QDialog):
         self.emit(SIGNAL("donewithmyshit"), self.functions)
 
     def duplicate(self):
-        self.win = CreateFunction(self.functions[self.listbox.currentRow()], self, example = self.example)
+        self.win = CreateFunction(self.functions[self.listbox.currentRow()],
+            parent=self, example = self.example)
         self.win.setModal(True)
         self.win.show()
         self.connect(self.win, SIGNAL("valschanged"), self.addBuddy)

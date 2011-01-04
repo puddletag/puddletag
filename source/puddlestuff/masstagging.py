@@ -282,6 +282,10 @@ def retrieve(results, album_bound = 0.7):
             if stop:
                 set_status(QApplication.translate('Masstagging', '<b>%1</b>: Stopping.').arg(tagsource.name))
                 break
+
+    if not results:
+        files = []
+    
     ret = []
     for track in tracks:
         ret.append(dict([(key, remove_dupes(value)) for 
@@ -355,6 +359,8 @@ def search(tagsources, configs, audios,
         for config in configs:
             tagsource = source_names[config[0]]
             set_status(QApplication.translate('Masstagging', u'Polling <b>%1<b>: ').arg(config[0]))
+            if not files:
+                continue
             group = split_by_tag(files, *tagsource.group_by)
             field = group.keys()[0]
             result = tagsource.search(field, group[field])

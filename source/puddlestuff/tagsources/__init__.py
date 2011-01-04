@@ -7,6 +7,7 @@ from PyQt4.QtCore import QObject, SIGNAL
 from collections import defaultdict
 import urllib2, socket, urllib
 from sgmllib import SGMLParser
+import urlparse
 
 all = ['musicbrainz', 'discogs', 'amazon']
 
@@ -49,6 +50,14 @@ def get_encoding(page, decode=False, default=None):
         return encoding, page.decode(encoding, 'replace') if encoding else page
     else:
         return encoding
+
+#From http://stackoverflow.com/questions/4389572 by bobince
+def iri_to_uri(iri):
+    parts= urlparse.urlparse(iri)
+    return urlparse.urlunparse(
+        part.encode('idna') if parti==1 else url_encode_non_ascii(part.encode('utf-8'))
+        for parti, part in enumerate(parts)
+    )
 
 def parse_searchstring(text):
     try:
@@ -104,6 +113,9 @@ def to_file(data, name):
     f = open(name, 'w')
     f.write(data)
     f.close()
+
+def url_encode_non_ascii(b):
+    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
 
 def urlopen(url, mask=True):
     try:

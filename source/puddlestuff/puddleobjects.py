@@ -310,7 +310,7 @@ def get_icon(name, backup):
     try:
         return QIcon.fromTheme(name, QIcon(backup))
     except AttributeError:
-        return QIcon(backup_name)
+        return QIcon(backup)
 
 def singleerror(parent, msg):
     QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok,
@@ -1605,13 +1605,12 @@ class PicWidget(QWidget):
         the image in the current file to disk."""
         if self.currentImage > -1:
             filedlg = QFileDialog()
-            filedlg.setNameFilters(filters.keys())
             if self.lastfilename:
                 tempfilename = os.path.splitext(self.lastfilename)[0] + u'.jpg'
             else:
-                tempfilename = ''
+                tempfilename = 'folder.jpg'
             filename = filedlg.getSaveFileName(self,
-                QApplication.translate("Artwork", 'Save as...'), tempfilename,
+                QApplication.translate("Artwork", 'Save artwork as...'), tempfilename,
                 QApplication.translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
             if not filename:
                 return

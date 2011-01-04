@@ -14,7 +14,7 @@ import sys
 
 from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
-    urlopen, parse_searchstring)
+    urlopen, parse_searchstring, iri_to_uri)
 import puddlestuff.tagsources
 from puddlestuff.audioinfo import DATA
 import urllib2, gzip, cStringIO, pdb, socket
@@ -232,20 +232,8 @@ def search(artist=None, album=None):
     return keyword_search(keywords)
 
 
-import urlparse
-
-def urlEncodeNonAscii(b):
-    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
-
-def iriToUri(iri):
-    parts= urlparse.urlparse(iri)
-    return urlparse.urlunparse(
-        part.encode('idna') if parti==1 else urlEncodeNonAscii(part.encode('utf-8'))
-        for parti, part in enumerate(parts)
-    )
-
 def urlopen(url):
-    url = iriToUri(url)    
+    url = iri_to_uri(url)
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
     if puddlestuff.tagsources.user_agent:
