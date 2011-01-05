@@ -49,6 +49,7 @@ def remove_tag(tag, parent):
         for f in files:
             try:
                 _remove_tag(f, tag)
+                yield None
             except (IOError, OSError), e:
                 filename = f[audioinfo.PATH]
                 m = unicode(QApplication.translate("Defaults",

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
+from PyQt4.QtGui import QAction
 from StringIO import StringIO
 from copy import copy, deepcopy
 from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
@@ -161,6 +162,11 @@ def write(audio, tags, save_mtime = True):
 def real_filetags(mapping, revmapping, tags):
     filefields = [mapping.get(key, key) for key in FILETAGS]
     return dict([(revmapping.get(key, key), tags[key]) for key in filefields if key in tags])
+
+def separator(parent=None):
+    s = QAction(parent)
+    s.setSeparator(True)
+    return s
 
 def without_file(mapping, tags):
     filefields = [mapping.get(key, key) for key in FILETAGS]

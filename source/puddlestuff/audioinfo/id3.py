@@ -670,7 +670,9 @@ class Tag(TagBase):
 
     info = property(_info)
 
-    def save(self):
+    def save(self, v1=None):
+        if v1 is None:
+            v1 = v1_option
         """Writes the tags to file."""
         filename = self.filepath
         if self._mutfile.tags is None:
@@ -715,7 +717,7 @@ class Tag(TagBase):
         #pdb.set_trace()
 
         audio.tags.filename = self.filepath
-        audio.tags.save(v1=v1_option)
+        audio.tags.save(v1=v1)
         self._originaltags = audio.keys()
 
     @setdeco
@@ -768,5 +770,18 @@ class Tag(TagBase):
             else:
                 self._tags.update(create_usertext(key, value))
 
+    def to_encoding(self, encoding = 3):
+        frames = []
+        saved = []
+        for frame in self._tags.values():
+            if hasattr(frame, 'encoding'):
+                frames.append((frame, frame.encoding))
+                frame.encoding = encoding
+        try:
+            self.save(v1=1)
+        except:
+            for frame, enc in frames:
+                frame.encoding = enc
+            raise
 
 filetype = [PuddleID3FileType, Tag, 'ID3']

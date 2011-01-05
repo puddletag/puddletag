@@ -125,14 +125,12 @@ class FrameCombo(QGroupBox):
     
     def _disablePreview(self):
         
-        for field, combo in self.combos.items():
-            try:
-                self.disconnect(combo.lineEdit(), TEXTEDITED,
-                    self._funcs[field])
-                self.disconnect(combo.lineEdit(), EDITFINISHED, self.save)
-            except KeyError:
-                break
-        self._funcs = {}
+        for field, combo in self.combos.iteritems():
+            edit = QLineEdit()
+            combo.setLineEdit(edit)
+            completer = combo.completer()
+            completer.setCaseSensitivity(Qt.CaseSensitive)
+            completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
 
     def disableCombos(self):
         for z in self.combos:
@@ -140,7 +138,8 @@ class FrameCombo(QGroupBox):
             self.combos[z].setEnabled(False)
     
     def _enablePreview(self):
-        def get_func(field, combo):
+
+        for field, combo in self.combos.iteritems():
             func = partial(self._emitChange, field)
             edit = QLineEdit()
             combo.setLineEdit(edit)
@@ -149,8 +148,6 @@ class FrameCombo(QGroupBox):
             completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
             self.connect(edit, TEXTEDITED, func)
             self.connect(edit, EDITFINISHED, self.save)
-            return field, func
-        self._funcs = dict([get_func(*i) for i in self.combos.items()])
     
     def _emitChange(self, field, text):
         text = unicode(text)

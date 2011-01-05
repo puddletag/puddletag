@@ -39,7 +39,8 @@ from copy import copy
 
 pyqtRemoveInputHook()
 
-from constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGNALS
+from constants import (ALWAYS, FILESLOADED, VIEWFILLED,
+    FILESSELECTED, ENABLESIGNALS, MODULES)
 
 #A global variable that hold the status of
 #various puddletag statuses.
@@ -212,8 +213,8 @@ def load_plugins():
     puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
     puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
     puddlestuff.musiclib.extralibs = plugins[constants.MUSICLIBS]
-    
-    return plugins[constants.DIALOGS]
+
+    return plugins[constants.DIALOGS], plugins[constants.MODULES]
 
 class PreviewLabel(QLabel):
     def __init__(self, *args, **kwargs):
@@ -254,7 +255,7 @@ class MainWin(QMainWindow):
             ('onetomanypreview', self.writeSinglePreview)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
-        plugin_dialogs = load_plugins()
+        plugin_dialogs, plugin_modules = load_plugins()
 
         self.setWindowTitle("puddletag")
         self.setDockNestingEnabled(True)
@@ -311,6 +312,10 @@ class MainWin(QMainWindow):
         connect_action_shortcuts(all_actions)
         create_context_menus(controls, all_actions)
         status['actions'] = all_actions
+
+        for m in plugin_modules:
+            if hasattr(m, 'init'):
+                m.init(parent=self)
 
         for win in plugin_dialogs:
             #try:
