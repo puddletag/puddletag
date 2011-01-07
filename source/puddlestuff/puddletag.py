@@ -335,6 +335,7 @@ class MainWin(QMainWindow):
         if connect:
             connect_control(PuddleDock._controls[name], controls)
         dock.setVisible(visibility)
+        self.restoreDockWidget(dock)
 
     def addShortcuts(self, menu_title, actions, toolbar=False, save=False):
         if not actions:
@@ -547,7 +548,6 @@ class MainWin(QMainWindow):
         h = self._table.horizontalHeader()
         h.restoreState(settings.value('table/header').toByteArray())
         self.restoreState(settings.value('main/state').toByteArray())
-        
         
         gensettings = {}
         controls = PuddleDock._controls.values()

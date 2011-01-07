@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #rhythmbox.py
 
 #Copyright (C) 2008-2009 concentricpuddle
@@ -19,15 +20,12 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from xml.dom import minidom
+from collections import defaultdict
 import pdb
 from os import path
 import sys
 import urllib, os
-try:
-    import puddlestuff.audioinfo as audioinfo
-except:
-    sys.path.insert(1, '..')
-    import audioinfo
+import puddlestuff.audioinfo as audioinfo
 FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
@@ -52,11 +50,11 @@ def getFilename(filename):
 
     if filename.startswith(u'file://'):
         filename = filename[len(u'file://'):]
-        return {u'__folder': path.dirname(filename),
-                FILENAME: filename,
-                PATH: path.basename(filename),
-                u"__folder": path.dirname(filename),
-                u"__ext": path.splitext(filename)[1][1:]}
+        return {'__dirpath': path.dirname(filename),
+                PATH: filename,
+                FILENAME: path.basename(filename),
+                "__ext": path.splitext(filename)[1][1:],
+                "__dirname": path.basename(path.dirname(filename))}
 
 getTime = lambda date: audioinfo.strtime(int(date))
 getCreated = lambda created: {u'__created': getTime(created)}
@@ -74,7 +72,8 @@ u'duration': getLength,
 u'file-size': u'__size',
 u'location': getFilename,
 u'first-seen': getCreated,
-u'last-seen': getModified,
+u'mtime': getModified,
+u'last-seen': '__last_seen',
 u'bitrate': getBitRate,
 u'disc-number': u'discnumber'}
 
@@ -100,6 +99,112 @@ RECONVERSION = {
 
 SUPPORTEDTAGS = ['artist', 'genre', 'title', 'track', '__size', 'album']
 
+class DBParser(ContentHandler):
+    indent = " " * 4
+    def __init__ (self):
+        #Information is stored as follows:
+        #self.albums is a dictionary with each key being an artist.
+        #self.albums[key] is also a dictionary with album names as keys
+        #and an integer specifying the index of the album in self.tracks
+        #self.tracks being a list of lists, each of which contains the
+        #track metadata for an album as dictionaries.
+        self.tagval = ""
+        self.name = ""
+        self.stargetting = False
+        self.values = {}
+        self.current = "#nothing"
+        self.tracks = []
+        self.albums = defaultdict(lambda: {})
+        self.extravalues = []
+        self.extras = False
+        self.extratype = ""
+
+    def characters (self, ch):
+        try:
+            self.values[self.current] += ch
+        except KeyError:
+            self.values[self.current] = ch
+
+    def endElement(self, name):
+        if name == "entry" and self.stargetting:
+            self.stargetting = False
+
+            if not self.extras:
+                tag = {}
+                for field, value in self.values.items():
+                    try:
+                        tag.update(CONVERSION[field](value.strip()))
+                    except TypeError:
+                        tag[CONVERSION[field]] = value.strip()
+                    except KeyError:
+                        tag['#' + field] = value.strip()
+                
+                f = ((k, v.strip()) for k,v in tag.items())
+                tag = dict((k,v) for k,v in f if v)
+
+                album = tag.get('album', u'')
+                artist = tag.get('artist', u'')
+
+                albums = self.albums[artist]
+                if album not in albums:
+                    albums[album] = len(self.tracks)
+                    self.tracks.append([tag])
+                else:
+                    self.tracks[albums[album]].append(tag)
+            else:
+                x = ((k, v.strip()) for k,v in self.values.items())
+                x = dict((k,v) for k,v in x if v)
+                x['name'] = self.extratype
+                self.extratype = ""
+                self.extravalues.append(x)
+                self.extras = False
+            self.values = {}
+
+    def _escapedText(self, txt):
+        result = txt
+        result = result.replace("&", "&amp;")
+        result = result.replace("<", "&lt;")
+        result = result.replace(">", "&gt;")
+        return result
+
+    def parse_file(self, filename):
+        parser = make_parser()
+        parser.setContentHandler(self)
+        try:
+            parser.parse(filename)
+        except ValueError , detail:
+            if not os.path.exists(filename):
+                msg = "%s does not exist." % filename
+            else:
+                msg = "%s is not a valid Rhythmbox XML database." % filename
+            raise musiclib.MusicLibError(0, msg)
+        except (IOError, OSError), detail:
+            if not os.path.exists(filename):
+                msg = "%s does not exist." % filename
+            else:
+                msg = detail.strerror()
+            raise musiclib.MusicLibError(0, msg)
+        self.filename = filename
+        return self.albums, self.tracks
+
+    def startElement(self, name, attrs):
+        def startelement(name, attrs):
+            if name == 'entry':
+                if attrs.get('type') == 'song':
+                    self.stargetting = True
+                else:
+                    self.extratype = attrs.get('type')
+                    self.extras = True
+                    self.stargetting = True
+            if self.stargetting and name != 'entry':
+                self.current = name
+                self.values[name] = ""
+        if name == 'rhythmdb':
+            version = attrs.get('version')
+            self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
+                u'  <rhythmdb version="%s">' % unicode(version)
+            self.startElement = startelement
+    
 
 class RhythmDB(ContentHandler):
     indent = " " * 4
@@ -383,7 +488,6 @@ class RhythmDB(ContentHandler):
                     break
         return tracks
 
-
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
@@ -412,7 +516,6 @@ class ConfigWindow(QWidget):
         if filename:
             self.dbpath.setText(filename)
 
-
     def getLibClass(self):
         return RhythmDB(unicode(self.dbpath.text()))
 
@@ -423,4 +526,10 @@ def loadLibrary():
     settings = QSettings()
     return RhythmDB(unicode(settings.value('Library/dbpath').toString()))
 
-
+if __name__ == '__main__':
+    k = DBParser()
+    x, y = k.parse_file('rdb.xml')
+    #import pdb
+    #pdb.set_trace()
+    print [i for i, z in enumerate(y) if len(z) > 1]
+    print x.keys()[0], x[x.keys()[0]], y[34]

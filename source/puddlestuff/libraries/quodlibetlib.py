@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 import cPickle as pickle
 from puddlestuff.audioinfo.util import (FILENAME, DIRPATH, PATH, EXTENSION, READONLY,
     FILETAGS, INFOTAGS, stringtags, getinfo, strlength, MockTag, isempty, 
-    lngtime, lngfrequency, lnglength, setdeco, getdeco)
+    lngtime, lngfrequency, lnglength, setdeco, getdeco, DIRNAME)
 import puddlestuff.audioinfo as audioinfo
 model_tag = audioinfo.model_tag
 from puddlestuff.musiclib import MusicLibError
@@ -33,28 +33,32 @@ timetags = ['~#added', '~#lastplayed', '~#laststarted']
 timefunc = lambda key: lambda value : {'__%s' % key[2:]: strtime(value)}
 mapping = dict([(key, timefunc(key)) for key in timetags])
 
-mapping.update({'tracknumber': lambda value: {'track': [value]},
-                '~#bitrate' : lambda value: {'__bitrate': strbitrate(value)},
-                '~#length': lambda value: {'__length': strlength(value)},
-                '~#playcount': lambda value: {'_playcount': [unicode(value)]},
-                '~#rating': lambda value: {'_rating': [unicode(value)]},
-                '~#skipcount': lambda value: {'_skipcount': [unicode(value)]},
-                '~mountpoint': lambda value: {'__mountpoint': value},
-                '~#mtime': lambda value : {'__modified': strtime(value)},
-                })
+mapping.update({
+    'tracknumber': lambda value: {'track': [value]},
+    '~#bitrate' : lambda value: {'__bitrate': strbitrate(value)},
+    '~#length': lambda value: {'__length': strlength(value)},
+    '~#playcount': lambda value: {'_playcount': [unicode(value)]},
+    '~#rating': lambda value: {'_rating': [unicode(value)]},
+    '~#skipcount': lambda value: {'_skipcount': [unicode(value)]},
+    '~mountpoint': lambda value: {'__mountpoint': value},
+    '~#mtime': lambda value : {'__modified': strtime(value)},
+    '~picture': lambda value: {'__picture': value},
+    })
 
 timetags = ['__added', '__lastplayed', '__laststarted',]
 timefunc = lambda key: lambda value : {'~#%s' % key[2:]: lngtime(value)}
 revmapping = dict([(key, timefunc(key)) for key in timetags])
-revmapping.update({'track': lambda value: {'tracknumber': value},
-                '__bitrate' : lambda value: {'~#bitrate': lngfrequency(value)},
-                '__length': lambda value: {'~#length': lnglength(value)},
-                '_playcount': lambda value: {'~#playcount': int(value)},
-                '_rating': lambda value: {'~#rating': float(value)},
-                '_skipcount': lambda value: {'~#skipcount': int(value)},
-                '__mountpoint': lambda value: {'~mountpoint': value},
-                '__modified': lambda value : {'~#mtime': lngtime(value)},
-                })
+revmapping.update({
+    'track': lambda value: {'tracknumber': value},
+    '__bitrate' : lambda value: {'~#bitrate': lngfrequency(value)},
+    '__length': lambda value: {'~#length': lnglength(value)},
+    '_playcount': lambda value: {'~#playcount': int(value)},
+    '_rating': lambda value: {'~#rating': float(value)},
+    '_skipcount': lambda value: {'~#skipcount': int(value)},
+    '__mountpoint': lambda value: {'~mountpoint': value},
+    '__modified': lambda value : {'~#mtime': lngtime(value)},
+    '__picture': lambda value: {'~picture': to_string(value)},
+    })
 
 class Tag(MockTag):
     """Use as base for all tag classes."""
@@ -64,7 +68,8 @@ class Tag(MockTag):
     _hash = {PATH: 'filepath',
             FILENAME:'filename',
             EXTENSION: 'ext',
-            DIRPATH: 'dirpath'}
+            DIRPATH: 'dirpath',
+            DIRNAME: 'dirname'}
 
     def __init__(self, libclass, libtags):
         MockTag.__init__(self)
@@ -73,6 +78,8 @@ class Tag(MockTag):
         self._libtags = libtags
         tags = {}
         for key, value in libtags.items():
+            if not value:
+                continue
             if key in mapping:
                 tags.update(mapping[key](value))
             else:
@@ -86,13 +93,10 @@ class Tag(MockTag):
         self._tags['__size'] = self.size
         self.accessed = info['__accessed']
         self._tags['__accessed'] = self.accessed
-        
 
     @getdeco
     def __getitem__(self, key):
-        if key in self._tags:
-            return self._tags[key]
-        return ['']
+        return self._tags[key]
 
     @setdeco
     def __setitem__(self, key, value):
@@ -112,8 +116,6 @@ class Tag(MockTag):
             self._tags[key] = [unicode(z) for z in value]
 
     def save(self, justrename = False):
-        if justrename:
-            return
         libtags = self._libtags
         tags = self._tags
         newartist = tags.get('artist', [u''])
@@ -152,15 +154,12 @@ class Tag(MockTag):
 Tag = audioinfo.model_tag(Tag)
 
 class QuodLibet(object):
-    def __init__(self, filepath, config = None):
+    def __init__(self, filepath):
         self.edited = False
         self._tracks = pickle.load(open(filepath, 'rb'))
-        if not config:
-            config = os.path.join(os.path.dirname(filepath), u'config')
-        try:
-            quodlibet.config.init(config)
-        except ValueError:
-            "Raised if this method's called twice."
+
+        quodlibet.config.init()
+
         self._filepath = filepath
         cached = defaultdict(lambda: defaultdict(lambda: []))
         for track in self._tracks:
@@ -216,8 +215,8 @@ class QuodLibet(object):
         os.rename(filepath, self._filepath)
 
     def delete(self, track):
-        artist = to_string(track['artist'])
-        album = to_string(track['album'])
+        artist = to_string(track.get('artist', u''))
+        album = to_string(track.get('album', u''))
         self._cached[artist][album].remove(track)
         self._tracks.remove(track)
 
@@ -245,10 +244,6 @@ class QuodLibet(object):
 
     def update(self, artist, album, track):
         cached = self._cached
-        if not artist:
-            artist = None
-        if not album:
-            album = None
         cached[artist][album].remove(track)
         if not cached[artist][album]:
             del(cached[artist][album])
@@ -302,16 +297,6 @@ class InitWidget(QWidget):
         hbox.addWidget(select_db)
         vbox.addLayout(hbox)
 
-        vbox.addStretch()
-        vbox.addWidget(label(QApplication.translate("QuodLibet", '&Config Path'), self.configpath))
-
-        hbox = QHBoxLayout()
-        select_config = QPushButton(QApplication.translate("QuodLibet", "..."))
-        self.connect(select_config, SIGNAL('clicked()'), self.select_config)
-        hbox.addWidget(self.configpath)
-        hbox.addWidget(select_config)
-        vbox.addLayout(hbox)
-
         vbox.addStretch(1)
         self.setLayout(vbox)
 
@@ -323,19 +308,10 @@ class InitWidget(QWidget):
         if filename:
             self.dbpath.setText(filename)
 
-    def select_config(self):
-        filedlg = QFileDialog()
-        filename = filedlg.getOpenFileName(self,
-            QApplication.translate("QuodLibet", 'Select QuodLibet config file...'),
-            self.configpath.text())
-        if filename:
-            self.configpath.setText(filename)
-
     def library(self):
         dbpath = self.dbpath.text().toLocal8Bit()
-        configpath = self.configpath.text().toLocal8Bit()
         try:
-            return QuodLibet(dbpath, configpath)
+            return QuodLibet(dbpath)
         except (IOError, OSError), e:
             raise MusicLibError(0, QApplication.translate(
                 "QuodLibet", '%1 (%2)').arg(e.strerror).arg(e.filename))

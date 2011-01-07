@@ -922,7 +922,7 @@ class TagModel(QAbstractTableModel):
                 return False
             ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
             if not self.previewMode and currentfile.library:
-                self.emit(SIGNAL('libfilesedit'), ret[0], ret[1])
+                self.emit(SIGNAL('libfilesedited'), [ret])
             self.undolevel += 1
             self.emit(SIGNAL('fileChanged()'))
             return True
@@ -952,6 +952,7 @@ class TagModel(QAbstractTableModel):
         audio = self.taginfo[row]
 
         temporary = temp
+        ret = None
 
         if self.previewMode:
             if temporary:
@@ -992,8 +993,7 @@ class TagModel(QAbstractTableModel):
             undo_val = write(audio, tags, self.saveModification)
             if undo:
                 self._addUndo(audio, undo_val)
-            if audio.library:
-                return (artist, tags)
+            ret = (artist, tags)
         
         if DIRNAME in tags:
             newdir = safe_name(encode_fn(tags[DIRNAME]))
@@ -1005,6 +1005,8 @@ class TagModel(QAbstractTableModel):
             newdir = encode_fn(tags[DIRPATH])
             if newdir != audio.dirpath:
                 self.renameDir(audio.dirpath, newdir)
+
+        return ret
 
     def setTestData(self, rows, previews=None):
         """A method that allows you to change the visible data of
@@ -1291,8 +1293,7 @@ class TagTable(QTableView):
             self.emit(ENABLEUNDO, val)
             self.selectionChanged()
         self.connect(model, ENABLEUNDO, emitundo)
-        self.connect(model, SIGNAL('libfilesedited'), lambda *args:
-            self.emit(SIGNAL('libfilesedited'), *args))
+        self.connect(model, SIGNAL('libfilesedited'), SIGNAL('libfilesedited'))
         self.undo = model.undo
 
         if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
@@ -1844,8 +1845,8 @@ class TagTable(QTableView):
                             QMessageBox.Ok, QMessageBox.NoButton)
                 else:
                     QMessageBox.critical(self, QApplication.translate("Defaults", "Error"),
-                        QApplication.translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(" ".join(self.playcommand),
-                            QMessageBox.Ok, QMessageBox.NoButton))
+                        QApplication.translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(" ".join(self.playcommand)),
+                            QMessageBox.Ok, QMessageBox.NoButton)
     
     def previewMode(self, value):
         if not value:
