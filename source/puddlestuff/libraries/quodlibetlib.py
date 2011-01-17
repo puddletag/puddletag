@@ -78,7 +78,7 @@ class Tag(MockTag):
         self._libtags = libtags
         tags = {}
         for key, value in libtags.items():
-            if not value:
+            if not value and not isinstance(value, (int, long)):
                 continue
             if key in mapping:
                 tags.update(mapping[key](value))

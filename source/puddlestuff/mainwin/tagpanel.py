@@ -116,15 +116,14 @@ class FrameCombo(QGroupBox):
         QGroupBox.__init__(self,parent)
         self.emits = ['onetomany', 'onetomanypreview']
         self.receives = [(SELECTIONCHANGED, self.fillCombos),
-            ('enable_preview_mode', self._enablePreview),
-            ('disable_preview_mode', self._disablePreview)]
+            ('previewModeChanged', lambda v: self._enablePreview()
+                if v else self._disablePreview()),]
         self.combos = {}
         self.labels = {}
         self._status = status
         self._originalValues = {}
     
     def _disablePreview(self):
-        
         for field, combo in self.combos.iteritems():
             edit = QLineEdit()
             combo.setLineEdit(edit)
@@ -138,7 +137,6 @@ class FrameCombo(QGroupBox):
             self.combos[z].setEnabled(False)
     
     def _enablePreview(self):
-
         for field, combo in self.combos.iteritems():
             func = partial(self._emitChange, field)
             edit = QLineEdit()

@@ -243,16 +243,18 @@ def removeslash(x):
         return removeslash(x[:-1])
     return x
 
-def create_buddy(text, control, hbox=None):
+def create_buddy(text, control, box=None):
     label = QLabel(text)
     label.setBuddy(control)
 
-    if not hbox:
-        hbox = QHBoxLayout()
-    hbox.addWidget(label)
-    hbox.addWidget(control, 1)
+    if not box:
+        box = QHBoxLayout()
+    elif hbox is True:
+        box = QVBoxLayout()
+    box.addWidget(label)
+    box.addWidget(control, 1)
 
-    return hbox
+    return box
 
 def dircmp(a, b):
     """Compare function to sort directories via parent.

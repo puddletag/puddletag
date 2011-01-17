@@ -1,15 +1,10 @@
-Tagging needs it's own track/ tag window
 Cancel a tag lookup
 Tag lookup configurable to optionally ignore anything in () or [] {} in tag lookups
 Ability not to save artwork to tag, or to tag & file or just file or not at all. 
-File loading chokes on certain character sets. Need to find out which.
 The only big things I can think about are:
 Rhythmbox and mpd library support.
 Library stuff, like finding duplicates, maybe some stats (I hate that
 most programs don't provide good lib stats)
-Automatic tagging. Like trying one tag source after another if no
-matches are found.
-Loading only files matching pattern.
 The filesystem browser needs some updating. It needs to update the
 directory tree if it's changed. And keyboard-surfing should work too.
 A better console version. It shouldn't do much besides editing tags,
@@ -20,7 +15,3 @@ Massive, massive code cleanup.
 Docs for everything that needs it like plugins and all the new stuff.
 Drag and drop album art (this seems like it'll be a cinch to implement).
 Alternating colours by album instead of row.
-Changing the search box so that each tag source can handle searches
-in it's specific way. Which means that you'll be able to do things
-like search a specific album page for allmusic or retrieve a specific
-album by musicbrainz id.

@@ -10,19 +10,34 @@ from puddlestuff.tagsources import RetrievalError, write_log, set_status, parse_
 from puddlestuff.util import split_by_tag
 from puddlestuff.constants import CHECKBOX, SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
+from PyQt4.QtGui import QApplication
+
+old_version = False
+
+def translate(context, uni=False):
+    if uni:
+        return lambda text: unicode(QApplication.translate(context, text))
+    return lambda text: QApplication.translate(context, text)
 
 Release = brainzmodel.Release
 RELEASETYPES = (Release.TYPE_OFFICIAL)
 try:
     RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
         releaseEvents=True, labels=True, ratings=True, isrcs=True)
-except (TypeError, ValueError):
+except (TypeError):
     RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
-        releaseEvents=True, labels=True, ratings=True)
+        releaseEvents=True, labels=True)
+    old_version = True
 
-ARTIST_INCLUDES = ws.ArtistIncludes(ratings=True,
-    releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
-    trackRelations=True, artistRelations=True)
+try:
+    ARTIST_INCLUDES = ws.ArtistIncludes(ratings=True,
+        releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
+        trackRelations=True, artistRelations=True)
+except TypeError:
+    ARTIST_INCLUDES = ws.ArtistIncludes(
+        releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
+        trackRelations=True, artistRelations=True)
+    old_version = True
 
 ARTIST_ID = 'mbrainz_artist_id'
 ALBUM_ID = 'mbrainz_album_id'
@@ -30,8 +45,11 @@ PUID = 'musicip_puid'
 TRACK_ID = 'mbrainz_track_id'
 COUNTRY = 'mbrainz_country'
 
-CONNECTIONERROR = "Could not connect to Musicbrainz server." \
-    "(Check your net connection)"
+utr = translate('MusicBrainz', True)
+
+CONNECTIONERROR = utr("Could not connect to Musicbrainz server." \
+    "(Check your net connection)")
+
 q = Query()
 
 def artist_id(artist, lucene=False):
@@ -43,14 +61,8 @@ def artist_id(artist, lucene=False):
         return (results[0].artist.name, results[0].artist.id)
 
 def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
-    #f = open('/tmp/mbrainz/release1', 'rb')
-    #release = pickle.load(f)
-    #f.close()
     release = q.getReleaseById(release_id, RELEASEINCLUDES)
     info = release_to_dict(release)
-    #f = open('/tmp/mbrainz/release1', 'wb')
-    #pickle.dump(release, f)
-    #f.close()
 
     if release.tracks:
         tracks = []
@@ -59,9 +71,13 @@ def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
                 track_id: extractUuid(track.id),
                 'title': track.title,
                 'track': unicode(num + 1),
-                'artist': track.artist.name if track.artist else None,
-                'mbrainz_rating': unicode(track.rating.value) if track.rating.value is not None else None,
-                'mbrainz_isrcs': track.isrcs}
+                'artist': track.artist.name if track.artist else None,}
+
+            if not old_version:
+                track.update({
+                    'mbrainz_rating': unicode(track.rating.value) if \
+                        track.rating.value is not None else None,
+                    'mbrainz_isrcs': track.isrcs if track.isrcs else None})
             tracks.append(dict((k,v) for k,v in track.items() if v))
 
         if puids:
@@ -72,11 +88,6 @@ def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
 
 def artist_releases(artistid):
     ret = q.getArtistById(artistid, ARTIST_INCLUDES).releases
-    #f = open('/tmp/mbrainz/artist', 'wb')
-    #pickle.dump(ret, f)
-    #f.close()
-    #ret = pickle.load(open('/tmp/mbrainz/artist', 'rb'))
-    #pdb.set_trace()
     return ret
 
 def get_all_releases(title):
@@ -93,15 +104,15 @@ def get_all_releases(title):
     return artists, albums, albumlist
 
 def get_puid(track_id):
-    includes = ws.TrackIncludes(puids=True, ratings=True)
+    if not old_version:
+        includes = ws.TrackIncludes(puids=True, ratings=True)
+    else:
+        includes = ws.TrackIncludes(puids=True)
     track = q.getTrackById(track_id, includes)
-    #track = pickle.load(open('/tmp/mbrainz/' + track_id, 'rb'))
-    #f = open('/tmp/mbrainz/' + track_id, 'wb')
-    #pickle.dump(track, f)
-    #f.close()
-    track = {
-        'musicip_puid': track.puids,
-        'mbrainz_rating': unicode(track.rating.value) if track.rating.value is not None else None}
+    track = {'musicip_puid': track.puids}
+    if not old_version:
+        track['mbrainz_rating'] = unicode(track.rating.value) if \
+            track.rating.value is not None else None
     return dict((k,v) for k,v in track.items() if v)
 
 def find_id(tracks, field=None):

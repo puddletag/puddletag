@@ -233,7 +233,7 @@ class SortOptionEditor(QDialog):
         (text, ok) = QInputDialog().getItem(self,
             tr('Edit sort option'),
             tr('Enter a sorting option (a comma-separated list of fields. '
-            'Eg. "artist, title")'), patterns, row)
+                'Eg. "artist, title")'), patterns, row)
         if ok:
             item = l(row)
             item.setText(text)
@@ -289,10 +289,6 @@ class SettingsDialog(QWidget):
         
         vbox.addWidget(albumlabel)
         vbox.addWidget(self._albumdisp)
-        
-        #vbox.addWidget(self._savecover)
-        #vbox.addWidget(coverlabel)
-        #vbox.addWidget(self._coverdir)
 
         vbox.addWidget(sortlabel)
         sortbox = QHBoxLayout()
@@ -313,7 +309,7 @@ class SettingsDialog(QWidget):
                 'Minimum &percentage required for album matches.'),
             self.albumBound))
         auto_box.addLayout(create_buddy(QApplication.translate('Profile Editor',
-                'Match tracks using &fields: '), self.matchFields))
+            'Match tracks using &fields: '), self.matchFields))
         auto_box.addLayout(create_buddy(QApplication.translate(
                 'Profile Editor','Minimum percentage required for track match.'),
             self.trackBound))
@@ -605,7 +601,7 @@ class MainWin(QWidget):
         files = self._status['selectedfiles']
         if self._tagsource.group_by:
             group = split_by_tag(files, *self._tagsource.group_by)
-        self.label.setText(tr('Retrieving album info.'))
+        self.label.setText(tr('Searching...'))
         text = None
         if self._searchparams.text() and self._searchparams.isEnabled():
             text = unicode(self._searchparams.text())

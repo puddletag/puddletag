@@ -86,8 +86,15 @@ def create_tool_windows(parent, extra=None):
         except IndexError:
             pass
 
-        p = PuddleDock(*z[:2], **{'status':status})
+        p = PuddleDock(z[0], z[1], parent, status)
+        
         parent.addDockWidget(z[2], p)
+
+        try:
+            if z[4]: p.setFloating(True)
+            p.move(parent.rect().center())
+        except IndexError: pass
+            
         p.setVisible(z[3])
         docks.append(p)
         action = p.toggleViewAction()

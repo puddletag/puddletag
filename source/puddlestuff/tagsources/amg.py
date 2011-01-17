@@ -122,7 +122,7 @@ def get_track(trackinfo, keys):
                 values) if value])
     except ValueError:
         return dict([(key, value) for key, value in zip(keys, values)
-            if key or value])
+            if value])
 
 def parse_album_element(element):
     ret =  dict([(k, text(z)) for k, z in
@@ -193,15 +193,17 @@ def parse_albumpage(page, artist=None, album=None):
 
     #Get Genres
     styles = artist_group.find_all('div', {'id': 'genre-style'})
+    half_column = re.compile('half-column$')
     for style in styles:
-        for g in style.find_all('div', re.compile('half-column$')):
+        for g in style.find_all('div', half_column):
             try:
                 field = g.find('h3').string.strip()
             except AttributeError:
-                #Sometimes the leave an extra empty field
+                #Sometimes they leave an extra empty field
                 continue
             try:
-                values = [convert(z.string) for z in g.find('ul').find_all('li')]
+                values = [convert(z.string) for z
+                    in g.find('ul').find_all('li')]
             except AttributeError:
                 info.update(parse_rating(g, field))
                 continue
@@ -212,6 +214,7 @@ def parse_albumpage(page, artist=None, album=None):
     info.update(convert_year(info))
     info.update(parse_cover(album_soup))
 
+    pdb.set_trace()
     info = dict((spanmap.get(k, k), v) for k, v in info.iteritems() if v)
 
     if artist and 'artist' not in info:
@@ -319,7 +322,8 @@ def parse_track_table(table, discnum=None):
             track[spanmap.get(field, field)] = value
         if not track:
             continue
-        tracks.append(track)
+        else:
+            tracks.append(dict((k,v) for k,v in track.items() if v))
     if not tracks:
         return None
     return tracks
@@ -346,7 +350,7 @@ def parse_tracks(soup):
         return parse_track_table(track_tables[0])
 
 def retrieve_album(url, coverurl=None, id_field=None):
-    review = True
+    review = False
     try:
         write_log('Opening Review Page - %s' % (url + '/review', ))
         album_page = urlopen(url + '/review', False)
@@ -512,7 +516,7 @@ class AllMusic(object):
         self._useid = args[1]
         self._id_field = args[2]
         if args[2]:
-            spanmap['AMG Album ID'] = self._useid
+            spanmap['AMG Album ID'] = self._id_field
         else:
             spanmap['AMG Album ID'] = 'amg_album_id'
 

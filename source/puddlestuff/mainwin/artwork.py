@@ -2,7 +2,7 @@
 import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
+from puddlestuff.constants import RIGHTDOCK, LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PicWidget
 from puddlestuff.audioinfo.util import commonimages
 
@@ -79,4 +79,4 @@ class ArtworkWidget(QWidget):
             self.fill(self._audios)
             self._audios = []
 
-control = ('Artwork', ArtworkWidget, LEFTDOCK, False)
+control = ('Artwork', ArtworkWidget, RIGHTDOCK, False, True)

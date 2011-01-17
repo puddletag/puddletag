@@ -277,7 +277,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         top = self.index(0,0, parent)
         bottom = self.index(self.rowCount(parent) - 1, 0, parent)
         self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
-                'QModelIndex&)'), top, bottom)
+            'QModelIndex&)'), top, bottom)
 
     albumPattern = property(_get_albumPattern, _set_albumPattern)
 

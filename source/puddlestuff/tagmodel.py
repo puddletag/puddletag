@@ -1504,8 +1504,11 @@ class TagTable(QTableView):
     def deleteSelectedWithoutMessage(self):
         self.deleteSelected(showmsg = False)
 
-    def deleteSelected(self, delfiles=True, ifgone = False, showmsg = True):
-        showmsg = confirmations.should_show('delete_files')
+    def deleteSelected(self, delfiles=True, ifgone = False, showmsg = None):
+        if showmsg is None:
+            showmsg = True
+            showmsg = confirmations.should_show('delete_files')
+    
         if delfiles and showmsg:
             result = QMessageBox.question(self, "puddletag",
                 QApplication.translate("Table", "Are you sure you want to delete the selected files?"),
@@ -1587,7 +1590,7 @@ class TagTable(QTableView):
         if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
             return
         filenames = [z.filepath for z in self.selectedTags]
-        urls = [QUrl.fromLocalFile(f) for f in filenames]
+        urls = map(QUrl.fromLocalFile, map(decode_fn, filenames))
         mimeData = QMimeData()
         mimeData.setUrls(urls)
 
@@ -1595,9 +1598,9 @@ class TagTable(QTableView):
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
         dropaction = drag.exec_()
-        #if dropaction == Qt.MoveAction:
-            #if not os.path.exists(filenames[0])
-                #self.deleteSelected(False, True)
+        if dropaction == Qt.MoveAction:
+            if not os.path.exists(filenames[0]):
+                self.deleteSelected(False, False, False)
 
     def mousePressEvent(self, event):
         if event.buttons() == Qt.LeftButton:
