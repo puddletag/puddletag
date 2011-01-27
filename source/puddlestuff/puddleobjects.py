@@ -1777,7 +1777,11 @@ class ProgressWin(QDialog):
 
         if maximum <= 0:
             self.pbar.setTextVisible(False)
-            self.label.setVisible(False)
+            if not progresstext:
+                self.label.setVisible(False)
+            else:
+                self.label.setText(progresstext)
+            self.ptext = u''
 
         cancel = QPushButton(QApplication.translate("Defaults", 'Cancel'))
         cbox = QHBoxLayout()
@@ -1797,11 +1801,12 @@ class ProgressWin(QDialog):
         if maximum > 0:
             self.setValue(1)
         else:
-            timer = QTimer(self)
-            timer.setInterval(100)
-            update = lambda: self.setValue(self.pbar.value() + 1)
-            self.connect(timer, SIGNAL('timeout()'), update)
-            timer.start()
+            self._timer = QTimer(self)
+            self._timer.setInterval(100)
+            def update():
+                self.setValue(self.pbar.value() + 1)
+            self.connect(self._timer, SIGNAL('timeout()'), update)
+            self._timer.start()
 
     def setValue(self, value):
         if self._infunc:
@@ -1809,8 +1814,8 @@ class ProgressWin(QDialog):
         self._infunc = True
         if self.ptext:
             self.pbar.setTextVisible(False)
-            self.label.setText(
-                self._format.arg(self.ptext).arg(value).arg(self.pbar.maximum()))
+            self.label.setText(self._format.arg(self.ptext
+                ).arg(value).arg(self.pbar.maximum()))
         self.pbar.setValue(value)
         self._infunc = False
         if self.pbar.maximum() and value >= self.pbar.maximum():
@@ -1820,6 +1825,11 @@ class ProgressWin(QDialog):
         self.wasCanceled = True
         self.emit(SIGNAL('canceled()'))
         self.close()
+
+    def closeEvent(self, event):
+        if hasattr(self, '_timer'):
+            self._timer.stop()
+        super(ProgressWin, self).closeEvent(event)
 
     def _value(self):
         return self.pbar.value()

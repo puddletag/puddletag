@@ -155,13 +155,27 @@ class LibraryDialog(QWidget):
 
         self.emits = ['loadtags']
         self.receives = [('deletedfromlib', self.tree.update_deleted),
-                         ('libfilesedited', self.tree.update_edited)]
+            ('libfilesedited', self.tree.update_edited)]
 
     def searchTree(self):
         self.tree.search(unicode(self.searchtext.text()))
 
-    def saveSettings(self):
-        self._library.save()
+    def saveSettings(self, parent=None):
+        if parent is None:
+            self._library.save()
+        else:
+            win = ProgressWin(None, 0,
+                QApplication.translate('MusicLib', 'Saving music library...'),
+                False)
+            win.show()
+            QApplication.processEvents()
+            thread = PuddleThread(lambda: self._library.save(), parent)
+            thread.start()
+            while thread.isRunning():
+                QApplication.processEvents()
+            QApplication.processEvents()
+            win.close()
+            QApplication.processEvents()
 
 class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):
@@ -265,9 +279,9 @@ class LibraryTree(QTreeWidget):
                 remove = artist_item.removeChild
 
                 children = (get_child(i) for i in
-                                xrange(artist_item.childCount()))
+                    xrange(artist_item.childCount()))
                 toremove = [child for child in children if
-                                unicode(child.text(0)) not in albums]
+                    unicode(child.text(0)) not in albums]
                 [remove(child) for child in toremove]
             else:
                 take_item(index(artist_item))

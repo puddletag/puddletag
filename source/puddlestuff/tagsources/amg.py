@@ -100,30 +100,6 @@ def find_a(tag, regex):
 def find_all(regex, group):
     return filter(None, [find_a(tag, regex) for tag in group])
 
-def get_track(trackinfo, keys):
-    
-    tags =  trackinfo.find_all('td', {'class':'cell'})
-    if not tags:
-        return {}
-    keys = keys[len(keys) - len(tags):]
-    values = []
-    for tag in tags:
-        if text(tag):
-            values.append(text(tag))
-        else:
-            values.append('')
-    try:
-        track = int(values[0])
-        if not keys[0]:
-            return dict([(key, value) for key, value in 
-                zip(['track'] + keys[1:], values) if value])
-        else:
-            return dict([(key, value) for key, value in zip(['track'] + keys, 
-                values) if value])
-    except ValueError:
-        return dict([(key, value) for key, value in zip(keys, values)
-            if value])
-
 def parse_album_element(element):
     ret =  dict([(k, text(z)) for k, z in
                     zip(release_order, element)])
@@ -135,15 +111,6 @@ def parse_cover(soup):
     except AttributeError:
         return {}
     return {'#cover-url': cover_url}
-
-def parselist(item):
-    d = {}
-    titles = [text(z) for z in item.find_all('span')]
-    for key, ul in zip(titles, item.find_all('ul')):
-        if key in spanmap:
-            key = spanmap[key]
-            d[key] = [text(li) for li in ul.find_all('li')]
-    return d
 
 def parse_rating(soup, field='rating'):
     try:
@@ -160,11 +127,11 @@ def parse_review(soup):
         review = review_td.find('p', {'class':'text'}).string.strip()
         if not review.strip():
             raise IndexError
+        ##There are double-spaces in links and italics. Have to clean up.
         review = re.sub('\s{2,}', ' ', review)
     except (IndexError, AttributeError):
         return {}
-    ##There are double-spaces in links and italics. Have to clean up.
-    #review = re.sub('(\s+)', first_white, review)
+    
     return {'review': '%s\n\n%s' % (author, review)}
 
 def print_track(track):
@@ -191,7 +158,7 @@ def parse_albumpage(page, artist=None, album=None):
         field = field.string.strip()
         info[field] = value
 
-    #Get Genres
+    #Get Genres/styles
     styles = artist_group.find_all('div', {'id': 'genre-style'})
     half_column = re.compile('half-column$')
     for style in styles:
@@ -214,7 +181,6 @@ def parse_albumpage(page, artist=None, album=None):
     info.update(convert_year(info))
     info.update(parse_cover(album_soup))
 
-    pdb.set_trace()
     info = dict((spanmap.get(k, k), v) for k, v in info.iteritems() if v)
 
     if artist and 'artist' not in info:

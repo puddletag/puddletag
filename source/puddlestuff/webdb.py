@@ -39,7 +39,9 @@ import puddlestuff.audioinfo as audioinfo
 TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
 MTAG_SOURCE_DIR = os.path.join(SAVEDIR, 'mp3tag_sources')
 
-tr = lambda s: unicode(QApplication.translate('WebDB', s))
+#tr = lambda s: unicode(QApplication.translate('WebDB', s))
+
+translate = QApplication.translate
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
     import glob
@@ -50,7 +52,7 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             idents, search, album = mp3tag.open_script(f)
             classes.append(mp3tag.Mp3TagSource(idents, search, album))
         except:
-            print tr("Couldn't load Mp3tag Tag Source %s") % f
+            print translate("WebDB", "Couldn't load Mp3tag Tag Source %s") % f
             traceback.print_exc()
             continue
     return classes
@@ -58,14 +60,14 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return tr("<b>Error in pattern</b>")
+        return translate("WebDB", "<b>Nothing to display.</b>")
     s = "<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
         d = {'#images': unicode(len(tag['__image']))}
     else:
         d = {}
-    return "<br />".join([s % (z, tostr(v)) for z, v in
+    return "<br />".join([s % (z, tostranslate("WebDB", v)) for z, v in
         sorted(tag.items() + d.items()) if z != '__image' and not
         z.startswith('#')])
 
@@ -98,7 +100,7 @@ class TagListWidget(QWidget):
         if not tags:
             tags = []
         label = QLabel()
-        label.setText(QApplication.translate("Defaults", '&Fields'))
+        label.setText(translate("Defaults", '&Fields'))
         self._text = QLineEdit(u', '.join(tags))
         label.setBuddy(self._text)
 
@@ -134,7 +136,7 @@ class SourcePrefs(QDialog):
         vbox = QVBoxLayout()
         self._controls = []
         winsettings(title, self)
-        self.setWindowTitle(tr('Configure: %s') % title)
+        self.setWindowTitle(translate("WebDB", 'Configure: %s') % title)
         for desc, ctype, default in controls:
             if ctype == TEXT:
                 control = QLineEdit(default)
@@ -214,8 +216,8 @@ class SortOptionEditor(QDialog):
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
-        (text, ok) = QInputDialog().getItem(self, tr('Add sort option'),
-            tr('Enter a sorting option (a comma-separated list of fields. '
+        (text, ok) = QInputDialog().getItem(self, translate("WebDB", 'Add sort option'),
+            translate("WebDB", 'Enter a sorting option (a comma-separated list of fields. '
                 'Eg. "artist, title")'), patterns, row)
         if ok:
             self.listbox.clearSelection()
@@ -231,8 +233,8 @@ class SortOptionEditor(QDialog):
         l = self.listbox.item
         patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem(self,
-            tr('Edit sort option'),
-            tr('Enter a sorting option (a comma-separated list of fields. '
+            translate("WebDB", 'Edit sort option'),
+            translate("WebDB", 'Enter a sorting option (a comma-separated list of fields. '
                 'Eg. "artist, title")'), patterns, row)
         if ok:
             item = l(row)
@@ -251,31 +253,31 @@ class SettingsDialog(QWidget):
         QWidget.__init__(self, parent)
         self.title = 'Tag Sources'
 
-        label = QLabel(tr('&Display format for individual tracks.'))
+        label = QLabel(translate("WebDB", '&Display format for individual tracks.'))
         self._text = QLineEdit()
         label.setBuddy(self._text)
         
-        albumlabel = QLabel(tr('Display format for &retrieved albums'))
+        albumlabel = QLabel(translate("WebDB", 'Display format for &retrieved albums'))
         self._albumdisp = QLineEdit()
         albumlabel.setBuddy(self._albumdisp)
 
-        sortlabel = QLabel(tr('Sort retrieved albums using order:'))
+        sortlabel = QLabel(translate("WebDB", 'Sort retrieved albums using order:'))
         self._sortoptions = QComboBox()
         sortlabel.setBuddy(self._sortoptions)
-        editoptions = QPushButton(QApplication.translate("Defaults", '&Edit'))
+        editoptions = QPushButton(translate("Defaults", '&Edit'))
         self.connect(editoptions, SIGNAL('clicked()'), self._editOptions)
         
-        ua_label = QLabel(tr('User-Agent to use for screen scraping.'))
+        ua_label = QLabel(translate("WebDB", 'User-Agent to use for screen scraping.'))
         self._ua = QTextEdit()
 
-        self.jfdi = QCheckBox(QApplication.translate('Profile Editor',
+        self.jfdi = QCheckBox(translate('Profile Editor',
             'Brute force unmatched files.'))
-        self.jfdi.setToolTip(QApplication.translate('Profile Editor',"<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>"))
+        self.jfdi.setToolTip(translate('Profile Editor',"<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>"))
         self.matchFields = QLineEdit(u'artist, title')
-        self.matchFields.setToolTip(QApplication.translate('Profile Editor','<p>The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it\'ll be considered to match.</p>'))
+        self.matchFields.setToolTip(translate('Profile Editor','<p>The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it\'ll be considered to match.</p>'))
 
         self.albumBound = QSpinBox()
-        self.albumBound.setToolTip(QApplication.translate('Profile Editor',"<p>The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.</p>"))
+        self.albumBound.setToolTip(translate('Profile Editor',"<p>The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.</p>"))
         self.albumBound.setRange(0,100)
         self.albumBound.setValue(70)
         
@@ -299,18 +301,18 @@ class SettingsDialog(QWidget):
         vbox.addWidget(ua_label)
         vbox.addWidget(self._ua)
 
-        frame = QGroupBox(QApplication.translate(
+        frame = QGroupBox(translate(
             'WebDB', 'Automatic retrieval options'))
 
         auto_box = QVBoxLayout()
         frame.setLayout(auto_box)
 
-        auto_box.addLayout(create_buddy(QApplication.translate('Profile Editor',
+        auto_box.addLayout(create_buddy(translate('Profile Editor',
                 'Minimum &percentage required for album matches.'),
             self.albumBound))
-        auto_box.addLayout(create_buddy(QApplication.translate('Profile Editor',
+        auto_box.addLayout(create_buddy(translate('Profile Editor',
             'Match tracks using &fields: '), self.matchFields))
-        auto_box.addLayout(create_buddy(QApplication.translate(
+        auto_box.addLayout(create_buddy(translate(
                 'Profile Editor','Minimum percentage required for track match.'),
             self.trackBound))
         auto_box.addWidget(self.jfdi)
@@ -438,12 +440,12 @@ class MainWin(QWidget):
         self.sourcelist.addItems(self._sourcenames)
         self.connect(self.sourcelist, SIGNAL('currentIndexChanged (int)'),
                         self._changeSource)
-        sourcelabel = QLabel(tr('Sour&ce: '))
+        sourcelabel = QLabel(translate("WebDB", 'Sour&ce: '))
         sourcelabel.setBuddy(self.sourcelist)
 
         preferences = QToolButton()
         preferences.setIcon(QIcon(':/preferences.png'))
-        preferences.setToolTip(tr('Configure'))
+        preferences.setToolTip(translate("WebDB", 'Configure'))
         self.connect(preferences, SIGNAL('clicked()'), self.configure)
 
         sourcebox = QHBoxLayout()
@@ -453,32 +455,32 @@ class MainWin(QWidget):
         self._prefbutton = preferences
 
         self._searchparams = QLineEdit()
-        self._tooltip = tr("Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li><li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>")
+        self._tooltip = translate("WebDB", "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li><li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li></ul>")
         self._searchparams.setToolTip(self._tooltip)
 
-        self.getinfo = QPushButton(tr("&Search"))
+        self.getinfo = QPushButton(translate("WebDB", "&Search"))
         self.getinfo.setDefault(True)
         self.getinfo.setAutoDefault(True)
         self.connect(self._searchparams, SIGNAL('returnPressed()'), self.getInfo)
         self.connect(self.getinfo , SIGNAL("clicked()"), self.getInfo)
 
-        self._writebutton = QPushButton(tr('&Write'))
-        clear = QPushButton(QApplication.translate("Previews", "Clea&r preview"))
+        self._writebutton = QPushButton(translate("WebDB", '&Write'))
+        clear = QPushButton(translate("Previews", "Clea&r preview"))
 
         self.connect(self._writebutton, SIGNAL("clicked()"), self._write)
         self.connect(clear, SIGNAL("clicked()"), self._clear)
 
-        self.label = QLabel(tr("Select files and click on Search to retrieve "
+        self.label = QLabel(translate("WebDB", "Select files and click on Search to retrieve "
             "metadata."))
 
         self.listbox = ReleaseWidget(status, self._tagsource)
-        self._existing = QCheckBox(QApplication.translate("WebDB",
+        self._existing = QCheckBox(translate("WebDB",
             'Update empty fields only.'))
-        self._auto = QCheckBox(QApplication.translate("WebDB",
+        self._auto = QCheckBox(translate("WebDB",
             'Automatically retrieve matches.'))
 
         self._taglist = TagListWidget()
-        tooltip = tr('Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.')
+        tooltip = translate("WebDB", 'Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer, __image</b> will write all fields but the composer and __image fields.')
         self._taglist.setToolTip(tooltip)
         self.connect(self._taglist, SIGNAL('tagschanged'), self._changeTags)
         self.connect(self.listbox, SIGNAL('statusChanged'), self.label.setText)
@@ -560,7 +562,7 @@ class MainWin(QWidget):
 
     def _write(self):
         self.emit(SIGNAL('writepreview'))
-        self.label.setText(tr("<b>Tags were written.</b>"))
+        self.label.setText(translate("WebDB", "<b>Tags were written.</b>"))
 
     def closeEvent(self, e):
         self._clear()
@@ -601,12 +603,12 @@ class MainWin(QWidget):
         files = self._status['selectedfiles']
         if self._tagsource.group_by:
             group = split_by_tag(files, *self._tagsource.group_by)
-        self.label.setText(tr('Searching...'))
+        self.label.setText(translate("WebDB", 'Searching...'))
         text = None
         if self._searchparams.text() and self._searchparams.isEnabled():
             text = unicode(self._searchparams.text())
         elif not files:
-            self.label.setText(tr('<b>Select some files or enter search paramaters.</b>'))
+            self.label.setText(translate("WebDB", '<b>Select some files or enter search paramaters.</b>'))
             return
 
         def search():
@@ -655,9 +657,9 @@ class MainWin(QWidget):
         else:
             releases, files = retval
             if releases:
-                self.label.setText(tr('Searching complete.'))
+                self.label.setText(translate("WebDB", 'Searching complete.'))
             else:
-                self.label.setText(tr('No matching albums were found.'))
+                self.label.setText(translate("WebDB", 'No matching albums were found.'))
             if files and self._auto.isChecked():
                 self.listbox.setReleases(releases, files)
             else:

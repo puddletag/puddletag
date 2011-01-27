@@ -434,7 +434,10 @@ class MainWin(QMainWindow):
         controls = PuddleDock._controls
         for control in PuddleDock._controls.values():
             if hasattr(control, 'saveSettings'):
-                control.saveSettings()
+                try:
+                    control.saveSettings(self)
+                except TypeError:
+                    control.saveSettings()
 
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)

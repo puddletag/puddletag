@@ -170,20 +170,25 @@ class QuodLibet(object):
         self._cached = cached
 
     def get_tracks(self, maintag, mainval, secondary=None, secvalue=None):
+
+        exists = lambda t: os.path.exists(t['~filename'])
+        
         if secondary and secvalue:
             if secondary == 'album' and maintag == 'artist':
-                return map(lambda track : Tag(self, track),
-                    self._cached[mainval][secvalue])
-            def getvalue(track):
-                if (track.get(maintag) == mainval) and (
-                    track.get(secondary) == secvalue):
-                    return Track(self, track)
+                tracks = (Tag(self, track) for track in
+                    self._cached[mainval][secvalue] if exists(track))
+                return filter(None, tracks)
+            else:
+                def getvalue(track):
+                    if (track.get(maintag) == mainval) and (
+                        track.get(secondary) == secvalue):
+                        return Tag(self, track)
         else:
             if maintag == 'artist':
                 tracks = []
                 [tracks.extend(z) for z in self._cached[mainval].values()]
                 return [Tag(self, track) for track in tracks if 
-                    os.path.exists(track['~filename'])]
+                    exists(track)]
 
             def getvalue(track):
                 if track.get(maintag) == mainval:
@@ -219,6 +224,11 @@ class QuodLibet(object):
         album = to_string(track.get('album', u''))
         self._cached[artist][album].remove(track)
         self._tracks.remove(track)
+        if not self._cached[artist][album]:
+            del(self._cached[artist][album])
+            if not self._cached[artist]:
+                del(self._cached[artist])
+        self.edited = True
 
     def tree(self):
         title = 'title'
