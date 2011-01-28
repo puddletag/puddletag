@@ -35,7 +35,7 @@ from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
 from functools import partial
 from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
     SAVEDIR, ACTIONDIR, BLANK)
-from util import open_resourcefile, PluginFunction, escape_html
+from util import open_resourcefile, PluginFunction, escape_html, translate
 import functions_dialogs
 from puddlestuff.puddleobjects import ShortcutEditor
 from puddletag import status
@@ -66,18 +66,18 @@ def displaytags(tags):
             ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
         return ret
     else:
-        return unicode(QApplication.translate('Functions', '<b>No change.</b>'))
+        return translate('Functions Dialog', '<b>No change.</b>')
 
 class ShortcutDialog(QDialog):
     def __init__(self, shortcuts=None, parent=None):
         super(ShortcutDialog, self).__init__(parent)
         self.setWindowTitle('puddletag')
         self.ok = False
-        label = QLabel(QApplication.translate('Shortcut Editor', 'Enter a key sequence for the shortcut.'))
+        label = QLabel(translate('Shortcut Editor', 'Enter a key sequence for the shortcut.'))
         self._text = ShortcutEditor(shortcuts)
 
         okcancel = OKCancel()
-        okcancel.cancel.setText(QApplication.translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
+        okcancel.cancel.setText(translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
         okcancel.ok.setEnabled(False)
         
         self.connect(okcancel, SIGNAL('ok'), self.okClicked)
@@ -113,7 +113,7 @@ class ShortcutName(QDialog):
         self.setWindowTitle('puddletag')
         self.ok = False
         self._texts = texts
-        label = QLabel(QApplication.translate('Actions', 'Enter a name for the shortcut.'))
+        label = QLabel(translate('Actions', 'Enter a name for the shortcut.'))
         self._text = QLineEdit(default)
 
         okcancel = OKCancel()
@@ -195,7 +195,8 @@ class FunctionDialog(QWidget):
         userargs is the default values you want to fill the controls in the dialog with
         [make sure they don't exceed the number of arguments of funcname]."""
         QWidget.__init__(self,parent)
-        identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
+        identifier = QuotedString('"') | Combine(Word
+            (alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
         tags = delimitedList(identifier)
         self.func = Function(funcname)
         docstr = self.func.doc[1:]
@@ -204,16 +205,12 @@ class FunctionDialog(QWidget):
         self._combotags = []        
 
         if showcombo:
-            try:
-                fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
-            except:
-                pdb.set_trace()
-                fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
+            fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
         else:
             fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
 
         self.tagcombo = QComboBox(self)
-        tooltip = QApplication.translate('Functions', """<p>Fields that will
+        tooltip = translate('Functions Dialog', """<p>Fields that will
             get written to.</p>
 
             <ul>
@@ -233,10 +230,11 @@ class FunctionDialog(QWidget):
         self.tagcombo.addItems(fields)
         self._combotags = showcombo
         
-        self.connect(self.tagcombo, SIGNAL('editTextChanged(const QString&)'), self.showexample)
+        self.connect(self.tagcombo,
+            SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
         if self.func.function not in functions.no_fields:
-            label = QLabel(QApplication.translate('Defaults', "&Fields"))
+            label = QLabel(translate('Defaults', "&Fields"))
             self.vbox.addWidget(label)
             self.vbox.addWidget(self.tagcombo)
             label.setBuddy(self.tagcombo)
@@ -264,7 +262,7 @@ class FunctionDialog(QWidget):
         self.controls = []
         for argno, line in enumerate(docstr):
             args = tags.parseString(line)
-            label = args[0]
+            label = translate('Functions', args[0])
             ctype = args[1]
             default = args[2:]
             
@@ -378,7 +376,8 @@ class FunctionDialog(QWidget):
             try:
                 if self.func.function in functions.no_preview:
                     self.emit(SIGNAL('updateExample'), 
-                        unicode(QApplication.translate('Functions', 'No preview for is shown for this function.')))
+                        translate('Functions Dialog',
+                            'No preview for is shown for this function.'))
                     return
                 fields = findfunc.parse_field_list(self.func.tag, audio, self._combotags)
                 files = status['selectedfiles']
@@ -390,7 +389,8 @@ class FunctionDialog(QWidget):
             if val is not None:
                 self.emit(SIGNAL('updateExample'), val)
             else:
-                self.emit(SIGNAL('updateExample'), unicode(QApplication.translate('Functions', u'<b>No change</b>')))
+                self.emit(SIGNAL('updateExample'),
+                    translate('Functions Dialog', '<b>No change</b>'))
 
     def _sanitize(self, ctype, value):
         if ctype in ['combo', 'text']:
@@ -444,7 +444,7 @@ class CreateFunction(QDialog):
         Each item should be in the form (DisplayName, tagname) as used in audioinfo.
         prevfunc is a Function object that is to be edited."""
         QDialog.__init__(self,parent)
-        self.setWindowTitle(QApplication.translate('Functions', "Functions"))
+        self.setWindowTitle(translate('Functions Dialog', "Functions"))
         winsettings('createfunction', self)
 
         self.realfuncs = []
@@ -460,7 +460,8 @@ class CreateFunction(QDialog):
 
         self.vbox = QVBoxLayout()
         self.functions = QComboBox()
-        self.functions.addItems([z[0] for z in funcnames])
+        self.functions.addItems(map(lambda x: translate('Functions', x[0]),
+            funcnames))
         self.vbox.addWidget(self.functions)
 
         self.stack = QStackedWidget()
@@ -540,7 +541,7 @@ class CreateAction(QDialog):
         Each item should be in the form (DisplayName, tagname as used in audioinfo).
         prevfunction is the previous function that is to be edited."""
         QDialog.__init__(self, parent)
-        self.setWindowTitle(QApplication.translate('Actions', "Modify Action"))
+        self.setWindowTitle(translate('Actions', "Modify Action"))
         winsettings('editaction', self)
         self.grid = QGridLayout()
 
@@ -568,7 +569,8 @@ class CreateAction(QDialog):
 
         if prevfunctions is not None:
             self.functions = copy(prevfunctions)
-            self.listbox.addItems([function.description() for function in self.functions])
+            self.listbox.addItems([function.description() for
+                function in self.functions])
 
         if example:
             self._examplelabel = ScrollLabel('')
@@ -650,7 +652,7 @@ class ActionWindow(QDialog):
     def __init__(self, parent = None, example = None, quickaction = None):
         """tags are the tags to be shown in the FunctionDialog"""
         QDialog.__init__(self,parent)
-        self.setWindowTitle(QApplication.translate('Actions', "Actions"))
+        self.setWindowTitle(translate('Actions', "Actions"))
         winsettings('actions', self)
         self._shortcuts = []
         self._quickaction = quickaction
@@ -675,15 +677,15 @@ class ActionWindow(QDialog):
 
         self.okcancel = OKCancel()
         self.okcancel.ok.setDefault(True)
-        x = QAction(QApplication.translate('Actions', 'Assign &Shortcut'), self)
+        x = QAction(translate('Actions', 'Assign &Shortcut'), self)
         self.shortcutButton = QToolButton()
         self.shortcutButton.setDefaultAction(x)
-        x.setToolTip(QApplication.translate('Actions', '''<p>Creates a
+        x.setToolTip(translate('Actions', '''<p>Creates a
             shortcut for the checked actions on the Actions menu.
             Use Edit Shortcuts (found by pressing down on this button)
             to edit shortcuts after the fact.</p>'''))
         menu = QMenu(self)
-        edit_shortcuts = QAction(QApplication.translate('Actions', 'Edit Shortcuts'), menu)
+        edit_shortcuts = QAction(translate('Actions', 'Edit Shortcuts'), menu)
         self.connect(edit_shortcuts, SIGNAL('triggered()'), self.editShortcuts)
         menu.addAction(edit_shortcuts)
         self.shortcutButton.setMenu(menu)
@@ -891,7 +893,10 @@ class ActionWindow(QDialog):
         return filename
 
     def add(self):
-        (text, ok) = QInputDialog.getText (self, QApplication.translate('Actions', "New Action"), QApplication.translate('Actions', "Enter a name for the new action."), QLineEdit.Normal)
+        (text, ok) = QInputDialog.getText (self,
+            translate('Actions', "New Action"),
+            translate('Actions', "Enter a name for the new action."),
+            QLineEdit.Normal)
         if (ok is True) and text:
             item = QListWidgetItem(text)
             item.setCheckState(Qt.Unchecked)
@@ -900,7 +905,8 @@ class ActionWindow(QDialog):
         else:
             return
         win = CreateAction(self, example = self.example)
-        win.setWindowTitle(QApplication.translate('Actions', "Edit Action: ") + self.listbox.item(self.listbox.count() - 1).text())
+        win.setWindowTitle(translate('Actions', "Edit Action: ") + \
+            self.listbox.item(self.listbox.count() - 1).text())
         win.setModal(True)
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.addBuddy)
@@ -912,7 +918,8 @@ class ActionWindow(QDialog):
 
     def edit(self):
         win = CreateAction(self, self.funcs[self.listbox.currentRow()][0], example = self.example)
-        win.setWindowTitle(QApplication.translate('Actions', "Edit Action: ") + self.listbox.currentItem().text())
+        win.setWindowTitle(translate('Actions', "Edit Action: ") +
+            self.listbox.currentItem().text())
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editBuddy)
 
@@ -971,14 +978,16 @@ class ActionWindow(QDialog):
             return
         row = l.currentRow()
         oldname = self.funcs[row][1]
-        (text, ok) = QInputDialog.getText (self, QApplication.translate('Actions', "Copy %1 action").arg(oldname),
-            QApplication.translate('Actions', "Enter a name for the new action."), QLineEdit.Normal)
+        (text, ok) = QInputDialog.getText (self,
+            translate('Actions', "Copy %s action" % oldname),
+            translate('Actions', "Enter a name for the new action."),
+            QLineEdit.Normal)
         if not (ok and text):
             return
         funcs = copy(self.funcs[row][0])
         name = unicode(text)
         win = CreateAction(self, funcs, example = self.example)
-        win.setWindowTitle(QApplication.translate('Actions', "Edit Action: %s") % name)
+        win.setWindowTitle(translate('Actions', "Edit Action: %s") % name)
         win.show()
         dupebuddy = partial(self.duplicateBuddy, name)
         self.connect(win, SIGNAL("donewithmyshit"), dupebuddy)

@@ -11,10 +11,10 @@ from puddlestuff.constants import TAGSOURCE
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagsources import RetrievalError
 import puddlestuff
+from puddlestuff.util import translate
 
 CLIENTINFO = {'client_name': "puddletag",
     'client_version': puddlestuff.version_string}
-
 
 def sumdigits(n): return sum(map(long, str(n)))
 
@@ -131,7 +131,8 @@ def split_by_tag(tracks, main='artist', secondary='album'):
 
 class FreeDB(object):
     name = 'FreeDB'
-    tooltip = u'<b>FreeDB does not support text-based searches.</b>'
+    tooltip = translate("FreeDB",
+        '<b>FreeDB does not support text-based searches.</b>')
     group_by = ['album', None]
     
     def search(self, album, files):

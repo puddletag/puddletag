@@ -19,7 +19,6 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 import audioinfo, os, pdb, sys, string, re
 from decimal import Decimal, InvalidOperation
 from pyparsing import (Word, alphas,Literal, OneOrMore, NotAny, alphanums, 
@@ -28,7 +27,7 @@ from pyparsing import (Word, alphas,Literal, OneOrMore, NotAny, alphanums,
     Optional, commaSeparatedList)
 from puddleobjects import PuddleConfig
 from funcprint import pprint
-from puddlestuff.util import PluginFunction
+from puddlestuff.util import PluginFunction, translate
 numtimes = 0 #Used in filenametotag to keep track of shit.
 import cPickle as pickle
 stringtags = audioinfo.stringtags
@@ -53,6 +52,27 @@ class ParseError(Exception):
 class FuncError(ParseError): pass
 
 from functions import functions, no_fields
+
+def arglen_error(e, passed, function, to_raise = True):
+    varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
+    args_len = len(passed)
+    param_len = len(varnames)
+    if args_len > param_len:
+        message = translate('Functions',
+            'At most %1 arguments expected. %2 given')
+    elif args_len < param_len:
+        default_len = len(function.func_defaults) if \
+            function.func_defaults else 0
+        if args_len < (param_len - default_len):
+            message = translate('Functions',
+            'At least %1 arguments expected. %2 given')
+    else:
+        raise e
+    message = message.arg(unicode(param_len)).arg(unicode(args_len))
+    if to_raise:
+        raise ParseError(message)
+    else:
+        return message
 
 def convert_actions(dirpath, new_dir):
     backup = os.path.join(dirpath, 'actions.bak')
@@ -236,13 +256,7 @@ def function_parser(m_audio, audio=None, dictionary=None):
             try:
                 return function()
             except TypeError, e:
-                message = e.message
-                if message.endswith(u'given)'):
-                    start = message.find(u'takes')
-                    message = SYNTAX_ERROR % (tokens.funcname, message[start:])
-                    raise ParseError(message)
-                else:
-                    raise e
+                arglen_error(e, [], function)
 
         arguments = arglist.parseString(tokens.args[1:-1]).asList()
         
@@ -273,15 +287,11 @@ def function_parser(m_audio, audio=None, dictionary=None):
                 return u''
             return ret
         except TypeError, e:
-            message = e.message
-            if message.endswith(u'given)'):
-                start = message.find(u'takes')
-                message = SYNTAX_ERROR % (tokens.funcname, message[start:])
-                raise ParseError(message)
-            else:
-                raise e
+            message = SYNTAX_ERROR.arg(tokens.funcname)
+            message = message.arg(arglen_error(e, topass, function, False))
+            raise ParseError(message)
         except FuncError, e:
-            message = SYNTAX_ERROR % (tokens.funcname, e.message)
+            message = SYNTAX_ERROR.arg(tokens.funcname).arg(e.message)
             raise ParseError(message)
 
     funcMacro.setParseAction(replaceNestedMacros)
@@ -569,7 +579,8 @@ class Function:
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
-            self.doc = [u','.join([funcname.name, funcname.print_string])] + [','.join(z) for z in funcname.args]
+            self.doc = [u','.join([funcname.name, funcname.print_string])] + \
+                [','.join(z) for z in funcname.args]
             self.info = [funcname.name, funcname.print_string]
         else:
             self.function = funcname
@@ -642,7 +653,7 @@ class Function:
 
     def description(self):
         d = [u", ".join(self.tag)] + self.args
-        return pprint(self.info[1], d)
+        return pprint(translate('Functions', self.info[1]), d)
         
     def _getControls(self):
         identifier = QuotedString('"') | CharsNotIn(',')

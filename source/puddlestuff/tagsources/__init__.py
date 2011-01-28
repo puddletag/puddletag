@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from puddlestuff.constants import SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.util import translate
 from os.path import join, exists
 import os, re, pdb
 from PyQt4.QtCore import QObject, SIGNAL
@@ -64,11 +65,12 @@ def parse_searchstring(text):
         text = [z.split(u';') for z in text.split(u'|') if z]
         return [(z.strip(), v.strip()) for z, v in text]
     except ValueError:
-        raise RetrievalError('<b>Error parsing artist/album combinations.</b>')
+        raise RetrievalError(translate('Tag Sources',
+            '<b>Error parsing artist/album combinations.</b>'))
     return []
 
 def retrieve_cover(url):
-    write_log(u'Retrieving cover: %s' % url)
+    write_log(translate("Tag Sources", 'Retrieving cover: %s') % url)
     cover = urlopen(url)
     return {'__image': [{'data': cover}]}
 
@@ -124,9 +126,9 @@ def urlopen(url, mask=True):
             request.add_header('User-Agent', user_agent)
         page = urllib2.build_opener().open(request)
         if page.code == 403:
-            raise RetrievalError('HTTPError 403: Forbidden')
+            raise RetrievalError(translate("Tag Sources", 'HTTPError 403: Forbidden'))
         elif page.code == 404:
-            raise RetrievalError("Page doesn't exist")
+            raise RetrievalError(translate("Tag Sources", "Page doesn't exist"))
         return page.read()
     except urllib2.URLError, e:
         try:
@@ -166,10 +168,18 @@ class MetaProcessor(SGMLParser):
                 error.encoding = encoding
                 raise error
 
-import musicbrainz, amazon, freedb, discogs
+import amazon, freedb, discogs
+tagsources = [z.info for z in (amazon, freedb, discogs)]
+
+try:
+    import musicbrainz
+    tagsources.append(musicbrainz.info)
+except ImportError:
+    print translate("Tag Sources", "python-musicbrainz2 wasn't found.")
+
+
 try:
     import amg
-    tagsources = [z.info for z in [musicbrainz, amazon, freedb, amg, discogs]]
+    tagsources.append(amg.info)
 except ImportError:
     allmusic = None
-    tagsources = [z.info for z in [musicbrainz, amazon, freedb, discogs]]

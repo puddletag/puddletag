@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
+        
 from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
-from PyQt4.QtGui import QAction
+from PyQt4.QtGui import QAction, QApplication
 from StringIO import StringIO
 from copy import copy, deepcopy
 from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME)
 from errno import EEXIST
-import os, pdb
+import os, pdb, re
 from puddleobjects import safe_name, open_resourcefile
-from puddlestuff.constants import CHECKBOX
+import puddlestuff.translations
+translate = puddlestuff.translations.translate
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -185,7 +187,7 @@ class PluginFunction(object):
         newargs = []
         for arg in args:
             arg = list(arg)
-            if arg[1] == CHECKBOX:
+            if arg[1] == puddlestuff.constants.CHECKBOX:
                 arg[2] = unicode(bool(arg[2]))
             newargs.append(arg)
         self.args = newargs

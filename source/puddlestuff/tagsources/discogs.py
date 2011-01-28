@@ -20,6 +20,7 @@ from puddlestuff.audioinfo import DATA
 import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
 from puddlestuff.tagsources.musicbrainz import find_id
+from puddlestuff.util import translate
 
 
 R_ID = 'discogs_rid'
@@ -80,7 +81,7 @@ def get_text(node):
         return
 
 def keyword_search(keywords):
-    write_log(u'Retrieving search results for keywords: %s' % keywords)
+    write_log(translate("Discogs", 'Retrieving search results for keywords: %s' % keywords))
     keywords = re.sub('(\s+)', u'+', keywords)
     url = search_url % keywords
     text = urlopen(url)
@@ -167,7 +168,8 @@ def parse_search_xml(text):
         doc = minidom.parseString(text)
     except xml.parsers.expat.ExpatError:
         write_log(text)
-        raise RetrievalError('Invalid XML was returned. See log')
+        raise RetrievalError(translate("Discogs",
+            'Invalid XML was returned. See log'))
     exact = doc.getElementsByTagName('exactresults')
     results = []
     if exact:
@@ -194,14 +196,14 @@ def retrieve_album(info, image=LARGEIMAGE):
     if isinstance(info, (int, long)):
         r_id = unicode(info)
         info = {}
-        write_log(u'Retrieving using Release ID: %s' % r_id)
+        write_log(translate("Discogs", 'Retrieving using Release ID: %s' % r_id))
     elif isinstance(info, basestring):
         r_id = info
         info = {}
-        write_log(u'Retrieving using Release ID: %s' % r_id)
+        write_log(translate("Discogs", 'Retrieving using Release ID: %s' % r_id))
     else:
         r_id = info['#r_id']
-        write_log(u'Retrieving album %s' % (info['album']))
+        write_log(translate("Discogs", 'Retrieving album %s' % (info['album'])))
     
     xml = urlopen(album_url % r_id)
 
@@ -262,7 +264,7 @@ def urlopen(url):
 class Discogs(object):
     name = 'Discogs.com'
     group_by = [u'album', u'artist']
-    tooltip = """<p>Enter search parameters here. If empty,
+    tooltip = translate("Discogs", """<p>Enter search parameters here. If empty,
         the selected files are used.</p>
         <ul>
         <li><b>artist;album</b>
@@ -273,8 +275,9 @@ class Discogs(object):
         <b>;Resurrection.</li>
         <li>Using <b>:r id</b> will retrieve the album with Discogs
         ID <b>id</b>.</li>
-        <li>Enter any keywords to do search using those keywords.</li>
-        </ul>"""
+        <li>Entering keywords <b>without a semi-colon (;)</b> will
+         do a Discogs album search using those keywords.</li>
+        </ul>""")
 
     def __init__(self):
         super(Discogs, self).__init__()

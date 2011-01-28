@@ -15,6 +15,7 @@ from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError, 
     urlopen, parse_searchstring)
 from puddlestuff.audioinfo import DATA
+from puddlestuff.util import translate
 
 default_access_key = 'AKIAJ3KBYRUYQN5PVQGA'
 default_secret_key = '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'
@@ -75,7 +76,7 @@ def aws_url(aws_access_key_id, secret, query_dictionary):
         hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
             + query, hashlib.sha256)
     except TypeError:
-        raise RetrievalError('Invalid Access or Secret Key')
+        raise RetrievalError(translate('Amazon', 'Invalid Access or Secret Key'))
     signature = urllib2.quote(base64.b64encode(hm.digest()))
 
     query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
@@ -109,7 +110,8 @@ def parse_album_xml(text, album=None):
     try:
         tracklist = album_item.getElementsByTagName('Tracks')[0]
     except IndexError:
-        raise RetrievalError('Invalid XML returned.')
+        raise RetrievalError(translate('Amazon Tag Source',
+            'Invalid XML returned.'))
     tracks = []
     discs = [disc for disc in tracklist.childNodes if 
         not disc.nodeType == disc.TEXT_NODE]
@@ -176,9 +178,11 @@ def retrieve_album(info, image=MEDIUMIMAGE):
     url = aws_url(access_key, secret_key, query_pairs)
 
     if isinstance(info, basestring):
-        write_log(u'Retrieving using ASIN: %s' % asin)
+        write_log(translate('Amazon',
+            'Retrieving using ASIN: %s' % asin))
     else:
-        write_log(u'Retrieving XML: %s - %s' % (info['artist'], info['album']))
+        write_log(translate('Amazon',
+            'Retrieving XML: %s - %s' % (info['artist'], info['album'])))
     xml = urlopen(url)
     
     if isinstance(info, basestring):
@@ -188,7 +192,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
 
     if image in image_types:
         url = info[image]
-        write_log(u'Retrieving cover: %s' % url)
+        write_log(translate("Amazon", 'Retrieving cover: %s' % url))
         info.update({'__image': retrieve_cover(url)})
     return tracks
 
@@ -207,7 +211,8 @@ def search(artist=None, album=None):
     return keyword_search(keywords)
 
 def keyword_search(keywords):
-    write_log(u'Retrieving search results for keywords: %s' % keywords)
+    write_log(translate('Amazon',
+        'Retrieving search results for keywords: %s' % keywords))
     query_pairs = {
             "Operation": u"ItemSearch",
             'SearchIndex': u'Music',
@@ -257,8 +262,9 @@ class Amazon(object):
     # values are usually lists and "builtin" values are strings.
     #All strings are unicode, so don't worry about conversions.
 
-    tooltip = """<p>Enter search parameters here. If empty,
-        the selected files are used.</p>
+    tooltip = translate('Amazon',
+        """<p>Enter search parameters here. If empty, the selected files
+        are used.</p>
         <ul>
         <li><b>artist;album</b>
         searches for a specific album/artist combination.</li>
@@ -266,8 +272,9 @@ class Amazon(object):
         but keep the semicolon (eg. <b>Ratatat;</b>).
         For a album only leave the artist part as in
         <b>;Resurrection.</li>
-        <li>Enter any keywords to do search using those keywords.</li>
-        </ul>"""
+        <li>Entering keywords <b>without a semi-colon (;)</b> will do an Amazon
+        album search using those keywords.</li>
+        </ul>""")
 
     #__init__ should not accept any arguments.
     def __init__(self):
@@ -299,12 +306,16 @@ class Amazon(object):
         #the user's selected.
 
         self.preferences = [
-            ['Retrieve Cover', CHECKBOX, True],
-            ['Cover size to retrieve', COMBO, 
-                [['Small', 'Medium', 'Large'], 1]],
-            ['Access Key (Stored as plain-text. Leave empty for default.)',
+            [translate('Amazon', 'Retrieve Cover'), CHECKBOX, True],
+            [translate('Amazon', 'Cover size to retrieve'), COMBO,
+                [[translate('Amazon', 'Small'),
+                    translate('Amazon', 'Medium'),
+                    translate('Amazon', 'Large')], 1]],
+            [translate('Amazon',
+                'Access Key (Stored as plain-text. Leave empty for default.)'),
                 TEXT, u''],
-            ['Secret Key (Stored as plain-text. Leave empty for default.)',
+            [translate('Amazon',
+                'Secret Key (Stored as plain-text. Leave empty for default.)'),
                 TEXT, u''],
             ]
 

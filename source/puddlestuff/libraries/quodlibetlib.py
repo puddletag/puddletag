@@ -16,7 +16,7 @@ from quodlibet.parse import Query
 from functools import partial
 from puddlestuff.constants import HOMEDIR
 from collections import defaultdict
-from puddlestuff.util import to_string
+from puddlestuff.util import to_string, translate
 import shutil
 from itertools import ifilter
 
@@ -298,10 +298,10 @@ class InitWidget(QWidget):
             l.setBuddy(control)
             return l
 
-        vbox.addWidget(label(QApplication.translate("QuodLibet", '&Library Path'), self.dbpath))
+        vbox.addWidget(label(translate("QuodLibet", '&Library Path'), self.dbpath))
 
         hbox = QHBoxLayout()
-        select_db = QPushButton(QApplication.translate("QuodLibet", "..."))
+        select_db = QPushButton(translate("QuodLibet", "..."))
         self.connect(select_db, SIGNAL('clicked()'), self.select_db)
         hbox.addWidget(self.dbpath)
         hbox.addWidget(select_db)
@@ -313,7 +313,7 @@ class InitWidget(QWidget):
     def select_db(self):
         filedlg = QFileDialog()
         filename = filedlg.getOpenFileName(self,
-            QApplication.translate("QuodLibet", 'Select QuodLibet library file...'),
+            translate("QuodLibet", 'Select QuodLibet library file...'),
             self.dbpath.text())
         if filename:
             self.dbpath.setText(filename)
@@ -323,10 +323,10 @@ class InitWidget(QWidget):
         try:
             return QuodLibet(dbpath)
         except (IOError, OSError), e:
-            raise MusicLibError(0, QApplication.translate(
+            raise MusicLibError(0, translate(
                 "QuodLibet", '%1 (%2)').arg(e.strerror).arg(e.filename))
         except (pickle.UnpicklingError, EOFError):
-            raise MusicLibError(0, QApplication.translate("QuodLibet",
+            raise MusicLibError(0, translate("QuodLibet",
                 '%1 is an invalid QuodLibet music library file.').arg(dbpath))
 
 name = u'Quodlibet'

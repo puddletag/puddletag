@@ -1,5 +1,27 @@
 # -*- coding: utf-8 -*-
 from PyQt4.QtGui import QApplication
+import re
+
+class UnicodeMod(unicode):
+    """Emulates the arg method of QStrings. Not meant for use anywhere other
+    than the translate function above."""
+
+    def arg(self, value):
+        matches = [z for z in re.finditer("%(\d+)", self)]
+        if not matches:
+            print 'Undefined result for arg'
+            return UnicodeMod(self[::])
+        elif len(matches) == 1:
+            lowest = matches[0]
+        else:
+            lowest = sorted(matches, key=lambda m: m.groups())[0]
+        return UnicodeMod(self.replace(lowest.group(), value))
+
+    def __metaclass__(name, bases, d):
+        'Make it behave like unicode object'
+        return type.__new__(type(unicode), 'unicode', bases, d)
+
+translate = lambda k,v : UnicodeMod(QApplication.translate(k,v))
 
 #General Translations
 QApplication.translate("GenSettings", 'Su&bfolders')
@@ -76,3 +98,44 @@ QApplication.translate('Menus', 'Move Selected Do&wn')
 QApplication.translate('Menus', 'Select &Previous Directory')
 QApplication.translate('Menus', 'Remove ID3v&2 Tag')
 QApplication.translate('Menus', 'Remove ID3v&1 Tag')
+
+translate('Functions', 'Tag to filename')
+translate('Functions', 'Tag->File: $1')
+translate('Functions', 'Replace')
+translate('Functions', 'Replace $0: \'$1\' -> \'$2\', Match Case: $3, Words Only: $4')
+translate('Functions', 'Update from tag')
+translate('Functions', 'Update from $2, Fields: $1')
+translate('Functions', 'Trim whitespace')
+translate('Functions', 'Trim $0')
+translate('Functions', 'Autonumbering')
+translate('Functions', 'Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3')
+translate('Functions', 'Sort values')
+translate('Functions', 'Sort $0, order=\'$1\', Match Case=\'$2\'')
+translate('Functions', 'Tag to Dir')
+translate('Functions', 'Tag->Dir: $1')
+translate('Functions', 'Format value')
+translate('Functions', 'Format $0 using $1')
+translate('Functions', 'Replace with RegExp')
+translate('Functions', 'RegReplace $0: RegExp \'$1\' with \'$2\', Match Case: $3')
+translate('Functions', 'Load Artwork')
+translate('Functions', 'Artwork: Filenames=\'$1\', Description=\'$2\', Case Sensitive=$3')
+translate('Functions', 'Merge field')
+translate('Functions', 'Merge field: $0, sep=\'$1\'')
+translate('Functions', 'Remove duplicate values')
+translate('Functions', 'Remove Dupes: $0, Match Case $1')
+translate('Functions', 'Import text file')
+translate('Functions', 'Text File: $0, \'$1\'')
+translate('Functions', 'Split fields using separator')
+translate('Functions', 'Split using separator $0: sep=\'$1\'')
+translate('Functions', 'Remove all fields except')
+translate('Functions', 'Remove fields except: $1')
+translate('Functions', 'Remove Fields')
+translate('Functions', '<blank> $0')
+translate('Functions', 'Case conversion')
+translate('Functions', 'Convert Case: $0: $1')
+translate('Functions', 'Convert from non-standard encoding')
+translate('Functions', 'Convert to encoding: $0, Encoding: $1')
+translate('Functions', 'Text to Tag')
+translate('Functions', 'Text to Tag: $0 -> $1, $2')
+translate('Functions', 'Filename to Tag')
+translate('Functions', 'File->Tag \'$1\'')

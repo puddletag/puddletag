@@ -3,20 +3,21 @@ import os, sys
 from PyQt4.QtCore import Qt, SIGNAL
 from PyQt4.QtGui import QWidget, QApplication
 from os.path import dirname, join
+from puddlestuff.translations import translate
 
-SYNTAX_ERROR = unicode(QApplication.translate('Defaults', 'SYNTAX ERROR in $%s: %s'))
-SYNTAX_ARG_ERROR = unicode(QApplication.translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.'))
+SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
+SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
 SEPARATOR = u'\\\\'
 
 FS_ENC = sys.getfilesystemencoding()
 
-YES = unicode(QApplication.translate('Defaults', 'Yes'))
-NO = unicode(QApplication.translate('Defaults', 'No'))
+YES = translate('Defaults', 'Yes')
+NO = translate('Defaults', 'No')
 
-VARIOUS = unicode(QApplication.translate('Defaults', u'Various Artists'))
+VARIOUS = translate('Defaults', u'Various Artists')
 
-MUSICBRAINZ  = unicode(QApplication.translate('Defaults', 'MusicBrainz'))
+MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
 
 #Paths
 HOMEDIR = os.getenv('HOME')
@@ -30,8 +31,8 @@ ACTIONDIR = join(SAVEDIR, 'actions')
 TRANSDIR = join(SAVEDIR, 'translations')
 
 #Misc
-BLANK = unicode(QApplication.translate('Defaults', '<blank>'))
-KEEP = unicode(QApplication.translate('Defaults', '<keep>'))
+BLANK = translate('Defaults', '<blank>')
+KEEP = translate('Defaults', '<keep>')
 
 #Values used for controls in creating functions in actiondlg
 TEXT = 'text'

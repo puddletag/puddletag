@@ -137,7 +137,7 @@ if __name__ == '__main__':
         langargs = None
 
     if not langargs:
-        langargs = "puddletag_" + QLocale.system().name(),  TRANSDIR
+        langargs = "puddletag_" + QLocale.system().name(), TRANSDIR
 
     if langargs:
         if qtTranslator.load(*langargs):

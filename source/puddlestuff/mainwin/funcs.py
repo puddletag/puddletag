@@ -14,7 +14,7 @@ from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
-from puddlestuff.util import split_by_tag
+from puddlestuff.util import split_by_tag, translate
 import puddlestuff.functions as functions
 from tagtools import *
 import puddlestuff.confirmations as confirmations
@@ -430,13 +430,14 @@ def update_status(enable = True):
     x = findfunc.filenametotag(pattern, tag[PATH], True)
     emit('ftstatus', display_tag(x))
 
-    SYNTAX_ERROR = QApplication.translate("Status Bar", u"<b>SYNTAX ERROR: %s</b>")
+    bold_error = translate("Status Bar", "<b>%s</b>")
     
     try:
         newfilename = functions.move(tag, pattern, tag)['__path']
-        emit('tfstatus', QApplication.translate("Status Bar", "New Filename: <b>%1</b>").arg(newfilename.decode('utf8', 'replace')))
+        emit('tfstatus', translate("Status Bar",
+            "New Filename: <b>%1</b>").arg(newfilename.decode('utf8', 'replace')))
     except findfunc.ParseError, e:
-        emit('tfstatus', SYNTAX_ERROR % e.message)
+        emit('tfstatus', bold_error % e.message)
 
     oldir = path.dirname(tag.dirpath)
     try:
@@ -446,7 +447,7 @@ def update_status(enable = True):
             "Rename: <b>%1</b> to: <i>%2</i>").arg(tag[DIRPATH]).arg(newfolder.decode('utf8'))
         emit('renamedirstatus', dirstatus)
     except findfunc.ParseError, e:
-        emit('renamedirstatus', SYNTAX_ERROR % e.message)
+        emit('renamedirstatus', bold_error % e.message)
 
     selected = status['selectedtags']
     if not selected:
@@ -458,7 +459,7 @@ def update_status(enable = True):
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError, e:
-        emit('formatstatus', SYNTAX_ERROR % e.message)
+        emit('formatstatus', bold_error % e.message)
 
 obj = QObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
