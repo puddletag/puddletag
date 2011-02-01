@@ -314,6 +314,26 @@ def get_icon(name, backup):
     except AttributeError:
         return QIcon(backup)
 
+def get_languages(dirs=None):
+    files = []
+    if dirs is not None:
+        for d in dirs:
+            files.extend(glob(os.path.join(d, "*.qm")))
+    d = QDir(':/')
+    if d.cd('translations'):
+        files.extend([os.path.join(u':/translations', t) for t in
+            map(unicode, d.entryList('*.qm'))])
+
+    ret = {}
+    get_name = lambda s: os.path.splitext(os.path.basename(s))[0]
+    for f in files:
+        ts_name = get_name(f)
+        if ts_name.startswith('puddletag_'):
+            ret[ts_name[len('puddletag_'):]] = f
+        else:
+            ret[ts_name] = f
+    return ret
+
 def singleerror(parent, msg):
     QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok,
         QMessageBox.NoButton)

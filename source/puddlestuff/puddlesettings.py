@@ -44,8 +44,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys, resource, os
 from copy import copy
-from puddleobjects import ListButtons, OKCancel, HeaderSetting
-from puddleobjects import ListBox, PuddleConfig, winsettings
+from puddleobjects import (ListButtons, OKCancel, HeaderSetting,
+    ListBox, PuddleConfig, winsettings, get_languages, create_buddy)
 from shortcutsettings import ActionEditorDialog
 from puddlestuff.pluginloader import PluginConfig
 import pdb
@@ -53,6 +53,8 @@ import audioinfo.util
 import genres, confirmations
 from action_shortcuts import ShortcutEditor
 from copy import deepcopy
+from puddlestuff.translations import translate
+from puddlestuff.constants import TRANSDIR
 
 class SettingsError(Exception):
     pass
@@ -136,7 +138,21 @@ class GeneralSettings(QWidget):
             vbox.addWidget(widget)
             self._controls.append(widget)
 
-        edit_sort_options = QPushButton(QApplication.translate("GenSettings", '&Edit sort options'))
+        edit_sort_options = QPushButton(
+            translate("GenSettings", '&Edit sort options'))
+
+        self._lang_combo = QComboBox()
+        self._lang_combo.addItems([translate('GenSettings', '<Autodetect>'),
+            translate('GenSettings', 'Default')])
+        self._lang_combo.setCurrentIndex(0)
+
+        lang = PuddleConfig().get('main', 'lang', u'auto')
+        self._lang_combo.addItems(list(get_languages([TRANSDIR])))
+
+        if lang != u'auto':
+            i = self._lang_combo.findText(lang, Qt.MatchFixedString)
+            if i > 0:
+                self._lang_combo.setCurrentIndex(i)
         
         self.connect(edit_sort_options, SIGNAL('clicked()'), 
             self.editSortOptions)
@@ -146,8 +162,13 @@ class GeneralSettings(QWidget):
         hbox.addStretch()
         
         vbox.addLayout(hbox)
+        if self._lang_combo.count() > 2:
+            vbox.addLayout(create_buddy(
+                translate('GenSettings', 'Language (Requires a restart)'),
+                self._lang_combo))
+        else:
+            self._lang_combo.setCurrentIndex(0)
         vbox.addStretch()
-        
         self.setLayout(vbox)
         
     def editSortOptions(self):
@@ -155,8 +176,7 @@ class GeneralSettings(QWidget):
         options = cparser.get('table', 'sortoptions', 
             ['__filename,track,__dirpath','track, album', 
             '__filename,album,__dirpath'])
-        #options = [[z.strip() for z in option.split(u',')] 
-            #for option in options]
+
         from puddlestuff.webdb import SortOptionEditor
         win = SortOptionEditor(options, self)
         self.connect(win, SIGNAL('options'), self.applySortOptions)
@@ -169,6 +189,13 @@ class GeneralSettings(QWidget):
         cparser.set('table', 'sortoptions', options)
 
     def applySettings(self, controls):
+
+        cparser = PuddleConfig()
+        if self._lang_combo.currentIndex() > 0:
+            cparser.set('main', 'lang', unicode(self._lang_combo.currentText()))
+        else:
+            cparser.set('main', 'lang', u'auto')
+        
         vals =  dict([c.settingValue for c in self._controls])
         for c in controls:
             if hasattr(c, 'applyGenSettings'):
@@ -234,7 +261,19 @@ class TagMappings(QWidget):
         self._mappings = audioinfo.mapping
 
         QWidget.__init__(self, parent)
-        tooltip = QApplication.translate("Mapping Settings", '''<ul><li>Tag is the format that the mapping applies to. One of <b>ID3, APEv2, MP4, or VorbisComment</b>. </li><li>Fields will be mapped from Source to Target, meaning that if Source is found in a tag, it'll be editable in puddletag using Target.</li><li>Eg. For <b>Tag=VorbisComment, Source=organization, and Target=publisher</b> means that writing to the publisher field for VorbisComments in puddletag will in actuality write to the organization field.</li><li>Mappings for tag sources are also supported, just use the name of the tag source as Tag, eg. <b>Tag=MusicBrainz, Source=artist,Target=performer</b>.</li></ul>''')
+        tooltip = translate("Mapping Settings",
+            '''<ul><li>Tag is the format that the mapping applies to.
+            One of <b>ID3, APEv2, MP4, or VorbisComment</b>.
+            </li><li>Fields will be mapped from Source to Target,
+            meaning that if Source is found in a tag, it'll be
+            editable in puddletag using Target.</li>
+            <li>Eg. For <b>Tag=VorbisComment, Source=organization,
+            and Target=publisher</b> means that writing to the publisher
+            field for VorbisComments in puddletag will in actuality
+            write to the organization field.</li><li>Mappings for
+            tag sources are also supported, just use the name of the
+            tag source as Tag, eg. <b>Tag=MusicBrainz,
+            Source=artist,Target=performer</b>.</li></ul>''')
         
         self._table = QTableWidget()
         self._table.setToolTip(tooltip)
@@ -258,7 +297,8 @@ class TagMappings(QWidget):
         hbox.addLayout(buttons, 0)
 
         self._setMappings(self._mappings)
-        label = QLabel(QApplication.translate("Mapping Settings", '<b>A restart is required to apply these settings.</b>'))
+        label = QLabel(translate("Mapping Settings",
+            '<b>A restart is required to apply these settings.</b>'))
         vbox = QVBoxLayout()
         vbox.addLayout(hbox, 1)
         vbox.addWidget(label)

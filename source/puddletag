@@ -122,12 +122,15 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     qtTranslator = QTranslator()
     from puddlestuff.constants import TRANSDIR
+    from puddlestuff.translations import translate
+    from puddlestuff.puddleobjects import get_languages, PuddleConfig
+    from puddlestuff import version_string, revision, resource
 
     if '--langfile' in sys.argv:
         index = sys.argv.index('--langfile')
         langfile = sys.argv[index + 1]
         if not langfile.endswith('.qm'):
-            print 'Invalid translation file.'
+            print translate('Defaults', 'Invalid translation file.')
             langargs = None
         else:
             langargs = langfile, os.path.dirname(langfile)
@@ -137,7 +140,20 @@ if __name__ == '__main__':
         langargs = None
 
     if not langargs:
-        langargs = "puddletag_" + QLocale.system().name(), TRANSDIR
+        cparser = PuddleConfig()
+        lang = cparser.get('main', 'lang', u'auto')
+        langs = get_languages([TRANSDIR])
+        
+        if lang != 'auto':
+            if lang in langs:
+                f = langs[lang]
+                langargs = os.path.basename(f), os.path.dirname(f)
+
+        if not langargs:
+            locale = unicode(QLocale.system().name())
+            if locale in langs:
+                f = langs[locale]
+                langargs = os.path.basename(f), os.path.dirname(f)
 
     if langargs:
         if qtTranslator.load(*langargs):
@@ -164,12 +180,12 @@ if __name__ == '__main__':
     else:
         filename = None
 
-    from puddlestuff import version_string, revision, resource
+    
     if revision:
-        print u'puddletag Version: %s, Revision: %s' % (
-            version_string, revision)
+        print translate('Defaults', 'puddletag Version: %1, Revision: %2').arg(
+            version_string).arg(unicode(revision))
     else:
-        print u'puddletag Version: %s' % version_string
+        print translate('Defaults', 'puddletag Version: %s' % version_string)
 
     app.setWindowIcon(QIcon(":/appicon.png"))
     pixmap = QPixmap(':/puddlelogo.png')

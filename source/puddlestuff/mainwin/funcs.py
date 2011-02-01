@@ -98,9 +98,6 @@ def copy_whole():
     QApplication.clipboard().setMimeData(mime)
 
 def cut():
-    """The same as the cut operation in normal apps. In this case, though,
-    the tag data isn't cut to the clipboard and instead remains in
-    the copied atrribute."""
     selected = status['selectedtags']
     ba = QByteArray(unicode(selected).encode('utf8'))
     mime = QMimeData()

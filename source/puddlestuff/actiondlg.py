@@ -262,7 +262,7 @@ class FunctionDialog(QWidget):
         self.controls = []
         for argno, line in enumerate(docstr):
             args = tags.parseString(line)
-            label = translate('Functions', args[0])
+            label = args[0]
             ctype = args[1]
             default = args[2:]
             
@@ -323,7 +323,8 @@ class FunctionDialog(QWidget):
         if ctype == 'combo':
             func = control.currentText
             if default:
-                control.addItems(default)
+                control.addItems(map(
+                    lambda d: translate('Functions', d), default))
         elif ctype == 'text':
             self.textcombos.append(control)
             func = control.currentText
@@ -339,7 +340,7 @@ class FunctionDialog(QWidget):
             control.setText(label)
 
         if ctype != 'check':
-            label = QLabel(label)
+            label = QLabel(translate('Functions', label))
             label.setBuddy(control)
         else:
             label = None
