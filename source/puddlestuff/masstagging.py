@@ -16,22 +16,19 @@ from puddlestuff.tagsources import RetrievalError
 from puddlestuff.util import split_by_tag, to_string, escape_html
 from puddlestuff.webdb import strip
 from audioinfo import PATH
-
-#import exampletagsource, qltagsource
+from puddlestuff.translations import translate
 
 mutex = QMutex()
 
 PROFILEDIR = os.path.join(SAVEDIR, 'masstagging')
-
-#pyqtRemoveInputHook()
 
 CONFIG = os.path.join(SAVEDIR, 'masstagging.conf')
 
 
 
 NO_MATCH_OPTIONS = [
-    unicode(QApplication.translate('Masstagging', 'Continue')),
-    unicode(QApplication.translate('Masstagging', 'Stop'))]
+    translate('Masstagging', 'Continue'),
+    translate('Masstagging', 'Stop')]
 
 SINGLE_MATCH_OPTIONS = [
     unicode(QApplication.translate('Masstagging', 'Combine and continue')),
@@ -619,7 +616,9 @@ class ConfigEdit(QDialog):
         self._fields = QLineEdit()
         tooltip = QApplication.translate('Profile Editor','Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer,__image</b> will write all fields but the composer and __image fields.')
         self._fields.setToolTip(tooltip)
-        layout.addLayout(create_buddy('Fields:', self._fields))
+        print translate("Defaults", '&Fields:')
+        layout.addLayout(create_buddy(
+            translate("Defaults", '&Fields:'), self._fields))
         
         self._many_match = QComboBox()
         self._many_match.setToolTip(QApplication.translate('Profile Editor', "Choose the course of action if an exact match wasn't found. See the tooltip in the previous dialog for an explanation of <b>Use best match</b>."))
@@ -924,7 +923,8 @@ class Retriever(QWidget):
         source_configs = self._configs[SOURCE_CONFIGS]
 
         if not source_configs:
-            set_status(QApplication.translate('Masstagging', '<b>No tag sources were added to this profile. Exiting.'))
+            set_status(QApplication.translate('Masstagging',
+                '<br /><b>No tag sources were added to this profile. Exiting.</b>'))
             self._startButton.setText(QApplication.translate('Masstagging', '&Start'))
             return
         

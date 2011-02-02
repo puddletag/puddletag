@@ -214,7 +214,7 @@ class MusicBrainz(object):
 
         self.preferences = [
                 [translate("MusicBrainz",
-                    'Retrieve PUIDS (Requires a separte lookup for each track.)'),
+                    'Retrieve PUIDS (Requires a separate lookup for each track.)'),
                     CHECKBOX, self._puids]]
 
     def keyword_search(self, s):

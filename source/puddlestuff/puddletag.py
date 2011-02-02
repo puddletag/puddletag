@@ -292,8 +292,16 @@ class MainWin(QMainWindow):
         previewactions = mainwin.previews.create_actions(self)
         
         all_actions = actions + winactions + previewactions
+
+        controls = PuddleDock._controls
+
+        toolgroup = ls.get_menus('toolbar')
+        toolbar = ls.toolbar(toolgroup, all_actions, controls)
+        toolbar.setObjectName(QApplication.translate("Menus", 'Toolbar'))
+        self.addToolBar(toolbar)
+
         menubar, winmenu, self._menus = ls.menubar(menus, all_actions)
-        
+
         temp_winactions = winmenu.actions()
         [winmenu.addAction(a) for a in winactions if a not in temp_winactions]
 
@@ -306,14 +314,6 @@ class MainWin(QMainWindow):
         self.setMenuBar(menubar)
         menubar.addMenu(help_menu(self))
         mainfuncs.connect_status(actions)
-
-        controls = PuddleDock._controls
-        
-
-        toolgroup = ls.get_menus('toolbar')
-        toolbar = ls.toolbar(toolgroup, all_actions, controls)
-        toolbar.setObjectName(QApplication.translate("Menus", 'Toolbar'))
-        self.addToolBar(toolbar)
 
         connect_actions(actions, controls)
         connect_action_shortcuts(all_actions)

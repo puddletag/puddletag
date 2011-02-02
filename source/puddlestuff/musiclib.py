@@ -13,6 +13,7 @@ from collections import defaultdict
 import puddlestuff.libraries as libraries
 from functools import partial
 from puddlestuff.util import to_string
+from puddlestuff.translations import translate
 
 class MusicLibError(Exception):
     def __init__(self, number, stringvalue):
@@ -38,7 +39,7 @@ class LibChooseDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
         self.listbox = QListWidget()
-        self.setWindowTitle(QApplication.translate('MusicLib', 'Import Music Library'))
+        self.setWindowTitle(translate('MusicLib', 'Import Music Library'))
         winsettings('importmusiclib', self)
 
         self.libattrs = []
@@ -47,18 +48,20 @@ class LibChooseDialog(QDialog):
                 lib =  __import__('puddlestuff.libraries.%s' % libname,
                                     fromlist=['puddlestuff', 'libraries'])
                 if not hasattr(lib, 'InitWidget'):
-                    raise Exception(str(QApplication.translate('Masstagging', 'Invalid library')))
+                    raise Exception(str(translate('MusicLib', 'Invalid library')))
             except Exception, detail:
-                sys.stderr.write(QApplication.translate('MusicLib',  'Error loading %1: %2\n').arg(libname).arg(unicode(detail)))
+                msg = translate('MusicLib', 'Error loading %1: %2\n')
+                msg = msg.arg(libname).arg(unicode(detail))
+                sys.stderr.write(msg.encode('utf8'))
                 continue
             try: name = lib.name
-            except AttributeError: name = QApplication.translate('MusicLib', 'Anonymous Library')
+            except AttributeError: name = translate('MusicLib', 'Anonymous Library')
 
             try: desc = lib.description
-            except AttributeError: desc = QApplication.translate('Masstagging', 'Description was left out.')
+            except AttributeError: desc = translate('MusicLib', 'Description was left out.')
 
             try: author = lib.author
-            except AttributeError: author = QApplication.translate('MusicLib',  'Anonymous author.')
+            except AttributeError: author = translate('MusicLib',  'Anonymous author.')
 
             self.libattrs.append({'name': name, 'desc':desc, 'author': author, 'module': lib})
 
@@ -111,12 +114,14 @@ class LibChooseDialog(QDialog):
         p.close()
         QApplication.processEvents()
         if isinstance(library, basestring):
-            QMessageBox.critical(self, QApplication.translate('Defaults', "Error"),
-                QApplication.translate('MusicLib', 'An error occured while loading the %1 library: <b>%2</b>').arg(self.currentlib['name']).arg(library),
+            QMessageBox.critical(self, translate('Defaults', "Error"),
+                translate('MusicLib', 'An error occured while loading ' \
+                    'the %1 library: <b>%2</b>').arg(
+                    self.currentlib['name']).arg(library),
                 QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
         else:
             dialog = partial(LibraryDialog, library)
-            self.emit(SIGNAL('adddock'), QApplication.translate('MusicLib', 'Music Library'), dialog, RIGHTDOCK)
+            self.emit(SIGNAL('adddock'), translate('MusicLib', 'Music Library'), dialog, RIGHTDOCK)
             
             self.close()
 
@@ -133,9 +138,9 @@ class LibraryDialog(QWidget):
         hbox = QHBoxLayout()
 
 
-        searchlabel = QLabel(QApplication.translate('MusicLib', '&Search'))
+        searchlabel = QLabel(translate('MusicLib', '&Search'))
         self.searchtext = QLineEdit()
-        searchbutton = QPushButton(QApplication.translate('MusicLib', '&Go'))
+        searchbutton = QPushButton(translate('MusicLib', '&Go'))
         self.connect(self.searchtext, SIGNAL('returnPressed()'),
                 self.searchTree)
         self.connect(searchbutton, SIGNAL('clicked()'),
@@ -165,7 +170,7 @@ class LibraryDialog(QWidget):
             self._library.save()
         else:
             win = ProgressWin(None, 0,
-                QApplication.translate('MusicLib', 'Saving music library...'),
+                translate('MusicLib', 'Saving music library...'),
                 False)
             win.show()
             QApplication.processEvents()
@@ -181,7 +186,7 @@ class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):
         QTreeWidget.__init__(self, parent)
         self.library = library
-        self.setHeaderLabels([QApplication.translate('MusicLib', "Library Artists")])
+        self.setHeaderLabels([translate('MusicLib', "Library Artists")])
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSortingEnabled(True)
         self.sortItems(0, Qt.AscendingOrder)
@@ -349,9 +354,9 @@ class LibraryTree(QTreeWidget):
 obj = QObject()
 obj.emits = ['adddock']
 obj.receives = []
-name = unicode(QApplication.translate('MusicLib', 'Music Library'))
+name = translate('MusicLib', 'Music Library')
 
-control = (unicode(QApplication.translate('MusicLib', 'Music Library')), LibraryDialog, RIGHTDOCK, False)
+control = (translate('MusicLib', 'Music Library'), LibraryDialog, RIGHTDOCK, False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

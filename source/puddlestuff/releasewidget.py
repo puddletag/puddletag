@@ -663,10 +663,10 @@ class ReleaseWidget(QTreeView):
             matches = find_best(releases, files, self.albumBound)
             if not matches:
                 self.emit(SIGNAL('statusChanged'), QApplication.translate(
-                    'WebDB', 'No matching albums found'))
+                    'WebDB', 'No matching albums were found.'))
             elif len(matches) > 1:
                 self.emit(SIGNAL('statusChanged'), QApplication.translate(
-                    'WebDB', 'More than one album matches. Not retrieving any.'))
+                    'WebDB', 'More than one album matches. None will be retrieved.'))
             else:
                 self.emit(SIGNAL('statusChanged'), QApplication.translate(
                     'WebDB', 'Retrieving album.'))

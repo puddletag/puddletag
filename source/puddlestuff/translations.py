@@ -9,19 +9,25 @@ class UnicodeMod(unicode):
     def arg(self, value):
         matches = [z for z in re.finditer("%(\d+)", self)]
         if not matches:
-            print 'Undefined result for arg'
+            print 'Undefined result for arg.'
             return UnicodeMod(self[::])
         elif len(matches) == 1:
             lowest = matches[0]
         else:
             lowest = sorted(matches, key=lambda m: m.groups())[0]
+        text = lowest.group()
+        if isinstance(text, str):
+            text.decode('utf8', 'replace') 
         return UnicodeMod(self.replace(lowest.group(), value))
 
     def __metaclass__(name, bases, d):
         'Make it behave like unicode object'
         return type.__new__(type(unicode), 'unicode', bases, d)
 
-translate = lambda k,v : UnicodeMod(QApplication.translate(k,v))
+def translate(k,v):
+    if isinstance(v, str):
+        v = v.decode('utf8', 'replace')
+    return UnicodeMod(QApplication.translate(k,v))
 
 #General Translations
 QApplication.translate("GenSettings", 'Su&bfolders')
@@ -98,6 +104,21 @@ QApplication.translate('Menus', 'Move Selected Do&wn')
 QApplication.translate('Menus', 'Select &Previous Directory')
 QApplication.translate('Menus', 'Remove ID3v&2 Tag')
 QApplication.translate('Menus', 'Remove ID3v&1 Tag')
+QApplication.translate("Menus", 'Clear Selected &Cells')
+QApplication.translate("Menus", 'Sort &By')
+QApplication.translate("Menus", 'Clear Selected &Files')
+QApplication.translate("Menus", '&Write Previews')
+QApplication.translate("Menus", '&Undo Last Clear')
+QApplication.translate("Menus", 'Enabl&e Preview Mode')
+QApplication.translate('Menus', '&File')
+QApplication.translate('Menus', '&Edit')
+QApplication.translate('Menus', '&Convert')
+QApplication.translate('Menus', '&Actions')
+QApplication.translate('Menus', '&Tools')
+QApplication.translate('Menus', '&Preview Mode')
+QApplication.translate('Menus', 'Ta&g Tools')
+QApplication.translate('Menus', '&Windows')
+
 
 translate('Functions', 'Tag to filename')
 translate('Functions', 'Tag->File: $1')

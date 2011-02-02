@@ -59,13 +59,13 @@ def arglen_error(e, passed, function, to_raise = True):
     param_len = len(varnames)
     if args_len > param_len:
         message = translate('Functions',
-            'At most %1 arguments expected. %2 given')
+            'At most %1 arguments expected. %2 given.')
     elif args_len < param_len:
         default_len = len(function.func_defaults) if \
             function.func_defaults else 0
         if args_len < (param_len - default_len):
             message = translate('Functions',
-            'At least %1 arguments expected. %2 given')
+            'At least %1 arguments expected. %2 given.')
     else:
         raise e
     message = message.arg(unicode(param_len)).arg(unicode(args_len))
