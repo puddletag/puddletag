@@ -6,6 +6,7 @@ import sys, pdb, resource,os
 from constants import SAVEDIR, DATADIR
 import StringIO
 from util import open_resourcefile
+from puddlestuff.translations import translate
 
 __version__ = 26
 
@@ -76,7 +77,7 @@ def context_menu(section, actions, filepath=None):
     if not filepath:
         filepath = menu_path
         cparser.filename = filepath
-    order = cparser.get(section, 'order', [])
+    order = [translate('Menus', z) for z in cparser.get(section, 'order', [])]
     if not order:
         return
     texts = [unicode(action.text()) for action in actions]
