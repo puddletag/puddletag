@@ -191,10 +191,13 @@ class GeneralSettings(QWidget):
     def applySettings(self, controls):
 
         cparser = PuddleConfig()
-        if self._lang_combo.currentIndex() > 0:
+        index = self._lang_combo.currentIndex()
+        if index > 1:
             cparser.set('main', 'lang', unicode(self._lang_combo.currentText()))
-        else:
+        elif index == 0:
             cparser.set('main', 'lang', u'auto')
+        elif index == 1:
+            cparser.set('main', 'lang', u'default')
         
         vals =  dict([c.settingValue for c in self._controls])
         for c in controls:

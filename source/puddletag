@@ -149,13 +149,13 @@ if __name__ == '__main__':
                 f = langs[lang]
                 langargs = os.path.basename(f), os.path.dirname(f)
 
-        if not langargs:
+        if not langargs and lang != 'default':
             locale = unicode(QLocale.system().name())
             if locale in langs:
                 f = langs[locale]
                 langargs = os.path.basename(f), os.path.dirname(f)
 
-    if langargs:
+    if langargs and langargs != 'default':
         if qtTranslator.load(*langargs):
             app.installTranslator(qtTranslator)
 

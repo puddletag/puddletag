@@ -461,8 +461,9 @@ class CreateFunction(QDialog):
 
         self.vbox = QVBoxLayout()
         self.functions = QComboBox()
-        self.functions.addItems(map(lambda x: translate('Functions', x[0]),
-            funcnames))
+        self.functions.addItems(
+            sorted(map(lambda x: translate('Functions', x[0]),
+                funcnames)))
         self.vbox.addWidget(self.functions)
 
         self.stack = QStackedWidget()
@@ -485,7 +486,8 @@ class CreateFunction(QDialog):
         self.exlabel = ScrollLabel('')
 
         if prevfunc is not None:
-            index = self.functions.findText(prevfunc.funcname)
+            index = self.functions.findText(
+                translate('Functions', prevfunc.funcname))
             if index >= 0:
                 self.functions.setCurrentIndex(index)
                 self.createWindow(index, prevfunc.args, prevfunc.tag)

@@ -608,7 +608,7 @@
     <message>
         <location filename="puddlestuff/puddletag.py" line="748"/>
         <source>Writing </source>
-        <translation>Besig om te skryf</translation>
+        <translation>Besig om te skryf </translation>
     </message>
     <message>
         <location filename="puddlestuff/tagmodel.py" line="1513"/>
