@@ -3,7 +3,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
 from puddlestuff.puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
-                                        ListButtons)
+    ListButtons)
+from puddlestuff.translations import translate
 
 def load_patterns(filepath=None):
     settings = PuddleConfig(filepath)
@@ -64,9 +65,9 @@ class PatternCombo(QComboBox):
 
 
 class SettingsWin(QFrame):
-    title = 'Patterns'
     def __init__(self, parent = None, cenwid = None, status=None):
         QFrame.__init__(self, parent)
+        self.title = translate('Settings', "Patterns")
         connect = lambda c, signal, s: self.connect(c, SIGNAL(signal), s)
         self.setFrameStyle(QFrame.Box)
         self.listbox = ListBox()

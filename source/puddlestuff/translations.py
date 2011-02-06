@@ -119,6 +119,16 @@ QApplication.translate('Menus', '&Preview Mode')
 QApplication.translate('Menus', 'Ta&g Tools')
 QApplication.translate('Menus', '&Windows')
 
+#Tooltips
+translate("Menus", "Select a directory to import into puddletag.")
+translate("Menus", "Append a directory to current file-view.")
+translate("Menus", "Import an m3u playlist into puddletag.")
+translate("Menus", "Save all files to m3u playlist.")
+translate("Menus", "Refresh current file-view.")
+translate("Menus", "Plays the selected files in the predefined music player.")
+translate("Menus", "Convert filename to tag using the pattern.")
+translate("Menus", "Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.")
+
 
 translate('Functions', 'Tag to filename')
 translate('Functions', 'Tag->File: $1')

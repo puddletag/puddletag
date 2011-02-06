@@ -1,5 +1,5 @@
 [info]
-version=26
+version=27
 
 [shortcut1]
 name=&Open Folder
@@ -353,7 +353,7 @@ command=selectPrevDir
 control=table
 enabled=filesselected
 shortcut=Ctrl+Shift+N
-tooltip=Select all files belonging in the directory those selected. Otherwise selects all the files in the previous directory.
+tooltip=Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.
 
 [shortcut50]
 name=Remove ID3v&2 Tag

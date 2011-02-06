@@ -8,7 +8,7 @@ import StringIO
 from util import open_resourcefile
 from puddlestuff.translations import translate
 
-__version__ = 26
+__version__ = 27
 
 files = [open_resourcefile(filename)
     for filename in [':/caseconversion.action', ':/standard.action']]
@@ -121,7 +121,7 @@ def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
             action.setShortcuts(shortcut)
 
     if tooltip:
-        action.setToolTip(tooltip)
+        action.setToolTip(translate('Menus', tooltip))
     
     if togglecheck is not None:
         action.setCheckable(True)

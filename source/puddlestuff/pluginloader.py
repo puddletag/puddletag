@@ -7,6 +7,7 @@ from os.path import splitext, exists
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from puddlestuff.translations import translate
 
 NAME = 'name'
 AUTHOR = 'author'
@@ -90,7 +91,10 @@ class InfoWidget(QLabel):
             self.changeInfo(info)
     
     def changeInfo(self, info):
-        labels = ['Name', 'Author', 'Description', 'Version']
+        labels = [translate('Plugin Settings', 'Name'),
+            translate('Plugin Settings', 'Author'),
+            translate('Plugin Settings', 'Description'),
+            translate('Plugin Settings', 'Version')]
         properties = [NAME, AUTHOR, DESC, VERSION]
         
         text = u'<br />'.join([u'<b>%s:</b> %s' % (disp, info[prop]) for 
@@ -111,7 +115,8 @@ class PluginConfig(QDialog):
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
         vbox.addWidget(
-            QLabel('<b>Loading/unloading plugins requires a restart.</b>'))
+            QLabel(translate("Plugin Settings",
+                '<b>Loading/unloading plugins requires a restart.</b>')))
         self.setLayout(vbox)
 
         plugins = []

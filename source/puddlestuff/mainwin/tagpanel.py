@@ -11,6 +11,7 @@ from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPAR
 import time
 from functools import partial
 from puddlestuff.puddlesettings import SettingsError
+from puddlestuff.translations import translate
 
 TEXTEDITED = SIGNAL('textEdited(const QString&)')
 EDITFINISHED = SIGNAL('editingFinished()')
@@ -408,14 +409,15 @@ class PuddleTable(QTableWidget):
 TABLEWIDGETBG = QTableWidgetItem().background()
 RED = QBrush(Qt.red)
 
-TITLE = unicode(QApplication.translate("Defaults", 'Title'))
-FIELD = unicode(QApplication.translate("Defaults", 'Field'))
-ROW = unicode(QApplication.translate("Tag Panel Settings", 'Row'))
+TITLE = translate("Defaults", 'Title')
+FIELD = translate("Defaults", 'Field')
+ROW = translate("Tag Panel Settings", 'Row')
 
 class SettingsWin(QWidget):
-    title = 'Tag Panel'
+    
     def __init__(self, parent = None, status=None):
         QDialog.__init__(self, parent)
+        self.title = translate('Settings', 'Tag Panel')
         self._table = PuddleTable([TITLE, FIELD, ROW],
             [TITLE, FIELD, u'0'], self)
         self._buttons = ListButtons()
@@ -465,7 +467,8 @@ class SettingsWin(QWidget):
             try:
                 l[2] = int(l[2])
             except ValueError:
-                raise SettingsError('All row numbers must be integers.')
+                raise SettingsError(translate('Tag Panel Settings',
+                'All row numbers must be integers.'))
             try:
                 d[l[2]].append(l[:-1])
             except KeyError:

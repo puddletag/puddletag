@@ -467,7 +467,7 @@ class ListModel(QAbstractListModel):
             return QVariant()
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
-                return QVariant(self.options[index.row()][0])
+                return QVariant(QString(self.options[index.row()][0]))
             except IndexError: return QVariant()
         return QVariant()
 
@@ -517,10 +517,8 @@ class ColorEdit(QWidget):
         
         colors = (add, edit, remove, preview, selection)
 
-        label = QLabel(QApplication.translate("Colour Settings",
-            '<p>Below are the backgrounds used for various ' \
-            'controls in puddletag. <br \>Double click the desired action ' \
-            'to change its colour.</p>'))
+        text = translate("Colour Settings", '<p>Below are the backgrounds used for various controls in puddletag. <br \> Double click the desired action to change its colour.</p>')
+        label = QLabel(text)
 
         self.listbox = QTableWidget(0, 1, self)
         self.listbox.setEditTriggers(QAbstractItemView.NoEditTriggers)

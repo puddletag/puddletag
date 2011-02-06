@@ -138,16 +138,13 @@ class LibraryDialog(QWidget):
         hbox = QHBoxLayout()
 
 
-        searchlabel = QLabel(translate('MusicLib', '&Search'))
         self.searchtext = QLineEdit()
-        searchbutton = QPushButton(translate('MusicLib', '&Go'))
+        searchbutton = QPushButton(translate('MusicLib', '&Search'))
         self.connect(self.searchtext, SIGNAL('returnPressed()'),
                 self.searchTree)
         self.connect(searchbutton, SIGNAL('clicked()'),
-                self.searchTree)
-        searchlabel.setBuddy(self.searchtext)
+            self.searchTree)
         searchbox = QHBoxLayout()
-        searchbox.addWidget(searchlabel)
         searchbox.addWidget(self.searchtext)
         searchbox.addWidget(searchbutton)
 

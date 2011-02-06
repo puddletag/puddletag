@@ -2,6 +2,7 @@
 from PyQt4.QtGui import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
     QVBoxLayout, QWidget)
 from PyQt4.QtCore import SIGNAL
+from puddlestuff.translations import translate
 
 def sanitize(type_, value, default=None):
     if type_ is int:
@@ -29,7 +30,7 @@ class AutoNumbering(QWidget):
 
         vbox = QVBoxLayout()
 
-        startlabel = QLabel("&Start: ")
+        startlabel = QLabel(translate('Autonumbering Wizard', "&Start: "))
         self._start = QSpinBox()
         startlabel.setBuddy(self._start)
         self._start.setValue(1)
@@ -37,7 +38,7 @@ class AutoNumbering(QWidget):
 
         vbox.addLayout(hbox(startlabel, self._start))
 
-        label = QLabel('Max length after padding with zeroes: ')
+        label = QLabel(translate('Autonumbering Wizard', 'Max length after padding with zeroes: '))
         self._padlength = QSpinBox()
         label.setBuddy(self._padlength)
         self._padlength.setValue(1)
@@ -45,7 +46,7 @@ class AutoNumbering(QWidget):
         self._padlength.setMinimum(1)
         vbox.addLayout(hbox(label, self._padlength))
 
-        self._restart_numbering = QCheckBox("&Restart numbering at each directory.")
+        self._restart_numbering = QCheckBox(translate('Autonumbering Wizard', "&Restart numbering at each directory."))
 
         vbox.addWidget(self._restart_numbering)
         vbox.addStretch()

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from puddlestuff.constants import SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.translations import translate
 import os
 
 from PyQt4.QtGui import QApplication, QWidget, QCheckBox, QVBoxLayout
@@ -61,7 +62,8 @@ class Settings(QWidget):
         load()
         self._controls = {}
         for name in _registered:
-            control = QCheckBox(_confirmations[name][1])
+            control = QCheckBox(translate('Confirmations',
+                _confirmations[name][1]))
             control.setChecked(_confirmations[name][0])
             layout.addWidget(control)
             self._controls[name] = control

@@ -44,6 +44,7 @@ from util import write, rename_file, real_filetags, to_string
 from constants import SELECTIONCHANGED, SEPARATOR, BLANK
 import puddlestuff.confirmations as confirmations
 import logging, shutil
+from puddlestuff.translations import translate
 
 status = {}
 
@@ -74,9 +75,13 @@ def loadsettings(filepath=None):
     settings = PuddleConfig()
     if filepath:
         settings.filename = filepath
-    titles = settings.get('tableheader', 'titles',
-        ['Filename', 'Artist', 'Title', 'Album', 'Track', 'Length', 'Year', 
-            'Bitrate', 'Genre', 'Comment', 'Dirpath'])
+    titles = settings.get('tableheader', 'titles',[
+        translate('Fields', 'Filename'), translate('Fields', 'Artist'),
+        translate('Fields', 'Title'), translate('Fields', 'Album'),
+        translate('Fields', 'Track'), translate('Fields', 'Length'),
+        translate('Fields', 'Year'), translate('Fields', 'Bitrate'),
+        translate('Fields', 'Genre'), translate('Fields', 'Comment'),
+        translate('Fields', 'Dirpath')])
     tags = settings.get('tableheader', 'tags',
         ['__filename', 'artist', 'title','album', 'track', 
         '__length', 'year', '__bitrate','genre', 'comment', '__dirpath'])
@@ -89,7 +94,7 @@ def loadsettings(filepath=None):
     
     write_ape = settings.get('id3tags', 'write_ape', False)
     audioinfo.set_id3_options(write_ape)
-    
+
     return ((zip(titles, tags), checked), fontsize, rowsize, filespec)
 
 def caseless(tag, audio):
@@ -707,7 +712,7 @@ class TagModel(QAbstractTableModel):
             return QVariant()
         if orientation == Qt.Horizontal:
             try:
-                return QVariant(self.headerdata[section][0])
+                return QVariant(QString(self.headerdata[section][0]))
             except IndexError:
                 return QVariant()
         return QVariant(long(section + 1))

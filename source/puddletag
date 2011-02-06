@@ -133,7 +133,7 @@ if __name__ == '__main__':
             print translate('Defaults', 'Invalid translation file.')
             langargs = None
         else:
-            langargs = langfile, os.path.dirname(langfile)
+            langargs = os.path.basename(langfile), os.path.dirname(langfile)
         del(sys.argv[index])
         del(sys.argv[index])
     else:

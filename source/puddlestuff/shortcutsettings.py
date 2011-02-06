@@ -204,7 +204,7 @@ class ActionEditorDialog(QWidget):
         self.actions = actions
 
         help = QLabel(QApplication.translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column' \
-            u' to <br />modify the key sequence.</b>'))
+            ' to <br />modify the key sequence.</b>'))
         
         self.actionTable = QTableWidget(self)
         self.actionTable.setSelectionBehavior(QTableWidget.SelectRows)

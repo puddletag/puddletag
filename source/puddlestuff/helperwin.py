@@ -61,7 +61,7 @@ class TrackWindow(QDialog):
 
         vbox = QVBoxLayout()
         
-        startlabel = QLabel(QApplication.translate('Autonumbering Wizard', "Start: "))
+        startlabel = QLabel(translate('Autonumbering Wizard', "&Start: "))
         self._start = QSpinBox()
         startlabel.setBuddy(self._start)
         self._start.setValue(minval)

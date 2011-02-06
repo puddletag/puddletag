@@ -251,7 +251,7 @@ class SortOptionEditor(QDialog):
 class SettingsDialog(QWidget):
     def __init__(self, parent = None, status = None):
         QWidget.__init__(self, parent)
-        self.title = 'Tag Sources'
+        self.title = translate('Settings', 'Tag Sources')
 
         label = QLabel(translate("WebDB", '&Display format for individual tracks.'))
         self._text = QLineEdit()
