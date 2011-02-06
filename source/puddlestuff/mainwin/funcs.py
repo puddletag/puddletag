@@ -17,7 +17,7 @@ import traceback
 from puddlestuff.util import split_by_tag, translate
 import puddlestuff.functions as functions
 from tagtools import *
-import puddlestuff.confirmations as confirmations
+import puddlestuff.confirmations as conffirmations
 from puddlestuff.constants import HOMEDIR
 
 status = {}
@@ -122,6 +122,7 @@ def extended_tags(parent=None):
             status['previewmode'])
     else:
         win = helperwin.ExTags(files = status['selectedfiles'], parent=parent)
+    win.loadSettings()
     x = lambda val: emit('onetomany', val)
     obj.connect(win, SIGNAL('extendedtags'), x)
     win.show()

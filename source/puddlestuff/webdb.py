@@ -625,7 +625,7 @@ class MainWin(QWidget):
                     else:
                         return self._tagsource.search(files), files
             except RetrievalError, e:
-                return 'An error occured: %s' % unicode(e)
+                return translate('WebDB', 'An error occured: %1').arg(unicode(e))
         self.getinfo.setEnabled(False)
         self._t = PuddleThread(search)
         self.connect(self._t, SIGNAL('threadfinished'), self.setInfo)

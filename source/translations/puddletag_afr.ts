@@ -811,7 +811,7 @@
     <message>
         <location filename="puddlestuff/helperwin.py" line="314"/>
         <source>&amp;Value</source>
-        <translation>&amp;Value</translation>
+        <translation>&amp;Waarde</translation>
     </message>
     <message>
         <location filename="puddlestuff/helperwin.py" line="318"/>
@@ -834,7 +834,7 @@
     <message>
         <location filename="puddlestuff/helperwin.py" line="438"/>
         <source>Value</source>
-        <translation>Value</translation>
+        <translation>Waarde</translation>
     </message>
     <message>
         <location filename="puddlestuff/helperwin.py" line="656"/>

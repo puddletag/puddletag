@@ -130,9 +130,6 @@ class Tag(MockTag):
             self.library.update(oldartist, oldalbum, libtags)
         self.library.edited = True
 
-    def sget(self, key):
-        return self[key] if self.get(key) else ''
-
     def _tolibformat(self):
         libtags = {}
         tags = stringtags(self._tags).items()

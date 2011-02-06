@@ -278,6 +278,20 @@ class ImportWindow(QDialog):
         self.emit(SIGNAL("Newtags"), self.dicttags,
             unicode(self.patterncombo.currentText()))
 
+
+class TextEdit(QPlainTextEdit):
+    def focusInEvent(self, event):
+        super(TextEdit, self).focusInEvent(event)
+        self.selectAll()
+        self.textCursor().setPosition(len(self.toPlainText()) - 1)
+
+    def focusOutEvent(self, event):
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        self.setTextCursor(cursor)
+        super(TextEdit, self).focusOutEvent(event)
+        
+
 class EditTag(QDialog):
     """Dialog that allows you to edit the value
     of a tag.
@@ -312,7 +326,8 @@ class EditTag(QDialog):
         #Get the previous tag
         self.prevtag = tag
         label1 = QLabel(QApplication.translate('Edit Field', "&Value"))
-        self.value = QTextEdit()
+        self.value = TextEdit()
+        self.value.setTabChangesFocus(True)
         label1.setBuddy(self.value)
         okcancel = OKCancel()
         okcancel.ok.setText(QApplication.translate('Edit Field', 'A&dd'))
@@ -335,10 +350,10 @@ class EditTag(QDialog):
         self.connect(okcancel, SIGNAL("ok"), self.ok)
         self.connect(okcancel, SIGNAL("cancel"), self.close)
 
-        self.value.selectAll()
-        self.tagcombo.lineEdit().selectAll()
         if self.prevtag:
             self.value.setFocus()
+        else:
+            self.tagcombo.setFocus()
 
     def ok(self):
         self.close()
@@ -414,16 +429,16 @@ class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
     In addition, the file's image tag is shown."""
-    def __init__(self, parent = None, row=None, files=None, preview_mode=False):
+    def __init__(self, parent = None, row=None, files=None, preview_mode=False,
+        artwork=True):
         QDialog.__init__(self, parent)
         winsettings('extendedtags', self)
-        cparser = PuddleConfig()
-        self._taglist = gettaglist()
+        self._taglist = []
         self.previewMode = preview_mode
 
-        add = QColor.fromRgb(*cparser.get('extendedtags', 'add', [255,255,0], True))
-        edit = QColor.fromRgb(*cparser.get('extendedtags', 'edit', [0,255,0], True))
-        remove = QColor.fromRgb(*cparser.get('extendedtags', 'remove', [255,0,0], True))
+        add = QColor.fromRgb(255, 255, 0)
+        edit = QColor.fromRgb(0, 255, 0)
+        remove = QColor.fromRgb(255, 0, 0)
         self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
 
         self.listbox = QTableWidget(0, 2, self)
@@ -436,7 +451,7 @@ class ExTags(QDialog):
         header.setStretchLastSection (True)
         header.setSortIndicator (0, Qt.AscendingOrder)
         self.listbox.setHorizontalHeaderLabels([
-            QApplication.translate('Extended Tags','Field'),
+            QApplication.translate('Extended Tags', 'Field'),
             QApplication.translate('Extended Tags', 'Value')])
 
         self.listbox.verticalHeader().setVisible(False)
@@ -472,24 +487,26 @@ class ExTags(QDialog):
         hbox.addLayout(self.listbuttons, 0)
         listframe.setLayout(hbox)
 
-        imageframe = QFrame()
-        imageframe.setFrameStyle(QFrame.Box)
-        vbox = QVBoxLayout()
-        vbox.setMargin(0)
-        vbox.addWidget(self.piclabel)
-        vbox.addStretch()
-        vbox.addStrut(0)
-        imageframe.setLayout(vbox)
-
-        hbox = QHBoxLayout()
-        hbox.addWidget(listframe, 1)
-        hbox.addSpacing(4)
-        hbox.addWidget(imageframe)
-        #imageframe.setMaximumWidth(270)
-        hbox.addStrut(1)
-
         layout = QVBoxLayout()
-        layout.addLayout(hbox)
+        if artwork:
+            imageframe = QFrame()
+            imageframe.setFrameStyle(QFrame.Box)
+            vbox = QVBoxLayout()
+            vbox.setMargin(0)
+            vbox.addWidget(self.piclabel)
+            vbox.addStretch()
+            vbox.addStrut(0)
+            imageframe.setLayout(vbox)
+
+            hbox = QHBoxLayout()
+            hbox.addWidget(listframe, 1)
+            hbox.addSpacing(4)
+            hbox.addWidget(imageframe)
+            #imageframe.setMaximumWidth(270)
+            hbox.addStrut(1)
+            layout.addLayout(hbox)
+        else:
+            layout.addWidget(listframe)
         layout.addLayout(self.okcancel)
         self.okcancel.insertWidget(0, buttons)
         self.setLayout(layout)
@@ -615,6 +632,16 @@ class ExTags(QDialog):
         self._checkListBox()
         self.filechanged = True
         self.listbox.clearSelection()
+
+    def loadSettings(self):
+        cparser = PuddleConfig()
+        self._taglist = gettaglist()
+        get = lambda k,v : cparser.get('extendedtags', k, v, True)
+        add = QColor.fromRgb(*get('add', [255, 255, 0]))
+        edit = QColor.fromRgb(*get('edit', [0, 255,0]))
+        remove = QColor.fromRgb(*get('remove', [255, 0, 0]))
+
+        self._colors = {ADD:QBrush(add), EDIT:QBrush(edit), REMOVE:QBrush(remove)}
 
     def listtotag(self):
         gettag = self._tag
