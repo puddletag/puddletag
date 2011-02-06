@@ -17,7 +17,7 @@ import traceback
 from puddlestuff.util import split_by_tag, translate
 import puddlestuff.functions as functions
 from tagtools import *
-import puddlestuff.confirmations as conffirmations
+import puddlestuff.confirmations as confirmations
 from puddlestuff.constants import HOMEDIR
 
 status = {}
