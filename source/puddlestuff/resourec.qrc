@@ -23,8 +23,6 @@
 <file alias="reload.png">data/reload.png</file>
 <file alias="undo.png">data/undo.png</file>
 <file alias="quickaction.png">data/quickaction.png</file>
-<file alias="keep.png">data/keep.png</file>
-<file alias="blank.png">data/blank.png</file>
 <file alias="cut.png">data/cut.png</file>
 <file alias="copy.png">data/copy.png</file>
 <file alias="paste.png">data/paste.png</file>

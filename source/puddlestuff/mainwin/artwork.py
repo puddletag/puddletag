@@ -3,8 +3,50 @@ import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from puddlestuff.constants import RIGHTDOCK, LEFTDOCK, SELECTIONCHANGED
-from puddlestuff.puddleobjects import PicWidget
+from puddlestuff.puddleobjects import PicWidget, open_resourcefile
 from puddlestuff.audioinfo.util import commonimages
+from puddlestuff.constants import KEEP, BLANK
+from PyQt4.QtSvg import QSvgGenerator
+
+from xml.dom import minidom
+
+import tempfile
+
+def get_font(rect, *text):
+    font = QFont()
+    metrics = QFontMetrics
+    lengths = [(t, metrics(font).width(t)) for t in text]
+    lowest = max(lengths, key = lambda x: x[1])
+    i = 12
+    while QFontMetrics(font).width(lowest[0]) < rect.width() - 30:
+        font.setPointSize(i)
+        i += 1
+    return font
+
+def create_svg(text, font, rect=None):
+    if not rect:
+        rect = QRect(0, 0, 200, 200)
+    f = tempfile.NamedTemporaryFile()
+
+    generator = QSvgGenerator()
+    generator.setFileName(f.name)
+    generator.setSize(rect.size())
+    generator.setViewBox(rect);
+    generator.setTitle("puddletag image")
+    generator.setDescription("just to see")
+
+    painter = QPainter()
+    painter.begin(generator)
+    painter.fillRect(rect, Qt.black)
+    painter.setFont(font)
+    painter.setPen(Qt.white)
+    painter.setBrush(QBrush(Qt.white))
+    painter.drawText(rect, Qt.AlignCenter, text)
+    painter.end()
+
+    svg = open(f.name).read()
+    f.close()
+    return svg
 
 class ArtworkWidget(QWidget):
     def __init__(self, parent=None, status = None):
@@ -21,6 +63,7 @@ class ArtworkWidget(QWidget):
         status['images'] = self.images
         self._audios = []
         self._status = status
+        self._readOnly = None
 
     def fill(self, audios=None):
         if audios is None:
@@ -61,9 +104,15 @@ class ArtworkWidget(QWidget):
             self.setEnabled(False)
 
     def init(self):
-        pics = self.picwidget.loadPics(':/keep.png', ':/blank.png')
+        pics = self.picwidget.picsFromData(*self._readOnlyPics())
         self.picwidget.setImages(pics)
         self.picwidget.readonly = [0, 1]
+
+    def _readOnlyPics(self):
+        if not self._readOnly:
+            font = get_font(QRect(0, 0, 200, 200), KEEP, BLANK)
+            self._readOnly = [create_svg(KEEP, font), create_svg(BLANK, font)]
+        return self._readOnly
     
     def images(self):
         images = None

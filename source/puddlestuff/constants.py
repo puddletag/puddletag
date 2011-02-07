@@ -5,19 +5,30 @@ from PyQt4.QtGui import QWidget, QApplication
 from os.path import dirname, join
 from puddlestuff.translations import translate
 
-SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
-SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
+def trans_strings():
+    from puddlestuff.translations import translate
+    
+    global YES
+    global NO
+    global VARIOUS
+    global MUSICBRAINZ
+    global BLANK
+    global KEEP
+    global SYNTAX_ERROR
+    global SYNTAX_ARG_ERROR
+
+    YES = translate('Defaults', 'Yes')
+    NO = translate('Defaults', 'No')
+    BLANK = translate('Defaults', '<blank>')
+    KEEP = translate('Defaults', '<keep>')
+    VARIOUS = translate('Defaults', u'Various Artists')
+    MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
+    SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
+    SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
 SEPARATOR = u'\\\\'
 
 FS_ENC = sys.getfilesystemencoding()
-
-YES = translate('Defaults', 'Yes')
-NO = translate('Defaults', 'No')
-
-VARIOUS = translate('Defaults', u'Various Artists')
-
-MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
 
 #Paths
 HOMEDIR = os.getenv('HOME')
@@ -29,10 +40,6 @@ PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
 ACTIONDIR = join(SAVEDIR, 'actions')
 TRANSDIR = join(SAVEDIR, 'translations')
-
-#Misc
-BLANK = translate('Defaults', '<blank>')
-KEEP = translate('Defaults', '<keep>')
 
 #Values used for controls in creating functions in actiondlg
 TEXT = 'text'

@@ -517,7 +517,7 @@ class ColorEdit(QWidget):
         
         colors = (add, edit, remove, preview, selection)
 
-        text = translate("Colour Settings", '<p>Below are the backgrounds used for various controls in puddletag. <br \> Double click the desired action to change its colour.</p>')
+        text = QApplication.translate("Colour Settings", '<p>Below are the backgrounds used for various controls in puddletag. <br /> Double click the desired action to change its colour.</p>')
         label = QLabel(text)
 
         self.listbox = QTableWidget(0, 1, self)

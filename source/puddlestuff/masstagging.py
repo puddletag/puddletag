@@ -974,7 +974,7 @@ class Retriever(QWidget):
         self.emit(SIGNAL('writepreview'))
         
 
-control = (unicode(QApplication.translate('Masstagging', 'Mass Tagging')), Retriever, RIGHTDOCK, False)
+control = ('Mass Tagging', Retriever, RIGHTDOCK, False)
 
 if __name__ == '__main__':
     from puddlestuff import audioinfo

@@ -27,6 +27,7 @@ Contains objects used throughout puddletag"""
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from PyQt4.QtSvg import *
 import sys, os,pdb,shutil
 
 from itertools import groupby # for unique function.
@@ -658,7 +659,7 @@ def load_actions():
 
 def open_resourcefile(filename):
     f = QFile(filename)
-    f.open(QIODevice.ReadOnly | QIODevice.Text)
+    f.open(QIODevice.ReadOnly)
     return StringIO(f.readAll())
 
 def progress(func, pstring, maximum, threadfin = None):
@@ -882,17 +883,6 @@ class HeaderSetting(QDialog):
         self.listbox.clearSelection()
         self.listbox.setCurrentRow(self.listbox.count() - 1)
         self.textname.setFocus()
-
-class Label(QLabel):
-    """Just a QLabel that sends a clicked() signal
-    when left-clicked."""
-    def __init__ (self, text = "", parent = None):
-        QLabel.__init__ (self, text, parent)
-
-    def mouseReleaseEvent(self, event):
-      if event.button() == Qt.LeftButton:
-        self.emit(SIGNAL("clicked()"))
-      QLabel.mousePressEvent(self, event)
 
 class ListBox(QListWidget):
     """Puddletag's replacement of QListWidget, because
@@ -1236,30 +1226,70 @@ class LongInfoMessage(QDialog):
         self.close()
         self.accept()
 
-class ArtworkLabel(QLabel):
+#class ArtworkLabel(QLabel):
+    #def __init__(self, *args, **kwargs):
+        #super(ArtworkLabel, self).__init__(*args, **kwargs)
+        #self.setAcceptDrops(True)
+    
+    #def dragEnterEvent(self, event):
+        #mime = event.mimeData()
+        #if mime.hasUrls():
+            #event.accept()
+        #else:
+            #event.ignore()
+        #super(ArtworkLabel, self).dragEnterEvent(event)
+    
+    #def dropEvent(self, event):
+        #mime = event.mimeData()
+        #if mime.hasUrls():
+            #filenames = [unicode(z.path()) for z in mime.urls()]
+            #self.emit(SIGNAL('newImages'), *filenames)
+        #super(ArtworkLabel, self).dropEvent(event)
+    
+    #def mouseReleaseEvent(self, event):
+      #if event.button() == Qt.LeftButton:
+        #self.emit(SIGNAL("clicked()"))
+      #QLabel.mousePressEvent(self, event)
+
+class ArtworkLabel(QGraphicsView):
     def __init__(self, *args, **kwargs):
         super(ArtworkLabel, self).__init__(*args, **kwargs)
-        self.setAcceptDrops(True)
-    
-    def dragEnterEvent(self, event):
-        mime = event.mimeData()
-        if mime.hasUrls():
-            event.accept()
+        self._svg = QGraphicsSvgItem()
+        self._pixmap = QGraphicsPixmapItem()
+        self._scene = QGraphicsScene()
+        self._scene.addItem(self._svg)
+        self._scene.addItem(self._pixmap)
+        self.setScene(self._scene)
+        self.setSceneRect(QRectF())
+
+    def mousePressEvent(self, event):
+        super(ArtworkLabel, self).mousePressEvent(event)
+        if event.buttons() == Qt.LeftButton:
+            self.emit(SIGNAL('clicked()'))
+
+    def resizeEvent(self, event=None):
+        if event is not None:
+            super(ArtworkLabel, self).resizeEvent(event)
+        if self._svg.isVisible():
+            item = self._svg
+            self.setSceneRect(self._svg.boundingRect())
         else:
-            event.ignore()
-        super(ArtworkLabel, self).dragEnterEvent(event)
-    
-    def dropEvent(self, event):
-        mime = event.mimeData()
-        if mime.hasUrls():
-            filenames = [unicode(z.path()) for z in mime.urls()]
-            self.emit(SIGNAL('newImages'), *filenames)
-        super(ArtworkLabel, self).dropEvent(event)
-    
-    def mouseReleaseEvent(self, event):
-      if event.button() == Qt.LeftButton:
-        self.emit(SIGNAL("clicked()"))
-      QLabel.mousePressEvent(self, event)
+            item = self._pixmap
+            self.setSceneRect(self._pixmap.boundingRect())
+        self.fitInView(item, Qt.KeepAspectRatio)
+        
+
+    def setPixmap(self, pixmap):
+        if isinstance(pixmap, str):
+            renderer = QSvgRenderer (QByteArray(pixmap), self._svg)
+            self._svg.setSharedRenderer(renderer)
+            self._pixmap.setVisible(False)
+            self._svg.setVisible(True)
+        else:
+            self._svg.setVisible(False)
+            self._pixmap.setPixmap(pixmap)
+            self._pixmap.setVisible(True)
+        self.resizeEvent()
 
 class PicWidget(QWidget):
     """A widget that shows a file's pictures.
@@ -1305,7 +1335,7 @@ class PicWidget(QWidget):
         #The picture.
         self.label = ArtworkLabel()
         self.label.setFrameStyle(QFrame.Box)
-        self.label.setMargin(10)
+        #self.label.setMargin(10)
         self.label.setMinimumSize(200, 170)
         if buttons:
             self.label.setMaximumSize(200, 170)
@@ -1565,11 +1595,16 @@ class PicWidget(QWidget):
             while True:
                 #A lot of files have corrupt picture data. I just want to
                 #skip those and not have the user be any wiser.
-                image = QImage().fromData(self.images[num]['data'])
-                if image.isNull():
-                    del(self.images[num])
-                else:
+                data = self.images[num]['data']
+                if data.startswith('<?xml'):
+                    image = data
                     break
+                else:
+                    image = QImage().fromData(data)
+                    if image.isNull():
+                        del(self.images[num])
+                    else:
+                        break
             [action.setEnabled(True) for action in
                     (self.editpic, self.savepic, self.removepic)]
         except IndexError:
@@ -1582,10 +1617,14 @@ class PicWidget(QWidget):
             self.removepic.setEnabled(False)
             self._image_desc.setEnabled(False)
             self._image_type.setEnabled(False)
-        self.pixmap = QPixmap.fromImage(image)
-        self.win.setImage(self.pixmap)
-        #pdb.set_trace()
-        #self.label.setPixmap(self.pixmap)
+            self.savepic.setEnabled(False)
+        if isinstance(image, str):
+            self.label.setPixmap(image)
+            self.win.setImage(image)
+        else:
+            self.pixmap = QPixmap.fromImage(image)
+            self.label.setPixmap(self.pixmap)
+            self.win.setImage(self.pixmap)
 
         self._image_desc.blockSignals(True)
         desc = self.images[num].get('description', QApplication.translate("Artwork", 'Enter a description'))
@@ -1601,7 +1640,7 @@ class PicWidget(QWidget):
         self.context = unicode(self._contextFormat.arg(unicode(num + 1)).arg(unicode(len(self.images))))
         self.label.setFrameStyle(QFrame.NoFrame)        
         self.enableButtons()
-        self.resizeEvent()
+        #self.resizeEvent()
 
     currentImage = property(_getCurrentImage, _setCurrentImage,"""Get or set the index of
     the current image. If the index isn't valid
@@ -1609,12 +1648,11 @@ class PicWidget(QWidget):
 
     def maxImage(self):
         """Shows a window with the picture fullsized."""
-        if self.pixmap:
-            if self.win.isVisible():
-                self.win.hide()
-            else:
-                self.win = PicWin(self.pixmap, self)
-                self.win.show()
+        if self.win.isVisible():
+            self.win.hide()
+        elif self.currentImage not in self.readonly:
+            self.win = PicWin(self.pixmap, self)
+            self.win.show()
 
     def nextImage(self):
         self.currentImage += 1
@@ -1627,10 +1665,7 @@ class PicWidget(QWidget):
         the image in the current file to disk."""
         if self.currentImage > -1:
             filedlg = QFileDialog()
-            if self.lastfilename:
-                tempfilename = os.path.splitext(self.lastfilename)[0] + u'.jpg'
-            else:
-                tempfilename = 'folder.jpg'
+            tempfilename = 'folder.jpg'
             filename = filedlg.getSaveFileName(self,
                 QApplication.translate("Artwork", 'Save artwork as...'), tempfilename,
                 QApplication.translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
@@ -1689,7 +1724,7 @@ class PicWidget(QWidget):
                         data = QBuffer(ba)
                         data.open(QIODevice.WriteOnly)
                         image.save(data, "JPG")
-                        data = data.data()
+                        data = str(data.data())
                     else:
                         raise e
                 pic = {'data': data, 'height': image.height(),
@@ -1698,6 +1733,18 @@ class PicWidget(QWidget):
                     'description': unicode(QApplication.translate("Artwork", 'Enter description')),
                     'imagetype': 3}
                 images.append(pic)
+        return images
+
+    def picsFromData(self, *data):
+        images = []
+        for d in data:
+            image = QImage().fromData(d)
+            pic = {'data': d, 'height': image.height(),
+                'width': image.width(), 'size': len(data),
+                'mime': 'image/jpeg',
+                'description': unicode(QApplication.translate("Artwork", 'Enter description')),
+                'imagetype': 3}
+            images.append(pic)
         return images
 
     def setImageTags(self, itags):
@@ -1722,24 +1769,6 @@ class PicWidget(QWidget):
         for z in others:
             tags[z](False)
         self._itags = itags
-    
-    def resizeEvent(self, event=None):
-        if event is not None:
-            QWidget.resizeEvent(self, event)
-        if self.pixmap:
-            labelheight = self.label.height()
-            labelwidth = self.label.width()
-            ratio = labelheight / float(labelwidth)
-
-            maxheight = int(labelheight / ratio)
-            maxwidth = int(labelwidth * ratio)
-
-            if maxwidth > maxheight:
-                pixmap = self.pixmap.scaledToHeight(maxheight - 10)
-            else:
-                pixmap = self.pixmap.scaledToWidth(maxwidth - 10)
-
-            self.label.setPixmap(pixmap)
 
 
 class PicWin(QDialog):
@@ -1752,7 +1781,7 @@ class PicWin(QDialog):
         is created, let pixmap = None and call setImage later."""
         QDialog.__init__(self, parent)
         self.setWindowTitle('Album Art')
-        self.label = Label()
+        self.label = ArtworkLabel()
 
         vbox = QVBoxLayout()
         vbox.setMargin(0)
@@ -1765,16 +1794,18 @@ class PicWin(QDialog):
         self.connect(self.label, SIGNAL('clicked()'), self.close)
 
     def setImage(self, pixmap):
-        
-        screensize = QDesktopWidget().availableGeometry()
-        screen_side = screensize.height() **2 + screensize.width() ** 2
-        pix_side = pixmap.height() **2 + pixmap.width() ** 2
-        if pix_side > screen_side:
-            pixmap = pixmap.scaled(screensize.size())
-        self.setMaximumSize(pixmap.size())
-        self.setMinimumSize(pixmap.size())
+        maxsize = QDesktopWidget().availableGeometry().size()
         self.label.setPixmap(pixmap)
-        self.resize(pixmap.size())
+        if hasattr(pixmap, 'size'):
+            size = pixmap.size()
+            if size.height() < maxsize.height() and size.width() < maxsize.width():
+                self.setMinimumSize(size)
+                self.setMaximumSize(size)
+            else:
+                self.setMaximumSize(maxsize)
+        else:
+            self.setMaximumSize(maxsize)
+            
 
 class ProgressWin(QDialog):
     def __init__(self, parent=None, maximum = 100, progresstext = '', showcancel = True):

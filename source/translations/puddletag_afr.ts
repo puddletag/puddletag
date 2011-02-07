@@ -1,15 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="af_ZA">
+<!DOCTYPE TS><TS version="1.1" language="af_ZA">
+<context>
+    <name>About</name>
+    <message>
+        <location filename="puddlestuff/about.py" line="12"/>
+        <source>puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.
+
+&lt;br /&gt;&lt;br /&gt;Features include: Batch editing of tags, renaming files using tags, retrieving tags from filenames, using Actions to automate repetitive tasks, importing your music library and loads of other awesome stuff. &lt;br /&gt;&lt;br /&gt;
+
+Supported formats: id3v1, id3v2 (.mp3), AAC (.mp4, .m4a), VorbisComments (.ogg, .flac) and APEv2 (.ape) &lt;br /&gt;&lt; br /&gt;
+
+Visit the puddletag website (&lt;a href=&quot;http://puddletag.sourceforge.net&quot;&gt;http://puddletag.sourceforge.net&lt;/a&gt;) for help and updates.&lt;br /&gt;&lt;br /&gt;
+&amp;copy; 2010 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
+Licensed under GPLv2 (&lt;a href=&quot;www.gnu.org/licenses/gpl-2.0.html&quot;&gt;www.gnu.org/licenses/gpl-2.0.html&lt;/a&gt;).
+</source>
+        <translation>puddletag is &apos;n klank -tag wysiger vir GNU/Linux soos die Windows program, Mp3tag.
+
+&lt;br /&gt;&lt;br /&gt;Funksies behels baie woorde wat ek glad nie lus het om te vertaal nie, so verbeel maar hier staan iets wat eintlik sin maak ;)&lt;br /&gt;&lt;br /&gt;
+
+Ondersteunde formats:  id3v1, id3v2 (.mp3), AAC (.mp4, .m4a), VorbisComments (.ogg, .flac) and APEv2 (.ape) &lt;br /&gt;&lt; br /&gt;
+
+Gaan na die puddletag webwerf (&lt;a href=&quot;http://puddletag.sourceforge.net&quot;&gt;http://puddletag.sourceforge.net&lt;/a&gt;) vir help en op hoede te bly vir updates.&lt;br /&gt;&lt;br /&gt;
+
+&amp;copy; 2010 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
+Gelisenseer onder GPLv2 (&lt;a href=&quot;www.gnu.org/licenses/gpl-2.0.html&quot;&gt;www.gnu.org/licenses/gpl-2.0.html&lt;/a&gt;).</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="23"/>
+        <source>&lt;b&gt;Evan Devetzis&lt;/b&gt; for his many, many awesome ideas and putting up with more bugs than humanly possible.&lt;br /&gt;&lt;br /&gt;
+
+To the writers of the libraries puddletag depends on (without which I&apos;ll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
+
+&lt;b&gt;Paul McGuire&lt;/b&gt; for PyParsing.&lt;br /&gt;
+&lt;b&gt;Michael Urman&lt;/b&gt; and &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
+&lt;b&gt;Phil Thomson&lt;/b&gt; and everyone responsible for PyQt4.&lt;br /&gt;
+&lt;b&gt;Michael Foord&lt;/b&gt; and &lt;b&gt;Nicola Larosa&lt;/b&gt; for ConfigObj (seriously, they should replace ConfigParser with this).&lt;br /&gt;
+The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.</source>
+        <translation>&lt;b&gt;Evan Devetzis&lt;/b&gt; vir vreeslik baie goed.&lt;br /&gt;&lt;br /&gt;
+
+Vir die vry-sagteware skrywers. Dankie baie.&lt;br /&gt;&lt;br /&gt;
+
+&lt;b&gt;Paul McGuire&lt;/b&gt; vir PyParsing.&lt;br /&gt;
+&lt;b&gt;Michael Urman&lt;/b&gt; vir &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
+&lt;b&gt;Nokia, Phil Thomson&lt;/b&gt; en almal verantwoordelik Qt/PyQt4.&lt;br /&gt;
+&lt;b&gt;Michael Foord&lt;/b&gt; and &lt;b&gt;Nicola Larosa&lt;/b&gt; vir ConfigObj .&lt;br /&gt;
+The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="55"/>
+        <source>About puddletag</source>
+        <translation>Oor puddletag</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="62"/>
+        <source>&lt;h2&gt;puddletag %1 (Revision %2)&lt;/h2&gt; %3</source>
+        <translation>&lt;h2&gt;puddletag %1 (Revisie %2)&lt;/h2&gt; %3</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="67"/>
+        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt; %3</source>
+        <translation type="obsolete">&lt;h2&gt;puddletag %1&lt;/h2&gt; %3</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="74"/>
+        <source>&amp;About</source>
+        <translation>&amp;Oor</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="75"/>
+        <source>&amp;Thanks</source>
+        <translation>&amp;Dankie</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/about.py" line="67"/>
+        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</source>
+        <translation>&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</translation>
+    </message>
+</context>
 <context>
     <name>Actions</name>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="547"/>
+        <location filename="puddlestuff/actiondlg.py" line="548"/>
         <source>Modify Action</source>
         <translation>Verander Aksie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="658"/>
+        <location filename="puddlestuff/actiondlg.py" line="659"/>
         <source>Actions</source>
         <translation>Aksies</translation>
     </message>
@@ -19,37 +95,37 @@
         <translation>Stel &apos;n naam vir die goupaadjie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="899"/>
+        <location filename="puddlestuff/actiondlg.py" line="900"/>
         <source>New Action</source>
         <translation>Nuwe Aksie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="984"/>
+        <location filename="puddlestuff/actiondlg.py" line="985"/>
         <source>Enter a name for the new action.</source>
         <translation>Stel &apos;n naam vir die nuwe Aksie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="924"/>
+        <location filename="puddlestuff/actiondlg.py" line="925"/>
         <source>Edit Action: </source>
         <translation>Verander Aksie:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="993"/>
+        <location filename="puddlestuff/actiondlg.py" line="994"/>
         <source>Edit Action: %s</source>
         <translation>Verander Aksie: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="683"/>
+        <location filename="puddlestuff/actiondlg.py" line="684"/>
         <source>Assign &amp;Shortcut</source>
         <translation>Sit &amp;Kortgewing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="691"/>
+        <location filename="puddlestuff/actiondlg.py" line="692"/>
         <source>Edit Shortcuts</source>
         <translation>Verander Kortgewings</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="686"/>
+        <location filename="puddlestuff/actiondlg.py" line="687"/>
         <source>&lt;p&gt;Creates a
             shortcut for the checked actions on the Actions menu.
             Use Edit Shortcuts (found by pressing down on this button)
@@ -182,22 +258,22 @@
         <translation>Kies Prent...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1634"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1631"/>
         <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>JPEG Prente (*.jpg);;PNG Prente (*.png);;All Vyle(*.*)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1641"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1638"/>
         <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
         <translation>Ek kon nie na &lt;b&gt;%1&lt;/b&gt; skryf nie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1698"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1695"/>
         <source>Enter description</source>
         <translation>Stel deskripsie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1634"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1631"/>
         <source>Save artwork as...</source>
         <translation>Save verfwerk as...</translation>
     </message>
@@ -223,7 +299,7 @@
 <context>
     <name>Autonumbering Wizard</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="53"/>
+        <location filename="puddlestuff/helperwin.py" line="52"/>
         <source>Autonumbering Wizard</source>
         <translation>Benommerings Agent</translation>
     </message>
@@ -233,22 +309,22 @@
         <translation type="obsolete">Begin: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="72"/>
+        <location filename="puddlestuff/helperwin.py" line="71"/>
         <source>Max length after padding with zeroes: </source>
         <translation>Maximum lengte na nul-bysittings: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="80"/>
+        <location filename="puddlestuff/helperwin.py" line="79"/>
         <source>Add track &amp;separator [&apos;/&apos;]: Number of tracks</source>
         <translation>Sit liedjie-&amp;seprator by: Aantal liedjies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="85"/>
+        <location filename="puddlestuff/helperwin.py" line="84"/>
         <source>&amp;Restart numbering at each directory.</source>
         <translation>&amp;Herbegin nommering by elke directory.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="64"/>
+        <location filename="puddlestuff/helperwin.py" line="63"/>
         <source>&amp;Start: </source>
         <translation>&amp;Begin: </translation>
     </message>
@@ -295,6 +371,11 @@
     <message>
         <location filename="puddlestuff/puddlesettings.py" line="520"/>
         <source>&lt;p&gt;Below are the backgrounds used for various controls in puddletag. &lt;br &gt; Double click the desired action to change its colour.&lt;/p&gt;</source>
+        <translation type="obsolete">&lt;p&gt;Onder is the agtergronde wat vir van die kontroles in puddletag gebruik word.&lt;br /&gt; Dubbel-klik die gesegte aksie om sy kleur te verander.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/puddlesettings.py" line="520"/>
+        <source>&lt;p&gt;Below are the backgrounds used for various controls in puddletag. &lt;br /&gt; Double click the desired action to change its colour.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Onder is the agtergronde wat vir van die kontroles in puddletag gebruik word.&lt;br /&gt; Dubbel-klik die gesegte aksie om sy kleur te verander.&lt;/p&gt;</translation>
     </message>
 </context>
@@ -324,7 +405,7 @@
 <context>
     <name>Combo Box</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1869"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1866"/>
         <source>Remove current item.</source>
         <translation>Verwyder huidige item.</translation>
     </message>
@@ -568,32 +649,32 @@
         <translation>&amp;Velde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="9"/>
+        <location filename="puddlestuff/constants.py" line="27"/>
         <source>SYNTAX ERROR: %s expects a number at argument %d.</source>
         <translation>SINTAX FOUNT: Die funksie %s verwag &apos;n nommer by argument %d.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="15"/>
+        <location filename="puddlestuff/constants.py" line="20"/>
         <source>Yes</source>
         <translation>Ja</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="16"/>
+        <location filename="puddlestuff/constants.py" line="21"/>
         <source>No</source>
         <translation>Nee</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="20"/>
+        <location filename="puddlestuff/constants.py" line="25"/>
         <source>MusicBrainz</source>
         <translation>MusicBrainz</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="34"/>
+        <location filename="puddlestuff/constants.py" line="22"/>
         <source>&lt;blank&gt;</source>
         <translation>&lt;leeg&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="35"/>
+        <location filename="puddlestuff/constants.py" line="23"/>
         <source>&lt;keep&gt;</source>
         <translation>&lt;hou&gt;</translation>
     </message>
@@ -613,7 +694,7 @@
         <translation>Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1806"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1803"/>
         <source>Cancel</source>
         <translation>Kanselleer</translation>
     </message>
@@ -663,7 +744,7 @@
         <translation>&amp;Wysig</translation>
     </message>
     <message>
-        <location filename="puddlestuff/constants.py" line="8"/>
+        <location filename="puddlestuff/constants.py" line="26"/>
         <source>SYNTAX ERROR in $%1: %2</source>
         <translation>SINTAKS Fout in $%1: %2</translation>
     </message>
@@ -816,27 +897,27 @@
 <context>
     <name>Edit Field</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="309"/>
+        <location filename="puddlestuff/helperwin.py" line="307"/>
         <source>Edit Field</source>
         <translation>Verander Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="313"/>
+        <location filename="puddlestuff/helperwin.py" line="311"/>
         <source>&amp;Field</source>
         <translation>&amp;Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="328"/>
+        <location filename="puddlestuff/helperwin.py" line="326"/>
         <source>&amp;Value</source>
         <translation>&amp;Waarde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="333"/>
+        <location filename="puddlestuff/helperwin.py" line="331"/>
         <source>A&amp;dd</source>
         <translation>&amp;Nuwe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="343"/>
+        <location filename="puddlestuff/helperwin.py" line="341"/>
         <source>E&amp;dit</source>
         <translation>&amp;Verander</translation>
     </message>
@@ -844,22 +925,22 @@
 <context>
     <name>Extended Tags</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="453"/>
+        <location filename="puddlestuff/helperwin.py" line="451"/>
         <source>Field</source>
         <translation>Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="453"/>
+        <location filename="puddlestuff/helperwin.py" line="451"/>
         <source>Value</source>
         <translation>Waarde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="683"/>
+        <location filename="puddlestuff/helperwin.py" line="681"/>
         <source>Different files.</source>
         <translation>Verskillende files.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="474"/>
+        <location filename="puddlestuff/helperwin.py" line="472"/>
         <source>Resets the selected fields to their original value.</source>
         <translation>Herstel die gekiesde velde na hulle oorspronklike waardes.</translation>
     </message>
@@ -1639,7 +1720,7 @@
         <translation>&lt;b&gt;%1&lt;/b&gt;: Besig om te stop.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/masstagging.py" line="977"/>
+        <location filename="puddlestuff/masstagging.py" line="813"/>
         <source>Mass Tagging</source>
         <translation>Opeenvolgende Taggery</translation>
     </message>
@@ -2510,12 +2591,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Progress Dialog</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1785"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1782"/>
         <source>Please Wait...</source>
         <translation>Wag net &apos;n bietjie...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1786"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1783"/>
         <source>%1%2 of %3...</source>
         <translation>%1%2 van %3...</translation>
     </message>
@@ -2807,47 +2888,47 @@ Egte: %2</translation>
 <context>
     <name>Text File -&gt; Tag</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="153"/>
+        <location filename="puddlestuff/helperwin.py" line="151"/>
         <source>Import tags from file</source>
         <translation>Kry tags van file</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="158"/>
+        <location filename="puddlestuff/helperwin.py" line="156"/>
         <source>Text</source>
         <translation>Woorde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="161"/>
+        <location filename="puddlestuff/helperwin.py" line="159"/>
         <source>Tag preview</source>
         <translation>Tag bevestiging</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="185"/>
+        <location filename="puddlestuff/helperwin.py" line="183"/>
         <source>&amp;Select File</source>
         <translation>&amp;Kies File</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="186"/>
+        <location filename="puddlestuff/helperwin.py" line="184"/>
         <source>&amp;Paste Clipboard</source>
         <translation>&amp;Druk Clipboard</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="231"/>
+        <location filename="puddlestuff/helperwin.py" line="229"/>
         <source>Error</source>
         <translation>Verkeerd</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="230"/>
+        <location filename="puddlestuff/helperwin.py" line="228"/>
         <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
         <translation>Die file &lt;b&gt;%1&lt;/b&gt; kon nie opgelaai word nie.&lt;br /&gt; Wil jy &apos;n ander een kies?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="231"/>
+        <location filename="puddlestuff/helperwin.py" line="229"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ja</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="231"/>
+        <location filename="puddlestuff/helperwin.py" line="229"/>
         <source>&amp;No</source>
         <translation>&amp;Nee</translation>
     </message>

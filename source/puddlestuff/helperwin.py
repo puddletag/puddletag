@@ -4,9 +4,7 @@ one place, and aren't that complicated are put here."""
 
 #helperwin.py
 
-#Copyright (C) 2008-2009 concentricpuddle
-
-#This file is part of puddletag, a semi-good music tag editor.
+#Copyright (C) 2008-2010 concentricpuddle
 
 #This program is free software; you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
@@ -29,7 +27,7 @@ import sys, findfunc, audioinfo, os,pdb, resource
 from puddleobjects import (gettaglist, settaglist, OKCancel, partial, MoveButtons, ListButtons,
     PicWidget, winsettings, PuddleConfig, get_icon)
 from copy import deepcopy
-from puddlestuff.constants import HOMEDIR
+from puddlestuff.constants import HOMEDIR, KEEP
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
 BOLD = 1
@@ -108,7 +106,6 @@ class TrackWindow(QDialog):
         section = 'autonumbering'
         self._start.setValue(cparser.get(section, 'start', 1))
         self._separator.setCheckState(cparser.get(section, 'separator', Qt.Unchecked))
-        self._numtracks.setValue(cparser.get(section, 'numtracks', 1))
         self._padlength.setValue(cparser.get(section, 'padlength',1))
         self._restart_numbering.setCheckState(cparser.get(section, 'restart',
             Qt.Unchecked))
@@ -653,7 +650,7 @@ class ExTags(QDialog):
 
         for field, val, status in listitems:
             if status != REMOVE:
-                if val == u'<keep>':
+                if val == KEEP:
                     continue
                 l_field = field.lower()
                 if l_field in lowered:
@@ -699,7 +696,7 @@ class ExTags(QDialog):
                 else:
                     preview = UNCHANGED
                 if numvalues[field] != len(audios):
-                    self._settag(row, field, '<keep>')
+                    self._settag(row, field, KEEP)
                     row += 1
                 else:
                     if isinstance(values, basestring):

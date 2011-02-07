@@ -121,7 +121,8 @@ def create_log():
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     qtTranslator = QTranslator()
-    from puddlestuff.constants import TRANSDIR
+    import puddlestuff.constants
+    TRANSDIR = puddlestuff.constants.TRANSDIR
     from puddlestuff.translations import translate
     from puddlestuff.puddleobjects import get_languages, PuddleConfig
     from puddlestuff import version_string, revision, resource
@@ -158,6 +159,7 @@ if __name__ == '__main__':
     if langargs and langargs != 'default':
         if qtTranslator.load(*langargs):
             app.installTranslator(qtTranslator)
+    puddlestuff.constants.trans_strings()
 
     if '--debug' in sys.argv:
         create_log()

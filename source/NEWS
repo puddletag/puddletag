@@ -1,3 +1,14 @@
+7 February 2011 - 0.9.12
+    (Almost) all strings are now translatable.
+    Changes:
+        Users stuck using python-musicbrainz2 < 0.7.0 shouldn't have problems any more. Nor is python-musicbrainz2 a hard-dependency any more.
+    Fixes:
+        Editing Actions sometimes didn't work.
+        Editing __dirname and __dirpath while using QuodLibet library is now possible + a bunch of Library bugs.
+        %__total_files% and %__counter% not working when used within scripting functions.
+        Many, many more...
+        
+
 20 December 2010 - 0.9.11
     Another bug where the Tag Sources dialog would freeze when retrieving albums is fixed.
 
