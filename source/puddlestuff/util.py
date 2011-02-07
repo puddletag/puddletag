@@ -122,7 +122,8 @@ def write(audio, tags, save_mtime = True):
         audio.preview = {}
 
     filetags = real_filetags(audio.mapping, audio.revmapping, tags)
-    undo = dict([(field, copy(audio.get(field, []))) 
+
+    undo = dict([(field, copy(audio.get(field, [])))
         for field in tags if
             (field not in filetags and 
                 tags.get(field, u'') != audio.get(field, u''))])

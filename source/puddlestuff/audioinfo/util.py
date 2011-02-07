@@ -477,6 +477,9 @@ class MockTag(object):
             if z not in INFOTAGS and not z.startswith('___'):
                 del(self._tags[z])
 
+    def __contains__(self, key):
+        return key in self._tags
+
     def keys(self):
         if not self.mapping:
             return self._tags.keys()
@@ -496,9 +499,6 @@ class MockTag(object):
 
     def __iter__(self):
         return self.keys().__iter__()
-
-    def __contains__(self, key):
-        return key in self.keys()
 
     def __len__(self):
         try:

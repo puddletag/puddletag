@@ -456,7 +456,8 @@ class CreateFunction(QDialog):
             elif callable(funcname) and (not (funcname.__name__.startswith("__") or (funcname.__doc__ is None))):
                 self.realfuncs.append(z)
 
-        funcnames = sorted([(Function(z).funcname, z) for z in  self.realfuncs])
+        funcnames = [(Function(z).funcname, z) for z in  self.realfuncs]
+        funcnames.sort(key = lambda x: translate('Functions', x[0]))
         self.realfuncs = [z[1] for z in funcnames]
 
         self.vbox = QVBoxLayout()

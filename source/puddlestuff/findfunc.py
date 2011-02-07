@@ -197,7 +197,7 @@ def load_action_from_name(name):
     filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
     return get_action(filename)
 
-def getfunc(text, audio):
+def getfunc(text, audio, dictionary=None):
     """Parses text and replaces all functions
     with their appropriate values.
 
@@ -207,7 +207,7 @@ def getfunc(text, audio):
     if not isinstance(text, unicode):
         text = unicode(text, 'utf8')
 
-    return function_parser(audio).transformString(text)
+    return function_parser(audio, dictionary=dictionary).transformString(text)
 
 def function_parser(m_audio, audio=None, dictionary=None):
     """Parses a function in the form $name(arguments)
@@ -268,7 +268,7 @@ def function_parser(m_audio, audio=None, dictionary=None):
         topass = []
         for no, (arg, param) in enumerate(zip(arguments, varnames)):
             if param.startswith('t_') or param.startswith('text'):
-                topass.append(replacevars(arg, audio))
+                topass.append(replacevars(arg, audio, dictionary))
             elif param.startswith('n_'):
                 try:
                     if float(arg) == int(arg):
@@ -512,11 +512,11 @@ def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
             return 0
 
     if not addext:
-        return replacevars(getfunc(pattern, tags), tags, state)
+        return replacevars(getfunc(pattern, tags, state), tags, state)
     elif addext and (extension is not None):
-        return replacevars(getfunc(pattern, tags), tags, state) + os.path.extsep + extension
+        return replacevars(getfunc(pattern, tags, state), tags, state) + os.path.extsep + extension
     else:
-        return replacevars(getfunc(pattern, tags), tags, state) + os.path.extsep + tags["__ext"]
+        return replacevars(getfunc(pattern, tags, state), tags, state) + os.path.extsep + tags["__ext"]
 
 def tagtotag(pattern, text, expression):
     """See filenametotag for an implementation example and explanation.
