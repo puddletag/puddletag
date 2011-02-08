@@ -29,15 +29,12 @@ _libs = [('mutagen', '(usually python-mutagen or just mutagen)',
             'http://code.google.com/p/configobj/'),
          ('pyparsing', '(python-pyparsing or python-parsing in most distros)',
             'http://pyparsing.wikispaces.com/'),
-         ('musicbrainz2', '(python-musicbrainz2 in most distros)', 
-            'http://musicbrainz2.org/doc/PythonMusicBrainz2'),
          ('PyQt4', '(python-qt4 usually)', 
             'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 _recommended = [
-    ('Image', 'Installing the python imaging library is '
-        'recommended in order to view/edit FLAC cover art.',
-        'python-imaging in most distros',
-        'http://www.pythonware.com/products/pil/')]
+    ('musicbrainz2', 'It is recommended for MusicBrainz support. Available as '
+        'python-musicbrainz2 in most distros.', 'python-musicbrainz2',
+        'http://musicbrainz2.org/doc/PythonMusicBrainz2'),]
 
 def check_libs():
     found = True

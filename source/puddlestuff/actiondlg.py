@@ -383,7 +383,7 @@ class FunctionDialog(QWidget):
                 fields = findfunc.parse_field_list(self.func.tag, audio, self._combotags)
                 files = status['selectedfiles']
                 files = unicode(len(files)) if files else u'1'
-                state = {'__counter': u'1', '__total_files': files}
+                state = {'__counter': u'0', '__total_files': files}
                 val = findfunc.runAction([self.func], audio, state, fields)
             except findfunc.ParseError, e:
                 val = u'<b>%s</b>' % (e.message)
@@ -591,7 +591,7 @@ class CreateAction(QDialog):
         try:
             files = status['selectedfiles']
             files = unicode(len(files)) if files else u'1'
-            state = {'__counter': u'1', '__total_files': files}
+            state = {'__counter': u'0', '__total_files': files}
             tags = runAction(self.functions, self.example, state)
             self._examplelabel.setText(displaytags(tags))
         except findfunc.ParseError, e:
@@ -865,7 +865,7 @@ class ActionWindow(QDialog):
             try:
                 files = status['selectedfiles']
                 files = unicode(len(files)) if files else u'1'
-                state = {'__counter': u'1', '__total_files': files}
+                state = {'__counter': u'0', '__total_files': files}
                 if self._quickaction:
                     tags = runQuickAction(funcs, self.example, state, self._quickaction)
                 else:

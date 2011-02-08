@@ -146,8 +146,10 @@ def format(parent=None, preview = None):
     ret = []
     tf = findfunc.tagtofilename
 
-    for audio, s in zip(files, selected):
-        val = tf(pattern, audio)
+    state = {'__total_files': unicode(len(files))}
+    for i, (audio, s) in enumerate(zip(files, selected)):
+        state['__counter'] = unicode(i + 1)
+        val = tf(pattern, audio, state = state)
         ret.append(dict([(tag, val) for tag in s]))
     emit('writeselected', ret)
 
@@ -271,12 +273,14 @@ def rename_dirs(parent=None):
 
     #Create the msgbox, I like that there'd be a difference between
     #the new and the old filename, so I bolded the new and italicised the old.
+    state = {'__total_files': unicode(len(files))}
     title = unicode(QApplication.translate("Dir Renaming", "<b>Are you sure you want to rename the following directories?</b>"))
     dirs = []
-    newname = lambda x: encode_fn(basename(safe_name(tagtofilename(pattern, x))))
+    newname = lambda x, st: encode_fn(basename(safe_name(tagtofilename(pattern, x, state=st))))
     msg = u''
-    for d, f in newdirs.items():
-        newfolder = path.join(dirname(d), newname(f))
+    for counter, (d, f) in enumerate(newdirs.items()):
+        state['__counter'] = unicode(counter + 1)
+        newfolder = path.join(dirname(d), newname(f, state))
         msg += u'%s -> <b>%s</b><br /><br />' % (
             f[DIRPATH], newfolder.decode('utf8', 'replace'))
         dirs.append([d, newfolder])
@@ -390,8 +394,14 @@ def tag_to_file():
     files = status['selectedfiles']
 
     tf = functions.move
+    state = {'__total_files': unicode(len(files))}
 
-    emit('renameselected', (tf(f, pattern, f)['__path'] for f in files))
+    def rename():
+        for i, f in enumerate(files):
+            state['__counter'] = unicode(i + 1)
+            yield tf(f, pattern, f, state=state)['__path']
+
+    emit('renameselected', rename())
 
 def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath
@@ -420,10 +430,12 @@ def text_file_to_tag(parent=None):
 def update_status(enable = True):
     files = status['selectedfiles']
     pattern = status['patterntext']
-    tf = lambda *args: encode_fn(findfunc.tagtofilename(*args))
+    tf = lambda *args, **kwargs: encode_fn(findfunc.tagtofilename(*args, **kwargs))
     if not files:
         return
     tag = files[0]
+
+    state = {'__counter': u'1', '__total_files': unicode(len(files))}
 
     x = findfunc.filenametotag(pattern, tag[PATH], True)
     emit('ftstatus', display_tag(x))
@@ -431,7 +443,7 @@ def update_status(enable = True):
     bold_error = translate("Status Bar", "<b>%s</b>")
     
     try:
-        newfilename = functions.move(tag, pattern, tag)['__path']
+        newfilename = functions.move(tag, pattern, tag, state=state.copy())['__path']
         emit('tfstatus', translate("Status Bar",
             "New Filename: <b>%1</b>").arg(newfilename.decode('utf8', 'replace')))
     except findfunc.ParseError, e:
@@ -440,7 +452,7 @@ def update_status(enable = True):
     oldir = path.dirname(tag.dirpath)
     try:
         newfolder = path.join(oldir, path.basename(
-            safe_name(tf(pattern, tag))))
+            safe_name(tf(pattern, tag, state=state.copy()))))
         dirstatus = QApplication.translate("Dir Renaming",
             "Rename: <b>%1</b> to: <i>%2</i>").arg(tag[DIRPATH]).arg(newfolder.decode('utf8'))
         emit('renamedirstatus', dirstatus)
@@ -453,7 +465,8 @@ def update_status(enable = True):
     else:
         selected = selected[0]
     try:
-        val = tf(pattern, tag).decode('utf8')
+        
+        val = tf(pattern, tag, state=state.copy()).decode('utf8')
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError, e:

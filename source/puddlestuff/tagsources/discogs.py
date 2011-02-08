@@ -19,7 +19,6 @@ import puddlestuff.tagsources
 from puddlestuff.audioinfo import DATA
 import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
-from puddlestuff.tagsources.musicbrainz import find_id
 from puddlestuff.util import translate
 
 
@@ -57,6 +56,17 @@ def convert_dict(d, keys=TRACK_KEYS):
 IMAGEKEYS = {
     'SmallImage': SMALLIMAGE,
     'LargeImage': LARGEIMAGE}
+
+def find_id(tracks, field=None):
+    if not field:
+        return
+    for track in tracks:
+        if field in track:
+            value = track[field]
+            if isinstance(value, basestring):
+                return value
+            else:
+                return value[0]
 
 def is_release(element):
     return element.attributes['type'].value == 'release'

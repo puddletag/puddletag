@@ -11,6 +11,7 @@ from puddlestuff.util import split_by_tag, translate
 from puddlestuff.constants import CHECKBOX, SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from PyQt4.QtGui import QApplication
+from puddlestuff.tagsources.discogs import find_id
 
 old_version = False
 
@@ -107,17 +108,6 @@ def get_puid(track_id):
         track['mbrainz_rating'] = unicode(track.rating.value) if \
             track.rating.value is not None else None
     return dict((k,v) for k,v in track.items() if v)
-
-def find_id(tracks, field=None):
-    if not field:
-        return
-    for track in tracks:
-        if field in track:
-            value = track[field]
-            if isinstance(value, basestring):
-                return value
-            else:
-                return value[0]
 
 def artist_search(artist):
     try:

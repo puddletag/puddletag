@@ -376,7 +376,7 @@ class SettingsDialog(QWidget):
             u'%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
         self._albumdisp.setText(albumformat)
 
-        self._ua.setText(cparser.get('tagsources', 'useragent', ''))
+        self._ua.setText(cparser.get('tagsources', 'useragent', 'puddletag/0.9.12'))
 
         self.albumBound.setValue(
             cparser.get('tagsources', 'album_bound', 70, True))
@@ -652,7 +652,7 @@ class MainWin(QWidget):
 
     def setInfo(self, retval):
         self.getinfo.setEnabled(True)
-        if isinstance(retval, basestring):
+        if isinstance(retval, (basestring, QString)):
             self.label.setText(retval)
         else:
             releases, files = retval

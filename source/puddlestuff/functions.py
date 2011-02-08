@@ -342,29 +342,32 @@ def mod(text,text1):
     except decimal.InvalidOperation:
         return
 
-def move(m_tags, pattern, r_tags, ext=True):
+def move(m_tags, pattern, r_tags, ext=True, state=None):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
     
     tags = m_tags
     tf = findfunc.tagtofilename
 
+    if state is None:
+        state = {}
+
     if os.path.isabs(pattern):
         
-        new_name = lambda d: safe_name(tf(d, tags))
+        new_name = lambda d: safe_name(tf(d, tags, state=state))
         subdirs = pattern.split(u'/')
         newdirs = map(new_name, subdirs[1:-1])
-        newdirs.append(safe_name(tf(subdirs[-1], tags, ext)))
+        newdirs.append(safe_name(tf(subdirs[-1], tags, ext, state=state)))
         newdirs.insert(0, u'/')
         return {'__path': os.path.join(*newdirs)}
     else:
 
-        new_name = lambda d: encode_fn(safe_name(tf(d, tags)))
+        new_name = lambda d: encode_fn(safe_name(tf(d, tags, state=state)))
         subdirs = pattern.split(u'/')
         count = pattern.count(u'/')
         
         newdirs = map(new_name, subdirs[:-1])
-        newdirs.append(encode_fn(safe_name(tf(subdirs[-1], tags, ext))))
+        newdirs.append(encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
 
         dirpath = r_tags.dirpath
 
