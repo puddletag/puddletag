@@ -90,7 +90,7 @@ def setmapping(m):
 
     mapping = m
     for z in mapping:
-        revmapping[z] = dict([(value,key) for key, value in mapping[z].items()])
+        revmapping[z] = CaselessDict([(value,key) for key, value in mapping[z].items()])
     for z in extensions.values():
         try:
             if z[2] in mapping:

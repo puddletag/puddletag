@@ -330,10 +330,10 @@ class CaselessDict(dict):
             # Doesn't do keyword args
             if isinstance(other, dict):
                 for k,v in other.items():
-                    dict.__setitem__(self, k.lower(), v)
+                    self[k] = v
             else:
                 for k,v in other:
-                    dict.__setitem__(self, k.lower(), v)
+                    self[k] = v
 
     def __getitem__(self, key):
         return dict.__getitem__(self, self._keys[key.lower()])
@@ -385,7 +385,6 @@ class MockTag(object):
         if filename:
             self.link(filename)
         else:
-            #self._tags = {}
             self._tags = CaselessDict()
 
     def _getfilepath(self):
@@ -478,6 +477,8 @@ class MockTag(object):
                 del(self._tags[z])
 
     def __contains__(self, key):
+        if self.revmapping:
+            key = self.revmapping.get(key, key)
         return key in self._tags
 
     def keys(self):

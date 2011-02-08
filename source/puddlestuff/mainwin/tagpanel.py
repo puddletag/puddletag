@@ -304,7 +304,7 @@ class FrameCombo(QGroupBox):
                 self._hboxes.append((widgetbox, self.combos[tagval]))
             vbox.addLayout(labelbox)
             vbox.addLayout(widgetbox)
-        vbox.addStrut(0)
+        
         self.setLayout(vbox)
         QApplication.processEvents()
         self.setMaximumHeight(self.sizeHint().height())
