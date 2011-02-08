@@ -95,6 +95,8 @@ for i in range(1,len(mod_keys)):
 
 mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
 
+#FIXME: I hate the way this looks.
+
 imagetypes = [
     (unicode(QApplication.translate('Cover Type', 'Other')), unicode(QApplication.translate("Cover Type", 'O'))),
     (unicode(QApplication.translate('Cover Type', 'File Icon')), unicode(QApplication.translate("Cover Type", 'I'))),
@@ -117,6 +119,31 @@ imagetypes = [
     (unicode(QApplication.translate("Cover Type", 'Illustration')), unicode(QApplication.translate("Cover Type", 'P'))),
     (unicode(QApplication.translate("Cover Type", 'Band/artist logotype')), unicode(QApplication.translate("Cover Type", 'BL'))),
     (unicode(QApplication.translate("Cover Type", 'Publisher/Studio logotype')), unicode(QApplication.translate("Cover Type", 'PL')))]
+
+def trans_imagetypes():
+    global imagetypes
+    imagetypes = [
+        (unicode(QApplication.translate('Cover Type', 'Other')), unicode(QApplication.translate("Cover Type", 'O'))),
+        (unicode(QApplication.translate('Cover Type', 'File Icon')), unicode(QApplication.translate("Cover Type", 'I'))),
+        (unicode(QApplication.translate('Cover Type', 'Other File Icon')), unicode(QApplication.translate("Cover Type", 'OI'))),
+        (unicode(QApplication.translate('Cover Type', 'Cover (front)')), unicode(QApplication.translate("Cover Type", 'CF'))),
+        (unicode(QApplication.translate('Cover Type', 'Cover (back)')), unicode(QApplication.translate("Cover Type", 'CB'))),
+        (unicode(QApplication.translate('Cover Type', 'Leaflet page')), unicode(QApplication.translate("Cover Type", 'LF'))),
+        (unicode(QApplication.translate('Cover Type', 'Media (e.g. label side of CD)')), unicode(QApplication.translate("Cover Type", 'M'))),
+        (unicode(QApplication.translate('Cover Type', 'Lead artist')), unicode(QApplication.translate("Cover Type", 'LA'))),
+        (unicode(QApplication.translate('Cover Type', 'Artist')), unicode(QApplication.translate("Cover Type", 'A'))),
+        (unicode(QApplication.translate('Cover Type', 'Conductor')), unicode(QApplication.translate("Cover Type", 'C'))),
+        (unicode(QApplication.translate('Cover Type', 'Band')), unicode(QApplication.translate("Cover Type", 'B'))),
+        (unicode(QApplication.translate("Cover Type", 'Composer')), unicode(QApplication.translate("Cover Type", 'CP'))),
+        (unicode(QApplication.translate("Cover Type", 'Lyricist')), unicode(QApplication.translate("Cover Type", 'L'))),
+        (unicode(QApplication.translate("Cover Type", 'Recording Location')), unicode(QApplication.translate("Cover Type", 'RL'))),
+        (unicode(QApplication.translate("Cover Type", 'During recording')), unicode(QApplication.translate("Cover Type", 'DR'))),
+        (unicode(QApplication.translate("Cover Type", 'During performance')), unicode(QApplication.translate("Cover Type", 'DP'))),
+        (unicode(QApplication.translate("Cover Type", 'Movie/video screen capture')), unicode(QApplication.translate("Cover Type", 'MC'))),
+        (unicode(QApplication.translate("Cover Type", 'A bright coloured fish')), unicode(QApplication.translate("Cover Type", 'F'))),
+        (unicode(QApplication.translate("Cover Type", 'Illustration')), unicode(QApplication.translate("Cover Type", 'P'))),
+        (unicode(QApplication.translate("Cover Type", 'Band/artist logotype')), unicode(QApplication.translate("Cover Type", 'BL'))),
+        (unicode(QApplication.translate("Cover Type", 'Publisher/Studio logotype')), unicode(QApplication.translate("Cover Type", 'PL')))]
 
 class CoverButton(QPushButton):
     def __init__(self, *args):
@@ -1230,6 +1257,13 @@ class LongInfoMessage(QDialog):
 class ArtworkLabel(QGraphicsView):
     def __init__(self, *args, **kwargs):
         super(ArtworkLabel, self).__init__(*args, **kwargs)
+
+        pal = self.palette()
+        pal.setBrush(self.backgroundRole(), QBrush(QPalette.Window))
+        self.setAutoFillBackground(True)
+        self.setPalette(pal)
+
+        
         self._svg = QGraphicsSvgItem()
         self._pixmap = QGraphicsPixmapItem()
         self._scene = QGraphicsScene()
