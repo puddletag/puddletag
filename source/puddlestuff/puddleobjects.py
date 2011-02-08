@@ -1226,30 +1226,6 @@ class LongInfoMessage(QDialog):
         self.close()
         self.accept()
 
-#class ArtworkLabel(QLabel):
-    #def __init__(self, *args, **kwargs):
-        #super(ArtworkLabel, self).__init__(*args, **kwargs)
-        #self.setAcceptDrops(True)
-    
-    #def dragEnterEvent(self, event):
-        #mime = event.mimeData()
-        #if mime.hasUrls():
-            #event.accept()
-        #else:
-            #event.ignore()
-        #super(ArtworkLabel, self).dragEnterEvent(event)
-    
-    #def dropEvent(self, event):
-        #mime = event.mimeData()
-        #if mime.hasUrls():
-            #filenames = [unicode(z.path()) for z in mime.urls()]
-            #self.emit(SIGNAL('newImages'), *filenames)
-        #super(ArtworkLabel, self).dropEvent(event)
-    
-    #def mouseReleaseEvent(self, event):
-      #if event.button() == Qt.LeftButton:
-        #self.emit(SIGNAL("clicked()"))
-      #QLabel.mousePressEvent(self, event)
 
 class ArtworkLabel(QGraphicsView):
     def __init__(self, *args, **kwargs):
@@ -1261,6 +1237,28 @@ class ArtworkLabel(QGraphicsView):
         self._scene.addItem(self._pixmap)
         self.setScene(self._scene)
         self.setSceneRect(QRectF())
+
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        mime = event.mimeData()
+        if mime.hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        mime = event.mimeData()
+        if mime.hasUrls():
+            filenames = [unicode(z.path()) for z in mime.urls()]
+            self.emit(SIGNAL('newImages'), *filenames)
+        super(ArtworkLabel, self).dropEvent(event)
 
     def mousePressEvent(self, event):
         super(ArtworkLabel, self).mousePressEvent(event)

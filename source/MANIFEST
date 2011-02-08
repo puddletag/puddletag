@@ -33,6 +33,7 @@ puddlestuff/quodlibetlib.py
 puddlestuff/resource.py
 puddlestuff/releasewidget.py
 puddlestuff/shortcutsettings.py
+puddlestuff/translations.py
 puddlestuff/tagmodel.py
 puddlestuff/util.py
 puddlestuff/webdb.py
