@@ -338,7 +338,7 @@ class FunctionDialog(QWidget):
                     control.setChecked(True)
                 else:
                     control.setChecked(False)
-            control.setText(label)
+            control.setText(translate('Functions', label))
 
         if ctype != 'check':
             label = QLabel(translate('Functions', label))

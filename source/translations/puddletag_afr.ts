@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="af_ZA">
+<!DOCTYPE TS><TS version="1.1" language="af_ZA">
 <context>
     <name>About</name>
     <message>
@@ -234,72 +233,72 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Artwork</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1662"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1661"/>
         <source>Enter a description</source>
         <translation>Stel &apos;n beskrywing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1385"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1384"/>
         <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don&apos;t differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Stel &apos;n deskripsie vir die gewysigde prent.&lt;/p&gt;&lt;p&gt;Vir ID3 tags, moet die deskripsie vir elke prent verskil volgens die ID3 spec. As hulle nie verskil nie dan sal spasies by die deskripsie gesit word tot dit uniek is.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1397"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1396"/>
         <source>&amp;Description</source>
         <translation>&amp;Deskripsie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1405"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1404"/>
         <source>&amp;Type</source>
         <translation>&amp;Tipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1416"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1415"/>
         <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kies &apos;n prent-tipe.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1495"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1494"/>
         <source>&amp;Save cover to file</source>
         <translation>&amp;Stel prent na vyl</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1498"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1497"/>
         <source>&amp;Add cover</source>
         <translation>&amp;Voeg prent by</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1501"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1500"/>
         <source>&amp;Remove cover</source>
         <translation>&amp;Verwyder prent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1504"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1503"/>
         <source>&amp;Change cover</source>
         <translation>&amp;Verwyder prent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1560"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1559"/>
         <source>Select Image...</source>
         <translation>Kies Prent...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1701"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1700"/>
         <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>JPEG Prente (*.jpg);;PNG Prente (*.png);;All Vyle(*.*)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1708"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1707"/>
         <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
         <translation>Ek kon nie na &lt;b&gt;%1&lt;/b&gt; skryf nie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1777"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1776"/>
         <source>Enter description</source>
         <translation>Stel deskripsie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1701"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1700"/>
         <source>Save artwork as...</source>
         <translation>Save verfwerk as...</translation>
     </message>
@@ -307,17 +306,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Artwork Context</name>
     <message>
-        <location filename="puddlestuff/translations.py" line="43"/>
+        <location filename="puddlestuff/translations.py" line="48"/>
         <source>Cover Varies</source>
         <translation>Die prente wikkel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="44"/>
+        <location filename="puddlestuff/translations.py" line="49"/>
         <source>No Images</source>
         <translation>Geen Prente Nie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1359"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1358"/>
         <source>%1/%2</source>
         <translation>%1 van %2</translation>
     </message>
@@ -423,7 +422,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>&amp;Kies Kolomme</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="799"/>
+        <location filename="puddlestuff/puddleobjects.py" line="798"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
@@ -431,7 +430,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Combo Box</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1932"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1930"/>
         <source>Remove current item.</source>
         <translation>Verwyder huidige item.</translation>
     </message>
@@ -439,17 +438,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Confirmations</name>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="58"/>
+        <location filename="puddlestuff/puddletag.py" line="59"/>
         <source>Confirm when renaming directories.</source>
         <translation>Bevesting wanneer gids hernoem word.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="59"/>
+        <location filename="puddlestuff/puddletag.py" line="60"/>
         <source>Confirm when exiting preview mode.</source>
         <translation>Bevestig wanneer uit voorksou mode gaan.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="60"/>
+        <location filename="puddlestuff/puddletag.py" line="61"/>
         <source>Confirm when deleting files.</source>
         <translation>Bevesting wanneer leêrs verwyder word.</translation>
     </message>
@@ -457,212 +456,212 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Cover Type</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="126"/>
+        <location filename="puddlestuff/puddleobjects.py" line="125"/>
         <source>Other</source>
         <translation>Anders</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="126"/>
+        <location filename="puddlestuff/puddleobjects.py" line="125"/>
         <source>O</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="127"/>
+        <location filename="puddlestuff/puddleobjects.py" line="126"/>
         <source>File Icon</source>
         <translation>Leêr Ikon</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="127"/>
+        <location filename="puddlestuff/puddleobjects.py" line="126"/>
         <source>I</source>
         <translation>I</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="128"/>
+        <location filename="puddlestuff/puddleobjects.py" line="127"/>
         <source>Other File Icon</source>
         <translation>Ander Leêr Ikon</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="128"/>
+        <location filename="puddlestuff/puddleobjects.py" line="127"/>
         <source>OI</source>
         <translation>AI</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="129"/>
+        <location filename="puddlestuff/puddleobjects.py" line="128"/>
         <source>Cover (front)</source>
         <translation>Prent (Voor)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="129"/>
+        <location filename="puddlestuff/puddleobjects.py" line="128"/>
         <source>CF</source>
         <translation>PF</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="130"/>
+        <location filename="puddlestuff/puddleobjects.py" line="129"/>
         <source>Cover (back)</source>
         <translation>Prent (Agter)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="130"/>
+        <location filename="puddlestuff/puddleobjects.py" line="129"/>
         <source>CB</source>
         <translation>PA</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="131"/>
+        <location filename="puddlestuff/puddleobjects.py" line="130"/>
         <source>Leaflet page</source>
         <translation>Pamplef bladsy</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="131"/>
+        <location filename="puddlestuff/puddleobjects.py" line="130"/>
         <source>LF</source>
         <translation>PB</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="132"/>
+        <location filename="puddlestuff/puddleobjects.py" line="131"/>
         <source>Media (e.g. label side of CD)</source>
         <translation>Media (bv. etiket aan kan van CD)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="132"/>
+        <location filename="puddlestuff/puddleobjects.py" line="131"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="133"/>
+        <location filename="puddlestuff/puddleobjects.py" line="132"/>
         <source>Lead artist</source>
         <translation>Lei-kunstenaar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="133"/>
+        <location filename="puddlestuff/puddleobjects.py" line="132"/>
         <source>LA</source>
         <translation>LK</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="134"/>
+        <location filename="puddlestuff/puddleobjects.py" line="133"/>
         <source>Artist</source>
         <translation>Kunstenaar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="134"/>
+        <location filename="puddlestuff/puddleobjects.py" line="133"/>
         <source>A</source>
         <translation>K</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="135"/>
+        <location filename="puddlestuff/puddleobjects.py" line="134"/>
         <source>Conductor</source>
         <translation>Dirigent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="135"/>
+        <location filename="puddlestuff/puddleobjects.py" line="134"/>
         <source>C</source>
         <translation>D</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="136"/>
+        <location filename="puddlestuff/puddleobjects.py" line="135"/>
         <source>Band</source>
         <translation>Musiek Group</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="136"/>
+        <location filename="puddlestuff/puddleobjects.py" line="135"/>
         <source>B</source>
         <translation>MG</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="137"/>
+        <location filename="puddlestuff/puddleobjects.py" line="136"/>
         <source>Composer</source>
         <translation>Komponis</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="137"/>
+        <location filename="puddlestuff/puddleobjects.py" line="136"/>
         <source>CP</source>
         <translation>KP</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="138"/>
+        <location filename="puddlestuff/puddleobjects.py" line="137"/>
         <source>Lyricist</source>
         <translation>Skrywer</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="138"/>
+        <location filename="puddlestuff/puddleobjects.py" line="137"/>
         <source>L</source>
         <translation>S</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="139"/>
+        <location filename="puddlestuff/puddleobjects.py" line="138"/>
         <source>Recording Location</source>
         <translation>Opnaam Lokasie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="139"/>
+        <location filename="puddlestuff/puddleobjects.py" line="138"/>
         <source>RL</source>
         <translation>OL</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="140"/>
+        <location filename="puddlestuff/puddleobjects.py" line="139"/>
         <source>During recording</source>
         <translation>Gedurende Opname</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="140"/>
+        <location filename="puddlestuff/puddleobjects.py" line="139"/>
         <source>DR</source>
         <translation>GO</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="141"/>
+        <location filename="puddlestuff/puddleobjects.py" line="140"/>
         <source>During performance</source>
         <translation>Gedurende performance</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="141"/>
+        <location filename="puddlestuff/puddleobjects.py" line="140"/>
         <source>DP</source>
         <translation>GP</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="142"/>
+        <location filename="puddlestuff/puddleobjects.py" line="141"/>
         <source>Movie/video screen capture</source>
         <translation>Film/video prent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="142"/>
+        <location filename="puddlestuff/puddleobjects.py" line="141"/>
         <source>MC</source>
         <translation>FP</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="143"/>
+        <location filename="puddlestuff/puddleobjects.py" line="142"/>
         <source>A bright coloured fish</source>
         <translation>A veelkleurige vis</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="143"/>
+        <location filename="puddlestuff/puddleobjects.py" line="142"/>
         <source>F</source>
         <translation>V</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="144"/>
+        <location filename="puddlestuff/puddleobjects.py" line="143"/>
         <source>Illustration</source>
         <translation>Illustrasie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="144"/>
+        <location filename="puddlestuff/puddleobjects.py" line="143"/>
         <source>P</source>
         <translation>I</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="145"/>
+        <location filename="puddlestuff/puddleobjects.py" line="144"/>
         <source>Band/artist logotype</source>
         <translation>Musiek group/kunstenaar logotipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="145"/>
+        <location filename="puddlestuff/puddleobjects.py" line="144"/>
         <source>BL</source>
         <translation>ML</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="146"/>
+        <location filename="puddlestuff/puddleobjects.py" line="145"/>
         <source>Publisher/Studio logotype</source>
         <translation>Uitgewer/Studio logotipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="146"/>
+        <location filename="puddlestuff/puddleobjects.py" line="145"/>
         <source>PL</source>
         <translation>UL</translation>
     </message>
@@ -710,7 +709,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Fout</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="383"/>
+        <location filename="puddlestuff/puddleobjects.py" line="382"/>
         <source>&lt;br /&gt; Do you want to continue?</source>
         <translation>&lt;br /&gt; Wil jy aan gaan?</translation>
     </message>
@@ -720,17 +719,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1869"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1867"/>
         <source>Cancel</source>
         <translation>Kanselleer</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/tagtools.py" line="55"/>
+        <location filename="puddlestuff/mainwin/tagtools.py" line="56"/>
         <source>An error occured while writing to &lt;b&gt;%1&lt;/b&gt;. (%2)</source>
         <translation>&apos;n Fout het plaasgevind gedurende die skryf van &lt;b&gt;%1&lt;/b&gt; (%2)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="748"/>
+        <location filename="puddlestuff/puddletag.py" line="749"/>
         <source>Writing </source>
         <translation>Besig om te skryf </translation>
     </message>
@@ -750,12 +749,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Lading </translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/action_dialogs.py" line="75"/>
+        <location filename="puddlestuff/mainwin/action_dialogs.py" line="76"/>
         <source>Appl&amp;y</source>
         <translation>Pas &amp;Toe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/filterwin.py" line="13"/>
+        <location filename="puddlestuff/mainwin/filterwin.py" line="14"/>
         <source>Field: </source>
         <translation>Veld: </translation>
     </message>
@@ -788,52 +787,52 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Dialogs</name>
     <message>
-        <location filename="puddlestuff/translations.py" line="47"/>
+        <location filename="puddlestuff/translations.py" line="52"/>
         <source>Functions</source>
         <translation>Funksies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="48"/>
+        <location filename="puddlestuff/translations.py" line="53"/>
         <source>Actions</source>
         <translation>Aksies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="49"/>
+        <location filename="puddlestuff/translations.py" line="54"/>
         <source>Artwork</source>
         <translation>Verfwerk</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="50"/>
+        <location filename="puddlestuff/translations.py" line="55"/>
         <source>Mass Tagging</source>
         <translation>Opeenvolgende Taggery</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="51"/>
+        <location filename="puddlestuff/translations.py" line="56"/>
         <source>Tag Panel</source>
         <translation>Tag Paneel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="52"/>
+        <location filename="puddlestuff/translations.py" line="57"/>
         <source>Filter</source>
         <translation>Filter</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="53"/>
+        <location filename="puddlestuff/translations.py" line="58"/>
         <source>Filesystem</source>
         <translation>Leêrsisteem</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="54"/>
+        <location filename="puddlestuff/translations.py" line="59"/>
         <source>Tag Sources</source>
         <translation>Tag Bronne</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="55"/>
+        <location filename="puddlestuff/translations.py" line="60"/>
         <source>Stored Tags</source>
         <translation>Gestoorde Tags</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="56"/>
+        <location filename="puddlestuff/translations.py" line="61"/>
         <source>Logs</source>
         <translation>Boombasse</translation>
     </message>
@@ -841,17 +840,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Dir Renaming</name>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="807"/>
+        <location filename="puddlestuff/puddletag.py" line="808"/>
         <source>An error occured while renaming &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;. (%3)</source>
         <translation>&apos;n Fout het plaasgevind gedurende die hernaming van &lt;b&gt;%1&lt;/b&gt; na &lt;b&gt;%2&lt;/b&gt;. (%3)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="815"/>
+        <location filename="puddlestuff/puddletag.py" line="816"/>
         <source>Renaming </source>
         <translation>Hernaming</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="831"/>
+        <location filename="puddlestuff/puddletag.py" line="832"/>
         <source>I couldn&apos;t rename: &lt;i&gt;%1&lt;/i&gt; to &lt;b&gt;%2&lt;/b&gt; (%3)</source>
         <translation>Ek kon nie &lt;i&gt;%1&lt;/i&gt; hernaam na &lt;b&gt;%2&lt;/b&gt; (%3)</translation>
     </message>
@@ -879,22 +878,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Dirview</name>
     <message>
-        <location filename="puddlestuff/mainwin/dirview.py" line="63"/>
+        <location filename="puddlestuff/mainwin/dirview.py" line="64"/>
         <source>Refresh Directory</source>
         <translation>Vervars gids</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/dirview.py" line="71"/>
+        <location filename="puddlestuff/mainwin/dirview.py" line="72"/>
         <source>Show Header</source>
         <translation>Wys kopstuk</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/dirview.py" line="75"/>
+        <location filename="puddlestuff/mainwin/dirview.py" line="76"/>
         <source>Hide Header</source>
         <translation>Steek kopstuk weg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/dirview.py" line="79"/>
+        <location filename="puddlestuff/mainwin/dirview.py" line="80"/>
         <source>Open in File Manager</source>
         <translation>Maak oop in leêr manipuleerder</translation>
     </message>
@@ -1125,162 +1124,162 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Functions</name>
     <message>
-        <location filename="puddlestuff/translations.py" line="135"/>
+        <location filename="puddlestuff/translations.py" line="140"/>
         <source>Tag to filename</source>
         <translation>Tag na Vylnaam</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="134"/>
+        <location filename="puddlestuff/translations.py" line="139"/>
         <source>Tag-&gt;File: $1</source>
         <translation>Tag na vyl: $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="139"/>
+        <location filename="puddlestuff/translations.py" line="144"/>
         <source>Replace</source>
         <translation>Vervang</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="146"/>
+        <location filename="puddlestuff/translations.py" line="151"/>
         <source>Update from tag</source>
         <translation>Update van tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="145"/>
+        <location filename="puddlestuff/translations.py" line="150"/>
         <source>Update from $2, Fields: $1</source>
         <translation>Update van $2, Velde: $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="153"/>
+        <location filename="puddlestuff/translations.py" line="158"/>
         <source>Trim whitespace</source>
         <translation>Trim witspasies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="152"/>
+        <location filename="puddlestuff/translations.py" line="157"/>
         <source>Trim $0</source>
         <translation>Trim $0</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="154"/>
+        <location filename="puddlestuff/translations.py" line="159"/>
         <source>Autonumbering</source>
         <translation>Autobenommering</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="155"/>
+        <location filename="puddlestuff/translations.py" line="160"/>
         <source>Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3</source>
         <translation>Autobenommering: $0, Begin: $1, Herberbegin vir gids: $2, Padding: $3</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="158"/>
+        <location filename="puddlestuff/translations.py" line="163"/>
         <source>Sort values</source>
         <translation>Soort waardes</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="163"/>
+        <location filename="puddlestuff/translations.py" line="168"/>
         <source>Tag to Dir</source>
         <translation>Tag na Gids</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="164"/>
+        <location filename="puddlestuff/translations.py" line="169"/>
         <source>Tag-&gt;Dir: $1</source>
         <translation>Tag-&gt;Gids: $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="168"/>
+        <location filename="puddlestuff/translations.py" line="173"/>
         <source>Format value</source>
         <translation>Formateer waardes</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="167"/>
+        <location filename="puddlestuff/translations.py" line="172"/>
         <source>Format $0 using $1</source>
         <translation>Formateer $0 gebruik $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="172"/>
+        <location filename="puddlestuff/translations.py" line="177"/>
         <source>Replace with RegExp</source>
         <translation>Hervang met Reguliere Expressie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="178"/>
+        <location filename="puddlestuff/translations.py" line="183"/>
         <source>Load Artwork</source>
         <translation>Laai Verfwerk</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="184"/>
+        <location filename="puddlestuff/translations.py" line="189"/>
         <source>Merge field</source>
         <translation>Kombineer veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="188"/>
+        <location filename="puddlestuff/translations.py" line="193"/>
         <source>Remove duplicate values</source>
         <translation>Verwyder tweevoudige waardes</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="187"/>
+        <location filename="puddlestuff/translations.py" line="192"/>
         <source>Remove Dupes: $0, Match Case $1</source>
         <translation>Hervang Tweevoudiges: $0, Kas-sensitief $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="192"/>
+        <location filename="puddlestuff/translations.py" line="197"/>
         <source>Import text file</source>
         <translation>Voer teks leêr in</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="196"/>
+        <location filename="puddlestuff/translations.py" line="201"/>
         <source>Split fields using separator</source>
         <translation>Gebruik verdeler om velde te verdeel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="200"/>
+        <location filename="puddlestuff/translations.py" line="205"/>
         <source>Remove all fields except</source>
         <translation>Verwyder alle velde behalwe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="199"/>
+        <location filename="puddlestuff/translations.py" line="204"/>
         <source>Remove fields except: $1</source>
         <translation>Verwyder velde behalwe: $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="204"/>
+        <location filename="puddlestuff/translations.py" line="209"/>
         <source>Remove Fields</source>
         <translation>Verwyder velde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="203"/>
+        <location filename="puddlestuff/translations.py" line="208"/>
         <source>&lt;blank&gt; $0</source>
         <translation>&lt;leeg&gt; $0</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="207"/>
+        <location filename="puddlestuff/translations.py" line="212"/>
         <source>Case conversion</source>
         <translation>Kas verandering</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="206"/>
+        <location filename="puddlestuff/translations.py" line="211"/>
         <source>Convert Case: $0: $1</source>
         <translation>Verander Kas: $0 $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="215"/>
+        <location filename="puddlestuff/translations.py" line="220"/>
         <source>Convert from non-standard encoding</source>
         <translation>Skakel van nie-standaarde enkoding</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="214"/>
+        <location filename="puddlestuff/translations.py" line="219"/>
         <source>Convert to encoding: $0, Encoding: $1</source>
         <translation>Skakel na enkode: $0, Enkoding: $1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="228"/>
+        <location filename="puddlestuff/translations.py" line="233"/>
         <source>Text to Tag</source>
         <translation>Teks na Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="227"/>
+        <location filename="puddlestuff/translations.py" line="232"/>
         <source>Text to Tag: $0 -&gt; $1, $2</source>
         <translation>Teks na Tag: $0 -&gt; $1, $2</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="234"/>
+        <location filename="puddlestuff/translations.py" line="239"/>
         <source>Filename to Tag</source>
         <translation>Leêrnaam na Tag</translation>
     </message>
@@ -1295,232 +1294,232 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation type="obsolete">Nie meer as %1 argumente word verwag nie. %2 was gegee.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="235"/>
+        <location filename="puddlestuff/translations.py" line="240"/>
         <source>&amp;Pattern</source>
         <translation>&amp;Patroon</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="138"/>
+        <location filename="puddlestuff/translations.py" line="143"/>
         <source>Replace $0: &apos;$1&apos; -&gt; &apos;$2&apos;, Match Case: $3, Words Only: $4</source>
         <translation>Vervang $0: &apos;$1&apos; -&gt; &apos;$2&apos;, Kas-sensitief: $3, Net woorde: $4</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="140"/>
+        <location filename="puddlestuff/translations.py" line="145"/>
         <source>&amp;Replace</source>
         <translation>&amp;Vervang</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="141"/>
+        <location filename="puddlestuff/translations.py" line="146"/>
         <source>w&amp;ith:</source>
         <translation>&amp;m&amp;et:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="142"/>
+        <location filename="puddlestuff/translations.py" line="147"/>
         <source>Match c&amp;ase:</source>
         <translation>K&amp;as sensitief:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="143"/>
+        <location filename="puddlestuff/translations.py" line="148"/>
         <source>only as &amp;whole word</source>
         <translation>net as &amp;hele woord</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="201"/>
+        <location filename="puddlestuff/translations.py" line="206"/>
         <source>&amp;Field list (; separated):</source>
         <translation>&amp;Vel lys (: verdeeld):</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="148"/>
+        <location filename="puddlestuff/translations.py" line="153"/>
         <source>&amp;Tag</source>
         <translation>&amp;Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="149"/>
+        <location filename="puddlestuff/translations.py" line="154"/>
         <source>APEv2</source>
         <translation>APEv2</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="150"/>
+        <location filename="puddlestuff/translations.py" line="155"/>
         <source>ID3</source>
         <translation>ID3</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="157"/>
+        <location filename="puddlestuff/translations.py" line="162"/>
         <source>Sort $0, order=&apos;$1&apos;, Match Case=&apos;$2&apos;</source>
         <translation>Soort $0, order=&apos;$1&apos;, Kas Sensitief=&apos;$2&apos;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="159"/>
+        <location filename="puddlestuff/translations.py" line="164"/>
         <source>&amp;Order</source>
         <translation>&amp;Orde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="160"/>
+        <location filename="puddlestuff/translations.py" line="165"/>
         <source>Ascending</source>
         <translation>Stygend</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="161"/>
+        <location filename="puddlestuff/translations.py" line="166"/>
         <source>Descending</source>
         <translation>Dalend</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="189"/>
+        <location filename="puddlestuff/translations.py" line="194"/>
         <source>Match &amp;Case</source>
         <translation>K&amp;as sensitief</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="193"/>
+        <location filename="puddlestuff/translations.py" line="198"/>
         <source>&amp;Pattern (can be relative path)</source>
         <translation>&amp;Patroon (kan relatiewe pad wees)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="169"/>
+        <location filename="puddlestuff/translations.py" line="174"/>
         <source>&amp;Format string</source>
         <translation>&amp;Formaterings string</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="171"/>
+        <location filename="puddlestuff/translations.py" line="176"/>
         <source>RegReplace $0: RegExp &apos;$1&apos; with &apos;$2&apos;, Match Case: $3</source>
         <translation>RegVervang $0: RegExp &apos;$1&apos; met &apos;$2&apos;, Kas Sensitief: $3</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="173"/>
+        <location filename="puddlestuff/translations.py" line="178"/>
         <source>&amp;Regular Expression</source>
         <translation>&amp;Reguliere Expressie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="174"/>
+        <location filename="puddlestuff/translations.py" line="179"/>
         <source>Replace &amp;matches with:</source>
         <translation>Vervang &amp;matches met:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="177"/>
+        <location filename="puddlestuff/translations.py" line="182"/>
         <source>Artwork: Filenames=&apos;$1&apos;, Description=&apos;$2&apos;, Case Sensitive=$3</source>
         <translation>Verfwerk: Leêrname=&apos;$1&apos;, Beskrywing=&apos;$2&apos;, Kas sensitief=$3</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="179"/>
+        <location filename="puddlestuff/translations.py" line="184"/>
         <source>&amp;Filenames to check (;-separated, shell wildcards [eg. *] allowed)</source>
         <translation>&amp;Leêrname om the toets (; separated, shell wildcard [bv. *] is toegelaat)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="180"/>
+        <location filename="puddlestuff/translations.py" line="185"/>
         <source>&amp;Default description (can be pattern):</source>
         <translation>&amp;Standaard beskrywing (kan &apos;n patroon wees):</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="181"/>
+        <location filename="puddlestuff/translations.py" line="186"/>
         <source>Match filename&apos;s &amp;case:</source>
         <translation>Match leêrnaam se &amp;kas:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="183"/>
+        <location filename="puddlestuff/translations.py" line="188"/>
         <source>Merge field: $0, sep=&apos;$1&apos;</source>
         <translation>Kombineer veld: $0, verdeler=&apos;$1&apos;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="197"/>
+        <location filename="puddlestuff/translations.py" line="202"/>
         <source>&amp;Separator</source>
         <translation>&amp;Verdeler</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="191"/>
+        <location filename="puddlestuff/translations.py" line="196"/>
         <source>Text File: $0, &apos;$1&apos;</source>
         <translation>Teks Leêr: $0, &apos;$1&apos;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="195"/>
+        <location filename="puddlestuff/translations.py" line="200"/>
         <source>Split using separator $0: sep=&apos;$1&apos;</source>
         <translation>Veld verdeel $0: verdeler=&apos;$1&apos;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="208"/>
+        <location filename="puddlestuff/translations.py" line="213"/>
         <source>&amp;Type</source>
         <translation>&amp;Tipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="209"/>
+        <location filename="puddlestuff/translations.py" line="214"/>
         <source>Mixed Case</source>
         <translation>Gemenge Kas</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="210"/>
+        <location filename="puddlestuff/translations.py" line="215"/>
         <source>UPPER CASE</source>
         <translation>BOONSTE KAS</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="211"/>
+        <location filename="puddlestuff/translations.py" line="216"/>
         <source>lower case</source>
         <translation>LAER KAS</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="212"/>
+        <location filename="puddlestuff/translations.py" line="217"/>
         <source>For &amp;Mixed Case, after any of:</source>
         <translation>Vir &amp;Gemenge Kas, agter enige van:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="216"/>
+        <location filename="puddlestuff/translations.py" line="221"/>
         <source>&amp;Encoding</source>
         <translation>&amp;Enkoding</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="217"/>
+        <location filename="puddlestuff/translations.py" line="222"/>
         <source>cp1250</source>
         <translation>cp1250</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="218"/>
+        <location filename="puddlestuff/translations.py" line="223"/>
         <source>cp1251</source>
         <translation>cp1251</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="219"/>
+        <location filename="puddlestuff/translations.py" line="224"/>
         <source>cp1252</source>
         <translation>cp1252</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="220"/>
+        <location filename="puddlestuff/translations.py" line="225"/>
         <source>cp1253</source>
         <translation>cp1253</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="221"/>
+        <location filename="puddlestuff/translations.py" line="226"/>
         <source>cp1254</source>
         <translation>cp1254</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="222"/>
+        <location filename="puddlestuff/translations.py" line="227"/>
         <source>cp1255</source>
         <translation>cp1255</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="223"/>
+        <location filename="puddlestuff/translations.py" line="228"/>
         <source>cp1256</source>
         <translation>cp1256</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="224"/>
+        <location filename="puddlestuff/translations.py" line="229"/>
         <source>cp1257</source>
         <translation>cp1257</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="225"/>
+        <location filename="puddlestuff/translations.py" line="230"/>
         <source>cp1258</source>
         <translation>cp1258</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="229"/>
+        <location filename="puddlestuff/translations.py" line="234"/>
         <source>&amp;Text</source>
         <translation>&amp;Teks</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="231"/>
+        <location filename="puddlestuff/translations.py" line="236"/>
         <source>&amp;Output</source>
         <translation>&amp;Uitsetting</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="233"/>
+        <location filename="puddlestuff/translations.py" line="238"/>
         <source>File-&gt;Tag &apos;$1&apos;</source>
         <translation>Leêr-&gt;Tag &apos;$1&apos;</translation>
     </message>
@@ -1587,42 +1586,42 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>&amp;Wysig soort opsies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="33"/>
+        <location filename="puddlestuff/translations.py" line="38"/>
         <source>Su&amp;bfolders</source>
         <translation>Su&amp;bleêrs</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="34"/>
+        <location filename="puddlestuff/translations.py" line="39"/>
         <source>Show &amp;gridlines</source>
         <translation>Wys &amp;gridlyne</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="35"/>
+        <location filename="puddlestuff/translations.py" line="40"/>
         <source>Show tooltips in file-view:</source>
         <translation>Wys tool tip in leêr view:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="36"/>
+        <location filename="puddlestuff/translations.py" line="41"/>
         <source>Show &amp;row numbers</source>
         <translation>Wys &amp;ry nommers</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="37"/>
+        <location filename="puddlestuff/translations.py" line="42"/>
         <source>Automatically resize columns to contents</source>
         <translation>Strek kollomme automaties na hul besittings</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="38"/>
+        <location filename="puddlestuff/translations.py" line="43"/>
         <source>&amp;Preserve file modification times</source>
         <translation>&amp;Bewaar leêr-modifikasie tye</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="39"/>
+        <location filename="puddlestuff/translations.py" line="44"/>
         <source>Program to &amp;play files with:</source>
         <translation>Program om musiek leêr mee te &amp;speel:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="40"/>
+        <location filename="puddlestuff/translations.py" line="45"/>
         <source>&amp;Load last folder at startup</source>
         <translation>&amp;Herlaai laaste gids by begin</translation>
     </message>
@@ -1645,42 +1644,42 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>List Buttons</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1064"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1063"/>
         <source>Add</source>
         <translation>Voeg By</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1067"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1066"/>
         <source>Remove</source>
         <translation>Verwyder</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1071"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1070"/>
         <source>Move Up</source>
         <translation>Beweeg Op</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1074"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1073"/>
         <source>Move Down</source>
         <translation>Beweeg Af</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1077"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1076"/>
         <source>Edit</source>
         <translation>Wysig</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1080"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1079"/>
         <source>Duplicate</source>
         <translation>Tweevoud</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1139"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1138"/>
         <source>&amp;&gt;&gt;</source>
         <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1140"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1139"/>
         <source>&amp;&lt;&lt;</source>
         <translation>&amp;&lt;&lt;</translation>
     </message>
@@ -1688,12 +1687,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Logs</name>
     <message>
-        <location filename="puddlestuff/mainwin/logdialog.py" line="19"/>
+        <location filename="puddlestuff/mainwin/logdialog.py" line="20"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/logdialog.py" line="20"/>
+        <location filename="puddlestuff/mainwin/logdialog.py" line="21"/>
         <source>&amp;Clear</source>
         <translation>&amp;Beleeg</translation>
     </message>
@@ -1701,17 +1700,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Main Window</name>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="406"/>
+        <location filename="puddlestuff/puddletag.py" line="407"/>
         <source>puddletag: %1 + others</source>
         <translation>puddletag: %1 en anders</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="408"/>
+        <location filename="puddlestuff/puddletag.py" line="409"/>
         <source>puddletag: %1</source>
         <translation>puddletag: %1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="415"/>
+        <location filename="puddlestuff/puddletag.py" line="416"/>
         <source>Import directory...</source>
         <translation>Voor gids in...</translation>
     </message>
@@ -1954,367 +1953,367 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Menus</name>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="205"/>
+        <location filename="puddlestuff/puddletag.py" line="206"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="207"/>
+        <location filename="puddlestuff/puddletag.py" line="208"/>
         <source>About puddletag</source>
         <translation>Oor puddletag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="209"/>
+        <location filename="puddlestuff/puddletag.py" line="210"/>
         <source>About Qt</source>
         <translation>Oor Qt</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="300"/>
+        <location filename="puddlestuff/puddletag.py" line="301"/>
         <source>Toolbar</source>
         <translation>Toolbar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="59"/>
+        <location filename="puddlestuff/translations.py" line="64"/>
         <source>&amp;Open Folder</source>
         <translation>&amp;Maak Gids Oop</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="60"/>
+        <location filename="puddlestuff/translations.py" line="65"/>
         <source>&amp;Add Folder</source>
         <translation>&amp;Voeg gids by</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="61"/>
+        <location filename="puddlestuff/translations.py" line="66"/>
         <source>Load &amp;playlist</source>
         <translation>Laai &amp;speellys</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="62"/>
+        <location filename="puddlestuff/translations.py" line="67"/>
         <source>Sa&amp;ve playlist</source>
         <translation>Stoo&amp;r splellys</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="63"/>
+        <location filename="puddlestuff/translations.py" line="68"/>
         <source>&amp;Refresh</source>
         <translation>&amp;Vervars</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="64"/>
+        <location filename="puddlestuff/translations.py" line="69"/>
         <source>&amp;Save</source>
         <translation>&amp;Stoor</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="65"/>
+        <location filename="puddlestuff/translations.py" line="70"/>
         <source>&amp;Play</source>
         <translation>&amp;Speel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="66"/>
+        <location filename="puddlestuff/translations.py" line="71"/>
         <source>&amp;File-&gt;Tag</source>
         <translation>&amp;Leêr-&gt;Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="67"/>
+        <location filename="puddlestuff/translations.py" line="72"/>
         <source>&amp;Undo</source>
         <translation>Maak &amp;Ongedaan</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="68"/>
+        <location filename="puddlestuff/translations.py" line="73"/>
         <source>Autonumbering &amp;Wizard...</source>
         <translation>Automaties Benommerings &amp;Agent...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="69"/>
+        <location filename="puddlestuff/translations.py" line="74"/>
         <source>&amp;Clear</source>
         <translation>&amp;Beleeg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="70"/>
+        <location filename="puddlestuff/translations.py" line="75"/>
         <source>&amp;Format</source>
         <translation>&amp;Formateer</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="71"/>
+        <location filename="puddlestuff/translations.py" line="76"/>
         <source>&amp;Text File-&gt;Tag</source>
         <translation>&amp;Teks Leêr-&gt;Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="72"/>
+        <location filename="puddlestuff/translations.py" line="77"/>
         <source>&amp;Import Music Library...</source>
         <translation>&amp;Voer Musiek Biblioteek in...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="116"/>
+        <location filename="puddlestuff/translations.py" line="121"/>
         <source>&amp;Actions</source>
         <translation>&amp;Aksies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="74"/>
+        <location filename="puddlestuff/translations.py" line="79"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Voorkeure</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="75"/>
+        <location filename="puddlestuff/translations.py" line="80"/>
         <source>&amp;Functions</source>
         <translation>&amp;Funksies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="76"/>
+        <location filename="puddlestuff/translations.py" line="81"/>
         <source>&amp;QuickActions</source>
         <translation>&amp;Vinnige Aksies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="77"/>
+        <location filename="puddlestuff/translations.py" line="82"/>
         <source>&amp;Rename Directories</source>
         <translation>&amp;Hernaam gidse</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="78"/>
+        <location filename="puddlestuff/translations.py" line="83"/>
         <source>&amp;Exit</source>
         <translation>&amp;Sluit Af</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="79"/>
+        <location filename="puddlestuff/translations.py" line="84"/>
         <source>&amp;Tag-&gt;File</source>
         <translation>&amp;Tag-&gt;Leêrnaam</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="80"/>
+        <location filename="puddlestuff/translations.py" line="85"/>
         <source>&amp;Increase Font</source>
         <translation>&amp;Vergroot Font</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="81"/>
+        <location filename="puddlestuff/translations.py" line="86"/>
         <source>&amp;Decrease Font</source>
         <translation>&amp;Verklein Font</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="82"/>
+        <location filename="puddlestuff/translations.py" line="87"/>
         <source>&amp;Clipboard-&gt;Tag</source>
         <translation>&amp;Klipbord-&gt;Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="83"/>
+        <location filename="puddlestuff/translations.py" line="88"/>
         <source>Select &amp;All</source>
         <translation>Kies &amp;Alles</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="84"/>
+        <location filename="puddlestuff/translations.py" line="89"/>
         <source>&amp;Invert Selection</source>
         <translation>&amp;Keer om Kiesing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="85"/>
+        <location filename="puddlestuff/translations.py" line="90"/>
         <source>&amp;Select Column</source>
         <translation>&amp;Kies Kolom</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="86"/>
+        <location filename="puddlestuff/translations.py" line="91"/>
         <source>&amp;Cut</source>
         <translation>&amp;Sny</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="87"/>
+        <location filename="puddlestuff/translations.py" line="92"/>
         <source>&amp;Copy Selection</source>
         <translation>&amp;Copie Kiesing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="88"/>
+        <location filename="puddlestuff/translations.py" line="93"/>
         <source>&amp;Paste</source>
         <translation>&amp;Plak</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="89"/>
+        <location filename="puddlestuff/translations.py" line="94"/>
         <source>&amp;Remove Tag</source>
         <translation>&amp;Verwyder Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="90"/>
+        <location filename="puddlestuff/translations.py" line="95"/>
         <source>E&amp;xtended Tags</source>
         <translation>&amp;Ekstra Tags</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="91"/>
+        <location filename="puddlestuff/translations.py" line="96"/>
         <source>&amp;Delete</source>
         <translation>&amp;Verwyder</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="92"/>
+        <location filename="puddlestuff/translations.py" line="97"/>
         <source>&amp;Properties</source>
         <translation>&amp;Eienskappe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="93"/>
+        <location filename="puddlestuff/translations.py" line="98"/>
         <source>Paste &amp;Onto Selection</source>
         <translation>Plak &amp;Op Kiesing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="94"/>
+        <location filename="puddlestuff/translations.py" line="99"/>
         <source>&amp;Lock Layout</source>
         <translation>&amp;Sluit layout</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="96"/>
+        <location filename="puddlestuff/translations.py" line="101"/>
         <source>Copy All &amp;Fields</source>
         <translation>Kopie All &amp;Velde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="97"/>
+        <location filename="puddlestuff/translations.py" line="102"/>
         <source>Delete &amp;Without Confirmation</source>
         <translation>Verwyder Sonder &amp;Bevestiging</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="98"/>
+        <location filename="puddlestuff/translations.py" line="103"/>
         <source>In &amp;Library</source>
         <translation>&amp;In Biblioteek</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="99"/>
+        <location filename="puddlestuff/translations.py" line="104"/>
         <source>Replace...</source>
         <translation>Vervang...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="109"/>
+        <location filename="puddlestuff/translations.py" line="114"/>
         <source>Clear Selected &amp;Files</source>
         <translation>Beleeg Gekiesde &amp;Leêrs</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="110"/>
+        <location filename="puddlestuff/translations.py" line="115"/>
         <source>&amp;Write Previews</source>
         <translation>&amp;Skryf voorskoue</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="111"/>
+        <location filename="puddlestuff/translations.py" line="116"/>
         <source>&amp;Undo Last Clear</source>
         <translation>Maak laaste beleging &amp;ongedaan</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="107"/>
+        <location filename="puddlestuff/translations.py" line="112"/>
         <source>Clear Selected &amp;Cells</source>
         <translation>Beleeg Gekiesde &amp;Selle</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="95"/>
+        <location filename="puddlestuff/translations.py" line="100"/>
         <source>Select &amp;Next Directory</source>
         <translation>Kies &amp;Volgende Gids</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="100"/>
+        <location filename="puddlestuff/translations.py" line="105"/>
         <source>Remove &amp;APEv2 Tag</source>
         <translation>&amp;Verwyder &amp;APEv2 Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="101"/>
+        <location filename="puddlestuff/translations.py" line="106"/>
         <source>Remove All &amp;ID3 Tags</source>
         <translation>&amp;Verwyder Alle &amp;ID3 Tags</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="102"/>
+        <location filename="puddlestuff/translations.py" line="107"/>
         <source>Move Selected &amp;Up</source>
         <translation>&amp;Bewees Kiesing &amp;Op</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="103"/>
+        <location filename="puddlestuff/translations.py" line="108"/>
         <source>Move Selected Do&amp;wn</source>
         <translation>&amp;Bewees Kiesing &amp;Af</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="104"/>
+        <location filename="puddlestuff/translations.py" line="109"/>
         <source>Select &amp;Previous Directory</source>
         <translation>Kies Vorig&amp;e Gids</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="105"/>
+        <location filename="puddlestuff/translations.py" line="110"/>
         <source>Remove ID3v&amp;2 Tag</source>
         <translation>Verwyder ID3v&amp;2 Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="106"/>
+        <location filename="puddlestuff/translations.py" line="111"/>
         <source>Remove ID3v&amp;1 Tag</source>
         <translation>Verwyder ID3v&amp;1 Tag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="108"/>
+        <location filename="puddlestuff/translations.py" line="113"/>
         <source>Sort &amp;By</source>
         <translation>Sorteer &amp;Deur</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/previews.py" line="16"/>
+        <location filename="puddlestuff/mainwin/previews.py" line="17"/>
         <source>Enabl&amp;e Preview Mode</source>
         <translation>Skakel Voorskou Mode &amp;Aan</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/previews.py" line="17"/>
+        <location filename="puddlestuff/mainwin/previews.py" line="18"/>
         <source>Disabl&amp;e Preview Mode</source>
         <translation>Skakel Voorskou Mode A&amp;f</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="113"/>
+        <location filename="puddlestuff/translations.py" line="118"/>
         <source>&amp;File</source>
         <translation>&amp;Leêr</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="114"/>
+        <location filename="puddlestuff/translations.py" line="119"/>
         <source>&amp;Edit</source>
         <translation>&amp;Wysig</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="115"/>
+        <location filename="puddlestuff/translations.py" line="120"/>
         <source>&amp;Convert</source>
         <translation>&amp;Verander</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="117"/>
+        <location filename="puddlestuff/translations.py" line="122"/>
         <source>&amp;Tools</source>
         <translation>&amp;Gereedskap</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="118"/>
+        <location filename="puddlestuff/translations.py" line="123"/>
         <source>&amp;Preview Mode</source>
         <translation>&amp;Voorskou Mode</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="119"/>
+        <location filename="puddlestuff/translations.py" line="124"/>
         <source>Ta&amp;g Tools</source>
         <translation>Ta&amp;g Gereedskap</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="120"/>
+        <location filename="puddlestuff/translations.py" line="125"/>
         <source>&amp;Windows</source>
         <translation>&amp;Vensters</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="123"/>
+        <location filename="puddlestuff/translations.py" line="128"/>
         <source>Select a directory to import into puddletag.</source>
         <translation>Kies &apos;n gids om by puddletag in te voer.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="124"/>
+        <location filename="puddlestuff/translations.py" line="129"/>
         <source>Append a directory to current file-view.</source>
         <translation>Voeg gids by huidige gelaaide gidse.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="125"/>
+        <location filename="puddlestuff/translations.py" line="130"/>
         <source>Import an m3u playlist into puddletag.</source>
         <translation>Voer m3u spellys in.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="126"/>
+        <location filename="puddlestuff/translations.py" line="131"/>
         <source>Save all files to m3u playlist.</source>
         <translation>Stoor alle lêre na m3u spellys.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="127"/>
+        <location filename="puddlestuff/translations.py" line="132"/>
         <source>Refresh current file-view.</source>
         <translation>Vervars huidige leêr view.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="128"/>
+        <location filename="puddlestuff/translations.py" line="133"/>
         <source>Plays the selected files in the predefined music player.</source>
         <translation>Die gekiesde lêre sal in die gedefineerde musiek speler gespeel word.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="129"/>
+        <location filename="puddlestuff/translations.py" line="134"/>
         <source>Convert filename to tag using the pattern.</source>
         <translation>Verander leêrnaam na tag deur die Patroon in die Patroon combo te gebruik.</translation>
     </message>
@@ -2324,7 +2323,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation type="obsolete">Kies alle lêre wat </translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="130"/>
+        <location filename="puddlestuff/translations.py" line="135"/>
         <source>Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.</source>
         <translation>Kies alle lêre wat in die gekiesde gidse behoort. Andersins kies alle lêre wat in die vorige gidse is.</translation>
     </message>
@@ -2499,17 +2498,17 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Playlist</name>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="490"/>
+        <location filename="puddlestuff/puddletag.py" line="491"/>
         <source>Select m3u file...</source>
         <translation>Kies m3u leêr...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="503"/>
+        <location filename="puddlestuff/puddletag.py" line="504"/>
         <source>An error occured while reading &lt;b&gt;%1&lt;/b&gt; (%2)</source>
         <translation>&apos;n Fout het plaasgevind gedurende die lees van &lt;b&gt;%1&lt;/b&gt; (%2)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="621"/>
+        <location filename="puddlestuff/puddletag.py" line="622"/>
         <source>Save Playlist...</source>
         <translation>Stoor spellys...</translation>
     </message>
@@ -2563,12 +2562,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Previews</name>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="471"/>
+        <location filename="puddlestuff/puddletag.py" line="472"/>
         <source>Preview Mode: Off</source>
         <translation>Voorskou Mode: Af</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="469"/>
+        <location filename="puddlestuff/puddletag.py" line="470"/>
         <source>&lt;b&gt;Preview Mode: On&lt;/b&gt;</source>
         <translation>&lt;b&gt;Voorskou Mode: Aan&lt;/b&gt;</translation>
     </message>
@@ -2578,7 +2577,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Wil jy Voorskou Mode Sluit?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/tagtools.py" line="42"/>
+        <location filename="puddlestuff/mainwin/tagtools.py" line="43"/>
         <source>Disable Preview Mode first to enable tag deletion.</source>
         <translation>Tag verwydering is net moontlik as Voorskou Mode &lt;b&gt;af&lt;/b&gt; is. Skakel dit af eerste.</translation>
     </message>
@@ -2732,12 +2731,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Progress Dialog</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1848"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1847"/>
         <source>Please Wait...</source>
         <translation>Wag net &apos;n bietjie...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1849"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1848"/>
         <source>%1%2 of %3...</source>
         <translation>%1%2 van %3...</translation>
     </message>
@@ -2818,7 +2817,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Kortgewings</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="312"/>
+        <location filename="puddlestuff/puddletag.py" line="313"/>
         <source>&amp;Windows</source>
         <translation>&amp;Vensters</translation>
     </message>
@@ -2864,22 +2863,22 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Leêr Eienskappe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/shortcutsettings.py" line="213"/>
+        <location filename="puddlestuff/shortcutsettings.py" line="214"/>
         <source>Description</source>
         <translation>Beskrywing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/shortcutsettings.py" line="213"/>
+        <location filename="puddlestuff/shortcutsettings.py" line="214"/>
         <source>Shortcut</source>
         <translation>Korgewing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/shortcutsettings.py" line="257"/>
+        <location filename="puddlestuff/shortcutsettings.py" line="258"/>
         <source>Edit Shortcuts</source>
         <translation>Wysig Kortgewings</translation>
     </message>
     <message>
-        <location filename="puddlestuff/shortcutsettings.py" line="206"/>
+        <location filename="puddlestuff/shortcutsettings.py" line="207"/>
         <source>&lt;b&gt;Double click a cell in the Shortcut Column to &lt;br /&gt;modify the key sequence.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Dubbel klik &apos;n sel in die Kortgewing Kolom om &lt;br /&gt; die sleutel sequence te manipuleer&lt;/b&gt;</translation>
     </message>
@@ -3077,27 +3076,27 @@ Egte: %2</translation>
 <context>
     <name>WebDB</name>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="91"/>
+        <location filename="puddlestuff/releasewidget.py" line="92"/>
         <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
         <translation>&lt;b&gt;Fout in patroon&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="250"/>
+        <location filename="puddlestuff/releasewidget.py" line="251"/>
         <source>Retrieved Albums</source>
         <translation>Afgelaaide Albums</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="367"/>
+        <location filename="puddlestuff/releasewidget.py" line="368"/>
         <source>Retrieving album tracks...</source>
         <translation>Besig om album liedjies af te laai...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="459"/>
+        <location filename="puddlestuff/releasewidget.py" line="460"/>
         <source>Retrieval complete.</source>
         <translation>Aflaai is gedaan.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="465"/>
+        <location filename="puddlestuff/releasewidget.py" line="466"/>
         <source>Retrieving tracks...</source>
         <translation>Besig om liedjies af te laai...</translation>
     </message>
@@ -3182,7 +3181,7 @@ Egte: %2</translation>
         <translation type="obsolete">Meer as een album stem oor een. Geen albums sal afgelaai word nie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="671"/>
+        <location filename="puddlestuff/releasewidget.py" line="672"/>
         <source>Retrieving album.</source>
         <translation>Besig om album af te laai.</translation>
     </message>
@@ -3247,7 +3246,7 @@ Egte: %2</translation>
         <translation>&lt;b&gt;Niks om te wys nie&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="668"/>
+        <location filename="puddlestuff/releasewidget.py" line="669"/>
         <source>More than one album matches. None will be retrieved.</source>
         <translation>Meer as een album stem oorleen. Geen sal afgelaai word nie.</translation>
     </message>

@@ -5,13 +5,12 @@
         Users stuck using python-musicbrainz2 < 0.7.0 shouldn't have problems with puddletag crashing on startup.
         Nor is python-musicbrainz2 a hard dependency any more.
         The default user agent now set to puddletag/0.9.12. New users will be able to use the Discogs Tag Source 'out of the box'.
-    Fixes:
+    Fixes include, but are not limited to:
         Editing __dirname and __dirpath while using QuodLibet library is now possible + tons of Music Library related bugs.
         Editing Actions sometimes didn't work.
         The Load Artwork function didn't work as advertised.
         %__total_files% and %__counter% not working when used within scripting functions.
-        Many more...
-        
+        The Artwork Window is floating by default. Fixes an issue whereby the puddletag window would be larger than the screen.
 
 20 December 2010 - 0.9.11
     Another bug where the Tag Sources dialog would freeze when retrieving albums is fixed.
