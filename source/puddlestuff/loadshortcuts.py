@@ -55,7 +55,7 @@ def menubar(menus, actions):
     winmenu = None
     _menus = {}
     for title, actionlist in menus:
-        menu = menubar.addMenu(QApplication.translate("Menus", title))
+        menu = menubar.addMenu(translate("Menus", title))
         _menus[title] = [menu]
         if title == u'&Windows':
             winmenu = menu
@@ -65,7 +65,7 @@ def menubar(menus, actions):
         for action in actionlist:
             if action in texts:
                 shortcut = actions[texts.index(action)]
-                shortcut.setText(QApplication.translate(tr_section, action))
+                shortcut.setText(translate(tr_section, action))
                 menu.addAction(shortcut)
                 _menus[title].append(shortcut)
             elif action == SEPARATOR:

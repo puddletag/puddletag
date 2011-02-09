@@ -178,8 +178,8 @@ def load_musiclib(parent=None):
     try:
         m = puddlestuff.musiclib.LibChooseDialog()
     except puddlestuff.musiclib.MusicLibError:
-        QMessageBox.critical(parent, QApplication.translate("MusicLib", 'No libraries found'),
-           QApplication.translate("MusicLib", "No supported music libraries were found. Most likely "
+        QMessageBox.critical(parent, translate("MusicLib", 'No libraries found'),
+           translate("MusicLib", "No supported music libraries were found. Most likely "
             "the required dependencies aren't installed. Visit the "
             "puddletag website, <a href='http://puddletag.sourceforge.net'>"
             "puddletag.sourceforge.net</a> for more details."))
@@ -253,7 +253,7 @@ def rename_dirs(parent=None):
     one as per the pattern in self.patterncombo."""
     if status['table'].model().previewMode:
         QMessageBox.information(parent, 'puddletag',
-            QApplication.translate("Dir Renaming", 'Disable Preview Mode first to enable renaming of directories.'))
+            translate("Dir Renaming", 'Disable Preview Mode first to enable renaming of directories.'))
         return
 
     tagtofilename = findfunc.tagtofilename
@@ -274,7 +274,7 @@ def rename_dirs(parent=None):
     #Create the msgbox, I like that there'd be a difference between
     #the new and the old filename, so I bolded the new and italicised the old.
     state = {'__total_files': unicode(len(files))}
-    title = unicode(QApplication.translate("Dir Renaming", "<b>Are you sure you want to rename the following directories?</b>"))
+    title = translate("Dir Renaming", "<b>Are you sure you want to rename the following directories?</b>")
     dirs = []
     newname = lambda x, st: encode_fn(basename(safe_name(tagtofilename(pattern, x, state=st))))
     msg = u''
@@ -288,7 +288,7 @@ def rename_dirs(parent=None):
     msg = msg[:-len('<br /><br />')]
 
     if confirmations.should_show('rename_dirs'):
-        info = LongInfoMessage(unicode(QApplication.translate("Dir Renaming", 'Rename dirs?')), title, msg, parent)
+        info = LongInfoMessage(translate("Dir Renaming", 'Rename dirs?'), title, msg, parent)
         if not info.exec_():
             return
     dirs = sorted(dirs, dircmp, itemgetter(0))
@@ -453,7 +453,7 @@ def update_status(enable = True):
     try:
         newfolder = path.join(oldir, path.basename(
             safe_name(tf(pattern, tag, state=state.copy()))))
-        dirstatus = QApplication.translate("Dir Renaming",
+        dirstatus = translate("Dir Renaming",
             "Rename: <b>%1</b> to: <i>%2</i>").arg(tag[DIRPATH]).arg(newfolder.decode('utf8'))
         emit('renamedirstatus', dirstatus)
     except findfunc.ParseError, e:

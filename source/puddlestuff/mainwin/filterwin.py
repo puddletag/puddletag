@@ -3,6 +3,7 @@ from PyQt4.QtGui import QWidget, QLabel, QComboBox, QLineEdit, QHBoxLayout, QApp
 from PyQt4.QtCore import SIGNAL
 from puddlestuff.puddleobjects import gettaglist
 from puddlestuff.constants import BOTTOMDOCK
+from puddlestuff.translations import translate
 
 class FilterView(QWidget):
     def __init__(self, parent=None, status=None):
@@ -10,7 +11,7 @@ class FilterView(QWidget):
         self.emits = ['filter']
         self.receives = []
         hbox = QHBoxLayout()
-        hbox.addWidget(QLabel(QApplication.translate("Defaults", "Field: ")))
+        hbox.addWidget(QLabel(translate("Defaults", "Field: ")))
         self._tags = QComboBox()
         self._tags.addItems(['None', '__all'] + gettaglist())
         self._tags.setEditable(True)

@@ -9,6 +9,7 @@ from puddlestuff.puddleobjects import (PuddleConfig, PuddleThread,
 from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 mutex = mutex.mutex()
 qmutex = QMutex()
+from puddlestuff.translations import translate
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""
@@ -60,7 +61,7 @@ class DirView(QTreeView):
         connect = lambda o,s: self.connect(o, SIGNAL('triggered()'), s)
         
         menu = QMenu(self)
-        refresh = QAction(QApplication.translate("Dirview",
+        refresh = QAction(translate("Dirview",
             'Refresh Directory'), self)
 
         index = self.indexAt(event.pos())
@@ -68,15 +69,15 @@ class DirView(QTreeView):
         
         header = self.header()
         if self.header().isHidden():
-            show_header = QAction(QApplication.translate("Dirview",
+            show_header = QAction(translate("Dirview",
                 'Show Header'), self)
             connect(show_header, header.show)
         else:
-            show_header = QAction(QApplication.translate("Dirview",
+            show_header = QAction(translate("Dirview",
                 'Hide Header'), self)
             connect(show_header, header.hide)
         
-        open_dir = QAction(QApplication.translate(
+        open_dir = QAction(translate(
             'Dirview', 'Open in File Manager'), self)
         connect(open_dir, lambda: self.openExtern(index))
         

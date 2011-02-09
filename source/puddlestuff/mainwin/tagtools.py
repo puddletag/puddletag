@@ -7,6 +7,7 @@ import traceback
 from mutagen import id3, apev2
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.puddleobjects import progress
+from puddlestuff.translations import translate
 
 id3_tag = audioinfo.id3.Tag
 ape_tag = audioinfo.apev2.Tag
@@ -40,7 +41,7 @@ def _remove_tag(f, tag):
 def remove_tag(tag, parent):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
-            QApplication.translate("Previews",
+            translate("Previews",
                 'Disable Preview Mode first to enable tag deletion.'))
         return
     files = status['selectedfiles']
@@ -52,15 +53,15 @@ def remove_tag(tag, parent):
                 yield None
             except (IOError, OSError), e:
                 filename = f[audioinfo.PATH]
-                m = unicode(QApplication.translate("Defaults",
-                    'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
+                m = translate("Defaults",
+                    'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror)
                 if row == rows[-1]:
                     yield m, 1
                 else:
                     yield m, len(rows)
         status['model'].undolevel += 1
 
-    s = progress(func, QApplication.translate("Tag Tools",
+    s = progress(func, translate("Tag Tools",
         'Removing %s tag: ' % tag), len(files))
     s(parent)
 

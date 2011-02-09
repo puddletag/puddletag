@@ -7,6 +7,7 @@ import puddlestuff.loadshortcuts as ls
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 pyqtRemoveInputHook()
+from puddlestuff.translations import translate
 
 from PyQt4.QtCore import QEvent, QRect, QString, Qt, QVariant, SIGNAL
 from PyQt4.QtGui import qApp, QBrush, QColor, QDialog, QHBoxLayout, \
@@ -203,7 +204,7 @@ class ActionEditorDialog(QWidget):
         super(ActionEditorDialog, self).__init__(parent)
         self.actions = actions
 
-        help = QLabel(QApplication.translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column' \
+        help = QLabel(translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column' \
             ' to <br />modify the key sequence.</b>'))
         
         self.actionTable = QTableWidget(self)
@@ -211,8 +212,8 @@ class ActionEditorDialog(QWidget):
         self.actionTable.setEditTriggers(QTableWidget.DoubleClicked)
         self.actionTable.setColumnCount(2)
         self.actionTable.setHorizontalHeaderLabels(
-            [QApplication.translate("Shortcut Settings", "Description"),
-            QApplication.translate("Shortcut Settings", "Shortcut")]
+            [translate("Shortcut Settings", "Description"),
+            translate("Shortcut Settings", "Shortcut")]
             )
         self.actionTable.horizontalHeader().setStretchLastSection(True)
         self.actionTable.verticalHeader().hide()
@@ -254,7 +255,7 @@ class ActionEditorDialog(QWidget):
         self._model.edited = False
         self.actionTable.model().edited = False
         
-        self.setWindowTitle(QApplication.translate("Shortcut Settings", "Edit Shortcuts"))
+        self.setWindowTitle(translate("Shortcut Settings", "Edit Shortcuts"))
     
     def applySettings(self, control=None):
         if not self._model.edited:

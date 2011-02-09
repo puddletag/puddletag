@@ -54,6 +54,7 @@ def to_str(v):
         return escape_html(SEPARATOR.join(v))
 
 def displaytags(tags):
+    image_tr = translate('Defaults', '<b>__image</b>: %s images<br />')
     if tags:
         if isinstance(tags, basestring):
             return tags
@@ -63,7 +64,7 @@ def displaytags(tags):
         ret = u"".join([s % (z, to_str(v)) for z, v in sorted(tags.items()) 
             if z not in READONLY and z != '__image'])[:-2]
         if u'__image' in tags:
-            ret += u'<b>__image</b>: %s images<br />' % len(tags['__image'])
+            ret += image_tr % len(tags['__image'])
         return ret
     else:
         return translate('Functions Dialog', '<b>No change.</b>')

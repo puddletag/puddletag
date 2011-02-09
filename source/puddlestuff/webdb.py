@@ -32,16 +32,12 @@ pyqtRemoveInputHook()
 from findfunc import replacevars, getfunc
 from functools import partial
 from copy import copy, deepcopy
-from puddlestuff.util import to_string, split_by_tag
+from puddlestuff.util import to_string, split_by_tag, translate
 from releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
 
 TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
 MTAG_SOURCE_DIR = os.path.join(SAVEDIR, 'mp3tag_sources')
-
-#tr = lambda s: unicode(QApplication.translate('WebDB', s))
-
-translate = QApplication.translate
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
     import glob
@@ -59,15 +55,16 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
+    images = translate('WebDB', '#images')
     if not tag:
         return translate("WebDB", "<b>Nothing to display.</b>")
     s = "<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
-        d = {'#images': unicode(len(tag['__image']))}
+        d = {images: unicode(len(tag['__image']))}
     else:
         d = {}
-    return "<br />".join([s % (z, tostranslate("WebDB", v)) for z, v in
+    return "<br />".join([s % (z, tostr(v)) for z, v in
         sorted(tag.items() + d.items()) if z != '__image' and not
         z.startswith('#')])
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="af_ZA">
+<!DOCTYPE TS>
+<TS version="2.0" language="af_ZA">
 <context>
     <name>About</name>
     <message>
@@ -80,52 +81,52 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Actions</name>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="548"/>
+        <location filename="puddlestuff/actiondlg.py" line="549"/>
         <source>Modify Action</source>
         <translation>Verander Aksie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="659"/>
+        <location filename="puddlestuff/actiondlg.py" line="660"/>
         <source>Actions</source>
         <translation>Aksies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="116"/>
+        <location filename="puddlestuff/actiondlg.py" line="117"/>
         <source>Enter a name for the shortcut.</source>
         <translation>Stel &apos;n naam vir die goupaadjie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="900"/>
+        <location filename="puddlestuff/actiondlg.py" line="901"/>
         <source>New Action</source>
         <translation>Nuwe Aksie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="985"/>
+        <location filename="puddlestuff/actiondlg.py" line="986"/>
         <source>Enter a name for the new action.</source>
         <translation>Stel &apos;n naam vir die nuwe Aksie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="925"/>
+        <location filename="puddlestuff/actiondlg.py" line="926"/>
         <source>Edit Action: </source>
         <translation>Verander Aksie:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="994"/>
+        <location filename="puddlestuff/actiondlg.py" line="995"/>
         <source>Edit Action: %s</source>
         <translation>Verander Aksie: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="684"/>
+        <location filename="puddlestuff/actiondlg.py" line="685"/>
         <source>Assign &amp;Shortcut</source>
         <translation>Sit &amp;Kortgewing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="692"/>
+        <location filename="puddlestuff/actiondlg.py" line="693"/>
         <source>Edit Shortcuts</source>
         <translation>Verander Kortgewings</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="687"/>
+        <location filename="puddlestuff/actiondlg.py" line="688"/>
         <source>&lt;p&gt;Creates a
             shortcut for the checked actions on the Actions menu.
             Use Edit Shortcuts (found by pressing down on this button)
@@ -196,6 +197,31 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <source>Invalid XML returned.</source>
         <translation>Ongeldige XML was teruggekeer.</translation>
     </message>
+    <message>
+        <location filename="puddlestuff/tagsources/amazon.py" line="181"/>
+        <source>Retrieving using ASIN: %s</source>
+        <translation>ASIN %s sal gebruik word aflaaïng.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/amazon.py" line="184"/>
+        <source>Retrieving XML: %1 - %2</source>
+        <translation>Besing om XML af te laai: %1 - %2</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/amazon.py" line="195"/>
+        <source>Retrieving cover: %s</source>
+        <translation>Besig om prent te kry: %s</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/amazon.py" line="214"/>
+        <source>Retrieving search results for keywords: %s</source>
+        <translation>Besig om versoeking af te laai vir sleutelwoorde: %s</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/amazon.py" line="158"/>
+        <source>Album at Amazon</source>
+        <translation>Album by Amazon</translation>
+    </message>
 </context>
 <context>
     <name>Amazon Tag Source</name>
@@ -208,72 +234,72 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Artwork</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1591"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1662"/>
         <source>Enter a description</source>
         <translation>Stel &apos;n beskrywing</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1323"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1385"/>
         <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don&apos;t differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Stel &apos;n deskripsie vir die gewysigde prent.&lt;/p&gt;&lt;p&gt;Vir ID3 tags, moet die deskripsie vir elke prent verskil volgens die ID3 spec. As hulle nie verskil nie dan sal spasies by die deskripsie gesit word tot dit uniek is.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1335"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1397"/>
         <source>&amp;Description</source>
         <translation>&amp;Deskripsie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1343"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1405"/>
         <source>&amp;Type</source>
         <translation>&amp;Tipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1354"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1416"/>
         <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kies &apos;n prent-tipe.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1433"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1495"/>
         <source>&amp;Save cover to file</source>
         <translation>&amp;Stel prent na vyl</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1436"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1498"/>
         <source>&amp;Add cover</source>
         <translation>&amp;Voeg prent by</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1439"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1501"/>
         <source>&amp;Remove cover</source>
         <translation>&amp;Verwyder prent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1442"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1504"/>
         <source>&amp;Change cover</source>
         <translation>&amp;Verwyder prent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1498"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1560"/>
         <source>Select Image...</source>
         <translation>Kies Prent...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1631"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1701"/>
         <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>JPEG Prente (*.jpg);;PNG Prente (*.png);;All Vyle(*.*)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1638"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1708"/>
         <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
         <translation>Ek kon nie na &lt;b&gt;%1&lt;/b&gt; skryf nie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1695"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1777"/>
         <source>Enter description</source>
         <translation>Stel deskripsie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1631"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1701"/>
         <source>Save artwork as...</source>
         <translation>Save verfwerk as...</translation>
     </message>
@@ -291,7 +317,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Geen Prente Nie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1297"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1359"/>
         <source>%1/%2</source>
         <translation>%1 van %2</translation>
     </message>
@@ -397,7 +423,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>&amp;Kies Kolomme</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="771"/>
+        <location filename="puddlestuff/puddleobjects.py" line="799"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
@@ -405,7 +431,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Combo Box</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1866"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1932"/>
         <source>Remove current item.</source>
         <translation>Verwyder huidige item.</translation>
     </message>
@@ -431,212 +457,212 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Cover Type</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="98"/>
+        <location filename="puddlestuff/puddleobjects.py" line="126"/>
         <source>Other</source>
         <translation>Anders</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="98"/>
+        <location filename="puddlestuff/puddleobjects.py" line="126"/>
         <source>O</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="99"/>
+        <location filename="puddlestuff/puddleobjects.py" line="127"/>
         <source>File Icon</source>
         <translation>Leêr Ikon</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="99"/>
+        <location filename="puddlestuff/puddleobjects.py" line="127"/>
         <source>I</source>
         <translation>I</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="100"/>
+        <location filename="puddlestuff/puddleobjects.py" line="128"/>
         <source>Other File Icon</source>
         <translation>Ander Leêr Ikon</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="100"/>
+        <location filename="puddlestuff/puddleobjects.py" line="128"/>
         <source>OI</source>
         <translation>AI</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="101"/>
+        <location filename="puddlestuff/puddleobjects.py" line="129"/>
         <source>Cover (front)</source>
         <translation>Prent (Voor)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="101"/>
+        <location filename="puddlestuff/puddleobjects.py" line="129"/>
         <source>CF</source>
         <translation>PF</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="102"/>
+        <location filename="puddlestuff/puddleobjects.py" line="130"/>
         <source>Cover (back)</source>
         <translation>Prent (Agter)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="102"/>
+        <location filename="puddlestuff/puddleobjects.py" line="130"/>
         <source>CB</source>
         <translation>PA</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="103"/>
+        <location filename="puddlestuff/puddleobjects.py" line="131"/>
         <source>Leaflet page</source>
         <translation>Pamplef bladsy</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="103"/>
+        <location filename="puddlestuff/puddleobjects.py" line="131"/>
         <source>LF</source>
         <translation>PB</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="104"/>
+        <location filename="puddlestuff/puddleobjects.py" line="132"/>
         <source>Media (e.g. label side of CD)</source>
         <translation>Media (bv. etiket aan kan van CD)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="104"/>
+        <location filename="puddlestuff/puddleobjects.py" line="132"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="105"/>
+        <location filename="puddlestuff/puddleobjects.py" line="133"/>
         <source>Lead artist</source>
         <translation>Lei-kunstenaar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="105"/>
+        <location filename="puddlestuff/puddleobjects.py" line="133"/>
         <source>LA</source>
         <translation>LK</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="106"/>
+        <location filename="puddlestuff/puddleobjects.py" line="134"/>
         <source>Artist</source>
         <translation>Kunstenaar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="106"/>
+        <location filename="puddlestuff/puddleobjects.py" line="134"/>
         <source>A</source>
         <translation>K</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="107"/>
+        <location filename="puddlestuff/puddleobjects.py" line="135"/>
         <source>Conductor</source>
         <translation>Dirigent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="107"/>
+        <location filename="puddlestuff/puddleobjects.py" line="135"/>
         <source>C</source>
         <translation>D</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="108"/>
+        <location filename="puddlestuff/puddleobjects.py" line="136"/>
         <source>Band</source>
         <translation>Musiek Group</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="108"/>
+        <location filename="puddlestuff/puddleobjects.py" line="136"/>
         <source>B</source>
         <translation>MG</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="109"/>
+        <location filename="puddlestuff/puddleobjects.py" line="137"/>
         <source>Composer</source>
         <translation>Komponis</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="109"/>
+        <location filename="puddlestuff/puddleobjects.py" line="137"/>
         <source>CP</source>
         <translation>KP</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="110"/>
+        <location filename="puddlestuff/puddleobjects.py" line="138"/>
         <source>Lyricist</source>
         <translation>Skrywer</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="110"/>
+        <location filename="puddlestuff/puddleobjects.py" line="138"/>
         <source>L</source>
         <translation>S</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="111"/>
+        <location filename="puddlestuff/puddleobjects.py" line="139"/>
         <source>Recording Location</source>
         <translation>Opnaam Lokasie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="111"/>
+        <location filename="puddlestuff/puddleobjects.py" line="139"/>
         <source>RL</source>
         <translation>OL</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="112"/>
+        <location filename="puddlestuff/puddleobjects.py" line="140"/>
         <source>During recording</source>
         <translation>Gedurende Opname</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="112"/>
+        <location filename="puddlestuff/puddleobjects.py" line="140"/>
         <source>DR</source>
         <translation>GO</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="113"/>
+        <location filename="puddlestuff/puddleobjects.py" line="141"/>
         <source>During performance</source>
         <translation>Gedurende performance</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="113"/>
+        <location filename="puddlestuff/puddleobjects.py" line="141"/>
         <source>DP</source>
         <translation>GP</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="114"/>
+        <location filename="puddlestuff/puddleobjects.py" line="142"/>
         <source>Movie/video screen capture</source>
         <translation>Film/video prent</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="114"/>
+        <location filename="puddlestuff/puddleobjects.py" line="142"/>
         <source>MC</source>
         <translation>FP</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="115"/>
+        <location filename="puddlestuff/puddleobjects.py" line="143"/>
         <source>A bright coloured fish</source>
         <translation>A veelkleurige vis</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="115"/>
+        <location filename="puddlestuff/puddleobjects.py" line="143"/>
         <source>F</source>
         <translation>V</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="116"/>
+        <location filename="puddlestuff/puddleobjects.py" line="144"/>
         <source>Illustration</source>
         <translation>Illustrasie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="116"/>
+        <location filename="puddlestuff/puddleobjects.py" line="144"/>
         <source>P</source>
         <translation>I</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="117"/>
+        <location filename="puddlestuff/puddleobjects.py" line="145"/>
         <source>Band/artist logotype</source>
         <translation>Musiek group/kunstenaar logotipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="117"/>
+        <location filename="puddlestuff/puddleobjects.py" line="145"/>
         <source>BL</source>
         <translation>ML</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="118"/>
+        <location filename="puddlestuff/puddleobjects.py" line="146"/>
         <source>Publisher/Studio logotype</source>
         <translation>Uitgewer/Studio logotipe</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="118"/>
+        <location filename="puddlestuff/puddleobjects.py" line="146"/>
         <source>PL</source>
         <translation>UL</translation>
     </message>
@@ -644,7 +670,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Defaults</name>
     <message>
-        <location filename="puddlestuff/webdb.py" line="103"/>
+        <location filename="puddlestuff/webdb.py" line="100"/>
         <source>&amp;Fields</source>
         <translation>&amp;Velde</translation>
     </message>
@@ -684,7 +710,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Fout</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="355"/>
+        <location filename="puddlestuff/puddleobjects.py" line="383"/>
         <source>&lt;br /&gt; Do you want to continue?</source>
         <translation>&lt;br /&gt; Wil jy aan gaan?</translation>
     </message>
@@ -694,7 +720,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1803"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1869"/>
         <source>Cancel</source>
         <translation>Kanselleer</translation>
     </message>
@@ -739,7 +765,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="267"/>
+        <location filename="puddlestuff/webdb.py" line="264"/>
         <source>&amp;Edit</source>
         <translation>&amp;Wysig</translation>
     </message>
@@ -752,6 +778,11 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <location filename="puddlestuff/masstagging.py" line="620"/>
         <source>&amp;Fields:</source>
         <translation>&amp;Velde:</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/actiondlg.py" line="57"/>
+        <source>&lt;b&gt;__image&lt;/b&gt;: %s images&lt;br /&gt;</source>
+        <translation>&lt;b&gt;__image&lt;/b&gt;: %s prente&lt;br /&gt;</translation>
     </message>
 </context>
 <context>
@@ -825,22 +856,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Ek kon nie &lt;i&gt;%1&lt;/i&gt; hernaam na &lt;b&gt;%2&lt;/b&gt; (%3)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="253"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="255"/>
         <source>Disable Preview Mode first to enable renaming of directories.</source>
         <translation>Voorskou Mode moet afgeskakel wees voordat jy gidse kan hernaam.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="274"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="277"/>
         <source>&lt;b&gt;Are you sure you want to rename the following directories?&lt;/b&gt;</source>
         <translation>&lt;b&gt;Is jy seker jy wil die gelysde gidse hernaam&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="287"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="291"/>
         <source>Rename dirs?</source>
         <translation>Hernaam gidse?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="444"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="456"/>
         <source>Rename: &lt;b&gt;%1&lt;/b&gt; to: &lt;i&gt;%2&lt;/i&gt;</source>
         <translation>Hernaam: &lt;b&gt;%1&lt;/b&gt; na: &lt;i&gt;%2&lt;/i&gt;</translation>
     </message>
@@ -871,12 +902,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Discogs</name>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="171"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="180"/>
         <source>Invalid XML was returned. See log</source>
         <translation>Ongeldige XML was teruggekeer. Sien log</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="267"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="276"/>
         <source>&lt;p&gt;Enter search parameters here. If empty,
         the selected files are used.&lt;/p&gt;
         &lt;ul&gt;
@@ -892,6 +923,86 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
          do a Discogs album search using those keywords.&lt;/li&gt;
         &lt;/ul&gt;</source>
         <translation>&lt;p&gt;Gee soek terme hier. As geen woorde gestel is nie, sal die gekiesde leêrs gebruik word.&lt;p&gt;&lt;ul&gt;&lt;li&gt; As jou terme in &lt;b&gt;kunstenaar;album&lt;/b&gt; formaat is dan sal &apos;n besoeking vir a spesifieke kunstenaar/album paar gedoen word.&lt;/li&gt;&lt;li&gt;Om net die albums van &apos;n kunstenaar to haal, behou net die kunstenaar se naam soos in &lt;b&gt;Ratatat;&lt;/b&gt; (nb. die komma-punt moet bly). Om net vir &apos;n spesifieke album to soek kan jy die kunstenaar gedeelte af los soos in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Terme wat nie &apos;n komma-punt bevat nie sal as &apos;n Amazon woorde-soek behandel word.&lt;/li&gt;&lt;/ul&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="57"/>
+        <source>SmallImage</source>
+        <translation type="obsolete">KleinPrent</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="58"/>
+        <source>LargeImage</source>
+        <translation type="obsolete">GrootPrent</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="297"/>
+        <source>Retrieve Cover</source>
+        <translation>Haal prent</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="298"/>
+        <source>Cover size to retrieve</source>
+        <translation>Grote van prent om te haal</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="301"/>
+        <source>Field to use for discogs_id</source>
+        <translation>Veld om te gebruik vir Discogs ID</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="302"/>
+        <source>API Key (Stored as plain-text. Leave empty to use default.)</source>
+        <translation>API Sleutel (Word as teks gestoor. Los leeg om die ingeboude sleutel te gebruik.)</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="314"/>
+        <source>Invalid Discogs Release ID</source>
+        <translation>Ongeldige Discogs Release ID</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="332"/>
+        <source>Checking tracks for Discogs Album ID.</source>
+        <translation>Besig om liedjies to soek vir Discogs Album ID.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="337"/>
+        <source>No Discogs ID found in tracks.</source>
+        <translation>Geen Discogs ID was in die liedjies gevind nie.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="299"/>
+        <source>Small</source>
+        <translation>Klein</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="300"/>
+        <source>Large</source>
+        <translation>Groot</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="93"/>
+        <source>Retrieving search results for keywords: %s</source>
+        <translation>Besig om versoeking af te laai vir sleutelwoorde: %s</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="212"/>
+        <source>Retrieving using Release ID: %s</source>
+        <translation>Discogs ID %s sal gebruik word aflaaïng</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="215"/>
+        <source>Retrieving album %s</source>
+        <translation>Besig om album af te laai %s</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="231"/>
+        <source>Retrieving cover: %s</source>
+        <translation>Besig om prent te kry: %s</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/discogs.py" line="339"/>
+        <source>Found Discogs ID: %s</source>
+        <translation>Discogs ID %s was gekry</translation>
     </message>
 </context>
 <context>
@@ -1427,12 +1538,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Functions Dialog</name>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="69"/>
+        <location filename="puddlestuff/actiondlg.py" line="70"/>
         <source>&lt;b&gt;No change.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Geen Verandering&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="213"/>
+        <location filename="puddlestuff/actiondlg.py" line="214"/>
         <source>&lt;p&gt;Fields that will
             get written to.&lt;/p&gt;
 
@@ -1453,17 +1564,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 &lt;li&gt;&apos;~&apos; sal na al die velde skryf in &apos;n leêr behalwe vir die velde wat dit vold. Bv &lt;b&gt;~artist, title&lt;/b&gt; sal skryf na almal behalwe die artist en title velde was in die gekies leêrs gevind is&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="379"/>
+        <location filename="puddlestuff/actiondlg.py" line="380"/>
         <source>No preview for is shown for this function.</source>
         <translation>Geen voorskou word vir hierdie Funksie gewys nie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="393"/>
+        <location filename="puddlestuff/actiondlg.py" line="394"/>
         <source>&lt;b&gt;No change&lt;/b&gt;</source>
         <translation>&lt;b&gt;Geen Verandering&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="448"/>
+        <location filename="puddlestuff/actiondlg.py" line="449"/>
         <source>Functions</source>
         <translation>Funksies</translation>
     </message>
@@ -1534,42 +1645,42 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>List Buttons</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1047"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1064"/>
         <source>Add</source>
         <translation>Voeg By</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1050"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1067"/>
         <source>Remove</source>
         <translation>Verwyder</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1054"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1071"/>
         <source>Move Up</source>
         <translation>Beweeg Op</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1057"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1074"/>
         <source>Move Down</source>
         <translation>Beweeg Af</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1060"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1077"/>
         <source>Edit</source>
         <translation>Wysig</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1063"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1080"/>
         <source>Duplicate</source>
         <translation>Tweevoud</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1122"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1139"/>
         <source>&amp;&gt;&gt;</source>
         <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1123"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1140"/>
         <source>&amp;&lt;&lt;</source>
         <translation>&amp;&lt;&lt;</translation>
     </message>
@@ -1833,6 +1944,11 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <location filename="puddlestuff/masstagging.py" line="926"/>
         <source>&lt;br /&gt;&lt;b&gt;No tag sources were added to this profile. Exiting.&lt;/b&gt;</source>
         <translation>&lt;br /&gt;&lt;b&gt;Geen Tag-Bronne was by hierde profiel bygevoug nie. Aflaaïng sal nou sluit.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/masstagging.py" line="334"/>
+        <source>&lt;b&gt;Initializing...&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Besig om te initialiseer...&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -2216,12 +2332,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>MusicBrainz</name>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="43"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="48"/>
         <source>Could not connect to MusicBrainz server. Check your net connection.</source>
         <translation>Konneksies to die MusicBrainz server was onsuksesvol. Kyk na jou internet konneksie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="191"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="185"/>
         <source>&lt;p&gt;Enter search parameters here.
         If empty, the selected files are used.&lt;/p&gt;
         
@@ -2252,19 +2368,44 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation type="obsolete">Kry PUIDS (Benodig a opsoeking vir elke liedjie.)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="255"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="247"/>
         <source>Checking tracks for MusicBrainz Album ID.</source>
         <translation>Besig om liedjies te toets vir MusicBrainz Album ID.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="261"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="253"/>
         <source>No Album ID found in tracks.</source>
         <translation>Geen MusicBrainz Album ID was in die liedjies gevind nie.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="216"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="210"/>
         <source>Retrieve PUIDS (Requires a separate lookup for each track.)</source>
         <translation>Kry PUIDS (Benodig a opsoeking vir elke liedjie.)</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="120"/>
+        <source>Retrieving Artist Info for &lt;b&gt;%s&lt;/b&gt;</source>
+        <translation>Kunstenaar info vor afgelaai vir &lt;b&gt;%s&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="271"/>
+        <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving %1: %2</source>
+        <translation>&lt;b&gt;Fout:&lt;/b&gt;Terwyl die aflaaing van %1: %2</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="230"/>
+        <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID %1 (%2)</source>
+        <translation>&lt;b&gt;Fout:&lt;/b&gt;Terwyl die aflaaing van Album ID %1: (%2)</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="256"/>
+        <source>Found Album ID: %s</source>
+        <translation>Album ID %s was gekry</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="267"/>
+        <source>Searching for album: %s</source>
+        <translation>Besig om te soek vir album: %s</translation>
     </message>
 </context>
 <context>
@@ -2312,12 +2453,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Biblioteek Kunstenaars</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="179"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="181"/>
         <source>No libraries found</source>
         <translation>Geen geldige Musiek Biblieteke was gevind nie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="179"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="181"/>
         <source>No supported music libraries were found. Most likely the required dependencies aren&apos;t installed. Visit the puddletag website, &lt;a href=&apos;http://puddletag.sourceforge.net&apos;&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
         <translation>&lt;a href=&apos;http://puddletag.sourceforge.net&apos;&gt;puddletag.sourceforge.net&lt;/a&gt;Geen geldige Musiek Biblieteke was gevind nie. Heelwaarskynlik is the benodigde afhanklikhede nie geïnstalleer nie. Gaan na die puddletag webwerf, vir meer informasie.</translation>
     </message>
@@ -2442,7 +2583,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Tag verwydering is net moontlik as Voorskou Mode &lt;b&gt;af&lt;/b&gt; is. Skakel dit af eerste.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="468"/>
+        <location filename="puddlestuff/webdb.py" line="465"/>
         <source>Clea&amp;r preview</source>
         <translation>Belee&amp;g voorskou</translation>
     </message>
@@ -2488,22 +2629,22 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>&lt;p&gt;As geen tag informasie in die leêr gevind is nie, sal hierdie patroon gebruik word om tags van die leêrnaam to kry&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="280"/>
+        <location filename="puddlestuff/webdb.py" line="277"/>
         <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Die kunstenaar and album velde sal gebruik word om to beskou of &apos;n album die afgelaaide album match. Elke feld was jy hier lys sal gebruik word in fuzzy-matching algoritme. As the gemiddelde gekalkuleerde persentasie groter of gelyk is aan wat jy hier lys, sal die afgelaaide album &apos;n match beskou word.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="277"/>
+        <location filename="puddlestuff/webdb.py" line="274"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Die velde was hier gelys word sal gebruik word om to beskou of a sekere liedjie sy en sy afgelaaide maat dieselfe is. Elke veld sal getoets word met &apos;n fuzzy-matching algoritme. As die gemiddelde persentasie van aldie velde groter as die &apos;Minimum Persentasie&apos; is sal dit as &apos;n match beskou word.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="273"/>
+        <location filename="puddlestuff/webdb.py" line="270"/>
         <source>Brute force unmatched files.</source>
         <translation>Gebruik dom krag vir ongematchde leêrs.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="275"/>
+        <location filename="puddlestuff/webdb.py" line="272"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
         <translation>&lt;p&gt;As &apos;n presiese match nie gevind is nie vir &apos;n leêr, sal die leêr gesoort word volgens leêrnaam. Die afgelaaide albums sal dan gesoort word volgens liedjie nommer en die ooreenstemmende (vorige ongematchde) liedjies sal gematch word.&lt;/p&gt;</translation>
     </message>
@@ -2523,7 +2664,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Match liedjies met velde:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="315"/>
+        <location filename="puddlestuff/webdb.py" line="312"/>
         <source>Minimum percentage required for track match.</source>
         <translation>Minimum persentasie benodiig vir &apos;n liedjie match.</translation>
     </message>
@@ -2578,12 +2719,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Minimum grens-vereiste vir album matches.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="310"/>
+        <location filename="puddlestuff/webdb.py" line="307"/>
         <source>Minimum &amp;percentage required for album matches.</source>
         <translation>Minimum &amp;grens-vereiste vir album matches.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="313"/>
+        <location filename="puddlestuff/webdb.py" line="310"/>
         <source>Match tracks using &amp;fields: </source>
         <translation>&amp;Velde om te gebruik vir liedjie matches: </translation>
     </message>
@@ -2591,12 +2732,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Progress Dialog</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1782"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1848"/>
         <source>Please Wait...</source>
         <translation>Wag net &apos;n bietjie...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1783"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1849"/>
         <source>%1%2 of %3...</source>
         <translation>%1%2 van %3...</translation>
     </message>
@@ -2687,7 +2828,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>&apos;n Fout het plaasgevind gedurende die storing van voorkeure &lt;b&gt;%1&lt;/b&gt;: %2</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="254"/>
+        <location filename="puddlestuff/webdb.py" line="251"/>
         <source>Tag Sources</source>
         <translation>Tag Bronne</translation>
     </message>
@@ -2705,12 +2846,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Shortcut Editor</name>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="76"/>
+        <location filename="puddlestuff/actiondlg.py" line="77"/>
         <source>Enter a key sequence for the shortcut.</source>
         <translation>Stel &apos;n knoppie volgorde vir die kortgewing.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="80"/>
+        <location filename="puddlestuff/actiondlg.py" line="81"/>
         <source>&amp;Don&apos;t assign keyboard shortcut.</source>
         <translation>&amp;Mone &apos;n moenie &apos;n sleutelbord kortgewing set nie.</translation>
     </message>
@@ -2746,12 +2887,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
 <context>
     <name>Status Bar</name>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="435"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="447"/>
         <source>New Filename: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>Nuwe leêrnaam: &lt;b&gt;%1 &lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="431"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="443"/>
         <source>&lt;b&gt;%s&lt;/b&gt;</source>
         <translation>&lt;b&gt;%s&lt;/b&gt;</translation>
     </message>
@@ -2961,72 +3102,72 @@ Egte: %2</translation>
         <translation>Besig om liedjies af te laai...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="628"/>
+        <location filename="puddlestuff/webdb.py" line="625"/>
         <source>An error occured: %1</source>
         <translation>&apos;n Fout het plaasgevind: %1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="219"/>
+        <location filename="puddlestuff/webdb.py" line="216"/>
         <source>Add sort option</source>
         <translation>Voeg soort opsie by</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="235"/>
+        <location filename="puddlestuff/webdb.py" line="232"/>
         <source>Edit sort option</source>
         <translation>Wysing soort opsie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="443"/>
+        <location filename="puddlestuff/webdb.py" line="440"/>
         <source>Sour&amp;ce: </source>
         <translation>&amp;Bron:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="448"/>
+        <location filename="puddlestuff/webdb.py" line="445"/>
         <source>Configure</source>
         <translation>Stel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="458"/>
+        <location filename="puddlestuff/webdb.py" line="455"/>
         <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
         <translation>&lt;p&gt;Stel you soek parameters hier. As geen woorde gestel is nie, sal die geselekteerde leêrs gebruik word.&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;kunstenaar;album&lt;/b&gt; soek vir a spesifieke kunstenaar/album kombinasie.&lt;/li&gt;&lt;li&gt;Om net die albums van &apos;n kunstenaar, behou net die kunstenaar se naam soos in &lt;b&gt;Ratatat;&lt;/b&gt; (nb. die komma-punt moet bly). Om net vir &apos;n spesifieke album to soek kan jy die kunstenaar gedeelte af los soos in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="461"/>
+        <location filename="puddlestuff/webdb.py" line="458"/>
         <source>&amp;Search</source>
         <translation>&amp;Soek</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="467"/>
+        <location filename="puddlestuff/webdb.py" line="464"/>
         <source>&amp;Write</source>
         <translation>&amp;Skryf</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="477"/>
+        <location filename="puddlestuff/webdb.py" line="474"/>
         <source>Update empty fields only.</source>
         <translation>Update alleenlik leë velde.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="483"/>
+        <location filename="puddlestuff/webdb.py" line="480"/>
         <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
         <translation>Stel &apos;n comma-spaseerde lys van velde om te skryf.&lt;br /&gt;&lt;br /&gt;Bv.&lt;b&gt;artist, album, title&lt;/b&gt; sal net die artist, album en title velde skryf van die afgelaaide albums.&lt;br /&gt;&lt;br /&gt;As jy alle velde wil skryf behalwe &apos;n, begin jou lys met die tilde karakter (~). Bv &lt;b&gt;~composer,__image&lt;/b&gt; sal al die afgelaaide waardes skryf behalwe die wat hoort and die composer en __image velde.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="565"/>
+        <location filename="puddlestuff/webdb.py" line="562"/>
         <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Tags was geskryfe&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="611"/>
+        <location filename="puddlestuff/webdb.py" line="608"/>
         <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Kies leêr eerste of stel terme om mee &apos;n versoek te doen&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="660"/>
+        <location filename="puddlestuff/webdb.py" line="657"/>
         <source>Searching complete.</source>
         <translation>Versoekings is gedaan.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="662"/>
+        <location filename="puddlestuff/webdb.py" line="659"/>
         <source>No matching albums were found.</source>
         <translation>Geen ooreenstemmende albums was gevind nie.</translation>
     </message>
@@ -3046,62 +3187,62 @@ Egte: %2</translation>
         <translation>Besig om album af te laai.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="55"/>
+        <location filename="puddlestuff/webdb.py" line="51"/>
         <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
         <translation>Die Mp3tag Tag Bron %s kon nie gelaai word nie</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="139"/>
+        <location filename="puddlestuff/webdb.py" line="136"/>
         <source>Configure: %s</source>
         <translation>Stel: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="256"/>
+        <location filename="puddlestuff/webdb.py" line="253"/>
         <source>&amp;Display format for individual tracks.</source>
         <translation>Wysigings formaat vir &amp;individieule liedjies.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="260"/>
+        <location filename="puddlestuff/webdb.py" line="257"/>
         <source>Display format for &amp;retrieved albums</source>
         <translation>Wysigings formaat vir &amp;afgelaaide albums</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="264"/>
+        <location filename="puddlestuff/webdb.py" line="261"/>
         <source>Sort retrieved albums using order:</source>
         <translation>Volgorde om afgelaaide albums mee te soort:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="270"/>
+        <location filename="puddlestuff/webdb.py" line="267"/>
         <source>User-Agent to use for screen scraping.</source>
         <translation>Gebruikers-Agent om te gebruik vir puddletag.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="304"/>
+        <location filename="puddlestuff/webdb.py" line="301"/>
         <source>Automatic retrieval options</source>
         <translation>Automities aflaii opsies</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="479"/>
+        <location filename="puddlestuff/webdb.py" line="476"/>
         <source>Automatically retrieve matches.</source>
         <translation>Laai oorenstemmende albums automaties af.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="235"/>
+        <location filename="puddlestuff/webdb.py" line="232"/>
         <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
         <translation>Stel &apos;n soort opsie (&apos;n komma-gespaseer lys van velde. Bv &quot;artist, title&quot;)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="473"/>
+        <location filename="puddlestuff/webdb.py" line="470"/>
         <source>Select files and click on Search to retrieve metadata.</source>
         <translation>Kies leêrs en klik om Soek om metadata af te laai.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="606"/>
+        <location filename="puddlestuff/webdb.py" line="603"/>
         <source>Searching...</source>
         <translation>Besig om te soek...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="63"/>
+        <location filename="puddlestuff/webdb.py" line="60"/>
         <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Niks om te wys nie&lt;/b&gt;</translation>
     </message>
@@ -3109,6 +3250,11 @@ Egte: %2</translation>
         <location filename="puddlestuff/releasewidget.py" line="668"/>
         <source>More than one album matches. None will be retrieved.</source>
         <translation>Meer as een album stem oorleen. Geen sal afgelaai word nie.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/webdb.py" line="58"/>
+        <source>#images</source>
+        <translation>#prente</translation>
     </message>
 </context>
 </TS>

@@ -7,14 +7,15 @@ from itertools import izip
 from copy import deepcopy
 from puddlestuff.constants import FILESSELECTED, FILESLOADED
 from puddlestuff.plugins import connect_shortcut
+from puddlestuff.translations import translate
 
 status = {}
 
 _previews = []
 _sort_action = None
 
-ENABLED = QApplication.translate("Menus", 'Enabl&e Preview Mode')
-DISABLED = QApplication.translate("Menus", 'Disabl&e Preview Mode')
+ENABLED = translate("Menus", 'Enabl&e Preview Mode')
+DISABLED = translate("Menus", 'Disabl&e Preview Mode')
 
 class PreviewAction(QAction):
     def setEnabled(self, value):

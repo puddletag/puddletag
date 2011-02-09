@@ -7,6 +7,7 @@ from puddlestuff.mainwin.funcs import run_func, applyaction
 from puddlestuff.puddleobjects import PuddleConfig
 from functools import partial
 import pdb
+from puddlestuff.translations import translate
 
 class ActionDialog(ActionWindow):
     def __init__(self, *args, **kwargs):
@@ -18,7 +19,7 @@ class ActionDialog(ActionWindow):
         super(ActionDialog, self).__init__(*args, **kwargs)
         self.okcancel.ok.hide()
         self.okcancel.cancel.hide()
-        self._apply = QPushButton(QApplication.translate("Defaults", 'Appl&y'))
+        self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda funcs: applyaction(self._status['selectedfiles'], funcs)
         self.connect(self._apply, SIGNAL('clicked()'),
             partial(self.okClicked, False))
@@ -72,7 +73,7 @@ class FunctionDialog(CreateFunction):
         super(FunctionDialog, self).__init__(*args, **kwargs)
         self.okcancel.ok.hide()
         self.okcancel.cancel.hide()
-        self._apply = QPushButton(QApplication.translate("Defaults", 'Appl&y'))
+        self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda func: run_func(self._status['selectedfiles'], func)
         self.connect(self._apply, SIGNAL('clicked()'),
             partial(self.okClicked, False))

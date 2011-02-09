@@ -21,7 +21,6 @@ import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
 from puddlestuff.util import translate
 
-
 R_ID = 'discogs_rid'
 
 api_key = 'c6e33897b6'
@@ -91,7 +90,7 @@ def get_text(node):
         return
 
 def keyword_search(keywords):
-    write_log(translate("Discogs", 'Retrieving search results for keywords: %s' % keywords))
+    write_log(translate("Discogs", 'Retrieving search results for keywords: %s') % keywords)
     keywords = re.sub('(\s+)', u'+', keywords)
     url = search_url % keywords
     text = urlopen(url)
@@ -206,14 +205,14 @@ def retrieve_album(info, image=LARGEIMAGE):
     if isinstance(info, (int, long)):
         r_id = unicode(info)
         info = {}
-        write_log(translate("Discogs", 'Retrieving using Release ID: %s' % r_id))
+        write_log(translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
     elif isinstance(info, basestring):
         r_id = info
         info = {}
-        write_log(translate("Discogs", 'Retrieving using Release ID: %s' % r_id))
+        write_log(translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
     else:
         r_id = info['#r_id']
-        write_log(translate("Discogs", 'Retrieving album %s' % (info['album'])))
+        write_log(translate("Discogs", 'Retrieving album %s') % (info['album']))
     
     xml = urlopen(album_url % r_id)
 
@@ -226,10 +225,10 @@ def retrieve_album(info, image=LARGEIMAGE):
         data = []
         for large, small in info['#cover-url']:
             if image == LARGEIMAGE:
-                write_log(u'Retrieving cover: %s' % large)
+                write_log(translate("Discogs", 'Retrieving cover: %s') % large)
                 data.append({DATA: urlopen(large)})
             else:
-                write_log(u'Retrieving cover: %s' % small)
+                write_log(translate("Discogs", 'Retrieving cover: %s') % small)
                 data.append({DATA: urlopen(small)})
         info.update({'__image': data})
     return info, ret[1]
@@ -295,12 +294,13 @@ class Discogs(object):
         self.covertype = 1
 
         self.preferences = [
-            ['Retrieve Cover', CHECKBOX, True],
-            ['Cover size to retrieve', COMBO,
-                [['Small', 'Large'], 1]],
-            ['Field to use for discogs_id', TEXT, R_ID],
-            ['API Key (Stored as plain-text. Leave empty to use default.)',
-                TEXT, 'c6e33897b6'],
+            [translate('Discogs', 'Retrieve Cover'), CHECKBOX, True],
+            [translate("Discogs", 'Cover size to retrieve'), COMBO,
+                [[translate("Discogs", 'Small'),
+                    translate("Discogs", 'Large')], 1]],
+            [translate("Discogs", 'Field to use for discogs_id'), TEXT, R_ID],
+            [translate("Discogs", 'API Key (Stored as plain-text. Leave empty to use default.)'),
+                TEXT, ''],
             ]
 
     def keyword_search(self, text):
@@ -311,7 +311,7 @@ class Discogs(object):
                 int(r_id)
                 return [retrieve_album(r_id, self.covertype)]
             except TypeError:
-                raise RetrievalError('Invalid Discogs Release ID')
+                raise RetrievalError(translate("Discogs", 'Invalid Discogs Release ID'))
         try:
             params = parse_searchstring(text)
         except RetrievalError:
@@ -329,14 +329,14 @@ class Discogs(object):
             artist = [z for z in artists][0]
 
         if hasattr(artists, 'values'):
-            write_log(u'Checking tracks for Discogs Album ID.')
+            write_log(translate("Discogs", 'Checking tracks for Discogs Album ID.'))
             tracks = []
             [tracks.extend(z) for z in artists.values()]
             album_id = find_id(tracks, R_ID)
             if not album_id:
-                write_log(u'No Discogs ID found in tracks.')
+                write_log(translate("Discogs", 'No Discogs ID found in tracks.'))
             else:
-                write_log(u'Found Discogs ID: %s' % album_id)
+                write_log(translate("Discogs", 'Found Discogs ID: %s') % album_id)
                 return [retrieve_album(album_id, self.covertype)]
 
         retrieved_albums = search(artist, album)

@@ -49,7 +49,7 @@ class TrackWindow(QDialog):
         QDialog.__init__(self,parent)
         #tr = partial(QApplication.trUtf8, "Autonumbering Wizard")
         
-        self.setWindowTitle(QApplication.translate('Autonumbering Wizard', "Autonumbering Wizard"))
+        self.setWindowTitle(translate('Autonumbering Wizard', "Autonumbering Wizard"))
         winsettings('autonumbering', self)
 
         def hbox(*widgets):
@@ -68,7 +68,7 @@ class TrackWindow(QDialog):
 
         vbox.addLayout(hbox(startlabel, self._start))
 
-        label = QLabel(QApplication.translate('Autonumbering Wizard', 'Max length after padding with zeroes: '))
+        label = QLabel(translate('Autonumbering Wizard', 'Max length after padding with zeroes: '))
         self._padlength = QSpinBox()
         label.setBuddy(self._padlength)
         self._padlength.setValue(1)
@@ -76,12 +76,12 @@ class TrackWindow(QDialog):
         self._padlength.setMinimum(1)
         vbox.addLayout(hbox(label, self._padlength))
 
-        self._separator = QCheckBox(QApplication.translate('Autonumbering Wizard', "Add track &separator ['/']: Number of tracks"))
+        self._separator = QCheckBox(translate('Autonumbering Wizard', "Add track &separator ['/']: Number of tracks"))
         self._numtracks = QSpinBox()
         self._numtracks.setEnabled(False)
         if numtracks:
             self._numtracks.setValue(numtracks)
-        self._restart_numbering = QCheckBox(QApplication.translate('Autonumbering Wizard', "&Restart numbering at each directory."))
+        self._restart_numbering = QCheckBox(translate('Autonumbering Wizard', "&Restart numbering at each directory."))
 
         vbox.addLayout(hbox(self._separator, self._numtracks))
         vbox.addWidget(self._restart_numbering)
@@ -148,15 +148,15 @@ class ImportWindow(QDialog):
     def __init__(self,parent = None, filename = None, clipboard = None):
         QDialog.__init__(self, parent)
         
-        self.setWindowTitle(QApplication.translate('Text File -> Tag', "Import tags from file"))
+        self.setWindowTitle(translate('Text File -> Tag', "Import tags from file"))
         winsettings('importwin', self)
 
         self.grid = QGridLayout()
 
-        self.label = QLabel(QApplication.translate('Text File -> Tag', "Text"))
+        self.label = QLabel(translate('Text File -> Tag', "Text"))
         self.grid.addWidget(self.label,0,0)
 
-        self.label = QLabel(QApplication.translate('Text File -> Tag', "Tag preview"))
+        self.label = QLabel(translate('Text File -> Tag', "Tag preview"))
         self.grid.addWidget(self.label,0,2)
 
 
@@ -180,8 +180,8 @@ class ImportWindow(QDialog):
         self.ok = okcancel.ok
         self.cancel = okcancel.cancel
 
-        self.openfile = QPushButton(QApplication.translate('Text File -> Tag', "&Select File"))
-        getclip = QPushButton(QApplication.translate('Text File -> Tag', "&Paste Clipboard"))
+        self.openfile = QPushButton(translate('Text File -> Tag', "&Select File"))
+        getclip = QPushButton(translate('Text File -> Tag', "&Paste Clipboard"))
         self.connect(getclip, SIGNAL('clicked()'), self.openClipBoard)
 
         self.hbox.addWidget(self.openfile)
@@ -225,11 +225,11 @@ class ImportWindow(QDialog):
         try:
             f = open(filename, 'r')
         except (IOError, OSError), detail:
-            errormsg = QApplication.translate('Text File -> Tag', "The file <b>%1</b> couldn't be loaded.<br /> Do you want to choose another?")
-            ret = QMessageBox.question(self, QApplication.translate('Text File -> Tag', "Error"),
-                QApplication.translate('Text File -> Tag', errormsg.arg(filename)),
-                QApplication.translate('Text File -> Tag', "&Yes"),
-                QApplication.translate('Text File -> Tag', "&No"))
+            errormsg = translate('Text File -> Tag', "The file <b>%1</b> couldn't be loaded.<br /> Do you want to choose another?")
+            ret = QMessageBox.question(self, translate('Text File -> Tag', "Error"),
+                translate('Text File -> Tag', errormsg.arg(filename)),
+                translate('Text File -> Tag', "&Yes"),
+                translate('Text File -> Tag', "&No"))
             if ret == 0:
                 return self.openFile()
             else:
@@ -304,11 +304,11 @@ class EditTag(QDialog):
     def __init__(self, tag = None, parent = None, taglist = None, edit=True):
 
         QDialog.__init__(self, parent)
-        self.setWindowTitle(QApplication.translate('Edit Field', 'Edit Field'))
+        self.setWindowTitle(translate('Edit Field', 'Edit Field'))
         winsettings('edit_field', self)
         self.vbox = QVBoxLayout()
 
-        label = QLabel(QApplication.translate('Edit Field', "&Field"))
+        label = QLabel(translate('Edit Field', "&Field"))
         self.tagcombo = QComboBox()
         self.tagcombo.setEditable(True)
         completer = self.tagcombo.completer()
@@ -323,12 +323,12 @@ class EditTag(QDialog):
 
         #Get the previous tag
         self.prevtag = tag
-        label1 = QLabel(QApplication.translate('Edit Field', "&Value"))
+        label1 = QLabel(translate('Edit Field', "&Value"))
         self.value = TextEdit()
         self.value.setTabChangesFocus(True)
         label1.setBuddy(self.value)
         okcancel = OKCancel()
-        okcancel.ok.setText(QApplication.translate('Edit Field', 'A&dd'))
+        okcancel.ok.setText(translate('Edit Field', 'A&dd'))
         if tag is not None:
             x = self.tagcombo.findText(tag[0])
 
@@ -338,7 +338,7 @@ class EditTag(QDialog):
                 self.tagcombo.setEditText(tag[0])
             self.value.setPlainText(tag[1])
             if edit:
-                okcancel.ok.setText(QApplication.translate('Edit Field', 'E&dit'))
+                okcancel.ok.setText(translate('Edit Field', 'E&dit'))
 
         [self.vbox.addWidget(z) for z in [label, self.tagcombo, label1, self.value]]
         
@@ -449,8 +449,8 @@ class ExTags(QDialog):
         header.setStretchLastSection (True)
         header.setSortIndicator (0, Qt.AscendingOrder)
         self.listbox.setHorizontalHeaderLabels([
-            QApplication.translate('Extended Tags', 'Field'),
-            QApplication.translate('Extended Tags', 'Value')])
+            translate('Extended Tags', 'Field'),
+            translate('Extended Tags', 'Value')])
 
         self.listbox.verticalHeader().setVisible(False)
         self.piclabel = PicWidget(buttons = True)
@@ -469,7 +469,7 @@ class ExTags(QDialog):
 
         self.listbuttons = ListButtons()
         self._reset = QToolButton()
-        self._reset.setToolTip(QApplication.translate(
+        self._reset.setToolTip(translate(
             'Extended Tags',
                 'Resets the selected fields to their original value.'))
         self._reset.setIcon(get_icon('edit-undo', ':/undo.png'))
@@ -678,7 +678,7 @@ class ExTags(QDialog):
             self.setWindowTitle(audios[0].filepath)
             self._loadsingle(audio)
         else:
-            self.setWindowTitle(QApplication.translate('Extended Tags', 'Different files.'))
+            self.setWindowTitle(translate('Extended Tags', 'Different files.'))
             common, numvalues, imagetags = commontags(audios)
             images = common['__image']
             del(common['__image'])

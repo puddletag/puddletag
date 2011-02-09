@@ -8,6 +8,7 @@
     Fixes:
         Editing __dirname and __dirpath while using QuodLibet library is now possible + tons of Music Library related bugs.
         Editing Actions sometimes didn't work.
+        The Load Artwork function didn't work as advertised.
         %__total_files% and %__counter% not working when used within scripting functions.
         Many more...
         

@@ -12,6 +12,7 @@ import pdb
 import puddlestuff.puddletag
 from puddlestuff.shortcutsettings import ActionEditorDialog
 import puddlestuff.puddleobjects as puddleobjects
+from puddlestuff.translations import translate
 
 FILENAME = os.path.join(ACTIONDIR, 'action_shortcuts')
 
@@ -132,7 +133,7 @@ class Editor(QDialog):
 
         self._shortcut = puddleobjects.ShortcutEditor(shortcuts)
         self._shortcut.setText(shortcut)
-        clear = QPushButton(QApplication.translate('Shortcuts', '&Clear'))
+        clear = QPushButton(translate('Shortcuts', '&Clear'))
         self.connect(clear, SIGNAL('clicked()'), self._shortcut.clear)
         
         if names is None:
@@ -158,7 +159,7 @@ class Editor(QDialog):
         scut_status = QLabel('')
         self.connect(self._shortcut, SIGNAL('validityChanged'),
             lambda v: scut_status.setText(u'') if v or (not self._shortcut.text()) else
-                scut_status.setText(QApplication.translate('Shortcuts', "Invalid shortcut sequence.")))
+                scut_status.setText(translate('Shortcuts', "Invalid shortcut sequence.")))
         okcancel.insertWidget(0, scut_status)
 
         hbox = QHBoxLayout()
@@ -225,7 +226,7 @@ class Editor(QDialog):
         self.setShortcut(shortcut)
         if filenames:
             for filename in filenames:
-                item = QListWidgetItem(names.get(filename, QApplication.translate('Shortcuts', '(Deleted)')))
+                item = QListWidgetItem(names.get(filename, translate('Shortcuts', '(Deleted)')))
                 item._action = [names.get(filename, u''), filename]
                 self._newActionList.addItem(item)
 

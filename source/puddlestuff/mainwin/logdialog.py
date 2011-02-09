@@ -3,6 +3,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from puddlestuff.constants import RIGHTDOCK
 import sys
+from puddlestuff.translations import translate
 
 mutex = QMutex()
 
@@ -16,8 +17,8 @@ class LogDialog(QWidget):
         self._text = QTextEdit()
         self._text.setWordWrapMode(QTextOption.NoWrap)
 
-        copy = QPushButton(QApplication.translate("Logs", '&Copy'))
-        clear = QPushButton(QApplication.translate("Logs", '&Clear'))
+        copy = QPushButton(translate("Logs", '&Copy'))
+        clear = QPushButton(translate("Logs", '&Clear'))
 
         self.connect(copy, SIGNAL('clicked()'), self._copy)
         self.connect(clear, SIGNAL('clicked()'), self._clear)

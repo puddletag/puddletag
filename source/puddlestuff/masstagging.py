@@ -31,14 +31,14 @@ NO_MATCH_OPTIONS = [
     translate('Masstagging', 'Stop')]
 
 SINGLE_MATCH_OPTIONS = [
-    unicode(QApplication.translate('Masstagging', 'Combine and continue')),
-    unicode(QApplication.translate('Masstagging', 'Replace and continue')),
-    unicode(QApplication.translate('Masstagging', 'Combine and stop')),
-    unicode(QApplication.translate('Masstagging', 'Replace and stop'))]
+    translate('Masstagging', 'Combine and continue'),
+    translate('Masstagging', 'Replace and continue'),
+    translate('Masstagging', 'Combine and stop'),
+    translate('Masstagging', 'Replace and stop')]
 
 AMBIGIOUS_MATCH_OPTIONS = [
-    unicode(QApplication.translate('Masstagging', 'Use best match')),
-    unicode(QApplication.translate('Masstagging', 'Do nothing and continue'))]
+    translate('Masstagging', 'Use best match'),
+    translate('Masstagging', 'Do nothing and continue')]
 
 COMBINE_CONTINUE = 0
 REPLACE_CONTINUE = 1
@@ -253,30 +253,30 @@ def retrieve(results, album_bound = 0.7):
         if not matches:
             operation = config[1]
             if operation == CONTINUE:
-                set_status(QApplication.translate('Masstagging', '<b>%1</b>: No matches, trying other sources.').arg(tagsource.name))
+                set_status(translate('Masstagging', '<b>%1</b>: No matches, trying other sources.').arg(tagsource.name))
                 continue
             elif operation == STOP:
-                set_status(QApplication.translate('Masstagging', '<b>%1</b>: No matches, stopping retrieval.').arg(tagsource.name))
+                set_status(translate('Masstagging', '<b>%1</b>: No matches, stopping retrieval.').arg(tagsource.name))
                 break
         elif len(matches) > 1:
             operation = config[4]
             if operation == DO_NOTHING:
-                set_status(QApplication.translate('Masstagging', '<b>%1</b>: Inexact matches found, doing nothing.').arg(tagsource.name))
+                set_status(translate('Masstagging', '<b>%1</b>: Inexact matches found, doing nothing.').arg(tagsource.name))
                 continue
             elif operation == USE_BEST:
-                set_status(QApplication.translate('Masstagging', '<b>%1</b>: Inexact matches found, using best.').arg(tagsource.name))
+                set_status(translate('Masstagging', '<b>%1</b>: Inexact matches found, using best.').arg(tagsource.name))
                 matches = find_best(matches, files, album_bound)
                 if not matches:
-                    set_status(QApplication.translate('Masstagging', '<b>%1</b>: No match found within bounds.').arg(tagsource.name))
+                    set_status(translate('Masstagging', '<b>%1</b>: No match found within bounds.').arg(tagsource.name))
                     continue
 
         if len(matches) == 1:
-            set_status(QApplication.translate('Masstagging', '<b>%1</b>: Retrieving album.').arg(tagsource.name))
+            set_status(translate('Masstagging', '<b>%1</b>: Retrieving album.').arg(tagsource.name))
             stop, tracks, source_info = parse_single_match(matches, tagsource, 
                 config[2], fields, tracks, files)
             info.update(source_info)
             if stop:
-                set_status(QApplication.translate('Masstagging', '<b>%1</b>: Stopping.').arg(tagsource.name))
+                set_status(translate('Masstagging', '<b>%1</b>: Stopping.').arg(tagsource.name))
                 break
 
     if not results:
@@ -331,7 +331,7 @@ def insert_status(msg):
 def search(tagsources, configs, audios, 
     pattern = '%dummy% - %album%/%artist% - %track% - %title%'):
 
-    set_status('<b>Initializing...</b>')
+    set_status(translate('Masstagging', '<b>Initializing...</b>'))
     tag_groups = split_files(audios, pattern)
 
     source_names = dict([(z.name, z) for z in 
@@ -349,16 +349,16 @@ def search(tagsources, configs, audios,
         else:
             artist = u'Various Artists'
 
-        set_status(QApplication.translate('Masstagging', '<br />Starting album search.'))
-        set_status(QApplication.translate('Masstagging', 'artist: %1').arg(artist if artist else '<b>No artist found</b>'))
-        set_status(QApplication.translate('Masstagging', 'album: %1').arg(album if album else '<b>No album name found</b>'))
+        set_status(translate('Masstagging', '<br />Starting album search.'))
+        set_status(translate('Masstagging', 'artist: %1').arg(artist if artist else '<b>No artist found</b>'))
+        set_status(translate('Masstagging', 'album: %1').arg(album if album else '<b>No album name found</b>'))
 
         files = []
         results = []
         [files.extend(z) for z in artists.values()]
         for config in configs:
             tagsource = source_names[config[0]]
-            set_status(QApplication.translate('Masstagging', 'Polling <b>%1</b>: ').arg(config[0]))
+            set_status(translate('Masstagging', 'Polling <b>%1</b>: ').arg(config[0]))
             if not files:
                 continue
             group = split_by_tag(files, *tagsource.group_by)
@@ -367,12 +367,12 @@ def search(tagsources, configs, audios,
             if result:
                 results.append([tagsource, result, files, config])
                 if len(result) == 1:
-                    insert_status(QApplication.translate('Masstagging', 'Exact match found.'))
+                    insert_status(translate('Masstagging', 'Exact match found.'))
                 else:
-                    insert_status(QApplication.translate('Masstagging', '%1 albums found.').arg(unicode(len(result))))
+                    insert_status(translate('Masstagging', '%1 albums found.').arg(unicode(len(result))))
             elif not result:
                 results.append([tagsource, [], files, config])
-                insert_status(QApplication.translate('Masstagging', 'No albums found'))
+                insert_status(translate('Masstagging', 'No albums found'))
         yield results
 
 def save_configs(configs, filename=CONFIG):
@@ -418,20 +418,20 @@ class ProfileEdit(QDialog):
     def __init__(self, tagsources, configs=None, parent=None):
         super(ProfileEdit, self).__init__(parent)
         
-        self.setWindowTitle(QApplication.translate('Profile Editor', 'Edit Profile'))
+        self.setWindowTitle(translate('Profile Editor', 'Edit Profile'))
         winsettings('profile', self)
         self._configs = []
         self.tagsources = tagsources
         
-        self._name = QLineEdit(QApplication.translate('Profile Editor','Masstagging Profile'))
+        self._name = QLineEdit(translate('Profile Editor','Masstagging Profile'))
         namelayout = QHBoxLayout()
-        namelabel = QLabel(QApplication.translate('Profile Editor', '&Name:'))
+        namelabel = QLabel(translate('Profile Editor', '&Name:'))
         namelabel.setBuddy(self._name)
         namelayout.addWidget(namelabel)
         namelayout.addWidget(self._name)
         
         self._desc = QLineEdit()
-        desclabel = QLabel(QApplication.translate('Profile Editor', '&Description'))
+        desclabel = QLabel(translate('Profile Editor', '&Description'))
         desclabel.setBuddy(self._desc)
         desclayout = QHBoxLayout()
         desclayout.addWidget(desclabel)
@@ -446,36 +446,36 @@ class ProfileEdit(QDialog):
         self.buttonlist = ListButtons()
         
         self.pattern = QLineEdit('%artist% - %album%/%track% - %title%')
-        self.pattern.setToolTip(QApplication.translate('Profile Editor', "<p>If no tag information is found in a file, the tags retrieved using this pattern will be used instead.</p>"))
+        self.pattern.setToolTip(translate('Profile Editor', "<p>If no tag information is found in a file, the tags retrieved using this pattern will be used instead.</p>"))
         
         self.albumBound = QSpinBox()
-        self.albumBound.setToolTip(QApplication.translate('Profile Editor',"<p>The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.</p>"))
+        self.albumBound.setToolTip(translate('Profile Editor',"<p>The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.</p>"))
         self.albumBound.setRange(0,100)
         self.albumBound.setValue(70)
         
         self.matchFields = QLineEdit('artist, title')
-        self.matchFields.setToolTip(QApplication.translate('Profile Editor','<p>The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it\'ll be considered to match.</p>'))
+        self.matchFields.setToolTip(translate('Profile Editor','<p>The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it\'ll be considered to match.</p>'))
         self.trackBound = QSpinBox()
         self.trackBound.setRange(0,100)
         self.trackBound.setValue(80)
         
-        self.jfdi = QCheckBox(QApplication.translate('Profile Editor','Brute force unmatched files.'))
-        self.jfdi.setToolTip(QApplication.translate('Profile Editor',"<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>"))
+        self.jfdi = QCheckBox(translate('Profile Editor','Brute force unmatched files.'))
+        self.jfdi.setToolTip(translate('Profile Editor',"<p>If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.</p>"))
         
-        self.existing = QCheckBox(QApplication.translate('Profile Editor','Update empty fields only.'))
+        self.existing = QCheckBox(translate('Profile Editor','Update empty fields only.'))
         
         self.grid.addLayout(namelayout, 0, 0, 1, 2)
         self.grid.addLayout(desclayout, 1, 0, 1, 2)
         self.grid.addWidget(self.listbox, 2, 0)
         self.grid.setRowStretch(2, 1)
         self.grid.addLayout(self.buttonlist, 2, 1)
-        self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Pattern to match filenames against.'),
+        self.grid.addLayout(create_buddy(translate('Profile Editor', 'Pattern to match filenames against.'),
             self.pattern, QVBoxLayout()), 3, 0, 1, 2)
-        self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Minimum percentage required for album matches.'),
+        self.grid.addLayout(create_buddy(translate('Profile Editor', 'Minimum percentage required for album matches.'),
             self.albumBound), 4, 0, 1, 2)
-        self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor', 'Match tracks using fields: '),
+        self.grid.addLayout(create_buddy(translate('Profile Editor', 'Match tracks using fields: '),
             self.matchFields, QVBoxLayout()), 5, 0, 1, 2)
-        self.grid.addLayout(create_buddy(QApplication.translate('Profile Editor','Minimum percentage required for track match.'), self.trackBound), 6, 0, 1, 2)
+        self.grid.addLayout(create_buddy(translate('Profile Editor','Minimum percentage required for track match.'), self.trackBound), 6, 0, 1, 2)
         self.grid.addWidget(self.jfdi, 7, 0, 1, 2)
         self.grid.addWidget(self.existing, 8, 0, 1, 2)
         self.grid.addLayout(self.okcancel, 9, 0, 1, 2)
@@ -593,37 +593,37 @@ class ProfileEdit(QDialog):
 class ConfigEdit(QDialog):
     def __init__(self, tagsources, previous=None, parent=None):
         super(ConfigEdit, self).__init__(parent)
-        self.setWindowTitle(QApplication.translate('Profile Editor', 'Edit Config'))
+        self.setWindowTitle(translate('Profile Editor', 'Edit Config'))
         
         layout = QVBoxLayout()
         self.setLayout(layout)
         
         self._source = QComboBox()
         self._source.addItems([source.name for source in tagsources])
-        layout.addLayout(create_buddy(QApplication.translate('Profile Editor', '&Source'), self._source))
+        layout.addLayout(create_buddy(translate('Profile Editor', '&Source'), self._source))
         
         self._no_match = QComboBox()
-        self._no_match.setToolTip(QApplication.translate('Profile Editor', '<b>Continue</b>: The lookup for the current album continue unabated if no results were returned for this Tag Source.<br /><b>Stop:</b> The lookup the current album will stop and any previous results will be used.'))
+        self._no_match.setToolTip(translate('Profile Editor', '<b>Continue</b>: The lookup for the current album continue unabated if no results were returned for this Tag Source.<br /><b>Stop:</b> The lookup the current album will stop and any previous results will be used.'))
         self._no_match.addItems(NO_MATCH_OPTIONS)
-        layout.addLayout(create_buddy(QApplication.translate('Profile Editor', '&If no results found: '), self._no_match))
+        layout.addLayout(create_buddy(translate('Profile Editor', '&If no results found: '), self._no_match))
         
         self._single_match = QComboBox()
-        self._single_match.setToolTip(QApplication.translate('Profile Editor','Say FreeDB returned the following <b>artist=Linkin, album=Meteora, genre=Rock</b> and MusicBrainz <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b>. <br /><br /><b>Combining</b> them means that fields with differing values will be combined, in this case "genre". The resulting tag will be <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rock, Rap</b> (ie. genre will have two values, Rock and Rap. Not the singular "Rock, Rap".)<br /><br />Choosing to <b>replace</b> fields will result in the following tag <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b> (since Musicbrainz was last, it\'s genre field takes precedence)'))
+        self._single_match.setToolTip(translate('Profile Editor','Say FreeDB returned the following <b>artist=Linkin, album=Meteora, genre=Rock</b> and MusicBrainz <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b>. <br /><br /><b>Combining</b> them means that fields with differing values will be combined, in this case "genre". The resulting tag will be <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rock, Rap</b> (ie. genre will have two values, Rock and Rap. Not the singular "Rock, Rap".)<br /><br />Choosing to <b>replace</b> fields will result in the following tag <b>artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap</b> (since Musicbrainz was last, it\'s genre field takes precedence)'))
         self._single_match.addItems(SINGLE_MATCH_OPTIONS)
-        layout.addLayout(create_buddy(QApplication.translate('Profile Editor', '&If single match found: '), 
+        layout.addLayout(create_buddy(translate('Profile Editor', '&If single match found: '),
             self._single_match))
         
         self._fields = QLineEdit()
-        tooltip = QApplication.translate('Profile Editor','Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer,__image</b> will write all fields but the composer and __image fields.')
+        tooltip = translate('Profile Editor','Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer,__image</b> will write all fields but the composer and __image fields.')
         self._fields.setToolTip(tooltip)
         print translate("Defaults", '&Fields:')
         layout.addLayout(create_buddy(
             translate("Defaults", '&Fields:'), self._fields))
         
         self._many_match = QComboBox()
-        self._many_match.setToolTip(QApplication.translate('Profile Editor', "Choose the course of action if an exact match wasn't found. See the tooltip in the previous dialog for an explanation of <b>Use best match</b>."))
+        self._many_match.setToolTip(translate('Profile Editor', "Choose the course of action if an exact match wasn't found. See the tooltip in the previous dialog for an explanation of <b>Use best match</b>."))
         self._many_match.addItems(AMBIGIOUS_MATCH_OPTIONS)
-        layout.addLayout(create_buddy(QApplication.translate('Profile Editor', '&If ambiguous matches found: '), 
+        layout.addLayout(create_buddy(translate('Profile Editor', '&If ambiguous matches found: '),
             self._many_match))
         
         okcancel = OKCancel()
@@ -660,7 +660,7 @@ class Config(QDialog):
     def __init__(self, tagsources, profiles=None, parent = None):
         super(Config, self).__init__(parent)
         
-        self.setWindowTitle(QApplication.translate('Profile Config', 'Configure Mass Tagging'))
+        self.setWindowTitle(translate('Profile Config', 'Configure Mass Tagging'))
         winsettings('masstagging', self)
         
         self.listbox = ListBox()
@@ -691,7 +691,7 @@ class Config(QDialog):
         layout = QVBoxLayout()
         self.setLayout(layout)
         
-        layout.addWidget(QLabel(QApplication.translate('Profile Config', 'Profiles')))
+        layout.addWidget(QLabel(translate('Profile Config', 'Profiles')))
         
         list_layout = QHBoxLayout()
         list_layout.addWidget(self.listbox, 1)
@@ -810,12 +810,12 @@ class Retriever(QWidget):
             'writepreview', 'disable_preview_mode']
         self.wasCanceled = False
         
-        self.setWindowTitle(QApplication.translate('Masstagging', 'Mass Tagging'))
+        self.setWindowTitle(translate('Masstagging', 'Mass Tagging'))
         winsettings('masstaglog', self)
-        self._startButton = QPushButton(QApplication.translate('Masstagging', '&Start'))
-        configure = QPushButton(QApplication.translate('Masstagging', '&Configure'))
-        write = QPushButton(QApplication.translate('Masstagging', '&Write'))
-        clear = QPushButton(QApplication.translate('Masstagging', 'Clear &Preview'))
+        self._startButton = QPushButton(translate('Masstagging', '&Start'))
+        configure = QPushButton(translate('Masstagging', '&Configure'))
+        write = QPushButton(translate('Masstagging', '&Write'))
+        clear = QPushButton(translate('Masstagging', 'Clear &Preview'))
         self._log = QTextEdit()
         self.tagsources = status['initialized_tagsources']
         
@@ -840,7 +840,7 @@ class Retriever(QWidget):
         buttons.addWidget(clear)
         
         combo = QHBoxLayout()
-        label = QLabel(QApplication.translate('Masstagging', '&Profile:'))
+        label = QLabel(translate('Masstagging', '&Profile:'))
         label.setBuddy(self._curProfile)
         combo.addWidget(label)
         combo.addWidget(self._curProfile, 1)
@@ -880,13 +880,13 @@ class Retriever(QWidget):
     
     def lookup(self):
         button = self.sender()
-        if self._startButton.text() != QApplication.translate('Masstagging', '&Stop'):
+        if self._startButton.text() != translate('Masstagging', '&Stop'):
             self.wasCanceled = False
             self._log.clear()
-            self._startButton.setText(QApplication.translate('Masstagging', '&Stop'))
+            self._startButton.setText(translate('Masstagging', '&Stop'))
             self._start()
         else:
-            self._startButton.setText(QApplication.translate('Masstagging', '&Start'))
+            self._startButton.setText(translate('Masstagging', '&Start'))
             self.wasCanceled = True
     
     def loadSettings(self):
@@ -923,9 +923,9 @@ class Retriever(QWidget):
         source_configs = self._configs[SOURCE_CONFIGS]
 
         if not source_configs:
-            set_status(QApplication.translate('Masstagging',
+            set_status(translate('Masstagging',
                 '<br /><b>No tag sources were added to this profile. Exiting.</b>'))
-            self._startButton.setText(QApplication.translate('Masstagging', '&Start'))
+            self._startButton.setText(translate('Masstagging', '&Start'))
             return
         
         pattern = self._configs[PATTERN]
@@ -949,19 +949,19 @@ class Retriever(QWidget):
                                 track_bound, track_fields, jfdi, existing)
                             thread.emit(SIGNAL('setpreview'), matched)
                         except RetrievalError, e:
-                            set_status(QApplication.translate('Masstagging',
+                            set_status(translate('Masstagging',
                                 '<b>Error:</b> %1').arg(escape_html(unicode(e))))
             except RetrievalError, e:
-                set_status(QApplication.translate('Masstagging',
+                set_status(translate('Masstagging',
                     '<br /><b>Error:</b> %1').arg(escape_html(unicode(e))))
-                set_status(QApplication.translate('Masstagging',
+                set_status(translate('Masstagging',
                     '<br /><b>Stopping due to error.</b>'))
                 return True
         
         def finished(value):
             if not (value is True):
-                set_status(QApplication.translate('Masstagging', '<br /><b>Lookups completed.</b>'))
-            self._startButton.setText(QApplication.translate('Masstagging', '&Start'))
+                set_status(translate('Masstagging', '<br /><b>Lookups completed.</b>'))
+            self._startButton.setText(translate('Masstagging', '&Start'))
             self.wasCanceled = False
         
         thread = PuddleThread(method, self)

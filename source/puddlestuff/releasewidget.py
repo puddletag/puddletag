@@ -13,6 +13,7 @@ from puddlestuff.findfunc import replacevars, getfunc
 from functools import partial
 from puddlestuff.util import to_string
 from puddlestuff.audioinfo import stringtags
+from puddlestuff.translations import translate
 
 CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -73,7 +74,7 @@ def strip(audio, taglist, reverse = False, mapping=None):
 
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return QApplication.translate("WebDB", "<b>Error in pattern</b>")
+        return translate("WebDB", "<b>Error in pattern</b>")
     s = u"<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
@@ -88,7 +89,7 @@ def strip(audio, taglist, reverse = False, mapping=None):
 def tooltip(tag, mapping):
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return QApplication.translate("WebDB", "<b>Error in pattern</b>")
+        return translate("WebDB", "<b>Error in pattern</b>")
     s = "<b>%s</b>: %s"
     tostr = lambda i: i if isinstance(i, basestring) else i[0]
     if ('__image' in tag) and tag['__image']:
@@ -247,7 +248,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         QtCore.QAbstractItemModel.__init__(self, parent)
         
         self.mapping = {}
-        rootData = map(QtCore.QVariant, [QApplication.translate("WebDB", 'Retrieved Albums')])
+        rootData = map(QtCore.QVariant, [translate("WebDB", 'Retrieved Albums')])
         self.rootItem = RootItem(rootData)
         
         self._albumPattern = ''
@@ -358,13 +359,13 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
-                    QApplication.translate("WebDB", 'An error occured: %1').arg(unicode(e)))
+                    translate("WebDB", 'An error occured: %1').arg(unicode(e)))
                 self.emit(SIGNAL('retrievalDone'))
                 return
 
         item.retrieving = True
         thread = PuddleThread(fetch_func, self)
-        self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieving album tracks..."))
+        self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieving album tracks..."))
         thread.start()
         while thread.isRunning():
             QApplication.processEvents()
@@ -374,7 +375,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return
             info, tracks = val
             fillItem(item, info, tracks, self.trackPattern)
-            self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieval complete."))
+            self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
             item.retrieving = False
         self.emit(SIGNAL('retrievalDone'))
 
@@ -444,7 +445,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
-                    QApplication.translate("WebDB", 'An error occured: %1').arg(unicode(e)))
+                    translate("WebDB", 'An error occured: %1').arg(unicode(e)))
                 self.emit(SIGNAL('retrievalDone'))
                 return None
 
@@ -456,13 +457,13 @@ class TreeModel(QtCore.QAbstractItemModel):
             item.retrieving = False
             self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
                 'QModelIndex&)'), index, index)
-            self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieval complete."))
+            self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
             self.emit(SIGNAL('retrievalDone'))
             if fin_func:
                 fin_func()
 
         item.retrieving = True
-        self.emit(SIGNAL("statusChanged"), QApplication.translate("WebDB", "Retrieving tracks..."))
+        self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieving tracks..."))
         thread = PuddleThread(retrieval_func, parent=self)
         thread.connect(thread, SIGNAL('threadfinished'), finished)
         thread.start()
@@ -662,13 +663,13 @@ class ReleaseWidget(QTreeView):
         if files:
             matches = find_best(releases, files, self.albumBound)
             if not matches:
-                self.emit(SIGNAL('statusChanged'), QApplication.translate(
+                self.emit(SIGNAL('statusChanged'), translate(
                     'WebDB', 'No matching albums were found.'))
             elif len(matches) > 1:
-                self.emit(SIGNAL('statusChanged'), QApplication.translate(
+                self.emit(SIGNAL('statusChanged'), translate(
                     'WebDB', 'More than one album matches. None will be retrieved.'))
             else:
-                self.emit(SIGNAL('statusChanged'), QApplication.translate(
+                self.emit(SIGNAL('statusChanged'), translate(
                     'WebDB', 'Retrieving album.'))
                 model = self.model()
                 children = [z.itemData for z in model.rootItem.childItems]

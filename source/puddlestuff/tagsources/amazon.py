@@ -155,7 +155,7 @@ def parse_search_xml(text):
             image_items = item.getElementsByTagName(key)
             if image_items:
                 info[IMAGEKEYS[key]] = get_image_url(image_items[0])
-        info['#extrainfo'] = ('Album at Amazon', page_url(item))
+        info['#extrainfo'] = (translate('Amazon', 'Album at Amazon'), page_url(item))
         info['#asin'] = get_asin(item)
         info['asin'] = info['#asin']
         ret.append(info)
@@ -179,10 +179,10 @@ def retrieve_album(info, image=MEDIUMIMAGE):
 
     if isinstance(info, basestring):
         write_log(translate('Amazon',
-            'Retrieving using ASIN: %s' % asin))
+            'Retrieving using ASIN: %s') % asin)
     else:
         write_log(translate('Amazon',
-            'Retrieving XML: %s - %s' % (info['artist'], info['album'])))
+            'Retrieving XML: %1 - %2').arg(info['artist']).arg(info['album']))
     xml = urlopen(url)
     
     if isinstance(info, basestring):
@@ -192,7 +192,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
 
     if image in image_types:
         url = info[image]
-        write_log(translate("Amazon", 'Retrieving cover: %s' % url))
+        write_log(translate("Amazon", 'Retrieving cover: %s') % url)
         info.update({'__image': retrieve_cover(url)})
     return tracks
 
@@ -212,7 +212,7 @@ def search(artist=None, album=None):
 
 def keyword_search(keywords):
     write_log(translate('Amazon',
-        'Retrieving search results for keywords: %s' % keywords))
+        'Retrieving search results for keywords: %s') % keywords)
     query_pairs = {
             "Operation": u"ItemSearch",
             'SearchIndex': u'Music',
@@ -372,7 +372,7 @@ class Amazon(object):
             if len(artists) > 1:
                 artist = u'Various Artists'
             else:
-                artist = artists[0]
+                artist = artists.keys()[0]
         else:
             artist = None
 

@@ -12,11 +12,15 @@ from puddlestuff.constants import CHECKBOX, SAVEDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from PyQt4.QtGui import QApplication
 from puddlestuff.tagsources.discogs import find_id
+from puddlestuff.util import escape_html
 
 old_version = False
 
 Release = brainzmodel.Release
 RELEASETYPES = (Release.TYPE_OFFICIAL)
+
+escape = lambda e: escape_html(unicode(e))
+
 try:
     RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
         releaseEvents=True, labels=True, ratings=True, isrcs=True)
@@ -61,18 +65,18 @@ def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
     if release.tracks:
         tracks = []
         for num, track in enumerate(release.tracks):
-            track = {
+            track_dict = {
                 track_id: extractUuid(track.id),
                 'title': track.title,
                 'track': unicode(num + 1),
                 'artist': track.artist.name if track.artist else None,}
 
             if not old_version:
-                track.update({
+                track_dict.update({
                     'mbrainz_rating': unicode(track.rating.value) if \
                         track.rating.value is not None else None,
                     'mbrainz_isrcs': track.isrcs if track.isrcs else None})
-            tracks.append(dict((k,v) for k,v in track.items() if v))
+            tracks.append(dict((k,v) for k,v in track_dict.items() if v))
 
         if puids:
             for track in tracks:
@@ -112,14 +116,14 @@ def get_puid(track_id):
 def artist_search(artist):
     try:
         set_status(translate("MusicBrainz",
-            'Retrieving Artist Info for <b>%s</b>' % artist))
+            'Retrieving Artist Info for <b>%s</b>') % artist)
         write_log(translate("MusicBrainz",
-            'Retrieving Artist Info for <b>%s</b>' % artist))
+            'Retrieving Artist Info for <b>%s</b>') % artist)
         artist, artistid = artist_id(artist)
         return artist, artistid
     except WebServiceError, e:
         write_log(translate("MusicBrainz",
-            '<b>Error:</b> While retrieving %s: %s' % (artist, unicode(e))))
+            '<b>Error:</b> While retrieving %1: %2').arg(artist).arg(escape(e)))
         raise RetrievalError(unicode(e))
     except ValueError:
         return (None, None)
@@ -215,8 +219,7 @@ class MusicBrainz(object):
                     in artist_releases(artist_id)]
             except WebServiceError, e:
                 write_log(translate("MusicBrainz",
-                    '<b>Error:</b> While retrieving %s: %s' % \
-                        (artistid, unicode(e))))
+                    '<b>Error:</b> While retrieving %1: %2').arg(artistid).arg(escape(e)))
                 raise RetrievalError(unicode(e))
 
         elif s.startswith(u':b'):
@@ -225,8 +228,7 @@ class MusicBrainz(object):
                 return [retrieve_tracks(r_id)]
             except WebServiceError, e:
                 write_log(translate("MusicBrainz",
-                    "<b>Error:</b> While retrieving Album ID %s (%s)" % \
-                        (r_id, unicode(e))))
+                    "<b>Error:</b> While retrieving Album ID %1 (%2)").arg(r_id).arg(escape(e)))
                 raise RetrievalError(unicode(e))
         else:
             try:
@@ -252,22 +254,23 @@ class MusicBrainz(object):
                     'No Album ID found in tracks.'))
             else:
                 write_log(translate("MusicBrainz",
-                    'Found Album ID: %s' % album_id))
+                    'Found Album ID: %s') % album_id)
                 try:
                     return [retrieve_tracks(album_id)]
                 except WebServiceError, e:
-                    write_log(translate("MusicBrainz",
-                        '<b>Error:</b> While retrieving %s: %s' % \
-                            (artist_id, unicode(e))))
+                    msg = translate("MusicBrainz",
+                        '<b>Error:</b> While retrieving %1: %2')
+                    msg = msg.arg(album_id).arg(escape(e))
+                    write_log(msg)
                     raise RetrievalError(unicode(e))
 
-        write_log(u'Searching for album: %s ' % album)
+        write_log(translate("MusicBrainz", 'Searching for album: %s') % album)
         try:
             return [(info, []) for info in find_releases(artists, album)]
         except WebServiceError, e:
-            write_log(translate("MusicBrainz",
-                '<b>Error:</b> While retrieving %s: %s' % \
-                    (artist_id, unicode(e))))
+            msg = translate("MusicBrainz",
+                '<b>Error:</b> While retrieving %1: %2')
+            write_log(msg.arg(album).arg(escape(e)))
             raise RetrievalError(unicode(e))
 
     def retrieve(self, info):
