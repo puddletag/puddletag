@@ -453,13 +453,11 @@ class TreeModel(QtCore.QAbstractItemModel):
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
                     translate("WebDB", 'An error occured: %1').arg(unicode(e)))
-                self.emit(SIGNAL('retrievalDone'))
                 return None
             except Exception, e:
                 traceback.print_exc()
                 self.emit(SIGNAL("statusChanged"),
                     translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
-                self.emit(SIGNAL('retrievalDone'))
                 return
 
         def finished(val):
