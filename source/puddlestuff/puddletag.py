@@ -344,6 +344,7 @@ class MainWin(QMainWindow):
             connect_control(PuddleDock._controls[name], controls)
         dock.setVisible(visibility)
         self.restoreDockWidget(dock)
+        return PuddleDock._controls[name]
 
     def addShortcuts(self, menu_title, actions, toolbar=False, save=False):
         if not actions:
@@ -429,7 +430,8 @@ class MainWin(QMainWindow):
     def applyGenSettings(self, settings, a=None):
         if a == 1:
             if settings['&Load last folder at startup']:
-                self.openDir(self._lastdir[0], False)
+                if os.path.exists(self._lastdir[0]):
+                    self.openDir(self._lastdir[0], False)
 
     def closeEvent(self, e):
         controls = PuddleDock._controls

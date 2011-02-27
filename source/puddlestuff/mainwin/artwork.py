@@ -11,6 +11,11 @@ from PyQt4.QtSvg import QSvgGenerator
 from xml.dom import minidom
 
 import tempfile
+import pdb
+
+def svg_to_pic(data, desc):
+    return {'data': data, 'size': len(data),
+        'description': desc, 'imagetype': 3}
 
 def get_font(rect, *text):
     font = QFont()
@@ -68,14 +73,14 @@ class ArtworkWidget(QWidget):
     def fill(self, audios=None):
         if audios is None:
             audios = self._status['selectedfiles']
-        self.picwidget.setImages(None)
-        self.init()
         if not audios:
             self.picwidget.setEnabled(False)
+            self.picwidget.setImages(None)
             return
         if not self.isVisible():
             self._audios = audios
             return
+        pics = list(self._readOnlyPics())
         self.picwidget.setEnabled(True)
         images = []
         imagetags = set()
@@ -89,14 +94,16 @@ class ArtworkWidget(QWidget):
         self.picwidget.lastfilename = audios[0].filepath
         images = commonimages(images)
         self.picwidget.setImageTags(imagetags)
+        
         if images == 0:
-            self.picwidget.currentImage = 0
+            self.picwidget.setImages(pics, default = 0)
             self.picwidget.context = 'Cover Varies'
         elif images is None:
-            self.picwidget.currentImage = 1
+            self.picwidget.setImages(pics, default = 1)
         else:
-            self.picwidget.images.extend(images)
-            self.picwidget.currentImage = 2
+            pics.extend(images)
+            self.picwidget.setImages(pics, default = 2)
+        self.picwidget.readonly = [0, 1]
 
         if imagetags:
             self.setEnabled(True)
@@ -104,14 +111,16 @@ class ArtworkWidget(QWidget):
             self.setEnabled(False)
 
     def init(self):
-        pics = self.picwidget.picsFromData(*self._readOnlyPics())
+        pics = self._readOnlyPics()
         self.picwidget.setImages(pics)
         self.picwidget.readonly = [0, 1]
 
     def _readOnlyPics(self):
         if not self._readOnly:
             font = get_font(QRect(0, 0, 200, 200), KEEP, BLANK)
-            self._readOnly = [create_svg(KEEP, font), create_svg(BLANK, font)]
+            data = (create_svg(KEEP, font), create_svg(BLANK, font))
+            self._readOnly = tuple([svg_to_pic(datum, desc) for datum, desc
+                in zip(data, (KEEP, BLANK))])
         return self._readOnly
     
     def images(self):

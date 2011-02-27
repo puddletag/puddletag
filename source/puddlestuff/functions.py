@@ -408,7 +408,7 @@ def num(text, numlen):
         numlen = long(numlen)
     except ValueError:
         return text
-    if len(text)<numlen:
+    if len(text) < numlen:
         text='0' * (numlen - len(text)) + text
     if len(text)>numlen:
         while text.startswith('0') and len(text)>numlen:

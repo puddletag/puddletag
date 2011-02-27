@@ -793,6 +793,38 @@ class TagModel(QAbstractTableModel):
             [setattr(z, 'color', None) for z in self.taginfo if z.color]
             self.undolevel = 0
 
+    def moveRows(self, rows, row):
+        print rows, row
+
+        taginfo = self.taginfo
+        rows = sorted(rows)
+
+        tags = [taginfo[i] for i in rows]
+        
+        num_moved = len(rows)
+
+        first = min(rows)
+        first = first if first < row else row
+
+        last = max(rows)
+        last = last if last > row else row
+
+        top = self.index(first, 0)
+        bottom = self.index(last, self.columnCount() -1)
+
+        while rows:
+            del(taginfo[rows[0]])
+            rows = [i - 1 for i in rows[1:]]
+
+        if row >= len(taginfo):
+            row = row - num_moved
+            taginfo.extend(tags)
+
+        [taginfo.insert(row, z) for z in reversed(tags)]
+
+        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+            top, bottom)
+
     def permaHighlight(self, rows):
         rows = rows[::]
         hcolor = self.permaColor
@@ -1472,17 +1504,18 @@ class TagTable(QTableView):
                     deltag(row)
                     yield None
                 except (OSError, IOError), e:
-                    yield translate("Table",
-                        "An error occurred while deleting the tag of %1: <b>%2</b>"
-                            ).arg(e.filename).arg(e.strerror).arg(len(self.selectedRows))
+                    msg = translate('Table', "An error occurred while " \
+                        "deleting the tag of %1: <b>%2</b>")
+                    msg = msg.arg(e.filename).arg(e.strerror)
+                    yield msg, len(self.selectedRows)
                 except NotImplementedError, e:
                     f = self.model().taginfo[row]
                     filename = f[PATH]
                     ext = f[EXTENSION]
                     rowlen = len(self.selectedRows)
-                    yield translate("Table", "There was an error deleting the tag of %1: "
-                        "<b>Tag deletion isn't supported for %2 files.</b>").arg(
-                            filename).arg(ext).arg(rowlen)
+                    yield translate("Table", "There was an error deleting the "
+                        "tag of %1: <b>Tag deletion isn't supported"
+                        "for %2 files.</b>").arg(filename).arg(ext), rowlen
             self.model().undolevel += 1
             self.selectionChanged()
 
@@ -1565,17 +1598,36 @@ class TagTable(QTableView):
         event.acceptProposedAction()
 
     def dropEvent(self, event):
-        files = [unicode(z.path()) for z in event.mimeData().urls()]
-        while '' in files:
-            files.remove('')
-        self.loadFiles(files, append = True)
+        mime = event.mimeData()
+        if event.source() == self and \
+            hasattr(mime, 'draggedRows') and mime.draggedRows:
+
+            row = self.rowAt(event.pos().y())
+            if row == -1:
+                row = self.rowCount() - 1
+            self.saveSelection()
+            self.model().moveRows(mime.draggedRows, row)
+            self.restoreSelection()
+        else:
+            files = [str(z.path().toLocal8Bit()) for z in event.mimeData().urls()]
+
+            while '' in files:
+                files.remove('')
+            self.loadFiles(files, append = True)
 
     def dragMoveEvent(self, event):
+        mime = event.mimeData()
         if event.source() == self:
-            event.ignore()
+            if hasattr(mime, 'draggedRows') and mime.draggedRows:
+                event.accept()
+            else:
+                event.ignore()
             return
-        if event.mimeData().hasUrls():
+
+        if mime.hasUrls():
             event.accept()
+        else:
+            event.ignore()
 
     def mouseMoveEvent(self, event):
 
@@ -1598,6 +1650,10 @@ class TagTable(QTableView):
         urls = map(QUrl.fromLocalFile, map(decode_fn, filenames))
         mimeData = QMimeData()
         mimeData.setUrls(urls)
+        if event.modifiers() == Qt.MetaModifier:
+            mimeData.draggedRows = self.selectedRows[::]
+        else:
+            mimeData.draggedRows = None
 
         drag = QDrag(self)
         drag.setMimeData(mimeData)
@@ -1709,7 +1765,7 @@ class TagTable(QTableView):
 
         tags = []
         finished = lambda: self._loadFilesDone(tags, append, filepath)
-        def what():
+        def load_dir():
             isdir = os.path.isdir
             for f in files:
                 tag = gettag(f)
@@ -1717,7 +1773,7 @@ class TagTable(QTableView):
                     tags.append(tag)
                 yield None
 
-        s = progress(what, translate("Defaults", 'Loading '), len(files), finished)
+        s = progress(load_dir, translate("Defaults", 'Loading '), len(files), finished)
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):

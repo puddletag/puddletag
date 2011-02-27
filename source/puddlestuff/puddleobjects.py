@@ -1262,12 +1262,12 @@ class ArtworkLabel(QGraphicsView):
         self.setAutoFillBackground(True)
         self.setPalette(pal)
 
-        
         self._svg = QGraphicsSvgItem()
         self._pixmap = QGraphicsPixmapItem()
         self._scene = QGraphicsScene()
         self._scene.addItem(self._svg)
         self._scene.addItem(self._pixmap)
+        self._shown_pixmap = None
         self.setScene(self._scene)
         self.setSceneRect(QRectF())
 
@@ -1303,22 +1303,22 @@ class ArtworkLabel(QGraphicsView):
             super(ArtworkLabel, self).resizeEvent(event)
         if self._svg.isVisible():
             item = self._svg
-            self.setSceneRect(self._svg.boundingRect())
         else:
             item = self._pixmap
-            self.setSceneRect(self._pixmap.boundingRect())
+        self.setSceneRect(item.boundingRect())
         self.fitInView(item, Qt.KeepAspectRatio)
         
 
-    def setPixmap(self, pixmap):
+    def setPixmap(self, pixmap, data=None):
         if isinstance(pixmap, str):
             renderer = QSvgRenderer (QByteArray(pixmap), self._svg)
             self._svg.setSharedRenderer(renderer)
             self._pixmap.setVisible(False)
             self._svg.setVisible(True)
         else:
-            self._svg.setVisible(False)
+            self._data = data
             self._pixmap.setPixmap(pixmap)
+            self._svg.setVisible(False)
             self._pixmap.setVisible(True)
         self.resizeEvent()
 
@@ -1521,6 +1521,8 @@ class PicWidget(QWidget):
 
         self.setImages(images, imagetags)
 
+        self._lastdata = None
+
     def _setContext(self, text):
         if not text:
             self._contextlabel.setVisible(False)
@@ -1631,8 +1633,8 @@ class PicWidget(QWidget):
                     image = data
                     break
                 else:
-                    image = QImage().fromData(data)
-                    if image.isNull():
+                    image = QPixmap()
+                    if not image.loadFromData(QByteArray(data)):
                         del(self.images[num])
                     else:
                         break
@@ -1641,6 +1643,7 @@ class PicWidget(QWidget):
         except IndexError:
             self.setNone()
             return
+        
         if hasattr(self, '_itags'):
             self.setImageTags(self._itags)
         if num in self.readonly:
@@ -1649,14 +1652,16 @@ class PicWidget(QWidget):
             self._image_desc.setEnabled(False)
             self._image_type.setEnabled(False)
             self.savepic.setEnabled(False)
-        if isinstance(image, str):
-            self.label.setPixmap(image)
-            self.win.setImage(image)
-        else:
-            self.pixmap = QPixmap.fromImage(image)
-            self.label.setPixmap(self.pixmap)
-            self.win.setImage(self.pixmap)
-
+        if data != self._lastdata or self._lastdata is None:
+            if isinstance(image, str):
+                self.label.setPixmap(image, data)
+                self.win.setImage(image)
+                self.pixmap = None
+            else:
+                self.pixmap = image
+                self.label.setPixmap(self.pixmap, data)
+                self.win.setImage(self.pixmap)
+        self._lastdata = data
         self._image_desc.blockSignals(True)
         desc = self.images[num].get('description', translate("Artwork", 'Enter a description'))
         self._image_desc.setText(desc)
@@ -1719,13 +1724,13 @@ class PicWidget(QWidget):
         self.context = u'No Images'
 
 
-    def setImages(self, images, imagetags = None):
+    def setImages(self, images, imagetags = None, default=0):
         """Sets images. images are dictionaries as described in the class docstring."""
         if imagetags:
             self.setImageTags(imagetags)
         if images:
             self.images = images
-            self.currentImage = 0
+            self.currentImage = default
         else:
             self.setNone()
         self.enableButtons()
@@ -1811,7 +1816,7 @@ class PicWin(QDialog):
         If you don't want to load an image when the class
         is created, let pixmap = None and call setImage later."""
         QDialog.__init__(self, parent)
-        self.setWindowTitle('Album Art')
+        self.setWindowTitle(QApplication.translate('Dialogs', 'Album Art'))
         self.label = ArtworkLabel()
 
         vbox = QVBoxLayout()
@@ -1829,6 +1834,8 @@ class PicWin(QDialog):
         self.label.setPixmap(pixmap)
         if hasattr(pixmap, 'size'):
             size = pixmap.size()
+            res = u": %sx%s" % (size.width(), size.height())
+            self.setWindowTitle(self.windowTitle() + res)
             if size.height() < maxsize.height() and size.width() < maxsize.width():
                 self.setMinimumSize(size)
                 self.setMaximumSize(size)

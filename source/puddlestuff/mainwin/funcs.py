@@ -156,8 +156,9 @@ def format(parent=None, preview = None):
 def in_lib(state, parent=None):
     if state:
         if not status['library']:
-            print 'no lib loaded'
-            return
+            QMessageBox.critical(parent, translate("MusicLib", 'No libraries found'),
+                translate("MusicLib", "Load a lib first."))
+            return False
         files = status['allfiles']
         lib = status['library']
         libartists = status['library'].artists
@@ -171,8 +172,10 @@ def in_lib(state, parent=None):
                     if track.get('title', [u''])[0].lower() in titles:
                         to_highlight.append(track)
         emit('highlight', to_highlight)
+        return True
     else:
         emit('highlight', [])
+        return False
 
 def load_musiclib(parent=None):
     try:

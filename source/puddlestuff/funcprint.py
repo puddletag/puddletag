@@ -2,7 +2,7 @@
 import re, pdb
 from functools import partial
 from copy import copy
-from constants import YES, NO
+from puddlestuff.constants import YES, NO
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
 
 def perfunc(match, d):

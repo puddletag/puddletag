@@ -1,23 +1,28 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, resource, os, pdb
-sys.path.insert(1, '../..')
+import sys, os, pdb
+import puddlestuff.constants, puddlestuff.resource
 from decimal import Decimal
-from puddlestuff.puddlesettings import PuddleConfig
-from puddlestuff.puddleobjects import ListButtons, ListBox, OKCancel
-pyqtRemoveInputHook()
+from puddlestuff.puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
 from matchfuncs import Algo, funcinfo, funcs, _ratio
 from dupefuncs import dupesinlib
 from puddlestuff.findfunc import tagtofilename
 from puddlestuff.puddleobjects import progress, winsettings
 import time
+from puddlestuff.constants import SAVEDIR, RIGHTDOCK
+from puddlestuff.plugins import add_shortcuts, connect_shortcut
+from puddlestuff.puddletag import status
+
+title_sort = lambda a: a.get('title', u'')
+dupe_sort = lambda a: a[0].get('title', u'')
 
 DEFAULTSET = {'setname': 'Default',
-              'algs': [Algo(['artist', 'title'], 0.85, _ratio, False)],
-              'disp': ['%artist%', '%artist% - %title%'],
-              'maintag': 'artist'}
+    'algs': [Algo(['artist', 'title'], 0.85, _ratio, False)],
+    'disp': ['%artist%', '%artist% - %title%'],
+    'maintag': 'artist'}
 
-DUPEDIR = os.path.join(os.path.dirname(PuddleConfig().filename), 'dupes')
+DUPEDIR = os.path.join(SAVEDIR, 'dupes')
 
 def saveset(setname, disp, algs, maintag):
     cparser = PuddleConfig()
@@ -63,8 +68,10 @@ def loadsets():
     return sets
 
 class DupeTree(QTreeWidget):
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         QTreeWidget.__init__(self,*args)
+        self.emits = ['loadtags']
+        self.receives = []
 
     def selectedFiles(self):
         total = []
@@ -75,7 +82,6 @@ class DupeTree(QTreeWidget):
                 index = parent.indexOfChild(item)
                 children = item.childCount()
                 if children:
-                    #pdb.set_trace()
                     parindex = self.indexOfTopLevelItem(parent)
                     tracks = self.dupes[parindex][index]
                 else:
@@ -90,8 +96,7 @@ class DupeTree(QTreeWidget):
 
     def selectionChanged(self, selected, deselected):
         QTreeWidget.selectionChanged(self, selected, deselected)
-        #pdb.set_trace()
-        self.emit(SIGNAL('loadFiles'), self.selectedFiles())
+        self.emit(SIGNAL('loadtags'), self.selectedFiles())
 
     def loadDupes(self, lib, algos, dispformat, maintag = 'artist'):
         self.clear()
@@ -104,10 +109,12 @@ class DupeTree(QTreeWidget):
                 if d:
                     self.dupes.append(d)
                     item = QTreeWidgetItem([a])
-                    for z in d:
+                    for z in sorted(d, key=dupe_sort):
                         child = QTreeWidgetItem([tagtofilename(dispformat[0], z[0])])
-                        item.addChild(child)
-                        [child.addChild(QTreeWidgetItem([tagtofilename(dispformat[1],x)])) for x in z[1:]]
+                        item.addChild(child)                        
+                        [child.addChild(QTreeWidgetItem([
+                            tagtofilename(dispformat[1],x)])) for x in
+                                sorted(z[1:], key=title_sort)]
                     self.emit(SIGNAL('toplevel'), item)
                 yield None
         s = progress(what, 'Checking ', len(artists))
@@ -179,9 +186,9 @@ class DupeTree(QTreeWidget):
     #def _move(self):
         #pass
 
-class AlgWin(QDialog):
+class AlgWin(QWidget):
     def __init__(self, parent=None, alg = None):
-        QDialog.__init__(self, parent)
+        QWidget.__init__(self, parent)
         winsettings('algwin', self)
         taglabel = QLabel('&Tags')
         self.tags = QLineEdit('artist | title')
@@ -417,9 +424,27 @@ class SetDialog(QDialog):
     def cancelClicked(self):
         self.close()
 
+def load_window(parent):
+    import puddlestuff.libraries.quodlibetlib as quodlibet
+    from puddlestuff.constants import HOMEDIR
+    lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs')
+    from Levenshtein import ratio
+    algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]
+    qb = parent.addDock('Duplicates', DupeTree, RIGHTDOCK, connect=True)
+    qb.loadDupes(lib, algos, ['%artist% - %title%', '%title%'])
+
+def init(parent=None):
+    action = QAction('Dupes in Lib', parent)
+    #if not status['library']:
+        #action.setEnabled(False)
+    parent.connect(action, SIGNAL('triggered()'), lambda: load_window(parent))
+    add_shortcuts('&Tools', [action])
+    
+
 if __name__ == "__main__":
-    import puddlestuff.libraries.prokyon as prokyon
-    lib = prokyon.Prokyon('tracks', user='prokyon', passwd='prokyon', db='prokyon')
+    import puddlestuff.libraries.quodlibetlib as quodlibet
+    from puddlestuff.constants import HOMEDIR
+    lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs')
     from Levenshtein import ratio
     algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]
     app = QApplication(sys.argv)

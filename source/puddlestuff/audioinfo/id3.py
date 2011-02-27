@@ -443,11 +443,15 @@ def set_ufid(frame, value):
     frame.data = value
 
 def get_ufid(frame):
-    return [frame.data.encode('utf8')]
+    return [frame.data.decode('utf8')]
 
 def ufid_handler(frames):
     d = {}
     for frame in frames:
+        try:
+            frame.data.decode('utf8')
+        except UnicodeDecodeError:
+            continue
         frame.get_value = get_factory(get_ufid, frame)
         frame.set_value = set_factory(set_ufid, frame)
         d['ufid:' + frame.owner] = frame

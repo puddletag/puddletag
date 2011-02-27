@@ -36,6 +36,8 @@ from puddlestuff.util import to_string, split_by_tag, translate
 from releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
 
+import traceback
+
 TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
 MTAG_SOURCE_DIR = os.path.join(SAVEDIR, 'mp3tag_sources')
 
@@ -622,7 +624,12 @@ class MainWin(QWidget):
                     else:
                         return self._tagsource.search(files), files
             except RetrievalError, e:
-                return translate('WebDB', 'An error occured: %1').arg(unicode(e))
+                return translate('WebDB',
+                    'An error occured: %1').arg(unicode(e))
+            except Exception, e:
+                traceback.print_exc()
+                return translate('WebDB',
+                    'An unhandled error occurred: %1').arg(unicode(e))
         self.getinfo.setEnabled(False)
         self._t = PuddleThread(search)
         self.connect(self._t, SIGNAL('threadfinished'), self.setInfo)

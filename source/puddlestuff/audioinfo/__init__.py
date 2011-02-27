@@ -156,3 +156,5 @@ def Tag(filename):
     else: return None
 
 _Tag = Tag
+
+model_tag = lambda x: x

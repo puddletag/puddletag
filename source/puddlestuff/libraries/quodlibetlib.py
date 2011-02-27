@@ -83,6 +83,15 @@ class Tag(MockTag):
             if key in mapping:
                 tags.update(mapping[key](value))
             else:
+                if not isinstance(value, unicode):
+                    try:
+                        value = unicode(value, 'utf8')
+                    except (TypeError, ValueError):
+                        try:
+                            value = unicode(value)
+                        except:
+                            traceback.print_exc()
+                            continue
                 tags[key] = [value]
         del(tags['~filename'])
         self._tags = tags

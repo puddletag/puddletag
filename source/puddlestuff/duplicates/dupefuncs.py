@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb
 
 def dupes(tracks, tags, func, matchcase = False, threshold = 1, prevdupe = None):
     if matchcase:
-        strings = [[(i, t[tag] if tag in t else u'') for i, t in enumerate(tracks)] for tag in tags]
+        strings = [[(i, t.get(field, u'')) for i, t in enumerate(tracks)] for field in tags]
     else:
-        strings = [[(i, t[tag].lower() if tag in t else u'') for i, t in enumerate(tracks)] for tag in tags]
+        strings = [[(i, t.get(field, u'').lower())
+            for i, t in enumerate(tracks)] for field in tags]
     if prevdupe:
         ret = prevdupe
         start = 0
@@ -61,11 +63,11 @@ def dupesinlib(library, algs, maintag = None, artists = None):
     if not maintag:
         maintag = alg.tags[0]
     if not artists:
-        artists = library.distinctValues(maintag)
+        artists = sorted(library.distinct_values(maintag))
     yield artists
     for a in artists:
-        tracks = library.tracksByTag(maintag, a)
-        st = [z.stringtags() for z in library.tracksByTag(maintag, a)]
+        tracks = library.get_tracks(maintag, a)
+        st = [z.stringtags() for z in library.get_tracks(maintag, a)]
         ret = dupes(st, tags, alg.func, alg.matchcase, alg.threshold)
         for alg in algs:
             ret = dupes(st, alg.tags, alg.func, alg.matchcase, alg.threshold, ret)

@@ -128,7 +128,7 @@ def artist_search(artist):
     except ValueError:
         return (None, None)
 
-def find_releases(artists=None, album=None):
+def find_releases(artists=None, album=None, limit=100, offset=None):
     if artists and album and len(artists) > 1:
         ret = VA_search(album)
         if ret:
@@ -141,8 +141,8 @@ def find_releases(artists=None, album=None):
 
     q = Query()
     r_filter = ws.ReleaseFilter(artistName=artist, title=album,
+        limit=limit, offset=offset,
         releaseTypes=(Release.TYPE_OFFICIAL,))
-
     releases = q.getReleases(filter=r_filter)
 
     return map(release_to_dict, releases)
