@@ -2073,6 +2073,7 @@ class PuddleThread(QThread):
         QThread.__init__(self, parent)
         self.connect(self, SIGNAL('finished()'), self._finish)
         self.command = command
+        self.retval = None
 
     def run(self):
         #print 'thread', self.command, time.time()

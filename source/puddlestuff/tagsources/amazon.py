@@ -96,10 +96,10 @@ def check_matches(albums, artist=None, album_name=None):
             album['artist'].lower() == artist]
     elif artist:
         artist = artist.lower()
-        ret = [album for album in albums if album['artist'] == artist]
+        ret = [album for album in albums if album.get('artist', artist).lower() == artist]
     elif album_name:
         album_name = album_name.lower()
-        ret = [album for album in albums if album['album'] == album_name]
+        ret = [album for album in albums if album.get('album', album).lower() == album_name]
     
     return ret if ret else albums
 
@@ -182,7 +182,8 @@ def retrieve_album(info, image=MEDIUMIMAGE):
             'Retrieving using ASIN: %s') % asin)
     else:
         write_log(translate('Amazon',
-            'Retrieving XML: %1 - %2').arg(info['artist']).arg(info['album']))
+            'Retrieving XML: %1 - %2').arg(
+                info.get('artist', u'')).arg(info.get('album', u'')))
     xml = urlopen(url)
     
     if isinstance(info, basestring):
@@ -368,11 +369,14 @@ class Amazon(object):
         #Do the same even if an exact match was found, but an extra
         #lookup is required to retrieve tracks.
 
-        if artists is not None:
+        if artists:
             if len(artists) > 1:
                 artist = u'Various Artists'
             else:
-                artist = artists.keys()[0]
+                try:
+                    artist = artists.keys()[0]
+                except AttributeError:
+                    artist = artists[0]
         else:
             artist = None
 
