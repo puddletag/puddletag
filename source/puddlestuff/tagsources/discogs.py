@@ -25,10 +25,14 @@ R_ID = 'discogs_rid'
 
 api_key = 'c6e33897b6'
 search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=c6e33897b6'
-album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=c6e33897b6'
+release_url = 'http://www.discogs.com/release/%s?f=xml&api_key=c6e33897b6'
+master_url = 'http://www.discogs.com/master/%s?f=xml&api_key=c6e33897b6'
 
 SMALLIMAGE = '#smallimage'
 LARGEIMAGE = '#largeimage'
+
+MASTER = 'master'
+RELEASE = 'release'
 
 image_types = [SMALLIMAGE, LARGEIMAGE]
 
@@ -68,7 +72,7 @@ def find_id(tracks, field=None):
                 return value[0]
 
 def is_release(element):
-    return element.attributes['type'].value == 'release'
+    return element.attributes['type'].value in ('release', 'master')
 
 def node_to_dict(node):
     ret = {}
@@ -192,13 +196,24 @@ def parse_search_xml(text):
 
     for result in results:
         info = node_to_dict(result)
+        try:
+            info['#release_type'] = result.attributes['type'].value
+        except AttributeError:
+            continue
         info['#r_id'] = re.search('\d+$', info['uri']).group()
         info[R_ID] = info['#r_id']
+        info['discogs_release_type'] = info['#release_type']
         info = convert_dict(info, ALBUM_KEYS)
+        if 'album' in info:
+            artist, album = info['album'].split('-',1)
+            artist = re.sub('\s{2,}', ' ', artist).strip()
+            album = re.sub('\s{2,}', ' ', album).strip()
+            info['album'] = album
+            info['artist'] = artist
         ret.append(info)
     return ret
 
-def retrieve_album(info, image=LARGEIMAGE):
+def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
     If None, no image is retrieved."""
@@ -211,10 +226,15 @@ def retrieve_album(info, image=LARGEIMAGE):
         info = {}
         write_log(translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
     else:
+        if rls_type is None:
+            rls_type = info['#release_type']
         r_id = info['#r_id']
         write_log(translate("Discogs", 'Retrieving album %s') % (info['album']))
-    
-    xml = urlopen(album_url % r_id)
+
+    if rls_type == MASTER:
+        xml = urlopen(master_url % r_id)
+    else:
+        xml = urlopen(release_url % r_id)
 
     ret = parse_album_xml(xml)
 
@@ -249,6 +269,7 @@ def urlopen(url):
     request.add_header('Accept-Encoding', 'gzip')
     if puddlestuff.tagsources.user_agent:
         request.add_header('User-Agent', puddlestuff.tagsources.user_agent)
+
     try:
         data = urllib2.urlopen(request).read()
     except urllib2.URLError, e:
@@ -267,14 +288,6 @@ def urlopen(url):
     try: data = gzip.GzipFile(fileobj = cStringIO.StringIO(data)).read()
     except IOError: "Gzipped data not returned."
 
-    i = 0
-    filename = os.path.join('/home/keith/Desktop', unicode(i))
-    while not os.path.exists(filename):
-        i += 1
-        filename = os.path.join('/home/keith/Desktop', unicode(i))
-    f = open(filename, 'w')
-    f.write(data)
-    f.close()
     return data
 
 
@@ -362,17 +375,18 @@ class Discogs(object):
         global R_ID
         R_ID = args[2]
         global search_url
-        global album_url
+        global release_url
         if args[3]:
             search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[3]
-            album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[3]
+            release_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[3]
         else:
             search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + api_key
-            album_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + api_key
+            release_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + api_key
 
 info = Discogs
 
 if __name__ == '__main__':
-    print parse_album_xml(open(sys.argv[1], 'r').read())
+    print parse_search_xml(open(sys.argv[1], 'r').read())
+    #print parse_album_xml(open(sys.argv[1], 'r').read())
 
 #print keyword_search('Minutes to midnight')

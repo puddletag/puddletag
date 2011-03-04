@@ -458,7 +458,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 traceback.print_exc()
                 self.emit(SIGNAL("statusChanged"),
                     translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
-                return
+                return None
 
         def finished(val):
             if val is None:

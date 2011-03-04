@@ -26,6 +26,42 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
     FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
     'modified', 'filetype')
+import imghdr
+from mutagen.apev2 import APEValue, BINARY
+
+cover_keys = {'cover art (front)': 3, 'cover art (back)': 4}
+
+def get_pics(tag):
+    keys = dict((key.lower(), key) for key in tag)
+
+    pics = []
+
+    for key in cover_keys:
+        if key in keys:
+            pics.append(parse_pic(tag[keys[key]].value, cover_keys[key]))
+
+    return pics
+
+def parse_pic(value, covertype):
+    ret = {}
+    start = value.find('\x00')
+    ret['desc'] = value[:start].decode('utf8', 'replace')
+
+    ret['data'] = value[start + 1:]
+
+    mime = imghdr.what(None, ret['data'])
+    if mime:
+        ret['mime'] = u'image/' + mime
+
+    return ret
+
+def pic_to_bin(pic, covertype = 3):
+    desc = pic['desc'].encode('utf8')
+    data = pic['data']
+
+    key = 'Cover Art (Back)' if covertype == 4 else 'Cover Art (Front)'
+
+    return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
 
 def get_class(mutagen_file, base_function, attrib_fields):
     class Tag(util.MockTag):
