@@ -410,7 +410,7 @@ class Tags(QWidget):
         vbox.addWidget(v1_label)
         vbox.addWidget(self._v1_combo)
         
-        group = QGroupBox(translate('Tag Settings', 'ID3 Options')
+        group = QGroupBox(translate('Tag Settings', 'ID3 Options'))
 
         self.id3_v24 = QRadioButton(translate('Tag Settings',
             'Write ID3v2.&4'), group)

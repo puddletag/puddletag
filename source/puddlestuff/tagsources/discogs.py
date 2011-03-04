@@ -264,10 +264,18 @@ def urlopen(url):
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
-    try:
-        return gzip.GzipFile(fileobj = cStringIO.StringIO(data)).read()
-    except IOError:
-        return data
+    try: data = gzip.GzipFile(fileobj = cStringIO.StringIO(data)).read()
+    except IOError: "Gzipped data not returned."
+
+    i = 0
+    filename = os.path.join('/home/keith/Desktop', unicode(i))
+    while not os.path.exists(filename):
+        i += 1
+        filename = os.path.join('/home/keith/Desktop', unicode(i))
+    f = open(filename, 'w')
+    f.write(data)
+    f.close()
+    return data
 
 
 class Discogs(object):
