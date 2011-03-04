@@ -114,7 +114,7 @@ def exportm3u(tags, tofile, format = None, reldir = False):
     else:
         text = header
         extinfo = ('#EXTINF: %s, %s' % (str(lnglength(f.length)),
-            encode_fn(tagtofilename(format, f, True))) for f in tags)
+            encode_fn(tagtofilename(format, f, False))) for f in tags)
         [text.extend([z,y]) for z,y in zip(extinfo, filenames)]
         text = '\n'.join(text)
 

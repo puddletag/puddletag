@@ -33,7 +33,7 @@ from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
 from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
     progress, PuddleConfig, singleerror, winsettings, issubfolder,
-    timemethod, encode_fn, decode_fn)
+    timemethod, encode_fn, decode_fn, fnmatch)
 from musiclib import MusicLibError
 import time, re
 from errno import EEXIST
@@ -89,7 +89,9 @@ def loadsettings(filepath=None):
     fontsize = settings.get('table', 'fontsize', 0, True)
     rowsize = settings.get('table', 'rowsize', -1, True)
     v1_option = settings.get('id3tags', 'v1_option', 2)
+    v2_option = settings.get('id3tags', 'v2_option', 4)
     audioinfo.id3.v1_option = v1_option
+    audioinfo.id3.v2_option = v2_option
     filespec = u';'.join(settings.get('table', 'filespec', []))
     
     write_ape = settings.get('id3tags', 'write_ape', False)
@@ -1587,6 +1589,8 @@ class TagTable(QTableView):
                 self.emit(SIGNAL('deletedfromlib'), libtags)
             if index.isValid():
                 self.setCurrentIndex(index)
+            else:
+                self.selectionChanged()
         s = progress(func, translate("Table", 'Deleting '), len(selectedRows), fin)
         if self.parentWidget():
             s(self.parentWidget())
@@ -1760,20 +1764,35 @@ class TagTable(QTableView):
             self.dirs.extend(dirs)
         else:
             self.dirs = dirs
-        files = files + getfiles(dirs, subfolders, self.filespec)
-        #[files.extend(z[1]) for z in getfiles(dirs, subfolders)]
 
         tags = []
+        if len(dirs) == 1:
+            reading_dir = translate("Defaults",
+                'Reading Directory: %1').arg(dirs[0])
+        else:
+            reading_dir = translate("Defaults",
+                'Reading Directory: %1 + others').arg(dirs[0])
         finished = lambda: self._loadFilesDone(tags, append, filepath)
+
+        
         def load_dir():
-            isdir = os.path.isdir
-            for f in files:
-                tag = gettag(f)
+            filenames = []
+            for fname in getfiles(dirs, subfolders):
+                filenames.append(fname)
+                yield reading_dir
+
+            if self.filespec and self.filespec.strip():
+                filenames = fnmatch(self.filespec, filenames)
+
+            yield len(filenames)
+
+            for fname in filenames:
+                tag = gettag(fname)
                 if tag is not None:
                     tags.append(tag)
                 yield None
 
-        s = progress(load_dir, translate("Defaults", 'Loading '), len(files), finished)
+        s = progress(load_dir, translate("Defaults", 'Loading '), 20, finished)
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):

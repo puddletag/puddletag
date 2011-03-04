@@ -397,11 +397,10 @@ class Tags(QWidget):
         self._v1_combo = QComboBox()
         self._v1_combo.addItems(v1_options)
         
-        v1_label = QLabel(translate("Tag Settings", 'puddletag writes only &ID3v2 tags. What should be done with the ID3v1 tag?'))
+        v1_label = QLabel(translate("Tag Settings", 'puddletag writes only &ID3v2 tags.<br />What should be done with the ID3v1 tag upon saving?'))
         v1_label.setBuddy(self._v1_combo)
-        
-        self._apev2 = QCheckBox(translate("Tag Settings", 'Write APEv2'))
-        
+
+
         layout = QVBoxLayout()
         vbox = QVBoxLayout()
         
@@ -411,12 +410,20 @@ class Tags(QWidget):
         vbox.addWidget(v1_label)
         vbox.addWidget(self._v1_combo)
         
-        #vbox.addWidget(self._apev2)
+        group = QGroupBox(translate('Tag Settings', 'ID3 Options')
+
+        self.id3_v24 = QRadioButton(translate('Tag Settings',
+            'Write ID3v2.&4'), group)
+        self.id3_v24.setChecked(True)
+        self.id3_v23 = QRadioButton(translate('Tag Settings',
+            'Write ID3v2.&3 (Experimental)'), group)
         
-        vbox.addStretch()
-        
-        group = QGroupBox('ID3')
         group.setLayout(vbox)
+        vbox.addWidget(self.id3_v24)
+        vbox.addWidget(self.id3_v23)
+        self.id3_v24.hide()
+        self.id3_v23.hide()
+        vbox.addStretch()
 
         layout.addWidget(group)
         self.setLayout(layout)
@@ -424,27 +431,30 @@ class Tags(QWidget):
         cparser = PuddleConfig()
         index = cparser.get('id3tags', 'v1_option', 2)
         self._v1_combo.setCurrentIndex(index)
+        v2_option = cparser.get('id3tags', 'v2_option', 4)
+        if v2_option == 3:
+            self.id3_v23.setChecked(True)
         filespec = u';'.join(cparser.get('table', 'filespec', []))
         self._filespec.setText(filespec)
-        
-        write_ape = cparser.get('id3tags', 'write_ape', False)
-        
-        self._apev2.setChecked(write_ape)
 
     def applySettings(self, control=None):
         cparser = PuddleConfig()
         v1_option = self._v1_combo.currentIndex()
         cparser.set('id3tags', 'v1_option', v1_option)
+        
         audioinfo.id3.v1_option = v1_option
+        if self.id3_v24.isChecked():
+            audioinfo.id3.v1_option = 4
+            cparser.set('id3tags', 'v2_option', 4)
+        else:
+            audioinfo.id3.v1_option = 3
+            cparser.set('id3tags', 'v2_option', 3)
 
         filespec = unicode(self._filespec.text())
         control.filespec = filespec
         filespec = [z.strip() for z in filespec.split(';')]
         cparser.set('table', 'filespec', filespec)
 
-        cparser.set('id3tags', 'write_ape', False)
-        #cparser.set('id3tags', 'write_ape', self._apev2.isChecked())
-        audioinfo.set_id3_options(self._apev2.isChecked())
 
 class ListModel(QAbstractListModel):
     def __init__(self, options):

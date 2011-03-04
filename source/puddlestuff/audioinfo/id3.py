@@ -10,6 +10,7 @@ from collections import defaultdict
 from util import *
 TagBase = MockTag
 import util
+#from _compatid3 import CompatID3
 
 import mutagen, mutagen.id3, mutagen.mp3, pdb, util
 from copy import copy, deepcopy
@@ -25,21 +26,29 @@ import imghdr
 
 MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
-              'modified')
+    'modified')
 
 WRITE_V1 = 1
 WRITE_V2 = 2
 WRITE_BOTH = 3
 
 v1_option = 2
+v2_option = 4
 apev2_option = False
+
+ISO8859 = 0
+UTF16 = 1
+UTF16BE = 2
+UTF8 = 3
+
+encoding = UTF8
 
 class PuddleID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
     tags with the same description, ala Mp3tag."""
     PEDANTIC = True
     def loaded_frame(self, tag):
-        if len(type(tag).__name__) == 3:
+        if len(type(tag).__name__) == encoding:
             tag = type(tag).__base__(tag)
         i = 0
         while tag.HashKey in self:
@@ -65,7 +74,7 @@ def set_factory(func, frame):
     return lambda value: func(frame, value)
 
 def create_text(title, value):
-    frame = revtext_frames[title](3, value)
+    frame = revtext_frames[title](encoding, value)
     frame.get_value = lambda: get_text(frame)
     frame.set_value = partial(set_text, frame)
     return {title: frame}
@@ -74,8 +83,8 @@ def get_text(textframe):
     return [unicode(z) for z in textframe.text]
 
 def set_text(frame, value):
-    frame.text = TextFrame(3, value).text
-    frame.encoding = 3
+    frame.text = TextFrame(encoding, value).text
+    frame.encoding = encoding
     return True
 
 def text_handler(title):
@@ -86,11 +95,29 @@ def text_handler(title):
         return {title: frame}
     return func
 
+def create_genre(value):
+    frame = id3.TCON(encoding, value)
+    frame.get_value = lambda: get_genre(frame)
+    frame.set_value = lambda value: set_genre(frame, value)
+    return {'genre': frame}
+
+def get_genre(frame):
+    return frame.genres
+
+def set_genre(frame, value):
+    frame.genres = value
+    return True
+
+def genre_handler(frames):
+    frame = frames[0]
+    frame.get_value = lambda: get_genre(frame)
+    frame.set_value = lambda value: set_genre(frame, value)
+    return {'genre': frame}
+
 text_frames ={
     id3.TALB: 'album',
     id3.TBPM: 'bpm',
     id3.TCOM: 'composer',
-    id3.TCON: 'genre',
     id3.TCOP: "copyright",
     id3.TDAT: "date",
     id3.TDLY: "audiodelay",
@@ -142,9 +169,10 @@ except AttributeError:
 
 revtext_frames = dict([(key, frame) for frame, key in text_frames.items()])
 write_frames = dict([(key, partial(create_text, key)) for key in text_frames.values()])
+write_frames['genre'] = create_genre
 
 def create_time(title, value):
-    frame = revtime_frames[title](3)
+    frame = revtime_frames[title](encoding)
     if not set_time(frame, value):
         return {}
     frame.get_value = lambda: get_text(frame)
@@ -152,11 +180,11 @@ def create_time(title, value):
     return {title: frame}
 
 def set_time(frame, value):
-    text = TimeStampTextFrame(3, value).text
+    text = TimeStampTextFrame(encoding, value).text
     if not filter(None, text):
         return
     frame.text = text
-    frame.encoding = 3
+    frame.encoding = encoding
     return True
 
 def time_handler(title):
@@ -179,7 +207,7 @@ write_frames.update([(key, partial(create_time, key)) for
                         key in revtime_frames])
 
 def create_usertext(title, value):
-    frame = id3.TXXX(3, title, value)
+    frame = id3.TXXX(encoding, title, value)
     frame.get_value = lambda: get_text(frame)
     frame.set_value = partial(set_text, frame)
     return {title: frame}
@@ -261,7 +289,7 @@ write_frames.update([(key, partial(create_uurl, key)) for
 def create_userurl(title, value):
     value = to_string(value)
     desc = title[len('www:'):]
-    frame = id3.WXXX(3, desc, value)
+    frame = id3.WXXX(encoding, desc, value)
     frame.get_value = lambda: get_url(frame)
     frame.set_value = partial(set_url, frame)
     return {title: frame}
@@ -280,7 +308,7 @@ paired_textframes = {
     id3.IPLS: "involvedpeople"}
 
 def create_paired(key, value):
-    frame = revpaired_frames[key](3)
+    frame = revpaired_frames[key](encoding)
     if set_paired(frame, value):
         frame.get_value = get_factory(get_paired, frame)
         frame.set_value = set_factory(set_paired, frame)
@@ -301,7 +329,7 @@ def set_paired(frame, text):
         else:
             temp.append(pair)
     value = temp
-    frame.people = PairedTextFrame(3, value).people
+    frame.people = PairedTextFrame(encoding, value).people
     return True
 
 def paired_handler(title):
@@ -317,7 +345,7 @@ write_frames.update([(key, partial(create_paired, key)) for
                         key in revpaired_frames])
 
 def create_comment(desc, value):
-    frame = id3.COMM(3, 'XXX', desc, value)
+    frame = id3.COMM(encoding, 'XXX', desc, value)
     frame.get_value = lambda: get_text(frame)
     frame.set_value = partial(set_text, frame)
     return {u'comment:' + frame.desc: frame}
@@ -388,7 +416,7 @@ def to_string(value):
 def set_popm(frame, value):
     value = to_string(value)
     try:
-        email, rating, count = value.split(':', 3)
+        email, rating, count = value.split(':', encoding)
         rating = int(rating)
         count = int(count)
     except ValueError:
@@ -508,31 +536,35 @@ def rgain_handler(frames):
     return d
     
 
-write_frames.update({'playcount': create_playcount,
-                     'popularimeter': create_popm})
+write_frames.update({
+    'playcount': create_playcount,
+    'popularimeter': create_popm,
+    'genre': create_genre})
 
 frames = dict([(key, text_handler(title)) for key,
-                    title in text_frames.items()])
+    title in text_frames.items()])
 
 frames.update([(key, time_handler(title)) for key, title in
-                time_frames.items()])
+    time_frames.items()])
 
 frames.update([(key, url_handler(title)) for key, title in
-                url_frames.items()])
+    url_frames.items()])
 
 frames.update([(key, uurl_handler(title)) for key, title in
-                uurl_frames.items()])
+    uurl_frames.items()])
 
 frames.update([(key, paired_handler(title)) for key, title in
-                paired_textframes.items()])
+    paired_textframes.items()])
 
-frames.update({id3.WXXX: userurl_handler,
-               id3.TXXX: usertext_handler,
-               id3.COMM: comment_handler,
-               id3.PCNT: playcount_handler,
-               id3.POPM: popm_handler,
-               id3.UFID: ufid_handler,
-               id3.RVA2: rgain_handler,})
+frames.update({
+    id3.TCON: genre_handler,
+    id3.WXXX: userurl_handler,
+    id3.TXXX: usertext_handler,
+    id3.COMM: comment_handler,
+    id3.PCNT: playcount_handler,
+    id3.POPM: popm_handler,
+    id3.UFID: ufid_handler,
+    id3.RVA2: rgain_handler,})
 
 revframes = dict([(val, key) for key, val in frames.items()])
 
@@ -598,12 +630,12 @@ class Tag(TagBase):
         if not description:
             description = u''
         mime = image.get(util.MIMETYPE)
-        imagetype = image.get(util.IMAGETYPE, 3)
+        imagetype = image.get(util.IMAGETYPE, encoding)
         if not mime:
             t = imghdr.what(None, data)
             if t:
                 mime = u'image/' + t
-        return APIC(3, mime, imagetype, description, data)
+        return APIC(encoding, mime, imagetype, description, data)
 
     def _getImages(self):
         if self._images:
@@ -671,10 +703,9 @@ class Tag(TagBase):
 
         return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
 
-
     info = property(_info)
 
-    def save(self, v1=None):
+    def save(self, v1=None, v2=None):
         if v1 is None:
             v1 = v1_option
         """Writes the tags to file."""
@@ -712,20 +743,27 @@ class Tag(TagBase):
         else:
             toremove.extend(images)
 
-        #pdb.set_trace()
         for z in set(toremove):
             try:
                 del(audio[z])
             except KeyError:
                 continue
-        #pdb.set_trace()
 
         audio.tags.filename = self.filepath
+        v1 = v1_option if v1 is None else v1
+        v2 = v2_option if v2 is None else v2
+        
+        #if v2 == 4:
+            #audio.tags.update_to_v24()
+            #self.filetype = u'ID3v2.4'
+        #else:
+            #audio.tags.update_to_v23()
+            #self.filetype = u'ID3v2.3'
         audio.tags.save(v1=v1)
         self._originaltags = audio.keys()
 
     @setdeco
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         if key in READONLY:
             return
         elif not isinstance(key, basestring):
@@ -774,7 +812,7 @@ class Tag(TagBase):
             else:
                 self._tags.update(create_usertext(key, value))
 
-    def to_encoding(self, encoding = 3):
+    def to_encoding(self, encoding = UTF8):
         frames = []
         saved = []
         for frame in self._tags.values():
@@ -782,7 +820,7 @@ class Tag(TagBase):
                 frames.append((frame, frame.encoding))
                 frame.encoding = encoding
         try:
-            self.save(v1=1)
+            self.save()
         except:
             for frame, enc in frames:
                 frame.encoding = enc

@@ -522,15 +522,13 @@ def getfiles(files, subfolders = False, pattern = ''):
     def recursedir(folder, subfolders):
         folder = encode_fn(folder)
         if subfolders:
-            #TODO: This really fucks up when reading files with malformed
-            #unicode filenames.
-            files = []
-            [[files.append(path.join(z[0], y)) for y in z[2]]
-                for z in os.walk(folder)]
+            
+            return ([path.join(z[0], y) for y in z[2]]
+                for z in os.walk(folder))
         else:
             
             files = os.walk(folder).next()[2]
-            files = [path.join(folder, f) for f in files]
+            files = (path.join(folder, f) for f in files)
         return files
 
     if len(files) == 1 and os.path.isdir(files[0]):
@@ -553,6 +551,34 @@ def getfiles(files, subfolders = False, pattern = ''):
         return files
     else:
         return fnmatch(pattern, files)
+
+def getfiles(files, subfolders = False):
+
+    if isinstance(files, basestring):
+        files = [files]
+
+    isdir = os.path.isdir
+    join = os.path.join
+
+    if not subfolders:
+        for f in files:
+            if not isdir(f):
+                yield f
+            else:
+                dirname, subs, fnames = os.walk(f).next()
+                for fname in fnames:
+                    yield join(dirname, fname)
+    else:
+        for f in files:
+            if not isdir(f):
+                yield f
+            else:
+                for dirname, subs, fnames in os.walk(f):
+                    for fname in fnames:
+                        yield join(dirname, fname)
+                    for sub in subs:
+                        for fname in getfiles(join(dirname, sub), subfolders):
+                            yield fname
 
 def gettags(files):
     return (gettag(audio) for audio in files)
@@ -729,7 +755,11 @@ def progress(func, pstring, maximum, threadfin = None):
             while not win.wasCanceled:
                 try:
                     temp = f.next()
-                    if temp is not None:
+                    if isinstance(temp, (QString, str, unicode)):
+                        thread.emit(SIGNAL('message(QString)'), QString(temp))
+                    elif isinstance(temp, (int, long)):
+                        thread.emit(SIGNAL('set_max(int)'), temp)
+                    elif temp is not None:
                         #temp[0] is the error message, temp[1] the num files
                         thread.emit(SIGNAL('error(QString, int)'),
                             temp[0], temp[1])
@@ -765,9 +795,19 @@ def progress(func, pstring, maximum, threadfin = None):
                 thread.start()
             win.setValue(win.value + 1)
 
+        def set_message(msg):
+            if msg != win.label.text():
+                win.label.setText(msg)
+                QApplication.processEvents()
+
+        def set_max(value):
+            win.pbar.setMaximum(value)
+
         thread = PuddleThread(threadfunc, parent)
         thread.connect(thread, SIGNAL('win(int)'), threadexit)
         thread.connect(thread, SIGNAL('error(QString, int)'), threadexit)
+        thread.connect(thread, SIGNAL('message(QString)'), set_message)
+        thread.connect(thread, SIGNAL('set_max(int)'), set_max)
         thread.start()
     return s
 
