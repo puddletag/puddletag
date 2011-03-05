@@ -21,12 +21,19 @@ import urllib2, gzip, cStringIO, pdb, socket
 from copy import deepcopy
 from puddlestuff.util import translate
 
-R_ID = 'discogs_rid'
+R_ID_DEFAULT = 'discogs_id'
+R_ID = R_ID_DEFAULT
 
 api_key = 'c6e33897b6'
-search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=c6e33897b6'
-release_url = 'http://www.discogs.com/release/%s?f=xml&api_key=c6e33897b6'
-master_url = 'http://www.discogs.com/master/%s?f=xml&api_key=c6e33897b6'
+base_url = 'http://www.discogs.com/%sf=xml&api_key=%s'
+
+def query_urls(key):
+    search_url = base_url % ('search?type=releases&q=%s&', key)
+    release_url = base_url % ('release/%s?', key)
+    master_url = base_url % ('master/%s?', key)
+    return (search_url, release_url, master_url)
+
+search_url, release_url, master_url = query_urls(api_key)
 
 SMALLIMAGE = '#smallimage'
 LARGEIMAGE = '#largeimage'
@@ -373,20 +380,18 @@ class Discogs(object):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
         global R_ID
-        R_ID = args[2]
-        global search_url
-        global release_url
-        if args[3]:
-            search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + args[3]
-            release_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + args[3]
+        if args[2]:
+            R_ID = args[2]
         else:
-            search_url = 'http://www.discogs.com/search?type=releases&q=%s&f=xml&api_key=' + api_key
-            release_url = 'http://www.discogs.com/release/%s?f=xml&api_key=' + api_key
+            R_ID = R_ID_DEFAULT
+
+        global search_url, release_url, master_url
+        key = args[3] if args[3] else api_key
+        search_url, release_url, master_url = query_urls(key)
+        
 
 info = Discogs
 
 if __name__ == '__main__':
     print parse_search_xml(open(sys.argv[1], 'r').read())
     #print parse_album_xml(open(sys.argv[1], 'r').read())
-
-#print keyword_search('Minutes to midnight')

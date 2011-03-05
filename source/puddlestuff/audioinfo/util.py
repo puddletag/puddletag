@@ -442,7 +442,8 @@ class MockTag(object):
 
     def _set_attrs(self, attrs):
         tags = self._tags
-        [setattr(self, z, tags['__%s' % z]) for z in attrs]
+        [setattr(self, z, tags['__%s' % z]) for z in attrs if
+            '__%s' % z in tags]
 
     def _init_info(self, filename, filetype=None):
         self._tags = CaselessDict()

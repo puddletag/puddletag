@@ -29,7 +29,7 @@ ATTRIBUTES = ('length', 'accessed', 'size', 'created',
 import imghdr
 from mutagen.apev2 import APEValue, BINARY
 
-cover_keys = {'cover art (front)': 3, 'cover art (back)': 4}
+COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
 
 def get_pics(tag):
     keys = dict((key.lower(), key) for key in tag)
@@ -42,22 +42,24 @@ def get_pics(tag):
 
     return pics
 
-def parse_pic(value, covertype):
+def bin_to_pic(value, covertype = 3):
     ret = {}
     start = value.find('\x00')
-    ret['desc'] = value[:start].decode('utf8', 'replace')
+    ret[util.DESCRIPTION] = value[:start].decode('utf8', 'replace')
 
-    ret['data'] = value[start + 1:]
+    ret[util.DATA] = value[start + 1:]
 
     mime = imghdr.what(None, ret['data'])
     if mime:
-        ret['mime'] = u'image/' + mime
+        ret[util.MIMETYPE] = u'image/' + mime
+    ret[util.IMAGETYPE] = covertype
 
     return ret
 
-def pic_to_bin(pic, covertype = 3):
-    desc = pic['desc'].encode('utf8')
-    data = pic['data']
+def pic_to_bin(pic):
+    desc = pic[util.DESCRIPTION].encode('utf8')
+    data = pic[util.DATA]
+    covertype = pic[util.IMAGETYPE]
 
     key = 'Cover Art (Back)' if covertype == 4 else 'Cover Art (Front)'
 
@@ -68,7 +70,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
         """Tag class for APEv2 files.
 
         Tags are used as in ogg.py"""
-        IMAGETAGS = ()
+        IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA, util.IMAGETYPE)
         mapping = {}
         revmapping = {}
         apev2=True
@@ -78,14 +80,25 @@ def get_class(mutagen_file, base_function, attrib_fields):
             DIRPATH: 'dirpath',
             DIRNAME: 'dirname'}
 
+        def _getImages(self):
+            return self._images
+
+        def _setImages(self, images):
+            self._images = images
+
+        images = property(_getImages, _setImages)
+
         @getdeco
         def __getitem__(self,key):
+            if key == '__image':
+                return self.images
             return self._tags[key]
 
         @setdeco
         def __setitem__(self, key, value):
             
             if key == '__image':
+                self.images = value
                 return
 
             if isinstance(key, (int, long)):
@@ -147,6 +160,7 @@ def get_class(mutagen_file, base_function, attrib_fields):
         def link(self, filename, x = None):
             """Links the audio, filename
             returns self if successful, None otherwise."""
+            self._images = []
             try:
                 tags, audio = self._init_info(filename, mutagen_file)
             except mutagen.apev2.APENoHeaderError:
@@ -158,9 +172,14 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 return
 
             
-            for z in audio:
+            for key in audio:
                 try:
-                    self._tags[z.lower()] = audio.tags[z][:]
+                    if key.lower() in COVER_KEYS:
+                        img_type = COVER_KEYS.get(key.lower(), 3)
+                        self._images.append(
+                            bin_to_pic(audio[key].value, img_type))
+                    else:
+                        self._tags[key.lower()] = audio.tags[key][:]
                 except TypeError:
                     pass
 
@@ -178,6 +197,8 @@ def get_class(mutagen_file, base_function, attrib_fields):
             audio = self._mutfile
 
             newtag = {}
+            if self.images:
+                [newtag.update(pic_to_bin(z)) for z in self.images]
             for field, value in usertags(self._tags).items():
                 try:
                     if isinstance(field, unicode):

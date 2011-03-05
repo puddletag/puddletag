@@ -5,7 +5,7 @@ import util
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
                 getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY,
                 FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
-ATTRIBUTES = ('length', 'accessed', 'size', 'created',
+ATTRIBUTES = ('length', 'accessed', 'size', 'created', 'bitrate',
     'modified', 'frequency', 'version', 'channels', 'filetype')
 
 from apev2 import get_class
@@ -17,7 +17,8 @@ def base_tags(info):
         u"__frequency": strfrequency(info.sample_rate),
         u'__version': unicode(info.version),
         u'__channels': unicode(info.channels),
-        u'__filetype': u'Monkeys Audio (APEv2)'}
+        u'__filetype': u"Monkey's Audio",
+        u'__bitrate': u'0 kb/s'}
     try:
         tags.update({
             u'__titlegain': info.title_gain,

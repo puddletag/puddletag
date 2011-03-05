@@ -10,7 +10,7 @@ from collections import defaultdict
 from util import *
 TagBase = MockTag
 import util
-#from _compatid3 import CompatID3
+from _compatid3 import CompatID3
 
 import mutagen, mutagen.id3, mutagen.mp3, pdb, util
 from copy import copy, deepcopy
@@ -43,7 +43,7 @@ UTF8 = 3
 
 encoding = UTF8
 
-class PuddleID3(ID3):
+class PuddleID3(CompatID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
     tags with the same description, ala Mp3tag."""
     PEDANTIC = True
@@ -753,13 +753,11 @@ class Tag(TagBase):
         v1 = v1_option if v1 is None else v1
         v2 = v2_option if v2 is None else v2
         
-        #if v2 == 4:
-            #audio.tags.update_to_v24()
-            #self.filetype = u'ID3v2.4'
-        #else:
-            #audio.tags.update_to_v23()
-            #self.filetype = u'ID3v2.3'
-        audio.tags.save(v1=v1)
+        if v2 == 4:
+            audio.tags.update_to_v24()
+        else:
+            audio.tags.update_to_v23()
+        audio.tags.save(v1=v1, v2=v2)
         self._originaltags = audio.keys()
 
     @setdeco

@@ -517,48 +517,14 @@ def dupes(l, method = None):
                 groups.append([i])
     return [z for z in groups if len(z) > 1]
 
-def getfiles(files, subfolders = False, pattern = ''):
-    #pattern = u'*.ogg'
-    def recursedir(folder, subfolders):
-        folder = encode_fn(folder)
-        if subfolders:
-            
-            return ([path.join(z[0], y) for y in z[2]]
-                for z in os.walk(folder))
-        else:
-            
-            files = os.walk(folder).next()[2]
-            files = (path.join(folder, f) for f in files)
-        return files
-
-    if len(files) == 1 and os.path.isdir(files[0]):
-        files = files[0]
-    if isinstance(files, basestring):
-        if path.isdir(files):
-            dirname = [files]
-            files = recursedir(files, subfolders)
-        else:
-            dirname = []
-            files = [files]
-    else:
-        dirnames = [z for z in files if os.path.isdir(z)]
-        files = [z for z in files if not os.path.isdir(z)]
-        dirname = dirnames
-        while dirnames and subfolders:
-            [files.extend(recursedir(d, True)) for d in dirnames]
-            dirnames = [z for z in files if os.path.isdir(z)]
-    if not (pattern or pattern.strip()):
-        return files
-    else:
-        return fnmatch(pattern, files)
-
 def getfiles(files, subfolders = False):
-
     if isinstance(files, basestring):
         files = [files]
 
     isdir = os.path.isdir
     join = os.path.join
+
+    temp = []
 
     if not subfolders:
         for f in files:
@@ -572,13 +538,13 @@ def getfiles(files, subfolders = False):
         for f in files:
             if not isdir(f):
                 yield f
-            else:
+            else:                
                 for dirname, subs, fnames in os.walk(f):
                     for fname in fnames:
                         yield join(dirname, fname)
                     for sub in subs:
                         for fname in getfiles(join(dirname, sub), subfolders):
-                            yield fname
+                            pass
 
 def gettags(files):
     return (gettag(audio) for audio in files)

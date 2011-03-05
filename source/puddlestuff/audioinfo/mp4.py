@@ -24,7 +24,7 @@ import util, imghdr, pdb
 from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
-    FILETAGS, str_filesize)
+    FILETAGS, str_filesize, DIRNAME)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
@@ -175,7 +175,8 @@ class Tag(util.MockTag):
     _hash = {PATH: 'filepath',
             FILENAME:'filename',
             EXTENSION: 'ext',
-            DIRPATH: 'dirpath'}
+            DIRPATH: 'dirpath',
+            DIRNAME: 'dirname'}
 
     def copy(self):
         tag = Tag()
@@ -248,7 +249,11 @@ class Tag(util.MockTag):
     def _getImages(self):
         temp = []
         for value in self._images:
-            if value.format == MP4Cover.FORMAT_PNG:
+            try:
+                format = value.imageformat
+            except AttributeError:
+                format = value.format
+            if format == MP4Cover.FORMAT_PNG:
                 temp.append({'data': value, 'mime': 'image/png'})
             else:
                 temp.append({'data': value, 'mime': 'image/jpeg'})

@@ -421,8 +421,6 @@ class Tags(QWidget):
         group.setLayout(vbox)
         vbox.addWidget(self.id3_v24)
         vbox.addWidget(self.id3_v23)
-        self.id3_v24.hide()
-        self.id3_v23.hide()
         vbox.addStretch()
 
         layout.addWidget(group)
