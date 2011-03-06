@@ -1769,14 +1769,19 @@ class TagTable(QTableView):
         if len(dirs) == 1:
             reading_dir = translate("Defaults",
                 'Reading Directory: %1').arg(dirs[0])
-        else:
+        elif dirs:
             reading_dir = translate("Defaults",
                 'Reading Directory: %1 + others').arg(dirs[0])
+        else:
+            reading_dir = translate('Defaults', 'Reading Dir')
         finished = lambda: self._loadFilesDone(tags, append, filepath)
 
         
         def load_dir():
-            filenames = []
+            if files:
+                filenames = files
+            else:
+                filenames = []
             for fname in getfiles(dirs, subfolders):
                 filenames.append(fname)
                 yield reading_dir

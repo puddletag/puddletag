@@ -1,25 +1,6 @@
 # -*- coding: utf-8 -*-
-#ogg.py
 
-#Copyright (C) 2008 - 2009 concentricpuddle
-
-#This audio is part of puddletag, a semi-good music tag editor.
-
-#This program is free software; you can redistribute it and/or modify
-#it under the ter ms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-import util
+import util, struct
 from mutagen.asf import ASF
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
                   getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
@@ -29,6 +10,52 @@ from copy import copy
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
     'modified', 'filetype')
+
+#From picard
+def unpack_image(data):
+    """
+    Helper function to unpack image data from a WM/Picture tag.
+
+    The data has the following format:
+    1 byte: Picture type (0-20), see ID3 APIC frame specification at http://www.id3.org/id3v2.4.0-frames
+    4 bytes: Picture data length in LE format
+    MIME type, null terminated UTF-16-LE string
+    Description, null terminated UTF-16-LE string
+    The image data in the given length
+    """
+    (type, size) = struct.unpack_from("<bi", data)
+    pos = 5
+    mime = ""
+    while data[pos:pos+2] != "\x00\x00":
+        mime += data[pos:pos+2]
+        pos += 2
+    pos += 2
+    description = ""
+    while data[pos:pos+2] != "\x00\x00":
+        description += data[pos:pos+2]
+        pos += 2
+    pos += 2
+    image_data = data[pos:pos+size]
+    return {
+        util.MIMETYPE: mime.decode("utf-16-le"),
+        util.DATA: image_data,
+        util.IMAGETYPE: type,
+        util.DESCRIPTION: description.decode("utf-16-le"),}
+
+def pack_image(image):
+    """
+    Helper function to pack image data for a WM/Picture tag.
+    See unpack_image for a description of the data format.
+    """
+
+    mime = image[util.MIMETYPE]
+    data = image[util.DATA]
+    type = image[util.IMAGETYPE]
+    tag_data = struct.pack("<bi", type, len(data))
+    tag_data += mime.encode("utf-16-le") + "\x00\x00"
+    tag_data += description.encode("utf-16-le") + "\x00\x00"
+    tag_data += data
+    return tag_data
 
 class Tag(util.MockTag):
     """Ogg Tag class.
