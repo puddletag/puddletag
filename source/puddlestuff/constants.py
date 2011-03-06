@@ -5,6 +5,15 @@ from PyQt4.QtGui import QWidget, QApplication
 from os.path import dirname, join
 from puddlestuff.translations import translate
 
+YES = translate('Defaults', 'Yes')
+NO = translate('Defaults', 'No')
+BLANK = translate('Defaults', '<blank>')
+KEEP = translate('Defaults', '<keep>')
+VARIOUS = translate('Defaults', u'Various Artists')
+MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
+SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
+SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
+
 def trans_strings():
     from puddlestuff.translations import translate
     

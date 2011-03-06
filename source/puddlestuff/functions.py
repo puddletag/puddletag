@@ -677,11 +677,11 @@ def tag_dir(m_tags, pattern, r_tags):
     if pattern.endswith(u'/') and len(pattern) > 1:
         pattern = pattern[:-1]
     if os.path.isabs(pattern):
-        filename = path.splitext(move(m_tags, pattern, r_tags, False)['__path'])[0]
+        filename = move(m_tags, pattern, r_tags, False)['__path']
         filename = path.normpath(filename)
     else:
         pattern = u'/' + pattern
-        filename = path.splitext(move(m_tags, pattern, r_tags, False)['__path'])[0]
+        filename = move(m_tags, pattern, r_tags, False)['__path']
         filename = path.normpath(path.join(dirpath,
             os.path.pardir, encode_fn(filename[1:])))
     if filename:
