@@ -23,6 +23,6 @@ setup(
         'Topic :: Tagging',
         ],
     scripts = ['puddletag'],
-    data_files=[('share/pixmaps/', ('puddletag.png',)),
+    data_files=[('share/pixmaps/', ('puddletag.xpm', 'puddletag.png')),
                 ('share/applications', ('puddletag.desktop',))]
      )

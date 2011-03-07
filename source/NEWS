@@ -1,3 +1,19 @@
+7 March 2011 - 0.10.0
+    puddletag is now licensed under the GPLv3
+    
+    New Features:
+        Album art for all formats (except ASF)
+        Loading master releases in the Discogs.com tag source.
+    Changes:
+        For ID3 tags, UFID frames are now only loaded if the data can be decoded to UTF8.
+        MusicBrainz artist search retrieves 100 albums by default.
+        The initial reading of a directory can be canceled now.
+    Fixes:
+        Uncaught errors for Tag Sources shouldn't 'freeze' the Tag Sources window anymore.
+        Discogs artist/albums are parsed correctly instead of being mostly junk.
+        Amazon keyword search wasn't working at all.
+        Having periods in the Tag->Dir function were causing problems.
+
 9 February 2011 - 0.9.12
     puddletag is now fully translatable.
     
@@ -37,6 +53,7 @@
         A Discogs Tag Source that uses Discogs.com's XML service. I'm not sure how complete this tag source is since Discogs.com's documentation is woefully impcomplete. Set a user-agent in order to use it.
         Tag->Dir
         Using Default theme icons.
+        
     Changes:
         The Replace with Regular Expression function now starts from $1 instead of $0. I had to do this in order for Mp3tag's Tag Sources to work. Please update your actions.
         Previews in the Functions now show previews.

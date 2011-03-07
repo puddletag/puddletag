@@ -45,19 +45,26 @@ def convert_info(info):
     keys = {'category': '#category',
         'disc_id': '#discid',
         'title': 'album'}
-    for key in info.keys():
+
+    for key, value in info.items():
+        if key not in ['disc_id', 'category'] and isinstance(value, str):
+            info[key] = value.decode('utf8', 'replace')
         if key in keys:
             info[keys[key]] = info[key]
             del(info[key])
     if '#discid' in info:
-        info['freedb_disc_id'] = info['#discid']
+        info['freedb_disc_id'] = decode_str(info['#discid'])
     if '#category' in info:
-        info['freedb_category'] = info['#category']
+        info['freedb_category'] = decode_str(info['#category'])
+
     return info
 
 def convert_tracks(disc):
-    return [{'track': [unicode(track + 1)], 'title': [title]} for track, title 
-        in sorted(disc.items())]
+    return [{'track': [unicode(track + 1)], 'title': [decode_str(title)]}
+        for track, title in sorted(disc.items())]
+
+def decode_str(s):
+    return s if isinstance(s, unicode) else s.decode('utf8', 'replace')
 
 def query(category, discid, xcode='utf8:utf8'):
     #from quodlibet's cddb plugin by Michael Urman
@@ -147,6 +154,7 @@ class FreeDB(object):
 info = FreeDB
 
 if __name__ == '__main__':
+    #return [({'#discid': '0200d001', '#category': 'soundtrack', 'album': u'German'}, [])]
     import puddlestuff.audioinfo as audioinfo
     import glob
     import pdb

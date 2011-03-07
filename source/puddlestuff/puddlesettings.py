@@ -1,44 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#puddlesettings.py
-
-#Copyright (C) 2008-2009 concentricpuddle
-
-#This file is part of puddletag, a semi-good music tag editor.
-
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-
-"""In this module, all the dialogs for configuring puddletag are
-stored. These are accessed via the Preferences window.
-
-The MainWin class is the important class since it creates,
-the dialogs in a stacked widget and calls their methods as needed.
-
-Each dialog must have in its __init__ method an argument called 'cenwid'.
-cenwid is puddletag's main window found in puddletag.MainWin.
-If cenwid is passed, then the dialog should read all it's values,
-apply them (if needed) and return(close). This is done when puddletag starts.
-
-In addition, each dialog should have a saveSettings functions, which
-is called when settings pertinent to that dialog need to be saved.
-
-It is not required, that each dialog should also have
-an applySettings(self, cenwid) method, which is called when
-settings need to be applied while puddletag is running.
-"""
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -421,6 +382,8 @@ class Tags(QWidget):
         group.setLayout(vbox)
         vbox.addWidget(self.id3_v24)
         vbox.addWidget(self.id3_v23)
+        self.id3_v23.hide()
+        self.id3_v24.hide()
         vbox.addStretch()
 
         layout.addWidget(group)
