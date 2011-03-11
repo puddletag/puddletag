@@ -534,12 +534,80 @@ def rgain_handler(frames):
         f.set_value = set_factory(set_rgain, f)
         d['rgain:' + f.desc] = f
     return d
+
+def create_uslt(value):
+    f = id3.USLT()
+    set_uslt(f, value)
+    f.set_value = set_factory(set_uslt, f)
+    if f.frames:
+        return {'unsyncedlyrics': f}
+    return {}
+
+def set_uslt(f, value):
+    if isinstance(value, basestring):
+        value = [value]
+
+    frames = []
     
+    for lyrics in value:
+        try:
+            lyrics = [z for z in lyrics.split(u'|', 3)]
+        except (TypeError, ValueError):
+            continue
+        len_l = len(lyrics)
+        if len_l == 1:
+            lang = 'XXX'
+            desc = u''
+            text = lyrics[0]
+        elif len_l == 2:
+            lang = lyrics[0].strip().encode('utf8')
+            desc = u''
+            text = lyrics[1]
+        elif len_l == 3:
+            lang, desc, text = lyrics
+            lang = lang.strip().encode('utf8')
+        elif len_l > 3:
+            text = u''.join(lyrics[2:])
+            lang = lyrics[0].strip().encode('utf8')
+            desc = lyrics[1]
+        else:
+            continue
+
+        if not lang:
+            lang = 'XXX'
+        frames.append(id3.USLT(encoding, lang, desc, text))
+            
+    if not frames:
+        f.frames = []
+        f.get_value
+        return {}
+    
+    f.frames = frames
+    f.get_value = get_uslt(frames)
+
+def get_uslt(frames):
+    def text(f, attr):
+        ret = getattr(f, attr, u'')
+        return ret if isinstance(ret, unicode) else \
+            unicode(ret, 'utf8', 'replace')
+    ret = [u'%s|%s|%s' % (text(frame, 'lang'), text(frame, 'desc'),
+            text(frame, 'text')) for frame in frames]
+    return lambda: ret
+
+def uslt_handler(frames):
+    d = {}
+    f = frames[0]
+    f.get_value = get_uslt(frames)
+    f.set_value = set_factory(set_uslt, f)
+    f.frames = frames
+    d['unsyncedlyrics'] = f
+    return d
 
 write_frames.update({
     'playcount': create_playcount,
     'popularimeter': create_popm,
-    'genre': create_genre})
+    'genre': create_genre,
+    'unsyncedlyrics': create_uslt})
 
 frames = dict([(key, text_handler(title)) for key,
     title in text_frames.items()])
@@ -564,7 +632,8 @@ frames.update({
     id3.PCNT: playcount_handler,
     id3.POPM: popm_handler,
     id3.UFID: ufid_handler,
-    id3.RVA2: rgain_handler,})
+    id3.RVA2: rgain_handler,
+    id3.USLT: uslt_handler,})
 
 revframes = dict([(val, key) for key, val in frames.items()])
 
@@ -807,6 +876,8 @@ class Tag(TagBase):
                 self._tags.update(create_ufid(key, value))
             elif key.startswith('rgain:'):
                 self._tags.update(create_rgain(key, value))
+            elif key.startswith('lyrics_us:'):
+                self._tags.update(create_uslt(key, value))
             else:
                 self._tags.update(create_usertext(key, value))
 
