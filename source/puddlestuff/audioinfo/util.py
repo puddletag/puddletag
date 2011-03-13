@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+## -*- coding: utf-8 -*-
 
 import mutagen, time, pdb, calendar, os, logging, sys, imghdr
 from errno import ENOENT
@@ -14,13 +14,29 @@ FILENAME = u"__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
 DIRNAME = '__dirname'
+FILENAME_NO_EXT = '__filename_no_ext'
+PARENT_DIR = '__parent_dir'
+
+NUM_IMAGES = '__num_images'
+IMAGE_MIMETYPE = '__image_mimetype'
+
 READONLY = ('__bitrate', '__frequency', "__length", "__modified",
             "__size", "__created", "__library", '__accessed', '__filetype',
-            '__channels', '__version', '__titlegain', '__albumgain')
+            '__channels', '__version', '__titlegain', '__albumgain',
+            NUM_IMAGES, IMAGE_MIMETYPE)
 IMAGES = '__image'
-FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME]
+FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME, FILENAME_NO_EXT,
+    PARENT_DIR]
 INFOTAGS = FILETAGS + list(READONLY)
 
+fn_hash = {
+    PATH: 'filepath',
+    FILENAME:'filename',
+    EXTENSION: 'ext',
+    DIRPATH: 'dirpath',
+    DIRNAME: 'dirname',
+    FILENAME_NO_EXT: 'filename_no_ext',
+    PARENT_DIR: 'parent_dir'}
 
 MIMETYPE = 'mime'
 DESCRIPTION = 'description'
@@ -28,6 +44,11 @@ DATA = 'data'
 IMAGETYPE = 'imagetype'
 
 IMAGETAGS = (MIMETYPE, DESCRIPTION, DATA, IMAGETYPE)
+
+MONO = u'Mono'
+JOINT_STEREO = u'Joint-Stereo'
+DUAL_CHANNEL = u'Dual-Channel'
+STEREO = u'STEREO'
 
 TAGS = {'TALB': 'album',
         'TBPM': 'bpm',
@@ -140,6 +161,18 @@ def decode_fn(filename, errors='replace'):
     else:
         return filename.decode(FS_ENC, errors)
 
+def unicode_list(value):
+    if not value:
+        return []
+    if isinstance(value, unicode):
+        return [unicode(value)]
+    elif isinstance(value, str):
+        return [unicode(value, 'utf8', 'replace')]
+    elif isinstance(value, (int, long)):
+        return [unicode(value)]
+    else:
+        return [to_string(v, 'replace') for v in value if v]
+
 def stringtags(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.
     If a key is a list then the first item of that list is returned."""
@@ -213,11 +246,38 @@ def getfilename(filename):
     return path.realpath(filename)
 
 def getinfo(filename):
+    get_time = lambda f, s: time.strftime(f, time.gmtime(s))
     fileinfo = stat(filename)
-    return ({u"__modified": strtime(fileinfo[ST_MTIME]),
-            u"__size" : unicode(fileinfo[ST_SIZE]),
-            u"__created": strtime(fileinfo[ST_CTIME]),
-            u'__accessed': strtime(fileinfo[ST_ATIME])})
+    size = fileinfo[ST_SIZE]
+    accessed = fileinfo[ST_ATIME]
+    modified = fileinfo[ST_MTIME]
+    created = fileinfo[ST_CTIME]
+    return ({
+        "__size" : unicode(size),
+        '__file_size': str_filesize(size),
+        '__file_size_bytes': unicode(size),
+        '__file_size_kb': u'%d KB' % (size / 1024),
+        '__file_size_mb': u'%d KB' % (size / 1024**2),
+
+        "__created": strtime(created),
+        '__file_create_date': get_time('%Y-%m-%d', created),
+        '__file_create_datetime':
+            get_time('%Y-%m-%d %H:%M:%S', created),
+        '__file_create_datetime_raw': unicode(created),
+
+        "__modified": strtime(modified),
+        '__file_mod_date': get_time('%Y-%m-%d', modified),
+        '__file_mod_datetime':
+            get_time('%Y-%m-%d %H:%M:%S', modified),
+        '__file_mod_datetime_raw': unicode(modified),
+
+        '__accessed': strtime(accessed),
+        '__file_access_date': get_time('%Y-%m-%d', accessed),
+        '__file_access_datetime':
+            get_time('%Y-%m-%d %H:%M:%S', accessed),
+        '__file_access_datetime_raw': unicode(accessed),
+
+        })
 
 def converttag(tags):
     for tag,value in tags.items():
@@ -255,6 +315,17 @@ def getdeco(func):
         return func(self, key)
     return f
 
+def keys_deco(func):
+    def f(self):
+        if not self.revmapping:
+            return func(self)
+        else:
+            mapping = self.mapping
+            revmapping = self.revmapping
+            return [mapping.get(k, k) for k in func(self)
+                if not(k in revmapping and k not in mapping)]
+    return f
+
 def setdeco(func):
     def f(self, key, value):
         mapping = self.revmapping
@@ -265,7 +336,7 @@ def setdeco(func):
         return func(self, key, value)
     return f
 
-def deldeco(func):
+def del_deco(func):
     def f(self, key):
         mapping = self.revmapping
         if key in mapping:
@@ -289,6 +360,8 @@ def to_string(value, errors='strict'):
         return value.decode('utf8', errors)
     elif isinstance(value, unicode):
         return value
+    elif isinstance(value, (int, long)):
+        return unicode(value)
     else:
         return to_string(value[0])
 
@@ -301,7 +374,32 @@ def path_to_string(value):
         return path_to_string(value[0])
 
 def get_mime(data):
-    return 'image/' + imghdr.what(None, data)
+    mime = imghdr.what(None, data)
+    if mime:
+        return 'image/' + mime
+    else:
+        return u''
+
+def cover_info(images, d=None):
+    info = {}
+    if not images:
+        info[NUM_IMAGES] = u'0'
+        info[IMAGE_MIMETYPE] = u''
+    else:
+        info[NUM_IMAGES] = unicode(len(images))
+        image = images[0]
+        if MIMETYPE in image:
+            info[IMAGE_MIMETYPE] = image[MIMETYPE]
+        else:
+            info[IMAGE_MIMETYPE] = get_mime(image[DATA])
+
+    if d:
+        if not info[IMAGE_MIMETYPE]:
+            del(info[IMAGE_MIMETYPE])
+            try: del(d[IMAGE_MIMETYPE])
+            except KeyError: pass
+        d[NUM_IMAGES] = info[NUM_IMAGES]
+    return info
 
 class CaselessDict(dict):
     def __init__(self, other=None):
@@ -353,36 +451,36 @@ class CaselessDict(dict):
 
 class MockTag(object):
     """Use as base for all tag classes."""
-    _hash = {PATH: 'filepath',
-            FILENAME:'filename',
-            EXTENSION: 'ext',
-            DIRPATH: 'dirpath',
-            DIRNAME: 'dirname'}
-            
+
     def __init__(self, filename = None):
+        object.__init__(self)
         self._info = {}
         self._filepath = ''
         if filename:
             self.link(filename)
-        else:
-            self._tags = CaselessDict()
 
-    def _getfilepath(self):
-        return self._filepath
+    def get_filepath(self):
+        return self.__filepath
 
-    def _setfilepath(self,  val):
-        self._filepath = path_to_string(val)
+    def set_filepath(self,  val):
+        self.__filepath = path_to_string(val)
         val = to_string(val, 'replace')
-        self._tags.update({
+        
+        if hasattr(self, 'mut_obj'):
+            self.mut_obj.filename = self.__filepath
+        ret = {
             PATH: val,
             DIRPATH: path.dirname(val),
-            FILENAME: path.basename(val),
-            EXTENSION: path.splitext(val)[1][1:],
-            DIRNAME: path.basename(path.dirname(val))})
-        if hasattr(self, '_mutfile'):
-            self._mutfile.filename = self._filepath
+            FILENAME: path.basename(val)}
 
-    def _setext(self,  val):
+        ret[FILENAME_NO_EXT], ret[EXTENSION] = path.splitext(ret[FILENAME])
+        ret[EXTENSION] = ret[EXTENSION][1:]
+        ret[DIRNAME] = path.basename(ret[DIRPATH])
+        ret[PARENT_DIR] = path.basename(path.dirname(ret[DIRPATH]))
+
+        return ret
+
+    def _set_ext(self,  val):
         if val:
             val = path_to_string(val)
             self.filepath = '%s%s%s' % (path.splitext(self.filepath)[0],
@@ -390,43 +488,57 @@ class MockTag(object):
         else:
             self.filepath = path.splitext(self.filepath)[0]
 
-    def _getext(self):
+    def _get_ext(self):
         return path.splitext(self.filepath)[1][1:]
 
-    def _getfilename(self):
+    def _get_filename(self):
         return path.basename(self.filepath)
 
-    def _setfilename(self, val):
+    def _set_filename(self, val):
         val = path_to_string(val)
         self.filepath = path.join(self.dirpath, val)
 
-    def _getdirpath(self):
+    def _get_dirpath(self):
         return path.dirname(self.filepath)
 
-    def _setdirpath(self, val):
+    def _set_dirpath(self, val):
         val = path_to_string(val)
         self.filepath = path.join(val, self.filename)
     
-    def _getdirname(self):
+    def _get_dirname(self):
         return path.basename(self.dirpath)
     
-    def _setdirname(self, value):
+    def _set_dirname(self, value):
         value = path_to_string(value)
         self.dirpath = path.join(path.dirname(self.dirpath), value)
-    
-    filepath = property(_getfilepath, _setfilepath)
-    dirpath = property(_getdirpath, _setdirpath)
-    dirname = property(_getdirname, _setdirname)
-    ext = property(_getext, _setext)
-    filename = property(_getfilename, _setfilename)
 
-    def _set_attrs(self, attrs):
-        tags = self._tags
+    def _set_filename_no_ext(self, value):
+        self.filename = value + '.' + self.ext
+
+    def _get_filename_no_ext(self):
+        return path.splitext(path.basename(self.filepath))[0]
+
+    def _get_parent_dir(self):
+        return path.basename(path.dirname(self.dirpath))
+
+    def _set_parent_dir(self, value):
+        self.dirpath = path.join(path.dirname(self.dirpath), value)
+    
+    filepath = property(get_filepath, set_filepath)
+    dirpath = property(_get_dirpath, _set_dirpath)
+    dirname = property(_get_dirname, _set_dirname)
+    ext = property(_get_ext, _set_ext)
+    filename = property(_get_filename, _set_filename)
+    filename_no_ext = property(_get_filename_no_ext, _set_filename_no_ext)
+    parent_dir = property(_get_parent_dir, _set_parent_dir)
+
+    def set_attrs(self, attrs, tags=None):
+        if tags is None:
+            tags = self
         [setattr(self, z, tags['__%s' % z]) for z in attrs if
             '__%s' % z in tags]
 
-    def _init_info(self, filename, filetype=None):
-        self._tags = CaselessDict()
+    def load(self, filename, filetype=None):
         filename = getfilename(filename)
         self.filepath = filename
         if filetype is not None:
@@ -446,21 +558,11 @@ class MockTag(object):
             for key, value in dictionary:
                 self[key] = value
 
-    @deldeco
-    def __delitem__(self, key):
-        if key in self._tags and key not in INFOTAGS:
-            del(self._tags[key])
-
     def clear(self):
         keys = self._tags.keys()
         for z in keys:
-            if z not in INFOTAGS and not z.startswith('___'):
+            if not z.startswith('__'):
                 del(self._tags[z])
-
-    def __contains__(self, key):
-        if self.revmapping:
-            key = self.revmapping.get(key, key)
-        return key in self._tags
 
     def keys(self):
         if not self.mapping:

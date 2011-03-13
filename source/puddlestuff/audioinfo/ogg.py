@@ -9,7 +9,10 @@ import util
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-    getdeco, setdeco, str_filesize)
+    getdeco, setdeco, str_filesize, unicode_list,
+    CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
+    MONO, STEREO)
+from tag_versions import tags_in_file
 from copy import copy
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 
@@ -54,11 +57,29 @@ def vorbis_tag(base, name):
         mapping = {}
         revmapping = {}
 
+        def __init__(self, filename=None):
+            self.__images = []
+            self.__tags = CaselessDict()
+
+            util.MockTag.__init__(self, filename)
+
+        def get_filepath(self):
+            return util.MockTag.get_filepath(self)
+
+        def set_filepath(self,  val):
+            self.__tags.update(util.MockTag.set_filepath(self, val))
+
+        filepath = property(get_filepath, set_filepath)
+
         def _getImages(self):
-            return self._images
+            return self.__images
 
         def _setImages(self, images):
-            self._images = images
+            if images:
+                self.__images = images
+            else:
+                self.__images = []
+            cover_info(images, self.__tags)
 
         images = property(_getImages, _setImages)
 
@@ -66,44 +87,68 @@ def vorbis_tag(base, name):
         def __getitem__(self, key):
             if key == '__image':
                 return self.images
-            return self._tags[key]
+            elif key == '__total' and 'track' in self:
+                try:
+                    return self['track'][0].split(u'/')[1].strip()
+                except IndexError:
+                    pass
+            return self.__tags[key]
 
         @setdeco
         def __setitem__(self, key, value):
             if key in READONLY:
                 return
             elif key in FILETAGS:
-                setattr(self, self._hash[key], value)
+                setattr(self, fn_hash[key], value)
                 return
+            
+            if isempty(value):
+                if key in self:
+                    del(self[key])
+                else:
+                    return
 
-            if key not in INFOTAGS and isempty(value):
-                del(self[key])
-            elif key == '__image':
-                self.images = value
-            elif key in INFOTAGS or isinstance(key, (int, long)):
-                self._tags[key] = value
-            elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
-                self._tags[key.lower()] = [unicode(value)]
+            if key.startswith('__'):
+                if key == '__image':
+                    self.images = value
+                elif key in fn_hash:
+                    setattr(self, fn_hash[key], value)
             else:
-                self._tags[key.lower()] = [unicode(z) for z in value]
+                if isinstance(value, (int, long)):
+                    self.__tags[key.lower()] = [unicode(value)]
+                else:
+                    self.__tags[key.lower()] = unicode_list(value)
+                
+        def __contains__(self, key):
+            if self.revmapping:
+                key = self.revmapping.get(key, key)
+            return key in self.__tags
 
-        def copy(self):
-            tag = Tag()
-            tag.load(copy(self._mutfile), self._tags.copy())
-            return tag
+        @del_deco
+        def __delitem__(self, key):
+            if key == '__image':
+                self.images = []
+            elif key.startswith('__'):
+                return
+            else:
+                del(self.__tags[key])
 
         def delete(self):
-            self._mutfile.delete()
+            self.mut_obj.delete()
             for z in self.usertags:
                 del(self[z])
             self.images = []
             self.save()
 
+        @keys_deco
+        def keys(self):
+            return self.__tags.keys()
+
         def link(self, filename):
             """Links the audio, filename
             returns self if successful, None otherwise."""
-            self._images = []
-            tags, audio = self._init_info(filename, base)
+            self.__images = []
+            tags, audio = self.load(filename, base)
             if audio is None:
                 return
 
@@ -111,54 +156,65 @@ def vorbis_tag(base, name):
                 if key == COVER_KEY:
                     self.images = map(base64_to_image, audio[key])
                 else:
-                    self._tags[key.lower()] = audio.tags[key]
+                    self.__tags[key.lower()] = audio.tags[key]
 
             if base == mutagen.flac.FLAC:
-                self._images = map(bin_to_image, audio.pictures)
+                self.images = map(bin_to_image, audio.pictures)
 
             info = audio.info
-            try: tags[u"__frequency"] = strfrequency(info.sample_rate)
+            try: tags["__frequency"] = strfrequency(info.sample_rate)
             except AttributeError: pass
 
-            try: tags[u"__length"] = strlength(info.length)
+            try: tags["__length"] = strlength(info.length)
             except AttributeError: pass
 
-            try: tags[u"__bitrate"] = strbitrate(info.bitrate)
+            try: tags["__length_seconds"] = unicode(int(info.length))
+            except AttributeError: pass
+
+            try: tags["__bitrate"] = strbitrate(info.bitrate)
             except AttributeError: tags[u"__bitrate"] = u'0 kb/s'
 
-            try: tags[u'__bitspersample'] = unicode(info.bits_per_sample)
+            try: tags['__bitspersample'] = unicode(info.bits_per_sample)
             except AttributeError: pass
 
-            self._tags.update(tags)
-            self._set_attrs(ATTRIBUTES)
-            self._mutfile = audio
-            self._originaltags = self._tags.keys()
+            try: tags['__channels'] = unicode(info.channels)
+            except AttributeError: pass
+
+            try: tags['__mode'] = MONO if info.channels == 1 else STEREO
+            except AttributeError: pass
+
+            self.__tags.update(tags)
+            self.set_attrs(ATTRIBUTES)
+            self.mut_obj = audio
+            self._originaltags = self.__tags.keys()
             self.filetype = name
-            self._tags['__filetype'] = self.filetype
+            self.__tags['__filetype'] = self.filetype
+            self.__tags['__tag_read'] = u'VorbisComment'
+            self.update_tag_list()
             return self
 
         def save(self):
-            """Writes the tags in self._tags
+            """Writes the tags in self.__tags
             to self.filename if no filename is specified."""
             filepath = self.filepath
 
-            if self._mutfile.tags is None:
-                self._mutfile.add_tags()
-            if filepath != self._mutfile.filename:
-                self._mutfile.filename = filepath
-            audio = self._mutfile
+            if self.mut_obj.tags is None:
+                self.mut_obj.add_tags()
+            if filepath != self.mut_obj.filename:
+                self.mut_obj.filename = filepath
+            audio = self.mut_obj
 
             newtag = {}
-            for tag, value in usertags(self._tags).items():
+            for tag, value in usertags(self.__tags).items():
                 newtag[tag] = value
 
-            if self._images:
+            if self.__images:
                 if base == mutagen.flac.FLAC:
                     audio.clear_pictures()
                     map(lambda p: audio.add_picture(image_to_bin(p)),
-                        self._images)
+                        self.__images)
                 else:
-                    newtag[COVER_KEY] = map(image_to_base64, self._images)
+                    newtag[COVER_KEY] = map(image_to_base64, self.__images)
             else:
                 if base == mutagen.flac.FLAC:
                     audio.clear_pictures()
@@ -168,12 +224,19 @@ def vorbis_tag(base, name):
                 del(audio[z])
             audio.update(newtag)
             audio.save()
+
+        def update_tag_list(self):
+            l = tags_in_file(self.filepath)
+            if l:
+                self.__tags['__tag'] = u'VorbisComment, ' + u', '.join(l)
+            else:
+                self.__tags['__tag'] = u'VorbisComment'
     return Tag
 
 class Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
 
     def _info(self):
-        info = self._mutfile.info
+        info = self.mut_obj.info
         fileinfo = [
             ('Path', self[PATH]),
             ('Size', str_filesize(int(self.size))),

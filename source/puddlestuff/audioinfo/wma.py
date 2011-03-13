@@ -193,7 +193,7 @@ class Tag(util.MockTag):
         
         
         self.images = None
-        tags, audio = self._init_info(filename, ASF)
+        tags, audio = self.load(filename, ASF)
         if audio is None:
             return
 

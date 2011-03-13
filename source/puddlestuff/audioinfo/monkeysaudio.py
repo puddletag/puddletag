@@ -13,16 +13,16 @@ from apev2 import get_class
 
 def base_tags(info):
     tags = {
-        u"__length": strlength(info.length),
-        u"__frequency": strfrequency(info.sample_rate),
-        u'__version': unicode(info.version),
-        u'__channels': unicode(info.channels),
-        u'__filetype': u"Monkey's Audio",
-        u'__bitrate': u'0 kb/s'}
+        "__length": strlength(info.length),
+        "__frequency": strfrequency(info.sample_rate),
+        '__version': unicode(info.version),
+        '__channels': unicode(info.channels),
+        '__filetype': u"Monkey's Audio",
+        '__bitrate': u'0 kb/s'}
     try:
         tags.update({
-            u'__titlegain': info.title_gain,
-            u'__albumgain': info.album_gain})
+            '__titlegain': info.title_gain,
+            '__albumgain': info.album_gain})
     except AttributeError:
         pass
     return tags

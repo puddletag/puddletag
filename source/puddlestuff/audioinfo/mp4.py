@@ -4,11 +4,13 @@ import util, imghdr, pdb
 from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
-    FILETAGS, str_filesize, DIRNAME)
+    FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
+    del_deco, cover_info)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
     'modified', 'bitspersample', 'channels')
+import tag_versions
 
 #mp4 tags, like id3 can only have a fixed number of tags. The ones on the left
 #with the corresponding tag as recognized by puddletag on the right...
@@ -146,103 +148,128 @@ FUNCS = {
     'totaldiscs': (getint, setint),
     'bpm': (getint, setint)}
 
+def bin_to_pic(cover):
+    try:
+        format = cover.imageformat
+    except AttributeError:
+        format = cover.format
+    if format == MP4Cover.FORMAT_PNG:
+        return {'data': cover, 'mime': 'image/png'}
+    else:
+        return {'data': cover, 'mime': 'image/jpeg'}
+
+def pic_to_bin(image):
+    data = image[util.DATA]
+    mime = imghdr.what(None, data)
+    if mime == 'png':
+        format = MP4Cover.FORMAT_PNG
+    elif mime == 'jpeg':
+        format = MP4Cover.FORMAT_JPEG
+    else:
+        return
+    return MP4Cover(data, format)
+
 class Tag(util.MockTag):
     """Class for AAC tags."""
 
     mapping = {}
     revmapping = {}
     IMAGETAGS = (util.MIMETYPE, util.DATA)
-    _hash = {PATH: 'filepath',
-            FILENAME:'filename',
-            EXTENSION: 'ext',
-            DIRPATH: 'dirpath',
-            DIRNAME: 'dirname'}
 
-    def copy(self):
-        tag = Tag()
-        tag.load(self._tags.copy(), copy(self._mutfile), copy(self.images))
-        return tag
+    def __init__(self, filename=None):
+        self.__images = []
+        self.__errors = set()
+        self.__tags = CaselessDict()
+
+        util.MockTag.__init__(self, filename)
+
+    def get_filepath(self):
+        return util.MockTag.get_filepath(self)
+
+    def set_filepath(self,  val):
+        self.__tags.update(util.MockTag.set_filepath(self, val))
+
+    filepath = property(get_filepath, set_filepath)
+
+    def __contains__(self, key):
+        if self.revmapping:
+            key = self.revmapping.get(key, key)
+        return key in self.__tags
+
+    @del_deco
+    def __delitem__(self, key):
+        if key == '__image':
+            self.images = []  
+        elif key.startswith('__'):
+            return
+        else:
+            del(self.__tags[key])
 
     @getdeco
     def __getitem__(self, key):
-        if key == '__image':
-            return self.images
-
-        if key in INFOTAGS or isinstance(key, (int, long)):
-            return self._tags[key]
+        if key.startswith('__'):
+            if key == '__image':
+                return self.images
+            elif key == '__total' and 'track' in self:
+                try:
+                    return self['track'][0].split(u'/')[1].strip()
+                except IndexError:
+                    pass
+            else:
+                return self.__tags[key]
 
         try:
-            return FUNCS[key][0](self._tags[key])
+            return FUNCS[key][0](self.__tags[key])
         except KeyError:
-            return gettext(self._tags[key])
+            return gettext(self.__tags[key])
 
     @setdeco
     def __setitem__(self, key, value):
         if isinstance(key, (int, long)):
-            self._tags[key] = value
+            self.__tags[key] = value
             return
-        elif key in READONLY:
+        elif key.startswith('__'):
+            if key == '__image':
+                self.images = value
+            if key in FILETAGS:
+                setattr(self, fn_hash[key], value)
+            else:
+                self.__tags[key] = value
             return
-        elif key in FILETAGS:
-            setattr(self, self._hash[key], value)
+        elif isempty(value):
+            if key in self:
+                del(self[key])
             return
-        elif key == '__image':
-            self.images = value
-            return
-        elif key in INFOTAGS:
-            self._tags[key] = value
-            return
-        elif key not in INFOTAGS and isempty(value):
-            del(self[key])
-            return
-
-        try:
-            self._tags[key] = FUNCS[key][1](value)
-        except KeyError:
-            #User defined tags.
-            self._freeform[key] = '----:com.apple.iTunes:%s' % key
-            self._tags[key] = settext(value)
+        else:
+            try:
+                self.__tags[key] = FUNCS[key][1](value)
+            except KeyError:
+                #User defined tags.
+                self.__freeform[key] = '----:com.apple.iTunes:%s' % key
+                self.__tags[key] = settext(value)
+            except ValueError:
+                pass
 
     def delete(self):
-        self._mutfile.delete()
+        self.mut_obj.delete()
         for z in self.usertags:
-            del(self._tags[self.revmapping.get(z, z)])
+            del(self.__tags[self.revmapping.get(z, z)])
         self.images = []
-
-    def _picture(self, image):
-        data = image[util.DATA]
-        mime = imghdr.what(None, data)
-        if mime == 'png':
-            format = MP4Cover.FORMAT_PNG
-        elif mime == 'jpeg':
-            format = MP4Cover.FORMAT_JPEG
-        else:
-            return
-        return MP4Cover(data, format)
 
     def _setImages(self, images):
         if images:
-            self._images = filter(None, map(self._picture, images))
+            self.__images = images
         else:
-            self._images = []
+            self.__images = []
+        cover_info(images, self.__tags)
 
     def _getImages(self):
-        temp = []
-        for value in self._images:
-            try:
-                format = value.imageformat
-            except AttributeError:
-                format = value.format
-            if format == MP4Cover.FORMAT_PNG:
-                temp.append({'data': value, 'mime': 'image/png'})
-            else:
-                temp.append({'data': value, 'mime': 'image/jpeg'})
-        return temp
+        return self.__images
 
     images = property(_getImages, _setImages)
 
     def _info(self):
-        info = self._mutfile.info
+        info = self.mut_obj.info
         fileinfo = [('Path', self[PATH]),
                     ('Size', str_filesize(int(self.size))),
                     ('Filename', self[FILENAME]),
@@ -262,9 +289,7 @@ class Tag(util.MockTag):
         """Links the audio, filename
         returns self if successful, None otherwise."""
 
-        self._images = []
-        self._errors = set()
-        tags, audio = self._init_info(filename, MP4)
+        tags, audio = self.load(filename, MP4)
 
         if audio is None:
             return
@@ -272,27 +297,27 @@ class Tag(util.MockTag):
         revmap, mapping = self.revmapping, self.mapping
         self.revmapping, self.mapping = {}, {}
 
-        self._freeform = {} #Keys are tags as required by mutagen i.e. The '----'
+        self.__freeform = {} #Keys are tags as required by mutagen i.e. The '----'
                             #frames. Values are the tag as represented by puddletag.
 
         if audio.tags: #Not empty
             keys = audio.keys()
             try:
-                self._images = audio['covr']
+                self.images = map(bin_to_pic, audio['covr'])
                 keys.remove('covr')
             except KeyError:
                 pass
 
             #I want 'trkn', to split into track and totaltracks, like Mp3tag.
             if 'trkn' in keys:
-                self[u'track'] = [z[0] for z in audio['trkn']]
-                self[u'totaltracks'] = [z[1] for z in audio['trkn']]
+                self['track'] = [z[0] for z in audio['trkn']]
+                self['totaltracks'] = [z[1] for z in audio['trkn']]
                 keys.remove('trkn')
 
             #Same as above
             if 'disk' in keys:
-                self[u'disc'] = [z[0] for z in audio['disk']]
-                self[u'totaldiscs'] = [z[1] for z in audio['disk']]
+                self['disc'] = [z[0] for z in audio['disk']]
+                self['totaldiscs'] = [z[1] for z in audio['disk']]
                 keys.remove('disk')
 
             for key in keys:
@@ -300,47 +325,44 @@ class Tag(util.MockTag):
                     self[TAGS[key]] = audio[key]
                 else:
                     tag = key[key.find(':', key.find(':') +1) + 1:]
-                    self._freeform[tag] = key
+                    self.__freeform[tag] = key
                     try:
-                        self._tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
+                        self.__tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
                     except UnicodeDecodeError:
-                        self._errors.add(tag)
+                        self.__errors.add(tag)
 
         info = audio.info
-        self._tags.update({
-            u"__frequency": strfrequency(info.sample_rate),
-            u"__length": strlength(info.length),
-            u"__bitrate": strbitrate(info.bitrate),
-            u'__channels': unicode(info.channels),
-            u'__bitspersample': unicode(info.bits_per_sample)})
+        self.__tags.update({
+            "__frequency": strfrequency(info.sample_rate),
+            "__length": strlength(info.length),
+            "__bitrate": strbitrate(info.bitrate),
+            '__channels': unicode(info.channels),
+            '__bitspersample': unicode(info.bits_per_sample),
+            "__length_seconds": unicode(int(info.length))})
         self.revmapping, self.mapping = revmap, mapping
-        self._tags.update(tags)
+        self.__tags['__tag_read'] = u'MP4'
+        self.__tags.update(tags)
         self.filetype = 'MP4'
-        self._tags['__filetype'] = self.filetype
-        self._set_attrs(ATTRIBUTES)
-        self._mutfile = audio
+        self.__tags['__filetype'] = self.filetype
+        self.set_attrs(ATTRIBUTES, self.__tags)
+        self.update_tag_list()
+        self.mut_obj = audio
 
-    def load(self, tags, mutfile, images = None):
-        """Used only for creating a copy of myself."""
-        self._tags = deepcopy(tags)
-        self.filename = tags[FILENAME]
-        if not images:
-            self.images = []
-        else:
-            self.images = deepcopy(images)
-        self._mutfile = mutfile
+    @keys_deco
+    def keys(self):
+        return self.__tags.keys()
 
     def save(self):
-        if self._mutfile.tags is None:
-            self._mutfile.add_tags()
-        if self.filepath != self._mutfile.filename:
-            self._mutfile.filename = self.filepath
-        audio = self._mutfile
+        if self.mut_obj.tags is None:
+            self.mut_obj.add_tags()
+        if self.filepath != self.mut_obj.filename:
+            self.mut_obj.filename = self.filepath
+        audio = self.mut_obj
 
         newtag = {}
         tuples = (('track', ['trkn', 'totaltracks']),
             ('disc', ['disk', 'totaldiscs']))
-        tags = self._tags
+        tags = self.__tags
         for tag, values in tuples:
             if tag in tags:
                 denom = tags[tag]
@@ -354,7 +376,7 @@ class Tag(util.MockTag):
                 total = tags[values[1]]
                 newtag[values[0]] = [(0, int(z)) for z in total]
 
-        tags = usertags(self._tags)
+        tags = usertags(self.__tags)
         tags = [(z, tags[z]) for z in tags
             if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
 
@@ -362,16 +384,23 @@ class Tag(util.MockTag):
             try:
                 newtag[REVTAGS[tag]] = value
             except KeyError:
-                newtag[self._freeform[tag].encode('utf8')] = encode(self._tags[tag])
+                newtag[self.__freeform[tag].encode('utf8')] = encode(self.__tags[tag])
 
         if self.images:
-            newtag['covr'] = self._images
+            newtag['covr'] = map(pic_to_bin, self.images)
 
         toremove = [z for z in audio.keys() if
-            z not in newtag and z not in self._errors]
+            z not in newtag and z not in self.__errors]
         for key in toremove:
             del(audio[key])
         audio.update(newtag)
         audio.save()
+
+    def update_tag_list(self):
+        l = tag_versions.tags_in_file(self.filepath)
+        if l:
+            self.__tags['__tag'] = u'MP4, ' + u', '.join(l)
+        else:
+            self.__tags['__tag'] = u'MP4'
 
 filetype = (MP4, Tag, 'MP4')

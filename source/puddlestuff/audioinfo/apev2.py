@@ -4,11 +4,13 @@ from mutagen.apev2 import APEv2File, APEBinaryValue
 import util, pdb
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY, DIRNAME,
-    FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize)
+    FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize, fn_hash,
+    keys_deco, del_deco, CaselessDict, unicode_list, cover_info)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
     'modified', 'filetype')
 import imghdr
-from mutagen.apev2 import APEValue, BINARY
+from mutagen.apev2 import APEValue, BINARY, APENoHeaderError
+import tag_versions
 
 COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
 
@@ -55,25 +57,57 @@ def get_class(mutagen_file, base_function, attrib_fields):
         mapping = {}
         revmapping = {}
         apev2=True
-        _hash = {PATH: 'filepath',
-            FILENAME:'filename',
-            EXTENSION: 'ext',
-            DIRPATH: 'dirpath',
-            DIRNAME: 'dirname'}
+
+        def __init__(self, filename=None):
+            self.__images = []
+            self.__tags = CaselessDict()
+
+            util.MockTag.__init__(self, filename)
+
+        def get_filepath(self):
+            return util.MockTag.get_filepath(self)
+
+        def set_filepath(self,  val):
+            self.__tags.update(util.MockTag.set_filepath(self, val))
+
+        filepath = property(get_filepath, set_filepath)
 
         def _getImages(self):
-            return self._images
+            return self.__images
 
         def _setImages(self, images):
-            self._images = images
+            if images:
+                self.__images = images
+            else:
+                self.__images = []
+            cover_info(images, self.__tags)
 
         images = property(_getImages, _setImages)
+
+        def __contains__(self, key):
+            if self.revmapping:
+                key = self.revmapping.get(key, key)
+            return key in self.__tags
+
+        @del_deco
+        def __delitem__(self, key):
+            if key == '__image':
+                self.images = []
+            elif key.startswith('__'):
+                return
+            else:
+                del(self.__tags[key])
 
         @getdeco
         def __getitem__(self,key):
             if key == '__image':
                 return self.images
-            return self._tags[key]
+            elif key == '__total' and 'track' in self:
+                try:
+                    return self['track'][0].split(u'/')[1].strip()
+                except IndexError:
+                    pass
+            return self.__tags[key]
 
         @setdeco
         def __setitem__(self, key, value):
@@ -82,40 +116,27 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 self.images = value
                 return
 
-            if isinstance(key, (int, long)):
-                self._tags[key] = value
+            if key.startswith('__'):
+                if key == '__image':
+                    self.images = value
+                elif key in fn_hash:
+                    setattr(self, fn_hash[key], value)
                 return
-            elif key in READONLY:
-                return
-            elif key in FILETAGS:
-                setattr(self, self._hash[key], value)
-                return
-            elif key in INFOTAGS:
-                self._tags[key] = value
-                return
-            elif key not in INFOTAGS and isempty(value):
-                del(self[key])
-                return
-
-
-            if (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
-                self._tags[key] = [unicode(value)]
+            elif isempty(value):
+                if key in self:
+                    del(self[key])
             else:
-                self._tags[key] = [z if isinstance(z, unicode)
-                    else unicode(z) for z in value]
-
-        def copy(self):
-            tag = Tag()
-            tag.load(copy(self._mutfile), self._tags.copy())
-            return tag
+                value = unicode_list(value)
+                if isempty(value): return
+                self.__tags[key] = value
 
         def delete(self):
-            self._mutfile.delete()
+            self.mut_obj.delete()
             for z in self.usertags:
-                del(self._tags[z])
+                del(self.__tags[z])
 
         def _info(self):
-            info = self._mutfile.info
+            info = self.mut_obj.info
             fileinfo = [('Path', self[PATH]),
                         ('Size', str_filesize(int(self.size))),
                         ('Filename', self[FILENAME]),
@@ -133,18 +154,17 @@ def get_class(mutagen_file, base_function, attrib_fields):
 
         info = property(_info)
 
-        def load(self, mutfile, tags):
-            self._mutfile = mutfile
-            self.filepath = tags.filepath
-            self._tags = tags
+        @keys_deco
+        def keys(self):
+            return self.__tags.keys()
 
         def link(self, filename, x = None):
             """Links the audio, filename
             returns self if successful, None otherwise."""
-            self._images = []
+            self.__images = []
             try:
-                tags, audio = self._init_info(filename, mutagen_file)
-            except mutagen.apev2.APENoHeaderError:
+                tags, audio = self.load(filename, mutagen_file)
+            except APENoHeaderError:
                 audio = mutagen_file()
                 tags, audio = self._init_info(filename, None)
                 audio.filename = tags['__filepath']
@@ -152,35 +172,40 @@ def get_class(mutagen_file, base_function, attrib_fields):
             if audio is None:
                 return
 
-            
+            images = []
             for key in audio:
                 try:
                     if key.lower() in COVER_KEYS:
                         img_type = COVER_KEYS.get(key.lower(), 3)
-                        self._images.append(
+                        images.append(
                             bin_to_pic(audio[key].value, img_type))
                     else:
-                        self._tags[key.lower()] = audio.tags[key][:]
+                        self.__tags[key.lower()] = audio.tags[key][:]
                 except TypeError:
                     pass
 
-            self._tags.update(base_function(audio.info))
-            self._tags.update(tags)
-            self._set_attrs(attrib_fields)
-            self._mutfile = audio
+            self.images = images
+            self.__tags.update(base_function(audio.info))
+            self.__tags.update(tags)
+            self.__tags['__tag_read'] = u'APEv2'
+            self.set_attrs(attrib_fields)
+            self.filetype = 'APEv2' if '__filetype' not in self.__tags else \
+                self.__tags['__filetype']
+            self.update_tag_list()
+            self.mut_obj = audio
             return self
 
         def save(self):
-            if self._mutfile.tags is None:
-                self._mutfile.add_tags()
-            if self.filepath != self._mutfile.filename:
-                self._mutfile.filename = self.filepath
-            audio = self._mutfile
+            if self.mut_obj.tags is None:
+                self.mut_obj.add_tags()
+            if self.filepath != self.mut_obj.filename:
+                self.mut_obj.filename = self.filepath
+            audio = self.mut_obj
 
             newtag = {}
             if self.images:
                 [newtag.update(pic_to_bin(z)) for z in self.images]
-            for field, value in usertags(self._tags).items():
+            for field, value in usertags(self.__tags).items():
                 try:
                     if isinstance(field, unicode):
                         field = field.encode('utf8')
@@ -192,6 +217,14 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 del(audio[z])
             audio.tags.update(newtag)
             audio.save()
+
+        def update_tag_list(self):
+            l = tag_versions.tags_in_file(self.filepath,
+                [tag_versions.ID3_V1, tag_versions.ID3_V2])
+            if l:
+                self.__tags['__tag'] = u'APEv2, ' + u', '.join(l)
+            else:
+                self.__tags['__tag'] = u'APEv2'
 
     return Tag
 

@@ -76,10 +76,14 @@ PATH = u"__path"
 FILENAME = u"__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
+DIRNAME = '__dirname'
+FILENAME_NO_EXT = '__filename_no_ext'
+PARENT_DIR = '__parent_dir'
 READONLY = ('__bitrate', '__frequency', "__length",
     "__modified", "__size", "__created", "__library")
 IMAGE = '__image'
-FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH]
+FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME, FILENAME_NO_EXT,
+    PARENT_DIR]
 INFOTAGS = FILETAGS + list(READONLY)
 
 #SIGNALS
