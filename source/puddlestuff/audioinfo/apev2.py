@@ -57,7 +57,7 @@ def get_class(mutagen_file, filetype, attrib_fields):
         IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA, util.IMAGETYPE)
         mapping = {}
         revmapping = {}
-        apev2=True
+        apev2 = True
 
         def __init__(self, filename=None):
             self.__images = []

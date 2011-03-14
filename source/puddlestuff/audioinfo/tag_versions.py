@@ -3,7 +3,7 @@ import os, struct, sys, time
 from mutagen.id3 import ParseID3v1
 import mutagen.id3
 
-from id3 import handle
+import id3
 import apev2
 APEv2_Tag = apev2.Tag
 
@@ -21,9 +21,9 @@ def apev2_values(fn):
     return APEv2_Tag(fn).usertags
 
 def convert_id3_frames(frames):
-    mapping = audioinfo.mapping.get('ID3', {})
+    mapping = id3.Tag.mapping
     return dict((mapping.get(k, k) , v.get_value())
-        for k,v in handle(frames).iteritems())
+        for k,v in id3.handle(frames).iteritems())
 
 def fullread(fileobj, size):
     data = fileobj.read(size)
@@ -148,7 +148,6 @@ def tag_values(fn, tag):
 
 if __name__ == '__main__':
     import sys
-    sys.path.insert(0, '/home/keith/Documents/python/puddletag')
     filename = sys.argv[1]
     #f = open(filename, 'rb')
     print tags_in_file(filename)

@@ -5,9 +5,20 @@ from PyQt4.QtGui import *
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PuddleThread, natcasecmp
 from puddlestuff import audioinfo
+import puddlestuff.audioinfo.tag_versions as tag_versions
 import pdb, time
 
 mutex = QMutex()
+
+def sort_dict(d):
+    ret = []
+    for key, val in d.iteritems():
+        if isinstance(val, basestring):
+            ret.append((key, val))
+        else:
+            ret.extend((key, v) for v in val)
+    ret.sort(cmp =natcasecmp)
+    return ret
 
 class StoredTags(QScrollArea):
     def __init__(self, parent=None, status = None):
@@ -48,42 +59,62 @@ class StoredTags(QScrollArea):
 
         def retrieve_tag():
             try:
+                
                 audio = audioinfo._Tag(filepath)
+                tags = tag_versions.tags_in_file(filepath)
             except (OSError, IOError), e:
                 audio = {'Error': [e.strerror]}
-            try:
-                tags = audio.usertags
-            except AttributeError:
-                tags = audio
 
-            sortedvals = [[(key, val) for val in tags[key]] if
-                not isinstance(tags[key], basestring) else [(key, tags[key])]
-                for key in sorted(tags, cmp = natcasecmp)]
-            values = []
-            [values.extend(v) for v in sortedvals]
-            return values
+            if isinstance(audio, audioinfo.id3.Tag):
+                if u'ID3v2.4' in tags:
+                    tags.remove(u'ID3v2.4')
+                if u'ID3v2.3' in tags:
+                    tags.remove(u'ID3v2.3')
+            elif hasattr(audio, 'apev2') and audio.apev2:
+                if u'APEv2' in tags:
+                    tags.remove('APEv2')
 
-        def _load(values):
+            ret = [(audio['__tag_read'], sort_dict(audio.usertags))]
+            for tag in tags:
+                try:
+                    ret.append((tag,
+                        sort_dict(tag_versions.tag_values(filepath, tag))))
+                except:
+                    continue
+            return ret
+
+        def _load(tags):
             #print 'loading', time.time()
             while self._loading:
                 QApplication.processEvents()
             self._loading = True
             self._init()
-            if not values:
+            if not tags:
                 self._loading = False
                 return
+
             grid = self._grid
-            for row, (tag, value) in enumerate(values):
-                field = QLabel(u'%s:' % tag)
-                field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-                grid.addWidget(field, row, 0)
-                vlabel = QLabel(value)
-                vlabel.setFont(self._boldfont)
-                grid.addWidget(vlabel, row, 1)
+
+            offset = 1
+            for title, values in tags:
+                if not values:
+                    continue
+                t_label = QLabel(title)
+                t_label.setFont(self._boldfont)
+                grid.addWidget(t_label, offset - 1, 0)
+                for row, (tag, value) in enumerate(values):
+                    field = QLabel(u'%s:' % tag)
+                    field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+                    grid.addWidget(field, row + offset, 0)
+                    vlabel = QLabel(value)
+                    grid.addWidget(vlabel, row + offset, 1)
+                grid.setRowMinimumHeight(grid.rowCount(),
+                    vlabel.sizeHint().height())
+                offset += grid.rowCount() + 1
             vbox = QVBoxLayout()
             vbox.addStretch()
-            grid.addLayout(vbox,row + 1,0, -1, -1)
-            grid.setRowStretch(row + 1, 1)
+            grid.addLayout(vbox,offset + 1 + offset,0, -1, -1)
+            grid.setRowStretch(offset + 1, 1)
             self._loading = False
 
         thread = PuddleThread(retrieve_tag, self)
