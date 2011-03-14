@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import util, struct
-from mutagen.asf import ASF
+import util, struct, pdb
+from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
 from util import (strlength, strbitrate, strfrequency, usertags, PATH,
-                  getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-                  READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-                  getdeco, setdeco, str_filesize)
+    getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
+    READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
+    getdeco, setdeco, str_filesize, fn_hash, cover_info,
+    get_mime, to_string, unicode_list, CaselessDict, keys_deco,
+    del_deco, get_total, set_total, info_to_dict)
 from copy import copy
+import tag_versions
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
     'modified', 'filetype')
 
 #From picard
-def unpack_image(data):
+def bin_to_pic(image):
     """
     Helper function to unpack image data from a WM/Picture tag.
 
@@ -23,6 +26,7 @@ def unpack_image(data):
     Description, null terminated UTF-16-LE string
     The image data in the given length
     """
+    data = image.value
     (type, size) = struct.unpack_from("<bi", data)
     pos = 5
     mime = ""
@@ -42,132 +46,161 @@ def unpack_image(data):
         util.IMAGETYPE: type,
         util.DESCRIPTION: description.decode("utf-16-le"),}
 
-def pack_image(image):
+def pic_to_bin(image):
     """
     Helper function to pack image data for a WM/Picture tag.
     See unpack_image for a description of the data format.
     """
 
-    mime = image[util.MIMETYPE]
     data = image[util.DATA]
-    type = image[util.IMAGETYPE]
+    mime = image.get(util.MIMETYPE)
+    if not mime:
+        mime = get_mime(data)
+        if not mime:
+            return
+    type = image.get(util.IMAGETYPE, 3)
+    description = image.get(util.DESCRIPTION, u'')
     tag_data = struct.pack("<bi", type, len(data))
     tag_data += mime.encode("utf-16-le") + "\x00\x00"
     tag_data += description.encode("utf-16-le") + "\x00\x00"
     tag_data += data
-    return tag_data
+    return ASFByteArrayAttribute(tag_data)
 
 class Tag(util.MockTag):
-    """Ogg Tag class.
-
-    All methods, etc., work as with a usual dictionary.
-
-    To use, instantiate with a filename:
-    >>>x = Tag('filename.ogg')
-
-    Afterwards, tags can be edited using a dictionary style. .i.e.
-    >>>x['track'] = '1'
-    >>>x['title'] = ['Some Title']
-    >>>x['artist'] = ['Artist1', 'Artist2']
-
-    Multiple tag values are supported and all values are converted to
-    lists internally.
-
-    >>>x['track']
-    [u'1]"""
-    IMAGETAGS = ()
+    IMAGETAGS = (util.MIMETYPE, util.DATA, util.IMAGETYPE, util.DESCRIPTION)
     mapping = {}
     revmapping = {}
 
-    _hash = {PATH: 'filepath',
-             FILENAME:'filename',
-             EXTENSION: 'ext',
-             DIRPATH: 'dirpath'}
-
-    format = "Windows Media Audio"
-
     __rtranslate = {
         'album': 'WM/AlbumTitle',
-        'title': 'Title',
-        'artist': 'Author',
-        'albumartist': 'WM/AlbumArtist',
-        'year': 'WM/Year',
-        'composer': 'WM/Composer',
-        # FIXME performer
-        'lyricist': 'WM/Writer',
-        'conductor': 'WM/Conductor',
-        'remixer': 'WM/ModifiedBy',
-        # FIXME engineer
-        'engineer': 'WM/Producer',
-        'grouping': 'WM/ContentGroupDescription',
-        'subtitle': 'WM/SubTitle',
         'album_subtitle': 'WM/SetSubTitle',
-        'track': 'WM/TrackNumber',
-        'discnumber': 'WM/PartOfSet',
-        # FIXME compilation
-        'comment:': 'Description',
-        'genre': 'WM/Genre',
+        'albumartist': 'WM/AlbumArtist',
+        'albumartistsortorder': 'WM/AlbumArtistSortOrder',
+        'albumsortorder': 'WM/AlbumSortOrder',
+        'artist': 'Author',
         'bpm': 'WM/BeatsPerMinute',
-        'mood': 'WM/Mood',
-        'isrc': 'WM/ISRC',
+        'comment:': 'Description',
+        'composer': 'WM/Composer',
+        'conductor': 'WM/Conductor',
         'copyright': 'WM/Copyright',
-        'lyrics': 'WM/Lyrics',
-        # FIXME media, catalognumber, barcode
-        'label': 'WM/Publisher',
+        'discnumber': 'WM/PartOfSet',
         'encodedby': 'WM/EncodedBy',
-        'albumsort': 'WM/AlbumSortOrder',
-        'albumartistsort': 'WM/AlbumArtistSortOrder',
-        'artistsort': 'WM/ArtistSortOrder',
-        'titlesort': 'WM/TitleSortOrder',
-        'mbrainz_track_id': 'MusicBrainz/Track Id',
+        'encodersettings': 'WM/EncodingSettings',
+        'encodingtime': 'WM/EncodingTime',
+        'engineer': 'WM/Producer',
+        'genre': 'WM/Genre',
+        'grouping': 'WM/ContentGroupDescription',
+        'initialkey': 'WM/InitialKey',
+        'isrc': 'WM/ISRC',
+        'label': 'WM/Publisher',
+        'language': 'WM/Language',
+        'lyricist': 'WM/Writer',
+        'lyrics': 'WM/Lyrics',
         'mbrainz_album_id': 'MusicBrainz/Album Id',
-        'mbrainz_artist_id': 'MusicBrainz/Artist Id',
         'mbrainz_albumartist_id': 'MusicBrainz/Album Artist Id',
-        'mbrainz_trmid': 'MusicBrainz/TRM Id',
+        'mbrainz_artist_id': 'MusicBrainz/Artist Id',
         'mbrainz_discid': 'MusicBrainz/Disc Id',
+        'mbrainz_track_id': 'MusicBrainz/Track Id',
+        'mbrainz_trmid': 'MusicBrainz/TRM Id',
+        'mood': 'WM/Mood',
         'musicip_puid': 'MusicIP/PUID',
+        'originalalbum': 'WM/OriginalAlbumTitle',
+        'originalartist': 'WM/OriginalArtist',
+        'originalfilename': 'WM/OriginalFilename',
+        'originallyricist': 'WM/OriginalLyricist',
+        'originalyear': 'WM/OriginalReleaseYear',
+        'performersortorder': 'WM/ArtistSortOrder',
+        'releasecountry': 'MusicBrainz/Album Release Country',
         'releasestatus': 'MusicBrainz/Album Status',
         'releasetype': 'MusicBrainz/Album Type',
-        'releasecountry': 'MusicBrainz/Album Release Country',
+        'remixer': 'WM/ModifiedBy',
+        'subtitle': 'WM/SubTitle',
+        'title': 'Title',
+        'titlesortorder': 'WM/TitleSortOrder',
+        'track': 'WM/TrackNumber',
+        'unsyncedlyrics': 'WM/Lyrics',
+        'wwwartist': 'WM/AuthorURL',
+        'wwwaudiosource': 'WM/AudioSourceURL',
+        'wwwcommercialinfo': 'WM/PromotionURL',
+        'wwwcopyright': 'CopyrightURL',
+        'year': 'WM/Year',
     }
     __translate = dict([(v, k) for k, v in __rtranslate.iteritems()])
 
+    def __init__(self, filename=None):
+        self.__images = []
+        self.__tags = CaselessDict()
+
+        util.MockTag.__init__(self, filename)
+
+    def get_filepath(self):
+        return util.MockTag.get_filepath(self)
+
+    def set_filepath(self,  val):
+        self.__tags.update(util.MockTag.set_filepath(self, val))
+
+    filepath = property(get_filepath, set_filepath)
+
+    def _getImages(self):
+        return self.__images
+
+    def _setImages(self, images):
+        if images:
+            self.__images = images
+        else:
+            self.__images = []
+        cover_info(images, self.__tags)
+
+    images = property(_getImages, _setImages)
+
+    def __contains__(self, key):
+        if self.revmapping:
+            key = self.revmapping.get(key, key)
+        return key in self.__tags
+
     @getdeco
     def __getitem__(self, key):
-        return self._tags[key]
+        if key == '__image':
+            return self.images
+        elif key == '__total':
+            return get_total(self)
+        return self.__tags[key]
 
     @setdeco
     def __setitem__(self,key,value):
-        if key in READONLY:
-            return
-        elif key in FILETAGS:
-            setattr(self, self._hash[key], value)
-            return
+        if key.startswith('__'):
 
-        if key not in INFOTAGS and isempty(value):
+            if key == '__image':
+                self.images = value
+            elif key in fn_hash:
+                setattr(self, fn_hash[key], value)
+            elif key == '__total' and 'track' in self:
+                if set_total(self, value):
+                    return
+            return
+        elif isempty(value):
             del(self[key])
-        elif key in INFOTAGS or isinstance(key, (int, long)):
-            self._tags[key] = value
         elif key in self.__rtranslate:
-            if isinstance(value, (str, int, long)):
-                value = unicode(value)
-            if isinstance(value, basestring):
-                value = [value]
-            self._tags[key] = value
+            self.__tags[key] = unicode_list(value)
 
-    def copy(self):
-        tag = Tag()
-        tag.load(copy(self._mutfile), self._tags.copy())
-        return tag
+    @del_deco
+    def __delitem__(self, key):
+        if key == '__image':
+            self.images = []
+        elif key.startswith('__'):
+            return
+        else:
+            del(self.__tags[key])
 
     def delete(self):
-        self._mutfile.delete()
+        self.mut_obj.clear()
         for z in self.usertags:
             del(self[z])
+        self.mut_obj.save()
         self.save()
 
     def _info(self):
-        info = self._mutfile.info
+        info = self.mut_obj.info
         fileinfo = [('Path', self[PATH]),
                     ('Size', str_filesize(int(self.size))),
                     ('Filename', self[FILENAME]),
@@ -177,15 +210,13 @@ class Tag(util.MockTag):
                    ('Frequency', self.frequency),
                    ('Channels', unicode(info.channels)),
                    ('Length', self.length)]
-        return [('File', fileinfo), ('WMA Info', wmainfo)]
+        return [('File', fileinfo), ('ASF Info', wmainfo)]
 
     info = property(_info)
 
-
-    def load(self, mutfile, tags):
-        self._mutfile = mutfile
-        self.filename = tags[FILENAME]
-        self._tags = tags
+    @keys_deco
+    def keys(self):
+        return self.__tags.keys()
 
     def link(self, filename):
         """Links the audio, filename
@@ -197,41 +228,60 @@ class Tag(util.MockTag):
         if audio is None:
             return
 
-        for name, values in audio.tags.items():
-            try: name = self.__translate[name]
-            except KeyError: continue
-            self._tags[name] = u"\n".join(map(unicode, values))
+        for name, values in audio.tags.iteritems():
+            try:
+                self.__tags[self.__translate[name]] = map(unicode, values)
+            except KeyError:
+                if isinstance(values[0], ASFUnicodeAttribute):
+                    if name not in self.__tags:
+                        self.__tags[name] = map(unicode, values)
 
-        info = audio.info
-        self._tags.update({u"__frequency": strfrequency(info.sample_rate),
-                    u"__length": strlength(info.length),
-                    u"__bitrate": strbitrate(info.bitrate)})
-        self._tags.update(tags)
-        self._tags['__filetype'] = 'WMA'
-        self._set_attrs(ATTRIBUTES)
-        self._mutfile = audio
-        
+        if 'WM/Picture' in audio:
+            self.images = map(bin_to_pic, audio['WM/Picture'])
+
+        self.__tags.update(info_to_dict(audio.info))
+        self.__tags.update(tags)
+        self.__tags['__filetype'] = u'ASF'
+        self.filetype = u'ASF'
+        self.__tags['__tag_read'] = u'ASF'
+        self.set_attrs(ATTRIBUTES)
+        self.mut_obj = audio
+        self.update_tag_list()
         return self
 
     def save(self):
-        """Writes the tags in self._tags
+        """Writes the tags in self.__tags
         to self.filename if no filename is specified."""
         filepath = self.filepath
 
-        if self._mutfile.tags is None:
-            self._mutfile.add_tags()
-        if filepath != self._mutfile.filename:
-            self._mutfile.filename = filepath
-        audio = self._mutfile
+        if self.mut_obj.tags is None:
+            self.mut_obj.add_tags()
+        if filepath != self.mut_obj.filename:
+            self.mut_obj.filename = filepath
+        audio = self.mut_obj
 
         newtag = {}
-        for tag, value in usertags(self._tags).items():
-            newtag[self.__rtranslate[tag]] = value
+        for field, value in usertags(self.__tags).items():
+            try:
+                newtag[self.__rtranslate[field]] = value
+            except KeyError:
+                newtag[field] = value
+
+        pics = map(pic_to_bin, self.images)
+        if pics:
+            newtag['WM/Picture'] = pics
 
         toremove = [z for z in audio if z not in newtag]
         for z in toremove:
             del(audio[z])
         audio.update(newtag)
         audio.save()
+
+    def update_tag_list(self):
+        l = tag_versions.tags_in_file(self.filepath)
+        if l:
+            self.__tags['__tag'] = u'ASF, ' + u', '.join(l)
+        else:
+            self.__tags['__tag'] = u'ASF'
 
 filetype = (ASF, Tag, 'WMA')

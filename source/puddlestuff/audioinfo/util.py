@@ -8,7 +8,6 @@ from os import path, stat
 
 from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
 
-
 PATH = u"__path"
 FILENAME = u"__filename"
 EXTENSION = '__ext'
@@ -56,7 +55,8 @@ IMAGETAGS = (MIMETYPE, DESCRIPTION, DATA, IMAGETYPE)
 MONO = u'Mono'
 JOINT_STEREO = u'Joint-Stereo'
 DUAL_CHANNEL = u'Dual-Channel'
-STEREO = u'STEREO'
+STEREO = u'Stereo'
+MODES = [STEREO, JOINT_STEREO, DUAL_CHANNEL, MONO]
 
 TAGS = {'TALB': 'album',
         'TBPM': 'bpm',
@@ -180,6 +180,48 @@ def unicode_list(value):
         return [unicode(value)]
     else:
         return [to_string(v, 'replace') for v in value if v]
+
+def info_to_dict(info):
+    tags = {}
+    try: tags["__frequency"] = strfrequency(info.sample_rate)
+    except AttributeError: pass
+
+    try: tags["__length"] = strlength(info.length)
+    except AttributeError: pass
+
+    try: tags["__length_seconds"] = unicode(int(info.length))
+    except AttributeError: pass
+
+    try: tags["__bitrate"] = strbitrate(info.bitrate)
+    except AttributeError: tags[u"__bitrate"] = u'0 kb/s'
+
+    try: tags['__bitspersample'] = unicode(info.bits_per_sample)
+    except AttributeError: pass
+
+    try: tags['__channels'] = unicode(info.channels)
+    except AttributeError: pass
+
+    try: tags['__layer'] = unicode(info.layer)
+    except AttributeError: pass
+
+    if isinstance(info, mutagen.mp3.MPEGInfo):
+        try: tags['__mode'] = MODES[info.mode]
+        except AttributeError: pass
+    else:
+        try: tags['__mode'] = MONO if info.channels == 1 else STEREO
+        except AttributeError: pass
+
+    try: tags['__titlegain'] = unicode(info.title_gain)
+    except AttributeError: pass
+
+
+    try: tags['__albumgain'] = unicode(info.album_gain)
+    except AttributeError: pass
+
+    try: tags['__version'] = unicode(info.version)
+    except AttributeError: pass
+
+    return tags
 
 def stringtags(tag, leaveNone = False):
     """Takes a dictionary(tag) and returns string representations of each key.
@@ -387,6 +429,21 @@ def get_mime(data):
         return 'image/' + mime
     else:
         return u''
+
+def get_total(tag):
+    value = to_string(tag['track'])
+    try:
+        return value.split(u'/')[1].strip()
+    except IndexError:
+        raise KeyError('__total')
+
+def set_total(tag, value):
+    track = to_string(tag['track']).split(u'/', 1)
+    value = to_string(value)
+    if not (value and track) or len(track) == 1:
+        return False
+    tag['track'] = track[0] + u'/' + value
+    return True
 
 def cover_info(images, d=None):
     info = {}

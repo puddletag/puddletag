@@ -5,7 +5,7 @@ from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
     FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
-    del_deco, cover_info)
+    del_deco, cover_info, info_to_dict)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
@@ -210,11 +210,8 @@ class Tag(util.MockTag):
         if key.startswith('__'):
             if key == '__image':
                 return self.images
-            elif key == '__total' and 'track' in self:
-                try:
-                    return self['track'][0].split(u'/')[1].strip()
-                except IndexError:
-                    pass
+            elif key == '__total':
+                return FUNCS['totaltracks'][0](self.__tags['totaltracks'])
             else:
                 return self.__tags[key]
 
@@ -233,8 +230,8 @@ class Tag(util.MockTag):
                 self.images = value
             if key in FILETAGS:
                 setattr(self, fn_hash[key], value)
-            else:
-                self.__tags[key] = value
+            elif key == '__total':
+                self.__tags['totaltracks'] = FUNCS['totaltracks'][1](value)
             return
         elif isempty(value):
             if key in self:
@@ -331,14 +328,7 @@ class Tag(util.MockTag):
                     except UnicodeDecodeError:
                         self.__errors.add(tag)
 
-        info = audio.info
-        self.__tags.update({
-            "__frequency": strfrequency(info.sample_rate),
-            "__length": strlength(info.length),
-            "__bitrate": strbitrate(info.bitrate),
-            '__channels': unicode(info.channels),
-            '__bitspersample': unicode(info.bits_per_sample),
-            "__length_seconds": unicode(int(info.length))})
+        self.__tags.update(info_to_dict(audio.info))
         self.revmapping, self.mapping = revmap, mapping
         self.__tags['__tag_read'] = u'MP4'
         self.__tags.update(tags)

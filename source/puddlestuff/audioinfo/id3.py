@@ -22,7 +22,7 @@ MakeID3v1 = mutagen.id3.MakeID3v1
 from util import  (strlength, strbitrate, strfrequency, isempty, getdeco,
     setdeco, getfilename, getinfo, FILENAME, PATH, INFOTAGS,
     READONLY, EXTENSION, DIRPATH, FILETAGS, str_filesize, DIRNAME,
-    cover_info)
+    cover_info, get_total, set_total, info_to_dict)
 import imghdr
 
 def handle(f):
@@ -48,7 +48,6 @@ def handle(f):
 
 import tag_versions
 
-MODES = ['Stereo', 'Joint-Stereo', 'Dual-Channel', 'Mono']
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
     'modified')
 
@@ -722,11 +721,8 @@ class Tag(TagBase):
                 return self.images
             elif key == '__filetype':
                 return self.filetype
-            elif key == '__total' and 'track' in self:
-                try:
-                    return self['track'][0].split(u'/')[1].strip()
-                except IndexError:
-                    pass
+            elif key == '__total':
+                return get_total(self)
             else:
                 return self.__tags[key]
         elif not isinstance(key, basestring):
@@ -773,27 +769,8 @@ class Tag(TagBase):
             if apics:
                 self.images = map(bin_to_pic, apics)
 
-        info = audio.info
-        
-        try: self.__tags["__frequency"] = strfrequency(info.sample_rate)
-        except AttributeError: pass
-        
-        try: self.__tags["__length"] = strlength(info.length)
-        except AttributeError: pass
-
-        try: self.__tags["__bitrate"] = strbitrate(info.bitrate)
-        except AttributeError: pass
-        
-        try: self.__tags['__mode'] = MODES[info.mode]
-        except AttributeError: pass
-
-        try: self.__tags['__layer'] = unicode(info.layer)
-        except AttributeError: pass
-
-        try: tags["__length_seconds"] = unicode(int(info.length))
-        except AttributeError: pass
-        
         self.__tags.update(tags)
+        self.__tags.update(info_to_dict(audio.info))
 
         self.set_attrs(ATTRIBUTES)
 
@@ -902,6 +879,8 @@ class Tag(TagBase):
                 self.images = value
             elif key in fn_hash:
                 setattr(self, fn_hash[key], value)
+            elif key == '__total':
+                set_total(self, value)
             return
 
         value = unicode_list(value)

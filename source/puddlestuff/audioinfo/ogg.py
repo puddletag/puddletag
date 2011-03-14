@@ -11,7 +11,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
     getdeco, setdeco, str_filesize, unicode_list,
     CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
-    MONO, STEREO)
+    MONO, STEREO, get_total, set_total)
 from tag_versions import tags_in_file
 from copy import copy
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -87,32 +87,24 @@ def vorbis_tag(base, name):
         def __getitem__(self, key):
             if key == '__image':
                 return self.images
-            elif key == '__total' and 'track' in self:
-                try:
-                    return self['track'][0].split(u'/')[1].strip()
-                except IndexError:
-                    pass
+            elif key == '__total':
+                return get_total(self)
             return self.__tags[key]
 
         @setdeco
         def __setitem__(self, key, value):
-            if key in READONLY:
-                return
-            elif key in FILETAGS:
-                setattr(self, fn_hash[key], value)
-                return
-            
-            if isempty(value):
+            if key.startswith('__'):
+                if key == '__image':
+                    self.images = value
+                elif key == '__total':
+                    set_total(self, value)
+                elif key in fn_hash:
+                    setattr(self, fn_hash[key], value)
+            elif isempty(value):
                 if key in self:
                     del(self[key])
                 else:
                     return
-
-            if key.startswith('__'):
-                if key == '__image':
-                    self.images = value
-                elif key in fn_hash:
-                    setattr(self, fn_hash[key], value)
             else:
                 if isinstance(value, (int, long)):
                     self.__tags[key.lower()] = [unicode(value)]

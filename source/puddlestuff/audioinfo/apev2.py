@@ -5,7 +5,8 @@ import util, pdb
 from util import (strlength, strbitrate, strfrequency, usertags, PATH, isempty,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS, READONLY, DIRNAME,
     FILETAGS, DIRPATH, EXTENSION, getdeco, setdeco, str_filesize, fn_hash,
-    keys_deco, del_deco, CaselessDict, unicode_list, cover_info)
+    keys_deco, del_deco, CaselessDict, unicode_list, cover_info,
+    get_total, set_total, info_to_dict)
 ATTRIBUTES = ('length', 'accessed', 'size', 'created',
     'modified', 'filetype')
 import imghdr
@@ -48,7 +49,7 @@ def pic_to_bin(pic):
 
     return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
 
-def get_class(mutagen_file, base_function, attrib_fields):
+def get_class(mutagen_file, filetype, attrib_fields):
     class Tag(util.MockTag):
         """Tag class for APEv2 files.
 
@@ -102,11 +103,8 @@ def get_class(mutagen_file, base_function, attrib_fields):
         def __getitem__(self,key):
             if key == '__image':
                 return self.images
-            elif key == '__total' and 'track' in self:
-                try:
-                    return self['track'][0].split(u'/')[1].strip()
-                except IndexError:
-                    pass
+            elif key == '__total':
+                return get_total(self)
             return self.__tags[key]
 
         @setdeco
@@ -119,6 +117,8 @@ def get_class(mutagen_file, base_function, attrib_fields):
             if key.startswith('__'):
                 if key == '__image':
                     self.images = value
+                elif key == '__total':
+                    set_total(self, value)
                 elif key in fn_hash:
                     setattr(self, fn_hash[key], value)
                 return
@@ -185,12 +185,12 @@ def get_class(mutagen_file, base_function, attrib_fields):
                     pass
 
             self.images = images
-            self.__tags.update(base_function(audio.info))
+            self.__tags.update(info_to_dict(audio.info))
             self.__tags.update(tags)
             self.__tags['__tag_read'] = u'APEv2'
             self.set_attrs(attrib_fields)
-            self.filetype = 'APEv2' if '__filetype' not in self.__tags else \
-                self.__tags['__filetype']
+            self.filetype = filetype
+            self.__tags['__filetype'] = filetype
             self.update_tag_list()
             self.mut_obj = audio
             return self
@@ -225,17 +225,8 @@ def get_class(mutagen_file, base_function, attrib_fields):
                 self.__tags['__tag'] = u'APEv2, ' + u', '.join(l)
             else:
                 self.__tags['__tag'] = u'APEv2'
-
     return Tag
 
-def base_tags(info):
-    tags = {'__filetype': 'APEv2',
-        u"__length": strlength(info.length)}
-    if hasattr(info, 'sample_rate'):
-        tags.update(
-            {u"__frequency": strfrequency(info.sample_rate)})
-    return tags
-
-Tag = get_class(APEv2File, base_tags, ATTRIBUTES)
+Tag = get_class(APEv2File, u'APEv2', ATTRIBUTES)
 
 filetype = (APEv2File, Tag , u'APEv2')
