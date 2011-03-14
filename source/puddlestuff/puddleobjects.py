@@ -1279,6 +1279,7 @@ class ArtworkLabel(QGraphicsView):
 
         self._svg = QGraphicsSvgItem()
         self._pixmap = QGraphicsPixmapItem()
+        self._pixmap.setTransformationMode(Qt.SmoothTransformation)
         self._scene = QGraphicsScene()
         self._scene.addItem(self._svg)
         self._scene.addItem(self._pixmap)
@@ -1639,26 +1640,28 @@ class PicWidget(QWidget):
         return self._currentImage
 
     def _setCurrentImage(self, num):
-        try:
-            while True:
-                #A lot of files have corrupt picture data. I just want to
-                #skip those and not have the user be any wiser.
+        while True:
+            #A lot of files have corrupt picture data. I just want to
+            #skip those and not have the user be any wiser.
+            try:
                 data = self.images[num]['data']
-                if data.startswith('<?xml'):
-                    image = data
-                    break
+            except IndexError:
+                self.setNone()
+                return
+
+            if data.startswith('<?xml'):
+                image = data
+                break
+            else:
+                image = QPixmap()
+                if not image.loadFromData(data):
+                    del(self.images[num])
                 else:
-                    image = QPixmap()
-                    if not image.loadFromData(QByteArray(data)):
-                        del(self.images[num])
-                    else:
-                        break
-            [action.setEnabled(True) for action in
-                    (self.editpic, self.savepic, self.removepic)]
-        except IndexError:
-            self.setNone()
-            return
-        
+                    break
+
+        [action.setEnabled(True) for action in
+                (self.editpic, self.savepic, self.removepic)]
+
         if hasattr(self, '_itags'):
             self.setImageTags(self._itags)
         if num in self.readonly:

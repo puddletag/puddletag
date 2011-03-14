@@ -170,27 +170,21 @@ class FrameCombo(QGroupBox):
             return
 
         self.initCombos(True)
-        tags = dict([(tag, set()) for tag in combos])
+        tags = dict((tag, set()) for tag in combos)
         for audio in audios:
-            for tag in tags:
-                try:
-                    value = audio[tag]
+            for field in tags:
+                if field in audio:
+                    value = audio[field]
                     if isinstance(value, basestring):
-                        tags[tag].add(value)
+                        tags[field].add(value)
                     else:
-                        tags[tag].add(SEPARATOR.join(value))
-                except KeyError:
-                    tags[tag].add(u"")
+                        tags[field].add(SEPARATOR.join(value))
 
         for field, values in tags.iteritems():
-            if field in combos:
-                combo = combos[field]
-                values = sorted(values)
-                combo.addItems(values)
-                if len(values) == 1:
-                    combo.setCurrentIndex(2)
-                else:
-                    combo.setCurrentIndex(0)
+            combo = combos[field]
+            combo.addItems(sorted(values))
+            if len(values) == 1: combo.setCurrentIndex(2)
+            else: combo.setCurrentIndex(0)
 
         if 'genre' in tags and len(tags['genre']) == 1:
             combo = combos['genre']

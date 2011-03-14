@@ -613,33 +613,33 @@ class TagModel(QAbstractTableModel):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
             return QVariant()
-        if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole) or (role == Qt.EditRole):
+        if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
             try:
                 audio = self.taginfo[row]
                 tag = self.headerdata[index.column()][1]
                 val = self._toString(audio[tag])
-
-                if role == Qt.ToolTipRole:
-                    if not self.showToolTip:
-                        return QVariant()
-                    if self.previewMode and \
-                        audio.preview and tag in audio.preview:
-                        try:
-                            real = self._toString(audio.realvalue(tag))
-                            if not real:
-                                real = BLANK
-                        except KeyError:
-                            real = BLANK
-                        if real != val:
-                            tooltip = translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real))
-                        else:
-                            tooltip = val
-                    else:
-                        tooltip = val
-                    return QVariant(tooltip)
-                return QVariant(val)
             except (KeyError, IndexError):
                 return QVariant()
+
+            if role == Qt.ToolTipRole:
+                if not self.showToolTip:
+                    return QVariant()
+                if self.previewMode and \
+                    audio.preview and tag in audio.preview:
+                    try:
+                        real = self._toString(audio.realvalue(tag))
+                        if not real:
+                            real = BLANK
+                    except KeyError:
+                        real = BLANK
+                    if real != val:
+                        tooltip = translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real))
+                    else:
+                        tooltip = val
+                else:
+                    tooltip = val
+                return QVariant(tooltip)
+            return QVariant(val)
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]
             if audio.color:
@@ -647,6 +647,7 @@ class TagModel(QAbstractTableModel):
             elif self.previewMode and audio.preview:
                 return QVariant(self.previewBackground)
         elif role == Qt.FontRole:
+            
             field = self.headerdata[index.column()][1]
             f = QFont()
             if f.pointSize() != self.fontSize:
@@ -2031,6 +2032,7 @@ class TagTable(QTableView):
 
         I've set selected an deselected as None, because I sometimes
         want self.selectedRows updated without hassle."""
+        t = time.time()
         if selected is not None and deselected is not None:
             QTableView.selectionChanged(self, selected, deselected)
         taginfo = self.model().taginfo

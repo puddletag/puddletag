@@ -23,7 +23,15 @@ IMAGE_MIMETYPE = '__image_mimetype'
 READONLY = ('__bitrate', '__frequency', "__length", "__modified",
             "__size", "__created", "__library", '__accessed', '__filetype',
             '__channels', '__version', '__titlegain', '__albumgain',
-            NUM_IMAGES, IMAGE_MIMETYPE)
+            NUM_IMAGES, IMAGE_MIMETYPE, "__cover_mimetype", "__cover_size",
+            "__covers", "__file_create_date", "__file_create_datetime",
+            "__file_create_datetime_raw", "__file_mod_date",
+            "__file_mod_datetime", "__file_mod_datetime_raw",
+            "__file_size", "__file_size_bytes", "__file_size_kb",
+            "__file_size_mb", "__length_seconds",
+            "__mode", "__parent_dir", "__tag", "__tag_read", "__total",
+            '__file_access_date', '__file_access_datetime',
+            '__file_access_datetime_raw', '__layer')
 IMAGES = '__image'
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME, FILENAME_NO_EXT,
     PARENT_DIR]

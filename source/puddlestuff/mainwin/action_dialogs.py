@@ -31,10 +31,11 @@ class ActionDialog(ActionWindow):
 
     def _update(self):
         try:
-            self.example = self._status['selectedfiles'][0]
+            self.example, selected = self._status['firstselection']
         except IndexError:
             self.example = None
-        self.updateExample()
+        if self.isVisible():
+            self.updateExample()
 
     def updateChecked(self, rows):
         item = self.listbox.item
@@ -63,6 +64,11 @@ class ActionDialog(ActionWindow):
         self.saveOrder()
         self.saveChecked()
 
+    def showEvent(self, event):
+        super(ActionDialog, self).showEvent(event)
+        if self.example:
+            self.updateExample()
+
 class FunctionDialog(CreateFunction):
     def __init__(self, *args, **kwargs):
         self.emits = []
@@ -86,13 +92,15 @@ class FunctionDialog(CreateFunction):
         self.vbox.addLayout(hbox)
 
     def _update(self):
+        if not self.isVisible():
+            return
         widget = self.stack.currentWidget()
         try:
             f, selected = self._status['firstselection']
         except IndexError:
             widget.emit(SIGNAL('updateExample'), u'')
             return
-        
+
         field = selected.keys()[0]
         self.example = f
         self._text = f.get(field, u'')
@@ -106,6 +114,11 @@ class FunctionDialog(CreateFunction):
 
     def reject(self):
         pass
+
+    def showEvent(self, event):
+        self._update()
+        return super(FunctionDialog, self).showEvent(event)
+        
 
 controls = [
     ("Functions", FunctionDialog, RIGHTDOCK, False),
