@@ -5,6 +5,11 @@ from errno import ENOENT
 from decimal import Decimal
 from copy import copy, deepcopy
 from os import path, stat
+try:
+    import puddlestuff
+    app_name = 'puddletag v%s' % puddlestuff.version_string
+except ImportError:
+    app_name = 'puddletag'
 
 from stat import ST_SIZE, ST_MTIME, ST_CTIME, ST_ATIME
 
@@ -18,6 +23,7 @@ PARENT_DIR = '__parent_dir'
 
 NUM_IMAGES = '__num_images'
 IMAGE_MIMETYPE = '__image_mimetype'
+IMAGE_TYPE_FIELD = '__image_type'
 
 READONLY = ('__bitrate', '__frequency', "__length", "__modified",
             "__size", "__created", "__library", '__accessed', '__filetype',
@@ -30,7 +36,7 @@ READONLY = ('__bitrate', '__frequency', "__length", "__modified",
             "__file_size_mb", "__length_seconds",
             "__mode", "__parent_dir", "__tag", "__tag_read", "__total",
             '__file_access_date', '__file_access_datetime',
-            '__file_access_datetime_raw', '__layer')
+            '__file_access_datetime_raw', '__layer', IMAGE_TYPE_FIELD)
 IMAGES = '__image'
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME, FILENAME_NO_EXT,
     PARENT_DIR]
@@ -307,7 +313,7 @@ def getinfo(filename):
         '__file_size': str_filesize(size),
         '__file_size_bytes': unicode(size),
         '__file_size_kb': u'%d KB' % (size / 1024),
-        '__file_size_mb': u'%d KB' % (size / 1024**2),
+        '__file_size_mb': u'%.2f MB' % (size / 1024.0**2),
 
         "__created": strtime(created),
         '__file_create_date': get_time('%Y-%m-%d', created),
@@ -327,6 +333,8 @@ def getinfo(filename):
             get_time('%Y-%m-%d %H:%M:%S', accessed),
         '__file_access_datetime_raw': unicode(accessed),
 
+        '__app': app_name,
+
         })
 
 def converttag(tags):
@@ -342,7 +350,7 @@ def usertags(tags):
                     not (isinstance(z, (int, long)) or z.startswith('__'))])
 
 def writeable(tags):
-    return [z for z in tags if not z.starswith('___') or z.startswith('~')]
+    return [z for z in tags if not z.starswith('__') or z.startswith('~')]
 
 def isempty(value):
     if isinstance(value, (int, long)):
@@ -458,12 +466,15 @@ def cover_info(images, d=None):
         else:
             info[IMAGE_MIMETYPE] = get_mime(image[DATA])
 
+        if IMAGETYPE in image:
+            info[IMAGE_TYPE_FIELD] = IMAGETYPES[image[IMAGETYPE]]
+
     if d:
         if not info[IMAGE_MIMETYPE]:
             del(info[IMAGE_MIMETYPE])
             try: del(d[IMAGE_MIMETYPE])
             except KeyError: pass
-        d[NUM_IMAGES] = info[NUM_IMAGES]
+        d.update(info)
     return info
 
 class CaselessDict(dict):
