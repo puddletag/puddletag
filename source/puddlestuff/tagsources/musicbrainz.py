@@ -256,7 +256,7 @@ class MusicBrainz(object):
                 write_log(translate("MusicBrainz",
                     'Found Album ID: %s') % album_id)
                 try:
-                    return [retrieve_tracks(album_id)]
+                    return [retrieve_tracks(album_id, self._puids)]
                 except WebServiceError, e:
                     msg = translate("MusicBrainz",
                         '<b>Error:</b> While retrieving %1: %2')
