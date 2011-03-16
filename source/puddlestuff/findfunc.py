@@ -571,6 +571,7 @@ class Function:
             self.tag = fields
         else:
             self.tag = ''
+        self.args = None
         
         self.controls = self._getControls()
 

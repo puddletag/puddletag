@@ -247,6 +247,7 @@ class FunctionDialog(QWidget):
             label = args[0]
             ctype = args[1]
             default = args[2:]
+
             
             control, func, label = self._createControl(label, ctype, default)
 
@@ -362,7 +363,8 @@ class FunctionDialog(QWidget):
                         translate('Functions Dialog',
                             'No preview for is shown for this function.'))
                     return
-                fields = findfunc.parse_field_list(self.func.tag, audio, self._combotags)
+                fields = findfunc.parse_field_list(self.func.tag, audio,
+                    self._combotags)
                 files = status['selectedfiles']
                 files = unicode(len(files)) if files else u'1'
                 state = {'__counter': u'0', '__total_files': files}
@@ -473,7 +475,7 @@ class CreateFunction(QDialog):
                 translate('Functions', prevfunc.funcname))
             if index >= 0:
                 self.functions.setCurrentIndex(index)
-                self.createWindow(index, prevfunc.args, prevfunc.tag)
+                self.createWindow(index, prevfunc.tag, prevfunc.args)
         else:
             self.createWindow(0)
 
@@ -489,7 +491,7 @@ class CreateFunction(QDialog):
         self.stack.setFrameStyle(QFrame.Box)
         if index not in self.mydict:
             what = FunctionDialog(self.realfuncs[index], self.showcombo, 
-                fields, args, example=self.example, text=self._text)
+                args, fields, example=self.example, text=self._text)
             if args is None:
                 what.loadSettings()
             self.mydict.update({index: what})
@@ -497,6 +499,7 @@ class CreateFunction(QDialog):
             self.connect(what, SIGNAL('updateExample'), self.updateExample)
         self.stack.setCurrentWidget(self.mydict[index])
         self.mydict[index].showexample()
+        self.controls = getattr(self.mydict[index], 'controls', [])
         self.setMinimumHeight(self.sizeHint().height())
         if self.sizeHint().width() > self.width():
             self.setMinimumWidth(self.sizeHint().width())

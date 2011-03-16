@@ -14,7 +14,7 @@ from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
-from puddlestuff.util import split_by_tag, translate
+from puddlestuff.util import split_by_tag, translate, to_string
 import puddlestuff.functions as functions
 from tagtools import *
 import puddlestuff.confirmations as confirmations
@@ -383,9 +383,24 @@ def run_func(selectedfiles, func):
 run_quick_action = lambda parent=None: run_action(parent, True)
 
 def search_replace(parent=None):
-    function = puddlestuff.findfunc.Function('replace')
-    function.args = [u'', u'', False, False]
-    run_function(parent, function)
+
+    selectedfiles = status['selectedfiles']
+    audio, selected = status['firstselection']
+
+    try: text = to_string(selected.values()[0])
+    except IndexError: text = translate('Defaults', u'')
+
+    func = puddlestuff.findfunc.Function('replace')
+    func.args = [text, u'', False, False]
+    func.tag = ['__selected']
+
+    dialog = actiondlg.CreateFunction(prevfunc=func, parent=parent,
+        showcombo=selected.keys(), example=audio, text=text)
+
+    dialog.connect(dialog, SIGNAL("valschanged"), partial(run_func, selectedfiles))
+    dialog.setModal(True)
+    dialog.controls[0].combo.setFocus()
+    dialog.show()
 
 def show_about(parent=None):
     win = about.AboutPuddletag(parent)

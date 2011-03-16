@@ -107,11 +107,11 @@ def get_puid(track_id):
     else:
         includes = ws.TrackIncludes(puids=True)
     track = q.getTrackById(track_id, includes)
-    track = {'musicip_puid': track.puids}
+    track_dict = {'musicip_puid': track.puids}
     if not old_version:
-        track['mbrainz_rating'] = unicode(track.rating.value) if \
+        track_dict['mbrainz_rating'] = unicode(track.rating.value) if \
             track.rating.value is not None else None
-    return dict((k,v) for k,v in track.items() if v)
+    return dict((k,v) for k,v in track_dict.iteritems() if v)
 
 def artist_search(artist):
     try:

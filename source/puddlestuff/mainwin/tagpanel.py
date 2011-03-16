@@ -8,22 +8,13 @@ from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
 pyqtRemoveInputHook()
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
-import time
 from functools import partial
 from puddlestuff.puddlesettings import SettingsError
 from puddlestuff.translations import translate
 
 TEXTEDITED = SIGNAL('textEdited(const QString&)')
 EDITFINISHED = SIGNAL('editingFinished()')
-
-def timemethod(method):
-    def f(*args, **kwargs):
-        name = method.__name__
-        t = time.time()
-        ret = method(*args, **kwargs)
-        print name, time.time() - t
-        return ret
-    return f
+INDEXCHANGED = SIGNAL('currentIndexChanged(const QString&)')
 
 def loadsettings(filepath = None):
     settings = PuddleConfig()
@@ -115,7 +106,7 @@ class FrameCombo(QGroupBox):
     def __init__(self,tags = None,parent= None, status=None):
         self.settingsdialog = SettingsWin
         QGroupBox.__init__(self,parent)
-        self.emits = ['onetomany', 'onetomanypreview']
+        self.emits = ['onetomany', 'onetomanypreview', 'manypreview']
         self.receives = [(SELECTIONCHANGED, self.fillCombos),
             ('previewModeChanged', lambda v: self._enablePreview()
                 if v else self._disablePreview()),]
@@ -123,8 +114,11 @@ class FrameCombo(QGroupBox):
         self.labels = {}
         self._status = status
         self._originalValues = {}
+        self.__indexFuncs = []
     
     def _disablePreview(self):
+        self.__disconnectIndexChanged
+        self.__indexFuncs = []
         for field, combo in self.combos.iteritems():
             edit = QLineEdit()
             combo.setLineEdit(edit)
@@ -138,6 +132,7 @@ class FrameCombo(QGroupBox):
             self.combos[z].setEnabled(False)
     
     def _enablePreview(self):
+        self.__indexFuncs = []
         for field, combo in self.combos.iteritems():
             func = partial(self._emitChange, field)
             edit = QLineEdit()
@@ -146,12 +141,21 @@ class FrameCombo(QGroupBox):
             completer.setCaseSensitivity(Qt.CaseSensitive)
             completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
             self.connect(edit, TEXTEDITED, func)
+            combo.connect(combo, INDEXCHANGED, func)
+            self.__indexFuncs.append((combo, func))
             self.connect(edit, EDITFINISHED, self.save)
+
+    def __disconnectIndexChanged(self):
+        for combo, func in self.__indexFuncs:
+            combo.disconnect(combo, func)
     
     def _emitChange(self, field, text):
         text = unicode(text)
-        if text == BLANK: value = []
-        elif text == KEEP: return
+        if text == BLANK: text = u''
+        elif text == KEEP:
+            if self._audios:
+                self.emit(SIGNAL('manypreview'),
+                    [{field: a.get(field, u'')} for a in self._audios])
         else:
             if field in INFOTAGS:
                 value = text
@@ -161,6 +165,7 @@ class FrameCombo(QGroupBox):
 
     def fillCombos(self, *args):
         audios = self._status['selectedfiles']
+        self._audios = [z.usertags for z in audios]
         combos = self.combos
 
         if not audios:
@@ -169,6 +174,7 @@ class FrameCombo(QGroupBox):
                 combo.setEnabled(False)
             return
 
+        [combo.blockSignals(True) for combo in combos.values()]
         self.initCombos(True)
         tags = dict((tag, set()) for tag in combos)
         for audio in audios:
@@ -200,6 +206,7 @@ class FrameCombo(QGroupBox):
         self._originalValues = dict([(field, unicode(combo.currentText()))
             for field, combo in self.combos.items()])
         self._originalValues['__image'] = self._status['images']
+        [combo.blockSignals(False) for combo in combos.values()]
 
     def save(self):
         """Writes the tags of the selected files to the values in self.combogroup.combos."""

@@ -260,7 +260,8 @@ class MainWin(QMainWindow):
             ('playlistchanged', self._dirChanged),
             ('adddock', self.addDock),
             ('writeaction', self.writeAction),
-            ('onetomanypreview', self.writeSinglePreview)]
+            ('onetomanypreview', self.writeSinglePreview),
+            ('manypreview', self.writeManyPreview)]
         self.gensettings = [('&Load last folder at startup', False, 1)]
         self._playlist = None
         plugin_dialogs, plugin_modules = load_plugins()
@@ -759,6 +760,22 @@ class MainWin(QMainWindow):
         setRowData = model.setRowData
 
         [setRowData(row, d, undo=False, temp=True) for row in rows]
+        columns = filter(None, map(model.columns.get, d))
+        if columns:
+            start = model.index(min(rows), min(columns))
+            end = model.index(max(rows), max(columns))
+            model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+                start, end)
+
+    def writeManyPreview(self, tags):
+        if not status['previewmode']:
+            return
+        model = self._table.model()
+        rows = status['selectedrows']
+        setRowData = model.setRowData
+
+        [setRowData(row, d, undo=False, temp=True) for row, d in
+            zip(rows, tags)]
         columns = filter(None, map(model.columns.get, d))
         if columns:
             start = model.index(min(rows), min(columns))
