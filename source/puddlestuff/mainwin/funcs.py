@@ -391,7 +391,7 @@ def search_replace(parent=None):
     except IndexError: text = translate('Defaults', u'')
 
     func = puddlestuff.findfunc.Function('replace')
-    func.args = [text, u'', False, False]
+    func.args = [text, text, False, False]
     func.tag = ['__selected']
 
     dialog = actiondlg.CreateFunction(prevfunc=func, parent=parent,
