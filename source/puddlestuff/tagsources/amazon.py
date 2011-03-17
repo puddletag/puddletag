@@ -110,6 +110,9 @@ def parse_album_xml(text, album=None):
     try:
         tracklist = album_item.getElementsByTagName('Tracks')[0]
     except IndexError:
+        write_log(translate('Amazon',
+            'Invalid XML returned.'))
+        write_log(text)
         raise RetrievalError(translate('Amazon',
             'Invalid XML returned.'))
     tracks = []

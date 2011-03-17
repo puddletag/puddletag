@@ -24,8 +24,6 @@ PROFILEDIR = os.path.join(SAVEDIR, 'masstagging')
 
 CONFIG = os.path.join(SAVEDIR, 'masstagging.conf')
 
-
-
 NO_MATCH_OPTIONS = [
     translate('Masstagging', 'Continue'),
     translate('Masstagging', 'Stop')]

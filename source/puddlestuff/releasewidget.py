@@ -351,23 +351,21 @@ class TreeModel(QtCore.QAbstractItemModel):
         return QVariant()
 
     def fetchMore(self, index):
-        self.emit(SIGNAL('retrieving'))
         item = index.internalPointer()
         if item.retrieving:
             return
+        self.emit(SIGNAL('retrieving'))
         def fetch_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
                 self.emit(SIGNAL("statusChanged"), 
                     translate("WebDB", 'An error occured: %1').arg(unicode(e)))
-                self.emit(SIGNAL('retrievalDone'))
                 return
             except Exception, e:
                 traceback.print_exc()
                 self.emit(SIGNAL("statusChanged"),
                     translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
-                self.emit(SIGNAL('retrievalDone'))
                 return
 
         item.retrieving = True
@@ -376,15 +374,15 @@ class TreeModel(QtCore.QAbstractItemModel):
         thread.start()
         while thread.isRunning():
             QApplication.processEvents()
-        if thread.retval:
-            val = thread.retval
-            if val is None:
-                return
+        val = thread.retval
+        if val:
             info, tracks = val
             fillItem(item, info, tracks, self.trackPattern)
             self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
             item.retrieving = False
-        self.emit(SIGNAL('retrievalDone'))
+        else:
+            self.emit(SIGNAL('collapse'), index)
+        self.emit(SIGNAL('retrievalDone()'))
 
     def hasChildren(self, index):
         item = index.internalPointer()
@@ -462,14 +460,14 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         def finished(val):
             if val is None:
-                self.emit(SIGNAL('retrievalDone'))
+                self.emit(SIGNAL('retrievalDone()'))
                 return
             fillItem(item, val[0], val[1], self.trackPattern)
             item.retrieving = False
             self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
                 'QModelIndex&)'), index, index)
             self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
-            self.emit(SIGNAL('retrievalDone'))
+            self.emit(SIGNAL('retrievalDone()'))
             if fin_func:
                 fin_func()
 
@@ -658,9 +656,10 @@ class ReleaseWidget(QTreeView):
         self.connect(model, SIGNAL('statusChanged'), SIGNAL('statusChanged'))
         self.connect(model, SIGNAL('exactChanged'), self.exactChanged)
         modelconnect('retrieving', SIGNAL('retrieving'))
-        modelconnect('retrievalDone', SIGNAL('retrievalDone'))
+        modelconnect('retrievalDone()', SIGNAL('retrievalDone()'))
         modelconnect('retrieving', lambda: self.setEnabled(False))
-        modelconnect('retrievalDone', lambda: self.setEnabled(True))
+        modelconnect('retrievalDone()', lambda: self.setEnabled(True))
+        modelconnect('collapse', self.collapse)
         model.tagsource = self.tagSource
         model.mapping = self.mapping
     
