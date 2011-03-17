@@ -2,7 +2,7 @@
 
 from mutagen.oggvorbis import OggVorbis
 import mutagen.flac
-from mutagen.flac import Picture
+from mutagen.flac import Picture, FLAC
 import base64
 
 import util
@@ -22,7 +22,7 @@ ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
 COVER_KEY = 'metadata_block_picture'
 
 def base64_to_image(value):
-    return bin_to_image(mutagen.flac.Picture(base64.standard_b64decode(value)))
+    return bin_to_image(Picture(base64.standard_b64decode(value)))
 
 def bin_to_image(pic):
     return {'data': pic.data, 'description': pic.desc, 'mime': pic.mime,
@@ -150,7 +150,7 @@ def vorbis_tag(base, name):
                 else:
                     self.__tags[key.lower()] = audio.tags[key]
 
-            if base == mutagen.flac.FLAC:
+            if base == FLAC:
                 self.images = map(bin_to_image, audio.pictures)
 
             info = audio.info
@@ -201,14 +201,14 @@ def vorbis_tag(base, name):
                 newtag[tag] = value
 
             if self.__images:
-                if base == mutagen.flac.FLAC:
+                if base == FLAC:
                     audio.clear_pictures()
                     map(lambda p: audio.add_picture(image_to_bin(p)),
                         self.__images)
                 else:
                     newtag[COVER_KEY] = map(image_to_base64, self.__images)
             else:
-                if base == mutagen.flac.FLAC:
+                if base == FLAC:
                     audio.clear_pictures()
 
             toremove = [z for z in audio if z not in newtag]
@@ -225,22 +225,42 @@ def vorbis_tag(base, name):
                 self.__tags['__tag'] = u'VorbisComment'
     return Tag
 
-class Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
+class Ogg_Tag(vorbis_tag(OggVorbis, u'Ogg Vorbis')):
 
     def _info(self):
         info = self.mut_obj.info
         fileinfo = [
-            ('Path', self[PATH]),
-            ('Size', str_filesize(int(self.size))),
-            ('Filename', self[FILENAME]),
-            ('Modified', self.modified)]
+            (u'Path', self[PATH]),
+            (u'Size', str_filesize(int(self.size))),
+            (u'Filename', self[FILENAME]),
+            (u'Modified', self.modified)]
 
-        ogginfo = [('Bitrate', self.bitrate),
-                ('Frequency', self.frequency),
-                ('Channels', unicode(info.channels)),
-                ('Length', self.length)]
-        return [('File', fileinfo), ('Ogg Info', ogginfo)]
+        ogginfo = [(u'Bitrate', self.bitrate),
+                (u'Frequency', self.frequency),
+                (u'Channels', unicode(info.channels)),
+                (u'Length', self.length)]
+        return [(u'File', fileinfo), (u'Ogg Info', ogginfo)]
 
     info = property(_info)
 
-filetype = (OggVorbis, Tag, 'VorbisComment')
+
+class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
+    def _info(self):
+        info = self.mut_obj.info
+        fileinfo = [(u'Path', self[PATH]),
+                    (u'Size', str_filesize(int(self.size))),
+                    (u'Filename', self[FILENAME]),
+                    (u'Modified', self.modified)]
+
+        ogginfo = [(u'Bitrate', u'Lossless'),
+                (u'Frequency', self.frequency),
+                (u'Bits Per Sample', self.bitspersample),
+                (u'Channels', unicode(info.channels)),
+                (u'Length', self.length)]
+        return [('File', fileinfo), ('FLAC Info', ogginfo)]
+
+    info = property(_info)
+
+filetypes = [
+    (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
+    (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]

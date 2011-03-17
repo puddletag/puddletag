@@ -284,4 +284,4 @@ class Tag(util.MockTag):
         else:
             self.__tags['__tag'] = u'ASF'
 
-filetype = (ASF, Tag, 'WMA')
+filetype = (ASF, Tag, 'WMA', ['wma', 'wmv'])

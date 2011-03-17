@@ -112,7 +112,7 @@ def write(audio, tags, save_mtime = True):
     """
     tags = copy(tags)
     if audio.library and (ARTIST in tags or ALBUM in tags):
-        artist = audio.sget(ARTIST)
+        artist = audio.get(ARTIST, u'')
     else:
         artist = None
 

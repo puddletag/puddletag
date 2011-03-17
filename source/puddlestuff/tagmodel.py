@@ -74,9 +74,6 @@ def loadsettings(filepath=None):
     audioinfo.id3.v1_option = v1_option
     audioinfo.id3.v2_option = v2_option
     filespec = u';'.join(settings.get('table', 'filespec', []))
-    
-    write_ape = settings.get('id3tags', 'write_ape', False)
-    audioinfo.set_id3_options(write_ape)
 
     return ((zip(titles, tags), checked), fontsize, rowsize, filespec)
 
@@ -234,26 +231,11 @@ def model_tag(model, base = audioinfo.AbstractTag):
 def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
-    from audioinfo.combine import combine
-    from audioinfo import id3, apev2
-    
+
     options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind
         in audioinfo.options]
     filetypes = dict([(z[0],z) for z in options])
     extensions = dict([(k, filetypes[v[0]]) for k, v in extensions.items()])
-
-    _id3 = extensions['mp3'][1]
-    
-    _id3_ape = model_tag(model, combine(id3.filetype[1], apev2.filetype[1]))
-
-    def set_id3_options(write_apev2):
-        id3_option = [z for z in options if z[2] == 'ID3'][0]
-        if write_apev2:
-            id3_option[1] = _id3_ape
-        else:
-            id3_option[1] = _id3
-
-    audioinfo.set_id3_options = set_id3_options
     
     def ReplacementTag(filename):
         fileobj = file(filename, "rb")
@@ -1010,7 +992,7 @@ class TagModel(QAbstractTableModel):
             if undo and undo_val:
                 self._addUndo(audio, undo_val)
         else:
-            artist = audio.sget('artist')
+            artist = audio.get('artist', u'')
             undo_val = write(audio, tags, self.saveModification)
             if undo:
                 self._addUndo(audio, undo_val)

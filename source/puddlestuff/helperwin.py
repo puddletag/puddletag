@@ -14,7 +14,7 @@ ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
 BOLD = 1
 ITALICS = 2
-from audioinfo import commontags, INFOTAGS, REVTAGS, PATH
+from audioinfo import commontags, PATH
 from functools import partial
 from puddlestuff.translations import translate
 

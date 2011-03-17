@@ -1,47 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import mutagen, time, pdb, calendar, os
+import mutagen
 from util import *
-import id3, flac, ogg, apev2, mp4, wma, musepack, wavpack, monkeysaudio
-options = (id3.filetype, flac.filetype, ogg.filetype, apev2.filetype, 
-    mp4.filetype, wavpack.filetype, musepack.filetype, wma.filetype,
-    monkeysaudio.filetype)
-from mutagen.id3 import TCON
-GENRES = sorted(TCON.GENRES)
+from constants import *
 
 AbstractTag = MockTag
 
-FIELDS = [
-    'album', 'albumsortorder', 'arranger', 'artist', 'audiodelay',
-    'audiolength', 'audiosize', 'author', 'bpm', 'comment', 'composer',
-    'conductor', 'copyright', 'date', 'discnumber', 'encodedby',
-    'encodingsettings', 'encodingtime', 'filename', 'fileowner', 'filetype',
-    'genre', 'grouping', 'initialkey', 'involvedpeople', 'isrc',
-    'itunesalbumsortorder', 'itunescompilationflag', 'itunescomposersortorder',
-    'language', 'lyricist', 'mediatype', 'mood', 'musiciancredits',
-    'organization', 'originalalbum', 'originalartist', 'originalreleasetime',
-    'originalyear', 'peformersortorder', 'performer', 'popularimeter',
-    'producednotice', 'radioowner', 'radiostationname', 'recordingdates',
-    'releasetime', 'setsubtitle', 'taggingtime', 'time', 'title',
-    'titlesortorder', 'track', 'ufid', 'version', 'wwwartist',
-    'wwwcommercialinfo', 'wwwcopyright', 'wwwfileinfo', 'wwwpayment',
-    'wwwpublisher', 'wwwradio', 'wwwsource', 'year']
-
-extensions = {
-    'mp3': id3.filetype,
-    'flac': flac.filetype,
-    'ogg': ogg.filetype,
-    'mp4': mp4.filetype,
-    'm4a': mp4.filetype,
-    'ape': monkeysaudio.filetype,
-    'apl': monkeysaudio.filetype,
-    'wma': wma.filetype,
-    'mpc': musepack.filetype,
-    'wv': wavpack.filetype}
-
-_id3_type = id3.filetype
-
-TAG_TYPES = dict([(z[2], z[1]) for z in extensions.values()])
+extensions = {}
+options = []
 
 mapping = {}
 revmapping = {}
@@ -64,6 +30,15 @@ def loadmapping(filepath, default=None):
                 mappings[tags[0]] = ({tags[1]: tags[2]})
     return mappings
 
+def register_tag(mut_obj, tag, tag_name, tag_exts=None):
+    if isinstance(tag_exts, basestring):
+        extensions[tag_exts] = [mut_obj, tag, tag_name]
+    elif tag_exts is not None:
+        for e in tag_exts:
+            extensions[e] = [mut_obj, tag, tag_name]
+
+    options.append([mut_obj, tag, tag_name])
+
 def setmapping(m):
     global revmapping
     global mapping
@@ -76,20 +51,11 @@ def setmapping(m):
             if z[2] in mapping:
                 z[1].mapping = mapping[z[2]]
                 z[1].revmapping = revmapping[z[2]]
-            if 'puddletag' in mapping:
-                z[1].mapping.update(mapping['puddletag'])
-                z[1].revmapping.update(revmapping['puddletag'])
+            if 'global' in mapping:
+                z[1].mapping.update(mapping['global'])
+                z[1].revmapping.update(revmapping['global'])
         except IndexError:
             pass
-
-setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
-
-def set_id3_options(write_apev2):
-    from combine import combine
-    if write_apev2:
-        id3.filetype[1] = combine(_id3_type[1], apev2.filetype[1])
-    else:
-        id3.filetype[1] = _id3_type[1]
 
 def Tag(filename):
     """Class that operates on audio tags.
@@ -135,6 +101,16 @@ def Tag(filename):
     if score > 0: return Kind[1](filename)
     else: return None
 
-_Tag = Tag
+import id3, vorbis, apev2, mp4, wma
+tag_modules = (id3, vorbis, apev2, mp4, wma)
 
+for m in tag_modules:
+    if hasattr(m, 'filetype'):
+        register_tag(*m.filetype)
+    if hasattr(m, 'filetypes'):
+        map(lambda x: register_tag(*x), m.filetypes)
+
+setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
+
+_Tag = Tag
 model_tag = lambda x: x

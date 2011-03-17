@@ -12,7 +12,7 @@ from puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
     winsettings, gettaglist, settaglist, safe_name, ShortcutEditor)
 from findfunc import Function, runAction, runQuickAction
 from puddleobjects import PuddleConfig, PuddleCombo
-from audioinfo import REVTAGS, INFOTAGS, READONLY, usertags, isempty
+from audioinfo import INFOTAGS, READONLY, usertags, isempty
 from functools import partial
 from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
     SAVEDIR, ACTIONDIR, BLANK)

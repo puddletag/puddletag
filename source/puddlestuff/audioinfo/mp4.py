@@ -393,4 +393,4 @@ class Tag(util.MockTag):
         else:
             self.__tags['__tag'] = u'MP4'
 
-filetype = (MP4, Tag, 'MP4')
+filetype = (MP4, Tag, 'MP4', ['m4a', 'mp4', 'm4v'])
