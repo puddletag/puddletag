@@ -352,6 +352,19 @@ def path_to_string(value):
     else:
         return path_to_string(value[0])
 
+_image_defaults = {
+    DESCRIPTION: lambda i: i.get(DESCRIPTION, u''),
+    MIMETYPE: lambda i: get_mime(i[DATA]) if MIMETYPE in i else \
+        get_mime(i[DATA]),
+    IMAGETYPE: lambda i: i.get(IMAGETYPE, 3),
+    DATA: lambda i: i[DATA]}
+
+def parse_image(image, keys=None):
+    """Get default values for the image if they don't exist."""
+    if keys is None:
+        keys = [DATA, MIMETYPE, DESCRIPTION, IMAGETYPE]
+    return dict((k, _image_defaults[k](image)) for k in keys)
+
 def reversedict(d):
     return dict(((v,k) for k in d))
 

@@ -7,7 +7,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
     getdeco, setdeco, str_filesize, fn_hash, cover_info,
     get_mime, to_string, unicode_list, CaselessDict, keys_deco,
-    del_deco, get_total, set_total, info_to_dict)
+    del_deco, get_total, set_total, info_to_dict, parse_image)
 from copy import copy
 import tag_versions
 
@@ -16,16 +16,6 @@ ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
 
 #From picard
 def bin_to_pic(image):
-    """
-    Helper function to unpack image data from a WM/Picture tag.
-
-    The data has the following format:
-    1 byte: Picture type (0-20), see ID3 APIC frame specification at http://www.id3.org/id3v2.4.0-frames
-    4 bytes: Picture data length in LE format
-    MIME type, null terminated UTF-16-LE string
-    Description, null terminated UTF-16-LE string
-    The image data in the given length
-    """
     data = image.value
     (type, size) = struct.unpack_from("<bi", data)
     pos = 5
@@ -47,11 +37,6 @@ def bin_to_pic(image):
         util.DESCRIPTION: description.decode("utf-16-le"),}
 
 def pic_to_bin(image):
-    """
-    Helper function to pack image data for a WM/Picture tag.
-    See unpack_image for a description of the data format.
-    """
-
     data = image[util.DATA]
     mime = image.get(util.MIMETYPE)
     if not mime:
@@ -146,7 +131,7 @@ class Tag(util.MockTag):
 
     def _setImages(self, images):
         if images:
-            self.__images = images
+            self.__images = map(parse_image, images)
         else:
             self.__images = []
         cover_info(images, self.__tags)
@@ -196,7 +181,7 @@ class Tag(util.MockTag):
         self.mut_obj.clear()
         for z in self.usertags:
             del(self[z])
-        self.mut_obj.save()
+        self.images = []
         self.save()
 
     def _info(self):
@@ -233,7 +218,7 @@ class Tag(util.MockTag):
                 self.__tags[self.__translate[name]] = map(unicode, values)
             except KeyError:
                 if isinstance(values[0], ASFUnicodeAttribute):
-                    if name not in self.__tags:
+                    if not '/' in name and name not in self.__tags:
                         self.__tags[name] = map(unicode, values)
 
         if 'WM/Picture' in audio:

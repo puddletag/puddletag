@@ -12,7 +12,7 @@ from _compatid3 import CompatID3
 from constants import MODES
 from util import (CaselessDict, FILENAME, MockTag, PATH,
     cover_info, del_deco, fn_hash, get_mime, get_total,
-    getdeco, info_to_dict, isempty, keys_deco, set_total,
+    getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
     setdeco, str_filesize, unicode_list, usertags)
 
 TagBase = MockTag
@@ -724,7 +724,8 @@ class Tag(TagBase):
 
     def _set_images(self, images):
         if images:
-            self.__images = images
+            self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
+                images)
         else:
             self.__images = []
         cover_info(images, self.__tags)

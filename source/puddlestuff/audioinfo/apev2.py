@@ -8,7 +8,7 @@ from mutagen.wavpack import WavPack
 import util
 from util import (CaselessDict, FILENAME, MockTag, PATH,
     cover_info, del_deco, fn_hash, get_mime, get_total,
-    getdeco, info_to_dict, isempty, keys_deco, set_total,
+    getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
     setdeco, str_filesize, unicode_list, usertags)
 
 ATTRIBUTES = ['length', 'accessed', 'size', 'created',
@@ -63,17 +63,18 @@ def get_class(mutagen_file, filetype, attrib_fields):
 
         filepath = property(get_filepath, set_filepath)
 
-        def _getImages(self):
+        def _get_images(self):
             return self.__images
 
-        def _setImages(self, images):
+        def _set_images(self, images):
             if images:
-                self.__images = images
+                self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
+                    images)
             else:
                 self.__images = []
             cover_info(images, self.__tags)
 
-        images = property(_getImages, _setImages)
+        images = property(_get_images, _set_images)
 
         def __contains__(self, key):
             if self.revmapping:
@@ -124,6 +125,7 @@ def get_class(mutagen_file, filetype, attrib_fields):
             self.mut_obj.delete()
             for z in self.usertags:
                 del(self.__tags[z])
+            self.images = []
 
         def _info(self):
             info = self.mut_obj.info

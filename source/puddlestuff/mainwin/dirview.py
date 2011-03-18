@@ -10,16 +10,13 @@ from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 mutex = mutex.mutex()
 qmutex = QMutex()
 from puddlestuff.translations import translate
+from puddlestuff.puddlesettings import load_gen_settings, save_gen_settings
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""
 
     def __init__(self, parent = None, subfolders = False, status=None):
         QTreeView.__init__(self,parent)
-        self.receives = [
-            ('dirschanged', self.selectDirs),
-            ('dirsmoved', self.dirMoved),]
-        self.emits = ['loadFiles', 'removeFolders']
         dirmodel = QDirModel()
         dirmodel.setSorting(QDir.IgnoreCase)
         dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
@@ -245,4 +242,50 @@ class DirView(QTreeView):
         self._lastselection = len(self.selectedIndexes())
         self._select = False
 
-control = ('Filesystem', DirView, LEFTDOCK, True)
+class DirViewWidget(QWidget):
+    def __init__(self, parent = None, subfolders = False, status=None):
+        super(DirViewWidget, self).__init__(parent)
+        self._status = status
+        
+        self.dirview = DirView(self, subfolders, status)
+        self.connect(self.dirview, SIGNAL('loadFiles'), SIGNAL('loadFiles'))
+        self.connect(self.dirview, SIGNAL('removeFolder'), SIGNAL('removeFolders'))
+
+        self.receives = [
+            ('dirschanged', self.dirview.selectDirs),
+            ('dirsmoved', self.dirview.dirMoved),]
+        self.emits = ['loadFiles', 'removeFolders']
+
+        self.subfolderCheck = QCheckBox(translate('Dirview', 'Subfolders'),
+            self)
+        self.connect(self.subfolderCheck, SIGNAL('stateChanged(int)'),
+            self.setSubFolders)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.dirview, 1)
+        layout.addWidget(self.subfolderCheck, 0)
+        self.setLayout(layout)
+
+    def loadSettings(self):
+        self.dirview.loadSettings()
+        self.subfolderCheck.blockSignals(True)
+        if load_gen_settings([('Su&bfolders', True)]):
+            self.subfolderCheck.setChecked(True)
+        else:
+            self.subfolderCheck.setChecked(False)
+        self.subfolderCheck.blockSignals(False)
+
+    def saveSettings(self):
+        self.dirview.saveSettings()
+
+    def setSubFolders(self, check):
+        if check == Qt.Checked:
+            value = True
+        else:
+            value = False
+        self.dirview.subfolders = value
+        save_gen_settings({'Su&bfolders': value})
+        self._status['table'].subFolders = value
+
+
+control = ('Filesystem', DirViewWidget, LEFTDOCK, True)

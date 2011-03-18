@@ -5,7 +5,7 @@ from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
     FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
-    del_deco, cover_info, info_to_dict)
+    del_deco, cover_info, info_to_dict, parse_image)
 from copy import copy, deepcopy
 from mutagen.mp4 import MP4,  MP4Cover
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
@@ -253,17 +253,18 @@ class Tag(util.MockTag):
             del(self.__tags[self.revmapping.get(z, z)])
         self.images = []
 
-    def _setImages(self, images):
+    def _set_images(self, images):
         if images:
-            self.__images = images
+            self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
+                images)
         else:
             self.__images = []
         cover_info(images, self.__tags)
 
-    def _getImages(self):
+    def _get_images(self):
         return self.__images
 
-    images = property(_getImages, _setImages)
+    images = property(_get_images, _set_images)
 
     def _info(self):
         info = self.mut_obj.info

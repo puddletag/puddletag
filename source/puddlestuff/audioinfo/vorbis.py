@@ -11,7 +11,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
     getdeco, setdeco, str_filesize, unicode_list,
     CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
-    MONO, STEREO, get_total, set_total)
+    MONO, STEREO, get_total, set_total, parse_image)
 from tag_versions import tags_in_file
 from copy import copy
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -71,17 +71,18 @@ def vorbis_tag(base, name):
 
         filepath = property(get_filepath, set_filepath)
 
-        def _getImages(self):
+        def _get_images(self):
             return self.__images
 
-        def _setImages(self, images):
+        def _set_images(self, images):
             if images:
-                self.__images = images
+                self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
+                    images)
             else:
                 self.__images = []
             cover_info(images, self.__tags)
 
-        images = property(_getImages, _setImages)
+        images = property(_get_images, _set_images)
 
         @getdeco
         def __getitem__(self, key):
