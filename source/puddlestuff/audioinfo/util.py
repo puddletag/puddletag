@@ -73,7 +73,7 @@ def commontags(audios):
     imagetags = set()
     for audio in audios:
         if audio.IMAGETAGS:
-            image = audio[IMAGES] if audio[IMAGES] else []
+            image = audio[IMAGE_FIELD] if audio[IMAGE_FIELD] else []
         else:
             image = []
         images.append(image)
