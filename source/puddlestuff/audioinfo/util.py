@@ -242,6 +242,7 @@ def info_to_dict(info):
     Ef. info.channels will become '__channels' in the returned
     dictionary. Info.length becomes '__length' and so on.
     """
+    attrs = dir(info)
     tags = {}
     try: tags["__frequency"] = strfrequency(info.sample_rate)
     except AttributeError: pass
@@ -467,7 +468,7 @@ def strlength(value):
     If HH = 00: returns the value in MM:SS format"""
     seconds = unicode(int(value % 60)).zfill(2)
     if value/3600 >= 1:
-        return '%d:%d:%s' % (int(value / 3600),
+        return u'%d:%s:%s' % (int(value / 3600),
             unicode(int(value % 3600) / 60).zfill(2), seconds)
     else:
         return u"%d:%s" % (value / 60, seconds)

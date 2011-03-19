@@ -239,7 +239,9 @@ class Tag(util.MockTag):
             return
         else:
             try:
-                self.__tags[key] = FUNCS[key][1](value)
+                new_val = FUNCS[key][1](value)
+                if value:
+                    self.__tags[key] = new_val
             except KeyError:
                 #User defined tags.
                 self.__freeform[key] = '----:com.apple.iTunes:%s' % key
@@ -306,33 +308,42 @@ class Tag(util.MockTag):
             except KeyError:
                 pass
 
+            convert = lambda k, v: FUNCS[k][1](v)
+
             #I want 'trkn', to split into track and totaltracks, like Mp3tag.
             if 'trkn' in keys:
-                self['track'] = [z[0] for z in audio['trkn']]
-                self['totaltracks'] = [z[1] for z in audio['trkn']]
+                tags['track'] = convert('track',
+                    [z[0] for z in audio['trkn']])
+                tags['totaltracks'] = convert('totaltracks',
+                    [z[1] for z in audio['trkn']])
                 keys.remove('trkn')
 
             #Same as above
             if 'disk' in keys:
-                self['disc'] = [z[0] for z in audio['disk']]
-                self['totaldiscs'] = [z[1] for z in audio['disk']]
+                tags['disc'] = convert('disc', [z[0] for z in audio['disk']])
+                tags['totaldiscs'] = convert('totaldiscs',
+                    [z[1] for z in audio['disk']])
                 keys.remove('disk')
 
             for key in keys:
                 if key in TAGS:
-                    self[TAGS[key]] = audio[key]
+                    tags[TAGS[key]] = convert(TAGS[key], audio[key])
                 else:
-                    tag = key[key.find(':', key.find(':') +1) + 1:]
-                    self.__freeform[tag] = key
+                    field = key[key.find(':', key.find(':') +1) + 1:]
+                    self.__freeform[field] = key
                     try:
-                        self.__tags[tag] = [unicode(v, 'utf8') for v in audio[key]]
+                        tags[field] = [unicode(v, 'utf8') for v in audio[key]]
                     except UnicodeDecodeError:
-                        self.__errors.add(tag)
+                        self.__errors.add(field)
+
+        for k,v in tags.items():
+            if not v:
+                del(tags[k])
 
         self.__tags.update(info_to_dict(audio.info))
+        self.__tags.update(tags)
         self.revmapping, self.mapping = revmap, mapping
         self.__tags['__tag_read'] = u'MP4'
-        self.__tags.update(tags)
         self.filetype = 'MP4'
         self.__tags['__filetype'] = self.filetype
         self.set_attrs(ATTRIBUTES, self.__tags)

@@ -1717,9 +1717,13 @@ class PicWidget(QWidget):
     def saveToFile(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
+        if self.lastfilename:
+            tempfilename = os.path.join(os.path.dirname(self.lastfilename),
+                'folder.jpg')
+        else:
+            tempfilename = 'folder.jpg'
         if self.currentImage > -1:
             filedlg = QFileDialog()
-            tempfilename = 'folder.jpg'
             filename = filedlg.getSaveFileName(self,
                 translate("Artwork", 'Save artwork as...'), tempfilename,
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))

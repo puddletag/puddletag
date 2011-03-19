@@ -120,6 +120,12 @@ def model_tag(model, base = audioinfo.AbstractTag):
         
         images = property(_get_images, _set_images)
 
+        def __contains__(self, key):
+            if model.previewMode:
+                if key in self.preview:
+                    return True
+            return base.__contains__(self, key)
+
         def clear(self):
             self.preview.clear()
             super(ModelTag, self).clear()

@@ -11,7 +11,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
     getdeco, setdeco, str_filesize, unicode_list,
     CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
-    MONO, STEREO, get_total, set_total, parse_image)
+    MONO, STEREO, get_total, set_total, parse_image, info_to_dict)
 from tag_versions import tags_in_file
 from copy import copy
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -83,6 +83,20 @@ def vorbis_tag(base, name):
             cover_info(images, self.__tags)
 
         images = property(_get_images, _set_images)
+                
+        def __contains__(self, key):
+            if self.revmapping:
+                key = self.revmapping.get(key, key)
+            return key in self.__tags
+
+        @del_deco
+        def __delitem__(self, key):
+            if key == '__image':
+                self.images = []
+            elif key.startswith('__'):
+                return
+            else:
+                del(self.__tags[key])
 
         @getdeco
         def __getitem__(self, key):
@@ -111,20 +125,6 @@ def vorbis_tag(base, name):
                     self.__tags[key.lower()] = [unicode(value)]
                 else:
                     self.__tags[key.lower()] = unicode_list(value)
-                
-        def __contains__(self, key):
-            if self.revmapping:
-                key = self.revmapping.get(key, key)
-            return key in self.__tags
-
-        @del_deco
-        def __delitem__(self, key):
-            if key == '__image':
-                self.images = []
-            elif key.startswith('__'):
-                return
-            else:
-                del(self.__tags[key])
 
         def delete(self):
             self.mut_obj.delete()
@@ -154,28 +154,7 @@ def vorbis_tag(base, name):
             if base == FLAC:
                 self.images = map(bin_to_image, audio.pictures)
 
-            info = audio.info
-            try: tags["__frequency"] = strfrequency(info.sample_rate)
-            except AttributeError: pass
-
-            try: tags["__length"] = strlength(info.length)
-            except AttributeError: pass
-
-            try: tags["__length_seconds"] = unicode(int(info.length))
-            except AttributeError: pass
-
-            try: tags["__bitrate"] = strbitrate(info.bitrate)
-            except AttributeError: tags[u"__bitrate"] = u'0 kb/s'
-
-            try: tags['__bitspersample'] = unicode(info.bits_per_sample)
-            except AttributeError: pass
-
-            try: tags['__channels'] = unicode(info.channels)
-            except AttributeError: pass
-
-            try: tags['__mode'] = MONO if info.channels == 1 else STEREO
-            except AttributeError: pass
-
+            self.__tags.update(info_to_dict(audio.info))
             self.__tags.update(tags)
             self.set_attrs(ATTRIBUTES)
             self.mut_obj = audio

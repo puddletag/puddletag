@@ -185,6 +185,8 @@ class FrameCombo(QGroupBox):
                         tags[field].add(value)
                     else:
                         tags[field].add(SEPARATOR.join(value))
+                else:
+                    tags[field].add(u'')
 
         for field, values in tags.iteritems():
             combo = combos[field]
