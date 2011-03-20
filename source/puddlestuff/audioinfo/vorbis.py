@@ -11,7 +11,8 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
     getdeco, setdeco, str_filesize, unicode_list,
     CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
-    MONO, STEREO, get_total, set_total, parse_image, info_to_dict)
+    MONO, STEREO, get_total, set_total, parse_image, info_to_dict,
+    get_mime)
 from tag_versions import tags_in_file
 from copy import copy
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -46,7 +47,6 @@ def image_to_bin(image):
     props['mime'] = mime
     props['data'] = data
 
-    args = dict([(z, props[z]) for z in PICARGS if z in props])
     p = Picture()
     [setattr(p, z, props[z]) for z in PICARGS if z in props]
     return p

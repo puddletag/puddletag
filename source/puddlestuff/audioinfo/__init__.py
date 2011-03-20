@@ -101,8 +101,8 @@ def Tag(filename):
     if score > 0: return Kind[1](filename)
     else: return None
 
-import id3, vorbis, apev2, mp4, wma
-tag_modules = (id3, vorbis, apev2, mp4, wma)
+import id3, vorbis, apev2, mp4
+tag_modules = (id3, vorbis, apev2, mp4)
 
 for m in tag_modules:
     if hasattr(m, 'filetype'):

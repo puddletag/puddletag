@@ -5,14 +5,14 @@ GENRES = sorted(TCON.GENRES)
 DIRNAME = '__dirname'
 DIRPATH = '__dirpath'
 EXTENSION = '__ext'
-FILENAME = u"__filename"
+FILENAME = "__filename"
 FILENAME_NO_EXT = '__filename_no_ext'
 IMAGE_FIELD = '__image'
 IMAGE_MIMETYPE = '__image_mimetype'
 IMAGE_TYPE_FIELD = '__image_type'
 NUM_IMAGES = '__num_images'
 PARENT_DIR = '__parent_dir'
-PATH = u"__path"
+PATH = "__path"
 
 MONO = u'Mono'
 JOINT_STEREO = u'Joint-Stereo'
@@ -56,7 +56,8 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (Front)',
 
 MODES = [STEREO, JOINT_STEREO, DUAL_CHANNEL, MONO]
 
-READONLY = (IMAGE_MIMETYPE, IMAGE_TYPE_FIELD, NUM_IMAGES, '__accessed',
+READONLY = (PARENT_DIR, IMAGE_MIMETYPE, IMAGE_TYPE_FIELD, NUM_IMAGES,
+    '__accessed',
     '__albumgain', '__bitrate', '__channels', "__cover_mimetype",
     "__cover_size", "__covers", "__created", '__file_access_date',
     '__file_access_datetime', '__file_access_datetime_raw',

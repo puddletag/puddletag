@@ -226,7 +226,10 @@ def parse_searchpage(page, artist, album, id_field):
     page = get_encoding(page, True, 'utf8')[1]
     soup = parse_html.SoupWrapper(parse_html.parse(page))
     results = soup.find('table', {'class': 'search-results'})
-    fields = [z.string.strip().lower() for z in results.find('tr').find_all('th')]
+    try:
+        fields = [z.string.strip().lower() for z in results.find('tr').find_all('th')]
+    except AttributeError:
+        return []
     albums = [parse_search_element(z, fields, id_field) for z in
         results.find_all('tr')[1:]]
 
@@ -427,6 +430,9 @@ class AllMusic(object):
                 write_log(u'Found Album ID %s' % album_id)
                 return self.keyword_search(u':id %s' % album_id)
 
+        if not album:
+            raise RetrievalError('Album name required.')
+
         write_log(u'Searching for %s' % album)
         try:
             searchpage = search(album)
@@ -469,7 +475,7 @@ class AllMusic(object):
                 info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:
             write_log(u'Error: While retrieving album URL %s - %s' % 
-                        (url, unicode(e)))
+                (url, unicode(e)))
             raise RetrievalError(unicode(e))
         if cover:
             info.update(cover)
