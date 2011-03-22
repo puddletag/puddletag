@@ -1725,7 +1725,8 @@ class PicWidget(QWidget):
         if self.currentImage > -1:
             filedlg = QFileDialog()
             filename = filedlg.getSaveFileName(self,
-                translate("Artwork", 'Save artwork as...'), tempfilename,
+                translate("Artwork", 'Save artwork as...'),
+                QString.fromLocal8Bit(tempfilename),
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
             if not filename:
                 return

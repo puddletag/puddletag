@@ -96,15 +96,29 @@ class Shortcut(QAction):
         self.funcs = self.get_funcs()
         self.connect(self, SIGNAL('triggered()'), self.runAction)
 
-        watcher = QFileSystemWatcher(filter(os.path.exists, filenames), self)
-        self.connect(watcher, SIGNAL('fileChanged(const QString&)'),
-            self._checkFile)
+        self._watcher = QFileSystemWatcher(filter(os.path.exists, filenames),
+            self)
+        self._watcher.connect(self._watcher,
+            SIGNAL('fileChanged(const QString&)'), self._checkFile)
 
     def _checkFile(self, filename):
+        #There's some fucked up behaviour going on with QFileSystemWatcher.
+        #Without the code here, this method will be called 404 times
+        #whenever the file changes. I spent the last hour trying
+        #to figure it out and I'm giving up and brute forcing it.
+
+        #Disconnecting and reconnecting doesn't work either.
+        #Nor does using blockSignals
+        
+        self._watcher.disconnect(self._watcher,
+            SIGNAL('fileChanged(const QString&)'), self._checkFile)
         filename = filename.toLocal8Bit().data()
         if not os.path.exists(filename):
             self.filenames.remove(filename)
         self.funcs = self.get_funcs()
+        self._watcher = QFileSystemWatcher(self.filenames, self)
+        self._watcher.connect(self._watcher,
+            SIGNAL('fileChanged(const QString&)'), self._checkFile)
 
     def get_funcs(self, filenames=None):
         if filenames is None:

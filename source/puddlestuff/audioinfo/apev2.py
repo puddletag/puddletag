@@ -123,8 +123,8 @@ def get_class(mutagen_file, filetype, attrib_fields):
 
         def delete(self):
             self.mut_obj.delete()
-            for z in self.usertags:
-                del(self.__tags[z])
+            for key in self.usertags:
+                del(self.__tags[self.revmapping.key(key, key)])
             self.images = []
 
         def _info(self):

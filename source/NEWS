@@ -1,3 +1,6 @@
+20 March 2011 - 0.10.2
+    Contains a fix for bug discovered in 0.10.1 where the default dir for saving artwork defaults to home directory.
+    
 20 March 2011 - 0.10.1
     New Features:
         Loading subfolders can be turned on/off using the Filesystem Window.

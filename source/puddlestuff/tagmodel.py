@@ -868,7 +868,7 @@ class TagModel(QAbstractTableModel):
         return True
     
     def renameDir(self, oldpath, newpath):
-        os.rename(oldpath, newpath)
+        os.renames(oldpath, newpath)
         self.changeFolder(oldpath, newpath)
         self.emit(SIGNAL('dirsmoved'), [[oldpath, newpath]])
 

@@ -58,8 +58,7 @@ class StoredTags(QScrollArea):
             return
 
         def retrieve_tag():
-            try:
-                
+            try:                
                 audio = audioinfo._Tag(filepath)
                 tags = tag_versions.tags_in_file(filepath)
             except (OSError, IOError), e:
@@ -121,6 +120,10 @@ class StoredTags(QScrollArea):
         thread.connect(thread, SIGNAL('threadfinished'), _load)
         #print 'starting thread', time.time()
         thread.start()
+
+    def showEvent(self, event):
+        super(StoredTags, self).showEvent(event)
+        self.load()
 
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()

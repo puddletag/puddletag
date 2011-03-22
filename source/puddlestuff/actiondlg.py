@@ -780,10 +780,16 @@ class ActionWindow(QDialog):
             self.shortcutButton.setEnabled(False)
     
     def renameAction(self, item):
-        row = self.listbox.row(item)
         name = unicode(item.text())
-        if name != self.funcs[row][1]:
+        names = [self.funcs[r][1] for r in self.funcs]
+        row = self.listbox.row(item)
+        if name not in names:
             self.saveAction(name, self.funcs[row][0], self.funcs[row][2])
+            self.funcs[row][1] = name
+        else:
+            self.listbox.blockSignals(True)
+            item.setText(self.funcs[row][1])
+            self.listbox.blockSignals(False)
 
     def loadActions(self):
         from glob import glob

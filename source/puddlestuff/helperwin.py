@@ -652,7 +652,7 @@ class ExTags(QDialog):
         self.filechanged = False
         self.listbox.clearContents()
         self.listbox.setRowCount(0)
-        self.piclabel.lastfilename = audios[0].dirpath
+        self.piclabel.lastfilename = audios[0].filepath
         self.piclabel.setEnabled(False)
         self.piclabel.setImages(None)
         if len(audios) == 1:
@@ -717,7 +717,7 @@ class ExTags(QDialog):
             else:
                 [items.append([key, z, None, preview]) for z in val]
         [self._settag(i, *item) for i, item in enumerate(items)]
-        self.piclabel.lastfilename = tags.dirpath
+        self.piclabel.lastfilename = tags.filepath
         if not tags.library:
             self.piclabel.setImageTags(tags.IMAGETAGS)
             if tags.IMAGETAGS:

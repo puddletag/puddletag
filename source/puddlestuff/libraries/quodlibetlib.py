@@ -10,7 +10,8 @@ from puddlestuff.audioinfo.util import (FILENAME, DIRPATH, PATH, EXTENSION, READ
 import puddlestuff.audioinfo as audioinfo
 model_tag = audioinfo.model_tag
 from puddlestuff.musiclib import MusicLibError
-ATTRIBUTES = ('bitrate', 'length', 'modified')
+ATTRIBUTES = ['length', 'accessed', 'size', 'created',
+    'modified', 'filetype']
 import quodlibet.config
 from quodlibet.parse import Query
 from functools import partial
@@ -94,14 +95,44 @@ class Tag(MockTag):
                             continue
                 tags[key] = [value]
         del(tags['~filename'])
+        
         self._tags = tags
-        self._set_attrs(ATTRIBUTES)
         self.filepath = libtags['~filename']
-        info = getinfo(self.filepath)
-        self.size = info['__size']
-        self._tags['__size'] = self.size
-        self.accessed = info['__accessed']
-        self._tags['__accessed'] = self.accessed
+        self._tags.update(getinfo(self.filepath))
+        self.set_attrs(ATTRIBUTES, self._tags)
+
+    def get_filepath(self):
+        return MockTag.get_filepath(self)
+
+    def set_filepath(self,  val):
+        self._tags.update(MockTag.set_filepath(self, val))
+
+    filepath = property(get_filepath, set_filepath)
+
+    def _get_images(self):
+        return []
+
+    def _set_images(self, images):
+        return
+
+    images = property(_get_images, _set_images)
+
+    def __contains__(self, key):
+        return key in self._tags
+
+    def __delitem__(self, key):
+        if key == '__image':
+            return
+        elif key.startswith('__'):
+            return
+        else:
+            if key == 'track':
+                del(self._libtags['tracknumber'])
+                del(self._tags['track'])
+            else:
+                if key in self._libtags:
+                    del(self._libtags[key])
+                    del(self._tags[key])
 
     @getdeco
     def __getitem__(self, key):
@@ -123,6 +154,12 @@ class Tag(MockTag):
             self._tags[key] = [unicode(value)]
         else:
             self._tags[key] = [unicode(z) for z in value]
+
+    def delete(self):
+        raise NotImplementedError
+
+    def keys(self):
+        return self._tags.keys()
 
     def save(self, justrename = False):
         libtags = self._libtags

@@ -251,8 +251,8 @@ class Tag(util.MockTag):
 
     def delete(self):
         self.mut_obj.delete()
-        for z in self.usertags:
-            del(self.__tags[self.revmapping.get(z, z)])
+        for key in self.usertags:
+            del(self.__tags[self.revmapping.get(key, key)])
         self.images = []
 
     def _set_images(self, images):

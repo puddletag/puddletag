@@ -158,7 +158,7 @@ text_frames = {
     id3.TRSO: "radioowner",
     id3.TSIZ: "audiosize",
     id3.TSOA: "albumsortorder",
-    id3.TSOP: "peformersortorder",
+    id3.TSOP: "performersortorder",
     id3.TSOT: "titlesortorder",
     id3.TSRC: "isrc",
     id3.TSSE: "encodingsettings",
@@ -829,8 +829,8 @@ class Tag(TagBase):
 
     def delete(self):
         self.mut_obj.delete()
-        for z in self.usertags:
-            del(self.__tags[z])
+        for key in self.usertags:
+            del(self.__tags[self.revmapping.get(key, key)])
         self.images = []
 
     @keys_deco
@@ -924,11 +924,13 @@ class Tag(TagBase):
         
         if v2 == 4:
             audio.tags.update_to_v24()
-            self.__tags['__tag'] = u'ID3v2.4'
         else:
             audio.tags.update_to_v23()
-            self.__tags['__tag'] = u'ID3v2.3'
+            
+        self.update_tag_list()
         audio.tags.save(v1=v1, v2=v2)
+        self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
+        self.update_tag_list()
         self._originaltags = audio.keys()
 
     def to_encoding(self, encoding = UTF8):
@@ -939,7 +941,7 @@ class Tag(TagBase):
                 frames.append((frame, frame.encoding))
                 frame.encoding = encoding
         try:
-            self.save()
+            self.save(v2=4)
         except:
             for frame, enc in frames:
                 frame.encoding = enc
@@ -955,6 +957,5 @@ class Tag(TagBase):
             self.__tags['__tag'] = u', '.join(l)
         else:
             self.__tags['__tag'] = tag
-
 
 filetype = [ID3FileType, Tag, u'ID3', 'mp3']

@@ -620,6 +620,11 @@ class Function:
         
         if first_text:
             if isinstance(text, basestring):
+                if varnames[0].startswith('m_'):
+                    return function([text], *arguments)
+                else:
+                    return function(text, *arguments)
+            elif varnames[0].startswith('m_'):
                 return function(text, *arguments)
             else:
                 ret = (function(v, *arguments) for v in text)

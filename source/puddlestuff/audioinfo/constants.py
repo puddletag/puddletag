@@ -57,7 +57,7 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (Front)',
 MODES = [STEREO, JOINT_STEREO, DUAL_CHANNEL, MONO]
 
 READONLY = (PARENT_DIR, IMAGE_MIMETYPE, IMAGE_TYPE_FIELD, NUM_IMAGES,
-    '__accessed',
+    '__accessed', '__app',
     '__albumgain', '__bitrate', '__channels', "__cover_mimetype",
     "__cover_size", "__covers", "__created", '__file_access_date',
     '__file_access_datetime', '__file_access_datetime_raw',
