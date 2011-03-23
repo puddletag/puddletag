@@ -18,7 +18,7 @@ from puddlestuff.util import split_by_tag, translate, to_string
 import puddlestuff.functions as functions
 from tagtools import *
 import puddlestuff.confirmations as confirmations
-from puddlestuff.constants import HOMEDIR
+from puddlestuff.constants import HOMEDIR, SEPARATOR
 
 status = {}
 
@@ -79,21 +79,34 @@ def connect_status(actions):
 
 def copy():
     selected = status['selectedtags']
-    ba = QByteArray(unicode(selected).encode('utf8'))
     mime = QMimeData()
+    if selected[0]:
+        text = selected[0][selected[0].keys()[0]]
+        if not isinstance(text, basestring):
+            text = SEPARATOR.join(text)
+        mime.setText(text)
+    ba = QByteArray(unicode(selected).encode('utf8'))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
 def copy_whole():
     tags = []
+    mime = QMimeData()
+    
     def usertags(f):
         ret = f.usertags
         if hasattr(f, 'images') and f.images:
             ret.update({'__image': f.images})
         return ret
+        
     tags = [usertags(f) for f in status['selectedfiles']]
+
+    if tags[0]:
+        text = tags[0][tags[0].keys()[0]]
+        if not isinstance(text, basestring):
+            text = SEPARATOR.join(text)
+        mime.setText(text)
     ba = QByteArray(unicode(tags).encode('utf8'))
-    mime = QMimeData()
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 

@@ -128,7 +128,7 @@ def vorbis_tag(base, name):
 
         def delete(self):
             self.mut_obj.delete()
-            for z in self.usertags:
+            for key in self.usertags:
                 del(self.__tags[self.revmapping.get(key, key)])
             self.images = []
 
