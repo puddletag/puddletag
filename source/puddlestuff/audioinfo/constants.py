@@ -33,7 +33,7 @@ FIELDS = [
     'itunesalbumsortorder', 'itunescompilationflag', 'itunescomposersortorder',
     'language', 'lyricist', 'mediatype', 'mood', 'musiciancredits',
     'organization', 'originalalbum', 'originalartist', 'originalreleasetime',
-    'originalyear', 'peformersortorder', 'performer', 'popularimeter',
+    'originalyear', 'performersortorder', 'performer', 'popularimeter',
     'producednotice', 'radioowner', 'radiostationname', 'recordingdates',
     'releasetime', 'setsubtitle', 'taggingtime', 'time', 'title',
     'titlesortorder', 'track', 'ufid', 'version', 'wwwartist',

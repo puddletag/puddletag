@@ -399,7 +399,7 @@ def errormsg(parent, msg, maximum):
     else:
         singleerror(parent, msg)
 
-def safe_name(name, chars=r'/\*?;"|:', to=None):
+def safe_name(name, chars=r'/\*?"|:', to=None):
     """Make a filename safe for use (remove some special chars)
 
     If any special chars are found they are replaced by to."""
@@ -1571,16 +1571,20 @@ class PicWidget(QWidget):
 
         If a filename is not given, then an open file dialog is shown.
         If edit is True, then the current image is changed."""
+            
 
         if not filename:
+            default_fn = os.path.join(
+                os.path.dirname(self.lastfilename), 'folder.jpg')
+            default_fn = QString.fromLocal8Bit(default_fn)
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
-                translate("Artwork", 'Select Image...'), 'folder.jpg',
+                translate("Artwork", 'Select Image...'), default_fn,
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)")))
 
         if not filename:
             return
-        self.lastfilename = os.path.dirname(filename)
+        self.lastfilename = filename
         data = open(filename, 'rb').read()
         pic = self.loadPics(filename)
         if pic:

@@ -328,11 +328,11 @@ class MainWin(QMainWindow):
                 m.init(parent=self)
 
         for win in plugin_dialogs:
-            #try:
-            self.addDock(*win, connect=False)
-            #except:
-                #print "Error while loading Plugin dialog."
-                #traceback.print_exc()
+            try:
+                self.addDock(*win, connect=False)
+            except:
+                print "Error while loading Plugin dialog."
+                traceback.print_exc()
 
         self.restoreSettings()
         self.emit(SIGNAL('always'), True)

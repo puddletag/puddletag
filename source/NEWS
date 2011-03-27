@@ -1,3 +1,10 @@
+23 March 2011 - 0.10.3
+    Fixes:
+        Deleting tags containing mapped fields.
+        Functions operating on multiple values like Merge Field were broken.
+        peformersortorder is spelt correctly as performersortorder for ID3 tags.
+        Renaming directories when intermediate directories are to be created.
+
 20 March 2011 - 0.10.2
     Contains a fix for bug discovered in 0.10.1 where the default dir for saving artwork defaults to home directory.
     

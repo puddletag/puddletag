@@ -1111,7 +1111,7 @@ class TagModel(QAbstractTableModel):
             self.undolevel = 0
             return
         level = self.undolevel - 1
-        oldfiles =  []
+        oldfiles = []
         newfiles = []
         rows = []
         edited = []
@@ -1136,7 +1136,6 @@ class TagModel(QAbstractTableModel):
                 if audio.library:
                     oldfiles.append(deepcopy(audio.tags))
                 edited.append(self.setRowData(row, undo_tags))
-            
 
         del(undo[level])
         if rows:

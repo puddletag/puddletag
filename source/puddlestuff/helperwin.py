@@ -263,7 +263,11 @@ class TextEdit(QPlainTextEdit):
     def focusInEvent(self, event):
         super(TextEdit, self).focusInEvent(event)
         self.selectAll()
-        self.textCursor().setPosition(len(self.toPlainText()) - 1)
+        pos = len(self.toPlainText()) - 1
+        if pos > 0:
+            self.textCursor().setPosition(pos)
+        else:
+            self.textCursor().setPosition(pos)
 
     def focusOutEvent(self, event):
         cursor = self.textCursor()
