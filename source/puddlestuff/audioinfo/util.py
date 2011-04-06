@@ -36,7 +36,7 @@ def commonimages(images):
         0 if some of the images aren't equal.
         None, if an empty list was passed.
         the first image in the list if all of them are equal.
-    """
+    """ 
     
     if images:
         x = images[0]
@@ -72,13 +72,16 @@ def commontags(audios):
     images = []
     imagetags = set()
     for audio in audios:
-        if audio.IMAGETAGS:
+        if getattr(audio, 'IMAGETAGS', []):
             image = audio[IMAGE_FIELD] if audio[IMAGE_FIELD] else []
+            imagetags = imagetags.union(audio.IMAGETAGS)
         else:
             image = []
         images.append(image)
-        imagetags = imagetags.union(audio.IMAGETAGS)
-        audio = audio.usertags
+        if hasattr(audio, 'usertags'):
+            audio = audio.usertags
+        else:
+            audio = usertags(audio)
 
         for field, value in audio.items():
             if field in combined:
@@ -524,6 +527,7 @@ class CaselessDict(dict):
     """Caseless dictionry. Only accepts strings as keys."""
     def __init__(self, other=None):
         self._keys = {}
+        dict.__init__(self)
         if other:
             # Doesn't do keyword args
             if isinstance(other, dict):
@@ -535,6 +539,12 @@ class CaselessDict(dict):
 
     def __contains__(self, key):
         return key.lower() in self._keys
+
+    def __deepcopy__(self, memo):
+        cls = CaselessDict()
+        for key, value in dict.iteritems(self):
+            cls[key] = deepcopy(value)
+        return cls
 
     def __delitem__(self, key):
         dict.__delitem__(self, self._keys[key.lower()])

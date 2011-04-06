@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+from copy import deepcopy
 from functools import partial
 
 import mutagen, mutagen.id3 as id3, mutagen.mp3
@@ -56,7 +57,7 @@ def handle(audio):
 import tag_versions
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
-    'modified')
+    'modified', 'filetype')
 
 WRITE_V1 = 1
 WRITE_V2 = 2
@@ -760,6 +761,36 @@ class Tag(TagBase):
             key = self.revmapping.get(key, key)
         return key in self.__tags
 
+    def __deepcopy__(self, memo=None):
+        cls = Tag()
+        tags = CaselessDict()
+        frames = []
+        [frames.append(frame) if not hasattr(frame, 'frames') else
+            frames.extend(frame.frames) for key, frame in self.__tags.items()
+            if not key.startswith('__')]
+        funcs = []
+        frames_copy = []
+        for frame in frames:
+            funcs.append((getattr(frame, 'get_value', None),
+                getattr(frame, 'set_value', None)))
+            if hasattr(frame, 'get_value'):
+                delattr(frame, 'get_value')
+            if hasattr(frame, 'set_value'):
+                delattr(frame, 'set_value')
+            frames_copy.append(deepcopy(frame))
+        tags = handle(dict([(frame.HashKey, frame) for frame in frames_copy]))
+        for frame, (get_value, set_value) in zip(frames, funcs):
+            if get_value is not None:
+                frame.get_value = get_value
+            if set_value is not None:
+                frame.set_value = set_value
+        for key, value in self.__tags.items():
+            if key not in tags:
+                tags[key] = deepcopy(value)
+        cls.set_fundamentals(tags,
+            self.mut_obj, deepcopy(self.images))
+        return cls
+
     @del_deco
     def __delitem__(self, key):
         if key == '__image':
@@ -857,13 +888,12 @@ class Tag(TagBase):
         self.__tags.update(tags)
         self.__tags.update(info_to_dict(audio.info))
 
-        self.set_attrs(ATTRIBUTES)
-
         if self.ext.lower() == 'mp3':
             self.__tags['__filetype'] = u'MP3'
         else:
             self.__tags['__filetype'] = u'ID3'
-        self.filetype = self.__tags['__filetype']
+
+        self.set_attrs(ATTRIBUTES, self.__tags)
             
         try:
             self.__tags['__tag_read'] = u'ID3v%s.%s' % audio.tags.version[:2]
@@ -932,6 +962,14 @@ class Tag(TagBase):
         self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
         self.update_tag_list()
         self._originaltags = audio.keys()
+
+    def set_fundamentals(self, tags, mut_obj, images=None):
+        self.__tags = tags
+        self.mut_obj = mut_obj
+        if images:
+            self.images = images
+        self._originaltags = tags.keys()
+        self.set_attrs(ATTRIBUTES, tags)
 
     def to_encoding(self, encoding = UTF8):
         frames = []

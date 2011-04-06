@@ -15,7 +15,7 @@ import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
 import mainwin.action_dialogs, mainwin.tagtools
 import mainwin.previews, mainwin.artwork
-import puddlestuff.masstagging
+import puddlestuff.masstag.dialogs
 import puddlestuff.webdb
 import loadshortcuts as ls
 import m3u, findfunc, genres
@@ -74,7 +74,7 @@ def create_tool_windows(parent, extra=None):
         mainwin.dirview,
         mainwin.patterncombo, mainwin.filterwin, puddlestuff.webdb, 
         mainwin.storedtags, mainwin.logdialog, 
-        puddlestuff.masstagging)]
+        puddlestuff.masstag.dialogs)]
     controls.extend(mainwin.action_dialogs.controls)
     if extra:
         controls.extend(extra)
@@ -758,6 +758,8 @@ class MainWin(QMainWindow):
             return
         model = self._table.model()
         rows = status['selectedrows']
+        if not rows:
+            return
         setRowData = model.setRowData
 
         [setRowData(row, d, undo=False, temp=True) for row in rows]

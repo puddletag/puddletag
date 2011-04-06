@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-        
+import string
+
 from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
 from PyQt4.QtGui import QAction, QApplication
@@ -39,6 +40,11 @@ def escape_html(txt):
     result = result.replace(u"<", u"&lt;")
     result = result.replace(u">", u"&gt;")
     return result
+
+def fields_from_text(text):
+    if not text:
+        return []
+    return filter(None, map(string.strip, text.split(u',')))
 
 def matching(audios, listing):
     ret = {}
@@ -91,6 +97,15 @@ def split_by_tag(tracks, main='artist', secondary='album'):
         ret = defaultdict(lambda: [])
         [ret[to_string(track.get(main))].append(track) for track in tracks]
     return ret
+
+split_by_field = split_by_tag
+
+def to_list(value):
+    if isinstance(value, (str, int, long)):
+        value = [unicode(value)]
+    elif isinstance(value, unicode):
+        value = [value]
+    return value
 
 def to_string(value):
     if not value:

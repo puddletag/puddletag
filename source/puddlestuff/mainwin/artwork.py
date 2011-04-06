@@ -22,10 +22,10 @@ def get_font(rect, *text):
     metrics = QFontMetrics
     lengths = [(t, metrics(font).width(t)) for t in text]
     lowest = max(lengths, key = lambda x: x[1])
-    i = 12
+    size = 12
     while QFontMetrics(font).width(lowest[0]) < rect.width() - 30:
-        font.setPointSize(i)
-        i += 1
+        font.setPointSize(size)
+        size += 1
     return font
 
 def create_svg(text, font, rect=None):

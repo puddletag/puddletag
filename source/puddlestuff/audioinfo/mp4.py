@@ -196,6 +196,14 @@ class Tag(util.MockTag):
             key = self.revmapping.get(key, key)
         return key in self.__tags
 
+    def __deepcopy__(self, memo=None):
+        cls = Tag()
+        cls.mapping = self.mapping
+        cls.revmapping = self.revmapping
+        cls.set_fundamentals(deepcopy(self.__tags), deepcopy(self.images),
+            self.mut_obj, deepcopy(self.__freeform), deepcopy(self.__errors))
+        return cls
+
     @del_deco
     def __delitem__(self, key):
         if key == '__image':
@@ -290,6 +298,7 @@ class Tag(util.MockTag):
         returns self if successful, None otherwise."""
 
         tags, audio = self.load(filename, MP4)
+        self.images = []
 
         if audio is None:
             return
@@ -306,7 +315,7 @@ class Tag(util.MockTag):
                 self.images = map(bin_to_pic, audio['covr'])
                 keys.remove('covr')
             except KeyError:
-                pass
+                self.images = []
 
             convert = lambda k, v: FUNCS[k][1](v)
 
@@ -397,6 +406,13 @@ class Tag(util.MockTag):
             del(audio[key])
         audio.update(newtag)
         audio.save()
+
+    def set_fundamentals(self, tags, images, mut_obj, freeform=None, errors=None):
+        self.__freeform = {} if freeform is None else freeform
+        self.__errors = {} if errors is None else errors
+        self.__tags = tags
+        self.mut_obj = mut_obj
+        self.images = images
 
     def update_tag_list(self):
         l = tag_versions.tags_in_file(self.filepath)

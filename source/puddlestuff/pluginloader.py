@@ -59,7 +59,7 @@ def load_plugins(plugins=None, parent=None):
         try:
             module = __import__(plugin[MODULE_NAME])
         except:
-            print u'Failed to load plugin: %s', plugin['name']
+            print u'Failed to load plugin: ', plugin['name']
             traceback.print_exc()
             continue
         if hasattr(module, 'functions'):

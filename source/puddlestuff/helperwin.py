@@ -248,7 +248,8 @@ class ImportWindow(QDialog):
         self.dicttags = []
         self.tags.clear()
         for z in self.lines.split("\n"):
-            self.dicttags.append(findfunc.filenametotag(unicode(self.patterncombo.currentText()),z,False))
+            self.dicttags.append(findfunc.filenametotag(
+                unicode(self.patterncombo.currentText()), z, False, False))
         if self.dicttags:
             self.tags.setHtml("<br/>".join([formattag(z) for z in self.dicttags]))
 

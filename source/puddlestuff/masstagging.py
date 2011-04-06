@@ -21,7 +21,6 @@ from puddlestuff.translations import translate
 mutex = QMutex()
 
 PROFILEDIR = os.path.join(SAVEDIR, 'masstagging')
-
 CONFIG = os.path.join(SAVEDIR, 'masstagging.conf')
 
 NO_MATCH_OPTIONS = [

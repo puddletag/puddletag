@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from copy import copy, deepcopy
+
 from mutagen.oggvorbis import OggVorbis
 import mutagen.flac
 from mutagen.flac import Picture, FLAC
@@ -14,7 +16,7 @@ from util import (strlength, strbitrate, strfrequency, usertags, PATH,
     MONO, STEREO, get_total, set_total, parse_image, info_to_dict,
     get_mime)
 from tag_versions import tags_in_file
-from copy import copy
+
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
@@ -61,6 +63,10 @@ def vorbis_tag(base, name):
             self.__images = []
             self.__tags = CaselessDict()
 
+            self.filetype = name
+            self.__tags['__filetype'] = self.filetype
+            self.__tags['__tag_read'] = u'VorbisComment'
+
             util.MockTag.__init__(self, filename)
 
         def get_filepath(self):
@@ -88,6 +94,14 @@ def vorbis_tag(base, name):
             if self.revmapping:
                 key = self.revmapping.get(key, key)
             return key in self.__tags
+
+        def __deepcopy__(self, memo):
+            cls = Tag()
+            cls.mapping = self.mapping
+            cls.revmapping = self.revmapping
+            cls.set_fundamentals(deepcopy(self.__tags),
+                self.mut_obj, self.images)
+            return cls
 
         @del_deco
         def __delitem__(self, key):
@@ -158,9 +172,6 @@ def vorbis_tag(base, name):
             self.set_attrs(ATTRIBUTES)
             self.mut_obj = audio
             self._originaltags = self.__tags.keys()
-            self.filetype = name
-            self.__tags['__filetype'] = self.filetype
-            self.__tags['__tag_read'] = u'VorbisComment'
             self.update_tag_list()
             return self
 
@@ -195,6 +206,13 @@ def vorbis_tag(base, name):
                 del(audio[z])
             audio.update(newtag)
             audio.save()
+
+        def set_fundamentals(self, tags, mut_obj, images=None):
+            self.__tags = tags
+            self.mut_obj = mut_obj
+            if images:
+                self.images = images
+            self._originaltags = tags.keys()
 
         def update_tag_list(self):
             l = tags_in_file(self.filepath)

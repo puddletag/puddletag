@@ -601,6 +601,7 @@ class TagModel(QAbstractTableModel):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
             return QVariant()
+        
         if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
             try:
                 audio = self.taginfo[row]
@@ -626,7 +627,7 @@ class TagModel(QAbstractTableModel):
                         tooltip = val
                 else:
                     tooltip = val
-                return QVariant(tooltip)
+                return QVariant(QString(tooltip))
             return QVariant(val)
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]

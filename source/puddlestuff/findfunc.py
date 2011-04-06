@@ -68,7 +68,7 @@ def convert_actions(dirpath, new_dir):
         os.rename(filename, path_join(backup, basename(filename)))
         save_action(path_join(new_dir, basename(filename)), name, funcs)
 
-def filenametotag(pattern, filename, checkext = False):
+def filenametotag(pattern, filename, checkext = False, split_dirs=True):
     """Retrieves tag values from your filename
         pattern is the rule with which to extract
         the tags from filename. Which does not have to
@@ -100,7 +100,10 @@ def filenametotag(pattern, filename, checkext = False):
 
     e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
     patterns = filter(None, pattern.split(u'/'))
-    filenames = filename.split(u'/')[-len(patterns):]
+    if split_dirs:
+        filenames = filename.split(u'/')[-len(patterns):]
+    else:
+        filenames = [filename]
     mydict = {}
     for pattern, filename in zip(patterns, filenames):
         new_fields = tagtotag(pattern, filename, e)

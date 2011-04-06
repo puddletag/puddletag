@@ -285,7 +285,7 @@ def create_buddy(text, control, box=None):
 
     if not box:
         box = QHBoxLayout()
-    elif hbox is True:
+    elif box is True:
         box = QVBoxLayout()
     box.addWidget(label)
     box.addWidget(control, 1)

@@ -586,6 +586,7 @@ Match &Case, check"""
     ret.append(text[unmatched:])
     return u''.join(ret)
 
+replace_regex = replaceWithReg
 
 validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (
     string.ascii_letters, string.digits, os.path.sep)

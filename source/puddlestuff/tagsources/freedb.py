@@ -20,18 +20,19 @@ def sumdigits(n): return sum(map(long, str(n)))
 
 def sort_func(key, default):
     def func(audio):
-        track = audio.get(key, [default])[0]
+        track = to_string(audio.get(key, [default]))
         try:
             return int(track)
         except:
-            return 0
+            return track
     return func
 
 def calculate_discid(album):
     #from quodlibet's cddb plugin by Michael Urman
     album = sorted(album, key=sort_func('__filename', u''))
     album = sorted(album, key=sort_func('track', u'1'))
-    lengths = [audioinfo.lnglength(song['__length']) for song in album]
+    lengths = [audioinfo.lnglength(to_string(song['__length']))
+        for song in album]
     total_time = 0
     offsets = []
     for length in lengths:
@@ -52,6 +53,12 @@ def convert_info(info):
         if key in keys:
             info[keys[key]] = info[key]
             del(info[key])
+    if 'artist' not in info and 'album' in info:
+        try:
+            info['artist'], info['album'] = [z.strip() for z in
+                info['album'].split(u' / ', 1)]
+        except (TypeError, ValueError):
+            pass
     if '#discid' in info:
         info['freedb_disc_id'] = decode_str(info['#discid'])
     if '#category' in info:
@@ -60,8 +67,17 @@ def convert_info(info):
     return info
 
 def convert_tracks(disc):
-    return [{'track': [unicode(track + 1)], 'title': [decode_str(title)]}
-        for track, title in sorted(disc.items())]
+    tracks = []
+    for tracknum, title in sorted(disc.items()):
+        track = {'track': unicode(tracknum + 1)}
+        if u' / ' in title:
+            track['artist'], track['title'] = [z.strip() for z in
+                decode_str(title).split(u' / ', 1)]
+        else:
+            track['title'] = title
+        tracks.append(track)
+    return tracks
+            
 
 def decode_str(s):
     return s if isinstance(s, unicode) else s.decode('utf8', 'replace')
@@ -101,6 +117,7 @@ def retrieve(category, discid):
         info['disc_id'] = discid
     if 'category' not in info:
         info['category'] = category
+
     return convert_info(info), convert_tracks(tracks)
 
 def retrieve_from_info(info):
@@ -141,15 +158,30 @@ class FreeDB(object):
     tooltip = translate("FreeDB",
         '<b>FreeDB does not support text-based searches.</b>')
     group_by = ['album', None]
+
+    def __init__(self):
+        object.__init__(self)
+        self.__retrieved = {}
     
     def search(self, album, files):
         if files:
-            return search(files)
+            results = search(files)
+            if results:
+                results[0] = self.retrieve(results[0][0])
+            return results
         else:
             return []
 
     def retrieve(self, info):
-        return retrieve_from_info(info)
+        discid = info['#discid']
+        if discid in self.__retrieved:
+            return self.__retrieved[discid]
+        else:
+            info, tracks = retrieve_from_info(info)
+            self.__retrieved[info['#discid']] = [info, tracks]
+            return info, tracks
+        
+        return info
 
 info = FreeDB
 

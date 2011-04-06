@@ -1,6 +1,5 @@
 # -*- coding: utf-8-*-
 import sys, pdb, os
-sys.path.insert(0, '/home/keith/Documents/python/puddletag')
 from puddlestuff.puddleobjects import PuddleConfig, winsettings, OKCancel
 from puddlestuff.constants import SAVEDIR
 import puddlestuff.loadshortcuts as ls

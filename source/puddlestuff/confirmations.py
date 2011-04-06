@@ -80,7 +80,6 @@ if __name__ == '__main__':
     add('First True', True)
     add('Name', False, 'Description')
     print _confirmations
-    _filename = '/home/keith/Desktop/confirmations'
     win = Settings()
     win.show()
     app.exec_()

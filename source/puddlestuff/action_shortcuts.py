@@ -398,7 +398,6 @@ class ShortcutEditor(QDialog):
 
 if __name__ == '__main__':
     import sys
-    sys.path.insert(0, '/home/keith/Documents/python/puddletag/')
     app = QApplication([])
     actions = load_actions()
     win = ShortcutEditor(buttons=True)
