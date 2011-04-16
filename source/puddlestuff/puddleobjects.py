@@ -619,7 +619,8 @@ def gettaglist():
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
     try:
-        lines = sorted(set([z.strip() for z in open(filename, 'r').read().split('\n')]))
+        lines = sorted(set([z.strip().decode('utf8')
+            for z in open(filename, 'r').read().split('\n')]))
     except (IOError, OSError):
         lines = audioinfo.FIELDS[::]
     return lines
@@ -628,7 +629,8 @@ def settaglist(tags):
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
     f = open(filename, 'w')
-    text = '\n'.join(sorted([z for z in tags if not z.startswith('__')]))
+    text = u'\n'.join(sorted([z for z in tags if not z.startswith('__')]))
+    text = text.encode('utf8')
     f.write(text)
     f.close()
 

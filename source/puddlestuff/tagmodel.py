@@ -26,6 +26,7 @@ from constants import SELECTIONCHANGED, SEPARATOR, BLANK
 import puddlestuff.confirmations as confirmations
 import logging, shutil
 from puddlestuff.translations import translate
+from puddlestuff.util import rename_error_msg
 
 status = {}
 
@@ -286,7 +287,7 @@ class Properties(QDialog):
                     ('Mode', 'Stereo'),
                     ('Length', u'4:22')])]
         """
-        QDialog.__init__(self,parent)
+        QDialog.__init__(self, parent)
         winsettings('fileinfo', self)
         self.setWindowTitle(translate("Shortcut Settings", 'File Properties'))
         self._load(info)
@@ -299,9 +300,9 @@ class Properties(QDialog):
             framegrid = QGridLayout()
             framegrid.setColumnStretch(1,1)
             for row, value in enumerate(items):
-                property = QLabel(value[0] + u':')
-                property.setTextInteractionFlags(interaction)
-                framegrid.addWidget(property, row, 0)
+                prop = QLabel(value[0] + u':')
+                prop.setTextInteractionFlags(interaction)
+                framegrid.addWidget(prop, row, 0)
                 propvalue = QLabel(u'<b>%s</b>' % value[1])
 
                 propvalue.setTextInteractionFlags(interaction)
@@ -867,11 +868,6 @@ class TagModel(QAbstractTableModel):
         del(self.taginfo[position])
         self.endRemoveRows()
         return True
-    
-    def renameDir(self, oldpath, newpath):
-        os.renames(oldpath, newpath)
-        self.changeFolder(oldpath, newpath)
-        self.emit(SIGNAL('dirsmoved'), [[oldpath, newpath]])
 
     def reset(self):
         #Sometimes, (actually all the time on my box, but it may be different on yours)
@@ -963,6 +959,7 @@ class TagModel(QAbstractTableModel):
 
         temporary = temp
         ret = None
+        oldpath = audio.dirpath
 
         if self.previewMode:
             if temporary:
@@ -979,42 +976,17 @@ class TagModel(QAbstractTableModel):
                     audio._temp = {}
                 self._addUndo(audio, undo_val)
             return
-
-        if justrename:
-            filetags = real_filetags(audio.mapping, audio.revmapping, tags)
-            file_hash = {
-                PATH: 'filepath',
-                FILENAME:'filename',
-                EXTENSION: 'ext',
-                DIRPATH: 'dirpath',
-                DIRNAME: 'dirname'}
-            undo_val = {}
-            for key in filetags:
-                if key in file_hash:
-                    undo_val[key] = getattr(audio, file_hash[key])
-
-            rename_file(audio, filetags)
-            if audio.library:
-                audio.save(True)
-            if undo and undo_val:
-                self._addUndo(audio, undo_val)
         else:
             artist = audio.get('artist', u'')
-            undo_val = write(audio, tags, self.saveModification)
-            if undo:
+            undo_val = write(audio, tags, self.saveModification, justrename)
+            if undo and undo_val:
                 self._addUndo(audio, undo_val)
+            if DIRNAME in tags or DIRPATH in tags:
+                self.changeFolder(oldpath, audio.dirpath)
+                self.emit(SIGNAL('dirsmoved'), [[oldpath, audio.dirpath]])
+            if justrename and audio.library:
+                audio.save(True)
             ret = (artist, tags)
-        
-        if DIRNAME in tags:
-            newdir = safe_name(encode_fn(tags[DIRNAME]))
-            newdir = os.path.join(os.path.dirname(audio.dirpath),
-                newdir)
-            if newdir != audio.dirpath:
-                self.renameDir(audio.dirpath, newdir)
-        elif DIRPATH in tags:
-            newdir = encode_fn(tags[DIRPATH])
-            if newdir != audio.dirpath:
-                self.renameDir(audio.dirpath, newdir)
 
         return ret
 
@@ -1052,7 +1024,7 @@ class TagModel(QAbstractTableModel):
 
     def sibling(self, row, column, index = QModelIndex()):
         if row < (self.rowCount() - 1) and row >= 0:
-           return self.index(row + 1, column)
+            return self.index(row + 1, column)
 
     def sort(self, column, order=Qt.DescendingOrder):
         try:
@@ -1084,11 +1056,7 @@ class TagModel(QAbstractTableModel):
         else:
             for field in fields:
                 f = lambda audio: audio.get(field, u'')
-                try:
-                    self.taginfo.sort(natcasecmp, f, reverse)
-                except:
-                    pdb.set_trace()
-                    self.taginfo.sort(natcasecmp, f, reverse)
+                self.taginfo.sort(natcasecmp, f, reverse)                
 
         self.reverseSort = reverse
         self.sortFields = fields
@@ -1435,9 +1403,7 @@ class TagTable(QTableView):
             currentfile = model.taginfo[self.currentIndex().row()]
             QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
             model.emit(SETDATAERROR,
-                translate("Table",
-                    "An error occurred while writing to <b>%1</b>: (%2)").arg(
-                        currentfile[PATH]).arg(editor.writeError.strerror))
+                rename_error_msg(editor.writeError, currentfile.filepath))
             return
         
         if not editor.returnPressed:
@@ -1541,6 +1507,7 @@ class TagTable(QTableView):
                     filename = audio.filepath
                     os.remove(filename)
                     if audio.library:
+                        pdb.set_trace()
                         audio.remove()
                         libtags.append(audio)
                     removeRows(temprows[i])
@@ -1583,10 +1550,10 @@ class TagTable(QTableView):
             self.model().moveRows(mime.draggedRows, row)
             self.restoreSelection()
         else:
-            files = [str(z.path().toLocal8Bit()) for z in event.mimeData().urls()]
+            files = [str(z.path().toLocal8Bit()) for z
+                in event.mimeData().urls()]
 
-            while '' in files:
-                files.remove('')
+            files = filter(None, files)
             self.loadFiles(files, append = True)
 
     def dragMoveEvent(self, event):
@@ -1606,7 +1573,7 @@ class TagTable(QTableView):
     def mouseMoveEvent(self, event):
 
         if event.buttons() != Qt.LeftButton:
-           return
+            return
         mimeData = QMimeData()
         plainText = u""
         tags= []
@@ -1669,10 +1636,10 @@ class TagTable(QTableView):
 
     def invertSelection(self):
         model = self.model()
-        topLeft = model.index(0, 0);
+        topLeft = model.index(0, 0)
         bottomRight = model.index(model.rowCount()-1, model.columnCount()-1)
 
-        selection = QItemSelection(topLeft, bottomRight);
+        selection = QItemSelection(topLeft, bottomRight)
         self.selectionModel().select(selection, QItemSelectionModel.Toggle)
 
     def keyPressEvent(self, event):
@@ -1948,7 +1915,7 @@ class TagTable(QTableView):
             topLeft = model.index(0, col)
             bottomRight = model.index(model.rowCount()-1, col)
 
-            selection = QItemSelection(topLeft, bottomRight);
+            selection = QItemSelection(topLeft, bottomRight)
             self.selectionModel().select(selection, QItemSelectionModel.Select)
 
     def selectCorner(self):

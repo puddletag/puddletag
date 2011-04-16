@@ -670,9 +670,15 @@ def sub(text,text1):
     except decimal.InvalidOperation:
         return
 
-def tag_dir(m_tags, pattern, r_tags):
+def tag_dir(m_tags, pattern, r_tags, state = None):
     '''Tag to Dir, "Tag->Dir: $1"
 &Pattern (can be relative path), text, %artist% - %album%'''
+    if state is None:
+        state = {'tag_dir': set()}
+    elif 'tag_dir' not in state:
+        state['tag_dir'] = set()
+    if r_tags.dirpath in state['tag_dir']:
+        return
     path = os.path
     dirpath = r_tags.dirpath
     if pattern.endswith(u'/') and len(pattern) > 1:
@@ -686,6 +692,7 @@ def tag_dir(m_tags, pattern, r_tags):
         filename = path.normpath(path.join(dirpath,
             os.path.pardir, encode_fn(filename[1:])))
     if filename:
+        state['tag_dir'].add(filename)
         return {DIRPATH: filename}
 
 def testfunction(tags, t_text, p_pattern, n_number):

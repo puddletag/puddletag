@@ -7,15 +7,84 @@ from PyQt4.QtGui import QAction, QApplication
 from StringIO import StringIO
 from copy import copy, deepcopy
 from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
-    EXTENSION, MockTag, DIRPATH, DIRNAME)
+    EXTENSION, MockTag, DIRPATH, DIRNAME, fn_hash)
 from errno import EEXIST
 import os, pdb, re
-from puddleobjects import safe_name, open_resourcefile
+from puddleobjects import encode_fn, decode_fn, safe_name, open_resourcefile
 import puddlestuff.translations
 translate = puddlestuff.translations.translate
+import errno, traceback
 
 ARTIST = 'artist'
 ALBUM = 'album'
+
+def rename_error_msg(e, filename):
+    if isinstance(e, DirRenameError):
+        traceback.print_exc()
+        m = translate("Defaults", '<p>An error occured while '
+            'renaming the directory <b>%1</b> to <i>%2</i>.</p>'
+            '<p>Reason: <b>%3</b><br />'
+            'File used: %4</p>')
+        m = m.arg(e.oldpath).arg(e.newpath).arg(e.strerror)
+        return m.arg(filename)
+        
+    elif isinstance(e, RenameError):
+        traceback.print_exc()
+        m = translate("Defaults", '<p>An error occured while '
+            'renaming the file <b>%1</b> to <i>%2</i>.</p>'
+            '<p>Reason: <b>%3</b></p>')
+        return m.arg(e.oldpath).arg(e.newpath).arg(e.strerror)
+    elif isinstance(e, EnvironmentError):
+        traceback.print_exc()
+        m = translate("Defaults",
+            '<p>An error occured while writing to <b>%1</b>.</p>'
+            '<p>Reason: <b>%2</b></p>')
+        m = m.arg(filename).arg(e.strerror)
+        return m
+
+def rename(oldpath, newpath):
+    if oldpath == newpath:
+        return False
+    if os.path.exists(newpath):
+        raise RenameError(IOError(EEXIST, os.strerror(EEXIST),
+            newpath), oldpath, newpath)
+    if not os.path.exists(os.path.dirname(newpath)):
+        try:
+            os.makedirs(os.path.dirname(newpath))
+        except EnvironmentError, e:
+            e.strerror = translate('Errors', "Couldn't create "
+                "intermediate directory: %s")
+            e.strerror %= decode_fn(os.path.dirname(newpath))
+            raise RenameError(e, oldpath, newpath)
+
+    try:
+        os.rename(oldpath, newpath)
+        return True
+    except EnvironmentError, e:
+        raise RenameError(e, oldpath, newpath)
+
+def rename_dir(filename, olddir, newdir):
+    if newdir == olddir:
+        return False
+    try:
+        os.renames(olddir, newdir)
+        return True
+    except EnvironmentError, e:
+        raise DirRenameError(e, olddir, newdir)
+
+class RenameError(EnvironmentError):
+    def __init__(self, errno=None, strerror=None, filename=None):
+        if isinstance(errno, Exception):
+            e = errno
+            EnvironmentError.__init__(self, e.errno, e.strerror, e.filename)
+            self.oldpath = strerror
+            self.newpath = filename
+        else:
+            EnvironmentError.__init__(self, errno, strerror, filename)
+            self.oldpath = ''
+            self.newpath = ''
+
+class DirRenameError(RenameError): pass
 
 def convert_dict(d, keys):
     d = deepcopy(d)
@@ -64,29 +133,28 @@ def rename_file(audio, tags):
     otherwise {} is returned."""
     test_audio = MockTag()
     test_audio.filepath = audio.filepath
-    
+
     
     if PATH in tags:
-        returntag = PATH
-        test_audio.filepath = tags[PATH]
-    elif FILENAME in tags:
+        test_audio.filepath = to_string(tags[PATH])
+    if FILENAME in tags:
         test_audio.filename = safe_name(to_string(tags[FILENAME]))
-        returntag = FILENAME
-    elif EXTENSION in tags:
+    if EXTENSION in tags:
         test_audio.ext = safe_name(to_string(tags[EXTENSION]))
-        returntag = EXTENSION
-    else:
-        return
 
-    newfilename = test_audio.filepath
-    if newfilename != audio.filepath:
-        if os.path.exists(newfilename):
-            raise IOError(EEXIST, os.strerror(EEXIST), newfilename)
-        elif not os.path.exists(test_audio.dirpath):
-            os.makedirs(test_audio.dirpath)
-        os.rename(audio.filepath, newfilename)
-        audio.filepath = newfilename
-    return returntag
+    if rename(audio.filepath, test_audio.filepath):
+        audio.filepath = test_audio.filepath
+
+    if DIRNAME in tags:
+        newdir = safe_name(encode_fn(tags[DIRNAME]))
+        newdir = os.path.join(os.path.dirname(audio.dirpath),
+            newdir)
+        if rename_dir(audio.filepath, audio.dirpath, newdir):
+            audio.dirpath = newdir
+    elif DIRPATH in tags:
+        newdir = encode_fn(tags[DIRPATH])
+        if rename_dir(audio.filepath, audio.dirpath, newdir):
+            audio.dirpath = newdir
 
 def split_by_tag(tracks, main='artist', secondary='album'):
     if secondary:
@@ -117,7 +185,7 @@ def to_string(value):
     else:
         return to_string(value[0])
 
-def write(audio, tags, save_mtime = True):
+def write(audio, tags, save_mtime = True, justrename=False):
     """A function to update one row.
     row is the row, tags is a dictionary of tags.
 
@@ -125,7 +193,7 @@ def write(audio, tags, save_mtime = True):
     If justrename is True, then (if tags contain a PATH or EXTENSION key)
     the file is just renamed i.e not tags are written.
     """
-    tags = copy(tags)
+    tags = deepcopy(tags)
     if audio.library and (ARTIST in tags or ALBUM in tags):
         artist = audio.get(ARTIST, u'')
     else:
@@ -136,11 +204,11 @@ def write(audio, tags, save_mtime = True):
         preview = audio.preview
         audio.preview = {}
 
-    filetags = real_filetags(audio.mapping, audio.revmapping, tags)
+    fn_fields = dict((key, tags[key]) for key in FILETAGS if key in tags)
 
     undo = dict([(field, copy(audio.get(field, [])))
         for field in tags if
-            (field not in filetags and 
+            (field not in fn_fields and 
                 tags.get(field, u'') != audio.get(field, u''))])
 
     oldimages = None
@@ -150,22 +218,17 @@ def write(audio, tags, save_mtime = True):
         else:
             oldimages = audio['__image']
 
-    filetags = real_filetags(audio.mapping, audio.revmapping, tags)
     try:
-        if filetags:
-            file_hash = {
-                PATH: 'filepath',
-                FILENAME:'filename',
-                EXTENSION: 'ext',
-                DIRPATH: 'dirpath',
-                DIRNAME: 'dirname'}
-            for key in filetags:
-                if key in file_hash:
-                    undo[key] = getattr(audio, file_hash[key])
-            rename_file(audio, filetags)
-
-        audio.update(without_file(audio.mapping, tags))
-        audio.save()
+        if fn_fields:
+            for key in fn_fields:
+                if key in fn_hash:
+                    undo[key] = getattr(audio, fn_hash[key])
+            rename_file(audio, fn_fields)
+        if not justrename:
+            user_only = without_file(tags)
+            if user_only:
+                audio.update(user_only)
+                audio.save()
     except EnvironmentError:
         audio.update(undo)
         audio.preview = preview
@@ -173,8 +236,10 @@ def write(audio, tags, save_mtime = True):
             audio['__image'] = oldimages
         raise
     if save_mtime:
-        setmodtime(audio.filepath, audio.accessed,
-                    audio.modified)
+        try:
+            setmodtime(audio.filepath, audio.accessed, audio.modified)
+        except EnvironmentError:
+            pass
     return undo
 
 def real_filetags(mapping, revmapping, tags):
@@ -186,9 +251,8 @@ def separator(parent=None):
     s.setSeparator(True)
     return s
 
-def without_file(mapping, tags):
-    filefields = [mapping.get(key, key) for key in FILETAGS]
-    return dict([(key, tags[key]) for key in tags if key not in filefields])
+def without_file(tags):
+    return dict([(key, tags[key]) for key in tags if key not in FILETAGS])
 
 class PluginFunction(object):
     def __init__(self, name, function, pprint, args=None, desc=None):

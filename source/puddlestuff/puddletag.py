@@ -25,6 +25,7 @@ import puddlestuff.mainwin.funcs as mainfuncs
 from functools import partial
 from itertools import izip
 import puddlestuff.audioinfo as audioinfo
+from puddlestuff.util import rename_error_msg, RenameError, DirRenameError
 from audioinfo import lnglength, strlength, PATH, str_filesize
 from errno import EEXIST
 from operator import itemgetter
@@ -682,11 +683,9 @@ class MainWin(QMainWindow):
                     if update:
                         lib_updates.append(update)
                     yield None
-                except (IOError, OSError), e:
-                    traceback.print_exc()
+                except EnvironmentError, e:
                     filename = model.taginfo[row][PATH]
-                    m = translate("Defaults",
-                        'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror)
+                    m = rename_error_msg(e, filename)
                     if row == rows[-1]:
                         yield m, 1
                     else:

@@ -853,7 +853,7 @@ class Tag(TagBase):
                 self.__tags.update(create_ufid(key, value))
             elif key.startswith('rgain:'):
                 self.__tags.update(create_rgain(key, value))
-            elif key.startswith('lyrics_us:'):
+            elif key.startswith('unsyncedlyrics:'):
                 self.__tags.update(create_uslt(key, value))
             else:
                 self.__tags.update(create_usertext(key, value))

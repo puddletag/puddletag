@@ -201,7 +201,10 @@ class QuodLibet(object):
         self.edited = False
         self._tracks = pickle.load(open(filepath, 'rb'))
 
-        quodlibet.config.init()
+        try:
+            quodlibet.config.init()
+        except ValueError:
+            pass
 
         self._filepath = filepath
         cached = defaultdict(lambda: defaultdict(lambda: []))
