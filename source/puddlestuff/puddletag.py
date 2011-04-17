@@ -280,7 +280,7 @@ class MainWin(QMainWindow):
 
         PuddleDock._controls = {
             'table': self._table,
-            'mainwin':self,
+            'mainwin': self,
             'funcs': mainfuncs.obj,}
         status['mainwin'] = self
         status['model'] = self._table.model()

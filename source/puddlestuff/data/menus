@@ -1,5 +1,5 @@
 [info]
-version=27
+version=28
 
 [menu]
 &File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
@@ -18,9 +18,9 @@ order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode,Ta&g Tools,&Windows
 [toolbar]
 &File=&Open Folder,&Add Folder,&Refresh
 &Edit=&Save,&Undo
-&Convert=widget-patterncombo,&File->Tag,&Tag->File,&Format
+&Convert=widget-patterncombo,&File->Tag,&Tag->File,&Format,&Rename Directories
 &Action=&Actions,&QuickActions,&Functions
-&Tools=Autonumbering &Wizard...,&Text File->Tag,&Rename Directories,Field &Sort
+&Tools=Autonumbering &Wizard...,&Text File->Tag,Field &Sort
 
 [toolbarattrs]
 order=&File,&Edit,&Convert,&Action,&Tools

@@ -267,48 +267,17 @@ def paste_onto():
 def rename_dirs(parent=None):
     """Changes the directory of the currently selected files, to
     one as per the pattern in self.patterncombo."""
-    if status['table'].model().previewMode:
-        QMessageBox.information(parent, 'puddletag',
-            translate("Dir Renaming", 'Disable Preview Mode first to enable renaming of directories.'))
+    selectedfiles = status['selectedfiles']
+    audio, selected = status['firstselection']
+    pattern = status['patterntext']
+    if not pattern:
         return
 
-    tagtofilename = findfunc.tagtofilename
+    func = puddlestuff.findfunc.Function('tag_dir')
+    func.args = [pattern]
+    func.tag = ['sthaoeusnthaoeusnthaosnethu']
 
-    dirname = os.path.dirname
-    basename = os.path.basename
-    path = os.path
-
-    files = status['selectedfiles']
-    pattern = status['patterntext']
-
-    #Get distinct folders
-    newdirs = {}
-    for f in files:
-        if f.dirpath not in newdirs:
-            newdirs[f.dirpath] = f
-
-    #Create the msgbox, I like that there'd be a difference between
-    #the new and the old filename, so I bolded the new and italicised the old.
-    state = {'__total_files': unicode(len(files))}
-    title = translate("Dir Renaming", "<b>Are you sure you want to rename the following directories?</b>")
-    dirs = []
-    newname = lambda x, st: encode_fn(basename(safe_name(tagtofilename(pattern, x, state=st))))
-    msg = u''
-    for counter, (d, f) in enumerate(newdirs.items()):
-        state['__counter'] = unicode(counter + 1)
-        newfolder = path.join(dirname(d), newname(f, state))
-        msg += u'%s -> <b>%s</b><br /><br />' % (
-            f[DIRPATH], newfolder.decode('utf8', 'replace'))
-        dirs.append([d, newfolder])
-
-    msg = msg[:-len('<br /><br />')]
-
-    if confirmations.should_show('rename_dirs'):
-        info = LongInfoMessage(translate("Dir Renaming", 'Rename dirs?'), title, msg, parent)
-        if not info.exec_():
-            return
-    dirs = sorted(dirs, dircmp, itemgetter(0))
-    emit('renamedirs', dirs)
+    run_func(selectedfiles, func)
 
 def run_action(parent=None, quickaction=False):
     files = status['selectedfiles']
@@ -480,13 +449,14 @@ def update_status(enable = True):
     except findfunc.ParseError, e:
         emit('tfstatus', bold_error % e.message)
 
-    oldir = path.dirname(tag.dirpath)
     try:
-        newfolder = path.join(oldir, path.basename(
-            safe_name(tf(pattern, tag, state=state.copy()))))
-        dirstatus = translate("Dir Renaming",
-            "Rename: <b>%1</b> to: <i>%2</i>").arg(tag[DIRPATH]).arg(newfolder.decode('utf8'))
-        emit('renamedirstatus', dirstatus)
+        newfolder = functions.tag_dir(tag.tags, pattern, tag, state)
+        if newfolder:
+            newfolder = newfolder['__dirpath']
+            dirstatus = translate("Dir Renaming",
+                "Rename: <b>%1</b> to: <i>%2</i>")
+            dirstatus = dirstatus.arg(tag[DIRPATH]).arg(decode_fn(newfolder))
+            emit('renamedirstatus', dirstatus)
     except findfunc.ParseError, e:
         emit('renamedirstatus', bold_error % e.message)
 
@@ -496,7 +466,6 @@ def update_status(enable = True):
     else:
         selected = selected[0]
     try:
-        
         val = tf(pattern, tag, state=state.copy()).decode('utf8')
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))

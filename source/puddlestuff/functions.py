@@ -692,7 +692,7 @@ def tag_dir(m_tags, pattern, r_tags, state = None):
         filename = path.normpath(path.join(dirpath,
             os.path.pardir, encode_fn(filename[1:])))
     if filename:
-        state['tag_dir'].add(filename)
+        state['tag_dir'].add(encode_fn(filename))
         return {DIRPATH: filename}
 
 def testfunction(tags, t_text, p_pattern, n_number):

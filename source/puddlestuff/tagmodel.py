@@ -1092,7 +1092,7 @@ class TagModel(QAbstractTableModel):
             return
 
         get_row = self.taginfo.index
-        
+
         for audio, undo_tags in undo[level].items():
             row = get_row(audio)
             rows.append(row)

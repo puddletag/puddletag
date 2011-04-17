@@ -269,7 +269,7 @@ class DirViewWidget(QWidget):
     def loadSettings(self):
         self.dirview.loadSettings()
         self.subfolderCheck.blockSignals(True)
-        if load_gen_settings([('Su&bfolders', True)]):
+        if load_gen_settings([('Su&bfolders', True)])[0][1]:
             self.subfolderCheck.setChecked(True)
         else:
             self.subfolderCheck.setChecked(False)
