@@ -1,42 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#puddletag.py
-
-#Copyright (C) 2008-2009 concentricpuddle
-
-#This file is part of puddletag, a semi-good music tag editor.
-
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #import psyco
 #psyco.full()
 import sys, os
-_libs = [('mutagen', '(usually python-mutagen or just mutagen)', 
+
+from optparse import OptionParser
+
+def check_libs():
+    """Check for required libs.
+
+    If some not found, show/print a message.
+    Exit if requirements aren't met."""
+    _libs = [('mutagen', '(usually python-mutagen or just mutagen)',
             'http://code.google.com/p/mutagen/'),
-         ('configobj', '(usually python-configobj)', 
+         ('configobj', '(usually python-configobj)',
             'http://code.google.com/p/configobj/'),
          ('pyparsing', '(python-pyparsing or python-parsing in most distros)',
             'http://pyparsing.wikispaces.com/'),
-         ('PyQt4', '(python-qt4 usually)', 
+         ('PyQt4', '(python-qt4 usually)',
             'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
-_recommended = [
-    ('musicbrainz2', 'It is recommended for MusicBrainz support. Available as '
-        'python-musicbrainz2 in most distros.', 'python-musicbrainz2',
-        'http://musicbrainz2.org/doc/PythonMusicBrainz2'),]
 
-def check_libs():
+    _recommended = [
+        ('musicbrainz2',
+            'It is recommended for MusicBrainz support. Available as '
+            'python-musicbrainz2 in most distros.', 'python-musicbrainz2',
+            'http://musicbrainz2.org/doc/PythonMusicBrainz2'),]
+
     found = True
     errors = []
     msg = "Error: The %s module wasn't found. Please check that it's installed " \
@@ -70,21 +60,14 @@ def check_libs():
         pass
     
     if not found:
-       sys.exit(0)
-
-if __name__ == '__main__':
-    check_libs()
-
-from PyQt4.QtGui import QApplication, QFont, QPixmap, QSplashScreen, QIcon
-from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator, QLocale
-import pdb, logging
-pyqtRemoveInputHook()
+        sys.exit(1)
 
 def create_log():
+    """Creates a log file. Redirects sys.stderr sys.stdout output to it."""
     join = os.path.join
     rename = os.rename
     exists = os.path.exists
-    
+
     from puddlestuff.constants import SAVEDIR
     if not os.path.exists(SAVEDIR):
         os.mkdir(SAVEDIR)
@@ -98,42 +81,47 @@ def create_log():
     if exists(log_file):
         rename(log_file, join(SAVEDIR, 'log1.log'))
 
-
-    class stdout(object):
-        def __init__(self, old_write, new_write):
-            self._old_write = old_write
-            self._new_write = new_write
-
-        def write(self, text):
-            self._old_write(text)
-            try:
-                self._new_write(text)
-            except:
-                pass
-
     f = open(log_file, 'w')
-    sys.stdout = stdout(sys.stdout.write, f.write)
-    sys.stderr = stdout(sys.stderr.write, f.write)
+    sys.stdout = StdOut(sys.stdout.write, f.write)
+    sys.stderr = StdOut(sys.stderr.write, f.write)
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    qtTranslator = QTranslator()
-    import puddlestuff.constants
+def init(options, qapp):
+    """Initializes things that need to be initialized.
+
+    Parses command line options. Loads Translations. Sets fontsize."""
+
+    if options.debug:
+        create_log()
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+
+    load_language(qapp, options.langfile)
+
+    if options.fontsize:
+        try:
+            size = int(options.fontsize)
+            font = qapp.font()
+            font.setPointSize(size)
+            app.setFont(font)
+        except IndexError:
+            print 'No fontsize specified.'
+        except ValueError:
+            print 'Invalid fontsize specified.'
+
+def load_language(qapp, langfile=None):
+    """Loads the language file to be used by puddletag.
+
+    app => QApplication object.
+    langfile => If None, then the last option the user chose will be used.
+                Should be a path to a Qt translation file (.qm)."""
     TRANSDIR = puddlestuff.constants.TRANSDIR
-    from puddlestuff.translations import translate
-    from puddlestuff.puddleobjects import get_languages, PuddleConfig
-    from puddlestuff import version_string, revision, resource
 
-    if '--langfile' in sys.argv:
-        index = sys.argv.index('--langfile')
-        langfile = sys.argv[index + 1]
+    qtTranslator = QTranslator()
+    if langfile:
         if not langfile.endswith('.qm'):
             print translate('Defaults', 'Invalid translation file.')
             langargs = None
         else:
             langargs = os.path.basename(langfile), os.path.dirname(langfile)
-        del(sys.argv[index])
-        del(sys.argv[index])
     else:
         langargs = None
 
@@ -141,7 +129,7 @@ if __name__ == '__main__':
         cparser = PuddleConfig()
         lang = cparser.get('main', 'lang', u'auto')
         langs = get_languages([TRANSDIR])
-        
+
         if lang != 'auto':
             if lang in langs:
                 f = langs[lang]
@@ -155,55 +143,95 @@ if __name__ == '__main__':
 
     if langargs and langargs != 'default':
         if qtTranslator.load(*langargs):
-            app.installTranslator(qtTranslator)
+            qapp.installTranslator(qtTranslator)
     puddlestuff.constants.trans_strings()
     puddlestuff.puddleobjects.trans_imagetypes()
 
-    if '--debug' in sys.argv:
-        create_log()
-        sys.argv.remove('--debug')
-        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-
-    size = None
-
-    for i, arg in enumerate(sys.argv):
-        if arg.startswith('--fontsize'):
-            try:
-                size = int(sys.argv[i + 1])
-            except IndexError:
-                print 'No fontsize specified.'
-            except ValueError:
-                print 'Invalid fontsize specified.'
-
-    if len(sys.argv) > 1:
-        filename = sys.argv[-1]
-    else:
-        filename = None
-
+def parse_cmd_options():
+    usage = "usage: %prog [options] [directory path]"
+    parser = OptionParser(usage=usage)
     
+    parser.add_option("--langfile", dest="langfile",
+        default='',
+        help="Path to a translation (.qm) file.", metavar="LANGFILE")
+    parser.add_option("--fontsize", type='float',
+        dest="fontsize", help="Default fontsize to use (in points).")
+    parser.add_option("-d", "--debug", action="store_false",
+        dest="debug", default=False, help="Show (useless) debug messages.")
+
+    return parser.parse_args()
+
+def print_info():
+    """Print program info."""
+    from puddlestuff import version_string, revision
     if revision:
         print translate('Defaults', 'puddletag Version: %1, Revision: %2').arg(
             version_string).arg(unicode(revision))
     else:
         print translate('Defaults', 'puddletag Version: %s' % version_string)
 
+class StdOut(object):
+    """Class to redirect stdout/in/err."""
+    def __init__(self, old_write, new_write):
+        """old_write should be the original sys.stdout.out
+        new_write is a function is what sys.stdout.out will be replaced with.
+
+        Text will be passed to both functions."""
+        self._old_write = old_write
+        self._new_write = new_write
+
+    def write(self, text):
+
+        self._old_write(text)
+        try:
+            self._new_write(text)
+        except:
+            pass
+
+
+if __name__ == '__main__':
+    check_libs()
+
+    from PyQt4.QtGui import QApplication, QFont, QPixmap, QSplashScreen, QIcon
+    from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator, QLocale
+    import pdb, logging
+    pyqtRemoveInputHook()
+
+    #Load puddletag modules.
+    from puddlestuff import resource #Needs to be first as other modules use it.
+    import puddlestuff.constants
+    from puddlestuff.puddleobjects import get_languages, PuddleConfig
+    from puddlestuff.translations import translate
+
+    #Init.
+    print_info()
+    app = QApplication(sys.argv)
+    options, filenames = parse_cmd_options()
+    init(options, app)
+
+    #Depends on init being called first.
+    from puddlestuff.puddletag import MainWin
+    from puddlestuff.puddlesettings import load_gen_settings
+
     app.setWindowIcon(QIcon(":/appicon.png"))
     pixmap = QPixmap(':/puddlelogo.png')
+    app.setOrganizationName("Puddle Inc.")
+    app.setApplicationName("puddletag")
+
     splash = QSplashScreen(pixmap)
     splash.show()
     app.processEvents()
-
-    if size is not None:
-        font = app.font()
-        font.setPointSize(size)
-        app.setFont(font)
-    app.setOrganizationName("Puddle Inc.")
-    app.setApplicationName("puddletag")
-    from puddlestuff.puddletag import MainWin
     win = MainWin()
     splash.close()
     win.setVisible(True)
     app.processEvents()
-    if filename and os.path.exists(filename):
-        win.openDir(filename)
+
+    #Check if dirnames passed on command line.
+    if filenames:
+        dirname = filenames[0]
+        if dirname and os.path.exists(dirname):
+            win.openDir(dirname, False)
+    elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
+        if win._lastdir and os.path.exists(win._lastdir[0]):
+            win.openDir(win._lastdir[0], False)
     app.exec_()

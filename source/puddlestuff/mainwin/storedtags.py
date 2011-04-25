@@ -69,6 +69,8 @@ class StoredTags(QScrollArea):
                     tags.remove(u'ID3v2.4')
                 if u'ID3v2.3' in tags:
                     tags.remove(u'ID3v2.3')
+                if u'ID3v2.2' in tags:
+                    tags.remove(u'ID3v2.2')
             elif hasattr(audio, 'apev2') and audio.apev2:
                 if u'APEv2' in tags:
                     tags.remove('APEv2')

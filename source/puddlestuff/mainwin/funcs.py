@@ -323,10 +323,10 @@ def run_function(parent=None, prevfunc=None):
 
     if prevfunc:
         f = actiondlg.CreateFunction(prevfunc=prevfunc, parent=parent,
-            showcombo=selected_fields, example=example, text=text)
+            selected_fields=selected_fields, example=example, text=text)
     else:
-        f = actiondlg.CreateFunction(parent=parent, showcombo=selected_fields,
-            example=example, text=text)
+        f = actiondlg.CreateFunction(parent=parent,
+            selected_fields=selected_fields, example=example, text=text)
 
     f.connect(f, SIGNAL("valschanged"), partial(run_func, selectedfiles))
     f.setModal(True)
@@ -377,7 +377,7 @@ def search_replace(parent=None):
     func.tag = ['__selected']
 
     dialog = actiondlg.CreateFunction(prevfunc=func, parent=parent,
-        showcombo=selected.keys(), example=audio, text=text)
+        selected_fields=selected.keys(), example=audio, text=text)
 
     dialog.connect(dialog, SIGNAL("valschanged"), partial(run_func, selectedfiles))
     dialog.setModal(True)
@@ -399,9 +399,9 @@ def tag_to_file():
     def rename():
         for i, f in enumerate(files):
             state['__counter'] = unicode(i + 1)
-            yield tf(f, pattern, f, state=state)['__path']
+            yield tf(f, pattern, f, state=state)
 
-    emit('renameselected', rename())
+    emit('writeselected', rename())
 
 def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath

@@ -1,0 +1,31 @@
+.TH PUDDLETAG "1" "April 2011" "puddletag Version: 0.10.4, Revision: 422" "User Commands"
+.SH NAME
+puddletag \- puddletag
+.SH SYNOPSIS
+.B puddletag
+[\fIoptions\fR] [\fIdirectory path\fR]
+.SH DESCRIPTION
+puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
+
+The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.
+
+Then there're Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz. There's quite a bit more, but I've reached my comma quota.
+
+Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help message and exit.
+.TP
+\fB\-\-langfile\fR=\fILANGFILE\fR
+Path to a translation (.qm) file. If valid, this file'll be used to translate puddletag. Otherwise the last translation chosen will be used.
+.TP
+\fB\-\-fontsize\fR=\fIFONTSIZE\fR
+Default font size to use (in points). All UI elements except the file-view will use this font size.
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+Show (useless) debug messages. Do not use.
+.SH "SEE ALSO"
+The puddletag website (
+.B http://puddletag.sourceforge.net
+) contains more info. It is also the best place to get help.

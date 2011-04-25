@@ -53,7 +53,7 @@ Installing from the Debian package.
     Install dependencies using your favourite tool.
     Run puddletag from your Multimedia menu.
 
-Development builds are available via svn (I'm not great about keeping it stable, so use at own risk):
+Development builds are available via svn:
 
     svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
 

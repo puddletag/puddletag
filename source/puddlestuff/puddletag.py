@@ -430,11 +430,8 @@ class MainWin(QMainWindow):
     def _filesSelected(self, val):
         self.emit(SIGNAL('filesselected'), val)
 
-    def applyGenSettings(self, settings, a=None):
-        if a == 1:
-            if settings['&Load last folder at startup']:
-                if os.path.exists(self._lastdir[0]):
-                    self.openDir(self._lastdir[0], False)
+    def applyGenSettings(self, settings, level=None):
+        pass
 
     def closeEvent(self, e):
         controls = PuddleDock._controls

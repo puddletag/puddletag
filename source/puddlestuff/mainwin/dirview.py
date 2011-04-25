@@ -122,6 +122,10 @@ class DirView(QTreeView):
         
         cparser = PuddleConfig()
         d = cparser.get('main', 'lastfolder', HOMEDIR)
+        while not os.path.exists(d):
+            d = os.path.dirname(d)
+            if not d:
+                return
 
         def expand_thread_func():
             index = self.model().index(d)

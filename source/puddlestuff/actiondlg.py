@@ -170,7 +170,7 @@ class FunctionDialog(QWidget):
         CHECKBOX : SIGNAL('stateChanged(int)'),
         }
 
-    def __init__(self, funcname, showcombo = False, userargs = None, 
+    def __init__(self, funcname, selected_fields = False, userargs = None,
         default_fields = None, parent = None, example = None, text = None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
@@ -184,12 +184,14 @@ class FunctionDialog(QWidget):
         docstr = self.func.doc[1:]
         self.vbox = QVBoxLayout()
         self.retval = []
-        self._combotags = []        
+        self._selectedFields = selected_fields
 
-        if showcombo:
-            fields = ['__all'] + sorted(INFOTAGS) + showcombo + gettaglist()
+        if selected_fields:
+            fields = ['__all'] + sorted(INFOTAGS) + \
+                selected_fields + gettaglist()
         else:
-            fields = ['__selected', '__all'] + sorted(INFOTAGS) + gettaglist()
+            fields = ['__selected', '__all'] + sorted(INFOTAGS) + \
+                gettaglist()
 
         self.tagcombo = QComboBox(self)
         tooltip = translate('Functions Dialog', """<p>Fields that will
@@ -210,7 +212,6 @@ class FunctionDialog(QWidget):
         self.tagcombo.setEditable(True)
         self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
         self.tagcombo.addItems(fields)
-        self._combotags = showcombo
         
         self.connect(self.tagcombo,
             SIGNAL('editTextChanged(const QString&)'), self.showexample)
@@ -364,7 +365,7 @@ class FunctionDialog(QWidget):
                             'No preview for is shown for this function.'))
                     return
                 fields = findfunc.parse_field_list(self.func.tag, audio,
-                    self._combotags)
+                    self._selectedFields)
                 files = status['selectedfiles']
                 files = unicode(len(files)) if files else u'1'
                 state = {'__counter': u'0', '__total_files': files}
@@ -424,7 +425,7 @@ class FunctionDialog(QWidget):
 class CreateFunction(QDialog):
     """A dialog to allow the creation of functions using only one window and a QStackedWidget.
     For each function in functions, a dialog is created and displayed in the stacked widget."""
-    def __init__(self, prevfunc = None, showcombo = True, parent = None, example = None, text = None):
+    def __init__(self, prevfunc = None, selected_fields = None, parent = None, example = None, text = None):
         """tags is a list of the tags you want to show in the FunctionDialog.
         Each item should be in the form (DisplayName, tagname) as used in audioinfo.
         prevfunc is a Function object that is to be edited."""
@@ -455,7 +456,7 @@ class CreateFunction(QDialog):
         self.vbox.addWidget(self.stack)
         self.okcancel = OKCancel()
 
-        self.mydict = {}    #Holds the created windows in the form self.functions.index: window
+        self.stackWidgets = {}    #Holds the created windows in the form self.functions.index: window
         self.setLayout(self.vbox)
         self.setMinimumHeight(self.sizeHint().height())
         self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
@@ -463,10 +464,10 @@ class CreateFunction(QDialog):
         
         self.example = example
         self._text = text
-        if showcombo is True or not showcombo:
-            self.showcombo = []
+        if not selected_fields:
+            self.selectedFields = []
         else:
-            self.showcombo = showcombo
+            self.selectedFields = selected_fields
             
         self.exlabel = ScrollLabel('')
 
@@ -489,17 +490,18 @@ class CreateFunction(QDialog):
         """Creates a Function dialog in the stack window
         if it doesn't exist already."""
         self.stack.setFrameStyle(QFrame.Box)
-        if index not in self.mydict:
-            what = FunctionDialog(self.realfuncs[index], self.showcombo, 
-                args, fields, example=self.example, text=self._text)
+        if index not in self.stackWidgets:
+            widget = FunctionDialog(self.realfuncs[index],
+                self.selectedFields, args, fields,
+                example=self.example, text=self._text)
             if args is None:
-                what.loadSettings()
-            self.mydict.update({index: what})
-            self.stack.addWidget(what)
-            self.connect(what, SIGNAL('updateExample'), self.updateExample)
-        self.stack.setCurrentWidget(self.mydict[index])
-        self.mydict[index].showexample()
-        self.controls = getattr(self.mydict[index], 'controls', [])
+                widget.loadSettings()
+            self.stackWidgets.update({index: widget})
+            self.stack.addWidget(widget)
+            self.connect(widget, SIGNAL('updateExample'), self.updateExample)
+        self.stack.setCurrentWidget(self.stackWidgets[index])
+        self.stackWidgets[index].showexample()
+        self.controls = getattr(self.stackWidgets[index], 'controls', [])
         self.setMinimumHeight(self.sizeHint().height())
         if self.sizeHint().width() > self.width():
             self.setMinimumWidth(self.sizeHint().width())
@@ -509,11 +511,12 @@ class CreateFunction(QDialog):
         w.argValues()
         if close:
             self.close()
-        if self.showcombo:
-            newtags = [z for z in w.func.tag if z not in self.showcombo]
-            if newtags:
-                settaglist(sorted(newtags + self.showcombo))
-        for widget in self.mydict.values():
+        if w.func.tag:
+            fields = gettaglist()
+            new_fields = [z for z in w.func.tag if z not in fields]
+            if new_fields:
+                settaglist(sorted(new_fields + fields))
+        for widget in self.stackWidgets.values():
             widget.saveSettings()
         self.emit(SIGNAL("valschanged"), w.func)
 

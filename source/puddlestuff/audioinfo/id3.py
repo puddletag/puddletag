@@ -671,12 +671,13 @@ class ID3(CompatID3):
         if len(type(tag).__name__) == encoding:
             tag = type(tag).__base__(tag)
         i = 0
-        while tag.HashKey in self:
-            try:
-                tag.desc = tag.desc + unicode(i)
-            except AttributeError:
-                break
-            i += 1
+        try:
+            desc = tag.desc
+            while tag.HashKey in self:
+                tag.desc = desc + unicode(i)
+                i += 1
+        except AttributeError:
+            "Nothing to do"
         self[tag.HashKey] = tag
 
 
