@@ -65,7 +65,8 @@ MATCH_ALBUM = translate("MassTagging",
 MATCH_NO_INFO = translate("MassTagging", 'Retrieving matching album.')
 
 SEARCHING_ARTIST_ALBUM = translate("MassTagging",
- ':insertStarting search for: <br />artist=<b>%1</b> <br />album=<b>%2</b>')
+    ':insertStarting search for: <br />artist=<b>%1</b> '
+    '<br />album=<b>%2</b><br />')
 SEARCHING_ARTIST = translate("MassTagging",
     ':insertStarting search for: <br />artist=<b>%1</b>'
     '<br />album=No album name found.')
@@ -121,7 +122,7 @@ def apply_regexps(audio, regexps):
 def brute_force_results(audios, retrieved):
     matched = {}
     
-    audios = sorted(natcasecmp,
+    audios = sorted(audios, natcasecmp,
         lambda f: to_string(f.get('track', f['__filename'])))
 
     retrieved = sorted(retrieved, natcasecmp,
@@ -405,7 +406,12 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
 def split_files(audios, pattern):
     dir_groups = split_by_field(audios, '__dirpath', None)
-    tag_groups = []
+    tag_groups = {}
+    dirpaths = {}
+
+    for i, dirpath in enumerate(z['__dirpath'] for z in audios):
+        if dirpath not in dirpaths:
+            dirpaths[dirpath] = i
 
     for files in dir_groups.values():
         audios = []
@@ -415,8 +421,10 @@ def split_files(audios, pattern):
             audio_copy.update(dict_difference(audio_copy, tags))
             audio_copy.cls = f
             audios.append(audio_copy)
-        tag_groups.append(audios)
-    return tag_groups
+        dirpath = audios[0]['__dirpath']
+        tag_groups[dirpaths[dirpath]] = audios
+
+    return [tag_groups[k] for k in sorted(tag_groups)]
 
 class MassTagProfile(object):
     def __init__(self, name=DEFAULT_NAME, desc=u'', fields=None, files=None,
