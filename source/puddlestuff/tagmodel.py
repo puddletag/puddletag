@@ -27,6 +27,7 @@ import puddlestuff.confirmations as confirmations
 import logging, shutil
 from puddlestuff.translations import translate
 from puddlestuff.util import rename_error_msg
+from puddlestuff.audio_filter import parse as filter_audio
 
 status = {}
 
@@ -522,43 +523,19 @@ class TagModel(QAbstractTableModel):
         else:
             self._undo[self.undolevel][audio] = undo
 
-    def applyFilter(self, tags, pattern=None, matchcase=True):
+    def applyFilter(self, pattern=None, matchcase=True):
         self.taginfo = self.taginfo + self._filtered
         taginfo = self.taginfo
-        if ((not tags) or (not pattern)) and (not self._filtered):
+        if (not pattern) and (not self._filtered):
             return
-        elif (not tags) or (not pattern):
+        elif not pattern:
             self._filtered = []
             self.reset()
             return
 
-        pattern = re.compile(pattern)
-        def filt(tags, audio, check):
-            if check:
-                for tag in tags:
-                    if tag not in audio:
-                        continue
-                    elif isinstance(audio[tag], basestring):
-                        if pattern.search(audio[tag]):
-                            return True
-                    else:
-                        if [True for t in audio[tag] if pattern.search(t)]:
-                            return True
-            else:
-                for tag in tags:
-                    if isinstance(audio[tag], basestring):
-                        if pattern.search(audio[tag]):
-                            return True
-                    else:
-                        if [True for t in audio[tag] if pattern.search(t)]:
-                            return True
-            return False
-        if tags == ['__all']:
-            t = [filt(audio.keys(), audio, False) for audio in self.taginfo]
-        else:
-            t = [filt(tags, audio, True) for audio in self.taginfo]
-        self._filtered = [taginfo[i] for i,z in enumerate(t) if not z]
-        self.taginfo = [taginfo[i] for i,z in enumerate(t) if z]
+        filtered = [(filter_audio(a, pattern), a) for a in self.taginfo]
+        self._filtered = [z[1] for z in filtered if not z[0]]
+        self.taginfo = [z[1] for z in filtered if z[0]]
         self.reset()
 
     def changeFolder(self, olddir, newdir):

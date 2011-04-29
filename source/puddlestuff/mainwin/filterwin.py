@@ -1,38 +1,47 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import QWidget, QLabel, QComboBox, QLineEdit, QHBoxLayout, QApplication
-from PyQt4.QtCore import SIGNAL
-from puddlestuff.puddleobjects import gettaglist
+from PyQt4.QtGui import (QWidget, QLabel, QComboBox,
+    QLineEdit, QHBoxLayout, QApplication)
+from PyQt4.QtCore import SIGNAL, QTimer
+from puddlestuff.puddleobjects import gettaglist, create_buddy
 from puddlestuff.constants import BOTTOMDOCK
 from puddlestuff.translations import translate
+
+class DelayedEdit(QLineEdit):
+    def __init__(self, text=None, parent=None):
+        if parent is None and text is None:
+            QLineEdit.__init__(self)
+        elif text is not None and parent is None:
+            QLineEdit.__init__(self, text)
+        else:
+            QLineEdit.__init__(self, text, parent)
+
+        self.__timerslot = None
+        self.__timer = QTimer(self)
+        self.__timer.setInterval(350)
+        self.__timer.setSingleShot(True)
+        self.connect(self, SIGNAL("textChanged(QString)"), self.__time)
+
+    def __time(self, text):
+        timer = self.__timer
+        timer.stop()
+        if self.__timerslot is not None:
+            self.disconnect(timer, SIGNAL('timeout()'), self.__timerslot)
+        self.__timerslot = lambda: self.emit(SIGNAL('delayedText'), text)
+        self.connect(timer, SIGNAL('timeout()'), self.__timerslot)
+        timer.start()
 
 class FilterView(QWidget):
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.emits = ['filter']
         self.receives = []
-        hbox = QHBoxLayout()
-        hbox.addWidget(QLabel(translate("Defaults", "Field: ")))
-        self._tags = QComboBox()
-        self._tags.addItems(['None', '__all'] + gettaglist())
-        self._tags.setEditable(True)
-        self._text = QLineEdit()
-        hbox.addWidget(self._tags, 0)
-        hbox.setMargin(0)
-        hbox.addWidget(self._text, 1)
+        self._text = DelayedEdit()
+        hbox = create_buddy(translate("Defaults", "Filter: "), self._text)
         self.setLayout(hbox)
 
-        self.connect(self._text, SIGNAL("textChanged(QString)"),
-                        self.valsChanged)
-        self.connect(self._tags, SIGNAL("editTextChanged(QString)"),
-                        self.valsChanged)
+        self.connect(self._text, SIGNAL("delayedText"), self.filterChanged)
 
-    def valsChanged(self, *args):
-        tag = unicode(self._tags.currentText())
-        text = unicode(self._text.text())
-        if tag == 'None':
-            tag = None
-        else:
-            tag = [z.strip() for z in tag.split('|') if z.strip()]
-        self.emit(SIGNAL('filter'), tag, text)
+    def filterChanged(self, text):
+        self.emit(SIGNAL('filter'), unicode(text))
 
 control = ("Filter", FilterView, BOTTOMDOCK, True)

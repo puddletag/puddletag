@@ -2,7 +2,7 @@
 import sys
 import re
 import parse_html
-import urllib2
+import urllib, urllib2
 import codecs
 import sys, pdb, re, time, os
 from functools import partial
@@ -78,7 +78,8 @@ def convert_year(info):
     return {}
 
 def create_search(terms):
-    return search_adress % re.sub('(\s+)', u'%20', terms.strip())
+    terms = re.sub(u'[%]', u'', terms.strip())
+    return search_adress % urllib.quote(re.sub('(\s+)', u' ', terms))
 
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:

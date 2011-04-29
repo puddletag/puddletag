@@ -13,64 +13,23 @@ from puddlestuff.puddleobjects import (create_buddy, natcasecmp, ratio,
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.translations import translate
 from puddlestuff.util import to_list, to_string
-from puddlestuff.webdb import strip as strip_fields
 
 import puddlestuff.masstag
 from puddlestuff.masstag import (NO_MATCH_OPTIONS, combine_tracks,
-    fields_from_text, masstag, merge_tsp_tracks, split_files, MassTagFlag,
-    MassTagProfile, TagSourceProfile)
+    fields_from_text, match_files, masstag, merge_tsp_tracks,
+    split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
 from puddlestuff.masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
     load_all_mtps, mtp_from_file, save_mtp)
 
 status_obj = QObject()
 
-def set_status(msg): status_obj.emit(SIGNAL('statusChanged'), msg)
+def set_status(msg):
+    status_obj.emit(SIGNAL('statusChanged'), msg)
+    QApplication.processEvents()
 
 puddlestuff.masstag.set_status = set_status
 
 mutex = QMutex()
-
-get_lower = lambda f, key, default=u'': to_string(f.get(key, default)).lower()
-def ratio_compare(d1, d2, key):
-    return ratio(get_lower(d1, key, u'a'), get_lower(d2, key, u'b'))
-
-def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=False):
-    if not keys:
-        keys = ['artist', 'title']
-    ret = {}
-    unmatched = []
-    for f in files:
-        scores = {}
-        for track in tracks:
-            totals = [ratio_compare(f, track, key) for key in keys]
-            scores[min(totals)] = track
-        if scores:
-            max_ratio = max(scores)
-            if max_ratio > minimum and f.cls not in ret:
-                ret[f.cls] = scores[max_ratio]
-
-    if jfdi:
-        audios = sorted([f.cls for f in files], natcasecmp,
-            lambda f: f['__filename'])
-
-        tracks = sorted(tracks, natcasecmp,
-            lambda t: to_string(t.get('track', t.get('title' , u''))))
-
-        for audio, retrieved in zip(audios, tracks):
-            if audio in ret:
-                continue
-            else:
-                ret[audio] = retrieved
-
-    if existing:
-        previews = []
-        for f, r in ret.items():
-            temp = {}
-            for field in r:
-                if field not in f:
-                    temp[field] = r[field]
-            ret[f] = temp
-    return ret
 
 def search_error(error, profile):
     set_status(translate('MassTagging',
@@ -201,7 +160,7 @@ class MassTagEdit(QDialog):
             filename = profile.name + u'.mtp'
             i = 0
             while filename in filenames:
-                filename = u'%s_%d%s' (profile.name, i, u'.mtp')
+                filename = u'%s_%d%s' % (profile.name, i, u'.mtp')
                 i += 1
             filenames[filename] = profile
             order.append(profile.name)
@@ -583,10 +542,12 @@ class MassTagWindow(QWidget):
             self._log.textCursor().setPosition(pos)
             self._log.insertHtml(text)
         else:
-            self._log.textCursor().setPosition(len(self._log.toPlainText()))
+            pos = len(self._log.toPlainText())
+            if pos < 0:
+                pos = 0
+            self._log.textCursor().setPosition(pos)
             self._log.append(text)
         mutex.unlock()
-        QApplication.processEvents()
 
     def changeProfile(self, index):
         cparser = PuddleConfig()
@@ -648,6 +609,20 @@ class MassTagWindow(QWidget):
         tag_groups = split_files(self._status['selectedfiles'],
             profile.file_pattern)
 
+        search_msg = translate('MassTagging',
+            'An error occured during the search: <b>%s</b>')
+
+        retrieve_msg = translate('MassTagging',
+            'An error occured during album retrieval: <b>%s</b>')
+
+        def search_error(error, profile):
+            thread.emit(SIGNAL('statusChanged'),
+                search_msg % unicode(error))
+
+        def retrieval_error(error, profile):
+            thread.emit(SIGNAL('statusChanged'),
+                retrieve_msg % unicode(error))
+
         def run_masstag():
             replace_fields = []
             for files in tag_groups:
@@ -655,7 +630,7 @@ class MassTagWindow(QWidget):
                 masstag(profile, files, self.__flag, search_error,
                     retrieval_error)
 
-                tracks = merge_tsp_tracks(profile.profiles)
+                tracks = merge_tsp_tracks(profile.profiles, files)
 
                 thread.emit(SIGNAL('enable_preview_mode'))
                 matched = match_files(files, tracks, profile.track_bound,
@@ -676,6 +651,8 @@ class MassTagWindow(QWidget):
         self.connect(thread, SIGNAL('enable_preview_mode'),
             SIGNAL('enable_preview_mode'))
         self.connect(thread, SIGNAL('threadfinished'), finished)
+        self.connect(thread, SIGNAL('statusChanged'), set_status)
+        
         thread.start()
 
     def writePreview(self):

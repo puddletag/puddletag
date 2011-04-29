@@ -3,6 +3,7 @@ import pdb, string
 from collections import defaultdict
 from copy import deepcopy
 
+from puddlestuff.constants import VARIOUS
 from puddlestuff.findfunc import filenametotag
 from puddlestuff.functions import replace_regex
 from puddlestuff.puddleobjects import natcasecmp, ratio
@@ -117,6 +118,20 @@ def apply_regexps(audio, regexps):
             continue
     return audio
 
+def brute_force_results(audios, retrieved):
+    matched = {}
+    
+    audios = sorted(natcasecmp,
+        lambda f: to_string(f.get('track', f['__filename'])))
+
+    retrieved = sorted(retrieved, natcasecmp,
+        lambda t: to_string(t.get('track', t.get('title' , u''))))
+
+    for audio, result in zip(audios, retrieved):
+        matched[audio] = result
+
+    return matched
+
 def check_result(result, audios):
     track_nums = filter(None,
         [to_string(audio.get('track', None)) for audio in audios])
@@ -137,7 +152,7 @@ def check_result(result, audios):
         return True
     return False
 
-def combine_tracks(track1, track2, replace=None):
+def combine_tracks(track1, track2):
     ret = defaultdict(lambda: [])
     
     for key, value in track2.items() + track1.items():
@@ -154,6 +169,15 @@ def fields_from_text(text):
     if not text:
         return []
     return filter(None, map(string.strip, text.split(u',')))
+
+def dict_difference(dict1, dict2):
+    """Returns a dictonary containing key/value pairs from dict2 where key
+    isn't in dict1."""
+    temp = {}
+    for field in dict2:
+        if field not in dict1:
+            temp[field] = dict2[field]
+    return temp
 
 def find_best(matches, files, minimum=0.7):
     group = split_by_field(files, 'album', 'artist')
@@ -191,11 +215,11 @@ def find_best(matches, files, minimum=0.7):
         return []
 
 def get_artist_album(files):
-    tags = split_by_field(files, 'artist', 'album')
+    tags = split_by_field(files, 'album', 'artist')
     album = tags.keys()[0]
     artists = tags[album]
     if len(artists) > 1:
-        return u'Various Artists', album
+        return VARIOUS, album
     else:
         return list(artists)[0], album
 
@@ -216,19 +240,39 @@ def get_match_str(info):
     else:
         return MATCH_NO_INFO
 
-def merge_results(tsp):
-    ret = defaultdict(lambda: [])
-    no_tracks = []
+get_lower = lambda f, key, default=u'': to_string(f.get(key,default)).lower()
 
-    info = {}
-    tracks = []
-    for tsp in tsps:
-        if tsp.result.tracks is None:
-            no_tracks.append(merge_track(tsp.result.info, {}))
-        else:
-            for key, value in tsp.result.stripped_info.iteritems():
-                info[key].append(value) if isinstance(value, basestring) \
-                    else info.extend(value)
+def ratio_compare(d1, d2, key):
+    return ratio(get_lower(d1, key, u'a'), get_lower(d2, key, u'b'))
+
+def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=False):
+    if not keys:
+        keys = ['artist', 'title']
+    ret = {}
+    assigned = []
+    for f in files:
+        scores = {}
+        for track in tracks:
+            if track not in assigned:
+                totals = [ratio_compare(f, track, key) for key in keys]
+                score = min(totals)
+                if score not in scores:
+                    scores[score] = track
+        if scores:
+            max_ratio = max(scores)
+            if max_ratio > minimum and f.cls not in ret:
+                ret[f.cls] = scores[max_ratio]
+                assigned.append(scores[max_ratio])
+
+    if jfdi:
+        unmatched_tracks = [t for t in tracks if t not in assigned]
+        unmatched_files = [f.cls for f in files if f.cls not in ret]
+        ret.update(brute_force_results(unmatched_files, unmatched_tracks))
+
+    if existing:
+        ret = dict((f, dict_difference(f.cls, r)) for f, r in ret.iteritems())
+
+    return ret
 
 def merge_track(audio, info):
     track = {}
@@ -248,18 +292,14 @@ def merge_track(audio, info):
                 track[key] = audio[key][::]
     return track
 
-def merge_mt_profiles(profiles):
-    for profile in profiles:
-        profile.result
-
-def merge_tsp_tracks(profiles):
+def merge_tsp_tracks(profiles, files=None):
     ret = []
     to_repl = []
     for tsp in profiles:
         if not tsp.matched:
             continue
 
-        if tsp.result.tracks is None:
+        if tsp.result.tracks is None or files is not None:
             tags = [deepcopy(tsp.result.info) for z in files]
         tags = [strip_fields(t, tsp.fields) for t in tsp.result.merged]
         if len(tags) > len(ret):
@@ -329,7 +369,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             i += 1
             if i < len(matches):
                 set_status(RETRIEVING_NEXT)
-                result = tsp.retrieve(matches[i], error=tsp_error_func)
+                result = tsp.retrieve(matches[i], errors=tsp_error_func)
             else:
                 result = None
                 break
@@ -352,7 +392,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             album_bound=mtp.album_bound, track_bound=mtp.track_bound,
             regexps=mtp.regexps)
 
-        ret = masstag(new_mtp, audios_copy, flag)
+        ret = masstag(new_mtp, audios_copy, flag,
+            mtp_error_func, tsp_error_func)
 
     if found:
         if not ret:
@@ -366,14 +407,12 @@ def split_files(audios, pattern):
     dir_groups = split_by_field(audios, '__dirpath', None)
     tag_groups = []
 
-    for dirpath, files in dir_groups.items():
+    for files in dir_groups.values():
         audios = []
         for f in files:
             tags = filenametotag(f['__path'], pattern, True)
-            for field in tags:
-                if field not in f:
-                    f[field] = tags[s]
             audio_copy = deepcopy(f)
+            audio_copy.update(dict_difference(audio_copy, tags))
             audio_copy.cls = f
             audios.append(audio_copy)
         tag_groups.append(audios)
@@ -493,7 +532,7 @@ class TagSourceProfile(object):
         self.tag_source = tag_source
 
     def clear_results(self):
-        self.result is None
+        self.result = None
         self.results = []
         self.matched = []
 
