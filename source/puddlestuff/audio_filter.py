@@ -5,7 +5,9 @@ from pyparsing import *
 import puddlestuff.findfunc as findfunc
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.util import to_string
+from puddlestuff.puddleobjects import timemethod
 import time
+
 if len(sys.argv) > 1:
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -90,7 +92,7 @@ class Missing(BoolOperand):
     def __nonzero__(self):
         logging.debug('missing: ' + unicode(self.arg))
         if getattr(self, "audio", None):
-            return not (self.arg in audio)
+            return not (self.arg in self.audio)
         return False
 
 class Present(BoolOperand):
@@ -100,7 +102,7 @@ class Present(BoolOperand):
     def __nonzero__(self):
         logging.debug('present: ' + unicode(self.arg))
         if getattr(self, "audio", None):
-            return (self.arg in audio)
+            return (self.arg in self.audio)
         return False
 
 class BoolIs(BoolOperand):
@@ -132,11 +134,21 @@ field_expr = '%' + Word(alphanums) + '%'
 tokens = QuotedString('"', unquoteResults=False) \
     | field_expr | Word(alphanums)
 bool_expr = operatorPrecedence(tokens, bool_exprs)
+bool_expr.enablePackrat()
 
 def parse(audio, expr):
     for i in bool_exprs:
         i[3].audio = audio
-    return bool(bool_expr.parseString(expr)[0])
+    res = bool_expr.parseString(expr)[0]
+    if isinstance(res, basestring):
+        for field, value in audio.items():
+            if isinstance(value, basestring):
+                value = [value]
+            if res in '\\\\'.join(value):
+                return True
+    else:
+        return bool(res)
+    return False
 
 if __name__ == '__main__':
     audio = audioinfo.Tag('clen.mp3')
@@ -152,4 +164,9 @@ if __name__ == '__main__':
     #parse(audio, 'not missing artist and 18 greater 19')
     #parse(audio, 'artist is "Carl Douglas"')
     #parse(audio, "artist has aarl")
-    parse(audio, "artist has Carl")
+    #parse(audio, "artist has Carl")
+    import time
+    t = time.time()
+    parse(audio, 'snthaoeusnth')
+    print time.time() - t
+    

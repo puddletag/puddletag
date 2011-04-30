@@ -9,7 +9,7 @@ from puddlestuff.functions import replace_regex
 from puddlestuff.puddleobjects import natcasecmp, ratio
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.translations import translate
-from puddlestuff.util import split_by_field, to_string
+from puddlestuff.util import sorted_split_by_field, split_by_field, to_string
 from puddlestuff.webdb import strip as strip_fields
 
 def set_status(v):
@@ -405,26 +405,22 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
         return []
 
 def split_files(audios, pattern):
-    dir_groups = split_by_field(audios, '__dirpath', None)
-    tag_groups = {}
-    dirpaths = {}
 
-    for i, dirpath in enumerate(z['__dirpath'] for z in audios):
-        if dirpath not in dirpaths:
-            dirpaths[dirpath] = i
+    def copy_audio(f):
+        tags = filenametotag(f['__path'], pattern, True)
+        audio_copy = deepcopy(f)
+        audio_copy.update(dict_difference(audio_copy, tags))
+        audio_copy.cls = f
+        return audio_copy
 
-    for files in dir_groups.values():
-        audios = []
-        for f in files:
-            tags = filenametotag(f['__path'], pattern, True)
-            audio_copy = deepcopy(f)
-            audio_copy.update(dict_difference(audio_copy, tags))
-            audio_copy.cls = f
-            audios.append(audio_copy)
-        dirpath = audios[0]['__dirpath']
-        tag_groups[dirpaths[dirpath]] = audios
+    tag_groups = []
 
-    return [tag_groups[k] for k in sorted(tag_groups)]
+    for dirpath, files in sorted_split_by_field(audios, '__dirpath'):
+        album_groups = sorted_split_by_field(files, 'album')
+        for album, album_files in album_groups:
+            tag_groups.append(map(copy_audio, album_files))
+
+    return tag_groups
 
 class MassTagProfile(object):
     def __init__(self, name=DEFAULT_NAME, desc=u'', fields=None, files=None,

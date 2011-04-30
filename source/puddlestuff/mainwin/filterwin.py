@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt4.QtGui import (QWidget, QLabel, QComboBox,
-    QLineEdit, QHBoxLayout, QApplication)
+    QLineEdit, QHBoxLayout, QPushButton, QApplication)
 from PyQt4.QtCore import SIGNAL, QTimer
 from puddlestuff.puddleobjects import gettaglist, create_buddy
 from puddlestuff.constants import BOTTOMDOCK
@@ -35,13 +35,16 @@ class FilterView(QWidget):
         QWidget.__init__(self, parent)
         self.emits = ['filter']
         self.receives = []
-        self._text = DelayedEdit()
-        hbox = create_buddy(translate("Defaults", "Filter: "), self._text)
+        text = QLineEdit()
+        hbox = create_buddy(translate("Defaults", "Filter: "), text)
+        go_button = QPushButton(translate('Defaults', 'Go'))
+        hbox.addWidget(go_button)
         self.setLayout(hbox)
 
-        self.connect(self._text, SIGNAL("delayedText"), self.filterChanged)
+        emit_filter = lambda: self.emit(SIGNAL('filter'),
+            unicode(text.text()))
+        self.connect(go_button, SIGNAL('clicked()'), emit_filter)
+        self.connect(text, SIGNAL('returnPressed()'), emit_filter)
 
-    def filterChanged(self, text):
-        self.emit(SIGNAL('filter'), unicode(text))
 
 control = ("Filter", FilterView, BOTTOMDOCK, True)

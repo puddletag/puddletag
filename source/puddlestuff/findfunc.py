@@ -277,6 +277,7 @@ def function_parser(m_audio, audio=None, dictionary=None):
             raise ParseError(message)
 
     funcMacro.setParseAction(replaceNestedMacros)
+    funcMacro.enablePackrat()
 
     return funcMacro
 

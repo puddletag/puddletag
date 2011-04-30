@@ -168,6 +168,23 @@ def split_by_tag(tracks, main='artist', secondary='album'):
 
 split_by_field = split_by_tag
 
+def sorted_split_by_field(tracks, field='artist'):
+    """Splits the tracks by field, but preserves order.
+
+    Returns a list of two-tuples:
+        (value, all files with track[field] == value)"""
+    indexes = {}
+    ret = []
+    for track in tracks:
+        main_val = to_string(track.get(field, u""))
+        if main_val in indexes:
+            ret[indexes[main_val]][1].append(track)
+        else:
+            index = len(ret)
+            indexes[main_val] = index
+            ret.append([main_val, [track]])
+    return ret
+
 def to_list(value):
     if isinstance(value, (str, int, long)):
         value = [unicode(value)]
