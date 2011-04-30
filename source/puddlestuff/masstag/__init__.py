@@ -121,7 +121,7 @@ def apply_regexps(audio, regexps):
 
 def brute_force_results(audios, retrieved):
     matched = {}
-    
+
     audios = sorted(audios, natcasecmp,
         lambda f: to_string(f.get('track', f['__filename'])))
 
@@ -271,7 +271,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
         ret.update(brute_force_results(unmatched_files, unmatched_tracks))
 
     if existing:
-        ret = dict((f, dict_difference(f.cls, r)) for f, r in ret.iteritems())
+        ret = dict((f, dict_difference(f, r)) for f, r in ret.iteritems())
 
     return ret
 

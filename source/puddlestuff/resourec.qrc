@@ -11,7 +11,6 @@
 <file alias="open.png">data/open.png</file>
 <file alias="standard.action">data/caseconversion.action</file>
 <file alias="caseconversion.action">data/standard.action</file>
-<file alias="puddletag.conf">data/puddletag.conf</file>
 <file alias="puddlelogo.png">data/puddlelogo.png</file>
 <file alias="filenew.png">data/filenew.png</file>
 <file alias="edit.png">data/edit.png</file>
