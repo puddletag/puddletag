@@ -193,43 +193,67 @@ def getfunc(text, audio, dictionary=None):
 
     return function_parser(audio, dictionary=dictionary).transformString(text)
 
+def func_tokens(dictionary, parse_action):
+    func_name = Word(alphas+'_', alphanums+'_')
+
+    func_ident = Combine('$' + func_name.copy()('funcname'))
+    func_tok = func_ident + originalTextFor(nestedExpr())('args')
+    func_tok.leaveWhitespace()
+    func_tok.setParseAction(parse_action)
+    func_tok.enablePackrat()
+
+    rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
+
+    def replace_token(tokens):
+        index = int(tokens.num)
+        return dictionary.get(index, u'')
+
+    rx_tok.setParseAction(replace_token)
+
+    strip = lambda s, l, tok: tok[0].strip()
+    text_tok = CharsNotIn(u',').setParseAction(strip)
+    quote_tok = QuotedString('"')
+
+    if dictionary:
+        arglist = Optional(delimitedList(quote_tok | rx_tok | text_tok))
+    else:
+        arglist = Optional(delimitedList(quote_tok | text_tok))
+
+    return func_tok, arglist, rx_tok
+
+def parse_arglist(text):
+    in_quote=False
+    escape = False
+    current = []
+    arglist = []
+    for i, c in enumerate(text):
+        if c == u',' and not in_quote:
+            arglist.append(u''.join(current).strip())
+            current = []
+            continue
+        elif c == u'"' and not escape:
+            in_quote = not in_quote
+        elif c == u'\\':
+            escape = not escape
+        current.append(c)
+
+    if current:
+        arglist.append(u''.join(current).strip())
+    elif text.endswith(u','):
+        arglist.append(u'')
+
+    return [z if z else u'""' for z in arglist]
+
 def function_parser(m_audio, audio=None, dictionary=None):
     """Parses a function in the form $name(arguments)
     the function $name from the functions module is called
     with the arguments."""
-    if audio is None:
-        audio = stringtags(m_audio)
-    
-    ident = Word(alphas+'_', alphanums+'_')
-
-    funcIdent = Combine('$' + ident.copy()('funcname'))
-    funcMacro = funcIdent + originalTextFor(nestedExpr())('args')
-    funcMacro.leaveWhitespace()
-    
-    rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
-    
-    def replace_token(tokens):
-        index = int(tokens.num)
-        if dictionary and index in dictionary:
-            if not dictionary[index]:
-                return u'""'
-            return dictionary[index]
-        return u''
-    
-    rx_tok.setParseAction(replace_token)
-
-    strip = lambda s, l, tok: tok[0].strip()
-    if dictionary:
-        arglist = Optional(delimitedList(QuotedString('"') | rx_tok |
-            CharsNotIn(u',').setParseAction(strip) ))
-    else:
-        arglist = Optional(delimitedList(QuotedString('"') |
-            CharsNotIn(u',').setParseAction(strip) ))
-
     def replaceNestedMacros(tokens):
-        if funcMacro.searchString(tokens.args):
-            tokens['args'] = funcMacro.transformString(tokens.args)
-        
+        #if tokens.funcname == 'if':
+            #pdb.set_trace()
+        if func_tok.searchString(tokens.args):
+            tokens['args'] = func_tok.transformString(tokens.args)
+
         if tokens.funcname not in functions:
             return u''
         function = functions[tokens.funcname]
@@ -240,8 +264,9 @@ def function_parser(m_audio, audio=None, dictionary=None):
             except TypeError, e:
                 arglen_error(e, [], function)
 
-        arguments = arglist.parseString(tokens.args[1:-1]).asList()
-        
+        arguments = parse_arglist(tokens.args[1:-1])
+        arguments = arglist.parseString(u','.join(arguments)).asList()
+
         varnames = function.func_code.co_varnames
         
         for i,v in enumerate(varnames):
@@ -276,10 +301,12 @@ def function_parser(m_audio, audio=None, dictionary=None):
             message = SYNTAX_ERROR.arg(tokens.funcname).arg(e.message)
             raise ParseError(message)
 
-    funcMacro.setParseAction(replaceNestedMacros)
-    funcMacro.enablePackrat()
+    if audio is None:
+        audio = stringtags(m_audio)
 
-    return funcMacro
+    func_tok, arglist, rx_tok = func_tokens(dictionary, replaceNestedMacros)
+
+    return func_tok
 
 def parsefunc(text, audio, d=None):
     return function_parser(audio, None, d).transformString(text)
