@@ -212,7 +212,7 @@ class FunctionDialog(QWidget):
         self.tagcombo.setEditable(True)
         self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
         self.tagcombo.addItems(fields)
-        
+
         self.connect(self.tagcombo,
             SIGNAL('editTextChanged(const QString&)'), self.showexample)
 
@@ -249,7 +249,6 @@ class FunctionDialog(QWidget):
             ctype = args[1]
             default = args[2:]
 
-            
             control, func, label = self._createControl(label, ctype, default)
 
             self.retval.append(func)
@@ -518,7 +517,26 @@ class CreateFunction(QDialog):
                 settaglist(sorted(new_fields + fields))
         for widget in self.stackWidgets.values():
             widget.saveSettings()
+        self.saveSettings()
         self.emit(SIGNAL("valschanged"), w.func)
+
+    def loadSettings(self):
+        cparser = PuddleConfig()
+        func_name = cparser.get('functions', 'last_used', u'')
+        if not func_name:
+            return
+
+        try:
+            index = self.realfuncs.index(func_name)
+            self.createWindow(index)
+            self.functions.setCurrentIndex(index)
+        except ValueError:
+            return
+
+    def saveSettings(self):
+        cparser = PuddleConfig()
+        funcname = self.realfuncs[self.functions.currentIndex()]
+        cparser.set('functions', 'last_used', funcname)
 
     def updateExample(self, text):
         if not text:

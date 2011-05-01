@@ -2,7 +2,7 @@
 from PyQt4.QtGui import (QWidget, QLabel, QComboBox,
     QLineEdit, QHBoxLayout, QPushButton, QApplication)
 from PyQt4.QtCore import SIGNAL, QTimer
-from puddlestuff.puddleobjects import gettaglist, create_buddy
+from puddlestuff.puddleobjects import gettaglist, create_buddy, PuddleCombo
 from puddlestuff.constants import BOTTOMDOCK
 from puddlestuff.translations import translate
 
@@ -35,16 +35,24 @@ class FilterView(QWidget):
         QWidget.__init__(self, parent)
         self.emits = ['filter']
         self.receives = []
-        text = QLineEdit()
-        hbox = create_buddy(translate("Defaults", "Filter: "), text)
+        edit = QLineEdit()
+        self.combo = PuddleCombo('filter_text')
+        self.combo.setEditText(u'')
+        self.combo.combo.setLineEdit(edit)
+        hbox = create_buddy(translate("Defaults", "Filter: "), self.combo)
         go_button = QPushButton(translate('Defaults', 'Go'))
         hbox.addWidget(go_button)
         self.setLayout(hbox)
 
         emit_filter = lambda: self.emit(SIGNAL('filter'),
-            unicode(text.text()))
+            unicode(edit.text()))
         self.connect(go_button, SIGNAL('clicked()'), emit_filter)
-        self.connect(text, SIGNAL('returnPressed()'), emit_filter)
+        self.connect(edit, SIGNAL('returnPressed()'), emit_filter)
+        self.connect(self.combo.combo, SIGNAL('activated(int)'),
+            lambda i: emit_filter())
+
+    def saveSettings(self):
+        self.combo.save()
 
 
 control = ("Filter", FilterView, BOTTOMDOCK, True)

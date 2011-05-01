@@ -5,8 +5,19 @@ from pyparsing import *
 import puddlestuff.findfunc as findfunc
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.util import to_string
-from puddlestuff.puddleobjects import timemethod
+from puddlestuff.puddleobjects import gettaglist, timemethod
 import time
+
+def str_cmp(a, b):
+    if not isinstance(a, basestring):
+        a = u'\\'.join(a)
+
+    if not isinstance(b, basestring):
+        b = u'\\'.join(b)
+
+    return a.lower() == b.lower()
+
+FIELDS = set(z.lower() for z in gettaglist())
 
 if len(sys.argv) > 1:
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -14,12 +25,12 @@ if len(sys.argv) > 1:
 def parse_arg(audio, text):
     if not isinstance(text, basestring):
         return text
-    if text[0] == '%' and text[-1] == '%':
-        return to_string(audio.get(text[1:-1], ''))
-    elif text in audio:
-        return to_string(audio[text])
+    if text[0] == u'%' and text[-1] == u'%':
+        return to_string(audio.get(text[1:-1], u''))
+    elif text in FIELDS:
+        return to_string(audio.get(text, u''))
     else:
-        if text[0] == '"' and text[-1] == '"':
+        if text[0] == u'"' and text[-1] == u'"':
             text = text[1:-1]
         return findfunc.parsefunc(text, audio)
     return u""
@@ -58,32 +69,42 @@ class BoolOr(BoolOperand):
 class BoolNot(BoolOperand):
     def __init__(self,t):
         self.arg = t[0][1]
+
     @wrap_nonzero
     def __nonzero__(self):
         logging.debug('not: ' + unicode(self.arg))
+        if isinstance(self.arg, basestring):
+            arg = self.arg.lower()
+            for v in self.audio.values():
+                if isinstance(v, basestring):
+                    v = [v]
+                v = u'\\\\'.join(v).lower()
+                if arg in v:
+                    return False
+            return True
         return not bool(self.arg)
 
 class Greater(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
         logging.debug('greater: ' + unicode(self.args))
-        t = time.time()
-        
-        x = self.args[0] > self.args[1]
-        print 'a', time.time() - t
-        return x
+        try: self.args = map(float, self.args)
+        except ValueError: pass
+        return self.args[0] > self.args[1]
 
 class Less(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
         logging.debug('less: ' + unicode(self.args))
+        try: self.args = map(float, self.args)
+        except ValueError: pass
         return self.args[0] < self.args[1]
 
 class Equal(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
         logging.debug('equal: ' + unicode(self.args))
-        return self.args[0] == self.args[1]
+        return str_cmp(self.args[0], self.args[1])
 
 class Missing(BoolOperand):
     def __init__(self, t):
@@ -109,28 +130,28 @@ class BoolIs(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
         logging.debug('is: ' + unicode(self.args))
-        return self.args[0] == self.args[1]
+        return str_cmp(self.args[0], self.args[1])
 
 class Has(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
         logging.debug('has: ' + unicode(self.args))
-        return self.args[1] in self.args[0]
+        return self.args[1].lower() in self.args[0].lower()
     
 bool_exprs = [
-    ("missing", 1, opAssoc.RIGHT, Missing),
-    ("present", 1, opAssoc.RIGHT, Present),
-    ("greater", 2, opAssoc.LEFT, Greater),
-    ("less", 2, opAssoc.LEFT, Less),
-    ("equal", 2, opAssoc.LEFT, Equal),
-    ("has", 2, opAssoc.LEFT, Has),
-    ("is", 2, opAssoc.LEFT, BoolIs),
-    ("and", 2, opAssoc.LEFT,  BoolAnd),
-    ("or",  2, opAssoc.LEFT,  BoolOr),
-    ("not", 1, opAssoc.RIGHT, BoolNot),
+    (CaselessLiteral("missing"), 1, opAssoc.RIGHT, Missing),
+    (CaselessLiteral("present"), 1, opAssoc.RIGHT, Present),
+    (CaselessLiteral("greater"), 2, opAssoc.LEFT, Greater),
+    (CaselessLiteral("less"), 2, opAssoc.LEFT, Less),
+    (CaselessLiteral("equal"), 2, opAssoc.LEFT, Equal),
+    (CaselessLiteral("has"), 2, opAssoc.LEFT, Has),
+    (CaselessLiteral("is"), 2, opAssoc.LEFT, BoolIs),
+    (CaselessLiteral("and"), 2, opAssoc.LEFT,  BoolAnd),
+    (CaselessLiteral("or"),  2, opAssoc.LEFT,  BoolOr),
+    (CaselessLiteral("not"), 1, opAssoc.RIGHT, BoolNot),
     ]
-    
-field_expr = '%' + Word(alphanums) + '%'
+
+field_expr = u'%' + Word(alphanums) + u'%'
 tokens = QuotedString('"', unquoteResults=False) \
     | field_expr | Word(alphanums)
 bool_expr = operatorPrecedence(tokens, bool_exprs)
@@ -141,10 +162,11 @@ def parse(audio, expr):
         i[3].audio = audio
     res = bool_expr.parseString(expr)[0]
     if isinstance(res, basestring):
+        res = res.lower()
         for field, value in audio.items():
             if isinstance(value, basestring):
                 value = [value]
-            if res in '\\\\'.join(value):
+            if res in u'\\\\'.join(value).lower():
                 return True
     else:
         return bool(res)
