@@ -95,10 +95,10 @@ RECHECKING = translate("MassTagging",
     '<br />Rechecking with results from <b>%s</b>.<br />')
 
 VALID_FOUND = translate("MassTagging",
-    'Valid matches were found for the album.')
+    '<br />Valid matches were found for the album.')
 
 NO_VALID_FOUND = translate("MassTagging",
-    '<b> No valid matches were found for the album.</b>')
+    '<b>No valid matches were found for the album.</b>')
 
 class MassTagFlag(object):
     def __init__(self):
@@ -188,7 +188,6 @@ def find_best(matches, files, minimum=0.7):
         artist = artists[0]
     else:
         artist = VARIOUS
-
     d = {'artist': artist, 'album': album}
     scores = {}
 
@@ -198,16 +197,14 @@ def find_best(matches, files, minimum=0.7):
         else:
             info = match[0]
 
-        totals = [ratio(d[key].lower(), to_string(info[key]).lower())
-            for key in d if key in info]
+        score = min([ratio_compare(d, info, key) for key in d])
 
-        if len(totals) == len(d):
-            scores[min(totals)] = match
-
-        if match.tracks and min(totals) < minimum:
+        scores[score] = match
+        if match.tracks and score < minimum:
             if len(match.tracks) == len(files):
                 scores[minimum + 0.01] = match
 
+    #print '\n', scores
     if scores:
         return [scores[z] for z in
             sorted(scores, reverse=True) if z >= minimum]
@@ -319,7 +316,7 @@ def merge_tsp_tracks(profiles, files=None):
     return ret
 
 def masstag(mtp, files=None, flag=None, mtp_error_func=None,
-    tsp_error_func=None):
+    tsp_error_func=None, print_status=True):
 
     not_found = []
     found = []
@@ -358,7 +355,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
         if not matches:
             not_found.append(tsp)
             continue
-        
+
         if len(matches) > 1:
             set_status(MATCHING_ALBUMS_FOUND % len(matches))
         else:
@@ -397,14 +394,15 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             regexps=mtp.regexps)
 
         ret = masstag(new_mtp, audios_copy, flag,
-            mtp_error_func, tsp_error_func)
+            mtp_error_func, tsp_error_func, False)
 
     if found:
-        if not ret:
+        if not ret and print_status:
             set_status(VALID_FOUND)
         return [tsp.result for tsp in found] + ret
     else:
-        set_status(NO_VALID_FOUND)
+        if print_status:
+            set_status(NO_VALID_FOUND)
         return []
 
 def split_files(audios, pattern):
@@ -565,7 +563,7 @@ class TagSourceProfile(object):
             if errors(e, self):
                 raise e
             else:
-                self.result = Result({},[])
+                self.result = Result({}, [])
                 
         self.result.tag_source = self.tag_source
         return self.result

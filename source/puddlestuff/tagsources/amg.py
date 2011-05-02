@@ -79,7 +79,8 @@ def convert_year(info):
 
 def create_search(terms):
     terms = re.sub(u'[%]', u'', terms.strip())
-    return search_adress % urllib.quote(re.sub('(\s+)', u' ', terms))
+    return search_adress % urllib.quote(re.sub('(\s+)', u' ',
+        terms).encode('utf8'))
 
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:
