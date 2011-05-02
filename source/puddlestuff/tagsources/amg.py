@@ -371,7 +371,7 @@ def text(z):
 
 def to_file(data, name):
     if os.path.exists(name):
-        return to_file(name + '_')
+        return to_file(data, name + '_')
         
     f = open(name, 'w')
     f.write(data)

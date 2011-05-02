@@ -209,9 +209,8 @@ def find_best(matches, files, minimum=0.7):
                 scores[minimum + 0.01] = match
 
     if scores:
-        max_ratio = max(scores)
-        if max_ratio >= minimum:
-            return [scores[max_ratio]]
+        return [scores[score] for score in
+            sorted(scores, reverse=True) if score >= minimum]
     else:
         return []
 
@@ -300,9 +299,12 @@ def merge_tsp_tracks(profiles, files=None):
         if not tsp.matched:
             continue
 
-        if tsp.result.tracks is None or files is not None:
-            tags = [deepcopy(tsp.result.info) for z in files]
-        tags = [strip_fields(t, tsp.fields) for t in tsp.result.merged]
+        if tsp.result.tracks is None and files is not None:
+            info = strip_fields(tsp.result.info, tsp.fields)
+            tags = [deepcopy(info) for z in files]
+        else:
+            tags = [strip_fields(t, tsp.fields) for t in tsp.result.merged]
+
         if len(tags) > len(ret):
             ret.extend(tags[len(ret):])
         if tsp.replace_fields:
@@ -492,6 +494,8 @@ class Result(object):
 
         if self.__tracks:
             self.merged = map(lambda a: merge_track(a, value), self.__tracks)
+        else:
+            self.merged = []
 
     info = property(_get_info, _set_info)
 
