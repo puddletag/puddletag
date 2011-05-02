@@ -137,6 +137,9 @@ def check_result(result, audios):
     track_nums = filter(None,
         [to_string(audio.get('track', None)) for audio in audios])
 
+    if result.tracks is None:
+        return True
+
     if track_nums:
         max_num = 0
         for num in track_nums:
@@ -145,9 +148,6 @@ def check_result(result, audios):
             max_num = num if num > max_num else max_num
         if max_num != 0 and max_num == len(result.tracks):
             return True
-
-    if result.tracks is None:
-        return True
 
     if len(audios) == len(result.tracks):
         return True
@@ -209,8 +209,8 @@ def find_best(matches, files, minimum=0.7):
                 scores[minimum + 0.01] = match
 
     if scores:
-        return [scores[score] for score in
-            sorted(scores, reverse=True) if score >= minimum]
+        return [scores[z] for z in
+            sorted(scores, reverse=True) if z >= minimum]
     else:
         return []
 
@@ -366,16 +366,17 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
         set_status(get_match_str(matches[0].info))
         result = tsp.retrieve(matches[0], errors=tsp_error_func)
-        i = 0
+        i = 1
 
         while not check_result(result, files):
-            i += 1
             if i < len(matches):
                 set_status(RETRIEVING_NEXT)
+                set_status(get_match_str(matches[i].info))
                 result = tsp.retrieve(matches[i], errors=tsp_error_func)
             else:
                 result = None
                 break
+            i += 1
         if result is None:
             set_status(NO_MATCHES % tsp.tag_source.name)
             not_found.append(tsp)
