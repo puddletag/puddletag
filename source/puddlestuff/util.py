@@ -228,12 +228,11 @@ def write(audio, tags, save_mtime = True, justrename=False):
             (field not in fn_fields and 
                 tags.get(field, u'') != audio.get(field, u''))])
 
-    oldimages = None
     if '__image' in tags:
         if not audio.IMAGETAGS:
             del(tags['__image'])
         else:
-            oldimages = audio['__image']
+            undo['__image'] = audio.images
 
     try:
         if fn_fields:
@@ -249,8 +248,6 @@ def write(audio, tags, save_mtime = True, justrename=False):
     except EnvironmentError:
         audio.update(undo)
         audio.preview = preview
-        if oldimages is not None:
-            audio['__image'] = oldimages
         raise
     if save_mtime:
         try:
