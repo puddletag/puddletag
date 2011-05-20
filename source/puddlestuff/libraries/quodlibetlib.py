@@ -1,25 +1,33 @@
 # -*- coding: utf-8 -*-
-import sys, os, unittest, time, pdb, shutil
-from os import path
+import sys
+sys.path.insert(0, '/home/keith/Documents/python/puddletag')
+    
+import os, time, pdb, traceback
+import cPickle as pickle
+
+from collections import defaultdict
+from functools import partial
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import cPickle as pickle
-from puddlestuff.audioinfo.util import (FILENAME, DIRPATH, PATH, EXTENSION, READONLY,
-    FILETAGS, INFOTAGS, stringtags, getinfo, strlength, MockTag, isempty, 
-    lngtime, lngfrequency, lnglength, setdeco, getdeco, DIRNAME)
-import puddlestuff.audioinfo as audioinfo
-model_tag = audioinfo.model_tag
-from puddlestuff.musiclib import MusicLibError
-ATTRIBUTES = ['length', 'accessed', 'size', 'created',
-    'modified', 'filetype']
+
 import quodlibet.config
 from quodlibet.parse import Query
-from functools import partial
+
+import puddlestuff.audioinfo as audioinfo
+
+from puddlestuff.audioinfo.tag_versions import tags_in_file
+from puddlestuff.audioinfo.util import (del_deco, fn_hash, getdeco,
+    isempty, keys_deco, lngfrequency, lnglength, lngtime, set_total, setdeco,
+    stringtags, strlength, unicode_list, CaselessDict, MockTag)
 from puddlestuff.constants import HOMEDIR
-from collections import defaultdict
+from puddlestuff.musiclib import MusicLibError
 from puddlestuff.util import to_string, translate
-import shutil
-from itertools import ifilter
+
+model_tag = audioinfo.model_tag
+
+ATTRIBUTES = ['length', 'accessed', 'size', 'created',
+    'modified', 'filetype']
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
@@ -30,32 +38,32 @@ def strtime(seconds):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds))
 
 
-timetags = ['~#added', '~#lastplayed', '~#laststarted']
+time_fields = ['~#added', '~#lastplayed', '~#laststarted']
 timefunc = lambda key: lambda value : {'__%s' % key[2:]: strtime(value)}
-mapping = dict([(key, timefunc(key)) for key in timetags])
+mapping = dict([(key, timefunc(key)) for key in time_fields])
 
 mapping.update({
     'tracknumber': lambda value: {'track': [value]},
     '~#bitrate' : lambda value: {'__bitrate': strbitrate(value)},
     '~#length': lambda value: {'__length': strlength(value)},
-    '~#playcount': lambda value: {'_playcount': [unicode(value)]},
-    '~#rating': lambda value: {'_rating': [unicode(value)]},
-    '~#skipcount': lambda value: {'_skipcount': [unicode(value)]},
+    '~#playcount': lambda value: {'playcount': [unicode(value)]},
+    '~#rating': lambda value: {'rating': [unicode(value)]},
+    '~#skipcount': lambda value: {'__skipcount': [unicode(value)]},
     '~mountpoint': lambda value: {'__mountpoint': value},
     '~#mtime': lambda value : {'__modified': strtime(value)},
     '~picture': lambda value: {'__picture': value},
     })
 
-timetags = ['__added', '__lastplayed', '__laststarted',]
+time_fields = ['__added', '__lastplayed', '__laststarted',]
 timefunc = lambda key: lambda value : {'~#%s' % key[2:]: lngtime(value)}
-revmapping = dict([(key, timefunc(key)) for key in timetags])
+revmapping = dict([(key, timefunc(key)) for key in time_fields])
 revmapping.update({
     'track': lambda value: {'tracknumber': value},
     '__bitrate' : lambda value: {'~#bitrate': lngfrequency(value)},
     '__length': lambda value: {'~#length': lnglength(value)},
-    '_playcount': lambda value: {'~#playcount': int(value)},
-    '_rating': lambda value: {'~#rating': float(value)},
-    '_skipcount': lambda value: {'~#skipcount': int(value)},
+    'playcount': lambda value: {'~#playcount': int(value)},
+    'rating': lambda value: {'~#rating': float(value)},
+    '__skipcount': lambda value: {'~#skipcount': int(value)},
     '__mountpoint': lambda value: {'~mountpoint': value},
     '__modified': lambda value : {'~#mtime': lngtime(value)},
     '__picture': lambda value: {'~picture': to_string(value)},
@@ -66,108 +74,106 @@ class Tag(MockTag):
     mapping = audioinfo.mapping.get('puddletag', {})
     revmapping = audioinfo.revmapping.get('puddletag', {})
     IMAGETAGS = ()
-    _hash = {PATH: 'filepath',
-            FILENAME:'filename',
-            EXTENSION: 'ext',
-            DIRPATH: 'dirpath',
-            DIRNAME: 'dirname'}
 
     def __init__(self, libclass, libtags):
         MockTag.__init__(self)
+
+        self.__tags = CaselessDict()
+        tags = self.__tags
+
+        tags.update(self.load(libtags['~filename'])[0])
+        tags['__tag_read'] = u'QuodLibet'
+
         self.library = libclass
         self.remove = partial(libclass.delete, track=libtags)
         self._libtags = libtags
-        tags = {}
+
         for key, value in libtags.items():
             if not value and not isinstance(value, (int, long)):
                 continue
             if key in mapping:
                 tags.update(mapping[key](value))
             else:
-                if not isinstance(value, unicode):
-                    try:
-                        value = unicode(value, 'utf8')
+                if not isinstance(value, unicode): #Strings
+                    try: value = unicode(value, 'utf8', 'replace')
                     except (TypeError, ValueError):
-                        try:
-                            value = unicode(value)
+                        try: value = unicode(value) #Usually numbers
                         except:
                             traceback.print_exc()
                             continue
                 tags[key] = [value]
         del(tags['~filename'])
-        
-        self._tags = tags
+
         self.filepath = libtags['~filename']
-        self._tags.update(getinfo(self.filepath))
-        self.set_attrs(ATTRIBUTES, self._tags)
+        self.set_attrs(ATTRIBUTES, self.__tags)
+        self.update_tag_list()
 
     def get_filepath(self):
         return MockTag.get_filepath(self)
 
     def set_filepath(self,  val):
-        self._tags.update(MockTag.set_filepath(self, val))
+        self.__tags.update(MockTag.set_filepath(self, val))
 
     filepath = property(get_filepath, set_filepath)
 
-    def _get_images(self):
-        return []
-
-    def _set_images(self, images):
-        return
-
-    images = property(_get_images, _set_images)
+    images = property(lambda s: [], lambda s: [])
 
     def __contains__(self, key):
-        return key in self._tags
+        if self.revmapping:
+            key = self.revmapping.get(key, key)
+        return key in self.__tags
 
+    def __deepcopy__(self, memo=None):
+        tag = Tag(self._libclass, self._libtags)
+        tag.update(deepcopy(self.__tags))
+        return tag
+
+    @del_deco
     def __delitem__(self, key):
-        if key == '__image':
-            return
-        elif key.startswith('__'):
+        if key.startswith('__'):
             return
         else:
             if key == 'track':
                 del(self._libtags['tracknumber'])
-                del(self._tags['track'])
+                del(self.__tags['track'])
             else:
                 if key in self._libtags:
                     del(self._libtags[key])
-                    del(self._tags[key])
+                    del(self.__tags[key])
 
     @getdeco
     def __getitem__(self, key):
-        return self._tags[key]
+        return self.__tags[key]
 
     @setdeco
     def __setitem__(self, key, value):
-        if key in READONLY:
-            return
-        elif key in FILETAGS:
-            setattr(self, self._hash[key], value)
-            return
-
-        if key not in INFOTAGS and isempty(value):
-            del(self[key])
-        elif key in INFOTAGS or isinstance(key, (int, long)):
-            self._tags[key] = value
-        elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
-            self._tags[key] = [unicode(value)]
+        if key.startswith('__'):
+            if key == '__total':
+                set_total(self, value)
+            elif key in fn_hash:
+                setattr(self, fn_hash[key], value)
+        elif isempty(value):
+            if key in self:
+                del(self[key])
+            else:
+                return
         else:
-            self._tags[key] = [unicode(z) for z in value]
+            self.__tags[key] = unicode_list(value)
 
     def delete(self):
         raise NotImplementedError
 
+    @keys_deco
     def keys(self):
-        return self._tags.keys()
+        return self.__tags.keys()
 
     def save(self, justrename = False):
         libtags = self._libtags
-        tags = self._tags
-        newartist = tags.get('artist', [u''])
+        tags = self.__tags
+        newartist = to_string(tags.get('artist', [u'']))
         oldartist = libtags.get('artist', u'')
 
-        newalbum = tags.get('album', [u''])[0]
+        newalbum = to_string(tags.get('album', [u'']))
         oldalbum = libtags.get('album', u'')
 
         self._libtags.update(self._tolibformat())
@@ -175,24 +181,28 @@ class Tag(MockTag):
         if (newartist != oldartist) or (newalbum != oldalbum):
             self.library.update(oldartist, oldalbum, libtags)
         self.library.edited = True
+        self.update_tag_list()
 
     def _tolibformat(self):
         libtags = {}
-        tags = stringtags(self._tags).items()
+        tags = stringtags(self.__tags).items()
         for key, value in tags:
             if key in revmapping:
                 libtags.update(revmapping[key](value))
-            elif key in INFOTAGS:
+            elif key.startswith('__'):
                 continue
             else:
                 libtags[key] = value
-        libtags['~filename'] = self.filepath
-        if '__accessed' in libtags:
-            del(libtags['__accessed'])
 
-        if '__size' in libtags:
-            del(libtags['__size'])
+        libtags['~filename'] = self.filepath
         return libtags
+
+    def update_tag_list(self):
+        l = tags_in_file(self.filepath)
+        if l:
+            self.__tags['__tag'] = u'QuodLibet, ' + u', '.join(l)
+        else:
+            self.__tags['__tag'] = u'QuodLibet'
 
 Tag = audioinfo.model_tag(Tag)
 
@@ -209,10 +219,8 @@ class QuodLibet(object):
         self._filepath = filepath
         cached = defaultdict(lambda: defaultdict(lambda: []))
         for track in self._tracks:
-            if track.get('artist'):
-                cached[track['artist']][track.get('album', u'')].append(track)
-            else:
-                cached[u''][track.get('album', u'')].append(track)
+            cached[track.get('artist', u'')][track.get('album', u'')
+                ].append(track)
         self._cached = cached
 
     def get_tracks(self, maintag, mainval, secondary=None, secvalue=None):
@@ -300,7 +308,10 @@ class QuodLibet(object):
 
     def update(self, artist, album, track):
         cached = self._cached
-        cached[artist][album].remove(track)
+        try:
+            cached[artist][album].remove(track)
+        except ValueError:
+            pass
         if not cached[artist][album]:
             del(cached[artist][album])
         if not cached[artist]:
@@ -378,18 +389,19 @@ class InitWidget(QWidget):
 name = u'Quodlibet'
 
 if __name__ == '__main__':
-    #unittest.main()
-    import time
-    lib = QuodLibet('')
-    pdb.set_trace()
-    t = time.time()
-    i = 0
-    while i < 200:
-        lib.get_tracks('artist', 'Alicia Keys')#, secondary=None, secvalue=None):
-        i += 1
-    print time.time() - t
-
-    #app = QApplication([])
-    #win = ConfigWindow()
-    #win.show()
-    #app.exec_()
+    lib = QuodLibet('/home/keith/.quodlibet/songs')
+    artists = lib.artists
+    import random
+    d = defaultdict(lambda: defaultdict(lambda: []))
+    for nothing in xrange(20):
+        artist = artists[random.randint(0, len(artists))]
+        for album, tracks in lib._cached[artist].items():
+            d[artist][album] = [Tag(lib, t).usertags for t in tracks]
+    import pprint
+    f = {}
+    for z in d:
+        f[z] = dict(d[z])
+    pprint.pprint(f)
+        
+            
+        

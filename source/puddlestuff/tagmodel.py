@@ -1484,7 +1484,6 @@ class TagTable(QTableView):
                     filename = audio.filepath
                     os.remove(filename)
                     if audio.library:
-                        pdb.set_trace()
                         audio.remove()
                         libtags.append(audio)
                     removeRows(temprows[i])

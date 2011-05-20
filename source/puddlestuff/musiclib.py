@@ -1,24 +1,32 @@
 # -*- coding: utf-8 -*-
+"""Module for importing music libraries into puddletag.
+
+See puddlestuff.libraries.quodlibetlib for an example implementation.
+
+Classes of interest:
+
+LibraryWidget->Shows a tree view of library with search edit.
+LibraryTree->Actual widget used to show library info.
+
+"""
+import pdb, sys
+
+from collections import defaultdict
+from functools import partial
+from itertools import izip
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from os import path
-import sys, pdb
-from puddlestuff.puddleobjects import PuddleDock, OKCancel, ProgressWin, PuddleThread, winsettings
-import puddlestuff.audioinfo as audioinfo
-(stringtags, FILENAME, READONLY, INFOTAGS) = (audioinfo.stringtags, audioinfo.FILENAME, audioinfo.READONLY, audioinfo.INFOTAGS)
-import imp
-from itertools import izip
-from puddlestuff.constants import RIGHTDOCK
-from collections import defaultdict
+
 import puddlestuff.libraries as libraries
-from functools import partial
+
+from puddlestuff.constants import RIGHTDOCK
+from puddlestuff.puddleobjects import (winsettings, OKCancel,
+    ProgressWin, PuddleThread)
 from puddlestuff.util import to_string
 from puddlestuff.translations import translate
 
-class MusicLibError(Exception):
-    def __init__(self, number, stringvalue):
-        self.strerror = stringvalue
-        self.number = number
+pyqtRemoveInputHook()
 
 errors = {
     0: "Library load error",
@@ -28,15 +36,77 @@ errors = {
 
 extralibs = []
 
+def select_add_child(item, child):
+    item.addChild(child)
+    item.setSelected(True)
+
+class MusicLibError(Exception):
+    def __init__(self, number, stringvalue):
+        Exception.__init__(self)
+        self.strerror = stringvalue
+        self.number = number
+
 class TreeWidgetItem(QTreeWidgetItem):
     def __lt__(self, item):
         if self.text(0).toUpper() < item.text(0).toUpper():
             return True
         return False
-        
+
+class ParentItem(TreeWidgetItem):
+    def __init__(self, artist, albums=None, parent=None):
+        self.artist = artist
+
+        TreeWidgetItem.__init__(self, parent, [artist])
+
+        if albums:
+            children = [ChildItem(album, artist, self) for album in albums]
+            self.addChildren(children)
+
+    @property
+    def albums(self):
+        return [ch.album for ch in self.children]
+
+    @property
+    def children(self):
+        count = self.childCount()
+        if count <= 0:
+            return []
+        return [self.child(i) for i in xrange(count)]
+
+    def addChild(self, ch):
+        TreeWidgetItem.addChild(self, ch)
+
+    def selectedAlbums(self):
+        return [ch.album for ch in self.children if ch.isSelected()]
+
+class ChildItem(TreeWidgetItem):
+    def __init__(self, album, artist=u'', parent=None):
+        self.artist = artist
+        self.album = album
+
+        TreeWidgetItem.__init__(self, parent, [album])
 
 class LibChooseDialog(QDialog):
+    """Dialog used to choose a library to load."""
     def __init__(self, parent = None):
+        """Dialogs that allows users to load music libraries.
+
+        A list of libraries is listed in a ListWidget on the left with the library module's InitWidget shown on the right.
+
+        First all libraries stored in puddlestuff.libraries are loaded.
+        Then puddlestuff.musiclib.extralibs is checked for an extra libraries.
+        They should already be loaded.
+
+        
+
+        Useful methods:
+            loadLib()->Loads the currently selected library.
+            loadLibConfig()
+
+        Libraries are module which should contain the following:
+            name->The name of the library.
+            InitWidget class->Used to allow the use to set options required for loading the library.
+        """
         QDialog.__init__(self, parent)
         self.listbox = QListWidget()
         self.setWindowTitle(translate('MusicLib', 'Import Music Library'))
@@ -48,22 +118,27 @@ class LibChooseDialog(QDialog):
                 lib =  __import__('puddlestuff.libraries.%s' % libname,
                                     fromlist=['puddlestuff', 'libraries'])
                 if not hasattr(lib, 'InitWidget'):
-                    raise Exception(str(translate('MusicLib', 'Invalid library')))
+                    raise Exception(translate('MusicLib', 'Invalid library'))
             except Exception, detail:
                 msg = translate('MusicLib', 'Error loading %1: %2\n')
                 msg = msg.arg(libname).arg(unicode(detail))
                 sys.stderr.write(msg.encode('utf8'))
                 continue
+            
             try: name = lib.name
-            except AttributeError: name = translate('MusicLib', 'Anonymous Library')
+            except AttributeError:
+                name = translate('MusicLib', 'Anonymous Library')
 
             try: desc = lib.description
-            except AttributeError: desc = translate('MusicLib', 'Description was left out.')
+            except AttributeError:
+                desc = translate('MusicLib', 'Description was left out.')
 
             try: author = lib.author
-            except AttributeError: author = translate('MusicLib',  'Anonymous author.')
+            except AttributeError:
+                author = translate('MusicLib',  'Anonymous author.')
 
-            self.libattrs.append({'name': name, 'desc':desc, 'author': author, 'module': lib})
+            self.libattrs.append(
+                {'name': name, 'desc':desc, 'author': author, 'module': lib})
 
         self.libattrs.extend(extralibs)
         
@@ -72,7 +147,8 @@ class LibChooseDialog(QDialog):
 
         self.listbox.addItems([z['name'] for z in self.libattrs])
         self.stackwidgets = [z['module'].InitWidget() for z in  self.libattrs]
-        self.connect(self.listbox, SIGNAL('currentRowChanged (int)'), self.loadLibConfig)
+        self.connect(self.listbox, SIGNAL('currentRowChanged (int)'),
+            self.changeWidget)
 
         okcancel = OKCancel()
         self.connect(okcancel, SIGNAL('ok'), self.loadLib)
@@ -80,7 +156,7 @@ class LibChooseDialog(QDialog):
 
         self.stack = QStackedWidget()
         self.stack.setFrameStyle(QFrame.Box)
-        [self.stack.addWidget(z) for z in self.stackwidgets]
+        map(self.stack.addWidget, self.stackwidgets)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.listbox,0)
@@ -92,21 +168,27 @@ class LibChooseDialog(QDialog):
 
         self.setLayout(vbox)
 
-    def loadLibConfig(self, number):
+    def changeWidget(self, number):
         if number > -1:
             self.stack.setCurrentWidget(self.stackwidgets[number])
             self.currentlib = self.libattrs[number]
 
-    def _load_lib(self):
+    def _loadLib(self):
         try:
-             return self.stack.currentWidget().library()
+            return self.stack.currentWidget().library()
         except MusicLibError, details:
             return unicode(details.strerror)
 
     def loadLib(self):
-        p = ProgressWin(self, 0, showcancel = False)
+        """Loads the currently selected library.
+
+        Emits 'adddock' signal if successful with a LibraryTree class as its
+        widget.
+        """
+        p = ProgressWin(self, 0,
+            translate('MusicLib', 'Loading music library...'), False)
         p.show()
-        t = PuddleThread(self._load_lib)
+        t = PuddleThread(self._loadLib, self)
         t.start()
         while t.isRunning():
             QApplication.processEvents()
@@ -114,29 +196,34 @@ class LibChooseDialog(QDialog):
         p.close()
         QApplication.processEvents()
         if isinstance(library, basestring):
+            error_msg = library
+            msg = translate('MusicLib',
+                'An error occured while loading the %1 library: <b>%2</b>')
+            msg = msg.arg(self.currentlib['name']).arg(error_msg)
+            
             QMessageBox.critical(self, translate('Defaults', "Error"),
-                translate('MusicLib', 'An error occured while loading ' \
-                    'the %1 library: <b>%2</b>').arg(
-                    self.currentlib['name']).arg(library),
-                QMessageBox.Ok, QMessageBox.NoButton, QMessageBox.NoButton)
+                msg, QMessageBox.Ok, QMessageBox.NoButton,
+                QMessageBox.NoButton)
         else:
             dialog = partial(LibraryDialog, library)
-            self.emit(SIGNAL('adddock'), translate('MusicLib', 'Music Library'), dialog, RIGHTDOCK)
-            
+            self.emit(SIGNAL('adddock'),
+                translate('MusicLib', 'Music Library'), dialog, RIGHTDOCK)
             self.close()
 
 class LibraryDialog(QWidget):
-    def __init__(self, library=None, parent=None, status = None):
-        QWidget.__init__(self, parent)
-        self._library = library
-        status['library'] = library
-        self.tree = LibraryTree(library)
-        emit = lambda signal: lambda *args: self.emit(SIGNAL(signal), *args)
-        self.connect(self.tree, SIGNAL('loadtags'), emit('loadtags'))
-        vbox = QVBoxLayout()
-        vbox.setMargin(0)
-        hbox = QHBoxLayout()
+    """Widget containing a LibraryTree widget and searching options."""
+    def __init__(self, library, parent=None, status = None):
+        """Creates a library browser widget.
 
+        Arguments:
+            library->Required library class.
+            parent->Parent widget.
+            status->Status object."""
+        QWidget.__init__(self, parent)
+        if status is None:
+            status = {}
+
+        self.emits = ['loadtags']
 
         self.searchtext = QLineEdit()
         searchbutton = QPushButton(translate('MusicLib', '&Search'))
@@ -144,23 +231,25 @@ class LibraryDialog(QWidget):
                 self.searchTree)
         self.connect(searchbutton, SIGNAL('clicked()'),
             self.searchTree)
+
+        self._library = library
+        status['library'] = library
+
+        self.tree = LibraryTree(library)
+        self.loadLib = self.tree.loadLib
+        self.connect(self.tree, SIGNAL('loadtags'), SIGNAL('loadtags'))
+        self.receives = [('deletedfromlib', self.tree.updateDeleted),
+            ('libfilesedited', self.tree.updateEdited)]
+
         searchbox = QHBoxLayout()
         searchbox.addWidget(self.searchtext)
         searchbox.addWidget(searchbutton)
 
-        vbox.addLayout(hbox)
+        vbox = QVBoxLayout()
+        vbox.setMargin(0)
         vbox.addLayout(searchbox)
         vbox.addWidget(self.tree)
         self.setLayout(vbox)
-
-        self.load_lib = self.tree.load_lib
-
-        self.emits = ['loadtags']
-        self.receives = [('deletedfromlib', self.tree.update_deleted),
-            ('libfilesedited', self.tree.update_edited)]
-
-    def searchTree(self):
-        self.tree.search(unicode(self.searchtext.text()))
 
     def saveSettings(self, parent=None):
         if parent is None:
@@ -179,27 +268,31 @@ class LibraryDialog(QWidget):
             win.close()
             QApplication.processEvents()
 
+    def searchTree(self):
+        self.tree.search(unicode(self.searchtext.text()))
+
 class LibraryTree(QTreeWidget):
     def __init__(self, library, parent = None):
         QTreeWidget.__init__(self, parent)
-        self.library = library
+        self.__searchResults = []
+
         self.setHeaderLabels([translate('MusicLib', "Library Artists")])
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSortingEnabled(True)
         self.sortItems(0, Qt.AscendingOrder)
-        self.load_lib(library)
-        self._searchtracks = []
-        self.connect(self, SIGNAL('itemCollapsed (QTreeWidgetItem *)'), self.setClosedIcon)
-        self.connect(self, SIGNAL('itemExpanded (QTreeWidgetItem *)'), self.setOpenIcon)
 
-    def load_lib(self, library):
-        if self.library:
-            self.library.close()
-        self.fill_from_lib(library)
+        self.CLOSED_ICON = self.style().standardIcon(QStyle.SP_DirClosedIcon)
+        self.OPEN_ICON = self.style().standardIcon(QStyle.SP_DirOpenIcon)
+
+        self.connect(self, SIGNAL('itemCollapsed (QTreeWidgetItem *)'),
+            lambda item: item.setIcon(0, self.CLOSED_ICON))
+        self.connect(self, SIGNAL('itemExpanded (QTreeWidgetItem *)'),
+            lambda item: item.setIcon(0, self.OPEN_ICON))
+
         self.library = library
-        self.connect(self, SIGNAL('itemSelectionChanged()'), self.get_tracks)
+        self.loadLib(library)
 
-    def fill_from_lib(self, library, artists = None):
+    def fillFromLib(self, library, artists = None):
         select = artists
         if not artists:
             self.clear()
@@ -207,64 +300,102 @@ class LibraryTree(QTreeWidget):
         albumslist = (library.get_albums(artist) for artist in artists)
         self.populate(izip(artists, albumslist), select)
 
-    def populate(self, data, select = False):
-        icon = self.style().standardIcon(QStyle.SP_DirClosedIcon)
-        for artist, albums in data:
-            if albums:
-                top = TreeWidgetItem([artist])
-                top.setIcon(0, icon)
-                self.addTopLevelItem(top)
-                [top.addChild(TreeWidgetItem([z])) for z in albums]
-                if select:
-                    top.setSelected(True)
-                    self.expandItem(top)
-
-    def setClosedIcon(self, item):
-        item.setIcon(0, self.style().standardIcon(QStyle.SP_DirClosedIcon))
-
-    def setOpenIcon(self, item):
-        item.setIcon(0, self.style().standardIcon(QStyle.SP_DirOpenIcon))
-
-    def get_tracks(self):
-        if self._searchtracks:
-            def artist_tracks(artist):
+    def getTrackFuncs(self):
+        if self.__searchResults:
+            st = self.__searchResults
+            def get_artist_tracks(artist):
                 tracks = []
-                [tracks.extend(z) for z in self._searchtracks[artist].values()]
+                albums = st[artist]
+                [tracks.extend(albums[album]) for album in albums]
                 return tracks
-            album_tracks = lambda artist, album: self._searchtracks[artist][album]
+
+            get_album_tracks = lambda artist, album: st[artist][album]
         else:
             _libget = self.library.get_tracks
-            album_tracks = lambda artist, album: _libget('artist',
+            get_album_tracks = lambda artist, album: _libget('artist',
                 artist, 'album', album)
-            artist_tracks = lambda artist: _libget('artist', artist)
+            get_artist_tracks = lambda artist: _libget('artist', artist)
+
+        return get_album_tracks, get_artist_tracks
+
+    def getTracks(self):
+
+        get_album_tracks, get_artist_tracks = self.getTrackFuncs()
 
         total = []
         selected = self.selectedItems()
-        toplevels = [z for z in selected if not z.parent()]
+
         self.blockSignals(True)
-        for parent in toplevels:
-            child = parent.child
-            [child(row).setSelected(False) for row in
-                range(parent.childCount())]
+        for parent in [i for i in selected if not i.parent()]:
+            [ch.setSelected(False) for ch in parent.children]
         self.blockSignals(False)
+
         selected = self.selectedItems()
-        for item in self.selectedItems():
+        for item in selected:
             tracks = []
             if item.parent() and item.parent() not in selected:
-                album = unicode(item.text(0))
-                artist = unicode(item.parent().text(0))
-                tracks = album_tracks(artist, album)
+                tracks = get_album_tracks(item.artist, item.album)
             else:
-                artist = unicode(item.text(0))
-                tracks = artist_tracks(artist)
+                tracks = get_artist_tracks(item.artist)
             total.extend(tracks)
+
         self.emit(SIGNAL('loadtags'), total)
 
-    def update_deleted(self, tracks=None, artists = None):
-        if self._searchtracks:
+    def loadLib(self, library):
+        if self.library:
+            self.library.close()
+        self.fillFromLib(library)
+        self.library = library
+        self.disconnect(self,
+            SIGNAL('itemSelectionChanged()'), self.getTracks)
+        self.connect(self, SIGNAL('itemSelectionChanged()'), self.getTracks)
+
+    def populate(self, data, select = False):
+        icon = self.CLOSED_ICON
+        for artist, albums in data:
+            if not albums:
+                continue
+
+            item = ParentItem(artist, albums)
+            item.setIcon(0, icon)
+            self.addTopLevelItem(item)
+            if select:
+                item.setSelected(True)
+                self.expandItem(item)
+
+    def search(self, text):
+        if not text:
+            self.blockSignals(True)
+            self.__searchResults = []
+            self.fillFromLib(self.library)
+            self.blockSignals(False)
+            return
+
+        artist_field = 'artist'
+        album_field = 'album'
+
+        tracks = self.library.search(text)
+        grouped = defaultdict(lambda: defaultdict(lambda: []))
+
+        def add_track(track):
+            artist = to_string(track.get(artist_field, u''))
+            album = to_string(track.get(album_field, u''))
+            grouped[artist][album].append(track)
+
+        map(add_track, tracks)
+        self.__searchResults = grouped
+
+        self.blockSignals(True)
+        self.clear()
+        self.populate(grouped.items())
+        self.blockSignals(False)
+
+    def updateDeleted(self, tracks=None, artists = None):
+        if self.__searchResults:
             return
         if tracks:
-            data = set([track['artist'][0] for track in tracks])
+            data = set([to_string(track.get['artist'], u'')
+                for track in tracks])
         else:
             data = set(artists)
 
@@ -277,32 +408,25 @@ class LibraryTree(QTreeWidget):
             artist_item = self.findItems(artist, Qt.MatchExactly)[0]
             if artist in lib_artists:
                 albums = get_albums(artist)
-                get_child = artist_item.child
                 remove = artist_item.removeChild
 
-                children = (get_child(i) for i in
-                    xrange(artist_item.childCount()))
-                toremove = [child for child in children if
-                    unicode(child.text(0)) not in albums]
+                children = artist_item.children
+                toremove = [ch for ch in children if ch.album not in albums]
                 [remove(child) for child in toremove]
             else:
                 take_item(index(artist_item))
 
-    def update_edited(self, data):
-        if self._searchtracks:
+    def updateEdited(self, data):
+        if self.__searchResults:
             return
         self.blockSignals(True)
 
-        try:
-            artists = [to_string(tag.get('artist', [artist])) for artist, tag in data]
-        except:
-            pdb.set_trace()
-            artists = [to_string(tag.get('artist', [artist])[0]) for artist, tag in data]
-        self.update_deleted(artists = [to_string(z[0]) for z in data])
-        lib_artists = self.library.artists
+        artists = [to_string(tag.get('artist', artist))
+            for artist, tag in data]
+
+        self.updateDeleted(artists = [to_string(z[0]) for z in data])
+
         get_albums = self.library.get_albums
-        index = self.indexOfTopLevelItem
-        take_item = self.takeTopLevelItem
 
         newartists = []
         for artist in set(artists):
@@ -310,42 +434,19 @@ class LibraryTree(QTreeWidget):
             if artist_item:
                 artist_item = artist_item[0]
                 albums = get_albums(artist)
-                get_child = artist_item.child
-                add = artist_item.addChild
 
-                tree_albums = [unicode(get_child(i).text(0)) for i in
-                    xrange(artist_item.childCount())]
-                items = [TreeWidgetItem([album]) for album in albums if album not
-                    in tree_albums]
-                def select(item):
-                    add(item)
-                    item.setSelected(True)
-                map(select, items)
+                tree_albums = artist_item.albums
+                children = (ChildItem(album, artist, artist_item)
+                    for album in albums if album not in tree_albums)
+
+                map(partial(select_add_child, artist_item), children)
                 self.expandItem(artist_item)
             else:
                 newartists.append(artist)
-        if newartists:
-            self.fill_from_lib(self.library, newartists)
-        self.blockSignals(False)
 
-    def search(self, text):
-        if not text:
-            self._searchtracks = []
-            self.fill_from_lib(self.library)
-            return
-        self.blockSignals(True)
-        self.clear()
-        tracks = self.library.search(text)
-        grouped = defaultdict(lambda: defaultdict(lambda: []))
-        artist_tag = 'artist'
-        album_tag = 'album'
-        def add(track):
-            artist = track[artist_tag][0] if artist_tag in track else ''
-            album = track[album_tag][0] if album_tag in track else ''
-            grouped[artist][album].append(track)
-        [add(track) for track in tracks]
-        self.populate(grouped.items())
-        self._searchtracks = grouped
+        if newartists:
+            self.fillFromLib(self.library, newartists)
+
         self.blockSignals(False)
 
 obj = QObject()
@@ -353,11 +454,16 @@ obj.emits = ['adddock']
 obj.receives = []
 name = translate('MusicLib', 'Music Library')
 
-control = (translate('MusicLib', 'Music Library'), LibraryDialog, RIGHTDOCK, False)
+control = (translate('MusicLib', 'Music Library'),
+    LibraryDialog, RIGHTDOCK, False)
 
 if __name__ == "__main__":
+    from puddlestuff.libraries import quodlibetlib
     app = QApplication(sys.argv)
-    #qb = LibraryTree(quodlibetlib.QuodLibet('songs'))
-    qb = LibChooseDialog()
+    lib = quodlibetlib.QuodLibet('~/.quodlibet/songs')
+    qb = LibraryDialog(lib, status = {})
+    def b(l): print len(l)
+    QObject.connect(qb, SIGNAL('loadtags'), b)
+    
     qb.show()
     app.exec_()

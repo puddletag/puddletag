@@ -2078,8 +2078,6 @@ class PuddleHeader(QHeaderView):
     def contextMenuEvent(self, event):
         menu = self.getMenu()
         menu.exec_(event.globalPos())
-        
-    
 
 class PuddleStatus(object):
     _status = {}

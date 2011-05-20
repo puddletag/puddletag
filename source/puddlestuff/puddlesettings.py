@@ -244,7 +244,7 @@ class TagMappings(QWidget):
         self._table.setColumnCount(3)
         self._table.setHorizontalHeaderLabels([
             translate("Mapping Settings", 'Tag'),
-            translate("Mapping Settings", 'Source'),
+            translate("Mapping Settings", 'Original Field'),
             translate("Mapping Settings", 'Target')])
         header = self._table.horizontalHeader()
         header.setVisible(True)

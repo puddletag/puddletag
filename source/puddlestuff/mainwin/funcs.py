@@ -46,14 +46,14 @@ def auto_numbering(parent=None):
     tags = status['selectedfiles']
     numtracks = len(tags)
 
-    win = helperwin.TrackWindow(parent, 1, numtracks, False)
+    win = helperwin.AutonumberDialog(parent, 1, numtracks, False)
     win.setModal(True)
     t = partial(number_tracks, tags)
     win.connect(win, SIGNAL("newtracks"), t)
     win.show()
 
 def clipboard_to_tag(parent=None):
-    win = helperwin.ImportWindow(parent, clipboard = True)
+    win = helperwin.ImportTextFile(parent, clipboard = True)
     win.setModal(True)
     win.patterncombo.addItems(status['patterns'])
 
@@ -192,7 +192,7 @@ def in_lib(state, parent=None):
 
 def load_musiclib(parent=None):
     try:
-        m = puddlestuff.musiclib.LibChooseDialog()
+        m = puddlestuff.musiclib.LibChooseDialog(parent)
     except puddlestuff.musiclib.MusicLibError:
         QMessageBox.critical(parent, translate("MusicLib", 'No libraries found'),
            translate("MusicLib", "No supported music libraries were found. Most likely "
@@ -406,7 +406,7 @@ def tag_to_file():
 def text_file_to_tag(parent=None):
     dirpath = status['selectedfiles'][0].dirpath
 
-    win = helperwin.ImportWindow(parent)
+    win = helperwin.ImportTextFile(parent)
     cparser = PuddleConfig()
     last_dir = cparser.get('importwindow', 'lastdir', HOMEDIR)
     if win.openFile(dirpath=last_dir):

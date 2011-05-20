@@ -34,21 +34,36 @@ def to_str(v):
     else:
         return escape_html(SEPARATOR.join(v))
 
-def displaytags(tags):
+def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", read_only=False):
     image_tr = translate('Defaults', '<b>__image</b>: %s images<br />')
     if tags:
         if isinstance(tags, basestring):
             return tags
         elif not hasattr(tags, 'items'):
             return SEPARATOR.join(filter(lambda x: x is not None, tags))
-        s = u"<b>%s</b>: %s<br />"
-        ret = u"".join([s % (z, to_str(v)) for z, v in sorted(tags.items()) 
-            if z not in READONLY and z != '__image'])[:-2]
+
+        if read_only:
+            items = [(k,v) for k, v in tags.items() if k != '__image']
+        else:
+            items = [(k,v) for k,v in tags.items() if
+                k not in READONLY and k != '__image']
+
+        map_func = lambda v: fmt % (v[0], to_str(v[1]))
+        values = map(map_func, sorted(tags.items()))
+
+        ret = u"".join(values)
         if u'__image' in tags:
             ret += image_tr % len(tags['__image'])
         return ret
-    else:
+
+def displaytags(tags):
+    text = pprint_tag(tags)
+    if not text:
         return translate('Functions Dialog', '<b>No change.</b>')
+
+    if text.endswith(u'<br />'):
+        text = text[:-len(u'<br />')]
+    return text
 
 class ShortcutDialog(QDialog):
     def __init__(self, shortcuts=None, parent=None):

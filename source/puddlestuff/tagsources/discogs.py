@@ -1,28 +1,22 @@
 # -*- coding: utf-8 -*-
-#Example tutorial for writing a tag source plugin using Amazon's webservice API.
+import base64, gzip, cStringIO, hashlib, hmac
+import os, pdb, re, socket, sys, time, urllib, urllib2, xml
 
-#The important stuff is at the bottom in the Amazon class.
-#Comments (or you've created a tag source you'd like
-#to share) can be directed at concentricpuddle@gmail.com
-
-#Imports and constants.
-#-----------------------------------------------------------
-import base64, hmac, hashlib, os, re, time, urllib2, urllib, xml, re
-
+from copy import deepcopy
 from xml.dom import minidom
-import sys
 
+import puddlestuff.tagsources
+
+from puddlestuff.audioinfo import DATA
 from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
-    urlopen, parse_searchstring, iri_to_uri)
-import puddlestuff.tagsources
-from puddlestuff.audioinfo import DATA
-import urllib2, gzip, cStringIO, pdb, socket
-from copy import deepcopy
+    parse_searchstring, iri_to_uri)
 from puddlestuff.util import translate
 
 R_ID_DEFAULT = 'discogs_id'
 R_ID = R_ID_DEFAULT
+MASTER = 'master'
+RELEASE = 'release'
 
 api_key = 'c6e33897b6'
 base_url = 'http://www.discogs.com/%sf=xml&api_key=%s'
@@ -37,11 +31,11 @@ search_url, release_url, master_url = query_urls(api_key)
 
 SMALLIMAGE = '#smallimage'
 LARGEIMAGE = '#largeimage'
-
-MASTER = 'master'
-RELEASE = 'release'
-
 image_types = [SMALLIMAGE, LARGEIMAGE]
+
+IMAGEKEYS = {
+    'SmallImage': SMALLIMAGE,
+    'LargeImage': LARGEIMAGE}
 
 ALBUM_KEYS = {
     'title': 'album',
@@ -55,17 +49,15 @@ TRACK_KEYS = {
     'duration': '__length',
     'notes': 'discogs_notes'}
 
-def convert_dict(d, keys=TRACK_KEYS):
+def convert_dict(d, keys=None):
+    if keys is None:
+        keys = TRACK_KEYS
     d = deepcopy(d)
     for key in keys:
         if key in d:
             d[keys[key]] = d[key]
             del(d[key])
     return d
-
-IMAGEKEYS = {
-    'SmallImage': SMALLIMAGE,
-    'LargeImage': LARGEIMAGE}
 
 def find_id(tracks, field=None):
     if not field:
@@ -78,8 +70,23 @@ def find_id(tracks, field=None):
             else:
                 return value[0]
 
+def get_text(node):
+    """Returns the textual data in a node."""
+    try:
+        return node.firstChild.data
+    except AttributeError:
+        return
+
 def is_release(element):
     return element.attributes['type'].value in ('release', 'master')
+
+def keyword_search(keywords):
+    write_log(translate("Discogs",
+        'Retrieving search results for keywords: %s') % keywords)
+    keywords = re.sub('(\s+)', u'+', keywords)
+    url = search_url % keywords
+    text = urlopen(url)
+    return parse_search_xml(text)
 
 def node_to_dict(node):
     ret = {}
@@ -92,20 +99,6 @@ def node_to_dict(node):
         if text_node.nodeType == text_node.TEXT_NODE:
             ret[child.tagName] = text_node.data
     return ret
-
-def get_text(node):
-    """Returns the textual data in a node."""
-    try:
-        return node.firstChild.data
-    except AttributeError:
-        return
-
-def keyword_search(keywords):
-    write_log(translate("Discogs", 'Retrieving search results for keywords: %s') % keywords)
-    keywords = re.sub('(\s+)', u'+', keywords)
-    url = search_url % keywords
-    text = urlopen(url)
-    return parse_search_xml(text)
 
 def parse_album_xml(text):
     """Parses the retrieved xml for an album and get's the track listing."""
@@ -140,8 +133,8 @@ def parse_album_xml(text):
     extras = doc.getElementsByTagName('extraartists')
     if extras:
         ex_artists = [node_to_dict(z) for z  in extras[0].childNodes]
-        info['involvedpeople'] = u';'.join(u'%s:%s' % (e['name'], e['role'])
-            for e in ex_artists)
+        info['involvedpeople_album'] = u';'.join(
+            u'%s:%s' % (e['name'], e['role']) for e in ex_artists)
 
     try:
         info['genre'] = filter(None, [get_text(z) for z in
@@ -178,7 +171,37 @@ def parse_album_xml(text):
 
     tracklist = doc.getElementsByTagName('tracklist')[0]
     return convert_dict(info, ALBUM_KEYS), filter(None,
-        [convert_dict(node_to_dict(z)) for z in tracklist.childNodes])
+        [parse_track_node(z) for z in tracklist.childNodes])
+
+def parse_track_node(node):
+    ret = node_to_dict(node)
+
+    artist_node = node.getElementsByTagName('artists')
+    if artist_node:
+        artist_infos = map(node_to_dict, artist_node[0].childNodes)
+        if artist_infos:
+            artists = []
+            join = False
+            for a_info in artist_infos:
+                if 'join' in a_info:
+                    artist = a_info['name'] + u' ' + a_info['join']
+                else:
+                    artist = a_info['name']
+
+                if join: artists[-1] +=  artist
+                else: artists.append(artist)
+
+                join = 'join' in a_info
+
+            ret['artist'] = artists
+
+    extras = node.getElementsByTagName('extraartists')
+    if extras:
+        people = [node_to_dict(z) for z  in extras[0].childNodes]
+        people = u';'.join(u'%s:%s' % (e['name'], e['role']) for e in people)
+        ret['involvedpeople_track'] = people
+
+    return convert_dict(ret)
 
 def parse_search_xml(text):
     """Parses the xml retrieved after entering a search query. Returns a
@@ -197,7 +220,8 @@ def parse_search_xml(text):
 
     if not results:
         search_results = doc.getElementsByTagName('searchresults')
-        results = filter(is_release, search_results[0].getElementsByTagName('result'))
+        results = filter(is_release,
+            search_results[0].getElementsByTagName('result'))
 
     ret = []
 
@@ -227,16 +251,19 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     if isinstance(info, (int, long)):
         r_id = unicode(info)
         info = {}
-        write_log(translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
+        write_log(
+            translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
     elif isinstance(info, basestring):
         r_id = info
         info = {}
-        write_log(translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
+        write_log(
+            translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
     else:
         if rls_type is None:
             rls_type = info['#release_type']
         r_id = info['#r_id']
-        write_log(translate("Discogs", 'Retrieving album %s') % (info['album']))
+        write_log(
+            translate("Discogs", 'Retrieving album %s') % (info['album']))
 
     if rls_type == MASTER:
         xml = urlopen(master_url % r_id)
@@ -252,10 +279,12 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         data = []
         for large, small in info['#cover-url']:
             if image == LARGEIMAGE:
-                write_log(translate("Discogs", 'Retrieving cover: %s') % large)
+                write_log(
+                    translate("Discogs", 'Retrieving cover: %s') % large)
                 data.append({DATA: urlopen(large)})
             else:
-                write_log(translate("Discogs", 'Retrieving cover: %s') % small)
+                write_log(
+                    translate("Discogs", 'Retrieving cover: %s') % small)
                 data.append({DATA: urlopen(small)})
         info.update({'__image': data})
     return info, ret[1]
@@ -297,7 +326,6 @@ def urlopen(url):
 
     return data
 
-
 class Discogs(object):
     name = 'Discogs.com'
     group_by = [u'album', u'artist']
@@ -327,8 +355,8 @@ class Discogs(object):
                 [[translate("Discogs", 'Small'),
                     translate("Discogs", 'Large')], 1]],
             [translate("Discogs", 'Field to use for discogs_id'), TEXT, R_ID],
-            [translate("Discogs", 'API Key (Stored as plain-text. Leave empty to use default.)'),
-                TEXT, ''],
+            [translate("Discogs", 'API Key (Stored as plain-text.'
+                'Leave empty to use default.)'), TEXT, ''],
             ]
 
     def keyword_search(self, text):
@@ -337,9 +365,10 @@ class Discogs(object):
             r_id = text[len(':r'):].strip()
             try:
                 int(r_id)
-                return [retrieve_album(r_id, self.covertype)]
+                return [self.retrieve(r_id)]
             except TypeError:
-                raise RetrievalError(translate("Discogs", 'Invalid Discogs Release ID'))
+                raise RetrievalError(
+                    translate("Discogs", 'Invalid Discogs Release ID'))
         try:
             params = parse_searchstring(text)
         except RetrievalError:
@@ -357,15 +386,18 @@ class Discogs(object):
             artist = [z for z in artists][0]
 
         if hasattr(artists, 'values'):
-            write_log(translate("Discogs", 'Checking tracks for Discogs Album ID.'))
+            write_log(
+                translate("Discogs", 'Checking tracks for Discogs Album ID.'))
             tracks = []
             [tracks.extend(z) for z in artists.values()]
             album_id = find_id(tracks, R_ID)
             if not album_id:
-                write_log(translate("Discogs", 'No Discogs ID found in tracks.'))
+                write_log(
+                    translate("Discogs", 'No Discogs ID found in tracks.'))
             else:
-                write_log(translate("Discogs", 'Found Discogs ID: %s') % album_id)
-                return [retrieve_album(album_id, self.covertype)]
+                write_log(
+                    translate("Discogs", 'Found Discogs ID: %s') % album_id)
+                return [self.retrieve(album_id)]
 
         retrieved_albums = search(artist, album)
         return [(info, []) for info in retrieved_albums]
@@ -379,6 +411,8 @@ class Discogs(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
+        if not self._getcover:
+            self.covertype = None
         global R_ID
         if args[2]:
             R_ID = args[2]
