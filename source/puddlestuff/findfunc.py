@@ -584,8 +584,7 @@ class Function:
     See the functions module for more info."""
 
     def __init__(self, funcname, fields=None):
-        """funcname must be either a function or string(which is the functions name)."""
-        if type(funcname) is str:
+        if isinstance(funcname, basestring):
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
@@ -671,11 +670,18 @@ class Function:
         d = [u", ".join(self.tag)] + self.args
         return pprint(translate('Functions', self.info[1]), d)
         
-    def _getControls(self):
+    def _getControls(self, index=1):
         identifier = QuotedString('"') | CharsNotIn(',')
         arglist = delimitedList(identifier)
         docstr = self.doc[1:]
-        return [(arglist.parseString(line)[1]).strip() for line in docstr]
+        if index:
+            return [(arglist.parseString(line)[index]).strip()
+                for line in docstr]
+        else:
+            ret = []
+            for line in docstr:
+                ret.append([z.strip() for z in arglist.parseString(line)])
+            return ret
 
     def setTag(self, tag):
         self.tag = tag

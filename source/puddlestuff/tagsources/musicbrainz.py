@@ -1,23 +1,32 @@
 # -*- coding: utf-8 -*-
-import sys, pdb, os
-from musicbrainz2.webservice import Query, ArtistFilter, WebServiceError, ConnectionError, ReleaseFilter
+from collections import defaultdict
+
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as brainzmodel
+
 from musicbrainz2.utils import extractUuid
-from collections import defaultdict
-import cPickle as pickle
-from puddlestuff.tagsources import RetrievalError, write_log, set_status, parse_searchstring
-from puddlestuff.util import split_by_tag, translate
-from puddlestuff.constants import CHECKBOX, SAVEDIR
-from puddlestuff.puddleobjects import PuddleConfig
-from PyQt4.QtGui import QApplication
+from musicbrainz2.webservice import (ArtistFilter, Query, ReleaseFilter,
+    WebServiceError)
+
+import puddlestuff
+
+from puddlestuff.constants import CHECKBOX
+from puddlestuff.audioinfo import strlength
+from puddlestuff.tagsources import (parse_searchstring, set_status,
+    write_log, RetrievalError)
 from puddlestuff.tagsources.discogs import find_id
-from puddlestuff.util import escape_html
+from puddlestuff.util import escape_html, translate
 
 old_version = False
 
 Release = brainzmodel.Release
 RELEASETYPES = (Release.TYPE_OFFICIAL)
+ARTIST_ID = 'mbrainz_artist_id'
+ALBUM_ID = 'mbrainz_album_id'
+PUID = 'musicip_puid'
+TRACK_ID = 'mbrainz_track_id'
+COUNTRY = 'mbrainz_country'
+SITE_ALBUM_URL = 'http://musicbrainz.org/release/'
 
 escape = lambda e: escape_html(unicode(e))
 
@@ -39,18 +48,12 @@ except TypeError:
         trackRelations=True, artistRelations=True)
     old_version = True
 
-ARTIST_ID = 'mbrainz_artist_id'
-ALBUM_ID = 'mbrainz_album_id'
-PUID = 'musicip_puid'
-TRACK_ID = 'mbrainz_track_id'
-COUNTRY = 'mbrainz_country'
-
 CONNECTIONERROR = translate('MusicBrainz',
     "Could not connect to MusicBrainz server. Check your net connection.")
 
-q = Query()
+q = Query(clientId = 'puddletag/' + puddlestuff.version_string)
 
-def artist_id(artist, lucene=False):
+def get_artist_id(artist, lucene=False):
     if lucene:
         results = q.getArtists(ArtistFilter(query=artist, limit = 1))
     else:
@@ -58,35 +61,25 @@ def artist_id(artist, lucene=False):
     if results:
         return (results[0].artist.name, results[0].artist.id)
 
-def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
-    release = q.getReleaseById(release_id, RELEASEINCLUDES)
-    info = release_to_dict(release)
-
-    if release.tracks:
-        tracks = []
-        for num, track in enumerate(release.tracks):
-            track_dict = {
-                track_id: extractUuid(track.id),
-                'title': track.title,
-                'track': unicode(num + 1),
-                'artist': track.artist.name if track.artist else None,}
-
-            if not old_version:
-                track_dict.update({
-                    'mbrainz_rating': unicode(track.rating.value) if \
-                        track.rating.value is not None else None,
-                    'mbrainz_isrcs': track.isrcs if track.isrcs else None})
-            tracks.append(dict((k,v) for k,v in track_dict.items() if v))
-
-        if puids:
-            for track in tracks:
-                track.update(get_puid(track[TRACK_ID]))
-        return info, tracks
-    return info, []
-
 def artist_releases(artistid):
     ret = q.getArtistById(artistid, ARTIST_INCLUDES).releases
     return ret
+
+def artist_search(artist):
+    try:
+        set_status(translate("MusicBrainz",
+            'Retrieving Artist Info for <b>%s</b>') % artist)
+        write_log(translate("MusicBrainz",
+            'Retrieving Artist Info for <b>%s</b>') % artist)
+        artist, artistid = get_artist_id(artist)
+        return artist, artistid
+    except WebServiceError, e:
+        msg = translate("MusicBrainz",
+            '<b>Error:</b> While retrieving %1: %2').arg(artist)
+        write_log(msg.arg(escape(e)))
+        raise RetrievalError(unicode(e))
+    except ValueError:
+        return (None, None)
 
 def get_all_releases(title):
     tmp = ReleaseFilter(releaseTypes=RELEASETYPES,title=title)
@@ -113,21 +106,6 @@ def get_puid(track_id):
             track.rating.value is not None else None
     return dict((k,v) for k,v in track_dict.iteritems() if v)
 
-def artist_search(artist):
-    try:
-        set_status(translate("MusicBrainz",
-            'Retrieving Artist Info for <b>%s</b>') % artist)
-        write_log(translate("MusicBrainz",
-            'Retrieving Artist Info for <b>%s</b>') % artist)
-        artist, artistid = artist_id(artist)
-        return artist, artistid
-    except WebServiceError, e:
-        write_log(translate("MusicBrainz",
-            '<b>Error:</b> While retrieving %1: %2').arg(artist).arg(escape(e)))
-        raise RetrievalError(unicode(e))
-    except ValueError:
-        return (None, None)
-
 def find_releases(artists=None, album=None, limit=100, offset=None):
     if artists and album and len(artists) > 1:
         ret = VA_search(album)
@@ -139,13 +117,42 @@ def find_releases(artists=None, album=None, limit=100, offset=None):
     else:
         artist = None
 
-    q = Query()
     r_filter = ws.ReleaseFilter(artistName=artist, title=album,
         limit=limit, offset=offset,
         releaseTypes=(Release.TYPE_OFFICIAL,))
     releases = q.getReleases(filter=r_filter)
 
     return map(release_to_dict, releases)
+
+def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
+    release = q.getReleaseById(release_id, RELEASEINCLUDES)
+    info = release_to_dict(release)
+
+    if not release.tracks:
+        return info, []
+
+    tracks = []
+    for num, track in enumerate(release.tracks):
+        track_dict = {
+            track_id: extractUuid(track.id),
+            'title': track.title,
+            'track': unicode(num + 1),
+            'artist': track.artist.name if track.artist else None,
+            '__length': strlength(track.duration) if track.duration else None}
+
+        if not old_version:
+            track_dict.update({
+                'mbrainz_rating': unicode(track.rating.value) if \
+                    track.rating.value is not None else None,
+                'isrc': track.isrcs if track.isrcs else None})
+
+        tracks.append(dict((k,v) for k,v in track_dict.items() if v))
+
+    if puids:
+        for track in tracks:
+            track.update(get_puid(track[TRACK_ID]))
+
+    return info, tracks
 
 def release_to_dict(release):
     if hasattr(release, 'release'):
@@ -170,11 +177,13 @@ def release_to_dict(release):
             'barcode': e.barcode if hasattr(e, 'barcode') else None,
             'label': e.label.name if e.label else None})
 
+    info['#extrainfo'] = (translate('MusicBrainz',
+        '%s at MusicBrainz.org') % info['album'], r.id)
+
     return dict((k,v) for k,v in album.iteritems() if v)
 
 def VA_search(album):
-    q = Query()
-    r_filter = ws.ReleaseFilter(artistName=artist, title=album,
+    r_filter = ws.ReleaseFilter(title=album,
         releaseTypes=(Release.TYPE_COMPILATION, Release.TYPE_OFFICIAL))
 
     return map(release_to_dict, q.getReleases(filter=r_filter))
@@ -201,15 +210,16 @@ class MusicBrainz(object):
         (extra spaces around the ID are discarded.)</li>
         <li>In the same way an album can be retrieved using it's
         MusicBrainz ID by prefacing the search text with
-        <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b></li></ul>""")
+        <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b>
+        </li></ul>""")
     def __init__(self):
         super(MusicBrainz, self).__init__()
         self._puids = False
 
         self.preferences = [
-                [translate("MusicBrainz",
-                    'Retrieve PUIDS (Requires a separate lookup for each track.)'),
-                    CHECKBOX, self._puids]]
+            [translate("MusicBrainz",
+                'Retrieve PUIDS (Requires a separate lookup for each track.)'),
+                CHECKBOX, self._puids]]
 
     def keyword_search(self, s):
         if s.startswith(u':a'):
@@ -218,8 +228,10 @@ class MusicBrainz(object):
                 return [(release_to_dict(r), []) for r
                     in artist_releases(artist_id)]
             except WebServiceError, e:
-                write_log(translate("MusicBrainz",
-                    '<b>Error:</b> While retrieving %1: %2').arg(artistid).arg(escape(e)))
+                msg = translate("MusicBrainz",
+                    '<b>Error:</b> While retrieving %1: %2')
+
+                write_log(msg.arg(artist_id).arg(escape(e)))
                 raise RetrievalError(unicode(e))
 
         elif s.startswith(u':b'):
@@ -227,8 +239,9 @@ class MusicBrainz(object):
             try:
                 return [retrieve_tracks(r_id)]
             except WebServiceError, e:
-                write_log(translate("MusicBrainz",
-                    "<b>Error:</b> While retrieving Album ID %1 (%2)").arg(r_id).arg(escape(e)))
+                msg = translate("MusicBrainz",
+                    "<b>Error:</b> While retrieving Album ID %1 (%2)")
+                write_log(msg.arg(r_id).arg(escape(e)))
                 raise RetrievalError(unicode(e))
         else:
             try:
@@ -242,7 +255,6 @@ class MusicBrainz(object):
             return self.search(album, [artist])
 
     def search(self, album, artists):
-        ret = []
         if hasattr(artists, 'values'):
             write_log(translate("MusicBrainz",
                 'Checking tracks for MusicBrainz Album ID.'))

@@ -90,7 +90,8 @@ class TagListWidget(QWidget):
         layout.addWidget(label, 0)
         layout.addWidget(self._text, 1)
 
-        self.connect(self._text, SIGNAL('textChanged(QString)'), self.emitTags)
+        self.connect(self._text, SIGNAL('textChanged(QString)'),
+            self.emitTags)
 
         self.setLayout(layout)
 
@@ -215,7 +216,8 @@ class SortOptionEditor(QDialog):
         patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem(self,
             translate("WebDB", 'Edit sort option'),
-            translate("WebDB", 'Enter a sorting option (a comma-separated list of fields. '
+            translate("WebDB",
+                'Enter a sorting option (a comma-separated list of fields. '
                 'Eg. "artist, title")'), patterns, row)
         if ok:
             item = l(row)
@@ -474,6 +476,7 @@ class MainWin(QWidget):
         self.connect(status_obj, SIGNAL('logappend'), SIGNAL('logappend'))
         
         infolabel = QLabel()
+        infolabel.setOpenExternalLinks(True)
         self.connect(self.listbox, SIGNAL('infoChanged'), infolabel.setText)
         
         hbox = QHBoxLayout()
@@ -589,7 +592,8 @@ class MainWin(QWidget):
         if self._searchparams.text() and self._searchparams.isEnabled():
             text = unicode(self._searchparams.text())
         elif not files:
-            self.label.setText(translate("WebDB", '<b>Select some files or enter search paramaters.</b>'))
+            self.label.setText(translate("WebDB",
+                '<b>Select some files or enter search paramaters.</b>'))
             return
 
         def search():

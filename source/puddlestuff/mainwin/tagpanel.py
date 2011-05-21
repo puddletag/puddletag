@@ -9,7 +9,10 @@ import puddlestuff.resource as resource
 pyqtRemoveInputHook()
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
 from functools import partial
-from puddlestuff.puddlesettings import SettingsError
+try:
+    from puddlestuff.puddlesettings import SettingsError
+except ImportError:
+    pass
 from puddlestuff.translations import translate
 
 TEXTEDITED = SIGNAL('textEdited(const QString&)')

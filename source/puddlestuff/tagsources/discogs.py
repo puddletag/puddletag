@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import base64, gzip, cStringIO, hashlib, hmac
-import os, pdb, re, socket, sys, time, urllib, urllib2, xml
+import gzip, cStringIO, re, socket, sys, urllib2, xml
 
 from copy import deepcopy
 from xml.dom import minidom
@@ -8,8 +7,8 @@ from xml.dom import minidom
 import puddlestuff.tagsources
 
 from puddlestuff.audioinfo import DATA
-from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
-from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
+from puddlestuff.constants import CHECKBOX, COMBO, TEXT
+from puddlestuff.tagsources import (write_log, RetrievalError,
     parse_searchstring, iri_to_uri)
 from puddlestuff.util import translate
 
@@ -17,6 +16,9 @@ R_ID_DEFAULT = 'discogs_id'
 R_ID = R_ID_DEFAULT
 MASTER = 'master'
 RELEASE = 'release'
+
+SITE_MASTER_URL = 'http://www.discogs.com/master/'
+SITE_RELEASE_URL = 'http://www.discogs.com/release/'
 
 api_key = 'c6e33897b6'
 base_url = 'http://www.discogs.com/%sf=xml&api_key=%s'
@@ -241,6 +243,9 @@ def parse_search_xml(text):
             album = re.sub('\s{2,}', ' ', album).strip()
             info['album'] = album
             info['artist'] = artist
+        info['#extrainfo'] = (
+            translate('Discogs', '%s at Discogs.com') % info['album'],
+            info['discogs_uri'])
         ret.append(info)
     return ret
 
@@ -265,10 +270,12 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         write_log(
             translate("Discogs", 'Retrieving album %s') % (info['album']))
 
-    if rls_type == MASTER:
-        xml = urlopen(master_url % r_id)
-    else:
-        xml = urlopen(release_url % r_id)
+    site_url = SITE_MASTER_URL if rls_type == MASTER else SITE_RELEASE_URL
+    site_url += r_id.encode('utf8')
+
+    url = master_url % r_id if rls_type == MASTER else release_url % r_id
+
+    xml = urlopen(xml)
 
     ret = parse_album_xml(xml)
 
@@ -287,6 +294,9 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     translate("Discogs", 'Retrieving cover: %s') % small)
                 data.append({DATA: urlopen(small)})
         info.update({'__image': data})
+
+    info['#extrainfo'] = (
+        translate('Discogs', '%s at Discogs.com') % info['album'], site_url)
     return info, ret[1]
 
 def search(artist=None, album=None):

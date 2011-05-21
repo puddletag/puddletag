@@ -95,8 +95,6 @@ def toolbar(groups, actions, controls=None):
         controls = dict([('widget-' + z, v) for z,v in controls.items()])
     toolbar = QToolBar('Toolbar')
     for name, actionlist in groups:
-        #toolbar = QToolBar(name)
-        #toolbar.setObjectName(name)
         for action in actionlist:
             if action in texts:
                 toolbar.addAction(actions[texts.index(action)])

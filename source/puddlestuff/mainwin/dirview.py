@@ -10,7 +10,11 @@ from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 mutex = mutex.mutex()
 qmutex = QMutex()
 from puddlestuff.translations import translate
-from puddlestuff.puddlesettings import load_gen_settings, save_gen_settings
+try:
+    from puddlestuff.puddlesettings import (load_gen_settings,
+        save_gen_settings)
+except ImportError:
+    pass
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""

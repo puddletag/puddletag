@@ -7,12 +7,12 @@
 
 #Imports and constants.
 #-----------------------------------------------------------
-import base64, hmac, hashlib, os, re, time, urllib2, urllib, pdb
+import base64, hmac, hashlib, re, time, urllib2, urllib
 
 from xml.dom import minidom
 
-from puddlestuff.constants import CHECKBOX, COMBO, SAVEDIR, TEXT
-from puddlestuff.tagsources import (write_log, set_status, RetrievalError, 
+from puddlestuff.constants import CHECKBOX, COMBO, TEXT
+from puddlestuff.tagsources import (write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.audioinfo import DATA
 from puddlestuff.util import translate
@@ -41,16 +41,54 @@ IMAGEKEYS = {'SmallImage': SMALLIMAGE,
     'MediumImage': MEDIUMIMAGE,
     'LargeImage': LARGEIMAGE}
 
-#----------------------------------------
-
-def get_text(node):
-    """Returns the textual data in a node."""
-    return node.firstChild.data
-
 def check_binding(node):
     """Checks whether a returned item as an Audio CD."""
     binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
     return binding == u'Audio CD'
+
+def create_aws_url(aws_access_key_id, secret, query_dictionary):
+    """Creates the query url that'll be used to query Amazon's service."""
+    query_dictionary["AWSAccessKeyId"] = aws_access_key_id
+    query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
+        time.gmtime())
+
+    items = [(key, value.encode('utf8')) for key, value in
+        query_dictionary.items()]
+    query = urllib.urlencode(sorted(items))
+
+    try:
+        hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
+            + query, hashlib.sha256)
+    except TypeError:
+        raise RetrievalError(translate('Amazon',
+            'Invalid Access or Secret Key'))
+    signature = urllib2.quote(base64.b64encode(hm.digest()))
+
+    query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
+        query, signature)
+    return query
+
+def check_matches(albums, artist=None, album_name=None):
+    """Returns any album in albums with the same matching artist and
+    album_name's. If no matches are found, original list is returned."""
+    ret = []
+    if artist and album_name:
+        album_name = album_name.lower()
+        artist = artist.lower()
+
+        ret = [album for album in albums if
+            album['album'].lower() == album_name and
+            album['artist'].lower() == artist]
+    elif artist:
+        artist = artist.lower()
+        ret = [album for album in albums if
+            album.get('artist', artist).lower() == artist]
+    elif album_name:
+        album_name = album_name.lower()
+        ret = [album for album in albums if
+            album.get('album', album).lower() == album_name]
+
+    return ret if ret else albums
 
 def get_asin(node):
     """Retrieves the ASIN of a node."""
@@ -59,49 +97,26 @@ def get_asin(node):
 def get_image_url(node):
     return node.getElementsByTagName(u'URL')[0].firstChild.data
 
-def page_url(node):
+def get_site_url(node):
     return node.getElementsByTagName(u'DetailPageURL')[0].firstChild.data
 
-def aws_url(aws_access_key_id, secret, query_dictionary):
-    """Creates the query url that'll be used to query Amazon's service."""
-    query_dictionary["AWSAccessKeyId"] = aws_access_key_id
-    query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", 
-        time.gmtime())
-    
-    items = [(key, value.encode('utf8')) for key, value in 
-        query_dictionary.items()]
-    query = urllib.urlencode(sorted(items))
+def get_text(node):
+    """Returns the textual data in a node."""
+    return node.firstChild.data
 
-    try:
-        hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
-            + query, hashlib.sha256)
-    except TypeError:
-        raise RetrievalError(translate('Amazon', 'Invalid Access or Secret Key'))
-    signature = urllib2.quote(base64.b64encode(hm.digest()))
-
-    query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
-        query, signature)
-    return query
-
-def check_matches(albums, artist=None, album_name=None):
-    """Returns any album in albums with the same matching artist and 
-    album_name's. If no matches are found, original list is returned."""
-    ret = []
-    if artist and album_name:
-        album_name = album_name.lower()
-        artist = artist.lower()
-        
-        ret = [album for album in albums if
-            album['album'].lower() == album_name and 
-            album['artist'].lower() == artist]
-    elif artist:
-        artist = artist.lower()
-        ret = [album for album in albums if album.get('artist', artist).lower() == artist]
-    elif album_name:
-        album_name = album_name.lower()
-        ret = [album for album in albums if album.get('album', album).lower() == album_name]
-    
-    return ret if ret else albums
+def keyword_search(keywords):
+    write_log(translate('Amazon',
+        'Retrieving search results for keywords: %s') % keywords)
+    query_pairs = {
+            "Operation": u"ItemSearch",
+            'SearchIndex': u'Music',
+            "ResponseGroup":u"ItemAttributes,Images",
+            "Service":u"AWSECommerceService",
+            'ItemPage': u'1',
+            'Keywords': keywords}
+    url = create_aws_url(access_key, secret_key, query_pairs)
+    xml = urlopen(url)
+    return parse_search_xml(xml)
 
 def parse_album_xml(text, album=None):
     """Parses the retrieved xml for an album and get's the track listing."""
@@ -158,7 +173,8 @@ def parse_search_xml(text):
             image_items = item.getElementsByTagName(key)
             if image_items:
                 info[IMAGEKEYS[key]] = get_image_url(image_items[0])
-        info['#extrainfo'] = (translate('Amazon', 'Album at Amazon'), page_url(item))
+        info['#extrainfo'] = (translate('Amazon', 'Album at Amazon'),
+            get_site_url(item))
         info['#asin'] = get_asin(item)
         info['asin'] = info['#asin']
         ret.append(info)
@@ -178,7 +194,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         "Service":u"AWSECommerceService",
         'ItemId': asin,
         'ResponseGroup': u'Tracks'}
-    url = aws_url(access_key, secret_key, query_pairs)
+    url = create_aws_url(access_key, secret_key, query_pairs)
 
     if isinstance(info, basestring):
         write_log(translate('Amazon',
@@ -214,20 +230,6 @@ def search(artist=None, album=None):
     keywords = re.sub('(\s+)', u'+', keywords)
     return keyword_search(keywords)
 
-def keyword_search(keywords):
-    write_log(translate('Amazon',
-        'Retrieving search results for keywords: %s') % keywords)
-    query_pairs = {
-            "Operation": u"ItemSearch",
-            'SearchIndex': u'Music',
-            "ResponseGroup":u"ItemAttributes,Images",
-            "Service":u"AWSECommerceService",
-            'ItemPage': u'1',
-            'Keywords': keywords}
-    url = aws_url(access_key, secret_key, query_pairs)
-    xml = urlopen(url)
-    return parse_search_xml(xml)
-
 #A couple of things you should be aware of.
 #If you're retrieving urls use puddlestuff.tagsources.urlopen instead of the
 #generic urllib functions. When I implement some progress bars, proxies, etc
@@ -244,8 +246,8 @@ def keyword_search(keywords):
 #DESCRIPTION: the image's description
 #IMAGETYPE: Index of the element corresponding to audioinfo.IMAGETYPES
 
-#The only thing required is just a Tag Source object, which'll be the interface
-#to puddletag.
+#The only thing required is just a Tag Source object,
+#which'll be the interface to puddletag.
 class Amazon(object):
     #The name attribute is required.
     name = 'Amazon'
@@ -276,8 +278,8 @@ class Amazon(object):
         but keep the semicolon (eg. <b>Ratatat;</b>).
         For a album only leave the artist part as in
         <b>;Resurrection.</li>
-        <li>Entering keywords <b>without a semi-colon (;)</b> will do an Amazon
-        album search using those keywords.</li>
+        <li>Entering keywords <b>without a semi-colon (;)</b> will do an
+        Amazon album search using those keywords.</li>
         </ul>""")
 
     #__init__ should not accept any arguments.
@@ -289,8 +291,9 @@ class Amazon(object):
         #Object.preferences is a list of lists definining the the controls 
         #that'll be used to created the Tag Source's config dialog.
         
-        #Currently, there are three types of controls: TEXT, COMBO and CHECKBOX
-        #which correspond to a QLineEdit, QComboBox and QCheckBox respectively.
+        #Currently, there are three types of controls:
+        # TEXT, COMBO and CHECKBOX. They correspond to QLineEdit,
+        # QComboBox and QCheckBox respectively.
         
         #Each control requires three arguments in order to be created.
         #1. Some descriptive text that's shown in a label.
@@ -298,7 +301,8 @@ class Amazon(object):
         #3. For TEXT this argument is the default text. It's not required.
         #   For COMBO, the default argument is a list containing a list
         #   of strings as the first item. 
-        #   And the default index as the second item. eg. [['text1', 'text2'], 1]
+        #   And the default index as the second item. eg.
+        #   [['text1', 'text2'], 1]
         #   Checkboxes can either be checked or not so 
         #   default arguments must either True or False.
         
@@ -308,6 +312,9 @@ class Amazon(object):
         #The value returned will be either True or False for CHECKBOX.
         #For TEXT, it'll be just the text and for COMBO it'll be the index
         #the user's selected.
+        
+        #Values will be saved autotically and the applyPrefs method
+        #will be called when puddletag starts.
 
         self.preferences = [
             [translate('Amazon', 'Retrieve Cover'), CHECKBOX, True],
@@ -315,12 +322,10 @@ class Amazon(object):
                 [[translate('Amazon', 'Small'),
                     translate('Amazon', 'Medium'),
                     translate('Amazon', 'Large')], 1]],
-            [translate('Amazon',
-                'Access Key (Stored as plain-text. Leave empty for default.)'),
-                TEXT, u''],
-            [translate('Amazon',
-                'Secret Key (Stored as plain-text. Leave empty for default.)'),
-                TEXT, u''],
+            [translate('Amazon', 'Access Key (Stored '
+                'as plain-text. Leave empty for default.)'), TEXT, u''],
+            [translate('Amazon', 'Secret Key (Stored '
+                'as plain-text. Leave empty for default.)'), TEXT, u''],
             ]
 
     def keyword_search(self, text):
@@ -346,14 +351,16 @@ class Amazon(object):
         #See group_by's explanation for an overview of the arguments
         #that'll be passed to this function.
         
-        #It should return a list consisting of (albuminfo, tracklisting) pairs.
+        #It should return a list consisting of (albuminfo, tracklisting)
+        #pairs.
+
         #albuminfo is a dictionary containing information applicable to
         #the whole album name like 
         #{'artist': [u'The Postal Service'], 'album': [u'Give Up'], 
         #    'year': u'2003'}
-        #Values can be either strings or lists, but all strings must be
-        #unicode!
-        
+        #Values can be either strings or lists of strings,
+        #but all strings must be unicode!
+
         #Any key starting with '#' will be considered source specific and
         #will not be changed under any circumstances. Use them to store
         #any info that'll be used later to retrieve tracks.
