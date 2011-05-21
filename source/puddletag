@@ -115,7 +115,9 @@ def load_language(qapp, langfile=None):
                 Should be a path to a Qt translation file (.qm)."""
     TRANSDIR = puddlestuff.constants.TRANSDIR
 
+    global qtTranslator #Needs to live throughout app.
     qtTranslator = QTranslator()
+
     if langfile:
         if not langfile.endswith('.qm'):
             print translate('Defaults', 'Invalid translation file.')

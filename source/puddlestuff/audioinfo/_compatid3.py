@@ -25,7 +25,7 @@ from mutagen._util import insert_bytes
 from mutagen.id3 import ID3, Frame, Frames, Frames_2_2, TextFrame, TORY, \
     TYER, TIME, APIC, IPLS, TDAT, BitPaddedInt, MakeID3v1
 
-SEPARATOR = '/'
+SEPARATOR = ' / '
 
 class XDOR(TextFrame):
     pass
@@ -49,7 +49,7 @@ class CompatID3(ID3):
             known_frames["XDOR"] = XDOR
             known_frames["XSOP"] = XSOP
             kwargs["known_frames"] = known_frames
-        super(CompatID3, self).__init__(*args, **kwargs) 
+        super(CompatID3, self).__init__(*args, **kwargs)
 
     def save(self, filename=None, v1=1, v2=4):
         """Save changes to a file.

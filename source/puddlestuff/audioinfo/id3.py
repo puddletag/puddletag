@@ -955,11 +955,16 @@ class Tag(TagBase):
         
         if v2 == 4:
             audio.tags.update_to_v24()
+            audio.tags.save(v1=v1, v2=4)
         else:
-            audio.tags.update_to_v23()
-            
+            c = ID3()
+            c.filename = self.filepath
+            c.update(audio)
+            c.update_to_v23()
+            c.save(v1=v1, v2=3)
+
         self.update_tag_list()
-        audio.tags.save(v1=v1, v2=v2)
+
         self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
         self.update_tag_list()
         self._originaltags = audio.keys()
