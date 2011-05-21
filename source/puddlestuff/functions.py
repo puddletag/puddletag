@@ -200,17 +200,14 @@ def import_text(m_tags, pattern, r_tags):
 &Pattern (can be relative path), text, lyrics.txt'''
     path = os.path
     dirpath = r_tags.dirpath
-    if os.path.isabs(pattern):
-         filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
-         filename = path.normpath(filename)
-    else:
-        pattern = u'/' + pattern
-        filename = path.splitext(move(m_tags, pattern, r_tags)['__path'])[0]
-        filename = path.normpath(path.join(dirpath, encode_fn(filename[1:])))
+    filename = tag_to_filename(pattern, m_tags, r_tags, False)
     try:
         return open(filename, 'r').read().decode('utf8')
     except EnvironmentError:
         return
+    except:
+        pdb.set_trace()
+        filename = tag_to_filename(pattern, m_tags, r_tags, False)
 
 def isdigit(text):
     try:
@@ -342,6 +339,51 @@ def mod(text,text1):
     except decimal.InvalidOperation:
         return
 
+def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None):
+    if state is None:
+        state = {}
+
+    tags = m_tags
+    tf = findfunc.tagtofilename
+    path_join = os.path.join
+
+    if state is None:
+        state = {}
+
+    if os.path.isabs(pattern):
+
+        new_name = lambda d: safe_name(tf(d, tags, state=state))
+        subdirs = pattern.split(u'/')
+        newdirs = map(new_name, subdirs[1:-1])
+        newdirs.append(safe_name(tf(subdirs[-1], tags, ext, state=state)))
+        newdirs.insert(0, u'/')
+        return encode_fn(path_join(*newdirs))
+    else:
+        new_name = lambda d: encode_fn(safe_name(tf(d, tags, state=state)))
+        subdirs = pattern.split(u'/')
+        count = pattern.count(u'/')
+
+        newdirs = map(new_name, subdirs[:-1])
+        newdirs.append(
+            encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
+
+        dirpath = r_tags.dirpath
+
+        new_fn = encode_fn(path_join(*newdirs))
+        
+        if new_fn.startswith('./'):
+            return path_join(dirpath, new_fn[len('./'):])
+        elif new_fn.startswith('../'):
+            return path_join(os.path.dirname(dirpath), new_fn[len('../'):])
+        elif count and u'..' not in subdirs:
+            parent = dirpath.split('/')[:-count]
+        else:
+            parent = dirpath.split('/')
+
+        if not parent[0]:
+            parent.insert(0, '/')
+        return os.path.join(*(parent + [new_fn]))
+
 def move(m_tags, pattern, r_tags, ext=True, state=None):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
@@ -367,11 +409,12 @@ def move(m_tags, pattern, r_tags, ext=True, state=None):
         count = pattern.count(u'/')
         
         newdirs = map(new_name, subdirs[:-1])
-        newdirs.append(encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
+        newdirs.append(
+            encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
 
         dirpath = r_tags.dirpath
 
-        if count:
+        if count and u'..' not in subdirs:
             parent = dirpath.split('/')[:-count]
         else:
             parent = dirpath.split('/')
@@ -626,6 +669,50 @@ def right(text,n):
         return u''
     return text[-int(n):]
 
+def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
+    """Export artwork to file, "Export Art: pattern='$1'"
+&Pattern (extension not required), text, folder_%img_counter%"""
+    if state is None:
+        state = {}
+
+    if '__image' in m_tags:
+        images = m_tags['__image']
+    else:
+        images = r_tags.images
+
+    if not images:
+        return
+
+    new_state = state.copy()
+    new_state['img_count'] = unicode(len(images))
+    for i, image in enumerate(images):
+        data = image[audioinfo.DATA]
+        new_state['desc'] = image.get(audioinfo.DESCRIPTION, u'')
+        mime = image.get(audioinfo.MIMETYPE, u'')
+        if not mime:
+            mime = audioinfo.get_mime(data)
+            if not mime:
+                continue
+
+        extension = '.png' if 'png' in mime.lower() else '.jpg'
+
+        new_state['mime'] = mime
+        new_state['img_counter'] = unicode(i + 1)
+        fn = tag_to_filename(pattern, m_tags, r_tags,
+            False, new_state) + extension
+
+        i = 1
+        while path.exists(fn):
+            fn = path.splitext(fn)[0] + '_' + str(i) + extension
+            i += 1
+
+        if write:
+            fobj = open(fn, 'w')
+            fobj.write(data)
+            fobj.close()
+        else:
+            return fn
+
 def sort_field(m_text, order='Ascending', matchcase=False):
     """Sort values, "Sort $0, order='$1', Match Case='$2'"
 &Order, combo, Ascending, Descending,
@@ -822,6 +909,7 @@ functions = {
     "replace": replace,
     "replaceWithReg": replaceWithReg,
     "right": right,
+    'save_artwork': save_artwork,
     'sort': sort_field,
     'split_by_sep': split_by_sep,
     "strip": strip,
@@ -836,9 +924,9 @@ functions = {
     "validate": validate,
     'to_ascii': removeDisallowedFilenameChars}
 
-no_fields = (filenametotag, load_images, move, remove_except, tag_dir,
-    update_from_tag)
-no_preview = (autonumbering, load_images, remove_tag)
+no_fields = (filenametotag, load_images, move, remove_except,
+    save_artwork, tag_dir, update_from_tag)
+no_preview = (autonumbering, load_images, remove_tag, save_artwork)
 
 import findfunc
 FuncError = findfunc.FuncError

@@ -535,7 +535,7 @@ class ExTags(QDialog):
             self.loadFiles(files)
 
     def addField(self):
-        win = EditField(parent=self, taglist=self.get_fieldlist)
+        win = EditField(parent=self, field_list=self.get_fieldlist)
         win.setModal(True)
         win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.editFieldBuddy)
