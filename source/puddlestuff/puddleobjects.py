@@ -1726,6 +1726,8 @@ class PicWidget(QWidget):
     def saveToFile(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
+        from puddlestuff.functions import save_artwork
+
         if self.currentFile is not None and self.filePattern:
             tempfilename = save_artwork(self.currentFile,
                 self.filePattern, self.currentFile, write=False)
@@ -2170,8 +2172,6 @@ class ShortcutEditor(QLineEdit):
         self.emit(SIGNAL('validityChanged'), value)
 
     valid = property(_getValid, _setValid)
-
-from puddlestuff.functions import save_artwork
 
 if __name__ == '__main__':
     class MainWin(QDialog):
