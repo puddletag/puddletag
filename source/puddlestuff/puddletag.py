@@ -603,6 +603,9 @@ class MainWin(QMainWindow):
 
         connect_controls(controls + [mainwin.previews.obj])
 
+        cover_pattern = cparser.get('tags', 'cover_pattern', 'folder')
+        status['cover_pattern'] = cover_pattern
+
         winsettings('mainwin', self)
         if cparser.get("main", "maximized", True):
             self.showMaximized()

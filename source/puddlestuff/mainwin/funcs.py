@@ -132,7 +132,7 @@ def extended_tags(parent=None):
     rows = status['selectedrows']
     if len(rows) == 1:
         win = helperwin.ExTags(parent, rows[0], status['alltags'],
-            status['previewmode'])
+            status['previewmode'], status=status)
     else:
         win = helperwin.ExTags(files = status['selectedfiles'], parent=parent)
     win.loadSettings()

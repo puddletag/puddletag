@@ -344,30 +344,44 @@ class TagMappings(QWidget):
         table.editItem(item)
 
 class Tags(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent = None, status=None):
         QWidget.__init__(self, parent)
         self._edited = False
-        
+
+        self._status = status
+
         self._filespec = QLineEdit()
-        speclabel = QLabel(translate("Tag Settings", '&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")'))
+        speclabel = QLabel(translate("Tag Settings",
+            '&Restrict incoming files to (eg. "*.mp3; *.ogg; *.aac")'))
         speclabel.setBuddy(self._filespec)
 
-        v1_options = [translate("Tag Settings", 'Remove ID3v1 tag.'),
-            translate("Tag Settings", "Update the ID3v1 tag's values only if an ID3v1 tag is present."),
-            translate("Tag Settings", "Create an ID3v1 tag if it's not present. Otherwise update it.")]
+        v1_options = [translate("Tag Settings",'Remove ID3v1 tag.'),
+            translate("Tag Settings", "Update the ID3v1 tag's "
+                "values only if an ID3v1 tag is present."),
+            translate("Tag Settings", "Create an ID3v1 tag if it's "
+                "not present. Otherwise update it.")]
         self._v1_combo = QComboBox()
         self._v1_combo.addItems(v1_options)
         
-        v1_label = QLabel(translate("Tag Settings", 'puddletag writes only &ID3v2 tags.<br />What should be done with the ID3v1 tag upon saving?'))
+        v1_label = QLabel(translate("Tag Settings", "puddletag writes "
+            "only &ID3v2 tags.<br />What should be done "
+            "with the ID3v1 tag upon saving?"))
         v1_label.setBuddy(self._v1_combo)
 
+        self.coverPattern = QLineEdit('folder.jpg')
+        cover_label = QLabel(translate('Tag Settings',
+                'Default &pattern to use when saving artwork.'))
+        cover_label.setBuddy(self.coverPattern)
 
         layout = QVBoxLayout()
         vbox = QVBoxLayout()
-        
+
+        layout.addWidget(cover_label)
+        layout.addWidget(self.coverPattern)
+
         layout.addWidget(speclabel)
         layout.addWidget(self._filespec)
-        
+
         vbox.addWidget(v1_label)
         vbox.addWidget(self._v1_combo)
         
@@ -395,6 +409,8 @@ class Tags(QWidget):
             self.id3_v23.setChecked(True)
         filespec = u';'.join(cparser.get('table', 'filespec', []))
         self._filespec.setText(filespec)
+        cover_pattern = cparser.get('tags', 'cover_pattern', 'folder')
+        self.coverPattern.setText(cover_pattern)
 
     def applySettings(self, control=None):
         cparser = PuddleConfig()
@@ -413,6 +429,9 @@ class Tags(QWidget):
         control.filespec = filespec
         filespec = [z.strip() for z in filespec.split(';')]
         cparser.set('table', 'filespec', filespec)
+        cparser.set('tags', 'cover_pattern',
+            unicode(self.coverPattern.text()))
+        self._status['cover_pattern'] = unicode(self.coverPattern.text())
 
 
 class ListModel(QAbstractListModel):
@@ -556,15 +575,20 @@ class SettingsDialog(QDialog):
         winsettings('settingswin', self)
 
         built_in = [
-            (translate("Settings", 'General'), GeneralSettings(controls), controls),
-            (translate("Settings", 'Confirmations'), confirmations.Settings(), None),
+            (translate("Settings", 'General'),
+                GeneralSettings(controls), controls),
+            (translate("Settings", 'Confirmations'),
+                confirmations.Settings(), None),
             (translate("Settings", 'Mappings'), TagMappings(), None),
             (translate("Settings", 'Playlist'), Playlist(), None),
             (translate("Settings", 'Colours'), ColorEdit(), status['table']),
-            (translate("Settings", 'Genres'), genres.Genres(status=status), None),
-            (translate("Settings", 'Tags'), Tags(), status['table']),
+            (translate("Settings", 'Genres'),
+                genres.Genres(status=status), None),
+            (translate("Settings", 'Tags'), Tags(status=status),
+                status['table']),
             (translate("Settings", 'Plugins'), PluginConfig(), None),
-            (translate("Settings", 'Shortcuts'), ActionEditorDialog(status['actions']), None),]
+            (translate("Settings", 'Shortcuts'),
+                ActionEditorDialog(status['actions']), None),]
 
         d = dict(enumerate(built_in))
             

@@ -80,6 +80,8 @@ class ArtworkWidget(QWidget):
         if not self.isVisible():
             self._audios = audios
             return
+        self.picwidget.currentFile = audios[0]
+        self.picwidget.filePattern = self._status['cover_pattern']
         pics = list(self._readOnlyPics())
         self.picwidget.setEnabled(True)
         images = []

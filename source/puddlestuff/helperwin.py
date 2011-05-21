@@ -424,7 +424,12 @@ class ExTags(QDialog):
 
     In addition, any attached cover art is shown."""
     def __init__(self, parent=None, row=None, files=None, preview_mode=False,
-        artwork=True):
+        artwork=True, status=None):
+
+        if status is None:
+            status = {'cover_pattern': 'folder'}
+
+        self.status = status
             
         QDialog.__init__(self, parent)
         winsettings('extendedtags', self)
@@ -705,6 +710,8 @@ class ExTags(QDialog):
             del(common['__image'])
             previews = set(audios[0].preview)
             italics = set(audios[0].equal_fields())
+            self.piclabel.currentFile = audios[0]
+            self.piclabel.filePattern = self.status['cover_pattern']
 
             for audio in audios[1:]:
                 previews = previews.intersection(audio.preview)
@@ -748,6 +755,9 @@ class ExTags(QDialog):
         items = []
         d = tags.usertags.copy()
         italics = tags.equal_fields()
+        self.piclabel.currentFile = tags
+        self.piclabel.filePattern = self.status['cover_pattern']
+        print self.piclabel.filePattern
 
         for key, val in sorted(d.items()):
             if key in italics:

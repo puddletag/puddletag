@@ -1381,6 +1381,8 @@ class PicWidget(QWidget):
         self.sizePolicy().setHorizontalStretch(3)
 
         self.lastfilename = u'~'
+        self.currentFile = None
+        self.filePattern = u'folder.jpg'
         #The picture.
         self.label = ArtworkLabel()
         self.label.setFrameStyle(QFrame.Box)
@@ -1431,7 +1433,8 @@ class PicWidget(QWidget):
             hbox.addWidget(self._image_type)
             controls.addLayout(hbox)
         self._image_type.setToolTip(
-            translate("Artwork", '<p>Select a cover type for the artwork.</p>'))
+            translate("Artwork",
+                '<p>Select a cover type for the artwork.</p>'))
         self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
                             self.setType)
 
@@ -1482,7 +1485,6 @@ class PicWidget(QWidget):
         if buttons:
             vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
-        #vbox.addStretch()
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
 
@@ -1687,7 +1689,8 @@ class PicWidget(QWidget):
                 self.win.setImage(self.pixmap)
         self._lastdata = data
         self._image_desc.blockSignals(True)
-        desc = self.images[num].get('description', translate("Artwork", 'Enter a description'))
+        desc = self.images[num].get('description',
+            translate("Artwork", 'Enter a description'))
         self._image_desc.setText(desc)
         self._image_desc.blockSignals(False)
         self._image_type.blockSignals(True)
@@ -1723,7 +1726,13 @@ class PicWidget(QWidget):
     def saveToFile(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
-        if self.lastfilename:
+        if self.currentFile is not None and self.filePattern:
+            tempfilename = save_artwork(self.currentFile,
+                self.filePattern, self.currentFile, write=False)
+            if not tempfilename:
+                tempfilename = os.path.join(self.currentFile.dirpath,
+                    'folder.jpg')
+        elif self.lastfilename:
             tempfilename = os.path.join(os.path.dirname(self.lastfilename),
                 'folder.jpg')
         else:
@@ -1753,7 +1762,6 @@ class PicWidget(QWidget):
         self.context = u'No Images'
         self._lastdata = None
 
-
     def setImages(self, images, imagetags = None, default=0):
         """Sets images. images are dictionaries as described in the class docstring."""
         if imagetags:
@@ -1764,7 +1772,6 @@ class PicWidget(QWidget):
         else:
             self.setNone()
         self.enableButtons()
-
 
     def removeImage(self):
         """Removes the current image."""
@@ -2164,6 +2171,7 @@ class ShortcutEditor(QLineEdit):
 
     valid = property(_getValid, _setValid)
 
+from puddlestuff.functions import save_artwork
 
 if __name__ == '__main__':
     class MainWin(QDialog):
