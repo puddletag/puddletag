@@ -1860,8 +1860,8 @@ class TagTable(QTableView):
             if confirmations.should_show('preview_mode') and previews:
                 ret = QMessageBox.question(self, 'puddletag',
                     translate("Previews", 'Do you want to exit Preview Mode?'),
-                    QMessageBox.Ok, QMessageBox.No)
-                if ret != QMessageBox.Ok:
+                    QMessageBox.Yes, QMessageBox.No)
+                if ret != QMessageBox.Yes:
                     return
         self.model().previewMode = value
 

@@ -1227,6 +1227,9 @@ class OKCancel(QHBoxLayout):
         self.cancel = dbox.addButton(dbox.Cancel)
         self.addStretch()
         self.addWidget(dbox)
+
+        self.ok.setText(translate('Defaults', 'OK'))
+        self.cancel.setText(translate('Defaults', 'Cancel'))
         #self.cancel = QPushButton("&Cancel")
         #self.ok.setDefault(True)
 
