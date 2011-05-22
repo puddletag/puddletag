@@ -37,15 +37,18 @@ def parse_functions():
     func_strings = []
     def tr(s):
         return 'translate("Functions", "%s")' % s.replace('"', r'\"')
+
     for f in findfunc.functions:
         try:
             x = findfunc.Function(f)
             func_strings.append(tr(x.info[1]))
+            func_strings.append(tr(x.funcname))
             for controls in x._getControls(None):
                 del(controls[1])
                 func_strings.extend(map(tr, controls))
         except AttributeError:
             pass
+
     return func_strings
 
 def parse_shortcuts():
@@ -67,18 +70,48 @@ def parse_shortcuts():
             action_strings.append(tr(values['name']))
             if 'tooltip' in values:
                 action_strings.append(tr(values['tooltip']))
+
+    f.close()
+    menus = tempfile.NamedTemporaryFile('rb+')
+    fn = menus.name
+    loadshortcuts.check_file(fn, ':/menus')
+    cparser = PuddleConfig(fn)
+
+    action_strings.extend(map(tr, cparser.settings['menu']))
+    menus.close()
+
     return action_strings
+
+def parse_menus():
+    def tr(s):
+        s = s.replace('"', r'\"')
+        return 'translate("Menus", "%s")' % s
+
+    f = tempfile.NamedTemporaryFile('rb+')
+    fn = f.name
+
+    loadshortcuts.check_file(fn, ':/shortcuts')
+    cparser = PuddleConfig(fn)
+
+    action_strings = []
+    setting = cparser.settings
+    for section in cparser.sections():
+        if section.startswith('shortcut'):
+            values = dict([(str(k), v) for k,v in  setting[section].items()])
+            action_strings.append(tr(values['name']))
+            if 'tooltip' in values:
+                action_strings.append(tr(values['tooltip']))
 
 def write_translations():
     f = open('puddlestuff/translations.py', 'r+')
     out = []
     for i, l in enumerate(f.readlines()):
         out.append(l)
-        if 'translate("Artwork Context", \'No Images\')' in l:
+        if 'translate("Menus", "Sort &By")' in l:
             break
 
     f.seek(len(''.join(out)))
-    f.write('\n    #Menus\n    ' + '\n    '.join(parse_shortcuts()))
+    f.write('    ' + '\n    '.join(parse_shortcuts()))
     f.write('\n\n    #Functions\n    ' + '\n    '.join(parse_functions()))
     f.write('\n\n    #Dialogs\n    ' + '\n    '.join(parse_dialogs()))
     f.write('\n')

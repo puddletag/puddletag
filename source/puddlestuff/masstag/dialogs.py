@@ -32,11 +32,11 @@ puddlestuff.masstag.set_status = set_status
 mutex = QMutex()
 
 def search_error(error, profile):
-    set_status(translate('MassTagging',
+    set_status(translate('Masstagging',
         'An error occured during the search: <b>%s</b>') % unicode(error))
 
 def retrieval_error(error, profile):
-    set_status(translate('MassTagging',
+    set_status(translate('Masstagging',
         'An error occured during album retrieval: <b>%s</b>') % unicode(error))
 
 class MassTagEdit(QDialog):
@@ -609,10 +609,10 @@ class MassTagWindow(QWidget):
         tag_groups = split_files(self._status['selectedfiles'],
             profile.file_pattern)
 
-        search_msg = translate('MassTagging',
+        search_msg = translate('Masstagging',
             'An error occured during the search: <b>%s</b>')
 
-        retrieve_msg = translate('MassTagging',
+        retrieve_msg = translate('Masstagging',
             'An error occured during album retrieval: <b>%s</b>')
 
         def search_error(error, profile):

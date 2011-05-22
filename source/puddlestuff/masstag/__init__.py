@@ -55,49 +55,49 @@ DEFAULT_PATTERN = u'%artist% - %album%/%track% - %title%'
 DEFAULT_NAME = translate('Masstagging', 'Default Profile')
 
 
-POLLING = translate("MassTagging", '<b>Polling: %s</b>')
-MATCH_ARTIST_ALBUM = translate("MassTagging",
+POLLING = translate("Masstagging", '<b>Polling: %s</b>')
+MATCH_ARTIST_ALBUM = translate("Masstagging",
     'Retrieving matching album. <b>%1 - %2</b>')
-MATCH_ARTIST = translate("MassTagging",
+MATCH_ARTIST = translate("Masstagging",
     'Retrieving matching album. Artist=<b>%1</b>')
-MATCH_ALBUM = translate("MassTagging",
+MATCH_ALBUM = translate("Masstagging",
     'Retrieving matching album. Album=<b>%1</b>')
-MATCH_NO_INFO = translate("MassTagging", 'Retrieving matching album.')
+MATCH_NO_INFO = translate("Masstagging", 'Retrieving matching album.')
 
-SEARCHING_ARTIST_ALBUM = translate("MassTagging",
-    ':insertStarting search for: <br />artist=<b>%1</b> '
+SEARCHING_ARTIST_ALBUM = u':insert' + translate("Masstagging",
+    'Starting search for: <br />artist=<b>%1</b> '
     '<br />album=<b>%2</b><br />')
-SEARCHING_ARTIST = translate("MassTagging",
-    ':insertStarting search for: <br />artist=<b>%1</b>'
+SEARCHING_ARTIST = u':insert' + translate("Masstagging",
+    'Starting search for: <br />artist=<b>%1</b>'
     '<br />album=No album name found.')
-SEARCHING_ALBUM = translate("MassTagging",
-    ':insertStarting search for: <br />album=<b>%1</b>'
+SEARCHING_ALBUM = u':insert' + translate("Masstagging",
+    'Starting search for: <br />album=<b>%1</b>'
     '<br />artist=No artist found.')
-SEARCHING_NO_INFO = translate("MassTagging",
-    ':insertNo artist or album info found in files. Starting search.')
+SEARCHING_NO_INFO = u':insert' + translate("Masstagging",
+    'No artist or album info found in files. Starting search.')
 
-RESULTS_FOUND = translate("MassTagging", '<b>%d</b> results found.')
-NO_RESULTS_FOUND = translate("MassTagging", '<b>No results were found.</b>')
-ONE_RESULT_FOUND = translate("MassTagging", '<b>One</b> result found.')
+RESULTS_FOUND = translate("Masstagging", '<b>%d</b> results found.')
+NO_RESULTS_FOUND = translate("Masstagging", '<b>No results were found.</b>')
+ONE_RESULT_FOUND = translate("Masstagging", '<b>One</b> result found.')
 
-MATCHING_ALBUMS_FOUND = translate("MassTagging",
+MATCHING_ALBUMS_FOUND = translate("Masstagging",
     '<b>%d</b> possibly matching albums found.')
-ONE_MATCHING_ALBUM_FOUND = translate("MassTagging",
+ONE_MATCHING_ALBUM_FOUND = translate("Masstagging",
     '<b>One</b> possibly matching album found.')
-NO_MATCHES = translate("MassTagging",
+NO_MATCHES = translate("Masstagging",
     'No matches found for tag source <b>%s</b>')
 
-RETRIEVING_NEXT = translate("MassTagging",
+RETRIEVING_NEXT = translate("Masstagging",
     'Previously retrieved result does not match. '
     'Retrieving next matching album.')
 
-RECHECKING = translate("MassTagging",
+RECHECKING = translate("Masstagging",
     '<br />Rechecking with results from <b>%s</b>.<br />')
 
-VALID_FOUND = translate("MassTagging",
+VALID_FOUND = translate("Masstagging",
     '<br />Valid matches were found for the album.')
 
-NO_VALID_FOUND = translate("MassTagging",
+NO_VALID_FOUND = translate("Masstagging",
     '<b>No valid matches were found for the album.</b>')
 
 class MassTagFlag(object):
@@ -388,7 +388,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
         for t, m in zip(map(deepcopy, files), found[0].result.merged):
             audios_copy.append(combine_tracks(t,m))
 
-        new_mtp = MassTagProfile(translate("MassTagging", 'Rechecking'),
+        new_mtp = MassTagProfile(translate("Masstagging", 'Rechecking'),
             files=audios_copy, profiles=not_found,
             album_bound=mtp.album_bound, track_bound=mtp.track_bound,
             regexps=mtp.regexps)

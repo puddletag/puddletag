@@ -16,45 +16,14 @@ from audioinfo import INFOTAGS, READONLY, usertags, isempty
 from functools import partial
 from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
     SAVEDIR, ACTIONDIR, BLANK)
-from util import open_resourcefile, PluginFunction, escape_html, translate
+from util import (open_resourcefile, PluginFunction, escape_html,
+    translate, pprint_tag)
 import functions_dialogs
 from puddlestuff.puddleobjects import ShortcutEditor
 from puddletag import status
 
 READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
-
-def to_str(v):
-    if isempty(v):
-        return escape_html(BLANK)
-    elif isinstance(v, unicode):
-        return escape_html(v)
-    elif isinstance(v, str):
-        return escape_html(v.decode('utf8', 'replace'))
-    else:
-        return escape_html(SEPARATOR.join(v))
-
-def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", read_only=False):
-    image_tr = translate('Defaults', '<b>__image</b>: %s images<br />')
-    if tags:
-        if isinstance(tags, basestring):
-            return tags
-        elif not hasattr(tags, 'items'):
-            return SEPARATOR.join(filter(lambda x: x is not None, tags))
-
-        if read_only:
-            items = [(k,v) for k, v in tags.items() if k != '__image']
-        else:
-            items = [(k,v) for k,v in tags.items() if
-                k not in READONLY and k != '__image']
-
-        map_func = lambda v: fmt % (v[0], to_str(v[1]))
-        values = map(map_func, sorted(tags.items()))
-
-        ret = u"".join(values)
-        if u'__image' in tags:
-            ret += image_tr % len(tags['__image'])
-        return ret
 
 def displaytags(tags):
     text = pprint_tag(tags)

@@ -7,13 +7,14 @@ from PyQt4.QtGui import QAction, QApplication
 from StringIO import StringIO
 from copy import copy, deepcopy
 from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
-    EXTENSION, MockTag, DIRPATH, DIRNAME, fn_hash)
+    EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
 from errno import EEXIST
 import os, pdb, re
 from puddleobjects import encode_fn, decode_fn, safe_name, open_resourcefile
 import puddlestuff.translations
 translate = puddlestuff.translations.translate
 import errno, traceback
+from puddlestuff.constants import BLANK, SEPARATOR
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -125,6 +126,38 @@ def matching(audios, listing):
         return ret, True
     return ret, False
 
+def m_to_string(v):
+    if isempty(v):
+        return escape_html(BLANK)
+    elif isinstance(v, unicode):
+        return escape_html(v)
+    elif isinstance(v, str):
+        return escape_html(v.decode('utf8', 'replace'))
+    else:
+        return escape_html(SEPARATOR.join(v))
+
+def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
+    image_tr = translate('Defaults', '%s images')
+    if tags:
+        if isinstance(tags, basestring):
+            return tags
+        elif not hasattr(tags, 'items'):
+            return SEPARATOR.join(filter(lambda x: x is not None, tags))
+
+        if show_read_only:
+            items = [(k,v) for k, v in tags.items() if k != '__image']
+        else:
+            items = [(k,v) for k,v in tags.items() if
+                k not in READONLY and k != '__image']
+
+        map_func = lambda v: fmt % (v[0], m_to_string(v[1]))
+        values = map(map_func, sorted(tags.items()))
+
+        if u'__image' in tags:
+            ret.append(('__image', image_tr % len(tags['__image'])))
+
+        return u"".join(values)
+
 def rename_file(audio, tags):
     """If tags(a dictionary) contains a PATH key, then the file
     in self.taginfo[row] is renamed based on that.
@@ -193,7 +226,7 @@ def to_list(value):
     return value
 
 def to_string(value):
-    if not value:
+    if isempty(value):
         return u''
     elif isinstance(value, str):
         return value.decode('utf8')

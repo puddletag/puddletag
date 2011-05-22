@@ -1,27 +1,44 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+import os, pdb, sys, traceback
 
-import sys, pdb, os, traceback
-from puddleobjects import (unique, OKCancel, PuddleThread, PuddleConfig, 
-    winsettings, ListBox, ListButtons, OKCancel, create_buddy)
+from collections import defaultdict
+from copy import copy, deepcopy
+from functools import partial
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from collections import defaultdict
-from puddlestuff.tagsources import (RetrievalError, status_obj, write_log, 
-    tagsources, set_useragent, mp3tag)
-from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
-pyqtRemoveInputHook()
-from findfunc import replacevars, getfunc
-from functools import partial
-from copy import copy, deepcopy
-from puddlestuff.util import to_string, split_by_tag, translate
-from releasewidget import ReleaseWidget
-import puddlestuff.audioinfo as audioinfo
 
-import traceback
+from puddlestuff.releasewidget import ReleaseWidget
+import puddlestuff.audioinfo as audioinfo
+from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
+from puddlestuff.findfunc import getfunc, replacevars
+from puddleobjects import (create_buddy, unique, winsettings,
+    ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
+from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
+    write_log, RetrievalError, mp3tag)
+from puddlestuff.util import pprint_tag, split_by_field, to_string, translate
+
+pyqtRemoveInputHook()
 
 TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
 MTAG_SOURCE_DIR = os.path.join(SAVEDIR, 'mp3tag_sources')
+
+def display_tag(tag):
+    """Used to display tags in in a human parseable format."""
+    tag = dict((k,v) for k,v in tag.iteritems() if
+        not k.startswith('#') and not isempty(v))
+
+    if not tag:
+        return translate("WebDB", "<b>Nothing to display.</b>")
+    fmt = u"<b>%s</b>: %s<br />"
+    text = pprint_tag(tag, fmt, True)
+    if text.endswith(u'<br />'):
+        text = text[:-len(u'<br />')]
+    return text
+
+def display(pattern, tags):
+    return replacevars(getfunc(pattern, tags), audioinfo.stringtags(tags))
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
     import glob
@@ -37,29 +54,11 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             continue
     return classes
 
-def display_tag(tag):
-    """Used to display tags in in a human parseable format."""
-    images = translate('WebDB', '#images')
-    if not tag:
-        return translate("WebDB", "<b>Nothing to display.</b>")
-    s = "<b>%s</b>: %s"
-    tostr = lambda i: i if isinstance(i, basestring) else i[0]
-    if ('__image' in tag) and tag['__image']:
-        d = {images: unicode(len(tag['__image']))}
-    else:
-        d = {}
-    return "<br />".join([s % (z, tostr(v)) for z, v in
-        sorted(tag.items() + d.items()) if z != '__image' and not
-        z.startswith('#')])
-
-def display(pattern, tags):
-    return replacevars(getfunc(pattern, tags), audioinfo.stringtags(tags))
-
-def strip(audio, taglist, reverse = False):
-    if not taglist:
+def strip(audio, field_list, reverse = False):
+    if not field_list:
         return dict([(key, audio[key]) for key in audio if 
             not key.startswith('#')])
-    tags = taglist[::]
+    tags = field_list[::]
     if tags and tags[0].startswith('~'):
         reverse = True
         tags[0] = tags[0][1:]
@@ -69,8 +68,8 @@ def strip(audio, taglist, reverse = False):
         return dict([(key, audio[key]) for key in audio if key not in
                         tags and not key.startswith('#')])
     else:
-        return dict([(key, audio[key]) for key in taglist if key in audio and
-            not key.startswith('#')])
+        return dict([(key, audio[key]) for key in field_list
+            if not key.startswith('#') and key in audio])
 
 def split_strip(stringlist):
     return [[field.strip() for field in s.split(u',')] for s in stringlist]
@@ -95,13 +94,6 @@ class TagListWidget(QWidget):
 
         self.setLayout(layout)
 
-    def tags(self, text=None):
-        if not text:
-            return filter(None, [z.strip() for z in
-                unicode(self._text.text()).split(u',')])
-        else:
-            return filter(None, [z.strip() for z in unicode(text).split(u',')])
-
     def emitTags(self, text=None):
         self.emit(SIGNAL('tagschanged'), self.tags(text))
 
@@ -112,8 +104,45 @@ class TagListWidget(QWidget):
         QWidget.setToolTip(self, value)
         self._text.setToolTip(value)
 
+    def tags(self, text=None):
+        if not text:
+            return filter(None, [z.strip() for z in
+                unicode(self._text.text()).split(u',')])
+        else:
+            return filter(None,
+                [z.strip() for z in unicode(text).split(u',')])
+
 class SourcePrefs(QDialog):
+    """Class for simple dialog creation."""
     def __init__(self, title, controls, parent = None):
+        """title => Dialog's title.
+        controls is a list of 3-element-lists.
+
+        The three 3-element lists consist of:
+            description => Descriptive label for the control.
+            control_type => One of TEXT, COMBO, CHECKBOX corresponding
+                to a QLineEdit, QComboBox and QCheckBox being created
+                respectively.
+            default => Default arguments.
+                Can be any string for TEXT,
+                Must be a list of strings for COMBO as these will form the
+                    items selectable by the combo box.
+                Can be either True or False for CheckBox.
+
+        A dialog will be created with vertical layout. Like so:
+            <label>
+            <control>
+            <label>
+            <control>
+
+        When the user has finished editing an 'editingFinished' signal
+        will be emitted containing a list with the new value.
+
+        The list will consist of the value for each control in the order
+        given. For TEXT it'll a string. COMBO an integer corresponding to
+        the selected index. True or False for CHECK.
+        """
+
         QDialog.__init__(self, parent)
         vbox = QVBoxLayout()
         self._controls = []
@@ -157,10 +186,9 @@ class SourcePrefs(QDialog):
             elif isinstance(control, QComboBox):
                 values.append(control.currentIndex())
             elif isinstance(control, QCheckBox):
-                values.append(bool(control.checkState()))
+                values.append(control.isChecked())
         self.emit(SIGNAL('tagsourceprefs'), values)
         self.close()
-
 
 class SortOptionEditor(QDialog):
     def __init__(self, options, parent = None):
@@ -586,7 +614,7 @@ class MainWin(QWidget):
     def getInfo(self):
         files = self._status['selectedfiles']
         if self._tagsource.group_by:
-            group = split_by_tag(files, *self._tagsource.group_by)
+            group = split_by_field(files, *self._tagsource.group_by)
         self.label.setText(translate("WebDB", 'Searching...'))
         text = None
         if self._searchparams.text() and self._searchparams.isEnabled():
