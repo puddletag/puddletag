@@ -24,9 +24,26 @@ class UnicodeMod(unicode):
             value = unicode(value)
         return UnicodeMod(self.replace(lowest.group(), value))
 
-    def __metaclass__(name, bases, d):
-        'Make it behave like unicode object'
-        return type.__new__(type(unicode), 'unicode', bases, d)
+    def __add__(self, other):
+        return UnicodeMod(unicode.__add__(self, other))
+
+    def __radd__(self, other):
+        return UnicodeMod(other.__add__(unicode(self)))
+
+    def __mod__(self, other):
+        return UnicodeMod(unicode.__mod__(self, other))
+
+    def __format__(self, fmt=None):
+        return Unicode(unicode.__format__(self, fmt))
+
+    def __getitem__(self, item):
+        return UnicodeMod(unicode.__getitem__(self, item))
+
+    def __rmul__(self, v):
+        return UnicodeMod(unicode.__rmul__(self, v))
+
+    def __mul__(self, v):
+        return UnicodeMod(unicode.__mul__(self, v))
 
 def translate(k,v):
     if isinstance(v, str):

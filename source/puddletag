@@ -115,8 +115,8 @@ def load_language(qapp, langfile=None):
                 Should be a path to a Qt translation file (.qm)."""
     TRANSDIR = puddlestuff.constants.TRANSDIR
 
-    global qtTranslator #Needs to live throughout app.
-    qtTranslator = QTranslator()
+    global translators #Needs to live throughout app.
+    translators = []
 
     if langfile:
         if not langfile.endswith('.qm'):
@@ -144,8 +144,30 @@ def load_language(qapp, langfile=None):
                 langargs = os.path.basename(f), os.path.dirname(f)
 
     if langargs and langargs != 'default':
-        if qtTranslator.load(*langargs):
-            qapp.installTranslator(qtTranslator)
+        translator = QTranslator()
+        translator.load("qt_" + QLocale.system().name(),
+             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        translators.append(translator)
+
+        if 'puddletag_' in langargs[0]:
+            translator = QTranslator()
+            locale = langargs[0][len('puddletag_'):-len('.qm')]
+            translator.load("qt_" + locale,
+                QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+            translators.append(translator)
+
+        translator = QTranslator()
+        if translator.load(*langargs):
+            translators.append(translator)
+
+    elif langargs != 'default':
+        translator = QTranslator()
+        translator.load("qt_" + QLocale.system().name(),
+             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        translators.append(translator)
+
+    for t in reversed(translators):
+        qapp.installTranslator(t)
     puddlestuff.constants.trans_strings()
     puddlestuff.puddleobjects.trans_imagetypes()
 
@@ -195,7 +217,8 @@ if __name__ == '__main__':
     check_libs()
 
     from PyQt4.QtGui import QApplication, QFont, QPixmap, QSplashScreen, QIcon
-    from PyQt4.QtCore import pyqtRemoveInputHook, QTranslator, QLocale
+    from PyQt4.QtCore import (pyqtRemoveInputHook, QTranslator,
+        QLibraryInfo, QLocale)
     import pdb, logging
     pyqtRemoveInputHook()
 

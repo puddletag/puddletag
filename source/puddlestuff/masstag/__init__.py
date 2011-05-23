@@ -469,8 +469,9 @@ class MassTagProfile(object):
                     raise e
                 yield [], [], profile
                 continue
-                
-            profile.find_matches(self.album_bound, files, results)
+
+            if results:
+                profile.find_matches(self.album_bound, files, results)
             yield profile.matched, profile.results, profile
 
 class Result(object):
