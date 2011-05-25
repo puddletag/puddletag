@@ -125,6 +125,7 @@ def find_releases(artists=None, album=None, limit=100, offset=None):
     return map(release_to_dict, releases)
 
 def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
+    print release_id
     release = q.getReleaseById(release_id, RELEASEINCLUDES)
     info = release_to_dict(release)
 
@@ -159,7 +160,7 @@ def release_to_dict(release):
         r = release.release
     else:
         r = release
-    
+
     album = {
         'artist': r.artist.name if r.artist else None,
         ARTIST_ID: extractUuid(r.artist.id) if r.artist else None,
@@ -177,8 +178,8 @@ def release_to_dict(release):
             'barcode': e.barcode if hasattr(e, 'barcode') else None,
             'label': e.label.name if e.label else None})
 
-    info['#extrainfo'] = (translate('MusicBrainz',
-        '%s at MusicBrainz.org') % info['album'], r.id)
+    album['#extrainfo'] = (translate('MusicBrainz',
+        '%s at MusicBrainz.org') % album['album'], r.id)
 
     return dict((k,v) for k,v in album.iteritems() if v)
 

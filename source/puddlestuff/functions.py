@@ -201,13 +201,12 @@ def import_text(m_tags, pattern, r_tags):
     path = os.path
     dirpath = r_tags.dirpath
     filename = tag_to_filename(pattern, m_tags, r_tags, False)
+    if not filename:
+        return
     try:
         return open(filename, 'r').read().decode('utf8')
     except EnvironmentError:
         return
-    except:
-        pdb.set_trace()
-        filename = tag_to_filename(pattern, m_tags, r_tags, False)
 
 def isdigit(text):
     try:
@@ -339,7 +338,11 @@ def mod(text,text1):
     except decimal.InvalidOperation:
         return
 
-def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None):
+def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
+    is_dir=False):
+    
+    if not pattern:
+        return
     if state is None:
         state = {}
 
@@ -374,9 +377,20 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None):
         if new_fn.startswith('./'):
             return path_join(dirpath, new_fn[len('./'):])
         elif new_fn.startswith('../'):
-            return path_join(os.path.dirname(dirpath), new_fn[len('../'):])
+            parent = dirpath
+            while new_fn.startswith('../'):
+                parent = os.path.dirname(parent)
+                new_fn = new_fn[len('../'):]
+            return path_join(parent, new_fn)
         elif count and u'..' not in subdirs:
-            parent = dirpath.split('/')[:-count]
+            subdirs = dirpath.split('/')
+            if count >= len(subdirs):
+                parent = ['']
+            else:
+                if is_dir:
+                    parent = subdirs[:-(count + 1)]
+                else:
+                    parent = subdirs[:-(count)]
         else:
             parent = dirpath.split('/')
 
@@ -387,40 +401,15 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None):
 def move(m_tags, pattern, r_tags, ext=True, state=None):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
+
     
     tags = m_tags
     tf = findfunc.tagtofilename
 
-    if state is None:
-        state = {}
+    fn = tag_to_filename(pattern, m_tags, r_tags, ext, state)
 
-    if os.path.isabs(pattern):
-        
-        new_name = lambda d: safe_name(tf(d, tags, state=state))
-        subdirs = pattern.split(u'/')
-        newdirs = map(new_name, subdirs[1:-1])
-        newdirs.append(safe_name(tf(subdirs[-1], tags, ext, state=state)))
-        newdirs.insert(0, u'/')
-        return {'__path': os.path.join(*newdirs)}
-    else:
-
-        new_name = lambda d: encode_fn(safe_name(tf(d, tags, state=state)))
-        subdirs = pattern.split(u'/')
-        count = pattern.count(u'/')
-        
-        newdirs = map(new_name, subdirs[:-1])
-        newdirs.append(
-            encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
-
-        dirpath = r_tags.dirpath
-
-        if count and u'..' not in subdirs:
-            parent = dirpath.split('/')[:-count]
-        else:
-            parent = dirpath.split('/')
-        if not parent[0]:
-            parent.insert(0, '/')
-        return {'__path': os.path.join(*(parent + newdirs))}
+    if fn:
+        return {'__path': fn}
 
 def mul(text, text1):
     D = decimal.Decimal
@@ -593,11 +582,12 @@ def replaceWithReg(text, expr, rep, matchcase=False):
 &Regular Expression, text
 Replace &matches with:, text
 Match &Case, check"""
-    t = time.time()
+    if text.startswith('/'):
+        pdb.set_trace()
     if not expr:
         return text
     try:
-        match = re.search(expr, text, re.I)
+        match = re.search(expr, text, re.I | re.UNICODE)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
 
@@ -606,9 +596,9 @@ Match &Case, check"""
     append = ret.append
     
     if not matchcase:
-        matches = re.finditer(expr, text, re.I)
+        matches = re.finditer(expr, text, re.I | re.UNICODE)
     else:
-        matches = re.finditer(expr, text)
+        matches = re.finditer(expr, text, re.UNICODE)
 
     for match in matches:
         group = match.group()
@@ -701,6 +691,9 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
         fn = tag_to_filename(pattern, m_tags, r_tags,
             False, new_state) + extension
 
+        if not fn:
+            continue
+
         i = 1
         while path.exists(fn):
             fn = path.splitext(fn)[0] + '_' + str(i) + extension
@@ -748,7 +741,7 @@ def find(text, text1):
     val = text.find(text1)
     if val >= 0:
         return unicode(val)
-    return unicode(-1)
+    return u'-1'
 
 def sub(text,text1):
     D = decimal.Decimal
@@ -762,22 +755,18 @@ def tag_dir(m_tags, pattern, r_tags, state = None):
 &Pattern (can be relative path), text, %artist% - %album%'''
     if state is None:
         state = {'tag_dir': set()}
+
     elif 'tag_dir' not in state:
         state['tag_dir'] = set()
+
     if r_tags.dirpath in state['tag_dir']:
         return
-    path = os.path
+
     dirpath = r_tags.dirpath
     if pattern.endswith(u'/') and len(pattern) > 1:
         pattern = pattern[:-1]
-    if os.path.isabs(pattern):
-        filename = move(m_tags, pattern, r_tags, False)['__path']
-        filename = path.normpath(filename)
-    else:
-        pattern = u'/' + pattern
-        filename = move(m_tags, pattern, r_tags, False)['__path']
-        filename = path.normpath(path.join(dirpath,
-            os.path.pardir, encode_fn(filename[1:])))
+
+    filename = tag_to_filename(pattern, m_tags, r_tags, False, state, True)
     if filename:
         state['tag_dir'].add(encode_fn(filename))
         return {DIRPATH: filename}

@@ -274,8 +274,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     site_url += r_id.encode('utf8')
 
     url = master_url % r_id if rls_type == MASTER else release_url % r_id
-
-    xml = urlopen(xml)
+    xml = urlopen(url)
 
     ret = parse_album_xml(xml)
 
