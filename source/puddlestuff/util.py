@@ -10,7 +10,8 @@ from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
 from errno import EEXIST
 import os, pdb, re
-from puddleobjects import encode_fn, decode_fn, safe_name, open_resourcefile
+from puddleobjects import (encode_fn, decode_fn, issubfolder,
+    open_resourcefile, safe_name)
 import puddlestuff.translations
 translate = puddlestuff.translations.translate
 import errno, traceback
@@ -71,6 +72,9 @@ def rename_dir(filename, olddir, newdir):
         os.renames(olddir, newdir)
         return True
     except EnvironmentError, e:
+        if issubfolder(olddir, newdir, None):
+            e.strerror = translate('Errors',
+                "Cannot move directory to a subdirectory within itself.")
         raise DirRenameError(e, olddir, newdir)
 
 class RenameError(EnvironmentError):
