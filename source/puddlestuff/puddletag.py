@@ -417,6 +417,7 @@ class MainWin(QMainWindow):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         filedlg = QFileDialog()
         filedlg.setFileMode(filedlg.DirectoryOnly)
+        filedlg.setResolveSymlinks(False)
         filename = unicode(filedlg.getExistingDirectory(self,
             translate("Main Window", 'Import directory...'), dirname ,QFileDialog.ShowDirsOnly))
         return filename
@@ -523,7 +524,7 @@ class MainWin(QMainWindow):
             if not isinstance(filename, basestring):
                 filename = filename[0]
 
-            filename = os.path.realpath(filename)
+            filename = os.path.abspath(filename)
 
             if isinstance(filename, unicode):
                 filename = encode_fn(filename)

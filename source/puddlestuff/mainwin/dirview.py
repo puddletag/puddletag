@@ -26,6 +26,7 @@ class DirView(QTreeView):
         dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
         dirmodel.setReadOnly(False)
         dirmodel.setLazyChildCount(False)
+        dirmodel.setResolveSymlinks(False)
         header = PuddleHeader(Qt.Horizontal, self)
         self.setHeader(header)
         self.header().setResizeMode(QHeaderView.ResizeToContents)
@@ -49,7 +50,6 @@ class DirView(QTreeView):
         
         self.connect(self, SIGNAL('expanded(const QModelIndex &)'),
             lambda discarded: self.resizeColumnToContents(0))
-        
 
     def clearSelection(self, *args):
         self.blockSignals(True)
@@ -125,7 +125,7 @@ class DirView(QTreeView):
         self.setHeaderHidden(hide)
         
         cparser = PuddleConfig()
-        d = cparser.get('main', 'lastfolder', HOMEDIR)
+        d = cparser.get('main', 'lastfolder', '/')
         while not os.path.exists(d):
             d = os.path.dirname(d)
             if not d:

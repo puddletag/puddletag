@@ -125,7 +125,6 @@ def find_releases(artists=None, album=None, limit=100, offset=None):
     return map(release_to_dict, releases)
 
 def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
-    print release_id
     release = q.getReleaseById(release_id, RELEASEINCLUDES)
     info = release_to_dict(release)
 

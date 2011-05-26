@@ -176,7 +176,7 @@ def getdeco(func):
 
 def getfilename(filename):
     """Returns the full path of filename."""
-    return path.realpath(filename)
+    return path.abspath(filename)
 
 def getinfo(filename):
     """Gets file info like file-size etc. from filename.

@@ -457,7 +457,6 @@ class ExTags(QDialog):
         header.setStretchLastSection (True)
         header.setSortIndicator (0, Qt.AscendingOrder)
 
-        
         self.piclabel = PicWidget(buttons = True)
         self.connect(self.piclabel, SIGNAL('imageChanged'),
             self._imageChanged)
@@ -562,6 +561,7 @@ class ExTags(QDialog):
                 self.listbuttons.edit.setEnabled(True)
                 self.listbuttons.remove.setEnabled(True)
                 self.listbuttons.duplicate.setEnabled(True)
+        self.table.resizeColumnToContents(0)
     
     def closeEvent(self,event):
         self.piclabel.close()

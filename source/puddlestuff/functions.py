@@ -370,6 +370,7 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
         newdirs.append(
             encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
 
+        
         dirpath = r_tags.dirpath
 
         new_fn = encode_fn(path_join(*newdirs))
@@ -392,6 +393,8 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
                 else:
                     parent = subdirs[:-(count)]
         else:
+            if is_dir:
+                dirpath = os.path.dirname(r_tags.dirpath)
             parent = dirpath.split('/')
 
         if not parent[0]:
@@ -582,8 +585,6 @@ def replaceWithReg(text, expr, rep, matchcase=False):
 &Regular Expression, text
 Replace &matches with:, text
 Match &Case, check"""
-    if text.startswith('/'):
-        pdb.set_trace()
     if not expr:
         return text
     try:

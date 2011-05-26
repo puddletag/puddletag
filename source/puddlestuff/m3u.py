@@ -79,7 +79,7 @@ def readm3u(path):
     #From http://forums.fedoraforum.org/showthread.php?p=1224109
     fileHandle = open (path, 'r')
     reader = csv.reader(open(path, "r"))
-    olddir = os.path.realpath(os.curdir)
+    olddir = os.path.abspath(os.curdir)
     os.chdir(os.path.dirname(path))
 
     # List of mp3files
@@ -104,7 +104,7 @@ def exportm3u(tags, tofile, format = None, reldir = False):
     header = ['#EXTM3U']
 
     if reldir:
-        reldir = os.path.dirname(os.path.realpath(tofile))
+        reldir = os.path.dirname(os.path.abspath(tofile))
         filenames = [relpath(f.filepath, reldir) for f in tags]
     else:
         filenames = [f.filepath for f in tags]

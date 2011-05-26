@@ -99,8 +99,8 @@ def node_to_dict(node):
         if text_node is None:
             continue
         if text_node.nodeType == text_node.TEXT_NODE:
-            ret[child.tagName] = text_node.data
-    return ret
+            ret[child.tagName] = text_node.data.strip()
+    return dict((k,v) for k,v in ret.iteritems() if v)
 
 def parse_album_xml(text):
     """Parses the retrieved xml for an album and get's the track listing."""
@@ -115,7 +115,7 @@ def parse_album_xml(text):
             try:
                 info['label'] = label.attributes['name'].value
                 info['discogs_catno'] = label.attributes['catno'].value
-            except (AttributeError, KeyError):
+            except (AttributeError, KeyError, TypeError):
                 continue
 
     formats = doc.getElementsByTagName('formats')
@@ -124,19 +124,19 @@ def parse_album_xml(text):
             try:
                 info['discogs_format'] = format.attributes['name'].value
                 info['discs'] = format.attributes['qty'].value
-            except (AttributeError, IndexError, ValueError):
+            except (AttributeError, IndexError, ValueError, TypeError):
                 pass
             try:
                 info['discogs_format_desc'] = filter(None,
                     [get_text(z) for z in format.childNodes[0].childNodes])
-            except (AttributeError, IndexError, ValueError):
+            except (AttributeError, IndexError, ValueError, TypeError):
                 continue
 
     extras = doc.getElementsByTagName('extraartists')
     if extras:
         ex_artists = [node_to_dict(z) for z  in extras[0].childNodes]
         info['involvedpeople_album'] = u';'.join(
-            u'%s:%s' % (e['name'], e['role']) for e in ex_artists)
+            u'%s:%s' % (e['name'], e['role']) for e in ex_artists if e)
 
     try:
         info['genre'] = filter(None, [get_text(z) for z in
@@ -162,6 +162,8 @@ def parse_album_xml(text):
     if images:
         image_list = []
         for image in images[0].childNodes:
+            if not image.attributes:
+                continue
             d = dict(image.attributes.items())
             if not d:
                 continue
@@ -178,15 +180,20 @@ def parse_album_xml(text):
 def parse_track_node(node):
     ret = node_to_dict(node)
 
-    artist_node = node.getElementsByTagName('artists')
+    try:
+        artist_node = node.getElementsByTagName('artists')
+    except AttributeError:
+        return {}
     if artist_node:
         artist_infos = map(node_to_dict, artist_node[0].childNodes)
         if artist_infos:
             artists = []
             join = False
             for a_info in artist_infos:
+                if not a_info:
+                    continue
                 if 'join' in a_info:
-                    artist = a_info['name'] + u' ' + a_info['join']
+                    artist = u'%s %s ' % (a_info['name'], a_info['join'])
                 else:
                     artist = a_info['name']
 
@@ -200,7 +207,8 @@ def parse_track_node(node):
     extras = node.getElementsByTagName('extraartists')
     if extras:
         people = [node_to_dict(z) for z  in extras[0].childNodes]
-        people = u';'.join(u'%s:%s' % (e['name'], e['role']) for e in people)
+        people = u';'.join(u'%s:%s' % (e['name'], e['role'])
+            for e in people if e)
         ret['involvedpeople_track'] = people
 
     return convert_dict(ret)
@@ -375,7 +383,7 @@ class Discogs(object):
             try:
                 int(r_id)
                 return [self.retrieve(r_id)]
-            except TypeError:
+            except (TypeError, ValueError):
                 raise RetrievalError(
                     translate("Discogs", 'Invalid Discogs Release ID'))
         try:
@@ -436,5 +444,5 @@ class Discogs(object):
 info = Discogs
 
 if __name__ == '__main__':
-    print parse_search_xml(open(sys.argv[1], 'r').read())
-    #print parse_album_xml(open(sys.argv[1], 'r').read())
+    #print parse_search_xml(open(sys.argv[1], 'r').read())
+    print parse_album_xml(open(sys.argv[1], 'r').read())
