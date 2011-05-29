@@ -613,7 +613,6 @@ class ConfigEdit(QDialog):
         self._fields = QLineEdit()
         tooltip = translate('Profile Editor','Enter a comma seperated list of fields to write. <br /><br />Eg. <b>artist, album, title</b> will only write the artist, album and title fields of the retrieved tags. <br /><br />If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg <b>~composer,__image</b> will write all fields but the composer and __image fields.')
         self._fields.setToolTip(tooltip)
-        print translate("Defaults", '&Fields:')
         layout.addLayout(create_buddy(
             translate("Defaults", '&Fields:'), self._fields))
         

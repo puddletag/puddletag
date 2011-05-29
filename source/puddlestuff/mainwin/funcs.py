@@ -135,14 +135,15 @@ def extended_tags(parent=None):
             status['previewmode'], status=status)
     else:
         win = helperwin.ExTags(files = status['selectedfiles'], parent=parent)
+    win.setModal(True)
+    obj.connect(win, SIGNAL('rowChanged'),
+        status['table'].selectRow)
     win.loadSettings()
     x = lambda val: emit('onetomany', val)
     obj.connect(win, SIGNAL('extendedtags'), x)
     win.show()
 
 def filename_to_tag():
-    """Get tags from the selected files using the pattern in
-    self.patterncombo."""
     tags = status['selectedfiles']
     pattern = status['patterntext']
 

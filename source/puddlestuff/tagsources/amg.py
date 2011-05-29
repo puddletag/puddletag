@@ -428,7 +428,9 @@ class AllMusic(object):
             tracks = []
             [tracks.extend(z) for z in artists.values()]
             album_id = find_id(tracks, self._id_field)
-            if album_id and (album_id.startswith('r') or album_id.startswith('w')):
+            if album_id and (album_id.startswith('r') or \
+                album_id.startswith('w')):
+
                 write_log(u'Found Album ID %s' % album_id)
                 return self.keyword_search(u':id %s' % album_id)
 
@@ -444,8 +446,13 @@ class AllMusic(object):
             raise RetrievalError(unicode(e))
         write_log(u'Retrieved search results.')
         
-        matched, matches = parse_searchpage(searchpage, artist, album,
+        search_results = parse_searchpage(searchpage, artist, album,
             self._id_field)
+        if search_results:
+            matched, matches = search_results
+        else:
+            return []
+
         if matched and len(matches) == 1:
             ret = [(matches[0], [])]
         elif matched:
@@ -453,7 +460,7 @@ class AllMusic(object):
                 (artist, album))
             ret.extend([(z, []) for z in matches])
         else:
-            write_log(u'No matches found for: %s - %s' % 
+            write_log(u'No exact matches found for: %s - %s' % 
                 (artist, album))
             ret.extend([(z, []) for z in matches])
         return ret

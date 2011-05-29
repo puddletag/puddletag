@@ -1282,7 +1282,7 @@ class TagTable(QTableView):
             ('Show tooltips in file-view:', True),
             ('Show &row numbers', True),
             ('Automatically resize columns to contents', False),
-            ('&Preserve file modification times', True),
+            ('&Preserve file modification times (if supported)', True),
             ('Program to &play files with:', 'amarok -p')
             ]
 
@@ -1351,7 +1351,8 @@ class TagTable(QTableView):
             self.setShowGrid(d['Show &gridlines'])
             self.verticalHeader().setVisible(d['Show &row numbers'])
             self.autoresize = d['Automatically resize columns to contents']
-            self.model().saveModification = d['&Preserve file modification times']
+            self.model().saveModification = d[
+                '&Preserve file modification times (if supported)']
             self.playcommand = d['Program to &play files with:'].split(' ')
             self.model().showToolTip = d['Show tooltips in file-view:']
 
@@ -1898,7 +1899,7 @@ class TagTable(QTableView):
         topLeft = self.model().index(0, 0)
         selection = QItemSelection(topLeft, topLeft)
         self.selectionModel().select(selection, QItemSelectionModel.Select)
-        #self.setFocus()
+        self.setCurrentIndex(topLeft)
 
     def setModel(self, model):
         QTableView.setModel(self, model)
@@ -1911,7 +1912,6 @@ class TagTable(QTableView):
         self.connect(model, SIGNAL('previewModeChanged'), 
             SIGNAL('previewModeChanged'))
         self.connect(model, SIGNAL('dirsmoved'), SIGNAL('dirsmoved'))
-        #self.connect(model, SIGNAL('modelReset()'), self.restoreAfterReset)
 
     def currentRowSelection(self):
         """Returns a dictionary with the currently selected rows as keys.
@@ -2155,6 +2155,19 @@ class TagTable(QTableView):
 
     def selectPrevDir(self):
         return self.selectDir(True)
+
+    def selectRow(self, row):
+        selection = QItemSelection()
+        get_index = self.model().index
+        columns = self.selectedColumns
+        for column in columns:
+            index = get_index(row, column)
+            selection.merge(QItemSelection(index, index),
+                QItemSelectionModel.Select)
+        self.selectionModel().select(selection,
+            QItemSelectionModel.ClearAndSelect)
+
+        self.scrollTo (get_index(row, min(columns)), self.EnsureVisible )
 
     def selectDir(self, previous=False):
         model = self.model()

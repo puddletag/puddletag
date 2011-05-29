@@ -419,7 +419,10 @@ def split_files(audios, pattern):
     for dirpath, files in sorted_split_by_field(audios, '__dirpath'):
         album_groups = sorted_split_by_field(files, 'album')
         for album, album_files in album_groups:
+            #print album
             tag_groups.append(map(copy_audio, album_files))
+
+    #return []
 
     return tag_groups
 

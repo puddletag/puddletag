@@ -272,7 +272,7 @@ class TextEdit(QPlainTextEdit):
         if pos > 0:
             self.textCursor().setPosition(pos)
         else:
-            self.textCursor().setPosition(pos)
+            self.textCursor().setPosition(0)
 
     def focusOutEvent(self, event):
         cursor = self.textCursor()
@@ -757,7 +757,6 @@ class ExTags(QDialog):
         italics = tags.equal_fields()
         self.piclabel.currentFile = tags
         self.piclabel.filePattern = self.status['cover_pattern']
-        print self.piclabel.filePattern
 
         for key, val in sorted(d.items()):
             if key in italics:
@@ -797,6 +796,7 @@ class ExTags(QDialog):
         if self.filechanged:
             self.save()
         self.loadFiles([self._files[row]])
+        self.emit(SIGNAL('rowChanged'), row)
 
     def removeField(self):
         tb = self.table
