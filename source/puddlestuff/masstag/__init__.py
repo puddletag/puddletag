@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import pdb, string
+
 from collections import defaultdict
 from copy import deepcopy
+from operator import itemgetter
 
 from puddlestuff.constants import VARIOUS
 from puddlestuff.findfunc import filenametotag
@@ -246,23 +248,47 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
     if not keys:
         keys = ['artist', 'title']
     ret = {}
-    assigned = []
-    for f in files:
+    assigned = {}
+    matched = defaultdict(lambda: {})
+    for f_index, f in enumerate(files):
         scores = {}
-        for track in tracks:
-            if track not in assigned:
-                totals = [ratio_compare(f, track, key) for key in keys]
-                score = min(totals)
-                if score not in scores:
-                    scores[score] = track
-        if scores:
-            max_ratio = max(scores)
-            if max_ratio > minimum and f.cls not in ret:
-                ret[f.cls] = scores[max_ratio]
-                assigned.append(scores[max_ratio])
+        for t_index, track in enumerate(tracks):
+            totals = [ratio_compare(f, track, key) for key in keys]
+            score = min(totals)
+            if score > minimum and score not in scores:
+                matched[f_index][t_index] = sum(totals)
+
+    def get_best(f_index, t_indexes):
+        if not t_indexes:
+            return
+        best_match = max(t_indexes.items(), key=itemgetter(1))
+        assigned[best_match[0]] = f_index
+
+    for f_index, t_indexes in matched.iteritems():
+        best_match = max(t_indexes.items(), key=itemgetter(1))
+        t_index = best_match[0]
+        while t_index in assigned:
+            prev_matched = assigned[t_index]
+            if t_indexes[t_index] > matched[prev_matched][t_index]:
+                del(matched[prev_matched][t_index])
+                get_best(prev_matched, matched[prev_matched])
+                break
+            else:
+                del(t_indexes[t_index])
+                if not t_indexes:
+                    break
+                best_match = max(t_indexes.items(), key=itemgetter(1))
+                t_index = best_match[0]
+
+        if t_indexes:
+            assigned[t_index] = f_index
+
+    for t_index, f_index in assigned.iteritems():
+        ret[files[f_index].cls] = tracks[t_index]
 
     if jfdi:
-        unmatched_tracks = [t for t in tracks if t not in assigned]
+        unmatched_tracks = [t for i, t in enumerate(tracks) if i
+            not in assigned]
         unmatched_files = [f.cls for f in files if f.cls not in ret]
         ret.update(brute_force_results(unmatched_files, unmatched_tracks))
 

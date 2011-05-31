@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 
+import musicbrainz2
+
 import musicbrainz2.webservice as ws
 import musicbrainz2.model as brainzmodel
 
@@ -31,11 +33,12 @@ SITE_ALBUM_URL = 'http://musicbrainz.org/release/'
 escape = lambda e: escape_html(unicode(e))
 
 try:
-    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
-        releaseEvents=True, labels=True, ratings=True, isrcs=True)
+    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True,
+        artist=True, releaseEvents=True, labels=True, ratings=True,
+        isrcs=True)
 except (TypeError):
-    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True, artist=True,
-        releaseEvents=True, labels=True)
+    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True,
+        artist=True, releaseEvents=True, labels=True)
     old_version = True
 
 try:
@@ -47,6 +50,23 @@ except TypeError:
         releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
         trackRelations=True, artistRelations=True)
     old_version = True
+
+if hasattr(musicbrainz2.model, 'Rating'):
+    class Rating(musicbrainz2.model.Rating):
+
+        def getValue(self):
+            return self._value
+
+        def setValue(self, value):
+            try:
+                value = float(value)
+            except ValueError, e:
+                value = None
+            self._value = value
+
+        value = property(getValue, setValue, doc='The value of the rating.')
+
+    musicbrainz2.model.Rating = Rating
 
 CONNECTIONERROR = translate('MusicBrainz',
     "Could not connect to MusicBrainz server. Check your net connection.")
