@@ -1527,11 +1527,21 @@ class TagTable(QTableView):
             self.model().moveRows(mime.draggedRows, row)
             self.restoreSelection()
         else:
-            files = [str(z.path().toLocal8Bit()) for z
+            filenames = [str(z.path().toLocal8Bit()) for z
                 in event.mimeData().urls()]
 
-            files = filter(None, files)
-            self.loadFiles(files, append = True)
+            dirs = []
+            files = []
+
+            for f in filenames:
+                if not f:
+                    continue
+                if os.path.isdir(f):
+                    dirs.append(f)
+                else:
+                    files.append(f)
+            
+            self.loadFiles(files, dirs, append = True)
 
     def dragMoveEvent(self, event):
         mime = event.mimeData()
