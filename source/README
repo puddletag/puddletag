@@ -19,14 +19,14 @@ To Mp3tag, not that much. It has more or less the same UI and functionality. You
 What you need
 =============
 
-    At least Python 2.5 available from http://python.org
-    PyQt4 (4.5 or greater)(http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
-    PyParsing (&ge;1.5.1) (http://pyparsing.wikispaces.com) takes care of the parsing...
+    At least Python 2.5 available from http://python.org.
+    PyQt4 (4.5 or greater) (http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
+    PyParsing (1.5.1 or greater) (http://pyparsing.wikispaces.com) takes care of the parsing...
     Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
-    ConfigObj (http://code.google.com/p/configobj/) takes care of saving settings.
-    python-musicbrainz2 (http://musicbrainz.org/doc/python-musicbrainz2) is required for MusicBrainz support.
+    ConfigObj (4.5.0 or greater) (http://code.google.com/p/configobj/) takes care of saving settings.
 
     The following are recommended
+      python-musicbrainz2 (0.6.0 or better) (http://musicbrainz.org/doc/python-musicbrainz2) for MusicBrainz support.
       QuodLibet must be installed in order to edit a QuodLibet library.
 
 
@@ -46,7 +46,7 @@ From source:
 
 Installing from the Debian package.
 
-    This Debian package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze too.
+    This package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze.
     Download the package from http://puddletag.sourceforge.net.
     Install using your distros preferred method (usually double clicking should suffice). Or:
     Run as root dpkg -i /path/to/puddletag-deb.

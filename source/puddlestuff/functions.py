@@ -134,9 +134,6 @@ def enconvert(text, enc_name):
 &Encoding, combo, cp1250, cp1251, cp1252, cp1253, cp1254, cp1255, cp1256, cp1257, cp1258'''
     return text.encode("latin1", 'replace').decode(enc_name, 'replace')
 
-def export_cover(tags, pattern):
-    dirpath = tags['__dirpath']
-
 def filenametotag(m_tags, pattern):
     """Filename to Tag, File->Tag '$1'
 &Pattern, text"""
@@ -666,6 +663,9 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
     if state is None:
         state = {}
 
+    if 'artwork_data' not in state:
+        state['artwork_data'] = set()
+
     if '__image' in m_tags:
         images = m_tags['__image']
     else:
@@ -678,7 +678,9 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
     new_state['img_count'] = unicode(len(images))
     for i, image in enumerate(images):
         data = image[audioinfo.DATA]
-        new_state['desc'] = image.get(audioinfo.DESCRIPTION, u'')
+        new_state['img_desc'] = image.get(audioinfo.DESCRIPTION, u'')
+        new_state['img_type'] = audioinfo.IMAGETYPES[
+            image.get(audioinfo.IMAGETYPE, 3)]
         mime = image.get(audioinfo.MIMETYPE, u'')
         if not mime:
             mime = audioinfo.get_mime(data)
@@ -687,12 +689,17 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
 
         extension = '.png' if 'png' in mime.lower() else '.jpg'
 
-        new_state['mime'] = mime
+        new_state['img_mime'] = mime
         new_state['img_counter'] = unicode(i + 1)
         fn = tag_to_filename(pattern, m_tags, r_tags,
             False, new_state) + extension
 
         if not fn:
+            continue
+
+        if data not in state['artwork_data']:
+            state['artwork_data'].add(data)
+        elif path.exists(fn):
             continue
 
         i = 1
