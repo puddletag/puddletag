@@ -1241,7 +1241,6 @@ class TagTable(QTableView):
         model = TagModel(headerdata)
         self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)
         self.setModel(model)
-        self.applyFilter = model.applyFilter
 
         def emitundo(val):
             self.emit(ENABLEUNDO, val)
@@ -1355,6 +1354,12 @@ class TagTable(QTableView):
                 '&Preserve file modification times (if supported)']
             self.playcommand = d['Program to &play files with:'].split(' ')
             self.model().showToolTip = d['Show tooltips in file-view:']
+
+    def applyFilter(self, pattern=None, matchcase=True):
+        self.saveSelection()
+        self.clearSelection()
+        self.model().applyFilter(pattern, matchcase)
+        self.restoreSelection()
 
     autoresize = property(_getResize, _setResize)
 
@@ -2097,7 +2102,10 @@ class TagTable(QTableView):
                 tag = tags[0]
             except IndexError:
                 break
-            newindexes[tag[0]] = getrow(tag[1])
+            try:
+                newindexes[tag[0]] = getrow(tag[1])
+            except ValueError:
+                pass
             del(tags[0])
         groups = {}
         for col, rows in currentcol.items():

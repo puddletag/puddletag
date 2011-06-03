@@ -64,6 +64,7 @@ Changes:
     Unicode support for Replace with Regular Expression function.
     Overhaul of Masstagging internals.
     peformersortorder has been renamed to performersortorder in ID3 tags.
+    Images can be removed when the Cover Varies in Extended Tags.
     The semi-colon character(';') has been removed from the list of
     invalid filename chars.
     

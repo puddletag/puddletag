@@ -151,7 +151,7 @@ bool_exprs = [
     (CaselessLiteral("not"), 1, opAssoc.RIGHT, BoolNot),
     ]
 
-field_expr = u'%' + Word(alphanums) + u'%'
+field_expr = Combine(u'%' + Word(alphanums) + u'%')
 tokens = QuotedString('"', unquoteResults=False) \
     | field_expr | Word(alphanums)
 bool_expr = operatorPrecedence(tokens, bool_exprs)

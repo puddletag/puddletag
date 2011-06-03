@@ -57,7 +57,6 @@ mainwin.previews.set_status(status)
 mainwin.tagtools.set_status(status)
 plugins.status = status
 
-confirmations.add('rename_dirs', True, translate("Confirmations", 'Confirm when renaming directories.'))
 confirmations.add('preview_mode', True, translate("Confirmations", 'Confirm when exiting preview mode.'))
 confirmations.add('delete_files', True, translate("Confirmations", 'Confirm when deleting files.'))
 

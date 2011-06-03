@@ -461,6 +461,13 @@ class ExTags(QDialog):
         self.connect(self.piclabel, SIGNAL('imageChanged'),
             self._imageChanged)
 
+        if not isinstance(self.piclabel.removepic, QAction):
+            self.connect(self.piclabel.removepic, SIGNAL('clicked()'),
+                self.removePic)
+        else:
+            self.connect(self.piclabel.removepic,
+                SIGNAL('triggered()'), self.removePic)
+
         if row >= 0 and files:
             buttons = MoveButtons(files, row)
             self.connect(buttons, SIGNAL('indexChanged'), self._prevnext)
@@ -749,6 +756,7 @@ class ExTags(QDialog):
                 self.piclabel.setEnabled(True)
                 if images == 0:
                     self.piclabel.context = 'Cover Varies'
+                    self.piclabel.removepic.setEnabled(True)
         self._checkListBox()
 
     def _loadsingle(self, tags):
@@ -848,13 +856,26 @@ class ExTags(QDialog):
         for item in to_remove.values():
             self.table.removeRow(self.table.row(item))
         self._checkListBox()
-        
+
+    def removePic(self):
+        if self.piclabel.context == 'Cover Varies':
+            self.piclabel.context = 'No Images'
+            self.piclabel.removepic.setEnabled(False)
+            if not isinstance(self.piclabel.removepic, QAction):
+                self.disconnect(self.piclabel.removepic, SIGNAL('clicked()'),
+                    self.removePic)
+            else:
+                self.discconnect(self.piclabel.removepic,
+                    SIGNAL('triggered()'), self.removePic)
+            
+            
+            self.piclabel.setImages(None)
 
     def save(self):
         if not self.filechanged:
             return
         tags = self.listtotag()
-        if self.piclabel.context != u'Cover Varies':
+        if self.piclabel.context != 'Cover Varies':
             if not self.piclabel.images:
                 tags['__image'] = []
             else:
