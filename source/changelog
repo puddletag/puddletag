@@ -1,10 +1,13 @@
-2 June 2011 - 0.10.4
+4 June 2011 - 0.10.5
+    Tag Sources were broken in the release.
+
+3 June 2011 - 0.10.4
 News:
     Man page added.
     New logo created.
     Added data files to source tarball.
     Added documentation to source tarball.
-    French translation contributed by Raphael Como.
+    French translation contributed by Raphaël Rochet.
     Added changelog.
 
 New Features:

@@ -8,6 +8,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4 import QtCore, QtGui
 from collections import defaultdict
+from copy import deepcopy
+
 from puddlestuff.tagsources import RetrievalError, status_obj, write_log
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 from puddlestuff.findfunc import replacevars, getfunc
@@ -570,10 +572,15 @@ class ReleaseWidget(QTreeView):
         if not item.hasTracks:
             return
         preview = {}
-        from puddlestuff.masstagging import match_files
+        from puddlestuff.masstag import match_files
         tracks = item.tracks()
-        files = [{'__file': f} for f in files]
-        exact = match_files(files, tracks, self.trackBound, self.matchFields,
+        copies = []
+        for f in files:
+            cp = deepcopy(f)
+            cp.cls = f
+            copies.append(cp)
+
+        exact = match_files(copies, tracks, self.trackBound, self.matchFields,
             self.jfdi, False)
         ret = {}
         for f, t in exact.items():
@@ -664,7 +671,7 @@ class ReleaseWidget(QTreeView):
         model.mapping = self.mapping
     
     def setReleases(self, releases, files=None):
-        from puddlestuff.masstagging import find_best
+        from puddlestuff.masstag import find_best
         self.model().setupModelData(releases)
         #FIXME: The expander isn't shown if I don't do this. However
         #I can still click on it...Qt bug probably.

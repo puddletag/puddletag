@@ -117,7 +117,7 @@ def cut():
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
-    emit('writeselected', (dict([(z, "") for z in s if z not in FILETAGS])
+    emit('writeselected', (dict([(z, u"") for z in s if z not in FILETAGS])
         for s in selected))
 
 def display_tag(tag):

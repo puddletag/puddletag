@@ -202,11 +202,11 @@ def find_best(matches, files, minimum=0.7):
         score = min([ratio_compare(d, info, key) for key in d])
 
         scores[score] = match
-        if match.tracks and score < minimum:
-            if len(match.tracks) == len(files):
+        tracks = match.tracks if hasattr(match, 'tracks') else match[1]
+        if tracks and score < minimum:
+            if len(tracks) == len(files):
                 scores[minimum + 0.01] = match
 
-    #print '\n', scores
     if scores:
         return [scores[z] for z in
             sorted(scores, reverse=True) if z >= minimum]

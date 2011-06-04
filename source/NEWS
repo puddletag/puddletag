@@ -1,4 +1,7 @@
-2 June 2011 - 0.10.4
+4 June 2011 - 0.10.5
+    Fixed broken tag sources in release.
+
+3 June 2011 - 0.10.4
     News:
         French translation contributed by Raphael Como.
         Man page added.

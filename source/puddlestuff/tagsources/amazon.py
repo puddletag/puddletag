@@ -173,8 +173,8 @@ def parse_search_xml(text):
             image_items = item.getElementsByTagName(key)
             if image_items:
                 info[IMAGEKEYS[key]] = get_image_url(image_items[0])
-        info['#extrainfo'] = (translate('Amazon', 'Album at Amazon'),
-            get_site_url(item))
+        info['#extrainfo'] = (translate('Amazon', '%s at Amazon.com') %
+            info.get('album', u''), get_site_url(item))
         info['#asin'] = get_asin(item)
         info['asin'] = info['#asin']
         ret.append(info)

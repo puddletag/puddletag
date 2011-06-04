@@ -1484,7 +1484,7 @@ class TagTable(QTableView):
         last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
         libtags = []
         def func():
-            temprows = selectedRows[::]
+            temprows = sorted(selectedRows[::])
             for ((i, row), audio) in izip(enumerate(selectedRows), selected):
                 try:
                     filename = audio.filepath
