@@ -444,9 +444,14 @@ def update_status(enable = True):
     bold_error = translate("Status Bar", "<b>%s</b>")
     
     try:
-        newfilename = functions.move(tag, pattern, tag, state=state.copy())['__path']
-        emit('tfstatus', translate("Status Bar",
-            "New Filename: <b>%1</b>").arg(newfilename.decode('utf8', 'replace')))
+        newfilename = functions.move(tag, pattern, tag, state=state.copy())
+        if newfilename:
+            newfilename = newfilename['__path']
+            emit('tfstatus', translate("Status Bar",
+                "New Filename: <b>%1</b>").arg(
+                newfilename.decode('utf8', 'replace')))
+        else:
+            emit('tfstatus', u'<b>No change</b>')
     except findfunc.ParseError, e:
         emit('tfstatus', bold_error % e.message)
 
