@@ -1,3 +1,6 @@
+6 June 2011 - 0.10.6
+    Fix for freezes if Update empty fields and 'Retrieve exact matches.' checked
+    in Tag Sources dialog.
 4 June 2011 - 0.10.5
     Fixed broken tag sources in release.
 

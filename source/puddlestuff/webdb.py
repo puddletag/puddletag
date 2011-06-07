@@ -675,7 +675,6 @@ class MainWin(QWidget):
                     if field not in f:
                         temp[field] = r[field]
                 previews.append(temp)
-            pdb.set_trace()
             self.emit(SIGNAL('enable_preview_mode'))
             self.emit(SIGNAL('setpreview'), previews)
 

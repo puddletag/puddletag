@@ -21,7 +21,7 @@ from puddlestuff.translations import translate
 CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-default_albumpattern = u'%artist% - %album% $if(%__numtracks%, '\
+default_albumpattern = u'%artist% - %album% $if(%__numtracks%, ' \
     u'[%__numtracks%], "")'
 
 no_disp_fields = [u'__numtracks', u'__image']
