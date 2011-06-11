@@ -5,6 +5,7 @@ from collections import defaultdict
 from copy import deepcopy
 from operator import itemgetter
 
+from puddlestuff.audioinfo import FILENAME
 from puddlestuff.constants import VARIOUS
 from puddlestuff.findfunc import filenametotag
 from puddlestuff.functions import replace_regex
@@ -248,6 +249,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
     if not keys:
         keys = ['artist', 'title']
     ret = {}
+    replace_tracknumbers(files, tracks)
     assigned = {}
     matched = defaultdict(lambda: {})
     for f_index, f in enumerate(files):
@@ -431,6 +433,40 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             set_status(NO_VALID_FOUND)
         return []
 
+def replace_tracknumbers(files, tracks):
+    if len(files) != len(tracks):
+        return
+
+    
+    files = sorted(files, cmp=natcasecmp,
+        key=lambda f: to_string(f.get('track', f[FILENAME])))
+    try:
+        tracks = sorted(tracks, cmp=natcasecmp, key=itemgetter('track'))
+        tracks = sorted(tracks, cmp=natcasecmp, key=itemgetter('discnumber'))
+    except KeyError:
+        return
+
+    if len(files) == len(tracks):
+        discnum = 1
+        track_count = 0
+        offset = 0
+        for f, t in zip(files, tracks):
+            track_count += 1
+            try:
+                new_discnum = to_int(t['discnumber'])
+            except (ValueError, TypeError):
+                continue
+            if new_discnum > discnum:
+                offset = track_count - 1
+                discnum = new_discnum
+            try:
+                f_tracknum = to_int(f['track'])
+                t_tracknum = to_int(t['track'])
+            except (ValueError, TypeError):
+                continue
+            if f_tracknum > t_tracknum:
+                f['track'] = [unicode(f_tracknum - offset )]
+
 def split_files(audios, pattern):
 
     def copy_audio(f):
@@ -451,6 +487,9 @@ def split_files(audios, pattern):
     #return []
 
     return tag_groups
+
+def to_int(v):
+    return int(to_string(v))
 
 class MassTagProfile(object):
     def __init__(self, name=DEFAULT_NAME, desc=u'', fields=None, files=None,

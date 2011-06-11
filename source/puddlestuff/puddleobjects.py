@@ -32,6 +32,19 @@ MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
 from functools import partial
 from puddlestuff.translations import translate
 
+# Parameters for string distance function.
+# Words that can be moved to the end of a string using a comma.
+SD_END_WORDS = ['the', 'a', 'an']
+# Reduced weights for certain portions of the string.
+SD_PATTERNS = [
+    (r'^the ', 0.1),
+    (r'[\[\(]?(ep|single)[\]\)]?', 0.0),
+    (r'[\[\(]?(featuring|feat|ft)[\. :].+', 0.1),
+    (r'\(.*?\)', 0.3),
+    (r'\[.*?\]', 0.3),
+    (r'(, )?(pt\.|part) .+', 0.2),
+]
+
 mod_keys = {
     Qt.ShiftModifier: u'Shift',
     Qt.MetaModifier: u'Meta',
@@ -266,11 +279,88 @@ def winsettings(name, dialog, settings):
             cevent(event)
     setattr(dialog, 'closeEvent', closeEvent)
 
-try:
-    from Levenshtein import ratio
-except ImportError:
-    from difflib import SequenceMatcher
-    ratio = lambda a,b: SequenceMatcher(None, a,b).ratio()
+#Next three functions from beets: http://code.google.com/p/beets
+
+def _levenshtein(s1, s2):
+    """A nice DP edit distance implementation from Wikibooks:
+    http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/
+    Levenshtein_distance#Python
+    """
+    if len(s1) < len(s2):
+        return _levenshtein(s2, s1)
+    if not s1:
+        return len(s2)
+
+    previous_row = xrange(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
+def _string_dist_basic(str1, str2):
+    """Basic edit distance between two strings, ignoring
+    non-alphanumeric characters and case. Normalized by string length.
+    """
+    str1 = re.sub(r'[^a-z0-9]', '', str1.lower())
+    str2 = re.sub(r'[^a-z0-9]', '', str2.lower())
+    if not str1 and not str2:
+        return 0.0
+    return _levenshtein(str1, str2) / float(max(len(str1), len(str2)))
+
+def ratio(str1, str2):
+    """Gives an "intuitive" edit distance between two strings. This is
+    an edit distance, normalized by the string length, with a number of
+    tweaks that reflect intuition about text.
+    """
+    str1 = str1.lower()
+    str2 = str2.lower()
+
+    # Don't penalize strings that move certain words to the end. For
+    # example, "the something" should be considered equal to
+    # "something, the".
+    for word in SD_END_WORDS:
+        if str1.endswith(', %s' % word):
+            str1 = '%s %s' % (word, str1[:-len(word)-2])
+        if str2.endswith(', %s' % word):
+            str2 = '%s %s' % (word, str2[:-len(word)-2])
+
+    # Change the weight for certain string portions matched by a set
+    # of regular expressions. We gradually change the strings and build
+    # up penalties associated with parts of the string that were
+    # deleted.
+    base_dist = _string_dist_basic(str1, str2)
+    penalty = 0.0
+    for pat, weight in SD_PATTERNS:
+        # Get strings that drop the pattern.
+        case_str1 = re.sub(pat, '', str1)
+        case_str2 = re.sub(pat, '', str2)
+
+        if case_str1 != str1 or case_str2 != str2:
+            # If the pattern was present (i.e., it is deleted in the
+            # the current case), recalculate the distances for the
+            # modified strings.
+            case_dist = _string_dist_basic(case_str1, case_str2)
+            case_delta = max(0.0, base_dist - case_dist)
+            if case_delta == 0.0:
+                continue
+
+            # Shift our baseline strings down (to avoid rematching the
+            # same part of the string) and add a scaled distance
+            # amount to the penalties.
+            str1 = case_str1
+            str2 = case_str2
+            base_dist = case_dist
+            penalty += weight * case_delta
+    dist = base_dist + penalty
+
+    return 1 - dist
+
 
 dirlevels = lambda a: len(a.split('/'))
 
