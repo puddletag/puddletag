@@ -56,7 +56,7 @@ EXISTING_ONLY = 'field_exists'
 
 DEFAULT_PATTERN = u'%artist% - %album%/%track% - %title%'
 DEFAULT_NAME = translate('Masstagging', 'Default Profile')
-
+DEFAULT_REGEXP = {'album': [u'(.*?)([\(\[\{].*[\)\]\}])', u'$1']}
 
 POLLING = translate("Masstagging", '<b>Polling: %s</b>')
 MATCH_ARTIST_ALBUM = translate("Masstagging",
@@ -110,6 +110,7 @@ class MassTagFlag(object):
 
 def apply_regexps(audio, regexps):
     audio = deepcopy(audio)
+    changed = False
     for field, (regexp, output) in regexps.iteritems():
         if field not in audio:
             continue
@@ -118,9 +119,11 @@ def apply_regexps(audio, regexps):
             val = replace_regex(text, regexp, output)
             if val:
                 audio[field] = val
+                if not changed and val != text:
+                    changed = val
         except puddlestuff.findfunc.FuncError:
             continue
-    return audio
+    return changed, audio
 
 def brute_force_results(audios, retrieved):
     matched = {}
@@ -370,6 +373,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
     else:
         set_status(SEARCHING_NO_INFO)
 
+    mtp.regexps = DEFAULT_REGEXP if not mtp.regexps else mtp.regexps
+
     for matches, results, tsp in mtp.search(files, errors=mtp_error_func):
         if flag.stop:
             break
@@ -523,13 +528,25 @@ class MassTagProfile(object):
         assert profiles
 
         if regexps:
-            files = map(lambda f: apply_regexps(f, regexps), files)
+            changed_files = \
+                map(lambda f: apply_regexps(f, regexps), files)
+            rxp_album = changed_files[0][0]
+            changed_files = [z[1] for z in changed_files]
 
         for profile in profiles:
             profile.clear_results()
             set_status(POLLING % profile.tag_source.name)
             try:
                 results = profile.search(files)
+                if regexps and rxp_album:
+                    profile.clear_results()
+                    set_status(translate('Masstagging',
+                        'Retrying search with album name: <b>%s</b>') %
+                        rxp_album)
+                    rxp_results = profile.search(changed_files)
+                    results.extend(rxp_results)
+                    profile.clear_results()
+                profile.results = results
             except RetrievalError, e:
                 if errors is None:
                     raise e
@@ -539,7 +556,7 @@ class MassTagProfile(object):
                 continue
 
             if results:
-                profile.find_matches(self.album_bound, files, results)
+                profile.find_matches(self.album_bound, files)
             yield profile.matched, profile.results, profile
 
 class Result(object):
