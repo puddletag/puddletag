@@ -194,10 +194,12 @@ def rename_file(audio, tags):
             audio.dirpath = newdir
 
 def split_by_tag(tracks, main='artist', secondary='album'):
+    get = lambda t,f : to_string(track.get(f)).strip()
+    
     if secondary:
         ret = defaultdict(lambda: defaultdict(lambda: []))
-        [ret[to_string(track.get(main))]
-            [to_string(track.get(secondary))].append(track) for track in tracks]
+        [ret[get(track, main)]
+            [get(track, secondary)].append(track) for track in tracks]
     else:
         ret = defaultdict(lambda: [])
         [ret[to_string(track.get(main))].append(track) for track in tracks]
@@ -213,7 +215,7 @@ def sorted_split_by_field(tracks, field='artist'):
     indexes = {}
     ret = []
     for track in tracks:
-        main_val = to_string(track.get(field, u""))
+        main_val = to_string(track.get(field)).strip()
         if main_val in indexes:
             ret[indexes[main_val]][1].append(track)
         else:

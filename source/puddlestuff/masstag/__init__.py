@@ -396,17 +396,17 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
         set_status(get_match_str(matches[0].info))
         result = tsp.retrieve(matches[0], errors=tsp_error_func)
-        i = 1
 
         while not check_result(result, files):
-            if i < len(matches):
+            del(matches[0])
+            if matches:
                 set_status(RETRIEVING_NEXT)
-                set_status(get_match_str(matches[i].info))
-                result = tsp.retrieve(matches[i], errors=tsp_error_func)
+                set_status(get_match_str(matches[0].info))
+                result = tsp.retrieve(matches[0], errors=tsp_error_func)
             else:
                 result = None
                 break
-            i += 1
+            
         if result is None:
             set_status(NO_MATCHES % tsp.tag_source.name)
             not_found.append(tsp)
@@ -486,10 +486,7 @@ def split_files(audios, pattern):
     for dirpath, files in sorted_split_by_field(audios, '__dirpath'):
         album_groups = sorted_split_by_field(files, 'album')
         for album, album_files in album_groups:
-            #print album
             tag_groups.append(map(copy_audio, album_files))
-
-    #return []
 
     return tag_groups
 

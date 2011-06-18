@@ -627,6 +627,7 @@ class MassTagWindow(QWidget):
             replace_fields = []
             for files in tag_groups:
                 profile.clear()
+
                 masstag(profile, files, self.__flag, search_error,
                     retrieval_error)
 
