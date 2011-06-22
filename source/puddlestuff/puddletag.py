@@ -237,6 +237,9 @@ class MainWin(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
+        self.__updateDirs = True
+        self.__dirsToUpdate = []
+
         global add_shortcuts
         global remove_shortcuts
         add_shortcuts = self.addShortcuts
@@ -453,7 +456,6 @@ class MainWin(QMainWindow):
         settings.setValue('table/header', QVariant(headstate))
         genres.save_genres(status['genres'])
         e.accept()
-        #QMainWindow.closeEvent(self, e)
 
     def createStatusBar(self):
         statusbar = self.statusBar()
@@ -660,6 +662,7 @@ class MainWin(QMainWindow):
         self._totalstats.setText(self._updateStatus(status['alltags']))
 
     def _write(self, tagiter, rows=None):
+        self.__updateDirs = False
         if not rows:
             rows = status['selectedrows']
         model = self._table.model()
@@ -690,8 +693,13 @@ class MainWin(QMainWindow):
                         yield m, 1
                     else:
                         yield m, len(rows)
+
+        def finished():
+            self.__updateDirs = True
+            self.updateDirs([])
+            return fin()
         
-        return func, fin, rows
+        return func, finished, rows
 
     def writeTags(self, tagiter, rows=None):
         ret = self._write(tagiter, rows)
@@ -866,6 +874,24 @@ class MainWin(QMainWindow):
         self._table.restoreSelection()
     
     def updateDirs(self, dirs):
+        if self.__updateDirs:
+            if self.__dirsToUpdate:
+                dirs = self.__dirsToUpdate + dirs
+            self.__dirsToUpdate = []
+        else:
+           self.__dirsToUpdate.extend(dirs)
+           return
+
+        old_dirs = set()
+        new_dirs = []
+        for old_dir, new_dir in dirs:
+            if old_dir not in old_dirs:
+                new_dirs.append([old_dir, new_dir])
+                old_dirs.add(old_dir)
+
+        dirs = new_dirs
+        print dirs
+
         if self._lastdir:
             last = self._lastdir[::]
         else:

@@ -960,7 +960,8 @@ class TagModel(QAbstractTableModel):
                 self._addUndo(audio, undo_val)
             if DIRNAME in tags or DIRPATH in tags:
                 self.changeFolder(oldpath, audio.dirpath)
-                self.emit(SIGNAL('dirsmoved'), [[oldpath, audio.dirpath]])
+                self.emit(SIGNAL('dirsmoved'),
+                    [[oldpath, audio.dirpath]])
             if justrename and audio.library:
                 audio.save(True)
             ret = (artist, tags)

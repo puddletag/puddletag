@@ -94,15 +94,29 @@ class DirView(QTreeView):
         model = self.model()
         selectindex = self.selectionModel().select
         getindex = model.index
+        exists = os.path.exists
+
         parents = set([os.path.dirname(z[0]) for z in dirs])
-        thread = PuddleThread(lambda: [getindex(z[0]) for z in dirs], self)
+
+        def get_dir_indexes():
+            qmutex.lock()
+            indexes = []
+            for z in dirs:
+                if exists(z[0]):
+                    indexes.append(z[0])
+            qmutex.unlock()
+            return indexes
+
+        thread = PuddleThread(get_dir_indexes, self)
         def get_str(f):
             return model.filePath(f).toLocal8Bit().data()
+
         selected = map(get_str, self.selectedIndexes())
+            
         def finished(indexes):
             qmutex.lock()
             for p in parents:
-                if os.path.exists(p):
+                if exists(p):
                     i = getindex(p)
                     model.refresh(i)
                     self.expand(i)

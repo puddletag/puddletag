@@ -269,7 +269,7 @@ class FrameCombo(QGroupBox):
         ...        ('Track', 'track'), ("Comments",'comment'), ('Genre', 'genre'), (u'Year', u'date')]
         >>>rows = {0:[0], 1:[1], 2:[2], 3[3,4,6],4:[5]
         >>>f = FrameCombo()
-        >>>f.setCombo(tags,rows)"""
+        >>>f.setCombo(tags, rows)"""
         #pdb.set_trace()
 
         if self.combos:

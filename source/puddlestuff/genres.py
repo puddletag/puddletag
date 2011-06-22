@@ -71,5 +71,6 @@ class Genres(QWidget):
 
     def applySettings(self, control=None):
         item = self.listbox.item
-        genres = [unicode(item(row).text()) for row in range(self.listbox.count())]
+        genres = [unicode(item(row).text()) for row in
+            xrange(self.listbox.count())]
         self._status['genres'] = genres

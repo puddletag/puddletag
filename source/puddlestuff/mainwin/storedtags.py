@@ -58,7 +58,9 @@ class StoredTags(QScrollArea):
             return
 
         def retrieve_tag():
-            try:                
+            if not os.path.exists(filepath):
+                return
+            try:
                 audio = audioinfo._Tag(filepath)
                 tags = tag_versions.tags_in_file(filepath)
             except (OSError, IOError), e:

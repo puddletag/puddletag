@@ -246,11 +246,16 @@ def parse_search_xml(text):
         info['discogs_release_type'] = info['#release_type']
         info = convert_dict(info, ALBUM_KEYS)
         if 'album' in info:
-            artist, album = info['album'].split('-',1)
-            artist = re.sub('\s{2,}', ' ', artist).strip()
-            album = re.sub('\s{2,}', ' ', album).strip()
+            try:
+                artist, album = info['album'].split(' - ',1)
+            except ValueError:
+                artist = info.get('artist', u'').strip()
+                album = info.get('album', u'').strip()
+            artist = re.sub('\s{2,}', u' ', artist).strip()
+            album = re.sub('\s{2,}', u' ', album).strip()
             info['album'] = album
-            info['artist'] = artist
+            if artist:
+                info['artist'] = artist
         info['#extrainfo'] = (
             translate('Discogs', '%s at Discogs.com') % info['album'],
             info['discogs_uri'])
