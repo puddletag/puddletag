@@ -251,10 +251,14 @@ def ratio_compare(d1, d2, key):
 def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=False):
     if not keys:
         keys = ['artist', 'title']
+    if 'track' in keys:
+        keys = keys[::]
+        keys.remove('track')
     ret = {}
     replace_tracknumbers(files, tracks)
     assigned = {}
     matched = defaultdict(lambda: {})
+    b = False
     for f_index, f in enumerate(files):
         scores = {}
         for t_index, track in enumerate(tracks):
@@ -266,8 +270,28 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
     def get_best(f_index, t_indexes):
         if not t_indexes:
             return
-        best_match = max(t_indexes.items(), key=itemgetter(1))
-        assigned[best_match[0]] = f_index
+        items = t_indexes.items()
+        best_match = max(items, key=itemgetter(1))
+        t_i = best_match[0]
+
+        while t_i in assigned:
+            try:
+                old_match = matched[assigned[t_i]][t_i]
+            except KeyError:
+                break
+            if best_match[1] > old_match:
+                old_f_index = assigned[t_i]
+                assigned[t_i] = f_index
+                get_best(old_f_index, matched[old_f_index])
+                return
+            else:
+                items.remove(best_match)
+                if not items:
+                    return
+                best_match = max(items, key=itemgetter(1))
+                t_i = best_match[0]
+
+        assigned[t_i] = f_index
 
     for f_index, t_indexes in matched.iteritems():
         best_match = max(t_indexes.items(), key=itemgetter(1))
@@ -275,7 +299,6 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
         while t_index in assigned:
             prev_matched = assigned[t_index]
             if t_indexes[t_index] > matched[prev_matched][t_index]:
-                del(matched[prev_matched][t_index])
                 get_best(prev_matched, matched[prev_matched])
                 break
             else:
@@ -442,7 +465,6 @@ def replace_tracknumbers(files, tracks):
     if len(files) != len(tracks):
         return
 
-    
     files = sorted(files, cmp=natcasecmp,
         key=lambda f: to_string(f.get('track', f[FILENAME])))
     try:
