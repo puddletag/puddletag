@@ -908,8 +908,11 @@ class ActionWindow(QDialog):
         win.setWindowTitle(translate('Actions', "Edit Action: ") + \
             self.listbox.item(self.listbox.count() - 1).text())
         win.setModal(True)
-        win.show()
         self.connect(win, SIGNAL("donewithmyshit"), self.addBuddy)
+        self.connect(win, SIGNAL('rejected()'),
+            lambda: self.listbox.takeItem(self.listbox.count() - 1))
+        win.show()
+        
 
     def addBuddy(self, funcs):
         name = unicode(self.listbox.item(self.listbox.count() - 1).text())
