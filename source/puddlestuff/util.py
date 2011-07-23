@@ -17,6 +17,7 @@ translate = puddlestuff.translations.translate
 import errno, traceback
 from puddlestuff.constants import BLANK, SEPARATOR
 from operator import itemgetter
+from itertools import imap
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -156,13 +157,13 @@ def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
                 k not in READONLY and k != '__image')
 
         map_func = lambda v: fmt % (v[0], m_to_string(v[1]))
-        values = map(map_func, sorted(items, cmp=natcasecmp,
-            key=itemgetter(0)))
+
+        items = sorted(items, cmp=natcasecmp, key=itemgetter(0))
 
         if u'__image' in tags:
-            ret.append(('__image', image_tr % len(tags['__image'])))
+            items.insert(0, ('__image', image_tr % len(tags['__image'])))
 
-        return u"".join(values)
+        return u"".join(imap(map_func, items))
 
 def rename_file(audio, tags):
     """If tags(a dictionary) contains a PATH key, then the file
