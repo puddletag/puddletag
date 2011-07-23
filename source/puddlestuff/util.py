@@ -10,12 +10,13 @@ from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
 from errno import EEXIST
 import os, pdb, re
-from puddleobjects import (encode_fn, decode_fn, issubfolder,
+from puddleobjects import (encode_fn, decode_fn, issubfolder, natcasecmp,
     open_resourcefile, safe_name)
 import puddlestuff.translations
 translate = puddlestuff.translations.translate
 import errno, traceback
 from puddlestuff.constants import BLANK, SEPARATOR
+from operator import itemgetter
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -149,13 +150,14 @@ def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
             return SEPARATOR.join(filter(lambda x: x is not None, tags))
 
         if show_read_only:
-            items = [(k,v) for k, v in tags.items() if k != '__image']
+            items = ((k,v) for k, v in tags.iteritems() if k != '__image')
         else:
-            items = [(k,v) for k,v in tags.items() if
-                k not in READONLY and k != '__image']
+            items = ((k,v) for k,v in tags.iteritems() if
+                k not in READONLY and k != '__image')
 
         map_func = lambda v: fmt % (v[0], m_to_string(v[1]))
-        values = map(map_func, sorted(tags.items()))
+        values = map(map_func, sorted(items, cmp=natcasecmp,
+            key=itemgetter(0)))
 
         if u'__image' in tags:
             ret.append(('__image', image_tr % len(tags['__image'])))

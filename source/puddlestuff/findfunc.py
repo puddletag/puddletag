@@ -159,6 +159,8 @@ def load_action(filename):
                 func = Function(modules[func_module][func_name], fields)
             except IndexError:
                 continue
+            except AttributeError:
+                continue
             newargs = []
             for i, (control, arg) in enumerate(zip(func.controls, arguments)):
                 if control == CHECKBOX:
