@@ -1,0 +1,7 @@
+To compile docs into HTML format you need to install at least Sphinx 1.0.7 (install instructions http://sphinx.pocoo.org).
+
+All you need do is run:
+
+$ make documentation
+
+HTML files will be stored in ./_build/html

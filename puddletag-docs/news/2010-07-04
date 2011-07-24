@@ -1,0 +1,19 @@
+4 July 2010 - 0.9.2
+###################
+
+
+Again just a couple of things, but they improve the puddletag experience immensely.
+
+New Stuff
+---------
+
+* FreeDB and Amazon tag sources were added.
+* And puddletag can now use the MusicBrainz ArtistID if it's in a file's tag instead of searching for one. Still need to enable it for releases.
+* Tag mappings for tag sources, see the tooltip in Preferences/Mappings for more info.
+* And the ability to load only files based on their extension (Preferences/Tags to configure.)
+* A new applicication icon created by Evan himself.
+
+Fixes
+-----
+
+* No new fixes were entered last week, but there's a bug that completely freezes puddletag that I haven't been able to track down. I'll fix this one as soon as I find out just WTH is causing it.

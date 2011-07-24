@@ -1,0 +1,29 @@
+About
+=====
+
+About puddletag
+---------------
+
+puddletag is just a tag editor. Although it's likely better than what you're used to (unless you've used Mp3tag, in which case it's kinda like what you're used to).
+
+About the author
+----------------
+
+You may call me concentricpuddle, but I also go by Keith. I'm contactable via email (concentricpuddle@gmail.com), but only if you want to discuss something completely outside the scope of the `forum <http://sourceforge.net/apps/phpbb/puddletag>`_.
+
+Thank yous
+----------
+
+First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
+
+Thanks to **Raphaël Rochet** for contributing the French translation.
+
+To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).
+
++ **Paul McGuire** for PyParsing and for being extraordinarily helpful.
++ **Michael Urman** and **Joe Wreschnig** for Mutagen (It. Is. Awesome).
++ **Nokia, Phil Thomson** and all parties responsible for PyQt4.
++ **Michael Foord** and **Nicola Larosa** for ConfigObj (seriously, they should replace ConfigParser with this).
++ The **Oxygen team** for the Oxygen icons.
+
+And for those who've contributed, the people whose code I stole, those who helped me out on discussion boards and to open-source creators, **Thanks a bunch**.

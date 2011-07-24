@@ -1,0 +1,127 @@
+.. include:: subs.txt
+
+.. |source_link| replace:: puddletag-0.10.5.tar.gz
+.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-0.10.6.tar.gz
+.. |deb_link| replace:: puddletag_0.10.5-1_all.deb
+.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_0.10.6-1_all.deb
+
+.. |source_sha| replace:: 22b58f8e0ed92d7a81bf182d71c2955b6612494c
+.. |deb_sha| replace:: e1391cc0c4560af4884fae2cf2195bd0b9433e69
+
+Downloads
+=========
+
+Contents
+--------
+
++ :ref:`installing_from_source`
++ :ref:`installing_from_the_debian_package`
++ :ref:`installing_on_fedora_14_and_later`
++ :ref:`development_builds`
++ :ref:`plugins`
++ :ref:`translations`
+
+.. _installing_from_source:
+
+Installing from source
+----------------------
+
+Install the dependencies as outlined on the :doc:`home page <index>`. For Debian-based distros, you can run the following as root:
+
+.. code-block:: bash
+
+    aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2
+
++ Now download the source tarball |source_link|_ (SHA1 |source_sha|).
++ Unzip it.
++ You can run puddletag from that directory by typing ``./puddletag`` from the unzipped directory in your console.
++ Alternatively install it by running ``python setup.py install`` as root in the unzipped directory.
++ puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run ``desktop-file-install puddletag.desktop`` as root in the unzipped directory.
+
+.. _installing_from_the_debian_package:
+
+Installing from the Debian package
+----------------------------------
+
+This Debian package has been created on and for Ubuntu 10.04, but it should work on any Debian-based distro with the requisite dependencies. Make some noise on the |forum|_ if it doesn't work for you.
+
+Downloading the deb, |deb_link|_ (SHA1 |deb_sha|) and double clicking it to open your package manager should suffice to install it.
+
+Otherwise, first install the dependencies by running as root:
+
+.. code-block:: bash
+
+    aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2
+
+Then (also as root)
+
+.. code-block:: bash
+
+    dpkg -i /path/to/downloaded.deb
+
+puddletag should be available from your Multimedia menu.
+
+.. _installing_on_fedora_14_and_later:
+
+Installing on Fedora 14 and later
+---------------------------------
+
+Just run (as root):
+
+.. code-block:: bash
+
+   yum install puddletag
+
+Sometimes the latest version is still in the testing repo. Then you should use (also as root:)
+
+.. code-block:: bash
+
+   yum --enablerepo=updates-testing install
+
+
+.. _development_builds:
+
+Development builds
+------------------
+Development builds are available via Subversion. Use
+
+.. code-block:: bash
+
+    svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+
+to check it out.
+
+.. _plugin_downloads:
+
+.. _plugins:
+
+Plugins
+-------
+I've created two plugins that might be useful. To install, unzip the downloaded file into **~/.puddletag/plugins**. Then enable it in Edit->Preferences->Plugins.
+
+Both require at least **puddletag 0.10.1**
+
+Extended Tags
+^^^^^^^^^^^^^
+
+All does is add the **Extended Tags** dialog as a dockable window. Uses Ctrl+Shift+S (Tools->Save Extended) to save.
+
+I created this with the intention of replacing the Tag Panel, but I found it way too click-heavy.
+
++ `extended-1.2.tar.gz <http://sourceforge.net/projects/puddletag/files/plugins/extended-1.2.tar.gz>`_ (SHA1 340494d0d01efde6fd416a3cb6d464440bec61fc) for puddletag 0.10.4 and later.
++ `extended-1.1.tar.gz <http://sourceforge.net/projects/puddletag/files/plugins/extended-1.1.tar.gz>`_ (SHA1 8694232652f538b7b9c02ed0a2c9cb8ee0a599df) for puddletag 0.10.3 and earlier.
+
+ID3 Tools
+^^^^^^^^^
+Adds options to convert an ID3 tag to UTF-8 and to ID3v2.4 to the Plugins menu. Only works for files that have ID3 as their default tag (= mp3 files).
+
+Download `id3_tools.tar.gz <http://sourceforge.net/projects/puddletag/files/plugins/id3_tools-1.0.tar.gz>`_ (SHA1 bb01bbf0be54e1850fb4505c1d530240cab85c70).
+
+.. _translations:
+
+Translations
+------------
+
+To install, place the downloaded translation in **~/.puddletag/translations** (you'll probably need to create it). The translation will be listed in the Preferences dialog. If you'd like contribute a translation, see :doc:`source/translate`.
+
++ :download:`French <translations/puddletag_fr.qm>` by **Raphaël Rochet**

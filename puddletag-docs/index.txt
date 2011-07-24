@@ -1,0 +1,60 @@
+.. include:: subs.txt
+
+Home
+====
+
+What it is
+----------
+
+puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, `Mp3tag <http://www.mp3tag.de>`_. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
+
+The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.
+
+Then there're Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz. There's quite a bit more, but I've reached my comma quota.
+
+Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
+
+Why it is
+---------
+Keeping an XP partition for Mp3tag just wasn't feasible anymore.
+
+How it's different
+------------------
+To Mp3tag it's not that different. Mp3tag has things puddletag doesn't have, puddletag has things Mp3tag doesn't. Skim the :doc:`menus section <source/menus>` to get an overview of the differences.
+
+However, compared to other GNU/Linux taggers the differences are much too vast to list.
+
+What you need
+-------------
+
++   At least `Python 2.6 (but not Python 3) <http://python.org>`_
++   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
++   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
++   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
++   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
+
+The following are recommended
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
++   `python-musicbrainz2 (≥0.6.0) <http://musicbrainz.org/doc/python-musicbrainz2>`_ is required for MusicBrainz support.
++   QuodLibet must be installed in order to edit a QuodLibet library.
+
+How to get it
+-------------
+Instructions are over at the :doc:`downloads <download>` page.
+
+License
+-------
+puddletag licensed under the GPLv3, which you can find in its entirety at http://www.gnu.org/licenses/gpl-3.0.html
+
+Updates
+-------
+Releases usually go out bi-monthly. Subscribe to the :download:`RSS Feed <rss.xml>` to be notified.
+
+Support
+-------
+Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
+
+Last website update: 6 June 2011
+
+Latest version: 0.10.6

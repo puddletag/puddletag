@@ -1,0 +1,94 @@
+6 June 2011 - 0.10.6
+    Fix for freezes if Update empty fields and 'Retrieve exact matches.' checked
+    in Tag Sources dialog.
+4 June 2011 - 0.10.5
+    Tag Sources were broken in the release.
+3 June 2011 - 0.10.4
+News:
+    Man page added.
+    New logo created.
+    Added data files to source tarball.
+    Added documentation to source tarball.
+    French translation contributed by Raphaël Rochet.
+    Added changelog.
+
+New Features:
+    Much improved masstagging.
+    Save artwork to file Function.
+    Filter that behaves like Mp3tag's.
+    In Discogs tag source:
+            Added the ability to retrieve track artists
+            for Various Artist albums.
+
+            This required that the involvedpeople field be renamed
+            to involvedpeople_album as a list of involved people were
+            returned for each track too.
+
+            These people are added to the involvedpeople_track field.
+
+    URL links for albums in Tag Sources dialog are shown for all
+    Tag Sources (except FreeDB).
+    
+    Tag to filename and Tag->Dir functions handle patterns
+    like '../%artist%' and './%artist%/%album%' correctly.
+
+    Options for setting the pattern used in saving covers to file dialogs.
+    Ability to drag and drop folders on file-view.
+
+Fixes:
+    Lines that contain '/' being parsed incorrectly in Import Text File dialog.
+    FreeDB tag source artist/album parsing.
+    Undoing renaming of dirs.
+    MusicBrainz Tag Source ratings error.
+    Tag->Dir creating subfolders when it shouldn't.
+    Issue 132: Images weren't being added to list of fields to undo.
+    
+    Numbering of COMM frames (and others like it) to have frames with
+    the same description being number 0,1,2,3 instead of 0,01,002, etc.
+    
+    When editing actions, if a field not in the current list of fields was
+    used, then the list of saved fields would contain only that field.
+    
+    If a file contained an ID3v2.2 tag than that tag would be shown
+    twice in the Stored Tags window.
+    
+    Patterns that use scripting functions like $validate(arg1,,arg3) will
+    work correctly in that the second argument will evaluate to an empty
+    string instead of being discarded.
+
+    For Discogs Tag Source: Images were being retrieved even if disabled
+    when using textual searches.
+
+    Changing files in Extended Tags changes the selection in File-View,
+    thereby ensuring changes are written to the correct file.
+
+    Editing colour in Extended Tags remaining green even if changed.
+    Multiple value handling for ID3v2.3
+
+Changes:
+    Unicode support for Replace with Regular Expression function.
+    Overhaul of Masstagging internals.
+    peformersortorder has been renamed to performersortorder in ID3 tags.
+    Images can be removed when the Cover Varies in Extended Tags.
+    The semi-colon character(';') has been removed from the list of
+    invalid filename chars.
+    
+    Renaming dirs hooks into Tag->Dir function now.
+    lyrics_us is now unsyncedlyrics
+
+    Proper error messages differentiating whether the error occurred.
+    while writing to files or renaming dirs, files.
+    
+    Subfolder checkbox in the Filesystem window being enabled
+    when it had no reason to be.
+    
+    If last loaded dir is not found on startup,
+    then all parents of that dir (still existing) will be expanded.
+    
+    Functions dialog restores last used function upon first load.
+
+    In QuodLibet Library:
+        Changes the fields: _rating to rating, _skipcount to __skipcount, _playcount to playcount.
+        All fields are caseless.
+        Fixed the loading of fields with numbers for values.
+        Added the __tag and __tag_read fields.

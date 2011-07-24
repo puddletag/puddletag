@@ -1,0 +1,5 @@
+.. |forum| replace:: forum
+.. _forum: http://sourceforge.net/apps/phpbb/puddletag
+
+.. |issue_tracker| replace:: issue tracker
+.. _issue_tracker: http://code.google.com/p/puddletag/issues
