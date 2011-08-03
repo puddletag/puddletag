@@ -33,12 +33,18 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from puddleobjects import (PuddleConfig, safe_name, fnmatch,
-    dircmp, natcasecmp, encode_fn, decode_fn)
-import string, pdb, sys, audioinfo, decimal, os, pyparsing, re, imp, shutil, time, unicodedata
-from operator import itemgetter
+import math
+import decimal, os, pdb, re, shutil, sys, time, unicodedata, string
+
 from copy import deepcopy
 from functools import partial
+from operator import itemgetter
+
+import pyparsing
+
+import puddlestuff.audioinfo as audioinfo
+from puddleobjects import (PuddleConfig, safe_name, fnmatch,
+    dircmp, natcasecmp, encode_fn, decode_fn)
 
 PATH = audioinfo.PATH
 DIRPATH = audioinfo.DIRPATH
@@ -109,6 +115,9 @@ def caps3(text):
     except AttributeError:
         return
     return text[:start] + text[start].upper() + text[start + 1:].lower()
+
+def ceiling(n_value):
+    return math.ceil(n_value)
 
 def char(text):
     try:
@@ -211,6 +220,9 @@ def isdigit(text):
         return true
     except decimal.InvalidOperation:
         return false
+
+def floor(n_value):
+    return math.floor(n_value)
 
 def left(text, n):
     try:
@@ -460,6 +472,9 @@ def or_(text,text1):
 def rand():
     import random
     return unicode(random.random())
+
+def _round(n_value):
+    return round(n_value)
 
 def re_escape(rex):
     escaped = u""
@@ -867,11 +882,13 @@ functions = {
     "caps": caps,
     "caps2": caps2,
     "caps3": caps3,
+    "ceiling": ceiling,
     "char": char,
     "div": div,
     "enconvert": enconvert,
     'filenametotag': filenametotag,
     "find": find,
+    "floor": floor,
     "format": formatValue,
     "geql": geql,
     "grtr": grtr,
@@ -906,6 +923,7 @@ functions = {
     "replace": replace,
     "replaceWithReg": replaceWithReg,
     "right": right,
+    "round": _round,
     'save_artwork': save_artwork,
     'sort': sort_field,
     'split_by_sep': split_by_sep,

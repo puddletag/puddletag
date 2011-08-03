@@ -282,7 +282,7 @@ def function_parser(m_audio, audio=None, dictionary=None):
                 topass.append(replacevars(arg, audio, dictionary))
             elif param.startswith('n_'):
                 try:
-                    if float(arg) == int(arg):
+                    if float(arg) == int(float(arg)):
                         topass.append(int(arg))
                     else:
                         topass.append(float(arg))
