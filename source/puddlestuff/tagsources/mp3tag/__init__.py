@@ -84,19 +84,22 @@ def find_idents(lines):
 
     try:
         offset = search_source[0]
-    except:
-        raise ParseError('No search section found.')
-    #Adding 2 to offset, because it's needed. I'm to lazy to go search for
-    #why it is so.
-    search_source = [(offset + i + 2, s) for i, s in
-        enumerate(search_source[1])]
+        
+        #Adding 2 to offset, because it's needed. I'm to lazy to go search for
+        #why it is so.
+        search_source = [(offset + i + 2, s) for i, s in
+            enumerate(search_source[1])]
+    except UnboundLocalError:
+        search_source = None
 
     offset = album_source[0]
     album_source = [(offset + i + 2, s) for i, s
         in enumerate(album_source[1])]
 
     parser = lambda arg: parse_func(*arg)
-    return (idents, filter(None, map(parser, search_source)),
+    if search_source is not None:
+        search_source = filter(None, map(parser, search_source))
+    return (idents, search_source,
         filter(None, map(parser, album_source)))
 
 def open_script(filename):
@@ -129,7 +132,7 @@ def parse_func(lineno, line):
     args = [z[0] for z in
     ARGUMENT.searchString(line[len(funcname):]).asList()]
     if funcname and not funcname.startswith(u'#'):
-        return funcname, lineno, args
+        return funcname.lower(), lineno, args
 
 def parse_ident(line):
     ident, value = re.search('^\[(\w+)\]=(.*)$', line).groups()
@@ -178,7 +181,7 @@ class Cursor(object):
         self.stop = False
 
     def _get_char(self):
-        return self.line[self.charpos]
+        return self.line[self.charno]
 
     char = property(_get_char)
 
@@ -210,7 +213,7 @@ class Cursor(object):
     def _set_lineno(self, value):
         self._lineno = value
         try:
-            self.line = self.all_lines[self.lineno]
+            self.line = self.all_lines[self.lineno].strip()
         except IndexError:
             self.stop = True
             
@@ -234,26 +237,28 @@ class Cursor(object):
         elif self.debug:
             print text
 
-    def parse_page(self):
+    def parse_page(self, debug=False):
         self.next_cmd = 0
         self.cmd_index = 0
         i = 1
+        
+        ret = []
+        debug_info = []
 
         while (not self.stop) and (self.next_cmd < len(self.source)):
 
             self.log(unicode(self.output))
             cmd, lineno, args = self.source[self.cmd_index]
-            
+
             self.log(unicode(self.source[self.cmd_index]))
-            
-            #if i >= 26 and lineno >= 73:
-                #print cmd, lineno, args
-                #pdb.set_trace()
-            #elif lineno == 30:
-                #i += 1
             
             if not FUNCTIONS[cmd](self, *args):
                 self.next_cmd += 1
+            if debug:
+                debug_info.append(
+                {'lineno': lineno, 'cmd': cmd, 'params': args,
+                    'output': self.cache, 'charno': self.charno,
+                    'line': self.line})
             self.cmd_index = self.next_cmd
 
         self.output[self.field] = self.cache
@@ -264,6 +269,9 @@ class Cursor(object):
             except AttributeError:
                 self.tracks.update(self.output)
         self.stop = False
+        
+        if debug:
+            return debug_info
 
     def to_command(self, name):
         for i, l in enumerate(self.source[self.lineo:]):
@@ -281,15 +289,17 @@ class Mp3TagSource(object):
 
         self.search_source = search_source
         self.album_source = album_source
-        self._search_base = idents['indexurl']
-        self._separator = idents['wordseperator']
+        self._search_base = idents['indexurl'] if search_source else ''
+        self._separator = idents.get('wordseperator', u'+')
         self.group_by = [idents['searchby'][1:-1], None]
         self.name = idents['name'] + u' (Mp3tag)'
-        self.indexformat = idents['indexformat']
+        self.indexformat = idents['indexformat'] if search_source else ''
         self.album_url = idents['albumurl']
         self.tooltip = tooltip = """<p>Enter search keywords here. If empty,
         the selected files are used.<br /><br />
         Searches are done by <b>%s</b></p>""" % self.group_by[0]
+        
+        self.html = None
 
     def applyPrefs(self, args):
         self._get_cover = args[0]
@@ -298,16 +308,26 @@ class Mp3TagSource(object):
         return self.search(text)
 
     def search(self, artist, files=None):
+        if self.search_source is None:
+            album = self.retrieve(artist)
+            return [album] if album else []
         artist = re.sub('\s+', self._separator, artist)
         url = self._search_base % artist
         write_log(u'Opening Search Page: %s' % url)
-        page = get_encoding(urlopen(url), True, 'utf8')[1]
+        if self.html is None:
+            page = get_encoding(urlopen(url), True, 'utf8')[1]
+        else:
+            page = get_encoding(self.html, True, 'utf8')[1]
         infos = parse_search_page(self.indexformat, page, self.search_source, url)
         return [(info, []) for info in infos]
 
     def retrieve(self, info):
-        info = deepcopy(info)
-        url = self.album_url + info['#url']
+        if isinstance(info, basestring):
+            info = {'#url': self.album_url % info}
+            url = info['#url']
+        else:
+            info = deepcopy(info)
+            url = self.album_url + info['#url']
         write_log(u'Opening Album Page: %s' % url)
         page = get_encoding(urlopen(url), True, 'utf8')[1]
         new_info, tracks = parse_album_page(page, self.album_source, url)
@@ -318,29 +338,54 @@ class Mp3TagSource(object):
                 info.update(retrieve_cover(cover_url))
             else:
                 info.update(map(retrieve_cover, cover_url))
+        if not tracks:
+            tracks = None
         return info, tracks
+
+def load_mp3tag_sources(dirpath='.'):
+    "Loads Mp3tag tag sources from dirpath and return the tag source classes."
+    import glob
+    files = glob.glob(os.path.join(dirpath, '*.src'))
+    classes = []
+    for f in files:
+        try:
+            print f
+            idents, search, album = open_script(f)
+            classes.append(Mp3TagSource(idents, search, album))
+        except:
+            #print translate("WebDB", "Couldn't load Mp3tag Tag Source %s") % f
+            traceback.print_exc()
+            continue
+    return classes
+
+from puddlestuff.tagsources.discogs import urlopen
+import puddlestuff.tagsources
+puddlestuff.tagsources.user_agent = 'puddletag/0.9.12'
 
 if __name__ == '__main__':
     #text = open(sys.argv[1], 'r').read()
-    text = open(sys.argv[1], 'r').read()
-    import puddlestuff.tagsources
-    encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
-
+    #text = open(sys.argv[1], 'r').read()
+    tagsources = load_mp3tag_sources('.')
+    tagsources[0].search(u'1142869')
     #pdb.set_trace()
-    idents, search, album = open_script(sys.argv[2])
-    value = parse_search_page(idents['indexformat'], text, search)
+    #import puddlestuff.tagsources
+    #encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
+
+    ##pdb.set_trace()
+    #idents, search, album = open_script(sys.argv[2])
+    #value = parse_search_page(idents['indexformat'], text, search)
     
-    #value = parse_album_page(text, album, 'url')
-    print value
-    pdb.set_trace()
-    print convert_value(value)
-    #source = find_idents(lines)[1]
+    ##value = parse_album_page(text, album, 'url')
+    #print value
+    #pdb.set_trace()
+    #print convert_value(value)
+    ##source = find_idents(lines)[1]
     
-    #print parse_search(idents['indexformat'], search, text)
-    ##text = open('d_album.htm', 'r').read()
-    #c = Cursor(text.decode('utf8', 'replace'), source)
-    #c.parse_page()
-    ##print c.cache
-    ##print c.tracks[0]
-    #print u'\n'.join(u'%s: %s' % z for z in c.album.items())
+    ##print parse_search(idents['indexformat'], search, text)
+    ###text = open('d_album.htm', 'r').read()
+    ##c = Cursor(text.decode('utf8', 'replace'), source)
+    ##c.parse_page()
+    ###print c.cache
+    ###print c.tracks[0]
+    ##print u'\n'.join(u'%s: %s' % z for z in c.album.items())
     

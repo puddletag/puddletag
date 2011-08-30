@@ -1,11 +1,11 @@
 .. include:: subs.txt
 
-.. |source_link| replace:: puddletag-0.10.5.tar.gz
-.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-0.10.6.tar.gz
-.. |deb_link| replace:: puddletag_0.10.5-1_all.deb
+.. |source_link| replace:: puddletag-0.10.6.3.tar.gz
+.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-0.10.6.3.tar.gz
+.. |deb_link| replace:: puddletag_0.10.6-1_all.deb
 .. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_0.10.6-1_all.deb
 
-.. |source_sha| replace:: 22b58f8e0ed92d7a81bf182d71c2955b6612494c
+.. |source_sha| replace:: 725ad8a97e43593647ba5da0f14acf4d24e43341
 .. |deb_sha| replace:: e1391cc0c4560af4884fae2cf2195bd0b9433e69
 
 Downloads

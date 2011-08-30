@@ -96,8 +96,6 @@ def gotoline(cursor, num):
     cursor.charno = num - 1
 
 def _if(cursor, text, ifnot=False):
-    #if text == '"':
-        #pdb.set_trace()
     if ifnot:
         if not cursor.line[cursor.charno:].startswith(text):
             return
@@ -136,13 +134,19 @@ def joinlines(cursor, num):
 
 def joinuntil(cursor, text):
     ret = []
+    index = None
     for line in cursor.lines:
         if text in line:
             index = line.find(text) + len(text)
             ret.append(line[:index])
             break
         else:
-            ret.append(line + u' ')
+            v = line.strip()
+            if v:
+                ret.append(v)
+    
+    if index is None:
+        return
 
     append = line[index:]
     cursor.all_lines[cursor.lineno] = u''.join(ret)
@@ -177,7 +181,6 @@ def moveline(cursor, num, exit=None):
 
 def outputto(cursor, text):
     if text.lower() == 'tracks' and cursor.num_loop:
-        cursor.log('Outputting Tracks')
         if cursor.output is not cursor.album:
             cursor.tracks.append(cursor.output)
         cursor.output = {}
@@ -207,8 +210,10 @@ def replace(cursor, s, repl):
     cursor.line = cursor.line[:cursor.charno] + text
 
 def regexpreplace(cursor, regexp, s):
-    text = replaceWithReg(cursor.line[cursor.charno:], regexp, s)
+    text = replaceWithReg(cursor.line[cursor.charno:], regexp, s,
+        matchcase=True)
     cursor.line = cursor.line[:cursor.charno] + text
+    cursor.charno = 0
 
 def say(cursor, text):
     cursor.log('say %s' % text)
@@ -279,7 +284,9 @@ def sayuntil(cursor, text):
 
 def sayuntilml(cursor, text):
     cache = []
-    for i, line in enumerate(cursor.lines):
+    lines = cursor.lines[::]
+    lines[0] = cursor.line[cursor.charno:]
+    for i, line in enumerate(lines):
         index = line.find(text)
         if index != -1:
             cache.append(line)
@@ -291,8 +298,11 @@ def sayuntilml(cursor, text):
             return
 
 def _set(cursor, field, value=None):
-    if value is None:
-        if field in cursor.output: del(cursor.output[field])
+    if not value:
+        if field in cursor.output:
+            del(cursor.output[field])
+        elif cursor.field == field:
+            cursor.cache = u""
     else:
         cursor.output[field] = value if \
             isinstance(value, unicode) else unicode(value)
@@ -316,6 +326,10 @@ def _while(cursor, condition, numtimes=None):
                 cursor.num_iters += 1
             elif cmd == 'while':
                 nested += 1
+
+    if cursor.tracks == {}:
+        cursor.tracks = [{'title': z.strip()} for z in
+            cursor.cache.split(u'|')]
 
 def unspace(cursor):
     cursor.line = cursor.line.strip()

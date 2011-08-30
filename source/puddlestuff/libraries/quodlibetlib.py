@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0, '/home/keith/Documents/python/puddletag')
     
 import os, time, pdb, traceback
 import cPickle as pickle

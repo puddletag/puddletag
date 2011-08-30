@@ -32,7 +32,7 @@ def get_encoding(page, decode=False, default=None):
     encoding = None
     match = re.search('<\?xml(.+)\?>', page)
     if match:
-        enc = re.search('''encoding(?:\s*)=(?:\s*)["'](.+)['"]''',
+        enc = re.search('''encoding(?:\s*)=(?:\s*)["'](.+?)['"]''',
             match.group(), re.I)
         if enc:
             encoding = enc.groups()[0]
