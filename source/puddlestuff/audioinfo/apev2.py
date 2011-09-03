@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError
-from mutagen.monkeysaudio import MonkeysAudio
-from mutagen.musepack import Musepack
-from mutagen.wavpack import WavPack
+from mutagen.monkeysaudio import MonkeysAudio, MonkeysAudioHeaderError
+from mutagen.musepack import Musepack, MusepackHeaderError
+from mutagen.wavpack import WavPack, WavPackHeaderError
 
 import util
 from util import (CaselessDict, FILENAME, MockTag, PATH,
@@ -17,6 +17,8 @@ ATTRIBUTES = ['length', 'accessed', 'size', 'created',
 import tag_versions
 
 COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
+
+class DefaultHeaderError(RuntimeError): pass
 
 def bin_to_pic(value, covertype = 3):
     ret = {}
@@ -39,7 +41,7 @@ def pic_to_bin(pic):
 
     return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
 
-def get_class(mutagen_file, filetype, attrib_fields):
+def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
     class APEv2Base(MockTag):
         """Tag class for APEv2 files.
 
@@ -153,9 +155,14 @@ def get_class(mutagen_file, filetype, attrib_fields):
         def link(self, filename):
             """Links the audio, filename
             returns self if successful, None otherwise."""
+            no_header = DefaultHeaderError if header_error is None \
+                else header_error
+
             self.__images = []
             try:
                 tags, audio = self.load(filename, mutagen_file)
+            except no_header: #Try loading just APEv2
+                tags, audio = self.load(filename, APEv2File)
             except APENoHeaderError:
                 audio = mutagen_file()
                 tags, audio = self.load(filename, None)
@@ -221,7 +228,8 @@ def get_class(mutagen_file, filetype, attrib_fields):
     return APEv2Base
 
 mp_base = get_class(Musepack, u'Musepack',
-    ATTRIBUTES + ['frequency', 'bitrate', 'version', 'channels'])
+    ATTRIBUTES + ['frequency', 'bitrate', 'version', 'channels'],
+    MusepackHeaderError)
 
 class MusePackTag(mp_base):
     def _info(self):
@@ -241,7 +249,8 @@ class MusePackTag(mp_base):
 
 
 ma_base = get_class(MonkeysAudio, u"Monkey's Audio",
-    ATTRIBUTES + ['bitrate', 'frequency', 'version', 'channels'])
+    ATTRIBUTES + ['bitrate', 'frequency', 'version', 'channels'],
+    MonkeysAudioHeaderError)
 
 class MonkeysAudioTag(ma_base):
     def _info(self):
@@ -260,7 +269,8 @@ class MonkeysAudioTag(ma_base):
     info = property(_info)
 
 
-wv_base = get_class(WavPack, u'WavPack', ATTRIBUTES + ['frequency', 'bitrate'])
+wv_base = get_class(WavPack, u'WavPack',
+    ATTRIBUTES + ['frequency', 'bitrate'], WavPackHeaderError)
 
 class WavPackTag(wv_base):
     def _info(self):
