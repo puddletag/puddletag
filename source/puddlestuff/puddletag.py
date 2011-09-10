@@ -668,7 +668,7 @@ class MainWin(QMainWindow):
     def updateTotalStats(self, *args):
         self._totalstats.setText(self._updateStatus(status['alltags']))
 
-    def _write(self, tagiter, rows=None):
+    def _write(self, tagiter, rows=None, previews=None):
         self.__updateDirs = False
         if not rows:
             rows = status['selectedrows']
@@ -680,6 +680,8 @@ class MainWin(QMainWindow):
             if not model.previewMode:
                 self.emit(SIGNAL('libfilesedited'), lib_updates)
         lib_updates = []
+
+        failed_rows = []
 
         if model.previewMode:
             [setRowData(row, f, undo=True) for row, f in izip(rows, tagiter)]
@@ -694,6 +696,7 @@ class MainWin(QMainWindow):
                         lib_updates.append(update)
                     yield None
                 except EnvironmentError, e:
+                    failed_rows.append(row)
                     filename = model.taginfo[row][PATH]
                     m = rename_error_msg(e, filename)
                     if row == rows[-1]:
@@ -704,12 +707,20 @@ class MainWin(QMainWindow):
         def finished():
             self.__updateDirs = True
             self.updateDirs([])
+            if previews and failed_rows:
+                model.previewMode = True
+                taginfo = model.taginfo
+                for row in failed_rows:
+                    if row not in previews:
+                        continue
+                    taginfo[row].preview = previews[row]
+                model.updateTable(failed_rows)
             return fin()
         
         return func, finished, rows
 
-    def writeTags(self, tagiter, rows=None):
-        ret = self._write(tagiter, rows)
+    def writeTags(self, tagiter, rows=None, previews=None):
+        ret = self._write(tagiter, rows, previews)
         if ret is None:
             return
         
@@ -802,16 +813,18 @@ class MainWin(QMainWindow):
 
     def _writePreview(self):
         taginfo = self._table.model().taginfo
-        def get(audio):
-            ret = audio.preview
+        previews = {}
+        def get(audio, row):
+            preview = audio.preview
             audio.preview = {}
-            return ret
-        data = [(row, get(audio)) for row, audio in 
+            previews[row] = preview
+            return row, preview
+        data = [get(audio, row) for row, audio in
                     enumerate(taginfo) if audio.preview]
         if not data:
             return
         self._table.model().previewMode = False
-        self.writeTags((z[1] for z in data), [z[0] for z in data])
+        self.writeTags((z[1] for z in data), [z[0] for z in data], previews)
 
     def _renameSelected(self, filenames):
         rows = status['selectedrows']
