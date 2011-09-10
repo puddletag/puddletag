@@ -88,6 +88,42 @@ def caseless(tag, audio):
     except IndexError:
         return tag
 
+def has_previews(tags=None, parent=None, msg=None):
+    """Disables preview mode. Returns True if disable successful, else False.
+
+    Displays a confirmation to the user (message box) asking if they want
+    to exit Preview Mode if any files contain previews. If the user selects
+    that they want to exit, then True is returned. Preview Mode is not
+    changed.
+
+    If not previews in tags, then True is returned.
+
+    tags is a list of audioinfo.Tag object with the preview attribute.
+        If preview not empty, the file will be considered to have a preview.
+        If not specified status['alltags'] is used.
+    parent => A window to have as the parent for the message box.
+    msg => Message to show in message box.
+    """
+
+    if msg is None:
+        msg = translate("Previews", 'Do you want to exit Preview Mode?')
+    
+    if tags is None:
+        tags = status['alltags']
+
+    previews = False
+    for z in tags:
+        if z.preview:
+            previews = True
+            break
+
+    if previews and confirmations.should_show('preview_mode'):
+        ret = QMessageBox.question(parent, 'puddletag', msg,
+            QMessageBox.Yes, QMessageBox.No)
+        if ret != QMessageBox.Yes:
+            return True
+    return False
+
 def tag_in_file(tag, audio):
     if tag in audio:
         return tag
@@ -1868,19 +1904,10 @@ class TagTable(QTableView):
     
     def previewMode(self, value):
         if not value:
-            previews = False
-            for z in self.model().taginfo:
-                if z.preview:
-                    previews = True
-                    continue
-
-            if confirmations.should_show('preview_mode') and previews:
-                ret = QMessageBox.question(self, 'puddletag',
-                    translate("Previews", 'Do you want to exit Preview Mode?'),
-                    QMessageBox.Yes, QMessageBox.No)
-                if ret != QMessageBox.Yes:
-                    return
+            if not has_previews(self.model().taginfo, self):
+                return False
         self.model().previewMode = value
+        return value
 
     def reloadFiles(self, filenames = None):
         self._restore = self.saveSelection()

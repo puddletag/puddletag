@@ -10,6 +10,7 @@ from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 mutex = mutex.mutex()
 qmutex = QMutex()
 from puddlestuff.translations import translate
+from puddlestuff.tagmodel import has_previews
 try:
     from puddlestuff.puddlesettings import (load_gen_settings,
         save_gen_settings)
@@ -50,6 +51,29 @@ class DirView(QTreeView):
         
         self.connect(self, SIGNAL('expanded(const QModelIndex &)'),
             lambda discarded: self.resizeColumnToContents(0))
+
+    def checkPreviews(self, deselected):
+        """Confirm to user if any file have previewes.
+
+        If any currently loaded files have previews then the user
+        is asked to confirm whether they want to change to a new dir.
+        Returns True if the user cancels the action, False if
+        the user chooses to go ahead or there are no un-commited previews.
+        """
+        msg = translate('Previews', 'Some files have uncommited previews. '
+            'Changes will be lost once you load a directory. <br />'
+            'Do you still want to load a new directory?<br />')
+        if not has_previews(parent=self.parentWidget(), msg=msg):
+            return False
+        select = self._select
+        self._select = False
+        smodel = self.selectionModel()
+        smodel.blockSignals(True)
+        smodel.clear()
+        smodel.select(deselected, smodel.Select)
+        smodel.blockSignals(False)
+        self._select = select
+        return True
 
     def clearSelection(self, *args):
         self.blockSignals(True)
@@ -244,6 +268,7 @@ class DirView(QTreeView):
         if not self._load:
             self._lastselection = len(self.selectedIndexes())
             return
+            
         getfilename = self.model().filePath
         dirs = list(set([getfilename(i).toLocal8Bit().data() for
             i in selected.indexes()]))
@@ -259,6 +284,9 @@ class DirView(QTreeView):
         dirs = list(set(dirs).difference(old))
         if old:
             self.emit(SIGNAL('removeFolders'), old, False)
+
+        if self.checkPreviews(deselected):
+            return
         if dirs:
             self.emit(SIGNAL('loadFiles'), None, dirs, append)
         self._lastselection = len(self.selectedIndexes())

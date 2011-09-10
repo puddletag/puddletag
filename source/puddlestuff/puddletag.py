@@ -437,6 +437,13 @@ class MainWin(QMainWindow):
         pass
 
     def closeEvent(self, e):
+        preview_msg = translate('Previews',
+            'Some files have uncommited previews. '
+            'These changes will be lost once you exit puddletag. <br />'
+            'Do you want to exit without writing those changes?<br />')
+        if tagmodel.has_previews(parent=self, msg=preview_msg):
+            e.ignore()
+            return False
         controls = PuddleDock._controls
         for control in PuddleDock._controls.values():
             if hasattr(control, 'saveSettings'):
