@@ -681,7 +681,8 @@ class MainWin(QMainWindow):
                 self.emit(SIGNAL('libfilesedited'), lib_updates)
         lib_updates = []
 
-        failed_rows = []
+        failed_rows = [rows[0]] #First element=last row used.
+                                #Rest, rows that failed to write.
 
         if model.previewMode:
             [setRowData(row, f, undo=True) for row, f in izip(rows, tagiter)]
@@ -690,6 +691,7 @@ class MainWin(QMainWindow):
 
         def func():
             for row, f in izip(rows, tagiter):
+                failed_rows[0] = row
                 try:
                     update = setRowData(row, f, undo=True)
                     if update:
@@ -707,13 +709,17 @@ class MainWin(QMainWindow):
         def finished():
             self.__updateDirs = True
             self.updateDirs([])
-            if previews and failed_rows:
+            if previews and failed_rows[1:]:
                 model.previewMode = True
+                last_row = failed_rows[0]
+                [failed_rows.append(r) for r in previews if r > last_row]
                 taginfo = model.taginfo
-                for row in failed_rows:
+                for row in failed_rows[1:]:
                     if row not in previews:
                         continue
                     taginfo[row].preview = previews[row]
+                last_row = failed_rows[0]
+                
                 model.updateTable(failed_rows)
             return fin()
         
