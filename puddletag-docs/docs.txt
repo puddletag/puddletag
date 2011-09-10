@@ -25,7 +25,7 @@ Tutorials
 
     source/tut1
     source/tut2
-    source/tut3
+    Things you should know (like how to add album art) <source/tut3>
     source/tut4
     source/tut5
 

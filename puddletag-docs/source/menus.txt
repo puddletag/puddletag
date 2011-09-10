@@ -287,7 +287,7 @@ Select some files, fill in some text and save the changes (**File->Save**). Conf
     
 Artwork
 ^^^^^^^
-Shows the **Artwork** window with which you can edit album art.
+Shows the **Artwork** window with which you can edit album art. See :ref:`album_art` for more info.
 
 Filesystem
 ^^^^^^^^^^
