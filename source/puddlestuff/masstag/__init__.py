@@ -251,7 +251,7 @@ def ratio_compare(d1, d2, key):
 def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=False):
     if not keys:
         keys = ['artist', 'title']
-    if 'track' in keys:
+    if 'track' in keys and len(keys) > 1:
         keys = keys[::]
         keys.remove('track')
     ret = {}
@@ -259,10 +259,13 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
     assigned = {}
     matched = defaultdict(lambda: {})
     b = False
+    
     for f_index, f in enumerate(files):
         scores = {}
         for t_index, track in enumerate(tracks):
             totals = [ratio_compare(f, track, key) for key in keys]
+            if not totals:
+                continue
             score = min(totals)
             if score > minimum and score not in scores:
                 matched[f_index][t_index] = sum(totals)
