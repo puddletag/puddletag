@@ -1904,7 +1904,7 @@ class TagTable(QTableView):
     
     def previewMode(self, value):
         if not value:
-            if not has_previews(self.model().taginfo, self):
+            if has_previews(self.model().taginfo, self):
                 return False
         self.model().previewMode = value
         return value
