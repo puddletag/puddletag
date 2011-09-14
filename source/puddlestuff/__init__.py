@@ -5,10 +5,9 @@ version_string = '1.0.0'
 version = (1, 0, 0)
 
 try:
-    filedir = dirname(dirname(__file__))
-    info = subprocess.Popen(['svn', 'info', filedir], 
+    filedir = dirname(dirname(dirname(__file__)))
+    info = subprocess.Popen(['hg', 'id', '-i', filedir],
         stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    revision = int(re.search(u'Revision: (\d+)',
-        info.stdout.read()).groups()[0])
+    changeset = unicode(info.stdout.read().strip())
 except (EnvironmentError, AttributeError):
-    revision = None
+    changeset = None

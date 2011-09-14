@@ -187,10 +187,10 @@ def parse_cmd_options():
 
 def print_info():
     """Print program info."""
-    from puddlestuff import version_string, revision
-    if revision:
-        print translate('Defaults', 'puddletag Version: %1, Revision: %2').arg(
-            version_string).arg(unicode(revision))
+    from puddlestuff import version_string, changeset
+    if changeset:
+        print translate('Defaults', 'puddletag Version: %1, Changeset: %2').arg(
+            version_string).arg(changeset)
     else:
         print translate('Defaults', 'puddletag Version: %s' % version_string)
 

@@ -58,11 +58,11 @@ class AboutPuddletag(QDialog):
         lib_versions = ', '.join(['<b>PyQt  %s' % PYQT_VERSION_STR,
             'Mutagen %s' % mutagen.version_string,
             'Pyparsing %s</b>' %pyparsing.__version__])
-        if puddlestuff.revision:
+        if puddlestuff.changeset:
             version = translate("About",
-                '<h2>puddletag %1 (Revision %2)</h2> %3')
+                '<h2>puddletag %1 (Changeset %2)</h2> %3')
             version = version.arg(puddlestuff.version_string)
-            version = version.arg(unicode(puddlestuff.revision)).arg(lib_versions)
+            version = version.arg(puddlestuff.changeset).arg(lib_versions)
         else:
             version = translate("About",
                 '<h2>puddletag %1</h2> %2')
