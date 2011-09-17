@@ -83,13 +83,19 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 
 Development builds
 ------------------
-Development builds are available via Subversion. Use
+Development builds are available via Mercurial. Use
 
 .. code-block:: bash
 
-    svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
 
-to check it out.
+to check it out. And
+
+.. code-block:: bash
+
+    hg pull -u
+
+in the previously cloned directory to update.
 
 .. _plugin_downloads:
 

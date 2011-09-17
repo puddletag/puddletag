@@ -20,6 +20,7 @@ from puddlestuff.masstag import (NO_MATCH_OPTIONS, combine_tracks,
     split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
 from puddlestuff.masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
     load_all_mtps, mtp_from_file, save_mtp)
+from puddlestuff.webdb import strip as strip_fields
 
 status_obj = QObject()
 
@@ -605,9 +606,9 @@ class MassTagWindow(QWidget):
             self.changeProfile)
 
     def _start(self):
-        profile = self.profile
+        mtp = self.profile
         tag_groups = split_files(self._status['selectedfiles'],
-            profile.file_pattern)
+            mtp.file_pattern)
 
         search_msg = translate('Masstagging',
             'An error occured during the search: <b>%s</b>')
@@ -615,28 +616,39 @@ class MassTagWindow(QWidget):
         retrieve_msg = translate('Masstagging',
             'An error occured during album retrieval: <b>%s</b>')
 
-        def search_error(error, profile):
+        def search_error(error, mtp):
             thread.emit(SIGNAL('statusChanged'),
                 search_msg % unicode(error))
 
-        def retrieval_error(error, profile):
+        def retrieval_error(error, mtp):
             thread.emit(SIGNAL('statusChanged'),
                 retrieve_msg % unicode(error))
 
         def run_masstag():
             replace_fields = []
             for files in tag_groups:
-                profile.clear()
+                mtp.clear()
 
-                masstag(profile, files, self.__flag, search_error,
+                masstag(mtp, files, self.__flag, search_error,
                     retrieval_error)
 
-                tracks = merge_tsp_tracks(profile.profiles, files)
+                ret = {}
+                for tsp in mtp.profiles:
+                    if not tsp.matched:
+                        continue
+                    
+                    matched = match_files(files, tsp.result.merged,
+                        mtp.track_bound, mtp.fields, mtp.leave_existing)
+                    for f, m in matched.iteritems():
+                        d = strip_fields(m, tsp.fields)
+                        if f in ret:
+                            ret[f] = combine_tracks(ret[f], d,
+                                mtp.replace_fields)
+                        else:
+                            ret[f] = d
 
                 thread.emit(SIGNAL('enable_preview_mode'))
-                matched = match_files(files, tracks, profile.track_bound,
-                    profile.fields, profile.jfdi, profile.leave_existing)
-                thread.emit(SIGNAL('setpreview'), matched)
+                thread.emit(SIGNAL('setpreview'), ret)
 
                 set_status('<hr width="45%" /><br />')
 

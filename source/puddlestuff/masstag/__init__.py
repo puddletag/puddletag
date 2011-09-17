@@ -159,7 +159,7 @@ def check_result(result, audios):
         return True
     return False
 
-def combine_tracks(track1, track2):
+def combine_tracks(track1, track2, repl=None):
     ret = defaultdict(lambda: [])
     
     for key, value in track2.items() + track1.items():
@@ -170,6 +170,10 @@ def combine_tracks(track1, track2):
             for v in value:
                 if v not in ret[key]:
                     ret[key].append(v)
+    if repl:
+        for key in repl:
+            if key in track2:
+                ret[key] = track2[key]
     return ret
 
 def fields_from_text(text):
@@ -249,6 +253,7 @@ def ratio_compare(d1, d2, key):
     return ratio(get_lower(d1, key, u'a'), get_lower(d2, key, u'b'))
 
 def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=False):
+
     if not keys:
         keys = ['artist', 'title']
     if 'track' in keys and len(keys) > 1:
@@ -345,6 +350,30 @@ def merge_track(audio, info):
             else:
                 track[key] = audio[key][::]
     return track
+
+def merge_tracks(track_groups, files):
+    ret = []
+    to_repl = []
+    for tracks, info, fields in track_groups:
+        if tracks is None and files is not None:
+            info = strip_fields(info, fields)
+            tags = [deepcopy(info) for z in files]
+        else:
+            tags = [strip_fields(merge_track(t, info), fields)
+                for t in tracks]
+
+        if len(tags) > len(ret):
+            ret.extend(tags[len(ret):])
+        if tsp.replace_fields:
+            to_repl.append([tags, fields])
+        for i, t in enumerate(tags):
+            ret[i] = combine_tracks(ret[i], t)
+
+    for tracks, repl_fields in to_repl:
+        for repl, track in zip(tracks, ret):
+            track.update(strip_fields(repl, fields))
+
+    return ret
 
 def merge_tsp_tracks(profiles, files=None):
     ret = []
