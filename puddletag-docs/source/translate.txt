@@ -1,15 +1,15 @@
 Translating
 ===========
 
-In order to translate puddletag you need Subversion, Qt Linguist, the PyQt4 translation tools (specifically pylupdate4) and the ability to copy/paste into the console.
+In order to translate puddletag you need Mercurial, Qt Linguist, the PyQt4 translation tools (specifically pylupdate4) and the ability to copy/paste into the console.
 
-In Ubuntu and Debian-based distros, Subversion is available in 'subversion' package, Qt Linguist in qt-dev-tools and pylupdate4 in pyqt-dev-tools.
+In Ubuntu and Debian-based distros, Mercurial is available in 'mercurial' package, Qt Linguist in qt-dev-tools and pylupdate4 in pyqt-dev-tools.
 
 After installing the required tools, you'll need to retrieve the latest development release. Open up a terminal and paste the following:
 
 .. code-block:: bash
 
-    svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
 
 The dev version will downloaded into the puddletag directory. Change into the dev directory with:
 
@@ -23,7 +23,15 @@ Then run update_translation.py with your desired locale (eg en_ZA, rus, fr) like
 
     python update_translation.py your_locale
 
-A translation file will be created in **translations/puddletag_your_locale.ts**. Open this file in **Qt Linguist** and translate to your hearts content.
+.. note::
+
+    You can later update the dev version without downloading the whole thing again by using the following command in the downloaded puddletag dir:
+
+    .. code-block:: bash
+
+        hg pull -u
+
+A translation file will be created in **translations/puddletag_your_locale.ts**. Open this file in **Qt Linguist** and translate to your heart's content.
 
 To test your translation, generate a .qm file using **File->Release** in Qt Linguist. puddletag_your_locale.qm will be generated in the directory the .ts file you opened is stored.
 

@@ -137,6 +137,9 @@ def div(text,text1):
     except decimal.InvalidOperation:
         return
 
+def eql(text, text1):
+    return text == text1:
+
 # Contributed by Stjujsckij Nickolaj
 def enconvert(text, enc_name):
     ''' Convert from non-standard encoding, "Convert to encoding: $0, Encoding: $1"
@@ -886,6 +889,7 @@ functions = {
     "char": char,
     "div": div,
     "enconvert": enconvert,
+    "eql": eql,
     'filenametotag': filenametotag,
     "find": find,
     "floor": floor,

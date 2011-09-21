@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf8"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 11 Sep 2011 00:16:57 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>3 June 2011 - 0.10.4</title><link>http://puddletag.sourceforge.net/news.html#june-2011-0-10-4</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 21 Sep 2011 22:12:43 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>21 September 2011 - Mercurial</title><link>http://puddletag.sourceforge.net/news.html#september-2011-mercurial</link><description>
+  &lt;div class="section" id="september-2011-mercurial"&gt;
+&lt;h1&gt;21 September 2011 - Mercurial&lt;/h1&gt;
+&lt;p&gt;This is just a heads up that I&amp;#8217;ve moved from Subversion to Mercurial. No real reason for this other than trying something new. I&amp;#8217;ve been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo is dead.&lt;/p&gt;
+&lt;p&gt;Quick commands to get started for those who don&amp;#8217;t know Mercurial:&lt;/p&gt;
+&lt;p&gt;To get a copy:&lt;/p&gt;
+&lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;To update, run in the previously retrieved dir:&lt;/p&gt;
+&lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;hg pull -u
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Enjoy. ;-)&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Wed, 21 Sep 2011 00:00:00 GMT</pubDate></item><item><title>3 June 2011 - 0.10.4</title><link>http://puddletag.sourceforge.net/news.html#june-2011-0-10-4</link><description>
   &lt;div class="section" id="june-2011-0-10-4"&gt;
 &lt;h1&gt;3 June 2011 - 0.10.4&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Update 6 June 2011&lt;/strong&gt;: 0.10.6 fixes another bug not found. Think this&amp;#8217;ll be the last for now.
