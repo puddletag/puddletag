@@ -138,7 +138,7 @@ def div(text,text1):
         return
 
 def eql(text, text1):
-    return text == text1:
+    return text == text1
 
 # Contributed by Stjujsckij Nickolaj
 def enconvert(text, enc_name):

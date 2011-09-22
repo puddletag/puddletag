@@ -1,7 +1,7 @@
 21 September 2011 - Mercurial
 #############################
 
-This is just a heads up that I've moved from Subversion to Mercurial. No real reason for this other than trying something new. I've been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo is dead.
+This is just a heads up that I've moved from Subversion to Mercurial. No real reason for this other than trying something new. I've been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.
 
 Quick commands to get started for those who don't know Mercurial:
 
