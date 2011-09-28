@@ -521,7 +521,7 @@ def replace_tracknumbers(files, tracks):
             try:
                 f_tracknum = to_int(f['track'])
                 t_tracknum = to_int(t['track'])
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, KeyError):
                 continue
             if f_tracknum > t_tracknum:
                 f['track'] = [unicode(f_tracknum - offset )]
@@ -529,7 +529,7 @@ def replace_tracknumbers(files, tracks):
 def split_files(audios, pattern):
 
     def copy_audio(f):
-        tags = filenametotag(f['__path'], pattern, True)
+        tags = filenametotag(pattern, f['__path'], True)
         audio_copy = deepcopy(f)
         audio_copy.update(dict_difference(audio_copy, tags))
         audio_copy.cls = f
@@ -692,6 +692,7 @@ class TagSourceProfile(object):
 
     def retrieve(self, result, errors=None):
         info = result.info if hasattr(result, 'info') else result
+        
         try:
             self.result = Result(*self.tag_source.retrieve(info))
         except RetrievalError, e:
@@ -701,7 +702,6 @@ class TagSourceProfile(object):
                 raise e
             else:
                 self.result = Result({}, [])
-                
         self.result.tag_source = self.tag_source
         return self.result
 
@@ -716,6 +716,8 @@ class TagSourceProfile(object):
         search_value = files.keys()[0]
         self.results = map(lambda x: Result(*x),
             tag_source.search(search_value, files[search_value]))
+        for r in self.results:
+            r.tag_source = self.tag_source
         return self.results
 
 if __name__ == '__main__':
