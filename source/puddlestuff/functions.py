@@ -675,6 +675,29 @@ def right(text,n):
         return u''
     return text[-int(n):]
 
+def gain_to_watts(gain):
+    return pow(10, -gain*.1)
+
+def to_hexstring(x):
+    # leading space required; blame Apple
+    return " %08X" % int(x)
+
+def rg2sc(n_gain):
+    values = [
+        to_hexstring(1000 * gain_to_watts(n_gain)),
+        to_hexstring(1000 * gain_to_watts(n_gain)),
+        to_hexstring(2500 * gain_to_watts(n_gain)),
+        to_hexstring(2500 * gain_to_watts(n_gain)),
+        #" 00024CA8", # bogus
+        #" 00024CA8", # bogus
+        #to_hexstring(peak * (32*1024 - 1)),
+        #to_hexstring(peak * (32*1024 - 1)),
+        #" 00024CA8", # bogus
+        #" 00024CA8", # bogus
+        ]
+
+    return unicode(''.join(values))
+
 def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
     """Export artwork to file, "Export Art: pattern='$1'"
 &Pattern (extension not required), text, folder_%img_counter%"""

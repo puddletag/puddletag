@@ -136,7 +136,7 @@ def urlopen(url, mask=True):
         except AttributeError:
             msg = unicode(e)
         raise RetrievalError(msg)
-    except socket.error:
+    except socket.error, e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
     except EnvironmentError, e:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+import socket
 
 import musicbrainz2
 
@@ -304,6 +305,9 @@ class MusicBrainz(object):
                 '<b>Error:</b> While retrieving %1: %2')
             write_log(msg.arg(album).arg(escape(e)))
             raise RetrievalError(unicode(e))
+        except socket.error, e:
+            msg = u'%s (%s)' % (e.strerror, e.errno)
+            raise RetrievalError(msg)
 
     def retrieve(self, info):
         return retrieve_tracks(info['#album_id'], self._puids)

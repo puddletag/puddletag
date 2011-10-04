@@ -140,6 +140,8 @@ def search_by_id(discid):
     if stat not in [200, 211]:
         return []
     if discs:
+        if hasattr(discs, 'items'):
+            discs = [discs]
         return [(convert_info(info), []) for info in discs]
     return []
 
