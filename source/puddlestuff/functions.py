@@ -676,24 +676,40 @@ def right(text,n):
     return text[-int(n):]
 
 def gain_to_watts(gain):
-    return pow(10, -gain*.1)
+    return 10**(-gain*.1)
 
 def to_hexstring(x):
     # leading space required; blame Apple
     return " %08X" % int(x)
 
-def rg2sc(n_gain):
+def rg2sc(gain, peak=None):
+    if peak is None:
+        gain = gain.split(u':')
+        if len(gain) == 2: #gain:peak
+            peak = float(gain[1])
+            gain = float(gain[0])
+            print peak, gain
+        elif len(gain) == 3: #channel:gain:peak
+            peak = float(gain[2])
+            gain = float(gain[1])
+            print gain, peak
+        else:
+            return
+    else:
+        gain = float(gain)
+        peak = float(peak)
+
     values = [
-        to_hexstring(1000 * gain_to_watts(n_gain)),
-        to_hexstring(1000 * gain_to_watts(n_gain)),
-        to_hexstring(2500 * gain_to_watts(n_gain)),
-        to_hexstring(2500 * gain_to_watts(n_gain)),
-        #" 00024CA8", # bogus
-        #" 00024CA8", # bogus
-        #to_hexstring(peak * (32*1024 - 1)),
-        #to_hexstring(peak * (32*1024 - 1)),
-        #" 00024CA8", # bogus
-        #" 00024CA8", # bogus
+        to_hexstring(1000 * gain_to_watts(gain)),
+        to_hexstring(1000 * gain_to_watts(gain)),
+        to_hexstring(2500 * gain_to_watts(gain)),
+        to_hexstring(2500 * gain_to_watts(gain)),
+        " 00024CA8", # bogus
+        " 00024CA8", # bogus
+        to_hexstring(peak * (32*1024 - 1)),
+        to_hexstring(peak * (32*1024 - 1)),
+        " 00024CA8", # bogus
+        " 00024CA8", # bogus
         ]
 
     return unicode(''.join(values))

@@ -24,6 +24,8 @@ DESCRIPTION = 'description'
 DATA = 'data'
 IMAGETYPE = 'imagetype'
 
+DEFAULT_COVER = 3
+
 FIELDS = [
     'album', 'albumsortorder', 'arranger', 'artist', 'audiodelay',
     'audiolength', 'audiosize', 'author', 'bpm', 'comment', 'composer',

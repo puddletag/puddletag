@@ -14,7 +14,7 @@ from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
 import audioinfo
-from audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE,
+from audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
     encode_fn, decode_fn)
 from operator import itemgetter
 path = os.path
@@ -186,7 +186,10 @@ class CoverButton(QPushButton):
         self.setCurrentIndex(3)
     
     def setCurrentIndex(self, index):
-        self.setText(imagetypes[index][1])
+        try:
+            self.setText(imagetypes[index][1])
+        except IndexError:
+            self.setText(imagetypes[DEFAULT_COVER][1])
         self.emit(SIGNAL('currentIndexChanged (int)'), index)
         self._index = index
     

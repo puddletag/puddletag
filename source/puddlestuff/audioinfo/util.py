@@ -122,7 +122,10 @@ def cover_info(images, d=None):
             info[IMAGE_MIMETYPE] = get_mime(image[DATA])
 
         if IMAGETYPE in image:
-            info[IMAGE_TYPE_FIELD] = IMAGETYPES[image[IMAGETYPE]]
+            try:
+                info[IMAGE_TYPE_FIELD] = IMAGETYPES[image[IMAGETYPE]]
+            except IndexError:
+                info[IMAGE_TYPE_FIELD] = IMAGETYPES[DEFAULT_COVER]
 
     if d:
         if not info[IMAGE_MIMETYPE]:
@@ -360,7 +363,7 @@ _image_defaults = {
     DESCRIPTION: lambda i: i.get(DESCRIPTION, u''),
     MIMETYPE: lambda i: get_mime(i[DATA]) if MIMETYPE in i else \
         get_mime(i[DATA]),
-    IMAGETYPE: lambda i: i.get(IMAGETYPE, 3),
+    IMAGETYPE: lambda i: i.get(IMAGETYPE, DEFAULT_COVER),
     DATA: lambda i: i[DATA]}
 
 def parse_image(image, keys=None):

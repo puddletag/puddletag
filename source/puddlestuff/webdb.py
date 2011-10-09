@@ -513,7 +513,10 @@ class MainWin(QWidget):
 
         for ts in self.__sources:
             if hasattr(ts, 'preferences') and not isinstance(ts, QWidget):
-                ts.applyPrefs(load_source_prefs(ts.name, ts.preferences))
+                try:
+                    ts.applyPrefs(load_source_prefs(ts.name, ts.preferences))
+                except:
+                    continue
 
         status['initialized_tagsources'] = self.__sources
 
