@@ -923,7 +923,7 @@ class TagModel(QAbstractTableModel):
     def rowCount(self, index = QModelIndex()):
         return len(self.taginfo)
 
-    def setData(self, index, value, role = Qt.EditRole):
+    def setData(self, index, value, role = Qt.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
@@ -939,6 +939,8 @@ class TagModel(QAbstractTableModel):
                 newvalue = filter(None, newvalue.split(SEPARATOR))
             if newvalue == currentfile.get(tag, u''):
                 return False
+            if dontwrite:
+                return {tag: newvalue}, index.row()
             ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
             if not self.previewMode and currentfile.library:
                 self.emit(SIGNAL('libfilesedited'), [ret])
@@ -1301,7 +1303,7 @@ class TagTable(QTableView):
         self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
             'viewfilled', 'filesselected', 'enableUndo',
             'playlistchanged', 'deletedfromlib', 'libfilesedited',
-            'previewModeChanged']
+            'previewModeChanged', 'onetomany']
         self.receives = [
             ('loadFiles', self.loadFiles),
             ('removeFolders', self.removeFolders),
@@ -1955,6 +1957,15 @@ class TagTable(QTableView):
         self.connect(model, SIGNAL('previewModeChanged'), 
             SIGNAL('previewModeChanged'))
         self.connect(model, SIGNAL('dirsmoved'), SIGNAL('dirsmoved'))
+
+        set_data = model.setData
+
+        def modded_setData(index, value, role=Qt.EditRole):
+            ret = set_data(index, value, role, True)
+            if ret:
+                self.emit(SIGNAL('onetomany'), ret[0])
+
+        model.setData = modded_setData
 
     def currentRowSelection(self):
         """Returns a dictionary with the currently selected rows as keys.

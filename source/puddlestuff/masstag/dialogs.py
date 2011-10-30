@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import glob, os, string, sys
+import glob, os, pdb, string, sys
 
 from collections import defaultdict
 from copy import deepcopy
@@ -636,9 +636,13 @@ class MassTagWindow(QWidget):
                 for tsp in mtp.profiles:
                     if not tsp.matched:
                         continue
-                    
+
                     matched = match_files(files, tsp.result.merged,
-                        mtp.track_bound, mtp.fields, mtp.leave_existing)
+                        mtp.track_bound, mtp.fields, mtp.leave_existing, True)
+
+                    tsp.track_matches = matched[1]
+                    matched = matched[0]
+
                     for f, m in matched.iteritems():
                         d = strip_fields(m, tsp.fields)
                         if f in ret:

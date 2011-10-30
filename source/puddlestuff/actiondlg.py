@@ -658,7 +658,8 @@ class ActionWindow(QDialog):
 
         self.funcs = self.loadActions()
         cparser = PuddleConfig()
-        to_check = cparser.get('actions', 'checked', [])
+        self.__configKey = 'quick_actions' if quickaction else 'actions'
+        to_check = cparser.get(self.__configKey, 'checked', [])
         for z in self.funcs:
             func_name = self.funcs[z][1]
             item = QListWidgetItem(func_name)
@@ -949,7 +950,7 @@ class ActionWindow(QDialog):
 
     def saveChecked(self):
         cparser = PuddleConfig()
-        cparser.set('actions', 'checked', self.checked()[0])
+        cparser.set(self.__configKey, 'checked', self.checked()[0])
 
     def saveOrder(self):
         funcs = self.funcs
@@ -969,7 +970,7 @@ class ActionWindow(QDialog):
         """When clicked, save the current contents of the listbox and the associated functions"""
         names, funcs = self.checked()
         cparser = PuddleConfig()
-        cparser.set('actions', 'checked', names)
+        cparser.set(self.__configKey, 'checked', names)
         if close:
             self.close()
         self.emit(SIGNAL('checkedChanged'), self.checkedRows())

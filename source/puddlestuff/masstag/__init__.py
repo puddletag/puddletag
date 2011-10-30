@@ -252,7 +252,8 @@ get_lower = lambda f, key, default=u'': to_string(f.get(key,default)).lower()
 def ratio_compare(d1, d2, key):
     return ratio(get_lower(d1, key, u'a'), get_lower(d2, key, u'b'))
 
-def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=False):
+def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
+    existing=False, as_index=False):
 
     if not keys:
         keys = ['artist', 'title']
@@ -319,8 +320,14 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
         if t_indexes:
             assigned[t_index] = f_index
 
+    ret_indexes = {}
     for t_index, f_index in assigned.iteritems():
-        ret[files[f_index].cls] = tracks[t_index]
+        try:
+            ret[files[f_index].cls] = tracks[t_index]
+            ret_indexes[t_index] = files[f_index].cls
+        except AttributeError:
+            ret[files[f_index]] = tracks[t_index]
+            ret_indexes[t_index] = files[f_index]
 
     if jfdi:
         unmatched_tracks = [t for i, t in enumerate(tracks) if i
@@ -331,6 +338,8 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False, existing=Fals
     if existing:
         ret = dict((f, dict_difference(f, r)) for f, r in ret.iteritems())
 
+    if as_index:
+        return ret, ret_indexes
     return ret
 
 def merge_track(audio, info):
@@ -578,6 +587,8 @@ class MassTagProfile(object):
         assert files
         assert profiles
 
+        self.files = files
+
         if regexps:
             changed_files = \
                 map(lambda f: apply_regexps(f, regexps), files)
@@ -608,6 +619,7 @@ class MassTagProfile(object):
 
             if results:
                 profile.find_matches(self.album_bound, files)
+            profile.files = files
             yield profile.matched, profile.results, profile
 
 class Result(object):
@@ -621,6 +633,7 @@ class Result(object):
 
         self.tracks = tracks if tracks is not None else []
         self.info = {} if info is None else info
+        self.track_matched = {}
 
     def _get_info(self):
         return self.__info
@@ -692,7 +705,12 @@ class TagSourceProfile(object):
 
     def retrieve(self, result, errors=None):
         info = result.info if hasattr(result, 'info') else result
-        
+
+        try:
+            index = self.results.index(result)
+        except ValueError:
+            index = None
+
         try:
             self.result = Result(*self.tag_source.retrieve(info))
         except RetrievalError, e:
@@ -703,6 +721,8 @@ class TagSourceProfile(object):
             else:
                 self.result = Result({}, [])
         self.result.tag_source = self.tag_source
+        if index is not None:
+            self.results[index] = self.result
         return self.result
 
     def search(self, files=None, tag_source=None):
