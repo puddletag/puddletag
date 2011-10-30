@@ -328,7 +328,12 @@ class MainWin(QMainWindow):
 
         for m in plugin_modules:
             if hasattr(m, 'init'):
-                m.init(parent=self)
+                try:
+                    m.init(parent=self)
+                except:
+                    
+                    traceback.print_exc()
+                    continue
 
         for win in plugin_dialogs:
             try:

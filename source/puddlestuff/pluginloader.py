@@ -17,7 +17,8 @@ VERSION = 'version'
 INFO_SECTION = 'info'
 MODULE_NAME = 'module'
 
-PLUGIN_DIRS = [os.path.join(SAVEDIR, u'plugins')]
+PLUGIN_DIRS = [os.path.join(SAVEDIR, u'plugins'),
+    os.path.join(os.path.dirname(__file__), 'plugins')]
 
 PROPERTIES = [NAME, AUTHOR, DESC, PT_VERSION, VERSION]
 
@@ -52,6 +53,8 @@ def load_plugins(plugins=None, parent=None):
     if plugins is None:
         plugins = []
         [plugins.extend(get_plugins(d)) for d in PLUGIN_DIRS]
+
+    plugins.sort(key=lambda d: d.get(NAME, u''))
 
     for plugin in plugins:
         if plugin[MODULE_NAME] not in to_load:

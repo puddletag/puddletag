@@ -619,7 +619,7 @@ Match &Case, check"""
     for match in matches:
         group = match.group()
         groups = match.groups()
-        if not group:
+        if not group or groups:
             continue
         if groups:
             d = dict((i + 1, g) for i, g in enumerate(groups))

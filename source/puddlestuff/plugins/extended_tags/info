@@ -1,0 +1,6 @@
+[info]
+author = concentricpuddle
+version = 1.2
+puddletag_version = 0.10.4
+description = Allows using the Extended Tags dialog as a dockable window. Uses Plugins->Save Extended (Ctrl+Shift+S) to save.
+name = Extended Tags
