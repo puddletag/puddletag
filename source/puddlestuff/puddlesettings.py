@@ -17,6 +17,11 @@ from copy import deepcopy
 from puddlestuff.translations import translate
 from puddlestuff.constants import TRANSDIR
 
+config_widgets = []
+
+def add_config_widget(w):
+    config_widgets.append(w)
+
 class SettingsError(Exception):
     pass
 
@@ -598,6 +603,10 @@ class SettingsDialog(QDialog):
                 c = getattr(control, SETTINGSWIN)(status=status)
                 d[i] = [c.title, c, control]
                 i += 1
+        for c in config_widgets:
+            d[i] = [c.title, c(status=status), None]
+            i += 1
+
         self._widgets = d
 
         self.listbox = SettingsList()

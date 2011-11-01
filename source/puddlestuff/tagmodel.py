@@ -1354,6 +1354,11 @@ class TagTable(QTableView):
         self._resize = value
         if value:
             self.resizeColumnsToContents()
+            self.connect(self.model(), SIGNAL('modelReset'),
+                self.resizeColumnsToContents)
+        else:
+            self.disconnect(self.model(), SIGNAL('modelReset'),
+                self.resizeColumnsToContents)
 
     def _getSelectedTags(self):
         columns = dict([(v,k) for k,v in self.model().columns.items()])

@@ -2,7 +2,7 @@
 from collections import defaultdict
 from puddlestuff.constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGNALS
 from PyQt4.QtCore import SIGNAL
-from puddlestuff.puddlesettings import SettingsError
+from puddlestuff.puddlesettings import add_config_widget, SettingsError
 
 status = {}
 def connect_shortcut(action, enabled, disabled=None, togglecheck=None):

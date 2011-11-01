@@ -3,4 +3,4 @@ author = concentricpuddle
 version = 1.0
 puddletag_version = 1.0.0
 description = Adds short to the Plugins Menu to show all fields.
-name = Complete Field View
+name = View All Fields
