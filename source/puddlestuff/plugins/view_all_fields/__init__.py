@@ -22,22 +22,21 @@ def load_fields():
     return cparser.get('view_all_fields', 'fields',
         ['__filename', '__dirpath'])
 
+def restore_view(state):
+    tb = status['table']
+    header = tb.horizontalHeader()
+    tb.model().setHeader(state['headerdata'])
+    QApplication.processEvents()
+    header.restoreState(state['headerstate'])
+
 def show_all_fields(fields=None):
     tb = status['table']
     header = tb.horizontalHeader()
-    if state:
-        tb.model().setHeader(state['headerdata'])
-        tb.setHorizontalHeader(state['header'])
-        state.clear()
-        return
 
     files = status['allfiles']
     keys = set()
     for f in files:
         keys = keys.union(f.usertags)
-
-    state['headerdata'] = tb.model().headerdata[:]
-    state['header'] = header
 
     if fields is None:
         fields = load_fields()
@@ -50,12 +49,27 @@ def show_all_fields(fields=None):
     tb.model().setHeader(data)
 
 def init(parent=None):
+    state = {}
+    
     def sep():
         k = QAction(parent)
         k.setSeparator(True)
         return k
+
+    def show_fields(checked):
+        if checked:
+            tb = status['table']
+            header = tb.horizontalHeader()
+            state['headerdata'] = tb.model().headerdata[:]
+            state['headerstate'] = header.saveState()
+            show_all_fields()
+        else:
+            restore_view(state)
+
+
     action = QAction('Show all fields', parent)
-    action.connect(action, SIGNAL('triggered()'), show_all_fields)
+    action.setCheckable(True)
+    action.connect(action, SIGNAL('toggled(bool)'), show_fields)
     add_shortcuts('&Plugins', [sep(), action, sep()])
     add_config_widget(Settings)
 
@@ -161,10 +175,7 @@ class Settings(ButtonsAndList):
         cparser.set('view_all_fields', 'fields', fields)
 
         if state:
-            s = state.copy()
-            state.clear()
             show_all_fields()
-            state.update(s)
 
 if __name__ == '__main__':
     app = QApplication([])
