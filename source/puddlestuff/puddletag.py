@@ -70,11 +70,12 @@ def create_tool_windows(parent, extra=None):
     docks = []
     cparser = PuddleConfig()
     cparser.filename = ls.menu_path
-    controls = [z.control for z in (mainwin.tagpanel, mainwin.artwork,
-        mainwin.dirview,
-        mainwin.patterncombo, mainwin.filterwin, puddlestuff.webdb, 
-        mainwin.storedtags, mainwin.logdialog, 
-        puddlestuff.masstag.dialogs)]
+    widgets = (mainwin.tagpanel, mainwin.artwork,
+        mainwin.dirview, mainwin.patterncombo, mainwin.filterwin,
+        puddlestuff.webdb, mainwin.storedtags, mainwin.logdialog,
+        puddlestuff.masstag.dialogs)
+    
+    controls = [z.control for z in widgets]
     controls.extend(mainwin.action_dialogs.controls)
     if extra:
         controls.extend(extra)

@@ -2031,6 +2031,9 @@ class ProgressWin(QDialog):
             self.connect(self._timer, SIGNAL('timeout()'), update)
             self._timer.start()
 
+        self._focused = QApplication.focusWidget()
+        self._focusedpar = self._focused.parentWidget()
+
     def setValue(self, value):
         if self._infunc:
             return
@@ -2053,6 +2056,15 @@ class ProgressWin(QDialog):
         if hasattr(self, '_timer'):
             self._timer.stop()
         super(ProgressWin, self).closeEvent(event)
+        if self._focused is not None:
+            try:
+                self._focused.setFocus()
+            except RuntimeError:
+                try:
+                    self._focusedpar.setFocus()
+                    print 'parent'
+                except RuntimeError:
+                    pass
 
     def _value(self):
         return self.pbar.value()
