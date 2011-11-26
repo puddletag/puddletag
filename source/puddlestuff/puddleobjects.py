@@ -2032,7 +2032,10 @@ class ProgressWin(QDialog):
             self._timer.start()
 
         self._focused = QApplication.focusWidget()
-        self._focusedpar = self._focused.parentWidget()
+        if self._focused:
+            self._focusedpar = self._focused.parentWidget()
+        else:
+            self._focusedpar = None
 
     def setValue(self, value):
         if self._infunc:
@@ -2062,7 +2065,6 @@ class ProgressWin(QDialog):
             except RuntimeError:
                 try:
                     self._focusedpar.setFocus()
-                    print 'parent'
                 except RuntimeError:
                     pass
 
