@@ -168,8 +168,8 @@ class MetaProcessor(SGMLParser):
                 error.encoding = encoding
                 raise error
 
-import amazon, freedb, discogs
-tagsources = [z.info for z in (amazon, freedb, discogs)]
+import amazon, freedb, discogs, musicbrainzv2
+tagsources = [z.info for z in (amazon, freedb, discogs, musicbrainzv2)]
 
 try:
     import musicbrainz
