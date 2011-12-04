@@ -1,4 +1,4 @@
-import pdb, sys, time, urllib
+import pdb, sys, time, urllib, urllib2
 
 from collections import defaultdict
 from sgmllib import SGMLParser
