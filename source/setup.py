@@ -12,7 +12,7 @@ setup(
     packages = ['puddlestuff', 'puddlestuff.mainwin',
         'puddlestuff.libraries', 'puddlestuff.audioinfo',
         'puddlestuff.tagsources', 'puddlestuff.tagsources.mp3tag',
-        'puddlestuff.masstag'],
+        'puddlestuff.masstag', 'puddlestuff.plugins'],
 
     keywords='tagging ogg mp3 apev2 mp4 id3',
     license='GNU General Public License v2',
