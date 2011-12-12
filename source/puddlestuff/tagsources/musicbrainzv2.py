@@ -302,8 +302,9 @@ def retrieve_album(album_id):
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
         if isinstance(album, unicode):
-            album = album.encode('utf8')
-        return SERVER + 'release/?query=' + album + \
+            album = album.encode('utf8').replace(':', '')
+
+        return SERVER + 'release/?query=' + urllib.quote_plus(album) + \
             '&limit=%d&offset=%d' % (limit, offset)
 
     if artist:
@@ -320,7 +321,7 @@ def search_album(album=None, artist=None, limit=25, offset=0, own=False):
         else:
             query = 'release:' + urllib.quote_plus(album)
 
-    return SERVER + 'release/?query=' + query + \
+    return SERVER + 'release/?query=' + query.replace('%3A', '') + \
         '&limit=%d&offset=%d' % (limit, offset)
 
 def search_artist(artist, limit=25, offset=0):
@@ -331,7 +332,7 @@ def search_artist(artist, limit=25, offset=0):
         'limit': limit,
         'offset': offset,
         })
-    return SERVER + 'artist?' + query
+    return SERVER + 'artist?' + query.replace('%3A', '')
 
 def to_list(v, arg=None):
     if isinstance(v, list):

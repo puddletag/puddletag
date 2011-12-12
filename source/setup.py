@@ -20,7 +20,7 @@ setup(
         'Intended Audience :: Users',
         'Natural Language :: English',
         'Operating System :: GNU/Linux',
-        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
         'License :: OSI Approved :: GNU General Public License v3',
         'Topic :: Tagging',
         ],
