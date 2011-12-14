@@ -2020,12 +2020,6 @@ class ProgressWin(QDialog):
         self.wasCanceled = False
         self.connect(self, SIGNAL('rejected()'), self.cancel)
         self.connect(cancel, SIGNAL('clicked()'), self.cancel)
-
-        self._focused = QApplication.focusWidget()
-        if self._focused:
-            self._focusedpar = self._focused.parentWidget()
-        else:
-            self._focusedpar = None
         
         if maximum > 0:
             self.setValue(1)
@@ -2035,6 +2029,14 @@ class ProgressWin(QDialog):
             def update():
                 self.setValue(self.pbar.value() + 1)
             self.connect(self._timer, SIGNAL('timeout()'), update)
+
+        self._focused = QApplication.focusWidget()
+        if self._focused:
+            self._focusedpar = self._focused.parentWidget()
+        else:
+            self._focusedpar = None
+
+        if maximum <= 0:
             self._timer.start()
 
     def setValue(self, value):
