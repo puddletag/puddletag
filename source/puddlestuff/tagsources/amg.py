@@ -50,9 +50,9 @@ def find_id(tracks, field=None):
         if field in track:
             value = track[field]
             if isinstance(value, basestring):
-                return value
+                return value.replace(u' ', u'').lower()
             else:
-                return value[0]
+                return value[0].replace(u' ', u'').lower()
 
 white_replace = lambda match: match.group()[0]
 def convert(value):
@@ -183,6 +183,10 @@ def parse_albumpage(page, artist=None, album=None):
     info.update(convert_year(info))
     info.update(parse_cover(album_soup))
 
+    if 'AMG Album ID' in info:
+        info['AMG Album ID'] = \
+            info['AMG Album ID'].replace(u' ', u'').lower()
+
     info = dict((spanmap.get(k, k), v) for k, v in info.iteritems() if v)
 
     if artist and 'artist' not in info:
@@ -280,7 +284,10 @@ def parse_track_table(table, discnum=None):
             except (ValueError, TypeError):
                 tracks[-1][extra] = value
             continue
-                
+           
+        if len(headers) < len(tr.find_all('td')) and 'ptag' not in headers:
+            headers.insert(-1, 'ptag')
+               
         for field, td in zip(headers, tr.find_all('td')):
             if not field:
                 try:
@@ -294,6 +301,11 @@ def parse_track_table(table, discnum=None):
         if not track:
             continue
         else:
+            if track.get('ptag', u'').strip():
+                track['title'] = (track.get('title', u'') + u' - ' + 
+                    track['ptag']).strip()
+                del(track['ptag'])
+            
             tracks.append(dict((k,v) for k,v in track.items() if v))
     if not tracks:
         return None
