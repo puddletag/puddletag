@@ -302,13 +302,19 @@ def parse_track_table(table, discnum=None):
 def parse_tracks(soup):
     track_div = soup.find('div', {'id': 'tracks'})
     if track_div is None:
-        track_div = track_div = soup.find('div', {'id': 'performances'})
+        track_div = soup.find('div', {'id': 'performances'})
+
+    if track_div is None:
+        track_div = soup.find('div', {'id': 'results-table'})
 
     if track_div is None:
         return None
+        
     discs = [re.search('\d+$', z.string.strip()).group()
         for z in track_div.find_all('p', {'id': 'discnum'})]
     track_tables = soup.find_all('table', {'id': 'ExpansionTable'})
+    if not track_tables:
+        return None
     if discs:
         tracks = []
         [tracks.extend(parse_track_table(t, d)) for t,d in
@@ -331,13 +337,20 @@ def retrieve_album(url, coverurl=None, id_field=None):
         review = False
     album_page = get_encoding(album_page, True, 'utf8')[1]
     
-    
     info, tracks = parse_albumpage(album_page)
     if not tracks and review:
         write_log('Re-Opening Album Page - %s' % url)
         album_page = urlopen(url)
         album_page = get_encoding(album_page, True, 'utf8')[1]
         new_info, tracks = parse_albumpage(album_page)
+        info.update(new_info)
+    elif not tracks:
+        track_page = urlopen(url + '/tracks')
+        write_log('Opening track page - %s' % url)
+        f = open('a.html', 'w')
+        f.write(track_page)
+        f.close()
+        new_info, tracks = parse_albumpage(track_page)
         info.update(new_info)
         
     info['#albumurl'] = url
