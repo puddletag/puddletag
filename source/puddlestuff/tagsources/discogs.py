@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import gzip, cStringIO, re, socket, sys, urllib2, xml
+import cStringIO, gzip, json, re, socket, sys, time, urllib2
 
 from copy import deepcopy
-from xml.dom import minidom
 
 import puddlestuff.tagsources
 
@@ -19,14 +18,17 @@ RELEASE = 'release'
 
 SITE_MASTER_URL = 'http://www.discogs.com/master/'
 SITE_RELEASE_URL = 'http://www.discogs.com/release/'
+API_RELEASE_URL = 'http://api.discogs.com/release/'
+API_MASTER_URL = 'http://api.discogs.com/master/'
+SITE_URL = 'http://www.discogs.com'
 
 api_key = 'c6e33897b6'
-base_url = 'http://www.discogs.com/%sf=xml&api_key=%s'
+base_url = 'http://api.discogs.com/%s'
 
 def query_urls(key):
-    search_url = base_url % ('search?type=releases&q=%s&', key)
-    release_url = base_url % ('release/%s?', key)
-    master_url = base_url % ('master/%s?', key)
+    search_url = base_url % 'database/search?type=release&q=%s&per_page=100'
+    release_url = base_url % 'release/%s'
+    master_url = base_url % 'master/%s'
     return (search_url, release_url, master_url)
 
 search_url, release_url, master_url = query_urls(api_key)
@@ -44,13 +46,26 @@ ALBUM_KEYS = {
     'uri': 'discogs_uri',
     'summary': 'discogs_summary',
     'released': 'year',
-    'notes': 'discogs_notes'}
+    'notes': 'discogs_notes',
+    'id': '#r_id',
+    'thumb': '#cover_url',
+    'resource_url': '#discogs_url',
+    'type': '#release_type'}
 
 TRACK_KEYS = {
     'position': 'track',
     'duration': '__length',
     'notes': 'discogs_notes'}
 
+INVALID_KEYS = ['status', 'resource_url', 'tracklist', 'thumb',
+    'formats', 'artists', 'extraartists', 'images', 'videos',
+    'master_id', 'labels', 'companies', 'series']
+
+class LastTime(object): pass
+    
+__lasttime = LastTime()
+__lasttime.time = time.time()
+    
 def convert_dict(d, keys=None):
     if keys is None:
         keys = TRACK_KEYS
@@ -60,6 +75,25 @@ def convert_dict(d, keys=None):
             d[keys[key]] = d[key]
             del(d[key])
     return d
+
+def check_values(d):
+    ret = {}
+    for key in d:
+        if key in INVALID_KEYS:
+            continue
+        v = d[key]
+        if not v:
+            continue
+        if hasattr(v, '__iter__') and hasattr(v, 'items'):
+            continue
+        elif not hasattr(v, '__iter__'):
+            v = unicode(v)
+        elif isinstance(v, str):
+            v = v.decode('utf8')
+
+        ret[key] = v
+
+    return ret
 
 def find_id(tracks, field=None):
     if not field:
@@ -72,195 +106,109 @@ def find_id(tracks, field=None):
             else:
                 return value[0]
 
-def get_text(node):
-    """Returns the textual data in a node."""
-    try:
-        return node.firstChild.data
-    except AttributeError:
-        return
-
-def is_release(element):
-    return element.attributes['type'].value in ('release', 'master')
-
 def keyword_search(keywords):
     write_log(translate("Discogs",
         'Retrieving search results for keywords: %s') % keywords)
     keywords = re.sub('(\s+)', u'+', keywords)
     url = search_url % keywords
     text = urlopen(url)
-    return parse_search_xml(text)
+    return parse_search_json(json.loads(text))
 
-def node_to_dict(node):
-    ret = {}
-    for child in node.childNodes:
-        if child.nodeType == child.TEXT_NODE:
-            continue
-        text_node = child.firstChild
-        if text_node is None:
-            continue
-        if text_node.nodeType == text_node.TEXT_NODE:
-            ret[child.tagName] = text_node.data.strip()
-    return dict((k,v) for k,v in ret.iteritems() if v)
-
-def parse_album_xml(text):
-    """Parses the retrieved xml for an album and get's the track listing."""
-    doc = minidom.parseString(text)
-    info = {}
-    info['artist'] = [node_to_dict(e)['name'] for e in
-        doc.getElementsByTagName('artists')[0].childNodes if node_to_dict(e)]
-
-    labels = doc.getElementsByTagName('labels')
-    if labels:
-        for label in labels[0].childNodes:
-            try:
-                info['label'] = label.attributes['name'].value
-                info['discogs_catno'] = label.attributes['catno'].value
-            except (AttributeError, KeyError, TypeError):
-                continue
-
-    formats = doc.getElementsByTagName('formats')
-    if formats:
-        for format in formats[0].childNodes:
-            try:
-                info['discogs_format'] = format.attributes['name'].value
-                info['discs'] = format.attributes['qty'].value
-            except (AttributeError, IndexError, ValueError, TypeError):
-                pass
-            try:
-                info['discogs_format_desc'] = filter(None,
-                    [get_text(z) for z in format.childNodes[0].childNodes])
-            except (AttributeError, IndexError, ValueError, TypeError):
-                continue
-
-    extras = doc.getElementsByTagName('extraartists')
-    if extras:
-        ex_artists = [node_to_dict(z) for z  in extras[0].childNodes]
-        info['involvedpeople_album'] = u';'.join(
-            u'%s:%s' % (e['name'], e['role']) for e in ex_artists if e)
-
-    try:
-        info['genre'] = filter(None, [get_text(z) for z in
-            doc.getElementsByTagName('genres')[0].childNodes])
-    except IndexError:
-        pass
-
-    try:
-        info['style'] = filter(None, [get_text(z) for z in
-            doc.getElementsByTagName('styles')[0].childNodes])
-    except IndexError:
-        pass
-
-    text_keys = ['notes', 'country', 'released', 'title']
-
-    for key in text_keys:
-        try:
-            info[key] = get_text(doc.getElementsByTagName(key)[0])
-        except IndexError:
-            continue
-
-    images = doc.getElementsByTagName('images')
-    if images:
-        image_list = []
-        for image in images[0].childNodes:
-            if not image.attributes:
-                continue
-            d = dict(image.attributes.items())
-            if not d:
-                continue
-            if d['type'] == 'primary':
-                image_list.insert(0, (d['uri'], d['uri150']))
+def parse_tracklist(tlist):
+    tracks = []
+    for t in tlist:
+        title = t['title']
+        people = []
+        featuring = []
+        for person in t.get('extraartists', {}):
+            name = person['name']
+            if person.get('join'):
+                title = title + u' ' + join + u' ' + name
+            elif person.get('role', u'') == u'Featuring':
+                featuring.append(name)
             else:
-                image_list.append((d['uri'], d['uri150']))
-        info['#cover-url'] = image_list
+                people.append(u"%s:%s" % (person['name'], person['role']))
 
-    tracklist = doc.getElementsByTagName('tracklist')[0]
-    return convert_dict(info, ALBUM_KEYS), filter(None,
-        [parse_track_node(z) for z in tracklist.childNodes])
+        if featuring:
+            title = title + u' featuring ' + u', '.join(featuring)
 
-def parse_track_node(node):
-    ret = node_to_dict(node)
+        info = convert_dict(t)
+        info['title'] = title
 
-    try:
-        artist_node = node.getElementsByTagName('artists')
-    except AttributeError:
-        return {}
-    if artist_node:
-        artist_infos = map(node_to_dict, artist_node[0].childNodes)
-        if artist_infos:
-            artists = []
-            join = False
-            for a_info in artist_infos:
-                if not a_info:
-                    continue
-                if 'join' in a_info:
-                    artist = u'%s %s ' % (a_info['name'], a_info['join'])
-                else:
-                    artist = a_info['name']
+        if people:
+            info['involvedpeople_track'] = u';'.join(people)
+        tracks.append(check_values(info))
+    return tracks
 
-                if join: artists[-1] +=  artist
-                else: artists.append(artist)
+def parse_album_json(data):
+    """Parses the retrieved xml for an album and get's the track listing."""
 
-                join = 'join' in a_info
+    info = {}
 
-            ret['artist'] = artists
+    formats = []
+    for fmt in data.get('formats', []):
+        desc = fmt.get('descriptions', fmt.get('name', u''))
+        if not desc:
+            continue
+        if isinstance(desc, basestring):
+            formats.append(desc)
+        else:
+            formats.extend(desc)
+    
+    if formats:
+        info['format'] = list(set(formats))
+    info['artist'] = [z['name'] for z in data.get('artists', [])]
+    info['involvedpeople_album'] = u':'.join(u'%s;%s' % (z['name'],z['role'])
+        for z in data.get('extraartists', []))
+    info['label'] = [z['name'] for z in data.get('labels', [])]
 
-    extras = node.getElementsByTagName('extraartists')
-    if extras:
-        people = [node_to_dict(z) for z  in extras[0].childNodes]
-        people = u';'.join(u'%s:%s' % (e['name'], e['role'])
-            for e in people if e)
-        ret['involvedpeople_track'] = people
+    info['companies'] = u';'.join(
+        u'%s %s' % (z['entity_type_name'], z['name'])
+        for z in data.get('companies', []))
 
-    return convert_dict(ret)
+    info = check_values(convert_dict(info, ALBUM_KEYS))
 
-def parse_search_xml(text):
+    if 'images' in data:
+        imgs = [(z.get('uri', ''), z.get('uri150', ''))
+            for z in data['images'] if 'uri' in z or 'uri150' in images]
+        info['#cover-url'] = imgs
+        
+    return (info, parse_tracklist(data['tracklist']))
+
+def parse_search_json(data):
     """Parses the xml retrieved after entering a search query. Returns a
     list of the albums found.
     """
-    try:
-        doc = minidom.parseString(text)
-    except xml.parsers.expat.ExpatError:
-        write_log(text)
-        raise RetrievalError(translate("Discogs",
-            'Invalid XML was returned. See log'))
-    exact = doc.getElementsByTagName('exactresults')
-    results = []
-    if exact:
-        results = filter(is_release, exact[0].getElementsByTagName('result'))
+
+    results = data.get('results', []) + data.get('exactresults', [])
 
     if not results:
-        search_results = doc.getElementsByTagName('searchresults')
-        results = filter(is_release,
-            search_results[0].getElementsByTagName('result'))
+        return
 
-    ret = []
+    albums = []
 
     for result in results:
-        info = node_to_dict(result)
+        info = result.copy()
         try:
-            info['#release_type'] = result.attributes['type'].value
-        except AttributeError:
-            continue
-        info['#r_id'] = re.search('\d+$', info['uri']).group()
-        info[R_ID] = info['#r_id']
-        info['discogs_release_type'] = info['#release_type']
+            artist, album = result['title'].split(u' - ')
+        except ValueError:
+            album = result['title']
+            artist = u''
+
         info = convert_dict(info, ALBUM_KEYS)
-        if 'album' in info:
-            try:
-                artist, album = info['album'].split(' - ',1)
-            except ValueError:
-                artist = info.get('artist', u'').strip()
-                album = info.get('album', u'').strip()
-            artist = re.sub('\s{2,}', u' ', artist).strip()
-            album = re.sub('\s{2,}', u' ', album).strip()
-            info['album'] = album
-            if artist:
-                info['artist'] = artist
+
+        info['artist'] = artist
+        info['album'] = album
+
+        info['discogs_id'] = info['#r_id']
+
         info['#extrainfo'] = (
             translate('Discogs', '%s at Discogs.com') % info['album'],
-            info['discogs_uri'])
-        ret.append(info)
-    return ret
+            SITE_URL + info['discogs_uri'])
+
+        albums.append(check_values(info))
+
+    return albums
 
 def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
@@ -285,11 +233,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
     site_url = SITE_MASTER_URL if rls_type == MASTER else SITE_RELEASE_URL
     site_url += r_id.encode('utf8')
-
+            
     url = master_url % r_id if rls_type == MASTER else release_url % r_id
-    xml = urlopen(url)
-
-    ret = parse_album_xml(xml)
+    x = urlopen(url)
+    f = open('a.json', 'w')
+    f.write(x)
+    f.close()
+    ret = parse_album_json(json.loads(x)['resp'][rls_type])
 
     info = deepcopy(info)
     info.update(ret[0])
@@ -297,15 +247,24 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     if image in image_types and '#cover-url' in info:
         data = []
         for large, small in info['#cover-url']:
-            if image == LARGEIMAGE:
+            if image == LARGEIMAGE and large:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % large)
-                data.append({DATA: urlopen(large)})
+                try:
+                    data.append({DATA: urlopen(large)})
+                except RetrievalError, e:
+                    write_log(translate('Discogs',
+                        u'Error retrieving image:') + unicode(e))
             else:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % small)
-                data.append({DATA: urlopen(small)})
-        info.update({'__image': data})
+                try:
+                    data.append({DATA: urlopen(small)})
+                except RetrievalError, e:
+                    write_log(translate('Discogs',
+                        u'Error retrieving image:') + unicode(e))
+        if data:
+            info.update({'__image': data})
 
     info['#extrainfo'] = (
         translate('Discogs', '%s at Discogs.com') % info['album'], site_url)
@@ -320,13 +279,16 @@ def search(artist=None, album=None):
         keywords = album
     return keyword_search(keywords)
 
-
 def urlopen(url):
     url = iri_to_uri(url)
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
     if puddlestuff.tagsources.user_agent:
         request.add_header('User-Agent', puddlestuff.tagsources.user_agent)
+
+    if time.time() - __lasttime.time < 1:
+        time.sleep(1)
+    __lasttime.time = time.time()
 
     try:
         data = urllib2.urlopen(request).read()
@@ -449,5 +411,10 @@ class Discogs(object):
 info = Discogs
 
 if __name__ == '__main__':
-    #print parse_search_xml(open(sys.argv[1], 'r').read())
-    print parse_album_xml(open(sys.argv[1], 'r').read())
+    import json
+    f = open('k.json', 'r').read()
+    d = json.loads(f)
+    x = parse_search_json(d)
+    #print parse_album_json(d)[0]
+    #x = search('atliens')
+    print retrieve_album(x[0])
