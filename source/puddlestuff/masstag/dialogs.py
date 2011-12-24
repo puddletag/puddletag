@@ -551,9 +551,13 @@ class MassTagWindow(QWidget):
         mutex.unlock()
 
     def changeProfile(self, index):
+        try:
+            self.profile = self.profiles[index]
+        except IndexError:
+            return
         cparser = PuddleConfig()
         cparser.set('masstagging', 'lastindex', index)
-        self.profile = self.profiles[index]
+        
 
     def clearPreview(self):
         self.emit(SIGNAL('disable_preview_mode'))

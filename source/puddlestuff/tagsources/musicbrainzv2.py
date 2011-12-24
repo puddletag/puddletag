@@ -294,9 +294,6 @@ def retrieve_album(album_id):
         '+url-rels+work-rels+recording-level-rels+work-level-rels'
 
     xml = urlopen(url)
-    f = open('this_is_it.xml', 'w')
-    f.write(xml)
-    f.close()
     return parse_album(xml)
     
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):

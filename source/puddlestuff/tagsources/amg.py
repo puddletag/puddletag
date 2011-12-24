@@ -186,6 +186,8 @@ def parse_albumpage(page, artist=None, album=None):
     if 'AMG Album ID' in info:
         info['AMG Album ID'] = \
             info['AMG Album ID'].replace(u' ', u'').lower()
+        if info['AMG Album ID'].startswith('w') and 'genre' not in info:
+            info['genre'] = u'Classical'
 
     info = dict((spanmap.get(k, k), v) for k, v in info.iteritems() if v)
 
@@ -271,45 +273,61 @@ def parse_track_table(table, discnum=None):
 
     tracks = []
 
-    for tr in table.find_all('tr', {'id': 'trlink'}):
-        track = {}
-        if discnum:
-            track['discnumber'] = discnum
-        extra = tr.find('div', {'class': 'expand'})
-        if extra:
-            value = convert(extra.string)
-            try:
-                field, value = [z.strip() for z in value.split(u':')]
-                tracks[-1][spanmap.get(field, field)] = value
-            except (ValueError, TypeError):
-                tracks[-1][extra] = value
-            continue
-           
+    for tr in table.find_all('tr'):
         if len(headers) < len(tr.find_all('td')) and 'ptag' not in headers:
             headers.insert(-1, 'ptag')
-               
-        for field, td in zip(headers, tr.find_all('td')):
-            if not field:
-                try:
-                    value = unicode(int(td.string.strip()))
-                    field = 'track'
-                except (TypeError, ValueError):
-                    continue
-            else:
-                value = convert(td.string)
-            track[spanmap.get(field, field)] = value
-        if not track:
-            continue
+
+        if tr.element.attrib.get('id') == 'trlink':
+            track = parse_track(tr, headers)
+        elif tr.find_all('div', {'class': 'expand'}):
+            track = tracks[-1]
+            track.update(parse_track_extra(tr))
         else:
-            if track.get('ptag', u'').strip():
-                track['title'] = (track.get('title', u'') + u' - ' + 
-                    track['ptag']).strip()
-                del(track['ptag'])
-            
-            tracks.append(dict((k,v) for k,v in track.items() if v))
+            continue
+           
+        tracks.append(track)
+    
     if not tracks:
         return None
+
+    if discnum:
+        for track in tracks:
+            track['discnumber'] = discnum
     return tracks
+
+def parse_track(tr, headers):
+    track = {}
+    for field, td in zip(headers, tr.find_all('td')):
+        if not field:
+            try:
+                value = unicode(int(td.string.strip()))
+                field = 'track'
+            except (TypeError, ValueError):
+                continue
+        else:
+            value = convert(td.string)
+        track[spanmap.get(field, field)] = value
+
+    if track and track.get('ptag', u'').strip():
+        track['title'] = (track.get('title', u'') + u' : ' +
+            track['ptag']).strip()
+        del(track['ptag'])
+    return dict((k,v) for k,v in track.iteritems() if v.strip())
+
+def parse_track_extra(tr):
+    extra = tr.find('div', {'class': 'expand'})
+    track = {}
+    if not extra:
+        return track
+
+    value = convert(extra.string)
+    try:
+        field, value = [z.strip() for z in value.split(u':')]
+        track[spanmap.get(field, field)] = value
+    except (ValueError, TypeError):
+        track[extra] = value
+
+    return track
 
 def parse_tracks(soup):
     track_div = soup.find('div', {'id': 'tracks'})
@@ -357,11 +375,8 @@ def retrieve_album(url, coverurl=None, id_field=None):
         new_info, tracks = parse_albumpage(album_page)
         info.update(new_info)
     elif not tracks:
-        track_page = urlopen(url + '/tracks')
-        write_log('Opening track page - %s' % url)
-        f = open('a.html', 'w')
-        f.write(track_page)
-        f.close()
+        write_log('Opening track page - %s' % (url + '/tracks'))
+        track_page = get_encoding(urlopen(url + '/tracks'), True, 'utf8')[1]
         new_info, tracks = parse_albumpage(track_page)
         info.update(new_info)
         
