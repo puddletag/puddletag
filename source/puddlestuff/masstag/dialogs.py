@@ -638,7 +638,8 @@ class MassTagWindow(QWidget):
                         continue
 
                     matched = match_files(files, tsp.result.merged,
-                        mtp.track_bound, mtp.fields, mtp.leave_existing, True)
+                        mtp.track_bound, mtp.fields,
+                        mtp.jfdi, mtp.leave_existing, True)
 
                     tsp.track_matches = matched[1]
                     matched = matched[0]
