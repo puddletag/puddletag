@@ -284,8 +284,9 @@ def parse_track_table(table, discnum=None):
             track.update(parse_track_extra(tr))
         else:
             continue
-           
-        tracks.append(track)
+
+        if track:
+            tracks.append(track)
     
     if not tracks:
         return None

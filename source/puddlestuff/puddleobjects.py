@@ -809,6 +809,13 @@ def progress(func, pstring, maximum, threadfin = None):
     case where only the parent argument is passed).
     """
     def s(*args):
+
+        focused = QApplication.focusWidget()
+        if focused:
+            focusedpar = focused.parentWidget()
+        else:
+            focusedpar = None
+        
         parent = args[0]
         win = ProgressWin(parent, maximum, pstring)
         if maximum > 1:
@@ -848,8 +855,13 @@ def progress(func, pstring, maximum, threadfin = None):
             if args[0] == -1:
                 win.close()
                 win.destroy()
-                if threadfin:
+                if threadfin:                    
                     threadfin()
+                if focused is not None:
+                    try: focused.setFocus()
+                    except RuntimeError:
+                        try: focusedpar.setFocus()
+                        except RuntimeError: pass
             elif isinstance(args[0], QString):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)
@@ -2030,12 +2042,6 @@ class ProgressWin(QDialog):
                 self.setValue(self.pbar.value() + 1)
             self.connect(self._timer, SIGNAL('timeout()'), update)
 
-        self._focused = QApplication.focusWidget()
-        if self._focused:
-            self._focusedpar = self._focused.parentWidget()
-        else:
-            self._focusedpar = None
-
         if maximum <= 0:
             self._timer.start()
 
@@ -2061,14 +2067,6 @@ class ProgressWin(QDialog):
         if hasattr(self, '_timer'):
             self._timer.stop()
         super(ProgressWin, self).closeEvent(event)
-        if self._focused is not None:
-            try:
-                self._focused.setFocus()
-            except RuntimeError:
-                try:
-                    self._focusedpar.setFocus()
-                except RuntimeError:
-                    pass
 
     def _value(self):
         return self.pbar.value()
