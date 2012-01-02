@@ -42,8 +42,11 @@ def rename_error_msg(e, filename):
         traceback.print_exc()
         m = translate("Defaults",
             '<p>An error occured while writing to <b>%1</b>.</p>'
-            '<p>Reason: <b>%2</b></p>')
-        m = m.arg(filename).arg(e.strerror)
+            '<p>Reason: <b>%2</b> ('
+            '<i>See ~/.puddletag/log.log for debug info.</i>)</p>')
+        
+        m = m.arg(filename).arg(
+            unicode(e) if e.strerror is None else e.strerror)
         return m
 
 def rename(oldpath, newpath):

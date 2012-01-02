@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 
-import util, imghdr, pdb
+import imghdr, pdb
+
+from copy import copy, deepcopy
+from itertools import imap
+
+from mutagen.mp4 import MP4,  MP4Cover
+
+import tag_versions, util
+
 from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
     FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
     del_deco, cover_info, info_to_dict, parse_image)
-from copy import copy, deepcopy
-from mutagen.mp4 import MP4,  MP4Cover
+
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
     'modified', 'bitspersample', 'channels')
-import tag_versions
 
 #mp4 tags, like id3 can only have a fixed number of tags. The ones on the left
 #with the corresponding tag as recognized by puddletag on the right...

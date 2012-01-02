@@ -817,13 +817,21 @@ def progress(func, pstring, maximum, threadfin = None):
             focusedpar = None
         
         parent = args[0]
-        win = ProgressWin(parent, maximum, pstring)
+        
         if maximum > 1:
+            win = ProgressWin(parent, maximum, pstring)
             win.show()
+            
         if len(args) > 1:
             f = func(*args)
         else:
             f = func()
+
+        if maximum  == 1:
+            errors = f.next()
+            if not isinstance(errors, (QString, int, long, basestring)):
+                errormsg(parent, errors[0], 1)
+            return
         parent.showmessage = True
 
         def threadfunc():
@@ -837,7 +845,6 @@ def progress(func, pstring, maximum, threadfin = None):
                     elif isinstance(temp, (int, long)):
                         thread.emit(SIGNAL('set_max(int)'), temp)
                     elif temp is not None:
-                        #temp[0] is the error message, temp[1] the num files
                         thread.emit(SIGNAL('error(QString, int)'),
                             temp[0], temp[1])
                         err = True
@@ -857,8 +864,8 @@ def progress(func, pstring, maximum, threadfin = None):
                 win.destroy()
                 if threadfin:                    
                     threadfin()
-                if focused is not None:
-                    try: focused.setFocus()
+                if focusedpar is not None:
+                    try: focusedpar.setFocus()
                     except RuntimeError:
                         try: focusedpar.setFocus()
                         except RuntimeError: pass

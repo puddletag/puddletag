@@ -755,39 +755,18 @@ class MainWin(QMainWindow):
         s(self)
 
     def writeOneToMany(self, d):
-        model = self._table.model()
         rows = status['selectedrows']
-        setRowData = model.setRowData
-        lib_updates = []
-
-        def fin():
-            model.undolevel += 1
-            self._table.selectionChanged()
-            if not model.previewMode:
-                self.emit(SIGNAL('libfilesedited'), lib_updates)
-
-        if model.previewMode:
-            [setRowData(row, d, undo=True) for row in rows]
-            fin()
+        ret = self._write((d.copy() for r in rows), rows)
+        if ret is None:
             return
+        func, fin, rows = ret
 
-        def func():
-            for row in rows:
-                try:
-                    update = setRowData(row, d, undo=True)
-                    if update:
-                        lib_updates.append(update)
-                    yield None
-                except (IOError, OSError), e:
-                    filename = model.taginfo[row][PATH]
-                    m = translate("Defaults",
-                        'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror)
-                    if row == rows[-1]:
-                        yield m, 1
-                    else:
-                        yield m, len(rows)
-
-        s = progress(func, translate("Defaults", 'Writing '), len(rows), fin)
+        def finished():
+            fin()
+            if 'rename_dirs' in state:
+                self.renameDirs(state['rename_dirs'].items())
+        s = progress(func, translate("Defaults", 'Writing '),
+            len(rows), finished)
         s(self)
     
     def writeSinglePreview(self, d):

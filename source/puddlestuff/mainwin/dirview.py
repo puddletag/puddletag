@@ -299,7 +299,7 @@ class DirViewWidget(QWidget):
         
         self.dirview = DirView(self, subfolders, status)
         self.connect(self.dirview, SIGNAL('loadFiles'), SIGNAL('loadFiles'))
-        self.connect(self.dirview, SIGNAL('removeFolder'), SIGNAL('removeFolders'))
+        self.connect(self.dirview, SIGNAL('removeFolders'), SIGNAL('removeFolders'))
 
         self.receives = [
             ('dirschanged', self.dirview.selectDirs),

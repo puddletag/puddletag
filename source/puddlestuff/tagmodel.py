@@ -1966,9 +1966,13 @@ class TagTable(QTableView):
         set_data = model.setData
 
         def modded_setData(index, value, role=Qt.EditRole):
+            if len(self.selectedRows) == 1:
+                return set_data(index, value, role)
             ret = set_data(index, value, role, True)
+            
             if ret:
                 self.emit(SIGNAL('onetomany'), ret[0])
+            return False
 
         model.setData = modded_setData
 

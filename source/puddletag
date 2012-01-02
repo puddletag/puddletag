@@ -90,6 +90,10 @@ def init(options, qapp):
 
     Parses command line options. Loads Translations. Sets fontsize."""
 
+    if options.version:
+        #It's already printed.
+        exit()
+
     if options.debug:
         create_log()
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -172,7 +176,7 @@ def load_language(qapp, langfile=None):
     puddlestuff.puddleobjects.trans_imagetypes()
 
 def parse_cmd_options():
-    usage = "usage: %prog [options] [directory path]"
+    usage = "Usage: %prog [options] [directory path]"
     parser = OptionParser(usage=usage)
     
     parser.add_option("--langfile", dest="langfile",
@@ -180,8 +184,10 @@ def parse_cmd_options():
         help="Path to a translation (.qm) file.", metavar="LANGFILE")
     parser.add_option("--fontsize", type='float',
         dest="fontsize", help="Default fontsize to use (in points).")
-    parser.add_option("-d", "--debug", action="store_false",
+    parser.add_option("-d", "--debug", action="store_true",
         dest="debug", default=False, help="Show (useless) debug messages.")
+    parser.add_option("-v", "--version", action="store_true",
+        dest="version", default=False, help="Show version info and exit.")
 
     return parser.parse_args()
 
