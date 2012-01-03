@@ -829,7 +829,8 @@ def progress(func, pstring, maximum, threadfin = None):
 
         if maximum  == 1:
             errors = f.next()
-            if not isinstance(errors, (QString, int, long, basestring)):
+            if errors and \
+                not isinstance(errors, (QString, int, long, basestring)):
                 errormsg(parent, errors[0], 1)
             return
         parent.showmessage = True
@@ -866,9 +867,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     threadfin()
                 if focusedpar is not None:
                     try: focusedpar.setFocus()
-                    except RuntimeError:
-                        try: focusedpar.setFocus()
-                        except RuntimeError: pass
+                    except RuntimeError: pass
             elif isinstance(args[0], QString):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)

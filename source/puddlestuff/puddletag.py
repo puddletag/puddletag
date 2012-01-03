@@ -761,12 +761,8 @@ class MainWin(QMainWindow):
             return
         func, fin, rows = ret
 
-        def finished():
-            fin()
-            if 'rename_dirs' in state:
-                self.renameDirs(state['rename_dirs'].items())
         s = progress(func, translate("Defaults", 'Writing '),
-            len(rows), finished)
+            len(rows), fin)
         s(self)
     
     def writeSinglePreview(self, d):
