@@ -286,6 +286,9 @@ def parse_track_table(table, discnum=None):
             continue
 
         if track:
+            title = track['title']
+            if '" "' in title:
+                track['title'] = title.replace('" "', tracks[-1]['title'])
             tracks.append(track)
     
     if not tracks:
