@@ -1,325 +1,450 @@
-# -*- coding: utf-8 -*-
+import pdb, sys, time, urllib, urllib2
+
 from collections import defaultdict
-import socket
+from sgmllib import SGMLParser
+from xml.dom import minidom, Node
+from xml.sax.saxutils import escape, quoteattr
 
-import musicbrainz2
+from puddlestuff.tagsources import (write_log, RetrievalError,
+    urlopen as _urlopen, parse_searchstring)
+from puddlestuff.util import isempty, translate
 
-import musicbrainz2.webservice as ws
-import musicbrainz2.model as brainzmodel
+def urlopen(url):
+    print url
+    return _urlopen(url)
 
-from musicbrainz2.utils import extractUuid
-from musicbrainz2.webservice import (ArtistFilter, Query, ReleaseFilter,
-    WebServiceError)
+SERVER = 'http://musicbrainz.org/ws/2/'
 
-import puddlestuff
+TEXT_NODE = Node.TEXT_NODE
 
-from puddlestuff.constants import CHECKBOX
-from puddlestuff.audioinfo import strlength
-from puddlestuff.tagsources import (parse_searchstring, set_status,
-    write_log, RetrievalError)
-from puddlestuff.tagsources.discogs import find_id
-from puddlestuff.util import escape_html, translate
+ARTISTID = '#artistid'
+ALBUMID = '#albumid'
+LABELID = '#labelid'
+INCLUDES = ''
 
-old_version = False
+ARTISTID_FIELD = 'mb_artist_id'
+ALBUMID_FIELD = 'mb_album_id'
 
-Release = brainzmodel.Release
-RELEASETYPES = (Release.TYPE_OFFICIAL)
-ARTIST_ID = 'mbrainz_artist_id'
-ALBUM_ID = 'mbrainz_album_id'
-PUID = 'musicip_puid'
-TRACK_ID = 'mbrainz_track_id'
-COUNTRY = 'mbrainz_country'
-SITE_ALBUM_URL = 'http://musicbrainz.org/release/'
+ARTIST_KEYS = {
+    'name': 'artist',
+    'sort-name': 'sortname',
+    'id': 'artist_id',
+    'ext:score': '#score',
+    'type': 'artist_type',
+    }
 
-escape = lambda e: escape_html(unicode(e))
+ALBUM_KEYS = ARTIST_KEYS.copy()
+ALBUM_KEYS.update({
+    'name': 'album',
+    'id': 'album_id',
+    'type': 'album_type',
+    'xml:ext': '#xml:ext',
+    'title': 'album',
+    'track-count': '__numtracks',
+    })
 
-try:
-    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True,
-        artist=True, releaseEvents=True, labels=True, ratings=True,
-        isrcs=True)
-except (TypeError):
-    RELEASEINCLUDES = ws.ReleaseIncludes(discs=True, tracks=True,
-        artist=True, releaseEvents=True, labels=True)
-    old_version = True
+TRACK_KEYS = {
+    'id': 'mb_track_id',
+    'position': 'track',
+    'length': '__length',
+    }
 
-try:
-    ARTIST_INCLUDES = ws.ArtistIncludes(ratings=True,
-        releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
-        trackRelations=True, artistRelations=True)
-except TypeError:
-    ARTIST_INCLUDES = ws.ArtistIncludes(
-        releases=[Release.TYPE_OFFICIAL], releaseRelations=True,
-        trackRelations=True, artistRelations=True)
-    old_version = True
+TO_REMOVE = ('recording', 'offset', 'count')
 
-if hasattr(musicbrainz2.model, 'Rating'):
-    class Rating(musicbrainz2.model.Rating):
+def children_to_text(node):
+    if istext(node): return
+    info = dict(node.attributes.items())
+    for ch in node.childNodes:
+        if istext(ch): continue
+        key = ch.tagName
+        if key not in info:
+            info[key] = node_to_text(ch)
+        else:
+            info[key] = to_list(info[key], node_to_text(ch))
+    return info
 
-        def getValue(self):
-            return self._value
+def convert_dict(d, fm):
+    return dict((fm[k] if k in fm else k, v) for k, v in d.iteritems() if
+        not isempty(v))
 
-        def setValue(self, value):
-            try:
-                value = float(value)
-            except ValueError, e:
-                value = None
-            self._value = value
+def fix_xml(xml):
+    c = XMLEscaper()
+    c.feed(album_xml)
+    return c.xml
 
-        value = property(getValue, setValue, doc='The value of the rating.')
+def istext(node):
+    return getattr(node, 'nodeType', None) == TEXT_NODE
 
-    musicbrainz2.model.Rating = Rating
+def node_to_text(node):
+    if len(node.childNodes) > 1:
+        return
+    text_node = node.firstChild
+    if istext(text_node):
+        return text_node.data
 
-CONNECTIONERROR = translate('MusicBrainz',
-    "Could not connect to MusicBrainz server. Check your net connection.")
+def parse_album(xml):
+    doc = minidom.parseString(xml)
+    release_node = doc.getElementsByTagName('release')[0]
 
-q = Query(clientId = 'puddletag/' + puddlestuff.version_string)
+    return parse_release(release_node)
 
-def get_artist_id(artist, lucene=False):
-    if lucene:
-        results = q.getArtists(ArtistFilter(query=artist, limit = 1))
+def parse_album_search(xml):
+    doc = minidom.parseString(xml)
+    nodes = doc.getElementsByTagName('release-list')[0].childNodes
+    ret = []
+    for i, node in enumerate(nodes):
+        if istext(node):
+            continue
+        ret.append(parse_release(node))
+    return ret
+        
+def parse_artist_credit(node):
+    artists = parse_node(node, u'artist-credit', u'name-credit', u'artist')
+    if not artists:
+        return {}
+
+    artist = u', '.join(z[u'artist'][u'name'] for z in artists)
+    if len(artists) == 1:
+        artist_id = artists[0]['artist']['id']
+        return {
+            'artist': artist,
+            '#artist_id': artist_id,
+            'artist_id': artist_id,
+            }
     else:
-        results = q.getArtists(ArtistFilter(artist, limit = 1))
-    if results:
-        return (results[0].artist.name, results[0].artist.id)
+        return {'artist': artist}
 
-def artist_releases(artistid):
-    ret = q.getArtistById(artistid, ARTIST_INCLUDES).releases
+def parse_artist_relation(relations):
+    ret = defaultdict(lambda: [])
+    for r in to_list(relations[u'relation']):
+        field = r['type']
+        desc = u''
+
+        if u'attribute-list' in r:
+            desc = u', '.join(to_list(r[u'attribute-list']['attribute']))
+        if u'artist' in r:
+            if not desc:
+                desc = r[u'artist'][u'name']
+            else:
+                desc = desc + u' by ' + r[u'artist'][u'name']
+        if desc:
+            ret[field].append(desc)
+    return ret
+        
+def parse_artist_search(xml):
+    doc = minidom.parseString(xml)
+    nodes = doc.getElementsByTagName('artist-list')[0].childNodes
+    ret = []
+    for node in nodes:
+        if istext(node):
+            continue
+        info = dict(node.attributes.items())
+        for ch in node.childNodes:
+            if istext(node):
+                continue
+            info[ch.tagName] = node_to_text(ch)
+        info = convert_dict(info, ARTIST_KEYS)
+        info['#artist_id'] = info['artist_id']
+        ret.append(info)
     return ret
 
-def artist_search(artist):
-    try:
-        set_status(translate("MusicBrainz",
-            'Retrieving Artist Info for <b>%s</b>') % artist)
-        write_log(translate("MusicBrainz",
-            'Retrieving Artist Info for <b>%s</b>') % artist)
-        artist, artistid = get_artist_id(artist)
-        return artist, artistid
-    except WebServiceError, e:
-        msg = translate("MusicBrainz",
-            '<b>Error:</b> While retrieving %1: %2').arg(artist)
-        write_log(msg.arg(escape(e)))
-        raise RetrievalError(unicode(e))
-    except ValueError:
-        return (None, None)
+def parse_label_list(release_node):
+    labels = parse_node(release_node, u'label-info-list', u'label-info',
+        u'label')
 
-def get_all_releases(title):
-    tmp = ReleaseFilter(releaseTypes=RELEASETYPES,title=title)
-    releases = q.getReleases(filter=tmp)
-    artists = defaultdict(lambda: {})
-    albums = defaultdict(lambda:{})
-    albumlist = defaultdict(lambda:[])
-    for release in releases:
-        r = release.release
-        artists[r.artist.name] = (r.artist.name, r.artist.id)
-        albums[r.artist.id][r.title] = r.id
-        albumlist[r.artist.name].append((r.title, []))
-    return artists, albums, albumlist
 
-def get_puid(track_id):
-    if not old_version:
-        includes = ws.TrackIncludes(puids=True, ratings=True)
-    else:
-        includes = ws.TrackIncludes(puids=True)
-    track = q.getTrackById(track_id, includes)
-    track_dict = {'musicip_puid': track.puids}
-    if not old_version:
-        track_dict['mbrainz_rating'] = unicode(track.rating.value) if \
-            track.rating.value is not None else None
-    return dict((k,v) for k,v in track_dict.iteritems() if v)
+    catalogs = [z[u'catalog-number'] for z in labels if u'catalog-number' in z]
+    label_names = [z[u'label'][u'name'] for z in labels
+        if u'label' in z and u'name' in z[u'label']]
+    label_ids = [z[u'label'][u'id'] for z in labels
+        if u'label' in z and u'id' in z[u'label']]
+    return {
+        'label': label_names,
+        'mb_label_id': label_ids,
+        'catalog': catalogs
+        }
+    
+def parse_medium_list(r_node):
+    mediums = parse_node(r_node, u'medium-list', u'medium', u'format')
+    if not mediums:
+        return {}
 
-def find_releases(artists=None, album=None, limit=100, offset=None):
-    if artists and album and len(artists) > 1:
-        ret = VA_search(album)
-        if ret:
-            return ret
+    mediums = [convert_dict(m, ALBUM_KEYS) for m in mediums]
+    info = mediums[0]
+    info.update({'discs': unicode(len(mediums))})
+    return info
 
-    if artists is not None:
-        artist = artists[0]
-    else:
-        artist = None
+def parse_node(node, header_tag, sub_tag, check_tag):
+    ret = []
+    nodes = [z for z in node.childNodes if z.tagName == header_tag]
+    for node in nodes:
+        info = children_to_text(node)
+        for ch in node.getElementsByTagName(sub_tag):
+            if ch not in node.childNodes:
+                continue
+            info = info.copy()
+            info.update(rec_children_to_text(ch))
+            if check_tag not in info:
+                continue
+            ret.append(info)
+    return ret
 
-    r_filter = ws.ReleaseFilter(artistName=artist, title=album,
-        limit=limit, offset=offset,
-        releaseTypes=(Release.TYPE_OFFICIAL,))
-    releases = q.getReleases(filter=r_filter)
+def parse_recording_relation(relations):
+    info = defaultdict(lambda: [])
 
-    return map(release_to_dict, releases)
+    for relation in to_list(relations[u'relation']):
+        recording = relation['recording']
+        desc = None
 
-def retrieve_tracks(release_id, puids=False, track_id=TRACK_ID):
-    release = q.getReleaseById(release_id, RELEASEINCLUDES)
-    info = release_to_dict(release)
+        if u'artist-credit' in recording:
+            artists = []
+            for cr in to_list(recording[u'artist-credit']['name-credit']):
+                if u'join-phrase' in cr:
+                    artists.append(cr[u'join-phrase'])
+                artists.append(cr[u'artist'][u'name'])
 
-    if not release.tracks:
-        return info, []
+            unique_artists = []
+            for z in artists:
+                if z not in unique_artists:
+                    unique_artists.append(z)
+                
+            desc = u' '.join(unique_artists)
 
+        if u'title' in recording:
+            if desc:
+                desc = recording[u'title'] + u' by ' + desc
+            else:
+                desc = recording[u'title']
+        if desc is not None:
+            info[relation['type']].append(desc)
+    return info
+
+def parse_release(node):
+    info = children_to_text(node)
+    info.update(parse_artist_credit(node))
+    if len(info['artist']) > 50:
+        parse_artist_credit(node)
+
+    info.update(parse_label_list(node))
+    info.update(parse_medium_list(node))
+    info = convert_dict(info, ALBUM_KEYS)
+    info['#album_id'] = info[u'album_id']
+    if u'count' in info:
+        del(info['count'])
     tracks = []
-    for num, track in enumerate(release.tracks):
-        track_dict = {
-            track_id: extractUuid(track.id),
-            'title': track.title,
-            'track': unicode(num + 1),
-            'artist': track.artist.name if track.artist else None,
-            '__length': strlength(track.duration) if track.duration else None}
-
-        if not old_version:
-            track_dict.update({
-                'mbrainz_rating': unicode(track.rating.value) if \
-                    track.rating.value is not None else None,
-                'isrc': track.isrcs if track.isrcs else None})
-
-        tracks.append(dict((k,v) for k,v in track_dict.items() if v))
-
-    if puids:
-        for track in tracks:
-            track.update(get_puid(track[TRACK_ID]))
-
+    for medium in node.getElementsByTagName('medium'):
+        tracks.extend(parse_track_list(medium))
     return info, tracks
+    
+def parse_track_list(node):
+    tracks = []
+    for t in parse_node(node, 'track-list', 'track', 'position'):
+        track = t['recording']
+        for k in TO_REMOVE:
+            if k in t:
+                del(t[k])
+        track.update(t)
 
-def release_to_dict(release):
-    if hasattr(release, 'release'):
-        r = release.release
+        if 'puid-list' in track:
+            track['musicip_puid'] = track['puid-list']['id']
+            del(track['puid-list'])
+    
+        if u'relation-list' in track and not isempty(track['relation-list']):
+            map(track.update,
+                map(parse_track_relation, to_list(track['relation-list'])))
+
+        for k, v in track.items():
+            if not isinstance(track[k], (basestring, list)):
+                del(track[k])
+            elif isinstance(v, list) and not isinstance(v[0], basestring):
+                del(track[k])
+
+        tracks.append(convert_dict(track, TRACK_KEYS))
+    return tracks
+
+def parse_track_relation(relation):
+    if relation[u'target-type'] == u'recording':
+        return parse_recording_relation(relation)
+    elif relation[u'target-type'] == u'artist':
+        return parse_artist_relation(relation)
+    return {}
+
+def rec_children_to_text(node):
+    if istext(node): return
+    info = dict(node.attributes.items())
+    for ch in node.childNodes:
+        if istext(ch):
+            continue
+        text = node_to_text(ch)
+        tag = ch.tagName
+        if text is not None:
+            info[tag] = to_list(info[tag], text) if tag in info else text
+        elif ch.childNodes:
+            v = rec_children_to_text(ch)
+            info[tag] = to_list(info[tag], v) if tag in info else v
+        elif ch.attributes:
+            for k, v in ch.attributes.items():
+                info[k] = to_list(info[k], v) if k in info else v
+    return info
+
+def retrieve_album(album_id):
+    url = SERVER + 'release/' + album_id + \
+        '?inc=recordings+artist-credits+puids+isrcs+tags+ratings' \
+        '+artist-rels+recording-rels+release-rels+release-group-rels' \
+        '+url-rels+work-rels+recording-level-rels+work-level-rels'
+
+    xml = urlopen(url)
+    return parse_album(xml)
+    
+def search_album(album=None, artist=None, limit=25, offset=0, own=False):
+    if own:
+        if isinstance(album, unicode):
+            album = album.encode('utf8').replace(':', '')
+
+        return SERVER + 'release/?query=' + urllib.quote_plus(album) + \
+            '&limit=%d&offset=%d' % (limit, offset)
+
+    if artist:
+        if isinstance(artist, unicode):
+            artist = artist.encode('utf8')
+        query = 'artistname:' + urllib.quote_plus(artist)
+
+    if album:
+        if isinstance(album, unicode):
+            album = album.encode('utf8')
+        if artist:
+            query = 'release:' + urllib.quote_plus(album) + \
+                '%20AND%20' + query
+        else:
+            query = 'release:' + urllib.quote_plus(album)
+
+    return SERVER + 'release/?query=' + query.replace('%3A', '') + \
+        '&limit=%d&offset=%d' % (limit, offset)
+
+def search_artist(artist, limit=25, offset=0):
+    if isinstance(artist, unicode):
+        artist.encode('utf8')
+    query = urllib.urlencode({
+        'query': artist,
+        'limit': limit,
+        'offset': offset,
+        })
+    return SERVER + 'artist?' + query.replace('%3A', '')
+
+def to_list(v, arg=None):
+    if isinstance(v, list):
+        if arg is not None:
+            v.append(arg)
+        return v
     else:
-        r = release
+        return [v, arg] if arg is not None else [v]
 
-    album = {
-        'artist': r.artist.name if r.artist else None,
-        ARTIST_ID: extractUuid(r.artist.id) if r.artist else None,
-        'album': r.title,
-        ALBUM_ID: extractUuid(r.id),
-        '#artist_id': r.artist.id if r.artist else None,
-        '#album_id': r.id,
-        'asin': r.asin}
+class XMLEscaper(SGMLParser):
+    def reset(self):
+        SGMLParser.reset(self)
+        self._xml = []
 
-    if r.releaseEvents:
-        e = r.releaseEvents[0]
-        album.update({
-            'year': e.date if hasattr(e, 'date') else None,
-            COUNTRY: e.country if hasattr(e, 'country') else None,
-            'barcode': e.barcode if hasattr(e, 'barcode') else None,
-            'label': e.label.name if e.label else None})
+    def handle_data(self, data):
+        self._xml.append(escape(data))
 
-    album['#extrainfo'] = (translate('MusicBrainz',
-        '%s at MusicBrainz.org') % album['album'], r.id)
+    def unknown_starttag(self, tag, attributes):
+        attrib_str = ' '.join('%s=%s' % (k, quoteattr(v))
+            for k, v in attributes)
+        self._xml.append('<%s %s>' % (tag, attrib_str))
 
-    return dict((k,v) for k,v in album.iteritems() if v)
+    def unknown_endtag(self, tag):
+        self._xml.append('</%s>' % tag)
 
-def VA_search(album):
-    r_filter = ws.ReleaseFilter(title=album,
-        releaseTypes=(Release.TYPE_COMPILATION, Release.TYPE_OFFICIAL))
+    def _get_xml(self):
+        return ''.join(self._xml)
 
-    return map(release_to_dict, q.getReleases(filter=r_filter))
+    xml = property(_get_xml)
+
 
 class MusicBrainz(object):
-    name = 'MusicBrainz'
-    group_by = ['album', 'artist']
-    tooltip = translate("MusicBrainz", """<p>Enter search parameters here.
-        If empty, the selected files are used.</p>
-        
-        <ul>
-        <li>Enter any text to search for an album. Eg.
-            <b>Southernplayalisticadillacmuzik</b></li>
-        <li><b>artist;album</b> searches for a
-        specific album/artist combination.</li>
-        <li>For multiple artist/album combinations separate them with the
-        '|' character. eg. <b>Amy Winehouse;Back To Black|Outkast;Atliens</b>.
-        </li> <li>To list the albums by an artist leave off the album part,
-        but keep the semicolon (eg. <b>Ratatat;</b>).
-        For an album only leave the artist part as in <b>;Resurrection.</li>
-        <li>Retrieving all albums by an artist using their MusicBrainz
-        Artist ID is possible by prefacing your search with
-        <b>:a</b> as in <b>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</b>
-        (extra spaces around the ID are discarded.)</li>
-        <li>In the same way an album can be retrieved using it's
-        MusicBrainz ID by prefacing the search text with
-        <b>:b</b> eg. <b>:b 34bb630-8061-454c-b35d-8f7131f4ff08</b>
-        </li></ul>""")
+    name = u'MusicBrainz'
+
+    group_by = [u'album', 'artist']
     def __init__(self):
         super(MusicBrainz, self).__init__()
-        self._puids = False
-
-        self.preferences = [
-            [translate("MusicBrainz",
-                'Retrieve PUIDS (Requires a separate lookup for each track.)'),
-                CHECKBOX, self._puids]]
+        self.__lasttime = time.time()
 
     def keyword_search(self, s):
         if s.startswith(u':a'):
             artist_id = s[len(':a'):].strip()
             try:
-                return [(release_to_dict(r), []) for r
-                    in artist_releases(artist_id)]
-            except WebServiceError, e:
+                xml = urlopen(search_album(u'arid:' + artist_id,
+                    limit=100, own=True))
+                return parse_album_search(xml)
+            except RetrievalError, e:
                 msg = translate("MusicBrainz",
                     '<b>Error:</b> While retrieving %1: %2')
-
                 write_log(msg.arg(artist_id).arg(escape(e)))
-                raise RetrievalError(unicode(e))
-
+                raise
         elif s.startswith(u':b'):
             r_id = s[len(u':b'):].strip()
             try:
-                return [retrieve_tracks(r_id)]
-            except WebServiceError, e:
+                return [retrieve_album(r_id)]
+            except RetrievalError, e:
                 msg = translate("MusicBrainz",
                     "<b>Error:</b> While retrieving Album ID %1 (%2)")
                 write_log(msg.arg(r_id).arg(escape(e)))
-                raise RetrievalError(unicode(e))
+                raise 
         else:
             try:
                 params = parse_searchstring(s)
-            except RetrievalError:
-                return [(info, []) for info in find_releases(None, s)]
-            if not params: 
+            except RetrievalError, e:
+                return parse_album_search(urlopen(search_album(s, limit=100)))
+            if not params:
                 return
             artist = params[0][0]
             album = params[0][1]
-            return self.search(album, [artist])
+            return self.search(album, [artist], 100)
 
-    def search(self, album, artists):
-        if hasattr(artists, 'values'):
-            write_log(translate("MusicBrainz",
-                'Checking tracks for MusicBrainz Album ID.'))
-            tracks = []
-            [tracks.extend(z) for z in artists.values()]
-            album_id = find_id(tracks, ALBUM_ID)
-            if not album_id:
-                write_log(translate("MusicBrainz",
-                    'No Album ID found in tracks.'))
+    def search(self, album, artists=u'', limit=40):
+        if time.time() - self.__lasttime < 1000:
+            time.sleep(1)
+
+        ret = []
+        check_matches = False
+        if isempty(artists):
+            artist = None
+        if len(artists) > 1:
+            artist = u'Various Artists'
+        elif artists:
+            if hasattr(artists, 'items'):
+                artist = artists.keys()[0]
             else:
-                write_log(translate("MusicBrainz",
-                    'Found Album ID: %s') % album_id)
-                try:
-                    return [retrieve_tracks(album_id, self._puids)]
-                except WebServiceError, e:
-                    msg = translate("MusicBrainz",
-                        '<b>Error:</b> While retrieving %1: %2')
-                    msg = msg.arg(album_id).arg(escape(e))
-                    write_log(msg)
-                    raise RetrievalError(unicode(e))
+                artist = artists[0]
 
-        write_log(translate("MusicBrainz", 'Searching for album: %s') % album)
+        if not album and not artist:
+            raise RetrievalError('Album or Artist required.')
+
+        write_log(u'Searching for %s' % album)
         try:
-            return [(info, []) for info in find_releases(artists, album)]
-        except WebServiceError, e:
-            msg = translate("MusicBrainz",
-                '<b>Error:</b> While retrieving %1: %2')
-            write_log(msg.arg(album).arg(escape(e)))
+            xml = urlopen(search_album(album, artist, limit))
+        except urllib2.URLError, e:
+            write_log(u'Error: While retrieving search page %s' %
+                        unicode(e))
             raise RetrievalError(unicode(e))
-        except socket.error, e:
-            msg = u'%s (%s)' % (e.strerror, e.errno)
-            raise RetrievalError(msg)
+        write_log(u'Retrieved search results.')
+        self.__lasttime = time.time()
+        return parse_album_search(xml)
 
-    def retrieve(self, info):
-        return retrieve_tracks(info['#album_id'], self._puids)
-
-    def applyPrefs(self, value):
-        self._puids = value[0]
+    def retrieve(self, albuminfo):
+        album_id = albuminfo['#album_id']
+        if time.time() - self.__lasttime < 1000:
+            time.sleep(1)
+        ret = retrieve_album(album_id)
+        self.__lasttime = time.time()
+        return ret
 
 info = MusicBrainz
 
 if __name__ == '__main__':
-    #import pickle
-    #releases = pickle.load(open('/tmp/mbrainz/releases', 'rb'))
-    #print map(release_to_dict, releases)
-    x = find_releases(['Ratatat'], 'Classics')
-    print retrieve_tracks(x[0][ALBUM_ID], True)
+    #c = MusicBrainz()
+    xml = open('this_is_it.xml', 'r').read()
+    #x = c.search('New Again', 'Taking Back Sunday')
+    x = parse_album(xml)
+    #y = parse_tracks(open('taking_tracks.xml', 'r').read())
+    #print c.retrieve(x[0][0])
