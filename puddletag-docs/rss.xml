@@ -1,5 +1,22 @@
-<?xml version="1.0" encoding="utf8"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 21 Sep 2011 22:20:46 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>21 September 2011 - Mercurial</title><link>http://puddletag.sourceforge.net/news.html#september-2011-mercurial</link><description>
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 18 Jan 2012 21:34:07 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>18 January 2012 - 1.0.0beta</title><link>http://puddletag.sourceforge.net/news.html#january-2012-1-0-0beta</link><description>
+  &lt;div class="section" id="january-2012-1-0-0beta"&gt;
+&lt;h1&gt;18 January 2012 - 1.0.0beta&lt;/h1&gt;
+&lt;p&gt;It&amp;#8217;s been a while I know, but I figured if I don&amp;#8217;t get this out now I might
+leave it until next year.&lt;/p&gt;
+&lt;p&gt;This is a beta, reason being that it&amp;#8217;s not anywhere near thoroughly tested, but
+it does contain important stuff like.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Masstagging improvements with regards to both matching (courtesy of &lt;a class="reference external" href="http://beets.radbox.org/"&gt;beets&lt;/a&gt;)   and searching.&lt;/li&gt;
+&lt;li&gt;$ceiling, $eql, $floor, $round scripting functions.&lt;/li&gt;
+&lt;li&gt;Full support for Mp3tag tag sources.&lt;/li&gt;
+&lt;li&gt;Support for MusicBrainz and Discogs new APIs.&lt;/li&gt;
+&lt;li&gt;More than one file can be written to at a time in the file-view. Just select more than one file, write to a field and Bob&amp;#8217;s your aunt.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Test it out and if you find any bugs feel free to &lt;a class="reference external" href="http://code.google.com/p/puddletag/issues"&gt;let me know&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Wed, 18 Jan 2012 00:00:00 GMT</pubDate></item><item><title>21 September 2011 - Mercurial</title><link>http://puddletag.sourceforge.net/news.html#september-2011-mercurial</link><description>
   &lt;div class="section" id="september-2011-mercurial"&gt;
 &lt;h1&gt;21 September 2011 - Mercurial&lt;/h1&gt;
 &lt;p&gt;This is just a heads up that I&amp;#8217;ve moved from Subversion to Mercurial. No real reason for this other than trying something new. I&amp;#8217;ve been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.&lt;/p&gt;

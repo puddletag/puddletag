@@ -1,3 +1,13 @@
+18 January 2012 - 1.0.0beta1
+    Masstagging improvements with regards to both matching (courtesy of beets)
+    and searching.
+    $ceiling, $eql, $floor, $round scripting functions.
+    Full support for Mp3tag tag sources.
+    Support for MusicBrainz and Discogs new APIs.
+    More than one file can be written to at a time in the file-view. Just
+    select more than one file, write to a field and Bob's your aunt.
+    
+
 6 June 2011 - 0.10.6
     Fix for freezes if Update empty fields and 'Retrieve exact matches.' checked
     in Tag Sources dialog.

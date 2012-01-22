@@ -15,6 +15,26 @@ News
 
 ----
 
+18 January 2012 - 1.0.0beta
+#############################
+
+It's been a while I know, but I figured if I don't get this out now I might
+leave it until next year.
+
+This is a beta, reason being that it's not anywhere near thoroughly tested, but
+it does contain important stuff like.
+
++   Masstagging improvements with regards to both matching (courtesy of `beets <http://beets.radbox.org/>`_)   and searching.
++   $ceiling, $eql, $floor, $round scripting functions.
++   Full support for Mp3tag tag sources.
++   Support for MusicBrainz and Discogs new APIs.
++   More than one file can be written to at a time in the file-view. Just select more than one file, write to a field and Bob's your aunt.
+
+Test it out and if you find any bugs feel free to `let me know <http://code.google.com/p/puddletag/issues>`_.
+
+
+----
+
 21 September 2011 - Mercurial
 #############################
 

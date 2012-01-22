@@ -1,4 +1,4 @@
-import pdb, sys, time, urllib, urllib2
+import pdb, re, sys, time, urllib, urllib2
 
 from collections import defaultdict
 from sgmllib import SGMLParser
@@ -8,10 +8,6 @@ from xml.sax.saxutils import escape, quoteattr
 from puddlestuff.tagsources import (write_log, RetrievalError,
     urlopen as _urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
-
-def urlopen(url):
-    print url
-    return _urlopen(url)
 
 SERVER = 'http://musicbrainz.org/ws/2/'
 
@@ -74,6 +70,19 @@ def fix_xml(xml):
 
 def istext(node):
     return getattr(node, 'nodeType', None) == TEXT_NODE
+
+ESCAPE_CHARS_RE = re.compile(r'(?<!\\)(?P<char>[&|+\-!(){}[\]^"~*?:])')
+def solr_escape(value):
+    r"""Escape un-escaped special characters and return escaped value.
+
+    >>> solr_escape(r'foo+') == r'foo\+'
+    True
+    >>> solr_escape(r'foo\+') == r'foo\+'
+    True
+    >>> solr_escape(r'foo\\+') == r'foo\\+'
+    True
+    """
+    return ESCAPE_CHARS_RE.sub(r'\\\g<char>', value)
 
 def node_to_text(node):
     if len(node.childNodes) > 1:
@@ -299,7 +308,7 @@ def retrieve_album(album_id):
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
         if isinstance(album, unicode):
-            album = album.encode('utf8').replace(':', '')
+            album = solr_escape(album.encode('utf8'))
 
         return SERVER + 'release/?query=' + urllib.quote_plus(album) + \
             '&limit=%d&offset=%d' % (limit, offset)
@@ -307,11 +316,11 @@ def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if artist:
         if isinstance(artist, unicode):
             artist = artist.encode('utf8')
-        query = 'artistname:' + urllib.quote_plus(artist)
+        query = 'artistname:' + urllib.quote_plus(solr_escape(artist))
 
     if album:
         if isinstance(album, unicode):
-            album = album.encode('utf8')
+            album = solr_escape(album.encode('utf8'))
         if artist:
             query = 'release:' + urllib.quote_plus(album) + \
                 '%20AND%20' + query
@@ -323,9 +332,9 @@ def search_album(album=None, artist=None, limit=25, offset=0, own=False):
 
 def search_artist(artist, limit=25, offset=0):
     if isinstance(artist, unicode):
-        artist.encode('utf8')
+        artist = artist.encode('utf8')
     query = urllib.urlencode({
-        'query': artist,
+        'query': solr_escape(artist),
         'limit': limit,
         'offset': offset,
         })
