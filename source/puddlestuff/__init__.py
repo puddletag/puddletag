@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import subprocess, re
 from os.path import dirname
-version_string = '1.0.0beta1'
+version_string = '1.0.0beta2'
 version = (1, 0, 0)
 
 try:

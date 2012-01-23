@@ -6,7 +6,7 @@ from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
 from puddlestuff.tagsources import (write_log, RetrievalError,
-    urlopen as _urlopen, parse_searchstring)
+    urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
 
 SERVER = 'http://musicbrainz.org/ws/2/'
@@ -18,21 +18,22 @@ ALBUMID = '#albumid'
 LABELID = '#labelid'
 INCLUDES = ''
 
-ARTISTID_FIELD = 'mb_artist_id'
-ALBUMID_FIELD = 'mb_album_id'
+ARTISTID_FIELD = 'mbrainz_artist_id'
+ALBUMID_FIELD = 'mbrainz_album_id'
 
 ARTIST_KEYS = {
     'name': 'artist',
     'sort-name': 'sortname',
-    'id': 'artist_id',
+    'id': 'mbrainz_artist_id',
     'ext:score': '#score',
     'type': 'artist_type',
+    'rating': 'mbrainz_rating',
     }
 
 ALBUM_KEYS = ARTIST_KEYS.copy()
 ALBUM_KEYS.update({
     'name': 'album',
-    'id': 'album_id',
+    'id': 'mbrainz_album_id',
     'type': 'album_type',
     'xml:ext': '#xml:ext',
     'title': 'album',
@@ -40,9 +41,10 @@ ALBUM_KEYS.update({
     })
 
 TRACK_KEYS = {
-    'id': 'mb_track_id',
+    'id': 'mbrainz_track_id',
     'position': 'track',
     'length': '__length',
+    'rating': 'mbrainz_rating',
     }
 
 TO_REMOVE = ('recording', 'offset', 'count')
@@ -118,7 +120,7 @@ def parse_artist_credit(node):
         return {
             'artist': artist,
             '#artist_id': artist_id,
-            'artist_id': artist_id,
+            'mbrainz_artist_id': artist_id,
             }
     else:
         return {'artist': artist}
@@ -153,7 +155,7 @@ def parse_artist_search(xml):
                 continue
             info[ch.tagName] = node_to_text(ch)
         info = convert_dict(info, ARTIST_KEYS)
-        info['#artist_id'] = info['artist_id']
+        info['#artist_id'] = info['mbrainz_artist_id']
         ret.append(info)
     return ret
 
@@ -169,7 +171,7 @@ def parse_label_list(release_node):
         if u'label' in z and u'id' in z[u'label']]
     return {
         'label': label_names,
-        'mb_label_id': label_ids,
+        'mbrainz_label_id': label_ids,
         'catalog': catalogs
         }
     
@@ -237,7 +239,7 @@ def parse_release(node):
     info.update(parse_label_list(node))
     info.update(parse_medium_list(node))
     info = convert_dict(info, ALBUM_KEYS)
-    info['#album_id'] = info[u'album_id']
+    info['#album_id'] = info[u'mbrainz_album_id']
     if u'count' in info:
         del(info['count'])
     tracks = []

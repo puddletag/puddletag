@@ -1,4 +1,7 @@
-18 January 2012 - 1.0.0beta1
+23 January 2012 - 1.0.0beta2
+    Fixed MusicBrainz not working (issue 170).
+    
+22 January 2012 - 1.0.0beta1
     Improved masstagging for albums with weird track numbers.
     Mastagging matching improved (courtesy of beets)
     Masstagging ignores stuff inbetween brackets like "this name (disc 1)" and
@@ -20,7 +23,7 @@
     Update Discogs tag source to use new Discogs API as per http://www.discogs.com/help/forums/topic/234138.
     An error would be raised when trying to save invalid picture data. Data is discarded now upon saving. Issue 167
     --version command line option.
-    Request to check log to user error messages.
+    Request to check log to for more info in error messages.
 
 
 24 August 2011 - 0.10.6.3
