@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
+
+import codecs, pdb, re, os, sys, traceback
+
+from copy import deepcopy
+from htmlentitydefs import name2codepoint as n2cp
+
 from pyparsing import QuotedString, Word, nums, printables, Optional, Combine
-import re, pdb, os
 
-import sys, traceback
-
-from puddlestuff.util import convert_dict as _convert_dict
+from funcs import FUNCTIONS
+from puddlestuff.audioinfo.util import CaselessDict
+from puddlestuff.constants import CHECKBOX
+from puddlestuff.functions import format_value
 from puddlestuff.tagsources import (urlopen, get_encoding,
     write_log, retrieve_cover)
-from puddlestuff.constants import CHECKBOX
-from funcs import FUNCTIONS
-from copy import deepcopy
-import codecs
-from htmlentitydefs import name2codepoint as n2cp
+from puddlestuff.util import convert_dict as _convert_dict
 
 class ParseError(Exception): pass
 
@@ -110,7 +112,9 @@ def open_script(filename):
 def parse_album_page(page, album_source, url=None):
     cursor = Cursor(page, album_source)
     if url:
-        cursor.output = {'CurrentUrl': url}
+        cursor.output = CaselessDict({'CurrentUrl': url})
+        cursor.album = CaselessDict({'CurrentUrl': url})
+
     cursor.parse_page()
     info = convert_dict(cursor.album)
     if hasattr(cursor.tracks, 'items'):
@@ -291,10 +295,12 @@ class Mp3TagSource(object):
         self.album_source = album_source
         self._search_base = idents['indexurl'] if search_source else ''
         self._separator = idents.get('wordseperator', u'+')
-        self.group_by = [idents['searchby'][1:-1], None]
+        self.searchby = idents.get('searchby', u'')
+        self.group_by = ['album' if '$' in idents['searchby'] \
+            else idents['searchby'][1:-1], None]
         self.name = idents['name'] + u' (Mp3tag)'
         self.indexformat = idents['indexformat'] if search_source else ''
-        self.album_url = idents['albumurl']
+        self.album_url = idents.get('albumurl', '')
         self.tooltip = tooltip = """<p>Enter search keywords here. If empty,
         the selected files are used.<br /><br />
         Searches are done by <b>%s</b></p>""" % self.group_by[0]
@@ -308,11 +314,17 @@ class Mp3TagSource(object):
         return self.search(text)
 
     def search(self, artist, files=None):
+        if files is not None and self.searchby:
+            keywords = format_value(files[0], self.searchby)
+        else:
+            keywords = artist
+        keywords = re.sub('\s+', self._separator, keywords)
+
         if self.search_source is None:
-            album = self.retrieve(artist)
+            album = self.retrieve(keywords)
             return [album] if album else []
-        artist = re.sub('\s+', self._separator, artist)
-        url = self._search_base % artist
+        
+        url = self._search_base % keywords
         write_log(u'Opening Search Page: %s' % url)
         if self.html is None:
             page = get_encoding(urlopen(url), True, 'utf8')[1]
@@ -323,15 +335,27 @@ class Mp3TagSource(object):
 
     def retrieve(self, info):
         if isinstance(info, basestring):
-            info = {'#url': self.album_url % info}
-            url = info['#url']
+            text = info.replace(u' ', self._separator)
+            info = {}
         else:
             info = deepcopy(info)
-            url = self.album_url + info['#url']
-        write_log(u'Opening Album Page: %s' % url)
-        page = get_encoding(urlopen(url), True, 'utf8')[1]
-        new_info, tracks = parse_album_page(page, self.album_source, url)
-        info.update(new_info)
+            text = info['#url']
+        
+        try:
+            url = self.album_url % text
+        except TypeError:
+            url = self.album_url + text
+        
+        info['#url'] = url
+
+        if self.album_url:
+            write_log(u'Opening Album Page: %s' % url)
+            page = get_encoding(urlopen(url), True, 'utf8')[1]
+            new_info, tracks = parse_album_page(page, self.album_source, url)
+            info.update(new_info)
+        else:
+            new_info, tracks = parse_album_page(u"", self.album_source, url)
+            info.update(dict((k,v) for k,v in new_info.iteritems() if v))
         if self._get_cover and COVER in info:
             cover_url = new_info[COVER]
             if isinstance(cover_url, basestring):
@@ -359,14 +383,13 @@ def load_mp3tag_sources(dirpath='.'):
     return classes
 
 from puddlestuff.tagsources.discogs import urlopen
-import puddlestuff.tagsources
-puddlestuff.tagsources.user_agent = 'puddletag/0.9.12'
 
 if __name__ == '__main__':
     #text = open(sys.argv[1], 'r').read()
     #text = open(sys.argv[1], 'r').read()
     tagsources = load_mp3tag_sources('.')
-    tagsources[0].search(u'1142869')
+    albums = tagsources[1].search(u'kanye')
+    print tagsources[1].retrieve(albums[0][0])
     #pdb.set_trace()
     #import puddlestuff.tagsources
     #encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
