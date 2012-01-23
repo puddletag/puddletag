@@ -324,12 +324,14 @@ class Mp3TagSource(object):
             album = self.retrieve(keywords)
             return [album] if album else []
         
-        url = self._search_base % keywords
+        url = self._search_base.replace(u'%s', keywords)
+
         write_log(u'Opening Search Page: %s' % url)
         if self.html is None:
             page = get_encoding(urlopen(url), True, 'utf8')[1]
         else:
             page = get_encoding(self.html, True, 'utf8')[1]
+        
         infos = parse_search_page(self.indexformat, page, self.search_source, url)
         return [(info, []) for info in infos]
 
