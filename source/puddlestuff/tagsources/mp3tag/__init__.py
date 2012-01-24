@@ -133,8 +133,11 @@ def parse_album_page(page, album_source, url=None):
 def parse_func(lineno, line):
     line = line.strip()
     funcname = line.split(' ', 1)[0].strip()
-    args = [z[0] for z in
-    ARGUMENT.searchString(line[len(funcname):]).asList()]
+    arg_string = line[len(funcname):]
+    args = (z[0]
+        for z in ARGUMENT.searchString(arg_string).asList())
+    args = [i.replace(u'\\\\', u'\\') if isinstance(i, basestring) else i
+        for i in args]
     if funcname and not funcname.startswith(u'#'):
         return funcname.lower(), lineno, args
 
@@ -254,7 +257,7 @@ class Cursor(object):
             self.log(unicode(self.output))
             cmd, lineno, args = self.source[self.cmd_index]
 
-            self.log(unicode(self.source[self.cmd_index]))
+            self.log(unicode(self.source[self.cmd_index]))               
             
             if not FUNCTIONS[cmd](self, *args):
                 self.next_cmd += 1
@@ -331,7 +334,7 @@ class Mp3TagSource(object):
             page = get_encoding(urlopen(url), True, 'utf8')[1]
         else:
             page = get_encoding(self.html, True, 'utf8')[1]
-        
+
         infos = parse_search_page(self.indexformat, page, self.search_source, url)
         return [(info, []) for info in infos]
 
@@ -350,14 +353,15 @@ class Mp3TagSource(object):
         
         info['#url'] = url
 
-        if self.album_url:
+        try:
             write_log(u'Opening Album Page: %s' % url)
             page = get_encoding(urlopen(url), True, 'utf8')[1]
-            new_info, tracks = parse_album_page(page, self.album_source, url)
-            info.update(new_info)
-        else:
-            new_info, tracks = parse_album_page(u"", self.album_source, url)
-            info.update(dict((k,v) for k,v in new_info.iteritems() if v))
+        except:
+            page = u''
+
+        new_info, tracks = parse_album_page(page, self.album_source, url)
+        info.update(dict((k,v) for k,v in new_info.iteritems() if v))
+        
         if self._get_cover and COVER in info:
             cover_url = new_info[COVER]
             if isinstance(cover_url, basestring):
@@ -390,8 +394,9 @@ if __name__ == '__main__':
     #text = open(sys.argv[1], 'r').read()
     #text = open(sys.argv[1], 'r').read()
     tagsources = load_mp3tag_sources('.')
-    albums = tagsources[1].search(u'kanye')
-    print tagsources[1].retrieve(albums[0][0])
+    albums = tagsources[2].search(u'Goth-Erotika')
+    tagsources[2]._get_cover = False
+    print tagsources[2].retrieve(albums[0][0])
     #pdb.set_trace()
     #import puddlestuff.tagsources
     #encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')

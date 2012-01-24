@@ -257,7 +257,7 @@ def sayregexp(cursor, rexp, separator=None, check=None):
     else:
         match = re.search(rexp, line).group()
         if match:
-            cursor.cache += match.group()
+            cursor.cache += match
 
 def sayrest(cursor):
     cursor.log('Saying the rest of line from position %d.' % cursor.charno)
@@ -330,6 +330,8 @@ def _while(cursor, condition, numtimes=None):
     if cursor.tracks == {}:
         cursor.tracks = [{'title': z.strip()} for z in
             cursor.cache.split(u'|')]
+    elif cursor.output and cursor.tracks:
+        cursor.tracks.append(cursor.output)
 
 def unspace(cursor):
     cursor.line = cursor.line.strip()
