@@ -183,7 +183,7 @@ def parse_search_json(data):
     results = data.get('results', []) + data.get('exactresults', [])
 
     if not results:
-        return
+        return []
 
     albums = []
 

@@ -172,8 +172,6 @@ def getdeco(func):
         mapping = self.revmapping
         if key in mapping:
             return func(self, mapping[key])
-        elif key in self.mapping:
-            raise KeyError(key)
         return func(self, key)
     return f
 
@@ -678,7 +676,11 @@ class MockTag(object):
             del(self[key])
 
     def get(self, key, default=None):
-        return self[key] if key in self else default
+        try:
+            return self[key] if key in self else default
+        except:
+            pdb.set_trace()
+            return self[key] if key in self else default
 
     def items(self):
         return [(key, self[key]) for key in self]
