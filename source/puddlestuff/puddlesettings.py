@@ -1,21 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys, resource, os
+
+from copy import copy, deepcopy
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import sys, resource, os
-from copy import copy
-from puddleobjects import (ListButtons, OKCancel, HeaderSetting,
+
+
+from puddlestuff import genres, confirmations, audioinfo
+
+from puddlestuff.puddleobjects import (ListButtons, OKCancel, HeaderSetting,
     ListBox, PuddleConfig, winsettings, get_languages, create_buddy)
-from shortcutsettings import ActionEditorDialog
-from puddlestuff.pluginloader import PluginConfig
-import pdb
-import audioinfo.util
-import genres, confirmations
-from action_shortcuts import ShortcutEditor
-from copy import deepcopy
-from puddlestuff.translations import translate
+    
+from puddlestuff.action_shortcuts import ShortcutEditor
 from puddlestuff.constants import TRANSDIR
+from puddlestuff.pluginloader import PluginConfig
+from puddlestuff.shortcutsettings import ActionEditorDialog
+from puddlestuff.translations import translate
 
 config_widgets = []
 
@@ -424,10 +427,10 @@ class Tags(QWidget):
         
         audioinfo.id3.v1_option = v1_option
         if self.id3_v24.isChecked():
-            audioinfo.id3.v1_option = 4
+            audioinfo.id3.v2_option = 4
             cparser.set('id3tags', 'v2_option', 4)
         else:
-            audioinfo.id3.v1_option = 3
+            audioinfo.id3.v2_option = 3
             cparser.set('id3tags', 'v2_option', 3)
 
         filespec = unicode(self._filespec.text())

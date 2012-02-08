@@ -963,8 +963,6 @@ class Tag(TagBase):
             c.update_to_v23()
             c.save(v1=v1, v2=3)
 
-        self.update_tag_list()
-
         self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
         self.update_tag_list()
         self._originaltags = audio.keys()
