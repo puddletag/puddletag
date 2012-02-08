@@ -205,15 +205,36 @@ def connect_action_shortcuts(actions):
 
 def help_menu(parent):
     menu = QMenu(translate("Menus", 'Help'), parent)
+    open_url = lambda url: QDesktopServices.openUrl(QUrl(url))
+
+    connect = lambda c,s: c.connect(c, SIGNAL('triggered()'), s)
+    
+    doc_link = QAction(translate("Menus", 'Online &Documentation'),
+        parent)
+    connect(doc_link, lambda: open_url('http://puddletag.sf.net/docs.html'))
+
+    forum_link = QAction(translate("Menus", '&Forum'), parent)
+    connect(forum_link,
+        lambda: open_url('http://sourceforge.net/apps/phpbb/puddletag'))
+
+    issue_link = QAction(translate("Menus", '&Bug tracker'), parent)
+    connect(issue_link,
+        lambda: open_url('http://code.google.com/p/puddletag/issues'))
+    
     about_icon = get_icon('help-about', QIcon())
     about = QAction(about_icon,
         translate("Menus", 'About puddletag'), parent)
+    connect(about, partial(mainfuncs.show_about, parent))
+    
     about_qt = QAction(translate("Menus", 'About Qt'), parent)
-    about_qt.connect(about_qt, SIGNAL('triggered()'), QApplication.aboutQt)
-    about.connect(about, SIGNAL('triggered()'), 
-        partial(mainfuncs.show_about, parent))
-    menu.addAction(about)
-    menu.addAction(about_qt)
+    connect(about_qt, QApplication.aboutQt)
+    
+
+    sep = QAction(parent)
+    sep.setSeparator(True)
+    map(menu.addAction, (doc_link, forum_link, issue_link, sep,
+        about, about_qt))
+
     return menu
 
 def load_plugins():
