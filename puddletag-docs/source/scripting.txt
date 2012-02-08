@@ -7,6 +7,10 @@ The scripting functions that puddletag supports are listed here. Use them where 
 * Strings that contain commas must be enclode in double quotes (**"**).
 * White space before and after arguments will be discarded. Enclose the argument in quotes to preserve it as in **$left(" One space.", 3)**.
 
+.. describe:: $ceiling()
+
+   For the floating point number x.y. Returns integer x + 1.
+
 .. describe:: $and(a, b)
 
    Returns True if both a and b evaluate to True. Returns False otherwise.
@@ -40,6 +44,9 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Divides x by y.
 
+.. describe:: $floor()
+
+   For the floating point number x.y. Returns integer x.
 
 .. describe:: $geql(x, y)
 
@@ -149,6 +156,9 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Generates a pseudo-random number between 0 and 1.
 
+.. describe:: $round()
+
+   For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.
 
 .. describe:: $replace(string, word, replaceword, matchcase, whole)
 

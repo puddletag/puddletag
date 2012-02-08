@@ -21,6 +21,7 @@ The File-View
 -------------
 It lists the the metadata for the fields you've selected to display.
 
++ You can write to multiple files at once. Just select the files. Choose the field you want to write to and write as normal. All selected files will be updated.
 + Multiple-valued fields are shown like **value1\\\\value2**. Enter a value like that and puddletag will assume you want some multiple values.
 + Right Click on it to get the context menu. Menu items are just as described in :doc:`menus`.
 + When you press Enter after editing a cell, puddletag opens the one just be below it for editing. Shift+Enter will open the one directly above, Tab the one to the right and Shift+Tab the one on the left.
