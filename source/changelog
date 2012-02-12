@@ -1,3 +1,9 @@
+12 February 2012 - 1.0.0beta4
+    Helpful menu items added to about menu.
+    Updated documentation.
+    Fixed centering of images in docs.
+    When Discogs returned no results there'd be an error.
+
 24 January 2012 - 1.0.0beta3
     Fixes for issue 171.
     
