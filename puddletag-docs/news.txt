@@ -7,6 +7,7 @@ News
     :width: 27px
     :height: 28px
     :alt: RSS Image
+    :class: text
 
 :download:`RSS Feed <rss.xml>`
 

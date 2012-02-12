@@ -1,3 +1,46 @@
+12 February 2012 - 1.0.0beta4
+    Helpful menu items added to about menu.
+    Updated documentation.
+    Fixed centering of images in docs.
+    When Discogs returned no results there'd be an error.
+
+24 January 2012 - 1.0.0beta3
+    Fixes for issue 171.
+    
+23 January 2012 - 1.0.0beta2
+    Fixed MusicBrainz not working (issue 170).
+    
+22 January 2012 - 1.0.0beta1
+    Improved masstagging for albums with weird track numbers.
+    Mastagging matching improved (courtesy of beets)
+    Masstagging ignores stuff inbetween brackets like "this name (disc 1)" and
+    retries the search.
+    Mastagging checks all files and rearranges for best matches instead finding the
+    best match for one file and putting that match out of the running for checking
+    with later files.
+    $round, $ceiling and $floor scripting functions.
+    Mp3tag tag sources are fully supported.
+    Files containing APEv2 tags are loaded even if the file is not a valid audio file.
+    Confirmations when exiting/loading dirs if file's still contain previews.
+    If writing previews to files fails, then those files' previews are kept.
+    $eql scripting function.
+    Fixed a bug whereby if a file has an invalid picture type, puddletag would not start up. https://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=4&p=542#p542
+    If changed field for one file and multiple files selected, all will be update. Plus others.
+    Quickactions and actions' checked settings are now stored in different keys in config.
+    Plugins are sorted in plugin chooser widget.
+    Support for MusicBrainz's new API.
+    Update Discogs tag source to use new Discogs API as per http://www.discogs.com/help/forums/topic/234138.
+    An error would be raised when trying to save invalid picture data. Data is discarded now upon saving. Issue 167
+    --version command line option.
+    Request to check log to for more info in error messages.
+
+
+24 August 2011 - 0.10.6.3
+    Did modifications for inclusion into Debian.
+
+21 August 2011 - 0.10.6-2
+    No source changes. Added missing files required for Debian packaging.
+
 6 June 2011 - 0.10.6
     Fix for freezes if Update empty fields and 'Retrieve exact matches.' checked
     in Tag Sources dialog.
