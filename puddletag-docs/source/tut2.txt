@@ -13,7 +13,6 @@ Let's pick buttons at random and start with the right the **Reload** (|reload.pn
 .. |reload.png| image:: tut1/reload.png
    :alt: Reload
    :align: middle
-   :class: text
 
 
 Next up is the **Functions** button (|functions.png|) from the **Actions** menu. Select some files and click on it. You'll get this window:
@@ -21,7 +20,6 @@ Next up is the **Functions** button (|functions.png|) from the **Actions** menu.
 .. |functions.png| image:: tut1/functions.png
    :alt: Functions
    :align: middle
-   :class: text
 
 .. image:: tut1/formataction.png
    :alt: Format functions.
@@ -42,7 +40,6 @@ Three spaces to the left of the Pattern Combo is the **Actions** button (|action
 .. |actionsbutton.png| image:: tut1/actionsbutton.png
    :alt: Actions
    :align: middle
-   :class: text
 
 .. image:: tut1/actions.png
    :alt: Actions window.
@@ -73,7 +70,7 @@ The **Quick Actions** (|quickactions.png|) button is something I always wanted M
 .. |quickactions.png| image:: tut1/quickactions.png
    :alt: Quick Actions
    :align: middle
-   :class: text
+
       
 So if you have an action that writes to the **artist** field, but now want to use that action to write to the **title** field. Just select the title field and do a Quick Action.
 
@@ -82,7 +79,6 @@ The **Autonumbering Wizard** (|track.png|) from the **Tools** menu, lets you num
 .. |track.png| image:: tut1/track.png
    :alt: Autonumbering Wizard
    :align: middle
-   :class: text
 
 .. image:: tut1/numbering.png
    :alt: Track numbering wizard.
@@ -93,7 +89,6 @@ The **Add Folder** button (|addfolder.png|) from the **File** menu appends a fol
 .. |addfolder.png| image:: tut1/addfolder.png
    :alt: Append Folder
    :align: middle
-   :class: text
 
 
 The **Rename Dir** button (|renamedir.png|) from the **Convert menu** renames the currently selected folder using the pattern in the Pattern Combo. For instance if the Pattern Combo contained, **%artist% - %album%**, it would behave the same way as file renaming (except on the directory).
@@ -101,14 +96,12 @@ The **Rename Dir** button (|renamedir.png|) from the **Convert menu** renames th
 .. |renamedir.png| image:: tut1/addfolder.png
    :alt: Rename dir button
    :align: middle
-   :class: text
 
 The last item on our agenda for this tutorial is **Import File** (|importfile.png|), also from the **Tools menu**. Use it to import a text file to read tags from.
 
 .. |importfile.png| image:: tut1/addfolder.png
    :alt: Text->Tag button.
    :align: middle
-   :class: text
     
 
 .. image:: tut1/importfilewindow.png

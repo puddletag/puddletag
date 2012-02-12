@@ -76,6 +76,7 @@ Functions
    :alt: puddletag functions
    :target: ../_images/formataction.png
 
+
 In the **Fields** list:
 
 +   Having **__selected** as the field will apply the selected function to the selected cells. So if you have the album field selected in one file and artist in another. The function'll be applied to the album field of the first file and artist of the other respectively.

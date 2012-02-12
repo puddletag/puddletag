@@ -52,9 +52,11 @@ div.figure p.caption { font-size:1em; margin-top:0; margin-bottom:1.5em; color: 
 hr { color:#ccc; background-color:#ccc; height:1px; border:0; }
 p, ul, dl { margin-top:.6em; margin-bottom:1em; padding-bottom: 0.1em;}
 #yui-main div.yui-b img { max-width: 50em; margin-left: auto; margin-right: auto; border:1px solid black;}
-#yui-main div.yui-s img { max-width: 70em; margin-left: auto; margin-right: auto; display: block; }
+#yui-main div.yui-s img { max-width: 70em; margin-left: auto; margin-right: auto;}
+img.align-center {display: block;}
+img.align-middle {vertical-align:middle;}
 caption { font-size:1em; font-weight:bold; margin-top:0.5em; margin-bottom:0.5em; margin-left: 2px; text-align: center; }
-blockquote { padding: 0 1em; margin: 1em 0; font:125%/1.2em "Trebuchet MS", sans-serif; color:#234f32; border-left:2px solid #94da3a; } 
+blockquote { padding: 0 1em; margin: 1em 0; font:125%/1.2em "Trebuchet MS", sans-serif; color:#234f32; border-left:2px solid #94da3a; }
 strong { font-weight: bold; }
 em { font-style: italic; }
 ins { font-weight: bold; text-decoration: none; }

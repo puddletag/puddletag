@@ -41,7 +41,6 @@ After typing **%artist% - %track% - %title%** into the Pattern Combo [1] and usi
    :width: 27px
    :height: 28px
    :alt: File -> Tag
-   :class: text
    :align: middle
 
 
@@ -74,7 +73,6 @@ Okay, now some people like their filenames in a **%track% - %title%** format. Th
    :width: 35px
    :height: 36px
    :alt: Tag -> File
-   :class: text
    :align: middle
 
 Here's what I see...
