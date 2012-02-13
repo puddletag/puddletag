@@ -561,7 +561,7 @@ class MainWin(QWidget):
             'Update empty fields only.'))
         connect(self.listbox, 'statusChanged', self.label.setText)
         connect(self.listbox, 'preview', self.emit_preview)
-        connect(self.listbox, 'exact', self.emitExact)
+        connect(self.listbox, 'exactMatches', self.emitExact)
 
         self.__autoRetrieve = QCheckBox(translate("WebDB",
             'Automatically retrieve matches.'))

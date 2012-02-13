@@ -504,7 +504,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             parent = TreeItem(info, self.albumPattern, self.rootItem)
             fillItem(parent, info, tracks, self.trackPattern)
             if tracks is not None:
-                [exact_matches.append(track) for track in tracks if 
+                [exact_matches.append(track) for track in tracks if
                     u'#exact' in track]
             self.rootItem.appendChild(parent)
         self.sort()
@@ -567,6 +567,9 @@ class ReleaseWidget(QTreeView):
         self.model().tagsource = source
     
     tagSource = property(_get_tagSource, _set_tagSource)
+
+    def cleanTrack(self, track):
+        return strip(track, self.tagsToWrite, mapping=self.mapping)
     
     def emitExactMatches(self, item, files):
         if not item.hasTracks:
@@ -588,11 +591,18 @@ class ReleaseWidget(QTreeView):
             ret[f] = t
         self.emit(SIGNAL('exact'), ret)
         return ret
+
+    def emitInitialExact(self, exact):
+        ret = {}
+        
+        for track in exact:
+            ret[track['#exact']] = self.cleanTrack(track)
+
+        self.emit(SIGNAL('exactMatches'), ret)
     
     def emitTracks(self, tracks):
-        tags = self.tagsToWrite
         tracks = map(dict, tracks)
-        tracks = [strip(track, tags, mapping=self.mapping) for track in tracks]
+        tracks = map(self.cleanTrack, tracks)
         if tracks:
             self.emit(SIGNAL('preview'), 
                 tracks[:len(self._status['selectedrows'])])
@@ -662,6 +672,7 @@ class ReleaseWidget(QTreeView):
         connect('clicked (const QModelIndex&)', func)
         self.connect(model, SIGNAL('statusChanged'), SIGNAL('statusChanged'))
         self.connect(model, SIGNAL('exactChanged'), self.exactChanged)
+        modelconnect('exactMatches', self.emitInitialExact)
         modelconnect('retrieving', SIGNAL('retrieving'))
         modelconnect('retrievalDone()', SIGNAL('retrievalDone()'))
         modelconnect('retrieving', lambda: self.setEnabled(False))

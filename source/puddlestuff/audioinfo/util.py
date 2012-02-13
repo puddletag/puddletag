@@ -450,16 +450,19 @@ def stringtags(tag, leaveNone = False):
         if i in INFOTAGS:
             newtag[i] = v
             continue
-        if isinstance(i, int) or hasattr(v, 'items'):
+        if isinstance(i, (int, long, float)) or hasattr(v, 'items'):
             continue
 
         if leaveNone and isempty(v):
             newtag[i] = u''
             continue
-        elif (not v) or (len(v) == 1 and not v[0]):
+        elif (not v) or (hasattr(v, '__iter__') and len(v) == 1 and not v[0]):
             continue
+
         if isinstance(v, basestring):
             newtag[i] = v
+        elif isinstance(v, (int, float)):
+            newtag[i] = unicode(v)
         elif isinstance(i, basestring) and not isinstance(v, basestring):
             newtag[i] = v[0]
         else:

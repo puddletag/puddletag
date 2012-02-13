@@ -177,3 +177,9 @@ try:
     tagsources.append(amg.info)
 except ImportError:
     allmusic = None
+
+try:
+    import acoust_id
+    tagsources.insert(0, acoust_id.info)
+except ImportError:
+    allmusic = None
