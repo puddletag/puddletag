@@ -41,6 +41,9 @@ def parse_release_data(rel):
     info['discs'] = unicode(rel.get('medium_count', ''))
     info['#album_id'] = rel['id']
     info['mbrainz_album_id'] = rel['id']
+    if 'mediums' in rel:
+        info['track'] = unicode(
+            rel['mediums'][0]['tracks'][0].get('position', ""))
     return dict((k,v) for k,v in info.iteritems() if not isempty(v))
 
 def parse_lookup_result(data):
@@ -80,6 +83,10 @@ def parse_lookup_result(data):
     if 'artist' in info and 'artist' not in album_info:
         album_info['artist'] = info['artist']
 
+    if 'track' in album_info:
+        info['track'] = album_info['track']
+        del(album_info['track'])
+
     return album_info, info
 
 class AcoustID(object):
@@ -100,8 +107,9 @@ class AcoustID(object):
             write_log(RETRIEVE_MSG.arg(disp_fn))
             try:
                 data = acoustid.match("gT8GJxhO", fn.filepath,
-                    'releases recordings', False)
+                    'releases recordings tracks', False)
                 album, track = parse_lookup_result(data)
+                track.update(album)
             except acoustid.FingerprintGenerationError, e:
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
                 continue
