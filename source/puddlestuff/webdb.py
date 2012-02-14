@@ -13,7 +13,8 @@ import puddlestuff
 
 from puddlestuff.releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
-from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK, SAVEDIR
+from puddlestuff.constants import (TEXT, COMBO, SPINBOX,
+    CHECKBOX, RIGHTDOCK, SAVEDIR)
 from puddlestuff.findfunc import getfunc, replacevars
 from puddleobjects import (create_buddy, unique, winsettings,
     ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
@@ -187,10 +188,7 @@ class SimpleDialog(QDialog):
         for desc, ctype, default in controls:
             if ctype == TEXT:
                 control = QLineEdit(default)
-                label = QLabel(desc)
-                label.setBuddy(control)
-                vbox.addWidget(label)
-                vbox.addWidget(control)
+                vbox.addLayout(create_buddy(desc, control))
             elif ctype == COMBO:
                 control = QComboBox()
                 control.addItems(default[0])
@@ -206,6 +204,13 @@ class SimpleDialog(QDialog):
                 else:
                     control.setCheckState(Qt.Unchecked)
                 vbox.addWidget(control)
+            elif ctype == SPINBOX:
+                control = QSpinBox()
+                control.setMinimum(default[0])
+                control.setMaximum(default[1])
+                control.setValue(default[2])
+                vbox.addLayout(create_buddy(desc, control))
+                
             self._controls.append(control)
         okcancel = OKCancel()
         self.connect(okcancel, SIGNAL('ok'), self.okClicked)
@@ -223,6 +228,8 @@ class SimpleDialog(QDialog):
                 values.append(control.currentIndex())
             elif isinstance(control, QCheckBox):
                 values.append(control.isChecked())
+            elif isinstance(control, QSpinBox):
+                values.append(control.value())
         self.emit(SIGNAL('editingFinished'), values)
         self.close()
 
@@ -641,10 +648,12 @@ class MainWin(QWidget):
             defaults = load_source_prefs(self.curSource.name, config)
             prefs = deepcopy(config)
             for pref, value in zip(prefs, defaults):
-                if pref[1] != COMBO:
-                    pref[2] = value
-                else:
+                if pref[1] == SPINBOX:
+                    pref[2][2] = int(value)
+                elif pref[1] == COMBO:
                     pref[2][1] = value
+                else:
+                    pref[2] = value
             win = SimpleDialog(self.curSource.name, prefs, self)
         win.setModal(True)
         self.connect(win, SIGNAL('editingFinished'), self._applyPrefs)

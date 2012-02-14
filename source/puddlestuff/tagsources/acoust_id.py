@@ -1,26 +1,58 @@
+import pdb
+
 from collections import defaultdict
 
 import acoustid
 
 import puddlestuff.audioinfo as audioinfo
+
+from puddlestuff.constants import SPINBOX
 from puddlestuff.tagsources import set_status, write_log
 from puddlestuff.translations import translate
+from puddlestuff.util import isempty
 
 RETRIEVE_MSG = translate('AcoustID', "Retrieving data for file %1")
+FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
+WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
+
+def best_album(albums):
+    albums = albums[::]
+    while albums:
+        count = 0
+        album = albums[0]
+        best_match = [album, 1]
+        while album in albums:
+            albums.remove(album)
+            count + 1
+        if count > best_match[1]:
+            best_match = (album, count)
+    return best_match[0]
+            
+def parse_release_data(rel):
+    info = {}
+    info['__numtracks'] = unicode(rel.get('track_count', ''))
+    info['album'] = rel.get('title', u'')
+
+    if 'date' in rel:
+        date = rel['date']
+        info['year'] = u'-'.join(unicode(z).zfill(2) for z in
+            map(date.get, ('year', 'month', 'day')) if z)
+    info['country'] = rel.get('country', u'')
+    info['discs'] = unicode(rel.get('medium_count', ''))
+    info['#album_id'] = rel['id']
+    info['mbrainz_album_id'] = rel['id']
+    return dict((k,v) for k,v in info.iteritems() if not isempty(v))
 
 def parse_lookup_result(data):
-    """Given a parsed JSON response, generate tuples containing the match
-    score, the MusicBrainz recording ID, the title of the recording, and
-    the name of the recording's first artist. (If an artist is not
-    available, the last item is None.) If the response is incomplete,
-    raises a WebServiceError.
-    """
     if data['status'] != 'ok':
         raise acoustid.WebServiceError("status: %s" % data['status'])
     if 'results' not in data:
         raise acoustid.WebServiceError("results not included")
 
-    result = data['results'][0]
+    try:
+        result = data['results'][0]
+    except IndexError:
+        return {}, {}
     info = {}
     info['#score'] = result['score']
     if not result.get('recordings'):
@@ -38,52 +70,56 @@ def parse_lookup_result(data):
     if info['artist']:
         info['mbrainz_artist_id'] = track['artists'][0]['id']
 
-    if 'releases' in 'track':
-        rel = track['releases'][0]
-        info['__numtracks'] = unicode(rel.get('track_count', ''))
-        info['album'] = rel.get('title', u'')
-        
-        if 'date' in rel:
-            date = rel['date']
-            info['year'] = u'-'.join(unicode(z).zfill(2) for z in
-                map(date.get, ('year', 'month', 'day')) if z)
-        info['country'] = rel.get('country', u'')
-        info['discs'] = unicode(rel.get('medium_count', ''))
-        info['#album_id'] = rel['id']
-        info['mbrainz_album_id'] = rel['id']
+    if 'releases' in track:
+        album_info = parse_release_data(track['releases'][0])
+    else:
+        album_info = {}
 
-    return info
+    info = dict((k,v) for k,v in info.iteritems() if not isempty(v))
+
+    if 'artist' in info and 'artist' not in album_info:
+        album_info['artist'] = info['artist']
+
+    return album_info, info
 
 class AcoustID(object):
     name = 'AcoustID'
     group_by = ['album', None]
+    def __init__(self):
+        object.__init__(self)
+        self.min_score = 0.80
+        self.preferences = [['Minimum Score', SPINBOX, [0, 100, 80]]]
+        
     def search(self, artist, fns=None):
 
         tracks = []
+        albums = []
 
         for fn in fns:
-            
-            write_log(RETRIEVE_MSG.arg(audioinfo.decode_fn(fn.filepath)))
-            data = acoustid.match("gT8GJxhO", fn.filepath,
-                'release recordings', False)
+            disp_fn = audioinfo.decode_fn(fn.filepath)
+            write_log(RETRIEVE_MSG.arg(disp_fn))
+            try:
+                data = acoustid.match("gT8GJxhO", fn.filepath,
+                    'releases recordings', False)
+                album, track = parse_lookup_result(data)
+            except acoustid.FingerprintGenerationError, e:
+                write_log(FP_ERROR_MSG.arg(unicode(e)))
+                continue
+            except acoustid.WebServiceError, e:
+                set_status(WEB_ERROR_MSG.arg(unicode(e)))
+                write_log(WEB_ERROR_MSG.arg(unicode(e)))
+                break
 
-            print data
-            track = parse_lookup_result(data)
-            if track:
+            
+            if track and track['#score'] >= self.min_score:
                 track['#exact'] = fn
                 tracks.append(track)
-
-        albums = defaultdict(lambda: [])
-        for t in tracks:
-            if t and t.get('album'):
-                albums[t['album']].append(t)
-
-        print tracks
+                if album:
+                    albums.append(album)
 
         if albums:
-            info = albums[max(albums, lambda key: len(info[key]))]
-
-            return [(info, tracks)]
+            return [(best_album(albums), tracks)]
+            
         elif (not albums) and tracks:
             try:
                 info = {'artist': tracks[0]['artist']}
@@ -92,6 +128,8 @@ class AcoustID(object):
                 pass
         return []
 
+    def applyPrefs(self, args):
+        self.min_score = args[0] / 100.0
 
 info = AcoustID
 
