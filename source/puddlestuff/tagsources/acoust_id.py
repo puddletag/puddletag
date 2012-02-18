@@ -3,6 +3,7 @@ import pdb
 from collections import defaultdict
 
 import acoustid
+import audioread
 
 import puddlestuff.audioinfo as audioinfo
 
@@ -15,6 +16,58 @@ RETRIEVE_MSG = translate('AcoustID', "Retrieving data for file %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
 
+def audio_open(path):
+    """Open an audio file using a library that is available on this
+    system.
+    """
+    # Standard-library WAV and AIFF readers.
+    from audioread import rawread
+    try:
+        print 'raw'
+        return rawread.RawAudioFile(path)
+    except rawread.UnsupportedError:
+        pass
+
+    # Core Audio.
+    if audioread._ca_available():
+        from audioread import macca
+        try:
+            print 'ca'
+            return macca.ExtAudioFile(path)
+        except macca.MacError:
+            pass
+
+    # GStreamer.
+    if audioread._gst_available():
+        from audioread import gstdec
+        try:
+            print 'gst'
+            return gstdec.GstAudioFile(path)
+        except gstdec.GStreamerError:
+            pass
+
+    # MAD.
+    if audioread._mad_available():
+        from audioread import maddec
+        try:
+            print 'mad'
+            return maddec.MadAudioFile(path)
+        except maddec.UnsupportedError:
+            pass
+
+    # FFmpeg.
+    from audioread import ffdec
+    try:
+        print 'ff'
+        return ffdec.FFmpegAudioFile(path)
+    except ffdec.FFmpegError:
+        pass
+
+    # All backends failed!
+    raise DecodeError()
+
+audioread.audio_open = audio_open
+    
 def best_album(albums):
     albums = albums[::]
     while albums:
