@@ -5,6 +5,7 @@ from sgmllib import SGMLParser
 from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
+from puddlestuff.audioinfo import strlength
 from puddlestuff.tagsources import (write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
@@ -62,7 +63,7 @@ def children_to_text(node):
     return info
 
 def convert_dict(d, fm):
-    return dict((fm[k] if k in fm else k, v) for k, v in d.iteritems() if
+    return dict((fm.get(k, k), v) for k, v in d.iteritems() if
         not isempty(v))
 
 def fix_xml(xml):
@@ -137,7 +138,11 @@ def parse_artist_relation(relations):
             if not desc:
                 desc = r[u'artist'][u'name']
             else:
-                desc = desc + u' by ' + r[u'artist'][u'name']
+                if r[u'direction'] == u'backward':
+                    field = '%s %s' % (desc, field)
+                else:
+                    field = '%s %s' % (field, desc)
+                desc = r[u'artist'][u'name']
         if desc:
             ret[field].append(desc)
     return ret
@@ -187,7 +192,8 @@ def parse_medium_list(r_node):
 
 def parse_node(node, header_tag, sub_tag, check_tag):
     ret = []
-    nodes = [z for z in node.childNodes if z.tagName == header_tag]
+    nodes = [z for z in node.childNodes if
+        getattr(z, "tagName", u'') == header_tag]
     for node in nodes:
         info = children_to_text(node)
         for ch in node.getElementsByTagName(sub_tag):
@@ -233,8 +239,6 @@ def parse_recording_relation(relations):
 def parse_release(node):
     info = children_to_text(node)
     info.update(parse_artist_credit(node))
-    if len(info['artist']) > 50:
-        parse_artist_credit(node)
 
     info.update(parse_label_list(node))
     info.update(parse_medium_list(node))
@@ -249,26 +253,37 @@ def parse_release(node):
     
 def parse_track_list(node):
     tracks = []
-    for t in parse_node(node, 'track-list', 'track', 'position'):
+    for i, t in enumerate(parse_node(node, 'track-list', 'track', 'position')):
         track = t['recording']
         for k in TO_REMOVE:
             if k in t:
                 del(t[k])
         track.update(t)
 
-        if 'puid-list' in track:
+        if u'puid-list' in track:
             track['musicip_puid'] = track['puid-list']['id']
             del(track['puid-list'])
     
-        if u'relation-list' in track and not isempty(track['relation-list']):
-            map(track.update,
-                map(parse_track_relation, to_list(track['relation-list'])))
+        if not isempty(track.get(u'relation-list')):
+            for r in to_list(track['relation-list']):
+                track.update(parse_track_relation(r))
+
+
+        feat = to_list(track.get('artist-credit', {}).get('name-credit'))
+        if feat:
+            names = [(z['artist']['name'], z.get('joinphrase', u''))
+                for z in feat]
+
+            track['artist'] = u''.join('%s%s' % a for a in names)
 
         for k, v in track.items():
             if not isinstance(track[k], (basestring, list)):
                 del(track[k])
             elif isinstance(v, list) and not isinstance(v[0], basestring):
                 del(track[k])
+
+        if u'length' in track:
+            track['length'] = strlength(int(track[u'length']) / 1000)
 
         tracks.append(convert_dict(track, TRACK_KEYS))
     return tracks
@@ -304,8 +319,8 @@ def retrieve_album(album_id):
         '+artist-rels+recording-rels+release-rels+release-group-rels' \
         '+url-rels+work-rels+recording-level-rels+work-level-rels'
 
-    xml = urlopen(url)
-    return parse_album(xml)
+    data = urlopen(url)
+    return parse_album(data)
     
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
@@ -453,9 +468,10 @@ class MusicBrainz(object):
 info = MusicBrainz
 
 if __name__ == '__main__':
+    #retrieve_album(u'e08a3b6c-22ff-423a-8706-adbd45203698')
     #c = MusicBrainz()
-    xml = open('this_is_it.xml', 'r').read()
+    xml = open('/home/keith/Desktop/mb.xml', 'r').read()
     #x = c.search('New Again', 'Taking Back Sunday')
-    x = parse_album(xml)
-    #y = parse_tracks(open('taking_tracks.xml', 'r').read())
-    #print c.retrieve(x[0][0])
+    tracks = parse_album(xml)[1]
+    for z in tracks:
+        print z['artist'], z['__length']

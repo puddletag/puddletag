@@ -104,7 +104,7 @@ class AcoustID(object):
 
         for fn in fns:
             disp_fn = audioinfo.decode_fn(fn.filepath)
-            write_log(RETRIEVE_MSG.arg(disp_fn))
+            #write_log(RETRIEVE_MSG.arg(disp_fn))
             try:
                 data = acoustid.match("gT8GJxhO", fn.filepath,
                     'releases recordings tracks', False)
