@@ -12,6 +12,7 @@ import puddlestuff.audioinfo as audioinfo
 from puddlestuff.tagsources import RetrievalError
 import puddlestuff
 from puddlestuff.util import translate
+import time
 
 CLIENTINFO = {'client_name': "puddletag",
     'client_version': puddlestuff.version_string}
@@ -164,10 +165,14 @@ class FreeDB(object):
     def __init__(self):
         object.__init__(self)
         self.__retrieved = {}
+        self.__lasttime = time.time()
     
     def search(self, album, files):
+        if time.time() - self.__lasttime < 1000:
+            time.sleep(1)
         if files:
             results = search(files)
+            self.__lasttime = time.time()
             if results:
                 results[0] = self.retrieve(results[0][0])
             return results
@@ -175,6 +180,8 @@ class FreeDB(object):
             return []
 
     def retrieve(self, info):
+        if time.time() - self.__lasttime < 1000:
+            time.sleep(1)
         discid = info['#discid']
         if discid in self.__retrieved:
             return self.__retrieved[discid]

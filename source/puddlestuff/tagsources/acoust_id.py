@@ -1,4 +1,8 @@
 import pdb
+import urllib2
+import httplib
+import contextlib
+import time
 
 from collections import defaultdict
 
@@ -149,6 +153,24 @@ class AcoustID(object):
         object.__init__(self)
         self.min_score = 0.80
         self.preferences = [['Minimum Score', SPINBOX, [0, 100, 80]]]
+        self.__lasttime = time.time()
+        acoustid._send_request = self._send_request
+
+    def _send_request(self, req):
+        """Given a urllib2 Request object, make the request and return a
+        tuple containing the response data and headers.
+        """
+        if time.time() - self.__lasttime < 0.4:
+            time.sleep(time.time() - self.__lasttime + 0.1)
+        try:
+            with contextlib.closing(urllib2.urlopen(req)) as f:
+                return f.read(), f.info()
+        except urllib2.HTTPError, exc:
+            raise acoustid.WebServiceError('HTTP status %i' % exc.code, exc.read())
+        except httplib.BadStatusLine:
+            raise acoustid.WebServiceError('bad HTTP status line')
+        except IOError:
+            raise acoustid.WebServiceError('connection failed')
         
     def search(self, artist, fns=None):
 
