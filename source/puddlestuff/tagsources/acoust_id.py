@@ -140,8 +140,9 @@ class AcoustID(object):
             #write_log(RETRIEVE_MSG.arg(disp_fn))
             try:
                 print "Calculating ID"
-                data = acoustid.match("gT8GJxhO", fn.filepath,
-                    'releases recordings tracks', False)
+                #data = acoustid.match("gT8GJxhO", fn.filepath,
+                    #'releases recordings tracks', False)
+                data = {u'status': u'ok', u'results': [{u'recordings': [{u'id': u'32f5e92e-291b-4e2c-99b6-a0c0b2f1ab6d'}, {u'artists': [{u'id': u'ce55e49a-32f4-4757-9849-bf04d06d5fcc', u'name': u'T-Pain'}, {u'id': u'f5dfa020-ad69-41cd-b3d4-fd7af0414e94', u'name': u'Wiz Khalifa'}, {u'id': u'6e0c7c0e-cba5-4c2c-a652-38f71ef5785d', u'name': u'Lily Allen'}], u'id': u'b5d2720d-b40d-4400-b63b-19216452aab6', u'title': u"5 O'Clock"}, {u'duration': 280, u'artists': [{u'id': u'ce55e49a-32f4-4757-9849-bf04d06d5fcc', u'name': u'T-Pain'}], u'id': u'fb91dc84-dbed-43d0-ae6c-aecccc6a5cdc', u'title': u"5 O'Clock (feat. Wiz Khalifa & Lily Allen)"}], u'score': 0.936147, u'id': u'2f4ccef3-13b6-467a-bf2c-99cb1f83b696'}]}
                 print "Parsing Data"
                 album, track = parse_lookup_result(data)
                 if album:
