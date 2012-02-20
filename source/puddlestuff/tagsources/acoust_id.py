@@ -3,6 +3,7 @@ import urllib2
 import httplib
 import contextlib
 import time
+import logging
 
 from collections import defaultdict
 
@@ -19,71 +20,26 @@ from puddlestuff.util import isempty
 RETRIEVE_MSG = translate('AcoustID', "Retrieving data for file %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
-
-def audio_open(path):
-    """Open an audio file using a library that is available on this
-    system.
-    """
-    # Standard-library WAV and AIFF readers.
-    from audioread import rawread
-    try:
-        print 'raw'
-        return rawread.RawAudioFile(path)
-    except rawread.UnsupportedError:
-        pass
-
-    # Core Audio.
-    if audioread._ca_available():
-        from audioread import macca
-        try:
-            print 'ca'
-            return macca.ExtAudioFile(path)
-        except macca.MacError:
-            pass
-
-    # GStreamer.
-    if audioread._gst_available():
-        from audioread import gstdec
-        try:
-            print 'gst'
-            return gstdec.GstAudioFile(path)
-        except gstdec.GStreamerError:
-            pass
-
-    # MAD.
-    if audioread._mad_available():
-        from audioread import maddec
-        try:
-            print 'mad'
-            return maddec.MadAudioFile(path)
-        except maddec.UnsupportedError:
-            pass
-
-    # FFmpeg.
-    from audioread import ffdec
-    try:
-        print 'ff'
-        return ffdec.FFmpegAudioFile(path)
-    except ffdec.FFmpegError:
-        pass
-
-    # All backends failed!
-    raise DecodeError()
-
-audioread.audio_open = audio_open
-    
-def best_album(albums):
-    albums = albums[::]
-    while albums:
-        count = 0
-        album = albums[0]
-        best_match = [album, 1]
-        while album in albums:
-            albums.remove(album)
-            count + 1
-        if count > best_match[1]:
-            best_match = (album, count)
-    return best_match[0]
+   
+def best_album(matching_albums):
+    candidates = matching_albums[0]
+    best_match = None
+    broke = False
+    for c in candidates:
+        for albums in matching_albums[1:]:
+            if c not in albums:
+                broke = True
+                break
+        if not broke:
+            best_match = c
+        broke = False
+        
+    if best_match is None:
+        artist = filter(None,
+            (z[0].get('artist', u'') for z in matching_albums))
+        if artist:
+            best_match = {'artist': artist[0], 'album': u'[Multiple Albums]'}
+    return best_match
             
 def parse_release_data(rel):
     info = {}
@@ -103,7 +59,7 @@ def parse_release_data(rel):
             rel['mediums'][0]['tracks'][0].get('position', ""))
     return dict((k,v) for k,v in info.iteritems() if not isempty(v))
 
-def parse_lookup_result(data):
+def parse_lookup_result(data, albums=False):
     if data['status'] != 'ok':
         raise acoustid.WebServiceError("status: %s" % data['status'])
     if 'results' not in data:
@@ -131,14 +87,16 @@ def parse_lookup_result(data):
         info['mbrainz_artist_id'] = track['artists'][0]['id']
 
     if 'releases' in track:
-        album_info = parse_release_data(track['releases'][0])
+        album_info = map(parse_release_data, track['releases'])
     else:
-        album_info = {}
+        album_info = []
 
     info = dict((k,v) for k,v in info.iteritems() if not isempty(v))
 
-    if 'artist' in info and 'artist' not in album_info:
-        album_info['artist'] = info['artist']
+    if 'artist' in info:
+        for album in album_info:
+            if 'artist' not in album:
+                album['artist'] = info['artist']
 
     if 'track' in album_info:
         info['track'] = album_info['track']
@@ -181,10 +139,13 @@ class AcoustID(object):
             disp_fn = audioinfo.decode_fn(fn.filepath)
             #write_log(RETRIEVE_MSG.arg(disp_fn))
             try:
+                print "Calculating ID"
                 data = acoustid.match("gT8GJxhO", fn.filepath,
                     'releases recordings tracks', False)
+                print "Parsing Data"
                 album, track = parse_lookup_result(data)
-                track.update(album)
+                if album:
+                    track.update(max(album, key=len))
             except acoustid.FingerprintGenerationError, e:
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
                 continue
@@ -201,14 +162,18 @@ class AcoustID(object):
                     albums.append(album)
 
         if albums:
+            print "Returning Data 1"
             return [(best_album(albums), tracks)]
             
         elif (not albums) and tracks:
             try:
+                print "Returning Data 2"
+                
                 info = {'artist': tracks[0]['artist']}
                 return [(info, tracks)]
             except KeyError:
                 pass
+            print "Returning Data 3"
         return []
 
     def applyPrefs(self, args):
