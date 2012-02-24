@@ -42,7 +42,7 @@ def audio_open(path):
         except macca.MacError:
             pass
 
-    # GStreamer.
+    #GStreamer.
     #if audioread._gst_available():
         #from audioread import gstdec
         #try:
@@ -68,6 +68,7 @@ def audio_open(path):
     except ffdec.FFmpegError:
         pass
 
+    print 'failed'
     # All backends failed!
     raise DecodeError()
 
@@ -125,7 +126,7 @@ def parse_lookup_result(data, albums=False):
     info['#score'] = result['score']
     if not result.get('recordings'):
         # No recording attached. This result is not very useful.
-        return
+        return {}, {}
 
     track = max(result['recordings'], key=lambda v: len(v))
 
@@ -192,9 +193,11 @@ class AcoustID(object):
             #write_log(RETRIEVE_MSG.arg(disp_fn))
             try:
                 print "Calculating ID"
+                print disp_fn
                 data = acoustid.match("gT8GJxhO", fn.filepath,
                     'releases recordings tracks', False)
                 print "Parsing Data"
+                print data
                 album, track = parse_lookup_result(data)
                 if album:
                     track.update(max(album, key=len))
