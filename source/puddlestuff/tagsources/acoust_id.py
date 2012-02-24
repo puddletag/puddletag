@@ -20,6 +20,58 @@ from puddlestuff.util import isempty
 RETRIEVE_MSG = translate('AcoustID', "Retrieving data for file %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
+
+def audio_open(path):
+    """Open an audio file using a library that is available on this
+    system.
+    """
+    # Standard-library WAV and AIFF readers.
+    from audioread import rawread
+    try:
+        print 'raw'
+        return rawread.RawAudioFile(path)
+    except rawread.UnsupportedError:
+        pass
+
+    # Core Audio.
+    if audioread._ca_available():
+        from audioread import macca
+        try:
+            print 'ca'
+            return macca.ExtAudioFile(path)
+        except macca.MacError:
+            pass
+
+    # GStreamer.
+    #if audioread._gst_available():
+        #from audioread import gstdec
+        #try:
+            #print 'gst'
+            #return gstdec.GstAudioFile(path)
+        #except gstdec.GStreamerError:
+            #pass
+
+    # MAD.
+    if audioread._mad_available():
+        from audioread import maddec
+        try:
+            print 'mad'
+            return maddec.MadAudioFile(path)
+        except maddec.UnsupportedError:
+            pass
+
+    # FFmpeg.
+    from audioread import ffdec
+    try:
+        print 'ff'
+        return ffdec.FFmpegAudioFile(path)
+    except ffdec.FFmpegError:
+        pass
+
+    # All backends failed!
+    raise DecodeError()
+
+audioread.audio_open = audio_open
    
 def best_album(matching_albums):
     candidates = matching_albums[0]
@@ -140,9 +192,8 @@ class AcoustID(object):
             #write_log(RETRIEVE_MSG.arg(disp_fn))
             try:
                 print "Calculating ID"
-                #data = acoustid.match("gT8GJxhO", fn.filepath,
-                    #'releases recordings tracks', False)
-                data = {u'status': u'ok', u'results': [{u'recordings': [{u'id': u'32f5e92e-291b-4e2c-99b6-a0c0b2f1ab6d'}, {u'artists': [{u'id': u'ce55e49a-32f4-4757-9849-bf04d06d5fcc', u'name': u'T-Pain'}, {u'id': u'f5dfa020-ad69-41cd-b3d4-fd7af0414e94', u'name': u'Wiz Khalifa'}, {u'id': u'6e0c7c0e-cba5-4c2c-a652-38f71ef5785d', u'name': u'Lily Allen'}], u'id': u'b5d2720d-b40d-4400-b63b-19216452aab6', u'title': u"5 O'Clock"}, {u'duration': 280, u'artists': [{u'id': u'ce55e49a-32f4-4757-9849-bf04d06d5fcc', u'name': u'T-Pain'}], u'id': u'fb91dc84-dbed-43d0-ae6c-aecccc6a5cdc', u'title': u"5 O'Clock (feat. Wiz Khalifa & Lily Allen)"}], u'score': 0.936147, u'id': u'2f4ccef3-13b6-467a-bf2c-99cb1f83b696'}]}
+                data = acoustid.match("gT8GJxhO", fn.filepath,
+                    'releases recordings tracks', False)
                 print "Parsing Data"
                 album, track = parse_lookup_result(data)
                 if album:
