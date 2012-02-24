@@ -126,14 +126,14 @@ def parse_lookup_result(data, albums=False):
     info['#score'] = result['score']
     if not result.get('recordings'):
         # No recording attached. This result is not very useful.
-        return {}, {}
+        return {}, {'acoustid_id': result['id'], '#score': result['score']}
 
     track = max(result['recordings'], key=lambda v: len(v))
 
     info['title'] = track['title']
     if 'duration' in track:
         info['__length'] = audioinfo.strlength(track['duration'])
-    info['acoust_id'] = track['id']
+    info['acoustid_id'] = track['id']
 
     info['artist'] = track.get('artists', [{'name': u""}])[0]['name']
     if info['artist']:
@@ -223,9 +223,7 @@ class AcoustID(object):
         elif (not albums) and tracks:
             try:
                 print "Returning Data 2"
-                
-                info = {'artist': tracks[0]['artist']}
-                return [(info, tracks)]
+                return [({}, tracks)]
             except KeyError:
                 pass
             print "Returning Data 3"
