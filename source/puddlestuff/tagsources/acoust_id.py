@@ -6,6 +6,7 @@ import time
 import logging
 
 from collections import defaultdict
+from itertools import chain, izip, product, starmap
 
 import acoustid
 import audioread
@@ -14,10 +15,13 @@ import puddlestuff.audioinfo as audioinfo
 
 from puddlestuff.constants import SPINBOX
 from puddlestuff.tagsources import set_status, write_log
+from puddlestuff.tagsources.musicbrainz import retrieve_album
 from puddlestuff.translations import translate
-from puddlestuff.util import isempty
+from puddlestuff.util import escape_html, isempty
 
-RETRIEVE_MSG = translate('AcoustID', "Retrieving data for file %1")
+CALCULATE_MSG = translate('AcoustID', "Calculating ID")
+RETRIEVE_MSG = translate('AcoustID', "Retrieving AcoustID data: %1 of %2.")
+RETRIEVE_MB_MSG = translate('AcoustID', "Retrieving MB album data: %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
 
@@ -28,7 +32,6 @@ def audio_open(path):
     # Standard-library WAV and AIFF readers.
     from audioread import rawread
     try:
-        print 'raw'
         return rawread.RawAudioFile(path)
     except rawread.UnsupportedError:
         pass
@@ -37,7 +40,6 @@ def audio_open(path):
     if audioread._ca_available():
         from audioread import macca
         try:
-            print 'ca'
             return macca.ExtAudioFile(path)
         except macca.MacError:
             pass
@@ -55,7 +57,6 @@ def audio_open(path):
     if audioread._mad_available():
         from audioread import maddec
         try:
-            print 'mad'
             return maddec.MadAudioFile(path)
         except maddec.UnsupportedError:
             pass
@@ -63,7 +64,6 @@ def audio_open(path):
     # FFmpeg.
     from audioread import ffdec
     try:
-        print 'ff'
         return ffdec.FFmpegAudioFile(path)
     except ffdec.FFmpegError:
         pass
@@ -73,26 +73,38 @@ def audio_open(path):
     raise DecodeError()
 
 audioread.audio_open = audio_open
+
+def album_hash(d):
+    h = u''
+    if u'album' in d:
+        h = d[u'album']
+
+    if u'year' in d:
+        h += d[u'year']
+
+    return hash(h)
    
-def best_album(matching_albums):
-    candidates = matching_albums[0]
-    best_match = None
-    broke = False
-    for c in candidates:
-        for albums in matching_albums[1:]:
-            if c not in albums:
-                broke = True
-                break
-        if not broke:
-            best_match = c
-        broke = False
-        
-    if best_match is None:
-        artist = filter(None,
-            (z[0].get('artist', u'') for z in matching_albums))
-        if artist:
-            best_match = {'artist': artist[0], 'album': u'[Multiple Albums]'}
-    return best_match
+def best_match(albums, tracks):
+    hashed = {}
+    data = (product(a, [t]) for a, t in izip(albums, tracks))
+    for album, track in chain(*data):
+        key = album_hash(album)
+        if key not in hashed:
+            hashed[key] = [album, 1, [track]]
+        else:
+            hashed[key][1] += 1
+            hashed[key][2].append(track)
+
+    matched_tracks = []
+    ret = []
+    for key in sorted(hashed, key=lambda z: hashed[z][1]):
+        album, count, tracks = hashed[key]
+        tracks = [z for z in tracks if z not in matched_tracks]
+        if not tracks: continue
+        ret.append([album, tracks])
+        matched_tracks.extend(tracks)
+
+    return ret
             
 def parse_release_data(rel):
     info = {}
@@ -127,7 +139,7 @@ def parse_lookup_result(data, albums=False):
     if not result.get('recordings'):
         # No recording attached. This result is not very useful.
         return {}, {'acoustid_id': result['id'], '#score': result['score']}
-
+    
     track = max(result['recordings'], key=lambda v: len(v))
 
     info['title'] = track['title']
@@ -157,13 +169,34 @@ def parse_lookup_result(data, albums=False):
 
     return album_info, info
 
+def retrieve_album_info(album, tracks):
+    msg = u'<b>%s - %s</b>' % tuple(map(escape_html,
+        (album['artist'], album['album'])))
+    msg = RETRIEVE_MB_MSG.arg(msg)
+    write_log(msg)
+    set_status(msg)
+    
+    info, new_tracks = retrieve_album(album['mbrainz_album_id'])
+    for t in tracks:
+        try:
+            index = int(t['track'])
+        except KeyError:
+            for index, nt in enumerate(new_tracks):
+                if nt['title'] == t['title']:
+                    break
+        t.update(new_tracks[index])
+        new_tracks[index] = t
+
+    return info, new_tracks
+
 class AcoustID(object):
     name = 'AcoustID'
     group_by = ['album', None]
     def __init__(self):
         object.__init__(self)
         self.min_score = 0.80
-        self.preferences = [['Minimum Score', SPINBOX, [0, 100, 80]]]
+        self.preferences = [[
+            translate("AcoustID", 'Minimum Score'), SPINBOX, [0, 100, 80]]]
         self.__lasttime = time.time()
         acoustid._send_request = self._send_request
 
@@ -188,19 +221,20 @@ class AcoustID(object):
         tracks = []
         albums = []
 
-        for fn in fns:
+        fns_len = len(fns)
+        for i, fn in enumerate(fns):
             disp_fn = audioinfo.decode_fn(fn.filepath)
-            #write_log(RETRIEVE_MSG.arg(disp_fn))
+            write_log(disp_fn)
             try:
-                print "Calculating ID"
-                print disp_fn
+                write_log(CALCULATE_MSG)
+                write_log(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
+                set_status(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
                 data = acoustid.match("gT8GJxhO", fn.filepath,
                     'releases recordings tracks', False)
-                print "Parsing Data"
-                print data
+                write_log(translate('AcoustID', "Parsing Data"))
                 album, track = parse_lookup_result(data)
-                if album:
-                    track.update(max(album, key=len))
+                #if album:
+                    #track.update(max(album, key=len))
             except acoustid.FingerprintGenerationError, e:
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
                 continue
@@ -213,21 +247,20 @@ class AcoustID(object):
             if track and track['#score'] >= self.min_score:
                 track['#exact'] = fn
                 tracks.append(track)
-                if album:
-                    albums.append(album)
+                albums.append(album if album else {})
 
         if albums:
-            print "Returning Data 1"
-            return [(best_album(albums), tracks)]
+            return starmap(retrieve_album_info, best_match(albums, tracks))
             
         elif (not albums) and tracks:
             try:
-                print "Returning Data 2"
                 return [({}, tracks)]
             except KeyError:
                 pass
-            print "Returning Data 3"
         return []
+
+    def retrieve(self, info):
+        return info
 
     def applyPrefs(self, args):
         self.min_score = args[0] / 100.0

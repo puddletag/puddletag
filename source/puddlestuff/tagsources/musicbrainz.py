@@ -5,6 +5,8 @@ from sgmllib import SGMLParser
 from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
+sys.path.insert(1, '/home/keith/Documents/python/puddletag-hg/source')
+
 from puddlestuff.audioinfo import strlength
 from puddlestuff.tagsources import (write_log, RetrievalError,
     urlopen, parse_searchstring)
@@ -255,10 +257,8 @@ def parse_track_list(node):
     tracks = []
     for i, t in enumerate(parse_node(node, 'track-list', 'track', 'position')):
         track = t['recording']
-        for k in TO_REMOVE:
-            if k in t:
-                del(t[k])
-        track.update(t)
+        rem_keys = set(track).union(TO_REMOVE)
+        track.update((k,v) for k,v in t.iteritems() if k not in rem_keys)
 
         if u'puid-list' in track:
             track['musicip_puid'] = track['puid-list']['id']
@@ -267,7 +267,6 @@ def parse_track_list(node):
         if not isempty(track.get(u'relation-list')):
             for r in to_list(track['relation-list']):
                 track.update(parse_track_relation(r))
-
 
         feat = to_list(track.get('artist-credit', {}).get('name-credit'))
         if feat:
@@ -468,10 +467,10 @@ class MusicBrainz(object):
 info = MusicBrainz
 
 if __name__ == '__main__':
-    #retrieve_album(u'e08a3b6c-22ff-423a-8706-adbd45203698')
+    #retrieve_album(u'f504ebe7-8fb4-40e5-aa55-b6384bdf863e')
     #c = MusicBrainz()
     xml = open('/home/keith/Desktop/mb.xml', 'r').read()
     #x = c.search('New Again', 'Taking Back Sunday')
     tracks = parse_album(xml)[1]
     for z in tracks:
-        print z['artist'], z['__length']
+        print z['title'], z['track']
