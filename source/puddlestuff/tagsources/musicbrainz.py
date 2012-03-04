@@ -5,8 +5,6 @@ from sgmllib import SGMLParser
 from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
-sys.path.insert(1, '/home/keith/Documents/python/puddletag-hg/source')
-
 from puddlestuff.audioinfo import strlength
 from puddlestuff.tagsources import (write_log, RetrievalError,
     urlopen, parse_searchstring)
