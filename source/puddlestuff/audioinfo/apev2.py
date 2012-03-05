@@ -83,6 +83,15 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 key = self.revmapping.get(key, key)
             return key in self.__tags
 
+        def __deepcopy__(self, memo):
+            cls = Tag()
+            cls.mapping = self.mapping
+            cls.revmapping = self.revmapping
+            cls.set_fundamentals(deepcopy(self.__tags),
+                self.mut_obj, self.images)
+            cls.filepath = self.filepath
+            return cls
+
         @del_deco
         def __delitem__(self, key):
             if key == '__image':

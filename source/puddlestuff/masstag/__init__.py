@@ -712,7 +712,12 @@ class TagSourceProfile(object):
             index = None
 
         try:
-            self.result = Result(*self.tag_source.retrieve(info))
+            results = self.tag_source.retrieve(info)
+            if results is not None:
+                self.result = Result(*results)
+            else:
+                self.result = result
+                return self.result
         except RetrievalError, e:
             if errors is None:
                 raise

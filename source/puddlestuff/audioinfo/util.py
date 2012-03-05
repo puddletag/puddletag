@@ -589,7 +589,7 @@ class MockTag(object):
     def __init__(self, filename = None):
         object.__init__(self)
         self._info = {}
-        self._filepath = ''
+        self.__filepath = u''
         if filename:
             self.link(filename)
 

@@ -697,21 +697,21 @@ class Tag(TagBase):
     revmapping = {}
 
     def __init__(self, filename=None):
-            self.__images = []
+        self.__images = []
 
-            self.__tags = CaselessDict() #Used as storage.
-            #Each key as the is the field as used by puddletag, eg. 'artist'
-            #Each value contains an mutagen.id3.Frame object
-            #that have two methods, get_value and set_value.
-            #get_value returns the value stored by the frame as
-            #text/unicode list.
-            #set_value should take text/unicode list in parse it into
-            #it understands.
+        self.__tags = CaselessDict() #Used as storage.
+        #Each key as the is the field as used by puddletag, eg. 'artist'
+        #Each value contains an mutagen.id3.Frame object
+        #that have two methods, get_value and set_value.
+        #get_value returns the value stored by the frame as
+        #text/unicode list.
+        #set_value should take text/unicode list in parse it into
+        #it understands.
 
-            #When saving the frame stored will be used. If it has a 'frames'
-            #attributes, those frames will be used instead.
+        #When saving the frame stored will be used. If it has a 'frames'
+        #attributes, those frames will be used instead.
 
-            util.MockTag.__init__(self, filename)
+        util.MockTag.__init__(self, filename)
 
     def get_filepath(self):
         return util.MockTag.get_filepath(self)
@@ -790,6 +790,7 @@ class Tag(TagBase):
                 tags[key] = deepcopy(value)
         cls.set_fundamentals(tags,
             self.mut_obj, deepcopy(self.images))
+        cls.filepath = self.filepath
         return cls
 
     @del_deco

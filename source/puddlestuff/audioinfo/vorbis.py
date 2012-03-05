@@ -101,6 +101,7 @@ def vorbis_tag(base, name):
             cls.revmapping = self.revmapping
             cls.set_fundamentals(deepcopy(self.__tags),
                 self.mut_obj, self.images)
+            cls.filepath = self.filepath
             return cls
 
         @del_deco

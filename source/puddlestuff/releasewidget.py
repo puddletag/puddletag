@@ -186,6 +186,15 @@ class TreeItem(RootItem):
         self._display = inline_display(pattern, self.itemData)
     
     dispPattern = property(_getDisp, _setDisp)
+
+    def exact_matches(self):
+        ret = []
+        for c in self.childItems:
+            if c.exact is not None:
+                track = c.track()
+                track['#exact'] = c.exact
+                ret.append(track)
+        return ret
     
     def tracks(self):
         if self.hasTracks:
@@ -214,6 +223,9 @@ class ChildItem(RootItem):
         self.itemData = data
         if u'#exact' in data:
             self.checked = True
+            self.exact = data['#exact']
+        else:
+            self.exact = None
         self.childItems = []
         self._display = ''
         self.dispPattern = pattern
@@ -503,9 +515,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         for info, tracks in data:
             parent = TreeItem(info, self.albumPattern, self.rootItem)
             fillItem(parent, info, tracks, self.trackPattern)
-            if tracks is not None:
-                [exact_matches.append(track) for track in tracks if
-                    u'#exact' in track]
+            exact_matches.extend(parent.exact_matches())
             self.rootItem.appendChild(parent)
         self.sort()
         self.emit(SIGNAL('exactMatches'), exact_matches)

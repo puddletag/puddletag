@@ -87,6 +87,7 @@ def album_hash(d):
 def best_match(albums, tracks):
     hashed = {}
     data = (product(a, [t]) for a, t in izip(albums, tracks))
+    
     for album, track in chain(*data):
         key = album_hash(album)
         if key not in hashed:
@@ -97,12 +98,13 @@ def best_match(albums, tracks):
 
     matched_tracks = []
     ret = []
-    for key in sorted(hashed, key=lambda z: hashed[z][1]):
+
+    for key in sorted(hashed, key=lambda i: hashed[i][1], reverse=True):
         album, count, tracks = hashed[key]
-        tracks = [z for z in tracks if z not in matched_tracks]
+        tracks = [z for z in tracks if z['#exact'] not in matched_tracks]
         if not tracks: continue
         ret.append([album, tracks])
-        matched_tracks.extend(tracks)
+        matched_tracks.extend(t['#exact'] for t in tracks)
 
     return ret
             
@@ -133,43 +135,46 @@ def parse_lookup_result(data, albums=False):
     try:
         result = data['results'][0]
     except IndexError:
-        return {}, {}
+        return None
     info = {}
     info['#score'] = result['score']
     if not result.get('recordings'):
         # No recording attached. This result is not very useful.
-        return {}, {'acoustid_id': result['id'], '#score': result['score']}
-    
-    track = max(result['recordings'], key=lambda v: len(v))
+        return {'acoustid_id': result['id'], '#score': result['score']}
 
-    info['title'] = track['title']
-    if 'duration' in track:
-        info['__length'] = audioinfo.strlength(track['duration'])
-    info['acoustid_id'] = track['id']
+    tracks = [parse_recording_data(r, info) for r in result['recordings']]
 
-    info['artist'] = track.get('artists', [{'name': u""}])[0]['name']
-    if info['artist']:
-        info['mbrainz_artist_id'] = track['artists'][0]['id']
+    return tracks
 
-    if 'releases' in track:
-        album_info = map(parse_release_data, track['releases'])
+def parse_recording_data(data, info=None):
+    track = {} if info is None else info.copy()
+
+    track['title'] = data['title']
+    if 'duration' in data:
+        track['__length'] = audioinfo.strlength(data['duration'])
+    track['acoustid_id'] = data['id']
+
+    track['artist'] = data.get('artists', [{'name': u""}])[0]['name']
+    if track['artist']:
+        track['mbrainz_artist_id'] = data['artists'][0]['id']
+
+    if 'releases' in data:
+        album_info = map(parse_release_data, data['releases'])
     else:
         album_info = []
 
-    info = dict((k,v) for k,v in info.iteritems() if not isempty(v))
+    track = dict((k,v) for k,v in track.iteritems() if not isempty(v))
 
-    if 'artist' in info:
+    if 'artist' in track:
         for album in album_info:
             if 'artist' not in album:
-                album['artist'] = info['artist']
+                album['artist'] = track['artist']
 
-    if 'track' in album_info:
-        info['track'] = album_info['track']
-        del(album_info['track'])
-
-    return album_info, info
+    return album_info, track
 
 def retrieve_album_info(album, tracks):
+    if not album:
+        return album, tracks
     msg = u'<b>%s - %s</b>' % tuple(map(escape_html,
         (album['artist'], album['album'])))
     msg = RETRIEVE_MB_MSG.arg(msg)
@@ -232,9 +237,7 @@ class AcoustID(object):
                 data = acoustid.match("gT8GJxhO", fn.filepath,
                     'releases recordings tracks', False)
                 write_log(translate('AcoustID', "Parsing Data"))
-                album, track = parse_lookup_result(data)
-                #if album:
-                    #track.update(max(album, key=len))
+                info = parse_lookup_result(data)
             except acoustid.FingerprintGenerationError, e:
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
                 continue
@@ -243,24 +246,21 @@ class AcoustID(object):
                 write_log(WEB_ERROR_MSG.arg(unicode(e)))
                 break
 
-            
-            if track and track['#score'] >= self.min_score:
-                track['#exact'] = fn
-                tracks.append(track)
-                albums.append(album if album else {})
+            if hasattr(info, 'items'):
+                albums.append([{}])
+                info['#exact'] = fn
+                tracks.append(info)
+            elif info is not None:
+                for album, track in info:
+                    if track and track['#score'] >= self.min_score:
+                        track['#exact'] = fn
+                        tracks.append(track)
+                        albums.append(album if album else [{}])
 
-        if albums:
-            return starmap(retrieve_album_info, best_match(albums, tracks))
-            
-        elif (not albums) and tracks:
-            try:
-                return [({}, tracks)]
-            except KeyError:
-                pass
-        return []
+        return starmap(retrieve_album_info, best_match(albums, tracks))
 
     def retrieve(self, info):
-        return info
+        return None
 
     def applyPrefs(self, args):
         self.min_score = args[0] / 100.0
