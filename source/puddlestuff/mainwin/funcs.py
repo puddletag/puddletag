@@ -7,6 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, pdb
 path = os.path
+from collections import defaultdict
 import puddlestuff.helperwin as helperwin
 from functools import partial
 from itertools import izip
@@ -205,35 +206,40 @@ def load_musiclib(parent=None):
     obj.connect(m, SIGNAL('adddock'), emit_received('adddock'))
     m.show()
 
-_padding = u'0'
-def _pad(text, numlen):
-    if len(text) < numlen:
-        text = _padding * ((numlen - len(text)) / len(_padding)) + text
+
+def _pad(trknum, total, padlen):
+    if total is not None:
+        text = unicode(trknum).zfill(padlen) + u"/" + unicode(total)
+    else:
+        text = unicode(trknum).zfill(padlen)
     return text
 
-def number_tracks(tags, start, numtracks, restartdirs, padlength):
+def number_tracks(tags, offset, numtracks, restartdirs, padlength):
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.
     The second item of indices is the number of tracks."""
-    if numtracks:
-        num = "/" + unicode(numtracks)
-    else: num = ""
 
     if restartdirs: #Restart dir numbering
-        folders = {}
-        taglist = []
-        for tag in tags:
-            folder = tag[DIRPATH]
-            if folder in folders:
-                folders[folder] += 1
-            else:
-                folders[folder] = start
-            taglist.append({"track": _pad(unicode(folders[folder]) + num,
-                padlength)})
+        folders = defaultdict(lambda: [])
+        [folders[tag.dirpath].append(i) for i, tag in enumerate(tags)]
     else:
-        taglist = [{"track": _pad(unicode(z) + num, padlength)}
-            for z in range(start, start + len(tags) + 1)]
+        folders = {'fol': [i for i, t in enumerate(tags)]}
+    
+    taglist = {}
+    for tags in folders.itervalues():
+        if numtracks == -2:
+            total = len(tags)
+        elif numtracks is -1:
+            total = None
+        elif numtracks >= 0:
+            total = numtracks
+        for trknum, index in enumerate(tags):
+            trknum += offset
+            text = _pad(trknum, total, padlength)
+            taglist[index] = {'track': text}
+
+    taglist = [v for k,v in sorted(taglist.items(), key=lambda x: x[0])]
 
     emit('writeselected', taglist)
 

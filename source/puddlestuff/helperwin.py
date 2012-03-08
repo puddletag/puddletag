@@ -73,6 +73,8 @@ class AutonumberDialog(QDialog):
             self._numtracks.setValue(numtracks)
         self._restart_numbering = QCheckBox(translate('Autonumbering Wizard',
             "&Restart numbering at each directory."))
+        self.connect(self._restart_numbering, SIGNAL("stateChanged(int)"),
+            self.enableNumTracks)
 
         vbox.addLayout(hbox(self._separator, self._numtracks))
         vbox.addWidget(self._restart_numbering)
@@ -90,17 +92,33 @@ class AutonumberDialog(QDialog):
 
         self._loadSettings()
 
-    def emitValuesAndSave(self):
-        self.close()
-        if self._separator.checkState() == Qt.Checked:
-            self.emit(SIGNAL("newtracks"), self._start.value(),
-                        self._numtracks.value(),
-                        self._restart_numbering.checkState(),
-                        self._padlength.value())
+    def enableNumTracks(self, state):
+        if state == Qt.Checked:
+            self._numtracks.setVisible(False)
+            self._separator.setText(translate('Autonumbering Wizard',
+            "Add track &separator ['/']"))
         else:
-            self.emit(SIGNAL("newtracks"), self._start.value(),
-                        None, self._restart_numbering.checkState(),
-                        self._padlength.value())
+            self._numtracks.setVisible(True)
+            self._separator.setText(translate('Autonumbering Wizard',
+            "Add track &separator ['/']: Number of tracks"))
+
+    def emitValuesAndSave(self):
+        if self._numtracks.isVisible():
+            if self._separator.isChecked():
+                numtracks = self._numtracks.value()
+            else:
+                numtracks = -1 #Don't use totals
+        else:
+            if self._separator.isChecked():
+                numtracks = -2 #Use totals, automaticall generated
+            else:
+                numtracks = -1 
+
+        self.close()
+        
+        self.emit(SIGNAL("newtracks"), self._start.value(),
+            numtracks, self._restart_numbering.checkState(),
+            self._padlength.value())
         self._saveSettings()
 
     def _loadSettings(self):

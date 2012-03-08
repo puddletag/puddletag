@@ -444,23 +444,25 @@ def not_(text):
         return false
     return true
 
-def num(text, numlen):
+def num(text, n_len):
     if not text:
         return u""
-    text=str(text)
-    index = text.find("/")
-    if index >= 0:
-        text = text[:index]
-    try:
-        numlen = long(numlen)
-    except ValueError:
-        return text
-    if len(text) < numlen:
-        text='0' * (numlen - len(text)) + text
-    if len(text)>numlen:
-        while text.startswith('0') and len(text)>numlen:
-            text=text[1:]
-    return text
+
+    sep_index = text.find(u"/")
+    
+    if sep_index >= 0:
+        total = text[sep_index + 1:]
+        tracknum = text[:sep_index]
+    else:
+        total = None
+        tracknum = text
+
+    tracknum = tracknum.strip(u'0')
+    
+    if total:
+        return u"%s/%s" % (tracknum.zfill(n_len), total)
+    else:
+        return tracknum.zfill(n_len)
 
 def odd(text):
     D = decimal.Decimal
