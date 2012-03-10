@@ -447,6 +447,7 @@ def not_(text):
 def num(text, n_len):
     if not text:
         return u""
+    n_len = int(n_len)
 
     sep_index = text.find(u"/")
     
@@ -573,69 +574,50 @@ only as &whole word, check'''
             raise findfunc.FuncError(unicode(e))
     return text
 
-def replacetokens(text, dictionary, default=u''):
+class RegHelper(object):
+    def __init__(self, groups):
+        self.groups = groups
 
-    pat = re.compile('\$\d+')
-    start = 0
-    match = pat.search(text, start)
-    if match:
-        start = match.start()
-        l = [text[:start]]
-        end = start
-    else:
-        return default
-    while match:
-        start = match.start()
-        l.append(text[end:start])
-        end = match.end()
-        sub = int(text[start+1: end])
+    def repl(self, match):
+        v = int(match.group()[1:])
         try:
-            l.append(dictionary[sub])
+            return self.groups[v]
         except KeyError:
-            l.append(text[start: end])
-        match = pat.search(text, end)
-    l.append(text[end:])
-    return u''.join(l)
+            return u'$' + unicode(v)
 
-def replaceWithReg(text, expr, rep, matchcase=False):
+def replaceWithReg(m_tags, text, regex, repl, matchcase=False, state=None):
     """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"
 &Regular Expression, text
 Replace &matches with:, text
 Match &Case, check"""
-    if not expr:
+
+    if not regex:
         return text
+
+    if matchcase:
+        flags = re.UNICODE
+    else:
+        flags = re.UNICODE | re.I
+
+    def replace_tokens(match):
+        groups = match.groups()
+        group = match.group()
+        if not group:
+            d = {}
+        elif groups:
+            d = dict((i + 1, g) for i, g in enumerate(groups))
+            d[0] = group
+        else:
+            d = {1: group, 0: group}
+
+        return re.sub('\$\d+', RegHelper(d).repl, repl, flags=flags)
+
     try:
-        match = re.search(expr, text, re.I | re.UNICODE)
+        return findfunc.parsefunc(
+            re.sub(regex, replace_tokens, text, flags=flags),
+            m_tags, state=state)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
-
-    ret = []
-    unmatched = 0
-    append = ret.append
-    
-    if not matchcase:
-        matches = re.finditer(expr, text, re.I | re.UNICODE)
-    else:
-        matches = re.finditer(expr, text, re.UNICODE)
-
-    for match in matches:
-        group = match.group()
-        groups = match.groups()
-        if not group:
-            continue
-        if groups:
-            d = dict((i + 1, g) for i, g in enumerate(groups))
-        else:
-            d = {1: group}
-
-        replacetext = findfunc.parsefunc(rep, {}, d)
-        replacetext = replacetokens(replacetext, d, replacetext)
-
-        append(text[unmatched:match.start(0)])
-        unmatched = match.end(0)
-        append(replacetext)
-    ret.append(text[unmatched:])
-    return u''.join(ret)
 
 replace_regex = replaceWithReg
 

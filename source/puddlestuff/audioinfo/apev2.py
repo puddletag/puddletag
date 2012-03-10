@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
+
 from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError
 from mutagen.monkeysaudio import MonkeysAudio, MonkeysAudioHeaderError
 from mutagen.musepack import Musepack, MusepackHeaderError
@@ -226,6 +228,13 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 del(audio[z])
             audio.tags.update(newtag)
             audio.save()
+
+        def set_fundamentals(self, tags, mut_obj, images=None):
+            self.__tags = tags
+            self.mut_obj = mut_obj
+            if images:
+                self.images = images
+            self._originaltags = tags.keys()
 
         def update_tag_list(self):
             l = tag_versions.tags_in_file(self.filepath,

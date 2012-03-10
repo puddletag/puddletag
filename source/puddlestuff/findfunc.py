@@ -18,12 +18,16 @@ import glob
 from collections import defaultdict
 from functools import partial
 
+import string
+
 NOT_ALL = audioinfo.INFOTAGS + ['__image']
 FILETAGS = audioinfo.FILETAGS
 FUNC_NAME = 'func_name'
 FIELDS = 'fields'
 FUNC_MODULE = 'module'
 ARGS = 'arguments'
+
+whitespace = set(unicode(string.whitespace))
 
 class ParseError(Exception):
     def __init__(self, message):
@@ -183,18 +187,6 @@ def load_action_from_name(name):
     filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
     return get_action(filename)
 
-def getfunc(text, audio, dictionary=None):
-    """Parses text and replaces all functions
-    with their appropriate values.
-
-    Function must be of the form $name(args)
-    Returns the text unmodified if unsuccesful,"""
-
-    if not isinstance(text, unicode):
-        text = unicode(text, 'utf8')
-
-    return function_parser(audio, dictionary=dictionary).transformString(text)
-
 def func_tokens(dictionary, parse_action):
     func_name = Word(alphas+'_', alphanums+'_')
 
@@ -223,95 +215,198 @@ def func_tokens(dictionary, parse_action):
 
     return func_tok, arglist, rx_tok
 
-def parse_arglist(text):
-    in_quote=False
-    escape = False
-    current = []
-    arglist = []
-    for i, c in enumerate(text):
-        if c == u',' and not in_quote:
-            arglist.append(u''.join(current).strip())
-            current = []
-            continue
-        elif c == u'"' and not escape:
-            in_quote = not in_quote
-        elif c == u'\\':
-            escape = not escape
-        current.append(c)
+def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
+    state=None):
+    '''Runs the function function using the arguments specified from pudlestuff.function.
 
-    if current:
-        arglist.append(u''.join(current).strip())
-    elif text.endswith(u','):
-        arglist.append(u'')
+    Arguments:
+    funcname  -- String with the function name. Looked up using the
+                 dictionary pudlestuff.function.functions
+    arguments -- List of arguments to pass to the function. Patterns
+                 should not be evaluated. They'll be evaluated here.
+    m_audio   -- Audio file containg multiple multiple values per key.
+                 Eg. {'artist': [u'Artist1': 'Artist2']}
 
-    return [z if z else u'""' for z in arglist]
+    Keyword Arguments
+    s_audio -- Same as m_audio, but containing strings as values.
+               Generated on each run unless also passed.
+    extra -- Dictionary containing extra fields that are to be used
+             when matching fields.
+    state -- Dictionary that hold state. Like {'__count': 15}.
+             Used by some functions in puddlestuff.functions
+    
+    '''
+    
 
-def function_parser(m_audio, audio=None, dictionary=None):
-    """Parses a function in the form $name(arguments)
-    the function $name from the functions module is called
-    with the arguments."""
-    def replaceNestedMacros(tokens):
-        #if tokens.funcname == 'if':
-            #pdb.set_trace()
-        if func_tok.searchString(tokens.args):
-            tokens['args'] = func_tok.transformString(tokens.args)
+    #Get function
+    try:
+        func = functions[funcname]
+    except KeyError:
+        raise ParseError(SYNTAX_ERROR % (func,
+            translate('Defaults', 'function does not exist.')))
 
-        if tokens.funcname not in functions:
-            return u''
-        function = functions[tokens.funcname]
-        
-        if tokens.args == u'()':
+    arguments = arguments[:]    # List get's modified.
+    extra = {} if extra is None else extra
+    s_audio = stringtags(m_audio) if s_audio is None else s_audio
+    
+    varnames = func.func_code.co_varnames
+
+    #arguments will contain only a list of user supplied arguments
+    #Eg. for the function $format(%artist%) the user will specify
+    #only the %artist%, whereas calling the function requires
+    #the tags in order to look it up.
+    #This, and below replaces the tags with their corresponding order.
+
+    for i, v in enumerate(varnames):
+        if v == 'tags':
+            arguments.insert(i, s_audio)
+        elif v == 'm_tags':
+            arguments.insert(i, m_audio)
+        elif v == 'state':
+            arguments.insert(i, state)
+
+    topass = []
+
+    for no, (arg, param) in enumerate(zip(arguments, varnames)):
+        if param in ('tags', 'm_tags', 'r_tags') or param.startswith('p_'):
+            topass.append(arg)
+        elif param.startswith('n_'):
             try:
-                return function()
-            except TypeError, e:
-                arglen_error(e, [], function)
+                if float(arg) == int(float(arg)):
+                    topass.append(int(arg))
+                else:
+                    topass.append(float(arg))
+            except ValueError:
+                raise ParseError(SYNTAX_ARG_ERROR % (funcname, no))
+        else:
+            topass.append(replacevars(arg, s_audio))
 
-        arguments = parse_arglist(tokens.args[1:-1])
-        arguments = arglist.parseString(u','.join(arguments)).asList()
+    try:
+        ret = func(*topass)
+        if ret is None:
+            return u''
+        return ret
+    except TypeError, e:
+        message = SYNTAX_ERROR.arg(funcname)
+        message = message.arg(arglen_error(e, topass, func, False))
+        raise ParseError(message)
+    except FuncError, e:
+        message = SYNTAX_ERROR.arg(funcname).arg(e.message)
+        raise ParseError(message)
 
-        varnames = function.func_code.co_varnames
+def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
+    """Parses format strings. Returns the parsed string.
+
+    Arguments
+    ---------
+    s  -- *Unicode* format string. Eg. $replace(%artist%, name, surname)
+    m_audio -- Audio file containg multiple multiple values per key.
+        Eg. {'artist': [u'Artist1': 'Artist2']}
+
+    Keyword Arguments
+    s_audio -- Same as m_audio, but containing strings as values.
+        Generated on each run unless also passed.
+    extra -- Dictionary containing extra fields that are to be used
+             when matching fields.
+    state -- Dictionary that hold state. Like {'__count': 15}.
+             Used by some functions in puddlestuff.functions
+
+    >>> audio = {'artist': [u'Artist1'], track:u'10'}
+    >>> parsefunc(u'%track% - %artist%', m_audio)
+    Artist1 - 10
+    >>> state = {'__count': u'5'}
+    >>> parsefunc(u'$num(%track%, 2)/$num(%__count%, 2). %artist%', m_audio,
+    ... state = state)
+    u'05/05. Artist1'
+
+    """
+
+    #Yes I know this is a big ass function...but it works and I can't
+    #see a way to split it without making it complicated.
+    
+    tokens = []
+    token = []
+    #List containing a function with it's arguments
+    #Will look like ['replace', arg1, arg2, arg3]
+    #functions get evaluated as soon as closing bracket found.
+    func = []
+    #Flag determining if current within a function. Used for making comma's
+    #significant
+    in_func = False
+    in_quote = False
+    #field_open == -1 if not current in the middle of processing a field
+    #eg. %artist%. Otherwise contains the index in s that the field started.
+    field_open = -1
+    #Determine if next char should be escaped.
+    escape = False
         
-        for i,v in enumerate(varnames):
-            if v == 'tags':
-                arguments.insert(i, audio)
-            elif v == 'm_tags':
-                arguments.insert(i, m_audio)
-        topass = []
-        for no, (arg, param) in enumerate(zip(arguments, varnames)):
-            if param.startswith('t_') or param.startswith('text'):
-                topass.append(replacevars(arg, audio, dictionary))
-            elif param.startswith('n_'):
-                try:
-                    if float(arg) == int(float(arg)):
-                        topass.append(int(arg))
-                    else:
-                        topass.append(float(arg))
-                except ValueError:
-                    raise ParseError(SYNTAX_ARG_ERROR % (tokens.funcname, no))
-            else:
-                topass.append(arg)
+    
+    s_audio = stringtags(m_audio) if s_audio is None else s_audio
+    state = {} if state is None else state
+    tags = s_audio.copy()
+    tags.update(state)
+    tags.update(extra if extra is not None else {})
+
+    i = 0
+    while 1:
         try:
-            ret = function(*topass)
-            if ret is None:
-                return u''
-            return ret
-        except TypeError, e:
-            message = SYNTAX_ERROR.arg(tokens.funcname)
-            message = message.arg(arglen_error(e, topass, function, False))
-            raise ParseError(message)
-        except FuncError, e:
-            message = SYNTAX_ERROR.arg(tokens.funcname).arg(e.message)
-            raise ParseError(message)
+            c = s[i]
+        except IndexError:  #  Parsing's done.
+            if token:
+                tokens.append(replacevars(u''.join(token), tags))
+            break
 
-    if audio is None:
-        audio = stringtags(m_audio)
+        if c == u'"' and not escape:
+            if in_func:
+                token.append(c)
+            in_quote = not in_quote
+        elif in_quote:
+            token.append(c)
+        elif c == u'\\' and not escape:
+            escape = True
+            continue
+        elif c == u'$' and not (escape or (field_open >= 0)):
+            func_name = re.search(u'^\$(\w+)\(', s[i:])
+            if not func_name:
+                token.append(c)
+                i += 1
+                continue
 
-    func_tok, arglist, rx_tok = func_tokens(dictionary, replaceNestedMacros)
+            if in_func:
+                func_parsed, offset = parsefunc(s[i:], m_audio, s_audio,
+                    state, extra, True)
+                token.append(func_parsed)
+                i += offset + 1
+                continue
 
-    return func_tok
+            tokens.append(replacevars(u''.join(token), tags))
+            token = []
+            func = []
+            func_name = func_name.groups(0)[0]
+            func.append(func_name)
+            in_func = True
+            i += len(func_name) + 1
+        elif in_func and not in_quote and not token and c in whitespace:
+            'just increment counter'
+        elif c == u',' and in_func and not in_quote:
+            func.append(u''.join(token))
+            token = []
+        elif c == u')':
+            in_func = False
+            if token:
+                func.append(u''.join(token))
+            func_parsed = run_format_func(func[0], func[1:], m_audio, s_audio)
+            if ret_i:
+                return func_parsed, i
+            tokens.append(func_parsed)
+            token = []
+        else:
+            token.append(c)
+        escape = False
+        i += 1
 
-def parsefunc(text, audio, d=None):
-    return function_parser(audio, None, d).transformString(text)
+
+    return u''.join(tokens)
 
 def parse_field_list(fields, audio, selected=None):
     fields = fields[::]
@@ -359,32 +454,60 @@ def removeSpaces(text):
         text = text.replace(char, '')
     return text.lower()
 
-_varpat = re.compile('%([\w ]+)%')
-def replacevars(text, dictionary, extra = None):
-    """Replaces the tags in pattern with their corresponding value in audio.
+def replacevars(pattern, d, *extra):
+    """Replaces occurrences of %key% with the d[key] in the string pattern.
 
-    A tag is a string enclosed by percentages, .e.g. %tag%.
+    Arguments
+    ---------
+    pattern -- Format string like '%artist% - %title%'
+    d -- Dictionary with string values.
 
-    >>>replacevars('%artist% - %title%', {'artist':'Artist', 'title':'Title"}
-    Artist - Title."""
+    Optional Arguments
+    ------------------
+    *extra - Extra dictionaries to check. If a key can't be found in
+            d, the other dictionaries will be checked in order.
 
-    if extra is None:
-        extra = {}
+    Returns the parsed string. If a key isn't found, but in the format
+    string, it'll be removed.
+
+    >>> replacevars('%artist%', {'artist': u'ARTIST'})
+    u'ARTIST'
+    >>> replacevars('one %two%', {"three": u'VALUE'})
+    u'one '
+
+    """
+    r_vars = {}
+    map(r_vars.update, list(reversed(extra)) + [d])
     
-    dictionary = stringtags(dictionary)
-    start = 0
-    l = []
-    append = l.append
-    for match in _varpat.finditer(text):
-        append(text[start: match.start(0)])
-        try: append(dictionary[match.groups()[0]])
-        except KeyError:
-            try: append(extra[match.groups()[0]])
-            except KeyError: pass
-        start = match.end(0)
-    else:
-        append(text[start:])
-    return u''.join(l)
+    in_quote = False
+    in_field = False
+    ret = []
+    field_start = 0
+    escape = False
+
+    for i, c in enumerate(pattern):
+        if c == u'\\' and not escape:
+            escape = True
+            continue
+        elif escape:
+            escape = False
+        elif c == u'"':
+            in_quote = not in_quote
+            continue
+        elif c == u'%' and not in_quote:
+
+            if not in_field:
+                field_start = len(ret)
+                in_field = True
+            elif in_field:
+                in_field = False
+                field = u''.join(ret[field_start:])
+                del(ret[field_start:])
+                ret.append(r_vars.get(field, u''))
+            continue
+        ret.append(c)
+
+    return u''.join(ret)
 
 
 def runAction(funcs, audio, state = None, quick_action=None):
@@ -526,11 +649,11 @@ def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
             return 0
 
     if not addext:
-        return replacevars(getfunc(pattern, tags, state), tags, state)
+        return parsefunc(pattern, tags, state=state)
     elif addext and (extension is not None):
-        return replacevars(getfunc(pattern, tags, state), tags, state) + os.path.extsep + extension
+        return parsefunc(pattern, tags, state=state) + os.path.extsep + extension
     else:
-        return replacevars(getfunc(pattern, tags, state), tags, state) + os.path.extsep + tags["__ext"]
+        return parsefunc(pattern, tags, state=state) + os.path.extsep + tags["__ext"]
 
 def tagtotag(pattern, text, expression):
     """See filenametotag for an implementation example and explanation.

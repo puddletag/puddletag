@@ -12,7 +12,7 @@ from copy import deepcopy
 
 from puddlestuff.tagsources import RetrievalError, status_obj, write_log
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
-from puddlestuff.findfunc import replacevars, getfunc
+from puddlestuff.findfunc import parsefunc
 from functools import partial
 from puddlestuff.util import to_string
 from puddlestuff.audioinfo import stringtags
@@ -28,7 +28,7 @@ no_disp_fields = [u'__numtracks', u'__image']
 
 pyqtRemoveInputHook()
 def inline_display(pattern, tags):
-    return replacevars(getfunc(pattern, tags), stringtags(tags))
+    return parsefunc(pattern, tags)
 
 def fillItem(item, info, tracks, trackpattern):
     item.itemData = info

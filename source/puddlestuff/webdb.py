@@ -15,7 +15,7 @@ from puddlestuff.releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.constants import (TEXT, COMBO, SPINBOX,
     CHECKBOX, RIGHTDOCK, SAVEDIR)
-from puddlestuff.findfunc import getfunc, replacevars
+from puddlestuff.findfunc import parsefunc
 from puddleobjects import (create_buddy, unique, winsettings,
     ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
 from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
@@ -58,9 +58,6 @@ def display_tag(tag):
     if text.endswith(u'<br />'):
         text = text[:-len(u'<br />')]
     return text
-
-def display(pattern, tags):
-    return replacevars(getfunc(pattern, tags), audioinfo.stringtags(tags))
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
     "Loads Mp3tag tag sources from dirpath and return the tag source classes."
