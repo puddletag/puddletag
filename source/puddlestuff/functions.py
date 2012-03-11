@@ -164,7 +164,7 @@ def finddups(tracks, key = 'title', method=None):
 def formatValue(m_tags, pattern, state=None):
     """Format value, Format $0 using $1
 &Format string, text"""
-    ret = findfunc.tagtofilename(pattern, m_tags, state=state)
+    ret = findfunc.parsefunc(pattern, m_tags, state=state)
     if not ret:
         return
     else:

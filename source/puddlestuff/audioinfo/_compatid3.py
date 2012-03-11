@@ -68,7 +68,7 @@ class CompatID3(ID3):
         """
 
         # Sort frames by 'importance'
-        order = ["TIT2", "TPE1", "TRCK", "TALB", "TPOS", "TDRC", "TCON"]
+        order = ["TALB", "TPE1", "TIT2", "TRCK", "TPOS", "TDRC", "TCON"]
         order = dict(zip(order, range(len(order))))
         last = len(order)
         frames = self.items()
