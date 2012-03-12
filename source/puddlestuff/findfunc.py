@@ -37,6 +37,8 @@ class ParseError(Exception):
 
 class FuncError(ParseError): pass
 
+class MultiValueError(FuncError): pass
+
 from functions import functions, no_fields
 
 def arglen_error(e, passed, function, to_raise = True):
@@ -216,6 +218,43 @@ def func_tokens(dictionary, parse_action):
 
     return func_tok, arglist, rx_tok
 
+def get_function_arguments(func, arguments, reserved, *dicts):
+
+    varnames = func.func_code.co_varnames[:func.func_code.co_argcount]
+
+    #arguments will contain only a list of user supplied arguments
+    #Eg. for the function $format(%artist%) the user will specify
+    #only the %artist%, whereas calling the function requires
+    #the tags in order to look it up.
+    #This, and below replaces the tags with their corresponding order.
+    
+    topass = {}
+    othervars = []
+    for i, v in enumerate(varnames):
+        if v in KEYWORD_ARGS:
+            topass[v] = reserved[v]
+        else:
+            othervars.append(v)
+
+    for arg, param in zip(arguments, othervars):
+        if param.startswith('p_'):
+            topass[param] = arg
+        elif param.startswith('n_'):
+            try:
+                if float(arg) == int(float(arg)):
+                    topass[param] = int(arg)
+                else:
+                    topass[param] = float(arg)
+            except ValueError:
+                raise ParseError(SYNTAX_ARG_ERROR % (funcname, no))
+        else:
+            if isinstance(arg, basestring):
+                topass[param] = replacevars(arg, *dicts)
+            else:
+                topass[param] = arg
+
+    return topass
+
 def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     state=None):
     '''Runs the function function using the arguments specified from pudlestuff.function.
@@ -238,49 +277,22 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     
     '''
     
-
     #Get function
     try:
-        func = functions[funcname]
+        if isinstance(funcname, basestring):
+            func = functions[funcname]
+        else:
+            func = funcname
     except KeyError:
         raise ParseError(SYNTAX_ERROR % (func,
             translate('Defaults', 'function does not exist.')))
 
-    arguments = arguments[:]    # List get's modified.
     extra = {} if extra is None else extra
     s_audio = stringtags(m_audio) if s_audio is None else s_audio
     
-    varnames = list(func.func_code.co_varnames)
-
-    #arguments will contain only a list of user supplied arguments
-    #Eg. for the function $format(%artist%) the user will specify
-    #only the %artist%, whereas calling the function requires
-    #the tags in order to look it up.
-    #This, and below replaces the tags with their corresponding order.
-
     reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state}
-
-    topass = {}
-    othervars = []
-    for i, v in enumerate(varnames):
-        if v in KEYWORD_ARGS:
-            topass[v] = reserved[v]
-        else:
-            othervars.append(v)
-    
-    for arg, param in zip(arguments, othervars):
-        if param.startswith('p_'):
-            topass[param] = arg
-        elif param.startswith('n_'):
-            try:
-                if float(arg) == int(float(arg)):
-                    topass[param] = int(arg)
-                else:
-                    topass[param] = float(arg)
-            except ValueError:
-                raise ParseError(SYNTAX_ARG_ERROR % (funcname, no))
-        else:
-            topass[param] = replacevars(arg, s_audio)
+    dicts = [s_audio, extra, state]
+    topass = get_function_arguments(func, arguments, reserved, *dicts)
 
     try:
         ret = func(**topass)
@@ -348,11 +360,15 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
     tags.update(state)
     tags.update(extra if extra is not None else {})
 
+    br_error = translate('Errors', 'No closing bracket found.')
+
     i = 0
     while 1:
         try:
             c = s[i]
         except IndexError:  #  Parsing's done.
+            if in_func:
+                raise ParseError(SYNTAX_ERROR.arg(func[0]).arg(br_error))
             if token:
                 tokens.append(replacevars(u''.join(token), tags))
             break
@@ -460,7 +476,7 @@ def removeSpaces(text):
         text = text.replace(char, '')
     return text.lower()
 
-def replacevars(pattern, d, *extra):
+def replacevars(pattern, *dicts):
     """Replaces occurrences of %key% with the d[key] in the string pattern.
 
     Arguments
@@ -483,7 +499,7 @@ def replacevars(pattern, d, *extra):
 
     """
     r_vars = {}
-    map(r_vars.update, list(reversed(extra)) + [d])
+    map(r_vars.update, [z for z in dicts if z])
     
     in_quote = False
     in_field = False
@@ -752,50 +768,49 @@ class Function:
     def setArgs(self, args):
         self.args = args
 
-    def runFunction (self, text=None, m_tags=None, state=None, tags=None, r_tags=None):
-        function = self.function
-        varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
-        
+    def runFunction (self, text=None, m_tags=None, state=None,
+        tags=None, r_tags=None):
+
+        func = self.function
+
+        varnames = func.func_code.co_varnames[:func.func_code.co_argcount]
+
         if not varnames:
-            return function()
-        
-        if tags is None:
-            tags = stringtags(m_tags)
-        
-        if state is None:
-            state = {}
-        
-        arguments = self.args[::]
-        first_text = True
+            return func()
+            
+        s_audio = stringtags(m_tags) if tags is None else tags
+        m_audio = m_tags
+        state = {} if state is None else state
 
-        d = {'tags': tags, 'r_tags': r_tags, 'm_tags': m_tags, 'state':state}
+        reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
+            'r_tags': r_tags}
 
-        offset = 0
-        for i, v in enumerate(varnames):
-            if v in d:
-                arguments.insert(i + offset, d[v])
-                offset += 1
-
-        if varnames[0] in d:
-            first_text = False
-        
-        if first_text:
-            if isinstance(text, basestring):
-                if varnames[0].startswith('m_'):
-                    return function([text], *arguments)
-                else:
-                    return function(text, *arguments)
-            elif varnames[0].startswith('m_'):
-                return function(text, *arguments)
-            else:
-                ret = (function(v, *arguments) for v in text)
-                temp = []
-                append = temp.append
-                [append(z) for z in ret if z not in temp]
-                return temp
+        if varnames[0] in reserved:
+            topass = get_function_arguments(func, self.args, reserved,
+                *[s_audio, state])
+            return func(**topass)
         else:
-            return function(*arguments)
+            topass = get_function_arguments(func,
+                [text] + self.args, reserved,
+                *[s_audio, state])
+        try:
+            first_arg = [z for z in varnames if z not in reserved][0]
+        except IndeError:
+            return
 
+        if not first_arg.startswith('m_'):
+            text = [text] if isinstance(text, basestring) else text
+            ret = []
+            for z in text:
+                topass[first_arg] = z
+                ret.append(func(**topass))
+
+            temp = []
+            append = temp.append
+            [append(z) for z in ret if z not in temp]
+            return temp
+        else:
+            return func(**topass)
 
     def description(self):
         d = [u", ".join(self.tag)] + self.args

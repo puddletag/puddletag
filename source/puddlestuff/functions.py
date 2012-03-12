@@ -612,7 +612,6 @@ Match &Case, check"""
 
         return findfunc.parsefunc(re.sub('\$\d+', RegHelper(d).repl, repl, flags=flags), m_tags)
 
-
     try:
         return re.sub(regex, replace_tokens, text, flags=flags)
     except re.error, e:
@@ -947,7 +946,6 @@ functions = {
     'remove_except': remove_except,
     #'remove_tag': remove_tag,
     "replace": replace,
-    "replaceWithReg": replaceWithReg,
     "regex": replaceWithReg,
     "right": right,
     "round": _round,
