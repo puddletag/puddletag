@@ -26,6 +26,7 @@ FUNC_NAME = 'func_name'
 FIELDS = 'fields'
 FUNC_MODULE = 'module'
 ARGS = 'arguments'
+KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
 
 whitespace = set(unicode(string.whitespace))
 
@@ -249,7 +250,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     extra = {} if extra is None else extra
     s_audio = stringtags(m_audio) if s_audio is None else s_audio
     
-    varnames = func.func_code.co_varnames
+    varnames = list(func.func_code.co_varnames)
 
     #arguments will contain only a list of user supplied arguments
     #Eg. for the function $format(%artist%) the user will specify
@@ -257,32 +258,32 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     #the tags in order to look it up.
     #This, and below replaces the tags with their corresponding order.
 
+    reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state}
+
+    topass = {}
+    othervars = []
     for i, v in enumerate(varnames):
-        if v == 'tags':
-            arguments.insert(i, s_audio)
-        elif v == 'm_tags':
-            arguments.insert(i, m_audio)
-        elif v == 'state':
-            arguments.insert(i, state)
-
-    topass = []
-
-    for no, (arg, param) in enumerate(zip(arguments, varnames)):
-        if param in ('tags', 'm_tags', 'r_tags') or param.startswith('p_'):
-            topass.append(arg)
+        if v in KEYWORD_ARGS:
+            topass[v] = reserved[v]
+        else:
+            othervars.append(v)
+    
+    for arg, param in zip(arguments, othervars):
+        if param.startswith('p_'):
+            topass[param] = arg
         elif param.startswith('n_'):
             try:
                 if float(arg) == int(float(arg)):
-                    topass.append(int(arg))
+                    topass[param] = int(arg)
                 else:
-                    topass.append(float(arg))
+                    topass[param] = float(arg)
             except ValueError:
                 raise ParseError(SYNTAX_ARG_ERROR % (funcname, no))
         else:
-            topass.append(replacevars(arg, s_audio))
+            topass[param] = replacevars(arg, s_audio)
 
     try:
-        ret = func(*topass)
+        ret = func(**topass)
         if ret is None:
             return u''
         return ret
@@ -360,10 +361,16 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
             if in_func:
                 token.append(c)
             in_quote = not in_quote
+        elif c == u'"' and escape and in_func:
+            token.append(u'\\"')
+            i += 1
+            escape = False
+            continue
         elif in_quote:
             token.append(c)
         elif c == u'\\' and not escape:
             escape = True
+            i += 1
             continue
         elif c == u'$' and not (escape or (field_open >= 0)):
             func_name = re.search(u'^\$(\w+)\(', s[i:])
@@ -373,8 +380,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
                 continue
 
             if in_func:
-                func_parsed, offset = parsefunc(s[i:], m_audio, s_audio,
-                    state, extra, True)
+                func_parsed, offset = parsefunc(s[i:], m_audio, s_audio, state, extra, True)
                 token.append(func_parsed)
                 i += offset + 1
                 continue
@@ -391,9 +397,9 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
         elif c == u',' and in_func and not in_quote:
             func.append(u''.join(token))
             token = []
-        elif c == u')':
+        elif c == u')' and in_func:
             in_func = False
-            if token:
+            if token or s[i-1] == u',':
                 func.append(u''.join(token))
             func_parsed = run_format_func(func[0], func[1:], m_audio, s_audio)
             if ret_i:

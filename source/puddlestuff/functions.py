@@ -482,10 +482,10 @@ def rand():
 def _round(n_value):
     return round(n_value)
 
-def re_escape(rex):
+def re_escape(rex, chars=r'^$[]\+*?.(){},|'):
     escaped = u""
     for ch in rex:
-        if ch in r'^$[]\+*?.(){},|' : escaped = escaped + u'\\' + ch
+        if ch in chars : escaped = escaped + u'\\' + ch
         else: escaped = escaped + ch
     return escaped
 
@@ -581,7 +581,7 @@ class RegHelper(object):
     def repl(self, match):
         v = int(match.group()[1:])
         try:
-            return self.groups[v]
+            return re_escape(self.groups[v], u'"\\,')
         except KeyError:
             return u'$' + unicode(v)
 
@@ -594,10 +594,10 @@ Match &Case, check"""
     if not regex:
         return text
 
-    if matchcase:
-        flags = re.UNICODE
-    else:
+    if not matchcase or matchcase == false:
         flags = re.UNICODE | re.I
+    else:
+        flags = re.UNICODE
 
     def replace_tokens(match):
         groups = match.groups()
@@ -610,12 +610,11 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
-        return re.sub('\$\d+', RegHelper(d).repl, repl, flags=flags)
+        return findfunc.parsefunc(re.sub('\$\d+', RegHelper(d).repl, repl, flags=flags), m_tags)
+
 
     try:
-        return findfunc.parsefunc(
-            re.sub(regex, replace_tokens, text, flags=flags),
-            m_tags, state=state)
+        return re.sub(regex, replace_tokens, text, flags=flags)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
 
@@ -949,6 +948,7 @@ functions = {
     #'remove_tag': remove_tag,
     "replace": replace,
     "replaceWithReg": replaceWithReg,
+    "regex": replaceWithReg,
     "right": right,
     "round": _round,
     'save_artwork': save_artwork,
