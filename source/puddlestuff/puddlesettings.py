@@ -82,7 +82,7 @@ class SettingsLineEdit(QWidget):
         return self._desc, unicode(self._text.text())
 
     def _setValue(self, value):
-        self._text.setText(self._desc, text)
+        self._text.setText(self._desc, value)
 
     settingValue = property(_value, _setValue)
 

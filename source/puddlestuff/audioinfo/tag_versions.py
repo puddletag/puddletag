@@ -117,7 +117,7 @@ def tags_in_file(fn, to_check = (ID3_V1, ID3_V2, APEv2)):
         tags = [u'ID3v' + u'.'.join(map(unicode, z)) for z in id3_tags(fileobj)]
     elif ID3_V1 in to_check:
         tags = [u'ID3v1.1'] if has_v1(fileobj) else []
-    elif ID3_v2 in to_check:
+    elif ID3_V2 in to_check:
         tags = get_v2(fileobj)
         tags = [u'ID3v' + u'.'.join(map(unicode, tags))] if tags else []
     else:

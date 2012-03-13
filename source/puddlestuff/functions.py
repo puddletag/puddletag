@@ -34,7 +34,8 @@ This line is further split into three parts
     The third contains the default arguments as shown to the user."""
 
 import math
-import decimal, os, pdb, re, shutil, sys, time, unicodedata, string
+import decimal, os, pdb, re, shutil, sys
+import string, time, traceback, unicodedata
 
 from copy import deepcopy
 from functools import partial
@@ -634,9 +635,10 @@ Match &Case, check"""
     if isinstance(text, basestring):
         return text
 
+    
     if matchcase:
         ret = []
-        append = temp.append
+        append = ret.append
         [append(z) for z in text if z not in ret]
         return ret
     else:

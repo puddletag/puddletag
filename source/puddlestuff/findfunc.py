@@ -6,7 +6,7 @@ from pyparsing import (Word, alphas,Literal, OneOrMore, NotAny, alphanums,
     nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, 
     CharsNotIn, White, originalTextFor, nestedExpr, 
     Optional, commaSeparatedList)
-from puddleobjects import PuddleConfig
+from puddleobjects import PuddleConfig, safe_name
 from funcprint import pprint
 from puddlestuff.util import PluginFunction, translate
 numtimes = 0 #Used in filenametotag to keep track of shit.
@@ -188,7 +188,7 @@ def load_action(filename):
 
 def load_action_from_name(name):
     filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
-    return get_action(filename)
+    return load_action(filename)
 
 def func_tokens(dictionary, parse_action):
     func_name = Word(alphas+'_', alphanums+'_')
@@ -236,7 +236,7 @@ def get_function_arguments(func, arguments, reserved, *dicts):
         else:
             othervars.append(v)
 
-    for arg, param in zip(arguments, othervars):
+    for no, (arg, param) in enumerate(zip(arguments, othervars)):
         if param.startswith('p_'):
             topass[param] = arg
         elif param.startswith('n_'):
@@ -535,10 +535,10 @@ def replacevars(pattern, *dicts):
 def runAction(funcs, audio, state = None, quick_action=None):
     """Runs an action on audio
 
-    funcs can be a list of Function objects or a filename of an action file (see getAction).
+    funcs can be a list of Function objects or a filename of an action file (see load_action).
     audio must dictionary-like object."""
     if isinstance(funcs, basestring):
-        funcs = getAction(funcs)[0]
+        funcs = load_action(funcs)[0]
     
     if state is None:
         state = {}
@@ -552,7 +552,7 @@ def runAction(funcs, audio, state = None, quick_action=None):
         audio = deepcopy(audio.tags)
     else:
         audio = deepcopy(audio)
-    
+
     changed = set()
     for func in funcs:
         if quick_action is None:
@@ -795,7 +795,7 @@ class Function:
                 *[s_audio, state])
         try:
             first_arg = [z for z in varnames if z not in reserved][0]
-        except IndeError:
+        except IndexError:
             return
 
         if not first_arg.startswith('m_'):

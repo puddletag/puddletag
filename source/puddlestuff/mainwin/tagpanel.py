@@ -22,7 +22,7 @@ INDEXCHANGED = SIGNAL('currentIndexChanged(const QString&)')
 def loadsettings(filepath = None):
     settings = PuddleConfig()
     if filepath:
-        setting.filename = filepath
+        settings.filename = filepath
     else:
         settings.filename = os.path.join(settings.savedir, 'tagpanel')
     numrows = settings.get('panel','numrows',-1, True)
@@ -46,7 +46,7 @@ def loadsettings(filepath = None):
 def savesettings(d, filepath=None):
     settings = PuddleConfig()
     if filepath:
-        setting.filename = filepath
+        settings.filename = filepath
     else:
         settings.filename = os.path.join(settings.savedir, 'tagpanel')
     settings.set('panel', 'numrows', unicode(len(d)))

@@ -61,10 +61,7 @@ def load_settings(filename=None, actions=None):
 
     cparser = PuddleConfig(filename)
 
-    if actions is None:
-        actions = load_actions()
-    else:
-        self._actions = actions
+    actions = load_actions() if actions is None else actions
 
     shortcuts = []
     for section in sorted(cparser.sections()):

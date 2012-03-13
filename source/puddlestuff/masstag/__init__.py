@@ -116,7 +116,7 @@ def apply_regexps(audio, regexps):
             continue
         text = to_string(audio[field])
         try:
-            val = replace_regex(text, regexp, output)
+            val = replace_regex(audio, text, regexp, output)
             if val:
                 audio[field] = val
                 if not changed and val != text:
@@ -360,29 +360,6 @@ def merge_track(audio, info):
                 track[key] = audio[key][::]
     return track
 
-def merge_tracks(track_groups, files):
-    ret = []
-    to_repl = []
-    for tracks, info, fields in track_groups:
-        if tracks is None and files is not None:
-            info = strip_fields(info, fields)
-            tags = [deepcopy(info) for z in files]
-        else:
-            tags = [strip_fields(merge_track(t, info), fields)
-                for t in tracks]
-
-        if len(tags) > len(ret):
-            ret.extend(tags[len(ret):])
-        if tsp.replace_fields:
-            to_repl.append([tags, fields])
-        for i, t in enumerate(tags):
-            ret[i] = combine_tracks(ret[i], t)
-
-    for tracks, repl_fields in to_repl:
-        for repl, track in zip(tracks, ret):
-            track.update(strip_fields(repl, fields))
-
-    return ret
 
 def merge_tsp_tracks(profiles, files=None):
     ret = []

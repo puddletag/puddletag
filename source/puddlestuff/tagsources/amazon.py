@@ -421,3 +421,7 @@ class Amazon(object):
 #Required in order to let your tagsource be loaded.
 tagsources = [Amazon]
 info = Amazon
+
+if __name__ == '__main__':
+    x = Amazon()
+    x.keyword_search('amy winehouse')

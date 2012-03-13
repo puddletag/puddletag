@@ -70,7 +70,7 @@ def audio_open(path):
 
     print 'failed'
     # All backends failed!
-    raise DecodeError()
+    raise acoustid.DecodeError()
 
 audioread.audio_open = audio_open
 

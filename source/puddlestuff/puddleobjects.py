@@ -22,7 +22,7 @@ from configobj import ConfigObj
 import traceback
 import time, re
 from glob import glob
-from constants import ACTIONDIR
+from constants import ACTIONDIR, SAVEDIR
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
 import itertools
@@ -2121,6 +2121,7 @@ class PuddleCombo(QWidget):
         if not default:
             default = []
         self.combo.clear()
+        cparser = PuddleConfig(self.filename)
         self.combo.addItems(cparser.load(self.name, 'values', default))
 
     def save(self):

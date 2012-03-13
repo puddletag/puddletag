@@ -371,7 +371,7 @@ def parse_image(image, keys=None):
     return dict((k, _image_defaults[k](image)) for k in keys)
 
 def reversedict(d):
-    return dict(((v,k) for k in d))
+    return dict((v,k) for k,v in d.iteritems())
 
 def setdeco(func):
     """Decorates the __setitem__ method of a Tag object using it's mapping.

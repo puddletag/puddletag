@@ -14,12 +14,14 @@ from puddlestuff.tagsources import RetrievalError, status_obj, write_log
 from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
 from puddlestuff.findfunc import parsefunc
 from functools import partial
-from puddlestuff.util import to_string
+from puddlestuff.util import pprint_tag, to_string
 from puddlestuff.audioinfo import stringtags
 from puddlestuff.translations import translate
 
 CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
 
 default_albumpattern = u'%artist% - %album% $if(%__numtracks%, ' \
     u'[%__numtracks%], "")'
@@ -75,39 +77,15 @@ def strip(audio, taglist, reverse = False, mapping=None):
             return dict([(key, audio[key]) for key in taglist if 
                 key in audio and not key.startswith('#')])
 
+def tooltip(tag, mapping = None):
     """Used to display tags in in a human parseable format."""
     if not tag:
         return translate("WebDB", "<b>Error in pattern</b>")
-    s = u"<b>%s</b>: %s"
-    tostr = lambda i: i if isinstance(i, basestring) else i[0]
-    if ('__image' in tag) and tag['__image']:
-        d = {'#images': unicode(len(tag['__image']))}
-    else:
-        d = {}
-    
-    return u"<br />".join([s % (z, tostr(v)) for z, v in
-        sorted(tag.items() + d.items()) if z not in no_disp_fields and not
-        z.startswith('#')])
-
-def tooltip(tag, mapping):
-    """Used to display tags in in a human parseable format."""
-    if not tag:
-        return translate("WebDB", "<b>Error in pattern</b>")
-    s = "<b>%s</b>: %s"
-    tostr = lambda i: i if isinstance(i, basestring) else i[0]
-    if ('__image' in tag) and tag['__image']:
-        d = {'#images': unicode(len(tag['__image']))}
-    else:
-        d = {}
-
-    if mapping:
-        return "<br />".join([s % (mapping.get(z,z), tostr(v)) for z, v in
-            sorted(tag.items() + d.items()) if z not in no_disp_fields and not
-            z.startswith('#')])
-    else:
-        return "<br />".join([s % (z, tostr(v)) for z, v in
-            sorted(tag.items() + d.items()) if v and z not in no_disp_fields and not
-            z.startswith('#')])
+    mapping = {} if mapping is None else mapping
+    tag = dict((mapping.get(k, k), v) for k,v in tag.iteritems()
+        if not k.startswith('#'))
+        
+    return pprint_tag(tag)
 
 class Header(QHeaderView):
     def __init__(self, parent = None):
@@ -422,7 +400,9 @@ class TreeModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and \
             role == QtCore.Qt.DisplayRole:
-            return self.rootItem.data(section)
+            ret = RETRIEVED_ALBUMS % u' / '.join(self.sortOrder)
+            
+            return QVariant(QString(ret))
 
         return QtCore.QVariant()
 

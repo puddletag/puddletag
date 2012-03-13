@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import mutagen, os, cPickle as pickle, sys
+import mutagen, os, cPickle as pickle, sys, traceback
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

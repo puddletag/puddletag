@@ -45,16 +45,18 @@ def remove_tag(tag, parent):
                 'Disable Preview Mode first to enable tag deletion.'))
         return
     files = status['selectedfiles']
+    rows = states['selectedrows']
 
     def func():
-        for f in files:
+        for row, f in zip(rows, files):
             try:
                 _remove_tag(f, tag)
                 yield None
             except (IOError, OSError), e:
                 filename = f[audioinfo.PATH]
                 m = translate("Defaults",
-                    'An error occured while writing to <b>%1</b>. (%2)').arg(filename).arg(e.strerror)
+                    'An error occured while writing to <b>%1</b>. (%2)')
+                m = m.arg(filename).arg(e.strerror)
                 if row == rows[-1]:
                     yield m, 1
                 else:

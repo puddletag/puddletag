@@ -210,7 +210,7 @@ def replace(cursor, s, repl):
     cursor.line = cursor.line[:cursor.charno] + text
 
 def regexpreplace(cursor, regexp, s):
-    text = replaceWithReg(cursor.line[cursor.charno:], regexp, s,
+    text = replaceWithReg({}, cursor.line[cursor.charno:], regexp, s,
         matchcase=True)
     cursor.line = cursor.line[:cursor.charno] + text
     cursor.charno = 0

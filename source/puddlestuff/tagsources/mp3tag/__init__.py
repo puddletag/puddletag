@@ -280,13 +280,6 @@ class Cursor(object):
         if debug:
             return debug_info
 
-    def to_command(self, name):
-        for i, l in enumerate(self.source[self.lineo:]):
-            if l.startswith(command):
-                self.lineno = self.lineno + i
-                return True
-        return False
-
 class Mp3TagSource(object):
     def __init__(self, idents, search_source, album_source):
 

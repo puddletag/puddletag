@@ -123,7 +123,7 @@ def parse_tracklist(tlist):
         for person in t.get('extraartists', {}):
             name = person['name']
             if person.get('join'):
-                title = title + u' ' + join + u' ' + name
+                title = title + u' ' + person.get('join') + u' ' + name
             elif person.get('role', u'') == u'Featuring':
                 featuring.append(name)
             else:
@@ -170,7 +170,7 @@ def parse_album_json(data):
 
     if 'images' in data:
         imgs = [(z.get('uri', ''), z.get('uri150', ''))
-            for z in data['images'] if 'uri' in z or 'uri150' in images]
+            for z in data['images'] if 'uri' in z or 'uri150' in z]
         info['#cover-url'] = imgs
         
     return (info, parse_tracklist(data['tracklist']))

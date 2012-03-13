@@ -20,7 +20,8 @@ from puddleobjects import (create_buddy, unique, winsettings,
     ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
 from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
     write_log, RetrievalError, mp3tag)
-from puddlestuff.util import pprint_tag, split_by_field, to_string, translate
+from puddlestuff.util import (isempty, pprint_tag,
+    split_by_field, to_string, translate)
 
 pyqtRemoveInputHook()
 

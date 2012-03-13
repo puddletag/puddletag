@@ -34,7 +34,7 @@ class UnicodeMod(unicode):
         return UnicodeMod(unicode.__mod__(self, other))
 
     def __format__(self, fmt=None):
-        return Unicode(unicode.__format__(self, fmt))
+        return UnicodeMod(unicode.__format__(self, fmt))
 
     def __getitem__(self, item):
         return UnicodeMod(unicode.__getitem__(self, item))
