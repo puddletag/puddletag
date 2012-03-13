@@ -43,8 +43,11 @@ IMAGEKEYS = {'SmallImage': SMALLIMAGE,
 
 def check_binding(node):
     """Checks whether a returned item as an Audio CD."""
-    binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
-    return binding == u'Audio CD'
+    try:
+        binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
+        return binding == u'Audio CD'
+    except IndexError:
+        return
 
 def create_aws_url(aws_access_key_id, secret, query_dictionary):
     """Creates the query url that'll be used to query Amazon's service."""
@@ -113,7 +116,8 @@ def keyword_search(keywords):
             "ResponseGroup":u"ItemAttributes,Images",
             "Service":u"AWSECommerceService",
             'ItemPage': u'1',
-            'Keywords': keywords}
+            'Keywords': keywords,
+            'AssociateTag': u'puddletag-20'}
     url = create_aws_url(access_key, secret_key, query_pairs)
     xml = urlopen(url)
     return parse_search_xml(xml)
@@ -424,4 +428,4 @@ info = Amazon
 
 if __name__ == '__main__':
     x = Amazon()
-    x.keyword_search('amy winehouse')
+    print x.keyword_search('amy winehouse')
