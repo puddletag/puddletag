@@ -125,6 +125,7 @@ def keyword_search(keywords):
 def parse_album_xml(text, album=None):
     """Parses the retrieved xml for an album and get's the track listing."""
     doc = minidom.parseString(text)
+    
     album_item = doc.getElementsByTagName('Item')[0]
     try:
         tracklist = album_item.getElementsByTagName('Tracks')[0]
@@ -197,7 +198,8 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         "Operation": u"ItemLookup",
         "Service":u"AWSECommerceService",
         'ItemId': asin,
-        'ResponseGroup': u'Tracks'}
+        'ResponseGroup': u'Tracks',
+        'AssociateTag': u'puddletag-20'}
     url = create_aws_url(access_key, secret_key, query_pairs)
 
     if isinstance(info, basestring):
