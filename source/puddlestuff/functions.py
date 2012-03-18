@@ -459,7 +459,7 @@ def num(text, n_len, add_sep=false):
         total = None
         tracknum = text
 
-    tracknum = tracknum.strip(u'0')
+    tracknum = tracknum.lstrip(u'0')
 
     if total and add_sep != false:
         return u"%s/%s" % (tracknum.zfill(n_len), total)
@@ -489,6 +489,9 @@ def re_escape(rex, chars=r'^$[]\+*?.(){},|'):
         if ch in chars : escaped = escaped + u'\\' + ch
         else: escaped = escaped + ch
     return escaped
+
+def pat_escape(p_pat):
+    return re_escape(p_pat, u'$%\\')
 
 def remove_fields():
     '''Remove Fields, <blank> $0'''
@@ -827,19 +830,20 @@ def testfunction(tags, t_text, p_pattern, n_number):
     assert n_number == 23
     return u'Passed'
 
-def texttotag(tags, text, text1, text2):
+def texttotag(tags, input_text, pattern, output, state=None):
     """Text to Tag, "Text to Tag: $0 -> $1, $2"
 &Text, text
 &Pattern, text
 &Output, text"""
-    pattern = text1
-    tagpattern = pyparsing.Literal('%').suppress() + pyparsing.Word(pyparsing.nums)
-    d = findfunc.tagtotag(pattern, findfunc.tagtofilename(text, tags), tagpattern)
+    tagpattern = pyparsing.Literal('%').suppress() + \
+        pyparsing.Word(pyparsing.nums)
+    input_text = findfunc.parsefunc(input_text, tags, state=state)
+    d = findfunc.tagtotag(pattern, input_text, tagpattern)
     if d:
-        output = text2
         for key in d:
-            output = output.replace(u'%' + unicode(key), unicode(d[key]))
-        return findfunc.tagtofilename(output, tags)
+            output = output.replace(u'%' +
+                unicode(key), pat_escape(unicode(d[key])))
+        return findfunc.parsefunc(output, tags, state=state)
     return None
 
 def titleCase(text, ctype = None, characters = None):

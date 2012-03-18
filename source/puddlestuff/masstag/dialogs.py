@@ -636,30 +636,16 @@ class MassTagWindow(QWidget):
                 masstag(mtp, files, self.__flag, search_error,
                     retrieval_error)
 
-                ret = {}
-                for tsp in mtp.profiles:
-                    if not tsp.matched:
-                        continue
-
-                    matched = match_files(files, tsp.result.merged,
+                retrieved = merge_tsp_tracks(mtp.profiles)
+                ret = match_files(files, retrieved,
                         mtp.track_bound, mtp.fields,
-                        mtp.jfdi, mtp.leave_existing, True)
+                        mtp.jfdi, mtp.leave_existing, True)[0]
 
-                    tsp.track_matches = matched[1]
-                    matched = matched[0]
+                if ret:
+                    thread.emit(SIGNAL('enable_preview_mode'))
+                    thread.emit(SIGNAL('setpreview'), ret)
 
-                    for f, m in matched.iteritems():
-                        d = strip_fields(m, tsp.fields)
-                        if f in ret:
-                            ret[f] = combine_tracks(ret[f], d,
-                                mtp.replace_fields)
-                        else:
-                            ret[f] = d
-
-                thread.emit(SIGNAL('enable_preview_mode'))
-                thread.emit(SIGNAL('setpreview'), ret)
-
-                set_status('<hr width="45%" /><br />')
+                    set_status('<hr width="45%" /><br />')
 
         def finished(value):
             if not (value is True):
