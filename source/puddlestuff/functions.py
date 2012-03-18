@@ -445,13 +445,13 @@ def not_(text):
         return false
     return true
 
-def num(text, n_len):
+def num(text, n_len, add_sep=false):
     if not text:
         return u""
     n_len = int(n_len)
 
     sep_index = text.find(u"/")
-    
+
     if sep_index >= 0:
         total = text[sep_index + 1:]
         tracknum = text[:sep_index]
@@ -460,8 +460,8 @@ def num(text, n_len):
         tracknum = text
 
     tracknum = tracknum.strip(u'0')
-    
-    if total:
+
+    if total and add_sep != false:
         return u"%s/%s" % (tracknum.zfill(n_len), total)
     else:
         return tracknum.zfill(n_len)
@@ -584,7 +584,7 @@ class RegHelper(object):
         try:
             return re_escape(self.groups[v], u'"\\,')
         except KeyError:
-            return u'$' + unicode(v)
+            return u'""'
 
 def replaceWithReg(m_tags, text, regex, repl, matchcase=False, state=None):
     """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"

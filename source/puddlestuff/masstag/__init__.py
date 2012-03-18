@@ -5,6 +5,8 @@ from collections import defaultdict
 from copy import deepcopy
 from operator import itemgetter
 
+import puddlestuff
+
 from puddlestuff.audioinfo import FILENAME
 from puddlestuff.constants import VARIOUS
 from puddlestuff.findfunc import filenametotag

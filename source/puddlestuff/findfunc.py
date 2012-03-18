@@ -8,8 +8,7 @@ from pyparsing import (Word, alphas,Literal, OneOrMore, NotAny, alphanums,
     Optional, commaSeparatedList)
 from puddleobjects import PuddleConfig, safe_name
 from funcprint import pprint
-from puddlestuff.util import PluginFunction, translate
-numtimes = 0 #Used in filenametotag to keep track of shit.
+from puddlestuff.util import PluginFunction, translate, to_list, to_string
 import cPickle as pickle
 stringtags = audioinfo.stringtags
 from copy import deepcopy
@@ -17,7 +16,7 @@ from constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERR
 import glob
 from collections import defaultdict
 from functools import partial
-
+numtimes = 0
 import string
 
 NOT_ALL = audioinfo.INFOTAGS + ['__image']
@@ -218,7 +217,7 @@ def func_tokens(dictionary, parse_action):
 
     return func_tok, arglist, rx_tok
 
-def get_function_arguments(func, arguments, reserved, *dicts):
+def get_function_arguments(func, arguments, reserved, fmt=True, *dicts):
 
     varnames = func.func_code.co_varnames[:func.func_code.co_argcount]
 
@@ -230,8 +229,11 @@ def get_function_arguments(func, arguments, reserved, *dicts):
     
     topass = {}
     othervars = []
+
+    key_args = set(KEYWORD_ARGS).union(reserved)
+    
     for i, v in enumerate(varnames):
-        if v in KEYWORD_ARGS:
+        if v in key_args:
             topass[v] = reserved[v]
         else:
             othervars.append(v)
@@ -248,7 +250,7 @@ def get_function_arguments(func, arguments, reserved, *dicts):
             except ValueError:
                 raise ParseError(SYNTAX_ARG_ERROR % (funcname, no))
         else:
-            if isinstance(arg, basestring):
+            if isinstance(arg, basestring) and fmt:
                 topass[param] = replacevars(arg, *dicts)
             else:
                 topass[param] = arg
@@ -292,7 +294,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     
     reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state}
     dicts = [s_audio, extra, state]
-    topass = get_function_arguments(func, arguments, reserved, *dicts)
+    topass = get_function_arguments(func, arguments, reserved, True, *dicts)
 
     try:
         ret = func(**topass)
@@ -782,24 +784,34 @@ class Function:
         m_audio = m_tags
         state = {} if state is None else state
 
-        reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
-            'r_tags': r_tags}
+        m_text = to_list(text)
+        text = to_string(text)
 
+        reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
+            'r_tags': r_tags, 'text': to_string(text),
+            'm_text': m_text}
+
+        
         if varnames[0] in reserved:
+            reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
+                'r_tags': r_tags, 'text': to_string(text),
+                'm_text': m_text}
             topass = get_function_arguments(func, self.args, reserved,
-                *[s_audio, state])
+                False, *[s_audio, state])
             return func(**topass)
         else:
+            reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
+                'r_tags': r_tags}
             topass = get_function_arguments(func,
-                [text] + self.args, reserved,
-                *[s_audio, state])
+                [text] + self.args, reserved, False, *[s_audio, state])
+            
         try:
             first_arg = [z for z in varnames if z not in reserved][0]
         except IndexError:
             return
 
         if not first_arg.startswith('m_'):
-            text = [text] if isinstance(text, basestring) else text
+            text = m_text
             ret = []
             for z in text:
                 topass[first_arg] = z
@@ -810,6 +822,7 @@ class Function:
             [append(z) for z in ret if z not in temp]
             return temp
         else:
+            topass[first_arg]
             return func(**topass)
 
     def description(self):
