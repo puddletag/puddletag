@@ -147,12 +147,12 @@ def enconvert(text, enc_name):
 &Encoding, combo, cp1250, cp1251, cp1252, cp1253, cp1254, cp1255, cp1256, cp1257, cp1258'''
     return text.encode("latin1", 'replace').decode(enc_name, 'replace')
 
-def filenametotag(m_tags, pattern):
+def filenametotag(m_tags, p_pattern):
     """Filename to Tag, File->Tag '$1'
 &Pattern, text"""
-    return findfunc.filenametotag(pattern, m_tags[PATH], True)
+    return findfunc.filenametotag(p_pattern, m_tags[PATH], True)
 
-def finddups(tracks, key = 'title', method=None):
+def finddups(tracks, key='title', method=None):
     from puddleobjects import dupes
     li = []
     for z in tracks:
@@ -162,10 +162,10 @@ def finddups(tracks, key = 'title', method=None):
             li.append(None)
     return dupes(li, method)
 
-def formatValue(m_tags, pattern, state=None):
+def formatValue(m_tags, p_pattern, state=None):
     """Format value, Format $0 using $1
 &Format string, text"""
-    ret = findfunc.parsefunc(pattern, m_tags, state=state)
+    ret = findfunc.parsefunc(p_pattern, m_tags, state=state)
     if not ret:
         return
     else:
@@ -205,12 +205,12 @@ def iflonger(a, b, text, text1):
     except TypeError:
         return
 
-def import_text(m_tags, pattern, r_tags):
+def import_text(m_tags, p_pattern, r_tags):
     '''Import text file, "Text File: $0, '$1'"
 &Pattern (can be relative path), text, lyrics.txt'''
     path = os.path
     dirpath = r_tags.dirpath
-    filename = tag_to_filename(pattern, m_tags, r_tags, False)
+    filename = tag_to_filename(p_pattern, m_tags, r_tags, False)
     if not filename:
         return
     try:
@@ -414,7 +414,7 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
             parent.insert(0, '/')
         return os.path.join(*(parent + [new_fn]))
 
-def move(m_tags, pattern, r_tags, ext=True, state=None):
+def move(m_tags, p_pattern, r_tags, ext=True, state=None):
     """Tag to filename, Tag->File: $1
 &Pattern, text"""
 
@@ -422,7 +422,7 @@ def move(m_tags, pattern, r_tags, ext=True, state=None):
     tags = m_tags
     tf = findfunc.tagtofilename
 
-    fn = tag_to_filename(pattern, m_tags, r_tags, ext, state)
+    fn = tag_to_filename(p_pattern, m_tags, r_tags, ext, state)
 
     if fn:
         return {'__path': fn}
@@ -830,7 +830,7 @@ def testfunction(tags, t_text, p_pattern, n_number):
     assert n_number == 23
     return u'Passed'
 
-def texttotag(tags, input_text, pattern, output, state=None):
+def texttotag(tags, input_text, p_pattern, output, state=None):
     """Text to Tag, "Text to Tag: $0 -> $1, $2"
 &Text, text
 &Pattern, text
@@ -838,7 +838,7 @@ def texttotag(tags, input_text, pattern, output, state=None):
     tagpattern = pyparsing.Literal('%').suppress() + \
         pyparsing.Word(pyparsing.nums)
     input_text = findfunc.parsefunc(input_text, tags, state=state)
-    d = findfunc.tagtotag(pattern, input_text, tagpattern)
+    d = findfunc.tagtotag(p_pattern, input_text, tagpattern)
     if d:
         for key in d:
             output = output.replace(u'%' +
