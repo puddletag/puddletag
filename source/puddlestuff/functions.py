@@ -313,14 +313,14 @@ def merge_values(m_text, separator=u';'):
     else:
         return separator.join(m_text)
 
-def meta_sep(m_tags, field, sep=u', '):
-    value = m_tags.get(field)
+def meta_sep(m_tags, p_field, p_sep=u', '):
+    value = m_tags.get(p_field)
     if value is None:
         return None
     elif isinstance(value, basestring):
         return value
     else:
-        return sep.join(value)
+        return p_sep.join(value)
 
 def meta(m_tags, field, n_index=None):
     value = m_tags.get(field)
