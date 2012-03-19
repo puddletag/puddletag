@@ -117,6 +117,8 @@ def keyword_search(keywords):
 def parse_tracklist(tlist):
     tracks = []
     for t in tlist:
+        if not t.get(u'duration'):
+            continue
         title = t['title']
         people = []
         featuring = []
@@ -133,6 +135,7 @@ def parse_tracklist(tlist):
             title = title + u' featuring ' + u', '.join(featuring)
 
         info = convert_dict(t)
+        info['artist'] = [z['name'] for z in t.get('artists', [])]
         info['title'] = title
 
         if people:
@@ -141,7 +144,7 @@ def parse_tracklist(tlist):
     return tracks
 
 def parse_album_json(data):
-    """Parses the retrieved xml for an album and get's the track listing."""
+    """Parses the retrieved json for an album and get's the track listing."""
 
     info = {}
 
@@ -165,7 +168,7 @@ def parse_album_json(data):
     info['companies'] = u';'.join(
         u'%s %s' % (z['entity_type_name'], z['name'])
         for z in data.get('companies', []))
-
+    info['album'] = data['title']
     info = check_values(convert_dict(info, ALBUM_KEYS))
 
     if 'images' in data:
@@ -219,11 +222,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         info = {}
         write_log(
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
+        rls_type = u'release'
     elif isinstance(info, basestring):
         r_id = info
         info = {}
         write_log(
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
+        rls_type = u'release'
     else:
         if rls_type is None:
             rls_type = info['#release_type']
@@ -236,9 +241,6 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
             
     url = master_url % r_id if rls_type == MASTER else release_url % r_id
     x = urlopen(url)
-    f = open('a.json', 'w')
-    f.write(x)
-    f.close()
     ret = parse_album_json(json.loads(x)['resp'][rls_type])
 
     info = deepcopy(info)
@@ -266,8 +268,11 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         if data:
             info.update({'__image': data})
 
-    info['#extrainfo'] = (
-        translate('Discogs', '%s at Discogs.com') % info['album'], site_url)
+    try:
+        info['#extrainfo'] = (translate('Discogs', '%s at Discogs.com') % \
+            info['album'], site_url)
+    except KeyError:
+        pass
     return info, ret[1]
 
 def search(artist=None, album=None):
@@ -412,9 +417,6 @@ info = Discogs
 
 if __name__ == '__main__':
     import json
-    f = open('k.json', 'r').read()
-    d = json.loads(f)
-    x = parse_search_json(d)
-    #print parse_album_json(d)[0]
-    #x = search('atliens')
-    print retrieve_album(x[0])
+    d = json.loads(open('a.json', 'r').read())
+    x = parse_album_json(d['resp']['release'])
+    print x
