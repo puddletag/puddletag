@@ -135,7 +135,17 @@ def parse_tracklist(tlist):
             title = title + u' featuring ' + u', '.join(featuring)
 
         info = convert_dict(t)
-        info['artist'] = [z['name'] for z in t.get('artists', [])]
+        artist = []
+        a_len = len(t.get('artists', []))
+        for i, a in enumerate(t.get(u'artists', [])):
+            if a.get(u'join'):
+                artist.append(u'%s %s ' % (a[u'name'], a[u'join']))
+            else:
+                if i < a_len - 1:
+                    artist.append(u'%s & ' % a[u'name'])
+                else:
+                    artist.append(a[u'name'])
+        info['artist'] = u''.join(artist).strip()
         info['title'] = title
 
         if people:
