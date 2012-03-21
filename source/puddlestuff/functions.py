@@ -185,8 +185,8 @@ def grtr(text, text1):
     else:
         return false
 
-def hasformat(pattern, tagname = "__filename"):
-    if findfunc.filenametotag(pattern, tagname):
+def hasformat(p_pat, tagname = "__filename"):
+    if findfunc.filenametotag(p_pat, tagname):
         return true
     return false
 

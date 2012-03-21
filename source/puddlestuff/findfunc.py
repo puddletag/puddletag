@@ -38,7 +38,7 @@ class FuncError(ParseError): pass
 
 class MultiValueError(FuncError): pass
 
-from functions import functions, no_fields
+from functions import functions, no_fields, pat_escape
 
 def arglen_error(e, passed, function, to_raise = True):
     varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
@@ -399,7 +399,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
 
             if in_func:
                 func_parsed, offset = parsefunc(s[i:], m_audio, s_audio, state, extra, True)
-                token.append(func_parsed)
+                token.append(pat_escape(func_parsed))
                 i += offset + 1
                 continue
 
@@ -510,7 +510,7 @@ def replacevars(pattern, *dicts):
     escape = False
 
     for i, c in enumerate(pattern):
-        if c == u'\\' and not escape:
+        if not in_quote and c == u'\\' and not escape:
             escape = True
             continue
         elif escape:
