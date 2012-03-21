@@ -399,7 +399,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
 
             if in_func:
                 func_parsed, offset = parsefunc(s[i:], m_audio, s_audio, state, extra, True)
-                token.append(pat_escape(func_parsed))
+                token.append(func_parsed)
                 i += offset + 1
                 continue
 
@@ -514,6 +514,8 @@ def replacevars(pattern, *dicts):
             escape = True
             continue
         elif escape:
+            if c == u'\\':
+                ret.append(c)
             escape = False
         elif c == u'"':
             in_quote = not in_quote

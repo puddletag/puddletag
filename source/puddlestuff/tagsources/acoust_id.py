@@ -101,11 +101,15 @@ def best_match(albums, tracks):
 
     for key in sorted(hashed, key=lambda i: hashed[i][1], reverse=True):
         album, count, tracks = hashed[key]
-        tracks = [z for z in tracks if z['#exact'] not in matched_tracks]
-        if not tracks: continue
-        ret.append([album, tracks])
-        matched_tracks.extend(t['#exact'] for t in tracks)
-
+        new_tracks = []
+        
+        for t in tracks:
+            if t['#exact'] not in matched_tracks:
+                new_tracks.append(t)
+                matched_tracks.append(t['#exact'])
+        if not new_tracks: continue
+        ret.append([album, new_tracks])
+        
     return ret
             
 def parse_release_data(rel):
@@ -149,7 +153,11 @@ def parse_lookup_result(data, albums=False):
 def parse_recording_data(data, info=None):
     track = {} if info is None else info.copy()
 
-    track['title'] = data['title']
+    try:
+        track['title'] = data['title']
+    except:
+        print data
+        raise
     if 'duration' in data:
         track['__length'] = audioinfo.strlength(data['duration'])
     track['acoustid_id'] = data['id']
