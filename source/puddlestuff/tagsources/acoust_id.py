@@ -156,7 +156,8 @@ def parse_recording_data(data, info=None):
     try:
         track['title'] = data['title']
     except KeyError:
-        return {}, {'acoustid_id': data['id'], '#score': data['score']}
+        track['acoustid_id'] = data['id']
+        return {}, track
     if 'duration' in data:
         track['__length'] = audioinfo.strlength(data['duration'])
     track['acoustid_id'] = data['id']
