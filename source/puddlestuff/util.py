@@ -171,7 +171,7 @@ def rename_file(audio, tags):
     otherwise {} is returned."""
     test_audio = MockTag()
     test_audio.filepath = audio.filepath
-
+    renamed = False
     
     if PATH in tags:
         test_audio.filepath = to_string(tags[PATH])
@@ -182,6 +182,7 @@ def rename_file(audio, tags):
 
     if rename(audio.filepath, test_audio.filepath):
         audio.filepath = test_audio.filepath
+        renamed = True
 
     if DIRNAME in tags:
         newdir = safe_name(encode_fn(tags[DIRNAME]))
@@ -189,10 +190,12 @@ def rename_file(audio, tags):
             newdir)
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
+            renamed = True
     elif DIRPATH in tags:
         newdir = to_string(encode_fn(tags[DIRPATH]))
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
+            renamed = True
 
 def split_by_tag(tracks, main='artist', secondary='album'):
     get = lambda t,f : to_string(track.get(f)).strip()
@@ -251,6 +254,7 @@ def write(audio, tags, save_mtime = True, justrename=False):
     the file is just renamed i.e not tags are written.
     """
     tags = deepcopy(tags)
+    renamed = False
     if audio.library and (ARTIST in tags or ALBUM in tags):
         artist = audio.get(ARTIST, u'')
     else:
@@ -279,12 +283,15 @@ def write(audio, tags, save_mtime = True, justrename=False):
             for key in fn_fields:
                 if key in fn_hash:
                     undo[key] = getattr(audio, fn_hash[key])
-            rename_file(audio, fn_fields)
+            renamed = rename_file(audio, fn_fields)
+        
         if not justrename:
-            user_only = without_file(tags)
+            user_only = dict_diff(audio, without_file(tags))
             if user_only:
                 audio.update(user_only)
                 audio.save()
+            elif not user_only and not renamed:
+                return {}
     except EnvironmentError:
         audio.update(undo)
         audio.preview = preview
@@ -295,6 +302,25 @@ def write(audio, tags, save_mtime = True, justrename=False):
         except EnvironmentError:
             pass
     return undo
+
+def dict_diff(d1, d2):
+    """Compute difference between d2 and d1, returns dict with
+    k,v in d2 if d2[k] != d1[k].
+
+    For values, the string "this here" will be considered the same as the list
+    ["this here"].
+    """
+    ret = {}
+    for key in d2:
+        try:
+            if key not in d1:
+                ret[key] = d2[key]
+            else:
+                if to_list(d2[key]) != to_list(d1[key]):
+                    ret[key] = d2[key]
+        except (TypeError, ValueError):
+            ret[key] = d2[key]
+    return ret
 
 def real_filetags(mapping, revmapping, tags):
     filefields = [mapping.get(key, key) for key in FILETAGS]
