@@ -190,7 +190,7 @@ def rename_file(audio, tags):
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
     elif DIRPATH in tags:
-        newdir = encode_fn(tags[DIRPATH])
+        newdir = to_string(encode_fn(tags[DIRPATH]))
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
 
