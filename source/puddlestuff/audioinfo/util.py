@@ -286,6 +286,9 @@ def info_to_dict(info):
     try: tags['__version'] = unicode(info.version)
     except AttributeError: pass
 
+    try: tags['__md5sig'] = unicode(info.md5_signature)
+    except AttributeError: pass
+
     return tags
 
 def isempty(value):
