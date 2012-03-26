@@ -192,7 +192,7 @@ def rename_file(audio, tags):
             audio.dirpath = newdir
             renamed = True
     elif DIRPATH in tags:
-        newdir = to_string(encode_fn(tags[DIRPATH]))
+        newdir = encode_fn(to_string(tags[DIRPATH]))
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
             renamed = True
