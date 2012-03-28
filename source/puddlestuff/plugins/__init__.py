@@ -27,7 +27,8 @@ def connect_shortcut(action, enabled, disabled=None, togglecheck=None):
 def connect_control(control):
     controls = status['dialogs']
     emits = defaultdict(lambda: [])
-    for c in controls:
+        
+    for c in controls.values():
         [emits[sig].append(c) for sig in c.emits]
 
     connect = control.connect
@@ -36,7 +37,7 @@ def connect_control(control):
         if signal in emits:
             [connect(c, SIGNAL(signal), slot) for c in emits[signal]]
 
-    for c in controls:
+    for c in controls.values():
         for signal, slot in c.receives:
             if signal in control.emits:
                 connect(control, SIGNAL(signal), slot)

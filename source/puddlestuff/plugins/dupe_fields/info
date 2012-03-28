@@ -1,0 +1,6 @@
+[info]
+author = concentricpuddle
+version = 1.0
+puddletag_version = 1.0.0
+description = Adds shortcut to Plugins to highlight files which have the same value for a field.
+name = Highlight duplicate fields.
