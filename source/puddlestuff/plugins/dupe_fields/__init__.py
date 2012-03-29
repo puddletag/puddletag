@@ -19,24 +19,25 @@ def highlight_dupe_field():
         return
 
     highlight = []
-    first = files[0]
-    value = first.get(field)
-    if value is not None:
-        if value == files[1].get(field, None):
-            highlight.append(first)
+    prev = files[0]
+    value = prev.get(field)
     
     for f in files[1:]:
         if f.get(field) == value:
-            if value is not None:                
+            if value is not None:
+                if highlight and highlight[-1] != prev:
+                    highlight.append(prev)
+                elif not highlight:
+                    highlight.append(prev)
                 highlight.append(f)
         value = f.get(field)
+        prev = f
     obj.emit(SIGNAL('highlight'), highlight)
     obj.sender().setChecked(True)
 
 def remove_highlight():
     obj.emit(SIGNAL('highlight'), [])
     obj.sender().setChecked(False)
-
 
 def init(parent=None):
 
