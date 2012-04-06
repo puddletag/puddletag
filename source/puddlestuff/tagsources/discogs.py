@@ -117,7 +117,7 @@ def keyword_search(keywords):
 def parse_tracklist(tlist):
     tracks = []
     for t in tlist:
-        if not t.get(u'duration'):
+        if not t.get(u'duration') and not t.get('position'):
             continue
         title = t['title']
         people = []
@@ -240,7 +240,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
         rls_type = u'release'
     else:
-        if rls_type is None:
+        if rls_type is None and '#release_type' in info:
             rls_type = info['#release_type']
         r_id = info['#r_id']
         write_log(
@@ -363,7 +363,7 @@ class Discogs(object):
         if text.startswith(':r'):
             r_id = text[len(':r'):].strip()
             try:
-                int(r_id)
+                r_id = int(r_id)
                 return [self.retrieve(r_id)]
             except (TypeError, ValueError):
                 raise RetrievalError(
@@ -426,7 +426,11 @@ class Discogs(object):
 info = Discogs
 
 if __name__ == '__main__':
-    import json
-    d = json.loads(open('a.json', 'r').read())
-    x = parse_album_json(d['resp']['release'])
-    print x
+
+    k = Discogs()
+    print k.keyword_search(":r 911637")
+    
+    #import json
+    #d = json.loads(open('a.json', 'r').read())
+    #x = parse_album_json(d['resp']['release'])
+    #print x
