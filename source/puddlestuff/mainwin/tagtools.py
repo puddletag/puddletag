@@ -45,7 +45,7 @@ def remove_tag(tag, parent):
                 'Disable Preview Mode first to enable tag deletion.'))
         return
     files = status['selectedfiles']
-    rows = states['selectedrows']
+    rows = status['selectedrows']
 
     def func():
         for row, f in zip(rows, files):
