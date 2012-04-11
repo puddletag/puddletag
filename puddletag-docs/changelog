@@ -1,3 +1,20 @@
+10 April 2012 - 1.0.0beta5
+    Added AcoustID support. Not complete as yet.
+    Featuring artist in MusicBrainz tag source are parsed correctly.
+    Rate limiting for FreeDB as too many requests at once causes errors.
+    Restart numbering checkbox in Autonumbering wizard now hides the Total spinbox so that track numbering is generated for each directory.
+    $num function uses the length for the track number only and not the total.
+    Massively updated parser.
+    ID3v2.3 frames are written in same order as Mp3tag's.
+    $regex function added.
+    Fixed Amazon tag source as now requires AssociateTag to do lookups.
+    Added parameter to $num function to use track separators or not (default not)
+    For functions like $meta_sep to not use parsed patterns as things like \\\\ were being parsed as one separator instead of two.
+    VA album lookups for Discogs.
+    Dutch Translation by Fabian Bakkum.
+    Added __md5_sig field that lists internal MD5 signature of FLAC files.
+    For Discogs, fixed albums where tracks don't have lengths weren't being loaded.
+
 12 February 2012 - 1.0.0beta4
     Helpful menu items added to about menu.
     Updated documentation.

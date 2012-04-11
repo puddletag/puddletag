@@ -1,12 +1,7 @@
-.. puddletag documentation master file, created by
-   sphinx-quickstart on Tue Mar 22 20:40:26 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 puddletag Documentation 
 =======================
 
-**Download these docs:** `HTML <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-0.10.6.3.tar.bz2>`_ | `ReStructuredText <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-0.10.6.3.tar.bz2>`_
+**Download these docs:** `HTML <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.0beta5.tar.bz2>`_ | `ReStructuredText <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-1.0.0beta5.tar.bz2>`_
 
 First I have to introduce you to the naming conventions used by puddletag (some copied from Mp3tag).
 

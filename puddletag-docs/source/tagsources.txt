@@ -3,7 +3,7 @@ Using Tag Sources
 
 puddletag supports tagging your audio files using web based Tag Sources.
 
-Included with puddletag are tag sources supporting lookups from :ref:`Amazon <amazon>`, :ref:`Discogs <discogs>`, :ref:`FreeDB <freedb>` and :ref:`MusicBrainz <musicbrainz>`. The metadata returned by each tag source is detailed at the bottom of this page.
+Included with puddletag are tag sources supporting lookups from :ref:`Amazon <amazon>`, :ref:`Discogs <discogs>`, :ref:`FreeDB <freedb>` and :ref:`MusicBrainz <musicbrainz>` and :ref:`AcoustID <acoustid>`. The metadata returned by each tag source is detailed at the bottom of this page.
 
 The Tag Sources window
 ----------------------
@@ -37,6 +37,21 @@ How to Search
 Textual searches are also supported. If the Search Box has *any* text, it'll be used to search with instead of the selected files. See the Search Box's tooltip (or read the rest of this document) for details on how each tag source does textual searches.
 
 .. note:: For a more detailed explanation see the :doc:`Tag Sources tutorial <tut4>`.
+
+.. _acoustid:
+
+Using AcoustID
+--------------
+
+AcoustID is a music fingerprinting service provided by Lukas Lalinsky. It works by calculating a unique fingerprint for your audio files and trying to match it to data in the AcoustID database. This allows you to find information for tracks that have no metadata!
+
+AcoustID support is implemented using Andrew Sampson's `pyacoustid <https://github.com/sampsyo/pyacoustid>`_ library.
+
+.. note:: The library isn't available in most distros. Moreover you also need FFmpeg, Chromaprint and the `audioread library <https://github.com/sampsyo/audioread>`_ installed. For now, I'm not making the install instructions available as the dependencies will change to make install simpler.
+
+AcoustID returns the same data as the :ref:`MusicBrainz tag sources <musicbrainz>`, including the following fields.
+
++   **acoustid_id**: The AcoustID identifier for a track.
 
 .. _amazon:
     
@@ -182,3 +197,4 @@ The sources I've tested work like Mp3tag's. They also bomb on the same pages. Ho
 I won't be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn't with puddletag, `create an issue <http://code.google.com/p/puddletag/issues>`_ with a link to the tag source and some example searches and I'll fix 'em.
 
 Be sure to set 'debug off' or remove it alltogether unless you're in the mood for having your filesystem being littered with junk files.
+

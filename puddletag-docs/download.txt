@@ -5,15 +5,15 @@
 .. |deb_link| replace:: puddletag_0.10.6-1_all.deb
 .. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_0.10.6-1_all.deb
 
-.. |beta_source_link| replace:: puddletag-1.0.0beta4.tar.gz
-.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0beta4.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.0.0beta4-1_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.0beta4-1_all.deb
+.. |beta_source_link| replace:: puddletag-1.0.0beta5.tar.gz
+.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0beta5.tar.gz
+.. |beta_deb_link| replace:: puddletag_1.0.0beta5-1_all.deb
+.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.0beta5-1_all.deb
 
 .. |source_sha| replace:: 725ad8a97e43593647ba5da0f14acf4d24e43341
 .. |deb_sha| replace:: e1391cc0c4560af4884fae2cf2195bd0b9433e69
-.. |beta_source_sha| replace:: a4a02b18137c9befe831652882875ef92c5d0aea
-.. |beta_deb_sha| replace:: a4cc33f6cea3c62cb90aa83b77817143aa2739d6
+.. |beta_source_sha| replace:: 0972273bfd6082087a8e03e8a00437a56b703e87
+.. |beta_deb_sha| replace:: 5b555bf783070c3db9f3b9fc1900b0979af292c4
 
 Downloads
 =========
@@ -144,3 +144,4 @@ Translations
 To install, place the downloaded translation in **~/.puddletag/translations** (you'll probably need to create it). The translation will be listed in the Preferences dialog. If you'd like contribute a translation, see :doc:`source/translate`.
 
 + :download:`French <translations/puddletag_fr.qm>` by **Raphaël Rochet**
++:download:`Dutch (Nederlands) <translations/puddletag_nl-nl.qm>` by **Fabian Bakkum**

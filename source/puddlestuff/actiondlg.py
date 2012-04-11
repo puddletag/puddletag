@@ -139,7 +139,8 @@ class ScrollLabel(QScrollArea):
     def setText(self, text):
         label = self.widget()
         label.setText(text)
-        height = label.sizeHint().height()
+        hbar = self.horizontalScrollBar()
+        height = label.sizeHint().height() + hbar.height()
         self.setMaximumHeight(height)
         self.setMinimumHeight(height)
         

@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 12 Feb 2012 22:33:47 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>22 January 2012 - 1.0.0beta1</title><link>http://puddletag.sourceforge.net/news.html#january-2012-1-0-0beta1</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Tue, 10 Apr 2012 21:22:06 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>10 April 2012 - 1.00beta5</title><link>http://puddletag.sourceforge.net/news.html#april-2012-1-00beta5</link><description>
+  &lt;div class="section" id="april-2012-1-00beta5"&gt;
+&lt;h1&gt;10 April 2012 - 1.00beta5&lt;/h1&gt;
+&lt;p&gt;This release contains a ton of fixes with regards to Tag Sources.&lt;/p&gt;
+&lt;div class="section" id="fixes"&gt;
+&lt;h2&gt;Fixes&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;MusicBrainz works.&lt;/li&gt;
+&lt;li&gt;Discogs works better with regards to VA albums.&lt;/li&gt;
+&lt;li&gt;Amazon works again.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="new-features"&gt;
+&lt;h2&gt;New Features&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;strong&gt;__md5_sig&lt;/strong&gt; field for FLAC.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;$regex&lt;/strong&gt; scripting function.&lt;/li&gt;
+&lt;li&gt;Dutch Translation by Fabian Bakkum.&lt;/li&gt;
+&lt;li&gt;Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you&amp;#8217;re an &amp;#8216;advanced&amp;#8217; user.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That&amp;#8217;s it basically. If you want more, see the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;. Docs for the latest version have been uploaded &lt;a class="reference external" href="http://puddletag.sf.net/latest/docs.html"&gt;here&lt;/a&gt;. I still have quite a bit of updating to do though.&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://code.google.com/p/puddletag/issues"&gt;Please let me know if you experience any issues.&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Tue, 10 Apr 2012 00:00:00 GMT</pubDate></item><item><title>22 January 2012 - 1.0.0beta1</title><link>http://puddletag.sourceforge.net/news.html#january-2012-1-0-0beta1</link><description>
   &lt;div class="section" id="january-2012-1-0-0beta1"&gt;
 &lt;h1&gt;22 January 2012 - 1.0.0beta1&lt;/h1&gt;
 &lt;p&gt;It&amp;#8217;s been a while I know, but I figured if I don&amp;#8217;t get this out now I might just

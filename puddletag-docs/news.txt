@@ -15,6 +15,32 @@ News
 
 ----
 
+10 April 2012 - 1.00beta5
+#########################
+
+This release contains a ton of fixes with regards to Tag Sources.
+
+Fixes
+-----
+
++   MusicBrainz works.
++   Discogs works better with regards to VA albums.
++   Amazon works again.
+
+New Features
+------------
++   **__md5_sig** field for FLAC.
++   **$regex** scripting function.
++   Dutch Translation by Fabian Bakkum.
++   Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you're an 'advanced' user.
+
+That's it basically. If you want more, see the :download:`changelog`. Docs for the latest version have been uploaded `here <http://puddletag.sf.net/latest/docs.html>`_. I still have quite a bit of updating to do though.
+
+`Please let me know if you experience any issues. <http://code.google.com/p/puddletag/issues>`_
+
+
+----
+
 22 January 2012 - 1.0.0beta1
 ############################
 

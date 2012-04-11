@@ -156,6 +156,18 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Generates a pseudo-random number between 0 and 1.
 
+.. describe:: $regex(text, regex, repl, matchcase=0)
+
+   Replaces all occurrences of **regex** with **repl** in text.
+
+   | **text**: text to search, eg. *%artist%*
+   | **regex**: regular expression to use as the search eg. *jay\.**
+   | **repl**: Text to replace all matches of regex with. Can be pattern ex *$lower($1)*, but has to be quoted like in "$lower($1)" otherwise any scripting functions used will be run before the regular expression is evaluated.
+   | **matchcase**: Defaults to *0*. If *1*, will have case-sensitive matching.
+   
+   See :ref:`replace_with_regexp` for more examples.
+    
+
 .. describe:: $round()
 
    For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.

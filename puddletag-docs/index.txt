@@ -1,5 +1,7 @@
 .. include:: subs.txt
 
+.. note:: This documentation is for the current development version.
+
 Home
 ====
 
@@ -33,12 +35,6 @@ What you need
 +   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
 +   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
 
-The following are recommended
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-+   `python-musicbrainz2 (≥0.6.0) <http://musicbrainz.org/doc/python-musicbrainz2>`_ is required for MusicBrainz support.
-+   QuodLibet must be installed in order to edit a QuodLibet library.
-
 How to get it
 -------------
 Instructions are over at the :doc:`downloads <download>` page.
@@ -49,12 +45,12 @@ puddletag licensed under the GPLv3, which you can find in its entirety at http:/
 
 Updates
 -------
-Releases usually go out bi-monthly. Subscribe to the :download:`RSS Feed <rss.xml>` to be notified.
+Releases are infrequent. Subscribe to the :download:`RSS Feed <rss.xml>` to be notified.
 
 Support
 -------
 Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
 
-Last website update: 12 February 2012
+Last website update: 10 April 2012
 
-Latest version: 1.0.0beta4, stable 0.10.6.3
+Latest version: 1.0.0beta5, stable 0.10.6.3

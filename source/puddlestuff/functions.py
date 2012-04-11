@@ -598,7 +598,7 @@ Match &Case, check"""
     if not regex:
         return text
 
-    if not matchcase or matchcase == false:
+    if not check_truth(matchcase):
         flags = re.UNICODE | re.I
     else:
         flags = re.UNICODE
@@ -614,10 +614,10 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
-        return findfunc.parsefunc(re.sub('\$\d+', RegHelper(d).repl, repl, flags=flags), m_tags)
+        return findfunc.parsefunc(re.sub('\$\d+', RegHelper(d).repl, repl, 0, flags), m_tags)
 
     try:
-        return re.sub(regex, replace_tokens, text, flags=flags)
+        return re.sub(regex, replace_tokens, text, 0, flags)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
 
