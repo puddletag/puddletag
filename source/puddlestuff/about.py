@@ -22,13 +22,18 @@ Licensed under GPLv2 (<a href="www.gnu.org/licenses/gpl-2.0.html">www.gnu.org/li
 
 thanks = translate("About", """<b>Evan Devetzis</b> for his many, many awesome ideas and putting up with more bugs than humanly possible.<br /><br />
 
+French translation by <b>Raphaël Rochet</b>.<br />
+Dutch (Nederlands) translation by <b>Fabian Bakkum</b>.<br /><br />
+
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).<br /><br />
 
 <b>Paul McGuire</b> for PyParsing.<br />
 <b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (It. Is. Awesome).<br />
 <b>Phil Thomson</b> and everyone responsible for PyQt4.<br />
 <b>Michael Foord</b> and <b>Nicola Larosa</b> for ConfigObj (seriously, they should replace ConfigParser with this).<br />
-The <b>Oxygen team</b> for the Oxygen icons.""")
+The <b>Oxygen team</b> for the Oxygen icons.
+
+""")
 
 class ScrollLabel(QWidget):
     def __init__(self, text, alignment = Qt.AlignCenter, parent=None):

@@ -144,4 +144,4 @@ Translations
 To install, place the downloaded translation in **~/.puddletag/translations** (you'll probably need to create it). The translation will be listed in the Preferences dialog. If you'd like contribute a translation, see :doc:`source/translate`.
 
 + :download:`French <translations/puddletag_fr.qm>` by **Raphaël Rochet**
-+:download:`Dutch (Nederlands) <translations/puddletag_nl-nl.qm>` by **Fabian Bakkum**
++ :download:`Dutch (Nederlands) <translations/puddletag_nl-nl.qm>` by **Fabian Bakkum**
