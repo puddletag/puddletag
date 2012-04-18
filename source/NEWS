@@ -1,3 +1,25 @@
+18 April 2012
+    Fixes:
+        Fixed issues with deb not un/installing.
+        Fixed issue with dropping album art on Artwork window. Invalid files would still affect the files that have been loaded.
+        Fixed error in parser where it wouldn't detect syntax errors correctly.
+    Changed:
+        Added translations to source tarball.
+
+
+11 April 2012 - 1.0.0beta5
+    Fixes:
+        MusicBrainz works.
+        Discogs works better with regards to VA albums.
+        Amazon works again.
+
+    New Features
+        __md5_sig field for FLAC.
+        regex scripting function.
+        Dutch Translation by Fabian Bakkum.
+        Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you're an 'advanced' user.
+
+        
 18 January 2012 - 1.0.0beta1
     Masstagging improvements with regards to both matching (courtesy of beets)
     and searching.

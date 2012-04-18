@@ -15,8 +15,8 @@ News
 
 ----
 
-10 April 2012 - 1.00beta5
-#########################
+11 April 2012 - 1.0.0beta5
+##########################
 
 This release contains a ton of fixes with regards to Tag Sources.
 

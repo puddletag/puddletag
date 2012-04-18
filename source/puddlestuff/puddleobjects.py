@@ -1719,7 +1719,7 @@ class PicWidget(QWidget):
             self.emit(SIGNAL('imageChanged'))
     
     def addImages(self, images):
-        if not self._itags:
+        if not self._itags or not images:
             return
         if self.images:
             index = len(self.images)

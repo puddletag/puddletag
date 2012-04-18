@@ -12,8 +12,8 @@
 
 .. |source_sha| replace:: 725ad8a97e43593647ba5da0f14acf4d24e43341
 .. |deb_sha| replace:: e1391cc0c4560af4884fae2cf2195bd0b9433e69
-.. |beta_source_sha| replace:: 0972273bfd6082087a8e03e8a00437a56b703e87
-.. |beta_deb_sha| replace:: 5b555bf783070c3db9f3b9fc1900b0979af292c4
+.. |beta_source_sha| replace:: 946bc13872ca7d6e62260daf34c7a6b0faa12555
+.. |beta_deb_sha| replace:: 9610e3a179734d1aada958957ecf269c06a3a0f0
 
 Downloads
 =========

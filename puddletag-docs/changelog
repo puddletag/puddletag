@@ -1,3 +1,9 @@
+18 April 2012 - 1.0.0beta6
+    Fixed issues with deb not un/installing.
+    Fixed issue with dropping album art on Artwork window. Invalid files would still affect the files that have been loaded.
+    Fixed error in parser where it wouldn't detect syntax errors correctly.
+    Added translations to source tarball.
+
 10 April 2012 - 1.0.0beta5
     Added AcoustID support. Not complete as yet.
     Featuring artist in MusicBrainz tag source are parsed correctly.
@@ -14,6 +20,7 @@
     Dutch Translation by Fabian Bakkum.
     Added __md5_sig field that lists internal MD5 signature of FLAC files.
     For Discogs, fixed albums where tracks don't have lengths weren't being loaded.
+    Fixes issue 174, where if scrollbar shown in Functions dialog, it sometimes hides text.
 
 12 February 2012 - 1.0.0beta4
     Helpful menu items added to about menu.
