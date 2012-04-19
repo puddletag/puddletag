@@ -18,6 +18,8 @@ News
 11 April 2012 - 1.0.0beta5
 ##########################
 
+**18 April 2012 - Updated to 1.0.0beta6 to fix issues with deb. This is the second last beta.**
+
 This release contains a ton of fixes with regards to Tag Sources.
 
 Fixes
