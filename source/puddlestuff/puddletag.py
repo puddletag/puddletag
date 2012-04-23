@@ -609,6 +609,8 @@ class MainWin(QMainWindow):
 
         for control, val in gensettings.items():
             control.applyGenSettings(val, 0)
+
+        
         
         self._lastdir = [encode_fn(cparser.get(
             'main', 'lastfolder', constants.HOMEDIR))]

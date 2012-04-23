@@ -74,7 +74,7 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             continue
     return classes
 
-def strip(audio, field_list, reverse = False):
+def strip(audio, field_list, reverse = False, leave_exact=False):
     '''Returns dict of key/values from audio where the key is in field_list.
 
     If reverse is True then the dict will consist of all
@@ -86,8 +86,11 @@ def strip(audio, field_list, reverse = False):
     Any fields starting with '#' will be removed.
     '''
     if not field_list:
-        return dict([(key, audio[key]) for key in audio if 
+        ret = dict([(key, audio[key]) for key in audio if
             not key.startswith('#')])
+        if leave_exact and '#exact' in audio:
+            ret['#exact'] = audio['#exact']
+        return ret
     tags = field_list[::]
     if tags and tags[0].startswith('~'):
         reverse = True
@@ -95,11 +98,15 @@ def strip(audio, field_list, reverse = False):
     else:
         reverse = False
     if reverse:
-        return dict([(key, audio[key]) for key in audio if key not in
+        ret = dict([(key, audio[key]) for key in audio if key not in
                         tags and not key.startswith('#')])
     else:
-        return dict([(key, audio[key]) for key in field_list
+        ret = dict([(key, audio[key]) for key in field_list
             if not key.startswith('#') and key in audio])
+
+    if leave_exact and '#exact' in audio:
+        ret['#exact'] = audio['#exact']
+    return ret
 
 def split_strip(stringlist):
     '''Splits and strips each comma-delimited string in a list of strings.

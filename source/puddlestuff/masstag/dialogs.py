@@ -633,6 +633,7 @@ class MassTagWindow(QWidget):
             for files in tag_groups:
                 mtp.clear()
 
+                
                 masstag(mtp, files, self.__flag, search_error,
                     retrieval_error)
 

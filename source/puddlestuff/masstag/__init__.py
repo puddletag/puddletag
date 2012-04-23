@@ -176,6 +176,10 @@ def combine_tracks(track1, track2, repl=None):
         for key in repl:
             if key in track2:
                 ret[key] = track2[key]
+    if '#exact' in track1:
+        ret['#exact'] = track1['#exact']
+    elif '#exact' in track2:
+        ret['#exact'] = track2['#exact']
     return ret
 
 def fields_from_text(text):
@@ -331,6 +335,11 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
             ret[files[f_index]] = tracks[t_index]
             ret_indexes[t_index] = files[f_index]
 
+    for t in tracks:
+        if '#exact' in t:
+            ret[t['#exact'].cls] = t
+            del(t['#exact'])
+
     if jfdi:
         unmatched_tracks = [t for i, t in enumerate(tracks) if i
             not in assigned]
@@ -360,6 +369,8 @@ def merge_track(audio, info):
                 track[key] = audio[key]
             else:
                 track[key] = audio[key][::]
+    if '#exact' in audio:
+        track['#exact'] = audio['#exact']
     return track
 
 
@@ -371,10 +382,11 @@ def merge_tsp_tracks(profiles, files=None):
             continue
 
         if tsp.result.tracks is None and files is not None:
-            info = strip_fields(tsp.result.info, tsp.fields)
+            info = strip_fields(tsp.result.info, tsp.fields, leave_exact=True)
             tags = [deepcopy(info) for z in files]
         else:
-            tags = [strip_fields(t, tsp.fields) for t in tsp.result.merged]
+            tags = [strip_fields(t, tsp.fields, leave_exact=True)
+                for t in tsp.result.merged]
 
         if len(tags) > len(ret):
             ret.extend(tags[len(ret):])
@@ -385,7 +397,7 @@ def merge_tsp_tracks(profiles, files=None):
 
     for tracks, fields in to_repl:
         for repl, track in zip(tracks, ret):
-            track.update(strip_fields(repl, fields))
+            track.update(strip_fields(repl, fields, leave_exact=True))
 
     return ret
 

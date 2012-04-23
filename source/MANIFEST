@@ -110,3 +110,4 @@ puddlestuff/data/undo.png
 puddlestuff/plugins/__init__.py
 translations/puddletag_fr.ts
 translations/puddletag_nl-nl.ts
+translations/puddletag_pt_BR.ts
