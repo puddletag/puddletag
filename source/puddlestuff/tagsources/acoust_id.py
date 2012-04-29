@@ -1,15 +1,20 @@
-import pdb
 import urllib2
 import httplib
 import contextlib
 import time
 import logging
+import os
 
 from collections import defaultdict
 from itertools import chain, izip, product, starmap
 
-import acoustid
-import audioread
+try:
+    import acoustid
+    #Don't want it to use audioread as python-gst
+    #lib causes lockups.
+    acoustid.have_audioread = False
+except ImportError:
+    import _acoustid as acoustid
 
 import puddlestuff.audioinfo as audioinfo
 
@@ -25,54 +30,7 @@ RETRIEVE_MB_MSG = translate('AcoustID', "Retrieving MB album data: %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
 
-def audio_open(path):
-    """Open an audio file using a library that is available on this
-    system.
-    """
-    # Standard-library WAV and AIFF readers.
-    from audioread import rawread
-    try:
-        return rawread.RawAudioFile(path)
-    except rawread.UnsupportedError:
-        pass
 
-    # Core Audio.
-    if audioread._ca_available():
-        from audioread import macca
-        try:
-            return macca.ExtAudioFile(path)
-        except macca.MacError:
-            pass
-
-    #GStreamer.
-    #if audioread._gst_available():
-        #from audioread import gstdec
-        #try:
-            #print 'gst'
-            #return gstdec.GstAudioFile(path)
-        #except gstdec.GStreamerError:
-            #pass
-
-    # MAD.
-    if audioread._mad_available():
-        from audioread import maddec
-        try:
-            return maddec.MadAudioFile(path)
-        except maddec.UnsupportedError:
-            pass
-
-    # FFmpeg.
-    from audioread import ffdec
-    try:
-        return ffdec.FFmpegAudioFile(path)
-    except ffdec.FFmpegError:
-        pass
-
-    print 'failed'
-    # All backends failed!
-    raise acoustid.DecodeError()
-
-audioread.audio_open = audio_open
 
 def album_hash(d):
     h = u''
@@ -111,6 +69,18 @@ def best_match(albums, tracks):
         ret.append([album, new_tracks])
         
     return ret
+
+def match(apikey, path, meta='releases recordings tracks'):
+    """Look up the metadata for an audio file. If ``parse`` is true,
+    then ``parse_lookup_result`` is used to return an iterator over
+    small tuple of relevant information; otherwise, the full parsed JSON
+    response is returned.
+    """
+    path = os.path.abspath(os.path.expanduser(path))
+    duration, fp = acoustid._fingerprint_file_fpcalc(path)
+    response = acoustid.lookup(apikey, fp, duration, meta)
+    return response, fp
+
             
 def parse_release_data(rel):
     info = {}
@@ -130,7 +100,7 @@ def parse_release_data(rel):
             rel['mediums'][0]['tracks'][0].get('position', ""))
     return dict((k,v) for k,v in info.iteritems() if not isempty(v))
 
-def parse_lookup_result(data, albums=False):
+def parse_lookup_result(data, albums=False, fp=None):
     if data['status'] != 'ok':
         raise acoustid.WebServiceError("status: %s" % data['status'])
     if 'results' not in data:
@@ -144,7 +114,13 @@ def parse_lookup_result(data, albums=False):
     info['#score'] = result['score']
     if not result.get('recordings'):
         # No recording attached. This result is not very useful.
-        return {'acoustid_id': result['id'], '#score': result['score']}
+        return {
+            'acoustid_id': result['id'],
+            '#score': result['score'],
+            'acoustid_fingerprint': fp,}
+
+    if fp:
+        info['acoustid_fingerprint'] = fp
 
     tracks = [parse_recording_data(r, info) for r in result['recordings']]
 
@@ -242,10 +218,9 @@ class AcoustID(object):
                 write_log(CALCULATE_MSG)
                 write_log(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
                 set_status(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
-                data = acoustid.match("gT8GJxhO", fn.filepath,
-                    'releases recordings tracks', False)
+                data, fp = match("gT8GJxhO", fn.filepath)
                 write_log(translate('AcoustID', "Parsing Data"))
-                info = parse_lookup_result(data)
+                info = parse_lookup_result(data, fp=fp)
             except acoustid.FingerprintGenerationError, e:
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
                 continue

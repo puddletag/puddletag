@@ -739,6 +739,26 @@ class TagModel(QAbstractTableModel):
         #self.emit(SIGNAL('modelReset')) #Because of the strange behaviour mentioned in reset.
         return True
 
+    def reloadTags(self, tags):
+        for z in tags:
+            z.preview = {}
+            z.undo = {}
+            z.previewundo = {}
+            z.color = None
+            z._temp = {}
+            if not hasattr(z, 'library'):
+                z.library = None
+
+        fns = dict((f.filepath, i) for i,f in enumerate(self.taginfo))
+
+        to_append = []
+
+        for t in tags:
+            if t.filepath in fns:
+                self.taginfo[fns[t.filepath]] = t
+            else:
+                self.taginfo.append(t)
+
     def load(self, taginfo, headerdata=None, append = False):
         """Loads tags as in __init__.
         If append is true, then the tags are just appended."""
@@ -781,7 +801,6 @@ class TagModel(QAbstractTableModel):
             self.undolevel = 0
 
     def moveRows(self, rows, row):
-        print rows, row
 
         taginfo = self.taginfo
         rows = sorted(rows)
@@ -1653,9 +1672,12 @@ class TagTable(QTableView):
         """
         self.selectedRows = []
         self.selectedColumns = []
-        self.model().load(tags, append = append)
+        if append is None:
+            self.model().reloadTags(tags)
+        else:
+            self.model().load(tags, append=append)
 
-        if append:
+        if append or append is None:
             self.restoreSelection()
         else:
             self.selectCorner()
@@ -1697,7 +1719,7 @@ class TagTable(QTableView):
         QTableView.keyPressEvent(self, event)
 
     def loadFiles(self, files=None, dirs=None, append=False, subfolders=None,
-                filepath=None):
+                filepath=None, post_process=None):
         assert files or dirs, 'Either files or dirs (or both) must be specified.'
 
         if subfolders is None:
@@ -1747,8 +1769,6 @@ class TagTable(QTableView):
                 'Reading Directory: %1 + others').arg(dirs[0])
         else:
             reading_dir = translate('Defaults', 'Reading Dir')
-        finished = lambda: self._loadFilesDone(tags, append, filepath)
-
         
         def load_dir():
             if files:
@@ -1770,7 +1790,12 @@ class TagTable(QTableView):
                     tags.append(tag)
                 yield None
 
-        s = progress(load_dir, translate("Defaults", 'Loading '), 20, finished)
+        if post_process:
+            s = progress(load_dir, translate("Defaults", 'Loading '), 20,
+                lambda: post_process(tags, append, filepath))
+        else:
+            s = progress(load_dir, translate("Defaults", 'Loading '), 20,
+                lambda: self._loadFilesDone(tags, append, filepath))
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):
@@ -1916,7 +1941,47 @@ class TagTable(QTableView):
         self.model().previewMode = value
         return value
 
-    def reloadFiles(self, filenames = None):
+    def reloadSelected(self, files = None):
+        self._restore = self.saveSelection()
+
+        loaded_dirs = map(encode_fn, self.dirs)
+        if files is None:
+            files = self.model().taginfo
+
+        taginfo = self.model().taginfo
+        dirs = set(map(lambda i: taginfo[i].dirpath, self.selectedRows))
+
+        is_sub = lambda fn: filter(None,
+            [issubfolder(z,fn) for z in dirs])
+
+        sub_files = []
+        for f in files:
+            if f.dirpath in dirs or is_sub(f.dirpath):
+                sub_files.append(f)
+
+        self.loadFiles(None, dirs, False, self.subFolders,
+            self._playlist,
+            lambda t,a,f: self.__processReload(t,a,f, sub_files))
+
+    def __processReload(self, tags, append, filepath, sub_files):
+        new_fns = set(z.filepath for z in tags)
+        to_remove = set(z for z in sub_files
+            if z.filepath not in new_fns)
+        self.model().taginfo = [z for z in self.model().taginfo if
+            z not in to_remove]
+        self.fillTable(tags, None)
+        model = self.model().reset()
+        self.emit(SIGNAL('filesloaded'), True)
+        if self._restore:
+            self.clearSelection()
+            self.restoreReloadSelection(*self._restore)
+            self._restore = False
+
+        
+        self.selectionChanged()
+        
+
+    def reloadFiles(self, files=None):
         self._restore = self.saveSelection()
         dirs = map(encode_fn, self.dirs)
         files = [z.filepath for z in self.model().taginfo if z.dirpath

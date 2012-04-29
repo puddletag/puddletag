@@ -161,6 +161,9 @@ class DirView(QTreeView):
         header.restoreState(settings.value('dirview/header').toByteArray())
         hide = settings.value('dirview/hide', QVariant(True)).toBool()
         self.setHeaderHidden(hide)
+
+        if self.isVisible() == False:
+            return
         
         cparser = PuddleConfig()
         d = cparser.get('main', 'lastfolder', '/')
@@ -199,6 +202,8 @@ class DirView(QTreeView):
 
     def selectDirs(self, dirlist):
         if self._threadRunning:
+            return
+        if not self.isVisible():
             return
         if not self._select:
             self._select = True

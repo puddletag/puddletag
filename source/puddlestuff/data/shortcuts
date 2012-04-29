@@ -1,5 +1,5 @@
 [info]
-version=28
+version=29
 
 [shortcut1]
 name=&Open Folder
@@ -92,7 +92,7 @@ enabled=filesselected
 shortcut=Ctrl+K
 
 [shortcut11]
-name=&Clear
+name=&Unload Everything
 command=clearAll
 control=table
 enabled=filesloaded
@@ -366,3 +366,10 @@ name=Remove ID3v&1 Tag
 command=remove_id3v1
 control=mainwin
 enabled=filesselected
+
+[shortcut52]
+name=Refresh &Selected
+command=reloadSelected
+control=table
+enabled=filesselected
+tooltip = Reloads directories of selected files.

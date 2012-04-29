@@ -8,7 +8,7 @@ import StringIO
 from util import open_resourcefile
 from puddlestuff.translations import translate
 
-__version__ = 28
+__version__ = 29
 
 files = [open_resourcefile(filename)
     for filename in [':/caseconversion.action', ':/standard.action']]

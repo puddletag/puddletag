@@ -1,8 +1,8 @@
 [info]
-version=28
+version=29
 
 [menu]
-&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,&Clear,separator,&Exit
+&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,Refresh &Selected,&Unload Everything,separator,&Exit
 &Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Remove Tag,separator,Select &Next Directory,Select &Previous Directory,&Invert Selection,&Select Column,Select &All,separator,Move Selected &Up,Move Selected Do&wn,separator,&Increase Font,&Decrease Font,separator,&Preferences
 &Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
 &Actions=&Actions,&QuickActions,&Functions,separator
