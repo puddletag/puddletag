@@ -7,7 +7,7 @@ from puddlestuff.puddleobjects import (create_buddy, ListBox,
     ListButtons, load_actions, OKCancel, PuddleConfig)
 from puddlestuff.constants import ACTIONDIR
 from functools import partial
-from findfunc import load_action
+from findfunc import load_macro_info as load_action
 import pdb
 import puddlestuff.puddletag
 from puddlestuff.shortcutsettings import ActionEditorDialog
@@ -58,6 +58,9 @@ def get_shortcuts(default=None):
 def load_settings(filename=None, actions=None):
     if filename is None:
         filename = FILENAME
+
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
 
     cparser = PuddleConfig(filename)
 

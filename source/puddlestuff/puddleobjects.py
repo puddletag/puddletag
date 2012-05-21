@@ -775,7 +775,7 @@ def load_actions():
 
     funcs = []
     for f in files:
-        action = findfunc.load_action(f)
+        action = findfunc.load_macro_info(f)
         funcs.append([action[0], action[1], f])
     return funcs
 

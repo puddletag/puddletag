@@ -143,7 +143,7 @@ def get_old_action(filename):
     f.close()
     return [funcs, name]
 
-def load_action(filename):
+def load_macro_info(filename):
     modules = defaultdict(lambda: defaultdict(lambda: {}))
     for function in functions.values():
         if isinstance(function, PluginFunction):
@@ -183,11 +183,11 @@ def load_action(filename):
             else:
                 func.args = arguments
             funcs.append(func)
-    return [funcs, name]
+    return [funcs, name]    
 
-def load_action_from_name(name):
+def load_macro_from_name(name):
     filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
-    return load_action(filename)
+    return Macro(filename)
 
 def func_tokens(dictionary, parse_action):
     func_name = Word(alphas+'_', alphanums+'_')
@@ -536,13 +536,11 @@ def replacevars(pattern, *dicts):
     return u''.join(ret)
 
 
-def runAction(funcs, audio, state = None, quick_action=None):
+def apply_actions(actions, audio, state=None, ovr_fields=None):
     """Runs an action on audio
 
-    funcs can be a list of Function objects or a filename of an action file (see load_action).
+    actions can be a list of Function objects or a filename of an action file (see load_action).
     audio must dictionary-like object."""
-    if isinstance(funcs, basestring):
-        funcs = load_action(funcs)[0]
     
     if state is None:
         state = {}
@@ -558,11 +556,11 @@ def runAction(funcs, audio, state = None, quick_action=None):
         audio = deepcopy(audio)
 
     changed = set()
-    for func in funcs:
-        if quick_action is None:
+    for func in actions:
+        if ovr_fields is None:
             fields = parse_field_list(func.tag, audio)
         else:
-            fields = quick_action[::]
+            fields = ovr_fields[::]
         ret = {}
 
         for field in fields:
@@ -593,12 +591,23 @@ def runAction(funcs, audio, state = None, quick_action=None):
             audio.update(ret)
     return dict([(z, audio[z]) for z in changed])
 
+def apply_macros(macros, audio, state, fields=None):
+    actions = []
+    for m in macros:
+        actions.extend(m.actions)
+
+    if fields:
+        return apply_actions(actions, audio, state, fields)
+    else:
+        return apply_actions(actions, audio, state)
+    
+
 def runQuickAction(funcs, audio, state, tag):
     """Same as runAction, except that all funcs are 
     applied not in the values stored but on audio[tag]."""
     return runAction(funcs, audio, state, tag)
 
-def save_action(filename, name, funcs):
+def save_macro(filename, name, funcs):
     f = open(filename, 'w')
     f.close()
     cparser = PuddleConfig(filename)
@@ -852,3 +861,32 @@ class Function:
         if self.function.func_code.co_argcount > len(self.args) + 1:
             self.args.append(arg)
 
+class Macro(object):
+    def __init__(self, filename=None):
+        object.__init__(self)
+        self.name = u''
+        self.actions = []
+        self.filename = u''
+        if filename is not None:
+            self.load(filename)
+
+    def apply_action(self, audio, state=None, fields=None):
+
+        return run_action(self.actions, audio, state, fields)
+
+    def copy(self):
+        m = Macro()
+        m.filename = self.filename
+        m.actions = self.actions[::]
+        return m
+
+    def load(self, filename):
+        self.actions, self.name = load_macro_info(filename)
+        self.filename = filename
+
+    def save(self, filename=None):
+        if filename is None:
+            filename = self.filename
+    
+        save_macro(filename, self.name, self.actions)
+        

@@ -614,6 +614,7 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
+        
         return findfunc.parsefunc(re.sub('\$\d+', RegHelper(d).repl, repl, 0, flags), m_tags)
 
     try:

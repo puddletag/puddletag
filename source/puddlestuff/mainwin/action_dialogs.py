@@ -47,11 +47,11 @@ class ActionDialog(ActionWindow):
 
     def updateOrder(self):
         self.listbox.clear()
-        self.funcs = self.loadActions()
+        self.funcs = self.loadMacros()
         cparser = PuddleConfig()
         to_check = cparser.get('actions', 'checked', [])
-        for z in self.funcs:
-            func_name = self.funcs[z][1]
+        for i, m in sorted(self.macros.items()):
+            func_name = m.name
             item = QListWidgetItem(func_name)
             item.setFlags(item.flags() | Qt.ItemIsEditable)
             if func_name in to_check:

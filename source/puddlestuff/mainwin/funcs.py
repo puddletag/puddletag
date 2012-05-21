@@ -26,7 +26,10 @@ status = {}
 def applyaction(files=None, funcs=None):
     if files is None:
         files = status['selectedfiles']
-    r = findfunc.runAction
+    if isinstance(funcs[0], findfunc.Macro):
+        r = findfunc.apply_macros
+    else:
+        r = findfunc.apply_actions
     state = {'__total_files': unicode(len(files))}
     state['__files'] = files
     def func():
@@ -35,7 +38,11 @@ def applyaction(files=None, funcs=None):
     emit('writeaction', func(), None, state)
 
 def applyquickaction(files, funcs):
-    qa = findfunc.runQuickAction
+    if isinstance(funcs[0], findfunc.Macro):
+        qa = findfunc.apply_macros
+    else:
+        qa = findfunc.apply_actions
+    
     selected = status['selectedtags']
     state = {'__total_files': unicode(len(selected))}
     t = (qa(funcs, f, state, s.keys()) for f, s in izip(files, selected))
