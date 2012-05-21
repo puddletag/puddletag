@@ -44,6 +44,25 @@ def save_gen_settings(setlist):
     for desc, value in setlist.items():
         settings.set(desc, 'value', value)
 
+def update_settings():
+    """Updates any out of date settings."""
+
+    #Mapping contains invalid case for ID3
+    cparser = PuddleConfig()
+    filepath = os.path.join(cparser.savedir, 'mappings')
+    mapping = audioinfo.loadmapping(filepath, {})
+
+    if "ID3" in mapping:
+        id3 = mapping['ID3']
+        keys = {u'MusicBrainz Album ID': u'MusicBrainz Album Id',
+            u'MusicBrainz Artist ID': u'MusicBrainz Artist Id'}
+        for k in keys:
+            if k in id3:
+                id3[keys[k]] =id3[k]
+                del(id3[k])
+        
+        audioinfo.setmapping(mapping)
+
 class SettingsCheckBox(QCheckBox):
     def __init__(self, default=None, text=None, parent=None):
         QCheckBox.__init__(self, translate("GenSettings", text), parent)

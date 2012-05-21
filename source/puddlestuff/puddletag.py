@@ -20,7 +20,7 @@ import puddlestuff.webdb
 import loadshortcuts as ls
 import m3u, findfunc, genres
 
-from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings
+from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings, update_settings
 import puddlestuff.mainwin.funcs as mainfuncs
 from functools import partial
 from itertools import izip
@@ -628,8 +628,8 @@ class MainWin(QMainWindow):
                 u'MusicBrainz Album Id': u'mbrainz_album_id'},
             u'ID3':
                 {u'ufid:http://musicbrainz.org': u'mbrainz_track_id',
-                u'MusicBrainz Album ID': u'mbrainz_album_id',
-                u'MusicBrainz Artist ID': u'mbrainz_artist_id'},
+                u'MusicBrainz Album Id': u'mbrainz_album_id',
+                u'MusicBrainz Artist Id': u'mbrainz_artist_id'},
             u'APEv2':
                 {u'musicbrainz_albumid': u'mbrainz_album_id',
                 u'musicbrainz_artistid': u'mbrainz_artist_id',
@@ -652,6 +652,7 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 1)
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
+        update_settings()
 
     def savePlayList(self):
         tags = self._table.model().taginfo
