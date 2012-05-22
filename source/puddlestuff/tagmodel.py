@@ -1015,6 +1015,7 @@ class TagModel(QAbstractTableModel):
             undo_val = write(audio, tags, self.saveModification, justrename)
             if undo and undo_val:
                 self._addUndo(audio, undo_val)
+
             if DIRNAME in tags or DIRPATH in tags:
                 self.changeFolder(oldpath, audio.dirpath)
                 self.emit(SIGNAL('dirsmoved'),
@@ -1139,7 +1140,7 @@ class TagModel(QAbstractTableModel):
             else:
                 if audio.library:
                     oldfiles.append(deepcopy(audio.tags))
-                edited.append(self.setRowData(row, undo_tags))
+                edited.append(self.setRowData(row, undo_tags, False))
 
         del(undo[level])
         if rows:
@@ -2027,7 +2028,6 @@ class TagTable(QTableView):
         self.connect(model, SIGNAL('previewModeChanged'), 
             SIGNAL('previewModeChanged'))
         self.connect(model, SIGNAL('dirsmoved'), SIGNAL('dirsmoved'))
-
         set_data = model.setData
 
         def modded_setData(index, value, role=Qt.EditRole):

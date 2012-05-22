@@ -832,6 +832,8 @@ def progress(func, pstring, maximum, threadfin = None):
             if errors and \
                 not isinstance(errors, (QString, int, long, basestring)):
                 errormsg(parent, errors[0], 1)
+            if threadfin:
+                threadfin()
             return
         parent.showmessage = True
 

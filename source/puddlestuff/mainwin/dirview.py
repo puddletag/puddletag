@@ -114,6 +114,8 @@ class DirView(QTreeView):
         super(DirView, self).contextMenuEvent(event)
 
     def dirMoved(self, dirs):
+        if not self.isVisible():
+            return
         self._load = False
         model = self.model()
         selectindex = self.selectionModel().select
@@ -122,38 +124,24 @@ class DirView(QTreeView):
 
         parents = set([os.path.dirname(z[0]) for z in dirs])
 
-        def get_dir_indexes():
-            qmutex.lock()
-            indexes = []
-            for z in dirs:
-                if exists(z[0]):
-                    indexes.append(z[0])
-            qmutex.unlock()
-            return indexes
-
-        thread = PuddleThread(get_dir_indexes, self)
         def get_str(f):
             return model.filePath(f).toLocal8Bit().data()
 
         selected = map(get_str, self.selectedIndexes())
-            
-        def finished(indexes):
-            qmutex.lock()
-            for p in parents:
-                if exists(p):
-                    i = getindex(p)
-                    model.refresh(i)
-                    self.expand(i)
-            for idx, (olddir,newdir) in zip(indexes, dirs):
-                if olddir in selected:
-                    if isinstance(newdir, str):
-                        newdir = QString.fromLocal8Bit(newdir)
-                    selectindex(getindex(newdir), QItemSelectionModel.Select)
 
-            self._load = True
-            qmutex.unlock()
-        self.connect(thread, SIGNAL('threadfinished'), finished)
-        thread.start()
+        for p in parents:
+            if exists(p):
+                i = getindex(p)
+                while not i.isValid():
+                    p = os.path.dirname(p)
+                    i = getindex(p)
+                model.refresh(i)
+        
+        for d in [z[1] for z in dirs] + selected:
+            if isinstance(d, str):
+                d = QString.fromLocal8Bit(d)
+            self.selectIndex(getindex(d))
+        self._load = True
 
     def loadSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.IniFormat)
@@ -215,6 +203,9 @@ class DirView(QTreeView):
             self.selectionModel().clear()
             self._load = load
             return
+
+        if isinstance(dirlist, basestring):
+            dirlist = [dirlist]
         self._threadRunning = True
         self.setEnabled(False)
         self.selectionModel().clear()
@@ -297,6 +288,16 @@ class DirView(QTreeView):
         self._lastselection = len(self.selectedIndexes())
         self._select = False
 
+    def selectIndex(self, index):
+        if not index.isValid():
+            return
+        self.selectionModel().select(index, QItemSelectionModel.Select)
+        parent = index.parent()
+        while parent.isValid():
+            self.expand(index)
+            parent = parent.parent()
+        
+
 class DirViewWidget(QWidget):
     def __init__(self, parent = None, subfolders = False, status=None):
         super(DirViewWidget, self).__init__(parent)
@@ -308,7 +309,8 @@ class DirViewWidget(QWidget):
 
         self.receives = [
             ('dirschanged', self.dirview.selectDirs),
-            ('dirsmoved', self.dirview.dirMoved),]
+            ('dirsmoved', self.dirview.dirMoved),
+            ]
         self.emits = ['loadFiles', 'removeFolders']
 
         self.subfolderCheck = QCheckBox(translate('Dirview', 'Subfolders'),

@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-import re, os
+import htmlentitydefs, re, os
+
+from copy import deepcopy
+from itertools import izip
 from sgmllib import SGMLParser
-import htmlentitydefs
+
 from puddlestuff.functions import replaceWithReg
+from puddlestuff.audioinfo import CaselessDict
 
 conditionals = set(['if', 'ifnot'])
 
@@ -15,6 +19,7 @@ def debug(cursor, flag, filename=None, maxsize=None):
     return
 
 def do(cursor):
+    cursor._domodified = deepcopy(cursor.output)
     cursor.num_loop += 1
     return
 
@@ -139,6 +144,7 @@ def joinuntil(cursor, text):
         if text in line:
             index = line.find(text) + len(text)
             ret.append(line[:index])
+            #if line.strip() == text:
             break
         else:
             v = line.strip()
@@ -148,10 +154,10 @@ def joinuntil(cursor, text):
     if index is None:
         return
 
-    append = line[index:]
-    cursor.all_lines[cursor.lineno] = u''.join(ret)
-    del(cursor.all_lines[cursor.lineno + 1: cursor.lineno + len(ret)])
-    cursor.all_lines.insert(cursor.lineno + len(ret) +1, append)
+    append = [line[index:]] if line[index:].strip() else []
+    al = cursor.all_lines
+    cursor.all_lines = al[:cursor.lineno] + [u''.join(ret)] + \
+        append + al[cursor.lineno + len(ret):]
     cursor.lineno = cursor.lineno
 
 def killtag(cursor, tag, repl=u' '):
@@ -183,7 +189,7 @@ def outputto(cursor, text):
     if text.lower() == 'tracks' and cursor.num_loop:
         if cursor.output is not cursor.album:
             cursor.tracks.append(cursor.output)
-        cursor.output = {}
+        cursor.output = CaselessDict()
         cursor.field = 'title'
     elif text.lower() == 'tracks':
         if cursor.field in cursor.output:
@@ -193,7 +199,7 @@ def outputto(cursor, text):
         field = cursor.field
         cursor.cache = u''
         cursor.tracks = {}
-        cursor.output = {}
+        cursor.output = CaselessDict()
         cursor.field = 'title'
         del(cursor.output[field])
     elif not cursor.num_loop:
@@ -210,9 +216,11 @@ def replace(cursor, s, repl):
     cursor.line = cursor.line[:cursor.charno] + text
 
 def regexpreplace(cursor, regexp, s):
-    text = replaceWithReg({}, cursor.line[cursor.charno:], regexp, s,
+    text = replaceWithReg({}, cursor.line, regexp, s,
         matchcase=True)
-    cursor.line = cursor.line[:cursor.charno] + text
+    #Now uses whole line instead of just from the current char onwards
+    #because Mp3tag is being a fucking idiot.
+    cursor.line = text
     cursor.charno = 0
 
 def say(cursor, text):
@@ -241,10 +249,32 @@ def saynextword(cursor):
     cursor.charno += len(word)
 
 def sayoutput(cursor, field):
-    cursor.cache += cursor.output.get(field, u'')
+    if field.lower().strip() == u'tracks' and cursor.tracks:
+        field = u'title'
+
+    
+    track_field = [field.lower(), cursor.field.lower()]
+    track_field = cursor.track_fields.intersection(track_field)
+    track_field = track_field or (cursor.field.lower() == u'track')
+    
+    if track_field and cursor.tracks:
+        field = field.lower()
+        if field in cursor.output:
+            v = [z.strip() for z in cursor.output[field].split(u"|")]
+            v_len = len(v)
+        for i, t in enumerate(cursor.tracks):
+            if field in t:
+                t[cursor.field] = t.get(field)
+            elif v and i < v_len:
+                t[cursor.field] = v[i]
+    else:
+        v = cursor.output.get(field, u'')
+        cursor.cache += v
 
 def sayregexp(cursor, rexp, separator=None, check=None):
     if (check is not None) and (check not in cursor.line):
+        return
+    if cursor.charno + 1 == len(cursor.line):
         return
     if check:
         line = cursor.line[cursor.charno: cursor.line.find(check, cursor.charno)]
@@ -264,8 +294,7 @@ def sayrest(cursor):
     cursor.log('Line: %s.' % cursor.line)
     cursor.log('Saying: %s\n' % cursor.line[cursor.charno:])
     cursor.cache += cursor.line[cursor.charno:]
-    cursor.lineno += 1
-    cursor.charno = 0
+    cursor.charno = len(cursor.line) - 1
 
 def sayuntil(cursor, text):
     cursor.log('SayUntil start: %d' % cursor.charno)
@@ -288,7 +317,7 @@ def sayuntilml(cursor, text):
     lines[0] = cursor.line[cursor.charno:]
     for i, line in enumerate(lines):
         index = line.find(text)
-        if index != -1:
+        if index == -1:
             cache.append(line)
         else:
             cache.append(line[:index])
@@ -330,8 +359,11 @@ def _while(cursor, condition, numtimes=None):
     if cursor.tracks == {}:
         cursor.tracks = [{'title': z.strip()} for z in
             cursor.cache.split(u'|')]
+        cursor.track_fields.add('title')
     elif cursor.output and cursor.tracks:
-        cursor.tracks.append(cursor.output)
+        if cursor.output != cursor._domodified:
+            cursor.tracks.append(cursor.output)
+            map(cursor.track_fields.add, (z.lower() for z in cursor.output))
 
 def unspace(cursor):
     cursor.line = cursor.line.strip()

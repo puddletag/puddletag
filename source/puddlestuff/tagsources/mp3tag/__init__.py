@@ -5,15 +5,17 @@ import codecs, pdb, re, os, sys, traceback
 from copy import deepcopy
 from htmlentitydefs import name2codepoint as n2cp
 
-from pyparsing import QuotedString, Word, nums, printables, Optional, Combine
+from pyparsing import (nums, printables, Combine, Optional,
+    QuotedString, Word, ZeroOrMore)
 
 from funcs import FUNCTIONS
 from puddlestuff.audioinfo.util import CaselessDict
 from puddlestuff.constants import CHECKBOX
 from puddlestuff.functions import format_value
 from puddlestuff.tagsources import (urlopen, get_encoding,
-    write_log, retrieve_cover)
+    write_log, retrieve_cover, set_status)
 from puddlestuff.util import convert_dict as _convert_dict
+from puddlestuff.translations import translate
 
 class ParseError(Exception): pass
 
@@ -31,7 +33,7 @@ NUMBER = Combine(Optional('-') + Word(nums)).setParseAction(getnum)
 COVER = '#cover-url'
 
 ARGUMENT = STRING | NUMBER
-ARGUMENT.ignore(u'#' + Word(printables))
+ARGUMENT.ignore(u'#' + ZeroOrMore(Word(printables)))
 
 MTAG_KEYS = {
     '_length': '__length',
@@ -132,7 +134,10 @@ def parse_album_page(page, album_source, url=None):
 
 def parse_func(lineno, line):
     line = line.strip()
-    funcname = line.split(' ', 1)[0].strip()
+    if not line:
+        return
+
+    funcname = line.split(None, 1)[0].strip()
     arg_string = line[len(funcname):]
     args = (z[0]
         for z in ARGUMENT.searchString(arg_string).asList())
@@ -173,7 +178,7 @@ def parse_search_page(indexformat, page, search_source, url=None):
 class Cursor(object):
     def __init__(self, text, source_lines):
         self.text = text
-        self.all_lines = [z + u' ' for z in text.split('\n')] + [u' ']
+        self.all_lines = [z + u' ' for z in text.split(u'\n')] + [u' ']
         self.all_lowered = [z.lower() for z in self.all_lines]
         self.lineno = 0
         self.charno = 0
@@ -182,10 +187,11 @@ class Cursor(object):
         self.debug = False
         self._field = ''
         self.tracks = []
-        self.album = {}
+        self.album = CaselessDict()
         self.num_loop = 0
         self.output = self.album
         self.stop = False
+        self.track_fields = set(['track'])
 
     def _get_char(self):
         return self.line[self.charno]
@@ -252,15 +258,26 @@ class Cursor(object):
         ret = []
         debug_info = []
 
+        i = 0
         while (not self.stop) and (self.next_cmd < len(self.source)):
 
             self.log(unicode(self.output))
             cmd, lineno, args = self.source[self.cmd_index]
 
-            self.log(unicode(self.source[self.cmd_index]))               
-            
+            self.log(unicode(self.source[self.cmd_index]))
+
+            #if lineno == 106 or lineno == 108:
+                #pdb.set_trace()
+                #i += 1
+            #print cmd, lineno, args
+
+            #if lineno >= 436:
+                #print self.cache
+                #pdb.set_trace()
+                
             if not FUNCTIONS[cmd](self, *args):
                 self.next_cmd += 1
+
             if debug:
                 debug_info.append(
                 {'lineno': lineno, 'cmd': cmd, 'params': args,
@@ -322,12 +339,15 @@ class Mp3TagSource(object):
         
         url = self._search_base.replace(u'%s', keywords)
 
-        write_log(u'Opening Search Page: %s' % url)
+        write_log(translate('Mp3tag', u'Retrieving search page: %s') % url)
+        set_status(translate('Mp3tag', u'Retrieving search page...'))
         if self.html is None:
             page = get_encoding(urlopen(url), True, 'utf8')[1]
         else:
             page = get_encoding(self.html, True, 'utf8')[1]
 
+        write_log(translate('Mp3tag', u'Parsing search page.'))
+        set_status(translate('Mp3tag', u'Parsing search page...'))
         infos = parse_search_page(self.indexformat, page, self.search_source, url)
         return [(info, []) for info in infos]
 
@@ -347,11 +367,14 @@ class Mp3TagSource(object):
         info['#url'] = url
 
         try:
-            write_log(u'Opening Album Page: %s' % url)
+            write_log(translate('Mp3tag', u'Retrieving album page: %s') % url)
+            set_status(translate('Mp3tag', u'Retrieving album page...'))
             page = get_encoding(urlopen(url), True, 'utf8')[1]
         except:
             page = u''
 
+        write_log(translate('Mp3tag', u'Parsing album page.'))
+        set_status(translate('Mp3tag', u'Parsing album page...'))
         new_info, tracks = parse_album_page(page, self.album_source, url)
         info.update(dict((k,v) for k,v in new_info.iteritems() if v))
         
@@ -372,7 +395,6 @@ def load_mp3tag_sources(dirpath='.'):
     classes = []
     for f in files:
         try:
-            print f
             idents, search, album = open_script(f)
             classes.append(Mp3TagSource(idents, search, album))
         except:

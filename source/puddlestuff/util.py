@@ -57,6 +57,7 @@ def rename(oldpath, newpath):
     if os.path.exists(newpath):
         raise RenameError(IOError(EEXIST, os.strerror(EEXIST),
             newpath), oldpath, newpath)
+
     if not os.path.exists(os.path.dirname(newpath)):
         try:
             os.makedirs(os.path.dirname(newpath))
@@ -65,7 +66,6 @@ def rename(oldpath, newpath):
                 "intermediate directory: %s")
             e.strerror %= decode_fn(os.path.dirname(newpath))
             raise RenameError(e, oldpath, newpath)
-
     try:
         os.rename(oldpath, newpath)
         return True
@@ -180,22 +180,26 @@ def rename_file(audio, tags):
     if EXTENSION in tags:
         test_audio.ext = safe_name(to_string(tags[EXTENSION]))
 
-    if rename(audio.filepath, test_audio.filepath):
-        audio.filepath = test_audio.filepath
-        renamed = True
-
     if DIRNAME in tags:
         newdir = safe_name(encode_fn(tags[DIRNAME]))
         newdir = os.path.join(os.path.dirname(audio.dirpath),
             newdir)
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
+            test_audio.dirpath = newdir
             renamed = True
     elif DIRPATH in tags:
         newdir = encode_fn(to_string(tags[DIRPATH]))
         if rename_dir(audio.filepath, audio.dirpath, newdir):
             audio.dirpath = newdir
             renamed = True
+            test_audio.dirpath = newdir
+
+    if rename(audio.filepath, test_audio.filepath):
+        audio.filepath = test_audio.filepath
+        renamed = True
+    
+    return renamed
 
 def split_by_tag(tracks, main='artist', secondary='album'):
     get = lambda t,f : to_string(track.get(f)).strip()
@@ -296,6 +300,7 @@ def write(audio, tags, save_mtime = True, justrename=False):
         audio.update(undo)
         audio.preview = preview
         raise
+
     if save_mtime:
         try:
             setmodtime(audio.filepath, audio.accessed, audio.modified)

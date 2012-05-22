@@ -775,7 +775,8 @@ class MainWin(QMainWindow):
             fin()
             if 'rename_dirs' in state:
                 self.renameDirs(state['rename_dirs'].items())
-        s = progress(func, translate("Defaults", 'Writing '), len(rows), finished)
+        s = progress(func, translate("Defaults", 'Writing '), len(rows),
+            finished)
         s(self)
 
     def writeOneToMany(self, d):
@@ -921,7 +922,6 @@ class MainWin(QMainWindow):
                 old_dirs.add(old_dir)
 
         dirs = new_dirs
-        print dirs
 
         if self._lastdir:
             last = self._lastdir[::]
