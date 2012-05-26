@@ -618,7 +618,14 @@ Match &Case, check"""
         return findfunc.parsefunc(re.sub('\$\d+', RegHelper(d).repl, repl, 0, flags), m_tags)
 
     try:
-        return re.sub(regex, replace_tokens, text, 0, flags)
+        try:
+            return re.sub(regex, replace_tokens, text, 0, flags)
+        except TypeError:
+            #Python2.6 doesn't accept flags arg.
+            if matchcase:
+                return re.sub(u'(?i)' + regex, replace_tokens, text, 0)
+            else:
+                return re.sub(regex, replace_tokens, text, 0)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
 
