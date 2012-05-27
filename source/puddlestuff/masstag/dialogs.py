@@ -646,7 +646,7 @@ class MassTagWindow(QWidget):
                     thread.emit(SIGNAL('enable_preview_mode'))
                     thread.emit(SIGNAL('setpreview'), ret)
 
-                    set_status('<hr width="45%" /><br />')
+                set_status('<hr width="45%" /><br />')
 
         def finished(value):
             if not (value is True):

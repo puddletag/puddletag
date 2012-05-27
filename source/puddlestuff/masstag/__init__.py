@@ -215,6 +215,8 @@ def find_best(matches, files, minimum=0.7):
 
         score = min([ratio_compare(d, info, key) for key in d])
 
+        if score in scores:
+            score = score + 0.01 #For albums that have same name.
         scores[score] = match
         tracks = match.tracks if hasattr(match, 'tracks') else match[1]
         if tracks and score < minimum:
