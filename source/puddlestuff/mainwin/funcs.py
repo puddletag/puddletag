@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import puddlestuff.findfunc as findfunc
 from puddlestuff.puddleobjects import (dircmp, safe_name, natcasecmp,
     LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
@@ -11,7 +12,7 @@ from collections import defaultdict
 import puddlestuff.helperwin as helperwin
 from functools import partial
 from itertools import izip
-from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS
+from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
 import traceback
@@ -88,11 +89,7 @@ def connect_status(actions):
 def copy():
     selected = status['selectedtags']
     mime = QMimeData()
-    if selected[0]:
-        text = selected[0][selected[0].keys()[0]]
-        if not isinstance(text, basestring):
-            text = SEPARATOR.join(text)
-        mime.setText(text)
+    mime.setText(json.dumps(map(tag_to_json, selected)))
     ba = QByteArray(unicode(selected).encode('utf8'))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
@@ -109,11 +106,7 @@ def copy_whole():
         
     tags = [usertags(f) for f in status['selectedfiles']]
 
-    if tags[0]:
-        text = tags[0][tags[0].keys()[0]]
-        if not isinstance(text, basestring):
-            text = SEPARATOR.join(text)
-        mime.setText(text)
+    mime.setText(json.dumps(map(tag_to_json, tags)))
     ba = QByteArray(unicode(tags).encode('utf8'))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
@@ -121,7 +114,7 @@ def copy_whole():
 def cut():
     selected = status['selectedtags']
     ba = QByteArray(unicode(selected).encode('utf8'))
-    mime = QMimeData()
+    mime.setText(json.dumps(map(tag_to_json, selected)))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 

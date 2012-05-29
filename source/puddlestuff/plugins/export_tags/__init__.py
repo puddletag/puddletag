@@ -7,16 +7,7 @@ import base64, json, os, sys, traceback
 from optparse import OptionParser
 
 from puddlestuff import audioinfo
-
-def img_to_b64(img):
-    ret = img.copy()
-    ret['data'] = base64.b64encode(img['data'])
-    return ret
-
-def b64_to_img(img):
-    ret = img.copy()
-    ret['data'] = base64.b64decode(img['data'])
-    return ret
+from puddlestuff.audioinfo import tag_to_json
     
 def tags_to_json(dirpath):
     ret = []
@@ -29,21 +20,6 @@ def tags_to_json(dirpath):
         if tag:
             ret.append(tag)
     return ret
-
-def tag_to_json(fn):
-    try:
-        audio = audioinfo.Tag(fn)
-    except:
-        print "Invalid File:", fn
-        return
-
-    if audio is None:
-        return
-    tags = audio.tags.copy()
-    if audio.images:
-        tags['__image'] = map(img_to_b64, audio.images)
-
-    return tags
 
 def backup_dir(dirpath, fn):
     fo = open(fn, 'w')

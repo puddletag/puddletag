@@ -1,6 +1,8 @@
 ## -*- coding: utf-8 -*-
 
-import mutagen, time, pdb, calendar, os, logging, sys, imghdr
+import base64, calendar, imghdr, json, logging, pdb, os, sys, time
+import mutagen
+
 from errno import ENOENT
 from decimal import Decimal
 from copy import copy, deepcopy
@@ -28,6 +30,11 @@ fn_hash = {
     PARENT_DIR: 'parent_dir'}
 
 splitext = lambda x: path.splitext(x)[1][1:].lower()
+
+def b64_to_img(img):
+    ret = img.copy()
+    ret['data'] = base64.b64decode(img['data'])
+    return ret
 
 def commonimages(images):
     """Checks the equality of the list of images.
@@ -239,6 +246,11 @@ def get_total(tag):
     except IndexError:
         raise KeyError('__total')
 
+def img_to_b64(img):
+    ret = img.copy()
+    ret['data'] = base64.b64encode(img['data'])
+    return ret
+        
 def info_to_dict(info):
     """Create a dictionary representation of info's attributes.
 
@@ -487,6 +499,32 @@ def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds))
 
+def tag_to_json(audio):
+    if isinstance(audio, basestring):
+        try:
+            audio = audioinfo.Tag(audio)
+        except:
+            print "Invalid File:", audio
+            return
+
+    if audio is None:
+        return
+    try:
+        tags = audio.tags.copy()
+    except AttributeError:
+        tags = audio.copy()
+
+    try:
+        if audio.images:
+            tags['__image'] = map(img_to_b64, audio.images)
+        elif '__image' in tags:
+            tags['__image'] = map(img_to_b64, tags['__image'])
+    except AttributeError:
+        if '__image' in tags:
+            tags['__image'] = map(img_to_b64, tags['__image'])
+
+    return tags
+    
 def to_string(value, errors='strict'):
     """Convert the value to a unicode string.
 
