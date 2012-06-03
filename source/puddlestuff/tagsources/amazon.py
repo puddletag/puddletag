@@ -131,10 +131,10 @@ def parse_album_xml(text, album=None):
         tracklist = album_item.getElementsByTagName('Tracks')[0]
     except IndexError:
         write_log(translate('Amazon',
-            'Invalid XML returned.'))
+            'Invalid XML returned. No tracks listed.'))
         write_log(text)
         raise RetrievalError(translate('Amazon',
-            'Invalid XML returned.'))
+            'Invalid XML returned. No tracks listed.'))
     tracks = []
     discs = [disc for disc in tracklist.childNodes if 
         not disc.nodeType == disc.TEXT_NODE]

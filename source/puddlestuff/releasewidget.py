@@ -373,7 +373,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
             item.retrieving = False
         else:
-            if not item.hasChildren:
+            if not item.childCount():
                 self.emit(SIGNAL('collapse'), index)
         self.emit(SIGNAL('retrievalDone()'))
 
