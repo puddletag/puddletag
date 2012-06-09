@@ -69,6 +69,8 @@ puddlestuff/masstag/dialogs.py
 puddlestuff/mainwin/previews.py
 puddlestuff/tagsources/__init__.py
 puddlestuff/tagsources/amazon.py
+puddlestuff/tagsources/acoust_id.py
+puddlestuff/tagsources/_acoustid.py
 puddlestuff/tagsources/CDDB.py
 puddlestuff/tagsources/discogs.py
 puddlestuff/tagsources/freedb.py

@@ -418,7 +418,7 @@ class Tags(QWidget):
             'Write ID3v2.&4'), group)
         self.id3_v24.setChecked(True)
         self.id3_v23 = QRadioButton(translate('Tag Settings',
-            'Write ID3v2.&3 (Experimental)'), group)
+            'Write ID3v2.&3'), group)
         
         group.setLayout(vbox)
         vbox.addWidget(self.id3_v24)

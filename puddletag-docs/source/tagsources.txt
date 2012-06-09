@@ -45,14 +45,12 @@ Using AcoustID
 
 AcoustID is a music fingerprinting service provided by Lukas Lalinsky. It works by calculating a unique fingerprint for your audio files and trying to match it to data in the AcoustID database. This allows you to find information for tracks that have no metadata!
 
-AcoustID support is implemented using Andrew Sampson's `pyacoustid <https://github.com/sampsyo/pyacoustid>`_ library.
+.. note:: In order to use the library you need to have `chromaprint <http://acoustid.org/chromaprint>`_ installed.
 
-.. note:: The library isn't available in most distros. Moreover you also need FFmpeg, Chromaprint and the `audioread library <https://github.com/sampsyo/audioread>`_ installed. For now, I'm not making the install instructions available as the dependencies will change to make install simpler.
+AcoustID returns the same data as the :ref:`MusicBrainz tag source <musicbrainz>`, including the following fields.
 
-AcoustID returns the same data as the :ref:`MusicBrainz tag sources <musicbrainz>`, including the following fields.
-
-+   **acoustid_id**: The AcoustID identifier for a track.
-
++   **acoustid_id**: The AcoustID identifier for a track as returned by the AcoustID webservice.
++   **acoustid_fingerprint**: The calculated AcoustID fingerprint. Can get long.
 .. _amazon:
     
 Using Amazon

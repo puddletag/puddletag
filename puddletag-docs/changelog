@@ -1,3 +1,25 @@
+9 June 2012 - 1.0.0RC1
+    Fixed: Issue 183 where the Tag Sources dialog wouldn't unfreeze for invalid results.
+    Added: Copy/Paste now copies the data as JSON to clipboard.
+    Fixed: Masstagging was discarding albums with same name.
+    Fixed: Issue 181. regex function wasn't working on Python 2.6.
+    Fixed: Edge cases with Mp3tag tag sources.
+    Fixed: Undoing filename related changes weren't being effected.
+    Fixed: Issue 180 where directories weren't unloaded when loading a new one.
+    Added: Status message for Mp3tag tag sources.
+    Fixed: Creating new actions duplicated old ones.
+    Added: Made it impossible to save Functions with invalid field names.
+    Fixed: AcoustID doesn't have as many dependencies. Only chromaprint as
+           included sampsyo's pyacoustid source and wrote supporting libs
+           to contain only needed code.
+    Changed: Filesystem panel will not update if hidden. Works for loading
+             large directories so puddletag won't freeze for an extended
+             period.
+    Added: AcoustID tag source also returns acoustid_fingerprint field.
+    Changed: If directory was created when removing a file, that directory will
+             be removed if change is undone.
+    
+
 18 April 2012 - 1.0.0beta6
     Fixed issues with deb not un/installing.
     Fixed issue with dropping album art on Artwork window. Invalid files would still affect the files that have been loaded.
