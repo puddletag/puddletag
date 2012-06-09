@@ -169,12 +169,12 @@ class MetaProcessor(SGMLParser):
                 raise error
 
 import amazon, freedb, discogs, musicbrainz
-tagsources = [z.info for z in (amazon, freedb, discogs, musicbrainz)]
+tagsources = [z.info for z in (amazon, discogs, freedb, musicbrainz)]
 
 
 try:
     import amg
-    tagsources.append(amg.info)
+    tagsources.insert(0, amg.info)
 except ImportError:
     allmusic = None
 
@@ -182,4 +182,4 @@ try:
     import acoust_id
     tagsources.insert(0, acoust_id.info)
 except ImportError:
-    allmusic = None
+    "Nothing to be done."

@@ -311,7 +311,7 @@ class Mp3TagSource(object):
         self.searchby = idents.get('searchby', u'')
         self.group_by = ['album' if '$' in idents['searchby'] \
             else idents['searchby'][1:-1], None]
-        self.name = idents['name'] + u' (Mp3tag)'
+        self.name = idents['name'] + u' [M]'
         self.indexformat = idents['indexformat'] if search_source else ''
         self.album_url = idents.get('albumurl', '')
         self.tooltip = tooltip = """<p>Enter search keywords here. If empty,

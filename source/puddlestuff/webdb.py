@@ -704,6 +704,8 @@ class MainWin(QWidget):
             for ts in self.__sources]
 
         index = self.sourcelist.findText(source)
+        if index == -1:
+            index = 0
         self.sourcelist.setCurrentIndex(index)
         self.__fieldsEdit.setTags(self.__sourceFields[index])
         df = get('trackpattern', u'%track% - %title%')
