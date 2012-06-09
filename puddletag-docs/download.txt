@@ -1,19 +1,19 @@
 .. include:: subs.txt
 
-.. |source_link| replace:: puddletag-1.0.0beta6.tar.gz
-.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.0beta6.tar.gz
-.. |deb_link| replace:: puddletag_1.0.0beta6-1_all.deb
-.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.0beta6-1_all.deb
+.. |source_link| replace:: puddletag-1.0.0RC1.tar.gz
+.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.0RC1.tar.gz
+.. |deb_link| replace:: puddletag-1.0.0RC1-1_all.deb
+.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.0RC1-1_all.deb
 
-.. |beta_source_link| replace:: puddletag-1.0.0beta6.tar.gz
-.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0beta6.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.0.0beta6-1_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.0beta6-1_all.deb
+.. |beta_source_link| replace:: puddletag-1.0.0RC1.tar.gz
+.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0RC1.tar.gz
+.. |beta_deb_link| replace:: puddletag-1.0.0RC1-1_all.deb
+.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0RC1-1_all.deb
 
-.. |source_sha| replace:: 0b0b0046c8671c3036922c3a7256a2acc383663b
-.. |deb_sha| replace:: 7471e75e27e4923f4f982c5ed65ab582c44a703e
-.. |beta_source_sha| replace:: 0b0b0046c8671c3036922c3a7256a2acc383663b
-.. |beta_deb_sha| replace:: 7471e75e27e4923f4f982c5ed65ab582c44a703e
+.. |source_sha| replace:: 3ec04e6cbeb09cc741e19b0e3b18d6eb5ef7e1e3
+.. |deb_sha| replace:: ea114021cce1c3f506a9409cba87c049ef3bd40b
+.. |beta_source_sha| replace:: 3ec04e6cbeb09cc741e19b0e3b18d6eb5ef7e1e3
+.. |beta_deb_sha| replace:: ea114021cce1c3f506a9409cba87c049ef3bd40b
 
 Downloads
 =========

@@ -195,19 +195,19 @@ class CompatID3(ID3):
         if "TCON" in self:
             self["TCON"].genres = self["TCON"].genres
 
+        #Change encoding for text to ISO-8859
+        pics = self.getall("APIC")
+        mimes = { "PNG": "image/png", "JPG": "image/jpeg" }
+        self.delall("APIC")
+        for pic in pics:
+            newpic = APIC(
+                encoding=0, mime=mimes.get(pic.mime, pic.mime),
+                type=pic.type, desc=pic.desc, data=pic.data)
+            self.add(newpic)
         if self.version < (2, 3):
-            # ID3v2.2 PIC frames are slightly different.
-            pics = self.getall("APIC")
-            mimes = { "PNG": "image/png", "JPG": "image/jpeg" }
-            self.delall("APIC")
-            for pic in pics:
-                newpic = APIC(
-                    encoding=pic.encoding, mime=mimes.get(pic.mime, pic.mime),
-                    type=pic.type, desc=pic.desc, data=pic.data)
-                self.add(newpic)
-
             # ID3v2.2 LNK frames are just way too different to upgrade.
             self.delall("LINK")
+            
 
         if "TSOP" in self:
             f = self.pop("TSOP")

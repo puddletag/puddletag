@@ -50,7 +50,8 @@ AcoustID is a music fingerprinting service provided by Lukas Lalinsky. It works 
 AcoustID returns the same data as the :ref:`MusicBrainz tag source <musicbrainz>`, including the following fields.
 
 +   **acoustid_id**: The AcoustID identifier for a track as returned by the AcoustID webservice.
-+   **acoustid_fingerprint**: The calculated AcoustID fingerprint. Can get long.
++   **acoustid_fingerprint**: The calculated AcoustID fingerprint. Can be a very large value.
+
 .. _amazon:
     
 Using Amazon

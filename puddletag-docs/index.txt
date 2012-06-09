@@ -10,7 +10,7 @@ puddletag is an audio tag editor (primarily created) for GNU/Linux similar to th
 
 The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.
 
-Then there're Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz. There's quite a bit more, but I've reached my comma quota.
+Then there're Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There's quite a bit more, but I've reached my comma quota.
 
 Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
 
@@ -49,6 +49,5 @@ Support
 -------
 Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
 
-Last website update: 9 June 2012
-
-Latest version: 1.0.0RC1
+| Last website update: 9 June 2012
+| Latest version: 1.0.0RC1

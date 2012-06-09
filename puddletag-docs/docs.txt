@@ -1,7 +1,7 @@
 puddletag Documentation 
 =======================
 
-**Download these docs:** `HTML <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.0beta5.tar.bz2>`_ | `ReStructuredText <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-1.0.0beta5.tar.bz2>`_
+**Download these docs:** `HTML <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.0RC1.tar.bz2>`_ | `ReStructuredText <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.0.tar.bz2>`_
 
 First I have to introduce you to the naming conventions used by puddletag (some copied from Mp3tag).
 

@@ -657,8 +657,8 @@ def pic_to_bin(image):
     description = image.get(util.DESCRIPTION)
     if not description:
         description = u''
-    mime = image.get(util.MIMETYPE)
     imagetype = image.get(util.IMAGETYPE, encoding)
+    mime = image.get(util.MIMETYPE)
     if not mime:
         mime = get_mime(data)
     return APIC(encoding, mime, imagetype, description, data)

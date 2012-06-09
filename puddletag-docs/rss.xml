@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Thu, 19 Apr 2012 20:50:01 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>11 April 2012 - 1.0.0beta5</title><link>http://puddletag.sourceforge.net/news.html#april-2012-1-0-0beta5</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sat, 09 Jun 2012 21:16:34 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>9 June 2012 - 1.0.0RC1</title><link>http://puddletag.sourceforge.net/news.html#june-2012-1-0-0rc1</link><description>
+  &lt;div class="section" id="june-2012-1-0-0rc1"&gt;
+&lt;h1&gt;9 June 2012 - 1.0.0RC1&lt;/h1&gt;
+&lt;p&gt;This release is the first RC with the final release planned for next week depending on feedback. All that&amp;#8217;s still needed is to update the docs, fix some outstanding bugs and package the plugins.&lt;/p&gt;
+&lt;p&gt;As for the changes here, it&amp;#8217;s just some bug fixes. For a more comprehensive list see the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;. The most interesting ones are:&lt;/p&gt;
+&lt;div class="section" id="fixes"&gt;
+&lt;h2&gt;Fixes&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Loading a new directory would sometimes not unload previously loaded directory.&lt;/li&gt;
+&lt;li&gt;Mp3tag tag source are more compatible than before.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="changes"&gt;
+&lt;h2&gt;Changes&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;The only dependency for AcoustID now is that you have
+&lt;a class="reference external" href="http://acoustid.org/chromaprint"&gt;chromaprint&lt;/a&gt; installed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Sat, 09 Jun 2012 00:00:00 GMT</pubDate></item><item><title>11 April 2012 - 1.0.0beta5</title><link>http://puddletag.sourceforge.net/news.html#april-2012-1-0-0beta5</link><description>
   &lt;div class="section" id="april-2012-1-0-0beta5"&gt;
 &lt;h1&gt;11 April 2012 - 1.0.0beta5&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;18 April 2012 - Updated to 1.0.0beta6 to fix issues with deb. This is the second last beta.&lt;/strong&gt;&lt;/p&gt;
