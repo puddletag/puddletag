@@ -7,7 +7,7 @@ import puddlestuff.tagsources
 
 from puddlestuff.audioinfo import DATA
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
-from puddlestuff.tagsources import (write_log, RetrievalError,
+from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
     parse_searchstring, iri_to_uri)
 from puddlestuff.util import translate
 
@@ -94,17 +94,6 @@ def check_values(d):
         ret[key] = v
 
     return ret
-
-def find_id(tracks, field=None):
-    if not field:
-        return
-    for track in tracks:
-        if field in track:
-            value = track[field]
-            if isinstance(value, basestring):
-                return value
-            else:
-                return value[0]
 
 def keyword_search(keywords):
     write_log(translate("Discogs",

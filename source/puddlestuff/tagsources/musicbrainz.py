@@ -1,12 +1,13 @@
 import pdb, re, sys, time, urllib, urllib2
 
 from collections import defaultdict
+from itertools import chain
 from sgmllib import SGMLParser
 from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
 from puddlestuff.audioinfo import strlength
-from puddlestuff.tagsources import (write_log, RetrievalError,
+from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
 
@@ -444,6 +445,19 @@ class MusicBrainz(object):
             raise RetrievalError('Album or Artist required.')
 
         write_log(u'Searching for %s' % album)
+
+        if hasattr(artists, "items"):
+            album_id = find_id(chain(*artists.values()), "mbrainz_album_id")
+            if album_id:
+                try:
+                    write_log(translate("MusicBrainz",
+                        "Found album id %s in tracks. Retrieving") % album_id)
+                    return [retrieve_album(album_id)]
+                except RetrievalError, e:
+                    msg = translate("MusicBrainz",
+                        "<b>Error:</b> While retrieving Album ID %1 (%2)")
+                    write_log(msg.arg(album_id).arg(escape(e)))
+
         try:
             xml = urlopen(search_album(album, artist, limit))
         except urllib2.URLError, e:

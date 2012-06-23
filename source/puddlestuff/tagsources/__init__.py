@@ -52,6 +52,17 @@ def get_encoding(page, decode=False, default=None):
     else:
         return encoding
 
+def find_id(tracks, field):
+    if not field:
+        return
+    for track in tracks:
+        if field in track:
+            value = track[field]
+            if isinstance(value, basestring):
+                return value
+            else:
+                return value[0]
+        
 #From http://stackoverflow.com/questions/4389572 by bobince
 def iri_to_uri(iri):
     parts= urlparse.urlparse(iri)
