@@ -212,7 +212,10 @@ class AcoustID(object):
 
         fns_len = len(fns)
         for i, fn in enumerate(fns):
-            disp_fn = audioinfo.decode_fn(fn.filepath)
+            try:
+                disp_fn = audioinfo.decode_fn(fn.filepath)
+            except AttributeError:
+                disp_fn = fn['__path']
             write_log(disp_fn)
             try:
                 write_log(CALCULATE_MSG)

@@ -10,10 +10,10 @@
 .. |beta_deb_link| replace:: puddletag-1.0.0RC1-1_all.deb
 .. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0RC1-1_all.deb
 
-.. |source_sha| replace:: 3ec04e6cbeb09cc741e19b0e3b18d6eb5ef7e1e3
-.. |deb_sha| replace:: ea114021cce1c3f506a9409cba87c049ef3bd40b
-.. |beta_source_sha| replace:: 3ec04e6cbeb09cc741e19b0e3b18d6eb5ef7e1e3
-.. |beta_deb_sha| replace:: ea114021cce1c3f506a9409cba87c049ef3bd40b
+.. |source_sha| replace:: f8d4b01ceff9fb012274cc760bbff21964e8cbf9
+.. |deb_sha| replace:: 38b79b9a5c4261971697ee61ab569501a2098f77
+.. |beta_source_sha| replace:: f8d4b01ceff9fb012274cc760bbff21964e8cbf9
+.. |beta_deb_sha| replace:: 38b79b9a5c4261971697ee61ab569501a2098f77
 
 Downloads
 =========
