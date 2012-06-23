@@ -114,6 +114,7 @@ def copy_whole():
 def cut():
     selected = status['selectedtags']
     ba = QByteArray(unicode(selected).encode('utf8'))
+    mime = QMimeData()
     mime.setText(json.dumps(map(tag_to_json, selected)))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
