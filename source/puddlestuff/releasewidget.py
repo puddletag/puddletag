@@ -499,7 +499,8 @@ class TreeModel(QtCore.QAbstractItemModel):
             exact_matches.extend(parent.exact_matches())
             self.rootItem.appendChild(parent)
         self.sort()
-        self.emit(SIGNAL('exactMatches'), exact_matches)
+        if exact_matches:
+            self.emit(SIGNAL('exactMatches'), exact_matches)
 
     def sort(self, column=0, order=Qt.AscendingOrder):
         if order == Qt.AscendingOrder:
