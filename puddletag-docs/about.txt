@@ -16,7 +16,7 @@ Thank yous
 
 First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
 
-Thanks to **Raphaël Rochet**, **Fabian Bakkum**, **Alan Gomes** and **Viktor Yu. Kovalskiy** for contributing translations.
+Thanks to **Raphaël Rochet**, **Fabian Bakkum**, **Alan Gomes** and others for contributing translations.
 
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).
 

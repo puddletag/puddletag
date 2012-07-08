@@ -145,5 +145,6 @@ To install, place the downloaded translation in **~/.puddletag/translations** (y
 
 + :download:`Dutch (Nederlands) <translations/puddletag_nl-nl.qm>` by **Fabian Bakkum**.
 + :download:`French <translations/puddletag_fr.qm>` by **Raphaël Rochet**.
++ :download:`German <translations/puddletag_de.qm>` by **Ralf Sarholz**.
 + :download:`Portuguese (Brazilian) <translations/puddletag_pt_BR.qm>` by **Alan Gomes**.
 + :download:`Russian <translations/puddletag_ru_RU.qm>` by **Viktor Yu. Kovalskiy**.
