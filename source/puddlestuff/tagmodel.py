@@ -1177,6 +1177,7 @@ class TagDelegate(QStyledItemDelegate):
         editor = QLineEdit(parent)
         editor.returnPressed = False
         editor.writeError = False
+        editor.noHint = False
         editor.setFrame(False)
         font = editor.font()
         font.setPointSize(index.model().fontSize)
@@ -1196,7 +1197,8 @@ class TagDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         try:
-            model.setData(index, QVariant(editor.text()))
+            if not model.setData(index, QVariant(editor.text())):
+                editor.noHint = True
         except EnvironmentError, e:
             editor.writeError = e
 
@@ -1451,6 +1453,9 @@ class TagTable(QTableView):
             QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
             model.emit(SETDATAERROR,
                 rename_error_msg(editor.writeError, currentfile.filepath))
+            return
+        elif editor.noHint:
+            QTableView.closeEditor(self, editor,QAbstractItemDelegate.NoHint)
             return
         
         if not editor.returnPressed:
