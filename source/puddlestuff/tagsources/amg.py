@@ -142,9 +142,13 @@ def parse_sidebar_element(element):
             if field == 'editor rating':
                 info['rating'] = parse_rating(e)
                 continue
-            elif field in ('genres', 'styles'):
-                items = e.find('ul').find_all('li')
-                info[field[:-1]] = [convert(i.string) for i in items]
+            elif field in ('genres', 'styles', 'genre', 'style'):
+                try:
+                    items = e.find('ul').find_all('li')
+                    key = spanmap.get(field, field)
+                    info[key] = [convert(i.string) for i in items]
+                except AttributeError:
+                    info[field[:-1]] = convert(e.string)
             elif e.element.attrib.get('class') == u'metaids':
                 info.update(parse_sidebar_element(e.contents[0].contents[1]))
             else:
@@ -159,7 +163,10 @@ def parse_sidebar_element(element):
 
 def parse_similar(swipe):
     ret = []
-    similar = swipe.find('ul', {'class': "swipe-gallery-pages"})
+    try:
+        similar = swipe.find('ul', {'class': "swipe-gallery-pages"})
+    except AttributeError:
+        return {}
     for div in similar.find_all('div', {'class': "thumbnail lg album"}):
         try:
             title = div.a.element.attrib['title']
@@ -167,7 +174,7 @@ def parse_similar(swipe):
             title = div.a.element.attrib['oldtitle']
         #artist = convert(div.find('div', {'class': 'artist'}).string)
         #album = convert(div.find('div', {'class': 'album'}).string)
-        ret.append(title.replace(u' - ', u', ', 1))
+        ret.append(title.replace(u' - ', u'; ', 1))
 
     if ret:
         return {'similar': ret}
@@ -201,9 +208,11 @@ def parse_sidebar(sidebar):
     info = {}
 
     cover = sidebar.find('div', {'class': 'album-art'})
+    cover = cover.find('div', {'class': 'image-container'})
     try:
+        
         info['#cover-url'] = json.loads(
-            cover.div.element.attrib['data-large'])['url']
+            cover.element.attrib['data-large'])['url']
     except KeyError:
         "Doesn't have artwork."
 
@@ -240,7 +249,9 @@ def parse_search_element(td, id_field=ALBUM_ID):
     
     def to_string(e):
         try: return convert(e.a.string)
-        except AttributeError: return convert(e.string)
+        except AttributeError:
+            try: return convert(e.string)
+            except AttributeError: return u''
     
     info = {}
 
@@ -251,6 +262,15 @@ def parse_search_element(td, id_field=ALBUM_ID):
     info['amg_url'] = info['#albumurl']
 
     info['artist'] = to_string(td.find('div', {'class': 'artist'}))
+
+    if not info['artist']:
+        artist = to_string(td.find('div', {'class': 'title'}))
+        if u':' in artist:
+            artist = [z.strip() for z in artist.split(u':', 1)]
+            info['artist'], info['album'] = artist
+        else:
+            info['album'] = artist
+    
     info['year'] = to_string(td.find('div', {'class': 'year'}))
     info['genre'] = to_string(td.find('div', {'class': 'genre'}))
 
@@ -323,17 +343,27 @@ def parse_track_table(table, discnum=None):
         except AttributeError: return convert(e.string)
     
     header_items = table.table.thead.find('tr').find_all('th')
-    headers = [th.element.attrib['class'] for th in header_items]
+    headers = [th.element.attrib.get('class', convert(th.string))
+        for th in header_items]
     fields = [spanmap.get(key, key) for key in headers]
-    
-    tracks = []
-    track_items = table.tbody.find_all('tr')
 
-    return [parse_track(tr, fields) for tr in track_items]
+    tracks = []
+    performance = u''
+    for item in table.tbody.find_all('tr'):
+        t = parse_track(item, fields)
+        if isinstance(t, basestring):
+            performance = t + u': '
+        else:
+            t['title'] = performance + t['title']
+            tracks.append(t)
+    return tracks
 
 def parse_track(tr, fields):
 
     track = {}
+
+    if tr.element.attrib.get('class') == 'perfomance-title':
+        return convert(tr.string)
     
     for th, field in zip(tr.find_all('td'), fields):
         if field is None:
@@ -345,28 +375,16 @@ def parse_track(tr, fields):
             continue
         if field == 'artist':
             track['title'] = th.find('div', {'class':'title'})
+            if track['title'] is None:
+                track['title'] = th.find('div', {'class':'title primary_link'})
+
             track['title']= convert(track['title'].string)
-            
+                
             composer_div = th.find('div', {'class': "artist secondary_link"})
             composer = map(convert, composer_div.string.split(u' / '))
             track['composer'] = composer
         elif field == 'performer':
             track['performer'] =  map(convert, th.string.split(u' / '))
-
-    return track
-
-def parse_track_extra(tr):
-    extra = tr.find('div', {'class': 'expand'})
-    track = {}
-    if not extra:
-        return track
-
-    value = convert(extra.string)
-    try:
-        field, value = [z.strip() for z in value.split(u':')]
-        track[spanmap.get(field, field)] = value
-    except (ValueError, TypeError):
-        track[extra] = value
 
     return track
 
@@ -457,7 +475,11 @@ class AllMusic(object):
     
     def keyword_search(self, text):
         if text.startswith(u':id'):
-            url = album_url + text[len(':id'):].strip()
+            sql = text[len(':id'):].strip().replace(u' ', u'').lower()
+            if sql.startswith('mr'):
+                url = album_url + 'release/' + sql
+            else:
+                url = album_url + sql
             if self._useid:
                 info, tracks, cover = retrieve_album(url, self._getcover, 
                     self._id_field)
