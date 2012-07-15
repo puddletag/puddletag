@@ -477,6 +477,7 @@ class AllMusic(object):
     def keyword_search(self, text):
         if text.startswith(u':id'):
             sql = text[len(':id'):].strip().replace(u' ', u'').lower()
+            cover = None
             if sql.startswith('mr'):
                 url = album_url + 'release/' + sql
             else:
