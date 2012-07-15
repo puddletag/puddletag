@@ -209,12 +209,12 @@ def parse_sidebar(sidebar):
 
     cover = sidebar.find('div', {'class': 'album-art'})
     cover = cover.find('div', {'class': 'image-container'})
-    try:
-        
-        info['#cover-url'] = json.loads(
-            cover.element.attrib['data-large'])['url']
-    except KeyError:
-        "Doesn't have artwork."
+    if cover is not None:
+        try:
+            info['#cover-url'] = json.loads(
+                cover.element.attrib['data-large'])['url']
+        except KeyError:
+            "Doesn't have artwork."
 
     details = sidebar.find('dl', {'class': 'details'})
     info.update(parse_sidebar_element(details))
@@ -418,7 +418,7 @@ def parse_tracks(content):
     else:
         return parse_track_table(track_tables[0])
 
-def retrieve_album(url, coverurl=None, id_field=None):
+def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     review = False
     write_log('Opening Album Page - %s' % url)
     album_page = urlopen(url, False)
@@ -468,11 +468,9 @@ class AllMusic(object):
         super(AllMusic, self).__init__()
         self._getcover = True
         self._useid = True
-        self._id_field = ALBUM_ID
         self.preferences = [
             ['Retrieve Covers', CHECKBOX, True],
             ['Use AllMusic Album ID to retrieve albums:', CHECKBOX, self._useid],
-            ['Field to use for SQL ID:', TEXT, self._id_field]
             ]
     
     def keyword_search(self, text):
@@ -482,10 +480,6 @@ class AllMusic(object):
                 url = album_url + 'release/' + sql
             else:
                 url = album_url + sql
-            if self._useid:
-                info, tracks, cover = retrieve_album(url, self._getcover, 
-                    self._id_field)
-            else:
                 info, tracks, cover = retrieve_album(url, self._getcover)
             if cover:
                 info.update(cover)
@@ -513,10 +507,12 @@ class AllMusic(object):
         if self._useid and hasattr(artists, 'values'):
             tracks = []
             [tracks.extend(z) for z in artists.values()]
-            album_id = find_id(tracks, self._id_field)
-            if album_id and (album_id.startswith('r') or \
-                album_id.startswith('w')):
+            for field in ('amg_pop_id', 'amg_album_id', 'amgsqlid', 'amg_rovi_id'):
+                album_id = find_id(tracks, field)
+                if album_id:
+                    break
 
+            if not isempty(album_id):
                 write_log(u'Found Album ID %s' % album_id)
                 return self.keyword_search(u':id %s' % album_id)
 
@@ -532,8 +528,7 @@ class AllMusic(object):
             raise RetrievalError(unicode(e))
         write_log(u'Retrieved search results.')
         
-        search_results = parse_searchpage(searchpage, artist, album,
-            self._id_field)
+        search_results = parse_searchpage(searchpage, artist, album)
         if search_results:
             matched, matches = search_results
         else:
@@ -564,8 +559,7 @@ class AllMusic(object):
         url = albuminfo['#albumurl']
         try:
             if self._useid:
-                info, tracks, cover = retrieve_album(url, self._getcover,
-                    self._id_field)
+                info, tracks, cover = retrieve_album(url, self._getcover)
             else:
                 info, tracks, cover = retrieve_album(url, self._getcover)
         except urllib2.URLError, e:
@@ -581,11 +575,6 @@ class AllMusic(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self._useid = args[1]
-        self._id_field = args[2]
-        if args[2]:
-            spanmap['AMG Album ID'] = self._id_field
-        else:
-            spanmap['AMG Album ID'] = ALBUM_ID
 
 info = AllMusic
 
