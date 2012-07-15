@@ -177,7 +177,7 @@ def parse_similar(swipe):
         ret.append(title.replace(u' - ', u'; ', 1))
 
     if ret:
-        return {'similar': ret}
+        return {'similar_albums': ret}
     return {}
             
 def parse_albumpage(page, artist=None, album=None):
