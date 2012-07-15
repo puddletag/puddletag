@@ -477,12 +477,11 @@ class AllMusic(object):
     def keyword_search(self, text):
         if text.startswith(u':id'):
             sql = text[len(':id'):].strip().replace(u' ', u'').lower()
-            cover = None
             if sql.startswith('mr'):
                 url = album_url + 'release/' + sql
             else:
                 url = album_url + sql
-                info, tracks, cover = retrieve_album(url, self._getcover)
+            info, tracks, cover = retrieve_album(url, self._getcover)
             if cover:
                 info.update(cover)
             return [(info, tracks)]
