@@ -355,6 +355,8 @@ def parse_track_table(table, discnum=None):
             performance = t + u': '
         else:
             t['title'] = performance + t['title']
+            if discnum:
+                t['discnumber'] = discnum
             tracks.append(t)
     return tracks
 
