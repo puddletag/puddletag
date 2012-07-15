@@ -956,7 +956,7 @@ class TagModel(QAbstractTableModel):
 
             if tag not in FILETAGS:
                 newvalue = filter(None, newvalue.split(SEPARATOR))
-            if newvalue == currentfile.get(tag, u''):
+            if newvalue == currentfile.get(tag, u'') and not dontwrite:
                 return False
             if dontwrite:
                 return {tag: newvalue}, index.row()
