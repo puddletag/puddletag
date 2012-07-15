@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
+import sys, json
 import re
 import parse_html
 import urllib, urllib2
@@ -12,12 +12,15 @@ from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
 from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.audioinfo import isempty, CaselessDict
+
+ALBUM_ID = 'amg_album_id'
 
 release_order = ('year', 'type', 'label', 'catalog')
-search_adress = 'http://www.allmusic.com/search/album/%s'
+search_adress = 'http://www.allmusic.com/-/search/albums/%s'
 album_url = u'http://www.allmusic.com/album/'
 
-spanmap = {
+spanmap = CaselessDict({
     'Genre': 'genre',
     'Styles': 'style',
     'Style': 'style',
@@ -29,7 +32,7 @@ spanmap = {
     'Album': 'album',
     'Artist': 'artist',
     'Featured Artist': 'artist',
-    'Performer': 'artist',
+    'Performer': 'performer',
     'Title': 'title',
     'Composer': 'composer',
     'Time': '__length',
@@ -38,8 +41,14 @@ spanmap = {
     'Performance': 'performance',
     'Sound': 'sound',
     'Rating': 'rating',
-    'AMG Album ID': 'amg_album_id',
-    'Performed By': 'performer'}
+    'AMG Album ID': ALBUM_ID,
+    'Performed By': 'performer',
+    'sample': None,
+    'stream': None,
+    'title-artist': 'artist',
+    'AMG Pop ID': 'amg_pop_id',
+    'Rovi Music ID': 'amg_rovi_id',
+    })
 
 sqlre = re.compile('(r\d+)$')
 
@@ -93,19 +102,6 @@ def equal(audio1, audio2, play=False, tags=('artist', 'album')):
         return False
     return True
 
-def find_a(tag, regex):
-    ret = tag.find('a', href=re.compile(regex))
-    if ret:
-        return ret.all_text()
-    return False
-
-def find_all(regex, group):
-    return filter(None, [find_a(tag, regex) for tag in group])
-
-def parse_album_element(element):
-    ret =  dict([(k, text(z)) for k, z in
-                    zip(release_order, element)])
-
 def parse_cover(soup):
     cover_html = soup.find('img', src=re.compile('http://image.allmusic.com/'))
     try:
@@ -113,133 +109,184 @@ def parse_cover(soup):
     except AttributeError:
         return {}
     return {'#cover-url': cover_url}
-
-def parse_rating(soup, field='rating'):
-    try:
-        img = soup.find('img', {'alt': re.compile('star_rating\(\d+\)')})
-        rating = re.search('star_rating\((\d+)\)', img.element.attrib['alt']).groups()[0]
-    except (IndexError, AttributeError):
-        return {}
-    return {field: rating}
-
-def parse_review(soup):
-    try:
-        review_td = soup.find_all('div', {'id': 'review'})[0]
-        author = review_td.find('p', {'class':'author'}).string.strip()
-        review = review_td.find('p', {'class':'text'}).string.strip()
-        if not review.strip():
-            raise IndexError
-        ##There are double-spaces in links and italics. Have to clean up.
-        review = re.sub('\s{2,}', ' ', review)
-    except (IndexError, AttributeError):
-        return {}
     
-    return {'review': '%s\n\n%s' % (author, review)}
+def parse_rating(dd):
+    dd.find('span', {'class':"hidden", 'itemprop':"rating"})
+    return convert(dd.string)
+
+def parse_review(content):
+
+    review = content.find('div', {'id': 'review'})
+    if not review:
+        return {}
+
+    review_text = content.find('div', {'class':"review-body"})
+    review_text = review.find('div',
+        {'class': "editorial-text collapsible-content"})
+    text = convert(review_text.p.string)
+
+    author = convert(review.find('span', {'class':"author"}).string)
+
+    return {'review': author + '\n\n' + text}
 
 def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
 
+def parse_sidebar_element(element):
+    info = {}
+    for e in element.find_all('dt|dd'):
+        if e.tag == 'dt':
+            field = convert(e.string)
+        elif e.tag == 'dd':
+            if field == 'editor rating':
+                info['rating'] = parse_rating(e)
+                continue
+            elif field in ('genres', 'styles'):
+                items = e.find('ul').find_all('li')
+                info[field[:-1]] = [convert(i.string) for i in items]
+            elif e.element.attrib.get('class') == u'metaids':
+                info.update(parse_sidebar_element(e.contents[0].contents[1]))
+            else:
+                if field:
+                    info[spanmap.get(field, field)] = convert(e.string)
+            field = None
+
+    info.update(convert_year(info))
+    if 'duration' in info:
+        del(info['duration'])
+    return info
+
+def parse_similar(swipe):
+    ret = []
+    similar = swipe.find('ul', {'class': "swipe-gallery-pages"})
+    for div in similar.find_all('div', {'class': "thumbnail lg album"}):
+        try:
+            title = div.a.element.attrib['title']
+        except KeyError:
+            title = div.a.element.attrib['oldtitle']
+        #artist = convert(div.find('div', {'class': 'artist'}).string)
+        #album = convert(div.find('div', {'class': 'album'}).string)
+        ret.append(title.replace(u' - ', u', ', 1))
+
+    if ret:
+        return {'similar': ret}
+    return {}
+            
 def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
-    artist_group = album_soup.find('div', {'class': 'left-sidebar'})
 
-    find = artist_group.find_all
-
-    info = {}
-    values = find('p')
-
-    for field in find('h3'):
-        if field.element.attrib:
-            continue
-
-        value = field.element.getnext()
-        if value.tag != 'p':
-            break
-        value = convert(value.text_content())
-        field = field.string.strip()
-        info[field] = value
-
-    #Get Genres/styles
-    styles = artist_group.find_all('div', {'id': 'genre-style'})
-    half_column = re.compile('half-column$')
-    for style in styles:
-        for g in style.find_all('div', half_column):
-            try:
-                field = g.find('h3').string.strip()
-            except AttributeError:
-                #Sometimes they leave an extra empty field
-                continue
-            try:
-                values = [convert(z.string) for z
-                    in g.find('ul').find_all('li')]
-            except AttributeError:
-                info.update(parse_rating(g, field))
-                continue
-            info[field] = values
-
-    info.update(parse_rating(album_soup))
-    info.update(parse_review(album_soup))
-    info.update(convert_year(info))
-    info.update(parse_cover(album_soup))
-
-    if 'AMG Album ID' in info:
-        info['AMG Album ID'] = \
-            info['AMG Album ID'].replace(u' ', u'').lower()
-        if info['AMG Album ID'].startswith('w') and 'genre' not in info:
-            info['genre'] = u'Classical'
-
-    info = dict((spanmap.get(k, k), v) for k, v in info.iteritems() if v)
-
-    if artist and 'artist' not in info:
-        info['artist'] = artist
+    heading = album_soup.find('div', {'class': 'page-heading'})
+    artist = heading.find('div', {'class': 'album-artist'})
+    album = heading.find('div', {'class': 'album-title'})
+    info = {'artist': convert(artist.string), 'album': convert(album.string)}
     
-    if album and 'album' not in info:
-        info['album'] = album
+    main = album_soup.find('div', {'id': 'main'})
+    sidebar = main.find('div', {'class': 'left', 'id': 'sidebar'})
+    info.update(parse_sidebar(sidebar))
 
-    if ('#extrainfo' not in info) and ('#albumurl' in info) and ('album' in info):
-        info['#extrainfo'] = [info['album'] + u' at AllMusic.com', info['#albumurl']]
+    content = main.find('div', {'class': 'right', 'id': 'content'})
+    info.update(parse_review(content))
 
-    return info, parse_tracks(album_soup)
+    swipe = main.find('div', {'id':"similar-albums", 'class':"grid-gallery"})
+    
+    info.update(parse_similar(swipe))
+    
+    info = dict((k,v) for k, v in info.iteritems() if not isempty(v))
+        
+    return [info, parse_tracks(content)]
 
-def parse_search_element(element, fields, id_field = None):
-    ret = {}
-    for td, field in zip(element.find_all('td'), fields):
-        if field == 'title':
-            ret['#albumurl'] = td.find('a').element.attrib['href']
-        elif not field:
-            try:
-                ret.update({'#play': td.find(
-                    'a', {'rel': 'sample'}).element.attrib['href']})
-            except AttributeError:
-                pass
-            continue
-        ret[field] = td.string.strip()
+def parse_sidebar(sidebar):
+    
+    info = {}
 
-    ret['#extrainfo'] = [ret['title'] + u' at AllMusic.com', ret['#albumurl']]
+    cover = sidebar.find('div', {'class': 'album-art'})
     try:
-        if id_field:
-            ret[id_field] = sqlre.search(ret['#albumurl']).groups()[0]
-    except AttributeError:
-        pass
-    if 'relevance' in ret:
-        del(ret['relevance'])
+        info['#cover-url'] = json.loads(
+            cover.div.element.attrib['data-large'])['url']
+    except KeyError:
+        "Doesn't have artwork."
 
-    if 'title' in ret:
-        ret['album'] = ret['title']
-        del(ret['title'])
-    return ret
+    details = sidebar.find('dl', {'class': 'details'})
+    info.update(parse_sidebar_element(details))
 
-def parse_searchpage(page, artist, album, id_field):
+    moods = sidebar.find('div', {'class': 'sidebar-module moods'})
+    if moods is not None:
+        info['mood'] = [convert(z.string) for z in
+            moods.find('ul').find_all('li')]
+
+    themes = sidebar.find('div', {'class': 'sidebar-module themes'})
+    if themes is not None:
+        info['theme'] = [convert(z.string) for z in
+            themes.find('ul').find_all('li')]
+
+    return info
+
+def parse_search_element(td, id_field=ALBUM_ID):
+    """Parse search element td and returns dictionary with album info.
+
+    Search pages contain all album info in a td element. This routine
+    parses the element and returns all info in dictionary with
+    the field as keys and value being the value.
+
+    Returns a dictionary with at least the following keys:
+    artist -- artist name found
+    album -- album name found
+    #albumurl -- link to album.
+    #extrainfo -- tuple with first item description text and second item
+                  a link to the album.
+    year -- album release year."""
+
+    
+    def to_string(e):
+        try: return convert(e.a.string)
+        except AttributeError: return convert(e.string)
+    
+    info = {}
+
+    album = td.find('div', {'class': 'title'})
+    
+    info['album'] = to_string(album)
+    info['#albumurl'] = convert(album.a.element.attrib['href'])
+    info['amg_url'] = info['#albumurl']
+
+    info['artist'] = to_string(td.find('div', {'class': 'artist'}))
+    info['year'] = to_string(td.find('div', {'class': 'year'}))
+    info['genre'] = to_string(td.find('div', {'class': 'genre'}))
+
+    info['#extrainfo'] = [
+        info['album'] + u' at AllMusic.com', info['#albumurl']]
+
+    info[id_field] = re.search('-(mw\d+)$', info['#albumurl']).groups()[0]
+    
+    return dict((k,v) for k, v in info.iteritems() if not isempty(v))
+
+def parse_searchpage(page, artist=None, album=None, id_field=ALBUM_ID):
+    """Parses a search page and gets relevant info.
+
+
+    Arguments:
+    page -- html string with search page's html.
+    artist -- artist to to check for in results. If found only results
+              with that artist are returned.
+    album -- album to check for in results. If found only results with
+             with the album are returned.
+    id_field -- key to use for the album id found.
+
+    Return a tuple with the first element being == True if the list
+    was truncated with only matching artist/albums.
+    
+    """
     page = get_encoding(page, True, 'utf8')[1]
     soup = parse_html.SoupWrapper(parse_html.parse(page))
-    results = soup.find('table', {'class': 'search-results'})
+    result_table = soup.find('table', {'class': 'search-results'})
     try:
-        fields = [z.string.strip().lower() for z in results.find('tr').find_all('th')]
+        results = result_table.find_all('tr',
+            {'class': 'search-result album'})
     except AttributeError:
         return []
-    albums = [parse_search_element(z, fields, id_field) for z in
-        results.find_all('tr')[1:]]
+
+    albums = [parse_search_element(result.find("td")) for result in results]
 
     d = {}
     if artist and album:
@@ -251,6 +298,12 @@ def parse_searchpage(page, artist, album, id_field):
         if not ret:
             ret = [album for album in albums if 
                 equal(d, album, False, ['album'])]
+    elif artist:
+        d = {'artist': artist}
+        ret = [album for album in albums if equal(d, album, True, ['artist'])]
+        if not ret:
+            ret = [album for album in albums if
+                equal(d, album, False, ['artist'])]
     else:
         ret = []
 
@@ -264,59 +317,43 @@ def parse_searchpage(page, artist, album, id_field):
             return False, albums
 
 def parse_track_table(table, discnum=None):
-    try:
-        headers = [th.string.strip() for th in table.tr.find_all('th')]
-    except AttributeError:
-        return None
 
-    keys = [spanmap.get(key, key) for key in headers]
-
+    def to_string(e):
+        try: return convert(e.a.string)
+        except AttributeError: return convert(e.string)
+    
+    header_items = table.table.thead.find('tr').find_all('th')
+    headers = [th.element.attrib['class'] for th in header_items]
+    fields = [spanmap.get(key, key) for key in headers]
+    
     tracks = []
+    track_items = table.tbody.find_all('tr')
 
-    for tr in table.find_all('tr'):
-        if len(headers) < len(tr.find_all('td')) and 'ptag' not in headers:
-            headers.insert(-1, 'ptag')
+    return [parse_track(tr, fields) for tr in track_items]
 
-        if tr.element.attrib.get('id') == 'trlink':
-            track = parse_track(tr, headers)
-        elif tr.find_all('div', {'class': 'expand'}):
-            track = tracks[-1]
-            track.update(parse_track_extra(tr))
-        else:
+def parse_track(tr, fields):
+
+    track = {}
+    
+    for th, field in zip(tr.find_all('td'), fields):
+        if field is None:
             continue
 
-        if track:
-            title = track['title']
-            if '" "' in title:
-                track['title'] = title.replace('" "', tracks[-1]['title'])
-            tracks.append(track)
-    
-    if not tracks:
-        return None
+        divs = th.find_all('div')
+        if not divs:
+            track[field] = convert(th.string)
+            continue
+        if field == 'artist':
+            track['title'] = th.find('div', {'class':'title'})
+            track['title']= convert(track['title'].string)
+            
+            composer_div = th.find('div', {'class': "artist secondary_link"})
+            composer = map(convert, composer_div.string.split(u' / '))
+            track['composer'] = composer
+        elif field == 'performer':
+            track['performer'] =  map(convert, th.string.split(u' / '))
 
-    if discnum:
-        for track in tracks:
-            track['discnumber'] = discnum
-    return tracks
-
-def parse_track(tr, headers):
-    track = {}
-    for field, td in zip(headers, tr.find_all('td')):
-        if not field:
-            try:
-                value = unicode(int(td.string.strip()))
-                field = 'track'
-            except (TypeError, ValueError):
-                continue
-        else:
-            value = convert(td.string)
-        track[spanmap.get(field, field)] = value
-
-    if track and track.get('ptag', u'').strip():
-        track['title'] = (track.get('title', u'') + u' : ' +
-            track['ptag']).strip()
-        del(track['ptag'])
-    return dict((k,v) for k,v in track.iteritems() if v.strip())
+    return track
 
 def parse_track_extra(tr):
     extra = tr.find('div', {'class': 'expand'})
@@ -333,26 +370,27 @@ def parse_track_extra(tr):
 
     return track
 
-def parse_tracks(soup):
-    track_div = soup.find('div', {'id': 'tracks'})
+def parse_tracks(content):
+    track_div = content.find('div', {'id': 'tracks'})
     if track_div is None:
-        track_div = soup.find('div', {'id': 'performances'})
+        track_div = content.find('div', {'id': 'performances'})
 
     if track_div is None:
-        track_div = soup.find('div', {'id': 'results-table'})
+        track_div = content.find('div', {'id': 'results-table'})
 
     if track_div is None:
         return None
-        
+
     discs = [re.search('\d+$', z.string.strip()).group()
-        for z in track_div.find_all('p', {'id': 'discnum'})]
-    track_tables = soup.find_all('table', {'id': 'ExpansionTable'})
+        for z in track_div.find_all('span', {'class': 'disc-num'})]
+    track_tables = content.find_all('div', {'class': 'table-container'})
     if not track_tables:
         return None
+        
     if discs:
         tracks = []
-        [tracks.extend(parse_track_table(t, d)) for t,d in
-            zip(track_tables, discs)]
+        for tb, discnum in zip(track_tables, discs):
+            tracks.extend(parse_track_table(tb, discnum))
         if tracks:
             return tracks
         else:
@@ -362,34 +400,14 @@ def parse_tracks(soup):
 
 def retrieve_album(url, coverurl=None, id_field=None):
     review = False
-    try:
-        write_log('Opening Review Page - %s' % (url + '/review', ))
-        album_page = urlopen(url + '/review', False)
-    except (EnvironmentError, RetrievalError):
-        write_log('Opening Album Page - %s' % url)
-        album_page = urlopen(url)
-        review = False
+    write_log('Opening Album Page - %s' % url)
+    album_page = urlopen(url, False)
     album_page = get_encoding(album_page, True, 'utf8')[1]
     
     info, tracks = parse_albumpage(album_page)
-    if not tracks and review:
-        write_log('Re-Opening Album Page - %s' % url)
-        album_page = urlopen(url)
-        album_page = get_encoding(album_page, True, 'utf8')[1]
-        new_info, tracks = parse_albumpage(album_page)
-        info.update(new_info)
-    elif not tracks:
-        write_log('Opening track page - %s' % (url + '/tracks'))
-        track_page = get_encoding(urlopen(url + '/tracks'), True, 'utf8')[1]
-        new_info, tracks = parse_albumpage(track_page)
-        info.update(new_info)
-        
     info['#albumurl'] = url
-    try:
-        if id_field:
-            info[id_field] = sqlre.search(url).groups()[0]
-    except AttributeError:
-        pass
+    info['amg_url'] = url
+
     if coverurl:
         try:
             write_log('Retrieving Cover - %s'  % info['#cover-url'])
@@ -430,7 +448,7 @@ class AllMusic(object):
         super(AllMusic, self).__init__()
         self._getcover = True
         self._useid = True
-        self._id_field = 'amgalbumid'
+        self._id_field = ALBUM_ID
         self.preferences = [
             ['Retrieve Covers', CHECKBOX, True],
             ['Use AllMusic Album ID to retrieve albums:', CHECKBOX, self._useid],
@@ -543,7 +561,7 @@ class AllMusic(object):
         if args[2]:
             spanmap['AMG Album ID'] = self._id_field
         else:
-            spanmap['AMG Album ID'] = 'amg_album_id'
+            spanmap['AMG Album ID'] = ALBUM_ID
 
 info = AllMusic
 

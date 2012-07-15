@@ -22,6 +22,7 @@ import m3u, findfunc, genres
 
 from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings, update_settings
 import puddlestuff.mainwin.funcs as mainfuncs
+from puddlestuff.helperwin import ConfirmationErrorDialog
 from functools import partial
 from itertools import izip
 import puddlestuff.audioinfo as audioinfo
@@ -609,8 +610,6 @@ class MainWin(QMainWindow):
 
         for control, val in gensettings.items():
             control.applyGenSettings(val, 0)
-
-        
         
         self._lastdir = [encode_fn(cparser.get(
             'main', 'lastfolder', constants.HOMEDIR))]
@@ -647,12 +646,24 @@ class MainWin(QMainWindow):
         winsettings('mainwin', self)
         if cparser.get("main", "maximized", True):
             self.showMaximized()
+        
         QApplication.processEvents()
+
+        if constants.FS_ENC == "ascii":
+            QMessageBox.warning(self, "puddletag", translate("Errors",
+                "Your filesystem encoding was detected as <b>ASCII</b>. <br />"
+                "You won't be able to rename files using accented, <br />"
+                " cyrillic or any characters outside the ASCII alphabet."))
+        
         for control, val in gensettings.items():
             control.applyGenSettings(val, 1)
+        
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
         update_settings()
+
+        QApplication.processEvents()
+        
 
     def savePlayList(self):
         tags = self._table.model().taginfo

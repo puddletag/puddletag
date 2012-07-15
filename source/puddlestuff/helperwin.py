@@ -937,7 +937,46 @@ class ExTags(QDialog):
 
         tb.setSortingEnabled(True)
         return valitem
-        
+
+class ConfirmationErrorDialog(QDialog):
+    def __init__(self, name, parent=None):
+        super(ConfirmationErrorDialog, self).__init__(parent)
+        self.name = name
+        self.__label = QLabel()
+        icon = QLabel()
+        msgbox = QMessageBox()
+        msgbox.setIcon(QMessageBox.Warning)
+        icon.setPixmap(msgbox.iconPixmap())
+        ok = QPushButton(translate("Defaults", "OK"))
+        checkbox = QCheckBox(
+            translate("Defaults", "Never show this message again."))
+
+        self.connect(ok, SIGNAL('clicked()'), partial(self.saveState, name))
+
+        labelbox = QHBoxLayout()
+        labelbox.addWidget(icon)
+        labelbox.addWidget(self.__label)
+
+        layout = QVBoxLayout()
+        layout.addLayout(labelbox, 1)
+        layout.addWidget(checkbox, 0, Qt.AlignHCenter)
+        layout.addWidget(ok, 0, Qt.AlignHCenter)
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def saveState(self, name):
+        settings = PuddleConfig()
+        settings.set("OnceOnlyErrors", name, True)
+        self.close()
+
+    def showMessage(self, message):
+        settings = PuddleConfig()
+        should_show = settings.get("OnceOnlyErrors", self.name, True)
+        self.__label.setText(message)
+        if should_show:
+            self.setModal(True)
+            self.show()
+            
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
