@@ -48,6 +48,7 @@ spanmap = CaselessDict({
     'title-artist': 'artist',
     'AMG Pop ID': 'amg_pop_id',
     'Rovi Music ID': 'amg_rovi_id',
+    'tracknum': 'track',
     })
 
 sqlre = re.compile('(r\d+)$')
