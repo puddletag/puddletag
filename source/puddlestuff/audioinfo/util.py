@@ -8,6 +8,7 @@ from decimal import Decimal
 from copy import copy, deepcopy
 from os import path, stat
 
+
 from constants import *
 
 try:
@@ -499,29 +500,39 @@ def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(seconds))
 
-def tag_to_json(audio):
+def tag_to_json(audio, fields=None):
+
+    import puddlestuff.audioinfo as audioinfo
     if isinstance(audio, basestring):
         try:
             audio = audioinfo.Tag(audio)
         except:
+            import traceback
+            traceback.print_exc()
             print "Invalid File:", audio
             return
 
     if audio is None:
         return
     try:
-        tags = audio.tags.copy()
+        if fields:
+            tags = dict((k, audio[k]) for k in fields if k in audio)
+        else:
+            fields = []
+            tags = audio.tags.copy()
     except AttributeError:
         tags = audio.copy()
 
     try:
-        if audio.images:
-            tags['__image'] = map(img_to_b64, audio.images)
-        elif '__image' in tags:
-            tags['__image'] = map(img_to_b64, tags['__image'])
+        if not fields or '__image' in fields:
+            if audio.images:
+                tags['__image'] = map(img_to_b64, audio.images)
+            elif '__image' in tags:
+                tags['__image'] = map(img_to_b64, tags['__image'])
     except AttributeError:
-        if '__image' in tags:
-            tags['__image'] = map(img_to_b64, tags['__image'])
+        if not fields or '__image' in fields:
+            if '__image' in tags:
+                tags['__image'] = map(img_to_b64, tags['__image'])
 
     return tags
     

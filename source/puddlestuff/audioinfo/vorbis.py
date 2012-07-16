@@ -91,6 +91,8 @@ def vorbis_tag(base, name):
         images = property(_get_images, _set_images)
                 
         def __contains__(self, key):
+            if key == '__image':
+                return bool(self.images)
             if self.revmapping:
                 key = self.revmapping.get(key, key)
             return key in self.__tags

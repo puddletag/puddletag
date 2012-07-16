@@ -758,8 +758,12 @@ class Tag(TagBase):
     info = property(_info)
 
     def __contains__(self, key):
+        if key == '__image':
+            return bool(self.images)
+
         if self.revmapping:
             key = self.revmapping.get(key, key)
+        
         return key in self.__tags
 
     def __deepcopy__(self, memo=None):

@@ -139,6 +139,8 @@ class Tag(util.MockTag):
     images = property(_getImages, _setImages)
 
     def __contains__(self, key):
+        if key == '__image':
+            return bool(self.images)
         if self.revmapping:
             key = self.revmapping.get(key, key)
         return key in self.__tags

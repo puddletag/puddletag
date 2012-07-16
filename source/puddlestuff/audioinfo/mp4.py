@@ -198,6 +198,8 @@ class Tag(util.MockTag):
     filepath = property(get_filepath, set_filepath)
 
     def __contains__(self, key):
+        if key == '__image':
+            return bool(self.images)
         if self.revmapping:
             key = self.revmapping.get(key, key)
         return key in self.__tags
