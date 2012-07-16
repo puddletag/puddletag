@@ -173,9 +173,9 @@ def parse_similar(swipe):
             title = div.a.element.attrib['title']
         except KeyError:
             title = div.a.element.attrib['oldtitle']
-        #artist = convert(div.find('div', {'class': 'artist'}).string)
-        #album = convert(div.find('div', {'class': 'album'}).string)
-        ret.append(title.replace(u' - ', u'; ', 1))
+
+        url = u';http://www.almusic.com' + div.a.element.attrib['href']
+        ret.append(title.replace(u' - ', u'; ', 1) + url)
 
     if ret:
         return {'similar_albums': ret}
