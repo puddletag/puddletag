@@ -174,7 +174,7 @@ def parse_similar(swipe):
         except KeyError:
             title = div.a.element.attrib['oldtitle']
 
-        url = u';http://www.almusic.com' + div.a.element.attrib['href']
+        url = u'; http://www.almusic.com' + div.a.element.attrib['href']
         ret.append(title.replace(u' - ', u'; ', 1) + url)
 
     if ret:
