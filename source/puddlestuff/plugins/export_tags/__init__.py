@@ -15,7 +15,7 @@ def tags_to_json(dirpath, fields=None):
         fn = os.path.join(dirpath, fn)
         if os.path.isdir(fn):
             ret.extend(tags_to_json(fn, fields))
-            return
+            continue
         tag = tag_to_json(fn, fields)
         if tag:
             ret.append(tag)
