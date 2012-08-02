@@ -17,7 +17,7 @@ def str_cmp(a, b):
 
     return a.lower() == b.lower()
 
-FIELDS = set(z.lower() for z in gettaglist())
+FIELDS = set(z.lower() for z in gettaglist()).union(audioinfo.FILETAGS)
 
 if len(sys.argv) > 1:
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -151,9 +151,9 @@ bool_exprs = [
     (CaselessLiteral("not"), 1, opAssoc.RIGHT, BoolNot),
     ]
 
-field_expr = Combine(u'%' + Word(alphanums) + u'%')
+field_expr = Combine(u'%' + Word(alphanums + '_') + u'%')
 tokens = QuotedString('"', unquoteResults=False) \
-    | field_expr | Word(alphanums)
+    | field_expr | Word(alphanums + '_')
 bool_expr = operatorPrecedence(tokens, bool_exprs)
 bool_expr.enablePackrat()
 
@@ -189,6 +189,6 @@ if __name__ == '__main__':
     #parse(audio, "artist has Carl")
     import time
     t = time.time()
-    parse(audio, 'snthaoeusnth')
-    print time.time() - t
+    print audio.filepath
+    print parse(audio, '__filename has clen')
     

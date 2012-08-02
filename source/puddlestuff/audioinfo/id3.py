@@ -113,6 +113,7 @@ def get_genre(frame):
 
 def set_genre(frame, value):
     frame.genres = value
+    frame.encoding = encoding
     return True
 
 def genre_handler(frames):
