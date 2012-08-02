@@ -1,3 +1,16 @@
+2 August 2012 - 1.0.0-RC2
+    Added: Updated icon
+    Fixed: Cutting tags wasn't working.
+    Added: Russian translation by Viktor Yu. Kovalskiy
+    Fixed: If multiple files were selected in file-view and edited.
+           When changing focus, the new cell would be opened and would remain
+           with the value as before after the change.
+    Added: German translation by Ralf Sarholz
+    Changed: Updated .desktop file as per issue 186.
+    Fixed: Encoding is added for genre field. Fixes http://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=4&p=699&sid=10751cabefe27ffcd74eea2dde7663f8#p699
+    Fixed: Filter wasn't working with filename fields like __filename.
+
+
 9 June 2012 - 1.0.0RC1
     Fixed: Issue 183 where the Tag Sources dialog wouldn't unfreeze for invalid results.
     Added: Copy/Paste now copies the data as JSON to clipboard.

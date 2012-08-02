@@ -1177,7 +1177,6 @@ class TagDelegate(QStyledItemDelegate):
         editor = QLineEdit(parent)
         editor.returnPressed = False
         editor.writeError = False
-        editor.noHint = False
         editor.setFrame(False)
         font = editor.font()
         font.setPointSize(index.model().fontSize)
@@ -1197,8 +1196,7 @@ class TagDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         try:
-            if not model.setData(index, QVariant(editor.text())):
-                editor.noHint = True
+            model.setData(index, QVariant(editor.text()))
         except EnvironmentError, e:
             editor.writeError = e
 
@@ -1310,10 +1308,9 @@ class TagTable(QTableView):
         self.connect(model, SIGNAL('libfilesedited'), SIGNAL('libfilesedited'))
         self.undo = model.undo
 
-        if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
-            self.closeEditor = self._closeEditor
-            delegate = TagDelegate(self)
-            self.setItemDelegate(delegate)
+        self.closeEditor = self._closeEditor
+        delegate = TagDelegate(self)
+        self.setItemDelegate(delegate)
             
         self.subFolders = False
 
@@ -1454,11 +1451,10 @@ class TagTable(QTableView):
             model.emit(SETDATAERROR,
                 rename_error_msg(editor.writeError, currentfile.filepath))
             return
-        elif editor.noHint:
-            QTableView.closeEditor(self, editor,QAbstractItemDelegate.NoHint)
-            return
-        
-        if not editor.returnPressed:
+
+        if len(self.selectedRows) > 1:
+            QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+        elif not editor.returnPressed:
             QTableView.closeEditor(self, editor, hint)
         else:
             index = self.currentIndex()
