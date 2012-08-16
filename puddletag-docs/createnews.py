@@ -10,6 +10,8 @@ from htmlentitydefs import name2codepoint as n2cp
 from subprocess import call
 import shutil
 
+#Need to have Sphinx and PyRSS2Gen installed.
+
 def remove_headerlinks(text):
     return re.sub('''<a class=['"]headerlink['"] .*?</a>''', '', text)
 
@@ -26,8 +28,12 @@ def to_html(fns):
         shutil.copy(fn, rst_fn)
         rst_fns.append(rst_fn)
 
-    call(['sphinx-build', '-q', '-b', 'html', '-D',
-        'html_theme=rss',  '.', html_dir] + rst_fns)
+    try:
+        call(['sphinx-build2', '-q', '-b', 'html', '-D',
+            'html_theme=rss',  '.', html_dir] + rst_fns)
+    except OSError:
+        call(['sphinx-build', '-q', '-b', 'html', '-D',
+            'html_theme=rss',  '.', html_dir] + rst_fns)
 
     map(os.remove, rst_fns)
 
