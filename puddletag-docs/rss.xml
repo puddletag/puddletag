@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Thu, 16 Aug 2012 22:45:04 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>9 June 2012 - 1.0.0RC1</title><link>http://puddletag.sourceforge.net/news.html#june-2012-1-0-0rc1</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 22 Aug 2012 19:59:57 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>21 August 2012 - 1.0.0</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-0</link><description>
+  &lt;div class="section" id="august-2012-1-0-0"&gt;
+&lt;h1&gt;21 August 2012 - 1.0.0&lt;/h1&gt;
+&lt;p&gt;v1 has finally arrived!&lt;/p&gt;
+&lt;p&gt;There&amp;#8217;s not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Right now puddletag is about as stable as it&amp;#8217;ll get without much more work. As for the future, I have a some things that I&amp;#8217;ve been putting off until v1. A command line version being top priority.&lt;/p&gt;
+&lt;p&gt;Anyway, that&amp;#8217;s it for now. Enjoy!&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Tue, 21 Aug 2012 00:00:00 GMT</pubDate></item><item><title>9 June 2012 - 1.0.0RC1</title><link>http://puddletag.sourceforge.net/news.html#june-2012-1-0-0rc1</link><description>
   &lt;div class="section" id="june-2012-1-0-0rc1"&gt;
 &lt;h1&gt;9 June 2012 - 1.0.0RC1&lt;/h1&gt;
 &lt;p&gt;This release is the first RC with the final release planned for next week depending on feedback. All that&amp;#8217;s still needed is to update the docs, fix some outstanding bugs and package the plugins.&lt;/p&gt;

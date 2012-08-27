@@ -1,17 +1,17 @@
 .. include:: subs.txt
 
-.. |source_link| replace:: puddletag-1.0.0RC1.tar.gz
-.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.0RC1.tar.gz
-.. |deb_link| replace:: puddletag-1.0.0RC1-1_all.deb
-.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.0RC1-1_all.deb
+.. |source_link| replace:: puddletag-1.0.0.tar.gz
+.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.0.tar.gz
+.. |deb_link| replace:: puddletag_1.0.0-1_all.deb
+.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.0-1_all.deb
 
-.. |beta_source_link| replace:: puddletag-1.0.0RC1.tar.gz
-.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0RC1.tar.gz
-.. |beta_deb_link| replace:: puddletag-1.0.0RC1-1_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0RC1-1_all.deb
+.. |beta_source_link| replace:: puddletag-1.0.0.tar.gz
+.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.0.tar.gz
+.. |beta_deb_link| replace:: puddletag_1.0.0-1_all.deb
+.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.0-1_all.deb
 
-.. |source_sha| replace:: f8d4b01ceff9fb012274cc760bbff21964e8cbf9
-.. |deb_sha| replace:: 38b79b9a5c4261971697ee61ab569501a2098f77
+.. |source_sha| replace:: eea8fe642cee56457c0211643bcae0ba9bfcba20
+.. |deb_sha| replace:: f38442067ce69aa7abd60315f0681abe21de233c
 .. |beta_source_sha| replace:: f8d4b01ceff9fb012274cc760bbff21964e8cbf9
 .. |beta_deb_sha| replace:: 38b79b9a5c4261971697ee61ab569501a2098f77
 
@@ -90,11 +90,6 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 
 Development builds
 ------------------
-
-Download links:
-
-+   |beta_source_link|_ (SHA1 |beta_source_sha|)
-+   |beta_deb_link|_ (SHA1 |beta_deb_sha|).
 
 Source control is done using Mercurial. Use
 

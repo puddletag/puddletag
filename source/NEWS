@@ -1,3 +1,16 @@
+21 August 2012
+    Fixes:
+        Cutting tags wasn't working.
+        If multiple files were selected in file-view and edited.
+           When changing focus, the new cell would be opened and would remain
+           with the value as before after the change.
+    Changed:
+        Updated icon
+        Updated .desktop file as per issue 186.
+    Added:
+        Russian translation by Viktor Yu. Kovalskiy
+        German translation by Ralf Sarholz
+    
 9 June 2012
     Fixes:
         Loading a new directory would sometimes not unload previously loaded

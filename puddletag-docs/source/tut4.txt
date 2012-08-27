@@ -41,9 +41,9 @@ How you do it
 6. Click on **Search**.
 7. Select the correct (or any really) album from the Tag Sources dialog. Retrieved metadata now be matched to the selected files.
 8. Remember I said sort files in ascending order? The matching process will "connect" each file to a retrieved track. Going from track 1 to the end.
-8. puddletag will now be in **Preview Mode**. You can make changes if you wish as they'll be stored in memory.
-9. Don't despair if you encounter a situation where the version/ release of the album you have is different to that retrieved via the Tag Source and/or the track sequence or number of tracks differ. You can tag individual tracks by selecting the track in the File-View and then clicking on the corresponding track in the Tag Source's track list. Similarly, selecting a sequence of tracks will do the same for the selected files.
-10. Use **Write** on the Tag Sources dialog or **Write Previews** from the Preview Mode menu to save the changes to file.
+9. puddletag will now be in **Preview Mode**. You can make changes if you wish as they'll be stored in memory.
+10. Don't despair if you encounter a situation where the version/ release of the album you have is different to that retrieved via the Tag Source and/or the track sequence or number of tracks differ. You can tag individual tracks by selecting the track in the File-View and then clicking on the corresponding track in the Tag Source's track list. Similarly, selecting a sequence of tracks will do the same for the selected files.
+11. Use **Write** on the Tag Sources dialog or **Write Previews** from the Preview Mode menu to save the changes to file.
 
 Things to be aware of
 ---------------------

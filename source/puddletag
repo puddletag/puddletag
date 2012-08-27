@@ -21,12 +21,6 @@ def check_libs():
          ('PyQt4', '(python-qt4 usually)',
             'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 
-    _recommended = [
-        ('musicbrainz2',
-            'It is recommended for MusicBrainz support. Available as '
-            'python-musicbrainz2 in most distros.', 'python-musicbrainz2',
-            'http://musicbrainz2.org/doc/PythonMusicBrainz2'),]
-
     found = True
     errors = []
     msg = "Error: The %s module wasn't found. Please check that it's installed " \
@@ -43,13 +37,6 @@ def check_libs():
     msg = "Error: %s module wasn't found. %s. Please check that it's " \
         "installed properly. You can download it from your distro's " \
         "repository (%s), or download directly from %s.\n"
-    
-    for lib in _recommended:
-        try:
-            __import__(lib[0])
-        except ImportError:
-            errors.append(msg % lib)
-            print msg % lib
 
     try:
         if not found:

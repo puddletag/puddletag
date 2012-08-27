@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 import sys, puddlestuff
 setup(
     name='puddletag',
@@ -26,7 +29,7 @@ setup(
         ],
         
     scripts = ['puddletag'],
-    data_files=[('share/pixmaps/', ('puddletag.xpm', 'puddletag.png',)),
+    data_files=[('share/pixmaps/', ('puddletag.png',)),
         ('share/applications/', ('puddletag.desktop',)),
         ('share/man/man1/', ('puddletag.1',))]
      )

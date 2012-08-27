@@ -8,7 +8,6 @@ TODO
 puddletag
 setup.py
 puddletag.desktop
-puddletag.xpm
 puddletag.png
 puddletag.1
 puddlestuff/__init__.py
@@ -24,16 +23,13 @@ puddlestuff/functions.py
 puddlestuff/functions_dialogs.py
 puddlestuff/genres.py
 puddlestuff/helperwin.py
-puddlestuff/image.py
 puddlestuff/loadshortcuts.py
 puddlestuff/m3u.py
 puddlestuff/musiclib.py
 puddlestuff/pluginloader.py
-puddlestuff/plugins.py
 puddlestuff/puddleobjects.py
 puddlestuff/puddlesettings.py
 puddlestuff/puddletag.py
-puddlestuff/quodlibetlib.py
 puddlestuff/resource.py
 puddlestuff/releasewidget.py
 puddlestuff/shortcutsettings.py
