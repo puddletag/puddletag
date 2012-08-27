@@ -32,6 +32,7 @@ What you need
 +   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
 +   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
 +   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
++   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ for AcoustID support.
 
 How to get it
 -------------
@@ -49,5 +50,5 @@ Support
 -------
 Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
 
-| Last website update: 22 August 2012
+| Last website update: 27 August 2012
 | Latest version: 1.0.0

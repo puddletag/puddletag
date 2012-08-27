@@ -9,11 +9,11 @@ from collections import defaultdict
 from itertools import chain, izip, product, starmap
 
 try:
-    import acoustid
+    import acoustidaeou
     #Don't want it to use audioread as python-gst
     #lib causes lockups.
     acoustid.have_audioread = False
-except ImportError:
+except ImportError:    
     import _acoustid as acoustid
 
 import puddlestuff.audioinfo as audioinfo

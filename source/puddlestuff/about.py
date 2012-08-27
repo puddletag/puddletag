@@ -16,14 +16,15 @@ desc  = translate("About", '''puddletag is an audio tag editor for GNU/Linux sim
 Supported formats: id3v1, id3v2 (.mp3), AAC (.mp4, .m4a), VorbisComments (.ogg, .flac) and APEv2 (.ape) <br />< br />
 
 Visit the puddletag website (<a href="http://puddletag.sourceforge.net">http://puddletag.sourceforge.net</a>) for help and updates.<br /><br />
-&copy; 2010 concentricpuddle (concentricpuddle@gmail.com) <br />
-Licensed under GPLv2 (<a href="www.gnu.org/licenses/gpl-2.0.html">www.gnu.org/licenses/gpl-2.0.html</a>).
+&copy; 2008-2012 concentricpuddle (concentricpuddle@gmail.com) <br />
+Licensed under GPLv3 (<a href="www.gnu.org/licenses/gpl-3.0.html">www.gnu.org/licenses/gpl-3.0.html</a>).
 ''')
 
 thanks = translate("About", """<b>Evan Devetzis</b> for his many, many awesome ideas and putting up with more bugs than humanly possible.<br /><br />
 
-French translation by <b>Raphaël Rochet</b>.<br />
-Dutch (Nederlands) translation by <b>Fabian Bakkum</b>.<br /><br />
+First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
+
+Thanks to <b>Raphaël Rochet</b>, <b>Fabian Bakkum</b>, <b>Alan Gomes</b> and others for contributing translations.
 
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).<br /><br />
 

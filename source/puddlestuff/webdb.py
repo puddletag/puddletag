@@ -654,7 +654,10 @@ class MainWin(QWidget):
             prefs = deepcopy(config)
             for pref, value in zip(prefs, defaults):
                 if pref[1] == SPINBOX:
-                    pref[2][2] = int(value)
+                    try:
+                        pref[2][2] = int(value)
+                    except ValueError:
+                        pass
                 elif pref[1] == COMBO:
                     pref[2][1] = value
                 else:

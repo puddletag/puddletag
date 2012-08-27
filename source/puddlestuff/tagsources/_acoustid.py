@@ -8,7 +8,7 @@
 # distribute, sublicense, and/or sell copies of the Software, and to
 # permit persons to whom the Software is furnished to do so, subject to
 # the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
@@ -18,6 +18,7 @@ import urllib
 import urllib2
 import httplib
 import contextlib
+import errno
 try:
     import audioread
     have_audioread = True
@@ -46,6 +47,11 @@ class AcoustidError(Exception):
 
 class FingerprintGenerationError(AcoustidError):
     """The audio could not be fingerprinted."""
+
+class NoBackendError(FingerprintGenerationError):
+    """The audio could not be fingerprinted because neither the
+    Chromaprint library nor the fpcalc command-line tool is installed.
+    """
 
 class FingerprintSubmissionError(AcoustidError):
     """Missing required data for a fingerprint submission."""
@@ -149,7 +155,18 @@ def _api_request(url, params):
     which are encoded as compressed form data, and returns a parsed JSON
     response. May raise a WebServiceError if the request fails.
     """
-    body = _compress(urllib.urlencode(params))
+    # Encode any Unicode values in parameters. (urllib.urlencode in
+    # Python 2.x operates on bytestrings, so a Unicode error is raised
+    # if non-ASCII characters are passed in a Unicode string.)
+    byte_params = {}
+    for key, value in params.iteritems():
+        if isinstance(key, unicode):
+            key = key.encode('utf8')
+        if isinstance(value, unicode):
+            value = value.encode('utf8')
+        byte_params[key] = value
+
+    body = _compress(urllib.urlencode(byte_params))
     req = urllib2.Request(url, body, {
         'Content-Encoding': 'gzip',
         'Accept-Encoding': 'gzip',
@@ -215,19 +232,19 @@ def parse_lookup_result(data):
 
     for result in data['results']:
         score = result['score']
-        if not result.get('recordings'):
+        if 'recordings' not in result:
             # No recording attached. This result is not very useful.
             continue
-        recording = result['recordings'][0]
 
-        # Get the artist if available.
-        if recording['artists']:
-            artist = recording['artists'][0]
-            artist_name = artist['name']
-        else:
-            artist_name = None
+        for recording in result['recordings']:
+            # Get the artist if available.
+            if recording.get('artists'):
+                names = [artist['name'] for artist in recording['artists']]
+                artist_name = '; '.join(names)
+            else:
+                artist_name = None
 
-        yield score, recording['id'], recording['title'], artist_name
+            yield score, recording['id'], recording.get('title'), artist_name
 
 def _fingerprint_file_audioread(path):
     """Fingerprint a file by using audioread and chromaprint."""
@@ -244,9 +261,18 @@ def _fingerprint_file_fpcalc(path):
     fpcalc = os.environ.get(FPCALC_ENVVAR, FPCALC_COMMAND)
     command = [fpcalc, "-length", str(MAX_AUDIO_LENGTH), path]
     try:
-        output = subprocess.check_output(command)
-    except (OSError, subprocess.CalledProcessError):
-        raise FingerprintGenerationError("fpcalc invocation failed")
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+        output, _ = proc.communicate()
+    except OSError, exc:
+        if exc.errno == errno.ENOENT:
+            raise NoBackendError("fpcalc not found")
+        else:
+            raise FingerprintGenerationError("fpcalc invocation failed: %s" %
+                                             str(exc))
+    retcode = proc.poll()
+    if retcode:
+        raise FingerprintGenerationError("fpcalc exited with status %i" %
+                                         retcode)
 
     duration = fp = None
     for line in output.splitlines():
@@ -266,17 +292,24 @@ def _fingerprint_file_fpcalc(path):
         raise FingerprintGenerationError("missing fpcalc output")
     return duration, fp
 
+def fingerprint_file(path):
+    """Fingerprint a file either using the Chromaprint dynamic library
+    or the fpcalc command-line tool, whichever is available. Returns the
+    duration and the fingerprint.
+    """
+    path = os.path.abspath(os.path.expanduser(path))
+    if have_audioread and have_chromaprint:
+        return _fingerprint_file_audioread(path)
+    else:
+        return _fingerprint_file_fpcalc(path)
+
 def match(apikey, path, meta=DEFAULT_META, parse=True):
     """Look up the metadata for an audio file. If ``parse`` is true,
     then ``parse_lookup_result`` is used to return an iterator over
     small tuple of relevant information; otherwise, the full parsed JSON
     response is returned.
     """
-    path = os.path.abspath(os.path.expanduser(path))
-    if have_audioread and have_chromaprint:
-        duration, fp = _fingerprint_file_audioread(path)
-    else:
-        duration, fp = _fingerprint_file_fpcalc(path)
+    duration, fp = fingerprint_file(path)
     response = lookup(apikey, fp, duration, meta)
     if parse:
         return parse_lookup_result(response)
