@@ -499,10 +499,15 @@ class SettingsDialog(QWidget):
 
 def load_source_prefs(name, preferences):
     cparser = PuddleConfig(TAGSOURCE_CONFIG)
-    return [cparser.get(name, option[0], option[2]) if 
-        option[1] != COMBO else 
-        cparser.get(name, option[0], option[2][1]) for 
-        option in preferences]
+    ret = []
+    for option in preferences:
+        if option[1] == COMBO:
+            ret.append(cparser.get(name, option[0], option[2][1]))
+        elif option[1] == SPINBOX:
+            ret.append(cparser.get(name, option[0], option[2][2]))
+        else:
+            ret.append(cparser.get(name, option[0], option[2]))
+    return ret
 
 class MainWin(QWidget):
     def __init__(self, status, parent = None):
