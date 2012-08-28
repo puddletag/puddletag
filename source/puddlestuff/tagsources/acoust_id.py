@@ -9,7 +9,7 @@ from collections import defaultdict
 from itertools import chain, izip, product, starmap
 
 try:
-    import acoustidaeou
+    import acoustid
     #Don't want it to use audioread as python-gst
     #lib causes lockups.
     acoustid.have_audioread = False
@@ -178,6 +178,22 @@ def retrieve_album_info(album, tracks):
 
     return info, new_tracks
 
+def which(program):
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
 class AcoustID(object):
     name = 'AcoustID'
     group_by = ['album', None]
@@ -250,6 +266,9 @@ class AcoustID(object):
 
     def applyPrefs(self, args):
         self.min_score = args[0] / 100.0
+
+if not which('fpcalc'):
+    raise ImportError("fpcalc not found on system")
 
 info = AcoustID
 
