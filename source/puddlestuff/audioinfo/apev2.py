@@ -41,7 +41,9 @@ def pic_to_bin(pic):
 
     key = 'Cover Art (Back)' if covertype == 4 else 'Cover Art (Front)'
 
-    return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
+    if data:
+        return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
+    return {}
 
 def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
     class APEv2Base(MockTag):

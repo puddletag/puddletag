@@ -45,7 +45,7 @@ Using AcoustID
 
 AcoustID is a music fingerprinting service provided by Lukas Lalinsky. It works by calculating a unique fingerprint for your audio files and trying to match it to data in the AcoustID database. This allows you to find information for tracks that have no metadata!
 
-.. note:: In order to use the library you need to have `chromaprint <http://acoustid.org/chromaprint>`_ installed.
+.. note:: In order to use the library you need to have `chromaprint <http://acoustid.org/chromaprint>`_ (specifically the fpcalc binary) installed.
 
 AcoustID returns the same data as the :ref:`MusicBrainz tag source <musicbrainz>`, including the following fields.
 

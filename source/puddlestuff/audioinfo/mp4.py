@@ -408,7 +408,7 @@ class Tag(util.MockTag):
                 newtag[self.__freeform[tag].encode('utf8')] = encode(self.__tags[tag])
 
         if self.images:
-            newtag['covr'] = map(pic_to_bin, self.images)
+            newtag['covr'] = filter(None, map(pic_to_bin, self.images))
 
         toremove = [z for z in audio.keys() if
             z not in newtag and z not in self.__errors]

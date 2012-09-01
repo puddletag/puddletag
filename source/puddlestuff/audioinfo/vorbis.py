@@ -168,7 +168,7 @@ def vorbis_tag(base, name):
                     self.__tags[key.lower()] = audio.tags[key]
 
             if base == FLAC:
-                self.images = map(bin_to_image, audio.pictures)
+                self.images = filter(None, map(bin_to_image, audio.pictures))
 
             self.__tags.update(info_to_dict(audio.info))
             self.__tags.update(tags)
@@ -199,7 +199,7 @@ def vorbis_tag(base, name):
                     map(lambda p: audio.add_picture(image_to_bin(p)),
                         self.__images)
                 else:
-                    newtag[COVER_KEY] = map(image_to_base64, self.__images)
+                    newtag[COVER_KEY] = filter(None, map(image_to_base64, self.__images))
             else:
                 if base == FLAC:
                     audio.clear_pictures()

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 27 Aug 2012 23:15:51 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>21 August 2012 - 1.0.0</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-0</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sat, 01 Sep 2012 23:26:19 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>31 August 2012 - 1.0.1</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-1</link><description>
+  &lt;div class="section" id="august-2012-1-0-1"&gt;
+&lt;h1&gt;31 August 2012 - 1.0.1&lt;/h1&gt;
+&lt;p&gt;This release fixes some bugs spotted with the last release.&lt;/p&gt;
+&lt;p&gt;They include:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;puddletag.desktop file installation error with deb package.&lt;/li&gt;
+&lt;li&gt;Python2.6 incompatibility.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Have fun!&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Fri, 31 Aug 2012 00:00:00 GMT</pubDate></item><item><title>21 August 2012 - 1.0.0</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-0</link><description>
   &lt;div class="section" id="august-2012-1-0-0"&gt;
 &lt;h1&gt;21 August 2012 - 1.0.0&lt;/h1&gt;
 &lt;p&gt;v1 has finally arrived!&lt;/p&gt;

@@ -937,7 +937,7 @@ class Tag(TagBase):
         old_apics = [z for z in audio if z.startswith(u'APIC')]
         if self.__images:
             newimages = []
-            for image in map(pic_to_bin, self.__images):
+            for image in filter(None, map(pic_to_bin, self.__images)):
                 i = 0
                 while image.HashKey in newimages:
                     i += 1

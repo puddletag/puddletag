@@ -1,3 +1,9 @@
+31 August 2012 - 1.0.1
+    Changed: AcoustID tag source is not loaded if fpcalc binary not found.
+    Fixed: Issue 189.
+    Fixed: puddletag.desktop file installation error with .deb file.
+    Fixed: python2.6 incompatibility.
+    
 21 August 2012 - 1.0.0
     Added: Updated icon
     Fixed: Cutting tags wasn't working.
