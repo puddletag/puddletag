@@ -864,7 +864,9 @@ def progress(func, pstring, maximum, threadfin = None):
         def threadexit(*args):
             if args[0] == -1:
                 win.close()
+                QApplication.processEvents()
                 win.destroy()
+                QApplication.processEvents()
                 if threadfin:                    
                     threadfin()
                 if focusedpar is not None:

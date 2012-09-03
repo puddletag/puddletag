@@ -166,7 +166,10 @@ def parse(audio, expr):
         for field, value in audio.items():
             if isinstance(value, basestring):
                 value = [value]
-            if res in u'\\\\'.join(value).lower():
+            try:
+                if res in u'\\\\'.join(value).lower():
+                    return True
+            except TypeError:
                 return True
     else:
         return bool(res)
