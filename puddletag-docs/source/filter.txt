@@ -48,17 +48,17 @@ Expressions
 
 .. describe:: field IS expr
 
-    Evaluates to *True* if **field=expr** for each file. Eg. **artist IS "Bongo Maffin**, **title IS Monster**.
+    Evaluates to *True* if **field=expr** for each file. Eg. **artist IS "Bongo Maffin"**, **title IS Monster**.
 
 .. describe:: expr1 AND expr2
 
-    Evaluates to *True* if **both expr1 and expr2 evaluate to True** for each file. Eg. **artist IS "Bongo Maffin AND title IS Monster**.
+    Evaluates to *True* if **both expr1 and expr2 evaluate to True** for each file. Eg. **artist IS "Bongo Maffin" AND title IS Monster**.
 
 
 .. describe:: expr1 OR expr2
 
-    Evaluates to *True* if **either expr1 and expr2 evaluate to True** for the file. Eg. **artist IS "Bongo Maffin OR title IS Monster**.
+    Evaluates to *True* if **either expr1 and expr2 evaluate to True** for the file. Eg. **artist IS "Bongo Maffin" OR title IS Monster**.
 
 .. describe:: NOT expr
 
-    Evaluates to *True* if **expr is False**. Eg. **NOT artist IS "Bongo Maffin OR title IS Monster**.
+    Evaluates to *True* if **expr is False**. Eg. **NOT artist IS "Bongo Maffin" OR title IS Monster**.

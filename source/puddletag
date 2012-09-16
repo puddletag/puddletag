@@ -81,7 +81,7 @@ def init(options, qapp):
         #It's already printed.
         exit()
 
-    create_log()
+    #create_log()
     if options.debug:        
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 

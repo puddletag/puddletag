@@ -863,8 +863,6 @@ def progress(func, pstring, maximum, threadfin = None):
 
         def threadexit(*args):
             if args[0] == -1:
-                win.close()
-                QApplication.processEvents()
                 win.destroy()
                 QApplication.processEvents()
                 if threadfin:                    
@@ -872,6 +870,7 @@ def progress(func, pstring, maximum, threadfin = None):
                 if focusedpar is not None:
                     try: focusedpar.setFocus()
                     except RuntimeError: pass
+                return
             elif isinstance(args[0], QString):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)
@@ -1425,7 +1424,7 @@ class ArtworkLabel(QGraphicsView):
     def dropEvent(self, event):
         mime = event.mimeData()
         if mime.hasUrls():
-            filenames = [unicode(z.path()) for z in mime.urls()]
+            filenames = [unicode(z.toString()) for z in mime.urls()]
             self.emit(SIGNAL('newImages'), *filenames)
         super(ArtworkLabel, self).dropEvent(event)
 
@@ -1905,27 +1904,31 @@ class PicWidget(QWidget):
 
     def loadPics(self, *filenames):
         """Loads pictures from the filenames"""
+        #I really need to sort out these circular references.
+        from puddlestuff.tagsources import RetrievalError, urlopen 
         images = []
         for filename in filenames:
             image = QImage()
-            if image.load(filename):
+            if filename.startswith(":/"):
+                ba = QByteArray()
+                data = QBuffer(ba)
+                data.open(QIODevice.WriteOnly)
+                image.save(data, "JPG")
+                data = str(data.data())
+            else:
                 try:
-                    data = open(filename, 'rb').read()
-                except IOError, e:
-                    if filename.startswith(u':/'):
-                        ba = QByteArray()
-                        data = QBuffer(ba)
-                        data.open(QIODevice.WriteOnly)
-                        image.save(data, "JPG")
-                        data = str(data.data())
-                    else:
-                        raise e
+                    data = urlopen(filename)
+                except (ValueError, RetrievalError):
+                    pass
+
+            if image.loadFromData(data):
                 pic = {'data': data, 'height': image.height(),
                     'width': image.width(), 'size': len(data),
                     'mime': 'image/jpeg',
                     'description': translate("Artwork", 'Enter description'),
                     'imagetype': 3}
                 images.append(pic)
+
         return images
 
     def picsFromData(self, *data):
