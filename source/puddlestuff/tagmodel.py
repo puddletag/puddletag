@@ -1502,10 +1502,14 @@ class TagTable(QTableView):
                     yield translate("Table", "There was an error deleting the "
                         "tag of %1: <b>Tag deletion isn't supported"
                         "for %2 files.</b>").arg(filename).arg(ext), rowlen
-            self.model().undolevel += 1
-            self.selectionChanged()
 
-        f = progress(func, translate("Table", 'Deleting tag... '), len(self.selectedRows))
+
+        def fin():
+            self.selectionChanged()
+            self.model().undolevel += 1
+
+        f = progress(func, translate("Table", 'Deleting tag... '),
+            len(self.selectedRows), fin)
         f(self)
 
     def columnCount(self):
