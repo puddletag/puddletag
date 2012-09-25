@@ -15,7 +15,7 @@ from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
 import audioinfo
 from audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
-    encode_fn, decode_fn)
+    encode_fn, decode_fn, INFOTAGS)
 from operator import itemgetter
 path = os.path
 from configobj import ConfigObj
@@ -922,7 +922,9 @@ class HeaderSetting(QDialog):
         self.vbox = QVBoxLayout()
         self.vboxgrid = QGridLayout()
         self.textname = QLineEdit()
-        self.tag = QLineEdit()
+        self.tag = QComboBox()
+        self.tag.addItems(sorted(INFOTAGS) + gettaglist())
+        self.tag.setEditable(True)
         self.buttonlist = ListButtons()
         self.buttonlist.edit.setVisible(False)
         if showedits:
@@ -1005,20 +1007,20 @@ class HeaderSetting(QDialog):
         try: #An error is raised if the last item has just been removed
             if row > -1:
                 self.tags[row][0] = unicode(self.textname.text())
-                self.tags[row][1] = unicode(self.tag.text())
+                self.tags[row][1] = unicode(self.tag.currentText())
         except IndexError:
             pass
 
         row = self.listbox.row(current)
         if row > -1:
             self.textname.setText(self.tags[row][0])
-            self.tag.setText(self.tags[row][1])
+            self.tag.setEditText(self.tags[row][1])
 
     def okClicked(self):
         row = self.listbox.currentRow()
         if row > -1:
             self.tags[row][0] = unicode(self.textname.text())
-            self.tags[row][1] = unicode(self.tag.text())
+            self.tags[row][1] = unicode(self.tag.currentText())
         self.emit(SIGNAL("headerChanged"),[z for z in self.tags])
         self.close()
 

@@ -377,7 +377,7 @@ class ColumnSettings(HeaderSetting):
         row = self.listbox.currentRow()
         if row > -1:
             self.tags[row][0] = unicode(self.textname.text())
-            self.tags[row][1] = unicode(self.tag.text())
+            self.tags[row][1] = unicode(self.tag.currentText())
         checked = [z for z in range(self.listbox.count()) if
             self.listbox.item(z).checkState()]
         titles = [z[0] for z in self.tags]
