@@ -98,15 +98,24 @@ def copy_whole():
     tags = []
     mime = QMimeData()
     
-    def usertags(f):
+    def usertags(f, images=True):
         ret = f.usertags
-        if hasattr(f, 'images') and f.images:
+        if images and hasattr(f, 'images') and f.images:
             ret.update({'__image': f.images})
         return ret
         
     tags = [usertags(f) for f in status['selectedfiles']]
 
-    mime.setText(json.dumps(map(tag_to_json, tags)))
+    data = json.dumps(map(tag_to_json, tags))
+
+    to_copy = check_copy_data(data)
+    if to_copy == 2:
+        tags = [usertags(f, False) for f in status['selectedfiles']]
+        data = json.dumps(map(tag_to_json, tags))
+    elif to_copy == 1:
+        return
+
+    mime.setText(data)
     ba = QByteArray(unicode(tags).encode('utf8'))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
@@ -121,6 +130,29 @@ def cut():
 
     emit('writeselected', (dict([(z, u"") for z in s if z not in FILETAGS])
         for s in selected))
+
+def check_copy_data(data):
+    #0 = yes
+    #1 = no
+    #2 = no images
+    print len(data)
+    if len(data) > 5242880:
+        msgbox = QMessageBox()
+        msgbox.setText(translate("Messages",
+            "That's a large amount of data to copy.\n"
+            "It may cause your system to lock up.\n\n"
+            "Do you want to go ahead?"))
+
+        msgbox.setIcon(QMessageBox.Question)
+        msgbox.addButton(translate("Defaults", "&Yes"),
+            QMessageBox.YesRole)
+        msgbox.addButton(translate("Defaults", "No"),
+            QMessageBox.NoRole)
+        msgbox.addButton(translate("Messages", "Copy without images."),
+            QMessageBox.ApplyRole)
+        return msgbox.exec_()
+    else:
+        return 0
 
 def display_tag(tag):
     """Used to display tags in the status bar in a human parseable format."""
