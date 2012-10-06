@@ -17,7 +17,7 @@ from puddlestuff.audioinfo import isempty, CaselessDict
 ALBUM_ID = 'amg_album_id'
 
 release_order = ('year', 'type', 'label', 'catalog')
-search_adress = 'http://www.allmusic.com/-/search/albums/%s'
+search_adress = 'http://www.allmusic.com/search/albums/%s'
 album_url = u'http://www.allmusic.com/album/'
 
 spanmap = CaselessDict({
