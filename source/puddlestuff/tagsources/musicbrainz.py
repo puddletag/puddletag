@@ -1,4 +1,4 @@
-import pdb, re, sys, time, urllib, urllib2
+import json, pdb, re, sys, time, urllib, urllib2
 
 from collections import defaultdict
 from itertools import chain
@@ -6,7 +6,8 @@ from sgmllib import SGMLParser
 from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
-from puddlestuff.audioinfo import strlength
+from puddlestuff.audioinfo import IMAGETYPES, get_mime, strlength
+from puddlestuff.constants import CHECKBOX, COMBO
 from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
@@ -50,6 +51,18 @@ TRACK_KEYS = {
     }
 
 TO_REMOVE = ('recording', 'offset', 'count')
+
+SMALL = 0
+LARGE = 1
+ORIG = 2
+
+imagetypes = dict(reversed(i) for i in enumerate(IMAGETYPES))
+
+mb_imagetypes = {
+    "Front": "Cover (Front)",
+    "Back": "Cover (Back)",
+    "Other": "Other",
+    }
 
 def children_to_text(node):
     if istext(node): return
@@ -319,6 +332,65 @@ def retrieve_album(album_id):
 
     data = urlopen(url)
     return parse_album(data)
+
+def retrieve_cover_links(album_id, extra=None):
+    if extra is None:
+        url = "http://coverartarchive.org/release/" + album_id
+    else:
+        url = "http://coverartarchive.org/release/%s/%s" % (album_id, extra)
+    write_log(translate("MusicBrainz", "Retrieving cover: %s") % url)
+    try:
+        data, code = urlopen(url, code=True)
+    except RetrievalError, e:
+        if e.code == 404:
+            raise RetrievalError(translate("MusicBrainz",
+                "No images exist for this album."), 404)
+        raise e
+            
+
+    if code == 200:
+        if extra is None:
+            return json.loads(data)
+        else:
+            return data
+    elif code == 400:
+        raise RetrievalError(translate("MusicBrainz", "Invalid UUID"))
+    elif code in (405, 406):
+        raise RetrievalError(translate("MusicBrainz", "Invalid query sent."))
+    elif code == 503:
+        raise RetrievalError(translate("MusicBrainz",
+            "You have exceeded your rate limit."))
+    elif code == 404:
+        raise RetrievalError(translate("MusicBrainz",
+            "Image does not exist."))
+
+def retrieve_covers(cover_links, size=LARGE):
+    ret = []
+    for cover in cover_links['images']:
+        desc = cover.get('comment', u"")
+        cover_type = cover['types'][0]
+        if cover_type in mb_imagetypes:
+            cover_type = imagetypes[mb_imagetypes[cover_type]]
+        else:
+            cover_type = imagetypes[u"Other"]
+        if cover == SMALL:
+            image_url = cover['thumbnails']['small']
+        elif cover == LARGE:
+            image_url = cover['thumbnails']['large']
+        else:
+            image_url = cover['image']
+
+        write_log(translate("MusicBrainz", "Retrieving image %s") % image_url)
+        image_data = urlopen(image_url)
+
+        ret.append({'desc': desc, 'mime': get_mime(image_data),
+            "imagetype": cover_type, "data": image_data})
+
+    return ret
+
+def retrieve_front_cover(album_id):
+    data = retrieve_cover_links(album_id, "front")
+    return {'data': data, 'mime': get_mime(data)}
     
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
@@ -392,6 +464,20 @@ class MusicBrainz(object):
     def __init__(self):
         super(MusicBrainz, self).__init__()
         self.__lasttime = time.time()
+        self.__image_size = LARGE
+        self.__num_images = 0
+        self.__get_images = True
+
+        self.preferences = [
+            [translate('MusicBrainz', 'Retrieve Cover'), CHECKBOX, True],
+            [translate('MusicBrainz', 'Cover size to retrieve:'), COMBO,
+                [[translate('Amazon', 'Small'),
+                    translate('Amazon', 'Large'),
+                    translate('Amazon', 'Original Size')], 1]],
+            [translate('MusicBrainz', 'Amount of images to retrieve:'), COMBO,
+                [[translate('MusicBrainz', 'Just the front cover'),
+                    translate('MusicBrainz', 'All (can take a while)')], 0]],
+            ]
 
     def keyword_search(self, s):
         if s.startswith(u':a'):
@@ -408,7 +494,7 @@ class MusicBrainz(object):
         elif s.startswith(u':b'):
             r_id = s[len(u':b'):].strip()
             try:
-                return [retrieve_album(r_id)]
+                return [self.retrieve(r_id)]
             except RetrievalError, e:
                 msg = translate("MusicBrainz",
                     "<b>Error:</b> While retrieving Album ID %1 (%2)")
@@ -469,12 +555,39 @@ class MusicBrainz(object):
         return parse_album_search(xml)
 
     def retrieve(self, albuminfo):
-        album_id = albuminfo['#album_id']
+        try:
+            album_id = albuminfo['#album_id']
+        except TypeError:
+            album_id = albuminfo
         if time.time() - self.__lasttime < 1000:
             time.sleep(1)
         ret = retrieve_album(album_id)
         self.__lasttime = time.time()
+        ret[0]['__image'] = self.retrieve_covers(album_id)
         return ret
+
+    def retrieve_covers(self, album_id):
+        if not self.__get_images:
+            return []
+        if self.__num_images == 0:
+            try:
+                image = retrieve_front_cover(album_id)
+                if image:
+                    return [image]
+            except RetrievalError, e:
+                import traceback
+                traceback.print_exc()
+                print
+                write_log(translate("MusicBrainz",
+                    "Error retrieving image: %s") % unicode(e))
+                return []
+        else:
+            return retrieve_covers(album_id, self.__image_size)
+
+    def applyPrefs(self, args):
+        self.__get_images = args[0]
+        self.__image_size = args[1]
+        self.__num_images = args[2]
 
 info = MusicBrainz
 

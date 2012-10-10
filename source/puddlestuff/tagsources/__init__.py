@@ -14,8 +14,10 @@ all = ['musicbrainz', 'discogs', 'amazon']
 
 class FoundEncoding(Exception): pass
 
-class RetrievalError(Exception):
-    pass
+class RetrievalError(EnvironmentError):
+    def __init__(self, msg, code=0):
+        EnvironmentError.__init__(self, msg)
+        self.code = code
 
 cover_pattern = u'%artist% - %album%'
 
@@ -130,7 +132,7 @@ def to_file(data, name):
 def url_encode_non_ascii(b):
     return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
 
-def urlopen(url, mask=True):
+def urlopen(url, mask=True, code=False):
     try:
         request = urllib2.Request(url)
         if user_agent:
@@ -140,18 +142,21 @@ def urlopen(url, mask=True):
             raise RetrievalError(translate("Tag Sources", 'HTTPError 403: Forbidden'))
         elif page.code == 404:
             raise RetrievalError(translate("Tag Sources", "Page doesn't exist"))
-        return page.read()
+        if code:
+            return page.read(), page.code
+        else:
+            return page.read()
     except urllib2.URLError, e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = unicode(e)
-        raise RetrievalError(msg)
+        raise RetrievalError(msg, e.code)
     except socket.error, e:
-        msg = u'%s (%s)' % (e.strerror, e.errno)
+        msg = u'%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
     except EnvironmentError, e:
-        msg = u'%s (%s)' % (e.strerror, e.errno)
+        msg = u'%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
 
 def write_log(text):
