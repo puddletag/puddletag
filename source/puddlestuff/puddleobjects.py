@@ -1921,7 +1921,7 @@ class PicWidget(QWidget):
                 try:
                     data = urlopen(filename)
                 except (ValueError, RetrievalError):
-                    pass
+                    continue
 
             if image.loadFromData(data):
                 pic = {'data': data, 'height': image.height(),
