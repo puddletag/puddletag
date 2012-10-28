@@ -258,8 +258,14 @@ def parse_release(node):
     info.update(parse_medium_list(node))
     info = convert_dict(info, ALBUM_KEYS)
     info['#album_id'] = info[u'mbrainz_album_id']
+
     if u'count' in info:
         del(info['count'])
+
+    if 'disambiguation' in info:
+        info['album'] = u"%s (%s)" % (info['album'], info['disambiguation'])
+        del(info['disambiguation'])
+    
     tracks = []
     for medium in node.getElementsByTagName('medium'):
         tracks.extend(parse_track_list(medium))
@@ -483,9 +489,9 @@ class MusicBrainz(object):
         if s.startswith(u':a'):
             artist_id = s[len(':a'):].strip()
             try:
-                xml = urlopen(search_album(u'arid:' + artist_id,
-                    limit=100, own=True))
-                return parse_album_search(xml)
+                url = search_album('arid:' +
+                    solr_escape(artist_id.encode('utf8')), limit=100, own=True)
+                return parse_album_search(urlopen(url))
             except RetrievalError, e:
                 msg = translate("MusicBrainz",
                     '<b>Error:</b> While retrieving %1: %2')
