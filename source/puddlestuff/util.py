@@ -306,6 +306,8 @@ def write(audio, tags, save_mtime = True, justrename=False):
             setmodtime(audio.filepath, audio.accessed, audio.modified)
         except EnvironmentError:
             pass
+    else:
+        os.utime(audio.dirpath, None)
     return undo
 
 def dict_diff(d1, d2):
