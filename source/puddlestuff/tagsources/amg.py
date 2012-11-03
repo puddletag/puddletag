@@ -215,7 +215,10 @@ def parse_sidebar(sidebar):
             info['#cover-url'] = json.loads(
                 cover.element.attrib['data-large'])['url']
         except KeyError:
-            "Doesn't have artwork."
+            try:
+                info['#cover-url'] = cover.img.element.attrib['src']
+            except (AttributeError, KeyError):
+                "No artwork."
 
     details = sidebar.find('dl', {'class': 'details'})
     info.update(parse_sidebar_element(details))
