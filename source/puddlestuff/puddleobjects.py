@@ -1909,6 +1909,7 @@ class PicWidget(QWidget):
         #I really need to sort out these circular references.
         from puddlestuff.tagsources import RetrievalError, urlopen 
         images = []
+        
         for filename in filenames:
             image = QImage()
             if filename.startswith(":/"):
@@ -1921,7 +1922,10 @@ class PicWidget(QWidget):
                 try:
                     data = urlopen(filename)
                 except (ValueError, RetrievalError):
-                    continue
+                    try:
+                        data = open(filename, 'r').read()
+                    except EnvironmentError:
+                        continue
 
             if image.loadFromData(data):
                 pic = {'data': data, 'height': image.height(),

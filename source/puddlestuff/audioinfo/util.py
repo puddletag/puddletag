@@ -445,7 +445,7 @@ def str_filesize(size):
 
 def strfrequency(value):
     """Converts the frequency Hz to a string in kHz."""
-    return unicode(value / 1000.0)[:4] + u" kHz"
+    return u"%.1f kHz" % (value / 1000.0)
 
 def stringtags(tag, leaveNone = False):
     """Converts each value in tag to a string.
