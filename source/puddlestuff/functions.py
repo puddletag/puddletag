@@ -174,12 +174,33 @@ def formatValue(m_tags, p_pattern, state=None):
 format_value = formatValue
 
 def geql(text,text1):
+
+    try:
+        text = float(text)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        text1 = float(text1)
+    except (TypeError, ValueError):
+        pass
+    
     if text >= text1:
         return true
     else:
         return false
 
 def grtr(text, text1):
+    try:
+        text = float(text)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        text1 = float(text1)
+    except (TypeError, ValueError):
+        pass
+    
     if text > text1:
         return true
     else:
@@ -239,12 +260,34 @@ def len_(text):
     return unicode(len(text))
 
 def leql(text,text1):
+
+    try:
+        text = float(text)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        text1 = float(text1)
+    except (TypeError, ValueError):
+        pass
+    
     if text <= text1:
         return true
     else:
         return false
 
 def less(text, text1):
+
+    try:
+        text = float(text)
+    except (TypeError, ValueError):
+        pass
+
+    try:
+        text1 = float(text1)
+    except (TypeError, ValueError):
+        pass
+    
     if text < text1:
         return true
     else:

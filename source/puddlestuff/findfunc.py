@@ -286,7 +286,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
         else:
             func = funcname
     except KeyError:
-        raise ParseError(SYNTAX_ERROR % (funcname,
+        raise ParseError(SYNTAX_ERROR.arg(funcname).arg(
             translate('Defaults', 'function does not exist.')))
 
     extra = {} if extra is None else extra
