@@ -562,6 +562,10 @@ class MainWin(QWidget):
         self.searchButton.setAutoDefault(True)
         connect(self.searchButton, "clicked()", self.search)
 
+        self.submitButton = QPushButton(translate("WebDB",
+            "S&ubmit Tags"))
+        connect(self.submitButton, "clicked()", self.submit)
+
         write_preview = QPushButton(translate("WebDB", '&Write'))
         connect(write_preview, "clicked()", self.writePreview)
         
@@ -599,8 +603,8 @@ class MainWin(QWidget):
         sourcebox.addWidget(preferences)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(self.searchEdit, 1)
         hbox.addWidget(self.searchButton, 0)
+        hbox.addWidget(self.searchEdit, 1)
 
         vbox = QVBoxLayout()
         vbox.addLayout(sourcebox)
@@ -611,6 +615,7 @@ class MainWin(QWidget):
         hbox = QHBoxLayout()
         hbox.addWidget(infolabel, 1)
         hbox.addStretch()
+        hbox.addWidget(self.submitButton)
         hbox.addWidget(write_preview)
         hbox.addWidget(clear)
         vbox.addLayout(hbox)
@@ -646,6 +651,9 @@ class MainWin(QWidget):
         self.listbox.setMapping(self.fieldMapping.get(self.curSource.name, {}))
 
         self.searchEdit.setEnabled(hasattr(self.curSource, 'keyword_search'))
+
+        self.submitButton.setVisible(hasattr(self.curSource, 'submit'))
+            
 
     def configure(self):
         config = getattr(self.curSource, 'preferences', None)
@@ -805,6 +813,32 @@ class MainWin(QWidget):
         self.searchButton.setEnabled(False)
         t = PuddleThread(search, self)
         self.connect(t, SIGNAL('threadfinished'), self.setResults)
+        t.start()
+
+    def submit(self):
+        files = self._status['selectedfiles']
+        self.submitButton.setEnabled(False)
+
+        def end(text):
+            self.submitButton.setEnabled(True)
+            self.label.setText(text)
+
+        def submit():
+            try:
+                self.curSource.submit(files)
+            except SubmissionError, e:
+                traceback.print_exc()
+                return translate('WebDB',
+                    'An error occured: %1').arg(unicode(e))
+            except Exception, e:
+                traceback.print_exc()
+                return translate('WebDB',
+                    'An unhandled error occurred: %1').arg(unicode(e))
+
+            return translate("WebDB", "Submission completed.")
+
+        t = PuddleThread(submit, self)
+        self.connect(t, SIGNAL('threadfinished'), end)
         t.start()
 
     def saveSettings(self):

@@ -1,9 +1,9 @@
-import urllib2
-import httplib
 import contextlib
-import time
+import httplib
 import logging
-import os
+import os, pdb
+import time
+import urllib2
 
 from collections import defaultdict
 from itertools import chain, izip, product, starmap
@@ -18,19 +18,23 @@ except ImportError:
 
 import puddlestuff.audioinfo as audioinfo
 
-from puddlestuff.constants import SPINBOX
-from puddlestuff.tagsources import set_status, write_log
+from puddlestuff.audioinfo import stringtags
+from puddlestuff.constants import SPINBOX, TEXT
+from puddlestuff.tagsources import set_status, write_log, SubmissionError
 from puddlestuff.tagsources.musicbrainz import retrieve_album
 from puddlestuff.translations import translate
-from puddlestuff.util import escape_html, isempty
+from puddlestuff.util import escape_html, isempty, to_string
 
 CALCULATE_MSG = translate('AcoustID', "Calculating ID")
 RETRIEVE_MSG = translate('AcoustID', "Retrieving AcoustID data: %1 of %2.")
 RETRIEVE_MB_MSG = translate('AcoustID', "Retrieving MB album data: %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
+SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: %1")
+SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: %1 of %2.")
+FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
 
-
+API_KEY = "gT8GJxhO"
 
 def album_hash(d):
     h = u''
@@ -70,14 +74,52 @@ def best_match(albums, tracks):
         
     return ret
 
-def match(apikey, path, meta='releases recordings tracks'):
+def convert_for_submit(tags):
+    cipher = {
+        'mbrainz_track_id': 'mbid',
+        'title': 'track',
+        'track': 'trackno',
+        'discnumber': 'discno',
+        '__bitrate': 'bitrate',
+        'musicip_puid': 'puid',
+        }
+
+    valid_keys = set(['artist', 'album', 'title', 'track', 'discno', 'mbid',
+        'year', 'bitrate', 'puid'])
+
+    ret = dict((cipher.get(k, k) , v) for k,v in stringtags(tags).iteritems()
+        if cipher.get(k, k) in valid_keys and v)
+    bitrate = audioinfo.lngfrequency(ret['bitrate'])
+    if bitrate == 0:
+        del(ret['bitrate'])
+    else:
+        ret['bitrate'] = unicode(bitrate)
+
+    return ret
+
+def id_in_tag(tag):
+    
+    if 'acoustid_fingerprint' in tag:
+        fp = to_string(tag['acoustid_fingerprint'])
+    else:
+        return
+
+    if '__length' in tag:
+        duration = audioinfo.lnglength(tag['__length'])
+    else:
+        return
+
+    return (duration, fp)
+
+def match(apikey, path, meta='releases recordings tracks', fp=None, dur=None):
     """Look up the metadata for an audio file. If ``parse`` is true,
     then ``parse_lookup_result`` is used to return an iterator over
     small tuple of relevant information; otherwise, the full parsed JSON
     response is returned.
     """
     path = os.path.abspath(os.path.expanduser(path))
-    duration, fp = acoustid._fingerprint_file_fpcalc(path)
+    if None in (fp, dur):
+        duration, fp = acoustid._fingerprint_file_fpcalc(path)
     response = acoustid.lookup(apikey, fp, duration, meta)
     return response, fp
 
@@ -195,16 +237,20 @@ def which(program):
 
     return None
 
+
 class AcoustID(object):
     name = 'AcoustID'
     group_by = ['album', None]
     def __init__(self):
         object.__init__(self)
         self.min_score = 0.80
-        self.preferences = [[
-            translate("AcoustID", 'Minimum Score'), SPINBOX, [0, 100, 80]]]
+        self.preferences = [
+            [translate("AcoustID", 'Minimum Score'), SPINBOX, [0, 100, 80]],
+            [translate("AcoustID", "AcoustID Key"), TEXT, u""]
+            ]
         self.__lasttime = time.time()
         acoustid._send_request = self._send_request
+        self.__user_key = ""
 
     def _send_request(self, req):
         """Given a urllib2 Request object, make the request and return a
@@ -235,10 +281,19 @@ class AcoustID(object):
                 disp_fn = fn['__path']
             write_log(disp_fn)
             try:
-                write_log(CALCULATE_MSG)
+
+                fp = id_in_tag(fn)
+                if fp:
+                    write_log(FOUND_ID_MSG)
+                    dur, fp = fp
+                else:
+                    write_log(CALCULATE_MSG)
+                    dur, fp = (None, None)
+
                 write_log(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
                 set_status(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
-                data, fp = match("gT8GJxhO", fn.filepath)
+
+                data, fp = match("gT8GJxhO", fn.filepath, fp, dur)
                 write_log(translate('AcoustID', "Parsing Data"))
                 info = parse_lookup_result(data, fp=fp)
             except acoustid.FingerprintGenerationError, e:
@@ -262,11 +317,53 @@ class AcoustID(object):
 
         return starmap(retrieve_album_info, best_match(albums, tracks))
 
+    def submit(self, fns):
+        if not self.__user_key:
+            raise SubmissionError(translate("AcoustID",
+                "Please enter AcoustID user key in settings"))
+
+        fns_len = len(fns)
+        for i, fn in enumerate(fns):
+
+            try:
+                disp_fn = audioinfo.decode_fn(fn.filepath)
+            except AttributeError:
+                disp_fn = fn['__path']
+            write_log(disp_fn)
+
+            try:
+                fp = id_in_tag(fn)
+                if fp:
+                    write_log(FOUND_ID_MSG)
+                    dur, fp = fp
+                else:
+                    write_log(CALCULATE_MSG)
+                    dur, fp = acoustid._fingerprint_file_fpcalc(fn.filepath)
+
+                write_log(SUBMIT_MSG.arg(i + 1).arg(fns_len))
+                set_status(SUBMIT_MSG.arg(i + 1).arg(fns_len))
+                info = {
+                    'duration':unicode(dur),
+                    'data': convert_for_submit(fn),
+                    'fingerprint': unicode(fp),
+                    }
+
+                acoustid.submit(API_KEY, self.__user_key, info)
+
+            except acoustid.FingerprintGenerationError, e:
+                write_log(FP_ERROR_MSG.arg(unicode(e)))
+                continue
+            except acoustid.WebServiceError, e:
+                set_status(SUBMIT_ERROR_MSG.arg(unicode(e)))
+                write_log(SUBMIT_ERROR_MSG.arg(unicode(e)))
+                break
+
     def retrieve(self, info):
         return None
 
     def applyPrefs(self, args):
         self.min_score = args[0] / 100.0
+        self.__user_key = args[1]
 
 if not which('fpcalc'):
     raise ImportError("fpcalc not found on system")
@@ -275,4 +372,15 @@ info = AcoustID
 
 if __name__ == '__main__':
     x = AcoustID()
-    print parse_lookup_result({u'status': u'ok', u'results': [{u'recordings': [{u'id': u'32f5e92e-291b-4e2c-99b6-a0c0b2f1ab6d'}, {u'artists': [{u'id': u'ce55e49a-32f4-4757-9849-bf04d06d5fcc', u'name': u'T-Pain'}, {u'id': u'f5dfa020-ad69-41cd-b3d4-fd7af0414e94', u'name': u'Wiz Khalifa'}, {u'id': u'6e0c7c0e-cba5-4c2c-a652-38f71ef5785d', u'name': u'Lily Allen'}], u'id': u'b5d2720d-b40d-4400-b63b-19216452aab6', u'title': u"5 O'Clock"}, {u'duration': 280, u'artists': [{u'id': u'ce55e49a-32f4-4757-9849-bf04d06d5fcc', u'name': u'T-Pain'}], u'id': u'fb91dc84-dbed-43d0-ae6c-aecccc6a5cdc', u'title': u"5 O'Clock (feat. Wiz Khalifa & Lily Allen)"}], u'score': 0.936147, u'id': u'2f4ccef3-13b6-467a-bf2c-99cb1f83b696'}]})
+    x.applyPrefs([85, "KEIY0X4P"])
+    file_dir = ''
+    files = []
+    for z in os.listdir(file_dir):
+        fn = os.path.join(file_dir, z)
+        try:
+            tag = audioinfo.Tag(fn)
+            if tag is not None:
+                files.append(tag)
+        except:
+            pass
+    x.submit(files)

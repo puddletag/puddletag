@@ -14,9 +14,17 @@ all = ['musicbrainz', 'discogs', 'amazon']
 
 class FoundEncoding(Exception): pass
 
-class RetrievalError(EnvironmentError):
+class WebServiceError(EnvironmentError):
+    pass
+
+class RetrievalError(WebServiceError):
     def __init__(self, msg, code=0):
-        EnvironmentError.__init__(self, msg)
+        WebServiceError.__init__(self, msg)
+        self.code = code
+
+class SubmissionError(WebServiceError):
+    def __init__(self, msg, code=0):
+        WebServiceError.__init__(self, msg)
         self.code = code
 
 cover_pattern = u'%artist% - %album%'

@@ -181,14 +181,14 @@ def _api_request(url, params):
     except ValueError:
         raise WebServiceError('response is not valid JSON')
 
-def fingerprint(samplerate, channels, pcmiter):
+def fingerprint(samplerate, channels, pcmiter, maxlength=MAX_AUDIO_LENGTH):
     """Fingerprint audio data given its sample rate and number of
     channels.  pcmiter should be an iterable containing blocks of PCM
     data as byte strings. Raises a FingerprintGenerationError if
     anything goes wrong.
     """
     # Maximum number of samples to decode.
-    endposition = samplerate * MAX_AUDIO_LENGTH
+    endposition = samplerate * channels * maxlength
 
     try:
         fper = chromaprint.Fingerprinter()
@@ -246,20 +246,20 @@ def parse_lookup_result(data):
 
             yield score, recording['id'], recording.get('title'), artist_name
 
-def _fingerprint_file_audioread(path):
+def _fingerprint_file_audioread(path, maxlength):
     """Fingerprint a file by using audioread and chromaprint."""
     try:
         with audioread.audio_open(path) as f:
             duration = f.duration
-            fp = fingerprint(f.samplerate, f.channels, iter(f))
+            fp = fingerprint(f.samplerate, f.channels, iter(f), maxlength)
     except audioread.DecodeError:
         raise FingerprintGenerationError("audio could not be decoded")
     return duration, fp
 
-def _fingerprint_file_fpcalc(path):
+def _fingerprint_file_fpcalc(path, maxlength):
     """Fingerprint a file by calling the fpcalc application."""
     fpcalc = os.environ.get(FPCALC_ENVVAR, FPCALC_COMMAND)
-    command = [fpcalc, "-length", str(MAX_AUDIO_LENGTH), path]
+    command = [fpcalc, "-length", str(maxlength), path]
     try:
         proc = subprocess.Popen(command, stdout=subprocess.PIPE)
         output, _ = proc.communicate()
@@ -292,16 +292,16 @@ def _fingerprint_file_fpcalc(path):
         raise FingerprintGenerationError("missing fpcalc output")
     return duration, fp
 
-def fingerprint_file(path):
+def fingerprint_file(path, maxlength=MAX_AUDIO_LENGTH):
     """Fingerprint a file either using the Chromaprint dynamic library
     or the fpcalc command-line tool, whichever is available. Returns the
     duration and the fingerprint.
     """
     path = os.path.abspath(os.path.expanduser(path))
     if have_audioread and have_chromaprint:
-        return _fingerprint_file_audioread(path)
+        return _fingerprint_file_audioread(path, maxlength)
     else:
-        return _fingerprint_file_fpcalc(path)
+        return _fingerprint_file_fpcalc(path, maxlength)
 
 def match(apikey, path, meta=DEFAULT_META, parse=True):
     """Look up the metadata for an audio file. If ``parse`` is true,
@@ -349,5 +349,6 @@ def submit(apikey, userkey, data):
             args["%s.%s" % (k, i)] = v
 
     response = _api_request(_get_submit_url(), args)
+    print response
     if response['status'] != 'ok':
         raise WebServiceError("status: %s" % data['status'])
