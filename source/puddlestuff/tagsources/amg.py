@@ -188,6 +188,7 @@ def parse_albumpage(page, artist=None, album=None):
     artist = heading.find('div', {'class': 'album-artist'})
     album = heading.find('div', {'class': 'album-title'})
     info = {'artist': convert(artist.string), 'album': convert(album.string)}
+    info['albumartist'] = info['artist']
     
     main = album_soup.find('div', {'id': 'main'})
     sidebar = main.find('div', {'class': 'left', 'id': 'sidebar'})
@@ -390,9 +391,13 @@ def parse_track(tr, fields):
             composer = map(convert, composer_div.string.split(u' / '))
             track['composer'] = composer
         elif field == 'performer':
-            track['performer'] =  map(convert, th.string.split(u' / '))
+            
+            if 'artist' not in track:
+                track['artist'] =  map(convert, th.string.split(u' / '))
+            else:
+                track['performer'] =  map(convert, th.string.split(u' / '))
 
-    return track
+    return dict((k,v) for k,v in track.iteritems() if not isempty(v))
 
 def parse_tracks(content):
     track_div = content.find('div', {'id': 'tracks'})
