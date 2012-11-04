@@ -84,12 +84,12 @@ def convert_for_submit(tags):
         'musicip_puid': 'puid',
         }
 
-    valid_keys = set(['artist', 'album', 'title', 'track', 'discno', 'mbid',
-        'year', 'bitrate', 'puid'])
-
+    valid_keys = set(['artist', 'album', 'title', 'track', 'discno',
+        'mbid', 'year', 'bitrate', 'puid', 'trackno'])
+    
     ret = dict((cipher.get(k, k) , v) for k,v in stringtags(tags).iteritems()
         if cipher.get(k, k) in valid_keys and v)
-    bitrate = audioinfo.lngfrequency(ret['bitrate'])
+    bitrate = ret['bitrate'].split(u' ')[0]
     if bitrate == 0:
         del(ret['bitrate'])
     else:
@@ -344,16 +344,19 @@ class AcoustID(object):
                 set_status(SUBMIT_MSG.arg(i + 1).arg(fns_len))
                 info = {
                     'duration':unicode(dur),
-                    'data': convert_for_submit(fn),
                     'fingerprint': unicode(fp),
                     }
+
+                info.update(convert_for_submit(fn))
 
                 acoustid.submit(API_KEY, self.__user_key, info)
 
             except acoustid.FingerprintGenerationError, e:
+                traceback.print_exc()
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
                 continue
             except acoustid.WebServiceError, e:
+                traceback.print_exc()
                 set_status(SUBMIT_ERROR_MSG.arg(unicode(e)))
                 write_log(SUBMIT_ERROR_MSG.arg(unicode(e)))
                 break
