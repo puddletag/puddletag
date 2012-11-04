@@ -348,6 +348,8 @@ def submit(apikey, userkey, data):
         for k, v in d.iteritems():
             args["%s.%s" % (k, i)] = v
 
+    import pdb
+    pdb.set_trace()
     response = _api_request(_get_submit_url(), args)
     print response
     if response['status'] != 'ok':

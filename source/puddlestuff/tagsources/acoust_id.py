@@ -8,13 +8,13 @@ import urllib2
 from collections import defaultdict
 from itertools import chain, izip, product, starmap
 
-try:
-    import acoustid
-    #Don't want it to use audioread as python-gst
-    #lib causes lockups.
-    acoustid.have_audioread = False
-except ImportError:    
-    import _acoustid as acoustid
+#try:
+    #import acoustid
+    ##Don't want it to use audioread as python-gst
+    ##lib causes lockups.
+    #acoustid.have_audioread = False
+#except ImportError:    
+import _acoustid as acoustid
 
 import puddlestuff.audioinfo as audioinfo
 
@@ -31,8 +31,9 @@ RETRIEVE_MB_MSG = translate('AcoustID', "Retrieving MB album data: %1")
 FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
 WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
 SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: %1")
-SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: %1 of %2.")
+SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: %1 to %2 of %3.")
 FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
+FILE_MSG = translate('AcoustID', u'File #%1: %2')
 
 API_KEY = "gT8GJxhO"
 
@@ -119,7 +120,7 @@ def match(apikey, path, meta='releases recordings tracks', fp=None, dur=None):
     """
     path = os.path.abspath(os.path.expanduser(path))
     if None in (fp, dur):
-        duration, fp = acoustid._fingerprint_file_fpcalc(path)
+        duration, fp = acoustid._fingerprint_file_fpcalc(path, 120)
     response = acoustid.lookup(apikey, fp, duration, meta)
     return response, fp
 
@@ -323,13 +324,14 @@ class AcoustID(object):
                 "Please enter AcoustID user key in settings"))
 
         fns_len = len(fns)
+        data = []
         for i, fn in enumerate(fns):
 
             try:
                 disp_fn = audioinfo.decode_fn(fn.filepath)
             except AttributeError:
                 disp_fn = fn['__path']
-            write_log(disp_fn)
+            write_log(FILE_MSG.arg(i + 1).arg(disp_fn))
 
             try:
                 fp = id_in_tag(fn)
@@ -338,18 +340,23 @@ class AcoustID(object):
                     dur, fp = fp
                 else:
                     write_log(CALCULATE_MSG)
-                    dur, fp = acoustid._fingerprint_file_fpcalc(fn.filepath)
+                    dur, fp = acoustid._fingerprint_file_fpcalc(fn.filepath, 120)
 
-                write_log(SUBMIT_MSG.arg(i + 1).arg(fns_len))
-                set_status(SUBMIT_MSG.arg(i + 1).arg(fns_len))
                 info = {
                     'duration':unicode(dur),
                     'fingerprint': unicode(fp),
                     }
 
                 info.update(convert_for_submit(fn))
+                data.append(info)
 
-                acoustid.submit(API_KEY, self.__user_key, info)
+                if len(data) > 9 or i == fns_len - 1:
+                    msg = SUBMIT_MSG.arg(i - len(data) + 2)
+                    msg = msg.arg(i + 1).arg(fns_len)
+                    write_log(msg)
+                    set_status(msg)
+                    acoustid.submit(API_KEY, self.__user_key, data)
+                    data = []
 
             except acoustid.FingerprintGenerationError, e:
                 traceback.print_exc()
