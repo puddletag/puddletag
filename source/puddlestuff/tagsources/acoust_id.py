@@ -8,13 +8,13 @@ import urllib2
 from collections import defaultdict
 from itertools import chain, izip, product, starmap
 
-#try:
-    #import acoustid
-    ##Don't want it to use audioread as python-gst
-    ##lib causes lockups.
-    #acoustid.have_audioread = False
-#except ImportError:    
-import _acoustid as acoustid
+try:
+    import acoustid
+    #Don't want it to use audioread as python-gst
+    #lib causes lockups.
+    acoustid.have_audioread = False
+except ImportError:
+    import _acoustid as acoustid
 
 import puddlestuff.audioinfo as audioinfo
 
