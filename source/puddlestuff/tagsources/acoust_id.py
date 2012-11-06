@@ -321,7 +321,7 @@ class AcoustID(object):
     def submit(self, fns):
         if not self.__user_key:
             raise SubmissionError(translate("AcoustID",
-                "Please enter AcoustID user key in settings"))
+                "Please enter AcoustID user key in settings."))
 
         fns_len = len(fns)
         data = []

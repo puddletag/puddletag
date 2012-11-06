@@ -19,7 +19,7 @@ from puddlestuff.findfunc import parsefunc
 from puddleobjects import (create_buddy, unique, winsettings,
     ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
 from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
-    write_log, RetrievalError, mp3tag)
+    write_log, RetrievalError, mp3tag, SubmissionError)
 from puddlestuff.util import (isempty, pprint_tag,
     split_by_field, to_string, translate)
 
