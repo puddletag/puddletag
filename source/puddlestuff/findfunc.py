@@ -799,9 +799,7 @@ class Function:
         text = to_string(text)
 
         reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
-            'r_tags': r_tags, 'text': to_string(text),
-            'm_text': m_text}
-
+            'r_tags': r_tags, 'm_text': m_text}
         
         if varnames[0] in reserved:
             reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
@@ -824,7 +822,7 @@ class Function:
         if not first_arg.startswith('m_'):
             text = m_text
             ret = []
-            for z in text:
+            for z in m_text:
                 topass[first_arg] = z
                 ret.append(func(**topass))
 
