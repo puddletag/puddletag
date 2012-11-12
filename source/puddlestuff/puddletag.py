@@ -418,7 +418,6 @@ class MainWin(QMainWindow):
     def _dirChanged(self, dirs):
         if not dirs:
             self.setWindowTitle('puddletag')
-            self._lastdir = []
             return
         
         if isinstance(dirs, basestring):
@@ -441,7 +440,6 @@ class MainWin(QMainWindow):
             self.setWindowTitle(translate("Main Window", 'puddletag: %1 + others').arg(initial))
         else:
             self.setWindowTitle(translate("Main Window", 'puddletag: %1').arg(initial))
-        self._lastdir = dirs
 
     def _getDir(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
