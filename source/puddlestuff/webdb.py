@@ -16,6 +16,7 @@ import puddlestuff.audioinfo as audioinfo
 from puddlestuff.constants import (TEXT, COMBO, SPINBOX,
     CHECKBOX, RIGHTDOCK, SAVEDIR)
 from puddlestuff.findfunc import parsefunc
+from puddlestuff.functions import replace_regex
 from puddleobjects import (create_buddy, unique, winsettings,
     ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
 from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
@@ -46,6 +47,27 @@ FIELDLIST_TIP = translate("WebDB",
     'list the tilde (~) character. Eg <b>~composer, '
     '__image</b> will write all fields but the '
     'composer and __image fields.')
+
+DEFAULT_REGEXP = {'album': [u'(.*?)([\(\[\{].*[\)\]\}])', u'$1']}
+
+def apply_regexps(audio, regexps=None):
+    if regexps is None:
+        regexps = DEFAULT_REGEXP
+    audio = deepcopy(audio)
+    changed = False
+    for field, (regexp, output) in regexps.iteritems():
+        if field not in audio:
+            continue
+        text = to_string(audio[field])
+        try:
+            val = replace_regex(audio, text, regexp, output)
+            if val:
+                audio[field] = val
+                if not changed and val != text:
+                    changed = val
+        except puddlestuff.findfunc.FuncError:
+            continue
+    return changed, audio
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
@@ -509,6 +531,30 @@ def load_source_prefs(name, preferences):
             ret.append(cparser.get(name, option[0], option[2]))
     return ret
 
+def tag_source_search(ts, group, files):
+    """Helper method for tag source searches."""
+
+    if not ts.group_by:
+        return ts.search(files), files
+
+    ret = []
+
+    for primary in group:
+        albums = ts.search(primary, group[primary])
+        if albums:
+            ret.extend(albums)
+            continue
+
+        audio = {'album': primary}
+        changed, audio = apply_regexps(audio)
+        if changed:
+            audio['album'] = audio['album'].strip()
+            write_log(translate('WebDB', 'Retrying search with %s') %
+                audio['album'])
+            ret.extend(ts.search(audio['album'], group[primary]))
+
+    return ret, files
+
 class MainWin(QWidget):
     def __init__(self, status, parent = None):
         QWidget.__init__(self, parent)
@@ -796,13 +842,7 @@ class MainWin(QWidget):
                 if text:
                     return self.curSource.keyword_search(text), None
                 else:
-                    if self.curSource.group_by:
-                        for primary in group:
-                            ret.extend(self.curSource.search(
-                                primary, group[primary]))
-                        return ret, files
-                    else:
-                        return self.curSource.search(files), files
+                    return tag_source_search(self.curSource, group, files)
             except RetrievalError, e:
                 return translate('WebDB',
                     'An error occured: %1').arg(unicode(e))

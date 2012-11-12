@@ -10,12 +10,12 @@ import puddlestuff
 from puddlestuff.audioinfo import FILENAME
 from puddlestuff.constants import VARIOUS
 from puddlestuff.findfunc import filenametotag
-from puddlestuff.functions import replace_regex
 from puddlestuff.puddleobjects import natcasecmp, ratio
 from puddlestuff.tagsources import RetrievalError
 from puddlestuff.translations import translate
 from puddlestuff.util import sorted_split_by_field, split_by_field, to_string
-from puddlestuff.webdb import strip as strip_fields
+from puddlestuff.webdb import (strip as strip_fields, DEFAULT_REGEXP,
+    apply_regexps)
 
 def set_status(v):
     print v
@@ -58,7 +58,6 @@ EXISTING_ONLY = 'field_exists'
 
 DEFAULT_PATTERN = u'%artist% - %album%/%track% - %title%'
 DEFAULT_NAME = translate('Masstagging', 'Default Profile')
-DEFAULT_REGEXP = {'album': [u'(.*?)([\(\[\{].*[\)\]\}])', u'$1']}
 
 POLLING = translate("Masstagging", '<b>Polling: %s</b>')
 MATCH_ARTIST_ALBUM = translate("Masstagging",
@@ -110,22 +109,7 @@ class MassTagFlag(object):
         self.stop = False
         object.__init__(self)
 
-def apply_regexps(audio, regexps):
-    audio = deepcopy(audio)
-    changed = False
-    for field, (regexp, output) in regexps.iteritems():
-        if field not in audio:
-            continue
-        text = to_string(audio[field])
-        try:
-            val = replace_regex(audio, text, regexp, output)
-            if val:
-                audio[field] = val
-                if not changed and val != text:
-                    changed = val
-        except puddlestuff.findfunc.FuncError:
-            continue
-    return changed, audio
+
 
 def brute_force_results(audios, retrieved):
     matched = {}
