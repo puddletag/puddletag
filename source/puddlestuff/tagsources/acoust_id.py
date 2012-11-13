@@ -98,6 +98,12 @@ def convert_for_submit(tags):
 
     return ret
 
+def fingerprint_file(fn):
+    try:
+        return acoustid._fingerprint_file_fpcalc(fn, 120)
+    except TypeError:
+        return acoustid._fingerprint_file_fpcalc(fn)
+
 def id_in_tag(tag):
     
     if 'acoustid_fingerprint' in tag:
@@ -112,7 +118,7 @@ def id_in_tag(tag):
 
     return (duration, fp)
 
-def match(apikey, path, meta='releases recordings tracks', fp=None, dur=None):
+def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
     """Look up the metadata for an audio file. If ``parse`` is true,
     then ``parse_lookup_result`` is used to return an iterator over
     small tuple of relevant information; otherwise, the full parsed JSON
@@ -120,7 +126,7 @@ def match(apikey, path, meta='releases recordings tracks', fp=None, dur=None):
     """
     path = os.path.abspath(os.path.expanduser(path))
     if None in (fp, dur):
-        duration, fp = acoustid._fingerprint_file_fpcalc(path, 120)
+        duration, fp = fingerprint_file(path)
     response = acoustid.lookup(apikey, fp, duration, meta)
     return response, fp
 
@@ -296,6 +302,7 @@ class AcoustID(object):
 
                 data, fp = match("gT8GJxhO", fn.filepath, fp, dur)
                 write_log(translate('AcoustID', "Parsing Data"))
+                
                 info = parse_lookup_result(data, fp=fp)
             except acoustid.FingerprintGenerationError, e:
                 write_log(FP_ERROR_MSG.arg(unicode(e)))
@@ -340,7 +347,7 @@ class AcoustID(object):
                     dur, fp = fp
                 else:
                     write_log(CALCULATE_MSG)
-                    dur, fp = acoustid._fingerprint_file_fpcalc(fn.filepath, 120)
+                    dur, fp = fingerprint_file(fn.filepath)
 
                 info = {
                     'duration':unicode(dur),

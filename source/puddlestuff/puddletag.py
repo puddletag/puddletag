@@ -441,6 +441,8 @@ class MainWin(QMainWindow):
         else:
             self.setWindowTitle(translate("Main Window", 'puddletag: %1').arg(initial))
 
+        self._lastdir = dirs
+
     def _getDir(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         filedlg = QFileDialog()
