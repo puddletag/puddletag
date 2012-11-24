@@ -349,6 +349,5 @@ def submit(apikey, userkey, data):
             args["%s.%s" % (k, i)] = v
 
     response = _api_request(_get_submit_url(), args)
-    print response
     if response['status'] != 'ok':
         raise WebServiceError("status: %s" % data['status'])

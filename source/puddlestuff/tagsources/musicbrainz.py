@@ -569,7 +569,9 @@ class MusicBrainz(object):
             time.sleep(1)
         ret = retrieve_album(album_id)
         self.__lasttime = time.time()
-        ret[0]['__image'] = self.retrieve_covers(album_id)
+        image = self.retrieve_covers(album_id)
+        if image:
+            ret[0]['__image'] = image
         return ret
 
     def retrieve_covers(self, album_id):

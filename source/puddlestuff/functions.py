@@ -658,7 +658,7 @@ Match &Case, check"""
             d = {1: group, 0: group}
 
 
-        ret = re.sub('(?i)\$\d+', RegHelper(d).repl, repl, 0, flags)
+        ret = re.sub('(?i)\$\d+', RegHelper(d).repl, repl, 0)
         
         return findfunc.parsefunc(ret, m_tags)
 
