@@ -139,7 +139,7 @@ def div(text,text1):
         return
 
 def eql(text, text1):
-    return text == text1
+    return true if text == text1 else false
 
 # Contributed by Stjujsckij Nickolaj
 def enconvert(text, enc_name):
@@ -969,7 +969,7 @@ functions = {
     "char": char,
     "div": div,
     "enconvert": enconvert,
-    "eql": eql,
+    "equals": eql,
     'filenametotag': filenametotag,
     "find": find,
     "floor": floor,
