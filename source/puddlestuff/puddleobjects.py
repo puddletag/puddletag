@@ -913,8 +913,10 @@ def timemethod(method):
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""
-    def __init__(self, tags = None, parent = None, showok = True, showedits = True):
+    def __init__(self, tags=None, parent=None, showok=True, showedits=True):
+
         QDialog.__init__(self, parent)
+
         self.listbox = ListBox()
         self.tags = [list(z) for z in tags]
         self.listbox.addItems([z[0] for z in self.tags])
@@ -927,6 +929,7 @@ class HeaderSetting(QDialog):
         self.tag.setEditable(True)
         self.buttonlist = ListButtons()
         self.buttonlist.edit.setVisible(False)
+
         if showedits:
             self.vboxgrid.addWidget(QLabel(translate("Column Settings", "Title")),0,0)
             self.vboxgrid.addWidget(self.textname,0,1)
@@ -946,9 +949,11 @@ class HeaderSetting(QDialog):
         self.grid.setColumnStretch(1,1)
         self.grid.setColumnStretch(0,2)
 
-        self.connect(self.listbox, SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"), self.fillEdits)
-        self.connect(self.listbox, SIGNAL("itemSelectionChanged()"),self.enableEdits)
+        self.connect(self.listbox,
+            SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"),
+            self.fillEdits)
 
+        self.connect(self.listbox, SIGNAL("itemSelectionChanged()"),self.enableEdits)
 
         self.okbuttons = OKCancel()
         if showok is True:

@@ -357,13 +357,23 @@ class Properties(QDialog):
 class ColumnSettings(HeaderSetting):
     """A dialog that allows you to edit the header of a TagTable widget."""
     title = translate("Column Settings", 'Columns')
-    def __init__(self, parent = None, showok = False, status=None):
+    def __init__(self, parent = None, showok=False, status=None, table=None):
+
         (self.tags, checked), fontsize, rowsize, filespec = loadsettings()
+
+        if table is not None:
+            tags = table.model().headerdata
+            hd = table.horizontalHeader()
+            
+            tags = [(hd.visualIndex(i), z) for i, z in enumerate(tags)]
+            self.tags = [z[1] for z in sorted(tags)]
+
         HeaderSetting.__init__(self, self.tags, parent, showok, True)
+        
         if showok:
             winsettings('columnsettings', self)
-        self.buttonlist.moveup.hide()
-        self.buttonlist.movedown.hide()
+        #self.buttonlist.moveup.hide()
+        #self.buttonlist.movedown.hide()
         self.setWindowFlags(Qt.Widget)
         label = QLabel(translate("Column Settings", 'Adjust visibility of columns.'))
         self.grid.addWidget(label, 0, 0)
@@ -390,6 +400,7 @@ class ColumnSettings(HeaderSetting):
         headerdata = [z for i, z in enumerate(self.tags) if i in checked]
 
         if control:
+            control.horizontalHeader().reset()
             control.setHeaderTags(headerdata)
             control.restoreSelection()
         else:
@@ -1217,8 +1228,10 @@ class TableHeader(QHeaderView):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        settings = menu.addAction(translate("Column Settings", "&Select Columns"))
+        settings = menu.addAction(
+            translate("Column Settings", "&Select Columns"))
         self.connect(settings, SIGNAL('triggered()'), self.setTitles)
+        
         menu.exec_(event.globalPos())
 
     def mousePressEvent(self,event):
@@ -1228,7 +1241,7 @@ class TableHeader(QHeaderView):
         QHeaderView.mousePressEvent(self, event)
 
     def setTitles(self):
-        self.win = ColumnSettings(showok = True)
+        self.win = ColumnSettings(showok=True, table=self.parent())
         self.win.setModal(True)
         self.win.show()
         self.connect(self.win, SIGNAL("headerChanged"), self.headerChanged)
@@ -2242,6 +2255,7 @@ class TagTable(QTableView):
 
     def setHeaderTags(self, tags):
         self.saveSelection()
+        self.horizontalHeader().reset()
         self.model().setHeader(tags)
         self.restoreSelection()
 
