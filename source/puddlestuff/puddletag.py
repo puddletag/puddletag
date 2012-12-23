@@ -594,10 +594,6 @@ class MainWin(QMainWindow):
 
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
-
-        h = self._table.horizontalHeader()
-        h.restoreState(settings.value('table/header').toByteArray())
-        self.restoreState(settings.value('main/state').toByteArray())
         
         gensettings = {}
         controls = PuddleDock._controls.values()
@@ -657,6 +653,10 @@ class MainWin(QMainWindow):
         
         for control, val in gensettings.items():
             control.applyGenSettings(val, 1)
+
+        h = self._table.horizontalHeader()
+        h.restoreState(settings.value('table/header').toByteArray())
+        self.restoreState(settings.value('main/state').toByteArray())
         
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])

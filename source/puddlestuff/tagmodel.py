@@ -68,7 +68,8 @@ def loadsettings(filepath=None):
     tags = settings.get('tableheader', 'tags',
         ['__filename', 'artist', 'title','album', 'track', 
         '__length', 'year', '__bitrate','genre', 'comment', '__dirpath'])
-    checked = settings.get('tableheader', 'enabled', range(len(tags)), True)
+    #checked = settings.get('tableheader', 'enabled', range(len(tags)), True)
+    #checked = []
     fontsize = settings.get('table', 'fontsize', 0, True)
     rowsize = settings.get('table', 'rowsize', -1, True)
     v1_option = settings.get('id3tags', 'v1_option', 2)
@@ -77,7 +78,7 @@ def loadsettings(filepath=None):
     audioinfo.id3.v2_option = v2_option
     filespec = u';'.join(settings.get('table', 'filespec', []))
 
-    return ((zip(titles, tags), checked), fontsize, rowsize, filespec)
+    return (zip(titles, tags), fontsize, rowsize, filespec)
 
 def caseless(tag, audio):
     if tag in audio:
@@ -359,27 +360,33 @@ class ColumnSettings(HeaderSetting):
     title = translate("Column Settings", 'Columns')
     def __init__(self, parent = None, showok=False, status=None, table=None):
 
-        (self.tags, checked), fontsize, rowsize, filespec = loadsettings()
+        self.tags, fontsize, rowsize, filespec = loadsettings()
 
         if table is not None:
+            
             tags = table.model().headerdata
             hd = table.horizontalHeader()
-            
-            tags = [(hd.visualIndex(i), z) for i, z in enumerate(tags)]
-            self.tags = [z[1] for z in sorted(tags)]
+
+            tags = ([hd.visualIndex(i), z, hd.isSectionHidden(i)] for i, z in
+                enumerate(tags))
+            tags = sorted(tags)
+            checked = [i for i, t in enumerate(tags) if not t[2]]
+            tags = [tuple(z[1]) for z in tags]
+            [tags.append(z) for z in self.tags if z not in tags]
+            self.tags = tags
 
         HeaderSetting.__init__(self, self.tags, parent, showok, True)
         
         if showok:
             winsettings('columnsettings', self)
-        #self.buttonlist.moveup.hide()
-        #self.buttonlist.movedown.hide()
+        
         self.setWindowFlags(Qt.Widget)
         label = QLabel(translate("Column Settings", 'Adjust visibility of columns.'))
         self.grid.addWidget(label, 0, 0)
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
+        
         if not checked:
-            checked = []
+            checked = range(len(tags))
         [z.setCheckState(Qt.Checked) if i in checked
             else z.setCheckState(Qt.Unchecked) for i,z in enumerate(items)]
 
@@ -395,16 +402,16 @@ class ColumnSettings(HeaderSetting):
         cparser = PuddleConfig()
         cparser.set('tableheader', 'titles', titles)
         cparser.set('tableheader', 'tags', tags)
-        cparser.set('tableheader', 'enabled', checked)
+        
 
-        headerdata = [z for i, z in enumerate(self.tags) if i in checked]
-
+        hidden = [i for i, z in enumerate(self.tags) if i not in checked]
+        
         if control:
             control.horizontalHeader().reset()
-            control.setHeaderTags(headerdata)
+            control.setHeaderTags(self.tags, hidden)
             control.restoreSelection()
         else:
-            self.emit(SIGNAL("headerChanged"), headerdata)
+            self.emit(SIGNAL("headerChanged"), self.tags, hidden)
 
     def add(self):
         HeaderSetting.add(self)
@@ -441,6 +448,7 @@ class TagModel(QAbstractTableModel):
 
         QAbstractTableModel.__init__(self)
         self.alternateAlbumColors = True
+        self._headerData = []
         self.headerdata = headerdata
         self.colorRows = []
         self.sortOrder = (0, Qt.AscendingOrder)
@@ -478,9 +486,6 @@ class TagModel(QAbstractTableModel):
                 z.library = None
         self.undolevel = 0
         self._fontSize = QFont().pointSize()
-        
-        self.columns = dict([(field, i) for i, 
-            (title, field) in enumerate(headerdata)])
 
     def _setFontSize(self, size):
         self._fontSize = size
@@ -493,6 +498,28 @@ class TagModel(QAbstractTableModel):
         return self._fontSize
 
     fontSize = property(_getFontSize, _setFontSize)
+
+    def _getHeaderData(self):
+        return self._headerData
+
+    def _setHeaderData(self, tags):
+
+        new_tags = []
+        indexes = {}
+
+        for i, t in enumerate(tags):
+            t = tuple(t)
+            if t not in indexes:
+                indexes[t] = i
+                new_tags.append(t)
+
+        self._headerData = new_tags
+
+        self.columns = dict((field, i) for i, (title, field) in
+            enumerate(new_tags))
+
+
+    headerdata = property(_getHeaderData, _setHeaderData)
 
     def _get_pBg(self):
         return self._previewBackground
@@ -982,14 +1009,14 @@ class TagModel(QAbstractTableModel):
     def setHeaderData(self, section, orientation, value, role = Qt.EditRole):
         if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
             self.headerdata[section] = value
-        self.columns = dict([(field, i) for i, (title, field) in 
-            enumerate(self.headerdata)])
+
+        self.headerdata = self.headerdata #make sure columns are set
+
         self.emit(SIGNAL("headerDataChanged (Qt::Orientation,int,int)"), orientation, section, section)
 
     def setHeader(self, tags):
         self.headerdata = tags
-        self.columns = dict([(field, i) for i, (title, field) in 
-            enumerate(self.headerdata)])
+    
         self.reset()
 
     def setRowData(self,row, tags, undo = False, justrename = False, temp=False):
@@ -1244,10 +1271,8 @@ class TableHeader(QHeaderView):
         self.win = ColumnSettings(showok=True, table=self.parent())
         self.win.setModal(True)
         self.win.show()
-        self.connect(self.win, SIGNAL("headerChanged"), self.headerChanged)
-
-    def headerChanged(self, val):
-        self.emit(SIGNAL("headerChanged"), val)
+        self.connect(self.win, SIGNAL("headerChanged"),
+            SIGNAL('headerChanged'))
 
 class VerticalHeader(QHeaderView):
     def __init__(self, orientation, parent = None):
@@ -1283,12 +1308,8 @@ class TagTable(QTableView):
         header.setSortIndicatorShown(True)
         self.setSortingEnabled(True)
         self._savedSelection = False
-        #header.setStretchLastSection(True)
 
         self.setVerticalHeader(VerticalHeader(Qt.Vertical))
-
-        #self.connect(header, SIGNAL("sectionClicked(int)"), self.sortByColumn)
-        #header.setSortIndicator(0, Qt.AscendingOrder)
         self.setHorizontalHeader(header)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
@@ -1397,8 +1418,10 @@ class TagTable(QTableView):
         rows = self.currentRowSelection()
         audios = self.selectedTags
 
+
         def get_selected(f, row):
             selected = (columns[column] for column in rows[row])
+                
             return ((field, f.get(field, u'')) for field in selected)
         
         return map(dict, (get_selected(*z) for z in zip(audios, sorted(rows))))
@@ -1844,8 +1867,8 @@ class TagTable(QTableView):
         QTableView.sortByColumn(self, sortcolumn)
 
     def loadSettings(self):
-        ((tags, checked), fontsize, rowsize, self.filespec) = loadsettings()
-        self.setHeaderTags([z for i, z in enumerate(tags) if i in checked])
+        (tags, fontsize, rowsize, self.filespec) = loadsettings()
+        self.setHeaderTags(tags)
         if fontsize:
             self.fontSize = fontsize
         if rowsize > -1:
@@ -2253,10 +2276,21 @@ class TagTable(QTableView):
             self.dirs = list(set(self.dirs).difference(dirs))
             self.model().removeFolders(dirs, valid)
 
-    def setHeaderTags(self, tags):
+    def setHeaderTags(self, tags, hidden=None):
+            
         self.saveSelection()
-        self.horizontalHeader().reset()
+        hd = self.horizontalHeader()
+        hd.reset()
+        for c in range(hd.count()):
+            if hd.isSectionHidden(c):
+                hd.setSectionHidden(c, False)
+        
         self.model().setHeader(tags)
+        if hidden is not None:
+            hd = self.horizontalHeader()
+            for c in hidden:
+                hd.hideSection(c)
+
         self.restoreSelection()
 
     def setHorizontalHeader(self, header):
