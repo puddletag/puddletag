@@ -1030,6 +1030,7 @@ class ActionWindow(QDialog):
         cparser.set(self.__configKey, 'checked', names)
         if close:
             self.close()
+
         self.emit(SIGNAL('checkedChanged'), self.checkedRows())
         self.emit(SIGNAL("donewithmyshit"), macros)
 

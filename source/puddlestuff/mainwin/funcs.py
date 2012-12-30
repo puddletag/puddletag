@@ -342,8 +342,9 @@ def run_action(parent=None, quickaction=False):
     action_tool = PuddleDock._controls['Actions']
     parent.connect(win, SIGNAL('actionOrderChanged'),
         action_tool.updateOrder)
-    parent.connect(win, SIGNAL('checkedChanged'),
-        action_tool.updateChecked)
+    if not quickaction:
+        parent.connect(win, SIGNAL('checkedChanged'),
+            action_tool.updateChecked)
     win.show()
 
 def run_function(parent=None, prevfunc=None):
