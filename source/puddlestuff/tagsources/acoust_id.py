@@ -126,8 +126,8 @@ def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
     """
     path = os.path.abspath(os.path.expanduser(path))
     if None in (fp, dur):
-        duration, fp = fingerprint_file(path)
-    response = acoustid.lookup(apikey, fp, duration, meta)
+        dur, fp = fingerprint_file(path)
+    response = acoustid.lookup(apikey, fp, dur, meta)
     return response, fp
 
             
