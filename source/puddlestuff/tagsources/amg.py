@@ -14,6 +14,9 @@ from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.audioinfo import isempty, CaselessDict
 
+class OldURLError(RetrievalError):
+    pass
+
 ALBUM_ID = 'amg_album_id'
 
 release_order = ('year', 'type', 'label', 'catalog')
@@ -431,7 +434,9 @@ def parse_tracks(content):
 def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     review = False
     write_log('Opening Album Page - %s' % url)
-    album_page = urlopen(url, False)
+    album_page, code = urlopen(url, False, True)
+    if album_page.find("featured new releases") >= 0:
+        raise OldURLError("Old AMG URL used.")
     album_page = get_encoding(album_page, True, 'utf8')[1]
     
     info, tracks = parse_albumpage(album_page)
@@ -524,7 +529,10 @@ class AllMusic(object):
 
             if not isempty(album_id):
                 write_log(u'Found Album ID %s' % album_id)
-                return self.keyword_search(u':id %s' % album_id)
+                try:
+                    return self.keyword_search(u':id %s' % album_id)
+                except OldURLError:
+                    write_log("Invalid URL used. Doing normal search.")
 
         if not album:
             raise RetrievalError('Album name required.')

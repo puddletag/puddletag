@@ -595,6 +595,8 @@ class ReleaseWidget(QTreeView):
     def emitTracks(self, tracks):
         tracks = map(dict, tracks)
         tracks = map(self.cleanTrack, tracks)
+        #import pdb
+        #pdb.set_trace()
         if tracks:
             self.emit(SIGNAL('preview'), 
                 tracks[:len(self._status['selectedrows'])])
