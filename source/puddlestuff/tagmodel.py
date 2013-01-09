@@ -362,7 +362,13 @@ class ColumnSettings(HeaderSetting):
 
         self.tags, fontsize, rowsize, filespec = loadsettings()
 
+        checked = []
+
+        if table is None and status is not None:
+            table = status['table']
+
         if table is not None:
+            
             
             tags = table.model().headerdata
             hd = table.horizontalHeader()

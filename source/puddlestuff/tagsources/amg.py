@@ -572,7 +572,7 @@ class AllMusic(object):
             write_log('Retrieving %s - %s' % (artist, album))
         except KeyError:
             set_status('Retrieving album.')
-            write_log('Retrieving album')
+            write_log('Retrieving album.')
         write_log('Album URL - %s' % albuminfo['#albumurl'])
         url = albuminfo['#albumurl']
         try:
