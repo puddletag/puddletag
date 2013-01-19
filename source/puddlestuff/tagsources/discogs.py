@@ -244,8 +244,6 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
             
     url = master_url % r_id if rls_type == MASTER else release_url % r_id
     x = urlopen(url)
-    import pdb
-    pdb.set_trace()
     ret = parse_album_json(json.loads(x)['resp'][rls_type])
 
     info = deepcopy(info)
