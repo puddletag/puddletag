@@ -50,7 +50,8 @@ ALBUM_KEYS = {
     'id': '#r_id',
     'thumb': '#cover_url',
     'resource_url': '#discogs_url',
-    'type': '#release_type'}
+    'type': '#release_type',
+    'master_url': "discogs_master_url"}
 
 TRACK_KEYS = {
     'position': 'track',
@@ -59,7 +60,7 @@ TRACK_KEYS = {
 
 INVALID_KEYS = ['status', 'resource_url', 'tracklist', 'thumb',
     'formats', 'artists', 'extraartists', 'images', 'videos',
-    'master_id', 'labels', 'companies', 'series']
+    'master_id', 'labels', 'companies', 'series', 'released_formatted']
 
 class LastTime(object): pass
     
@@ -78,11 +79,8 @@ def convert_dict(d, keys=None):
 
 def check_values(d):
     ret = {}
-    for key in d:
-        if key in INVALID_KEYS:
-            continue
-        v = d[key]
-        if not v:
+    for key,v in d.iteritems():
+        if key in INVALID_KEYS or isempty(v):
             continue
         if hasattr(v, '__iter__') and hasattr(v, 'items'):
             continue
@@ -170,14 +168,14 @@ def parse_album_json(data):
         u'%s %s' % (z['entity_type_name'], z['name'])
         for z in data.get('companies', []))
     info['album'] = data['title']
-    info = check_values(convert_dict(info, ALBUM_KEYS))
+    cleaned_data = convert_dict(check_values(data), ALBUM_KEYS)
+    cleaned_data.update(check_values(convert_dict(info, ALBUM_KEYS)))
+    info = cleaned_data
 
     if 'images' in data:
         imgs = [(z.get('uri', ''), z.get('uri150', ''))
             for z in data['images'] if 'uri' in z or 'uri150' in z]
         info['#cover-url'] = imgs
-
-    info = dict((k,v) for k,v in info.iteritems() if not isempty(v))
         
     return (info, parse_tracklist(data['tracklist']))
 
