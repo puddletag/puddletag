@@ -5,7 +5,7 @@ from copy import deepcopy
 
 import puddlestuff.tagsources
 
-from puddlestuff.audioinfo import DATA
+from puddlestuff.audioinfo import DATA, isempty
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
 from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
     parse_searchstring, iri_to_uri)
@@ -163,6 +163,8 @@ def parse_album_json(data):
     info['involvedpeople_album'] = u':'.join(u'%s;%s' % (z['name'],z['role'])
         for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
+    info['catno'] = filter(None,
+        [z.get('catno') for z in data.get('labels', [])])
 
     info['companies'] = u';'.join(
         u'%s %s' % (z['entity_type_name'], z['name'])
@@ -174,6 +176,8 @@ def parse_album_json(data):
         imgs = [(z.get('uri', ''), z.get('uri150', ''))
             for z in data['images'] if 'uri' in z or 'uri150' in z]
         info['#cover-url'] = imgs
+
+    info = dict((k,v) for k,v in info.iteritems() if not isempty(v))
         
     return (info, parse_tracklist(data['tracklist']))
 
@@ -240,6 +244,8 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
             
     url = master_url % r_id if rls_type == MASTER else release_url % r_id
     x = urlopen(url)
+    import pdb
+    pdb.set_trace()
     ret = parse_album_json(json.loads(x)['resp'][rls_type])
 
     info = deepcopy(info)
