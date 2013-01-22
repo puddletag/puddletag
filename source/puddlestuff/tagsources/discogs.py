@@ -395,14 +395,9 @@ class Discogs(object):
 
     def retrieve(self, info):
         if self._getcover:
-            x = retrieve_album(info, self.covertype)
+            return retrieve_album(info, self.covertype)
         else:
-            x = retrieve_album(info, None)
-
-        import pdb
-        pdb.set_trace()
-        print "k"
-        return x
+            return retrieve_album(info, None)
 
     def applyPrefs(self, args):
         self._getcover = args[0]
