@@ -60,7 +60,8 @@ TRACK_KEYS = {
 
 INVALID_KEYS = ['status', 'resource_url', 'tracklist', 'thumb',
     'formats', 'artists', 'extraartists', 'images', 'videos',
-    'master_id', 'labels', 'companies', 'series', 'released_formatted']
+    'master_id', 'labels', 'companies', 'series', 'released_formatted',
+    'identifiers']
 
 class LastTime(object): pass
     
@@ -394,9 +395,14 @@ class Discogs(object):
 
     def retrieve(self, info):
         if self._getcover:
-            return retrieve_album(info, self.covertype)
+            x = retrieve_album(info, self.covertype)
         else:
-            return retrieve_album(info, None)
+            x = retrieve_album(info, None)
+
+        import pdb
+        pdb.set_trace()
+        print "k"
+        return x
 
     def applyPrefs(self, args):
         self._getcover = args[0]
