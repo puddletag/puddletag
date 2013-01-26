@@ -159,6 +159,7 @@ def parse_album_json(data):
     if formats:
         info['format'] = list(set(formats))
     info['artist'] = [z['name'] for z in data.get('artists', [])]
+    info['artist'] = u" & ".join(filter(None, info['artist']))
     info['involvedpeople_album'] = u':'.join(u'%s;%s' % (z['name'],z['role'])
         for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
