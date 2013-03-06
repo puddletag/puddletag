@@ -217,7 +217,7 @@ def func_tokens(dictionary, parse_action):
 
     return func_tok, arglist, rx_tok
 
-def get_function_arguments(func, arguments, reserved, fmt=True, *dicts):
+def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts):
 
     varnames = func.func_code.co_varnames[:func.func_code.co_argcount]
 
@@ -243,12 +243,10 @@ def get_function_arguments(func, arguments, reserved, fmt=True, *dicts):
             topass[param] = arg
         elif param.startswith('n_'):
             try:
-                if float(arg) == int(float(arg)):
-                    topass[param] = int(arg)
-                else:
-                    topass[param] = float(arg)
+                if float(arg):
+                    topass[param] = Decimal(arg)
             except ValueError:
-                raise ParseError(SYNTAX_ARG_ERROR % (funcname, no))
+                raise ParseError(SYNTAX_ARG_ERROR % (funcname, no + 1))
         else:
             if isinstance(arg, basestring) and fmt:
                 topass[param] = replacevars(arg, *dicts)
@@ -294,7 +292,8 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     
     reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state}
     dicts = [s_audio, extra, state]
-    topass = get_function_arguments(func, arguments, reserved, True, *dicts)
+    topass = get_function_arguments(funcname, func, arguments, 
+        reserved, True, *dicts)
 
     try:
         ret = func(**topass)
@@ -510,12 +509,10 @@ def replacevars(pattern, *dicts):
     escape = False
 
     for i, c in enumerate(pattern):
-        if not in_quote and c == u'\\' and not escape:
+        if c == u'\\' and not escape:
             escape = True
             continue
         elif escape:
-            if c == u'\\':
-                ret.append(c)
             escape = False
         elif c == u'"':
             in_quote = not in_quote
@@ -805,13 +802,13 @@ class Function:
             reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
                 'r_tags': r_tags, 'text': to_string(text),
                 'm_text': m_text}
-            topass = get_function_arguments(func, self.args, reserved,
+            topass = get_function_arguments("", func, self.args, reserved,
                 False, *[s_audio, state])
             return func(**topass)
         else:
             reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
                 'r_tags': r_tags}
-            topass = get_function_arguments(func,
+            topass = get_function_arguments("", func,
                 [text] + self.args, reserved, False, *[s_audio, state])
             
         try:

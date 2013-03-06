@@ -5,7 +5,7 @@ from copy import deepcopy
 from itertools import izip
 from sgmllib import SGMLParser
 
-from puddlestuff.functions import replaceWithReg
+from puddlestuff.functions import replace_regex
 from puddlestuff.audioinfo import CaselessDict
 
 conditionals = set(['if', 'ifnot'])
@@ -216,7 +216,7 @@ def replace(cursor, s, repl):
     cursor.line = cursor.line[:cursor.charno] + text
 
 def regexpreplace(cursor, regexp, s):
-    text = replaceWithReg({}, cursor.line, regexp, s,
+    text = replace_regex({}, cursor.line, regexp, s,
         matchcase=True)
     #Now uses whole line instead of just from the current char onwards
     #because Mp3tag is being a fucking idiot.

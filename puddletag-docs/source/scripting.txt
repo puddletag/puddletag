@@ -33,6 +33,10 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $caps3(string)
 
    Capitalizes the first letter of the string and converts the rest to lower case.
+   
+.. describe:: $ceiling(number)
+
+   Returns the smallest integer that is greater than or equal to number.
 
 
 .. describe:: $char(character)
@@ -63,11 +67,6 @@ The scripting functions that puddletag supports are listed here. Use them where 
    If x is True, y is returned, otherwise z is returned.
 
 
-.. describe:: $ifgreater(a, b, x, y)
-
-   If the number a > b return x. Otherwise return y.
-
-
 .. describe:: $iflonger(a,b,x,y)
 
    If string a is longer than string b, then x is returned, otherwise y.
@@ -76,7 +75,6 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $isdigit(x)
 
    Returns true if x is a decimal number.
-
 
 .. describe:: $left(string, n)
 

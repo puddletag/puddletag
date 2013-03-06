@@ -54,8 +54,9 @@ true = u'1'
 false = u'0'
 path = os.path
 
+D = decimal.Decimal
+
 def add(text,text1):
-    D = decimal.Decimal
     try:
         return unicode((D(unicode(text)) + D(unicode(text1))).normalize().to_eng_string())
     except decimal.InvalidOperation:
@@ -101,16 +102,20 @@ def and_(text, text1):
     return unicode(check_truth(text) and check_truth(text1))
 
 def caps(text):
+    #Capitalizes the first letter of each word in string and 
+    #converts the rest to lower case.
     return titleCase(text)
 
 def caps2(text):
-    upcase = [z for z,i in enumerate(text) if i in string.uppercase]
-    text = list(titleCase(text))
-    for z in upcase:
-        text[z] = text[z].upper()
-    return "".join(text)
+    #Capitalizes the first letter of each word in string and 
+    #leaves all other characters unchanged.
+    upcase = set(i for i, char in enumerate(text) if char.upper() == char)
+    return "".join(ch.upper() if i in upcase else ch 
+        for i, ch in enumerate(text.title()))
 
 def caps3(text):
+    #Capitalizes the first letter of the string and converts 
+    #the rest to lower case.
     try:
         start = re.search("\w", text, re.U).start(0)
     except AttributeError:
@@ -118,6 +123,7 @@ def caps3(text):
     return text[:start] + text[start].upper() + text[start + 1:].lower()
 
 def ceiling(n_value):
+    
     return math.ceil(n_value)
 
 def char(text):
@@ -131,12 +137,18 @@ def changeartist(artist, *files):
         audio['artist'] = artist
         audio.save()
 
-def div(text,text1):
-    D = decimal.Decimal
+def div(n_numerator, n_divisor):
+    if n_divisor == 0:
+        raise FuncError("Cannot divide by zero.")
     try:
-        return unicode((D(text) / D(text1)).normalize())
+        return unicode((D(n_numerator) / D(n_divisor)).normalize())
     except decimal.InvalidOperation:
         return
+    #ret = unicode(float(n_numerator) / n_divisor)
+    #if len(ret) < len(normalized):
+        #return ret
+    #else:
+        #return normalized
 
 def eql(text, text1):
     return true if text == text1 else false
@@ -161,6 +173,9 @@ def finddups(tracks, key='title', method=None):
         except KeyError:
             li.append(None)
     return dupes(li, method)
+
+def floor(n_value):
+    return math.floor(n_value)
 
 def formatValue(m_tags, p_pattern, state=None):
     """Format value, Format $0 using $1
@@ -245,9 +260,6 @@ def isdigit(text):
         return true
     except decimal.InvalidOperation:
         return false
-
-def floor(n_value):
-    return math.floor(n_value)
 
 def left(text, n):
     try:
@@ -346,7 +358,7 @@ Match filename's &case:, check'''
         return {'__image': images}
 
 def lower(text):
-    return string.lower(text)
+    return text.lower()
 
 def merge_values(m_text, separator=u';'):
     '''Merge field, "Merge field: $0, sep='$1'"
@@ -370,6 +382,7 @@ def meta(m_tags, field, n_index=None):
     if value is None:
         return None
     if n_index is not None:
+        n_index = int(n_index)
         try:
             return value[n_index]
         except IndexError:
@@ -379,18 +392,23 @@ def meta(m_tags, field, n_index=None):
             return value
         return u', '.join(value)
 
-def mid(text, n, i):
+def mid(text, n_start, n_len):
+    
     try:
-        n = int(n)
-        i = int(i)
-        return unicode(text)[n: n + i]
+        n_start = int(n_start)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % unicode(n))
-
-def mod(text,text1):
-    D = decimal.Decimal
+        raise FuncError(u'Integer expected, got "%s"' % unicode(n_start))
+    
     try:
-        return unicode((D(text) % D(text1).normalize()))
+        n_len = int(n_len)
+    except (TypeError, ValueError):
+        raise FuncError(u'Integer expected, got "%s"' % unicode(n_len))
+
+    return unicode(text)[n_start: n_start + n_len]
+
+def mod(n_x, n_y):
+    try:
+        return unicode((n_x % n_y).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -470,10 +488,10 @@ def move(m_tags, p_pattern, r_tags, ext=True, state=None):
     if fn:
         return {'__path': fn}
 
-def mul(text, text1):
+def mul(n_x, n_y):
     D = decimal.Decimal
     try:
-        return unicode((D(text) * D(text1)).normalize())
+        return unicode((D(n_x) * D(n_y)).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -484,9 +502,7 @@ def neql(text, text1):
         return true
 
 def not_(text):
-    if check_truth(text):
-        return false
-    return true
+    return false if check_truth(text) else true
 
 def num(text, n_len, add_sep=false):
     if not text:
@@ -504,20 +520,16 @@ def num(text, n_len, add_sep=false):
 
     tracknum = tracknum.lstrip(u'0')
 
-    if total and add_sep != false:
+    if total and check_truth(add_sep):
         return u"%s/%s" % (tracknum.zfill(n_len), total)
     else:
         return tracknum.zfill(n_len)
 
-def odd(text):
-    D = decimal.Decimal
-    if D(text) % 2 != 0:
-        return true
-    else:
-        return false
+def odd(n_number):
+    return true if (n_number % 2 != 0) else false
 
 def or_(text,text1):
-    return unicode(check_truth(text) or check_truth(text1))
+    return true if (check_truth(text) or check_truth(text1)) else false
 
 def rand():
     import random
@@ -632,7 +644,7 @@ class RegHelper(object):
         except KeyError:
             return u'""'
 
-def replaceWithReg(m_tags, text, regex, repl, matchcase=False, state=None):
+def replace_regex(m_tags, text, regex, repl, matchcase=False, state=None):
     """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"
 &Regular Expression, text
 Replace &matches with:, text
@@ -674,15 +686,13 @@ Match &Case, check"""
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
 
-replace_regex = replaceWithReg
-
-validFilenameChars = "'-_.!()[]{}&~+^ %s%s%s" % (
+VALID_FILENAME_CHARS = "'-_.!()[]{}&~+^ %s%s%s" % (
     string.ascii_letters, string.digits, os.path.sep)
 
 #Contributed by Erik Reckase
-def removeDisallowedFilenameChars(t_filename):
-    cleanedFilename = unicodedata.normalize('NFKD', t_filename).encode('ASCII', 'ignore')
-    return u''.join(c for c in cleanedFilename if c in validFilenameChars)
+def to_ascii(t_fn):
+    cleaned_fn = unicodedata.normalize('NFKD', t_fn).encode('ASCII', 'ignore')
+    return u''.join(c for c in cleaned_fn if c in VALID_FILENAME_CHARS)
 
 def remove_dupes(m_text, matchcase=False):
     """Remove duplicate values, "Remove Dupes: $0, Match Case $1"
@@ -848,12 +858,8 @@ def find(text, text1):
         return unicode(val)
     return u'-1'
 
-def sub(text,text1):
-    D = decimal.Decimal
-    try:
-        return  unicode(D(text) - D(text1))
-    except decimal.InvalidOperation:
-        return
+def sub(n_1, n_2):
+    return unicode(n_1 - n_2)
 
 def tag_dir(m_tags, pattern, r_tags, state = None):
     '''Tag to Dir, "Tag->Dir: $1"
@@ -1005,7 +1011,7 @@ functions = {
     'remove_except': remove_except,
     #'remove_tag': remove_tag,
     "replace": replace,
-    "regex": replaceWithReg,
+    "regex": replace_regex,
     "right": right,
     "round": _round,
     'save_artwork': save_artwork,
@@ -1021,7 +1027,7 @@ functions = {
     "upper": upper,
     'update_from_tag': update_from_tag,
     "validate": validate,
-    'to_ascii': removeDisallowedFilenameChars}
+    'to_ascii': to_ascii}
 
 no_fields = (filenametotag, load_images, move, remove_except,
     save_artwork, tag_dir, update_from_tag)
