@@ -207,15 +207,15 @@ def geql(text,text1):
 
 def grtr(text, text1):
     try:
-        text = float(text)
+        text = float(text) if text.strip() else 0
     except (TypeError, ValueError):
         pass
 
     try:
-        text1 = float(text1)
+        text1 = float(text1) if text1.strip() else 0
     except (TypeError, ValueError):
         pass
-    
+
     if text > text1:
         return true
     else:
