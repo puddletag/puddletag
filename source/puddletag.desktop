@@ -7,4 +7,3 @@ Exec=puddletag %F
 Icon=puddletag
 GenericName=Audio Tag Editor
 Categories=AudioVideo;Audio;Qt;
-MimeType=inode/directory;
