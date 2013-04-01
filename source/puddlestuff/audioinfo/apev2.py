@@ -85,6 +85,13 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
         def __contains__(self, key):
             if key == '__image':
                 return bool(self.images)
+            
+            elif key == '__total':
+                try:
+                    return bool(get_total(self))
+                except (KeyError, ValueError):
+                    return False
+            
             if self.revmapping:
                 key = self.revmapping.get(key, key)
             return key in self.__tags

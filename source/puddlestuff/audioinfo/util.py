@@ -415,8 +415,13 @@ def setmodtime(fn, atime, mtime):
 def set_total(tag, value):
     """If tag['track'] is of format x/y set's y to value."""
     track = to_string(tag['track']).split(u'/', 1)
+    
+    if isempty(value) and track:
+        tag['track'] = track[0]
+        return
+
     value = to_string(value)
-    if not (value and track) or len(track) == 1:
+    if not (value and track):
         return False
     tag['track'] = track[0] + u'/' + value
     return True
@@ -553,8 +558,11 @@ def to_string(value, errors='strict'):
 
 def usertags(tag):
     """Return dictionary of all editable key, value pairs found in tag."""
-    return dict([(z,v) for z,v in tag.items() if
-        not (isinstance(z, (int, long)) or z.startswith('__'))])
+    ret = dict((z,v) for z,v in tag.iteritems() if isinstance(z, basestring)
+        and not z.startswith('__'))
+    if tag.get('__total'):
+        ret['__total'] = tag['__total']
+    return ret
 
 def unicode_list(value):
     """Modifies the passed value to a unicode list.

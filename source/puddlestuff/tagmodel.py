@@ -396,7 +396,7 @@ class ColumnSettings(HeaderSetting):
         [z.setCheckState(Qt.Checked) if i in checked
             else z.setCheckState(Qt.Unchecked) for i,z in enumerate(items)]
 
-    def applySettings(self, control = None):
+    def applySettings(self, control = None):        
         row = self.listbox.currentRow()
         if row > -1:
             self.tags[row][0] = unicode(self.textname.text())
@@ -416,6 +416,7 @@ class ColumnSettings(HeaderSetting):
             control.horizontalHeader().reset()
             control.setHeaderTags(self.tags, hidden)
             control.restoreSelection()
+            control.horizontalHeader().reset()
         else:
             self.emit(SIGNAL("headerChanged"), self.tags, hidden)
 
@@ -1022,7 +1023,8 @@ class TagModel(QAbstractTableModel):
 
     def setHeader(self, tags):
         self.headerdata = tags
-    
+        self.emit(SIGNAL("headerDataChanged(Qt::Orientation,int,int)"), 
+            Qt.Horizontal, 0, len(self.headerdata))
         self.reset()
 
     def setRowData(self,row, tags, undo = False, justrename = False, temp=False):
@@ -1725,8 +1727,9 @@ class TagTable(QTableView):
         else:
             self.model().load(tags, append=append)
 
+        QApplication.processEvents()
         if append or append is None:
-            self.restoreSelection()
+            self.restoreSelection() 
         else:
             self.selectCorner()
 
@@ -1854,9 +1857,7 @@ class TagTable(QTableView):
             self.emit(SIGNAL('playlistchanged'), filepath)
         self.emit(SIGNAL('filesloaded'), True)
         if self._restore:
-            self.clearSelection()
-            self.restoreReloadSelection(*self._restore)
-            self._restore = False
+            self.restoreSelection(self._restore)
 
         model = self.model()
         model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
@@ -2021,13 +2022,9 @@ class TagTable(QTableView):
         model = self.model().reset()
         self.emit(SIGNAL('filesloaded'), True)
         if self._restore:
-            self.clearSelection()
-            self.restoreReloadSelection(*self._restore)
-            self._restore = False
+            self.restoreSelection(self._restore)
 
-        
         self.selectionChanged()
-        
 
     def reloadFiles(self, files=None):
         self._restore = self.saveSelection()
@@ -2174,10 +2171,14 @@ class TagTable(QTableView):
             return
 
     def saveSelection(self):
-        self._currentcol = self.currentColumnSelection()
-        self._currentrow = self.currentRowSelection()
-        self._currenttags = [(row, self.rowTags(row)) for row in self._currentrow]
-        return (self._currentrow, self._currentcol, self._currenttags)
+        taginfo = self.model().taginfo
+        fields = [field for title, field in self.model().headerdata]
+        filenames = defaultdict(lambda: set())
+        selection = self.currentRowSelection()
+        for row, columns in self.currentRowSelection().iteritems():
+            filenames[taginfo[row].filepath] = set(fields[c] for c in columns)
+        self.__savedSelection = filenames
+        return filenames
 
     def restoreReloadSelection(self, currentrow, currentcol, tags):
         if not tags:
@@ -2226,55 +2227,32 @@ class TagTable(QTableView):
             [select(min(row), max(row), col) for row in rows]
         self.selectionModel().select(selection, QItemSelectionModel.Select)
 
-    def restoreSelection(self, currentrow=None, currentcol=None, tags=None):
-        if not currentrow:
-            currentrow = self._currentrow
-            currentcol = self._currentcol
-            tags = self._currenttags
-        if not tags:
-            return
-
-        def getGroups(rows):
-            groups = []
-            try:
-                last = [rows[0]]
-            except IndexError:
-                return []
-            for row in rows[1:]:
-                if row - 1 == last[-1]:
-                    last.append(row)
-                else:
-                    groups.append(last)
-                    last = [row]
-            groups.append(last)
-            return groups
-
-        getrow = self.model().taginfo.index
-        modelindex = self.model().index
+    def restoreSelection(self, data=None):
+        if data is None:
+            data = self.__savedSelection
+            
+        get_index = self.model().index
         selection = QItemSelection()
-        select = lambda top, low, col: selection.append(
-            QItemSelectionRange(modelindex(top, col),
-                modelindex(low, col)))
-        newindexes = {}
 
-        while True:
-            try:
-                tag = tags[0]
-            except IndexError:
-                break
-            try:
-                newindexes[tag[0]] = getrow(tag[1])
-            except ValueError:
-                pass
-            del(tags[0])
-        groups = {}
-        for col, rows in currentcol.items():
-            groups[col] = getGroups(sorted([newindexes[row] for row in rows if row in newindexes]))
+        def select_index(row, col):
+            model_index = get_index(row, col)
+            selection.select(model_index, model_index)
 
-        for col, rows in groups.items():
-            [select(min(row), max(row), col) for row in rows]
+        columns = dict((field[1], i)  for i, field in 
+            enumerate(self.model().headerdata))
+        
+        for row, fn in enumerate(z.filepath for z in self.model().taginfo):
+            selected_fields = data.get(fn)
+            if not selected_fields:
+                continue
+            
+            for field in selected_fields:
+                column = columns.get(field)
+                if column is not None:
+                    select_index(row, column)
+
         self.selectionModel().clear()
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent)
         self.model().highlight(self.selectedRows)
 
     def removeFolders(self, dirs, valid = True):
@@ -2283,17 +2261,16 @@ class TagTable(QTableView):
             self.model().removeFolders(dirs, valid)
 
     def setHeaderTags(self, tags, hidden=None):
-            
+
         self.saveSelection()
-        hd = self.horizontalHeader()
-        hd.reset()
-        for c in range(hd.count()):
-            if hd.isSectionHidden(c):
-                hd.setSectionHidden(c, False)
-        
+        hd = TableHeader(Qt.Horizontal, tags, self)
+        hd.setSortIndicatorShown(True)
+        hd.setVisible(True)
+        self.connect(hd, SIGNAL("headerChanged"), self.setHeaderTags)
+        self.setHorizontalHeader(hd)
         self.model().setHeader(tags)
+
         if hidden is not None:
-            hd = self.horizontalHeader()
             for c in hidden:
                 hd.hideSection(c)
 

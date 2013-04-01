@@ -60,7 +60,6 @@ class Combo(QComboBox):
         super(Combo, self).__init__(*args, **kwargs)
         self._edited = False
         def k(text): self._edited = True
-        pdb.set_trace()
         self.connect(self, SIGNAL('editTextChanged(const QString&)'),
             k)        
 
