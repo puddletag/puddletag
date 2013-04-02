@@ -1,3 +1,21 @@
+1 April 2013 - 1.0.2 RC1
+    Fixed: Album art can be dragged from browser. If link can be resolved, image will be loaded.
+    Added: Confirmation dialog if copying large amounts of data.
+    Added: In field selection dialog for columns, fields are listed in combo box.
+    Added: Support for MusicBrainz cover art.
+    Fixed: Search by ID for MusicBrainz tag source.
+    Added: Directory modified date is force-changed if files are modified.
+    Added: disambiguation to album title for MusiBrainz so that album titles would be "Somaro (Deluxe Edition)" instead of just "Somaro".
+    Added: Tags can be submitted to AcoustID.
+    Added: Russian translation.
+    Fixed: Removed invalid files from puddletag.pro for translations.
+    Changed: Column settings take ordering made by user (by dragging, etc) into account.
+    Fixed: checked Actions being overwritten by check Quick Actions selections.
+    Added: catno field to Discogs tag source.
+    Fixed: Discogs didn't return all album info.
+    Changed: Discogs multiple artists are concatenated using &.
+    Added: __total can be added to Tag Panel and edited.
+
 31 August 2012 - 1.0.1
     Changed: AcoustID tag source is not loaded if fpcalc binary not found.
     Fixed: Issue 189.

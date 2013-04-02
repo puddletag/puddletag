@@ -2166,7 +2166,7 @@ class TagTable(QTableView):
     def restoreSort(self):
         self.setCursor(Qt.ArrowCursor)
         if self._savedSelection:
-            self.restoreSelection(*self._savedSelection)
+            self.restoreSelection(self._savedSelection)
             self._savedSelection = None
             return
 

@@ -37,13 +37,21 @@ Install the dependencies as outlined on the :doc:`home page <index>`. For Debian
 
 .. code-block:: bash
 
-    aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2
+    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
 
 + Now download the source tarball |source_link|_ (SHA1 |source_sha|).
 + Unzip it.
 + You can run puddletag from that directory by typing ``./puddletag`` from the unzipped directory in your console.
 + Alternatively install it by running ``python setup.py install`` as root in the unzipped directory.
 + puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run ``desktop-file-install puddletag.desktop`` as root in the unzipped directory.
+
+.. note:: For AcoustID support in Ubuntu you will also need to **fpcalc** binary
+    For Ubuntu 12.04 and later it is available in the libchromaprint-tools 
+    package.
+
+    For earlier versions and other distros please visit the 
+    `AcoustID <http://acoustid.org/chromaprint>`_ page for installation
+    instructions.
 
 .. _installing_from_the_debian_package:
 

@@ -11,7 +11,30 @@ News
 
 :download:`RSS Feed <rss.xml>`
 
+----
 
+1 April 2013 - 1.0.2RC1
+#######################
+
+This release is an RC, because I'm only 98% sure everything works as intended.
+If there's not feedback within the next week regarding any new bugs/issues, I'll 
+just rename it to 1.0.2 ;-). So as for...
+
+New Features:
+-------------
+
++ Album art can be dragged from your browser. If link can be resolved, image will be loaded. Does not work if you drag from Google images unless you disable Google redirects.
++ Tags can now be submitted to AcoustID.
++ When searching for a title like "Atliens (Deluxe Edition)" the search will be retried with just "Atliens" if there were no results.
++ Support for MusicBrainz album art.
++ Russian translation
+
+Fixed:
+------
+
++ Some comparisons function like **$grtr** weren't working as they should.
++ Discogs didn't return all album info.
++ Search by ID for MusicBrainz tag source.
 
 ----
 

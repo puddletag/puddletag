@@ -644,7 +644,7 @@ class RegHelper(object):
         except KeyError:
             return u'""'
 
-def replace_regex(m_tags, text, regex, repl, matchcase=False, state=None):
+def replaceWithReg(m_tags, text, regex, repl, matchcase=False, state=None):
     """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"
 &Regular Expression, text
 Replace &matches with:, text
@@ -685,6 +685,8 @@ Match &Case, check"""
                 return re.sub(regex, replace_tokens, text, 0)
     except re.error, e:
         raise findfunc.FuncError(unicode(e))
+
+replace_regex = replaceWithReg
 
 VALID_FILENAME_CHARS = "'-_.!()[]{}&~+^ %s%s%s" % (
     string.ascii_letters, string.digits, os.path.sep)
@@ -1011,7 +1013,7 @@ functions = {
     'remove_except': remove_except,
     #'remove_tag': remove_tag,
     "replace": replace,
-    "regex": replace_regex,
+    "regex": replaceWithReg,
     "right": right,
     "round": _round,
     'save_artwork': save_artwork,

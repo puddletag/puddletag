@@ -88,7 +88,7 @@ def fix_xml(xml):
 def istext(node):
     return getattr(node, 'nodeType', None) == TEXT_NODE
 
-ESCAPE_CHARS_RE = re.compile(r'(?<!\\)(?P<char>[&|+\-!(){}[\]^"~*?:])')
+ESCAPE_CHARS_RE = re.compile(r'(?<!\\)(?P<char>[&|+\-!(){}[\]^"~*?:/])')
 def solr_escape(value):
     r"""Escape un-escaped special characters and return escaped value.
 
@@ -99,6 +99,7 @@ def solr_escape(value):
     >>> solr_escape(r'foo\\+') == r'foo\\+'
     True
     """
+#    value = value.replace(u'/', u' ')
     return ESCAPE_CHARS_RE.sub(r'\\\g<char>', value)
 
 def node_to_text(node):
