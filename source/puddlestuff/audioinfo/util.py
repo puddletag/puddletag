@@ -560,8 +560,6 @@ def usertags(tag):
     """Return dictionary of all editable key, value pairs found in tag."""
     ret = dict((z,v) for z,v in tag.iteritems() if isinstance(z, basestring)
         and not z.startswith('__'))
-    if tag.get('__total'):
-        ret['__total'] = tag['__total']
     return ret
 
 def unicode_list(value):
