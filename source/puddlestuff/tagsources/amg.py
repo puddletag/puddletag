@@ -443,10 +443,6 @@ def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     info['#albumurl'] = url
     info['amg_url'] = url
 
-    if 'album' in info:
-        info['#extrainfo'] = [
-            info['album'] + u' at AllMusic.com', info['#albumurl']]
-
     if coverurl:
         try:
             write_log('Retrieving Cover - %s'  % info['#cover-url'])

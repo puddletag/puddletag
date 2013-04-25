@@ -398,7 +398,6 @@ class StatusWidgetItem(QTableWidgetItem):
         return self._status
 
     def _set_status(self, status):
-        print self.statusColors
         if status and status in self.statusColors:
             if self._status == ADD and status != REMOVE:
                 return
@@ -424,73 +423,6 @@ class StatusWidgetItem(QTableWidgetItem):
         else:
             self.status = status
         self.linked = []
-
-class ComboTableWidgetItem(QComboBox):
-    def __init__(self, text=None, status=None, colors=None, preview=False, parent=None):
-        super(ComboTableWidgetItem, self).__init__(parent)
-        self.preview = preview
-        self.statusColors = colors
-
-        if text:
-            self.addItems(text)
-            self.setCurrentIndex(0)
-        
-        if status and status in self.statusColors:
-            self.setBackground(self.statusColors[status])
-            
-        self._status = status
-        self.setEditable(False)
-        self._original = (text[0], preview, status)
-
-    def _get_preview(self):
-        return self.font().bold()
-
-    def _set_preview(self, value):
-        font = self.font()
-        font.setBold(value)
-        self.setFont(font)
-    
-    preview = property(_get_preview, _set_preview)
-
-    def _get_status(self):
-        return self._status
-
-    def _set_status(self, status):
-        if status and status in self.statusColours:
-            if self._status == ADD and status != REMOVE:
-                return
-            self.setBackground(self.statusColors[status])
-            self._status = stats
-        else:
-            self.setBackground(None)
-            self._status = None
-    
-    status = property(_get_status, _set_status)
-
-    def __lt__(self, item):
-        if self.currentText().toUpper() < item.currentText().toUpper():
-            return True
-        return False
-
-    def reset(self):
-        self.setEditText(self._original[0])
-        self.preview = self._original[1]
-        status = self._original[2]
-        if status == ADD:
-            self.status = REMOVE
-        else:
-            self.status = status
-        self.linked = []
-
-    def setBackground(self, brush):
-
-        if not brush:
-            l = QLineEdit()
-            color = l.palette().color(l.backgroundRole())
-        else:
-            color = brush.color()
-        color = 'rgb(%s,%s,%s)' % (color.red(), color.blue(), color.green())
-        self.setStyleSheet('QComboBox {background-color: %s;}' % color)
 
 
 class VerticalHeader(QHeaderView):
@@ -751,17 +683,11 @@ class ExTags(QDialog):
             EDIT: QBrush(edit), REMOVE: QBrush(remove)}
 
         item = self.table.item
-        cell = self.table.cellWidget
-
         for row in xrange(self.table.rowCount()):
             item(row, 0).statusColors = self._colors
             item(row, 0).status = item(row, 0).status
-            if item(row, 1) is None:                
-                cell(row, 1).statusColors = self._colors
-                cell(row, 1).status = cell(row, 1).status
-            else:
-                item(row, 1).statusColors = self._colors
-                item(row, 1).status = item(row, 1).status
+            item(row, 1).statusColors = self._colors
+            item(row, 1).status = item(row, 1).status
 
     def listtotag(self):
         get_field = self.get_field
@@ -828,7 +754,7 @@ class ExTags(QDialog):
                     preview = UNCHANGED
 
                 if numvalues[field] != len(audios):
-                    self._settag(row, field, values)
+                    self._settag(row, field, KEEP)
                     row += 1
                 else:
                     if isinstance(values, basestring):
@@ -960,6 +886,7 @@ class ExTags(QDialog):
                 self.discconnect(self.piclabel.removepic,
                     SIGNAL('triggered()'), self.removePic)
             
+            
             self.piclabel.setImages(None)
 
     def save(self):
@@ -986,13 +913,8 @@ class ExTags(QDialog):
             field_item = StatusWidgetItem(field, status,
                 self._colors, preview)
             tb.setItem(row, 0, field_item)
-            if isinstance(value, basestring):
-                valitem = StatusWidgetItem(field, status,
-                                          self._colors, preview)
-                tb.setItem(row, 1, valitem)
-            else:
-                valitem = ComboTableWidgetItem(value, status, self._colors, preview, tb)
-                tb.setCellWidget(row, 1, valitem)
+            valitem = StatusWidgetItem(value, status, self._colors, preview)
+            tb.setItem(row, 1, valitem)
         else:
             field_item = tb.item(row, 0)
             field_item.setText(field)
