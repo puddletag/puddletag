@@ -127,12 +127,12 @@ def parse_tracklist(tlist):
         a_len = len(t.get('artists', []))
         for i, a in enumerate(t.get(u'artists', [])):
             if a.get(u'join'):
-                artist.append(u'%s %s ' % (a[u'name'], a[u'join']))
+                artist.append(u'%s %s ' % (a[u'name'].strip(), a[u'join']))
             else:
                 if i < a_len - 1:
-                    artist.append(u'%s & ' % a[u'name'])
+                    artist.append(u'%s & ' % a[u'name'].strip())
                 else:
-                    artist.append(a[u'name'])
+                    artist.append(a[u'name'].strip())
         info['artist'] = u''.join(artist).strip()
         info['title'] = title
 
@@ -158,7 +158,7 @@ def parse_album_json(data):
     
     if formats:
         info['format'] = list(set(formats))
-    info['artist'] = [z['name'] for z in data.get('artists', [])]
+    info['artist'] = [z['name'].strip() for z in data.get('artists', [])]
     info['artist'] = u" & ".join(filter(None, info['artist']))
     info['involvedpeople_album'] = u':'.join(u'%s;%s' % (z['name'],z['role'])
         for z in data.get('extraartists', []))
@@ -203,7 +203,7 @@ def parse_search_json(data):
 
         info = convert_dict(info, ALBUM_KEYS)
 
-        info['artist'] = artist
+        info['artist'] = re.sub('\s+', ' ', artist)
         info['album'] = album
 
         info['discogs_id'] = info['#r_id']
