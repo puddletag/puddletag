@@ -445,7 +445,7 @@ def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
 
     if 'album' in info:
         info['#extrainfo'] = [
-            info['album'] + u' at AllMusic.com', info['#albumurl']
+            info['album'] + u' at AllMusic.com', info['#albumurl']]
 
     if coverurl:
         try:
