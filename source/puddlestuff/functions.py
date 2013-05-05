@@ -326,32 +326,20 @@ def load_images(r_tags, filepatterns, desc, matchcase,state=None):
 &Default description (can be pattern):, text
 Match filename's &case:, check'''
     tags = r_tags
-    if state is None:
-        state = {}
-    
-    dirpath = tags.dirpath
-    key = 'image_dirpath' + dirpath
-    if key in state:
-        files = state[key]
-    else:
-        files = os.listdir(dirpath)
+
     images = []
-    pictures = fnmatch(filepatterns, files, matchcase)
+    dirpath = r_tags.dirpath
+    pictures = fnmatch(filepatterns, os.listdir(dirpath), matchcase)
     for pic in pictures:
-        filename = os.path.join(dirpath, pic)
-        key = 'loaded_image' + filename
-        if key in state:
-            image = deepcopy(state[key])
-        else:
-            image = _load_image(filename)
-            if not image:
-                continue
-            desc = formatValue(tags, desc)
-            if desc is None:
-                desc = u''
-            image[audioinfo.DESCRIPTION] = desc
-            image[audioinfo.IMAGETYPE] = 3
-            state[key] = image
+        filename = os.path.join(dirpath, pic)        
+        image = _load_image(filename)
+        if not image:
+            continue
+        desc = formatValue(tags, desc)
+        if desc is None:
+            desc = u''
+        image[audioinfo.DESCRIPTION] = desc
+        image[audioinfo.IMAGETYPE] = 3
         images.append(image)
 
     if images:
