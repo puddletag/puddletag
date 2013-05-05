@@ -425,12 +425,12 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
             if start_pos != p:
                 new_dirs.append(safe_name(text[start_pos:p]))
             start_pos = p
-        new_dirs.append(text[start_pos + 1:])
+        new_dirs.append(safe_name(text[start_pos + 1:]))
     else:
-        new_dirs = [text]
+        new_dirs = [safe_name(text)]
 
     if os.path.isabs(pattern):
-        return add_extension(encode_fn(u'/' + u'/'.join(new_dirs)), tags, ext)
+        return add_extension(u'/' + u'/'.join(map(safe_name, new_dirs)), tags, ext)
     else:
 
         subdirs = new_dirs
