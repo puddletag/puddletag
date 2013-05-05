@@ -308,7 +308,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
         message = SYNTAX_ERROR.arg(funcname).arg(e.message)
         raise ParseError(message)
 
-def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
+def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, path_sep=None):
     """Parses format strings. Returns the parsed string.
 
     Arguments
@@ -362,6 +362,8 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
     tags.update(extra if extra is not None else {})
 
     br_error = translate('Errors', 'No closing bracket found.')
+
+    paths = []
 
     i = 0
     while 1:
@@ -425,11 +427,15 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False):
             token = []
         else:
             token.append(c)
+            if path_sep and c == path_sep and not in_func:
+                paths.append(len(u''.join(tokens) + replacevars(u''.join(token), tags)) - 1)
         escape = False
         i += 1
 
-
-    return u''.join(tokens)
+    if path_sep and not ret_i:
+        return paths, u''.join(tokens)
+    else:
+        return u''.join(tokens)
 
 def parse_field_list(fields, audio, selected=None):
     fields = fields[::]

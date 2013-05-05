@@ -489,7 +489,7 @@ def update_status(enable = True):
             newfilename = newfilename['__path']
             emit('tfstatus', translate("Status Bar",
                 "New Filename: <b>%1</b>").arg(
-                newfilename.decode('utf8', 'replace')))
+                    decode_fn(newfilename)))
         else:
             emit('tfstatus', u'<b>No change</b>')
     except findfunc.ParseError, e:

@@ -421,36 +421,39 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
         state = {}
 
     tags = m_tags
-    tf = findfunc.tagtofilename
+    tf = findfunc.parsefunc
     path_join = os.path.join
 
     if state is None:
         state = {}
 
-    if os.path.isabs(pattern):
+    path_seps, text = tf(pattern, tags, state=state, path_sep=u"/")
 
-        new_name = lambda d: safe_name(tf(d, tags, state=state))
-        subdirs = pattern.split(u'/')
-        newdirs = map(new_name, subdirs[1:-1])
-        newdirs.append(safe_name(tf(subdirs[-1], tags, ext, state=state)))
-        newdirs.insert(0, u'/')
-        return encode_fn(path_join(*newdirs))
+    start_pos = 0
+    new_dirs = []
+    
+    if path_seps:
+        for p in path_seps:
+            if start_pos != p:
+                new_dirs.append(safe_name(text[start_pos:p]))
+            start_pos = p
+        new_dirs.append(text[start_pos + 1:])
     else:
-        new_name = lambda d: encode_fn(safe_name(tf(d, tags, state=state)))
-        subdirs = pattern.split(u'/')
-        count = pattern.count(u'/')
+        new_dirs = [text]
 
-        newdirs = map(new_name, subdirs[:-1])
-        newdirs.append(
-            encode_fn(safe_name(tf(subdirs[-1], tags, ext, state=state))))
+    if os.path.isabs(pattern):
+        return add_extension(encode_fn(u'/' + u'/'.join(new_dirs)), tags, ext)
+    else:
 
+        subdirs = new_dirs
+        count = len(path_seps)
         
         dirpath = r_tags.dirpath
 
-        new_fn = encode_fn(path_join(*newdirs))
+        new_fn = encode_fn(path_join(*new_dirs))
         
         if new_fn.startswith('./'):
-            return path_join(dirpath, new_fn[len('./'):])
+            return add_extension(path_join(dirpath, new_fn[len('./'):]), tags, ext)
         elif new_fn.startswith('../'):
             parent = dirpath
             while new_fn.startswith('../'):
@@ -473,7 +476,15 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
 
         if not parent[0]:
             parent.insert(0, '/')
-        return os.path.join(*(parent + [new_fn]))
+        return add_extension(os.path.join(*(parent + [new_fn])), tags, ext)
+
+def add_extension(fn, tags, addext = None, extension=None):
+    if not addext:
+        return fn
+    elif addext and (extension is not None):
+        return fn + os.path.extsep + encode_fn(extension)
+    else:
+        return fn + os.path.extsep + encode_fn(tags["__ext"])
 
 def move(m_tags, p_pattern, r_tags, ext=True, state=None):
     """Tag to filename, Tag->File: $1
