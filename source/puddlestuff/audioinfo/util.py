@@ -8,7 +8,6 @@ from decimal import Decimal
 from copy import copy, deepcopy
 from os import path, stat
 
-
 from constants import *
 
 try:
@@ -79,6 +78,7 @@ def commontags(audios):
     tags = {}
     images = []
     imagetags = set()
+
     for audio in audios:
         if getattr(audio, 'IMAGETAGS', []):
             image = audio[IMAGE_FIELD] if audio[IMAGE_FIELD] else []
@@ -86,16 +86,21 @@ def commontags(audios):
         else:
             image = []
         images.append(image)
+        
         if hasattr(audio, 'usertags'):
             audio = audio.usertags
         else:
             audio = usertags(audio)
 
         for field, value in audio.items():
+            value = list(value) if not isinstance(value, basestring) else [value]
             if field in combined:
                 if combined[field] == value:
                     tags[field] += 1
-            else:
+                else:
+                    values = combined[field]
+                    [values.append(v) for v in value if v not in values]
+            else:               
                 combined[field] = value
                 tags[field] = 1
     combined['__image'] = commonimages(images)

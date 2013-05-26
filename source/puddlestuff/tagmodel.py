@@ -29,6 +29,8 @@ from puddlestuff.translations import translate
 from puddlestuff.util import rename_error_msg
 from puddlestuff.audio_filter import parse as filter_audio
 
+the_break = False
+
 status = {}
 
 SETDATAERROR = SIGNAL("setDataError")

@@ -10,7 +10,7 @@ from functools import partial
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from puddlestuff.actiondlg import pprint_tag
+from puddlestuff.util import pprint_tag
 import puddlestuff.findfunc as findfunc
 import puddlestuff.resource
 
@@ -20,6 +20,7 @@ from puddleobjects import (get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
     PicWidget, PuddleConfig)
 from puddlestuff.translations import translate
+from puddlestuff.util import to_string
 
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
@@ -437,6 +438,85 @@ class VerticalHeader(QHeaderView):
     def _resize(self, row, oldsize, newsize):
         self.setDefaultSectionSize(newsize)
 
+class StatusWidgetCombo(QComboBox):
+    def __init__(self, items=None, status=None, colors=None, preview=False):
+        QComboBox.__init__(self)
+        self.preview = preview
+
+        self.statusColors = colors
+        self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
+        
+        items = [KEEP] + items
+        self.addItems( items)
+        self.setCurrentIndex(0)
+            
+        if status and status in self.statusColors:
+            self.setBackground(self.statusColors[status])
+        else:
+            self.setBackground(None)
+
+        self._status = status 
+        self._original = (items, preview, status)
+        self.linked = []
+
+    def _get_preview(self):
+        return False
+        return self.font().bold()
+
+    def _set_preview(self, value):
+        return
+        font = self.font()
+        font.setBold(value)
+        self.setFont(font)
+
+    preview = property(_get_preview, _set_preview)
+
+    def _get_status(self):
+        return self._status
+
+    def _set_status(self, status):
+        if status and status in self.statusColors:
+            if self._status == ADD and status != REMOVE:
+                return
+            self.setBackground(self.statusColors[status])
+            self._status = status
+        else:
+            self.setBackground(None)
+            self._status = None
+
+    status = property(_get_status, _set_status)
+
+    def setBackground(self, brush = None):
+        if brush is None:
+            color = QLineEdit().palette().color(QPalette.Base).name()
+        else:
+            color = brush.color().name()
+        self.setStyleSheet("QComboBox { background-color: %s; }" % color);
+
+    def background(self):
+        brush = QBrush()
+        brush.setColor(self.palette().color(QPalette.Background))
+        return brush
+
+    def reset(self):
+        self.clear()
+        self.addItems(self._original[0])
+        self.setCurrentIndex(0)
+        self.preview = self._original[1]
+        status = self._original[2]
+        if status == ADD:
+            self.status = REMOVE
+        else:
+            self.status = status
+        self.linked = []
+
+    def setText(self, value):
+        if self.currentIndex() == 0:
+            self.insertItem(1, value)
+            self.setCurrentIndex(1)
+        else:
+            self.setItemText(self.currentIndex(), value)
+
 class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
@@ -579,7 +659,7 @@ class ExTags(QDialog):
         else:
             self.table.setEnabled(True)
             self._reset.setEnabled(True)
-            if len(self.table.selectedItems()) / 2 > 1:
+            if len(self.table.selectedIndexes()) / 2 > 1:
                 self.listbuttons.edit.setEnabled(False)
                 self.listbuttons.duplicate.setEnabled(False)
             else:
@@ -643,7 +723,7 @@ class ExTags(QDialog):
                     if row + 1 < rowcount:
                         self.table.selectRow(row + 1)
                 else:
-                    cur_item = self.table.currentItem()
+                    cur_item = self.table.item(self.table.currentRow(),0)
                     self.resetFields([cur_item])
                     self.table.setCurrentItem(cur_item,
                         QItemSelectionModel.ClearAndSelect)
@@ -662,7 +742,10 @@ class ExTags(QDialog):
         getitem = self.table.item
         item = getitem(row, 0)
         tag = unicode(item.text())
-        value = unicode(getitem(row, 1).text())
+        try:
+            value = unicode(getitem(row, 1).text())
+        except AttributeError:
+            value = unicode(self.table.cellWidget(row, 1).currentText())
         if status:
             return (tag, value, item.status)
         else:
@@ -684,10 +767,13 @@ class ExTags(QDialog):
 
         item = self.table.item
         for row in xrange(self.table.rowCount()):
-            item(row, 0).statusColors = self._colors
-            item(row, 0).status = item(row, 0).status
-            item(row, 1).statusColors = self._colors
-            item(row, 1).status = item(row, 1).status
+            field_item = self.get_item(row, 0)
+            field_item.statusColors = self._colors
+            field_item.status = field_item.status
+            
+            val_item = self.get_item(row, 1)
+            val_item.statusColors = self._colors
+            val_item.status = val_item.status
 
     def listtotag(self):
         get_field = self.get_field
@@ -729,7 +815,9 @@ class ExTags(QDialog):
         else:
             self.setWindowTitle(
                 translate('Extended Tags', 'Different files.'))
-
+            
+            from puddlestuff.tagmodel import status
+            k = status['table'].model().taginfo[0]
             common, numvalues, imagetags = commontags(audios)
             images = common['__image']
             del(common['__image'])
@@ -752,9 +840,8 @@ class ExTags(QDialog):
                     preview = BOLD
                 else:
                     preview = UNCHANGED
-
                 if numvalues[field] != len(audios):
-                    self._settag(row, field, KEEP)
+                    self._settag(row, field, values, multi=True)
                     row += 1
                 else:
                     if isinstance(values, basestring):
@@ -824,18 +911,28 @@ class ExTags(QDialog):
         self.loadFiles([self._files[row]])
         self.emit(SIGNAL('rowChanged'), row)
 
+    def get_item(self, row, column=None):
+        if column is None: #Assume QModelIndex passed
+            column = row.column()
+            row = row.row()
+        item = self.table.item(row, column)
+        if item is None:
+            item = self.table.cellWidget(row, column)
+        return item
+
     def removeField(self):
         tb = self.table
         tb.setSortingEnabled(False)
         to_remove = {}
         rows = []
-        for i in self.table.selectedItems():
-            row = tb.row(i)
-            if i.status == ADD:
-                to_remove[row] = i
+        for index in self.table.selectedIndexes():
+            row = index.row()
+            item = self.get_item(index)
+            if item.status == ADD:
+                to_remove[row] = item
             rows.append(row)
-            i.status = REMOVE
-            i.status = REMOVE
+            item.status = REMOVE
+            item.status = REMOVE
         [tb.removeRow(tb.row(z)) for z in to_remove.values()]
         tb.setSortingEnabled(True)
         self.filechanged = True
@@ -850,18 +947,19 @@ class ExTags(QDialog):
         box = self.table
         to_remove = {} #Stores row: item values so that only one item
                        #gets removed per row.
-        if items is None:
-            items = box.selectedItems()
 
         max_row = -1
-        for item in box.selectedItems():
+        for index in box.selectedIndexes():
+            row = index.row()
+            item = self.table.item(row, index.column())
+            if item is None:    
+                item = self.table.cellWidget(row, index.column())
             for i in item.linked:
                 try:
                     to_remove[box.row(i)] = i
                 except RuntimeError:
                     pass
             item.reset()
-            row = self.table.row(item)
             if row > max_row:
                 max_row = row
             if item.status == REMOVE:
@@ -904,7 +1002,7 @@ class ExTags(QDialog):
         self.emit(SIGNAL('extendedtags'), tags)
 
     def _settag(self, row, field, value, status=None, preview=False,
-        check=False):
+                check=False, multi=False):
 
         tb = self.table
         tb.setSortingEnabled(False)
@@ -913,16 +1011,20 @@ class ExTags(QDialog):
             field_item = StatusWidgetItem(field, status,
                 self._colors, preview)
             tb.setItem(row, 0, field_item)
-            valitem = StatusWidgetItem(value, status, self._colors, preview)
-            tb.setItem(row, 1, valitem)
+            if not multi and (len(value) == 1 or isinstance(value, basestring)):
+                valitem = StatusWidgetItem(to_string(value), status, self._colors, preview)
+                tb.setItem(row, 1, valitem)
+            else:
+                valitem = StatusWidgetCombo(value, status, self._colors, preview)
+                tb.setCellWidget(row, 1, valitem)
         else:
             field_item = tb.item(row, 0)
             field_item.setText(field)
             field_item.status = status
-
-            valitem = tb.item(row, 1)
-            valitem.setText(value)
-            valitem.status = status
+            
+            val_item = self.get_item(row, 1)
+            val_item.setText(value)
+            val_item.status = status
 
         if check:
             lowered_tag = field.lower()
@@ -933,10 +1035,13 @@ class ExTags(QDialog):
                     item.setText(field)
                     if item.status not in [ADD, REMOVE]:
                         item.status = EDIT
-                        tb.item(row, 1).status = EDIT
+                        try:
+                            tb.item(row, 1).status = EDIT
+                        except AttributeError:
+                            tb.cellWidget(row, 1).status = EDIT
 
         tb.setSortingEnabled(True)
-        return valitem
+        return field_item
 
 class ConfirmationErrorDialog(QDialog):
     def __init__(self, name, parent=None):
@@ -980,7 +1085,15 @@ class ConfirmationErrorDialog(QDialog):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    wid = ImportTextFile(clipboard = True)
+    dirpath = '/home/keith/Desktop/Daft.Punk-Random.Access.Memories-2013-FLAC.-NewsHost-1023'
+    import glob
+    tags = map(puddlestuff.audioinfo.Tag, glob.glob(os.path.join(dirpath, "*.flac")))
+    for tag in tags:
+        tag.preview = {}
+        tag.equal_fields = lambda: []
+        tag.library = None
+    wid = ExTags(files=tags)
     wid.resize(200, 400)
     wid.show()
+    pyqtRemoveInputHook()
     app.exec_()
