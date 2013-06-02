@@ -988,8 +988,18 @@ class ExTags(QDialog):
             self.piclabel.setImages(None)
 
     def save(self):
+        
+        if not self.filechanged:
+            table = self.table
+            for row in range(table.rowCount()):
+                combo = table.cellWidget(row, 1)
+                if combo is not None and combo.currentIndex() != 0:
+                    self.filechanged = True
+                    break
+
         if not self.filechanged:
             return
+
         tags = self.listtotag()
         if self.piclabel.context != 'Cover Varies':
             if not self.piclabel.images:
