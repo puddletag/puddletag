@@ -13,7 +13,7 @@ from util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
     FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
-    del_deco, cover_info, info_to_dict, parse_image)
+    del_deco, cover_info, info_to_dict, parse_image, get_total)
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
     'modified', 'bitspersample', 'channels')
