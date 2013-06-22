@@ -145,6 +145,7 @@ def load_language(qapp, langfile=None):
             locale = langargs[0][len('puddletag_'):-len('.qm')]
             translator.load("qt_" + locale,
                 QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+            print "Locale: " + locale
             translators.append(translator)
 
         translator = QTranslator()
@@ -155,7 +156,11 @@ def load_language(qapp, langfile=None):
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
              QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        print "Locale: " + unicode(QLocale.system().name())
         translators.append(translator)
+
+    else:
+        print "Loading default (ie. no) translation."
 
     for t in reversed(translators):
         qapp.installTranslator(t)
