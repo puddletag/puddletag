@@ -246,7 +246,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Новое действие</translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="1043"/>
+        <location filename="puddlestuff/actiondlg.py" line="1044"/>
         <source>Enter a name for the new action.</source>
         <translation>Введите имя для нового действия.</translation>
     </message>
@@ -256,7 +256,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Редактировать Действие: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/actiondlg.py" line="1054"/>
+        <location filename="puddlestuff/actiondlg.py" line="1055"/>
         <source>Edit Action: %s</source>
         <translation>Редактировать Дествие: %s</translation>
     </message>
@@ -351,7 +351,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Размер обложки</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="480"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="481"/>
         <source>Small</source>
         <translation>Маленький</translation>
     </message>
@@ -361,7 +361,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Средний</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="481"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="482"/>
         <source>Large</source>
         <translation>Большой</translation>
     </message>
@@ -381,7 +381,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Неверный XML получен. Ни одного трека не перечислено.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="482"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="483"/>
         <source>Original Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -389,72 +389,72 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Artwork</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1811"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1816"/>
         <source>Enter a description</source>
         <translation>Введите описание</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1523"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1528"/>
         <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don&apos;t differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Введите описание для данной обложки.&lt;/p&gt;&lt;p&gt;Для ID3 тегов описание должно отличаться для каждой обложки по спецификации ID3. Если описания не отличаются, то пробелы будут добавлены во время сохранения тега.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1535"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1540"/>
         <source>&amp;Description</source>
         <translation>&amp;Описание</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1543"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1548"/>
         <source>&amp;Type</source>
         <translation>&amp;Тип</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1554"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1559"/>
         <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Выберите тип обложки для рисунка.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1633"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1638"/>
         <source>&amp;Save cover to file</source>
         <translation>&amp;Сохранить обложку в файл</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1636"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1641"/>
         <source>&amp;Add cover</source>
         <translation>&amp;Добавить обложку</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1639"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1644"/>
         <source>&amp;Remove cover</source>
         <translation>&amp;Удалить обложку</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1642"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1647"/>
         <source>&amp;Change cover</source>
         <translation>&amp;Изменить обложку</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1704"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1709"/>
         <source>Select Image...</source>
         <translation>Выбрать изображение...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1863"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1868"/>
         <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>Изображения JPEG (*.jpg);;Изображения PNG (*.png);;Все файлы(*.*)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1863"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1868"/>
         <source>Save artwork as...</source>
         <translation>Сохранить рисунок как...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1871"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1876"/>
         <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
         <translation>Запись &lt;b&gt;%1&lt;/b&gt; не удалась.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1947"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1952"/>
         <source>Enter description</source>
         <translation>Введите описание</translation>
     </message>
@@ -462,7 +462,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Artwork Context</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1495"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1500"/>
         <source>%1/%2</source>
         <translation>%1/%2</translation>
     </message>
@@ -480,32 +480,32 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Autonumbering Wizard</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="36"/>
+        <location filename="puddlestuff/helperwin.py" line="37"/>
         <source>Autonumbering Wizard</source>
         <translation>Мастер автонумерации</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="52"/>
+        <location filename="puddlestuff/helperwin.py" line="53"/>
         <source>&amp;Start: </source>
         <translation>&amp;Начало: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="62"/>
+        <location filename="puddlestuff/helperwin.py" line="63"/>
         <source>Max length after padding with zeroes: </source>
         <translation>Максимальная длина после заполнения нулями: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="102"/>
+        <location filename="puddlestuff/helperwin.py" line="103"/>
         <source>Add track &amp;separator [&apos;/&apos;]: Number of tracks</source>
         <translation>Добаить &amp;разделить треков [&apos;/&apos;]: Число треков</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="74"/>
+        <location filename="puddlestuff/helperwin.py" line="75"/>
         <source>&amp;Restart numbering at each directory.</source>
         <translation>&amp;Начинать нумерацию в каждой директории.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="98"/>
+        <location filename="puddlestuff/helperwin.py" line="99"/>
         <source>Add track &amp;separator [&apos;/&apos;]</source>
         <translation>Добавить &amp;разделитель [&apos;/&apos;]</translation>
     </message>
@@ -546,22 +546,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Column Settings</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="931"/>
+        <location filename="puddlestuff/puddleobjects.py" line="934"/>
         <source>Title</source>
         <translation>Заголовок</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="359"/>
+        <location filename="puddlestuff/tagmodel.py" line="362"/>
         <source>Columns</source>
         <translation>Колонки</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="368"/>
+        <location filename="puddlestuff/tagmodel.py" line="392"/>
         <source>Adjust visibility of columns.</source>
         <translation>Настроить видимость колонок.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1220"/>
+        <location filename="puddlestuff/tagmodel.py" line="1268"/>
         <source>&amp;Select Columns</source>
         <translation>&amp;Выбрать колонки</translation>
     </message>
@@ -569,7 +569,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Combo Box</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="2105"/>
+        <location filename="puddlestuff/puddleobjects.py" line="2110"/>
         <source>Remove current item.</source>
         <translation>Удалить данный элемент.</translation>
     </message>
@@ -853,12 +853,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Разные артисты</translation>
     </message>
     <message>
-        <location filename="puddlestuff/findfunc.py" line="289"/>
+        <location filename="puddlestuff/findfunc.py" line="287"/>
         <source>function does not exist.</source>
         <translation>функция не существует.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1939"/>
+        <location filename="puddlestuff/tagmodel.py" line="1984"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -868,17 +868,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>&lt;br /&gt; Вы хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="933"/>
+        <location filename="puddlestuff/puddleobjects.py" line="936"/>
         <source>Field</source>
         <translation>Поле</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1347"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1352"/>
         <source>OK</source>
         <translation>Да</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="2040"/>
+        <location filename="puddlestuff/puddleobjects.py" line="2045"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -888,32 +888,32 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Запись</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1541"/>
+        <location filename="puddlestuff/tagmodel.py" line="1587"/>
         <source>&amp;Yes</source>
         <translation>&amp;Да</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1541"/>
+        <location filename="puddlestuff/tagmodel.py" line="1587"/>
         <source>&amp;No</source>
         <translation>&amp;Нет</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1771"/>
+        <location filename="puddlestuff/tagmodel.py" line="1818"/>
         <source>Reading Directory: %1</source>
         <translation>Чтение директории: %1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1774"/>
+        <location filename="puddlestuff/tagmodel.py" line="1821"/>
         <source>Reading Directory: %1 + others</source>
         <translation>Чтение директории: %1 + другие</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1777"/>
+        <location filename="puddlestuff/tagmodel.py" line="1824"/>
         <source>Reading Dir</source>
         <translation>Чтение директории</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1803"/>
+        <location filename="puddlestuff/tagmodel.py" line="1850"/>
         <source>Loading </source>
         <translation>Загрузка</translation>
     </message>
@@ -938,7 +938,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Перейти</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/tagpanel.py" line="418"/>
+        <location filename="puddlestuff/mainwin/tagpanel.py" line="417"/>
         <source>Title</source>
         <translation>Заголовок</translation>
     </message>
@@ -973,7 +973,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>%s изображения</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="951"/>
+        <location filename="puddlestuff/helperwin.py" line="1066"/>
         <source>Never show this message again.</source>
         <translation>Никогда не показывать это сообщение снова.</translation>
     </message>
@@ -986,7 +986,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Dialogs</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1985"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1990"/>
         <source>Album Art</source>
         <translation>Обложка альбома</translation>
     </message>
@@ -1059,7 +1059,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Не могу переименовать:&lt;i&gt;%1&lt;/i&gt; в &lt;b&gt;%2&lt;/b&gt; (%3) </translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="501"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="502"/>
         <source>Rename: &lt;b&gt;%1&lt;/b&gt; to: &lt;i&gt;%2&lt;/i&gt;</source>
         <translation>Переименовать: &lt;b&gt;%1&lt;/b&gt; to: &lt;i&gt;%2&lt;/i&gt;</translation>
     </message>
@@ -1095,37 +1095,37 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Discogs</name>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="99"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="98"/>
         <source>Retrieving search results for keywords: %s</source>
         <translation>Получение результатов поиска для ключевых слов: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="271"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="275"/>
         <source>%s at Discogs.com</source>
         <translation>%s на Discogs.com</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="228"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="232"/>
         <source>Retrieving using Release ID: %s</source>
         <translation>Получение данных, используя Release ID: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="235"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="239"/>
         <source>Retrieving album %s</source>
         <translation>Получение альбома: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="260"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="264"/>
         <source>Retrieving cover: %s</source>
         <translation>Получение обложки: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="265"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="269"/>
         <source>Error retrieving image:</source>
         <translation>Ошибка получения изображения:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="320"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="324"/>
         <source>&lt;p&gt;Enter search parameters here. If empty,
         the selected files are used.&lt;/p&gt;
         &lt;ul&gt;
@@ -1154,52 +1154,52 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         &lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="341"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="345"/>
         <source>Retrieve Cover</source>
         <translation>Получить обложку</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="342"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="346"/>
         <source>Cover size to retrieve</source>
         <translation>Размер обложки</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="343"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="347"/>
         <source>Small</source>
         <translation>Маленький</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="344"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="348"/>
         <source>Large</source>
         <translation>Большой</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="345"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="349"/>
         <source>Field to use for discogs_id</source>
         <translation>Поле для discogs_id</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="346"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="350"/>
         <source>API Key (Stored as plain-text.Leave empty to use default.)</source>
         <translation>API ключ (Хранится как обычный текст. Оставьте пустым для ключа по умолчанию.)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="358"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="362"/>
         <source>Invalid Discogs Release ID</source>
         <translation>Неверный Discogs Release ID</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="377"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="381"/>
         <source>Checking tracks for Discogs Album ID.</source>
         <translation>Проверка треков для Discogs Album ID.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="383"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="387"/>
         <source>No Discogs ID found in tracks.</source>
         <translation>Ни одного Discogs ID не найдено в треках.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/discogs.py" line="386"/>
+        <location filename="puddlestuff/tagsources/discogs.py" line="390"/>
         <source>Found Discogs ID: %s</source>
         <translation>Найден Discogs ID: %s</translation>
     </message>
@@ -1207,27 +1207,27 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Edit Field</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="318"/>
+        <location filename="puddlestuff/helperwin.py" line="319"/>
         <source>Edit Field</source>
         <translation>Редактировать Поле</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="323"/>
+        <location filename="puddlestuff/helperwin.py" line="324"/>
         <source>&amp;Field</source>
         <translation>&amp;Поле</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="334"/>
+        <location filename="puddlestuff/helperwin.py" line="335"/>
         <source>&amp;Value</source>
         <translation>&amp;Значение</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="340"/>
+        <location filename="puddlestuff/helperwin.py" line="341"/>
         <source>A&amp;dd</source>
         <translation>&amp;Добавить</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="351"/>
+        <location filename="puddlestuff/helperwin.py" line="352"/>
         <source>E&amp;dit</source>
         <translation>&amp;Редактировать</translation>
     </message>
@@ -1235,7 +1235,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Errors</name>
     <message>
-        <location filename="puddlestuff/findfunc.py" line="365"/>
+        <location filename="puddlestuff/findfunc.py" line="364"/>
         <source>No closing bracket found.</source>
         <translation>Закрывающая скобка не найдена.</translation>
     </message>
@@ -1250,7 +1250,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Невозможно переместить директорию в собственную поддиректорию.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddletag.py" line="653"/>
+        <location filename="puddlestuff/puddletag.py" line="649"/>
         <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won&apos;t be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
         <translation>Кодировка вашей файловой системы была определена как &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Вы не сможете использовать в имени файлов символы не входящие в ASCII алфавит, &lt;br /&gt;такие как диакритические знаки, кириллические или другие символы.</translation>
     </message>
@@ -1258,22 +1258,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Extended Tags</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="468"/>
+        <location filename="puddlestuff/helperwin.py" line="548"/>
         <source>Field</source>
         <translation>Поле</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="468"/>
+        <location filename="puddlestuff/helperwin.py" line="548"/>
         <source>Value</source>
         <translation>Значение</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="503"/>
+        <location filename="puddlestuff/helperwin.py" line="583"/>
         <source>Resets the selected fields to their original value.</source>
         <translation>Сбросить выбранные значения к их оригинальному значению.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="730"/>
+        <location filename="puddlestuff/helperwin.py" line="816"/>
         <source>Different files.</source>
         <translation>Различные файлы.</translation>
     </message>
@@ -1281,57 +1281,57 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Fields</name>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Filename</source>
         <translation>Имя файла</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Artist</source>
         <translation>Артист</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Title</source>
         <translation>Заголовок</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Album</source>
         <translation>Альбом</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Track</source>
         <translation>Трек</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Length</source>
         <translation>Длительность</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Year</source>
         <translation>Год</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Bitrate</source>
         <translation>Битрейт</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Genre</source>
         <translation>Жанр</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Comment</source>
         <translation>Комментарий</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="61"/>
+        <location filename="puddlestuff/tagmodel.py" line="63"/>
         <source>Dirpath</source>
         <translation>Директория</translation>
     </message>
@@ -1965,42 +1965,42 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>List Buttons</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1196"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1201"/>
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1199"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1204"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1203"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1208"/>
         <source>Move Up</source>
         <translation>Передвинуть вверх</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1206"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1211"/>
         <source>Move Down</source>
         <translation>Передвинуть вниз</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1209"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1214"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1212"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1217"/>
         <source>Duplicate</source>
         <translation>Дублировать</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1271"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1276"/>
         <source>&amp;&gt;&gt;</source>
         <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="1272"/>
+        <location filename="puddlestuff/puddleobjects.py" line="1277"/>
         <source>&amp;&lt;&lt;</source>
         <translation>&amp;&lt;&lt;</translation>
     </message>
@@ -2764,82 +2764,82 @@ Do you want to go ahead?</source>
 <context>
     <name>MusicBrainz</name>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="496"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="497"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving %1: %2</source>
         <translation>&lt;b&gt;Ошибка:&lt;/b&gt; Во время получения %1: %2</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="549"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="550"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID %1 (%2)</source>
         <translation>&lt;b&gt;Ошибка:&lt;/b&gt; Во время получения ID альбома %1 (%2)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="545"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="546"/>
         <source>Found album id %s in tracks. Retrieving</source>
         <translation>Найден id альбома %s в треках. Получение</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="347"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="348"/>
         <source>Retrieving cover: %s</source>
         <translation type="unfinished">Получение обложки: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="352"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="353"/>
         <source>No images exist for this album.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="363"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="364"/>
         <source>Invalid UUID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="365"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="366"/>
         <source>Invalid query sent.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="367"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="368"/>
         <source>You have exceeded your rate limit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="370"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="371"/>
         <source>Image does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="389"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="390"/>
         <source>Retrieving image %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="478"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="479"/>
         <source>Retrieve Cover</source>
         <translation type="unfinished">Получить обложку</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="479"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="480"/>
         <source>Cover size to retrieve:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="483"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="484"/>
         <source>Amount of images to retrieve:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="484"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="485"/>
         <source>Just the front cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="485"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="486"/>
         <source>All (can take a while)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagsources/musicbrainz.py" line="589"/>
+        <location filename="puddlestuff/tagsources/musicbrainz.py" line="590"/>
         <source>Error retrieving image: %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3018,7 +3018,7 @@ Do you want to go ahead?</source>
         <translation>&lt;b&gt;Режим предпросмотра: включён&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="109"/>
+        <location filename="puddlestuff/tagmodel.py" line="112"/>
         <source>Do you want to exit Preview Mode?</source>
         <translation>Вы хотите выйти из режима предпросмотра?</translation>
     </message>
@@ -3182,12 +3182,12 @@ Do you want to go ahead?</source>
 <context>
     <name>Progress Dialog</name>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="2020"/>
+        <location filename="puddlestuff/puddleobjects.py" line="2025"/>
         <source>Please Wait...</source>
         <translation>Пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/puddleobjects.py" line="2021"/>
+        <location filename="puddlestuff/puddleobjects.py" line="2026"/>
         <source>%1%2 of %3...</source>
         <translation>%1%2 из %3...</translation>
     </message>
@@ -3288,7 +3288,7 @@ Do you want to go ahead?</source>
         <translation type="obsolete">Шаблоны</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/tagpanel.py" line="426"/>
+        <location filename="puddlestuff/mainwin/tagpanel.py" line="425"/>
         <source>Tag Panel</source>
         <translation>Панель тегов</translation>
     </message>
@@ -3309,7 +3309,7 @@ Do you want to go ahead?</source>
 <context>
     <name>Shortcut Settings</name>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="329"/>
+        <location filename="puddlestuff/tagmodel.py" line="332"/>
         <source>File Properties</source>
         <translation>Свойства файла</translation>
     </message>
@@ -3355,12 +3355,12 @@ Do you want to go ahead?</source>
 <context>
     <name>Status Bar</name>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="483"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="484"/>
         <source>&lt;b&gt;%s&lt;/b&gt;</source>
         <translation>&lt;b&gt;%s&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/funcs.py" line="489"/>
+        <location filename="puddlestuff/mainwin/funcs.py" line="490"/>
         <source>New Filename: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>Новое имя файла: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
@@ -3368,49 +3368,49 @@ Do you want to go ahead?</source>
 <context>
     <name>Table</name>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="639"/>
+        <location filename="puddlestuff/tagmodel.py" line="686"/>
         <source>Preview: %1
 Real: %2</source>
         <translation>Превью: %1
 На самом деле: %2</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1483"/>
+        <location filename="puddlestuff/tagmodel.py" line="1529"/>
         <source>Disable Preview Mode first to enable tag deletion.</source>
         <translation>Выключить Режим предпросмотра сначала, чтобы включить уделение тегов.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1493"/>
+        <location filename="puddlestuff/tagmodel.py" line="1539"/>
         <source>An error occurred while deleting the tag of %1: &lt;b&gt;%2&lt;/b&gt;</source>
         <translation>Произошла ошибка во время удаления тега %1: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1502"/>
+        <location filename="puddlestuff/tagmodel.py" line="1548"/>
         <source>There was an error deleting the tag of %1: &lt;b&gt;Tag deletion isn&apos;t supportedfor %2 files.&lt;/b&gt;</source>
         <translation>Произошла ошибка во врему удалеия тега %1: &lt;b&gt;Удаление тега не поддерживается для %2 файлов.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1511"/>
+        <location filename="puddlestuff/tagmodel.py" line="1557"/>
         <source>Deleting tag... </source>
         <translation>Удаление тега... </translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1541"/>
+        <location filename="puddlestuff/tagmodel.py" line="1587"/>
         <source>Are you sure you want to delete the selected files?</source>
         <translation>Вы уверены, что хотите удалить выбранные файлы?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1582"/>
+        <location filename="puddlestuff/tagmodel.py" line="1628"/>
         <source>Deleting </source>
         <translation>Удаление</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1932"/>
+        <location filename="puddlestuff/tagmodel.py" line="1977"/>
         <source>An error occurred while trying to play the selected files: &lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Does the music player you defined (&lt;b&gt;%2&lt;/b&gt;) exist?</source>
         <translation>Произошла ошибка во время проигрывания файла: &lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Плеер, который вы выбрали (&lt;b&gt;%2&lt;/b&gt;), существует?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/tagmodel.py" line="1939"/>
+        <location filename="puddlestuff/tagmodel.py" line="1984"/>
         <source>It wasn&apos;t possible to play the selected files, because the music player you defined (&lt;b&gt;%1&lt;/b&gt;) does not exist.</source>
         <translation>Невозможно воспроизвести выбранные файлы, так как выбранный плеер (&lt;b&gt;%1&lt;/b&gt;) не существует.</translation>
     </message>
@@ -3418,12 +3418,12 @@ Real: %2</source>
 <context>
     <name>Tag Panel Settings</name>
     <message>
-        <location filename="puddlestuff/mainwin/tagpanel.py" line="420"/>
+        <location filename="puddlestuff/mainwin/tagpanel.py" line="419"/>
         <source>Row</source>
         <translation>Ряд</translation>
     </message>
     <message>
-        <location filename="puddlestuff/mainwin/tagpanel.py" line="476"/>
+        <location filename="puddlestuff/mainwin/tagpanel.py" line="475"/>
         <source>All row numbers must be integers.</source>
         <translation>Все номера рядов должны быть целыми.</translation>
     </message>
@@ -3507,47 +3507,47 @@ Real: %2</source>
 <context>
     <name>Text File -&gt; Tag</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="148"/>
+        <location filename="puddlestuff/helperwin.py" line="149"/>
         <source>Import tags from text file</source>
         <translation>Импортировать теги из текстового файла</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="154"/>
+        <location filename="puddlestuff/helperwin.py" line="155"/>
         <source>Text</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="157"/>
+        <location filename="puddlestuff/helperwin.py" line="158"/>
         <source>Tag preview</source>
         <translation>Предпросмотр тега</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="178"/>
+        <location filename="puddlestuff/helperwin.py" line="179"/>
         <source>&amp;Select File</source>
         <translation>&amp;Выберите файл</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="180"/>
+        <location filename="puddlestuff/helperwin.py" line="181"/>
         <source>&amp;Paste Clipboard</source>
         <translation>&amp;Вставить содержимое буфера обмена</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="244"/>
+        <location filename="puddlestuff/helperwin.py" line="245"/>
         <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
         <translation>Файл &lt;b&gt;%1&lt;/b&gt; не может быть загружен.&lt;br /&gt; Хотите ли вы выбрать другой файл?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="248"/>
+        <location filename="puddlestuff/helperwin.py" line="249"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="248"/>
+        <location filename="puddlestuff/helperwin.py" line="249"/>
         <source>&amp;Yes</source>
         <translation>&amp;Да</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="248"/>
+        <location filename="puddlestuff/helperwin.py" line="249"/>
         <source>&amp;No</source>
         <translation>&amp;Нет</translation>
     </message>
@@ -3600,12 +3600,12 @@ Real: %2</source>
         <translation>Не найдено подходящего альбома.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="689"/>
+        <location filename="puddlestuff/releasewidget.py" line="691"/>
         <source>More than one album matches. None will be retrieved.</source>
         <translation>Больше одного альбома подходит. Ни один не будет загружен.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="692"/>
+        <location filename="puddlestuff/releasewidget.py" line="694"/>
         <source>Retrieving album.</source>
         <translation>Получение информации об альбоме.</translation>
     </message>
