@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 01 Apr 2013 16:11:28 GMT</lastBuildDate><generator>PyRSS2Gen-1.0.0</generator><item><title>31 August 2012 - 1.0.1</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-1</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 26 Jun 2013 19:32:09 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>26 June 2013 - Some news</title><link>http://puddletag.sourceforge.net/news.html#june-2013-some-news</link><description>
+  &lt;div class="section" id="june-2013-some-news"&gt;
+&lt;h1&gt;26 June 2013 - Some news&lt;/h1&gt;
+&lt;p&gt;Just a heads up that the repository URL has changed to&lt;/p&gt;
+&lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;http://hg.code.sf.net/p/puddletag/code
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;a class="reference download internal" href="_downloads/puddletag_cs.qm"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Contributions are always appreciated so please post on the forum (link above) if you&amp;#8217;d like to translate puddletag.&lt;/p&gt;
+&lt;p&gt;New beta coming this weekend.&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Wed, 26 Jun 2013 00:00:00 GMT</pubDate></item><item><title>31 August 2012 - 1.0.1</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-1</link><description>
   &lt;div class="section" id="august-2012-1-0-1"&gt;
 &lt;h1&gt;31 August 2012 - 1.0.1&lt;/h1&gt;
 &lt;p&gt;This release fixes some bugs spotted with the last release.&lt;/p&gt;
@@ -108,7 +120,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;strong&gt;Update 4 June 2011&lt;/strong&gt;: Tag sources were broken due to a bug not found in testing. Therefore 0.10.5 has been released.&lt;/p&gt;
 &lt;p&gt;Unless there&amp;#8217;re some critical bugs discovered in this release, then the next release will be puddletag v1. There won&amp;#8217;t be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.&lt;/p&gt;
 &lt;p&gt;As for this release, there&amp;#8217;re a lot of changes, but nothing of note UI wise (except for the website theme change copied from the &lt;a class="reference external" href="http://djangoproject.com"&gt;Django docs&lt;/a&gt;).&lt;/p&gt;
-&lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;RaphaÃ«l Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;a class="reference internal" href="download.html#translations"&gt;&lt;em&gt;French translation&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;Raphaël Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;a class="reference internal" href="download.html#translations"&gt;&lt;em&gt;French translation&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;div class="section" id="new-features"&gt;
 &lt;h2&gt;New Features&lt;/h2&gt;
 &lt;ul&gt;

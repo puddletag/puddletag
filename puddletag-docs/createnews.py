@@ -51,8 +51,12 @@ def create_rss(files):
     contents = to_html(files)
     titles = [re.search('<h1>(.*?)</h1>', c).groups()[0] for c in contents]
 
-    dates = [[int(z) for z in os.path.basename(filename).split('-')]
-        for filename in files]
+    dates = []
+    for filename in files:
+        try:
+            dates.append([int(z) for z in os.path.basename(filename).split('-')])
+        except ValueError:
+            pass
     dates = [datetime.datetime(*date) for date in dates]
 
     items = []
@@ -61,7 +65,7 @@ def create_rss(files):
         items.append(PyRSS2Gen.RSSItem(
             title = title,
             link = "http://puddletag.sourceforge.net/news.html#%s" % anchor,
-            description = '\n'.join(desc.split('\n')[1:]),
+            description = ('\n'.join(desc.split('\n')[1:]).decode('utf8')),
             pubDate = date,
             author='concentricpuddle'))
 

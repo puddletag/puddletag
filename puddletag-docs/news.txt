@@ -11,30 +11,25 @@ News
 
 :download:`RSS Feed <rss.xml>`
 
+
+
 ----
 
-1 April 2013 - 1.0.2RC1
-#######################
+26 June 2013 - Some news
+########################
 
-This release is an RC, because I'm only 98% sure everything works as intended.
-If there's not feedback within the next week regarding any new bugs/issues, I'll 
-just rename it to 1.0.2 ;-). So as for...
+Just a heads up that the repository URL has changed to 
 
-New Features:
--------------
+.. code-block:: bash
+   
+   http://hg.code.sf.net/p/puddletag/code
 
-+ Album art can be dragged from your browser. If link can be resolved, image will be loaded. Does not work if you drag from Google images unless you disable Google redirects.
-+ Tags can now be submitted to AcoustID.
-+ When searching for a title like "Atliens (Deluxe Edition)" the search will be retried with just "Atliens" if there were no results.
-+ Support for MusicBrainz album art.
-+ Russian translation
+Pavel Fric has contributed a Czech translation which you can :download:`download <translations/puddletag_cs.qm>`.
 
-Fixed:
-------
+Contributions are always appreciated so please post on the forum (link above) if you'd like to translate puddletag.
 
-+ Some comparisons function like **$grtr** weren't working as they should.
-+ Discogs didn't return all album info.
-+ Search by ID for MusicBrainz tag source.
+New beta coming this weekend.
+
 
 ----
 
