@@ -16,9 +16,10 @@ import puddlestuff.resource
 
 from audioinfo import commontags, PATH
 from puddlestuff.constants import HOMEDIR, KEEP
-from puddleobjects import (get_icon, gettaglist, partial,
+from puddleobjects import (
+    get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
-    PicWidget, PuddleConfig)
+    PicWidget, PuddleConfig, natcasecmp)
 from puddlestuff.translations import translate
 from puddlestuff.util import to_string
 
@@ -324,6 +325,7 @@ class EditField(QDialog):
         label = QLabel(translate('Edit Field', "&Field"))
         self.tagcombo = QComboBox()
         self.tagcombo.setEditable(True)
+        label.setBuddy(self.tagcombo)
         completer = self.tagcombo.completer()
         completer.setCaseSensitivity(Qt.CaseSensitive)
         completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
@@ -446,8 +448,11 @@ class StatusWidgetCombo(QComboBox):
         self.statusColors = colors
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         
-        items = [KEEP] + items
-        self.addItems( items)
+        items = sorted(items, cmp=natcasecmp)
+        if len(items) > 1:
+            items.append(r'\\'.join(items))
+        self.addItem(KEEP)
+        self.addItems(items)
         self.setCurrentIndex(0)
             
         if status and status in self.statusColors:
@@ -791,7 +796,7 @@ class ExTags(QDialog):
                     tags[lowered[l_field]].append(val)
                 else:
                     lowered[l_field] = field
-                    tags[field] = [val]
+                    tags[field] = [z.strip() for z in val.split('\\') if z.strip()]
             else:
                 if field.lower() not in lowered:
                     tags[field] = []
