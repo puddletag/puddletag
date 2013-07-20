@@ -5,15 +5,15 @@
 .. |deb_link| replace:: puddletag_1.0.1-1_all.deb
 .. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.1-1_all.deb
 
-.. |beta_source_link| replace:: puddletag-1.0.1.tar.gz
-.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.1.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.0.1-1_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.1-1_all.deb
+.. |beta_source_link| replace:: puddletag-1.0.2RC1.tar.gz
+.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.2RC1.tar.gz
+.. |beta_deb_link| replace:: puddletag_1.0.2RC1-1_all.deb
+.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.2RC1-1_all.deb
 
 .. |source_sha| replace:: 09cf2db36ec13ab2a5ac53d871e2b04b0f5afa48
 .. |deb_sha| replace:: 290394c0c80204df11a9d3da49d82992d89deac7
-.. |beta_source_sha| replace:: 09cf2db36ec13ab2a5ac53d871e2b04b0f5afa48
-.. |beta_deb_sha| replace:: 290394c0c80204df11a9d3da49d82992d89deac7
+.. |beta_source_sha| replace:: fd832e627cc49aa0379021a7b777c08f23b92550
+.. |beta_deb_sha| replace:: 36b9d63504e95cba47667b48158b0a2132e39bf7
 
 Downloads
 =========
@@ -58,21 +58,19 @@ Install the dependencies as outlined on the :doc:`home page <index>`. For Debian
 Installing from the Debian package
 ----------------------------------
 
-This Debian package has been created on and for Ubuntu 10.04, but it should work on any Debian-based distro with the requisite dependencies. Make some noise on the |forum|_ if it doesn't work for you.
+Download the deb, |deb_link|_ (SHA1 |deb_sha|) and install by double clicking it.
 
-Downloading the deb, |deb_link|_ (SHA1 |deb_sha|) and double clicking it to open your package manager should suffice to install it.
-
-Otherwise, first install the dependencies by running as root:
+If that doesn't work, first install the dependencies by running as root:
 
 .. code-block:: bash
 
-    aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2
+    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
 
 Then (also as root)
 
 .. code-block:: bash
 
-    dpkg -i /path/to/downloaded.deb
+    dpkg -i /path/to/puddletag-version.deb
 
 puddletag should be available from your Multimedia menu.
 
@@ -99,11 +97,13 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 Development builds
 ------------------
 
+The latest dev release is 1.0.2RC1. Download the deb (|beta_deb_link|_ SHA1 |beta_deb_sha|) or tarball (|beta_source_link|_ SHA1 |beta_deb_sha|).
+
 Source control is done using Mercurial. Use
 
 .. code-block:: bash
 
-    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
+    hg clone http://hg.code.sf.net/p/puddletag/code puddletag-hg
 
 to check it out. And
 
@@ -111,7 +111,7 @@ to check it out. And
 
     hg pull -u
 
-in the previously cloned directory to update.
+in the previously cloned directory to update it a later stage.
 
 .. _plugin_downloads:
 
@@ -144,7 +144,7 @@ Download `id3_tools.tar.gz <http://sourceforge.net/projects/puddletag/files/plug
 Translations
 ------------
 
-To install, place the downloaded translation in **~/.puddletag/translations** (you'll probably need to create it). The translation will be listed in the Preferences dialog. If you'd like contribute a translation, see :doc:`source/translate`.
+To install, place the downloaded translation in **~/.puddletag/translations** (you'll probably need to create it). The translation will be listed in the Preferences dialog. Some if these are incomplete, so if if you'd like contribute a translation, see :doc:`source/translate`.
 
 + :download:`Dutch (Nederlands) <translations/puddletag_nl-nl.qm>` by **Fabian Bakkum**.
 + :download:`French <translations/puddletag_fr.qm>` by **Raphaël Rochet**.

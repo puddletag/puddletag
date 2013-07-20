@@ -1,4 +1,12 @@
-1 April 2013 - 1.0.2 RC1
+14 July 2013 - 1.0.2 RC1
+    Added: Multiple-valued fields can be added using '\\' in extended tags.
+    Added: Czech translation by Pavel Fric.
+    Fixed: MP4 tagging not working at all.
+    Added: Dropdown in Extended Tags that works like Tag Panel.
+    Fixed: Directory renaming not stripping invalid chars.
+    Fixed: $validate scripting function failing when '/' in arguments.
+    Fixed: Unable to delete fields if __total populated.
+    Added: __total can be edited in Tag Panel and other places.
     Fixed: Album art can be dragged from browser. If link can be resolved, image will be loaded.
     Added: Confirmation dialog if copying large amounts of data.
     Added: In field selection dialog for columns, fields are listed in combo box.

@@ -9,13 +9,13 @@ After installing the required tools, you'll need to retrieve the latest developm
 
 .. code-block:: bash
 
-    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
+    hg clone http://hg.code.sf.net/p/puddletag/code puddletag-hg
 
 The dev version will downloaded into the puddletag directory. Change into the dev directory with:
 
 .. code-block:: bash
 
-    cd puddletag
+    cd puddletag-hg
 
 Then run update_translation.py with your desired locale (eg en_ZA, rus, fr) like so:
 

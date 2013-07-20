@@ -121,16 +121,13 @@ def parse_rating(dd):
 
 def parse_review(content):
 
-    review = content.find('div', {'id': 'review'})
-    if not review:
+    reviewer = content.find('h4', {'class': 'review-author headline'})
+    if not reviewer:
         return {}
 
-    review_text = content.find('div', {'class':"review-body"})
-    review_text = review.find('div',
-        {'class': "editorial-text collapsible-content"})
-    text = convert(review_text.p.string)
+    author = convert(reviewer.string)
 
-    author = convert(review.find('span', {'class':"author"}).string)
+    text = convert(content.find('div', {'class':'text'}).p.string)
 
     return {'review': author + '\n\n' + text}
 
@@ -138,33 +135,6 @@ def print_track(track):
     print '\n'.join([u'  %s - %s' % z for z in track.items()])
     print
 
-def parse_sidebar_element(element):
-    info = {}
-    for e in element.find_all('dt|dd'):
-        if e.tag == 'dt':
-            field = convert(e.string)
-        elif e.tag == 'dd':
-            if field == 'editor rating':
-                info['rating'] = parse_rating(e)
-                continue
-            elif field in ('genres', 'styles', 'genre', 'style'):
-                try:
-                    items = e.find('ul').find_all('li')
-                    key = spanmap.get(field, field)
-                    info[key] = [convert(i.string) for i in items]
-                except AttributeError:
-                    info[field[:-1]] = convert(e.string)
-            elif e.element.attrib.get('class') == u'metaids':
-                info.update(parse_sidebar_element(e.contents[0].contents[1]))
-            else:
-                if field:
-                    info[spanmap.get(field, field)] = convert(e.string)
-            field = None
-
-    info.update(convert_year(info))
-    if 'duration' in info:
-        del(info['duration'])
-    return info
 
 def parse_similar(swipe):
     ret = []
@@ -188,55 +158,83 @@ def parse_similar(swipe):
 def parse_albumpage(page, artist=None, album=None):
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
 
-    heading = album_soup.find('div', {'class': 'page-heading'})
-    artist = heading.find('div', {'class': 'album-artist'})
-    album = heading.find('div', {'class': 'album-title'})
+    artist = album_soup.find('div', {'class': 'album-artist'})
+    album = album_soup.find('div', {'class': 'album-title'})
     info = {'artist': convert(artist.string), 'album': convert(album.string)}
     info['albumartist'] = info['artist']
-    
-    main = album_soup.find('div', {'id': 'main'})
-    sidebar = main.find('div', {'class': 'left', 'id': 'sidebar'})
+
+    sidebar = album_soup.find('div', {'class': 'sidebar'})
     info.update(parse_sidebar(sidebar))
 
-    content = main.find('div', {'class': 'right', 'id': 'content'})
+    content = album_soup.find('section', {'class': 'review read-more'})
     info.update(parse_review(content))
 
-    swipe = main.find('div', {'id':"similar-albums", 'class':"grid-gallery"})
+    #swipe = main.find('div', {'id':"similar-albums", 'class':"grid-gallery"})
     
-    info.update(parse_similar(swipe))
+    #info.update(parse_similar(swipe))
     
     info = dict((k,v) for k, v in info.iteritems() if not isempty(v))
         
-    return [info, parse_tracks(content)]
+    return [info, parse_tracks(album_soup)]
+
+def parse_sidebar_element(element):
+    title = convert(element.find('h4').string.lower())
+    if element.find('span'):
+        values = [convert(element.find('span').string)]
+    elif element.find('div'):
+        anchors = element.find('div').find_all('a')
+        values = [convert(anchor.string) for anchor in anchors]
+    else:
+        return {}
+    return {title: values}
+
+def parse_metadata_ids(element):
+    data = {}
+    key = None
+    for child in element.contents:
+        if child.element.attrib.get('class') == 'id-type':
+            key = convert(child.string)
+        elif key:
+            data[key] = [convert(child.string)]
+            key = None
+    return data
+    
 
 def parse_sidebar(sidebar):
     
     info = {}
 
-    cover = sidebar.find('div', {'class': 'album-art'})
-    cover = cover.find('div', {'class': 'image-container'})
+    container = sidebar.find('div', {'class': 'album-contain'})
+    cover = container.find('img')
     if cover is not None:
         try:
             info['#cover-url'] = json.loads(
-                cover.element.attrib['data-large'])['url']
+                cover.element.attrib['data-lightbox'])['url'].replace('?partner=allrovi.com', '')
         except KeyError:
             try:
-                info['#cover-url'] = cover.img.element.attrib['src']
+                info['#cover-url'] = cover.element.attrib['src'].replace('?partner=allrovi.com', '')
             except (AttributeError, KeyError):
                 "No artwork."
 
-    details = sidebar.find('dl', {'class': 'details'})
-    info.update(parse_sidebar_element(details))
+    basic_info = sidebar.find('section', {'class': 'basic-info'})
+    invalids = set(['affiliates', 'advertising medium-rectangle', 'partner-buttons'])
+    for div in basic_info.find_all('div'):
+        class_name = div.element.attrib.get('class')
+        if class_name in invalids: continue
+        if class_name == 'metadata-ids':
+            info.update(parse_metadata_ids(div))
+        elif class_name:
+            info.update(parse_sidebar_element(div))
 
-    moods = sidebar.find('div', {'class': 'sidebar-module moods'})
+    moods = sidebar.find('section', {'class': 'moods'})
     if moods is not None:
         info['mood'] = [convert(z.string) for z in
-            moods.find('ul').find_all('li')]
+                        moods.find_all('span', {'class': 'mood'})]
 
-    themes = sidebar.find('div', {'class': 'sidebar-module themes'})
+    themes = sidebar.find('section', {'class': 'themes'})
     if themes is not None:
         info['theme'] = [convert(z.string) for z in
-            themes.find('ul').find_all('li')]
+                        themes.find_all('span', {'class': 'theme'})]
 
     return info
 
@@ -351,85 +349,62 @@ def parse_track_table(table, discnum=None):
         try: return convert(e.a.string)
         except AttributeError: return convert(e.string)
     
-    header_items = table.table.thead.find('tr').find_all('th')
+    header_items = table.thead.find('tr').find_all('th')
     headers = [th.element.attrib.get('class', convert(th.string))
         for th in header_items]
-    fields = [spanmap.get(key, key) for key in headers]
+    fields = headers
 
     tracks = []
-    performance = u''
+    performance_title = None
     for item in table.tbody.find_all('tr'):
-        t = parse_track(item, fields)
-        if isinstance(t, basestring):
-            performance = t + u': '
-        else:
-            t['title'] = performance + t['title']
-            if discnum:
-                t['discnumber'] = discnum
-            tracks.append(t)
+        if item.element.attrib.get('class') == 'performance-title':
+            performance_title = convert(item.string.strip())
+            continue
+        t = parse_track(item, fields, performance_title)
+        performance_title = None
+        tracks.append(t)
+    print tracks
     return tracks
 
-def parse_track(tr, fields):
+def parse_track(tr, fields, performance_title=None):
 
     track = {}
+    ignore = set(['pick-prefix', 'sample', 'stream', 'pick-suffix'])
 
     if tr.element.attrib.get('class') == 'perfomance-title':
         return convert(tr.string)
     
-    for th, field in zip(tr.find_all('td'), fields):
-        if field is None:
+    for td, field in zip(tr.find_all('td'), fields):
+        if not field or field in ignore:
             continue
-
-        divs = th.find_all('div')
-        if not divs:
-            track[field] = convert(th.string)
-            continue
-        if field == 'artist':
-            track['title'] = th.find('div', {'class':'title'})
-            if track['title'] is None:
-                track['title'] = th.find('div', {'class':'title primary_link'})
-
-            track['title']= convert(track['title'].string)
-                
-            composer_div = th.find('div', {'class': "artist secondary_link"})
-            composer = map(convert, composer_div.string.split(u' / '))
-            track['composer'] = composer
-        elif field == 'performer':
-            
-            if 'artist' not in track:
-                track['artist'] =  map(convert, th.string.split(u' / '))
-            else:
-                track['performer'] =  map(convert, th.string.split(u' / '))
-
+        
+        sub_fields = td.find_all('div')
+        if (sub_fields):
+            for div in sub_fields:
+                sub_field = div.element.attrib['class']
+                if field == 'performer' and sub_field == 'primary':
+                    sub_field = field
+                elif field == 'performer' and sub_field != 'primary':
+                    sub_field = 'composer'
+                value = convert(div.string)
+                track[sub_field] = value
+        else:
+            track[field] = convert(td.string)                
+    if performance_title:
+        track['performance_title'] = performance_title
     return dict((k,v) for k,v in track.iteritems() if not isempty(v))
 
 def parse_tracks(content):
-    track_div = content.find('div', {'id': 'tracks'})
-    if track_div is None:
-        track_div = content.find('div', {'id': 'performances'})
+    discs = content.find_all('div', 'disc')    
+    tracks = []
+    for i, disc in enumerate(discs):
+        info = {'discnumber': unicode(i + 1)}
+        disc_tracks = parse_track_table(disc.table)
+        for track in disc_tracks:
+            track.update(info)
+        tracks.extend(disc_tracks)
 
-    if track_div is None:
-        track_div = content.find('div', {'id': 'results-table'})
-
-    if track_div is None:
-        return None
-
-    discs = [re.search('\d+$', z.string.strip()).group()
-        for z in track_div.find_all('span', {'class': 'disc-num'})]
-    track_tables = content.find_all('div', {'class': 'table-container'})
-    if not track_tables:
-        return None
-        
-    if discs:
-        tracks = []
-        for tb, discnum in zip(track_tables, discs):
-            tracks.extend(parse_track_table(tb, discnum))
-        if tracks:
-            return tracks
-        else:
-            return None
-    else:
-        return parse_track_table(track_tables[0])
+    return tracks
 
 def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     review = False

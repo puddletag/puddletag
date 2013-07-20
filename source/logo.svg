@@ -14,7 +14,7 @@
    height="127.587"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="logo.svg"
    inkscape:export-filename="/home/keith/Documents/python/puddletag-hg/source/puddlestuff/data/puddlelogo.png"
    inkscape:export-xdpi="90"
@@ -170,8 +170,8 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1145"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
      inkscape:window-x="-2"
      inkscape:window-y="-3"
      inkscape:window-maximized="1" />
@@ -183,7 +183,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -215,8 +215,8 @@
          style="font-size:43.37858582px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;font-family:'Impossibilium (BRK)';-inkscape-font-specification:'Impossibilium (BRK)'">puddletag</flowPara></flowRoot>    <text
        xml:space="preserve"
        style="font-size:22px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#241c1c;fill-opacity:1;stroke:none;font-family:Copperplate Gothic Bold;-inkscape-font-specification:'Copperplate Gothic Bold, Bold'"
-       x="417.90527"
-       y="1016.8771"
+       x="371.90527"
+       y="1017.8771"
        id="text5257"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/keith/Documents/python/puddletag/puddlestuff/data/puddlelogo.png"
@@ -224,7 +224,7 @@
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan5259"
-         x="417.90527"
-         y="1016.8771">v1.0.1</tspan></text>
+         x="371.90527"
+         y="1017.8771">v1.0.2RC1</tspan></text>
   </g>
 </svg>

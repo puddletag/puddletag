@@ -1,3 +1,13 @@
+14 July 2013 - 1.0.2 RC1
+   Added:
+	Dropdown in Extended Tags that works like Tag Panel. Useful for editing multiple valued fields.
+	You can now submit your tags containing MusicBrainz IDs to AcoustID. I suggest you do this.
+	Russian and Czech translations. Compiled translations are also included in default install.
+	__total can be edited in Tag Panel and other places.
+   Fixed:
+	MP4 tagging not working at all. I cannot believe no one picked this up.
+	Discogs didn't return all album info.
+
 31 August 2012
     Fixes:
         Issue 189.

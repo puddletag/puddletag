@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import subprocess, re, pdb
 from os.path import dirname
-version_string = '1.0.1'
-version = (1, 0, 1)
+version_string = '1.0.2RC1'
+version = (1, 0, 2)
 
 try:
     filedir = dirname(dirname(dirname(__file__)))

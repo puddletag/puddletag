@@ -450,32 +450,32 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Autonumbering Wizard</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="37"/>
+        <location filename="puddlestuff/helperwin.py" line="38"/>
         <source>Autonumbering Wizard</source>
         <translation>Automatische nummerings wizard</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="53"/>
+        <location filename="puddlestuff/helperwin.py" line="54"/>
         <source>&amp;Start: </source>
         <translation>&amp;Start: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="63"/>
+        <location filename="puddlestuff/helperwin.py" line="64"/>
         <source>Max length after padding with zeroes: </source>
         <translation>Maximale lengte na vulling met nullen: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="103"/>
+        <location filename="puddlestuff/helperwin.py" line="104"/>
         <source>Add track &amp;separator [&apos;/&apos;]: Number of tracks</source>
         <translation>&amp;Scheidingsteken toevoegen aan nummers [&apos;/&apos;]: Aantal nummers</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="75"/>
+        <location filename="puddlestuff/helperwin.py" line="76"/>
         <source>&amp;Restart numbering at each directory.</source>
         <translation>&amp;Herstart de opsomming in elke map.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="99"/>
+        <location filename="puddlestuff/helperwin.py" line="100"/>
         <source>Add track &amp;separator [&apos;/&apos;]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -943,7 +943,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="1066"/>
+        <location filename="puddlestuff/helperwin.py" line="1071"/>
         <source>Never show this message again.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1179,27 +1179,27 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Edit Field</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="319"/>
+        <location filename="puddlestuff/helperwin.py" line="320"/>
         <source>Edit Field</source>
         <translation>Veld bewerken</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="324"/>
+        <location filename="puddlestuff/helperwin.py" line="325"/>
         <source>&amp;Field</source>
         <translation>&amp;Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="335"/>
+        <location filename="puddlestuff/helperwin.py" line="337"/>
         <source>&amp;Value</source>
         <translation>&amp;Waarde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="341"/>
+        <location filename="puddlestuff/helperwin.py" line="343"/>
         <source>A&amp;dd</source>
         <translation>Toevoege&amp;n</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="352"/>
+        <location filename="puddlestuff/helperwin.py" line="354"/>
         <source>E&amp;dit</source>
         <translation>Bewerke&amp;n</translation>
     </message>
@@ -1230,22 +1230,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Extended Tags</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="548"/>
+        <location filename="puddlestuff/helperwin.py" line="553"/>
         <source>Field</source>
         <translation>Veld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="548"/>
+        <location filename="puddlestuff/helperwin.py" line="553"/>
         <source>Value</source>
         <translation>Waarde</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="583"/>
+        <location filename="puddlestuff/helperwin.py" line="588"/>
         <source>Resets the selected fields to their original value.</source>
         <translation>Hiermee worden de geselecteerde velden hersteld naar de originele waarde.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="816"/>
+        <location filename="puddlestuff/helperwin.py" line="821"/>
         <source>Different files.</source>
         <translation>Verschillende bestanden.</translation>
     </message>
@@ -2885,12 +2885,12 @@ Do you want to go ahead?</source>
     <message>
         <location filename="puddlestuff/mainwin/patterncombo.py" line="83"/>
         <source>&amp;Sort</source>
-        <translation type="obsolete">&amp;Sorteren</translation>
+        <translation type="unfinished">&amp;Sorteren</translation>
     </message>
     <message>
         <location filename="puddlestuff/mainwin/patterncombo.py" line="134"/>
         <source>Enter a pattern</source>
-        <translation type="obsolete">Voer een patroon in</translation>
+        <translation type="unfinished">Voer een patroon in</translation>
     </message>
 </context>
 <context>
@@ -3242,7 +3242,7 @@ Do you want to go ahead?</source>
     <message>
         <location filename="puddlestuff/mainwin/patterncombo.py" line="70"/>
         <source>Patterns</source>
-        <translation type="obsolete">Patronen</translation>
+        <translation type="unfinished">Patronen</translation>
     </message>
     <message>
         <location filename="puddlestuff/mainwin/tagpanel.py" line="425"/>
@@ -3464,47 +3464,47 @@ Echt: %2</translation>
 <context>
     <name>Text File -&gt; Tag</name>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="149"/>
+        <location filename="puddlestuff/helperwin.py" line="150"/>
         <source>Import tags from text file</source>
         <translation>Tags importeren uit een tekstbestand</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="155"/>
+        <location filename="puddlestuff/helperwin.py" line="156"/>
         <source>Text</source>
         <translation>Tekst</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="158"/>
+        <location filename="puddlestuff/helperwin.py" line="159"/>
         <source>Tag preview</source>
         <translation>Tag voorbeeld</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="179"/>
+        <location filename="puddlestuff/helperwin.py" line="180"/>
         <source>&amp;Select File</source>
         <translation>&amp;Bestand selecteren</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="181"/>
+        <location filename="puddlestuff/helperwin.py" line="182"/>
         <source>&amp;Paste Clipboard</source>
         <translation>&amp;Plakken</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="245"/>
+        <location filename="puddlestuff/helperwin.py" line="246"/>
         <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
         <translation>Het bestand &lt;b&gt;%1&lt;/b&gt; kan niet geladen worden.&lt;br /&gt;Wilt u een ander bestand kiezen?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="249"/>
+        <location filename="puddlestuff/helperwin.py" line="250"/>
         <source>Error</source>
         <translation>Fout</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="249"/>
+        <location filename="puddlestuff/helperwin.py" line="250"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ja</translation>
     </message>
     <message>
-        <location filename="puddlestuff/helperwin.py" line="249"/>
+        <location filename="puddlestuff/helperwin.py" line="250"/>
         <source>&amp;No</source>
         <translation>&amp;Nee</translation>
     </message>
