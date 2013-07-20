@@ -11,7 +11,7 @@ from puddlestuff.util import split_by_tag
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
 from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
-from puddlestuff.puddleobjects import PuddleConfig
+from puddlestuff.puddleobjects import PuddleConfig, ratio
 from puddlestuff.audioinfo import isempty, CaselessDict
 
 class OldURLError(RetrievalError):
@@ -99,7 +99,7 @@ def create_search(terms):
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:
         if (key in audio1) and (key in audio2):
-            if u''.join(audio1[key]).lower() != u''.join(audio2[key]).lower():
+            if ratio(u''.join(audio1[key]), u''.join(audio2[key])) < 0.5:
                 return False
         else:
             return False
@@ -319,30 +319,23 @@ def parse_searchpage(page, artist=None, album=None, id_field=ALBUM_ID):
     d = {}
     if artist and album:
         d = {'artist': artist, 'album': album}
-        ret = [album for album in albums if equal(d, album, True)]
+        top = [album for album in albums if equal(d, album, True)]
     elif album:
         d = {'album': album}
-        ret = [album for album in albums if equal(d, album, True, ['album'])]
-        if not ret:
-            ret = [album for album in albums if 
+        top = [album for album in albums if equal(d, album, True, ['album'])]
+        if not top:
+            top = [album for album in albums if 
                 equal(d, album, False, ['album'])]
     elif artist:
         d = {'artist': artist}
-        ret = [album for album in albums if equal(d, album, True, ['artist'])]
+        top = [album for album in albums if equal(d, album, True, ['artist'])]
         if not ret:
-            ret = [album for album in albums if
+            top = [album for album in albums if
                 equal(d, album, False, ['artist'])]
     else:
-        ret = []
-
-    if ret:
-        return True, ret
-    else:
-        ret = [album for album in albums if equal(d, album, False)]
-        if ret:
-            return True, ret
-        else:
-            return False, albums
+        top = []
+    
+    return False, albums
 
 def parse_track_table(table, discnum=None):
 
