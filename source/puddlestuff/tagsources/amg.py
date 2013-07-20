@@ -167,7 +167,8 @@ def parse_albumpage(page, artist=None, album=None):
     info.update(parse_sidebar(sidebar))
 
     content = album_soup.find('section', {'class': 'review read-more'})
-    info.update(parse_review(content))
+    if content:
+        info.update(parse_review(content))
 
     #swipe = main.find('div', {'id':"similar-albums", 'class':"grid-gallery"})
     
@@ -279,7 +280,7 @@ def parse_search_element(td, id_field=ALBUM_ID):
             info['album'] = artist
     
     info['year'] = to_string(td.find('div', {'class': 'year'}))
-    info['genre'] = to_string(td.find('div', {'class': 'genre'}))
+    info['genre'] = to_string(td.find('div', {'class': 'genres'}))
 
     info['#extrainfo'] = [
         info['album'] + u' at AllMusic.com', info['#albumurl']]
@@ -306,14 +307,14 @@ def parse_searchpage(page, artist=None, album=None, id_field=ALBUM_ID):
     """
     page = get_encoding(page, True, 'utf8')[1]
     soup = parse_html.SoupWrapper(parse_html.parse(page))
-    result_table = soup.find('table', {'class': 'search-results'})
+    result_table = soup.find('ul', {'class': 'search-results'})
     try:
-        results = result_table.find_all('tr',
-            {'class': 'search-result album'})
+        results = result_table.find_all('div',
+            {'class': 'info'})
     except AttributeError:
         return []
 
-    albums = [parse_search_element(result.find("td")) for result in results]
+    albums = [parse_search_element(result) for result in results]
 
     d = {}
     if artist and album:
@@ -352,7 +353,8 @@ def parse_track_table(table, discnum=None):
     header_items = table.thead.find('tr').find_all('th')
     headers = [th.element.attrib.get('class', convert(th.string))
         for th in header_items]
-    fields = headers
+    
+    fields = [spanmap.get(key, key) for key in headers]
 
     tracks = []
     performance_title = None
@@ -363,7 +365,6 @@ def parse_track_table(table, discnum=None):
         t = parse_track(item, fields, performance_title)
         performance_title = None
         tracks.append(t)
-    print tracks
     return tracks
 
 def parse_track(tr, fields, performance_title=None):
