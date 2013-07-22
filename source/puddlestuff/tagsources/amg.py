@@ -209,13 +209,20 @@ def parse_sidebar(sidebar):
     cover = container.find('img')
     if cover is not None:
         try:
-            info['#cover-url'] = json.loads(
-                cover.element.attrib['data-lightbox'])['url'].replace('?partner=allrovi.com', '')
+            cover_url = json.loads(cover.element.attrib['data-lightbox'])['url']
         except KeyError:
             try:
-                info['#cover-url'] = cover.element.attrib['src'].replace('?partner=allrovi.com', '')
+                cover_url = cover.element.attrib['src']
+                if cover.element.attrib.get('class') == u'no-image':
+                    cover_url = None
             except (AttributeError, KeyError):
-                "No artwork."
+                cover_url = None
+            
+        if cover_url:
+            cover_url = cover_url.replace('?partner=allrovi.com', '')
+            if cover_url.startswith('/'):
+                cover_url = 'http://www.allmusic.com' + cover_url
+            
 
     basic_info = sidebar.find('section', {'class': 'basic-info'})
     invalids = set(['affiliates', 'advertising medium-rectangle', 'partner-buttons'])
@@ -384,18 +391,21 @@ def parse_track(tr, fields, performance_title=None):
                 track[sub_field] = value
         else:
             track[field] = convert(td.string)                
-    if performance_title:
-        track['performance_title'] = performance_title
+    if performance_title and 'title' in track:
+        track['title'] = performance_title + u': ' + track['title']
     return dict((k,v) for k,v in track.iteritems() if not isempty(v))
 
 def parse_tracks(content):
     discs = content.find_all('div', 'disc')    
+    if not discs:
+        return None
     tracks = []
     for i, disc in enumerate(discs):
         info = {'discnumber': unicode(i + 1)}
         disc_tracks = parse_track_table(disc.table)
-        for track in disc_tracks:
-            track.update(info)
+        if len(discs) > 1:
+            for track in disc_tracks:
+                track.update(info)
         tracks.extend(disc_tracks)
 
     return tracks
