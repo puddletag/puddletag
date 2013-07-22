@@ -355,6 +355,11 @@ class Tag(util.MockTag):
                     tags[TAGS[key]] = convert(TAGS[key], audio[key])
                 else:
                     field = key[key.find(':', key.find(':') +1) + 1:]
+                    try:
+                        field = field.decode('utf8')
+                    except UnicodeDecodeError:
+                        field = field.decode('latin1')
+
                     self.__freeform[field] = key
                     try:
                         tags[field] = [unicode(v, 'utf8') if not
@@ -407,7 +412,8 @@ class Tag(util.MockTag):
         tags = usertags(self.__tags)
         tags = [(z, tags[z]) for z in tags
             if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
-
+        
+        x = self.__tags
         for tag, value in tags:
             try:
                 newtag[REVTAGS[tag]] = value
