@@ -53,6 +53,7 @@ spanmap = CaselessDict({
     'Rovi Music ID': 'amg_rovi_id',
     'tracknum': 'track',
     'AMG Classical ID': 'amg_classical_id',
+    'catalog #': 'catalog',
     })
 
 sqlre = re.compile('(r\d+)$')
@@ -77,11 +78,16 @@ def convert(value):
     return text
 
 def convert_year(info):
-    if 'year' not in info:
+    if 'release date' not in info:
         return {}
 
+    info['year'] = info['release date']
+    del(info['release date'])
+
+    if not isinstance(info['year'], basestring):
+        info['year'] = info['year'][0]
     try:
-        year = time.strptime(info['year'], '%b %d, %Y')
+        year = time.strptime(info['year'], '%B %d, %Y')
         return {'year': time.strftime('%Y-%m-%d', year)}
     except ValueError:
         try:
@@ -160,11 +166,15 @@ def parse_albumpage(page, artist=None, album=None):
 
     artist = album_soup.find('div', {'class': 'album-artist'})
     album = album_soup.find('div', {'class': 'album-title'})
+    if not artist:
+        artist = album_soup.find('h3', 'release-artist')
+        album = album_soup.find('h3', 'release-title')
     info = {'artist': convert(artist.string), 'album': convert(album.string)}
     info['albumartist'] = info['artist']
 
     sidebar = album_soup.find('div', {'class': 'sidebar'})
     info.update(parse_sidebar(sidebar))
+    info.update(convert_year(info))
 
     content = album_soup.find('section', {'class': 'review read-more'})
     if content:
@@ -174,7 +184,7 @@ def parse_albumpage(page, artist=None, album=None):
     
     #info.update(parse_similar(swipe))
     
-    info = dict((k,v) for k, v in info.iteritems() if not isempty(v))
+    info = dict((spanmap.get(k,k),v) for k, v in info.iteritems() if not isempty(v))
         
     return [info, parse_tracks(album_soup)]
 
@@ -206,6 +216,8 @@ def parse_sidebar(sidebar):
     info = {}
 
     container = sidebar.find('div', {'class': 'album-contain'})
+    if container is None:
+        container = sidebar.find('div', {'class': 'release-cover-contain'})
     cover = container.find('img')
     if cover is not None:
         try:
@@ -363,7 +375,6 @@ def parse_track_table(table, discnum=None):
             performance_title = convert(item.string.strip())
             continue
         t = parse_track(item, fields, performance_title)
-        performance_title = None
         tracks.append(t)
     return tracks
 
