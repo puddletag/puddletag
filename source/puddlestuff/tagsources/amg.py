@@ -54,6 +54,7 @@ spanmap = CaselessDict({
     'tracknum': 'track',
     'AMG Classical ID': 'amg_classical_id',
     'catalog #': 'catalog',
+    'release info': 'release_info',
     })
 
 sqlre = re.compile('(r\d+)$')
@@ -195,6 +196,8 @@ def parse_sidebar_element(element):
     elif element.find('div'):
         anchors = element.find('div').find_all('a')
         values = [convert(anchor.string) for anchor in anchors]
+    elif element.find('ul'):
+        values = [convert(z.string) for z in element.ul.find_all('li')]
     else:
         return {}
     return {title: values}
