@@ -39,6 +39,7 @@ spanmap = CaselessDict({
     'Title': 'title',
     'Composer': 'composer',
     'Time': '__length',
+    'duration': '__length',
     'Type': 'type',
     'Year': 'year',
     'Performance': 'performance',
@@ -237,6 +238,7 @@ def parse_sidebar(sidebar):
             cover_url = cover_url.replace('?partner=allrovi.com', '')
             if cover_url.startswith('/'):
                 cover_url = 'http://www.allmusic.com' + cover_url
+            info['#cover-url'] = cover_url
             
 
     basic_info = sidebar.find('section', {'class': 'basic-info'})
