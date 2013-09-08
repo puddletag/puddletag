@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import audioinfo, os, pdb, sys, string, re
-from decimal import Decimal, InvalidOperation
-from pyparsing import (Word, alphas,Literal, OneOrMore, NotAny, alphanums, 
-    nums, ZeroOrMore, Forward, delimitedList, Combine, QuotedString, 
-    CharsNotIn, White, originalTextFor, nestedExpr, 
-    Optional, commaSeparatedList)
+import pdb
+import audioinfo, os, string, re
+from decimal import Decimal
+from pyparsing import (Word, alphas,Literal, OneOrMore, alphanums, 
+    nums, delimitedList, Combine, QuotedString, 
+    CharsNotIn, originalTextFor, nestedExpr, 
+    Optional)
 from puddleobjects import PuddleConfig, safe_name
 from funcprint import pprint
 from puddlestuff.util import PluginFunction, translate, to_list, to_string
@@ -38,7 +39,7 @@ class FuncError(ParseError): pass
 
 class MultiValueError(FuncError): pass
 
-from functions import functions, no_fields, pat_escape
+from functions import functions
 
 def arglen_error(e, passed, function, to_raise = True):
     varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
@@ -325,11 +326,11 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     state -- Dictionary that hold state. Like {'__count': 15}.
              Used by some functions in puddlestuff.functions
 
-    >>> audio = {'artist': [u'Artist1'], track:u'10'}
-    >>> parsefunc(u'%track% - %artist%', m_audio)
+    >>> audio = {'artist': [u'Artist1'], 'track':u'10'}
+    >>> parsefunc(u'%track% - %artist%', audio)
     Artist1 - 10
     >>> state = {'__count': u'5'}
-    >>> parsefunc(u'$num(%track%, 2)/$num(%__count%, 2). %artist%', m_audio,
+    >>> parsefunc(u'$num(%track%, 2)/$num(%__count%, 2). %artist%', audio,
     ... state = state)
     u'05/05. Artist1'
 
@@ -390,6 +391,8 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
         elif c == u'\\' and not escape:
             escape = True
             i += 1
+            if not in_func:
+                token.append(c)
             continue
         elif c == u'$' and not (escape or (field_open >= 0)):
             func_name = re.search(u'^\$(\w+)\(', s[i:])

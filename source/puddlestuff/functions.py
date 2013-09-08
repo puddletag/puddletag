@@ -447,7 +447,7 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
             while new_fn.startswith('../'):
                 parent = os.path.dirname(parent)
                 new_fn = new_fn[len('../'):]
-            return path_join(parent, new_fn)
+            return add_extension(path_join(parent, new_fn), tags, ext)
         elif count and u'..' not in subdirs:
             subdirs = dirpath.split('/')
             if count >= len(subdirs):
