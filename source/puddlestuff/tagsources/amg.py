@@ -56,6 +56,7 @@ spanmap = CaselessDict({
     'AMG Classical ID': 'amg_classical_id',
     'catalog #': 'catalog',
     'release info': 'release_info',
+    'primary': 'composer',
     })
 
 sqlre = re.compile('(r\d+)$')
@@ -390,10 +391,14 @@ def parse_track(tr, fields, performance_title=None):
 
     if tr.element.attrib.get('class') == 'perfomance-title':
         return convert(tr.string)
-    
+
     for td, field in zip(tr.find_all('td'), fields):
-        if not field or field in ignore:
+        if field in ignore:
             continue
+        elif field is None:
+            field = td.element.attrib.get('class')
+            if not field:
+                continue
         
         sub_fields = td.find_all('div')
         if (sub_fields):
@@ -402,14 +407,19 @@ def parse_track(tr, fields, performance_title=None):
                 if field == 'performer' and sub_field == 'primary':
                     sub_field = field
                 elif field == 'performer' and sub_field != 'primary':
-                    sub_field = 'composer'
+                    if sub_field == 'featuring':
+                        track[field] += u' ' + convert(div.string)
+                        continue
+                    else:
+                        sub_field = 'composer'
+                    
                 value = convert(div.string)
                 track[sub_field] = value
         else:
             track[field] = convert(td.string)                
     if performance_title and 'title' in track:
         track['title'] = performance_title + u': ' + track['title']
-    return dict((k,v) for k,v in track.iteritems() if not isempty(v))
+    return dict((spanmap.get(k,k),v) for k,v in track.iteritems() if not isempty(v))
 
 def parse_tracks(content):
     discs = content.find_all('div', 'disc')    
