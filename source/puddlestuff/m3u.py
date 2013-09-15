@@ -100,7 +100,7 @@ def readm3u(path):
     os.chdir(olddir)
     return mp3Files
 
-def exportm3u(tags, tofile, format = None, reldir = False):
+def exportm3u(tags, tofile, format = None, reldir = False, winsep=False):
     header = ['#EXTM3U']
 
     if reldir:
@@ -108,6 +108,9 @@ def exportm3u(tags, tofile, format = None, reldir = False):
         filenames = [relpath(f.filepath, reldir) for f in tags]
     else:
         filenames = [f.filepath for f in tags]
+
+    if winsep:
+        filenames = [f.replace('/', '\\') for f in filenames]
 
     if format is None:
         text = '\n'.join(header + filenames)

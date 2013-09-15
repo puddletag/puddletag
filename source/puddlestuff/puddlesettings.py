@@ -206,9 +206,6 @@ class Playlist(QWidget):
 
         self.extpattern = QLineEdit()
         self.extpattern.setText(cparser.load('playlist', 'extpattern','%artist% - %title%'))
-        hbox = QHBoxLayout()
-        hbox.addSpacing(10)
-        hbox.addWidget(self.extpattern)
 
         self.extinfo = QCheckBox(translate("Playlist Settings", '&Write extended info'), self)
         self.connect(self.extinfo, SIGNAL('stateChanged(int)'), self.extpattern.setEnabled)
@@ -218,19 +215,25 @@ class Playlist(QWidget):
         self.reldir = QCheckBox(translate("Playlist Settings", 'Entries &relative to working directory'))
         self.reldir.setCheckState(inttocheck(cparser.load('playlist', 'reldir',0, True)))
 
+        self.windows_separator = QCheckBox(translate("Playlist Settings", 'Use windows path separator (\\)'))
+        self.windows_separator.setCheckState(inttocheck(cparser.load('playlist', 'windows_separator',0, True)))
 
         self.filename = QLineEdit()
         self.filename.setText(cparser.load('playlist', 'filepattern','puddletag.m3u'))
         label = QLabel(translate("Playlist Settings", '&Filename pattern.'))
         label.setBuddy(self.filename)
 
+        hbox = QHBoxLayout()
+        hbox.addSpacing(10)
+        hbox.addWidget(self.extpattern)
+
         vbox = QVBoxLayout()
-        [vbox.addWidget(z) for z in (self.extinfo, self.reldir,
+        [vbox.addWidget(z) for z in (self.extinfo, self.reldir, self.windows_separator,
             label, self.filename)]
         vbox.insertLayout(1, hbox)
         vbox.addStretch()
-        vbox.insertSpacing(2, 5)
-        vbox.insertSpacing(4, 5)
+        vbox.insertSpacing(3, 5)
+        vbox.insertSpacing(5, 5)
         self.setLayout(vbox)
 
     def applySettings(self, control=None):
@@ -244,6 +247,7 @@ class Playlist(QWidget):
         cparser.setSection('playlist', 'extpattern', unicode(self.extpattern.text()))
         cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
         cparser.setSection('playlist', 'filepattern', unicode(self.filename.text()))
+        cparser.setSection('playlist', 'windows_separator', checktoint(self.windows_separator))
 
 class TagMappings(QWidget):
     def __init__(self, parent = None):

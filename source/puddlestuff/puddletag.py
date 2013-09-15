@@ -666,7 +666,9 @@ class MainWin(QMainWindow):
         
 
     def savePlayList(self):
-        tags = self._table.model().taginfo
+        tags = status['selectedfiles']
+        if not tags:
+            tags = status['alltags']
         settings = PuddleConfig()
         try:
             dirname = self._lastdir[0]
@@ -683,7 +685,8 @@ class MainWin(QMainWindow):
                 pattern = None
 
             reldir = settings.get('playlist', 'reldir', 0, True)
-            m3u.exportm3u(tags, f, pattern, reldir)
+            windows_separator = settings.get('playlist', 'windows_separator', 0, False)
+            m3u.exportm3u(tags, f, pattern, reldir, windows_separator)
 
     def _viewFilled(self, val):
         self.emit(SIGNAL('viewfilled'), val)
