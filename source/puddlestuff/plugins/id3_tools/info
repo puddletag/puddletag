@@ -1,0 +1,6 @@
+[info]
+author = concentricpuddle
+version = 1.0
+puddletag_version = 0.9.11
+description = Extra functions for handling ID3 tags added to the Tag Tools menu.
+name = ID3 Tools.
