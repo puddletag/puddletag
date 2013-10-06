@@ -419,7 +419,7 @@ def parse_track(tr, fields, performance_title=None):
             track[field] = convert(td.string)                
     if performance_title and 'title' in track:
         track['title'] = performance_title + u': ' + track['title']
-    return dict((spanmap.get(k,k),v) for k,v in track.iteritems() if not isempty(v))
+    return dict((spanmap.get(k,k),v) for k,v in track.iteritems() if spanmap.get(k) and not isempty(v))
 
 def parse_tracks(content):
     discs = content.find_all('div', 'disc')    
@@ -433,11 +433,9 @@ def parse_tracks(content):
             for track in disc_tracks:
                 track.update(info)
         tracks.extend(disc_tracks)
-
     return tracks
 
 def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
-    review = False
     write_log('Opening Album Page - %s' % url)
     album_page, code = urlopen(url, False, True)
     if album_page.find("featured new releases") >= 0:
@@ -519,7 +517,6 @@ class AllMusic(object):
 
     def search(self, album, artists):
         ret = []
-        check_matches = False
         if len(artists) > 1:
             artist = u'Various Artists'
         else:

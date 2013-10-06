@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import subprocess, re, pdb
+import subprocess
 from os.path import dirname
-version_string = '1.0.2RC1'
+version_string = '1.0.2'
 version = (1, 0, 2)
 
 try:
