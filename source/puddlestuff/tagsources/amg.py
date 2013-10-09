@@ -419,7 +419,9 @@ def parse_track(tr, fields, performance_title=None):
             track[field] = convert(td.string)                
     if performance_title and 'title' in track:
         track['title'] = performance_title + u': ' + track['title']
-    return dict((spanmap.get(k,k),v) for k,v in track.iteritems() if spanmap.get(k) and not isempty(v))
+    if 'artist' not in track and 'performer' in track:
+        track['artist'] = track['performer']
+    return dict((spanmap.get(k,k),v) for k,v in track.iteritems() if spanmap.get(k,k) and not isempty(v))
 
 def parse_tracks(content):
     discs = content.find_all('div', 'disc')    
