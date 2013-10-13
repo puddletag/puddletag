@@ -171,8 +171,13 @@ def parse_albumpage(page, artist=None, album=None):
     album = album_soup.find('div', {'class': 'album-title'})
     if not artist:
         artist = album_soup.find('h3', 'release-artist')
-        album = album_soup.find('h3', 'release-title')
-    info = {'artist': convert(artist.string), 'album': convert(album.string)}
+        if not album:
+            album = album_soup.find('h3', 'release-title')
+
+    if  album is None:
+        info = {'artist': convert(artist.string), 'album': ''}
+    else:
+        info = {'artist': convert(artist.string), 'album': convert(album.string)}
     info['albumartist'] = info['artist']
 
     sidebar = album_soup.find('div', {'class': 'sidebar'})
@@ -468,7 +473,7 @@ def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     return info, tracks, cover
 
 def search(album):
-    search_url = create_search(album.replace(u'/', u' '))
+    search_url = create_search(replace(u'/', u' '))
     write_log(u'Search URL - %s' % search_url)
     return urlopen(iri_to_uri(search_url))
 
