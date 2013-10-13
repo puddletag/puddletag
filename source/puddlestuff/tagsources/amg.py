@@ -473,7 +473,7 @@ def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     return info, tracks, cover
 
 def search(album):
-    search_url = create_search(replace(u'/', u' '))
+    search_url = create_search(album.replace(u'/', u' '))
     write_log(u'Search URL - %s' % search_url)
     return urlopen(iri_to_uri(search_url))
 
