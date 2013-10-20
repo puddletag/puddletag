@@ -3,6 +3,11 @@
 from copy import copy, deepcopy
 
 from mutagen.oggvorbis import OggVorbis
+try:
+    from mutagen.oggopus import OggOpus
+except ImportError:
+    OggOpus = None
+
 import mutagen.flac
 from mutagen.flac import Picture, FLAC
 import base64
@@ -250,6 +255,23 @@ class Ogg_Tag(vorbis_tag(OggVorbis, u'Ogg Vorbis')):
 
     info = property(_info)
 
+if OggOpus:
+    class Opus_Tag(vorbis_tag(OggOpus, u'Opus')):
+        def _info(self):
+            info = self.mut_obj.info
+            fileinfo = [
+                (u'Path', self[PATH]),
+                (u'Size', str_filesize(int(self.size))),
+                (u'Filename', self[FILENAME]),
+                (u'Modified', self.modified)]
+
+            ogginfo = [(u'Bitrate', self.bitrate),
+                       (u'Channels', unicode(info.channels)),
+                       (u'Length', self.length)]
+            return [(u'File', fileinfo), (u'Opus Info', ogginfo)]
+
+        info = property(_info)
+
 
 class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
     def _info(self):
@@ -271,3 +293,6 @@ class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
 filetypes = [
     (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
     (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]
+
+if OggOpus:
+    filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus'))
