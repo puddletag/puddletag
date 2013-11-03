@@ -1708,7 +1708,7 @@ class PicWidget(QWidget):
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
                 translate("Artwork", 'Select Image...'), default_fn,
-                translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)")))
+                translate("Artwork", "JPEG & PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)")))
 
         if not filename:
             return
