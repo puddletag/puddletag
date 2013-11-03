@@ -165,19 +165,29 @@ def parse_similar(swipe):
     return {}
             
 def parse_albumpage(page, artist=None, album=None):
+
+    info = {}
+
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
 
     artist = album_soup.find('div', {'class': 'album-artist'})
     album = album_soup.find('div', {'class': 'album-title'})
+
+    release_title = album_soup.find('h3', 'release-title')
+    
+    if release_title:
+        album = release_title
+        details = album_soup.find('p', {'class': 'release-details'})
+        if details:
+            info['release'] = convert(details.string)
+
     if not artist:
         artist = album_soup.find('h3', 'release-artist')
-        if not album:
-            album = album_soup.find('h3', 'release-title')
 
     if  album is None:
-        info = {'artist': convert(artist.string), 'album': ''}
+        info.update({'artist': convert(artist.string), 'album': ''})
     else:
-        info = {'artist': convert(artist.string), 'album': convert(album.string)}
+        info.update({'artist': convert(artist.string), 'album': convert(album.string)})
     info['albumartist'] = info['artist']
 
     sidebar = album_soup.find('div', {'class': 'sidebar'})
