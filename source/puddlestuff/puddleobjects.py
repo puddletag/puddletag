@@ -1524,7 +1524,7 @@ class PicWidget(QWidget):
 
         #Description and picture type shit.
         self._image_desc = QLineEdit(self)
-        self._image_desc.setText(translate("Artwork", 'Enter a description'))
+        self._image_desc.setPlaceholderText(translate("Artwork", 'Enter a description'))
         self._image_desc.setToolTip(
             translate("Artwork",
             '<p>Enter a description for the current cover.</p>'
