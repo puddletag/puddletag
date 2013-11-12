@@ -1,3 +1,10 @@
+7 November 2013 - 1.0.2
+  Fixed:
+	Escaped chars in functions weren't being escaped correctly. Check your functions if they make use of this odd behaviour.
+  Added:
+	Opus support.
+	Artwork windows list JPG + PNG's at the same time.
+
 14 July 2013 - 1.0.2 RC1
    Added:
 	Dropdown in Extended Tags that works like Tag Panel. Useful for editing multiple valued fields.

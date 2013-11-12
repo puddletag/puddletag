@@ -139,4 +139,4 @@ class ArtworkWidget(QWidget):
             self.fill(self._audios)
             self._audios = []
 
-control = ('Artwork', ArtworkWidget, RIGHTDOCK, False, True)
+control = ('Artwork', ArtworkWidget, RIGHTDOCK, False)

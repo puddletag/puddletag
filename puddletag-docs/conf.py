@@ -13,6 +13,8 @@
 
 import sys, os
 
+import sphinx_bootstrap_theme
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -50,7 +52,7 @@ copyright = u'2011, concentricpuddle'
 # built documents.
 #
 # The short X.Y version.
-version = '0.10.3'
+version = '1.0.2'
 # The full version, including alpha/beta/rc tags.
 release = '0.10.3'
 
@@ -93,7 +95,8 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'djangodocs'
+html_theme = 'bootstrap'
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path() + ['_templates']
 
 #agogo/theme.conf
 #basic/theme.conf
@@ -109,10 +112,27 @@ html_theme = 'djangodocs'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'navbar_site_name': 'puddletag',
+    'navbar_links' : [
+        ('Home', 'index'),
+        ('Download', 'download'),
+        ('News', 'news'),
+        ('Documentation', 'docs'),
+        ('Forum', "http://sourceforge.net/apps/phpbb/puddletag", True),
+        ('Screenshots', 'screenshots'),
+        ('About', 'about')
+        ],
+    'navbar_sidebarrel': False,
+    'globaltoc_includehidden': "false",
+    'navbar_pagenav': False,
+    'source_link_position': 'nothing',
+    'globaltoc_depth': -1,
+    
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_templates']
+#html_theme_path = ['_templates']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -133,7 +153,7 @@ html_title = 'puddletag'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -145,6 +165,7 @@ html_title = 'puddletag'
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
+html_sidebars = {'source/*': ['my_sidebar.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

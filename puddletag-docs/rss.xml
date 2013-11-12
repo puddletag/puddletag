@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 14 Jul 2013 15:51:28 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>14 July 2013 - 1.0.2 RC1</title><link>http://puddletag.sourceforge.net/news.html#july-2013-1-0-2-rc1</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Thu, 07 Nov 2013 20:47:24 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>7 November 2013 1.0.2</title><link>http://puddletag.sourceforge.net/news.html#november-2013-1-0-2</link><description>
+  &lt;div class="section" id="november-2013-1-0-2"&gt;
+&lt;h1&gt;7 November 2013 1.0.2&lt;/h1&gt;
+&lt;p&gt;Well, it&amp;#8217;s been more than a month and now major new issues have been report.&lt;/p&gt;
+&lt;p&gt;There&amp;#8217;s not much to tell, but here&amp;#8217;s some things anyway.&lt;/p&gt;
+&lt;div class="section" id="stuff-in-this-release"&gt;
+&lt;h2&gt;Stuff in this release:&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Escaped chars in functions weren&amp;#8217;t being escaped correctly. Check your functions if they make use of this odd behaviour.&lt;/li&gt;
+&lt;li&gt;Opus support.&lt;/li&gt;
+&lt;li&gt;Artwork windows list JPG + PNG&amp;#8217;s at the same time.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Thu, 07 Nov 2013 00:00:00 GMT</pubDate></item><item><title>14 July 2013 - 1.0.2 RC1</title><link>http://puddletag.sourceforge.net/news.html#july-2013-1-0-2-rc1</link><description>
   &lt;div class="section" id="july-2013-1-0-2-rc1"&gt;
 &lt;h1&gt;14 July 2013 - 1.0.2 RC1&lt;/h1&gt;
 &lt;p&gt;I&amp;#8217;ve been using this release since forever and consider it to work pretty well.&lt;/p&gt;

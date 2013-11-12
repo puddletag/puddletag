@@ -37,14 +37,14 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 
 html:
-	@python2 createnews.py
+	# @python2 createnews.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
-	@echo
-	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
-	@python2 createnews.py fixnews
+	# @echo
+	# @echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+	# @python2 createnews.py fixnews
 
 documentation:
-	@$(SPHINXBUILD) -b html -D html_theme=offline -D html_domain_indices=[] $(ALLSPHINXOPTS) $(BUILDDIR)/documentation about.txt docs.txt source/*.txt
+	@$(SPHINXBUILD) -b html -D html_domain_indices=[] $(ALLSPHINXOPTS) $(BUILDDIR)/documentation about.txt docs.txt source/*.txt
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/documentation."
 
 dirhtml:

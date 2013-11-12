@@ -1713,7 +1713,6 @@ class PicWidget(QWidget):
         if not filename:
             return
         self.lastfilename = filename
-        data = open(filename, 'rb').read()
         pic = self.loadPics(filename)
         if pic:
             pic = pic[0]

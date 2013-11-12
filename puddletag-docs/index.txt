@@ -50,5 +50,5 @@ Support
 -------
 Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
 
-| Last website update: 14 July 2013
-| Latest version: 1.0.2RC1
+| Last website update: 7 November 2013
+| Latest version: 1.0.2

@@ -5,7 +5,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-import sys, puddlestuff
+import puddlestuff
 setup(
     name='puddletag',
     version=puddlestuff.version_string,
