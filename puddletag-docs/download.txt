@@ -21,12 +21,29 @@ Downloads
 Contents
 --------
 
++ :ref:`dependencies`
 + :ref:`installing_from_source`
 + :ref:`installing_from_the_debian_package`
 + :ref:`installing_on_fedora_14_and_later`
 + :ref:`development_builds`
 + :ref:`plugins`
 + :ref:`translations`
+
+.. _dependencies:
+
+Dependencies
+------------
+
+puddletag requires the following dependencies. Visit the respective project's page if you having trouble installing a component.
+
+Install instructions are just below.
+
++   At least `Python 2.6 (but not Python 3) <http://python.org>`_
++   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
++   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
++   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
++   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
++   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ (optional) for AcoustID support.
 
 .. _installing_from_source:
 

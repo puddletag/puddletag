@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+# Automatically added by dh_pysupport
+if which update-python-modules >/dev/null 2>&1; then
+        update-python-modules  puddletag.public
+fi
+# End automatically added section
+
+# Automatically added by dh_installmenu
+if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
+    update-menus
+fi
+# End automatically added section
+# Automatically added by dh_desktop
+if [ "$1" = "configure" ] && which update-desktop-database >/dev/null 2>&1 ; then
+    update-desktop-database -q
+fi
+# End automatically added section
+
+# Automatically added by dh_installmenu
+if [ "$1" = "configure" ] && [ -x "`which desktop-file-install 2>/dev/null`" ]; then
+    desktop-file-install /usr/share/applications/puddletag.desktop
+fi
+# End automatically added section
+
+exit 0

@@ -1,0 +1,29 @@
+Package: puddletag
+Version: 1.0.0RC2
+Architecture: all
+Maintainer: concentricpuddle <concentricpuddle@gmail.com>
+Installed-Size: 3248
+Depends: python (>= 2.5), python-support, python-mutagen (>= 1.14), python-qt4 (>= 4.5), python-pyparsing (>= 1.5.1), python-configobj (>= 4.5)
+Homepage: http://puddletag.sourceforge.net
+Section: sound
+Priority: optional
+Description:Simple, powerful audio tag editor.
+ puddletag is an audio tag editor (primarily created) for GNU/Linux similar
+ to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux,
+ it uses a spreadsheet-like layout so that all the tags you
+ want to edit by hand are visible and easily editable.
+ .
+ The usual tag editor features are supported like extracting tag
+ information from filenames, renaming files based on
+ their tags by using patterns and basic tag editing.
+ .
+ Then there're Functions, which can do things like replace
+ text, trim it, do case conversions, etc. Actions can
+ automate repetitive tasks. You can import your QuodLibet
+ library, lookup tags using Amazon (including cover art),
+ Discogs (does cover art too!), FreeDB and MusicBrainz.
+ There's quite a bit more, but I've reached my comma quota.
+ .
+ Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.),
+ VorbisComments (ogg, flac), Musepack (mpc),
+ Monkey's Audio (ape) and WavPack (wv).

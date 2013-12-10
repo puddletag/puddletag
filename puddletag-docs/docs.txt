@@ -1,5 +1,5 @@
-puddletag Documentation 
-=======================
+puddletag Documentation
+-----------------------
 
 **Download these docs:** `HTML <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.2.tar.bz2>`_ | `ReStructuredText <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-1.0.2.tar.bz2>`_
 

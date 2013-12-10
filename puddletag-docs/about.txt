@@ -6,11 +6,6 @@ About puddletag
 
 puddletag is just a tag editor. Although it's likely better than what you're used to (unless you've used Mp3tag, in which case it's kinda like what you're used to).
 
-About the author
-----------------
-
-You may call me concentricpuddle, but I also go by Keith. I'm contactable via email (concentricpuddle@gmail.com), but only if you want to discuss something completely outside the scope of the `forum <http://sourceforge.net/apps/phpbb/puddletag>`_.
-
 Thank yous
 ----------
 

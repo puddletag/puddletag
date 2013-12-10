@@ -104,7 +104,6 @@ News
 ]
 
     texts = [open(f, 'r').read() for f in files]
-    new_text = []
 
     for t in texts:
         out.append('\n\n----\n\n' + t + '\n')

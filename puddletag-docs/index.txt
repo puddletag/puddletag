@@ -24,23 +24,13 @@ To Mp3tag it's not that different. Mp3tag has things puddletag doesn't have, pud
 
 However, compared to other GNU/Linux taggers the differences are much too vast to list.
 
-What you need
--------------
-
-+   At least `Python 2.6 (but not Python 3) <http://python.org>`_
-+   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
-+   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
-+   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
-+   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
-+   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ for AcoustID support.
-
 How to get it
 -------------
 Instructions are over at the :doc:`downloads <download>` page.
 
 License
 -------
-puddletag licensed under the GPLv3, which you can find in its entirety at http://www.gnu.org/licenses/gpl-3.0.html
+puddletag is licensed under the GPLv3, which you can find in its entirety at http://www.gnu.org/licenses/gpl-3.0.html.
 
 Updates
 -------
@@ -50,5 +40,5 @@ Support
 -------
 Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
 
-| Last website update: 7 November 2013
+| Last website update: 10 December 2013
 | Latest version: 1.0.2
