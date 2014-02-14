@@ -323,7 +323,7 @@ class Tag(util.MockTag):
         self.revmapping, self.mapping = {}, {}
 
         self.__freeform = {} #Keys are tags as required by mutagen i.e. The '----'
-                            #frames. Values are the tag as represented by puddletag.
+                             #frames. Values are the tag as represented by puddletag.
 
         if audio.tags: #Not empty
             keys = audio.keys()
@@ -413,7 +413,6 @@ class Tag(util.MockTag):
         tags = [(z, tags[z]) for z in tags
             if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
         
-        x = self.__tags
         for tag, value in tags:
             try:
                 newtag[REVTAGS[tag]] = value

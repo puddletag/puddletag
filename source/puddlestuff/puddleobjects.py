@@ -1507,24 +1507,25 @@ class PicWidget(QWidget):
         self.lastfilename = u'~'
         self.currentFile = None
         self.filePattern = u'folder.jpg'
-        #The picture.
+
         self.label = ArtworkLabel()
         self.label.setFrameStyle(QFrame.Box)
-        #self.label.setMargin(10)
+
         self.label.setMinimumSize(200, 170)
         if buttons:
             self.label.setMaximumSize(200, 170)
         self._itags = []
-        #else:
-            #self.setMaximumSize(400,400)
+
         self.label.setAlignment(Qt.AlignCenter)
         self.connect(self.label, SIGNAL('newImages'), 
             lambda *filenames: self.addImages(self.loadPics(*filenames)))
-        #self.label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
-        #Description and picture type shit.
         self._image_desc = QLineEdit(self)
-        self._image_desc.setPlaceholderText(translate("Artwork", 'Enter a description'))
+        if (hasattr(self._image_desc, 'setPlaceholderText')):
+            self._image_desc.setPlaceholderText(translate("Artwork", 'Enter a description'))
+        else:
+            self._image_desc.setText('Enter a description')
+
         self._image_desc.setToolTip(
             translate("Artwork",
             '<p>Enter a description for the current cover.</p>'

@@ -897,6 +897,8 @@ class Tag(TagBase):
             apics = audio.tags.getall("APIC")
             if apics:
                 self.images = map(bin_to_pic, apics)
+            else:
+                self.images = [];
 
         self.__tags.update(tags)
         self.__tags.update(info_to_dict(audio.info))

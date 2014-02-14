@@ -8,7 +8,6 @@ try:
 except ImportError:
     OggOpus = None
 
-import mutagen.flac
 from mutagen.flac import Picture, FLAC
 import base64
 
@@ -181,6 +180,8 @@ def vorbis_tag(base, name):
 
             if base == FLAC:
                 self.images = filter(None, map(bin_to_image, audio.pictures))
+            elif not self.images:
+                self.images = []
 
             self.__tags.update(info_to_dict(audio.info))
             self.__tags.update(tags)
@@ -227,6 +228,8 @@ def vorbis_tag(base, name):
             self.mut_obj = mut_obj
             if images:
                 self.images = images
+            else:
+                self.images = []
             self._originaltags = tags.keys()
 
         def update_tag_list(self):
