@@ -1,4 +1,4 @@
-21 March 2013 - 1.0.3
+11 March 2014 - 1.0.3
    Fixed: 
    	  Placeholder causing puddletag to not start up for Qt < 4.7.
     	  New version of configobj library not saving unicode objects.
