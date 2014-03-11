@@ -377,13 +377,6 @@ def run_func(selectedfiles, func):
     status['prevfunc'] = func
     selectedtags = status['selectedtags']
     
-    varnames = func.function.func_code.co_varnames
-    
-    if varnames and ((varnames[0] == 'tags') or (varnames[-1] == 'tags')):
-        useaudio = True
-    else:
-        useaudio = False
-
     function = func.runFunction
     state = {'__total_files': unicode(len(selectedtags))}
 

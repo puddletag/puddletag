@@ -2,7 +2,7 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 import sys, findfunc, pdb, os, resource, string, functions
 from copy import copy, deepcopy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \

@@ -206,7 +206,7 @@ class PuddleConfig(object):
     get -> load a key from a specified section
     set -> save a key section"""
     def __init__(self, filename = None):
-        self.settings = ConfigObj(filename, create_empty=True, encoding='utf8')
+        self.settings = ConfigObj(filename, create_empty=True, encoding='utf8', default_encoding='utf8')
 
         if not filename:
             filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
