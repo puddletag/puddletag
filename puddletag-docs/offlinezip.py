@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-import os, shutil
-import puddlestuff
+import os, shutil, sys
 
+puddlestuff_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'source')
+sys.path.insert(0, puddlestuff_dir)
+
+import puddlestuff
 version = puddlestuff.version_string
 
 from glob import glob
@@ -10,7 +13,7 @@ from subprocess import call
 RST_BASE='puddletag-docs-rst-' + version
 HTML_BASE = 'puddletag-docs-html-' + version
 
-def rst_docs(base = RST_BASE):
+def rst_docs(base=RST_BASE, outputdir=None):
 
     images = glob('_build/puddletag-docs-html-' + version + '/_images/*.png')
 
@@ -54,27 +57,31 @@ def rst_docs(base = RST_BASE):
     curdir = os.path.abspath('.')
     os.chdir(os.path.dirname(out_dir))
 
+    outputdir = outputdir if outputdir else curdir
     call(['tar', '--bzip2', '-c', '-f',
-        os.path.join(curdir, base + '.tar.bz2'),
+        os.path.join(outputdir, base + '.tar.bz2'),
         os.path.basename(out_dir)])
     os.chdir(curdir)
 
-def html_docs(base=HTML_BASE):
+def html_docs(basename=HTML_BASE, outputdir=None):
     if os.path.exists('_build'):
         shutil.rmtree('_build')
     call(['make', 'documentation'])
     shutil.rmtree('_build/documentation/_sources')
     os.remove('_build/documentation/.buildinfo')
-    out_dir = '_build/' + base
+    out_dir = '_build/' + basename
     os.rename('_build/documentation', out_dir)
-    curdir = os.path.abspath('.')
+    curdir  = os.path.abspath('.')
+    if outputdir is None:
+        outputdir  = curdir
     os.chdir('_build')
     call(['tar', '--bzip2', '-c', '-f',
-        os.path.join(curdir, base + '.tar.bz2'),
+        os.path.join(outputdir, basename + '.tar.bz2'),
         os.path.basename(out_dir)])
     os.chdir(curdir)
 
 
 if __name__ == '__main__':
-    html_docs()
-    rst_docs()
+    outputdir = sys.argv[1] if len(sys.argv) > 1 else None
+    html_docs(outputdir=outputdir)
+    rst_docs(outputdir=outputdir)

@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 from subprocess import call
 import subprocess
@@ -52,7 +53,7 @@ shutil.copytree('deb_build/data/usr/lib/python2.6/dist-packages/puddlestuff',
 os.makedirs('deb_build/data/usr/share/python-support')
 shutil.copy('puddletag.public', 'deb_build/data/usr/share/python-support')
 
-call(['python2', 'setup.py', 'egg_info'])
+call(['python2', 'setup.py', '--quiet', 'egg_info'])
 shutil.copy('puddletag.egg-info/PKG-INFO',
     'deb_build/data/usr/share/pyshared/puddletag.egg-info')
 shutil.copy('puddletag.egg-info/PKG-INFO',
@@ -132,6 +133,12 @@ f = open('deb_build/debian-binary', 'w')
 f.write('2.0\n')
 f.close()
 
-deb_name = 'dist/puddletag_' + puddlestuff.version_string + '-1_all.deb'
-call(['ar', 'rcu', deb_name, 'deb_build/debian-binary',
+
+deb_name = 'puddletag_' + puddlestuff.version_string + '-1_all.deb'
+
+call(['ar', 'rcu', 'dist/' + deb_name, 'deb_build/debian-binary',
     'deb_build/control.tar.gz', 'deb_build/data.tar.gz'])
+
+outputdir = sys.argv[1] if len(sys.argv) > 1 else None
+if outputdir:
+    shutil.move(os.path.join('dist', deb_name), outputdir)

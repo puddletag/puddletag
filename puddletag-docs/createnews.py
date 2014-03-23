@@ -16,7 +16,6 @@ def remove_headerlinks(text):
     return re.sub('''<a class=['"]headerlink['"] .*?</a>''', '', text)
 
 def to_html(fns):
-    import tempfile
 
     rst_fns = []
     html_fns = []

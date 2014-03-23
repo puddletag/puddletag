@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -E
+SPHINXOPTS    = -q
 SPHINXBUILD   = sphinx-build2
 PAPER         =
 BUILDDIR      = _build
@@ -37,10 +37,10 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 
 html:
-#	 python2 createnews.py
+	python2 createnews.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	echo
-#	python2 createnews.py fixnews
+	python2 createnews.py fixnews
 	python2 fix_html.py "_build/html"
 	echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

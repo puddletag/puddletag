@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
+import sys
+#Using the setuptools setup doesn't include everything
+#in the manifest.
 
-try:
-    from setuptools import setup
-except ImportError:
+if 'sdist' in sys.argv:
     from distutils.core import setup
+else:
+    try:
+        from setuptools import setup
+    except ImportError:
+        from distutils.core import setup
 
 import puddlestuff
 setup(
