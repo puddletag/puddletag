@@ -361,6 +361,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     tags = s_audio.copy()
     tags.update(state)
     tags.update(extra if extra is not None else {})
+    escape_chars = set('()$%')
 
     br_error = translate('Errors', 'No closing bracket found.')
 
@@ -391,7 +392,11 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
         elif c == u'\\' and not escape:
             escape = True
             i += 1
-            if not in_func:
+            try:
+                next_char = s[i+1];
+            except IndexError:
+                next_char = None
+            if not in_func or (next_char not in escape_chars):
                 token.append(c)
             continue
         elif c == u'$' and not (escape or (field_open >= 0)):
@@ -518,7 +523,11 @@ def replacevars(pattern, *dicts):
     escape = False
 
     for i, c in enumerate(pattern):
-        if c == u'\\' and not escape:
+        try:
+            next_char = pattern[i + 1]
+        except IndexError:
+            next_char = None
+        if c == u'\\' and next_char == '"' and not escape:
             escape = True
             continue
         elif escape:
