@@ -56,6 +56,7 @@ def arglen_error(e, passed, function, to_raise = True):
             'At least %1 arguments expected. %2 given.')
     else:
         raise e
+    import pdb; pdb.set_trace()
     message = message.arg(unicode(param_len)).arg(unicode(args_len))
     if to_raise:
         raise ParseError(message)
@@ -386,6 +387,11 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             token.append(u'\\"')
             i += 1
             escape = False
+            continue
+        elif escape:
+            token.append(c)
+            escape = False
+            i += 1
             continue
         elif in_quote:
             token.append(c)

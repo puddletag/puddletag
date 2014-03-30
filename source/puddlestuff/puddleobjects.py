@@ -18,7 +18,7 @@ from audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
     encode_fn, decode_fn, INFOTAGS)
 from operator import itemgetter
 path = os.path
-from configobj import ConfigObj
+from configobj import ConfigObj, ConfigObjError
 import traceback
 import time, re
 from glob import glob
@@ -2146,7 +2146,10 @@ class PuddleCombo(QWidget):
         values = [unicode(self.combo.itemText(index)) for index in xrange(self.combo.count())]
         values.append(unicode(self.combo.currentText()))
         cparser = PuddleConfig(self.filename)
-        cparser.setSection(self.name, 'values', values)
+        try:
+            cparser.setSection(self.name, 'values', values)
+        except ConfigObjError:
+            pass
 
     def removeCurrent(self):
         self.combo.removeItem(self.combo.currentIndex())
