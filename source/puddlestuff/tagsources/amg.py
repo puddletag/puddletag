@@ -3,7 +3,6 @@ import sys, json
 import re
 import parse_html
 import urllib, urllib2
-sys.path.insert(0, '/home/keith/Documents/python/puddletag-hg/source');
 import codecs
 import sys, pdb, re, time, os
 from functools import partial
