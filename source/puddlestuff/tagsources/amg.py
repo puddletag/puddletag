@@ -3,6 +3,7 @@ import sys, json
 import re
 import parse_html
 import urllib, urllib2
+sys.path.insert(0, '/home/keith/Documents/python/puddletag-hg/source');
 import codecs
 import sys, pdb, re, time, os
 from functools import partial
@@ -423,8 +424,7 @@ def parse_track(tr, fields, performance_title=None):
                     sub_field = field
                 elif field == 'performer' and sub_field != 'primary':
                     if sub_field == 'featuring':
-                        track[field] += u' ' + convert(div.string)
-                        continue
+                        track[field] = u'%s %s' % (track.get(field, u'') ,convert(div.string))
                     else:
                         sub_field = 'composer'
                     
@@ -622,6 +622,5 @@ info = AllMusic
 if __name__ == '__main__':
     f = get_encoding(open(sys.argv[1], 'r').read(), True)[1]
     x = parse_albumpage(f)
-    #pdb.set_trace()
     print x
     
