@@ -73,7 +73,7 @@ def convert_actions(dirpath, new_dir):
     for filename in glob.glob(path_join(dirpath, '*.action')):
         funcs, name = get_old_action(filename)
         os.rename(filename, path_join(backup, basename(filename)))
-        save_action(path_join(new_dir, basename(filename)), name, funcs)
+        save_macro(path_join(new_dir, basename(filename)), name, funcs)
 
 def filenametotag(pattern, filename, checkext = False, split_dirs=True):
     """Retrieves tag values from your filename
@@ -244,7 +244,7 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
             topass[param] = arg
         elif param.startswith('n_'):
             try:
-                if float(arg):
+                if float(arg) or float(arg) == 0:
                     topass[param] = Decimal(arg)
             except ValueError:
                 raise ParseError(SYNTAX_ARG_ERROR % (funcname, no + 1))
@@ -620,7 +620,7 @@ def apply_macros(macros, audio, state, fields=None):
 def runQuickAction(funcs, audio, state, tag):
     """Same as runAction, except that all funcs are 
     applied not in the values stored but on audio[tag]."""
-    return runAction(funcs, audio, state, tag)
+    return apply_macros(funcs, audio, state, tag)
 
 def save_macro(filename, name, funcs):
     f = open(filename, 'w')
@@ -885,7 +885,7 @@ class Macro(object):
 
     def apply_action(self, audio, state=None, fields=None):
 
-        return run_action(self.actions, audio, state, fields)
+        return apply_macros(self.actions, audio, state, fields)
 
     def copy(self):
         m = Macro()
