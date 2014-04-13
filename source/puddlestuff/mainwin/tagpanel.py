@@ -14,6 +14,7 @@ try:
 except ImportError:
     pass
 from puddlestuff.translations import translate
+from puddlestuff.constants import CONFIGDIR
 
 TEXTEDITED = SIGNAL('textEdited(const QString&)')
 EDITFINISHED = SIGNAL('editingFinished()')
@@ -24,7 +25,7 @@ def loadsettings(filepath = None):
     if filepath:
         settings.filename = filepath
     else:
-        settings.filename = os.path.join(settings.savedir, 'tagpanel')
+        settings.filename = os.path.join(CONFIGDIR, 'tagpanel')
     numrows = settings.get('panel','numrows',-1, True)
     if numrows > -1:
         sections = settings.sections()

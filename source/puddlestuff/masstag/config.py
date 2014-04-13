@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import glob, os, sys
 
-from puddlestuff.constants import SAVEDIR
+from puddlestuff.constants import CONFIGDIR
 from puddlestuff.masstag import (fields_from_text, MassTagProfile,
     TagSourceProfile)
 from puddlestuff.puddleobjects import encode_fn, PuddleConfig
 
-PROFILEDIR = os.path.join(SAVEDIR, 'masstagging')
-CONFIG = os.path.join(SAVEDIR, 'masstagging.conf')
+PROFILEDIR = os.path.join(CONFIGDIR, 'masstagging')
+CONFIG = os.path.join(CONFIGDIR, 'masstagging.conf')
 
 ALBUM_BOUND = 'album_bound'
 TRACK_BOUND = 'track_bound'

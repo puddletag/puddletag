@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, sys
 from PyQt4.QtCore import Qt, SIGNAL
-from PyQt4.QtGui import QWidget, QApplication
 from os.path import dirname, join
 from puddlestuff.translations import translate
 
@@ -40,13 +39,22 @@ SEPARATOR = u'\\\\'
 FS_ENC = sys.getfilesystemencoding()
 
 #Paths
-HOMEDIR = os.getenv('HOME')
-SAVEDIR = join(HOMEDIR,'.puddletag')
-CONFIG = join(SAVEDIR, 'puddletag.conf')
-QT_CONFIG = join(SAVEDIR, 'qt.conf')
-PLUGINDIR = join(SAVEDIR, 'plugins')
+
 PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
+
+_config_dir = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.path.expanduser("~"), '.config'))
+CONFIGDIR = os.path.join(_config_dir, 'puddletag')
+HOMEDIR = os.path.expanduser('~')
+
+CONFIG = join(CONFIGDIR, 'puddletag.conf')
+QT_CONFIG = join(CONFIGDIR, 'qt.conf')
+
+_data_dir = os.environ.get('XDG_DATA_HOME', os.path.join(os.path.expanduser("~"), '.local/share'))
+
+SAVEDIR = os.path.join(_data_dir, 'puddletag')
+PLUGINDIR = join(SAVEDIR, 'plugins')
+
 ACTIONDIR = join(SAVEDIR, 'actions')
 TRANSDIR = join(SAVEDIR, 'translations')
 

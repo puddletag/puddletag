@@ -1,7 +1,7 @@
 # -*- coding: utf-8-*-
 import sys, pdb, os
 from puddlestuff.puddleobjects import PuddleConfig, winsettings, OKCancel
-from puddlestuff.constants import SAVEDIR
+from puddlestuff.constants import CONFIGDIR
 import puddlestuff.loadshortcuts as ls
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -272,7 +272,7 @@ class ActionEditorDialog(QWidget):
     
     def _loadSettings(self, actions):
         
-        cparser = PuddleConfig(os.path.join(SAVEDIR, 'user_shortcuts'))
+        cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
 
         for action in actions:
             shortcut = cparser.get('shortcuts', unicode(action.text()), '')
@@ -283,7 +283,7 @@ class ActionEditorDialog(QWidget):
     
     def saveSettings(self, actions):
         
-        cparser = PuddleConfig(os.path.join(SAVEDIR, 'user_shortcuts'))
+        cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
         for action in actions:
             shortcut = unicode(action.shortcut().toString())
             cparser.set('shortcuts', unicode(action.text()), shortcut)

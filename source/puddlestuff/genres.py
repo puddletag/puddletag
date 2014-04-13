@@ -5,10 +5,11 @@ import sys, resource, os, audioinfo
 from puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
     PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
 
+from puddlestuff.constants import CONFIGDIR
+
 def load_genres(filepath=None):
     if not filepath:
-        cparser = PuddleConfig()
-        filepath = os.path.join(cparser.savedir, 'genres')
+        filepath = os.path.join(CONFIGDIR, 'genres')
     try:
         return [unicode(z.strip(), 'utf8') for z in
             open(filepath, 'r').readlines()]
@@ -16,9 +17,8 @@ def load_genres(filepath=None):
         return audioinfo.GENRES[::]
 
 def save_genres(genres, filepath=None):
-    cparser = PuddleConfig()
     if not filepath:
-        filepath = os.path.join(cparser.savedir, 'genres')
+        filepath = os.path.join(CONFIGDIR, 'genres')
     f = open(filepath, 'w')
     text = '\n'.join([z.encode('utf8') for z in genres])
     f.write(text)

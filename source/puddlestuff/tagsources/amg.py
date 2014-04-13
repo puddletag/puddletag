@@ -10,7 +10,7 @@ from collections import defaultdict
 from puddlestuff.util import split_by_tag
 from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
-from puddlestuff.constants import CHECKBOX, SAVEDIR, TEXT
+from puddlestuff.constants import CHECKBOX, TEXT
 from puddlestuff.puddleobjects import PuddleConfig, ratio
 from puddlestuff.audioinfo import isempty, CaselessDict
 

@@ -3,7 +3,7 @@ from puddleobjects import PuddleConfig, get_icon
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb, resource,os
-from constants import SAVEDIR, DATADIR
+from constants import CONFIGDIR, DATADIR
 import StringIO
 from util import open_resourcefile
 from puddlestuff.translations import translate
@@ -15,8 +15,8 @@ files = [open_resourcefile(filename)
 
 SEPARATOR = 'separator'
 ALWAYS = 'always'
-menu_path = os.path.join(SAVEDIR, 'menus')
-shortcut_path = os.path.join(SAVEDIR, 'shortcuts')
+menu_path = os.path.join(CONFIGDIR, 'menus')
+shortcut_path = os.path.join(CONFIGDIR, 'shortcuts')
 
 def create_file(path, resource):
     text = open_resourcefile(resource).read()

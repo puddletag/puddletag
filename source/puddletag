@@ -1,11 +1,53 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#import psyco
-#psyco.full()
-import sys, os
+
+import sys, os, shutil
 
 from optparse import OptionParser
+
+def migrate_settings():
+    from puddlestuff.constants import CONFIGDIR, SAVEDIR
+    for dirpath in [CONFIGDIR, SAVEDIR]:
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+
+    old_dir = os.path.join(os.getenv('HOME'), '.puddletag')
+    if (os.path.exists(old_dir)):
+        dirnames = [
+            'plugins', 'actions', 'masstagging', 'mp3tag_sources', 'translations']
+        
+        for dirname in dirnames:
+            src = os.path.join(old_dir, dirname)
+            dest = os.path.join(SAVEDIR, dirname)
+            if os.path.exists(src) and not os.path.exists(dest):
+                os.rename(src, os.path.join(SAVEDIR, dirname))
+
+        for filename in os.listdir(old_dir):
+            dest = os.path.join(CONFIGDIR, filename)
+            if (not os.path.exists(dest)):
+                src = os.path.join(old_dir, filename)
+                shutil.move(src, dest)
+
+        shutil.rmtree(old_dir)
+
+    _migrate_action_shortcuts()
+
+def _migrate_action_shortcuts():
+    from puddlestuff.constants import SAVEDIR, ACTIONDIR
+    from puddlestuff.puddleobjects import PuddleConfig
+    filename = os.path.join(SAVEDIR, 'actions', 'action_shortcuts')
+
+    if not os.path.exists(filename):
+        return
+        
+    cparser = PuddleConfig(filename)
+    for section in sorted(cparser.sections()):
+        if section.startswith('Shortcut'):
+            filenames = []
+            for filename in cparser.get(section, 'filenames', []):
+                filenames.append(os.path.join(ACTIONDIR, os.path.basename(filename)))
+            cparser.set(section, 'filenames', filenames)
 
 def check_libs():
     """Check for required libs.
@@ -30,7 +72,7 @@ def check_libs():
         try:
             __import__(lib[0])
         except ImportError:
-            print msg % lib
+            print (msg % lib)
             errors.append(msg % lib)
             found = False
 
@@ -223,6 +265,8 @@ if __name__ == '__main__':
     #Load puddletag modules.
     from puddlestuff import resource #Needs to be first as other modules use it.
     import puddlestuff.constants
+
+    migrate_settings()
     from puddlestuff.puddleobjects import get_languages, PuddleConfig
     from puddlestuff.translations import translate
 

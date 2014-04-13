@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from puddlestuff.constants import SAVEDIR
+from puddlestuff.constants import CONFIGDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.util import translate
 from os.path import join, exists
@@ -29,7 +29,7 @@ class SubmissionError(WebServiceError):
 
 cover_pattern = u'%artist% - %album%'
 
-COVERDIR = join(SAVEDIR, 'covers')
+COVERDIR = join(CONFIGDIR, 'covers')
 cparser = PuddleConfig()
 COVERDIR = cparser.get('tagsources', 'coverdir', COVERDIR)
 SAVECOVERS = False

@@ -22,7 +22,7 @@ from configobj import ConfigObj, ConfigObjError
 import traceback
 import time, re
 from glob import glob
-from constants import ACTIONDIR, SAVEDIR
+from constants import ACTIONDIR, SAVEDIR, CONFIGDIR
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
 import itertools
@@ -209,7 +209,7 @@ class PuddleConfig(object):
         self.settings = ConfigObj(filename, create_empty=True, encoding='utf8', default_encoding='utf8')
 
         if not filename:
-            filename = os.path.join(os.getenv('HOME'),'.puddletag', 'puddletag.conf')
+            filename = os.path.join(CONFIGDIR, 'puddletag.conf')
         self._setFilename(filename)
 
         #TODO: backward compatibility, remove all.

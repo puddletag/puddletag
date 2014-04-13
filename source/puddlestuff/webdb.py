@@ -14,7 +14,7 @@ import puddlestuff
 from puddlestuff.releasewidget import ReleaseWidget
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.constants import (TEXT, COMBO, SPINBOX,
-    CHECKBOX, RIGHTDOCK, SAVEDIR)
+                                   CHECKBOX, RIGHTDOCK, CONFIGDIR)
 from puddlestuff.findfunc import parsefunc
 from puddlestuff.functions import replace_regex
 from puddleobjects import (create_buddy, unique, winsettings,
@@ -26,8 +26,8 @@ from puddlestuff.util import (isempty, pprint_tag,
 
 pyqtRemoveInputHook()
 
-TAGSOURCE_CONFIG = os.path.join(SAVEDIR, 'tagsources.conf')
-MTAG_SOURCE_DIR = os.path.join(SAVEDIR, 'mp3tag_sources')
+TAGSOURCE_CONFIG = os.path.join(CONFIGDIR, 'tagsources.conf')
+MTAG_SOURCE_DIR = os.path.join(CONFIGDIR, 'mp3tag_sources')
 
 DEFAULT_SEARCH_TIP = translate("WebDB",
     "Enter search parameters here. If empty, the selected "
@@ -459,7 +459,7 @@ class SettingsDialog(QWidget):
         listbox.albumBound = self.albumBound.value() / 100.0
         listbox.trackBound = self.trackBound.value() / 100.0
         
-        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+        cparser = PuddleConfig(os.path.join(CONFIGDIR, 'tagsources.conf'))
         set_value = lambda s,v: cparser.set('tagsources', s, v)
         set_value('trackpattern', text)
         set_value('albumpattern', albumdisp)
@@ -471,7 +471,7 @@ class SettingsDialog(QWidget):
         set_value('match_fields', listbox.matchFields)
 
     def loadSettings(self):
-        cparser = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+        cparser = PuddleConfig(os.path.join(CONFIGDIR, 'tagsources.conf'))
 
         trackpattern = cparser.get('tagsources', 'trackpattern',
             '%track% - %title%')
@@ -758,7 +758,7 @@ class MainWin(QWidget):
             self.emit(SIGNAL('setpreview'), previews)
 
     def loadSettings(self):
-        settings = PuddleConfig(os.path.join(SAVEDIR, 'tagsources.conf'))
+        settings = PuddleConfig(os.path.join(CONFIGDIR, 'tagsources.conf'))
         get = lambda s, k, i=False: settings.get('tagsources', s, k, i)
 
         source = get('lastsource', 'Musicbrainz')
@@ -785,7 +785,7 @@ class MainWin(QWidget):
         sortindex = get('lastsort', 0)
         self.listbox.sort(sort_options[sortindex])
 
-        filepath = os.path.join(SAVEDIR, 'mappings')
+        filepath = os.path.join(CONFIGDIR, 'mappings')
         self.setMapping(audioinfo.loadmapping(filepath))
 
         useragent = get('useragent', '')
@@ -883,7 +883,7 @@ class MainWin(QWidget):
 
     def saveSettings(self):
         settings = PuddleConfig()
-        settings.filename = os.path.join(SAVEDIR, 'tagsources.conf')
+        settings.filename = os.path.join(CONFIGDIR, 'tagsources.conf')
         settings.set('tagsources', 'lastsource', self.sourcelist.currentText())
         for i, ts in enumerate(self.__sources):
             settings.set('tagsourcetags', ts.name, self.__sourceFields[i])
