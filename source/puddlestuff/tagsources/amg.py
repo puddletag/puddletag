@@ -140,11 +140,6 @@ def parse_review(content):
 
     return {'review': author + '\n\n' + text}
 
-def print_track(track):
-    print '\n'.join([u'  %s - %s' % z for z in track.items()])
-    print
-
-
 def parse_similar(swipe):
     ret = []
     try:
@@ -204,7 +199,7 @@ def parse_albumpage(page, artist=None, album=None):
     
     info = dict((spanmap.get(k,k),v) for k, v in info.iteritems() if not isempty(v))
         
-    return [info, parse_tracks(album_soup)]
+    return [info, parse_tracks(album_soup, info)]
 
 def parse_sidebar_element(element):
     title = convert(element.find('h4').string.lower())
@@ -437,17 +432,38 @@ def parse_track(tr, fields, performance_title=None):
         track['artist'] = track['performer']
     return dict((spanmap.get(k,k),v) for k,v in track.iteritems() if spanmap.get(k,k) and not isempty(v))
 
-def parse_tracks(content):
+
+def replace_feat(album_info, track_info):
+    artist = None
+    for key in ['albumartist', 'artist', 'performer', 'composer']:
+        value = album_info.get(key, '').strip();
+        if not value.startswith('feat:'):
+            artist = album_info[key]
+            break
+
+    if artist is None:
+        return
+
+    for k,v in track_info.items():
+        if isinstance(v, basestring) and v.strip().startswith('feat:'):
+            track_info[k] = artist + u' ' + v.strip()
+
+    if 'featuring' in track_info:
+        del(track_info['featuring'])
+
+def parse_tracks(content, album_info):
     discs = content.find_all('div', 'disc')    
     if not discs:
         return None
     tracks = []
     for i, disc in enumerate(discs):
-        info = {'discnumber': unicode(i + 1)}
+        disc_info = {'discnumber': unicode(i + 1)}
         disc_tracks = parse_track_table(disc.table)
-        if len(discs) > 1:
-            for track in disc_tracks:
-                track.update(info)
+        for track in disc_tracks:
+            if len(discs) > 1:
+                track.update(disc_info)
+            replace_feat(album_info, track)
+                
         tracks.extend(disc_tracks)
     return tracks
 
