@@ -992,6 +992,7 @@ class TagModel(QAbstractTableModel):
     def setData(self, index, value, role = Qt.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
+        QApplication.setOverrideCursor(Qt.WaitCursor);
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
@@ -999,19 +1000,23 @@ class TagModel(QAbstractTableModel):
             newvalue = unicode(value.toString())
             realtag = currentfile.mapping.get(tag, tag)
             if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
+                QApplication.restoreOverrideCursor()
                 return False
 
             if tag not in FILETAGS:
                 newvalue = filter(None, newvalue.split(SEPARATOR))
             if newvalue == currentfile.get(tag, u'') and not dontwrite:
+                QApplication.restoreOverrideCursor()
                 return False
             if dontwrite:
+                QApplication.restoreOverrideCursor()
                 return {tag: newvalue}, index.row()
             ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
             if not self.previewMode and currentfile.library:
                 self.emit(SIGNAL('libfilesedited'), [ret])
             self.undolevel += 1
             self.emit(SIGNAL('fileChanged()'))
+            QApplication.restoreOverrideCursor()
             return True
         return False
 
@@ -1311,6 +1316,7 @@ class TagTable(QTableView):
 
     def __init__(self, headerdata = None, parent = None):
         QTableView.__init__(self,parent)
+        self.setSelectionMode(self.ExtendedSelection)
         self.settingsdialog = ColumnSettings
         if not headerdata:
             headerdata = []
@@ -1758,18 +1764,20 @@ class TagTable(QTableView):
         #You might think that this is redundant since a delete
         #action is defined in contextMenuEvent, but if this isn't
         #done then the delegate is entered.
+
+        has_modifier = event.modifiers() in [Qt.ControlModifier, Qt.ShiftModifier, Qt.ControlModifier | Qt.ShiftModifier]
         if event.key() == Qt.Key_Delete and self.selectedRows:
             self.deleteSelected()
             return
         #This is so that an item isn't edited when the user's holding the shift or
         #control key.
-        elif event.key() == Qt.Key_Space and (Qt.ControlModifier == event.modifiers() or Qt.ShiftModifier == event.modifiers()):
+        elif event.key() == Qt.Key_Space and (has_modifier):
             trigger = self.editTriggers()
             self.setEditTriggers(self.NoEditTriggers)
-            QTableView.keyPressEvent(self, event)
+            ret = QTableView.keyPressEvent(self, event)
             self.setEditTriggers(trigger)
-            return
-        QTableView.keyPressEvent(self, event)
+            return ret
+        return QTableView.keyPressEvent(self, event)
 
     def loadFiles(self, files=None, dirs=None, append=False, subfolders=None,
                 filepath=None, post_process=None):
