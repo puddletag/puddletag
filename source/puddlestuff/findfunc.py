@@ -56,7 +56,6 @@ def arglen_error(e, passed, function, to_raise = True):
             'At least %1 arguments expected. %2 given.')
     else:
         raise e
-    import pdb; pdb.set_trace()
     message = message.arg(unicode(param_len)).arg(unicode(args_len))
     if to_raise:
         raise ParseError(message)
@@ -362,7 +361,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     tags = s_audio.copy()
     tags.update(state)
     tags.update(extra if extra is not None else {})
-    escape_chars = set('()$%')
+    escape_chars = set('()$%\\')
 
     br_error = translate('Errors', 'No closing bracket found.')
 
@@ -372,6 +371,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     while 1:
         try:
             c = s[i]
+            print c
         except IndexError:  #  Parsing's done.
             if in_func:
                 raise ParseError(SYNTAX_ERROR.arg(func[0]).arg(br_error))
@@ -399,11 +399,13 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             escape = True
             i += 1
             try:
-                next_char = s[i+1];
+                next_char = s[i]
             except IndexError:
                 next_char = None
+
             if not in_func or (next_char not in escape_chars):
                 token.append(c)
+                escape = False
             continue
         elif c == u'$' and not (escape or (field_open >= 0)):
             func_name = re.search(u'^\$(\w+)\(', s[i:])

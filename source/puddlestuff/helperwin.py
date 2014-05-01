@@ -71,6 +71,7 @@ class AutonumberDialog(QDialog):
             "Add track &separator ['/']: Number of tracks"))
         self._numtracks = QSpinBox()
         self._numtracks.setEnabled(False)
+        self._numtracks.setMaximum(65535)
         if numtracks:
             self._numtracks.setValue(numtracks)
         self._restart_numbering = QCheckBox(translate('Autonumbering Wizard',
