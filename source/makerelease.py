@@ -5,6 +5,7 @@ import subprocess
 import sys, os, pdb, re
 import puddlestuff
 import shutil
+from puddlestuff.puddleobjects import getfiles
 
 dirname = 'puddletag-' + puddlestuff.version_string.lower()
 
@@ -126,8 +127,16 @@ f.write(control)
 f.close()
 
 call(['tar', 'cz', '-C', 'deb_build/control', '-f', 'deb_build/control.tar.gz', '.'])
-call(['chmod', '744', '-R', 'deb_build/data'])
-call(['chmod', '755', '-R', 'deb_build/data/usr/bin/puddletag'])
+
+
+
+
+call(['chmod', '755', '-R', 'deb_build/data'])
+for f in getfiles('deb_build/data', True):
+    print f
+    call(['chmod', '744', f])
+
+call(['chmod', '755', 'deb_build/data/usr/bin/puddletag'])
 call(['tar', 'cz', '-C', 'deb_build/data', '-f', 'deb_build/data.tar.gz', '.'])
 f = open('deb_build/debian-binary', 'w')
 f.write('2.0\n')
