@@ -1,35 +1,176 @@
-[info]
-version=29
-
-[menu]
-&File=&Open Folder,&Add Folder,separator,Load &playlist,Sa&ve playlist,separator,&Save,&Play,separator,&Delete,Delete &Without Confirmation,separator,&Refresh,Refresh &Selected,&Unload Everything,separator,&Exit
-&Edit=&Undo,E&xtended Tags,&Properties,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Remove Tag,separator,Select &Next Directory,Select &Previous Directory,&Invert Selection,&Select Column,Select &All,separator,Move Selected &Up,Move Selected Do&wn,separator,&Increase Font,&Decrease Font,separator,&Preferences
-&Convert=&File->Tag,&Tag->File,&Format,separator,&Rename Directories,&Text File->Tag,&Clipboard->Tag
-&Actions=&Actions,&QuickActions,&Functions,separator
-&Tools=Autonumbering &Wizard...,&Import Music Library...,Replace...,Sort &By
-&Preview Mode=Enabl&e Preview Mode,&Undo Last Clear,&Write Previews,Clear Selected &Files, Clear Selected &Cells
-Ta&g Tools=Remove &APEv2 Tag,Remove All &ID3 Tags,Remove ID3v&2 Tag,Remove ID3v&1 Tag
-&Windows=Filter,Tag Panel,Artwork,Filesystem,Tag Sources,Stored Tags,Music Library,Logs,Puddle Testing,Mass Tagging,separator,Functions,Actions #,separator,&Lock Layout
-#Ab&out=About &Qt,
-
-[menuattrs]
-order=&File,&Edit,&Convert,&Actions,&Tools,&Preview Mode,Ta&g Tools,&Windows
-
-[toolbar]
-&File=&Open Folder,&Add Folder,&Refresh
-&Edit=&Save,&Undo
-&Convert=widget-patterncombo,&File->Tag,&Tag->File,&Format,&Rename Directories
-&Action=&Actions,&QuickActions,&Functions
-&Tools=Autonumbering &Wizard...,&Text File->Tag,Field &Sort
-
-[toolbarattrs]
-order=&File,&Edit,&Convert,&Action,&Tools
-
-[table]
-order=Sort &By,separator,&Play,E&xtended Tags,&Remove Tag,separator,&Cut,&Copy Selection,Copy All &Fields,&Paste,Paste &Onto Selection,separator,&Delete,separator,&Properties
-
-[winshortcuts]
-Filter=F3
-
-[shortcuts]
-"__dirpath/album/track"=Alt+Meta+1
+{
+  "info": {
+    "version": "29"
+  }, 
+  "shortcuts": {
+    "__dirpath/album/track": "Alt+Meta+1"
+  }, 
+  "menu": {
+    "&File": [
+      "&Open Folder", 
+      "&Add Folder", 
+      "separator", 
+      "Load &playlist", 
+      "Sa&ve playlist", 
+      "separator", 
+      "&Save", 
+      "&Play", 
+      "separator", 
+      "&Delete", 
+      "Delete &Without Confirmation", 
+      "separator", 
+      "&Refresh", 
+      "Refresh &Selected", 
+      "&Unload Everything", 
+      "separator", 
+      "&Exit"
+    ], 
+    "&Edit": [
+      "&Undo", 
+      "E&xtended Tags", 
+      "&Properties", 
+      "separator", 
+      "&Cut", 
+      "&Copy Selection", 
+      "Copy All &Fields", 
+      "&Paste", 
+      "Paste &Onto Selection", 
+      "separator", 
+      "&Remove Tag", 
+      "separator", 
+      "Select &Next Directory", 
+      "Select &Previous Directory", 
+      "&Invert Selection", 
+      "&Select Column", 
+      "Select &All", 
+      "separator", 
+      "Move Selected &Up", 
+      "Move Selected Do&wn", 
+      "separator", 
+      "&Increase Font", 
+      "&Decrease Font", 
+      "separator", 
+      "&Preferences"
+    ], 
+    "&Convert": [
+      "&File->Tag", 
+      "&Tag->File", 
+      "&Format", 
+      "separator", 
+      "&Rename Directories", 
+      "&Text File->Tag", 
+      "&Clipboard->Tag"
+    ], 
+    "&Actions": [
+      "&Actions", 
+      "&QuickActions", 
+      "&Functions", 
+      "separator"
+    ], 
+    "&Tools": [
+      "Autonumbering &Wizard...", 
+      "&Import Music Library...", 
+      "Replace...", 
+      "Sort &By"
+    ], 
+    "&Preview Mode": [
+      "Enabl&e Preview Mode", 
+      "&Undo Last Clear", 
+      "&Write Previews", 
+      "Clear Selected &Files", 
+      "Clear Selected &Cells"
+    ], 
+    "Ta&g Tools": [
+      "Remove &APEv2 Tag", 
+      "Remove All &ID3 Tags", 
+      "Remove ID3v&2 Tag", 
+      "Remove ID3v&1 Tag"
+    ], 
+    "&Windows": [
+      "Filter", 
+      "Tag Panel", 
+      "Artwork", 
+      "Filesystem", 
+      "Tag Sources", 
+      "Stored Tags", 
+      "Music Library", 
+      "Logs", 
+      "Puddle Testing", 
+      "Mass Tagging", 
+      "separator", 
+      "Functions", 
+      "Actions"
+    ]
+  }, 
+  "winshortcuts": {
+    "Filter": "F3"
+  }, 
+  "table": {
+    "order": [
+      "Sort &By", 
+      "separator", 
+      "&Play", 
+      "E&xtended Tags", 
+      "&Remove Tag", 
+      "separator", 
+      "&Cut", 
+      "&Copy Selection", 
+      "Copy All &Fields", 
+      "&Paste", 
+      "Paste &Onto Selection", 
+      "separator", 
+      "&Delete", 
+      "separator", 
+      "&Properties"
+    ]
+  }, 
+  "menuattrs": {
+    "order": [
+      "&File", 
+      "&Edit", 
+      "&Convert", 
+      "&Actions", 
+      "&Tools", 
+      "&Preview Mode", 
+      "Ta&g Tools", 
+      "&Windows"
+    ]
+  }, 
+  "toolbarattrs": {
+    "order": [
+      "&File", 
+      "&Edit", 
+      "&Convert", 
+      "&Action", 
+      "&Tools"
+    ]
+  }, 
+  "toolbar": {
+    "&File": [
+      "&Open Folder", 
+      "&Add Folder", 
+      "&Refresh"
+    ], 
+    "&Edit": [
+      "&Save", 
+      "&Undo"
+    ], 
+    "&Convert": [
+      "widget-patterncombo", 
+      "&File->Tag", 
+      "&Tag->File", 
+      "&Format", 
+      "&Rename Directories"
+    ], 
+    "&Action": [
+      "&Actions", 
+      "&QuickActions", 
+      "&Functions"
+    ], 
+    "&Tools": [
+      "Autonumbering &Wizard...", 
+      "&Text File->Tag", 
+      "Field &Sort"
+    ]
+  }
+}

@@ -1,375 +1,381 @@
-[info]
-version=29
-
-[shortcut1]
-name=&Open Folder
-icon=:/open.png
-control=mainwin
-command=openDir
-enabled=always
-tooltip=Select a directory to import into puddletag.
-shortcut=Ctrl+O
-icon_name=folder
-
-[shortcut2]
-name=&Add Folder
-icon=:/addfolder.png
-control=mainwin
-command=appendDir
-enabled=filesloaded
-tooltip=Append a directory to current file-view.
-icon_name=folder-new
-
-[shortcut3]
-name=Load &playlist
-icon=:/playlist.png
-control=mainwin
-command=loadPlayList
-enabled=always
-tooltip=Import an m3u playlist into puddletag.
-icon_name=view-media-playlist
-
-[shortcut4]
-name=Sa&ve playlist
-control=mainwin
-command=savePlayList
-enabled=viewfilled
-tooltip=Save all files to m3u playlist.
-
-[shortcut5]
-name=&Refresh
-control=table
-command=reloadFiles
-shortcut=F5
-tooltip=Refresh current file-view.
-icon=:/reload.png
-enabled=filesloaded
-icon_name=view-refresh
-
-[shortcut6]
-name=&Save
-control=Tag Panel
-command=save
-shortcut=Ctrl+S
-icon=:/save.png
-enabled=filesselected
-icon_name=document-save
-
-[shortcut7]
-name=&Play
-shortcut=Ctrl+P
-command=playFiles
-control=table
-tooltip=Plays the selected files in the predefined music player.
-enabled=filesselected
-icon_name=media-playback-start
-
-[shortcut8]
-name=&File->Tag
-shortcut=Ctrl+T
-command=filename_to_tag
-control=mainwin
-icon=:/filetotag.png
-enabled=filesselected
-tooltip=Convert filename to tag using the pattern.
-status = ftstatus
-
-[shortcut9]
-name=&Undo
-shortcut=Ctrl+Z
-command=undo
-control=table
-enabled=enableUndo
-icon=:/undo.png
-icon_name=edit-undo
-
-[shortcut10]
-name=Autonumbering &Wizard...
-icon=:/track.png
-command=auto_numbering
-control=mainwin
-enabled=filesselected
-shortcut=Ctrl+K
-
-[shortcut11]
-name=&Unload Everything
-command=clearAll
-control=table
-enabled=filesloaded
-
-[shortcut12]
-name=&Format
-command=format
-control=mainwin
-enabled=filesselected
-status=formatstatus
-
-[shortcut13]
-name=&Text File->Tag
-command=text_file_to_tag
-control=mainwin
-enabled=filesselected
-icon=:/text-tag.png
-
-[shortcut14]
-name=&Import Music Library...
-command=load_musiclib
-enabled=always
-control=mainwin
-
-[shortcut15]
-name=&Actions
-command=run_action
-icon=:/action.png
-control=mainwin
-enabled=filesselected
-icon_name=keith
-
-[shortcut16]
-name=&Preferences
-command=openPrefs
-control=mainwin
-enabled=always
-icon=:/preferences.png
-icon_name=configure
-
-[shortcut17]
-name=&Functions
-command=run_function
-control=mainwin
-enabled=filesselected
-
-[shortcut18]
-name=&QuickActions
-command=run_quick_action
-control=mainwin
-enabled=filesselected
-icon=:/quickaction.png
-
-[shortcut19]
-name=&Rename Directories
-command=rename_dirs
-control=mainwin
-enabled=filesselected
-icon=:/renamedirs.png
-status=renamedirstatus
-
-[shortcut20]
-name=&Exit
-icon=:/remove.png
-control=mainwin
-enabled=always
-command=close
-shortcut=Ctrl+Q
-icon_name=application-exit
-
-[shortcut21]
-name=&Tag->File
-control=mainwin
-enabled=filesselected
-command=tag_to_file
-shortcut=Ctrl+F
-icon=:/tagtofile.png
-status=tfstatus
-
-[shortcut23]
-name=&Increase Font
-enabled=always
-command=increaseFont
-control=table
-shortcut=Ctrl+Shift++
-
-[shortcut24]
-name=&Decrease Font
-enabled=always
-command=decreaseFont
-control=table
-shortcut=Ctrl+Shift+-
-
-[shortcut25]
-name=&Clipboard->Tag
-enabled=filesselected
-command=clipboard_to_tag
-control=mainwin
-
-[shortcut26]
-name=Select &All
-enabled=viewfilled
-command=selectAll
-control=table
-shortcut=Ctrl+A
-icon_name=edit-select-all
-
-[shortcut27]
-name=&Invert Selection
-enabled=viewfilled
-command=invertSelection
-control=table
-shortcut=Ctrl+Shift+A
-
-[shortcut28]
-name=&Select Column
-command=selectCurrentColumn
-control=table
-shortcut=Alt+Meta+C
-enabled=filesselected
-
-[shortcut29]
-name=&Cut
-command=cut
-control=mainwin
-shortcut=Ctrl+X
-enabled=filesselected
-icon=:/cut.png
-icon_name=edit-cut
-
-[shortcut30]
-name=&Copy Selection
-command=copy
-control=mainwin
-shortcut=Ctrl+C
-enabled=filesselected
-icon=:/copy.png
-
-[shortcut31]
-name=&Paste
-command=paste
-control=mainwin
-shortcut=Ctrl+V,Shift+Ins
-enabled=filesselected
-icon=:/paste.png
-icon_name=edit-paste
-
-[shortcut32]
-name=&Remove Tag
-command=removeTags
-control=table
-shortcut=Ctrl+R
-icon=:/remove.png
-enabled=filesselected
-icon_name=edit-delete
-
-[shortcut33]
-name=E&xtended Tags
-command=extended_tags
-control=mainwin
-enabled=filesselected
-shortcut=Ctrl+E
-
-[shortcut34]
-name=&Delete
-command=deleteSelected
-control=table
-shortcut=Del
-icon=:/remove.png
-enabled=filesselected
-icon_name=edit-delete
-
-[shortcut35]
-name=&Properties
-command=showProperties
-control=table
-enabled=filesselected
-
-[shortcut36]
-name=Paste &Onto Selection
-command=paste_onto
-control=mainwin
-enabled=filesselected
-
-[shortcut38]
-name=&Lock Layout
-command=lockLayout
-control=mainwin
-enabled=always
-
-[shortcut39]
-name=Select &Next Directory
-command=selectDir
-control=table
-enabled=filesselected
-shortcut=Ctrl+N
-
-[shortcut40]
-name=Copy All &Fields
-command=copy_whole
-control=mainwin
-enabled=filesselected
-shortcut=Ctrl+Shift+C
-
-[shortcut41]
-name=Delete &Without Confirmation
-command=deleteSelectedWithoutMessage
-control=table
-enabled=filesselected
-shortcut=Shift+Delete
-icon_name=edit-delete
-
-[shortcut42]
-name=In &Library
-command=in_lib
-checkstate=0
-control=mainwin
-enabled=filesloaded
-togglecheck=filesloaded
-
-[shortcut43]
-name=Replace...
-command=search_replace
-control=mainwin
-enabled=filesselected
-shortcut=Ctrl+H
-icon_name=edit-find-replace
-
-[shortcut45]
-name=Remove &APEv2 Tag
-command=remove_apev2
-control=mainwin
-enabled=filesselected
-
-[shortcut46]
-name=Remove All &ID3 Tags
-command=remove_id3
-control=mainwin
-enabled=filesselected
-
-[shortcut47]
-name=Move Selected &Up
-command=moveUp
-control=table
-enabled=filesselected
-shortcut=Ctrl++
-
-[shortcut48]
-name=Move Selected Do&wn
-command=moveDown
-control=table
-enabled=filesselected
-shortcut=Ctrl+-
-
-[shortcut49]
-name=Select &Previous Directory
-command=selectPrevDir
-control=table
-enabled=filesselected
-shortcut=Ctrl+Shift+N
-tooltip=Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.
-
-[shortcut50]
-name=Remove ID3v&2 Tag
-command=remove_id3v2
-control=mainwin
-enabled=filesselected
-
-[shortcut51]
-name=Remove ID3v&1 Tag
-command=remove_id3v1
-control=mainwin
-enabled=filesselected
-
-[shortcut52]
-name=Refresh &Selected
-command=reloadSelected
-control=table
-enabled=filesselected
-tooltip = Reloads directories of selected files.
+{
+  "shortcut13": {
+    "name": "&Text File->Tag", 
+    "command": "text_file_to_tag", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "icon": ":/text-tag.png"
+  }, 
+  "shortcut12": {
+    "name": "&Format", 
+    "command": "format", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "status": "formatstatus"
+  }, 
+  "shortcut52": {
+    "name": "Refresh &Selected", 
+    "command": "reloadSelected", 
+    "control": "table", 
+    "enabled": "filesselected", 
+    "tooltip": "Reloads directories of selected files."
+  }, 
+  "shortcut51": {
+    "name": "Remove ID3v&1 Tag", 
+    "command": "remove_id3v1", 
+    "control": "mainwin", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut50": {
+    "name": "Remove ID3v&2 Tag", 
+    "command": "remove_id3v2", 
+    "control": "mainwin", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut39": {
+    "name": "Select &Next Directory", 
+    "command": "selectDir", 
+    "control": "table", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+N"
+  }, 
+  "shortcut38": {
+    "name": "&Lock Layout", 
+    "command": "lockLayout", 
+    "control": "mainwin", 
+    "enabled": "always"
+  }, 
+  "shortcut11": {
+    "name": "&Unload Everything", 
+    "command": "clearAll", 
+    "control": "table", 
+    "enabled": "filesloaded"
+  }, 
+  "shortcut10": {
+    "name": "Autonumbering &Wizard...", 
+    "icon": ":/track.png", 
+    "command": "auto_numbering", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+K"
+  }, 
+  "shortcut17": {
+    "name": "&Functions", 
+    "command": "run_function", 
+    "control": "mainwin", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut16": {
+    "name": "&Preferences", 
+    "command": "openPrefs", 
+    "control": "mainwin", 
+    "enabled": "always", 
+    "icon": ":/preferences.png", 
+    "icon_name": "configure"
+  }, 
+  "shortcut15": {
+    "name": "&Actions", 
+    "command": "run_action", 
+    "icon": ":/action.png", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "icon_name": "keith"
+  }, 
+  "shortcut14": {
+    "name": "&Import Music Library...", 
+    "command": "load_musiclib", 
+    "enabled": "always", 
+    "control": "mainwin"
+  }, 
+  "shortcut31": {
+    "name": "&Paste", 
+    "command": "paste", 
+    "control": "mainwin", 
+    "shortcut": [
+      "Ctrl+V", 
+      "Shift+Ins"
+    ], 
+    "enabled": "filesselected", 
+    "icon": ":/paste.png", 
+    "icon_name": "edit-paste"
+  }, 
+  "shortcut30": {
+    "name": "&Copy Selection", 
+    "command": "copy", 
+    "control": "mainwin", 
+    "shortcut": "Ctrl+C", 
+    "enabled": "filesselected", 
+    "icon": ":/copy.png"
+  }, 
+  "shortcut19": {
+    "name": "&Rename Directories", 
+    "command": "rename_dirs", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "icon": ":/renamedirs.png", 
+    "status": "renamedirstatus"
+  }, 
+  "shortcut18": {
+    "name": "&QuickActions", 
+    "command": "run_quick_action", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "icon": ":/quickaction.png"
+  }, 
+  "shortcut35": {
+    "name": "&Properties", 
+    "command": "showProperties", 
+    "control": "table", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut34": {
+    "name": "&Delete", 
+    "command": "deleteSelected", 
+    "control": "table", 
+    "shortcut": "Del", 
+    "icon": ":/remove.png", 
+    "enabled": "filesselected", 
+    "icon_name": "edit-delete"
+  }, 
+  "shortcut36": {
+    "name": "Paste &Onto Selection", 
+    "command": "paste_onto", 
+    "control": "mainwin", 
+    "enabled": "filesselected"
+  }, 
+  "info": {
+    "version": "29"
+  }, 
+  "shortcut9": {
+    "name": "&Undo", 
+    "shortcut": "Ctrl+Z", 
+    "command": "undo", 
+    "control": "table", 
+    "enabled": "enableUndo", 
+    "icon": ":/undo.png", 
+    "icon_name": "edit-undo"
+  }, 
+  "shortcut8": {
+    "name": "&File->Tag", 
+    "shortcut": "Ctrl+T", 
+    "command": "filename_to_tag", 
+    "control": "mainwin", 
+    "icon": ":/filetotag.png", 
+    "enabled": "filesselected", 
+    "tooltip": "Convert filename to tag using the pattern.", 
+    "status": "ftstatus"
+  }, 
+  "shortcut3": {
+    "name": "Load &playlist", 
+    "icon": ":/playlist.png", 
+    "control": "mainwin", 
+    "command": "loadPlayList", 
+    "enabled": "always", 
+    "tooltip": "Import an m3u playlist into puddletag.", 
+    "icon_name": "view-media-playlist"
+  }, 
+  "shortcut2": {
+    "name": "&Add Folder", 
+    "icon": ":/addfolder.png", 
+    "control": "mainwin", 
+    "command": "appendDir", 
+    "enabled": "filesloaded", 
+    "tooltip": "Append a directory to current file-view.", 
+    "icon_name": "folder-new"
+  }, 
+  "shortcut1": {
+    "name": "&Open Folder", 
+    "icon": ":/open.png", 
+    "control": "mainwin", 
+    "command": "openDir", 
+    "enabled": "always", 
+    "tooltip": "Select a directory to import into puddletag.", 
+    "shortcut": "Ctrl+O", 
+    "icon_name": "folder"
+  }, 
+  "shortcut7": {
+    "name": "&Play", 
+    "shortcut": "Ctrl+P", 
+    "command": "playFiles", 
+    "control": "table", 
+    "tooltip": "Plays the selected files in the predefined music player.", 
+    "enabled": "filesselected", 
+    "icon_name": "media-playback-start"
+  }, 
+  "shortcut6": {
+    "name": "&Save", 
+    "control": "Tag Panel", 
+    "command": "save", 
+    "shortcut": "Ctrl+S", 
+    "icon": ":/save.png", 
+    "enabled": "filesselected", 
+    "icon_name": "document-save"
+  }, 
+  "shortcut5": {
+    "name": "&Refresh", 
+    "control": "table", 
+    "command": "reloadFiles", 
+    "shortcut": "F5", 
+    "tooltip": "Refresh current file-view.", 
+    "icon": ":/reload.png", 
+    "enabled": "filesloaded", 
+    "icon_name": "view-refresh"
+  }, 
+  "shortcut4": {
+    "name": "Sa&ve playlist", 
+    "control": "mainwin", 
+    "command": "savePlayList", 
+    "enabled": "viewfilled", 
+    "tooltip": "Save all files to m3u playlist."
+  }, 
+  "shortcut33": {
+    "name": "E&xtended Tags", 
+    "command": "extended_tags", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+E"
+  }, 
+  "shortcut48": {
+    "name": "Move Selected Do&wn", 
+    "command": "moveDown", 
+    "control": "table", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+-"
+  }, 
+  "shortcut49": {
+    "name": "Select &Previous Directory", 
+    "command": "selectPrevDir", 
+    "control": "table", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+Shift+N", 
+    "tooltip": "Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory."
+  }, 
+  "shortcut32": {
+    "name": "&Remove Tag", 
+    "command": "removeTags", 
+    "control": "table", 
+    "shortcut": "Ctrl+R", 
+    "icon": ":/remove.png", 
+    "enabled": "filesselected", 
+    "icon_name": "edit-delete"
+  }, 
+  "shortcut40": {
+    "name": "Copy All &Fields", 
+    "command": "copy_whole", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+Shift+C"
+  }, 
+  "shortcut41": {
+    "name": "Delete &Without Confirmation", 
+    "command": "deleteSelectedWithoutMessage", 
+    "control": "table", 
+    "enabled": "filesselected", 
+    "shortcut": "Shift+Delete", 
+    "icon_name": "edit-delete"
+  }, 
+  "shortcut42": {
+    "name": "In &Library", 
+    "command": "in_lib", 
+    "checkstate": "0", 
+    "control": "mainwin", 
+    "enabled": "filesloaded", 
+    "togglecheck": "filesloaded"
+  }, 
+  "shortcut43": {
+    "name": "Replace...", 
+    "command": "search_replace", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl+H", 
+    "icon_name": "edit-find-replace"
+  }, 
+  "shortcut45": {
+    "name": "Remove &APEv2 Tag", 
+    "command": "remove_apev2", 
+    "control": "mainwin", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut46": {
+    "name": "Remove All &ID3 Tags", 
+    "command": "remove_id3", 
+    "control": "mainwin", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut47": {
+    "name": "Move Selected &Up", 
+    "command": "moveUp", 
+    "control": "table", 
+    "enabled": "filesselected", 
+    "shortcut": "Ctrl++"
+  }, 
+  "shortcut28": {
+    "name": "&Select Column", 
+    "command": "selectCurrentColumn", 
+    "control": "table", 
+    "shortcut": "Alt+Meta+C", 
+    "enabled": "filesselected"
+  }, 
+  "shortcut29": {
+    "name": "&Cut", 
+    "command": "cut", 
+    "control": "mainwin", 
+    "shortcut": "Ctrl+X", 
+    "enabled": "filesselected", 
+    "icon": ":/cut.png", 
+    "icon_name": "edit-cut"
+  }, 
+  "shortcut23": {
+    "name": "&Increase Font", 
+    "enabled": "always", 
+    "command": "increaseFont", 
+    "control": "table", 
+    "shortcut": "Ctrl+Shift++"
+  }, 
+  "shortcut20": {
+    "name": "&Exit", 
+    "icon": ":/remove.png", 
+    "control": "mainwin", 
+    "enabled": "always", 
+    "command": "close", 
+    "shortcut": "Ctrl+Q", 
+    "icon_name": "application-exit"
+  }, 
+  "shortcut21": {
+    "name": "&Tag->File", 
+    "control": "mainwin", 
+    "enabled": "filesselected", 
+    "command": "tag_to_file", 
+    "shortcut": "Ctrl+F", 
+    "icon": ":/tagtofile.png", 
+    "status": "tfstatus"
+  }, 
+  "shortcut26": {
+    "name": "Select &All", 
+    "enabled": "viewfilled", 
+    "command": "selectAll", 
+    "control": "table", 
+    "shortcut": "Ctrl+A", 
+    "icon_name": "edit-select-all"
+  }, 
+  "shortcut27": {
+    "name": "&Invert Selection", 
+    "enabled": "viewfilled", 
+    "command": "invertSelection", 
+    "control": "table", 
+    "shortcut": "Ctrl+Shift+A"
+  }, 
+  "shortcut24": {
+    "name": "&Decrease Font", 
+    "enabled": "always", 
+    "command": "decreaseFont", 
+    "control": "table", 
+    "shortcut": "Ctrl+Shift+-"
+  }, 
+  "shortcut25": {
+    "name": "&Clipboard->Tag", 
+    "enabled": "filesselected", 
+    "command": "clipboard_to_tag", 
+    "control": "mainwin"
+  }
+}
