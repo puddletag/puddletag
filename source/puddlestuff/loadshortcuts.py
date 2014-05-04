@@ -43,7 +43,7 @@ def get_menus(section, filepath=None):
         filepath = menu_path
     cparser.filename = filepath
     menus = []
-    settings = cparser.settings
+    settings = cparser.data
     temp = settings[section]
     menus = [(z, temp[z]) for z in settings[section + 'attrs']['order']]
     return menus
@@ -139,7 +139,7 @@ def get_actions(parent, filepath=None):
     if not filepath:
         filepath = shortcut_path
     cparser.filename = filepath
-    setting = cparser.settings
+    setting = cparser.data
     actions = []
     for section in cparser.sections():
         if section.startswith('shortcut'):

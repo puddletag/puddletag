@@ -2,9 +2,46 @@
 # -*- coding: utf-8 -*-
 
 
-import sys, os, shutil
+import json, sys, os, shutil
 
 from optparse import OptionParser
+from glob import glob
+
+def convert_ini_files():
+    from puddlestuff.constants import CONFIGDIR, SAVEDIR
+    
+    config_files = [
+        'puddletag.conf', 'combos', 
+        'gensettings', 'menus', 'shortcuts', 
+        'tagpanel', 'tagsources.conf',
+        'function_settings', 'user_shortcuts', 'view_all_fields',
+    ]
+
+    data_files = glob(os.path.join(SAVEDIR, 'actions/*')) + \
+        glob(os.path.join(SAVEDIR, 'masstagging/*'))
+
+    files = [os.path.join(CONFIGDIR, fn) for fn in config_files] + data_files
+
+    for fn in files:
+        if os.path.exists(fn):
+            settings_to_json(fn)
+
+def settings_to_json(filename):
+    data = open(filename, 'r').read()
+
+    try:
+        json.loads(data)
+        return #Valid json so already converted.
+    except:
+        pass
+
+    try:
+        config_data = json.dumps(dict(ConfigObj(filename)), indent=2)
+        fo = open(filename, 'w')
+        fo.write(config_data)
+        fo.close()
+    except:
+        pass
 
 def migrate_settings():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -32,6 +69,7 @@ def migrate_settings():
         shutil.rmtree(old_dir)
 
     _migrate_action_shortcuts()
+    convert_ini_files()
 
 def _migrate_action_shortcuts():
     from puddlestuff.constants import SAVEDIR, ACTIONDIR
@@ -41,7 +79,12 @@ def _migrate_action_shortcuts():
     if not os.path.exists(filename):
         return
         
-    cparser = PuddleConfig(filename)
+    try:
+        cparser = PuddleConfig(filename)
+    except:
+        # Already converted to json. Nothing to do.
+        return None
+
     for section in sorted(cparser.sections()):
         if section.startswith('Shortcut'):
             filenames = []
@@ -255,11 +298,11 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
-
     from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen, QIcon
     from PyQt4.QtCore import (pyqtRemoveInputHook, QTranslator,
         QLibraryInfo, QLocale)
     import pdb, logging
+    from configobj import ConfigObj
     pyqtRemoveInputHook()
 
     #Load puddletag modules.

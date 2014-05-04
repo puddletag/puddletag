@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from puddlestuff.constants import SAVEDIR
+from puddlestuff.constants import CONFIGDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.translations import translate
 import os
@@ -11,7 +11,7 @@ DESC = 'description'
 SECTION = 'Config'
 VALUE = 'value'
 
-_filename = os.path.join(SAVEDIR, 'confirmations')
+_filename = os.path.join(CONFIGDIR, 'confirmations')
 _confirmations = {}
 _registered = []
 

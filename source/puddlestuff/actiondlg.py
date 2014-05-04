@@ -15,7 +15,7 @@ from puddleobjects import PuddleConfig, PuddleCombo
 from audioinfo import INFOTAGS, READONLY, usertags, isempty
 from functools import partial
 from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
-    SAVEDIR, ACTIONDIR, BLANK)
+    SAVEDIR, CONFIGDIR, ACTIONDIR, BLANK)
 from util import (open_resourcefile, PluginFunction, escape_html,
     translate, pprint_tag)
 import functions_dialogs
@@ -23,7 +23,7 @@ from puddlestuff.puddleobjects import ShortcutEditor
 from puddletag import status
 
 READONLY = list(READONLY)
-FUNC_SETTINGS = os.path.join(SAVEDIR, 'function_settings')
+FUNC_SETTINGS = os.path.join(CONFIGDIR, 'function_settings')
 
 FIELDS_TOOLTIP = translate('Functions Dialog',
     """<p>Fields that will

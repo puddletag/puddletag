@@ -4,6 +4,7 @@ from puddlestuff.puddleobjects import PuddleConfig, winsettings
 from puddlestuff.constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
     DIALOGS, MUSICLIBS, MODULES)
 from os.path import splitext, exists
+from configobj import ConfigObj
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -30,8 +31,9 @@ def get_plugins(plugindir):
         info_path = os.path.join(plugindir, module, 'info')
         if not exists(info_path):
             continue
-        cparser = PuddleConfig(info_path)
-        values = [cparser.get(INFO_SECTION, prop, '') for prop in PROPERTIES]
+        config_data = dict(ConfigObj(info_path))
+        values = [config_data.get(INFO_SECTION, {}).get('prop', '') for prop in PROPERTIES]
+
         if len(filter(None, values)) < len(PROPERTIES):
             continue
         d = dict(zip(PROPERTIES, values))

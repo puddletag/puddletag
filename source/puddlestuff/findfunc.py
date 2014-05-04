@@ -371,7 +371,6 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     while 1:
         try:
             c = s[i]
-            print c
         except IndexError:  #  Parsing's done.
             if in_func:
                 raise ParseError(SYNTAX_ERROR.arg(func[0]).arg(br_error))

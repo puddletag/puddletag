@@ -8,7 +8,8 @@ Contains objects used throughout puddletag"""
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4.QtSvg import *
-import sys, os,pdb,shutil
+import json, sys, os,pdb,shutil
+from collections import defaultdict
 
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
@@ -206,63 +207,82 @@ class PuddleConfig(object):
     get -> load a key from a specified section
     set -> save a key section"""
     def __init__(self, filename = None):
-        self.settings = ConfigObj(filename, create_empty=True, encoding='utf8', default_encoding='utf8')
-
         if not filename:
             filename = os.path.join(CONFIGDIR, 'puddletag.conf')
         self._setFilename(filename)
 
-        #TODO: backward compatibility, remove all.
         self.setSection = self.set
         self.load = self.get
 
     def get(self, section, key, default, getint = False):
-        settings = self.settings
+        settings = self.data
         try:
-            if isinstance(default, bool):
-                if self.settings[section][key] == 'True':
-                    return True
-                return False
-            elif getint or isinstance(default, (long,int)):
-                try:
-                    return int(self.settings[section][key])
-                except TypeError:
-                    return [int(z) for z in self.settings[section][key]]
-            else:
-                val = self.settings[section][key]
-                if val is None:
-                    return default
-                return val
+            value = self.data[section][key]
         except KeyError:
             return default
 
+        if isinstance(default, bool):
+            if value is True or value == 'True':
+                return True
+            return False
+        elif getint or isinstance(default, (long,int)):
+            try:
+                return int(value)
+            except TypeError:
+                return map(int, value)
+        else:
+            if value is None:
+                return default
+            return value
+
     def set(self, section = None, key = None, value = None):
-        settings = self.settings
-        if section in self.settings:
+        settings = self.data
+        if isinstance(value, QString):
+            value = unicode(value)
+        if section in self.data:
             settings[section][key] = value
         else:
             settings[section] = {}
             settings[section][key] = value
-        settings.write()
+        self.save()
+
+    def reload(self):
+        self.data = defaultdict(lambda: {})
+        if os.path.exists(self.filename):
+            try:
+                self.data.update(json.loads(open(self.filename, 'r').read()))
+            except:
+                pass
+
+    def save(self):
+        filename = self.filename
+        
+        if not os.path.exists(filename):
+            dirname = os.path.dirname(filename)
+            try:
+                os.makedirs(dirname)
+            except:
+                pass
+        
+        with open(filename, 'w') as fo:
+            fo.write(json.dumps(dict(self.data), indent=2))
+
 
     def _setFilename(self, filename):
-        dirname = os.path.dirname(filename)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
-        self.settings.filename = filename
-        self.savedir = dirname
-        self.settings.reload()
+        self._filename = filename
+        self.savedir = os.path.dirname(filename)
+        self.reload()
 
     def _getFilename(self):
-        return self.settings.filename
+        return self._filename
 
     def sections(self):
-        return self.settings.keys()
+        return self.data.keys()
 
     filename = property(_getFilename, _setFilename)
 
 def _setupsaves(func):
-    filename = os.path.join(PuddleConfig().savedir, 'windowsizes')
+    filename = os.path.join(CONFIGDIR, 'windowsizes')
     settings = QSettings(filename, QSettings.IniFormat)
     return lambda x, y: func(x, y, settings)
 
