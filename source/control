@@ -3,7 +3,7 @@ Version: 1.0.0RC2
 Architecture: all
 Maintainer: concentricpuddle <concentricpuddle@gmail.com>
 Installed-Size: 3248
-Depends: python (>= 2.5), python-support, python-mutagen (>= 1.14), python-qt4 (>= 4.5), python-pyparsing (>= 1.5.1), python-configobj (>= 4.5)
+Depends: python (>= 2.5), python-mutagen (>= 1.14), python-qt4 (>= 4.5), python-pyparsing (>= 1.5.1), python-configobj (>= 4.5)
 Homepage: http://puddletag.sourceforge.net
 Section: sound
 Priority: optional
