@@ -48,7 +48,10 @@ class UnicodeMod(unicode):
 def translate(k,v):
     if isinstance(v, str):
         v = v.decode('utf8', 'replace')
-    return UnicodeMod(QApplication.translate(k,v))
+    try:
+        return UnicodeMod(QApplication.translate(k,v))
+    except TypeError:
+        return v
 
 def dont_execute():
     #General Translations
