@@ -2,18 +2,18 @@
 
 .. |source_link| replace:: puddletag-1.0.3.tar.gz
 .. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.3.tar.gz
-.. |deb_link| replace:: puddletag_1.0.3-1_all.deb
-.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.3-1_all.deb
+.. |deb_link| replace:: puddletag_1.0.3-3_all.deb
+.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.3-3_all.deb
 
 .. |beta_source_link| replace:: puddletag-1.0.3.tar.gz
 .. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.3.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.0.3-1_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.3-1_all.deb
+.. |beta_deb_link| replace:: puddletag_1.0.3-3_all.deb
+.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.3-3_all.deb
 
 .. |source_sha| replace:: 7e13c6649da467d9ac91d97d0b135ca3852d3ac8
-.. |deb_sha| replace:: 7ba9a18863e2caee4052a2ff6881bccd9cb432b7
+.. |deb_sha| replace:: 65eb6b1b477e92b26e4a7db2b31fb78f80cdc021
 .. |beta_source_sha| replace:: 7e13c6649da467d9ac91d97d0b135ca3852d3ac8
-.. |beta_deb_sha| replace:: 7ba9a18863e2caee4052a2ff6881bccd9cb432b7
+.. |beta_deb_sha| replace:: 65eb6b1b477e92b26e4a7db2b31fb78f80cdc021
 
 Downloads
 =========
@@ -25,6 +25,7 @@ Contents
 + :ref:`installing_from_source`
 + :ref:`installing_from_the_debian_package`
 + :ref:`installing_on_fedora_14_and_later`
++ :ref:`installing_on_osx`
 + :ref:`development_builds`
 + :ref:`plugins`
 + :ref:`translations`
@@ -36,7 +37,7 @@ Dependencies
 
 puddletag requires the following dependencies. Visit the respective project's page if you having trouble installing a component.
 
-Install instructions are just below.
+Install instructions follow below.
 
 +   At least `Python 2.6 (but not Python 3) <http://python.org>`_
 +   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
@@ -50,7 +51,7 @@ Install instructions are just below.
 Installing from source
 ----------------------
 
-Install the dependencies as outlined on the :doc:`home page <index>`. For Debian-based distros, you can run the following as root:
+Install the dependencies as listed above. For Debian-based distros, you can run the following as root:
 
 .. code-block:: bash
 
@@ -87,7 +88,7 @@ Then (also as root)
 
 .. code-block:: bash
 
-    dpkg -i /path/to/puddletag-version.deb
+    dpkg -i puddletag_1.0.3-3_all.deb
 
 puddletag should be available from your Multimedia menu.
 
@@ -107,6 +108,15 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 .. code-block:: bash
 
    yum --enablerepo=updates-testing install
+
+.. __installing_on_osx:
+
+Install on OSX
+--------------
+
+There's a `great article on the VortexBox wiki <http://info.vortexbox.org/tiki-index.php?page=puddletag+on+os+x>`_ detailing the steps you need to follow. 
+
+
 
 
 .. _development_builds:

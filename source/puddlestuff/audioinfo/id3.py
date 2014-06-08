@@ -4,8 +4,16 @@ from copy import deepcopy
 from functools import partial
 
 import mutagen, mutagen.id3 as id3, mutagen.mp3
+
+try:
+    from mutagen.aiff import AIFF, _IFFID3
+except ImportError:
+    AIFF = None
+
 from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
     UrlFrame)
+
+
 
 import util
 from _compatid3 import CompatID3
@@ -688,330 +696,346 @@ class ID3FileType(mutagen.mp3.MP3):
         mutagen.mp3.MP3.add_tags(self, ID3)
 
     def load(self, filename, ID3=ID3, **kwargs):
-        mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
+        return mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
 
+if AIFF is not None:
+    class AIFFFileType(AIFF):
+        """See ID3 class."""
+        def add_tags(self, ID3=_IFFID3):
+            AIFF.add_tags(self, ID3)
 
-class Tag(TagBase):
-    IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
-        util.IMAGETYPE)
-    mapping = {}
-    revmapping = {}
+        def load(self, filename, **kwargs):
+            return AIFF.load(self, filename, **kwargs)
 
-    def __init__(self, filename=None):
-        self.__images = []
+def tag_factory(id3_filetype):
+    class Tag(TagBase):
+        IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
+            util.IMAGETYPE)
+        mapping = {}
+        revmapping = {}
 
-        self.__tags = CaselessDict() #Used as storage.
-        #Each key as the is the field as used by puddletag, eg. 'artist'
-        #Each value contains an mutagen.id3.Frame object
-        #that have two methods, get_value and set_value.
-        #get_value returns the value stored by the frame as
-        #text/unicode list.
-        #set_value should take text/unicode list in parse it into
-        #it understands.
-
-        #When saving the frame stored will be used. If it has a 'frames'
-        #attributes, those frames will be used instead.
-
-        util.MockTag.__init__(self, filename)
-
-    def get_filepath(self):
-        return util.MockTag.get_filepath(self)
-
-    def set_filepath(self,  val):
-        self.__tags.update(util.MockTag.set_filepath(self, val))
-
-    filepath = property(get_filepath, set_filepath)
-
-    def _get_images(self):
-        return self.__images
-
-    def _set_images(self, images):
-        if images:
-            self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
-                images)
-        else:
+        def __init__(self, filename=None):
             self.__images = []
-        cover_info(images, self.__tags)
 
-    images = property(_get_images, _set_images)
+            self.__tags = CaselessDict() #Used as storage.
+            #Each key as the is the field as used by puddletag, eg. 'artist'
+            #Each value contains an mutagen.id3.Frame object
+            #that have two methods, get_value and set_value.
+            #get_value returns the value stored by the frame as
+            #text/unicode list.
+            #set_value should take text/unicode list in parse it into
+            #it understands.
 
-    def _info(self):
-        info = self.mut_obj.info
-        fileinfo = [('Path', self[PATH]),
-                    ('Size', str_filesize(int(self.size))),
-                    ('Filename', self[FILENAME]),
-                    ('Modified', self.modified)]
-        try:
-            version = self.mut_obj.tags.version
-            version = ('ID3 Version', self.filetype)
-        except AttributeError:
-            version = ('ID3 Version', 'No tags in file.')
-        fileinfo.append(version)
+            #When saving the frame stored will be used. If it has a 'frames'
+            #attributes, those frames will be used instead.
 
-        mpginfo = [('Version', u'MPEG %i Layer %i' % (info.version, info.layer)),
-                   ('Bitrate', self.bitrate),
-                   ('Frequency', self.frequency),
-                   ('Mode', MODES[info.mode]),
-                   ('Length', self.length)]
+            util.MockTag.__init__(self, filename)
 
-        return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
+        def get_filepath(self):
+            return util.MockTag.get_filepath(self)
 
-    info = property(_info)
+        def set_filepath(self,  val):
+            self.__tags.update(util.MockTag.set_filepath(self, val))
 
-    def __contains__(self, key):
-        if key == '__image':
-            return bool(self.images)
+        filepath = property(get_filepath, set_filepath)
 
-        elif key == '__total':
-            try:
-                return bool(get_total(self))
-            except (KeyError, ValueError):
-                return False
+        def _get_images(self):
+            return self.__images
 
-        if self.revmapping:
-            key = self.revmapping.get(key, key)
-        
-        return key in self.__tags
-
-    def __deepcopy__(self, memo=None):
-        cls = Tag()
-        tags = CaselessDict()
-        frames = []
-        [frames.append(frame) if not hasattr(frame, 'frames') else
-            frames.extend(frame.frames) for key, frame in self.__tags.items()
-            if not key.startswith('__')]
-        funcs = []
-        frames_copy = []
-        for frame in frames:
-            funcs.append((getattr(frame, 'get_value', None),
-                getattr(frame, 'set_value', None)))
-            if hasattr(frame, 'get_value'):
-                delattr(frame, 'get_value')
-            if hasattr(frame, 'set_value'):
-                delattr(frame, 'set_value')
-            frames_copy.append(deepcopy(frame))
-        tags = handle(dict([(frame.HashKey, frame) for frame in frames_copy]))
-        for frame, (get_value, set_value) in zip(frames, funcs):
-            if get_value is not None:
-                frame.get_value = get_value
-            if set_value is not None:
-                frame.set_value = set_value
-        for key, value in self.__tags.items():
-            if key not in tags:
-                tags[key] = deepcopy(value)
-        cls.set_fundamentals(tags,
-            self.mut_obj, deepcopy(self.images))
-        cls.filepath = self.filepath
-        return cls
-
-    @del_deco
-    def __delitem__(self, key):
-        if key == '__image':
-            self.images = []
-        elif key.startswith('__'):
-            return
-        else:
-            del(self.__tags[key])
-
-    @getdeco
-    def __getitem__(self,key):
-        if key.startswith('__'):
-            if key == '__image':
-                return self.images
-            elif key == '__filetype':
-                return self.filetype
-            elif key == '__total':
-                return get_total(self)
+        def _set_images(self, images):
+            if images:
+                self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
+                    images)
             else:
+                self.__images = []
+            cover_info(images, self.__tags)
+
+        images = property(_get_images, _set_images)
+
+        def _info(self):
+            info = self.mut_obj.info
+            fileinfo = [('Path', self[PATH]),
+                        ('Size', str_filesize(int(self.size))),
+                        ('Filename', self[FILENAME]),
+                        ('Modified', self.modified)]
+            try:
+                version = self.mut_obj.tags.version
+                version = ('ID3 Version', self.filetype)
+            except AttributeError:
+                version = ('ID3 Version', 'No tags in file.')
+            fileinfo.append(version)
+
+            mpginfo = [('Version', u'MPEG %i Layer %i' % (info.version, info.layer)),
+                       ('Bitrate', self.bitrate),
+                       ('Frequency', self.frequency),
+                       ('Mode', MODES[info.mode]),
+                       ('Length', self.length)]
+
+            return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
+
+        info = property(_info)
+
+        def __contains__(self, key):
+            if key == '__image':
+                return bool(self.images)
+
+            elif key == '__total':
+                try:
+                    return bool(get_total(self))
+                except (KeyError, ValueError):
+                    return False
+
+            if self.revmapping:
+                key = self.revmapping.get(key, key)
+
+            return key in self.__tags
+
+        def __deepcopy__(self, memo=None):
+            cls = Tag()
+            tags = CaselessDict()
+            frames = []
+            [frames.append(frame) if not hasattr(frame, 'frames') else
+                frames.extend(frame.frames) for key, frame in self.__tags.items()
+                if not key.startswith('__')]
+            funcs = []
+            frames_copy = []
+            for frame in frames:
+                funcs.append((getattr(frame, 'get_value', None),
+                    getattr(frame, 'set_value', None)))
+                if hasattr(frame, 'get_value'):
+                    delattr(frame, 'get_value')
+                if hasattr(frame, 'set_value'):
+                    delattr(frame, 'set_value')
+                frames_copy.append(deepcopy(frame))
+            tags = handle(dict([(frame.HashKey, frame) for frame in frames_copy]))
+            for frame, (get_value, set_value) in zip(frames, funcs):
+                if get_value is not None:
+                    frame.get_value = get_value
+                if set_value is not None:
+                    frame.set_value = set_value
+            for key, value in self.__tags.items():
+                if key not in tags:
+                    tags[key] = deepcopy(value)
+            cls.set_fundamentals(tags,
+                self.mut_obj, deepcopy(self.images))
+            cls.filepath = self.filepath
+            return cls
+
+        @del_deco
+        def __delitem__(self, key):
+            if key == '__image':
+                self.images = []
+            elif key.startswith('__'):
+                return
+            else:
+                del(self.__tags[key])
+
+        @getdeco
+        def __getitem__(self,key):
+            if key.startswith('__'):
+                if key == '__image':
+                    return self.images
+                elif key == '__filetype':
+                    return self.filetype
+                elif key == '__total':
+                    return get_total(self)
+                else:
+                    return self.__tags[key]
+            elif not isinstance(key, basestring):
                 return self.__tags[key]
-        elif not isinstance(key, basestring):
-            return self.__tags[key]
-        else:
-            return self.__tags[key].get_value()
-
-    @setdeco
-    def __setitem__(self, key, value):
-        if not isinstance(key, basestring):
-            self.__tags[key] = value
-            return
-        if key.startswith('__'):
-            if key == '__image':
-                self.images = value
-            elif key in fn_hash:
-                setattr(self, fn_hash[key], value)
-            elif key == '__total':
-                set_total(self, value)
-            return
-
-        value = unicode_list(value)
-
-        if isempty(value):
-            if key in self:
-                del(self[key])
-            return
-
-        if key in self.__tags:
-            self.__tags[key].set_value(value)
-        else:
-            if key in write_frames:
-                self.__tags.update(write_frames[key](value))
-            elif key == u'comment':
-                frame = {'comment': create_comment('', value)['comment:']}
-                self.__tags.update(frame)
-            elif key.startswith('comment:'):
-                self.__tags.update(create_comment(key[len('comment:'):], value))
-            elif key.startswith('www:'):
-                self.__tags.update(create_userurl(key, value))
-            elif key.startswith('ufid:'):
-                self.__tags.update(create_ufid(key, value))
-            elif key.startswith('rgain:'):
-                self.__tags.update(create_rgain(key, value))
-            elif key.startswith('unsyncedlyrics:'):
-                self.__tags.update(create_uslt(key, value))
             else:
-                self.__tags.update(create_usertext(key, value))
+                return self.__tags[key].get_value()
 
-    def delete(self):
-        self.mut_obj.delete()
-        for key in self.usertags:
-            del(self.__tags[self.revmapping.get(key, key)])
-        self.images = []
+        @setdeco
+        def __setitem__(self, key, value):
+            if not isinstance(key, basestring):
+                self.__tags[key] = value
+                return
+            if key.startswith('__'):
+                if key == '__image':
+                    self.images = value
+                elif key in fn_hash:
+                    setattr(self, fn_hash[key], value)
+                elif key == '__total':
+                    set_total(self, value)
+                return
 
-    @keys_deco
-    def keys(self):
-        return self.__tags.keys()
+            value = unicode_list(value)
 
-    def link(self, filename):
-        """Links the audio, filename
-        returns self if successful, None otherwise."""
-        self.__images = []
-        tags, audio = self.load(filename, ID3FileType)
-        if audio is None:
-            return
+            if isempty(value):
+                if key in self:
+                    del(self[key])
+                return
 
-        if audio.tags: #Not empty
-            audio.tags.update_to_v24()
-            self.__tags.update(handle(audio))
-
-            #Get the image data.
-            apics = audio.tags.getall("APIC")
-            if apics:
-                self.images = map(bin_to_pic, apics)
+            if key in self.__tags:
+                self.__tags[key].set_value(value)
             else:
-                self.images = [];
+                if key in write_frames:
+                    self.__tags.update(write_frames[key](value))
+                elif key == u'comment':
+                    frame = {'comment': create_comment('', value)['comment:']}
+                    self.__tags.update(frame)
+                elif key.startswith('comment:'):
+                    self.__tags.update(create_comment(key[len('comment:'):], value))
+                elif key.startswith('www:'):
+                    self.__tags.update(create_userurl(key, value))
+                elif key.startswith('ufid:'):
+                    self.__tags.update(create_ufid(key, value))
+                elif key.startswith('rgain:'):
+                    self.__tags.update(create_rgain(key, value))
+                elif key.startswith('unsyncedlyrics:'):
+                    self.__tags.update(create_uslt(key, value))
+                else:
+                    self.__tags.update(create_usertext(key, value))
 
-        self.__tags.update(tags)
-        self.__tags.update(info_to_dict(audio.info))
+        def delete(self):
+            self.mut_obj.delete()
+            for key in self.usertags:
+                del(self.__tags[self.revmapping.get(key, key)])
+            self.images = []
 
-        if self.ext.lower() == 'mp3':
-            self.__tags['__filetype'] = u'MP3'
-        else:
-            self.__tags['__filetype'] = u'ID3'
+        @keys_deco
+        def keys(self):
+            return self.__tags.keys()
 
-        self.set_attrs(ATTRIBUTES, self.__tags)
-            
-        try:
-            self.__tags['__tag_read'] = u'ID3v%s.%s' % audio.tags.version[:2]
-        except AttributeError:
-            self.__tags['__tag_read'] = u''
-        self.mut_obj = audio
-        self._originaltags = audio.keys()
-        self.update_tag_list()
-        return self
+        def link(self, filename):
+            """Links the audio, filename
+            returns self if successful, None otherwise."""
+            self.__images = []
+            tags, audio = self.load(filename, id3_filetype)
+            if audio is None:
+                return
 
-    def save(self, v1=None, v2=None):
-        if v1 is None:
-            v1 = v1_option
-        """Writes the tags to file."""
-        filename = self.filepath
-        if self.mut_obj.tags is None:
-            self.mut_obj.add_tags()
-        if filename != self.mut_obj.filename:
-            self.mut_obj.tags.filename = filename
-            self.mut_obj.filename = filename
-        audio = self.mut_obj
-        util.MockTag.save(self)
+            if audio.tags: #Not empty
+                audio.tags.update_to_v24()
+                self.__tags.update(handle(audio))
 
-        userkeys = usertags(self.__tags).keys()
-        frames = []
-        [frames.append(frame) if not hasattr(frame, 'frames') else
-            frames.extend(frame.frames) for key, frame in self.__tags.items()
-            if key in userkeys]
-        hashes = dict([(frame.HashKey, frame) for frame in frames])
-        toremove = [z for z in self._originaltags if z in audio
-                    and not (z in hashes or z.startswith('APIC'))]
-        audio.update(hashes)
+                #Get the image data.
+                apics = audio.tags.getall("APIC")
+                if apics:
+                    self.images = map(bin_to_pic, apics)
+                else:
+                    self.images = [];
 
-        old_apics = [z for z in audio if z.startswith(u'APIC')]
-        if self.__images:
-            newimages = []
-            for image in filter(None, map(pic_to_bin, self.__images)):
-                i = 0
-                while image.HashKey in newimages:
-                    i += 1
-                    #Pad with spaces so that each key is unique.
-                    image.desc += u' '*i
-                audio[image.HashKey] = image
-                newimages.append(image.HashKey)
-            [toremove.append(z) for z in old_apics if z not in newimages]
-        else:
-            toremove.extend(old_apics)
+            self.__tags.update(tags)
+            self.__tags.update(info_to_dict(audio.info))
 
-        for z in set(toremove):
+            if self.ext.lower() == 'mp3':
+                self.__tags['__filetype'] = u'MP3'
+            else:
+                self.__tags['__filetype'] = u'ID3'
+
+            self.set_attrs(ATTRIBUTES, self.__tags)
+
             try:
-                del(audio[z])
-            except KeyError:
-                continue
-            
-        audio.tags.filename = self.filepath
-        v1 = v1_option if v1 is None else v1
-        v2 = v2_option if v2 is None else v2
-        
-        if v2 == 4:
-            audio.tags.update_to_v24()
-            audio.tags.save(v1=v1, v2=4)
-        else:
-            c = ID3()
-            c.filename = self.filepath
-            c.update(audio)
-            c.update_to_v23()
-            c.save(v1=v1, v2=3)
+                self.__tags['__tag_read'] = u'ID3v%s.%s' % audio.tags.version[:2]
+            except AttributeError:
+                self.__tags['__tag_read'] = u''
+            self.mut_obj = audio
+            self._originaltags = audio.keys()
+            self.update_tag_list()
+            return self
 
-        self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
-        self.update_tag_list()
-        self._originaltags = audio.keys()
+        def save(self, v1=None, v2=None):
+            if v1 is None:
+                v1 = v1_option
+            """Writes the tags to file."""
+            filename = self.filepath
+            if self.mut_obj.tags is None:
+                self.mut_obj.add_tags()
+            if filename != self.mut_obj.filename:
+                self.mut_obj.tags.filename = filename
+                self.mut_obj.filename = filename
+            audio = self.mut_obj
+            util.MockTag.save(self)
 
-    def set_fundamentals(self, tags, mut_obj, images=None):
-        self.__tags = tags
-        self.mut_obj = mut_obj
-        if images:
-            self.images = images
-        self._originaltags = tags.keys()
-        self.set_attrs(ATTRIBUTES, tags)
+            userkeys = usertags(self.__tags).keys()
+            frames = []
+            [frames.append(frame) if not hasattr(frame, 'frames') else
+                frames.extend(frame.frames) for key, frame in self.__tags.items()
+                if key in userkeys]
+            hashes = dict([(frame.HashKey, frame) for frame in frames])
+            toremove = [z for z in self._originaltags if z in audio
+                        and not (z in hashes or z.startswith('APIC'))]
+            audio.update(hashes)
 
-    def to_encoding(self, encoding = UTF8):
-        frames = []
-        saved = []
-        for frame in self.__tags.values():
-            if hasattr(frame, 'encoding'):
-                frames.append((frame, frame.encoding))
-                frame.encoding = encoding
-        try:
-            self.save(v2=4)
-        except:
-            for frame, enc in frames:
-                frame.encoding = enc
-            raise
+            old_apics = [z for z in audio if z.startswith(u'APIC')]
+            if self.__images:
+                newimages = []
+                for image in filter(None, map(pic_to_bin, self.__images)):
+                    i = 0
+                    while image.HashKey in newimages:
+                        i += 1
+                        #Pad with spaces so that each key is unique.
+                        image.desc += u' '*i
+                    audio[image.HashKey] = image
+                    newimages.append(image.HashKey)
+                [toremove.append(z) for z in old_apics if z not in newimages]
+            else:
+                toremove.extend(old_apics)
 
-    def update_tag_list(self):
-        tag = self.__tags['__tag_read']
-        l = tag_versions.tags_in_file(self.filepath)
-        if l:
-            if tag and tag in l:
-                l.remove(tag)
-                l.insert(0, tag)
-            self.__tags['__tag'] = u', '.join(l)
-        else:
-            self.__tags['__tag'] = tag
+            for z in set(toremove):
+                try:
+                    del(audio[z])
+                except KeyError:
+                    continue
 
-filetype = [ID3FileType, Tag, u'ID3', 'mp3']
+            audio.tags.filename = self.filepath
+            v1 = v1_option if v1 is None else v1
+            v2 = v2_option if v2 is None else v2
+
+            if v2 == 4:
+                audio.tags.update_to_v24()
+                audio.tags.save(v1=v1, v2=4)
+            else:
+                c = ID3()
+                c.filename = self.filepath
+                c.update(audio)
+                c.update_to_v23()
+                c.save(v1=v1, v2=3)
+
+            self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
+            self.update_tag_list()
+            self._originaltags = audio.keys()
+
+        def set_fundamentals(self, tags, mut_obj, images=None):
+            self.__tags = tags
+            self.mut_obj = mut_obj
+            if images:
+                self.images = images
+            self._originaltags = tags.keys()
+            self.set_attrs(ATTRIBUTES, tags)
+
+        def to_encoding(self, encoding = UTF8):
+            frames = []
+            saved = []
+            for frame in self.__tags.values():
+                if hasattr(frame, 'encoding'):
+                    frames.append((frame, frame.encoding))
+                    frame.encoding = encoding
+            try:
+                self.save(v2=4)
+            except:
+                for frame, enc in frames:
+                    frame.encoding = enc
+                raise
+
+        def update_tag_list(self):
+            tag = self.__tags['__tag_read']
+            l = tag_versions.tags_in_file(self.filepath)
+            if l:
+                if tag and tag in l:
+                    l.remove(tag)
+                    l.insert(0, tag)
+                self.__tags['__tag'] = u', '.join(l)
+            else:
+                self.__tags['__tag'] = tag
+
+    return Tag
+
+filetypes = [
+    (ID3FileType, tag_factory(ID3FileType), u'ID3', 'mp3'),
+]
+
+if AIFF is not None:
+    filetypes.append((AIFFFileType, tag_factory(AIFFFileType), u'AIFF', 'aiff'))
