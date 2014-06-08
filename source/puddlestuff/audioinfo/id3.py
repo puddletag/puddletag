@@ -984,15 +984,21 @@ def tag_factory(id3_filetype):
             v1 = v1_option if v1 is None else v1
             v2 = v2_option if v2 is None else v2
 
-            if v2 == 4:
-                audio.tags.update_to_v24()
-                audio.tags.save(v1=v1, v2=4)
+            if id3_filetype is AIFFFileType:
+                if v2 == 3:
+                    audio.tags.save(v2_version=3) #AIFF doesn't support id3v1
+                else:
+                    audio.tags.save() #AIFF doesn't support id3v1
             else:
-                c = ID3()
-                c.filename = self.filepath
-                c.update(audio)
-                c.update_to_v23()
-                c.save(v1=v1, v2=3)
+                if v2 == 4:
+                    audio.tags.update_to_v24()
+                    audio.tags.save(v1=v1, v2=4)
+                else:
+                    c = ID3()
+                    c.filename = self.filepath
+                    c.update(audio)
+                    c.update_to_v23()
+                    c.save(v1=v1, v2=3)
 
             self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
             self.update_tag_list()
@@ -1032,6 +1038,8 @@ def tag_factory(id3_filetype):
                 self.__tags['__tag'] = tag
 
     return Tag
+
+Tag = tag_factory(ID3FileType)    
 
 filetypes = [
     (ID3FileType, tag_factory(ID3FileType), u'ID3', 'mp3'),
