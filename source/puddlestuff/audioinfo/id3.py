@@ -702,7 +702,7 @@ if AIFF is not None:
     class AIFFFileType(AIFF):
         """See ID3 class."""
         def add_tags(self, ID3=_IFFID3):
-            AIFF.add_tags(self, ID3)
+            AIFF.add_tags(self)
 
         def load(self, filename, **kwargs):
             return AIFF.load(self, filename, **kwargs)
