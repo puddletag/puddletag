@@ -155,7 +155,14 @@ def load_macro_info(filename):
     cparser = PuddleConfig(filename)
     funcs = []
     name = cparser.get('info', 'name', u'')
-    for section in cparser.sections():
+
+    def get_func_index(funcname):
+        if funcname.startswith('Func'):
+            return int(funcname[4:].strip())
+        else:
+            return funcname
+
+    for section in sorted(cparser.sections(), key=get_func_index):
         if section.startswith(u'Func'):
             get = partial(cparser.get, section)
             func_name = get(FUNC_NAME, u'')

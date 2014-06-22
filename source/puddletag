@@ -43,6 +43,20 @@ def settings_to_json(filename):
     except:
         pass
 
+def _migrate_action_shortcut_filenames():
+    from puddlestuff.constants import SAVEDIR, ACTIONDIR
+    filename = os.path.join(ACTIONDIR, 'action_shortcuts')
+    if not os.path.exists(filename):
+        return
+    with open(filename, 'r') as fo:
+        data = json.loads(fo.read());
+    
+    old_dir = os.path.join(os.getenv('HOME'), '.puddletag', 'actions')
+    for key, shortcut in data.iteritems():
+        shortcut['filenames'] = [z.replace(old_dir, ACTIONDIR) for z in shortcut['filenames']]
+
+    with open(filename, 'w') as fo:
+        fo.write(json.dumps(data, indent=2))
 
 def migrate_settings():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -71,6 +85,7 @@ def migrate_settings():
 
     _migrate_action_shortcuts()
     convert_ini_files()
+    _migrate_action_shortcut_filenames()
 
 def _migrate_action_shortcuts():
     from puddlestuff.constants import SAVEDIR, ACTIONDIR
