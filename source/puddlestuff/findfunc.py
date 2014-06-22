@@ -178,7 +178,7 @@ def load_macro_info(filename):
             newargs = []
             for i, (control, arg) in enumerate(zip(func.controls, arguments)):
                 if control == CHECKBOX:
-                    if arg == u'False':
+                    if arg == False or arg == u'False':
                         newargs.append(False)
                     else:
                         newargs.append(True)
