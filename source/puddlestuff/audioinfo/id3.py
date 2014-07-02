@@ -984,7 +984,7 @@ def tag_factory(id3_filetype):
             v1 = v1_option if v1 is None else v1
             v2 = v2_option if v2 is None else v2
 
-            if id3_filetype is AIFFFileType:
+            if AIFF is not None and id3_filetype is AIFFFileType:
                 if v2 == 3:
                     audio.tags.save(v2_version=3) #AIFF doesn't support id3v1
                 else:

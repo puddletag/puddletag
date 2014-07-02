@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 04 May 2014 20:40:25 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>7 November 2013 1.0.2</title><link>http://puddletag.sourceforge.net/news.html#november-2013-1-0-2</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 22 Jun 2014 18:48:01 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>22 June 2014 - New forum</title><link>http://puddletag.sourceforge.net/news.html#june-2014-new-forum</link><description>
+  &lt;div class="section" id="june-2014-new-forum"&gt;
+&lt;h1&gt;22 June 2014 - New forum&lt;/h1&gt;
+&lt;p&gt;SourceForge has retired the hosted apps offering so I&amp;#8217;ll be maintaining it for now. You can find the new forum at &lt;a class="reference external" href="http://puddletag.sourceforge.net/forum"&gt;http://puddletag.sourceforge.net/forum&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Since logins were managed by SF, you might not be able to log in using your old password. If so, you can just reset your password.&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Sun, 22 Jun 2014 00:00:00 GMT</pubDate></item><item><title>7 November 2013 1.0.2</title><link>http://puddletag.sourceforge.net/news.html#november-2013-1-0-2</link><description>
   &lt;div class="section" id="november-2013-1-0-2"&gt;
 &lt;h1&gt;7 November 2013 1.0.2&lt;/h1&gt;
 &lt;p&gt;Well, it&amp;#8217;s been more than a month and now major new issues have been report.&lt;/p&gt;

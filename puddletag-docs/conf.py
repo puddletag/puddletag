@@ -119,7 +119,7 @@ html_theme_options = {
         ('Download', 'download'),
         ('News', 'news'),
         ('Documentation', 'docs'),
-        ('Forum', "http://sourceforge.net/apps/phpbb/puddletag", True),
+        ('Forum', "http://puddletag.sourceforge.net/forum", True),
         ('Screenshots', 'screenshots'),
         ('About', 'about')
         ],

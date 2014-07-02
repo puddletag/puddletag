@@ -15,6 +15,17 @@ News
 
 ----
 
+22 June 2014 - New forum
+########################
+
+SourceForge has retired the hosted apps offering so I'll be maintaining it for now. You can find the new forum at http://puddletag.sourceforge.net/forum.
+
+Since logins were managed by SF, you might not be able to log in using your old password. If so, you can just reset your password.
+
+
+
+----
+
 7 November 2013 1.0.2
 #####################
 
@@ -942,6 +953,24 @@ Stuff that's fixed
 * Saving a file's album art to disk now works.
 * The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.
 * Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.
+
+
+----
+
+7 November 2013 1.0.2
+#####################
+
+Well, it's been more than a month and now major new issues have been report.
+
+There's not much to tell, but here's some things anyway.
+
+Stuff in this release:
+----------------------
+
++ Escaped chars in functions weren't being escaped correctly. Check your functions if they make use of this odd behaviour.
++ Opus support.
++ Artwork windows list JPG + PNG's at the same time.
+
 
 
 ----
