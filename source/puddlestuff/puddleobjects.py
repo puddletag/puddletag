@@ -267,7 +267,6 @@ class PuddleConfig(object):
         with open(filename, 'w') as fo:
             fo.write(json.dumps(dict(self.data), indent=2))
 
-
     def _setFilename(self, filename):
         self._filename = filename
         self.savedir = os.path.dirname(filename)

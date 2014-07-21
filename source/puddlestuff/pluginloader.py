@@ -32,7 +32,7 @@ def get_plugins(plugindir):
         if not exists(info_path):
             continue
         config_data = dict(ConfigObj(info_path))
-        values = [config_data.get(INFO_SECTION, {}).get('prop', '') for prop in PROPERTIES]
+        values = [config_data.get(INFO_SECTION, {}).get(prop, '') for prop in PROPERTIES]
 
         if len(filter(None, values)) < len(PROPERTIES):
             continue
@@ -56,6 +56,7 @@ def load_plugins(plugins=None, parent=None):
         plugins = []
         [plugins.extend(get_plugins(d)) for d in PLUGIN_DIRS]
 
+    
     plugins.sort(key=lambda d: d.get(NAME, u''))
 
     for plugin in plugins:
@@ -129,6 +130,7 @@ class PluginConfig(QDialog):
         
         cparser = PuddleConfig()
         to_load = cparser.get('plugins', 'to_load', [])
+        plugins.sort(key=lambda d: d.get(NAME, u''))
         for plugin in plugins:
             item = QListWidgetItem()
             item.setText(plugin[NAME])
