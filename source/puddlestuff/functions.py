@@ -221,6 +221,10 @@ def grtr(text, text1):
     else:
         return false
 
+def to_num(text):
+    match = re.search('[\-\+]?[0-9]+(\.[0-9]+)?', text)
+    return match.group() if match else u''
+
 def hasformat(p_pat, tagname = "__filename"):
     if findfunc.filenametotag(p_pat, tagname):
         return true
@@ -1028,7 +1032,9 @@ functions = {
     "upper": upper,
     'update_from_tag': update_from_tag,
     "validate": validate,
-    'to_ascii': to_ascii}
+    'to_ascii': to_ascii,
+    'to_num': to_num
+}
 
 no_fields = (filenametotag, load_images, move, remove_except,
     save_artwork, tag_dir, update_from_tag)
