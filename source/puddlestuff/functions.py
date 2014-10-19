@@ -37,6 +37,8 @@ import math
 import decimal, os, pdb, re, shutil, sys
 import string, time, traceback, unicodedata
 
+from collections import defaultdict
+
 from copy import deepcopy
 from functools import partial
 from operator import itemgetter
@@ -73,22 +75,27 @@ def autonumbering(r_tags, minimum=1, restart=False, padding=1, state=None):
 oi,spinbox,1
 aoeu,check, False
 au,spinbox,1'''
+
     if 'autonumbering' not in state:
-        state['autonumbering'] = {}
-    
-    dir_list = state['autonumbering']
-    
-    if restart:
-        key = r_tags.dirpath
-    else:
-        key = 'temp'
+        dircount = defaultdict(lambda: 0)
+        count = {}
+        
+        files = state.get('__files')
+        if files is None:
+            count = {1:u'1'}
+        else:
+            for i, tag in enumerate(state['__files'], 1):
+                if restart:
+                    dircount[tag.dirpath] += 1
+                    count[i] = unicode(dircount[tag.dirpath])
+                else:
+                    count[i] = unicode(i)
 
-    if key in dir_list:
-        dir_list[key] += 1
-    else:
-        dir_list[key] = minimum
+        state['autonumbering'] = count
+        
+    index = int(state.get('__counter', 1))
 
-    tracknum = unicode(dir_list[key])
+    tracknum = state['autonumbering'][index]
 
     if padding > 1:
         return _pad(tracknum, padding)
