@@ -103,6 +103,8 @@ au,spinbox,1'''
         return tracknum
 
 def check_truth(text):
+    if isinstance(text, basestring):
+        text = text.strip()
     return 0 if ((not text) or (text == u'0')) else 1
 
 def and_(text, text1):

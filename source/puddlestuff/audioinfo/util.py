@@ -266,7 +266,9 @@ def info_to_dict(info):
     """
     attrs = dir(info)
     tags = {}
-    try: tags["__frequency"] = strfrequency(info.sample_rate)
+    try: 
+        tags["__frequency"] = strfrequency(info.sample_rate)
+        tags["__frequency_num"] = info.sample_rate / 1000.0
     except AttributeError: pass
 
     try: tags["__length"] = strlength(info.length)
@@ -275,8 +277,12 @@ def info_to_dict(info):
     try: tags["__length_seconds"] = unicode(int(info.length))
     except AttributeError: pass
 
-    try: tags["__bitrate"] = strbitrate(info.bitrate)
-    except AttributeError: tags[u"__bitrate"] = u'0 kb/s'
+    try: 
+        tags["__bitrate"] = strbitrate(info.bitrate)
+        tags["__bitrate_num"] = unicode(int(info.bitrate / 1000))
+    except AttributeError: 
+        tags[u"__bitrate"] = u'0 kb/s'
+        tags["__bitrate_num"] = 0
 
     try: tags['__bitspersample'] = unicode(info.bits_per_sample)
     except AttributeError: pass
