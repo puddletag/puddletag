@@ -743,11 +743,9 @@ def rg2sc(gain, peak=None):
         if len(gain) == 2: #gain:peak
             peak = float(gain[1])
             gain = float(gain[0])
-            print peak, gain
         elif len(gain) == 3: #channel:gain:peak
             peak = float(gain[2])
             gain = float(gain[1])
-            print gain, peak
         else:
             return
     else:
