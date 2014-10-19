@@ -656,7 +656,7 @@ class RegHelper(object):
         except KeyError:
             return u'""'
 
-def replaceWithReg(m_tags, text, regex, repl, matchcase=False, state=None):
+def replaceWithReg(m_tags, text, regex, repl, m_text=None, matchcase=False, state=None):
     """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"
 &Regular Expression, text
 Replace &matches with:, text
@@ -664,6 +664,9 @@ Match &Case, check"""
 
     if not regex:
         return text
+
+    if m_text is None:
+        m_text = [text]
 
     if not check_truth(matchcase):
         flags = re.UNICODE | re.I
@@ -676,27 +679,28 @@ Match &Case, check"""
         if not group:
             d = {}
         elif groups:
-            d = dict((i + 1, g) for i, g in enumerate(groups))
+            d = dict([(i, z if z is not None else u"") for i, z in enumerate(groups, 1)])
             d[0] = group
         else:
             d = {1: group, 0: group}
 
-
         ret = re.sub('(?i)\$\d+', RegHelper(d).repl, repl, 0)
-        
         return findfunc.parsefunc(ret, m_tags)
 
-    try:
+    def replace_matches(value):
         try:
-            return re.sub(regex, replace_tokens, text, 0, flags)
-        except TypeError:
-            #Python2.6 doesn't accept flags arg.
-            if matchcase:
-                return re.sub(u'(?i)' + regex, replace_tokens, text, 0)
-            else:
-                return re.sub(regex, replace_tokens, text, 0)
-    except re.error, e:
-        raise findfunc.FuncError(unicode(e))
+            try:
+                return re.sub(regex, replace_tokens, value, 0, flags)
+            except TypeError:
+                #Python2.6 doesn't accept flags arg.
+                if matchcase:
+                    return re.sub(u'(?i)' + regex, replace_tokens, value, 0)
+                else:
+                    return re.sub(regex, replace_tokens, value, 0)
+        except re.error, e:
+            raise findfunc.FuncError(unicode(e))
+
+    return u"\\".join(replace_matches(z) for z in m_text)
 
 replace_regex = replaceWithReg
 

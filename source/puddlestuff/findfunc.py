@@ -45,6 +45,7 @@ def arglen_error(e, passed, function, to_raise = True):
     varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
     args_len = len(passed)
     param_len = len(varnames)
+    message = None
     if args_len > param_len:
         message = translate('Functions',
             'At most %1 arguments expected. %2 given.')
@@ -56,7 +57,10 @@ def arglen_error(e, passed, function, to_raise = True):
             'At least %1 arguments expected. %2 given.')
     else:
         raise e
-    message = message.arg(unicode(param_len)).arg(unicode(args_len))
+    if message is not None:
+        message = message.arg(unicode(param_len)).arg(unicode(args_len))
+    else:
+        raise e
     if to_raise:
         raise ParseError(message)
     else:
