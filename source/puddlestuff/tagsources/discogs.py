@@ -3,6 +3,8 @@ import cStringIO, gzip, json, re, socket, sys, time, urllib2
 
 from copy import deepcopy
 
+import puddlestuff
+
 import puddlestuff.tagsources
 
 from puddlestuff.audioinfo import DATA, isempty
@@ -17,9 +19,9 @@ MASTER = 'master'
 RELEASE = 'release'
 
 SITE_MASTER_URL = 'http://www.discogs.com/master/'
-SITE_RELEASE_URL = 'http://www.discogs.com/release/'
-API_RELEASE_URL = 'http://api.discogs.com/release/'
-API_MASTER_URL = 'http://api.discogs.com/master/'
+SITE_RELEASE_URL = 'http://www.discogs.com/releases/'
+API_RELEASE_URL = 'http://api.discogs.com/releases/'
+API_MASTER_URL = 'http://api.discogs.com/masters/'
 SITE_URL = 'http://www.discogs.com'
 
 api_key = 'c6e33897b6'
@@ -27,8 +29,8 @@ base_url = 'http://api.discogs.com/%s'
 
 def query_urls(key):
     search_url = base_url % 'database/search?type=release&q=%s&per_page=100'
-    release_url = base_url % 'release/%s'
-    master_url = base_url % 'master/%s'
+    release_url = base_url % 'releases/%s'
+    master_url = base_url % 'masters/%s'
     return (search_url, release_url, master_url)
 
 search_url, release_url, master_url = query_urls(api_key)
@@ -243,8 +245,9 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     site_url += r_id.encode('utf8')
             
     url = master_url % r_id if rls_type == MASTER else release_url % r_id
+
     x = urlopen(url)
-    ret = parse_album_json(json.loads(x)['resp'][rls_type])
+    ret = parse_album_json(json.loads(x))
 
     info = deepcopy(info)
     info.update(ret[0])
@@ -293,6 +296,8 @@ def urlopen(url):
     request.add_header('Accept-Encoding', 'gzip')
     if puddlestuff.tagsources.user_agent:
         request.add_header('User-Agent', puddlestuff.tagsources.user_agent)
+    else:
+        request.add_header('User-Agent', 'puddetag/' + puddlestuff.version_string)
 
     if time.time() - __lasttime.time < 1:
         time.sleep(1)
@@ -353,22 +358,12 @@ class Discogs(object):
 
     def keyword_search(self, text):
 
-        if text.startswith(':r'):
-            r_id = text[len(':r'):].strip()
-            try:
-                r_id = int(r_id)
-                return [self.retrieve(r_id)]
-            except (TypeError, ValueError):
-                raise RetrievalError(
-                    translate("Discogs", 'Invalid Discogs Release ID'))
         try:
-            params = parse_searchstring(text)
-        except RetrievalError:
-            return [(info, []) for info in keyword_search(text)]
-
-        artists = [params[0][0]]
-        album = params[0][1]
-        return self.search(album, artists)
+            r_id = int(text.strip())
+            return [self.retrieve(r_id)]
+        except (TypeError, ValueError):
+            raise RetrievalError(
+                translate("Discogs", 'Invalid Discogs Release ID'))
 
     def search(self, album, artists):
 
@@ -391,8 +386,7 @@ class Discogs(object):
                     translate("Discogs", 'Found Discogs ID: %s') % album_id)
                 return [self.retrieve(album_id)]
 
-        retrieved_albums = search(artist, album)
-        return [(info, []) for info in retrieved_albums]
+        return []
 
     def retrieve(self, info):
         if self._getcover:

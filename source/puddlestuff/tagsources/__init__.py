@@ -2,6 +2,7 @@
 from puddlestuff.constants import CONFIGDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.util import translate
+import puddlestuff
 from os.path import join, exists
 import os, re, pdb
 from PyQt4.QtCore import QObject, SIGNAL
@@ -34,7 +35,7 @@ cparser = PuddleConfig()
 COVERDIR = cparser.get('tagsources', 'coverdir', COVERDIR)
 SAVECOVERS = False
 status_obj = QObject()
-user_agent = None
+user_agent = "puddletag/" + puddlestuff.version_string
 
 mapping = {}
 
