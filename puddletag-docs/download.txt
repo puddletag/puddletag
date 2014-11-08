@@ -1,19 +1,19 @@
 .. include:: subs.txt
 
-.. |source_link| replace:: puddletag-1.0.3.tar.gz
-.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.3.tar.gz
-.. |deb_link| replace:: puddletag_1.0.3-3_all.deb
-.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.3-3_all.deb
+.. |source_link| replace:: puddletag-1.0.4.tar.gz
+.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.4.tar.gz
+.. |deb_link| replace:: puddletag_1.0.4-1_all.deb
+.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.4-1_all.deb
 
-.. |beta_source_link| replace:: puddletag-1.0.3.tar.gz
-.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.3.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.0.3-3_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.3-3_all.deb
+.. |beta_source_link| replace:: puddletag-1.0.4.tar.gz
+.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.4.tar.gz
+.. |beta_deb_link| replace:: puddletag_1.0.4-1_all.deb
+.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.4-1_all.deb
 
-.. |source_sha| replace:: 7e13c6649da467d9ac91d97d0b135ca3852d3ac8
-.. |deb_sha| replace:: 65eb6b1b477e92b26e4a7db2b31fb78f80cdc021
-.. |beta_source_sha| replace:: 7e13c6649da467d9ac91d97d0b135ca3852d3ac8
-.. |beta_deb_sha| replace:: 65eb6b1b477e92b26e4a7db2b31fb78f80cdc021
+.. |source_sha| replace:: 721c8d5418e435608c89eb524d514a5a1a391b21
+.. |deb_sha| replace:: 4ab06295196114383806972e118ebcd3a73f8eb8
+.. |beta_source_sha| replace:: 721c8d5418e435608c89eb524d514a5a1a391b21
+.. |beta_deb_sha| replace:: 4ab06295196114383806972e118ebcd3a73f8eb8
 
 Downloads
 =========
@@ -88,7 +88,7 @@ Then (also as root)
 
 .. code-block:: bash
 
-    dpkg -i puddletag_1.0.3-3_all.deb
+    dpkg -i puddletag_1.0.4-1_all.deb
 
 puddletag should be available from your Multimedia menu.
 
