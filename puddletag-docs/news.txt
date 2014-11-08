@@ -15,6 +15,35 @@ News
 
 ----
 
+9 November 2014 - 1.0.4
+#######################
+
+This one has been a long time coming. Not much new except bugfixes, but they should lessen some of the pain that some users have been experiencing.
+
+Fixes
+-----
++ Regular expression parsing
++ Discogs API no longer working. Fixed it so that searches can be done using Discogs release id only.
++ Fixed comparison of boolean values in format strings.
++ Scripting function escaping wasn't working.
+
+Changes
+-------
+
++ All config options are stored as JSON. Should fix issues with not being able to store certain values.
+
+Added
+-----
+
++ $to_num scripting function. Converts text to numbers for easy comparison.
++ AIFF support.
++ Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag
+
+Linky
+
+
+----
+
 22 June 2014 - New forum
 ########################
 
@@ -953,45 +982,3 @@ Stuff that's fixed
 * Saving a file's album art to disk now works.
 * The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.
 * Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.
-
-
-----
-
-7 November 2013 1.0.2
-#####################
-
-Well, it's been more than a month and now major new issues have been report.
-
-There's not much to tell, but here's some things anyway.
-
-Stuff in this release:
-----------------------
-
-+ Escaped chars in functions weren't being escaped correctly. Check your functions if they make use of this odd behaviour.
-+ Opus support.
-+ Artwork windows list JPG + PNG's at the same time.
-
-
-
-----
-
-21 September 2011 - Mercurial
-#############################
-
-This is just a heads up that I've moved from Subversion to Mercurial. No real reason for this other than trying something new. I've been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.
-
-Quick commands to get started for those who don't know Mercurial:
-
-To get a copy:
-
-.. code-block:: bash
-
-    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
-
-To update, run in the previously retrieved dir:
-
-.. code-block:: bash
-
-    hg pull -u
-
-Enjoy. ;-)

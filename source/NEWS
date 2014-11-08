@@ -1,3 +1,17 @@
+9 November 2014 - 1.0.4
+   Fixed:
+	Regular expression parsing
+	Discogs API no longer working. Fixed it so that searches can be done using Discogs release id only.
+	Fixed comparison of boolean values in format strings.
+	Scripting function escaping wasn't working.
+   Changes:
+        All config options are stored as JSON. Should fix issues with not being able to store certain values.
+   Added:
+	$to_num scripting function. Converts text to numbers for easy comparison.
+	AIFF support.
+	Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag
+	
+
 11 March 2014 - 1.0.3
    Fixed: 
    	  Placeholder causing puddletag to not start up for Qt < 4.7.

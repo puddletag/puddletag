@@ -14,7 +14,7 @@
    height="127.587"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.5 r10040"
    sodipodi:docname="logo.svg"
    inkscape:export-filename="/home/keith/Documents/python/puddletag-hg/source/puddlestuff/data/puddlelogo.png"
    inkscape:export-xdpi="90"
@@ -171,8 +171,8 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1025"
-     inkscape:window-x="-3"
+     inkscape:window-height="1060"
+     inkscape:window-x="1917"
      inkscape:window-y="-3"
      inkscape:window-maximized="1" />
   <metadata
@@ -223,8 +223,8 @@
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
-         id="tspan5259"
          x="421.90527"
-         y="1014.8771">v1.0.3</tspan></text>
+         y="1014.8771"
+         id="tspan3093">v1.0.4</tspan></text>
   </g>
 </svg>

@@ -28,8 +28,8 @@ mv _build/html $BUILD_DIR/website
 
 echo "Uploading files to sourceforge"
 cd $BUILD_DIR
-rsync -acP -e ssh website $USER@frs.sourceforge.net:/home/project-web/puddletag/htdocs
-rsync -acP -e ssh *.tar.gz *.deb $USER@frs.sourceforge.net:/home/frs/project/p/pu/puddletag/ 
-rsync -acP -e ssh *.bz2 $USER@frs.sourceforge.net:/home/frs/project/p/pu/puddletag/docs
+# rsync -acP -e ssh website $USER@frs.sourceforge.net:/home/project-web/puddletag/htdocs
+# rsync -acP -e ssh *.tar.gz *.deb $USER@frs.sourceforge.net:/home/frs/project/p/pu/puddletag/ 
+# rsync -acP -e ssh *.bz2 $USER@frs.sourceforge.net:/home/frs/project/p/pu/puddletag/docs
 
 echo "Release uploaded"

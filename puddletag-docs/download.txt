@@ -109,7 +109,8 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 
    yum --enablerepo=updates-testing install
 
-.. __installing_on_osx:
+
+.. _installing_on_osx:
 
 Installing on OSX
 -----------------

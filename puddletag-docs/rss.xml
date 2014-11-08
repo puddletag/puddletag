@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 19 Oct 2014 17:48:43 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>22 June 2014 - New forum</title><link>http://puddletag.sourceforge.net/news.html#june-2014-new-forum</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 09 Nov 2014 00:38:23 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>9 November 2014 - 1.0.4</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-4</link><description>
+  &lt;div class="section" id="november-2014-1-0-4"&gt;
+&lt;h1&gt;9 November 2014 - 1.0.4&lt;/h1&gt;
+&lt;p&gt;This one has been a long time coming. Not much new except bugfixes, but they should lessen some of the pain that some users have been experiencing.&lt;/p&gt;
+&lt;div class="section" id="fixes"&gt;
+&lt;h2&gt;Fixes&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Regular expression parsing&lt;/li&gt;
+&lt;li&gt;Discogs API no longer working. Fixed it so that searches can be done using Discogs release id only.&lt;/li&gt;
+&lt;li&gt;Fixed comparison of boolean values in format strings.&lt;/li&gt;
+&lt;li&gt;Scripting function escaping wasn&amp;#8217;t working.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="changes"&gt;
+&lt;h2&gt;Changes&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;All config options are stored as JSON. Should fix issues with not being able to store certain values.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="added"&gt;
+&lt;h2&gt;Added&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;$to_num scripting function. Converts text to numbers for easy comparison.&lt;/li&gt;
+&lt;li&gt;AIFF support.&lt;/li&gt;
+&lt;li&gt;Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Linky&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Sun, 09 Nov 2014 00:00:00 GMT</pubDate></item><item><title>22 June 2014 - New forum</title><link>http://puddletag.sourceforge.net/news.html#june-2014-new-forum</link><description>
   &lt;div class="section" id="june-2014-new-forum"&gt;
 &lt;h1&gt;22 June 2014 - New forum&lt;/h1&gt;
 &lt;p&gt;SourceForge has retired the hosted apps offering so I&amp;#8217;ll be maintaining it for now. You can find the new forum at &lt;a class="reference external" href="http://puddletag.sourceforge.net/forum"&gt;http://puddletag.sourceforge.net/forum&lt;/a&gt;.&lt;/p&gt;
