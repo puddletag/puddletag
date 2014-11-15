@@ -1,4 +1,5 @@
 .. include:: subs.txt
+.. include:: checksums.txt
 
 Home
 ====
@@ -40,5 +41,5 @@ Support
 -------
 Report any bugs on the issue tracker hosted at `Google Code <http://code.google.com/p/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
 
-| Last website update: 22 June 2014
-| Latest version: 1.0.3
+| Last website update: |today|
+| Latest version: |version|

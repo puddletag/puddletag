@@ -171,8 +171,8 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1060"
-     inkscape:window-x="1917"
+     inkscape:window-height="1025"
+     inkscape:window-x="-3"
      inkscape:window-y="-3"
      inkscape:window-maximized="1" />
   <metadata
@@ -225,6 +225,6 @@
          sodipodi:role="line"
          x="421.90527"
          y="1014.8771"
-         id="tspan3093">v1.0.4</tspan></text>
+         id="tspan3093">v1.0.5</tspan></text>
   </g>
 </svg>

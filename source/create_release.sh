@@ -23,13 +23,14 @@ cd ../puddletag-docs
 python2 offlinezip.py $BUILD_DIR
 
 cd ../puddletag-docs
+python2 update_checksums.py checksums.txt $BUILD_DIR
 make html
 mv _build/html $BUILD_DIR/website
 
-echo "Uploading files to sourceforge"
-cd $BUILD_DIR
+# echo "Uploading files to sourceforge"
+# cd $BUILD_DIR
 # rsync -acP -e ssh website $USER@frs.sourceforge.net:/home/project-web/puddletag/htdocs
 # rsync -acP -e ssh *.tar.gz *.deb $USER@frs.sourceforge.net:/home/frs/project/p/pu/puddletag/ 
 # rsync -acP -e ssh *.bz2 $USER@frs.sourceforge.net:/home/frs/project/p/pu/puddletag/docs
 
-echo "Release uploaded"
+# echo "Release uploaded"
