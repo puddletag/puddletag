@@ -1,7 +1,9 @@
+.. include:: checksums.txt
+
 puddletag Documentation
 -----------------------
 
-**Download these docs:** `HTML <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.4.tar.bz2>`_ | `ReStructuredText <http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-1.0.4.tar.bz2>`_
+**Download these docs:** |docs_html_link|_ | |docs_rst_link|_
 
 First I have to introduce you to the naming conventions used by puddletag (some copied from Mp3tag).
 

@@ -15,6 +15,12 @@ TEMPLATE = """.. |source_link| replace:: puddletag-{version}.tar.gz
 .. |beta_deb_sha| replace:: {beta_deb_sha}
 
 .. |version| replace:: {version}
+.. |docs_html_link| replace:: HTML
+.. _docs_html_link: http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-{version}.tar.bz2
+.. |docs_rst_link| replace:: ReStructuredText
+.. _docs_rst_link: http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-{version}.tar.bz2
+
+
 """
 
 import glob
