@@ -233,7 +233,7 @@ def sorted_split_by_field(tracks, field='artist'):
     return ret
 
 def to_list(value):
-    if isinstance(value, (str, int, long)):
+    if isinstance(value, (str, int, long, float)):
         value = [unicode(value)]
     elif isinstance(value, unicode):
         value = [value]
@@ -246,6 +246,8 @@ def to_string(value):
         return value.decode('utf8')
     elif isinstance(value, unicode):
         return value
+    elif isinstance(value, (float, int, long)):
+        return unicode(value)
     else:
         return to_string(value[0])
 

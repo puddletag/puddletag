@@ -39,7 +39,7 @@ Added
 + AIFF support.
 + Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag
 
-Linky
+`.tar.gz download <http://sourceforge.net/projects/puddletag/files/puddletag-1.0.4.tar.gz>`_ | `.deb download <http://sourceforge.net/projects/puddletag/files/puddletag_1.0.4-1_all.deb>`_
 
 
 ----

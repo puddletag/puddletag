@@ -853,7 +853,7 @@ class Function:
             return
 
         if not first_arg.startswith('m_'):
-            text = m_text
+            text = [to_string(z) for z in to_list(m_text)]
             ret = []
             for z in m_text:
                 topass[first_arg] = z

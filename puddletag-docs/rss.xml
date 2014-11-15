@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 09 Nov 2014 00:55:43 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>9 November 2014 - 1.0.4</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-4</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 09 Nov 2014 01:02:05 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>9 November 2014 - 1.0.4</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-4</link><description>
   &lt;div class="section" id="november-2014-1-0-4"&gt;
 &lt;h1&gt;9 November 2014 - 1.0.4&lt;/h1&gt;
 &lt;p&gt;This one has been a long time coming. Not much new except bugfixes, but they should lessen some of the pain that some users have been experiencing.&lt;/p&gt;
@@ -25,7 +25,7 @@
 &lt;li&gt;AIFF support.&lt;/li&gt;
 &lt;li&gt;Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Linky&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://sourceforge.net/projects/puddletag/files/puddletag-1.0.4.tar.gz"&gt;.tar.gz download&lt;/a&gt; | &lt;a class="reference external" href="http://sourceforge.net/projects/puddletag/files/puddletag_1.0.4-1_all.deb"&gt;.deb download&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
