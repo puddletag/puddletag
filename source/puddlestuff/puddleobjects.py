@@ -255,8 +255,10 @@ class PuddleConfig(object):
                 pass
 
     def save(self):
+        actions =  self.data.get('puddleactions')
+        if actions:
+            index = actions['order'].index('/home/keith/.local/share/puddletag/actions/03 - upper case keith.action')
         filename = self.filename
-        
         if not os.path.exists(filename):
             dirname = os.path.dirname(filename)
             try:

@@ -47,7 +47,7 @@ class ActionDialog(ActionWindow):
 
     def updateOrder(self):
         self.listbox.clear()
-        self.funcs = self.loadMacros()
+        self.macros = self.loadMacros()
         cparser = PuddleConfig()
         to_check = cparser.get('actions', 'checked', [])
         for i, m in sorted(self.macros.items()):

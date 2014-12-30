@@ -876,11 +876,12 @@ class ActionWindow(QDialog):
                     enumerate(order)])
                 files = glob(os.path.join(ACTIONDIR, u'*.action'))
                 order = {}
-                for f in files:
+                for i, action_fn in enumerate(files):
                     try:
-                        order[old_order[basename(f)]] = f
+                        order[old_order[basename(action_fn)]] = action_fn
                     except KeyError:
-                        pass
+                        if not old_order:
+                            order[i] = action_fn
                 order = [z[1] for z in sorted(order.items())]
                 set_value('order', order)
 
