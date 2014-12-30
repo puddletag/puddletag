@@ -271,6 +271,7 @@ class MainWin(QMainWindow):
         
         self.emits = ['loadFiles', 'always', 'dirsmoved', 'libfilesedited',
             'enable_preview_mode', 'disable_preview_mode']
+        
         self.receives = [('writeselected', self.writeTags),
             ('filesloaded', self._filesLoaded),
             ('viewfilled', self._viewFilled),

@@ -800,11 +800,19 @@ class TagModel(QAbstractTableModel):
 
         to_append = []
 
+        
+        num_rows_to_insert = 0
+
+        first = self.rowCount()
         for t in tags:
             if t.filepath in fns:
                 self.taginfo[fns[t.filepath]] = t
             else:
                 self.taginfo.append(t)
+                num_rows_to_insert = 1
+
+        self.beginInsertRows(QModelIndex(), first, len(self.taginfo) - 1)
+        self.endInsertRows()
 
     def load(self, taginfo, headerdata=None, append = False):
         """Loads tags as in __init__.
@@ -1850,7 +1858,7 @@ class TagTable(QTableView):
                 if tag is not None:
                     tags.append(tag)
                 yield None
-
+                
         if post_process:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
                 lambda: post_process(tags, append, filepath))
@@ -1865,14 +1873,16 @@ class TagTable(QTableView):
             self.emit(SIGNAL('dirschanged'), self.dirs[::])
         else:
             self.emit(SIGNAL('playlistchanged'), filepath)
+            self.emit(SIGNAL('dirschanged'), [])
         self.emit(SIGNAL('filesloaded'), True)
         if self._restore:
             self.restoreSelection(self._restore)
 
         model = self.model()
-        model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                    model.index(0,0), model.index(model.rowCount() -1,
-                    model.columnCount() -1))
+        start_index = model.index(0,0)
+        end_index = model.index(model.rowCount() - 1, model.columnCount() -1)
+        model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), start_index, end_index)
+        # model.reset()
         self.selectionChanged()
 
     def load_tags(self, tags):
