@@ -1137,6 +1137,7 @@ class TagModel(QAbstractTableModel):
             self.sortByFields([field], reverse=False)
     
     def sortByFields(self, fields, files=None, rows=None, reverse=None):
+
         self.emit(SIGNAL('aboutToSort'))
 
         if reverse is None and fields == self.sortFields:
