@@ -1,12 +1,12 @@
 What it is
 =========
-puddletag is a audio tag editor for GNU/Linux similar to Windows program Mp3tag (http://www.mp3tag.de). Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
+puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
 
-The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns (that you define, not crappy, uneditable ones).
+The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.
 
-Then there're Functions, which can do things like replace text, trim, change the case of tags, etc. Actions can automate repetitive tasks. You can import your QuodLibet library, lookup tags using MusicBrainz, FreeDB or Amazon (though it's only good for cover art) and more, but I've reached my comma quota.
+Then there’re Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There’s quite a bit more, but I’ve reached my comma quota.
 
-Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
+Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey’s Audio (.ape) and WavPack (wv).
 
 Why it is
 =========
@@ -14,48 +14,47 @@ Keeping an XP partition just for Mp3tag just wasn't feasible anymore.
 
 How it's different
 ==================
-To Mp3tag, not that much. It has more or less the same UI and functionality. You'll feel right at home here for the most part. However, puddletag isn't a clone, so check the skim the docs section on the puddletag website (puddletag.sourceforge.net) for more details.
+To Mp3tag it’s not that different. Mp3tag has things puddletag doesn’t have, puddletag has things Mp3tag doesn’t. Skim the menus section to get an overview of the differences.
+
+However, compared to other GNU/Linux taggers the differences are much too vast to list.
 
 What you need
 =============
 
-    At least Python 2.5 available from http://python.org.
-    PyQt4 (4.5 or greater) (http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
-    PyParsing (1.5.1 or greater) (http://pyparsing.wikispaces.com) takes care of the parsing...
-    Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
-    ConfigObj (4.5.0 or greater) (http://code.google.com/p/configobj/) takes care of saving settings.
+- At least Python2.5 (not Python3) available from http://python.org.
+- PyQt4 (4.5 or greater) (http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
+- PyParsing (1.5.1 or greater) (http://pyparsing.wikispaces.com) takes care of the parsing...
+- Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
+- ConfigObj (4.5.0 or greater) (http://code.google.com/p/configobj/) takes care of saving settings.
 
-    The following are recommended
-      python-musicbrainz2 (0.6.0 or better) (http://musicbrainz.org/doc/python-musicbrainz2) for MusicBrainz support.
-      QuodLibet must be installed in order to edit a QuodLibet library.
+The following are recommended
+-----------------------------
 
+- Chromaprint (≥ 0.4) (http://acoustid.org/chromaprint) for AcoustID support.
 
 Downloading/Installing
 ======================
 
 From source:
 
-    Install the dependencies listed above.
-      For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
-    Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore everything on this line.)
-    Unzip it.
-    You can run puddletag from that directory by typing ./puddletag in your console.
-    Alternatively install it by running python setup.py install as root in the unzipped directory.
-    puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run 'desktop-file-install puddletag.desktop' as root in the unzipped directory.
+- Install the dependencies listed above.
+- For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
+- Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore everything on this line.)
+- Unzip it.
+- You can run puddletag from that directory by typing ./puddletag in your console.
+- Alternatively, install it by running python setup.py install as root in the unzipped directory.
+- puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run 'desktop-file-install puddletag.desktop' as root in the unzipped directory.
 
 
 Installing from the Debian package.
+-----------------------------------
 
-    This package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze.
-    Download the package from http://puddletag.sourceforge.net.
-    Install using your distros preferred method (usually double clicking should suffice). Or:
-    Run as root dpkg -i /path/to/puddletag-deb.
-    Install dependencies using your favourite tool.
-    Run puddletag from your Multimedia menu.
-
-Development builds are available via svn:
-
-    svn co https://puddletag.svn.sourceforge.net/svnroot/puddletag puddletag
+- This package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze.
+- Download the package from http://puddletag.sourceforge.net.
+- Install using your distros preferred method (usually double clicking should suffice). Or:
+- Run as root dpkg -i /path/to/puddletag-deb.
+- Install dependencies using your favourite tool.
+- puddletag will appear under your Multimedia menu
 
 License
 =======
@@ -63,8 +62,11 @@ puddletag licensed under the GPLv3, which you can find in its entirety at http:/
 
 Updates
 =======
-Release usually go out about once a month. Subscribe to the RSS feed at the website if you want to be updated.
+Releases are infrequent. Not more than a couple per year.
 
 Support
 =======
-Bugs go to the issue tracker at Google Code (http://code.google.com/p/puddletag/issues). Feature requests and things of general concern go on the forum (http://sourceforge.net/apps/phpbb/puddletag). For anything else I can be contacted via email at concentricpuddle@gmail.com.
+
+Forum: http://puddletag.sf.net/forum
+
+Github issues: https://github.com/keithgg/puddletag/issues
