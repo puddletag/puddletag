@@ -15,6 +15,20 @@ News
 
 ----
 
+13 May 2015 - Moving to GitHub.
+##############################
+
+With the shutdown of Google Code and the increasing dissatisfaction with SF, I've mode the code and issue tracker over to GitHub.
+
+`Linky <https://github.com/keithgg/puddletag>`_
+
+I'll move the rest of the site soon enough.
+
+
+
+
+----
+
 15 November 2014 - 1.0.5
 ########################
 

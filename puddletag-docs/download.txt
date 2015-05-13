@@ -111,17 +111,17 @@ You can also use Fink as `reported by wgscott on the forum <http://puddletag.sou
 Development builds
 ------------------
 
-Source control is done using Mercurial. Use
+Source control is done using Git. Use
 
 .. code-block:: bash
 
-    hg clone http://hg.code.sf.net/p/puddletag/code puddletag-hg
+    git clone git@github.com:keithgg/puddletag.git
 
 to check it out. And
 
 .. code-block:: bash
 
-    hg pull -u
+    git pull origin master
 
 in the previously cloned directory to update it a later stage.
 
