@@ -1,2 +1,6 @@
 *#*#
 /puddletag-docs/_build
+*.pyc
+*.qm
+source/releases
+source/deb_build

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 13 May 2015 20:31:09 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>13 May 2015 - Moving to GitHub.</title><link>http://puddletag.sourceforge.net/news.html#may-2015-moving-to-github</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 13 May 2015 21:03:25 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>13 May 2015 - Moving to Github.</title><link>http://puddletag.sourceforge.net/news.html#may-2015-moving-to-github</link><description>
   &lt;div class="section" id="may-2015-moving-to-github"&gt;
-&lt;h1&gt;13 May 2015 - Moving to GitHub.&lt;/h1&gt;
-&lt;p&gt;With the shutdown of Google Code and the increasing dissatisfaction with SF, I&amp;#8217;ve mode the code and issue tracker over to GitHub.&lt;/p&gt;
+&lt;h1&gt;13 May 2015 - Moving to Github.&lt;/h1&gt;
+&lt;p&gt;With the shutdown of Google Code and the increasing dissatisfaction with SF, I&amp;#8217;ve mode the code and issue tracker over to Github.&lt;/p&gt;
 &lt;p&gt;&lt;a class="reference external" href="https://github.com/keithgg/puddletag"&gt;Linky&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;I&amp;#8217;ll move the rest of the site soon enough.&lt;/p&gt;
 &lt;/div&gt;

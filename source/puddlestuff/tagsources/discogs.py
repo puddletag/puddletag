@@ -389,7 +389,7 @@ class Discogs(object):
         return []
 
     def retrieve(self, info):
-        if self._getcover:
+        if False and self._getcover: # retrieving images is broken by Discogs
             return retrieve_album(info, self.covertype)
         else:
             return retrieve_album(info, None)

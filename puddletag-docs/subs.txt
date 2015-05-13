@@ -2,4 +2,4 @@
 .. _forum: http://puddletag.sf.net/forum
 
 .. |issue_tracker| replace:: issue tracker
-.. _issue_tracker: https://github.com/keithgg/puddletag/issues
+.. _issue_tracker: https://github.com/keithgg/puddletag
