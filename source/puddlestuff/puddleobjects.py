@@ -1418,7 +1418,7 @@ class ArtworkLabel(QGraphicsView):
         super(ArtworkLabel, self).__init__(*args, **kwargs)
 
         pal = self.palette()
-        pal.setBrush(self.backgroundRole(), QBrush(QPalette.Window))
+        pal.setBrush(self.backgroundRole(), QBrush(pal.window()))
         self.setAutoFillBackground(True)
         self.setPalette(pal)
 
