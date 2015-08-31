@@ -202,7 +202,10 @@ def parse_albumpage(page, artist=None, album=None):
     return [info, parse_tracks(album_soup, info)]
 
 def parse_sidebar_element(element):
-    title = convert(element.find('h4').string.lower())
+    try:
+        title = convert(element.find('h4').string.lower())
+    except AttributeError:
+        {}
     if element.find('span'):
         values = [convert(element.find('span').string)]
     elif element.find('div'):
