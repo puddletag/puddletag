@@ -63,7 +63,7 @@ def parse_shortcuts():
     cparser = PuddleConfig(fn)
 
     action_strings = []
-    setting = cparser.settings
+    setting = cparser.data
     for section in cparser.sections():
         if section.startswith('shortcut'):
             values = dict([(str(k), v) for k,v in  setting[section].items()])
@@ -77,7 +77,7 @@ def parse_shortcuts():
     loadshortcuts.check_file(fn, ':/menus')
     cparser = PuddleConfig(fn)
 
-    action_strings.extend(map(tr, cparser.settings['menu']))
+    action_strings.extend(map(tr, cparser.data['menu']))
     menus.close()
 
     return action_strings
@@ -94,7 +94,7 @@ def parse_menus():
     cparser = PuddleConfig(fn)
 
     action_strings = []
-    setting = cparser.settings
+    setting = cparser.data
     for section in cparser.sections():
         if section.startswith('shortcut'):
             values = dict([(str(k), v) for k,v in  setting[section].items()])
