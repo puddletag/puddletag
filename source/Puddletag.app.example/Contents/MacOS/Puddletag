@@ -1,0 +1,5 @@
+# Add the absolute path to your puddletag tag executable here.
+# e. g. :
+
+#! /bin/bash
+/usr/bin/puddletag
