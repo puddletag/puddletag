@@ -56,6 +56,15 @@ Installing from the Debian package.
 - Install dependencies using your favourite tool.
 - puddletag will appear under your Multimedia menu
 
+
+Installing from Homebrew on Mac OS X.
+-------------------------------------
+
+- This package can be installed on MacOS X via the Homebrew package manager.
+- Install the package manager from http://brew.sh
+- Download and install puddletag by typing "brew install puddletag" in your console
+
+
 License
 =======
 puddletag licensed under the GPLv3, which you can find in its entirety at http://www.gnu.org/licenses/gpl-3.0.html
