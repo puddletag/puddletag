@@ -80,8 +80,8 @@ def check_matches(albums, artist=None, album_name=None):
         artist = artist.lower()
 
         ret = [album for album in albums if
-            album['album'].lower() == album_name and
-            album['artist'].lower() == artist]
+            album['album'].lower().startswith(album_name) and
+               album['artist'].lower().startswith(artist)]
     elif artist:
         artist = artist.lower()
         ret = [album for album in albums if
@@ -125,7 +125,6 @@ def keyword_search(keywords):
 def parse_album_xml(text, album=None):
     """Parses the retrieved xml for an album and get's the track listing."""
     doc = minidom.parseString(text)
-    
     album_item = doc.getElementsByTagName('Item')[0]
     try:
         tracklist = album_item.getElementsByTagName('Tracks')[0]
@@ -160,6 +159,7 @@ def parse_search_xml(text):
     doc = minidom.parseString(text)
     items = doc.getElementsByTagName('Item')
     ret = []
+
     for item in items:
         info = {}
         for attrib in item.getElementsByTagName('ItemAttributes'):
