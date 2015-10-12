@@ -242,7 +242,7 @@ def load_musiclib(parent=None):
 
 def _pad(trknum, total, padlen):
     if total is not None:
-        text = unicode(trknum).zfill(padlen) + u"/" + unicode(total)
+        text = unicode(trknum).zfill(padlen) + u"/" + unicode(total).zfill(padlen)
     else:
         text = unicode(trknum).zfill(padlen)
     return text
