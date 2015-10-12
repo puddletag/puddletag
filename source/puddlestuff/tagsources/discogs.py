@@ -326,20 +326,8 @@ def urlopen(url):
 class Discogs(object):
     name = 'Discogs.com'
     group_by = [u'album', u'artist']
-    tooltip = translate("Discogs", """<p>Enter search parameters here. If empty,
-        the selected files are used.</p>
-        <ul>
-        <li><b>artist;album</b>
-        searches for a specific album/artist combination.</li>
-        <li>To list the albums by an artist leave off the album part,
-        but keep the semicolon (eg. <b>Ratatat;</b>).
-        For a album only leave the artist part as in
-        <b>;Resurrection.</li>
-        <li>Using <b>:r id</b> will retrieve the album with Discogs
-        ID <b>id</b>.</li>
-        <li>Entering keywords <b>without a semi-colon (;)</b> will
-         do a Discogs album search using those keywords.</li>
-        </ul>""")
+    tooltip = translate("Discogs", """<p><b>Discogs only support searching by release id</b></p>
+        <p>Enter the release id Eg. "1257896" to search.</p>""")
 
     def __init__(self):
         super(Discogs, self).__init__()
@@ -360,10 +348,15 @@ class Discogs(object):
 
         try:
             r_id = int(text.strip())
-            return [self.retrieve(r_id)]
         except (TypeError, ValueError):
             raise RetrievalError(
-                translate("Discogs", 'Invalid Discogs Release ID'))
+                translate("Discogs", 'Discogs release id should be an integer.'))
+
+        try:
+            return [self.retrieve(r_id)]
+        except Exception, e:
+            raise RetrievalError(unicode(e))
+
 
     def search(self, album, artists):
 

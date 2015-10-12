@@ -40,6 +40,13 @@ HIGHLIGHTCOLOR = Qt.green
 SHIFT_RETURN = 2
 RETURN_ONLY = 1
 
+def _default_audio_player():
+    if sys.platform.startswith("linux"):
+        return u'xdg-open'
+    elif sys.platform == "darwin":
+        return u'open -a iTunes'
+    return "clementine -p"
+
 def commontag(tag, tags):
     x = defaultdict(lambda: [])
     for audio in tags:
@@ -1392,6 +1399,7 @@ class TagTable(QTableView):
             ('enable_preview_mode', partial(self.previewMode, True)),
             ('disable_preview_mode', partial(self.previewMode, False)),
             ]
+        
         self.gensettings = [
             ('Su&bfolders', True),
             ('Show &gridlines', True),
@@ -1399,7 +1407,7 @@ class TagTable(QTableView):
             ('Show &row numbers', True),
             ('Automatically resize columns to contents', False),
             ('&Preserve file modification times (if supported)', True),
-            ('Program to &play files with:', 'amarok -p')
+            ('Program to &play files with:', _default_audio_player())
             ]
 
         status['selectedrows'] = self._getSelectedRows
