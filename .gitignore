@@ -4,3 +4,5 @@
 *.qm
 source/releases
 source/deb_build
+source/dist/
+*#*

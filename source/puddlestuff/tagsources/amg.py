@@ -205,7 +205,8 @@ def parse_sidebar_element(element):
     try:
         title = convert(element.find('h4').string.lower())
     except AttributeError:
-        {}
+        return {}
+
     if element.find('span'):
         values = [convert(element.find('span').string)]
     elif element.find('div'):
