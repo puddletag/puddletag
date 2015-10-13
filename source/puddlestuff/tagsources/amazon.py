@@ -17,11 +17,11 @@ from puddlestuff.tagsources import (write_log, RetrievalError,
 from puddlestuff.audioinfo import DATA
 from puddlestuff.util import translate
 
-default_access_key = 'AKIAJ3KBYRUYQN5PVQGA'
-default_secret_key = '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'
+default_access_key = base64.b64decode('QUtJQUozS0JZUlVZUU41UFZRR0E=')
+default_secret_key = base64.b64decode('dmh6Q0ZaSEF6N0VvMmN5REt3STVnS1liU3ZFTCtSckx3c0tmanZEdA==')
 
-access_key = 'AKIAJ3KBYRUYQN5PVQGA'
-secret_key = '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'
+access_key = default_access_key
+secret_key = default_secret_key
 
 
 SMALLIMAGE = '#smallimage'
