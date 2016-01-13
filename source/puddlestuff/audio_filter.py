@@ -166,11 +166,13 @@ def parse(audio, expr):
         for field, value in audio.items():
             if isinstance(value, basestring):
                 value = [value]
+            elif isinstance(value, (int, float)):
+                value = [unicode(value)]
             try:
                 if res in u'\\\\'.join(value).lower():
                     return True
-            except TypeError:
-                return True
+            except TypeError, e:
+                continue
     else:
         return bool(res)
     return False
