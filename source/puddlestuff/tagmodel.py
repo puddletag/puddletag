@@ -1406,7 +1406,7 @@ class TagTable(QTableView):
             ('Show tooltips in file-view:', True),
             ('Show &row numbers', True),
             ('Automatically resize columns to contents', False),
-            ('&Preserve file modification times (if supported)', True),
+            ('&Preserve file modification times (if supported)', False),
             ('Program to &play files with:', _default_audio_player())
             ]
 
