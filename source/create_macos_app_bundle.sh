@@ -6,14 +6,14 @@ function create_bundle_structure () {
 }
 
 function provide_app_startup_script () {
-      cp ${appStartupScript} ${bundleMacOSFolder}/${1}
+      cp ${1} ${bundleMacOSFolder}/${1##*/}
 }
 
 function provide_app_icon () {
       $(which sips) -s format icns ${2} --out ${bundleResourcesFolder}/${1}.icns > /dev/null
 }
 
-function create_Info.plist () {
+function create_Info_plist () {
 echo -e "<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       <plist version="1.0">
@@ -89,6 +89,6 @@ provide_app_startup_script ${appStartupScript}
 if [[ ${appIcon} != "empty" ]]; then
        provide_app_icon ${appName} ${appIcon}
 fi
-create_Info.plist ${appName} ${appStartupScript} ${appIcon}
+create_Info_plist ${appName} ${appStartupScript} ${appIcon}
 
 # EoF
