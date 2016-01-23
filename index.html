@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Puddletag by keithgg</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Puddletag</h1>
+        <p>Powerful, simple, audio tag editor for GNU/Linux</p>
+
+        <p class="view"><a href="https://github.com/keithgg/puddletag">View the Project on GitHub <small>keithgg/puddletag</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/keithgg/puddletag/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/keithgg/puddletag/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/keithgg/puddletag">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="what-it-is" class="anchor" href="#what-it-is" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What it is</h1>
+
+<p>puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.</p>
+
+<p>The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.</p>
+
+<p>Then there’re Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There’s quite a bit more, but I’ve reached my comma quota.</p>
+
+<p>Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey’s Audio (.ape) and WavPack (wv).</p>
+
+<h1>
+<a id="why-it-is" class="anchor" href="#why-it-is" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why it is</h1>
+
+<p>Keeping an XP partition just for Mp3tag just wasn't feasible anymore.</p>
+
+<h1>
+<a id="how-its-different" class="anchor" href="#how-its-different" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How it's different</h1>
+
+<p>To Mp3tag it’s not that different. Mp3tag has things puddletag doesn’t have, puddletag has things Mp3tag doesn’t. Skim the menus section to get an overview of the differences.</p>
+
+<p>However, compared to other GNU/Linux taggers the differences are much too vast to list.</p>
+
+<h1>
+<a id="what-you-need" class="anchor" href="#what-you-need" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What you need</h1>
+
+<ul>
+<li>At least Python2.5 (not Python3) available from <a href="http://python.org">http://python.org</a>.</li>
+<li>PyQt4 (4.5 or greater) (<a href="http://www.riverbankcomputing.co.uk/software/pyqt/intro">http://www.riverbankcomputing.co.uk/software/pyqt/intro</a>) for the GUI.</li>
+<li>PyParsing (1.5.1 or greater) (<a href="http://pyparsing.wikispaces.com">http://pyparsing.wikispaces.com</a>) takes care of the parsing...</li>
+<li>Mutagen (1.20 recommended, 1.14 required) (<a href="http://code.google.com/p/mutagen/">http://code.google.com/p/mutagen/</a>) is used as the tagging lib and...</li>
+<li>ConfigObj (4.5.0 or greater) (<a href="http://code.google.com/p/configobj/">http://code.google.com/p/configobj/</a>) takes care of saving settings.</li>
+</ul>
+
+<h2>
+<a id="the-following-are-recommended" class="anchor" href="#the-following-are-recommended" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The following are recommended</h2>
+
+<ul>
+<li>Chromaprint (≥ 0.4) (<a href="http://acoustid.org/chromaprint">http://acoustid.org/chromaprint</a>) for AcoustID support.</li>
+</ul>
+
+<h1>
+<a id="downloadinginstalling" class="anchor" href="#downloadinginstalling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Downloading/Installing</h1>
+
+<p>From source:</p>
+
+<ul>
+<li>Install the dependencies listed above.</li>
+<li>For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging</li>
+<li>Download the source tarball from <a href="http://puddletag.sourceforge.net">http://puddletag.sourceforge.net</a>. (If this file came from that tarball, ignore everything on this line.)</li>
+<li>Unzip it.</li>
+<li>You can run puddletag from that directory by typing ./puddletag in your console.</li>
+<li>Alternatively, install it by running python setup.py install as root in the unzipped directory.</li>
+<li>puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run 'desktop-file-install puddletag.desktop' as root in the unzipped directory.</li>
+</ul>
+
+<h2>
+<a id="installing-from-the-debian-package" class="anchor" href="#installing-from-the-debian-package" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing from the Debian package.</h2>
+
+<ul>
+<li>This package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze.</li>
+<li>Download the package from <a href="http://puddletag.sourceforge.net">http://puddletag.sourceforge.net</a>.</li>
+<li>Install using your distros preferred method (usually double clicking should suffice). Or:</li>
+<li>Run as root dpkg -i /path/to/puddletag-deb.</li>
+<li>Install dependencies using your favourite tool.</li>
+<li>puddletag will appear under your Multimedia menu</li>
+</ul>
+
+<h2>
+<a id="installing-from-homebrew-on-mac-os-x" class="anchor" href="#installing-from-homebrew-on-mac-os-x" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing from Homebrew on Mac OS X.</h2>
+
+<ul>
+<li>This package can be installed on MacOS X via the Homebrew package manager.</li>
+<li>Install the package manager from <a href="http://brew.sh">http://brew.sh</a>
+</li>
+<li>Download and install puddletag by typing "brew install puddletag" in your console</li>
+</ul>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
+
+<p>puddletag licensed under the GPLv3, which you can find in its entirety at <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></p>
+
+<h1>
+<a id="updates" class="anchor" href="#updates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Updates</h1>
+
+<p>Releases are infrequent. Not more than a couple per year.</p>
+
+<h1>
+<a id="support" class="anchor" href="#support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support</h1>
+
+<p>Forum: <a href="http://puddletag.sf.net/forum">http://puddletag.sf.net/forum</a></p>
+
+<p>Github issues: <a href="https://github.com/keithgg/puddletag/issues">https://github.com/keithgg/puddletag/issues</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/keithgg">keithgg</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
