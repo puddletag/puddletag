@@ -14,7 +14,7 @@ from puddlestuff.util import pprint_tag
 import puddlestuff.findfunc as findfunc
 import puddlestuff.resource
 
-from audioinfo import commontags, PATH
+from audioinfo import commontags, PATH, FILE_FIELDS
 from puddlestuff.constants import HOMEDIR, KEEP
 from puddleobjects import (
     get_icon, gettaglist, partial,
@@ -77,10 +77,36 @@ class AutonumberDialog(QDialog):
         self._restart_numbering = QCheckBox(translate('Autonumbering Wizard',
             "&Restart numbering at each directory."))
         self.connect(self._restart_numbering, SIGNAL("stateChanged(int)"),
-            self.enableNumTracks)
+                     self.showDirectorySplittingOptions)
 
         vbox.addLayout(hbox(self._separator, self._numtracks))
         vbox.addWidget(self._restart_numbering)
+
+        self.custom_numbering_widgets = []
+
+        label = QLabel(translate('Autonumbering Wizard', "Field used for splitting directories: "))
+
+        self.split_field = QComboBox()
+        self.split_field.setEditable(True)
+        label.setBuddy(self.split_field)
+        
+        completer = self.split_field.completer()
+        completer.setCaseSensitivity(Qt.CaseSensitive)
+        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.split_field.setCompleter(completer)
+        self.split_field.addItems(FILE_FIELDS + gettaglist())
+        vbox.addLayout(hbox(label, self.split_field))
+
+        label = QLabel(translate('Autonumbering Wizard', "Output field: "))
+        
+        self.output_field = QComboBox()
+        self.output_field.setEditable(True)
+        label.setBuddy(self.output_field)
+        
+        self.output_field.setCompleter(completer)
+        self.output_field.addItems(gettaglist())
+        vbox.addLayout(hbox(label, self.output_field))
+        self.custom_numbering_widgets.extend([label, self.output_field])
 
         okcancel = OKCancel()
         vbox.addLayout(okcancel)
@@ -90,13 +116,20 @@ class AutonumberDialog(QDialog):
         self.connect(okcancel,SIGNAL('cancel'),self.close)
         self.connect(self._separator, SIGNAL("stateChanged(int)"),
             lambda v: self._numtracks.setEnabled(v == Qt.Checked))
+        
+        # self.connect(self._restart_numbering, SIGNAL("stateChanged(int)"),
+        #              self.showDirectorySplittingOptions)
 
         self._separator.setChecked(enablenumtracks)
 
         self._loadSettings()
 
-    def enableNumTracks(self, state):
-        if state == Qt.Checked:
+    def showDirectorySplittingOptions(self, state):
+        is_checked = state==Qt.Checked
+        for widget in self.custom_numbering_widgets:
+            widget.setVisible(is_checked)
+
+        if is_checked:
             self._numtracks.setVisible(False)
             self._separator.setText(translate('Autonumbering Wizard',
             "Add track &separator ['/']"))
@@ -119,9 +152,15 @@ class AutonumberDialog(QDialog):
 
         self.close()
         
-        self.emit(SIGNAL("newtracks"), self._start.value(),
-            numtracks, self._restart_numbering.checkState(),
-            self._padlength.value())
+        self.emit(SIGNAL("newtracks"),
+                  self._start.value(),
+                  numtracks,
+                  self._restart_numbering.checkState(),
+                  self._padlength.value(),
+                  unicode(self.split_field.currentText()),
+                  unicode(self.output_field.currentText())
+        )
+        
         self._saveSettings()
 
     def _loadSettings(self):
@@ -131,8 +170,26 @@ class AutonumberDialog(QDialog):
         self._separator.setCheckState(
             cparser.get(section, 'separator', Qt.Unchecked))
         self._padlength.setValue(cparser.get(section, 'padlength', 1))
+        
         self._restart_numbering.setCheckState(
             cparser.get(section, 'restart', Qt.Unchecked))
+        self.showDirectorySplittingOptions(self._restart_numbering.checkState())
+        
+        split_field_text = cparser.get(section, 'split_field', '__dirpath')
+        if not split_field_text:
+            split_field_text = '__dirpath'
+
+        last_used_field_index = self.split_field.findText(split_field_text)
+        if last_used_field_index > -1:
+            self.split_field.setCurrentIndex(last_used_field_index)
+
+        output_field_text = cparser.get(section, 'output_field', 'track')
+        if not output_field_text:
+            output_field_text = 'track'
+
+        last_output_field_index = self.output_field.findText(output_field_text)
+        if last_output_field_index > -1:
+            self.output_field.setCurrentIndex(last_output_field_index)
 
     def _saveSettings(self):
         cparser = PuddleConfig()
@@ -142,6 +199,8 @@ class AutonumberDialog(QDialog):
         cparser.set(section, 'numtracks', self._numtracks.value())
         cparser.set(section, 'restart', self._restart_numbering.checkState())
         cparser.set(section, 'padlength', self._padlength.value())
+        cparser.set(section, 'split_field', self.split_field.currentText())
+        cparser.set(section, 'output_field', self.output_field.currentText())
 
 class ImportTextFile(QDialog):
     """Dialog that importing a text file to retrieve tags from."""

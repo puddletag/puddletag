@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt4.QtGui import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
-    QVBoxLayout, QWidget)
+                         QVBoxLayout, QWidget, QLineEdit)
 from PyQt4.QtCore import SIGNAL
 from puddlestuff.translations import translate
 

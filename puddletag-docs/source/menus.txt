@@ -207,6 +207,10 @@ Autonumbering Wizard...
 ^^^^^^^^^^^^^^^^^^^^^^^
 Opens a dialog allowing to automatically number tracks in a sequence. It's pretty self explanatory.
 
+**Output field**: Instead of writing to the track field you can write the sequency to any non-file (ie. filename, path, etc) field.
+
+**Field used for splitting directories**: Use this field if you want to split by anything other than the directory path. Eg. discnumber.
+
 Import Music Library...
 ^^^^^^^^^^^^^^^^^^^^^^^
 Open's a dialog to allow you to import a supported Music Library into puddletag to edit its tags. Only QuodLibet is supported for now.

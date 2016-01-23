@@ -57,8 +57,7 @@ def auto_numbering(parent=None):
 
     win = helperwin.AutonumberDialog(parent, 1, numtracks, False)
     win.setModal(True)
-    t = partial(number_tracks, tags)
-    win.connect(win, SIGNAL("newtracks"), t)
+    win.connect(win, SIGNAL("newtracks"), partial(number_tracks, tags))
     win.show()
 
 def clipboard_to_tag(parent=None):
@@ -247,18 +246,37 @@ def _pad(trknum, total, padlen):
         text = unicode(trknum).zfill(padlen)
     return text
 
-def number_tracks(tags, offset, numtracks, restartdirs, padlength):
+def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track'):
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.
     The second item of indices is the number of tracks."""
 
+    if not split_field:
+        QMessageBox.critical(parent, translate("Autonumbering Wizard", 'Field empty...'),
+                             translate("Autonumbering Wizard",
+                                       "The field specified to use as a directory splitter was invalid. "
+                                       "Please check your values."))
+        return
+
+    if not output_field:
+        QMessageBox.critical(parent, translate("Autonumbering Wizard", 'Field empty...'),
+                             translate("Autonumbering Wizard",
+                                       "The output field specified was invalid. "
+                                       "Please check your values."))
+        return
+
     if restartdirs: #Restart dir numbering
         folders = defaultdict(lambda: [])
-        [folders[tag.dirpath].append(i) for i, tag in enumerate(tags)]
+        for tag_index, tag in enumerate(tags):
+            key = tag.get(split_field)
+            if not isinstance(key, basestring):
+                key = tag.stringtags().get(split_field)
+            folders[key].append(tag_index)
     else:
         folders = {'fol': [i for i, t in enumerate(tags)]}
-    
+
+
     taglist = {}
     for tags in folders.itervalues():
         if numtracks == -2:
@@ -270,7 +288,7 @@ def number_tracks(tags, offset, numtracks, restartdirs, padlength):
         for trknum, index in enumerate(tags):
             trknum += offset
             text = _pad(trknum, total, padlength)
-            taglist[index] = {'track': text}
+            taglist[index] = {output_field: text}
 
     taglist = [v for k,v in sorted(taglist.items(), key=lambda x: x[0])]
 
