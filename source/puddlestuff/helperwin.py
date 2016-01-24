@@ -75,7 +75,7 @@ class AutonumberDialog(QDialog):
         if numtracks:
             self._numtracks.setValue(numtracks)
         self._restart_numbering = QCheckBox(translate('Autonumbering Wizard',
-            "&Restart numbering at each directory."))
+            "&Restart numbering at each directory group."))
         self.connect(self._restart_numbering, SIGNAL("stateChanged(int)"),
                      self.showDirectorySplittingOptions)
 
@@ -84,24 +84,22 @@ class AutonumberDialog(QDialog):
 
         self.custom_numbering_widgets = []
 
-        label = QLabel(translate('Autonumbering Wizard', "Field used for splitting directories: "))
+        label = QLabel(translate('Autonumbering Wizard', "Group tracks using pattern:: "))
 
-        self.split_field = QComboBox()
-        self.split_field.setEditable(True)
-        label.setBuddy(self.split_field)
+        self.grouping = QLineEdit()
+        label.setBuddy(self.grouping)
         
-        completer = self.split_field.completer()
-        completer.setCaseSensitivity(Qt.CaseSensitive)
-        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
-        self.split_field.setCompleter(completer)
-        self.split_field.addItems(FILE_FIELDS + gettaglist())
-        vbox.addLayout(hbox(label, self.split_field))
+        vbox.addLayout(hbox(label, self.grouping))
 
         label = QLabel(translate('Autonumbering Wizard', "Output field: "))
         
         self.output_field = QComboBox()
-        self.output_field.setEditable(True)
         label.setBuddy(self.output_field)
+        
+        self.output_field.setEditable(True)
+        completer = self.output_field.completer()
+        completer.setCaseSensitivity(Qt.CaseSensitive)
+        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
         
         self.output_field.setCompleter(completer)
         self.output_field.addItems(gettaglist())
@@ -157,7 +155,7 @@ class AutonumberDialog(QDialog):
                   numtracks,
                   self._restart_numbering.checkState(),
                   self._padlength.value(),
-                  unicode(self.split_field.currentText()),
+                  unicode(self.grouping.text()),
                   unicode(self.output_field.currentText())
         )
         
@@ -175,14 +173,8 @@ class AutonumberDialog(QDialog):
             cparser.get(section, 'restart', Qt.Unchecked))
         self.showDirectorySplittingOptions(self._restart_numbering.checkState())
         
-        split_field_text = cparser.get(section, 'split_field', '__dirpath')
-        if not split_field_text:
-            split_field_text = '__dirpath'
-
-        last_used_field_index = self.split_field.findText(split_field_text)
-        if last_used_field_index > -1:
-            self.split_field.setCurrentIndex(last_used_field_index)
-
+        self.grouping.setText(cparser.get(section, 'grouping', '%__dirpath%'))
+        
         output_field_text = cparser.get(section, 'output_field', 'track')
         if not output_field_text:
             output_field_text = 'track'
@@ -199,7 +191,7 @@ class AutonumberDialog(QDialog):
         cparser.set(section, 'numtracks', self._numtracks.value())
         cparser.set(section, 'restart', self._restart_numbering.checkState())
         cparser.set(section, 'padlength', self._padlength.value())
-        cparser.set(section, 'split_field', self.split_field.currentText())
+        cparser.set(section, 'grouping', self.grouping.text())
         cparser.set(section, 'output_field', self.output_field.currentText())
 
 class ImportTextFile(QDialog):

@@ -209,7 +209,11 @@ Opens a dialog allowing to automatically number tracks in a sequence. It's prett
 
 **Output field**: Instead of writing to the track field you can write the sequency to any non-file (ie. filename, path, etc) field.
 
-**Field used for splitting directories**: Use this field if you want to split by anything other than the directory path. Eg. discnumber.
+**Group tracks using pattern**: Enter a pattern to group the tracks by.
+
+- Eg. if you would like to number tracks by discnumber enter *%discnumber%*.
+- If you'd like to split by directory, *%dirpath%*
+- Any valid pattern can be used, even something like *%album% - %dirpath%*
 
 Import Music Library...
 ^^^^^^^^^^^^^^^^^^^^^^^

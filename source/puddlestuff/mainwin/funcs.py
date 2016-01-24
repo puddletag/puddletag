@@ -269,7 +269,7 @@ def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='
     if restartdirs: #Restart dir numbering
         folders = defaultdict(lambda: [])
         for tag_index, tag in enumerate(tags):
-            key = tag.get(split_field)
+            key = findfunc.parsefunc(split_field, tag)
             if not isinstance(key, basestring):
                 key = tag.stringtags().get(split_field)
             folders[key].append(tag_index)
