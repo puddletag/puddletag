@@ -372,12 +372,13 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     tags = s_audio.copy()
     tags.update(state)
     tags.update(extra if extra is not None else {})
-    escape_chars = set('()$%\\')
+    escape_chars = set('()$%\\,')
 
     br_error = translate('Errors', 'No closing bracket found.')
 
     paths = []
 
+    
     i = 0
     while 1:
         try:
@@ -388,7 +389,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             if token:
                 tokens.append(replacevars(u''.join(token), tags))
             break
-
+        
         if c == u'"' and not escape:
             if in_func:
                 token.append(c)

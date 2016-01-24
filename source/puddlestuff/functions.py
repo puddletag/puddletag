@@ -646,13 +646,17 @@ only as &whole word, check'''
     return text
 
 class RegHelper(object):
-    def __init__(self, groups):
+    def __init__(self, groups, repl):
         self.groups = groups
+        self._repl = repl
 
     def repl(self, match):
         v = int(match.group()[1:])
         try:
-            return re_escape(self.groups[v], u'"\\,')
+            if re.search(u'\$[\w\d_]+\(', self._repl):
+                return re_escape(self.groups[v], u'"\\,')
+            else:
+                return self.groups[v]
         except KeyError:
             return u'""'
 
@@ -684,7 +688,7 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
-        ret = re.sub('(?i)\$\d+', RegHelper(d).repl, repl, 0)
+        ret = re.sub('(?i)\$\d+', RegHelper(d, repl).repl, repl, 0)
         return findfunc.parsefunc(ret, m_tags)
 
     def replace_matches(value):
