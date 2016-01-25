@@ -22,26 +22,7 @@
       {%- if show_sphinx %}
 	{% trans sphinx_version=sphinx_version|e %}Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> {{ sphinx_version }}.{% endtrans %}<br/>
       {%- endif %}
-      Hosted at <a href="http://sourceforge.net/projects/puddletag"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=232220&amp;type=9" width="80" height="15" alt="Get puddletag at SourceForge.net. Fast, secure and Free Open Source software downloads" align='middle'/></a>
     </p>
   </div>
-
-  <!-- Piwik -->
-  <script type="text/javascript"> 
-   var _paq = _paq || [];
-   _paq.push(['trackPageView']);
-   _paq.push(['enableLinkTracking']);
-   (function() {
-     var u=(("https:" == document.location.protocol) ? "https" : "http") + "://puddletag.sourceforge.net/piwik//";
-     _paq.push(['setTrackerUrl', u+'piwik.php']);
-     _paq.push(['setSiteId', 1]);
-     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
-     g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-   })();
-
-  </script>
-  <noscript><p><img src="http://puddletag.sourceforge.net/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
-  <!-- End Piwik Code -->
-
 </footer>
 {%- endblock %}

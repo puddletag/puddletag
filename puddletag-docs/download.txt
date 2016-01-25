@@ -101,6 +101,15 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 Installing on OSX
 -----------------
 
+Homebrew
+^^^^^^^^
+
+- Install the package manager from http://brew.sh.
+- Download and install puddletag by typing "brew install puddletag" in your console
+
+From source
+^^^^^^^^^^^
+
 There's a `great article on the VortexBox wiki <http://info.vortexbox.org/tiki-index.php?page=puddletag+on+os+x>`_ detailing the steps you need to follow. 
 
 You can also use Fink as `reported by wgscott on the forum <http://puddletag.sourceforge.net/forum/viewtopic.php?f=1&t=258>`_.
@@ -123,15 +132,3 @@ to check it out. And
     git pull origin master
 
 in the previously cloned directory to update it a later stage.
-
-Translations
-------------
-
-To install, place the downloaded translation in **~/.puddletag/translations** (you'll probably need to create it). The translation will be listed in the Preferences dialog. Some if these are incomplete, so if if you'd like contribute a translation, see :doc:`source/translate`.
-
-+ :download:`Dutch (Nederlands) <translations/puddletag_nl-nl.qm>` by **Fabian Bakkum**.
-+ :download:`French <translations/puddletag_fr.qm>` by **Raphaël Rochet**.
-+ :download:`German <translations/puddletag_de.qm>` by **Ralf Sarholz**.
-+ :download:`Portuguese (Brazilian) <translations/puddletag_pt_BR.qm>` by **Alan Gomes**.
-+ :download:`Russian <translations/puddletag_ru_RU.qm>` by **Viktor Yu. Kovalskiy**.
-+ :download:`Czech <translations/puddletag_cs.qm>` by **Pavel Fric**.

@@ -15,7 +15,7 @@ News
 
 ----
 
-26 January 2016 - 1.1.0
+27 January 2016 - 1.1.0
 #######################
 
 puddletag v1.1.0 is out. This release contains minor changes made over more than a year.

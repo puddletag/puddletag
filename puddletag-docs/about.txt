@@ -11,8 +11,6 @@ Thank yous
 
 First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
 
-Thanks to **Raphaël Rochet**, **Fabian Bakkum**, **Alan Gomes** and others for contributing translations.
-
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).
 
 + **Paul McGuire** for PyParsing and for being extraordinarily helpful.
@@ -22,3 +20,16 @@ To the writers of the libraries puddletag depends on (without which I'll probabl
 + The **Oxygen team** for the Oxygen icons.
 
 And for those who've contributed, the people whose code I stole, those who helped me out on discussion boards and to open-source creators, **Thanks a bunch**.
+
+
+Translators
+-----------
+
+Thank you to the translators below for their contributions.
+
++ Dutch (Nederlands) by **Fabian Bakkum**.
++ French by **Raphaël Rochet**.
++ German by **Ralf Sarholz**.
++ Portuguese (Brazilian) by **Alan Gomes**.
++ Russian by **Viktor Yu. Kovalskiy**.
++ Czech by **Pavel Fric**.

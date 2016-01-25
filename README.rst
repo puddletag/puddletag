@@ -76,6 +76,4 @@ Releases are infrequent. Not more than a couple per year.
 Support
 =======
 
-Forum: http://puddletag.sf.net/forum
-
 Github issues: https://github.com/keithgg/puddletag/issues

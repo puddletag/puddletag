@@ -14,7 +14,7 @@
 .. |beta_source_sha| replace:: d8b010b17e61214d30edb1008ffe1aa088cde4bd
 .. |beta_deb_sha| replace:: fadfcb20bd10457174fd00f2e2da616f475b196d
 
-.. |version| replace:: 1.0.5
+.. |version| replace:: 1.1.0
 .. |docs_html_link| replace:: HTML
 .. _docs_html_link: http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.5.tar.bz2
 .. |docs_rst_link| replace:: ReStructuredText
