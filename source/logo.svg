@@ -14,7 +14,7 @@
    height="127.587"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="logo.svg"
    inkscape:export-filename="/home/keith/Documents/python/puddletag-hg/source/puddlestuff/data/puddlelogo.png"
    inkscape:export-xdpi="90"
@@ -171,9 +171,9 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1025"
-     inkscape:window-x="-3"
-     inkscape:window-y="-3"
+     inkscape:window-height="1057"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -214,7 +214,7 @@
          id="flowPara2822"
          style="font-size:43.37858582px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;font-family:'Impossibilium (BRK)';-inkscape-font-specification:'Impossibilium (BRK)'">puddletag</flowPara></flowRoot>    <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#241c1c;fill-opacity:1;stroke:none;font-family:Copperplate Gothic Bold;-inkscape-font-specification:'Copperplate Gothic Bold, Bold'"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:22px;line-height:125%;font-family:'Copperplate Gothic Bold';-inkscape-font-specification:'Copperplate Gothic Bold, Bold';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#241c1c;fill-opacity:1;stroke:none"
        x="421.90527"
        y="1014.8771"
        id="text5257"
@@ -225,6 +225,6 @@
          sodipodi:role="line"
          x="421.90527"
          y="1014.8771"
-         id="tspan3093">v1.0.5</tspan></text>
+         id="tspan3093">v1.1.0</tspan></text>
   </g>
 </svg>

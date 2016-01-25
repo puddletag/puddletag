@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import subprocess
+import os
 from os.path import dirname
-version_string = '1.0.5'
-version = (1, 0, 5)
+
+version_string = '1.1.0'
+version = (1, 1, 0)
 
 try:
     filedir = dirname(dirname(dirname(__file__)))
-    info = subprocess.Popen(['hg', 'id', '-i', filedir],
-        stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    changeset = unicode(info.stdout.read().strip())
-    info.terminate()
+    hash_file = os.path.join(filedir, '.git/refs/heads/master')
+    if os.path.exists(hash_file):
+        with open(hash_file) as fo:
+            changeset = fo.read().strip()
 except (EnvironmentError, AttributeError):
     changeset = None
