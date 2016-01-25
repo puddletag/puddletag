@@ -7,7 +7,7 @@ def remove_h1(text):
     return re.sub(regexp, '', text)
 
 def clean_files(dirpath):
-    filenames = set(['index.html', 'screenshots.html', 'about.html', 'news.html', 'download.html'])
+    filenames = set(['index.html', 'screenshots.html'])
     for filename in filenames:
         path = os.path.join(dirpath, filename)
         if not path.endswith('.html'):

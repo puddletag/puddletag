@@ -119,7 +119,7 @@ html_theme_options = {
         ('Download', 'download'),
         ('News', 'news'),
         ('Documentation', 'docs'),
-        ('Forum', "http://puddletag.sourceforge.net/forum", True),
+        ('Issue Tracker', "https://github.com/keithgg/puddletag/issues", True),
         ('Screenshots', 'screenshots'),
         ('About', 'about')
         ],
@@ -165,7 +165,21 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
-html_sidebars = {'source/*': ['my_sidebar.html']}
+html_sidebars = {
+    'source/filter': ['my_sidebar.html'],
+    'source/function': ['my_sidebar.html'],
+    'source/id3': ['my_sidebar.html'],
+    'source/images': ['my_sidebar.html'],
+    'source/menus': ['my_sidebar.html'],
+    'source/plugins': ['my_sidebar.html'],
+    'source/preferences': ['my_sidebar.html'],
+    'source/tagsources': ['my_sidebar.html'],
+    'source/tagsource.tar.gz': ['my_sidebar.html'],
+    'source/tags': ['my_sidebar.html'],
+    'source/tut3': ['my_sidebar.html'],
+    'source/tut4': ['my_sidebar.html'],
+    'source/tut5': ['my_sidebar.html'],
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

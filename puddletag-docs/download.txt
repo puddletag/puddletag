@@ -2,11 +2,8 @@
 
 .. include:: checksums.txt
 
-Downloads
-=========
-
-Contents
---------
+Download
+========
 
 + :ref:`dependencies`
 + :ref:`installing_from_source`

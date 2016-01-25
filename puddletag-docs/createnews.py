@@ -91,11 +91,13 @@ def create_page(files):
 News
 ^^^^
 
+
 .. |rss| image:: feed.png
     :width: 27px
     :height: 28px
     :alt: RSS Image
     :class: text
+
 
 :download:`RSS Feed <rss.xml>`
 
