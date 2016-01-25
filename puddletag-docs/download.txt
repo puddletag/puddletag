@@ -14,7 +14,6 @@ Contents
 + :ref:`installing_on_fedora_14_and_later`
 + :ref:`installing_on_osx`
 + :ref:`development_builds`
-+ :ref:`plugins`
 + :ref:`translations`
 
 .. _dependencies:
@@ -124,34 +123,6 @@ to check it out. And
     git pull origin master
 
 in the previously cloned directory to update it a later stage.
-
-.. _plugin_downloads:
-
-.. _plugins:
-
-Plugins
--------
-I've created two plugins that might be useful. To install, unzip the downloaded file into **~/.puddletag/plugins**. Then enable it in Edit->Preferences->Plugins.
-
-Both require at least **puddletag 0.10.1**
-
-Extended Tags
-^^^^^^^^^^^^^
-
-All does is add the **Extended Tags** dialog as a dockable window. Uses Ctrl+Shift+S (Tools->Save Extended) to save.
-
-I created this with the intention of replacing the Tag Panel, but I found it way too click-heavy.
-
-+ `extended-1.2.tar.gz <http://sourceforge.net/projects/puddletag/files/plugins/extended-1.2.tar.gz>`_ (SHA1 340494d0d01efde6fd416a3cb6d464440bec61fc) for puddletag 0.10.4 and later.
-+ `extended-1.1.tar.gz <http://sourceforge.net/projects/puddletag/files/plugins/extended-1.1.tar.gz>`_ (SHA1 8694232652f538b7b9c02ed0a2c9cb8ee0a599df) for puddletag 0.10.3 and earlier.
-
-ID3 Tools
-^^^^^^^^^
-Adds options to convert an ID3 tag to UTF-8 and to ID3v2.4 to the Plugins menu. Only works for files that have ID3 as their default tag (= mp3 files).
-
-Download `id3_tools.tar.gz <http://sourceforge.net/projects/puddletag/files/plugins/id3_tools-1.0.tar.gz>`_ (SHA1 bb01bbf0be54e1850fb4505c1d530240cab85c70).
-
-.. _translations:
 
 Translations
 ------------

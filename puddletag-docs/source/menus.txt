@@ -203,6 +203,8 @@ Opens the Functions dialog. See the :doc:`functions pages <function>` for info o
 Tools
 -----
 
+.. _autonumbering_wizard:
+
 Autonumbering Wizard...
 ^^^^^^^^^^^^^^^^^^^^^^^
 Opens a dialog allowing to automatically number tracks in a sequence. It's pretty self explanatory.

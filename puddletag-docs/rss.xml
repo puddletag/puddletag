@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Wed, 13 May 2015 21:03:25 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>13 May 2015 - Moving to Github.</title><link>http://puddletag.sourceforge.net/news.html#may-2015-moving-to-github</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 25 Jan 2016 22:00:25 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>26 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
+  &lt;div class="section" id="january-2016-1-1-0"&gt;
+&lt;h1&gt;26 January 2016 - 1.1.0&lt;/h1&gt;
+&lt;p&gt;puddletag v1.1.0 is out. This release contains minor changes made over more than a year.&lt;/p&gt;
+&lt;p&gt;This release also completes the move to GitHub. All future downloads will point to GitHub. Documentation can be found
+at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"&gt;http://docs.puddletag.net&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Fixes&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Playlists not getting loaded in certain cases&lt;/li&gt;
+&lt;li&gt;Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.&lt;/li&gt;
+&lt;li&gt;Plugins are now included in default install&lt;/li&gt;
+&lt;li&gt;Padding of total tracks number follows the same rules as padding a track number #269&lt;/li&gt;
+&lt;li&gt;Improved matching of Amazon resources&lt;/li&gt;
+&lt;li&gt;Filtering &amp;#8216;simple&amp;#8217; values works again #253&lt;/li&gt;
+&lt;li&gt;Bug in regex functions where extra can get added&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Changes&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Modified date is updated by default when saving&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;New&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Autonumbering has a bunch of new options. Explained &lt;a class="reference internal" href="source/menus.html#autonumbering-wizard"&gt;&lt;span&gt;here&lt;/span&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Tue, 26 Jan 2016 00:00:00 GMT</pubDate></item><item><title>13 May 2015 - Moving to Github.</title><link>http://puddletag.sourceforge.net/news.html#may-2015-moving-to-github</link><description>
   &lt;div class="section" id="may-2015-moving-to-github"&gt;
 &lt;h1&gt;13 May 2015 - Moving to Github.&lt;/h1&gt;
 &lt;p&gt;With the shutdown of Google Code and the increasing dissatisfaction with SF, I&amp;#8217;ve mode the code and issue tracker over to Github.&lt;/p&gt;
@@ -72,7 +98,7 @@
 &lt;p&gt;I&amp;#8217;ve been using this release since forever and consider it to work pretty well.&lt;/p&gt;
 &lt;p&gt;Still an RC though, just in case there are any showstoppers. Use the forum link
 above if you run into any issues. The list of changes is larger than usual.
-Checkout the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt; for more.&lt;/p&gt;
+Checkout the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt; for more.&lt;/p&gt;
 &lt;p&gt;If no new issues are reported I&amp;#8217;ll just rename it to 1.0.2 within a month. ;-)&lt;/p&gt;
 &lt;div class="line-block"&gt;
 &lt;div class="line"&gt;&lt;a class="reference external" href="http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.2RC1-1_all.deb"&gt;Debian Package&lt;/a&gt; (SHA1 36b9d63504e95cba47667b48158b0a2132e39bf7)&lt;/div&gt;
@@ -103,7 +129,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;http://hg.code.sf.net/p/puddletag/code
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Contributions are always appreciated so please post on the forum (link above) if you&amp;#8217;d like to translate puddletag.&lt;/p&gt;
 &lt;p&gt;New beta coming this weekend.&lt;/p&gt;
 &lt;/div&gt;
@@ -124,7 +150,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
   &lt;div class="section" id="august-2012-1-0-0"&gt;
 &lt;h1&gt;21 August 2012 - 1.0.0&lt;/h1&gt;
 &lt;p&gt;v1 has finally arrived!&lt;/p&gt;
-&lt;p&gt;There&amp;#8217;s not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;There&amp;#8217;s not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Right now puddletag is about as stable as it&amp;#8217;ll get without much more work. As for the future, I have a some things that I&amp;#8217;ve been putting off until v1. A command line version being top priority.&lt;/p&gt;
 &lt;p&gt;Anyway, that&amp;#8217;s it for now. Enjoy!&lt;/p&gt;
 &lt;/div&gt;
@@ -133,7 +159,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
   &lt;div class="section" id="june-2012-1-0-0rc1"&gt;
 &lt;h1&gt;9 June 2012 - 1.0.0RC1&lt;/h1&gt;
 &lt;p&gt;This release is the first RC with the final release planned for next week depending on feedback. All that&amp;#8217;s still needed is to update the docs, fix some outstanding bugs and package the plugins.&lt;/p&gt;
-&lt;p&gt;As for the changes here, it&amp;#8217;s just some bug fixes. For a more comprehensive list see the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;. The most interesting ones are:&lt;/p&gt;
+&lt;p&gt;As for the changes here, it&amp;#8217;s just some bug fixes. For a more comprehensive list see the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;. The most interesting ones are:&lt;/p&gt;
 &lt;div class="section" id="fixes"&gt;
 &lt;h2&gt;Fixes&lt;/h2&gt;
 &lt;ul class="simple"&gt;
@@ -171,7 +197,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;li&gt;Dutch Translation by Fabian Bakkum.&lt;/li&gt;
 &lt;li&gt;Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you&amp;#8217;re an &amp;#8216;advanced&amp;#8217; user.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;That&amp;#8217;s it basically. If you want more, see the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt;. Docs for the latest version have been uploaded &lt;a class="reference external" href="http://puddletag.sf.net/latest/docs.html"&gt;here&lt;/a&gt;. I still have quite a bit of updating to do though.&lt;/p&gt;
+&lt;p&gt;That&amp;#8217;s it basically. If you want more, see the &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;. Docs for the latest version have been uploaded &lt;a class="reference external" href="http://puddletag.sf.net/latest/docs.html"&gt;here&lt;/a&gt;. I still have quite a bit of updating to do though.&lt;/p&gt;
 &lt;p&gt;&lt;a class="reference external" href="http://code.google.com/p/puddletag/issues"&gt;Please let me know if you experience any issues.&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -191,7 +217,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;li&gt;More than one file can be written to at a time in the file-view. Just select more than one file, edit a field as normal (like album) and Bob&amp;#8217;s your aunt.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Test it out and if you find any bugs feel free to &lt;a class="reference external" href="http://code.google.com/p/puddletag/issues"&gt;let me know&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;a class="reference internal" href="download.html#development-builds"&gt;&lt;em&gt;Download&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference internal" href="download.html#development-builds"&gt;&lt;span&gt;Download&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
 
 </description><author>concentricpuddle</author><pubDate>Sun, 22 Jan 2012 00:00:00 GMT</pubDate></item><item><title>21 September 2011 - Mercurial</title><link>http://puddletag.sourceforge.net/news.html#september-2011-mercurial</link><description>
@@ -217,13 +243,13 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;strong&gt;Update 4 June 2011&lt;/strong&gt;: Tag sources were broken due to a bug not found in testing. Therefore 0.10.5 has been released.&lt;/p&gt;
 &lt;p&gt;Unless there&amp;#8217;re some critical bugs discovered in this release, then the next release will be puddletag v1. There won&amp;#8217;t be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.&lt;/p&gt;
 &lt;p&gt;As for this release, there&amp;#8217;re a lot of changes, but nothing of note UI wise (except for the website theme change copied from the &lt;a class="reference external" href="http://djangoproject.com"&gt;Django docs&lt;/a&gt;).&lt;/p&gt;
-&lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;Raphaël Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;a class="reference internal" href="download.html#translations"&gt;&lt;em&gt;French translation&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;Raphaël Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;span class="xref std std-ref"&gt;French translation&lt;/span&gt;.&lt;/p&gt;
 &lt;div class="section" id="new-features"&gt;
 &lt;h2&gt;New Features&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;Much improved masstagging.&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;p class="first"&gt;The &lt;a class="reference internal" href="source/function.html#export-artwork-to-file"&gt;&lt;em&gt;Export artwork to file&lt;/em&gt;&lt;/a&gt; Function.&lt;/p&gt;
+&lt;li&gt;&lt;p class="first"&gt;The &lt;a class="reference internal" href="source/function.html#export-artwork-to-file"&gt;&lt;span&gt;Export artwork to file&lt;/span&gt;&lt;/a&gt; Function.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;The filter behaves like Mp3tag&amp;#8217;s. Described in &lt;a class="reference internal" href="source/filter.html"&gt;&lt;em&gt;Filter Expressions&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
@@ -251,11 +277,11 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;div class="section" id="changes"&gt;
 &lt;h2&gt;Changes&lt;/h2&gt;
 &lt;ul class="simple"&gt;
-&lt;li&gt;The old Extended Tags plugin will no longer work. Use the &lt;a class="reference internal" href="download.html#plugin-downloads"&gt;&lt;em&gt;new one&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;The old Extended Tags plugin will no longer work. Use the &lt;span class="xref std std-ref"&gt;new one&lt;/span&gt;.&lt;/li&gt;
 &lt;li&gt;Unicode support for Replace with Regular Expression function.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;peformersortorder&lt;/strong&gt; has been renamed to &lt;strong&gt;performersortorder&lt;/strong&gt; in ID3 tags.&lt;/li&gt;
 &lt;li&gt;Similarly the &lt;strong&gt;lyrics_us&lt;/strong&gt; field is now &lt;strong&gt;unsyncedlyrics&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Renaming dirs hooks into &lt;a class="reference internal" href="source/function.html#tag-to-dir"&gt;&lt;em&gt;Tag-&amp;gt;Dir&lt;/em&gt;&lt;/a&gt; function now.&lt;/li&gt;
+&lt;li&gt;Renaming dirs hooks into &lt;a class="reference internal" href="source/function.html#tag-to-dir"&gt;&lt;span&gt;Tag-&amp;gt;Dir&lt;/span&gt;&lt;/a&gt; function now.&lt;/li&gt;
 &lt;li&gt;A couple related to the QuodLibet library handling.&lt;/li&gt;
 &lt;li&gt;Proper error messages are now shown, differentiating whether the error occurred while writing to files or renaming dirs, files.&lt;/li&gt;
 &lt;/ul&gt;
@@ -287,10 +313,10 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;A bunch of new fields related to Mp3tag compatibility, most notably &lt;strong&gt;__tag&lt;/strong&gt; and &lt;strong&gt;__tag_read&lt;/strong&gt;. All are listed on the &lt;a class="reference internal" href="source/tags.html"&gt;&lt;em&gt;Tag Reference&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;Loading subfolders can be turned on/off using the Filesystem Window.&lt;/li&gt;
-&lt;li&gt;USLT Frame support for ID3 that uses the same format as ID3. See the &lt;a class="reference internal" href="source/id3.html#uslt"&gt;&lt;em&gt;ID3 page&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;USLT Frame support for ID3 that uses the same format as ID3. See the &lt;a class="reference internal" href="source/id3.html#uslt"&gt;&lt;span&gt;ID3 page&lt;/span&gt;&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;The Stored Tags window shows the values of all tags found in file.&lt;/li&gt;
 &lt;li&gt;Experimental ID3v2.3 support courtesy of &lt;a class="reference external" href="http://musicbrainz.org/doc/PicardTagger"&gt;MusicBrainz Picard&lt;/a&gt;. Multiple values are not supported. Don&amp;#8217;t use it for now unless you really need to. Then report back on how it went. Enable it in Edit-&amp;gt;Preferences-&amp;gt;Tags.&lt;/li&gt;
-&lt;li&gt;Two new plugins. Details are on the &lt;a class="reference internal" href="download.html#plugin-downloads"&gt;&lt;em&gt;Downloads&lt;/em&gt;&lt;/a&gt; page.&lt;/li&gt;
+&lt;li&gt;Two new plugins. Details are on the &lt;span class="xref std std-ref"&gt;Downloads&lt;/span&gt; page.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 &lt;div class="section" id="fixes"&gt;
@@ -404,15 +430,15 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;h2&gt;New Features&lt;/h2&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;puddletag now supports translations. If you want to create one for your language create an on the &lt;a href="#id3"&gt;&lt;span class="problematic" id="id4"&gt;|issue_tracker|_&lt;/span&gt;&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;A &lt;a class="reference internal" href="source/function.html#convert-from-non-standard-encoding"&gt;&lt;em&gt;new Function&lt;/em&gt;&lt;/a&gt; to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.&lt;/li&gt;
-&lt;li&gt;&lt;a class="reference internal" href="source/function.html#tag-to-dir"&gt;&lt;em&gt;Tag-&amp;gt;Dir&lt;/em&gt;&lt;/a&gt;, with which you can move directories has also been included.&lt;/li&gt;
+&lt;li&gt;A &lt;a class="reference internal" href="source/function.html#convert-from-non-standard-encoding"&gt;&lt;span&gt;new Function&lt;/span&gt;&lt;/a&gt; to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference internal" href="source/function.html#tag-to-dir"&gt;&lt;span&gt;Tag-&amp;gt;Dir&lt;/span&gt;&lt;/a&gt;, with which you can move directories has also been included.&lt;/li&gt;
 &lt;li&gt;MoveUp and MoveDown shortcuts that move the selected files Up/Down in file-view.&lt;/li&gt;
-&lt;li&gt;The MusicBrainz tag source now retrieves even more fields. See &lt;a class="reference internal" href="source/tagsources.html#musicbrainz"&gt;&lt;em&gt;here&lt;/em&gt;&lt;/a&gt; for a complete listing.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Select all in Dir&lt;/strong&gt; has been removed. I&amp;#8217;ve added two new menu items. Select Next in Dir and Select Previous Dir. Info can be found &lt;a class="reference internal" href="source/menus.html#select-next"&gt;&lt;em&gt;menus&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;The MusicBrainz tag source now retrieves even more fields. See &lt;a class="reference internal" href="source/tagsources.html#musicbrainz"&gt;&lt;span&gt;here&lt;/span&gt;&lt;/a&gt; for a complete listing.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Select all in Dir&lt;/strong&gt; has been removed. I&amp;#8217;ve added two new menu items. Select Next in Dir and Select Previous Dir. Info can be found &lt;a class="reference internal" href="source/menus.html#select-next"&gt;&lt;span&gt;menus&lt;/span&gt;&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;Support for GUI and music library plugins. There aren&amp;#8217;t any docs yet. I&amp;#8217;ll add them in mid January. If you want to do development in the mean time, make a post on the forum and I&amp;#8217;ll help you out.&lt;/li&gt;
-&lt;li&gt;A tag source that uses Discogs.com&amp;#8217;s XML service. I&amp;#8217;m not sure how complete this tag source is since Discogs.com&amp;#8217;s documentation is woefully inadequate. &lt;a class="reference internal" href="source/tagsources.html#discogs"&gt;&lt;em&gt;Info&lt;/em&gt;&lt;/a&gt;. &lt;strong&gt;You must set the User-Agent to use this!&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;A tag source that uses Discogs.com&amp;#8217;s XML service. I&amp;#8217;m not sure how complete this tag source is since Discogs.com&amp;#8217;s documentation is woefully inadequate. &lt;a class="reference internal" href="source/tagsources.html#discogs"&gt;&lt;span&gt;Info&lt;/span&gt;&lt;/a&gt;. &lt;strong&gt;You must set the User-Agent to use this!&lt;/strong&gt;.&lt;/li&gt;
 &lt;li&gt;puddletag now uses your theme&amp;#8217;s icons. Thanks to &lt;a class="reference external" href="http://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=1&amp;amp;t=16#p178"&gt;this&lt;/a&gt; post.&lt;/li&gt;
-&lt;li&gt;I&amp;#8217;ve added (tentative) support for Mp3tag&amp;#8217;s tag sources. Info &lt;a class="reference internal" href="source/tagsources.html#mp3tag-sources"&gt;&lt;em&gt;here&lt;/em&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;I&amp;#8217;ve added (tentative) support for Mp3tag&amp;#8217;s tag sources. Info &lt;a class="reference internal" href="source/tagsources.html#mp3tag-sources"&gt;&lt;span&gt;here&lt;/span&gt;&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;The &amp;#8216;~&amp;#8217;-notation used in Tag Sources can now be used for Functions too. See the bottom of &lt;a class="reference internal" href="source/tut3.html"&gt;&lt;em&gt;this&lt;/em&gt;&lt;/a&gt; page.&lt;/li&gt;
 &lt;li&gt;Options to remove ID3v1 and ID3v2 tags separately to the Tag Tools menu.&lt;/li&gt;
 &lt;li&gt;You can now automatically retrieve matches using Tag Sources. Kinda like mini-masstagging.&lt;/li&gt;
@@ -424,7 +450,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;li&gt;The Replace with Regular Expression function now starts from $1 instead of $0. I had to do this in order for Mp3tag&amp;#8217;s Tag Sources to work. Please update your actions.&lt;/li&gt;
 &lt;li&gt;Previews in the Functions dialog now show the fields too.&lt;/li&gt;
 &lt;li&gt;Action Shortcuts settings have been moved from Preferences to the Actions dialog.&lt;/li&gt;
-&lt;li&gt;Tools-&amp;gt;Sort Selected is now Tools-&amp;gt;Sort By. Visit this &lt;a class="reference internal" href="source/preferences.html#sort-option-prefs"&gt;&lt;em&gt;page&lt;/em&gt;&lt;/a&gt; for info.&lt;/li&gt;
+&lt;li&gt;Tools-&amp;gt;Sort Selected is now Tools-&amp;gt;Sort By. Visit this &lt;a class="reference internal" href="source/preferences.html#sort-option-prefs"&gt;&lt;span&gt;page&lt;/span&gt;&lt;/a&gt; for info.&lt;/li&gt;
 &lt;li&gt;performer in ID3 has been changed to albumartist.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
@@ -539,7 +565,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;li&gt;Right click on any directory. Click the refresh button to refresh it.&lt;/li&gt;
 &lt;li&gt;You can now change the shortcut for any menu item. Edit-&amp;gt;Preferences-&amp;gt;Shortcuts to configure.&lt;/li&gt;
 &lt;li&gt;Also, you can now sort selected tracks using predefined fields. Some defaults are in Tools-&amp;gt;Sort Selected. Configure it using the &amp;#8216;Edit sort options&amp;#8217; button in Preferences.&lt;/li&gt;
-&lt;li&gt;I&amp;#8217;ve finally added a &lt;a class="reference download internal" href="_downloads/rss.xml"&gt;&lt;tt class="xref download docutils literal"&gt;&lt;span class="pre"&gt;RSS&lt;/span&gt; &lt;span class="pre"&gt;Feed&lt;/span&gt;&lt;/tt&gt;&lt;/a&gt; to the website.&lt;/li&gt;
+&lt;li&gt;I&amp;#8217;ve finally added a &lt;a class="reference download internal" href="_downloads/rss.xml"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;RSS&lt;/span&gt; &lt;span class="pre"&gt;Feed&lt;/span&gt;&lt;/code&gt;&lt;/a&gt; to the website.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 &lt;div class="section" id="bugs"&gt;

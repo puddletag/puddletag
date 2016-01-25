@@ -1,3 +1,18 @@
+27 January 2015 - 1.1.0
+   Fixes:
+        Playlists not getting loaded in certain cases
+        Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.
+        Plugins are now included in default install
+        Padding of total tracks number follows the same rules as padding a track number #269
+        Improved matching of Amazon resources
+        Filtering 'simple' values works again #253
+        Bug in regex functions where extra \ can get added    
+   Changes:
+        Modified date is updated by default when saving
+   New:
+        Autonumbering has a bunch of new options. Explained in docs.
+        
+
 15 November 2014 - 1.0.5
    Fixed:
 	A bug in actions where floating point values weren't getting handled correctly. Could cause puddletag to lock up.

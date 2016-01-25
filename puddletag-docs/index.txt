@@ -35,11 +35,11 @@ puddletag is licensed under the GPLv3, which you can find in its entirety at htt
 
 Updates
 -------
-Releases are infrequent. Subscribe to the :download:`RSS Feed <rss.xml>` to be notified.
+Releases are very infrequent. Subscribe to the :download:`RSS Feed <rss.xml>` to be notified.
 
 Support
 -------
-Report any bugs on the issue tracker hosted at `Github <https://github.com/keithgg/puddletag/issues>`_. Anything else goes on the |forum|_. But check out the :doc:`documentation <docs>` first.
+Report any bugs or feedback on the issue tracker hosted at `Github <https://github.com/keithgg/puddletag/issues>`_. But check out the :doc:`documentation <docs>` first.
 
 | Last website update: |today|
 | Latest version: |version|
