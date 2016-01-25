@@ -90,6 +90,7 @@ class AutonumberDialog(QDialog):
         label.setBuddy(self.grouping)
         
         vbox.addLayout(hbox(label, self.grouping))
+        self.custom_numbering_widgets.extend([label, self.grouping])
 
         label = QLabel(translate('Autonumbering Wizard', "Output field: "))
         
@@ -105,6 +106,11 @@ class AutonumberDialog(QDialog):
         self.output_field.addItems(gettaglist())
         vbox.addLayout(hbox(label, self.output_field))
         self.custom_numbering_widgets.extend([label, self.output_field])
+
+        self.count_by_group = QCheckBox(translate(u'Autonumbering Wizard',
+                                                    u'Increase counter only on group change'))
+        vbox.addWidget(self.count_by_group)
+        self.custom_numbering_widgets.append(self.count_by_group)
 
         okcancel = OKCancel()
         vbox.addLayout(okcancel)
@@ -156,7 +162,8 @@ class AutonumberDialog(QDialog):
                   self._restart_numbering.checkState(),
                   self._padlength.value(),
                   unicode(self.grouping.text()),
-                  unicode(self.output_field.currentText())
+                  unicode(self.output_field.currentText()),
+                  self.count_by_group.checkState()
         )
         
         self._saveSettings()
@@ -171,6 +178,10 @@ class AutonumberDialog(QDialog):
         
         self._restart_numbering.setCheckState(
             cparser.get(section, 'restart', Qt.Unchecked))
+
+        self.count_by_group.setCheckState(
+            cparser.get(section, 'count_by_group', Qt.Unchecked))
+        
         self.showDirectorySplittingOptions(self._restart_numbering.checkState())
         
         self.grouping.setText(cparser.get(section, 'grouping', '%__dirpath%'))
@@ -188,6 +199,7 @@ class AutonumberDialog(QDialog):
         section = 'autonumbering'
         cparser.set(section, 'start', self._start.value())
         cparser.set(section, 'separator', self._separator.checkState())
+        cparser.set(section, 'count_by_group', self.count_by_group.checkState())
         cparser.set(section, 'numtracks', self._numtracks.value())
         cparser.set(section, 'restart', self._restart_numbering.checkState())
         cparser.set(section, 'padlength', self._padlength.value())

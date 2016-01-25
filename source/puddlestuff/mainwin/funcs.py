@@ -8,7 +8,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, pdb
 path = os.path
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import puddlestuff.helperwin as helperwin
 from functools import partial
 from itertools import izip
@@ -246,7 +246,7 @@ def _pad(trknum, total, padlen):
         text = unicode(trknum).zfill(padlen)
     return text
 
-def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track'):
+def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False):
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.
@@ -267,18 +267,22 @@ def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='
         return
 
     if restartdirs: #Restart dir numbering
-        folders = defaultdict(lambda: [])
+        folders = OrderedDict()
         for tag_index, tag in enumerate(tags):
             key = findfunc.parsefunc(split_field, tag)
             if not isinstance(key, basestring):
                 key = tag.stringtags().get(split_field)
-            folders[key].append(tag_index)
+            
+            if key in folders:
+                folders[key].append(tag_index)
+            else:
+                folders[key] = [tag_index]
     else:
         folders = {'fol': [i for i, t in enumerate(tags)]}
 
 
     taglist = {}
-    for tags in folders.itervalues():
+    for group_num, tags in enumerate(folders.itervalues()):
         if numtracks == -2:
             total = len(tags)
         elif numtracks is -1:
@@ -286,7 +290,11 @@ def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='
         elif numtracks >= 0:
             total = numtracks
         for trknum, index in enumerate(tags):
-            trknum += offset
+            if by_group:
+                trknum = group_num + offset
+            else:
+                trknum += offset
+                
             text = _pad(trknum, total, padlength)
             taglist[index] = {output_field: text}
 

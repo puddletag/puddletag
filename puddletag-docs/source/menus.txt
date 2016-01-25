@@ -215,6 +215,12 @@ Opens a dialog allowing to automatically number tracks in a sequence. It's prett
 - If you'd like to split by directory, *%dirpath%*
 - Any valid pattern can be used, even something like *%album% - %dirpath%*
 
+**Increase counter only on group change**: If checked, the counter will only be increased when the group changes.
+
+Eg if you split the tracks by *%__dirpath%* and output field %discnumber%. The discnumber field in each folder will be the same, increasing for each folder.
+
+All tracks in the first folder will have discnumber=1. All tracks in folder 2 will have discnumber=2 and so on.
+
 Import Music Library...
 ^^^^^^^^^^^^^^^^^^^^^^^
 Open's a dialog to allow you to import a supported Music Library into puddletag to edit its tags. Only QuodLibet is supported for now.
