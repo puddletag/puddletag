@@ -76,7 +76,7 @@ while [[ $# > 1 ]]; do
       shift # past argument or value
 done
 
-if [[ ! $(which sip) ]]; then
+if [[ ! $(which sips) ]]; then
       appIcon="empty"
 fi
 
