@@ -7,7 +7,7 @@ TEMPLATE = """.. |source_link| replace:: puddletag-{version}.tar.gz
 .. |beta_source_link| replace:: puddletag-{version}.tar.gz
 .. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_beta-{version}.tar.gz
 .. |beta_deb_link| replace:: puddletag_{version}-{deb_version}_all.deb
-.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/download/{version}/dev/puddletag_beta_{version}-{deb_version}_all.deb
+.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_beta_{version}-{deb_version}_all.deb
 
 .. |source_sha| replace:: {source_sha}
 .. |deb_sha| replace:: {deb_sha}

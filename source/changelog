@@ -1,4 +1,7 @@
 31 January 2015 1.1.1
+    Fixes issue starting puddletag without having git installed.
+
+31 January 2015 1.1.0
     Playlists not getting loaded in certain cases
     Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.
     Plugins are now included in default install

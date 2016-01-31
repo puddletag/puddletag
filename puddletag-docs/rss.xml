@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 31 Jan 2016 13:14:46 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>31 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 31 Jan 2016 15:44:44 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>31 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
   &lt;div class="section" id="january-2016-1-1-0"&gt;
 &lt;h1&gt;31 January 2016 - 1.1.0&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: There was a bug where puddletag would not start if you didn&amp;#8217;t have git installed. v1.1.1 released as a result.&lt;/p&gt;
 &lt;p&gt;puddletag v1.1.0 is out. This release contains minor changes made over more than a year.&lt;/p&gt;
 &lt;p&gt;This will be the last release on SourceForge. All future downloads will point to GitHub. Documentation can be found
 at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"&gt;http://docs.puddletag.net&lt;/a&gt;.&lt;/p&gt;

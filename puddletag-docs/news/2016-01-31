@@ -1,6 +1,8 @@
 31 January 2016 - 1.1.0
 #######################
 
+**Update**: There was a bug where puddletag would not start if you didn't have git installed. v1.1.1 released as a result.
+
 puddletag v1.1.0 is out. This release contains minor changes made over more than a year.
 
 This will be the last release on SourceForge. All future downloads will point to GitHub. Documentation can be found
