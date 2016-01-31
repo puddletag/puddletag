@@ -1,13 +1,13 @@
 TEMPLATE = """.. |source_link| replace:: puddletag-{version}.tar.gz
-.. _source_link: https://github.com/keithgg/puddletag/releases/tag/puddletag-{version}.tar.gz
+.. _source_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag-{version}.tar.gz
 .. |deb_link| replace:: puddletag_{version}-{deb_version}_all.deb
-.. _deb_link: https://github.com/keithgg/puddletag/releases/puddletag_{version}-{deb_version}_all.deb
+.. _deb_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_{version}-{deb_version}_all.deb
 .. |deb_name| replace:: puddletag_{version}-{deb_version}_all.deb
 
 .. |beta_source_link| replace:: puddletag-{version}.tar.gz
-.. _beta_source_link: https://github.com/keithgg/puddletag/releases/puddletag_beta-{version}.tar.gz
+.. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_beta-{version}.tar.gz
 .. |beta_deb_link| replace:: puddletag_{version}-{deb_version}_all.deb
-.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/dev/puddletag_beta_{version}-{deb_version}_all.deb
+.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/download/{version}/dev/puddletag_beta_{version}-{deb_version}_all.deb
 
 .. |source_sha| replace:: {source_sha}
 .. |deb_sha| replace:: {deb_sha}
@@ -16,9 +16,9 @@ TEMPLATE = """.. |source_link| replace:: puddletag-{version}.tar.gz
 
 .. |version| replace:: {version}
 .. |docs_html_link| replace:: HTML
-.. _docs_html_link: https://github.com/keithgg/puddletag/releases/docs/puddletag-docs-html-{version}.tar.bz2
+.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/{version}/docs/puddletag-docs-html-{version}.tar.bz2
 .. |docs_rst_link| replace:: ReStructuredText
-.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/docs/puddletag-docs-rst-{version}.tar.bz2
+.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/{version}/docs/puddletag-docs-rst-{version}.tar.bz2
 
 
 """
