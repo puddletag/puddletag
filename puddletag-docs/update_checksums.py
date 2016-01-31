@@ -16,9 +16,9 @@ TEMPLATE = """.. |source_link| replace:: puddletag-{version}.tar.gz
 
 .. |version| replace:: {version}
 .. |docs_html_link| replace:: HTML
-.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/{version}/docs/puddletag-docs-html-{version}.tar.bz2
+.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag-docs-html-{version}.tar.bz2
 .. |docs_rst_link| replace:: ReStructuredText
-.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/{version}/docs/puddletag-docs-rst-{version}.tar.bz2
+.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag-docs-rst-{version}.tar.bz2
 
 
 """
