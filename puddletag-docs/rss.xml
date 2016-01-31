@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 25 Jan 2016 23:44:11 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>27 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 31 Jan 2016 12:08:31 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>27 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
   &lt;div class="section" id="january-2016-1-1-0"&gt;
 &lt;h1&gt;27 January 2016 - 1.1.0&lt;/h1&gt;
 &lt;p&gt;puddletag v1.1.0 is out. This release contains minor changes made over more than a year.&lt;/p&gt;
@@ -156,7 +156,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;http://hg.code.sf.net/p/puddletag/code
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;a class="reference download internal" href="_downloads/puddletag_cs.qm"&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Contributions are always appreciated so please post on the forum (link above) if you&amp;#8217;d like to translate puddletag.&lt;/p&gt;
 &lt;p&gt;New beta coming this weekend.&lt;/p&gt;
 &lt;/div&gt;
