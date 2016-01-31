@@ -1,0 +1,163 @@
+
+
+  
+  
+ 
+  
+  
+ 
+
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Translating &mdash; puddletag</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.10.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="puddletag" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">puddletag</a>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../download.html">Download</a></li>
+                <li><a href="../news.html">News</a></li>
+                <li><a href="../docs.html">Documentation</a></li>
+                <li><a href="https://github.com/keithgg/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../about.html">About</a></li>
+            
+            
+              
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="translating">
+<h1>Translating<a class="headerlink" href="#translating" title="Permalink to this headline">¶</a></h1>
+<p>In order to translate puddletag you need Git, Qt Linguist, the PyQt4 translation tools (specifically pylupdate4) and the ability to copy/paste into the console.
+n
+In Ubuntu and Debian-based distros, Git is available in &#8216;git&#8217; package, Qt Linguist in qt-dev-tools and pylupdate4 in pyqt-dev-tools.</p>
+<p>After installing the required tools, you&#8217;ll need to retrieve the latest development release. Open up a terminal and paste the following:</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone git@github.com:keithgg/puddletag.git puddletag
+</pre></div>
+</div>
+<p>The dev version will downloaded into the puddletag directory. Change into the dev directory with:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd</span> puddletag-hg
+</pre></div>
+</div>
+<p>Then run update_translation.py with your desired locale (eg en_ZA, rus, fr) like so:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python update_translation.py your_locale
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You can later update the dev version without downloading the whole thing again by using the following command in the downloaded puddletag dir:</p>
+<div class="last highlight-bash"><div class="highlight"><pre>git pull origin master
+</pre></div>
+</div>
+</div>
+<p>A translation file will be created in <strong>translations/puddletag_your_locale.ts</strong>. Open this file in <strong>Qt Linguist</strong> and translate to your heart&#8217;s content.</p>
+<p>To test your translation, generate a .qm file using <strong>File-&gt;Release</strong> in Qt Linguist. puddletag_your_locale.qm will be generated in the directory the .ts file you opened is stored.</p>
+<p>Copy the .qm to <strong>~/.puddletag/translations</strong> (you&#8217;ll need to create the translations dir). Next time you start puddletag you&#8217;ll have the option to switch to the language in <strong>Edit-&gt;Preferences</strong>.</p>
+<p>Otherwise just run:</p>
+<div class="highlight-bash"><div class="highlight"><pre>puddletag --langfile /path/to/your_locale.qm
+</pre></div>
+</div>
+<p>That being said, I recommend you run the dev version, because the strings used may differ from the latest release. To do so use:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd</span> path/to/puddletag_dev_dir
+python ./puddletag
+</pre></div>
+</div>
+<p>Where <strong>path/to/puddletag_dev_dir</strong> is the path of the directory you downloaded the dev version of puddletag to.</p>
+<p>When you&#8217;re done, post the translation (the .ts file) to the <a class="reference external" href="http://sourceforge.net/apps/phpbb/puddletag">Forum</a> or <a class="reference external" href="https://github.com/keithgg/puddletag/issues">issue tracker</a> and I&#8217;ll merge it into puddletag.</p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

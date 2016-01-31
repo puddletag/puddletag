@@ -1,0 +1,131 @@
+.. include:: subs.txt
+
+.. include:: checksums.txt
+
+Download
+========
+
++ :ref:`dependencies`
++ :ref:`installing_from_source`
++ :ref:`installing_from_the_debian_package`
++ :ref:`installing_on_fedora_14_and_later`
++ :ref:`installing_on_osx`
++ :ref:`development_builds`
++ :ref:`translations`
+
+.. _dependencies:
+
+Dependencies
+------------
+
+puddletag requires the following dependencies. Visit the respective project's page if you having trouble installing a component.
+
+Install instructions follow below.
+
++   At least `Python 2.6 (but not Python 3) <http://python.org>`_
++   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
++   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
++   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
++   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
++   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ (optional) for AcoustID support.
+
+.. _installing_from_source:
+
+Installing from source
+----------------------
+
+Install the dependencies as listed above. For Debian-based distros, you can run the following as root:
+
+.. code-block:: bash
+
+    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
+
++ Now download the source tarball |source_link|_ (SHA1 |source_sha|).
++ Unzip it.
++ You can run puddletag from that directory by typing ``./puddletag`` from the unzipped directory in your console.
++ Alternatively install it by running ``python setup.py install`` as root in the unzipped directory.
++ puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run ``desktop-file-install puddletag.desktop`` as root in the unzipped directory.
+
+.. note:: For AcoustID support in Ubuntu you will also need to **fpcalc** binary
+    For Ubuntu 12.04 and later it is available in the libchromaprint-tools 
+    package.
+
+    For earlier versions and other distros please visit the 
+    `AcoustID <http://acoustid.org/chromaprint>`_ page for installation
+    instructions.
+
+.. _installing_from_the_debian_package:
+
+Installing from the Debian package
+----------------------------------
+
+Download the deb, |deb_link|_ (SHA1 |deb_sha|) and install by double clicking it.
+
+If that doesn't work, first install the dependencies by running as root:
+
+.. code-block:: bash
+
+    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
+
+Then (also as root)
+
+.. parsed-literal::
+
+    dpkg -i |deb_name|
+
+puddletag should be available from your Multimedia menu.
+
+.. _installing_on_fedora_14_and_later:
+
+Installing on Fedora 14 and later
+---------------------------------
+
+Just run (as root):
+
+.. code-block:: bash
+
+   yum install puddletag
+
+Sometimes the latest version is still in the testing repo. Then you should use (also as root:)
+
+.. code-block:: bash
+
+   yum --enablerepo=updates-testing install
+
+
+.. _installing_on_osx:
+
+Installing on OSX
+-----------------
+
+Homebrew
+^^^^^^^^
+
+- Install the package manager from http://brew.sh.
+- Download and install puddletag by typing "brew install puddletag" in your console
+
+From source
+^^^^^^^^^^^
+
+There's a `great article on the VortexBox wiki <http://info.vortexbox.org/tiki-index.php?page=puddletag+on+os+x>`_ detailing the steps you need to follow. 
+
+You can also use Fink as `reported by wgscott on the forum <http://puddletag.sourceforge.net/forum/viewtopic.php?f=1&t=258>`_.
+
+.. _development_builds:
+
+Development builds
+------------------
+
+Source control is done using Git. Use
+
+.. code-block:: bash
+
+    git clone git@github.com:keithgg/puddletag.git
+
+to check it out. And
+
+.. code-block:: bash
+
+    git pull origin master
+
+in the previously cloned directory to update it a later stage.

@@ -1,0 +1,55 @@
+Translating
+===========
+
+In order to translate puddletag you need Git, Qt Linguist, the PyQt4 translation tools (specifically pylupdate4) and the ability to copy/paste into the console.
+n
+In Ubuntu and Debian-based distros, Git is available in 'git' package, Qt Linguist in qt-dev-tools and pylupdate4 in pyqt-dev-tools.
+
+After installing the required tools, you'll need to retrieve the latest development release. Open up a terminal and paste the following:
+
+.. code-block:: bash
+
+    git clone git@github.com:keithgg/puddletag.git puddletag
+
+The dev version will downloaded into the puddletag directory. Change into the dev directory with:
+
+.. code-block:: bash
+
+    cd puddletag-hg
+
+Then run update_translation.py with your desired locale (eg en_ZA, rus, fr) like so:
+
+.. code-block:: bash
+
+    python update_translation.py your_locale
+
+.. note::
+
+    You can later update the dev version without downloading the whole thing again by using the following command in the downloaded puddletag dir:
+
+    .. code-block:: bash
+
+        git pull origin master
+
+A translation file will be created in **translations/puddletag_your_locale.ts**. Open this file in **Qt Linguist** and translate to your heart's content.
+
+To test your translation, generate a .qm file using **File->Release** in Qt Linguist. puddletag_your_locale.qm will be generated in the directory the .ts file you opened is stored.
+
+Copy the .qm to **~/.puddletag/translations** (you'll need to create the translations dir). Next time you start puddletag you'll have the option to switch to the language in **Edit->Preferences**.
+
+Otherwise just run:
+
+.. code-block:: bash
+
+    puddletag --langfile /path/to/your_locale.qm
+
+That being said, I recommend you run the dev version, because the strings used may differ from the latest release. To do so use:
+
+.. code-block:: bash
+
+    cd path/to/puddletag_dev_dir
+    python ./puddletag
+
+Where **path/to/puddletag_dev_dir** is the path of the directory you downloaded the dev version of puddletag to.
+
+When you're done, post the translation (the .ts file) to the `Forum <http://sourceforge.net/apps/phpbb/puddletag>`_ or `issue tracker <https://github.com/keithgg/puddletag/issues>`_ and I'll merge it into puddletag.

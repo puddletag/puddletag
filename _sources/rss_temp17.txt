@@ -1,0 +1,29 @@
+20 March 2011 - 0.10.2
+######################
+
+Another incremental-bugfix release. I might release another one before month-end.
+
+New Features
+------------
+
+* A bunch of new fields related to Mp3tag compatibility, most notably **__tag** and **__tag_read**. All are listed on the :doc:`source/tags`.
+* Loading subfolders can be turned on/off using the Filesystem Window.
+* USLT Frame support for ID3 that uses the same format as ID3. See the :ref:`ID3 page <uslt>`.
+* The Stored Tags window shows the values of all tags found in file.
+* Experimental ID3v2.3 support courtesy of `MusicBrainz Picard <http://musicbrainz.org/doc/PicardTagger>`_. Multiple values are not supported. Don't use it for now unless you really need to. Then report back on how it went. Enable it in Edit->Preferences->Tags.
+* Two new plugins. Details are on the :ref:`Downloads <plugin_downloads>` page.
+
+Fixes
+-----
+
+*   Major MP4 fixes.
+*   Retrieving PUIDS using the MusicBrainz tag source.
+*   Adding album art from Tag Source was defective.
+*   The Tag Panel not updating with 'previewed' values.
+*   Properties window not showing for certain file types.
+
+Changes
+-------
+
+*   Values in the Stored Tags window aren't emboldened anymore due to performance reasons.
+*   WMA support has been completely removed due to the high risk that you'd end up with damaged files.

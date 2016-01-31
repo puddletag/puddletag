@@ -1,0 +1,14 @@
+26 June 2013 - Some news
+########################
+
+Just a heads up that the repository URL has changed to 
+
+.. code-block:: bash
+   
+   http://hg.code.sf.net/p/puddletag/code
+
+Pavel Fric has contributed a Czech translation which you can :download:`download <translations/puddletag_cs.qm>`.
+
+Contributions are always appreciated so please post on the forum (link above) if you'd like to translate puddletag.
+
+New beta coming this weekend.

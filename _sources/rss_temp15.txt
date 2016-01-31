@@ -1,0 +1,42 @@
+3 June 2011 - 0.10.4
+####################
+
+**Update 6 June 2011**: 0.10.6 fixes another bug not found. Think this'll be the last for now.
+**Update 4 June 2011**: Tag sources were broken due to a bug not found in testing. Therefore 0.10.5 has been released.
+
+Unless there're some critical bugs discovered in this release, then the next release will be puddletag v1. There won't be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.
+
+As for this release, there're a lot of changes, but nothing of note UI wise (except for the website theme change copied from the `Django docs <http://djangoproject.com>`_).
+
+Quickly listed, I've added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there's a :download:`changelog` containing most everything done and **Raphaël Rochet** became the first person to translate puddletag by providing a :ref:`French translation <translations>`.
+
+
+New Features
+------------
+
++ Much improved masstagging.
++ The :ref:`Export artwork to file <export_artwork_to_file>` Function.
++ The filter behaves like Mp3tag's. Described in :doc:`source/filter`
++ For the Discogs tag source:
+    + Added the ability to retrieve track artists for Various Artist albums.
+    + This required that the **involvedpeople** field be renamed to **involvedpeople_album** as a list of involved people were returned for each track too.
+    + These people are added to the **involvedpeople_track** field.
+
+Fixes
+-----
+
++ Multiple value handling for ID3v2.3.
++ When editing actions, if a field not in the current list of fields was used, then the list of saved fields would contain only that field.
++ Undoing renaming of dirs and adding images using the Extended Tags dialog.
++ Patterns that use scripting functions in the form **$validate(arg1,,arg3)**. will work correctly in that the second argument will evaluate to an empty string instead of being discarded.
+
+Changes
+-------
+
++ The old Extended Tags plugin will no longer work. Use the :ref:`new one <plugin_downloads>`.
++ Unicode support for Replace with Regular Expression function.
++ **peformersortorder** has been renamed to **performersortorder** in ID3 tags.
++ Similarly the **lyrics_us** field is now **unsyncedlyrics**.
++ Renaming dirs hooks into :ref:`Tag->Dir <tag_to_dir>` function now.
++ A couple related to the QuodLibet library handling.
++ Proper error messages are now shown, differentiating whether the error occurred while writing to files or renaming dirs, files.

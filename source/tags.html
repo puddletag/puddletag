@@ -1,0 +1,664 @@
+
+
+  
+  
+ 
+  
+  
+ 
+
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tag Reference &mdash; puddletag</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.10.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="puddletag" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">puddletag</a>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../download.html">Download</a></li>
+                <li><a href="../news.html">News</a></li>
+                <li><a href="../docs.html">Documentation</a></li>
+                <li><a href="https://github.com/keithgg/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../about.html">About</a></li>
+            
+            
+              
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Tag Reference</a><ul>
+<li><a class="reference internal" href="#default-fields">Default fields</a></li>
+<li><a class="reference internal" href="#functions-only">Functions Only</a></li>
+<li><a class="reference internal" href="#cover-art">Cover Art</a></li>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+</ul>
+</li>
+</ul>
+
+
+<hr style='width:80%'>
+
+
+        </div>
+      </div>
+    <div class="col-md-9">
+      
+  <div class="section" id="tag-reference">
+<h1>Tag Reference<a class="headerlink" href="#tag-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="default-fields">
+<h2>Default fields<a class="headerlink" href="#default-fields" title="Permalink to this headline">¶</a></h2>
+<p>The following fields are common to almost all music files.</p>
+<dl class="describe">
+<dt>
+<code class="descname">__app</code></dt>
+<dd><p>The application name: puddletag v0.10.4 depending on version number.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__bitrate</code></dt>
+<dd><p>The bitrate of the file in kb/s. Note that it&#8217;s a string with kb/s appended as in &#8216;213 kb/s&#8217; and not &#8216;213&#8217;. For Lossless formats this is always &#8216;0 kb/s&#8217;</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__created</code></dt>
+<dd><p>The creation date of the file in YYYY-MM-DD HH:MM:SS format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__dirpath</code></dt>
+<dd><p>The path of the directory the file resides in. /media/Multimedia/Music/myfile.mp3 has __dirpath /media/Multimedia/Music/</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__ext</code></dt>
+<dd><p>Extension of the file. /media/Multimedia/Music/myfile.mp3 has extension mp3</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_accessed_date</code></dt>
+<dd><p>The date the file was accessed in YYYY-MM-DD format</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_accessed_datetime</code></dt>
+<dd><p>The date including the time the file was accessed in YYYY-MM-DD HH:MM:SS format</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_accessed_datetime_raw</code></dt>
+<dd><p>UNIX time of the file&#8217;s last access eg. 1234567890.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_create_date</code></dt>
+<dd><p>Creation date of the file in YYYY-MM-DD format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_create_datetime</code></dt>
+<dd><p>File&#8217;s creation date in YYYY-MM-DD HH:MM:SS format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_create_datetime_raw</code></dt>
+<dd><p>UNIX time of file creation date eg. 1234567890.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_mod_date</code></dt>
+<dd><p>Date the file was last modified in YYYY-MM-DD format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_mod_datetime</code></dt>
+<dd><p>Time the file was last modified in YYYY-MM-DD HH:MM:SS format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_mod_datetime_raw</code></dt>
+<dd><p>UNIX time of file&#8217;s last modification date.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_size</code></dt>
+<dd><p>The file&#8217;s size in human-readable format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_size_bytes</code></dt>
+<dd><p>The file&#8217;s size in bytes.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_size_kb</code></dt>
+<dd><p>The file&#8217;s size in KB.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__file_size_mb</code></dt>
+<dd><p>The file&#8217;s size in MB (to two decimal places).</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__filename</code></dt>
+<dd><p>The filename of the file with the folder stripped. e.g. the __filename of  /media/Multimedia/Music/myfile.mp3 is myfile.mp3</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__filename_no_ext</code></dt>
+<dd><p>The file&#8217;s filename without extension.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__filetype</code></dt>
+<dd><p>The format of the file. Currently the info is very sparse.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__frequency</code></dt>
+<dd><p>The sample rate of the file in kHz. Note that it&#8217;s a string with kHz appended as in &#8216;213 kHz&#8217; and not &#8216;213&#8217;</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__image</code></dt>
+<dd><p>Refers to the album art present in the file.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__image_mimetype</code></dt>
+<dd><p>MimeType of the first cover image in the file.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__image_size</code></dt>
+<dd><p>Size in bytes of the first cover image in the file.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__length</code></dt>
+<dd><p>The length of the file in &#8220;minutes: seconds&#8221; format.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__length_seconds</code></dt>
+<dd><p>Length of the file in seconds.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__mode</code></dt>
+<dd><p>One of, Mono, Stereo, Joint-Stereo or Dual Channel.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__modified</code></dt>
+<dd><p>The last time the file was modified in YYYY-MM-DD HH:MM:SS format .</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__num_images</code></dt>
+<dd><p>Number of cover images found in the file.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__parent_dir</code></dt>
+<dd><p>The name of the parent directory of the directory the file&#8217;s contained in. Cannot be written to.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__path</code></dt>
+<dd><p>The absolute filename of a file including directories. e.g /media/Multimedia/Music/myfile.mp3</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__size</code></dt>
+<dd><p>The size of the file in bytes.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__tag</code></dt>
+<dd><p>Comma-Separated list of tags found in file. Eg. VorbisComment, ID3v2.4, ID3v1.1</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__tag_read</code></dt>
+<dd><p>The tag that&#8217;ll get written to in the file.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="descname">__total</code></dt>
+<dd><p>If the track field is of track/numtracks format, returns numtracks. Can also be written to.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="functions-only">
+<h2>Functions Only<a class="headerlink" href="#functions-only" title="Permalink to this headline">¶</a></h2>
+<p>Only available for Functions is:</p>
+<dl class="describe">
+<dt>
+<code class="descname">__selected</code></dt>
+<dd><p>Having __selected as the field will apply the selected function to the selected cells. So if you have the album field selected in one file and artist in another. The function&#8217;ll be applied to the album field of the first file and artist of the other respectively.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="cover-art">
+<h2>Cover Art<a class="headerlink" href="#cover-art" title="Permalink to this headline">¶</a></h2>
+<p>Cover art can be accessed using the <strong>__image</strong> field. Use it only in Function like <a class="reference internal" href="function.html#remove-fields"><span>Remove Fields</span></a> as album cannot be displayed anywhere other than the <a class="reference internal" href="menus.html#artwork-window"><span>Artwork window</span></a> and <a class="reference internal" href="menus.html#extended-tags-menu"><span>Extended Tags</span></a> dialog.</p>
+<ul class="simple">
+<li>For ID3 tag cover art, writing multiple pictures per file is supported, but a different description is required for each.</li>
+<li>MP4 tags also support multiple pictures per file, but not setting descriptions.</li>
+<li>APEv2 tags can store at most two pictures per file. Moreover, these pictures need to have different cover types, limited to <strong>Cover (front)</strong> and <strong>Cover (back)</strong>.</li>
+<li>VorbisComment tags support multiple pictures per file with no limit on the descriptions or cover types.</li>
+</ul>
+</div>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<p>The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddletag fields. <a class="reference internal" href="id3.html"><em>This</em></a> page lists ID3 Frames and the various ways to edit them in puddletag.</p>
+<p>Any MP4 atoms not in this list will be assumed to be freeform frames, written using &#8216;:com.apple.iTunes:<strong>fieldname</strong>&#8216; as the atom. ID3 frames not found will be written as TXXX frames of the form <strong>TXXX:fieldname</strong> frame.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="27%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">puddletag field</th>
+<th class="head">ID3v2.4 Frame</th>
+<th class="head">MP4 Atom</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>album</strong></td>
+<td>TALB</td>
+<td>alb</td>
+</tr>
+<tr class="row-odd"><td><strong>albumartist</strong></td>
+<td>TPE2</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>albumsortorder</strong></td>
+<td>TSOA</td>
+<td>soal</td>
+</tr>
+<tr class="row-odd"><td><strong>arranger</strong></td>
+<td>TPE4</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>artist</strong></td>
+<td>TPE1</td>
+<td>ART</td>
+</tr>
+<tr class="row-odd"><td><strong>audiodelay</strong></td>
+<td>TDLY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>audiolength</strong></td>
+<td>TLEN</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>audiosize</strong></td>
+<td>TSIZ</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>author</strong></td>
+<td>TOLY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>bpm</strong></td>
+<td>TBPM</td>
+<td>tmpo</td>
+</tr>
+<tr class="row-even"><td><strong>comment</strong></td>
+<td>COMM</td>
+<td>cmt</td>
+</tr>
+<tr class="row-odd"><td><strong>composer</strong></td>
+<td>TCOM</td>
+<td>wrt</td>
+</tr>
+<tr class="row-even"><td><strong>conductor</strong></td>
+<td>TPE3</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>copyright</strong></td>
+<td>TCOP</td>
+<td>cprt</td>
+</tr>
+<tr class="row-even"><td><strong>date</strong></td>
+<td>TDAT</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>discnumber</strong></td>
+<td>TPOS</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>encodedby</strong></td>
+<td>TENC</td>
+<td>too</td>
+</tr>
+<tr class="row-odd"><td><strong>encodingsettings</strong></td>
+<td>TSSE</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>encodingtime</strong></td>
+<td>TDEN</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>filename</strong></td>
+<td>TOFN</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>fileowner</strong></td>
+<td>TOWN</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>filetype</strong></td>
+<td>TFLT</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>genre</strong></td>
+<td>TCON</td>
+<td>gen</td>
+</tr>
+<tr class="row-odd"><td><strong>grouping</strong></td>
+<td>TIT1</td>
+<td>grp</td>
+</tr>
+<tr class="row-even"><td><strong>initialkey</strong></td>
+<td>TKEY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>involvedpeople</strong></td>
+<td>TIPL</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>isrc</strong></td>
+<td>TSRC</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>itunesalbumsortorder</strong></td>
+<td>TSO2</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>itunescompilationflag</strong></td>
+<td>TCMP</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>itunescomposersortorder</strong></td>
+<td>TSOC</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>language</strong></td>
+<td>TLAN</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>lyricist</strong></td>
+<td>TEXT</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>mediatype</strong></td>
+<td>TMED</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>mood</strong></td>
+<td>TMOO</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>musiciancredits</strong></td>
+<td>TMCL</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>organization</strong></td>
+<td>TPUB</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>originalalbum</strong></td>
+<td>TOAL</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>originalartist</strong></td>
+<td>TOPE</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>originalreleasetime</strong></td>
+<td>TDOR</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>originalyear</strong></td>
+<td>TORY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>performersortorder</strong></td>
+<td>TSOP</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>popularimeter</strong></td>
+<td>POPM</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>producednotice</strong></td>
+<td>TPRO</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>radioowner</strong></td>
+<td>TRSO</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>radiostationname</strong></td>
+<td>TRSN</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>recordingdates</strong></td>
+<td>TRDA</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>releasetime</strong></td>
+<td>TDRL</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>setsubtitle</strong></td>
+<td>TSST</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>taggingtime</strong></td>
+<td>TDTG</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>time</strong></td>
+<td>TIME</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>title</strong></td>
+<td>TIT2</td>
+<td>nam</td>
+</tr>
+<tr class="row-odd"><td><strong>titlesortorder</strong></td>
+<td>TSOT</td>
+<td>sonm</td>
+</tr>
+<tr class="row-even"><td><strong>track</strong></td>
+<td>TRCK</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>unsyncedlyrics</strong></td>
+<td>USLT</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>ufid</strong></td>
+<td>UFID</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>version</strong></td>
+<td>TIT3</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>wwwartist</strong></td>
+<td>WOAR</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>wwwcommercialinfo</strong></td>
+<td>WCOM</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>wwwcopyright</strong></td>
+<td>WCOP</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>wwwfileinfo</strong></td>
+<td>WOAF</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>wwwpayment</strong></td>
+<td>WPAY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>wwwpublisher</strong></td>
+<td>WPUB</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>wwwradio</strong></td>
+<td>WORS</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>wwwsource</strong></td>
+<td>WOAS</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>year</strong></td>
+<td>TDRC</td>
+<td>day</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+25 November 2008
+################
+
+Stuff that's added
+------------------
+
+* A filter like in Mp3tag. F3 shows/hides it.
+* Musicbrainz support(Available on the toolbar and Tools -> Musicbrainz). Not sure how good it is. Send me a mail if you have any ideas on improving it.
+* The extended tags dialog is now available via the Tools menu(and by right clicking on the file-view).
+
+Stuff that's fixed
+------------------
+
+* Saving a file's album art to disk now works.
+* The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.
+* Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.
