@@ -1,3 +1,17 @@
+31 January 2015 1.1.1
+    Fixes issue starting puddletag without having git installed.
+
+31 January 2015 1.1.0
+    Playlists not getting loaded in certain cases
+    Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.
+    Plugins are now included in default install
+    Padding of total tracks number follows the same rules as padding a track number #269
+    Improved matching of Amazon resources
+    Filtering 'simple' values works again #253
+    Bug in regex functions where extra \ can get added    
+    Modified date is updated by default when saving
+    Autonumbering has a bunch of new options. Explained in docs.
+	
 11 March 2014 - 1.0.3
     Fixed: Placeholder causing puddletag to not start up for Qt < 4.7.
     Fixed: New version of configobj library not saving unicode objects.
