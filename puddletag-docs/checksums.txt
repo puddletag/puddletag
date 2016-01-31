@@ -1,23 +1,23 @@
-.. |source_link| replace:: puddletag-1.0.5.tar.gz
-.. _source_link: http://sourceforge.net/projects/puddletag/files/puddletag-1.0.5.tar.gz
-.. |deb_link| replace:: puddletag_1.0.5-1_all.deb
-.. _deb_link: http://sourceforge.net/projects/puddletag/files/puddletag_1.0.5-1_all.deb
-.. |deb_name| replace:: puddletag_1.0.5-1_all.deb
+.. |source_link| replace:: puddletag-1.1.0.tar.gz
+.. _source_link: https://github.com/keithgg/puddletag/releases/tag/puddletag-1.1.0.tar.gz
+.. |deb_link| replace:: puddletag_1.1.0-1_all.deb
+.. _deb_link: https://github.com/keithgg/puddletag/releases/puddletag_1.1.0-1_all.deb
+.. |deb_name| replace:: puddletag_1.1.0-1_all.deb
 
-.. |beta_source_link| replace:: puddletag-1.0.5.tar.gz
-.. _beta_source_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.5.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.0.5-1_all.deb
-.. _beta_deb_link: http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.5-1_all.deb
+.. |beta_source_link| replace:: puddletag-1.1.0.tar.gz
+.. _beta_source_link: https://github.com/keithgg/puddletag/releases/puddletag_beta-1.1.0.tar.gz
+.. |beta_deb_link| replace:: puddletag_1.1.0-1_all.deb
+.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/dev/puddletag_beta_1.1.0-1_all.deb
 
-.. |source_sha| replace:: d8b010b17e61214d30edb1008ffe1aa088cde4bd
-.. |deb_sha| replace:: fadfcb20bd10457174fd00f2e2da616f475b196d
-.. |beta_source_sha| replace:: d8b010b17e61214d30edb1008ffe1aa088cde4bd
-.. |beta_deb_sha| replace:: fadfcb20bd10457174fd00f2e2da616f475b196d
+.. |source_sha| replace:: 573cea90308f5ea94bd30fc2c8a9c62d5e4269ef
+.. |deb_sha| replace:: 3fce919430fbe2b88f6a1425b64f801c5cadd40b
+.. |beta_source_sha| replace:: 573cea90308f5ea94bd30fc2c8a9c62d5e4269ef
+.. |beta_deb_sha| replace:: 3fce919430fbe2b88f6a1425b64f801c5cadd40b
 
 .. |version| replace:: 1.1.0
 .. |docs_html_link| replace:: HTML
-.. _docs_html_link: http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-html-1.0.5.tar.bz2
+.. _docs_html_link: https://github.com/keithgg/puddletag/releases/docs/puddletag-docs-html-1.1.0.tar.bz2
 .. |docs_rst_link| replace:: ReStructuredText
-.. _docs_rst_link: http://sourceforge.net/projects/puddletag/files/docs/puddletag-docs-rst-1.0.5.tar.bz2
+.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/docs/puddletag-docs-rst-1.1.0.tar.bz2
 
 
