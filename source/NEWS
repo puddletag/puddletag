@@ -1,4 +1,4 @@
-27 January 2015 - 1.1.0
+31 January 2015 - 1.1.0
    Fixes:
         Playlists not getting loaded in certain cases
         Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.
