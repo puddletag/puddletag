@@ -107,32 +107,7 @@
 <p><a class="reference download internal" href="rss.xml"><code class="xref download docutils literal"><span class="pre">RSS</span> <span class="pre">Feed</span></code></a></p>
 <hr class="docutils" />
 <div class="section" id="january-2016-1-1-0">
-<h2>27 January 2016 - 1.1.0<a class="headerlink" href="#january-2016-1-1-0" title="Permalink to this headline">¶</a></h2>
-<p>puddletag v1.1.0 is out. This release contains minor changes made over more than a year.</p>
-<p>This release also completes the move to GitHub. All future downloads will point to GitHub. Documentation can be found
-at the new URL <a class="reference external" href="http://docs.puddletag.net">http://docs.puddletag.net</a>.</p>
-<p>Fixes</p>
-<ul class="simple">
-<li>Playlists not getting loaded in certain cases</li>
-<li>Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.</li>
-<li>Plugins are now included in default install</li>
-<li>Padding of total tracks number follows the same rules as padding a track number #269</li>
-<li>Improved matching of Amazon resources</li>
-<li>Filtering &#8216;simple&#8217; values works again #253</li>
-<li>Bug in regex functions where extra can get added</li>
-</ul>
-<p>Changes</p>
-<ul class="simple">
-<li>Modified date is updated by default when saving</li>
-</ul>
-<p>New</p>
-<ul class="simple">
-<li>Autonumbering has a bunch of new options. Explained <a class="reference internal" href="source/menus.html#autonumbering-wizard"><span>here</span></a>.</li>
-</ul>
-</div>
-<hr class="docutils" />
-<div class="section" id="id1">
-<h2>27 January 2016 - 1.1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>31 January 2016 - 1.1.0<a class="headerlink" href="#january-2016-1-1-0" title="Permalink to this headline">¶</a></h2>
 <p>puddletag v1.1.0 is out. This release contains minor changes made over more than a year.</p>
 <p>This will be the last release on SourceForge. All future downloads will point to GitHub. Documentation can be found
 at the new URL <a class="reference external" href="http://docs.puddletag.net">http://docs.puddletag.net</a>.</p>
@@ -239,8 +214,8 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <li>__total can be edited in Tag Panel and other places.</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h3>Fixes:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Fixes:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>MP4 tagging not working at all. I cannot believe no one picked this up.</li>
 <li>Discogs didn&#8217;t return all album info.</li>
@@ -282,15 +257,15 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <h2>9 June 2012 - 1.0.0RC1<a class="headerlink" href="#june-2012-1-0-0rc1" title="Permalink to this headline">¶</a></h2>
 <p>This release is the first RC with the final release planned for next week depending on feedback. All that&#8217;s still needed is to update the docs, fix some outstanding bugs and package the plugins.</p>
 <p>As for the changes here, it&#8217;s just some bug fixes. For a more comprehensive list see the <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>. The most interesting ones are:</p>
-<div class="section" id="id5">
-<h3>Fixes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Fixes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Loading a new directory would sometimes not unload previously loaded directory.</li>
 <li>Mp3tag tag source are more compatible than before.</li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h3>Changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>Changes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The only dependency for AcoustID now is that you have
 <a class="reference external" href="http://acoustid.org/chromaprint">chromaprint</a> installed.</li>
@@ -302,16 +277,16 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <h2>11 April 2012 - 1.0.0beta5<a class="headerlink" href="#april-2012-1-0-0beta5" title="Permalink to this headline">¶</a></h2>
 <p><strong>18 April 2012 - Updated to 1.0.0beta6 to fix issues with deb. This is the second last beta.</strong></p>
 <p>This release contains a ton of fixes with regards to Tag Sources.</p>
-<div class="section" id="id7">
-<h3>Fixes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>Fixes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>MusicBrainz works.</li>
 <li>Discogs works better with regards to VA albums.</li>
 <li>Amazon works again.</li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h3>New Features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>New Features<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><strong>__md5_sig</strong> field for FLAC.</li>
 <li><strong>$regex</strong> scripting function.</li>
@@ -362,8 +337,8 @@ it does contain important stuff like.</p>
 <p>Unless there&#8217;re some critical bugs discovered in this release, then the next release will be puddletag v1. There won&#8217;t be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.</p>
 <p>As for this release, there&#8217;re a lot of changes, but nothing of note UI wise (except for the website theme change copied from the <a class="reference external" href="http://djangoproject.com">Django docs</a>).</p>
 <p>Quickly listed, I&#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&#8217;s a <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a> containing most everything done and <strong>Raphaël Rochet</strong> became the first person to translate puddletag by providing a <span class="xref std std-ref">French translation</span>.</p>
-<div class="section" id="id9">
-<h3>New Features<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>New Features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p class="first">Much improved masstagging.</p>
 </li>
@@ -383,8 +358,8 @@ it does contain important stuff like.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="id10">
-<h3>Fixes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h3>Fixes<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Multiple value handling for ID3v2.3.</li>
 <li>When editing actions, if a field not in the current list of fields was used, then the list of saved fields would contain only that field.</li>
@@ -392,8 +367,8 @@ it does contain important stuff like.</p>
 <li>Patterns that use scripting functions in the form <strong>$validate(arg1,,arg3)</strong>. will work correctly in that the second argument will evaluate to an empty string instead of being discarded.</li>
 </ul>
 </div>
-<div class="section" id="id11">
-<h3>Changes<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>Changes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The old Extended Tags plugin will no longer work. Use the <span class="xref std std-ref">new one</span>.</li>
 <li>Unicode support for Replace with Regular Expression function.</li>
@@ -410,8 +385,8 @@ it does contain important stuff like.</p>
 <h2>23 March 2011 - 0.10.3<a class="headerlink" href="#march-2011-0-10-3" title="Permalink to this headline">¶</a></h2>
 <p>A couple of critical bugs were found in the last release, they&#8217;ve all been fixed.</p>
 <p>Provided nothing critical arises, there won&#8217;t be any releases until at least late next month.</p>
-<div class="section" id="id12">
-<h3>Fixes<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id11">
+<h3>Fixes<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Deleting tags when they contain mapped fields.</li>
 <li>Functions operating on multiple values like Merge Field were broken.</li>
@@ -424,8 +399,8 @@ it does contain important stuff like.</p>
 <div class="section" id="march-2011-0-10-2">
 <h2>20 March 2011 - 0.10.2<a class="headerlink" href="#march-2011-0-10-2" title="Permalink to this headline">¶</a></h2>
 <p>Another incremental-bugfix release. I might release another one before month-end.</p>
-<div class="section" id="id13">
-<h3>New Features<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h3>New Features<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>A bunch of new fields related to Mp3tag compatibility, most notably <strong>__tag</strong> and <strong>__tag_read</strong>. All are listed on the <a class="reference internal" href="source/tags.html"><em>Tag Reference</em></a>.</li>
 <li>Loading subfolders can be turned on/off using the Filesystem Window.</li>
@@ -435,8 +410,8 @@ it does contain important stuff like.</p>
 <li>Two new plugins. Details are on the <span class="xref std std-ref">Downloads</span> page.</li>
 </ul>
 </div>
-<div class="section" id="id14">
-<h3>Fixes<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>Fixes<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Major MP4 fixes.</li>
 <li>Retrieving PUIDS using the MusicBrainz tag source.</li>
@@ -445,8 +420,8 @@ it does contain important stuff like.</p>
 <li>Properties window not showing for certain file types.</li>
 </ul>
 </div>
-<div class="section" id="id15">
-<h3>Changes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>Changes<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Values in the Stored Tags window aren&#8217;t emboldened anymore due to performance reasons.</li>
 <li>WMA support has been completely removed due to the high risk that you&#8217;d end up with damaged files.</li>
@@ -457,23 +432,23 @@ it does contain important stuff like.</p>
 <div class="section" id="march-2011-0-10-0">
 <h2>8 March 2011 - 0.10.0<a class="headerlink" href="#march-2011-0-10-0" title="Permalink to this headline">¶</a></h2>
 <p>This is a kind-of bugfix release. I&#8217;m releasing it before I start with some pretty major architecture-related changes.</p>
-<div class="section" id="id16">
-<h3>New Features<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3>New Features<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Cover art support for all formats (except ASF)</li>
 <li>Loading master releases in the Discogs.com tag source.</li>
 </ul>
 </div>
-<div class="section" id="id17">
-<h3>Changes<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>Changes<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>For ID3 tags, UFID frames are now only loaded if the data can be decoded to UTF8.</li>
 <li>MusicBrainz artist search retrieves 100 albums by default.</li>
 <li>The initial reading of a directory can be canceled now.</li>
 </ul>
 </div>
-<div class="section" id="id18">
-<h3>Fixes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id17">
+<h3>Fixes<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Uncaught errors for Tag Sources shouldn&#8217;t leave the Tag Sources window disabled anymore.</li>
 <li>Discogs artist/albums are parsed correctly instead of looking weird.</li>
@@ -487,8 +462,8 @@ it does contain important stuff like.</p>
 <div class="section" id="february-2011-0-9-12">
 <h2>9 February 2011 - 0.9.12<a class="headerlink" href="#february-2011-0-9-12" title="Permalink to this headline">¶</a></h2>
 <p>Almost all the work done, was modifying the code base so that puddletag could be translated properly. I&#8217;ve put up a <a class="reference internal" href="source/translate.html"><em>translation guide</em></a> for interested parties. Since this is a bug-fix release, there are no new features, just some changes and fixes.</p>
-<div class="section" id="id19">
-<h3>Changes<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id18">
+<h3>Changes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Users stuck using python-musicbrainz2 &lt; 0.7.0 shouldn&#8217;t have problems with puddletag crashing on startup.</li>
 <li>Nor is python-musicbrainz2 a hard dependency any more.</li>
@@ -516,16 +491,16 @@ it does contain important stuff like.</p>
 <div class="section" id="december-2010-0-9-10">
 <h2>18 December 2010 - 0.9.10<a class="headerlink" href="#december-2010-0-9-10" title="Permalink to this headline">¶</a></h2>
 <p>A bug was discovered in Discogs that&#8217;d make it fail on the vast majority of albums (just not the ones I tested with). This release is to fix that. But I&#8217;ve included the following too:</p>
-<div class="section" id="id21">
-<h3>New Features<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id20">
+<h3>New Features<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Discogs uses the Discogs ID field (which you can define) if it&#8217;s found in your files.</li>
 <li>You can use your own Amazon and Discogs API keys.</li>
 <li><strong>__counter</strong> and <strong>__total_files</strong> fields which you can use in Functions and Actions. Info <a class="reference internal" href="source/tags.html"><em>here</em></a>.</li>
 </ul>
 </div>
-<div class="section" id="id22">
-<h3>Fixes<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id21">
+<h3>Fixes<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Case Sensitivity for field names is handled better.</li>
 </ul>
@@ -537,8 +512,8 @@ it does contain important stuff like.</p>
 <p>This&#8217;ll be the last release for a while as I&#8217;m taking a break from puddletag development. I&#8217;ll still be lurking in the forums and issue tracker, so don&#8217;t hesitate to ask for help or report bugs.</p>
 <p>All in all this has been a good year for puddletag. It went from kinda-working to better than anything else on Linux. Besides myself you gotta thank Evan for that. Without his constant feedback, testing and feature requests puddletag would be way less than it is.</p>
 <p>So yeah, some goals (like better WMA support) haven&#8217;t been met, but on the whole I&#8217;m satisfied with the way things turned out. The next planned release will be around mid to late March 2011, although I might do one in late January to update translations and plugins. Any other releases before March 2011 will be bugfix releases.</p>
-<div class="section" id="id23">
-<h3>New Features<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id22">
+<h3>New Features<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>puddletag now supports translations. If you want to create one for your language create an on the <a class="reference external" href="https://github.com/keithgg/puddletag">issue tracker</a>.</li>
 <li>A <a class="reference internal" href="source/function.html#convert-from-non-standard-encoding"><span>new Function</span></a> to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.</li>
@@ -555,8 +530,8 @@ it does contain important stuff like.</p>
 <li>You can now automatically retrieve matches using Tag Sources. Kinda like mini-masstagging.</li>
 </ul>
 </div>
-<div class="section" id="id24">
-<h3>Changes<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id23">
+<h3>Changes<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The Replace with Regular Expression function now starts from $1 instead of $0. I had to do this in order for Mp3tag&#8217;s Tag Sources to work. Please update your actions.</li>
 <li>Previews in the Functions dialog now show the fields too.</li>
@@ -565,8 +540,8 @@ it does contain important stuff like.</p>
 <li>performer in ID3 has been changed to albumartist.</li>
 </ul>
 </div>
-<div class="section" id="id25">
-<h3>Fixes<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id24">
+<h3>Fixes<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>MP4 mappings and handling of unicode fields in MP4 files.</li>
 <li>ID3&#8217;s rating didn&#8217;t handle missing parameters well.</li>
@@ -592,22 +567,22 @@ it does contain important stuff like.</p>
 <div class="section" id="october-2010-0-9-7">
 <h2>30 October 2010 - 0.9.7<a class="headerlink" href="#october-2010-0-9-7" title="Permalink to this headline">¶</a></h2>
 <p>There&#8217;s not much to this release, but I think the second &#8216;New Feature&#8217; is pretty fundamental to puddletag&#8217;s usability. Enjoy.</p>
-<div class="section" id="id26">
-<h3>New Features<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id25">
+<h3>New Features<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The Autonumbering wizard is now a Function.</li>
 <li>Fields are now case-insensitive. Which means that if a file contains a field named &#8216;album&#8217;, writing to &#8216;ALBUM&#8217; will rename &#8216;album&#8217; to &#8216;ALBUM&#8217;.</li>
 <li>You can add your actions as shortcuts to the Actions menu. See the tooltip for Create Shortcut in Actions dialog for details.</li>
 </ul>
 </div>
-<div class="section" id="id27">
-<h3>Fixes<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id26">
+<h3>Fixes<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Just a couple bugs were fixed, but nothing noteworthy.</li>
 </ul>
 </div>
-<div class="section" id="id28">
-<h3>Changes<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id27">
+<h3>Changes<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Filenames are now written using the filesystem&#8217;s encoding instead of UTF-8 (though you should be using UTF-8 anyway ;)).</li>
 <li>A new logo cause the old one was getting a bit long in the tooth.</li>
@@ -626,8 +601,8 @@ it does contain important stuff like.</p>
 <div class="section" id="october-2010-0-9-5">
 <h2>9 October 2010 - 0.9.5<a class="headerlink" href="#october-2010-0-9-5" title="Permalink to this headline">¶</a></h2>
 <p>This release is a bit late, but packed with features.</p>
-<div class="section" id="id29">
-<h3>New Features<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id28">
+<h3>New Features<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Actions and Functions now operate and write multiple-valued fields.</li>
 <li>A bunch of new Functions. All listed on the <a class="reference internal" href="source/function.html"><em>functions</em></a>.</li>
@@ -642,15 +617,15 @@ it does contain important stuff like.</p>
 <li>All <a class="reference internal" href="docs.html"><em>docs</em></a> have been updated.</li>
 </ul>
 </div>
-<div class="section" id="id30">
-<h3>Fixes<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id29">
+<h3>Fixes<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>If it was broken before, it probably works now.</li>
 <li>The one major fix is that you can load files with messed up encodings now, instead of having puddletag choke on them.</li>
 </ul>
 </div>
-<div class="section" id="id31">
-<h3>Changes<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id30">
+<h3>Changes<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Files that have previews now have a green background while in Preview Mode (Configurable in Edit-&gt;Preferences).</li>
 <li>The configuration for the MusicBrainz Tag Source has been removed. Instead I&#8217;ve opted to return MusicBrainz fields (Album ID, Artist ID, Track ID) by default in mbrainz_track_id, mbrainz_album_id and mbrainz_artist_id. I&#8217;ve also set up default mappings, so that these fields are written to the correct field for each format. Remove ~/.puddletag/mappings to get these.</li>
@@ -661,8 +636,8 @@ it does contain important stuff like.</p>
 <div class="section" id="august-2010-0-9-4">
 <h2>25 August 2010 - 0.9.4<a class="headerlink" href="#august-2010-0-9-4" title="Permalink to this headline">¶</a></h2>
 <p>As promised, this release is awesome. The next one will be in a couple of weeks, it&#8217;ll include some features I&#8217;ve been promising for a while.</p>
-<div class="section" id="id32">
-<h3>New Features<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id31">
+<h3>New Features<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Profiles were added to MassTagging, which means now you can do a configuration once and use that forever.</li>
 <li>Renaming files is now possible within Preview Mode.</li>
@@ -682,8 +657,8 @@ it does contain important stuff like.</p>
 <li>A bunch of others that aren&#8217;t really worth mentioning.</li>
 </ul>
 </div>
-<div class="section" id="id33">
-<h3>Changes<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id32">
+<h3>Changes<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>I&#8217;ve changed the way Tag Sources store their settings, so you&#8217;ll need to reconfigure them.</li>
 </ul>
@@ -694,8 +669,8 @@ it does contain important stuff like.</p>
 <h2>11 August 2010 - 0.9.3<a class="headerlink" href="#august-2010-0-9-3" title="Permalink to this headline">¶</a></h2>
 <p>Because of time commitments and the complexity of the new features, this release is a bit late...and a bit unfinished. I&#8217;m releasing it, because it contains too many bugfixes to keep to myself (and those using svn).</p>
 <p>Trust me when I say 0.9.4, due the 25th, will be awesome.</p>
-<div class="section" id="id34">
-<h3>New Features<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id33">
+<h3>New Features<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>I&#8217;ve added WavPack, MusePack, and basic WMA support (only common fields, not including artwork are supported.)</li>
 <li><em>Masstagging</em>. Also known as the time-sink, was added. What this allows you to do is retrieve tags from multiple tag sources at once, combine time and write them to the selected files. It sounds simple, but extremely useful. There&#8217;s no tutorial for it as yet (soon), but I think the interface is pretty self-explanatory.</li>
@@ -705,8 +680,8 @@ it does contain important stuff like.</p>
 <li>Converting filenames to tags can now take the directory name into account. Description on <a class="reference internal" href="source/menus.html"><em>menus page</em></a>.</li>
 </ul>
 </div>
-<div class="section" id="id35">
-<h3>Bugs<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id34">
+<h3>Bugs<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Some Tag Panel Bugs, including entries being replaced if an autocompletion was found of differing case. Genres always being Acapella and when adding entries like Blues\Rock not being separated properly. And puddletag crashing on loading non-ASCII genres.</li>
 <li>Copy/Paste not working correctly sometimes.</li>
@@ -730,8 +705,8 @@ it does contain important stuff like.</p>
 <li>A new applicication icon created by Evan himself.</li>
 </ul>
 </div>
-<div class="section" id="id36">
-<h3>Fixes<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id35">
+<h3>Fixes<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>No new fixes were entered last week, but there&#8217;s a bug that completely freezes puddletag that I haven&#8217;t been able to track down. I&#8217;ll fix this one as soon as I find out just WTH is causing it.</li>
 </ul>
@@ -741,8 +716,8 @@ it does contain important stuff like.</p>
 <div class="section" id="june-2010-0-9-1">
 <h2>25 June 2010 - 0.9.1<a class="headerlink" href="#june-2010-0-9-1" title="Permalink to this headline">¶</a></h2>
 <p>Just a couple of things this time. I spent most of my time on backend stuff. Next week will be dedicated to tag sources, so expect some major additions/improvements on that side.</p>
-<div class="section" id="id37">
-<h3>New Stuff:<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id36">
+<h3>New Stuff:<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Moving files using Tag-&gt;File is now supported. See the <a class="reference external" href="source/functions">functions page</a> for examples.</li>
 <li>And using it as an part of an action is possible too.</li>
@@ -750,15 +725,15 @@ it does contain important stuff like.</p>
 <li>Complete rewrite of the tag sources backend. Now you can sort the tag sources window using any field you want.</li>
 </ul>
 </div>
-<div class="section" id="id38">
-<h3>Fixes<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id37">
+<h3>Fixes<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>A bug where the same value is shown for user-defined fields in ID3 tags.</li>
 <li>The artwork windows resizing by itself (when not docked).</li>
 </ul>
 </div>
-<div class="section" id="id39">
-<h3>Changes<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id38">
+<h3>Changes<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The Replace with regular expression function now works like Mp3tag&#8217;s. i.e only replacing matches instead of overwriting whatever field it was writing to.</li>
 <li>Extended tags now shows changes properly.</li>
@@ -775,8 +750,8 @@ it does contain important stuff like.</p>
 <div class="section" id="april-2010">
 <h2>14 April 2010<a class="headerlink" href="#april-2010" title="Permalink to this headline">¶</a></h2>
 <p>It&#8217;s five months later and from the outside it kinda looks like the project has died when in fact I&#8217;ve spent more time working on puddletag this year than I have the past two years. All thanks to Evan Devetsis who&#8217;ve taken it upon himself to help me make puddletag better. Mostly it was restructuring work in paving the way to add new features, like:</p>
-<div class="section" id="id40">
-<h3>New Features<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id39">
+<h3>New Features<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Multiple tag sources support. Musicbrainz only for now, will add more over the coming week.</li>
 <li>Tag mappings. Map a tag to whatever you want to.</li>
@@ -788,8 +763,8 @@ it does contain important stuff like.</p>
 <li>All icons not created by me are from the Oxygen icon set for KDE. As soon as I found out how to detect if GNOME is running, I&#8217;ll add some Ubuntu icons.</li>
 </ul>
 </div>
-<div class="section" id="id41">
-<h3>Fixes<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id40">
+<h3>Fixes<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Far too many to list.</li>
 </ul>
@@ -799,14 +774,14 @@ it does contain important stuff like.</p>
 <hr class="docutils" />
 <div class="section" id="november-2009">
 <h2>5 November 2009<a class="headerlink" href="#november-2009" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id42">
-<h3>New Features<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id41">
+<h3>New Features<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The only new feature for this release is that the MusicBrainz dialog now allows you to select individual tracks. I like it better now.</li>
 </ul>
 </div>
-<div class="section" id="id43">
-<h3>Changes<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id42">
+<h3>Changes<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Some (actually many) bugs with loading directories were fixed.</li>
 </ul>
@@ -816,8 +791,8 @@ it does contain important stuff like.</p>
 <hr class="docutils" />
 <div class="section" id="october-2009">
 <h2>10 October 2009<a class="headerlink" href="#october-2009" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id44">
-<h3>New Features<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id43">
+<h3>New Features<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>A Stored Tags dialog that shows the current tags of the selected file as stored on disk. Useful for when editing libraries and the tag differs from the tag on disk.</li>
 <li>I added an option to allow retrieval of duplicates via a specific tag. This can speed things up for some searches.</li>
@@ -825,14 +800,14 @@ it does contain important stuff like.</p>
 <li>And finally, a setup script.</li>
 </ul>
 </div>
-<div class="section" id="id45">
-<h3>Changes<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id44">
+<h3>Changes<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Instead of changing the background colour of a row, the Musicbrainz dialog now just emboldens the text that&#8217;s to be written. It&#8217;s better this way.</li>
 </ul>
 </div>
-<div class="section" id="id46">
-<h3>Fixes<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id45">
+<h3>Fixes<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Duplicates can retrieve more than 300 at a time. (My fault for not checking.)</li>
 <li>Musicbrainz now works for all cases (it gave an error when retrieving via &#8216;album&#8217;).</li>
@@ -845,29 +820,29 @@ it does contain important stuff like.</p>
 <hr class="docutils" />
 <div class="section" id="september-2009">
 <h2>9 September 2009<a class="headerlink" href="#september-2009" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id47">
-<h3>New Features<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id46">
+<h3>New Features<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>A super useful duplicates finder. It&#8217;s not as well tested as I&#8217;d like so I&#8217;ll make that a priority for the next release. Currently it only works on the supported music libraries. I&#8217;ll add support for arbitrary folders during the month.</li>
 <li>Rudimentary file-management support had been added to the filesystem view.</li>
 <li>Note that I haven&#8217;t added any progress bars for these features (due in a week) so just have patience when using them (and keep an eye on the command line for errors).</li>
 </ul>
 </div>
-<div class="section" id="id48">
-<h3>Changes<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id47">
+<h3>Changes<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>I&#8217;ve changed the config system to use ConfigObj as PyQt4&#8217;s too buggy and Python&#8217;s built in library too much of a pain. Because of this, I recommend you remove ~/.puddletag/puddletag.conf just to avoid any adverse effects from using the new config style.</li>
 <li>Amarok library support has been removed due to the fact that it&#8217;ll probably not work on any machine but mine (and that&#8217;s not even guaranteed).</li>
 </ul>
 </div>
-<div class="section" id="id49">
-<h3>Fixes<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id48">
+<h3>Fixes<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Bugs were fixed where needed (I seriously need to remember to log this stuff)</li>
 </ul>
 </div>
-<div class="section" id="id50">
-<h3>Website changes<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id49">
+<h3>Website changes<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>It looks tons better.</li>
 <li>A <a class="reference internal" href="screenshots.html"><em>screenshots</em></a> section was added. I&#8217;ll up some videos during the month if I get time.</li>
@@ -878,21 +853,21 @@ it does contain important stuff like.</p>
 <div class="section" id="june-2009">
 <h2>4 June 2009<a class="headerlink" href="#june-2009" title="Permalink to this headline">¶</a></h2>
 <p>Besides not having much time, I have been very lazy this month when it came to puddletag. If all goes well then the next release will be more bountiful. Till then, you&#8217;ll have to make due with this, which only has the following to offer...</p>
-<div class="section" id="id51">
-<h3>New Features<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id50">
+<h3>New Features<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Loading times are improved by a couple of miliseconds.</li>
 <li>I&#8217;ve implemented a bit of fuzzy string matching via the Show Dupes button. Enter a tag prepended by a colon (like <strong>&#8221;:title</strong> and values will be fuzzily matched. It uses the <a class="reference external" href="http://code.michael-noll.com/?p=third-party;a=tree;f=python-Levenshtein-0.10.1">python-Levenshtein</a> for matching. If you don&#8217;t have it installed, difflib (part of the standard library) is used. There isn&#8217;t much difference except that Levenshtein is supposed to be faster since it&#8217;s compiled (I haven&#8217;t tested it though). Furthermore, entering <strong>:artist</strong> in the library search box will show you all the fuzzily matched duplicate artists.</li>
 </ul>
 </div>
-<div class="section" id="id52">
-<h3>Changes<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id51">
+<h3>Changes<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>I just changed the UI a bit to make it more coherent. It&#8217;s still ugly as hell, but that&#8217;s way outta my area of expertise.</li>
 </ul>
 </div>
-<div class="section" id="id53">
-<h3>Fixes<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id52">
+<h3>Fixes<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>There are many. I spent some time writing unit tests and testing the critical parts of puddletag. Many bugs were found. Many of these bugs weren&#8217;t logged. This being said, there may still be some bugs as I&#8217;ve once again made some internal changes that could mess up things. Expect one or two updates during the month.</li>
 </ul>
@@ -903,24 +878,24 @@ it does contain important stuff like.</p>
 <h2>1 May 2009<a class="headerlink" href="#may-2009" title="Permalink to this headline">¶</a></h2>
 <p>I like so this release so much that I almost changed it to puddletag version 1, but it still has some shortcomings compared to Mp3tag and some things that I want to implement before then.</p>
 <p>With that being said, here are the changes you&#8217;ll notice.</p>
-<div class="section" id="id54">
-<h3>New Features<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id53">
+<h3>New Features<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Saving and loading is now loads faster. On par with Mp3tag (sometimes puddletag is faster, sometimes Mp3tag).</li>
 <li>Like Mp3tag, puddletag stores a history of all the values you&#8217;ve used for the Format Value function, and every other one. Unlike Mp3tag, puddletag allows you delete any entries you don&#8217;t want on-the-fly, by clicking the red button next to it!</li>
 <li>Cut, Copy and Paste of tags is supported. Available via the Edit menu.</li>
 </ul>
 </div>
-<div class="section" id="id55">
-<h3>Changes<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id54">
+<h3>Changes<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>All window related actions were move to a new Windows menu to reduce clutter on the edit menu.</li>
 <li>A progress indicator is now shown when loading a music library.</li>
 <li>Settings are stored in ~/.puddletag instead of the ~/.config...</li>
 </ul>
 </div>
-<div class="section" id="id56">
-<h3>Fixes<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id55">
+<h3>Fixes<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Bugs in the image editor (changing picture type, enabling buttons depending on context, etc.) are fixed.</li>
 <li>Clicking Cancel while loading or saving now actually works as expected and instantly.</li>
@@ -1008,8 +983,8 @@ Expect these irritants to be gone two weeks from now.</p>
 <p>Don&#8217;t expect any updates until the 20th of January. If everything works out I&#8217;ll have at least one feature that sets puddletag apart from any tag-editor I&#8217;ve ever seen and propel puddletag into greatness.</p>
 </div>
 <hr class="docutils" />
-<div class="section" id="id57">
-<h2>3 December 2008<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id56">
+<h2>3 December 2008<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="stuff-that-s-added">
 <h3>Stuff that&#8217;s added<a class="headerlink" href="#stuff-that-s-added" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -1019,8 +994,8 @@ Expect these irritants to be gone two weeks from now.</p>
 <li>FLAC and APEv2 tags are now supported (only text tags, not images). Feedback on these would be appreciated as I have a serious lack of FLAC on my PC.</li>
 </ul>
 </div>
-<div class="section" id="id58">
-<h3>Stuff that&#8217;s fixed:<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id57">
+<h3>Stuff that&#8217;s fixed:<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>The musicbrainz dialog doesn&#8217;t freeze up puddletag anymore. Note that the threading is implemented in a very roughshod way though, so don&#8217;t hesitate to contact me if behaves in unexpected ways.</li>
 <li>The main window&#8217;s layout in addition to its size is now saved.</li>
@@ -1030,16 +1005,16 @@ Expect these irritants to be gone two weeks from now.</p>
 <hr class="docutils" />
 <div class="section" id="november-2008">
 <h2>25 November 2008<a class="headerlink" href="#november-2008" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id59">
-<h3>Stuff that&#8217;s added<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id58">
+<h3>Stuff that&#8217;s added<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>A filter like in Mp3tag. F3 shows/hides it.</li>
 <li>Musicbrainz support(Available on the toolbar and Tools -&gt; Musicbrainz). Not sure how good it is. Send me a mail if you have any ideas on improving it.</li>
 <li>The extended tags dialog is now available via the Tools menu(and by right clicking on the file-view).</li>
 </ul>
 </div>
-<div class="section" id="id60">
-<h3>Stuff that&#8217;s fixed<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id59">
+<h3>Stuff that&#8217;s fixed<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Saving a file&#8217;s album art to disk now works.</li>
 <li>The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.</li>

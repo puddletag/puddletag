@@ -1,6 +1,16 @@
-16 December 2008
-################
+3 December 2008
+###############
 
-It's December and the sun is out. As such, all I have to show is just a couple of bugfixes (in particular, the import from file window not saving tags) and a message that appears in the statusbar when an error occurs while editing a file.
+Stuff that's added
+------------------
 
-Don't expect any updates until the 20th of January. If everything works out I'll have at least one feature that sets puddletag apart from any tag-editor I've ever seen and propel puddletag into greatness.
+* Genres! Now you don't have to remember all of them.
+* Press Ctrl+W to switch between the file-view, pattern combo and the tag panel.
+* A splash screen for the long loads at the beginning to keep you company.
+* FLAC and APEv2 tags are now supported (only text tags, not images). Feedback on these would be appreciated as I have a serious lack of FLAC on my PC.
+
+Stuff that's fixed:
+-------------------
+
+* The musicbrainz dialog doesn't freeze up puddletag anymore. Note that the threading is implemented in a very roughshod way though, so don't hesitate to contact me if behaves in unexpected ways.
+* The main window's layout in addition to its size is now saved.

@@ -1,33 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 31 Jan 2016 12:08:31 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>27 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 31 Jan 2016 12:57:18 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>31 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
   &lt;div class="section" id="january-2016-1-1-0"&gt;
-&lt;h1&gt;27 January 2016 - 1.1.0&lt;/h1&gt;
-&lt;p&gt;puddletag v1.1.0 is out. This release contains minor changes made over more than a year.&lt;/p&gt;
-&lt;p&gt;This release also completes the move to GitHub. All future downloads will point to GitHub. Documentation can be found
-at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"&gt;http://docs.puddletag.net&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Fixes&lt;/p&gt;
-&lt;ul class="simple"&gt;
-&lt;li&gt;Playlists not getting loaded in certain cases&lt;/li&gt;
-&lt;li&gt;Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.&lt;/li&gt;
-&lt;li&gt;Plugins are now included in default install&lt;/li&gt;
-&lt;li&gt;Padding of total tracks number follows the same rules as padding a track number #269&lt;/li&gt;
-&lt;li&gt;Improved matching of Amazon resources&lt;/li&gt;
-&lt;li&gt;Filtering &amp;#8216;simple&amp;#8217; values works again #253&lt;/li&gt;
-&lt;li&gt;Bug in regex functions where extra can get added&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Changes&lt;/p&gt;
-&lt;ul class="simple"&gt;
-&lt;li&gt;Modified date is updated by default when saving&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;New&lt;/p&gt;
-&lt;ul class="simple"&gt;
-&lt;li&gt;Autonumbering has a bunch of new options. Explained &lt;a class="reference internal" href="source/menus.html#autonumbering-wizard"&gt;&lt;span&gt;here&lt;/span&gt;&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-
-</description><author>concentricpuddle</author><pubDate>Wed, 27 Jan 2016 00:00:00 GMT</pubDate></item><item><title>27 January 2016 - 1.1.0</title><link>http://puddletag.sourceforge.net/news.html#january-2016-1-1-0</link><description>
-  &lt;div class="section" id="january-2016-1-1-0"&gt;
-&lt;h1&gt;27 January 2016 - 1.1.0&lt;/h1&gt;
+&lt;h1&gt;31 January 2016 - 1.1.0&lt;/h1&gt;
 &lt;p&gt;puddletag v1.1.0 is out. This release contains minor changes made over more than a year.&lt;/p&gt;
 &lt;p&gt;This will be the last release on SourceForge. All future downloads will point to GitHub. Documentation can be found
 at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"&gt;http://docs.puddletag.net&lt;/a&gt;.&lt;/p&gt;
@@ -52,7 +26,7 @@ at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"
 &lt;/ul&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 13 May 2015 00:00:00 GMT</pubDate></item><item><title>13 May 2015 - Moving to Github.</title><link>http://puddletag.sourceforge.net/news.html#may-2015-moving-to-github</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 31 Jan 2016 00:00:00 GMT</pubDate></item><item><title>13 May 2015 - Moving to Github.</title><link>http://puddletag.sourceforge.net/news.html#may-2015-moving-to-github</link><description>
   &lt;div class="section" id="may-2015-moving-to-github"&gt;
 &lt;h1&gt;13 May 2015 - Moving to Github.&lt;/h1&gt;
 &lt;p&gt;With the shutdown of Google Code and the increasing dissatisfaction with SF, I&amp;#8217;ve mode the code and issue tracker over to Github.&lt;/p&gt;
@@ -60,14 +34,14 @@ at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"
 &lt;p&gt;I&amp;#8217;ll move the rest of the site soon enough.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sat, 15 Nov 2014 00:00:00 GMT</pubDate></item><item><title>15 November 2014 - 1.0.5</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-5</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 13 May 2015 00:00:00 GMT</pubDate></item><item><title>15 November 2014 - 1.0.5</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-5</link><description>
   &lt;div class="section" id="november-2014-1-0-5"&gt;
 &lt;h1&gt;15 November 2014 - 1.0.5&lt;/h1&gt;
 &lt;p&gt;This is a bug fix which fixes an issue in Actions where floating point values were handled incorrectly.&lt;/p&gt;
 &lt;p&gt;&lt;a class="reference external" href="http://sourceforge.net/projects/puddletag/files/puddletag-1.0.5.tar.gz"&gt;.tar.gz download&lt;/a&gt; | &lt;a class="reference external" href="http://sourceforge.net/projects/puddletag/files/puddletag_1.0.5-1_all.deb"&gt;.deb download&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 09 Nov 2014 00:00:00 GMT</pubDate></item><item><title>9 November 2014 - 1.0.4</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-4</link><description>
+</description><author>concentricpuddle</author><pubDate>Sat, 15 Nov 2014 00:00:00 GMT</pubDate></item><item><title>9 November 2014 - 1.0.4</title><link>http://puddletag.sourceforge.net/news.html#november-2014-1-0-4</link><description>
   &lt;div class="section" id="november-2014-1-0-4"&gt;
 &lt;h1&gt;9 November 2014 - 1.0.4&lt;/h1&gt;
 &lt;p&gt;This one has been a long time coming. Not much new except bugfixes, but they should lessen some of the pain that some users have been experiencing.&lt;/p&gt;
@@ -97,14 +71,14 @@ at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 22 Jun 2014 00:00:00 GMT</pubDate></item><item><title>22 June 2014 - New forum</title><link>http://puddletag.sourceforge.net/news.html#june-2014-new-forum</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 09 Nov 2014 00:00:00 GMT</pubDate></item><item><title>22 June 2014 - New forum</title><link>http://puddletag.sourceforge.net/news.html#june-2014-new-forum</link><description>
   &lt;div class="section" id="june-2014-new-forum"&gt;
 &lt;h1&gt;22 June 2014 - New forum&lt;/h1&gt;
 &lt;p&gt;SourceForge has retired the hosted apps offering so I&amp;#8217;ll be maintaining it for now. You can find the new forum at &lt;a class="reference external" href="http://puddletag.sourceforge.net/forum"&gt;http://puddletag.sourceforge.net/forum&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Since logins were managed by SF, you might not be able to log in using your old password. If so, you can just reset your password.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Thu, 07 Nov 2013 00:00:00 GMT</pubDate></item><item><title>7 November 2013 1.0.2</title><link>http://puddletag.sourceforge.net/news.html#november-2013-1-0-2</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 22 Jun 2014 00:00:00 GMT</pubDate></item><item><title>7 November 2013 1.0.2</title><link>http://puddletag.sourceforge.net/news.html#november-2013-1-0-2</link><description>
   &lt;div class="section" id="november-2013-1-0-2"&gt;
 &lt;h1&gt;7 November 2013 1.0.2&lt;/h1&gt;
 &lt;p&gt;Well, it&amp;#8217;s been more than a month and now major new issues have been report.&lt;/p&gt;
@@ -119,7 +93,7 @@ at the new URL &lt;a class="reference external" href="http://docs.puddletag.net"
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 14 Jul 2013 00:00:00 GMT</pubDate></item><item><title>14 July 2013 - 1.0.2 RC1</title><link>http://puddletag.sourceforge.net/news.html#july-2013-1-0-2-rc1</link><description>
+</description><author>concentricpuddle</author><pubDate>Thu, 07 Nov 2013 00:00:00 GMT</pubDate></item><item><title>14 July 2013 - 1.0.2 RC1</title><link>http://puddletag.sourceforge.net/news.html#july-2013-1-0-2-rc1</link><description>
   &lt;div class="section" id="july-2013-1-0-2-rc1"&gt;
 &lt;h1&gt;14 July 2013 - 1.0.2 RC1&lt;/h1&gt;
 &lt;p&gt;I&amp;#8217;ve been using this release since forever and consider it to work pretty well.&lt;/p&gt;
@@ -149,7 +123,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 26 Jun 2013 00:00:00 GMT</pubDate></item><item><title>26 June 2013 - Some news</title><link>http://puddletag.sourceforge.net/news.html#june-2013-some-news</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 14 Jul 2013 00:00:00 GMT</pubDate></item><item><title>26 June 2013 - Some news</title><link>http://puddletag.sourceforge.net/news.html#june-2013-some-news</link><description>
   &lt;div class="section" id="june-2013-some-news"&gt;
 &lt;h1&gt;26 June 2013 - Some news&lt;/h1&gt;
 &lt;p&gt;Just a heads up that the repository URL has changed to&lt;/p&gt;
@@ -161,7 +135,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;p&gt;New beta coming this weekend.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Fri, 31 Aug 2012 00:00:00 GMT</pubDate></item><item><title>31 August 2012 - 1.0.1</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-1</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 26 Jun 2013 00:00:00 GMT</pubDate></item><item><title>31 August 2012 - 1.0.1</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-1</link><description>
   &lt;div class="section" id="august-2012-1-0-1"&gt;
 &lt;h1&gt;31 August 2012 - 1.0.1&lt;/h1&gt;
 &lt;p&gt;This release fixes some bugs spotted with the last release.&lt;/p&gt;
@@ -173,7 +147,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;p&gt;Have fun!&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Tue, 21 Aug 2012 00:00:00 GMT</pubDate></item><item><title>21 August 2012 - 1.0.0</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-0</link><description>
+</description><author>concentricpuddle</author><pubDate>Fri, 31 Aug 2012 00:00:00 GMT</pubDate></item><item><title>21 August 2012 - 1.0.0</title><link>http://puddletag.sourceforge.net/news.html#august-2012-1-0-0</link><description>
   &lt;div class="section" id="august-2012-1-0-0"&gt;
 &lt;h1&gt;21 August 2012 - 1.0.0&lt;/h1&gt;
 &lt;p&gt;v1 has finally arrived!&lt;/p&gt;
@@ -182,7 +156,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;p&gt;Anyway, that&amp;#8217;s it for now. Enjoy!&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sat, 09 Jun 2012 00:00:00 GMT</pubDate></item><item><title>9 June 2012 - 1.0.0RC1</title><link>http://puddletag.sourceforge.net/news.html#june-2012-1-0-0rc1</link><description>
+</description><author>concentricpuddle</author><pubDate>Tue, 21 Aug 2012 00:00:00 GMT</pubDate></item><item><title>9 June 2012 - 1.0.0RC1</title><link>http://puddletag.sourceforge.net/news.html#june-2012-1-0-0rc1</link><description>
   &lt;div class="section" id="june-2012-1-0-0rc1"&gt;
 &lt;h1&gt;9 June 2012 - 1.0.0RC1&lt;/h1&gt;
 &lt;p&gt;This release is the first RC with the final release planned for next week depending on feedback. All that&amp;#8217;s still needed is to update the docs, fix some outstanding bugs and package the plugins.&lt;/p&gt;
@@ -203,7 +177,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 11 Apr 2012 00:00:00 GMT</pubDate></item><item><title>11 April 2012 - 1.0.0beta5</title><link>http://puddletag.sourceforge.net/news.html#april-2012-1-0-0beta5</link><description>
+</description><author>concentricpuddle</author><pubDate>Sat, 09 Jun 2012 00:00:00 GMT</pubDate></item><item><title>11 April 2012 - 1.0.0beta5</title><link>http://puddletag.sourceforge.net/news.html#april-2012-1-0-0beta5</link><description>
   &lt;div class="section" id="april-2012-1-0-0beta5"&gt;
 &lt;h1&gt;11 April 2012 - 1.0.0beta5&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;18 April 2012 - Updated to 1.0.0beta6 to fix issues with deb. This is the second last beta.&lt;/strong&gt;&lt;/p&gt;
@@ -229,7 +203,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 22 Jan 2012 00:00:00 GMT</pubDate></item><item><title>22 January 2012 - 1.0.0beta1</title><link>http://puddletag.sourceforge.net/news.html#january-2012-1-0-0beta1</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 11 Apr 2012 00:00:00 GMT</pubDate></item><item><title>22 January 2012 - 1.0.0beta1</title><link>http://puddletag.sourceforge.net/news.html#january-2012-1-0-0beta1</link><description>
   &lt;div class="section" id="january-2012-1-0-0beta1"&gt;
 &lt;h1&gt;22 January 2012 - 1.0.0beta1&lt;/h1&gt;
 &lt;p&gt;It&amp;#8217;s been a while I know, but I figured if I don&amp;#8217;t get this out now I might just
@@ -247,7 +221,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;p&gt;&lt;a class="reference internal" href="download.html#development-builds"&gt;&lt;span&gt;Download&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 21 Sep 2011 00:00:00 GMT</pubDate></item><item><title>21 September 2011 - Mercurial</title><link>http://puddletag.sourceforge.net/news.html#september-2011-mercurial</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 22 Jan 2012 00:00:00 GMT</pubDate></item><item><title>21 September 2011 - Mercurial</title><link>http://puddletag.sourceforge.net/news.html#september-2011-mercurial</link><description>
   &lt;div class="section" id="september-2011-mercurial"&gt;
 &lt;h1&gt;21 September 2011 - Mercurial&lt;/h1&gt;
 &lt;p&gt;This is just a heads up that I&amp;#8217;ve moved from Subversion to Mercurial. No real reason for this other than trying something new. I&amp;#8217;ve been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.&lt;/p&gt;
@@ -263,7 +237,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;p&gt;Enjoy. ;-)&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Mon, 06 Jun 2011 00:00:00 GMT</pubDate></item><item><title>3 June 2011 - 0.10.4</title><link>http://puddletag.sourceforge.net/news.html#june-2011-0-10-4</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 21 Sep 2011 00:00:00 GMT</pubDate></item><item><title>3 June 2011 - 0.10.4</title><link>http://puddletag.sourceforge.net/news.html#june-2011-0-10-4</link><description>
   &lt;div class="section" id="june-2011-0-10-4"&gt;
 &lt;h1&gt;3 June 2011 - 0.10.4&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Update 6 June 2011&lt;/strong&gt;: 0.10.6 fixes another bug not found. Think this&amp;#8217;ll be the last for now.
@@ -315,7 +289,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 23 Mar 2011 00:00:00 GMT</pubDate></item><item><title>23 March 2011 - 0.10.3</title><link>http://puddletag.sourceforge.net/news.html#march-2011-0-10-3</link><description>
+</description><author>concentricpuddle</author><pubDate>Mon, 06 Jun 2011 00:00:00 GMT</pubDate></item><item><title>23 March 2011 - 0.10.3</title><link>http://puddletag.sourceforge.net/news.html#march-2011-0-10-3</link><description>
   &lt;div class="section" id="march-2011-0-10-3"&gt;
 &lt;h1&gt;23 March 2011 - 0.10.3&lt;/h1&gt;
 &lt;p&gt;A couple of critical bugs were found in the last release, they&amp;#8217;ve all been fixed.&lt;/p&gt;
@@ -331,7 +305,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 20 Mar 2011 00:00:00 GMT</pubDate></item><item><title>20 March 2011 - 0.10.2</title><link>http://puddletag.sourceforge.net/news.html#march-2011-0-10-2</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 23 Mar 2011 00:00:00 GMT</pubDate></item><item><title>20 March 2011 - 0.10.2</title><link>http://puddletag.sourceforge.net/news.html#march-2011-0-10-2</link><description>
   &lt;div class="section" id="march-2011-0-10-2"&gt;
 &lt;h1&gt;20 March 2011 - 0.10.2&lt;/h1&gt;
 &lt;p&gt;Another incremental-bugfix release. I might release another one before month-end.&lt;/p&gt;
@@ -365,7 +339,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Tue, 08 Mar 2011 00:00:00 GMT</pubDate></item><item><title>8 March 2011 - 0.10.0</title><link>http://puddletag.sourceforge.net/news.html#march-2011-0-10-0</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 20 Mar 2011 00:00:00 GMT</pubDate></item><item><title>8 March 2011 - 0.10.0</title><link>http://puddletag.sourceforge.net/news.html#march-2011-0-10-0</link><description>
   &lt;div class="section" id="march-2011-0-10-0"&gt;
 &lt;h1&gt;8 March 2011 - 0.10.0&lt;/h1&gt;
 &lt;p&gt;This is a kind-of bugfix release. I&amp;#8217;m releasing it before I start with some pretty major architecture-related changes.&lt;/p&gt;
@@ -396,7 +370,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 09 Feb 2011 00:00:00 GMT</pubDate></item><item><title>9 February 2011 - 0.9.12</title><link>http://puddletag.sourceforge.net/news.html#february-2011-0-9-12</link><description>
+</description><author>concentricpuddle</author><pubDate>Tue, 08 Mar 2011 00:00:00 GMT</pubDate></item><item><title>9 February 2011 - 0.9.12</title><link>http://puddletag.sourceforge.net/news.html#february-2011-0-9-12</link><description>
   &lt;div class="section" id="february-2011-0-9-12"&gt;
 &lt;h1&gt;9 February 2011 - 0.9.12&lt;/h1&gt;
 &lt;p&gt;Almost all the work done, was modifying the code base so that puddletag could be translated properly. I&amp;#8217;ve put up a &lt;a class="reference internal" href="source/translate.html"&gt;&lt;em&gt;translation guide&lt;/em&gt;&lt;/a&gt; for interested parties. Since this is a bug-fix release, there are no new features, just some changes and fixes.&lt;/p&gt;
@@ -421,13 +395,13 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 19 Dec 2010 00:00:00 GMT</pubDate></item><item><title>19 December 2010 - 0.9.11</title><link>http://puddletag.sourceforge.net/news.html#december-2010-0-9-11</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 09 Feb 2011 00:00:00 GMT</pubDate></item><item><title>19 December 2010 - 0.9.11</title><link>http://puddletag.sourceforge.net/news.html#december-2010-0-9-11</link><description>
   &lt;div class="section" id="december-2010-0-9-11"&gt;
 &lt;h1&gt;19 December 2010 - 0.9.11&lt;/h1&gt;
 &lt;p&gt;Another bug related to Tag Sources freezing often is fixed in this release. Promise this is the last for a while. ;)&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sat, 18 Dec 2010 00:00:00 GMT</pubDate></item><item><title>18 December 2010 - 0.9.10</title><link>http://puddletag.sourceforge.net/news.html#december-2010-0-9-10</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 19 Dec 2010 00:00:00 GMT</pubDate></item><item><title>18 December 2010 - 0.9.10</title><link>http://puddletag.sourceforge.net/news.html#december-2010-0-9-10</link><description>
   &lt;div class="section" id="december-2010-0-9-10"&gt;
 &lt;h1&gt;18 December 2010 - 0.9.10&lt;/h1&gt;
 &lt;p&gt;A bug was discovered in Discogs that&amp;#8217;d make it fail on the vast majority of albums (just not the ones I tested with). This release is to fix that. But I&amp;#8217;ve included the following too:&lt;/p&gt;
@@ -447,7 +421,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Thu, 16 Dec 2010 00:00:00 GMT</pubDate></item><item><title>16 December 2010 - 0.9.8</title><link>http://puddletag.sourceforge.net/news.html#december-2010-0-9-8</link><description>
+</description><author>concentricpuddle</author><pubDate>Sat, 18 Dec 2010 00:00:00 GMT</pubDate></item><item><title>16 December 2010 - 0.9.8</title><link>http://puddletag.sourceforge.net/news.html#december-2010-0-9-8</link><description>
   &lt;div class="section" id="december-2010-0-9-8"&gt;
 &lt;h1&gt;16 December 2010 - 0.9.8&lt;/h1&gt;
 &lt;p&gt;This&amp;#8217;ll be the last release for a while as I&amp;#8217;m taking a break from puddletag development. I&amp;#8217;ll still be lurking in the forums and issue tracker, so don&amp;#8217;t hesitate to ask for help or report bugs.&lt;/p&gt;
@@ -505,7 +479,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sat, 30 Oct 2010 00:00:00 GMT</pubDate></item><item><title>30 October 2010 - 0.9.7</title><link>http://puddletag.sourceforge.net/news.html#october-2010-0-9-7</link><description>
+</description><author>concentricpuddle</author><pubDate>Thu, 16 Dec 2010 00:00:00 GMT</pubDate></item><item><title>30 October 2010 - 0.9.7</title><link>http://puddletag.sourceforge.net/news.html#october-2010-0-9-7</link><description>
   &lt;div class="section" id="october-2010-0-9-7"&gt;
 &lt;h1&gt;30 October 2010 - 0.9.7&lt;/h1&gt;
 &lt;p&gt;There&amp;#8217;s not much to this release, but I think the second &amp;#8216;New Feature&amp;#8217; is pretty fundamental to puddletag&amp;#8217;s usability. Enjoy.&lt;/p&gt;
@@ -535,13 +509,13 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 13 Oct 2010 00:00:00 GMT</pubDate></item><item><title>13 October 2010 - 0.9.6</title><link>http://puddletag.sourceforge.net/news.html#october-2010-0-9-6</link><description>
+</description><author>concentricpuddle</author><pubDate>Sat, 30 Oct 2010 00:00:00 GMT</pubDate></item><item><title>13 October 2010 - 0.9.6</title><link>http://puddletag.sourceforge.net/news.html#october-2010-0-9-6</link><description>
   &lt;div class="section" id="october-2010-0-9-6"&gt;
 &lt;h1&gt;13 October 2010 - 0.9.6&lt;/h1&gt;
 &lt;p&gt;There was a major bug discovered in 0.9.5 where fields weren&amp;#8217;t being shown in the Function&amp;#8217;s dialog. This release fixes it.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sat, 09 Oct 2010 00:00:00 GMT</pubDate></item><item><title>9 October 2010 - 0.9.5</title><link>http://puddletag.sourceforge.net/news.html#october-2010-0-9-5</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 13 Oct 2010 00:00:00 GMT</pubDate></item><item><title>9 October 2010 - 0.9.5</title><link>http://puddletag.sourceforge.net/news.html#october-2010-0-9-5</link><description>
   &lt;div class="section" id="october-2010-0-9-5"&gt;
 &lt;h1&gt;9 October 2010 - 0.9.5&lt;/h1&gt;
 &lt;p&gt;This release is a bit late, but packed with features.&lt;/p&gt;
@@ -577,7 +551,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 25 Aug 2010 00:00:00 GMT</pubDate></item><item><title>25 August 2010 - 0.9.4</title><link>http://puddletag.sourceforge.net/news.html#august-2010-0-9-4</link><description>
+</description><author>concentricpuddle</author><pubDate>Sat, 09 Oct 2010 00:00:00 GMT</pubDate></item><item><title>25 August 2010 - 0.9.4</title><link>http://puddletag.sourceforge.net/news.html#august-2010-0-9-4</link><description>
   &lt;div class="section" id="august-2010-0-9-4"&gt;
 &lt;h1&gt;25 August 2010 - 0.9.4&lt;/h1&gt;
 &lt;p&gt;As promised, this release is awesome. The next one will be in a couple of weeks, it&amp;#8217;ll include some features I&amp;#8217;ve been promising for a while.&lt;/p&gt;
@@ -610,7 +584,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 11 Aug 2010 00:00:00 GMT</pubDate></item><item><title>11 August 2010 - 0.9.3</title><link>http://puddletag.sourceforge.net/news.html#august-2010-0-9-3</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 25 Aug 2010 00:00:00 GMT</pubDate></item><item><title>11 August 2010 - 0.9.3</title><link>http://puddletag.sourceforge.net/news.html#august-2010-0-9-3</link><description>
   &lt;div class="section" id="august-2010-0-9-3"&gt;
 &lt;h1&gt;11 August 2010 - 0.9.3&lt;/h1&gt;
 &lt;p&gt;Because of time commitments and the complexity of the new features, this release is a bit late...and a bit unfinished. I&amp;#8217;m releasing it, because it contains too many bugfixes to keep to myself (and those using svn).&lt;/p&gt;
@@ -638,7 +612,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sun, 04 Jul 2010 00:00:00 GMT</pubDate></item><item><title>4 July 2010 - 0.9.2</title><link>http://puddletag.sourceforge.net/news.html#july-2010-0-9-2</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 11 Aug 2010 00:00:00 GMT</pubDate></item><item><title>4 July 2010 - 0.9.2</title><link>http://puddletag.sourceforge.net/news.html#july-2010-0-9-2</link><description>
   &lt;div class="section" id="july-2010-0-9-2"&gt;
 &lt;h1&gt;4 July 2010 - 0.9.2&lt;/h1&gt;
 &lt;p&gt;Again just a couple of things, but they improve the puddletag experience immensely.&lt;/p&gt;
@@ -660,7 +634,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Fri, 25 Jun 2010 00:00:00 GMT</pubDate></item><item><title>25 June 2010 - 0.9.1</title><link>http://puddletag.sourceforge.net/news.html#june-2010-0-9-1</link><description>
+</description><author>concentricpuddle</author><pubDate>Sun, 04 Jul 2010 00:00:00 GMT</pubDate></item><item><title>25 June 2010 - 0.9.1</title><link>http://puddletag.sourceforge.net/news.html#june-2010-0-9-1</link><description>
   &lt;div class="section" id="june-2010-0-9-1"&gt;
 &lt;h1&gt;25 June 2010 - 0.9.1&lt;/h1&gt;
 &lt;p&gt;Just a couple of things this time. I spent most of my time on backend stuff. Next week will be dedicated to tag sources, so expect some major additions/improvements on that side.&lt;/p&gt;
@@ -689,14 +663,14 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Fri, 11 Jun 2010 00:00:00 GMT</pubDate></item><item><title>11 June 2010</title><link>http://puddletag.sourceforge.net/news.html#june-2010</link><description>
+</description><author>concentricpuddle</author><pubDate>Fri, 25 Jun 2010 00:00:00 GMT</pubDate></item><item><title>11 June 2010</title><link>http://puddletag.sourceforge.net/news.html#june-2010</link><description>
   &lt;div class="section" id="june-2010"&gt;
 &lt;h1&gt;11 June 2010&lt;/h1&gt;
 &lt;p&gt;Interesting Trivia. The World Cup starts in about an hour.&lt;/p&gt;
 &lt;p&gt;This release is pretty awesome. Evan found bugs, I fixed &amp;#8216;em. Then added some polish. Then uploaded this release. Which is pretty awesome.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 14 Apr 2010 00:00:00 GMT</pubDate></item><item><title>14 April 2010</title><link>http://puddletag.sourceforge.net/news.html#april-2010</link><description>
+</description><author>concentricpuddle</author><pubDate>Fri, 11 Jun 2010 00:00:00 GMT</pubDate></item><item><title>14 April 2010</title><link>http://puddletag.sourceforge.net/news.html#april-2010</link><description>
   &lt;div class="section" id="april-2010"&gt;
 &lt;h1&gt;14 April 2010&lt;/h1&gt;
 &lt;p&gt;It&amp;#8217;s five months later and from the outside it kinda looks like the project has died when in fact I&amp;#8217;ve spent more time working on puddletag this year than I have the past two years. All thanks to Evan Devetsis who&amp;#8217;ve taken it upon himself to help me make puddletag better. Mostly it was restructuring work in paving the way to add new features, like:&lt;/p&gt;
@@ -722,7 +696,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Thu, 05 Nov 2009 00:00:00 GMT</pubDate></item><item><title>5 November 2009</title><link>http://puddletag.sourceforge.net/news.html#november-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 14 Apr 2010 00:00:00 GMT</pubDate></item><item><title>5 November 2009</title><link>http://puddletag.sourceforge.net/news.html#november-2009</link><description>
   &lt;div class="section" id="november-2009"&gt;
 &lt;h1&gt;5 November 2009&lt;/h1&gt;
 &lt;div class="section" id="new-features"&gt;
@@ -740,7 +714,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Sat, 10 Oct 2009 00:00:00 GMT</pubDate></item><item><title>10 October 2009</title><link>http://puddletag.sourceforge.net/news.html#october-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Thu, 05 Nov 2009 00:00:00 GMT</pubDate></item><item><title>10 October 2009</title><link>http://puddletag.sourceforge.net/news.html#october-2009</link><description>
   &lt;div class="section" id="october-2009"&gt;
 &lt;h1&gt;10 October 2009&lt;/h1&gt;
 &lt;div class="section" id="new-features"&gt;
@@ -770,7 +744,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 09 Sep 2009 00:00:00 GMT</pubDate></item><item><title>9 September 2009</title><link>http://puddletag.sourceforge.net/news.html#september-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Sat, 10 Oct 2009 00:00:00 GMT</pubDate></item><item><title>9 September 2009</title><link>http://puddletag.sourceforge.net/news.html#september-2009</link><description>
   &lt;div class="section" id="september-2009"&gt;
 &lt;h1&gt;9 September 2009&lt;/h1&gt;
 &lt;div class="section" id="new-features"&gt;
@@ -803,7 +777,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Thu, 04 Jun 2009 00:00:00 GMT</pubDate></item><item><title>4 June 2009</title><link>http://puddletag.sourceforge.net/news.html#june-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 09 Sep 2009 00:00:00 GMT</pubDate></item><item><title>4 June 2009</title><link>http://puddletag.sourceforge.net/news.html#june-2009</link><description>
   &lt;div class="section" id="june-2009"&gt;
 &lt;h1&gt;4 June 2009&lt;/h1&gt;
 &lt;p&gt;Besides not having much time, I have been very lazy this month when it came to puddletag. If all goes well then the next release will be more bountiful. Till then, you&amp;#8217;ll have to make due with this, which only has the following to offer...&lt;/p&gt;
@@ -828,7 +802,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Fri, 01 May 2009 00:00:00 GMT</pubDate></item><item><title>1 May 2009</title><link>http://puddletag.sourceforge.net/news.html#may-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Thu, 04 Jun 2009 00:00:00 GMT</pubDate></item><item><title>1 May 2009</title><link>http://puddletag.sourceforge.net/news.html#may-2009</link><description>
   &lt;div class="section" id="may-2009"&gt;
 &lt;h1&gt;1 May 2009&lt;/h1&gt;
 &lt;p&gt;I like so this release so much that I almost changed it to puddletag version 1, but it still has some shortcomings compared to Mp3tag and some things that I want to implement before then.&lt;/p&gt;
@@ -859,7 +833,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 08 Apr 2009 00:00:00 GMT</pubDate></item><item><title>8 April 2009</title><link>http://puddletag.sourceforge.net/news.html#april-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Fri, 01 May 2009 00:00:00 GMT</pubDate></item><item><title>8 April 2009</title><link>http://puddletag.sourceforge.net/news.html#april-2009</link><description>
   &lt;div class="section" id="april-2009"&gt;
 &lt;h1&gt;8 April 2009&lt;/h1&gt;
 &lt;p&gt;Besides the bugfixes in the minor releases last month, the changes this month include...&lt;/p&gt;
@@ -871,7 +845,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;p&gt;P.S. This version is 0.5.8, because it&amp;#8217;s not tested as much as I&amp;#8217;d like, so expect many bugfixes over the coming month.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Mon, 09 Mar 2009 00:00:00 GMT</pubDate></item><item><title>9 March 2009</title><link>http://puddletag.sourceforge.net/news.html#march-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Wed, 08 Apr 2009 00:00:00 GMT</pubDate></item><item><title>9 March 2009</title><link>http://puddletag.sourceforge.net/news.html#march-2009</link><description>
   &lt;div class="section" id="march-2009"&gt;
 &lt;h1&gt;9 March 2009&lt;/h1&gt;
 &lt;p&gt;Nope, still don&amp;#8217;t got no console version(been busy with other stuff, definitely next month).&lt;/p&gt;
@@ -889,7 +863,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;p&gt;Expect some interim updates over the next couple of days and a complete release in about a month (1 April 2009).&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Thu, 05 Feb 2009 00:00:00 GMT</pubDate></item><item><title>5 February 2009</title><link>http://puddletag.sourceforge.net/news.html#february-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Mon, 09 Mar 2009 00:00:00 GMT</pubDate></item><item><title>5 February 2009</title><link>http://puddletag.sourceforge.net/news.html#february-2009</link><description>
   &lt;div class="section" id="february-2009"&gt;
 &lt;h1&gt;5 February 2009&lt;/h1&gt;
 &lt;p&gt;This is basically a bugfix release. There are far too many fixes to list here, but some of the major ones were unicode related like:&lt;/p&gt;
@@ -911,7 +885,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Tue, 20 Jan 2009 00:00:00 GMT</pubDate></item><item><title>20 January 2009</title><link>http://puddletag.sourceforge.net/news.html#january-2009</link><description>
+</description><author>concentricpuddle</author><pubDate>Thu, 05 Feb 2009 00:00:00 GMT</pubDate></item><item><title>20 January 2009</title><link>http://puddletag.sourceforge.net/news.html#january-2009</link><description>
   &lt;div class="section" id="january-2009"&gt;
 &lt;h1&gt;20 January 2009&lt;/h1&gt;
 &lt;p&gt;Got a bunch of updates for ya.&lt;/p&gt;
@@ -936,14 +910,14 @@ Expect these irritants to be gone two weeks from now.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Tue, 16 Dec 2008 00:00:00 GMT</pubDate></item><item><title>16 December 2008</title><link>http://puddletag.sourceforge.net/news.html#december-2008</link><description>
+</description><author>concentricpuddle</author><pubDate>Tue, 20 Jan 2009 00:00:00 GMT</pubDate></item><item><title>16 December 2008</title><link>http://puddletag.sourceforge.net/news.html#december-2008</link><description>
   &lt;div class="section" id="december-2008"&gt;
 &lt;h1&gt;16 December 2008&lt;/h1&gt;
 &lt;p&gt;It&amp;#8217;s December and the sun is out. As such, all I have to show is just a couple of bugfixes (in particular, the import from file window not saving tags) and a message that appears in the statusbar when an error occurs while editing a file.&lt;/p&gt;
 &lt;p&gt;Don&amp;#8217;t expect any updates until the 20th of January. If everything works out I&amp;#8217;ll have at least one feature that sets puddletag apart from any tag-editor I&amp;#8217;ve ever seen and propel puddletag into greatness.&lt;/p&gt;
 &lt;/div&gt;
 
-</description><author>concentricpuddle</author><pubDate>Wed, 03 Dec 2008 00:00:00 GMT</pubDate></item><item><title>3 December 2008</title><link>http://puddletag.sourceforge.net/news.html#december-2008</link><description>
+</description><author>concentricpuddle</author><pubDate>Tue, 16 Dec 2008 00:00:00 GMT</pubDate></item><item><title>3 December 2008</title><link>http://puddletag.sourceforge.net/news.html#december-2008</link><description>
   &lt;div class="section" id="december-2008"&gt;
 &lt;h1&gt;3 December 2008&lt;/h1&gt;
 &lt;div class="section" id="stuff-that-s-added"&gt;
@@ -960,6 +934,27 @@ Expect these irritants to be gone two weeks from now.&lt;/p&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;The musicbrainz dialog doesn&amp;#8217;t freeze up puddletag anymore. Note that the threading is implemented in a very roughshod way though, so don&amp;#8217;t hesitate to contact me if behaves in unexpected ways.&lt;/li&gt;
 &lt;li&gt;The main window&amp;#8217;s layout in addition to its size is now saved.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Wed, 03 Dec 2008 00:00:00 GMT</pubDate></item><item><title>25 November 2008</title><link>http://puddletag.sourceforge.net/news.html#november-2008</link><description>
+  &lt;div class="section" id="november-2008"&gt;
+&lt;h1&gt;25 November 2008&lt;/h1&gt;
+&lt;div class="section" id="stuff-that-s-added"&gt;
+&lt;h2&gt;Stuff that&amp;#8217;s added&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;A filter like in Mp3tag. F3 shows/hides it.&lt;/li&gt;
+&lt;li&gt;Musicbrainz support(Available on the toolbar and Tools -&amp;gt; Musicbrainz). Not sure how good it is. Send me a mail if you have any ideas on improving it.&lt;/li&gt;
+&lt;li&gt;The extended tags dialog is now available via the Tools menu(and by right clicking on the file-view).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="stuff-that-s-fixed"&gt;
+&lt;h2&gt;Stuff that&amp;#8217;s fixed&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Saving a file&amp;#8217;s album art to disk now works.&lt;/li&gt;
+&lt;li&gt;The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.&lt;/li&gt;
+&lt;li&gt;Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 &lt;/div&gt;

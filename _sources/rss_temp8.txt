@@ -1,14 +1,11 @@
-26 June 2013 - Some news
-########################
+31 August 2012 - 1.0.1
+######################
 
-Just a heads up that the repository URL has changed to 
+This release fixes some bugs spotted with the last release.
 
-.. code-block:: bash
-   
-   http://hg.code.sf.net/p/puddletag/code
+They include:
+    
++   puddletag.desktop file installation error with deb package.
++   Python2.6 incompatibility.
 
-Pavel Fric has contributed a Czech translation which you can :download:`download <translations/puddletag_cs.qm>`.
-
-Contributions are always appreciated so please post on the forum (link above) if you'd like to translate puddletag.
-
-New beta coming this weekend.
+Have fun!
