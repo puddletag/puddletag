@@ -9,10 +9,10 @@
 .. |beta_deb_link| replace:: puddletag_1.1.0-1_all.deb
 .. _beta_deb_link: https://github.com/keithgg/puddletag/releases/dev/puddletag_beta_1.1.0-1_all.deb
 
-.. |source_sha| replace:: 573cea90308f5ea94bd30fc2c8a9c62d5e4269ef
-.. |deb_sha| replace:: 3fce919430fbe2b88f6a1425b64f801c5cadd40b
-.. |beta_source_sha| replace:: 573cea90308f5ea94bd30fc2c8a9c62d5e4269ef
-.. |beta_deb_sha| replace:: 3fce919430fbe2b88f6a1425b64f801c5cadd40b
+.. |source_sha| replace:: 03b85e767c775211b47bceae3a0eac409f66e14a
+.. |deb_sha| replace:: 9a78071e1ccaa0ae90f16a4c2f43fd98c98ee6d3
+.. |beta_source_sha| replace:: 03b85e767c775211b47bceae3a0eac409f66e14a
+.. |beta_deb_sha| replace:: 9a78071e1ccaa0ae90f16a4c2f43fd98c98ee6d3
 
 .. |version| replace:: 1.1.0
 .. |docs_html_link| replace:: HTML

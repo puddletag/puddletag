@@ -35,7 +35,7 @@ puddletag is licensed under the GPLv3, which you can find in its entirety at htt
 
 Updates
 -------
-Releases are very infrequent. Subscribe to the :download:`RSS Feed <rss.xml>` to be notified.
+Releases are very infrequent. Subscribe to the `RSS Feed <rss.xml>`_ to be notified.
 
 Support
 -------
