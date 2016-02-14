@@ -1540,10 +1540,11 @@ class PicWidget(QWidget):
             lambda *filenames: self.addImages(self.loadPics(*filenames)))
 
         self._image_desc = QLineEdit(self)
+        
         if (hasattr(self._image_desc, 'setPlaceholderText')):
             self._image_desc.setPlaceholderText(translate("Artwork", 'Enter a description'))
         else:
-            self._image_desc.setText('Enter a description')
+            self._image_desc.setText('')
 
         self._image_desc.setToolTip(
             translate("Artwork",
@@ -1953,10 +1954,10 @@ class PicWidget(QWidget):
 
             if image.loadFromData(data):
                 pic = {'data': data, 'height': image.height(),
-                    'width': image.width(), 'size': len(data),
-                    'mime': 'image/jpeg',
-                    'description': translate("Artwork", 'Enter description'),
-                    'imagetype': 3}
+                       'width': image.width(), 'size': len(data),
+                       'mime': 'image/jpeg',
+                       'description': u"",
+                       'imagetype': 3}
                 images.append(pic)
 
         return images
@@ -1966,10 +1967,10 @@ class PicWidget(QWidget):
         for d in data:
             image = QImage().fromData(d)
             pic = {'data': d, 'height': image.height(),
-                'width': image.width(), 'size': len(data),
-                'mime': 'image/jpeg',
-                'description': translate("Artwork", 'Enter description'),
-                'imagetype': 3}
+                   'width': image.width(), 'size': len(data),
+                   'mime': 'image/jpeg',
+                   'description': u"",
+                   'imagetype': 3}
             images.append(pic)
         return images
 
