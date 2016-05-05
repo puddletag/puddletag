@@ -242,6 +242,7 @@ def load_plugins():
     from puddlestuff.pluginloader import load_plugins
     plugins = load_plugins()
     puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
+    puddlestuff.functions.no_preview.extend(plugins[constants.FUNCTIONS_NO_PREVIEW])
     puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
     puddlestuff.musiclib.extralibs = plugins[constants.MUSICLIBS]
 

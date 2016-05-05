@@ -87,7 +87,7 @@ func = PluginFunction('Append text to artist', append_text,
 #3. For TEXT this argument is the default text. It's not required.
 #   For COMBO, the third and any following argument will be added as an item
 #   to the combobox. Default arguments aren't allowed.(I'm willing to 
-#   (change this if shown an appropriate use-case.)
+p#   (change this if shown an appropriate use-case.)
 #   Checkboxes can either be checked or not so default arguments must either 
 #   True or False.
 
@@ -95,3 +95,8 @@ func = PluginFunction('Append text to artist', append_text,
 # available in the same way).
 
 functions.update({'append_function': func})
+
+# If you would prefer that your function doesn't have a preview
+# in the functions dialog add it to this list.
+
+functions_no_preview = [append_text]

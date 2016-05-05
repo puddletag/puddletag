@@ -1051,9 +1051,9 @@ functions = {
     'to_num': to_num
 }
 
-no_fields = (filenametotag, load_images, move, remove_except,
-    save_artwork, tag_dir, update_from_tag)
-no_preview = (autonumbering, load_images, remove_tag, save_artwork)
+no_fields = [filenametotag, load_images, move, remove_except,
+    save_artwork, tag_dir, update_from_tag]
+no_preview = [autonumbering, load_images, remove_tag, save_artwork]
 
 import findfunc
 FuncError = findfunc.FuncError
