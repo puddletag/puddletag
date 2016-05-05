@@ -73,7 +73,6 @@ def load_plugins(plugins=None, parent=None):
             functions.update(module.functions)
 
         if hasattr(module, 'functions_no_preview'):
-            print 'here'
             functions_no_preview.extend(module.functions_no_preview)
 
         if hasattr(module, 'tagsources'):
