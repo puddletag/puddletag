@@ -166,11 +166,12 @@ def parse_album_json(data):
         info['format'] = list(set(formats))
     info['artist'] = [z['name'] for z in data.get('artists', [])]
     info['artist'] = u" & ".join(filter(None, info['artist']))
-    info['involvedpeople_album'] = u':'.join(u'%s;%s' % (z['name'], z['role'])
-        for z in data.get('extraartists', []))
+    info['involvedpeople_album'] = \
+        u':'.join(u'%s;%s' % (z['name'], z['role'])
+                  for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
     info['catno'] = filter(None,
-        [z.get('catno') for z in data.get('labels', [])])
+                           (z.get('catno') for z in data.get('labels', [])))
 
     info['companies'] = u';'.join(
         u'%s %s' % (z['entity_type_name'], z['name'])
@@ -181,9 +182,10 @@ def parse_album_json(data):
     info = cleaned_data
 
     if 'images' in data:
-        imgs = [(z.get('uri', ''), z.get('uri150', ''))
-            for z in data['images'] if 'uri' in z or 'uri150' in z]
-        info['#cover-url'] = imgs
+        images = \
+            [(z.get('uri', ''), z.get('uri150', ''))
+             for z in data['images'] if 'uri' in z or 'uri150' in z]
+        info['#cover-url'] = images
 
     return info, parse_tracklist(data['tracklist'])
 
@@ -266,23 +268,23 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     translate("Discogs", 'Retrieving cover: %s') % large)
                 try:
                     data.append({DATA: urlopen(large)})
-                except RetrievalError, e:
-                    write_log(translate('Discogs',
-                        u'Error retrieving image:') + unicode(e))
+                except RetrievalError as e:
+                    write_log(translate(
+                        'Discogs', u'Error retrieving image:') + unicode(e))
             else:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % small)
                 try:
                     data.append({DATA: urlopen(small)})
-                except RetrievalError, e:
-                    write_log(translate('Discogs',
-                        u'Error retrieving image:') + unicode(e))
+                except RetrievalError as e:
+                    write_log(translate(
+                        'Discogs', u'Error retrieving image:') + unicode(e))
         if data:
             info.update({'__image': data})
 
     try:
-        info['#extrainfo'] = (translate('Discogs', '%s at Discogs.com') % \
-            info['album'], site_url)
+        info['#extrainfo'] = translate(
+            'Discogs', '%s at Discogs.com') % info['album'], site_url
     except KeyError:
         pass
     return info, ret[1]
@@ -310,21 +312,23 @@ def urlopen(url):
 
     try:
         data = urllib2.urlopen(request).read()
-    except urllib2.URLError, e:
+    except urllib2.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = unicode(e)
         raise RetrievalError(msg)
-    except socket.error, e:
+    except socket.error as e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
     except EnvironmentError, e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
-    try: data = gzip.GzipFile(fileobj=cStringIO.StringIO(data)).read()
-    except IOError: "Gzipped data not returned."
+    try:
+        data = gzip.GzipFile(fileobj=cStringIO.StringIO(data)).read()
+    except IOError:
+        "Gzipped data not returned."
 
     return data
 
@@ -347,7 +351,7 @@ class Discogs(object):
                     translate("Discogs", 'Large')], 1]],
             [translate("Discogs", 'Field to use for discogs_id'), TEXT, R_ID],
             [translate("Discogs", 'API Key (Stored as plain-text.'
-                'Leave empty to use default.)'), TEXT, ''],
+                                  'Leave empty to use default.)'), TEXT, ''],
             ]
 
     def keyword_search(self, text):
@@ -355,8 +359,8 @@ class Discogs(object):
         try:
             r_id = int(text.strip())
         except (TypeError, ValueError):
-            raise RetrievalError(
-                translate("Discogs", 'Discogs release id should be an integer.'))
+            raise RetrievalError(translate(
+                "Discogs", 'Discogs release id should be an integer.'))
 
         try:
             return [self.retrieve(r_id)]
