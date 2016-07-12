@@ -12,7 +12,7 @@ import puddlestuff
 from puddlestuff.audioinfo import DATA, isempty
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
 from puddlestuff.tagsources import (
-    find_id, write_log, RetrievalError, iri_to_uri, user_agent)
+    find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
 from puddlestuff.util import translate
 
 R_ID_DEFAULT = 'discogs_id'
@@ -302,10 +302,7 @@ def urlopen(url):
     url = iri_to_uri(url)
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
-    if user_agent:
-        request.add_header('User-Agent', user_agent)
-    else:
-        request.add_header('User-Agent', 'puddetag/' + puddlestuff.version_string)
+    request.add_header('User-Agent', get_useragent())
 
     if time.time() - __lasttime.time < 1:
         time.sleep(1)

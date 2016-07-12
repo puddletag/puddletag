@@ -35,7 +35,7 @@ cparser = PuddleConfig()
 COVERDIR = cparser.get('tagsources', 'coverdir', COVERDIR)
 SAVECOVERS = False
 status_obj = QObject()
-user_agent = "puddletag/" + puddlestuff.version_string
+useragent = "puddletag/" + puddlestuff.version_string
 
 mapping = {}
 
@@ -126,9 +126,16 @@ def set_mapping(m):
 def set_status(msg):
     status_obj.emit(SIGNAL('statusChanged'), msg)
 
+
+def get_useragent():
+    if useragent:
+        return useragent
+    else:
+        return 'puddetag/' + puddlestuff.version_string
+
 def set_useragent(agent):
-    global user_agent
-    user_agent = agent
+    global useragent
+    useragent = agent
 
 def to_file(data, name):
     if os.path.exists(name):
