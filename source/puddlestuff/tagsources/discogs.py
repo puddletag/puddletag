@@ -8,7 +8,6 @@ import socket
 import time
 import urllib2
 
-import puddlestuff
 from puddlestuff.audioinfo import DATA, isempty
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
 from puddlestuff.tagsources import (

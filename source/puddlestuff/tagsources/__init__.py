@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from importlib import import_module
 import os
 from os.path import join, exists
 import re
@@ -11,10 +12,9 @@ from PyQt4.QtCore import QObject, SIGNAL
 
 import puddlestuff
 from puddlestuff.constants import CONFIGDIR
+from puddlestuff.findfunc import tagtofilename
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.util import translate
-
-all = ['musicbrainz', 'discogs', 'amazon']
 
 
 class FoundEncoding(Exception):
@@ -36,16 +36,16 @@ class SubmissionError(WebServiceError):
         WebServiceError.__init__(self, msg)
         self.code = code
 
-cover_pattern = u'%artist% - %album%'
 
-COVERDIR = join(CONFIGDIR, 'covers')
 cparser = PuddleConfig()
-COVERDIR = cparser.get('tagsources', 'coverdir', COVERDIR)
+
+COVERDIR = cparser.get('tagsources', 'coverdir', join(CONFIGDIR, 'covers'))
+COVER_PATTERN = u'%artist% - %album%'
 SAVECOVERS = False
-status_obj = QObject()
-useragent = "puddletag/" + puddlestuff.version_string
 
 mapping = {}
+status_obj = QObject()
+useragent = "puddletag/" + puddlestuff.version_string
 
 
 def get_encoding(page, decode=False, default=None):
@@ -113,7 +113,7 @@ def retrieve_cover(url):
 
 
 def save_cover(info, data, filetype):
-    filename = findfunc.tagtofilename(pattern, info, True, filetype)
+    filename = tagtofilename(COVER_PATTERN, info, True, filetype)
     save_file(filename, data)
 
 
@@ -232,18 +232,13 @@ class MetaProcessor(SGMLParser):
                 error.encoding = encoding
                 raise error
 
-import amazon, freedb, discogs, musicbrainz
-tagsources = [z.info for z in (amazon, discogs, freedb, musicbrainz)]
 
-
-try:
-    import amg
-    tagsources.insert(0, amg.info)
-except ImportError:
-    allmusic = None
-
-try:
-    import acoust_id
-    tagsources.insert(0, acoust_id.info)
-except ImportError:
-    "Nothing to be done."
+tagsources = []
+for source in ('acoust_id', 'amazon', 'amg', 'discogs', 'freedb',
+               'musicbrainz'):
+    try:
+        tagsources.append(getattr(
+            import_module('puddlestuff.tagsources.' + source),
+            'info'))
+    except ImportError:
+        pass
