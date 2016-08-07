@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-import cStringIO, gzip, json, re, socket, sys, time, urllib2
-
+import cStringIO
 from copy import deepcopy
-
-import puddlestuff
-
-import puddlestuff.tagsources
+import gzip
+import json
+import re
+import socket
+import time
+import urllib2
 
 from puddlestuff.audioinfo import DATA, isempty
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
-from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
-    parse_searchstring, iri_to_uri)
+from puddlestuff.tagsources import (
+    find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
 from puddlestuff.util import translate
 
 R_ID_DEFAULT = 'discogs_id'
@@ -24,20 +25,14 @@ API_RELEASE_URL = 'http://api.discogs.com/releases/'
 API_MASTER_URL = 'http://api.discogs.com/masters/'
 SITE_URL = 'http://www.discogs.com'
 
-api_key = 'c6e33897b6'
-base_url = 'http://api.discogs.com/%s'
-
-def query_urls(key):
-    search_url = base_url % 'database/search?type=release&q=%s&per_page=100'
-    release_url = base_url % 'releases/%s'
-    master_url = base_url % 'masters/%s'
-    return (search_url, release_url, master_url)
-
-search_url, release_url, master_url = query_urls(api_key)
+BASE_URL = 'http://api.discogs.com/%s'
+SEARCH_URL = BASE_URL % 'database/search?type=release&q=%s&per_page=100'
+RELEASE_URL = BASE_URL % 'releases/%s'
+MASTER_URL = BASE_URL % 'masters/%s'
 
 SMALLIMAGE = '#smallimage'
 LARGEIMAGE = '#largeimage'
-image_types = [SMALLIMAGE, LARGEIMAGE]
+IMAGE_TYPES = [SMALLIMAGE, LARGEIMAGE]
 
 IMAGEKEYS = {
     'SmallImage': SMALLIMAGE,
@@ -60,16 +55,19 @@ TRACK_KEYS = {
     'duration': '__length',
     'notes': 'discogs_notes'}
 
-INVALID_KEYS = ['status', 'resource_url', 'tracklist', 'thumb',
-    'formats', 'artists', 'extraartists', 'images', 'videos',
-    'master_id', 'labels', 'companies', 'series', 'released_formatted',
-    'identifiers']
+INVALID_KEYS = [
+    'status', 'resource_url', 'tracklist', 'thumb', 'formats', 'artists',
+    'extraartists', 'images', 'videos', 'master_id', 'labels', 'companies',
+    'series', 'released_formatted', 'identifiers']
 
-class LastTime(object): pass
-    
+
+class LastTime(object):
+    pass
+
 __lasttime = LastTime()
 __lasttime.time = time.time()
-    
+
+
 def convert_dict(d, keys=None):
     if keys is None:
         keys = TRACK_KEYS
@@ -80,9 +78,10 @@ def convert_dict(d, keys=None):
             del(d[key])
     return d
 
+
 def check_values(d):
     ret = {}
-    for key,v in d.iteritems():
+    for key, v in d.iteritems():
         if key in INVALID_KEYS or isempty(v):
             continue
         if hasattr(v, '__iter__') and hasattr(v, 'items'):
@@ -96,13 +95,16 @@ def check_values(d):
 
     return ret
 
+
 def keyword_search(keywords):
-    write_log(translate("Discogs",
-        'Retrieving search results for keywords: %s') % keywords)
+    write_log(
+        translate("Discogs",
+                  'Retrieving search results for keywords: %s') % keywords)
     keywords = re.sub('(\s+)', u'+', keywords)
-    url = search_url % keywords
+    url = SEARCH_URL % keywords
     text = urlopen(url)
     return parse_search_json(json.loads(text))
+
 
 def parse_tracklist(tlist):
     tracks = []
@@ -128,7 +130,7 @@ def parse_tracklist(tlist):
         artist = []
         a_len = len(t.get('artists', []))
         for i, a in enumerate(t.get(u'artists', [])):
-            if a.get(u'join'):
+            if a_len > 1 and a.get(u'join'):
                 artist.append(u'%s %s ' % (a[u'name'], a[u'join']))
             else:
                 if i < a_len - 1:
@@ -142,6 +144,7 @@ def parse_tracklist(tlist):
             info['involvedpeople_track'] = u';'.join(people)
         tracks.append(check_values(info))
     return tracks
+
 
 def parse_album_json(data):
     """Parses the retrieved json for an album and get's the track listing."""
@@ -157,16 +160,17 @@ def parse_album_json(data):
             formats.append(desc)
         else:
             formats.extend(desc)
-    
+
     if formats:
         info['format'] = list(set(formats))
     info['artist'] = [z['name'] for z in data.get('artists', [])]
     info['artist'] = u" & ".join(filter(None, info['artist']))
-    info['involvedpeople_album'] = u':'.join(u'%s;%s' % (z['name'],z['role'])
-        for z in data.get('extraartists', []))
+    info['involvedpeople_album'] = \
+        u':'.join(u'%s;%s' % (z['name'], z['role'])
+                  for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
     info['catno'] = filter(None,
-        [z.get('catno') for z in data.get('labels', [])])
+                           (z.get('catno') for z in data.get('labels', [])))
 
     info['companies'] = u';'.join(
         u'%s %s' % (z['entity_type_name'], z['name'])
@@ -177,11 +181,13 @@ def parse_album_json(data):
     info = cleaned_data
 
     if 'images' in data:
-        imgs = [(z.get('uri', ''), z.get('uri150', ''))
-            for z in data['images'] if 'uri' in z or 'uri150' in z]
-        info['#cover-url'] = imgs
-        
-    return (info, parse_tracklist(data['tracklist']))
+        images = \
+            [(z.get('uri', ''), z.get('uri150', ''))
+             for z in data['images'] if 'uri' in z or 'uri150' in z]
+        info['#cover-url'] = images
+
+    return info, parse_tracklist(data['tracklist'])
+
 
 def parse_search_json(data):
     """Parses the xml retrieved after entering a search query. Returns a
@@ -218,6 +224,7 @@ def parse_search_json(data):
 
     return albums
 
+
 def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
@@ -243,8 +250,8 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
     site_url = SITE_MASTER_URL if rls_type == MASTER else SITE_RELEASE_URL
     site_url += r_id.encode('utf8')
-            
-    url = master_url % r_id if rls_type == MASTER else release_url % r_id
+
+    url = MASTER_URL % r_id if rls_type == MASTER else RELEASE_URL % r_id
 
     x = urlopen(url)
     ret = parse_album_json(json.loads(x))
@@ -252,7 +259,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     info = deepcopy(info)
     info.update(ret[0])
 
-    if image in image_types and '#cover-url' in info:
+    if image in IMAGE_TYPES and '#cover-url' in info:
         data = []
         for large, small in info['#cover-url']:
             if image == LARGEIMAGE and large:
@@ -260,26 +267,27 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     translate("Discogs", 'Retrieving cover: %s') % large)
                 try:
                     data.append({DATA: urlopen(large)})
-                except RetrievalError, e:
-                    write_log(translate('Discogs',
-                        u'Error retrieving image:') + unicode(e))
+                except RetrievalError as e:
+                    write_log(translate(
+                        'Discogs', u'Error retrieving image:') + unicode(e))
             else:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % small)
                 try:
                     data.append({DATA: urlopen(small)})
-                except RetrievalError, e:
-                    write_log(translate('Discogs',
-                        u'Error retrieving image:') + unicode(e))
+                except RetrievalError as e:
+                    write_log(translate(
+                        'Discogs', u'Error retrieving image:') + unicode(e))
         if data:
             info.update({'__image': data})
 
     try:
-        info['#extrainfo'] = (translate('Discogs', '%s at Discogs.com') % \
-            info['album'], site_url)
+        info['#extrainfo'] = translate(
+            'Discogs', '%s at Discogs.com') % info['album'], site_url
     except KeyError:
         pass
     return info, ret[1]
+
 
 def search(artist=None, album=None):
     if artist and album:
@@ -290,14 +298,12 @@ def search(artist=None, album=None):
         keywords = album
     return keyword_search(keywords)
 
+
 def urlopen(url):
     url = iri_to_uri(url)
     request = urllib2.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
-    if puddlestuff.tagsources.user_agent:
-        request.add_header('User-Agent', puddlestuff.tagsources.user_agent)
-    else:
-        request.add_header('User-Agent', 'puddetag/' + puddlestuff.version_string)
+    request.add_header('User-Agent', get_useragent())
 
     if time.time() - __lasttime.time < 1:
         time.sleep(1)
@@ -305,23 +311,26 @@ def urlopen(url):
 
     try:
         data = urllib2.urlopen(request).read()
-    except urllib2.URLError, e:
+    except urllib2.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = unicode(e)
         raise RetrievalError(msg)
-    except socket.error:
+    except socket.error as e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
     except EnvironmentError, e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
-    try: data = gzip.GzipFile(fileobj = cStringIO.StringIO(data)).read()
-    except IOError: "Gzipped data not returned."
+    try:
+        data = gzip.GzipFile(fileobj=cStringIO.StringIO(data)).read()
+    except IOError:
+        "Gzipped data not returned."
 
     return data
+
 
 class Discogs(object):
     name = 'Discogs.com'
@@ -341,7 +350,7 @@ class Discogs(object):
                     translate("Discogs", 'Large')], 1]],
             [translate("Discogs", 'Field to use for discogs_id'), TEXT, R_ID],
             [translate("Discogs", 'API Key (Stored as plain-text.'
-                'Leave empty to use default.)'), TEXT, ''],
+                                  'Leave empty to use default.)'), TEXT, ''],
             ]
 
     def keyword_search(self, text):
@@ -349,14 +358,13 @@ class Discogs(object):
         try:
             r_id = int(text.strip())
         except (TypeError, ValueError):
-            raise RetrievalError(
-                translate("Discogs", 'Discogs release id should be an integer.'))
+            raise RetrievalError(translate(
+                "Discogs", 'Discogs release id should be an integer.'))
 
         try:
             return [self.retrieve(r_id)]
         except Exception, e:
             raise RetrievalError(unicode(e))
-
 
     def search(self, album, artists):
 
@@ -382,14 +390,14 @@ class Discogs(object):
         return []
 
     def retrieve(self, info):
-        if False and self._getcover: # retrieving images is broken by Discogs
+        if False and self._getcover:  # retrieving images is broken by Discogs
             return retrieve_album(info, self.covertype)
         else:
             return retrieve_album(info, None)
 
     def applyPrefs(self, args):
         self._getcover = args[0]
-        self.covertype = image_types[args[1]]
+        self.covertype = IMAGE_TYPES[args[1]]
         if not self._getcover:
             self.covertype = None
         global R_ID
@@ -398,10 +406,6 @@ class Discogs(object):
         else:
             R_ID = R_ID_DEFAULT
 
-        global search_url, release_url, master_url
-        key = args[3] if args[3] else api_key
-        search_url, release_url, master_url = query_urls(key)
-        
 
 info = Discogs
 
@@ -409,8 +413,3 @@ if __name__ == '__main__':
 
     k = Discogs()
     print k.keyword_search(":r 911637")
-    
-    #import json
-    #d = json.loads(open('a.json', 'r').read())
-    #x = parse_album_json(d['resp']['release'])
-    #print x
