@@ -112,6 +112,9 @@ class AutonumberDialog(QDialog):
         vbox.addWidget(self.count_by_group)
         self.custom_numbering_widgets.append(self.count_by_group)
 
+        self._shuffle = QCheckBox("Assign numbers in random order")
+        vbox.addLayout(hbox(self._shuffle))
+
         okcancel = OKCancel()
         vbox.addLayout(okcancel)
         self.setLayout(vbox)
@@ -163,7 +166,8 @@ class AutonumberDialog(QDialog):
                   self._padlength.value(),
                   unicode(self.grouping.text()),
                   unicode(self.output_field.currentText()),
-                  self.count_by_group.checkState()
+                  self.count_by_group.checkState(),
+                  self._shuffle.checkState()
         )
         
         self._saveSettings()
@@ -185,6 +189,9 @@ class AutonumberDialog(QDialog):
         self.showDirectorySplittingOptions(self._restart_numbering.checkState())
         
         self.grouping.setText(cparser.get(section, 'grouping', '%__dirpath%'))
+
+        self._shuffle.setCheckState(
+            cparser.get(section, 'shuffle', Qt.Unchecked))
         
         output_field_text = cparser.get(section, 'output_field', 'track')
         if not output_field_text:
@@ -205,6 +212,7 @@ class AutonumberDialog(QDialog):
         cparser.set(section, 'padlength', self._padlength.value())
         cparser.set(section, 'grouping', self.grouping.text())
         cparser.set(section, 'output_field', self.output_field.currentText())
+        cparser.set(section, 'shuffle', self._shuffle.checkState())
 
 class ImportTextFile(QDialog):
     """Dialog that importing a text file to retrieve tags from."""
