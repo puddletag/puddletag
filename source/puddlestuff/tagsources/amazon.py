@@ -72,24 +72,26 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
     return query
 
 def check_matches(albums, artist=None, album_name=None):
-    """Returns any album in albums with the same matching artist and
-    album_name's. If no matches are found, original list is returned."""
     ret = []
     if artist and album_name:
         album_name = album_name.lower()
         artist = artist.lower()
 
         ret = [album for album in albums if
-            album['album'].lower().startswith(album_name) and
-               album['artist'].lower().startswith(artist)]
+               album_name in album['album'].lower() and
+               artist in album['artist'].lower()]
     elif artist:
         artist = artist.lower()
-        ret = [album for album in albums if
-            album.get('artist', artist).lower() == artist]
+        ret = [
+            album for album in albums if
+            artist in album.get('artist', artist).lower()
+        ]
     elif album_name:
         album_name = album_name.lower()
-        ret = [album for album in albums if
-            album.get('album', album).lower() == album_name]
+        ret = [
+            album for album in albums if
+            album_name in album.get('album', album).lower()
+        ]
 
     return ret if ret else albums
 

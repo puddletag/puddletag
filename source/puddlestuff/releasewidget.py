@@ -207,6 +207,7 @@ class ChildItem(RootItem):
         self.childItems = []
         self._display = ''
         self.dispPattern = pattern
+        self.hasTracks = False
 
     def data(self, column):
         return self._display
