@@ -328,7 +328,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         elif role == Qt.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
-                return
+                return None
             if item.expanded:
                 return QVariant(self.expandedIcon)
             else:
@@ -381,6 +381,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         item = index.internalPointer()
         if not item:
             return True
+        if not item.hasTracks:
+            return False
         if (item == self.rootItem) or (item in self.rootItem.childItems):
             if not item.retrieving:
                 return True
