@@ -1341,7 +1341,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
     <message>
         <location filename="puddlestuff/translations.py" line="155"/>
         <source>only as &amp;whole word</source>
-        <translation>endast som &amp;hela ord</translation>
+        <translation>Endast &amp;hela ord</translation>
     </message>
     <message>
         <location filename="puddlestuff/translations.py" line="156"/>
@@ -1860,7 +1860,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
     <message>
         <location filename="puddlestuff/translations.py" line="60"/>
         <source>&amp;Preserve file modification times</source>
-        <translation>&amp;Bevara filers tidsstämpel</translation>
+        <translation>&amp;Bevara tidsstämpeln &apos;Senast ändrad&apos;</translation>
     </message>
     <message>
         <location filename="puddlestuff/translations.py" line="61"/>
@@ -3020,7 +3020,7 @@ Vill du fortsätta?</translation>
     <message>
         <location filename="puddlestuff/masstag/dialogs.py" line="262"/>
         <source>Minimum percentage required for album matches.</source>
-        <translation>Minimum procentvärde för albummatchning.</translation>
+        <translation>Minimivärde i procent, för albummatchning.</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstag/dialogs.py" line="265"/>
