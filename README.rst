@@ -25,7 +25,6 @@ What you need
 - PyQt4 (4.5 or greater) (http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
 - PyParsing (1.5.1 or greater) (http://pyparsing.wikispaces.com) takes care of the parsing...
 - Mutagen (1.20 recommended, 1.14 required) (http://code.google.com/p/mutagen/) is used as the tagging lib and...
-- ConfigObj (4.5.0 or greater) (http://code.google.com/p/configobj/) takes care of saving settings.
 
 The following are recommended
 -----------------------------
