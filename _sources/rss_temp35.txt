@@ -1,26 +1,20 @@
-1 May 2009
-##########
+4 June 2009
+###########
 
-I like so this release so much that I almost changed it to puddletag version 1, but it still has some shortcomings compared to Mp3tag and some things that I want to implement before then.
-
-With that being said, here are the changes you'll notice.
+Besides not having much time, I have been very lazy this month when it came to puddletag. If all goes well then the next release will be more bountiful. Till then, you'll have to make due with this, which only has the following to offer...
 
 New Features
 ------------
-* Saving and loading is now loads faster. On par with Mp3tag (sometimes puddletag is faster, sometimes Mp3tag).
-* Like Mp3tag, puddletag stores a history of all the values you've used for the Format Value function, and every other one. Unlike Mp3tag, puddletag allows you delete any entries you don't want on-the-fly, by clicking the red button next to it!
-* Cut, Copy and Paste of tags is supported. Available via the Edit menu.
+
+* Loading times are improved by a couple of miliseconds.
+* I've implemented a bit of fuzzy string matching via the Show Dupes button. Enter a tag prepended by a colon (like **":title** and values will be fuzzily matched. It uses the `python-Levenshtein <http://code.michael-noll.com/?p=third-party;a=tree;f=python-Levenshtein-0.10.1>`_ for matching. If you don't have it installed, difflib (part of the standard library) is used. There isn't much difference except that Levenshtein is supposed to be faster since it's compiled (I haven't tested it though). Furthermore, entering **:artist** in the library search box will show you all the fuzzily matched duplicate artists.
 
 Changes
 -------
 
-* All window related actions were move to a new Windows menu to reduce clutter on the edit menu.
-* A progress indicator is now shown when loading a music library.
-* Settings are stored in ~/.puddletag instead of the ~/.config...
+* I just changed the UI a bit to make it more coherent. It's still ugly as hell, but that's way outta my area of expertise.
 
 Fixes
 -----
 
-* Bugs in the image editor (changing picture type, enabling buttons depending on context, etc.) are fixed.
-* Clicking Cancel while loading or saving now actually works as expected and instantly.
-* The progress window doesn't stay persistent anymore when puddletag loads or saves files too quickly.
+* There are many. I spent some time writing unit tests and testing the critical parts of puddletag. Many bugs were found. Many of these bugs weren't logged. This being said, there may still be some bugs as I've once again made some internal changes that could mess up things. Expect one or two updates during the month.

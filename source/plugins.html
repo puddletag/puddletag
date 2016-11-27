@@ -15,7 +15,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Plugins &mdash; puddletag</title>
+    <title>Plugins &#8212; puddletag</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -41,6 +41,8 @@
     <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -123,15 +125,15 @@
 <div class="section" id="required-info">
 <h2>Required Info<a class="headerlink" href="#required-info" title="Permalink to this headline">¶</a></h2>
 <p>puddletag plugins are stored in <strong>~/.puddletag/plugins</strong>. In order for a plugin to be registered the following tree structure is required.:</p>
-<div class="highlight-python"><div class="highlight"><pre>~/.puddletag/plugins
-    --\modulename
-    ----\__init__.py
-    ----\info
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">~/.</span><span class="n">puddletag</span><span class="o">/</span><span class="n">plugins</span>
+    <span class="o">--</span>\<span class="n">modulename</span>
+    <span class="o">----</span>\<span class="n">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="o">----</span>\<span class="n">info</span>
 </pre></div>
 </div>
 <p>Plugins will be imported using <strong>modulename</strong>, as such only valid in Python module names (no spaces, periods, unicode, etc.) are allowed.</p>
 <p><strong>info</strong> is a INI file containing the plugin information. Use the following structure and keep in mind that all keys are case sensitive.</p>
-<div class="highlight-ini"><div class="highlight"><pre><span class="k">[info]</span>
+<div class="highlight-ini"><div class="highlight"><pre><span></span><span class="k">[info]</span>
 <span class="na">name</span> <span class="o">=</span> <span class="s">Plugin Name</span>
 <span class="na">author</span> <span class="o">=</span> <span class="s">Author Name</span>
 <span class="na">version</span> <span class="o">=</span> <span class="s">1.0</span>
@@ -150,8 +152,8 @@
 </div>
 <div class="section" id="plugin-examples">
 <h2>Plugin Examples:<a class="headerlink" href="#plugin-examples" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference download internal" href="../_downloads/functionplugin.tar.gz"><code class="xref download docutils literal"><span class="pre">Function</span> <span class="pre">plugin</span> <span class="pre">example</span></code></a> contains a short tutorial on writing scripting functions and Functions that can be part of an action.</p>
-<p>The <a class="reference download internal" href="../_downloads/tagsource.tar.gz"><code class="xref download docutils literal"><span class="pre">Tag</span> <span class="pre">Source</span> <span class="pre">Example</span></code></a> contains puddletag&#8217;s Amazon tag source with a lot of comments.</p>
+<p>The <a class="reference download internal" href="../_downloads/functionplugin.tar.gz" download=""><code class="xref download docutils literal"><span class="pre">Function</span> <span class="pre">plugin</span> <span class="pre">example</span></code></a> contains a short tutorial on writing scripting functions and Functions that can be part of an action.</p>
+<p>The <a class="reference download internal" href="../_downloads/tagsource.tar.gz" download=""><code class="xref download docutils literal"><span class="pre">Tag</span> <span class="pre">Source</span> <span class="pre">Example</span></code></a> contains puddletag&#8217;s Amazon tag source with a lot of comments.</p>
 </div>
 </div>
 
@@ -168,7 +170,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
     </p>
   </div>
 </footer>

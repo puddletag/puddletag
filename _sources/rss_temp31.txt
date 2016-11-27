@@ -1,15 +1,23 @@
-5 November 2009
-###############
+14 April 2010
+#############
 
+It's five months later and from the outside it kinda looks like the project has died when in fact I've spent more time working on puddletag this year than I have the past two years. All thanks to Evan Devetsis who've taken it upon himself to help me make puddletag better. Mostly it was restructuring work in paving the way to add new features, like:
 
 New Features
 ------------
 
-* The only new feature for this release is that the MusicBrainz dialog now allows you to select individual tracks. I like it better now.
+* Multiple tag sources support. Musicbrainz only for now, will add more over the coming week.
+* Tag mappings. Map a tag to whatever you want to.
+* Some tags were changed. See the :doc:`Tag Reference <source/tags>`.
+* More ID3 tags are supported.
+* Unicode in MP4 tags is supported.
+* Library code has been rewritten. Currently only QuodLibet is supported. Will add more week after next.
+* Some of the scripting functions with odd names (if\_, not\_, etc.) have been renamed to what they're supposed to be.
+* All icons not created by me are from the Oxygen icon set for KDE. As soon as I found out how to detect if GNOME is running, I'll add some Ubuntu icons.
 
-Changes
--------
+Fixes
+-----
 
-* Some (actually many) bugs with loading directories were fixed.
+* Far too many to list.
 
-There won't be any releases until at least February next year as I'm gonna take some time of from puddletag (and python) to learn new stuff and hopefully with enough new knowledge to implement the advanced features that I've been thinking of. If I do discover some critical bugs during this time though, I'll update the site.
+Most everything has changed, so for those that've used it before, explore and check it out. Cause I'm not listing all that here (...because I forgot :)

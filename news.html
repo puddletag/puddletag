@@ -15,7 +15,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>News &mdash; puddletag</title>
+    <title>News &#8212; puddletag</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -41,6 +41,8 @@
     <script type="text/javascript" src="_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="puddletag" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -104,7 +106,31 @@
       
   <div class="section" id="news">
 <h1>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference download internal" href="rss.xml"><code class="xref download docutils literal"><span class="pre">RSS</span> <span class="pre">Feed</span></code></a></p>
+<p><a class="reference download internal" href="rss.xml" download=""><code class="xref download docutils literal"><span class="pre">RSS</span> <span class="pre">Feed</span></code></a></p>
+<hr class="docutils" />
+<div class="section" id="november-2016-1-2-0">
+<h2>27 November 2016 - 1.2.0<a class="headerlink" href="#november-2016-1-2-0" title="Permalink to this headline">¶</a></h2>
+<p>Minor fixes were made over the course of the year. This release is so that package maintainers can update their repos.</p>
+<p>A Debian package is no longer supplied, supporting two versions of Ubuntu and Debian from a single .deb would take way too much time. For Ubuntu users, <a class="reference external" href="http://www.webupd8.org/">WebUpd8</a> keeps their <a class="reference external" href="https://launchpad.net/~nilarimogard/+archive/ubuntu/webupd8">PPA</a> up to date.</p>
+<p>Additions</p>
+<ul class="simple">
+<li>Swedish translation (Åke Engelbrektson)</li>
+<li>CJK Encoding for Encoding Conversion Function (XIE Dongping)</li>
+<li>Spanish translation (José Vidal)</li>
+</ul>
+<p>Changes</p>
+<ul class="simple">
+<li>Improved Amazon tag source album matching.</li>
+<li>Czech translation (Pavel Fric)</li>
+</ul>
+<p>Fixes</p>
+<ul class="simple">
+<li>#280 Turn off auto-saving &#8220;Enter description here&#8221; description for cover art</li>
+<li>Parsing tracks in Discogs if only a single artist (Frank Sachsenheim)</li>
+<li>Setting user-agent for Tag Sources (Frank Sachsenheim)</li>
+<li>Support for latest mutagen (Bruno Bergot)</li>
+</ul>
+</div>
 <hr class="docutils" />
 <div class="section" id="january-2016-1-1-0">
 <h2>31 January 2016 - 1.1.0<a class="headerlink" href="#january-2016-1-1-0" title="Permalink to this headline">¶</a></h2>
@@ -129,13 +155,13 @@ at the new URL <a class="reference external" href="http://docs.puddletag.net">ht
 </ul>
 <p>New</p>
 <ul class="simple">
-<li>Autonumbering has a bunch of new options. Explained <a class="reference internal" href="source/menus.html#autonumbering-wizard"><span>here</span></a>.</li>
+<li>Autonumbering has a bunch of new options. Explained <a class="reference internal" href="source/menus.html#autonumbering-wizard"><span class="std std-ref">here</span></a>.</li>
 </ul>
 </div>
 <hr class="docutils" />
 <div class="section" id="may-2015-moving-to-github">
 <h2>13 May 2015 - Moving to Github.<a class="headerlink" href="#may-2015-moving-to-github" title="Permalink to this headline">¶</a></h2>
-<p>With the shutdown of Google Code and the increasing dissatisfaction with SF, I&#8217;ve mode the code and issue tracker over to Github.</p>
+<p>With the shutdown of Google Code and the increasing dissatisfaction with SF, I&#8217;ve moved the code and issue tracker over to Github.</p>
 <p><a class="reference external" href="https://github.com/keithgg/puddletag">Linky</a></p>
 <p>I&#8217;ll move the rest of the site soon enough.</p>
 </div>
@@ -200,7 +226,7 @@ at the new URL <a class="reference external" href="http://docs.puddletag.net">ht
 <p>I&#8217;ve been using this release since forever and consider it to work pretty well.</p>
 <p>Still an RC though, just in case there are any showstoppers. Use the forum link
 above if you run into any issues. The list of changes is larger than usual.
-Checkout the <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a> for more.</p>
+Checkout the <a class="reference download internal" href="_downloads/changelog" download=""><code class="xref download docutils literal"><span class="pre">changelog</span></code></a> for more.</p>
 <p>If no new issues are reported I&#8217;ll just rename it to 1.0.2 within a month. ;-)</p>
 <div class="line-block">
 <div class="line"><a class="reference external" href="http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.2RC1-1_all.deb">Debian Package</a> (SHA1 36b9d63504e95cba47667b48158b0a2132e39bf7)</div>
@@ -227,10 +253,10 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <div class="section" id="june-2013-some-news">
 <h2>26 June 2013 - Some news<a class="headerlink" href="#june-2013-some-news" title="Permalink to this headline">¶</a></h2>
 <p>Just a heads up that the repository URL has changed to</p>
-<div class="highlight-bash"><div class="highlight"><pre>http://hg.code.sf.net/p/puddletag/code
+<div class="highlight-bash"><div class="highlight"><pre><span></span>http://hg.code.sf.net/p/puddletag/code
 </pre></div>
 </div>
-<p>Pavel Fric has contributed a Czech translation which you can <a class="reference download internal" href="_downloads/puddletag_cs.qm"><code class="xref download docutils literal"><span class="pre">download</span></code></a>.</p>
+<p>Pavel Fric has contributed a Czech translation which you can <a class="reference download internal" href="_downloads/puddletag_cs.qm" download=""><code class="xref download docutils literal"><span class="pre">download</span></code></a>.</p>
 <p>Contributions are always appreciated so please post on the forum (link above) if you&#8217;d like to translate puddletag.</p>
 <p>New beta coming this weekend.</p>
 </div>
@@ -249,7 +275,7 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <div class="section" id="august-2012-1-0-0">
 <h2>21 August 2012 - 1.0.0<a class="headerlink" href="#august-2012-1-0-0" title="Permalink to this headline">¶</a></h2>
 <p>v1 has finally arrived!</p>
-<p>There&#8217;s not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>.</p>
+<p>There&#8217;s not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the <a class="reference download internal" href="_downloads/changelog" download=""><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>.</p>
 <p>Right now puddletag is about as stable as it&#8217;ll get without much more work. As for the future, I have a some things that I&#8217;ve been putting off until v1. A command line version being top priority.</p>
 <p>Anyway, that&#8217;s it for now. Enjoy!</p>
 </div>
@@ -257,7 +283,7 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <div class="section" id="june-2012-1-0-0rc1">
 <h2>9 June 2012 - 1.0.0RC1<a class="headerlink" href="#june-2012-1-0-0rc1" title="Permalink to this headline">¶</a></h2>
 <p>This release is the first RC with the final release planned for next week depending on feedback. All that&#8217;s still needed is to update the docs, fix some outstanding bugs and package the plugins.</p>
-<p>As for the changes here, it&#8217;s just some bug fixes. For a more comprehensive list see the <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>. The most interesting ones are:</p>
+<p>As for the changes here, it&#8217;s just some bug fixes. For a more comprehensive list see the <a class="reference download internal" href="_downloads/changelog" download=""><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>. The most interesting ones are:</p>
 <div class="section" id="id4">
 <h3>Fixes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -294,7 +320,7 @@ Checkout the <a class="reference download internal" href="_downloads/changelog">
 <li>Dutch Translation by Fabian Bakkum.</li>
 <li>Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you&#8217;re an &#8216;advanced&#8217; user.</li>
 </ul>
-<p>That&#8217;s it basically. If you want more, see the <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>. Docs for the latest version have been uploaded <a class="reference external" href="http://puddletag.sf.net/latest/docs.html">here</a>. I still have quite a bit of updating to do though.</p>
+<p>That&#8217;s it basically. If you want more, see the <a class="reference download internal" href="_downloads/changelog" download=""><code class="xref download docutils literal"><span class="pre">changelog</span></code></a>. Docs for the latest version have been uploaded <a class="reference external" href="http://puddletag.sf.net/latest/docs.html">here</a>. I still have quite a bit of updating to do though.</p>
 <p><a class="reference external" href="http://code.google.com/p/puddletag/issues">Please let me know if you experience any issues.</a></p>
 </div>
 </div>
@@ -313,7 +339,7 @@ it does contain important stuff like.</p>
 <li>More than one file can be written to at a time in the file-view. Just select more than one file, edit a field as normal (like album) and Bob&#8217;s your aunt.</li>
 </ul>
 <p>Test it out and if you find any bugs feel free to <a class="reference external" href="http://code.google.com/p/puddletag/issues">let me know</a>.</p>
-<p><a class="reference internal" href="download.html#development-builds"><span>Download</span></a></p>
+<p><a class="reference internal" href="download.html#development-builds"><span class="std std-ref">Download</span></a></p>
 </div>
 <hr class="docutils" />
 <div class="section" id="september-2011-mercurial">
@@ -321,11 +347,11 @@ it does contain important stuff like.</p>
 <p>This is just a heads up that I&#8217;ve moved from Subversion to Mercurial. No real reason for this other than trying something new. I&#8217;ve been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.</p>
 <p>Quick commands to get started for those who don&#8217;t know Mercurial:</p>
 <p>To get a copy:</p>
-<div class="highlight-bash"><div class="highlight"><pre>hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
+<div class="highlight-bash"><div class="highlight"><pre><span></span>hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
 </pre></div>
 </div>
 <p>To update, run in the previously retrieved dir:</p>
-<div class="highlight-bash"><div class="highlight"><pre>hg pull -u
+<div class="highlight-bash"><div class="highlight"><pre><span></span>hg pull -u
 </pre></div>
 </div>
 <p>Enjoy. ;-)</p>
@@ -337,15 +363,15 @@ it does contain important stuff like.</p>
 <strong>Update 4 June 2011</strong>: Tag sources were broken due to a bug not found in testing. Therefore 0.10.5 has been released.</p>
 <p>Unless there&#8217;re some critical bugs discovered in this release, then the next release will be puddletag v1. There won&#8217;t be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.</p>
 <p>As for this release, there&#8217;re a lot of changes, but nothing of note UI wise (except for the website theme change copied from the <a class="reference external" href="http://djangoproject.com">Django docs</a>).</p>
-<p>Quickly listed, I&#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&#8217;s a <a class="reference download internal" href="_downloads/changelog"><code class="xref download docutils literal"><span class="pre">changelog</span></code></a> containing most everything done and <strong>Raphaël Rochet</strong> became the first person to translate puddletag by providing a <span class="xref std std-ref">French translation</span>.</p>
+<p>Quickly listed, I&#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&#8217;s a <a class="reference download internal" href="_downloads/changelog" download=""><code class="xref download docutils literal"><span class="pre">changelog</span></code></a> containing most everything done and <strong>Raphaël Rochet</strong> became the first person to translate puddletag by providing a <span class="xref std std-ref">French translation</span>.</p>
 <div class="section" id="id8">
 <h3>New Features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <ul>
 <li><p class="first">Much improved masstagging.</p>
 </li>
-<li><p class="first">The <a class="reference internal" href="source/function.html#export-artwork-to-file"><span>Export artwork to file</span></a> Function.</p>
+<li><p class="first">The <a class="reference internal" href="source/function.html#export-artwork-to-file"><span class="std std-ref">Export artwork to file</span></a> Function.</p>
 </li>
-<li><p class="first">The filter behaves like Mp3tag&#8217;s. Described in <a class="reference internal" href="source/filter.html"><em>Filter Expressions</em></a></p>
+<li><p class="first">The filter behaves like Mp3tag&#8217;s. Described in <a class="reference internal" href="source/filter.html"><span class="doc">Filter Expressions</span></a></p>
 </li>
 <li><dl class="first docutils">
 <dt>For the Discogs tag source:</dt>
@@ -375,7 +401,7 @@ it does contain important stuff like.</p>
 <li>Unicode support for Replace with Regular Expression function.</li>
 <li><strong>peformersortorder</strong> has been renamed to <strong>performersortorder</strong> in ID3 tags.</li>
 <li>Similarly the <strong>lyrics_us</strong> field is now <strong>unsyncedlyrics</strong>.</li>
-<li>Renaming dirs hooks into <a class="reference internal" href="source/function.html#tag-to-dir"><span>Tag-&gt;Dir</span></a> function now.</li>
+<li>Renaming dirs hooks into <a class="reference internal" href="source/function.html#tag-to-dir"><span class="std std-ref">Tag-&gt;Dir</span></a> function now.</li>
 <li>A couple related to the QuodLibet library handling.</li>
 <li>Proper error messages are now shown, differentiating whether the error occurred while writing to files or renaming dirs, files.</li>
 </ul>
@@ -403,9 +429,9 @@ it does contain important stuff like.</p>
 <div class="section" id="id12">
 <h3>New Features<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>A bunch of new fields related to Mp3tag compatibility, most notably <strong>__tag</strong> and <strong>__tag_read</strong>. All are listed on the <a class="reference internal" href="source/tags.html"><em>Tag Reference</em></a>.</li>
+<li>A bunch of new fields related to Mp3tag compatibility, most notably <strong>__tag</strong> and <strong>__tag_read</strong>. All are listed on the <a class="reference internal" href="source/tags.html"><span class="doc">Tag Reference</span></a>.</li>
 <li>Loading subfolders can be turned on/off using the Filesystem Window.</li>
-<li>USLT Frame support for ID3 that uses the same format as ID3. See the <a class="reference internal" href="source/id3.html#uslt"><span>ID3 page</span></a>.</li>
+<li>USLT Frame support for ID3 that uses the same format as ID3. See the <a class="reference internal" href="source/id3.html#uslt"><span class="std std-ref">ID3 page</span></a>.</li>
 <li>The Stored Tags window shows the values of all tags found in file.</li>
 <li>Experimental ID3v2.3 support courtesy of <a class="reference external" href="http://musicbrainz.org/doc/PicardTagger">MusicBrainz Picard</a>. Multiple values are not supported. Don&#8217;t use it for now unless you really need to. Then report back on how it went. Enable it in Edit-&gt;Preferences-&gt;Tags.</li>
 <li>Two new plugins. Details are on the <span class="xref std std-ref">Downloads</span> page.</li>
@@ -462,7 +488,7 @@ it does contain important stuff like.</p>
 <hr class="docutils" />
 <div class="section" id="february-2011-0-9-12">
 <h2>9 February 2011 - 0.9.12<a class="headerlink" href="#february-2011-0-9-12" title="Permalink to this headline">¶</a></h2>
-<p>Almost all the work done, was modifying the code base so that puddletag could be translated properly. I&#8217;ve put up a <a class="reference internal" href="source/translate.html"><em>translation guide</em></a> for interested parties. Since this is a bug-fix release, there are no new features, just some changes and fixes.</p>
+<p>Almost all the work done, was modifying the code base so that puddletag could be translated properly. I&#8217;ve put up a <a class="reference internal" href="source/translate.html"><span class="doc">translation guide</span></a> for interested parties. Since this is a bug-fix release, there are no new features, just some changes and fixes.</p>
 <div class="section" id="id18">
 <h3>Changes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -497,7 +523,7 @@ it does contain important stuff like.</p>
 <ul class="simple">
 <li>Discogs uses the Discogs ID field (which you can define) if it&#8217;s found in your files.</li>
 <li>You can use your own Amazon and Discogs API keys.</li>
-<li><strong>__counter</strong> and <strong>__total_files</strong> fields which you can use in Functions and Actions. Info <a class="reference internal" href="source/tags.html"><em>here</em></a>.</li>
+<li><strong>__counter</strong> and <strong>__total_files</strong> fields which you can use in Functions and Actions. Info <a class="reference internal" href="source/tags.html"><span class="doc">here</span></a>.</li>
 </ul>
 </div>
 <div class="section" id="id21">
@@ -517,16 +543,16 @@ it does contain important stuff like.</p>
 <h3>New Features<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>puddletag now supports translations. If you want to create one for your language create an on the <a class="reference external" href="https://github.com/keithgg/puddletag">issue tracker</a>.</li>
-<li>A <a class="reference internal" href="source/function.html#convert-from-non-standard-encoding"><span>new Function</span></a> to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.</li>
-<li><a class="reference internal" href="source/function.html#tag-to-dir"><span>Tag-&gt;Dir</span></a>, with which you can move directories has also been included.</li>
+<li>A <a class="reference internal" href="source/function.html#convert-from-non-standard-encoding"><span class="std std-ref">new Function</span></a> to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.</li>
+<li><a class="reference internal" href="source/function.html#tag-to-dir"><span class="std std-ref">Tag-&gt;Dir</span></a>, with which you can move directories has also been included.</li>
 <li>MoveUp and MoveDown shortcuts that move the selected files Up/Down in file-view.</li>
-<li>The MusicBrainz tag source now retrieves even more fields. See <a class="reference internal" href="source/tagsources.html#musicbrainz"><span>here</span></a> for a complete listing.</li>
-<li><strong>Select all in Dir</strong> has been removed. I&#8217;ve added two new menu items. Select Next in Dir and Select Previous Dir. Info can be found <a class="reference internal" href="source/menus.html#select-next"><span>menus</span></a>.</li>
+<li>The MusicBrainz tag source now retrieves even more fields. See <a class="reference internal" href="source/tagsources.html#musicbrainz"><span class="std std-ref">here</span></a> for a complete listing.</li>
+<li><strong>Select all in Dir</strong> has been removed. I&#8217;ve added two new menu items. Select Next in Dir and Select Previous Dir. Info can be found <a class="reference internal" href="source/menus.html#select-next"><span class="std std-ref">menus</span></a>.</li>
 <li>Support for GUI and music library plugins. There aren&#8217;t any docs yet. I&#8217;ll add them in mid January. If you want to do development in the mean time, make a post on the forum and I&#8217;ll help you out.</li>
-<li>A tag source that uses Discogs.com&#8217;s XML service. I&#8217;m not sure how complete this tag source is since Discogs.com&#8217;s documentation is woefully inadequate. <a class="reference internal" href="source/tagsources.html#discogs"><span>Info</span></a>. <strong>You must set the User-Agent to use this!</strong>.</li>
+<li>A tag source that uses Discogs.com&#8217;s XML service. I&#8217;m not sure how complete this tag source is since Discogs.com&#8217;s documentation is woefully inadequate. <a class="reference internal" href="source/tagsources.html#discogs"><span class="std std-ref">Info</span></a>. <strong>You must set the User-Agent to use this!</strong>.</li>
 <li>puddletag now uses your theme&#8217;s icons. Thanks to <a class="reference external" href="http://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=1&amp;t=16#p178">this</a> post.</li>
-<li>I&#8217;ve added (tentative) support for Mp3tag&#8217;s tag sources. Info <a class="reference internal" href="source/tagsources.html#mp3tag-sources"><span>here</span></a>.</li>
-<li>The &#8216;~&#8217;-notation used in Tag Sources can now be used for Functions too. See the bottom of <a class="reference internal" href="source/tut3.html"><em>this</em></a> page.</li>
+<li>I&#8217;ve added (tentative) support for Mp3tag&#8217;s tag sources. Info <a class="reference internal" href="source/tagsources.html#mp3tag-sources"><span class="std std-ref">here</span></a>.</li>
+<li>The &#8216;~&#8217;-notation used in Tag Sources can now be used for Functions too. See the bottom of <a class="reference internal" href="source/tut3.html"><span class="doc">this</span></a> page.</li>
 <li>Options to remove ID3v1 and ID3v2 tags separately to the Tag Tools menu.</li>
 <li>You can now automatically retrieve matches using Tag Sources. Kinda like mini-masstagging.</li>
 </ul>
@@ -537,7 +563,7 @@ it does contain important stuff like.</p>
 <li>The Replace with Regular Expression function now starts from $1 instead of $0. I had to do this in order for Mp3tag&#8217;s Tag Sources to work. Please update your actions.</li>
 <li>Previews in the Functions dialog now show the fields too.</li>
 <li>Action Shortcuts settings have been moved from Preferences to the Actions dialog.</li>
-<li>Tools-&gt;Sort Selected is now Tools-&gt;Sort By. Visit this <a class="reference internal" href="source/preferences.html#sort-option-prefs"><span>page</span></a> for info.</li>
+<li>Tools-&gt;Sort Selected is now Tools-&gt;Sort By. Visit this <a class="reference internal" href="source/preferences.html#sort-option-prefs"><span class="std std-ref">page</span></a> for info.</li>
 <li>performer in ID3 has been changed to albumartist.</li>
 </ul>
 </div>
@@ -559,8 +585,8 @@ it does contain important stuff like.</p>
 <div class="section" id="website-changes">
 <h3>Website changes<a class="headerlink" href="#website-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>I&#8217;ve added another tutorial called <a class="reference internal" href="source/tut3.html"><em>Things you should know</em></a>. You probably know some of it already.</li>
-<li>Documentation for Preferences has been added <a class="reference internal" href="source/preferences.html"><em>here</em></a>.</li>
+<li>I&#8217;ve added another tutorial called <a class="reference internal" href="source/tut3.html"><span class="doc">Things you should know</span></a>. You probably know some of it already.</li>
+<li>Documentation for Preferences has been added <a class="reference internal" href="source/preferences.html"><span class="doc">here</span></a>.</li>
 </ul>
 </div>
 </div>
@@ -606,8 +632,8 @@ it does contain important stuff like.</p>
 <h3>New Features<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Actions and Functions now operate and write multiple-valued fields.</li>
-<li>A bunch of new Functions. All listed on the <a class="reference internal" href="source/function.html"><em>functions</em></a>.</li>
-<li>Two new scripting functions copied straight from Mp3tag, <strong>$meta_sep</strong> and <strong>$meta</strong>. See the <a class="reference internal" href="source/scripting.html"><em>scripting functions</em></a> page for details.</li>
+<li>A bunch of new Functions. All listed on the <a class="reference internal" href="source/function.html"><span class="doc">functions</span></a>.</li>
+<li>Two new scripting functions copied straight from Mp3tag, <strong>$meta_sep</strong> and <strong>$meta</strong>. See the <a class="reference internal" href="source/scripting.html"><span class="doc">scripting functions</span></a> page for details.</li>
 <li>A new icon. This one designed by Yianni Pappas-Acreman.</li>
 <li>A new Tag Tools menu, with which you can remove ID3 and APEv2 tags from files where they don&#8217;t belong.</li>
 <li>Configurable confirmations. Like when you want to Rename Directories, etc.</li>
@@ -615,7 +641,7 @@ it does contain important stuff like.</p>
 <li>UFID frames for ID3v2 Tags.</li>
 <li>Monkey&#8217;s Audio File&#8217;s are now supported.</li>
 <li>The Actions and Functions dialogs can now be tool windows too (See Windows Menu).</li>
-<li>All <a class="reference internal" href="docs.html"><em>docs</em></a> have been updated.</li>
+<li>All <a class="reference internal" href="docs.html"><span class="doc">docs</span></a> have been updated.</li>
 </ul>
 </div>
 <div class="section" id="id29">
@@ -644,11 +670,11 @@ it does contain important stuff like.</p>
 <li>Renaming files is now possible within Preview Mode.</li>
 <li>A new Function called &#8216;Remove Fields&#8217; that does exactly that.</li>
 <li>A new scripting function (contributed by Erik Reckase) that&#8217;ll convert unicode strings to ASCII.</li>
-<li>The plugin interface for tag sources is now public. See the docs <a class="reference internal" href="source/function.html"><em>here</em></a>.</li>
+<li>The plugin interface for tag sources is now public. See the docs <a class="reference internal" href="source/function.html"><span class="doc">here</span></a>.</li>
 <li>Right click on any directory. Click the refresh button to refresh it.</li>
 <li>You can now change the shortcut for any menu item. Edit-&gt;Preferences-&gt;Shortcuts to configure.</li>
 <li>Also, you can now sort selected tracks using predefined fields. Some defaults are in Tools-&gt;Sort Selected. Configure it using the &#8216;Edit sort options&#8217; button in Preferences.</li>
-<li>I&#8217;ve finally added a <a class="reference download internal" href="rss.xml"><code class="xref download docutils literal"><span class="pre">RSS</span> <span class="pre">Feed</span></code></a> to the website.</li>
+<li>I&#8217;ve finally added a <a class="reference download internal" href="rss.xml" download=""><code class="xref download docutils literal"><span class="pre">RSS</span> <span class="pre">Feed</span></code></a> to the website.</li>
 </ul>
 </div>
 <div class="section" id="bugs">
@@ -675,10 +701,10 @@ it does contain important stuff like.</p>
 <ul class="simple">
 <li>I&#8217;ve added WavPack, MusePack, and basic WMA support (only common fields, not including artwork are supported.)</li>
 <li><em>Masstagging</em>. Also known as the time-sink, was added. What this allows you to do is retrieve tags from multiple tag sources at once, combine time and write them to the selected files. It sounds simple, but extremely useful. There&#8217;s no tutorial for it as yet (soon), but I think the interface is pretty self-explanatory.</li>
-<li>Also, I&#8217;ve added what I call Preview Mode, wherein you can do all your editing and write to files only once. See the description for it on the <a class="reference internal" href="source/menus.html"><em>menus page</em></a> (scroll to bottom).</li>
-<li>A new Function called &#8216;Load Artwork&#8217; Function with which you can load artwork from the file&#8217;s directory. Explanation can be found on the <a class="reference internal" href="source/function.html"><em>functions page</em></a>.</li>
-<li>The plugin interface is now public for Functions. Tag sources will be available in the next release. For those interested, there&#8217;s a tutorial <a class="reference internal" href="source/plugins.html"><em>here</em></a>.</li>
-<li>Converting filenames to tags can now take the directory name into account. Description on <a class="reference internal" href="source/menus.html"><em>menus page</em></a>.</li>
+<li>Also, I&#8217;ve added what I call Preview Mode, wherein you can do all your editing and write to files only once. See the description for it on the <a class="reference internal" href="source/menus.html"><span class="doc">menus page</span></a> (scroll to bottom).</li>
+<li>A new Function called &#8216;Load Artwork&#8217; Function with which you can load artwork from the file&#8217;s directory. Explanation can be found on the <a class="reference internal" href="source/function.html"><span class="doc">functions page</span></a>.</li>
+<li>The plugin interface is now public for Functions. Tag sources will be available in the next release. For those interested, there&#8217;s a tutorial <a class="reference internal" href="source/plugins.html"><span class="doc">here</span></a>.</li>
+<li>Converting filenames to tags can now take the directory name into account. Description on <a class="reference internal" href="source/menus.html"><span class="doc">menus page</span></a>.</li>
 </ul>
 </div>
 <div class="section" id="id34">
@@ -756,7 +782,7 @@ it does contain important stuff like.</p>
 <ul class="simple">
 <li>Multiple tag sources support. Musicbrainz only for now, will add more over the coming week.</li>
 <li>Tag mappings. Map a tag to whatever you want to.</li>
-<li>Some tags were changed. See the <a class="reference internal" href="source/tags.html"><em>Tag Reference</em></a>.</li>
+<li>Some tags were changed. See the <a class="reference internal" href="source/tags.html"><span class="doc">Tag Reference</span></a>.</li>
 <li>More ID3 tags are supported.</li>
 <li>Unicode in MP4 tags is supported.</li>
 <li>Library code has been rewritten. Currently only QuodLibet is supported. Will add more week after next.</li>
@@ -846,7 +872,7 @@ it does contain important stuff like.</p>
 <h3>Website changes<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>It looks tons better.</li>
-<li>A <a class="reference internal" href="screenshots.html"><em>screenshots</em></a> section was added. I&#8217;ll up some videos during the month if I get time.</li>
+<li>A <a class="reference internal" href="screenshots.html"><span class="doc">screenshots</span></a> section was added. I&#8217;ll up some videos during the month if I get time.</li>
 </ul>
 </div>
 </div>
@@ -1038,7 +1064,7 @@ Expect these irritants to be gone two weeks from now.</p>
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
     </p>
   </div>
 </footer>

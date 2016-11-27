@@ -1,16 +1,10 @@
-9 June 2012 - 1.0.0RC1
+21 August 2012 - 1.0.0
 ######################
 
-This release is the first RC with the final release planned for next week depending on feedback. All that's still needed is to update the docs, fix some outstanding bugs and package the plugins.
+v1 has finally arrived!
 
-As for the changes here, it's just some bug fixes. For a more comprehensive list see the :download:`changelog`. The most interesting ones are:
+There's not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the :download:`changelog`.
 
-Fixes
------
-+   Loading a new directory would sometimes not unload previously loaded directory.
-+   Mp3tag tag source are more compatible than before.
+Right now puddletag is about as stable as it'll get without much more work. As for the future, I have a some things that I've been putting off until v1. A command line version being top priority.
 
-Changes
--------
-+   The only dependency for AcoustID now is that you have 
-    `chromaprint <http://acoustid.org/chromaprint>`_ installed.
+Anyway, that's it for now. Enjoy!

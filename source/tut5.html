@@ -15,7 +15,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Masstagging Tutorial &mdash; puddletag</title>
+    <title>Masstagging Tutorial &#8212; puddletag</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -41,6 +41,8 @@
     <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -124,7 +126,7 @@
       
   <div class="section" id="masstagging-tutorial">
 <h1>Masstagging Tutorial<a class="headerlink" href="#masstagging-tutorial" title="Permalink to this headline">¶</a></h1>
-<p>If you haven&#8217;t got a handle on using <strong>Tag Sources</strong>, see the <a class="reference internal" href="tut4.html"><em>Tag Sources Tutorial</em></a>.</p>
+<p>If you haven&#8217;t got a handle on using <strong>Tag Sources</strong>, see the <a class="reference internal" href="tut4.html"><span class="doc">Tag Sources Tutorial</span></a>.</p>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>If you&#8217;re wanting to automatically tag multiple albums in unattended batch mode, then Masstagging may be just what you&#8217;re looking for. puddletag will take the files you selected, separate them into directories and sequentially process each directory.</p>
@@ -134,7 +136,7 @@
 <ol class="arabic">
 <li><p class="first">First off, puddletag will separate the selected files into directories. Furthermore, if the <strong>album</strong> field differs between each files in a directory, they&#8217;ll be split again using files will be grouped according the <strong>album</strong> field.</p>
 </li>
-<li><p class="first">A <a class="reference internal" href="function.html#filename-to-tag"><span>File-&gt;Tag</span></a> operation will be applied to each file. Any fields that aren&#8217;t present in the file will be filled using those results.</p>
+<li><p class="first">A <a class="reference internal" href="function.html#filename-to-tag"><span class="std std-ref">File-&gt;Tag</span></a> operation will be applied to each file. Any fields that aren&#8217;t present in the file will be filled using those results.</p>
 </li>
 <li><dl class="first docutils">
 <dt>For each group of files, the Tag Sources will be polled in the order listed in the current <strong>Masstagging Profile</strong>.</dt>
@@ -142,7 +144,7 @@
 <li>Each Tag Source listed will be polled and checked for a matching album within the bounds specified.</li>
 <li>If a match wasn&#8217;t found for one Tag Source, but for another the Tag Source will be polled again using the data retrieved from the matching source.</li>
 <li>Fields/Values from each tag source will be combined using your preferences.</li>
-<li>When done and if matches were found, the metadata will be applied to the files and puddletag will be in <a class="reference internal" href="menus.html#preview-mode"><span>Preview Mode</span></a></li>
+<li>When done and if matches were found, the metadata will be applied to the files and puddletag will be in <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a></li>
 </ol>
 </dd>
 </dl>
@@ -184,13 +186,13 @@
 <dt>
 <code class="descname">Tag Sources</code></dt>
 <dd><p>Each tag source will be polled in the order listed here.</p>
-<p>See <a class="reference internal" href="#masstag-tagsources"><span>Configuring a Tag Source</span></a>.</p>
+<p>See <a class="reference internal" href="#masstag-tagsources"><span class="std std-ref">Configuring a Tag Source</span></a>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
 <code class="descname">Pattern to match filenames against.</code></dt>
-<dd><p>A <a class="reference internal" href="function.html#filename-to-tag"><span>File-&gt;Tag</span></a> operation will be performed on each file using the pattern defined here. Any fields found from this operation not aren&#8217;t already present in the file will be replaced.</p>
+<dd><p>A <a class="reference internal" href="function.html#filename-to-tag"><span class="std std-ref">File-&gt;Tag</span></a> operation will be performed on each file using the pattern defined here. Any fields found from this operation not aren&#8217;t already present in the file will be replaced.</p>
 <p>Eg. For a with with path <em>/music/Bongo Maffin - Bongolution/02 - Way Kungakhona</em>, that has the tag, <strong>artist=Bongo Maffin, album=Bonglut, genre=Kwaito</strong>.</p>
 <p>Using the pattern <strong>%artist - %album%/%track% - %title%</strong> will retrieve the following tag <strong>artist=Bongo Maffin, album=Bongolution, track=02, title=Way Kungakhona</strong>. The file doesn&#8217;t contain the <em>track</em> and <em>title</em> fields, so it&#8217;ll be updated with these fields.</p>
 <p>The tag used to poll Tag Sources will then be <strong>artist=Bongo Maffin, album=Bonglut, genre=Kwaito, track=02, title=Way Kungokhona</strong>.</p>
@@ -243,7 +245,7 @@
 <dl class="describe">
 <dt>
 <code class="descname">Fields</code></dt>
-<dd><p>The list of fields to retrieve from the tag source. Rules are as described in <a class="reference internal" href="tut4.html#deciding-what-to-retrieve"><span>Deciding what to retrieve</span></a>.</p>
+<dd><p>The list of fields to retrieve from the tag source. Rules are as described in <a class="reference internal" href="tut4.html#deciding-what-to-retrieve"><span class="std std-ref">Deciding what to retrieve</span></a>.</p>
 <p>Fields from different tag sources will be combined into multiple values where they differ. Eg. If one tag source retrieved <strong>genre=Rock</strong> and another <strong>genre=Alternative</strong>, the value that puddletag will write to the files will the values <strong>Rock\\Alternative</strong>. Values will only be combined if they differ.</p>
 <p>The way they&#8217;re combined depends on the position the tag source is listed. The tag source polled last takes precedence. Say you polled FreeDB first and Discogs second.</p>
 <p>FreeDB returned <strong>artist=TKZee, title=Felakai, genre=Dance</strong>.</p>
@@ -271,7 +273,7 @@
 <dl class="describe">
 <dt>
 <code class="descname">Source</code></dt>
-<dd><p>The tag source to use. See <a class="reference internal" href="tagsources.html"><em>Using Tag Sources</em></a>.</p>
+<dd><p>The tag source to use. See <a class="reference internal" href="tagsources.html"><span class="doc">Using Tag Sources</span></a>.</p>
 </dd></dl>
 
 <dl class="describe">
@@ -297,7 +299,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
     </p>
   </div>
 </footer>

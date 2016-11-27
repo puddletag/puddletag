@@ -1,18 +1,11 @@
-9 March 2009
+8 April 2009
 ############
 
-Nope, still don't got no console version(been busy with other stuff, definitely next month).
 
-Anyway, some changes from the last release include:
+Besides the bugfixes in the minor releases last month, the changes this month include...
 
-* The ability to search the music libraries (albeit slowly).
-* A totally revamped parsing system(though it'll look the same from the users point of view).
-* Like Mp3tag, Actions are now stored separately instead of in one big file.
-* Two extra toolbar buttons, "In library" and 'Show Dupes".
-* If a library is loaded then "In library?" hides all the files that are not in the library.
-* "Show Dupes" hides all the files in the file-view that doesn't have a duplicate(in the file-view).
-* ...and a ton of bugfixes, most of which I can't remember(but which are in the svn logs...well, not really)
+* M4A support(You need mutagen 1.9 or greater in order not to get any error messages)
+* Bugfixes galore
+* A console version(in the main directory as console.py). I've been pressed for time, so expect documentation to be added over the coming week.
 
-For the next release I'll concentrate on supporting the rest of Mutagen's supported formats, fixing bugs and smoothing the user interface(progress when loading a library, faster search, etc.).
-
-Expect some interim updates over the next couple of days and a complete release in about a month (1 April 2009).
+P.S. This version is 0.5.8, because it's not tested as much as I'd like, so expect many bugfixes over the coming month.

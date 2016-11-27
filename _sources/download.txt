@@ -7,8 +7,7 @@ Download
 
 + :ref:`dependencies`
 + :ref:`installing_from_source`
-+ :ref:`installing_from_the_debian_package`
-+ :ref:`installing_on_fedora_14_and_later`
++ :ref:`installing_on_ubuntu`
 + :ref:`installing_on_osx`
 + :ref:`development_builds`
 
@@ -25,7 +24,6 @@ Install instructions follow below.
 +   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
 +   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
 +   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
-+   `ConfigObj (≥ 4.5.0) <http://voidspace.org.ux/python/configobj.html>`_ takes care of saving settings.
 +   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ (optional) for AcoustID support.
 
 .. _installing_from_source:
@@ -37,7 +35,7 @@ Install the dependencies as listed above. For Debian-based distros, you can run 
 
 .. code-block:: bash
 
-    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
+    apt-get install python-qt4 python-pyparsing python-mutagen
 
 + Now download the source tarball |source_link|_ (SHA1 |source_sha|).
 + Unzip it.
@@ -55,24 +53,18 @@ Install the dependencies as listed above. For Debian-based distros, you can run 
 
 .. _installing_from_the_debian_package:
 
-Installing from the Debian package
-----------------------------------
+.. _installing_on_ubuntu:
 
-Download the deb, |deb_link|_ (SHA1 |deb_sha|) and install by double clicking it.
 
-If that doesn't work, first install the dependencies by running as root:
+Installing on Ubuntu
+--------------------
 
-.. code-block:: bash
+You can install puddletag from the Software Centre in recent versions of Ubuntu.
 
-    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
+A Debian package is no longer provided, because of the complexity of generating a deb for different Ubuntu versions.
 
-Then (also as root)
+If you prefer using the latest version, `WebUpd8 <http://www.webupd8.org/>`_ provide puddletag packages in their `PPA <https://launchpad.net/~nilarimogard/+archive/ubuntu/webupd8>`_.
 
-.. parsed-literal::
-
-    dpkg -i |deb_name|
-
-puddletag should be available from your Multimedia menu.
 
 .. _installing_on_fedora_14_and_later:
 
@@ -96,6 +88,10 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 
 Installing on OSX
 -----------------
+
+.. note:: The below section is outdated as Homebrew doesn't support PyQt4 anymore and the Vortexbox links are broken.
+          If you have further instructions on how to fix these, add an issue on `GitHub <https://github.com/keithgg/puddletag/issues>`_.
+
 
 Homebrew
 ^^^^^^^^

@@ -15,7 +15,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Functions &mdash; puddletag</title>
+    <title>Functions &#8212; puddletag</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -41,6 +41,8 @@
     <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -247,7 +249,7 @@
 </div>
 <div class="section" id="id13">
 <h3>Description<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
-<p>See <a class="reference internal" href="menus.html#menus-file-to-tag"><span>File-&gt;Tag (Ctrl+T)</span></a>.</p>
+<p>See <a class="reference internal" href="menus.html#menus-file-to-tag"><span class="std std-ref">File-&gt;Tag (Ctrl+T)</span></a>.</p>
 </div>
 </div>
 <div class="section" id="format-value">
@@ -273,7 +275,7 @@
 <li>Using &#8216;I wanna write my own.&#8217; as a Format string will return &#8216;I wanna write my own.&#8217; and write it to the fields you choose.</li>
 <li>Individual fields can be referenced by placing them inbetween percent characters (%). So <strong>%artist%</strong> will return &#8216;A Guy&#8217;, <strong>%album%</strong>, &#8216;Screeching&#8217; and so on for the others. Using <strong>%genre%</strong> would return nothing, because there ain&#8217;t no genre field in the tag.</li>
 <li>You can combine fields with any combination of letters as in <strong>I don&#8217;t like an %title% %artist%...%album%</strong>. Returning, &#8216;I don&#8217;t like an Excessively Emo A Guy...Screeching&#8217;</li>
-<li>More editing power is available via the scripting functions. They have the format <strong>$name(arguments)</strong>. See the <a class="reference internal" href="scripting.html"><em>scripting functions page</em></a> for a listing. They can be simple eg. <strong>$upper(value)</strong> will return &#8216;VALUE&#8217;, <strong>$lower(%artist%)</strong> will return &#8216;a guy&#8217;. You can even combine/nest them to get what you want as in <strong>I don&#8217;t like an $lower(%title% $mid(%artist%,2,10)) $lower(%album%).</strong> giving &#8220;I don&#8217;t like an excessively emo guy screeching.&#8221;</li>
+<li>More editing power is available via the scripting functions. They have the format <strong>$name(arguments)</strong>. See the <a class="reference internal" href="scripting.html"><span class="doc">scripting functions page</span></a> for a listing. They can be simple eg. <strong>$upper(value)</strong> will return &#8216;VALUE&#8217;, <strong>$lower(%artist%)</strong> will return &#8216;a guy&#8217;. You can even combine/nest them to get what you want as in <strong>I don&#8217;t like an $lower(%title% $mid(%artist%,2,10)) $lower(%album%).</strong> giving &#8220;I don&#8217;t like an excessively emo guy screeching.&#8221;</li>
 </ul>
 </div>
 </div>
@@ -550,7 +552,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
     </p>
   </div>
 </footer>

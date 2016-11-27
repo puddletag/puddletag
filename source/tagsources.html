@@ -15,7 +15,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Using Tag Sources &mdash; puddletag</title>
+    <title>Using Tag Sources &#8212; puddletag</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -41,6 +41,8 @@
     <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -129,7 +131,7 @@
   <div class="section" id="using-tag-sources">
 <h1>Using Tag Sources<a class="headerlink" href="#using-tag-sources" title="Permalink to this headline">¶</a></h1>
 <p>puddletag supports tagging your audio files using web based Tag Sources.</p>
-<p>Included with puddletag are tag sources supporting lookups from <a class="reference internal" href="#amazon"><span>Amazon</span></a>, <a class="reference internal" href="#discogs"><span>Discogs</span></a>, <a class="reference internal" href="#freedb"><span>FreeDB</span></a> and <a class="reference internal" href="#musicbrainz"><span>MusicBrainz</span></a> and <a class="reference internal" href="#acoustid"><span>AcoustID</span></a>. The metadata returned by each tag source is detailed at the bottom of this page.</p>
+<p>Included with puddletag are tag sources supporting lookups from <a class="reference internal" href="#amazon"><span class="std std-ref">Amazon</span></a>, <a class="reference internal" href="#discogs"><span class="std std-ref">Discogs</span></a>, <a class="reference internal" href="#freedb"><span class="std std-ref">FreeDB</span></a> and <a class="reference internal" href="#musicbrainz"><span class="std std-ref">MusicBrainz</span></a> and <a class="reference internal" href="#acoustid"><span class="std std-ref">AcoustID</span></a>. The metadata returned by each tag source is detailed at the bottom of this page.</p>
 <div class="section" id="the-tag-sources-window">
 <h2>The Tag Sources window<a class="headerlink" href="#the-tag-sources-window" title="Permalink to this headline">¶</a></h2>
 <p>Refer to the screenshot below for a quick explanation of the Tag Sources windows&#8217; controls:</p>
@@ -138,10 +140,10 @@
 <li>Selects a tag source.</li>
 <li>Is the <strong>Search Box</strong>. Enter any text here to do a textual search. You cannot do a file-based and textual searches at the same time.</li>
 <li>Lists the retrieved albums. Click on an album to retrieve metadata. Lookups are done by album, but you can select metadata by track too. Hover over an album/track to see an overview of the metadata that&#8217;ll get written.</li>
-<li>After an album is selected, puddletag will enter <a class="reference internal" href="menus.html#preview-mode"><span>Preview Mode</span></a>. Click on Write to write the previews, or use Write from the <a class="reference internal" href="menus.html#write-preview"><span>Preview Mode menu</span></a> menu. Clear preview does as it says and exits preview mode.</li>
+<li>After an album is selected, puddletag will enter <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a>. Click on Write to write the previews, or use Write from the <a class="reference internal" href="menus.html#write-preview"><span class="std std-ref">Preview Mode menu</span></a> menu. Clear preview does as it says and exits preview mode.</li>
 <li>Enter a list of comma-separated fields to write here, eg. <strong>artist, album</strong>, will update only the artist and album fields when you select an album. If left empty all the retrieved fields will be written. Starting the list with the tilde (~) character will write all but the fields you specify. eg. <strong>~year,mbrainz_track_id</strong> will write all the fields (artist, album, etc) but the year and mbrainz_track_id fields from the tag source.</li>
 <li>Check this box and only fields that aren&#8217;t already in the file will get updated.</li>
-<li>If checked, the album that best matches the retrieved albums will be automatically retrieved. See <a class="reference internal" href="preferences.html#auto-retrieval-prefs"><span>Automatic Retrieval options</span></a>.</li>
+<li>If checked, the album that best matches the retrieved albums will be automatically retrieved. See <a class="reference internal" href="preferences.html#auto-retrieval-prefs"><span class="std std-ref">Automatic Retrieval options</span></a>.</li>
 </ol>
 </div>
 <div class="section" id="how-to-search">
@@ -153,13 +155,13 @@
 <li>Click on Search.</li>
 <li>The album&#8217;s tag&#8217;s will then be used to poll the tag sources.</li>
 <li>When results are returned, select an appropriate album.</li>
-<li>That album&#8217;s metadata will then be retrieved and the retrieved tags will be applied to the selected files. These changes aren&#8217;t written as puddletag will be in <a class="reference internal" href="menus.html#preview-mode"><span>Preview Mode</span></a>.</li>
+<li>That album&#8217;s metadata will then be retrieved and the retrieved tags will be applied to the selected files. These changes aren&#8217;t written as puddletag will be in <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a>.</li>
 <li>Write the changes to the files using the <strong>Write</strong> button (feel free to make any changes yourself beforehand).</li>
 </ul>
 <p>Textual searches are also supported. If the Search Box has <em>any</em> text, it&#8217;ll be used to search with instead of the selected files. See the Search Box&#8217;s tooltip (or read the rest of this document) for details on how each tag source does textual searches.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For a more detailed explanation see the <a class="reference internal" href="tut4.html"><em>Tag Sources tutorial</em></a>.</p>
+<p class="last">For a more detailed explanation see the <a class="reference internal" href="tut4.html"><span class="doc">Tag Sources tutorial</span></a>.</p>
 </div>
 </div>
 <div class="section" id="using-acoustid">
@@ -169,7 +171,7 @@
 <p class="first admonition-title">Note</p>
 <p class="last">In order to use the library you need to have <a class="reference external" href="http://acoustid.org/chromaprint">chromaprint</a> (specifically the fpcalc binary) installed.</p>
 </div>
-<p>AcoustID returns the same data as the <a class="reference internal" href="#musicbrainz"><span>MusicBrainz tag source</span></a>, including the following fields.</p>
+<p>AcoustID returns the same data as the <a class="reference internal" href="#musicbrainz"><span class="std std-ref">MusicBrainz tag source</span></a>, including the following fields.</p>
 <ul class="simple">
 <li><strong>acoustid_id</strong>: The AcoustID identifier for a track as returned by the AcoustID webservice.</li>
 <li><strong>acoustid_fingerprint</strong>: The calculated AcoustID fingerprint. Can be a very large value.</li>
@@ -318,7 +320,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.4.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
     </p>
   </div>
 </footer>
