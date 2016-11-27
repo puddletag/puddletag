@@ -4,8 +4,8 @@
 .. |beta_source_link| replace:: puddletag-1.2.0.tar.gz
 .. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag_beta-1.2.0.tar.gz
 
-.. |source_sha| replace:: fa6c99febd2193192d6e444229d35aec3ad4114f
-.. |beta_source_sha| replace:: fa6c99febd2193192d6e444229d35aec3ad4114f
+.. |source_sha| replace:: 255239ba572809d37caa14ad26c9ea8806c9fde0
+.. |beta_source_sha| replace:: 255239ba572809d37caa14ad26c9ea8806c9fde0
 
 .. |version| replace:: 1.2.0
 .. |docs_html_link| replace:: HTML
