@@ -33,3 +33,5 @@ Thank you to the translators below for their contributions.
 + Portuguese (Brazilian) by **Alan Gomes**.
 + Russian by **Viktor Yu. Kovalskiy**.
 + Czech by **Pavel Fric**.
++ Spanish by **José Vidal**
++ Swedish by **Åke Engelbrektson**

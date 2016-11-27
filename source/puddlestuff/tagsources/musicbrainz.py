@@ -192,7 +192,7 @@ def parse_label_list(release_node):
     return {
         'label': label_names,
         'mbrainz_label_id': label_ids,
-        'catalog': catalogs
+        'catalognumber': catalogs
         }
     
 def parse_medium_list(r_node):

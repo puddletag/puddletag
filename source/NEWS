@@ -1,4 +1,15 @@
-31 January 2015 - 1.1.0
+27 November 2016
+   Fixed: #280 Turn off auto-saving "Enter description here" description for cover art
+   Added: CJK Encoding for Encoding Conversion Function (XIE Dongping)
+   Fixed: Parsing tracks in Discogs if only a single artist (Frank Sachsenheim)
+   Fixed: Setting user-agent for Tag Sources (Frank Sachsenheim)
+   Fixed: Support for latest mutagen (Bruno Bergot)
+   Changed: Improved Amazon tag source album matching.
+   Added: Swedish translation (Åke Engelbrektson)
+   Updated: Czech translation (Pavel Fric)
+   Added: Spanish translation (José Vidal)
+
+31 January 2016 - 1.1.0
    Fixes:
         Playlists not getting loaded in certain cases
         Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.

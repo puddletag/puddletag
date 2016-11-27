@@ -1,18 +1,11 @@
 TEMPLATE = """.. |source_link| replace:: puddletag-{version}.tar.gz
 .. _source_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag-{version}.tar.gz
-.. |deb_link| replace:: puddletag_{version}-{deb_version}_all.deb
-.. _deb_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_{version}-{deb_version}_all.deb
-.. |deb_name| replace:: puddletag_{version}-{deb_version}_all.deb
 
 .. |beta_source_link| replace:: puddletag-{version}.tar.gz
 .. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_beta-{version}.tar.gz
-.. |beta_deb_link| replace:: puddletag_{version}-{deb_version}_all.deb
-.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/download/{version}/puddletag_beta_{version}-{deb_version}_all.deb
 
 .. |source_sha| replace:: {source_sha}
-.. |deb_sha| replace:: {deb_sha}
 .. |beta_source_sha| replace:: {beta_source_sha}
-.. |beta_deb_sha| replace:: {beta_deb_sha}
 
 .. |version| replace:: {version}
 .. |docs_html_link| replace:: HTML
@@ -40,15 +33,11 @@ def get_sha1_sum(filename):
 def update_checksums(filename, build_dir):
     files = find_sources(build_dir)
     source_sha = get_sha1_sum(files['source'])
-    deb_sha = get_sha1_sum(files['deb'])
     
     context = {
         'version': puddlestuff.version_string,
-        'deb_version': "1",
         'source_sha': source_sha,
-        'deb_sha': deb_sha,
         'beta_source_sha': source_sha,
-        'beta_deb_sha': deb_sha
         
     }
     with open(filename, 'w') as fo:
@@ -56,10 +45,8 @@ def update_checksums(filename, build_dir):
 
 def find_sources(build_dir):
     source_path = glob.glob(os.path.join(build_dir, '*.tar.gz'))[0]
-    deb_path = glob.glob(os.path.join(build_dir, '*.deb'))[0]
     return {
         'source': source_path,
-        'deb': deb_path
     }
     
 

@@ -1,23 +1,16 @@
-.. |source_link| replace:: puddletag-1.1.1.tar.gz
-.. _source_link: https://github.com/keithgg/puddletag/releases/download/1.1.1/puddletag-1.1.1.tar.gz
-.. |deb_link| replace:: puddletag_1.1.1-1_all.deb
-.. _deb_link: https://github.com/keithgg/puddletag/releases/download/1.1.1/puddletag_1.1.1-1_all.deb
-.. |deb_name| replace:: puddletag_1.1.1-1_all.deb
+.. |source_link| replace:: puddletag-1.2.0.tar.gz
+.. _source_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag-1.2.0.tar.gz
 
-.. |beta_source_link| replace:: puddletag-1.1.1.tar.gz
-.. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/1.1.1/puddletag_beta-1.1.1.tar.gz
-.. |beta_deb_link| replace:: puddletag_1.1.1-1_all.deb
-.. _beta_deb_link: https://github.com/keithgg/puddletag/releases/download/1.1.1/puddletag_beta_1.1.1-1_all.deb
+.. |beta_source_link| replace:: puddletag-1.2.0.tar.gz
+.. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag_beta-1.2.0.tar.gz
 
-.. |source_sha| replace:: b10d39225ae84b1790126f5e4ca58ee27efa9d58
-.. |deb_sha| replace:: c7c14f556327a8a7eb859aec0f62e04d451407ff
-.. |beta_source_sha| replace:: b10d39225ae84b1790126f5e4ca58ee27efa9d58
-.. |beta_deb_sha| replace:: c7c14f556327a8a7eb859aec0f62e04d451407ff
+.. |source_sha| replace:: fa6c99febd2193192d6e444229d35aec3ad4114f
+.. |beta_source_sha| replace:: fa6c99febd2193192d6e444229d35aec3ad4114f
 
-.. |version| replace:: 1.1.1
+.. |version| replace:: 1.2.0
 .. |docs_html_link| replace:: HTML
-.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/1.1.1/puddletag-docs-html-1.1.1.tar.bz2
+.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag-docs-html-1.2.0.tar.bz2
 .. |docs_rst_link| replace:: ReStructuredText
-.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/1.1.1/puddletag-docs-rst-1.1.1.tar.bz2
+.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag-docs-rst-1.2.0.tar.bz2
 
 
