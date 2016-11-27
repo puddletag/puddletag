@@ -34,8 +34,6 @@ The following are recommended
 Downloading/Installing
 ======================
 
-From source:
-
 - Install the dependencies listed above.
 - For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
 - Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore everything on this line.)
@@ -43,25 +41,6 @@ From source:
 - You can run puddletag from that directory by typing ./puddletag in your console.
 - Alternatively, install it by running python setup.py install as root in the unzipped directory.
 - puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run 'desktop-file-install puddletag.desktop' as root in the unzipped directory.
-
-
-Installing from the Debian package.
------------------------------------
-
-- This package has been created on and for Ubuntu 10.04, but has been reported to work on Ubuntu 10.10, Sabayon and Debian Squeeze.
-- Download the package from http://puddletag.sourceforge.net.
-- Install using your distros preferred method (usually double clicking should suffice). Or:
-- Run as root dpkg -i /path/to/puddletag-deb.
-- Install dependencies using your favourite tool.
-- puddletag will appear under your Multimedia menu
-
-
-Installing from Homebrew on Mac OS X.
--------------------------------------
-
-- This package can be installed on MacOS X via the Homebrew package manager.
-- Install the package manager from http://brew.sh
-- Download and install puddletag by typing "brew install puddletag" in your console
 
 
 License
