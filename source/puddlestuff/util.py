@@ -20,6 +20,7 @@ from operator import itemgetter
 from itertools import imap
 
 from xml.sax.saxutils import escape as escape_html
+import shutil
 
 ARTIST = 'artist'
 ALBUM = 'album'
@@ -70,7 +71,12 @@ def rename(oldpath, newpath):
         os.rename(oldpath, newpath)
         return True
     except EnvironmentError, e:
-        raise RenameError(e, oldpath, newpath)
+        try:
+            shutil.move(oldpath, newpath)
+            return True
+        except EnvironmentError, e:
+            raise RenameError(e, oldpath, newpath)
+
 
 def rename_dir(filename, olddir, newdir):
     if newdir == olddir:
