@@ -18,6 +18,7 @@ import errno, traceback
 from puddlestuff.constants import BLANK, SEPARATOR
 from operator import itemgetter
 from itertools import imap
+import logging
 
 from xml.sax.saxutils import escape as escape_html
 
@@ -303,13 +304,14 @@ def write(audio, tags, save_mtime = True, justrename=False):
         audio.preview = preview
         raise
 
-    if save_mtime:
-        try:
+    try:
+        if save_mtime:
             setmodtime(audio.filepath, audio.accessed, audio.modified)
-        except EnvironmentError:
-            pass
-    else:
-        os.utime(audio.dirpath, None)
+        else:
+            os.utime(audio.dirpath, None)
+    except EnvironmentError, ex:
+        logging.error("Could not set modification time for file or directory.")
+        logging.exception(ex)
     return undo
 
 def dict_diff(d1, d2):
