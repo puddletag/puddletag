@@ -7,6 +7,7 @@ import puddlestuff.audioinfo as audioinfo
 from puddlestuff.util import to_string
 from puddlestuff.puddleobjects import gettaglist, timemethod
 import time
+import re
 
 def str_cmp(a, b):
     if not isinstance(a, basestring):
@@ -137,6 +138,12 @@ class Has(BoolOperand):
     def __nonzero__(self):
         logging.debug('has: ' + unicode(self.args))
         return self.args[1].lower() in self.args[0].lower()
+
+class Matches(BoolOperand):
+    @wrap_nonzero
+    def __nonzero__(self):
+        logging.debug('matches: ' + unicode(self.args))
+        return not re.search(self.args[1].lower(), self.args[0].lower()) is None
     
 bool_exprs = [
     (CaselessLiteral("missing"), 1, opAssoc.RIGHT, Missing),
@@ -145,6 +152,7 @@ bool_exprs = [
     (CaselessLiteral("less"), 2, opAssoc.LEFT, Less),
     (CaselessLiteral("equal"), 2, opAssoc.LEFT, Equal),
     (CaselessLiteral("has"), 2, opAssoc.LEFT, Has),
+    (CaselessLiteral("matches"), 2, opAssoc.LEFT, Matches),
     (CaselessLiteral("is"), 2, opAssoc.LEFT, BoolIs),
     (CaselessLiteral("and"), 2, opAssoc.LEFT,  BoolAnd),
     (CaselessLiteral("or"),  2, opAssoc.LEFT,  BoolOr),
