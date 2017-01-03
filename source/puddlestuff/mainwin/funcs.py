@@ -134,7 +134,6 @@ def check_copy_data(data):
     #0 = yes
     #1 = no
     #2 = no images
-    print len(data)
     if len(data) > 5242880:
         msgbox = QMessageBox()
         msgbox.setText(translate("Messages",

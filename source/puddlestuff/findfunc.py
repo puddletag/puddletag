@@ -304,8 +304,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     
     reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state}
     dicts = [s_audio, extra, state]
-    topass = get_function_arguments(funcname, func, arguments, 
-        reserved, True, *dicts)
+    topass = get_function_arguments(funcname, func, arguments,  reserved, True, *dicts)
 
     try:
         ret = func(**topass)
@@ -372,6 +371,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     tags = s_audio.copy()
     tags.update(state)
     tags.update(extra if extra is not None else {})
+
     escape_chars = set('()$%\\,')
 
     br_error = translate('Errors', 'No closing bracket found.')
@@ -447,7 +447,8 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             in_func = False
             if token or s[i-1] == u',':
                 func.append(u''.join(token))
-            func_parsed = run_format_func(func[0], func[1:], m_audio, s_audio)
+
+            func_parsed = run_format_func(func[0], func[1:], m_audio, s_audio, state=state, extra=extra)
             if ret_i:
                 return func_parsed, i
             tokens.append(func_parsed)
