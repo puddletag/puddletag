@@ -78,12 +78,13 @@ class StoredTags(QScrollArea):
                     tags.remove('APEv2')
 
             ret = [(audio['__tag_read'], sort_dict(audio.usertags))]
+
             for tag in tags:
-                try:
-                    ret.append((tag,
-                        sort_dict(tag_versions.tag_values(filepath, tag))))
-                except:
-                    continue
+                if not tag == audio['__tag_read']:
+                    try:
+                        ret.append((tag, sort_dict(tag_versions.tag_values(filepath, tag))))
+                    except:
+                        continue
             return ret
 
         def _load(tags):

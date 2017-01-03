@@ -123,6 +123,7 @@ def tags_in_file(fn, to_check = (ID3_V1, ID3_V2, APEv2)):
     else:
         tags = []
 
+    print tags
     if APEv2 in to_check and has_apev2(fn):
         tags.append(u'APEv2')
     return tags
