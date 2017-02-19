@@ -78,8 +78,8 @@ def check_matches(albums, artist=None, album_name=None):
         artist = artist.lower()
 
         ret = [album for album in albums if
-               album_name in album['album'].lower() and
-               artist in album['artist'].lower()]
+               album_name in album.get('album', album_name).lower() and
+               artist in album.get('artist', artist).lower()]
     elif artist:
         artist = artist.lower()
         ret = [
