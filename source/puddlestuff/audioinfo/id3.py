@@ -10,10 +10,13 @@ try:
 except ImportError:
     AIFF = None
 
+try:
+    from mutagen.dsf import DSF, _DSFID3
+except ImportError:
+    DSF = None
+
 from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
     UrlFrame)
-
-
 
 import util
 from _compatid3 import CompatID3
@@ -693,10 +696,10 @@ class ID3(CompatID3):
 class ID3FileType(mutagen.mp3.MP3):
     """See ID3 class."""
     def add_tags(self, ID3=ID3):
-        mutagen.mp3.MP3.add_tags(self, ID3)
+        return super(ID3FileType, self).add_tags(ID3)
 
     def load(self, filename, ID3=ID3, **kwargs):
-        return mutagen.mp3.MP3.load(self, filename, ID3, **kwargs)
+        return super(ID3FileType, self).load(filename, ID3, **kwargs)
 
 if AIFF is not None:
     class AIFFFileType(AIFF):
@@ -706,6 +709,15 @@ if AIFF is not None:
 
         def load(self, filename, **kwargs):
             return AIFF.load(self, filename, **kwargs)
+
+if DSF is not None:
+    class DSFFileType(DSF):
+        """See ID3 class."""
+        def add_tags(self, ID3=_IFFID3):
+            DSF.add_tags(self)
+
+        def load(self, filename, **kwargs):
+            return DSF.load(self, filename, **kwargs)
 
 def tag_factory(id3_filetype):
     class Tag(TagBase):
@@ -765,11 +777,35 @@ def tag_factory(id3_filetype):
                 version = ('ID3 Version', 'No tags in file.')
             fileinfo.append(version)
 
-            mpginfo = [('Version', u'MPEG %i Layer %i' % (info.version, info.layer)),
-                       ('Bitrate', self.bitrate),
-                       ('Frequency', self.frequency),
-                       ('Mode', MODES[info.mode]),
-                       ('Length', self.length)]
+            if isinstance(self.mut_obj, DSFFileType):
+                mpginfo =[('Type', 'DSF')]
+            elif isinstance(self.mut_obj, AIFFFileType):
+                mpginfo =[('Type', 'AIFF')]
+            elif (self.mut_obj, ID3FileType):
+                mpginfo =[('Version', u'MPEG %i Layer %i' % (info.version, info.layer))]
+            else:
+                mpginfo =[]
+                
+            try:
+                mpginfo.append(('Bitrate', self.bitrate))
+            except AttributeError:
+                pass
+
+            try:
+                mpginfo.append(('Frequency', self.frequency))
+            except AttributeError:
+                pass
+
+            try:
+                mpginfo.append(('Mode', MODES[info.mode]))
+            except AttributeError:
+                pass
+
+            try:
+                mpginfo.append(('Length', self.length))
+            except Att:
+                pass
+
 
             return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
 
@@ -989,6 +1025,11 @@ def tag_factory(id3_filetype):
                     audio.tags.save(v2_version=3) #AIFF doesn't support id3v1
                 else:
                     audio.tags.save() #AIFF doesn't support id3v1
+            if DSF is not None and id3_filetype is DSFFileType:
+                if v2 == 3:
+                    audio.tags.save(v2_version=3) #DSF doesn't support id3v1
+                else:
+                    audio.tags.save() #DSF doesn't support id3v1
             else:
                 if v2 == 4:
                     audio.tags.update_to_v24()
@@ -1047,3 +1088,6 @@ filetypes = [
 
 if AIFF is not None:
     filetypes.append((AIFFFileType, tag_factory(AIFFFileType), u'AIFF', 'aiff'))
+
+if DSF is not None:
+    filetypes.append((DSFFileType, tag_factory(DSFFileType), u'DSF', ['dsf', 'dff']))
