@@ -362,8 +362,14 @@ class Tag(util.MockTag):
 
                     self.__freeform[field] = key
                     try:
-                        tags[field] = [unicode(v, 'utf8') if not
-                            isinstance(v, unicode) else v for v in audio[key]]
+                        field_value = []
+                        for v in audio[key]:
+                            if isinstance(v, str):
+                                field_value.append(unicode(v, 'utf8'))
+                            elif isinstance(v, unicode):
+                                field_value.append(v)
+                            else:
+                                field_value.append(unicode(v, 'utf8'))
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 
