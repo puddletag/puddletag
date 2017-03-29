@@ -369,7 +369,7 @@ class Tag(util.MockTag):
                             elif isinstance(v, unicode):
                                 field_value.append(v)
                             else:
-                                field_value.append(unicode(v, 'utf8'))
+                                field_value.append(unicode(v))
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 
