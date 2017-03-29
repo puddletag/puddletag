@@ -3,6 +3,7 @@ from collections import defaultdict
 from puddlestuff.constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGNALS
 from PyQt4.QtCore import SIGNAL
 from puddlestuff.puddlesettings import add_config_widget, SettingsError
+import logging
 
 status = {}
 def connect_shortcut(action, enabled, disabled=None, togglecheck=None):
@@ -17,7 +18,7 @@ def connect_shortcut(action, enabled, disabled=None, togglecheck=None):
         [connect(c, ENABLESIGNALS.get(enabled, SIGNAL(enabled)),
             action.setEnabled) for c in emits[enabled]]
     else:
-        print 'No enable signal found for', action.text()
+        logging.error(u'No enable signal found for ' + action.text())
         action.setEnabled(False)
 
     if togglecheck and togglecheck in emits:

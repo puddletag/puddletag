@@ -944,8 +944,8 @@ usando esas palabras.&lt;/li&gt;&lt;/ul&gt;
     </message>
     <message>
         <location filename="puddlestuff/util.py" line="45"/>
-        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See ~/.puddletag/log.log for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Error al guardar &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Razón: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;ver ~/.puddletag/log.log para información.&lt;/i&gt;)&lt;/p&gt;</translation>
+        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See %3 for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Error al guardar &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Razón: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;ver %3 para información.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="puddlestuff/util.py" line="146"/>

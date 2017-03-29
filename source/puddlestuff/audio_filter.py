@@ -20,9 +20,6 @@ def str_cmp(a, b):
 
 FIELDS = set(z.lower() for z in gettaglist()).union(audioinfo.FILETAGS)
 
-if len(sys.argv) > 1:
-    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-
 def parse_arg(audio, text):
     if not isinstance(text, basestring):
         return text

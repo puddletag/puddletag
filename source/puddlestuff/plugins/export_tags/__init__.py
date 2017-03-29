@@ -8,6 +8,7 @@ from optparse import OptionParser
 
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo import tag_to_json
+import logging
     
 def tags_to_json(dirpath, fields=None):
     ret = []
@@ -52,13 +53,13 @@ def main():
         exit()
 
     if not filenames:
-        print "Fatal Error: Require filename to write backup to!"
+        logging.error("Fatal Error: Require filename to write backup to!")
         exit(1)
 
     filename = filenames[0]
 
     if os.path.exists(filename) and options.backup:
-        print 'Fatal Error: Backup file,', filename, 'already exists!'
+        logging.error('Fatal Error: Backup file, %s already exists' % filename)
         exit(2)
 
     fields = options.fields if options.fields else None

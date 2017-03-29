@@ -1025,8 +1025,8 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="45"/>
-        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See ~/.puddletag/log.log for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Une erreur s&apos;est produite pendant l&apos;écriture de &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Voir ~/.puddletag/log.log pour les détails.&lt;/i&gt;)&lt;/p&gt;</translation>
+        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See %3 for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Une erreur s&apos;est produite pendant l&apos;écriture de &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Voir %3 pour les détails.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="1073"/>

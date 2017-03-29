@@ -6,6 +6,7 @@ import json, sys, os, shutil
 
 from optparse import OptionParser
 from glob import glob
+import logging
 
 def convert_ini_files():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -150,41 +151,20 @@ def check_libs():
     if not found:
         sys.exit(1)
 
-def create_log():
-    """Creates a log file. Redirects sys.stderr sys.stdout output to it."""
-    join = os.path.join
-    rename = os.rename
-    exists = os.path.exists
-
-    from puddlestuff.constants import SAVEDIR
-    if not os.path.exists(SAVEDIR):
-        os.mkdir(SAVEDIR)
-
-    for i in reversed(range(1, 5)):
-        filename = join(SAVEDIR, 'log%d.log' % i)
-        if exists(filename):
-            rename(filename, join(SAVEDIR, 'log%d.log' % (i + 1)))
-
-    log_file = join(SAVEDIR, 'log.log')
-    if exists(log_file):
-        rename(log_file, join(SAVEDIR, 'log1.log'))
-
-    f = open(log_file, 'w')
-    sys.stdout = StdOut(sys.stdout.write, f.write)
-    sys.stderr = StdOut(sys.stderr.write, f.write)
-
 def init(options, qapp):
     """Initializes things that need to be initialized.
 
     Parses command line options. Loads Translations. Sets fontsize."""
+    from puddlestuff.logger import init_logger
 
     if options.version:
         #It's already printed.
         exit()
 
-    #create_log()
-    if options.debug:        
-        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+    if options.debug:
+        init_logger(logging.DEBUG)
+    else:
+        init_logger(logging.WARN)
 
     load_language(qapp, options.langfile)
 
@@ -195,9 +175,9 @@ def init(options, qapp):
             font.setPointSize(size)
             app.setFont(font)
         except IndexError:
-            print 'No fontsize specified.'
+            logging.error('No fontsize specified.')
         except ValueError:
-            print 'Invalid fontsize specified.'
+            logging.error('Invalid fontsize specified.')
 
 def load_language(qapp, langfile=None):
     """Loads the language file to be used by puddletag.

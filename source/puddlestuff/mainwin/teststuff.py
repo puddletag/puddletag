@@ -48,7 +48,7 @@ class Tag(audioinfo.MockTag):
         self.filepath = dictionary['__filename']
 
     def save(self):
-        print 'saving', self.filename
+        logging.info('saving ' + self.filename)
 
     def copy(self):
         return Tag(self._tags.copy())

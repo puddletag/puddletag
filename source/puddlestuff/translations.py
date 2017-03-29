@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PyQt4.QtGui import QApplication
 import re
+import logging
 
 class UnicodeMod(unicode):
     """Emulates the arg method of QStrings. Not meant for use anywhere other
@@ -9,7 +10,7 @@ class UnicodeMod(unicode):
     def arg(self, value):
         matches = [z for z in re.finditer("%(\d+)", self)]
         if not matches:
-            print 'Undefined result for arg.'
+            logging.error('Undefined result for arg.')
             return UnicodeMod(self[::])
         elif len(matches) == 1:
             lowest = matches[0]

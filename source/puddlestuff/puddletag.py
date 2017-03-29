@@ -6,6 +6,7 @@ from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
 
 status = PuddleStatus()
 
+import logging
 import tagmodel
 from tagmodel import TagTable
 from PyQt4.QtCore import *
@@ -169,7 +170,7 @@ def connect_actions(actions, controls):
                 [connect(c, SIGNAL(action.enabled), action.setEnabled)
                         for c in emits[action.enabled]]
         else:
-            print 'No enable signal found for', action.text()
+            logging.debug('No enable signal found for ' + action.text())
             action.setEnabled(False)
             continue
         if action.togglecheck and action.togglecheck in emits:
@@ -194,7 +195,7 @@ def connect_actions(actions, controls):
             if hasattr(c, command):
                 connect(action, TRIGGERED, getattr(c, command))
             else:
-                print action.command, 'slot not found for', action.text()
+                logging.debug(action.command + ' slot not found for ' + action.text())
 
 def connect_action_shortcuts(actions):
     cparser = PuddleConfig()
@@ -364,8 +365,7 @@ class MainWin(QMainWindow):
             try:
                 self.addDock(*win, connect=False)
             except:
-                print "Error while loading Plugin dialog."
-                traceback.print_exc()
+                logging.exception("Error while loading Plugin dialog.")
 
         self.restoreSettings()
         self.emit(SIGNAL('always'), True)

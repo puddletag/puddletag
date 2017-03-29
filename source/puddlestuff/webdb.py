@@ -23,6 +23,7 @@ from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
     write_log, RetrievalError, mp3tag, SubmissionError)
 from puddlestuff.util import (isempty, pprint_tag,
     split_by_field, to_string, translate)
+import logging
 
 pyqtRemoveInputHook()
 
@@ -91,8 +92,7 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             idents, search, album = mp3tag.open_script(f)
             classes.append(mp3tag.Mp3TagSource(idents, search, album))
         except:
-            print translate("WebDB", "Couldn't load Mp3tag Tag Source %s") % f
-            traceback.print_exc()
+            logging.exception(translate("WebDB", "Couldn't load Mp3tag Tag Source %s") % f)
             continue
     return classes
 

@@ -27,6 +27,7 @@ from constants import ACTIONDIR, SAVEDIR, CONFIGDIR
 from PyQt4.QtCore import QFile, QIODevice
 from StringIO import StringIO
 import itertools
+import logging
 
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
     QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
@@ -667,16 +668,14 @@ def getfiles(files, subfolders = False):
                         for fname in getfiles(join(dirname, sub), subfolders):
                             pass
 
-def gettags(files):
+def gettags(files) :
     return (gettag(audio) for audio in files)
 
 def gettag(f):
     try:
         return audioinfo.Tag(f)
     except:
-        print u'An error occured.'
-        print f
-        traceback.print_exc()
+        logging.exception(u'Error loading file %s', f.decode('utf8', 'replace'))
         return
 
 def translate_filename_pattern(pat):

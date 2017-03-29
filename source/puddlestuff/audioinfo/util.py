@@ -2,6 +2,7 @@
 
 import base64, calendar, imghdr, json, logging, pdb, os, sys, time
 import mutagen
+import logging
 
 from errno import ENOENT
 from decimal import Decimal
@@ -523,9 +524,7 @@ def tag_to_json(audio, fields=None):
         try:
             audio = audioinfo.Tag(audio)
         except:
-            import traceback
-            traceback.print_exc()
-            print "Invalid File:", audio
+            logging.exception("Invalid File: " + audio)
             return
 
     if audio is None:

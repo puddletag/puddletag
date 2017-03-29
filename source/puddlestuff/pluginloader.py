@@ -5,6 +5,7 @@ from puddlestuff.constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
                                    DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)
 from os.path import splitext, exists
 from configobj import ConfigObj
+import logging
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -66,8 +67,7 @@ def load_plugins(plugins=None, parent=None):
         try:
             module = __import__(plugin[MODULE_NAME])
         except:
-            print u'Failed to load plugin: ', plugin['name']
-            traceback.print_exc()
+            logging.exception(u'Failed to load plugin: ' + plugin['name'])
             continue
         if hasattr(module, 'functions'):
             functions.update(module.functions)

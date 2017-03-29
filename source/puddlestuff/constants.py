@@ -53,6 +53,7 @@ QT_CONFIG = join(CONFIGDIR, 'qt.conf')
 _data_dir = os.environ.get('XDG_DATA_HOME', os.path.join(os.path.expanduser("~"), '.local/share'))
 
 SAVEDIR = os.path.join(_data_dir, 'puddletag')
+LOG_FILENAME = os.path.join(CONFIGDIR, 'puddletag.log')
 PLUGINDIR = join(SAVEDIR, 'plugins')
 
 ACTIONDIR = join(SAVEDIR, 'actions')

@@ -65,12 +65,10 @@ class Combo(QComboBox):
             k)        
 
     def setEditText(self, text):
-        print 'setText'
         self._edited = False
         super(Combo, self).setEditText(text)
     
     def focusOutEvent(self, event):
-        print self._edited
         if not self._edited:
             return super(Combo, self).focusOutEvent(event)
         curtext = self.currentText()

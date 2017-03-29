@@ -15,7 +15,7 @@ from puddleobjects import (encode_fn, decode_fn, issubfolder, natcasecmp,
 import puddlestuff.translations
 translate = puddlestuff.translations.translate
 import errno, traceback
-from puddlestuff.constants import BLANK, SEPARATOR
+from puddlestuff.constants import BLANK, SEPARATOR, LOG_FILENAME
 from operator import itemgetter
 from itertools import imap
 import logging
@@ -47,10 +47,10 @@ def rename_error_msg(e, filename):
         m = translate("Defaults",
             '<p>An error occured while writing to <b>%1</b>.</p>'
             '<p>Reason: <b>%2</b> ('
-            '<i>See ~/.puddletag/log.log for debug info.</i>)</p>')
-        
-        m = m.arg(filename).arg(
-            unicode(e) if e.strerror is None else e.strerror)
+            '<i>See %3 for debug info.</i>)</p>')
+        m = m.arg(filename)
+        m = m.arg(unicode(e) if e.strerror is None else e.strerror)
+        m = m.arg(LOG_FILENAME)
         return m
 
 def rename(oldpath, newpath):
@@ -67,6 +67,7 @@ def rename(oldpath, newpath):
             e.strerror = translate('Errors', "Couldn't create "
                 "intermediate directory: %s")
             e.strerror %= decode_fn(os.path.dirname(newpath))
+            logging.exception(e.strerror)
             raise RenameError(e, oldpath, newpath)
     try:
         os.rename(oldpath, newpath)

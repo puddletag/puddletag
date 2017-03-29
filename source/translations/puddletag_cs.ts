@@ -921,8 +921,8 @@ Poděkování programátorům knihoven, na nichž je puddletag založent (bez ni
     </message>
     <message>
         <location line="+6"/>
-        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See ~/.puddletag/log.log for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Při zápisu do &lt;b&gt;%1&lt;/b&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Kvůli dalším informacím se podívejte na ~/.puddletag/log.log.&lt;/i&gt;)&lt;/p&gt;</translation>
+        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See %3 for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Při zápisu do &lt;b&gt;%1&lt;/b&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Kvůli dalším informacím se podívejte na %3.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="+29"/>

@@ -138,7 +138,7 @@ if __name__ == '__main__':
             if tag:
                 tags.append(tag)
         except Exception, e:
-            print unicode(e)
+            unicode(e)
     folder = unicode(filedlg.getSaveFileName(None,
             'Save File'))
     exportm3u(tags, folder)
