@@ -15,6 +15,7 @@ from itertools import izip
 from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
+import random
 import traceback
 from puddlestuff.util import split_by_tag, translate, to_string
 import puddlestuff.functions as functions
@@ -245,7 +246,7 @@ def _pad(trknum, total, padlen):
         text = unicode(trknum).zfill(padlen)
     return text
 
-def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False):
+def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False, shuffle_tracks=False):
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.
@@ -279,6 +280,9 @@ def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='
     else:
         folders = {'fol': [i for i, t in enumerate(tags)]}
 
+    if(shuffle_tracks):
+        for key in folders:
+            random.shuffle(folders[key])
 
     taglist = {}
     for group_num, tags in enumerate(folders.itervalues()):
