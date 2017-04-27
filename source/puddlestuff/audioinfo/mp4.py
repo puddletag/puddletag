@@ -4,7 +4,6 @@ from __future__ import absolute_import
 import imghdr, pdb
 
 from copy import copy, deepcopy
-from itertools import imap
 
 from mutagen.mp4 import MP4,  MP4Cover
 
@@ -367,7 +366,7 @@ class Tag(util.MockTag):
                     try:
                         field_value = []
                         for v in audio[key]:
-                            if isinstance(v, str):
+                            if isinstance(v, bytes):
                                 field_value.append(six.text_type(v, 'utf8'))
                             elif isinstance(v, six.text_type):
                                 field_value.append(v)

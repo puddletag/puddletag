@@ -4,14 +4,13 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from copy import deepcopy
 from functools import partial
-import os, shutil, pdb, mutex
+import os, shutil, pdb
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleThread, 
     issubfolder, PuddleHeader)
 from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 import six
 from six.moves import map
 from six.moves import range
-mutex = mutex.mutex()
 qmutex = QMutex()
 from puddlestuff.translations import translate
 from puddlestuff.tagmodel import has_previews

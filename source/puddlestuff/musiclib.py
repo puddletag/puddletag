@@ -15,7 +15,10 @@ import pdb, sys
 
 from collections import defaultdict
 from functools import partial
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

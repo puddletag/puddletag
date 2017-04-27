@@ -21,7 +21,11 @@ from .musiclib import MusicLibError
 import time, re
 from errno import EEXIST
 import traceback
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
+
 from collections import defaultdict
 from .util import write, rename_file, real_filetags, to_string
 from .constants import SELECTIONCHANGED, SEPARATOR, BLANK

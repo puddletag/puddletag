@@ -4,7 +4,10 @@ from puddlestuff.puddleobjects import PuddleConfig
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from functools import partial
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 from copy import deepcopy
 from puddlestuff.constants import FILESSELECTED, FILESLOADED
 from puddlestuff.plugins import connect_shortcut

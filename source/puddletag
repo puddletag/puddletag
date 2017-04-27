@@ -6,10 +6,18 @@ from __future__ import absolute_import
 from __future__ import print_function
 import json, sys, os, shutil
 
+
+
 from optparse import OptionParser
 from glob import glob
 import logging
 import six
+
+try:
+    import sip
+    sip.setapi('QString', 1)
+except ImportError:
+    pass
 
 def convert_ini_files():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -297,6 +305,7 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
+    
     from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen, QIcon
     from PyQt4.QtCore import (pyqtRemoveInputHook, QTranslator,
         QLibraryInfo, QLocale)

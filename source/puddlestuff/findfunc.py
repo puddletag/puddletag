@@ -167,7 +167,7 @@ def load_macro_info(filename):
 
     def get_func_index(funcname):
         if funcname.startswith('Func'):
-            return int(funcname[4:].strip())
+            return funcname[4:].strip()
         else:
             return funcname
 

@@ -24,7 +24,7 @@ proto = 5
 default_server = 'http://freedb.freedb.org/~cddb/cddb.cgi'
 
 def query(track_info, server_url=default_server,
-	  user=default_user, host=hostname, client_name=name,
+          user=default_user, host=hostname, client_name=name,
           client_version=version):
 
     disc_id = track_info[0]
@@ -33,12 +33,12 @@ def query(track_info, server_url=default_server,
     query_str = (('%08lx %d ') % (disc_id, num_tracks))
 
     for i in track_info[2:]:
-	query_str = query_str + ('%d ' % i)
-	
+        query_str = query_str + ('%d ' % i)
+        
     query_str = urllib.quote_plus(string.rstrip(query_str))
 
     url = "%s?cmd=cddb+query+%s&hello=%s+%s+%s+%s&proto=%i" % \
-	  (server_url, query_str, user, host, client_name,
+          (server_url, query_str, user, host, client_name,
            client_version, proto)
 
     response = urllib.urlopen(url)
@@ -48,39 +48,39 @@ def query(track_info, server_url=default_server,
 
     header[0] = string.atoi(header[0])
 
-    if header[0] == 200:		# OK
-	result = { 'category': header[1], 'disc_id': header[2], 'title':
-		   header[3] }
+    if header[0] == 200:                # OK
+        result = { 'category': header[1], 'disc_id': header[2], 'title':
+                   header[3] }
 
-	return [ header[0], result ]
+        return [ header[0], result ]
 
     elif header[0] == 211 or header[0] == 210: # multiple matches
-	result = []
+        result = []
 
-	for line in response.readlines():
-	    line = string.rstrip(line)
+        for line in response.readlines():
+            line = string.rstrip(line)
 
-	    if line == '.':		# end of matches
-		break
-					# otherwise:
-					# split into 3 pieces, not 4
-					# (thanks to bgp for the fix!)
-	    match = string.split(line, ' ', 2)
+            if line == '.':             # end of matches
+                break
+                                        # otherwise:
+                                        # split into 3 pieces, not 4
+                                        # (thanks to bgp for the fix!)
+            match = string.split(line, ' ', 2)
 
-	    result.append({ 'category': match[0], 'disc_id': match[1], 'title':
-			    match[2] })
+            result.append({ 'category': match[0], 'disc_id': match[1], 'title':
+                            match[2] })
 
-	return [ header[0], result ]
+        return [ header[0], result ]
 
     else:
-	return [ header[0], None ]
+        return [ header[0], None ]
 
 def read(category, disc_id, server_url=default_server, 
-	 user=default_user, host=hostname, client_name=name,
+         user=default_user, host=hostname, client_name=name,
          client_version=version):
 
     url = "%s?cmd=cddb+read+%s+%s&hello=%s+%s+%s+%s&proto=%i" % \
-	  (server_url, category, disc_id, user, host, client_name,
+          (server_url, category, disc_id, user, host, client_name,
            client_version, proto)
 
     response = urllib.urlopen(url)
@@ -89,26 +89,26 @@ def read(category, disc_id, server_url=default_server,
 
     header[0] = string.atoi(header[0])
     if header[0] == 210 or header[0] == 417: # success or access denied
-	reply = []
+        reply = []
 
-	for line in response.readlines():
-	    line = string.rstrip(line)
+        for line in response.readlines():
+            line = string.rstrip(line)
 
-	    if line == '.':
-		break;
+            if line == '.':
+                break;
 
-	    line = string.replace(line, r'\t', "\t")
-	    line = string.replace(line, r'\n', "\n")
-	    line = string.replace(line, r'\\', "\\")
+            line = string.replace(line, r'\t', "\t")
+            line = string.replace(line, r'\n', "\n")
+            line = string.replace(line, r'\\', "\\")
 
-	    reply.append(line)
+            reply.append(line)
 
-	if header[0] == 210:		# success, parse the reply
-	    return [ header[0], parse_read_reply(reply) ]
-	else:				# access denied. :(
-	    return [ header[0], reply ]
+        if header[0] == 210:            # success, parse the reply
+            return [ header[0], parse_read_reply(reply) ]
+        else:                           # access denied. :(
+            return [ header[0], reply ]
     else:
-	return [ header[0], None ]
+        return [ header[0], None ]
 
 def parse_read_reply(comments):
     
@@ -120,29 +120,29 @@ def parse_read_reply(comments):
     result = {}
 
     for line in comments:
-	keyword_match = keyword_re.match(line)
-	if keyword_match:
-	    (keyword, data) = keyword_match.groups()
+        keyword_match = keyword_re.match(line)
+        if keyword_match:
+            (keyword, data) = keyword_match.groups()
 
-	    if keyword in result:
-		result[keyword] = result[keyword] + data
-	    else:
-		result[keyword] = data
-	    continue
+            if keyword in result:
+                result[keyword] = result[keyword] + data
+            else:
+                result[keyword] = data
+            continue
 
-	len_match = len_re.match(line)
-	if len_match:
-	    result['disc_len'] = int(len_match.group(1))
-	    continue
+        len_match = len_re.match(line)
+        if len_match:
+            result['disc_len'] = int(len_match.group(1))
+            continue
 
-	revis_match = revis_re.match(line)
-	if revis_match:
-	    result['revision'] = int(revis_match.group(1))
-	    continue
+        revis_match = revis_re.match(line)
+        if revis_match:
+            result['revision'] = int(revis_match.group(1))
+            continue
 
-	submit_match = submit_re.match(line)
-	if submit_match:
-	    result['submitted_via'] = submit_match.group(1)
-	    continue
+        submit_match = submit_re.match(line)
+        if submit_match:
+            result['submitted_via'] = submit_match.group(1)
+            continue
 
     return result

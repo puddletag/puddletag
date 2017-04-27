@@ -15,7 +15,10 @@ path = os.path
 from collections import defaultdict, OrderedDict
 import puddlestuff.helperwin as helperwin
 from functools import partial
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about

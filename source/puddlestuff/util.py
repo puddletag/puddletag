@@ -5,7 +5,7 @@ import string
 from collections import defaultdict
 from PyQt4.QtCore import QFile, QIODevice
 from PyQt4.QtGui import QAction, QApplication
-from StringIO import StringIO
+from six import StringIO
 from copy import copy, deepcopy
 from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
@@ -20,7 +20,10 @@ translate = puddlestuff.translations.translate
 import errno, traceback
 from puddlestuff.constants import BLANK, SEPARATOR, LOG_FILENAME
 from operator import itemgetter
-from itertools import imap
+try:
+    from itertools import imap
+except ImportError:
+    imap = map
 import logging
 
 from xml.sax.saxutils import escape as escape_html
@@ -146,7 +149,7 @@ def m_to_string(v):
         return escape_html(BLANK)
     elif isinstance(v, six.text_type):
         return escape_html(v)
-    elif isinstance(v, str):
+    elif isinstance(v, bytes):
         return escape_html(v.decode('utf8', 'replace'))
     else:
         return escape_html(SEPARATOR.join(v))

@@ -31,8 +31,7 @@ import traceback
 import time, re
 from glob import glob
 from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
-from PyQt4.QtCore import QFile, QIODevice
-from StringIO import StringIO
+from six import StringIO
 import itertools
 import logging
 
@@ -63,30 +62,17 @@ mod_keys = {
     Qt.KeypadModifier: u'',
     Qt.GroupSwitchModifier: u'',}
 
-def keycmp(a, b):
-    if a == b:
+def keycmp(modifier):
+    if modifier == Qt.CTRL:
+        return 4
+    elif modifier == Qt.SHIFT:
+        return 3
+    elif modifier == Qt.ALT:
+        return 2
+    elif modifier == Qt.META:
+        return 1
+    else:
         return 0
-    if a == Qt.CTRL:
-        return -1
-    elif b == Qt.CTRL:
-        return 1
-
-    if a == Qt.SHIFT:
-        return -1
-    elif b == Qt.SHIFT:
-        return 1
-
-    if a == Qt.ALT:
-        return -1
-    elif b == Qt.ALT:
-        return 1
-
-    if a == Qt.META:
-        return -1
-    elif b == Qt.META:
-        return 1
-
-    return 0
 
 try:
     permutations = itertools.permutations
@@ -123,7 +109,7 @@ for i in range(1,len(mod_keys)):
         mod = keys[0]
         for key in keys[1:]:
             mod = mod | key
-        modifiers[int(mod)] = u'+'.join(mod_keys[key] for key in sorted(keys, cmp=keycmp) if mod_keys[key])
+        modifiers[int(mod)] = u'+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
 
 mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
 
@@ -299,7 +285,7 @@ def savewinsize(name, dialog, settings):
 
 @_setupsaves
 def winsettings(name, dialog, settings):
-    dialog.restoreGeometry(settings.value(name).toByteArray())
+    dialog.restoreGeometry(settings.value(name))
     cevent = dialog.closeEvent
     def closeEvent(self, event=None):
         savewinsize(name, dialog)
@@ -737,8 +723,8 @@ def gettaglist():
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
     try:
-        lines = sorted(set([z.strip().decode('utf8')
-            for z in open(filename, 'r').read().split('\n')]))
+        lines = sorted(set([z.strip()
+            for z in open(filename, 'rt').read().split('\n')]))
     except (IOError, OSError):
         lines = audioinfo.FIELDS[::]
     return lines
@@ -807,7 +793,7 @@ def load_actions():
 def open_resourcefile(filename):
     f = QFile(filename)
     f.open(QIODevice.ReadOnly)
-    return StringIO(f.readAll())
+    return StringIO(str(f.readAll()))
 
 def progress(func, pstring, maximum, threadfin = None):
     """To be used for functions that need a threaded progressbar.

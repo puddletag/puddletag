@@ -4,10 +4,15 @@ from importlib import import_module
 import os
 from os.path import join, exists
 import re
-from sgmllib import SGMLParser
+
+try:
+    from HTMLParser import HTMLParser
+except ImportError:
+    from html.parser import HTMLParser
+
 import socket
-import urlparse
-import urllib2
+from six.moves.urllib.parse import urlparse
+from six.moves.urllib import request as urllib2
 
 from PyQt4.QtCore import QObject, SIGNAL
 
@@ -213,11 +218,11 @@ def write_log(text):
     status_obj.emit(SIGNAL('logappend'), text)
 
 
-class MetaProcessor(SGMLParser):
+class MetaProcessor(HTMLParser):
     def reset(self):
         self.pieces = []
         self.encoding = None
-        SGMLParser.reset(self)
+        HTMLParser.reset(self)
 
     def start_meta(self, text):
         text = [tuple([x.lower() for x in z]) for z in text]

@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb, resource,os
 from .constants import CONFIGDIR, DATADIR
-import StringIO
+from six import StringIO
 from .util import open_resourcefile
 from puddlestuff.translations import translate
 import six

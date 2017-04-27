@@ -245,7 +245,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         QtCore.QAbstractItemModel.__init__(self, parent)
         
         self.mapping = {}
-        rootData = list(map(QtCore.QVariant, [translate("WebDB", 'Retrieved Albums')]))
+        rootData = [translate("WebDB", 'Retrieved Albums')]
         self.rootItem = RootItem(rootData)
         
         self._albumPattern = ''

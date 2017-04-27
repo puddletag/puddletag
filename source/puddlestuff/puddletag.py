@@ -26,7 +26,10 @@ from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings, update
 import puddlestuff.mainwin.funcs as mainfuncs
 from puddlestuff.helperwin import ConfirmationErrorDialog
 from functools import partial
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.util import rename_error_msg, RenameError, DirRenameError
 from .audioinfo import lnglength, strlength, PATH, str_filesize

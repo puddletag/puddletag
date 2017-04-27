@@ -3,8 +3,15 @@ from __future__ import absolute_import
 import six.moves.html_entities, re, os
 
 from copy import deepcopy
-from itertools import izip
-from sgmllib import SGMLParser
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
+
+try:
+    from HTMLParser import HTMLParser
+except ImportError:
+    from html.parser import HTMLParser
 
 from puddlestuff.functions import replace_regex
 from puddlestuff.audioinfo import CaselessDict
@@ -372,10 +379,10 @@ def unspace(cursor):
     cursor.line = cursor.line.strip()
     cursor.charno = 0
 
-class TagProcessor(SGMLParser):
+class TagProcessor(HTMLParser):
     def reset(self):
         self.pieces = []
-        SGMLParser.reset(self)
+        HTMLParser.reset(self)
 
     def handle_data(self, text):
         self.pieces.append(text)
