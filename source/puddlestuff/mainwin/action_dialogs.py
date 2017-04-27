@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from puddlestuff.actiondlg import ActionWindow, CreateFunction
 from puddlestuff.constants import RIGHTDOCK, SELECTIONCHANGED
 from PyQt4.QtGui import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
@@ -8,6 +9,7 @@ from puddlestuff.puddleobjects import PuddleConfig
 from functools import partial
 import pdb
 from puddlestuff.translations import translate
+from six.moves import range
 
 class ActionDialog(ActionWindow):
     def __init__(self, *args, **kwargs):
@@ -101,11 +103,11 @@ class FunctionDialog(CreateFunction):
             widget.emit(SIGNAL('updateExample'), u'')
             return
 
-        field = selected.keys()[0]
+        field = list(selected.keys())[0]
         self.example = f
         self._text = f.get(field, u'')
 
-        widget._combotags = selected.keys()
+        widget._combotags = list(selected.keys())
         
         widget._text = self._text
         widget.example = f

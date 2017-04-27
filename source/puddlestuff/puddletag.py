@@ -1,25 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import sys, os
-from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
+from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
     progress, PuddleStatus, errormsg, dircmp, encode_fn, get_icon)
+import six
+from six.moves import map
+from six.moves import zip
 
 status = PuddleStatus()
 
 import logging
-import tagmodel
-from tagmodel import TagTable
+from . import tagmodel
+from .tagmodel import TagTable
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, resource
-import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
-import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
-import mainwin.action_dialogs, mainwin.tagtools
-import mainwin.previews, mainwin.artwork
+from . import mainwin
 import puddlestuff.masstag.dialogs
 import puddlestuff.webdb
-import loadshortcuts as ls
-import m3u, findfunc, genres
+from . import loadshortcuts as ls
+from . import m3u, findfunc, genres
 
 from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings, update_settings
 import puddlestuff.mainwin.funcs as mainfuncs
@@ -28,22 +29,25 @@ from functools import partial
 from itertools import izip
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.util import rename_error_msg, RenameError, DirRenameError
-from audioinfo import lnglength, strlength, PATH, str_filesize
+from .audioinfo import lnglength, strlength, PATH, str_filesize
 from errno import EEXIST
 from operator import itemgetter
 from collections import defaultdict
-import constants, shortcutsettings
+from . import constants, shortcutsettings
 
-import puddlestuff.findfunc, puddlestuff.tagsources
+from . import findfunc
+from . import functions
+from . import tagsources
 import puddlestuff.confirmations as confirmations
-import action_shortcuts, traceback
-import plugins
+from . import action_shortcuts
+import traceback
+from . import plugins
 from puddlestuff.translations import translate
 from copy import copy
 
 pyqtRemoveInputHook()
 
-from constants import (ALWAYS, FILESLOADED, VIEWFILLED,
+from .constants import (ALWAYS, FILESLOADED, VIEWFILLED,
     FILESSELECTED, ENABLESIGNALS, MODULES)
 
 #A global variable that hold the status of
@@ -183,7 +187,7 @@ def connect_actions(actions, controls):
         command = action.command
         if action.control == 'mainwin' and hasattr(mainfuncs, command):
             f = getattr(mainfuncs, command)
-            if 'parent' in f.func_code.co_varnames:
+            if 'parent' in f.__code__.co_varnames:
                 f = partial(f, parent=c)
             if action.togglecheck:
                 connect(action, SIGNAL('toggled(bool)'), f)
@@ -201,7 +205,7 @@ def connect_action_shortcuts(actions):
     cparser = PuddleConfig()
     cparser.filename = ls.menu_path
     for action in actions:
-        shortcut = cparser.get('shortcuts', unicode(action.text()), '')
+        shortcut = cparser.get('shortcuts', six.text_type(action.text()), '')
         if shortcut:
             action.setShortcut(shortcut)
 
@@ -234,18 +238,17 @@ def help_menu(parent):
 
     sep = QAction(parent)
     sep.setSeparator(True)
-    map(menu.addAction, (doc_link, forum_link, issue_link, sep,
-        about, about_qt))
+    [menu.addAction(z) for z in  (doc_link, forum_link, issue_link, sep,
+        about, about_qt)]
 
     return menu
 
 def load_plugins():
     from puddlestuff.pluginloader import load_plugins
     plugins = load_plugins()
-    puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
-    puddlestuff.functions.no_preview.extend(plugins[constants.FUNCTIONS_NO_PREVIEW])
-    puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
-    puddlestuff.musiclib.extralibs = plugins[constants.MUSICLIBS]
+    functions.functions.update(plugins[constants.FUNCTIONS])
+    functions.no_preview.extend(plugins[constants.FUNCTIONS_NO_PREVIEW])
+    tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
 
     return plugins[constants.DIALOGS], plugins[constants.MODULES]
 
@@ -371,7 +374,7 @@ class MainWin(QMainWindow):
         self.emit(SIGNAL('always'), True)
 
     def addDock(self, name, dialog, position, visibility=True, connect=True):
-        controls = PuddleDock._controls.values()
+        controls = list(PuddleDock._controls.values())
         dock = PuddleDock(name, dialog, self, status)
         self.addDockWidget(position, dock)
         self._winmenu.addAction(dock.toggleViewAction())
@@ -393,10 +396,10 @@ class MainWin(QMainWindow):
             self.menuBar().insertMenu(self._menus['&Windows'][0].menuAction(), menu)
 
         status['actions'].extend(actions)
-        map(menu.addAction, actions)
+        [menu.addAction(z) for z in actions]
 
         if toolbar:
-            map(self.toolbar.addAction, actions)
+            [self.toolbar.addAction(z) for z in actions]
         if save:
             shortcutsettings.ActionEditorDialog.saveSettings(status['actions'])
 
@@ -404,7 +407,7 @@ class MainWin(QMainWindow):
         x = {}
         def status(k):
             if k in x: return x[value]()
-        controls = controls.values()
+        controls = list(controls.values())
         connect = self.connect(c, SIGNAL('getstatus'), status)
         [x.update(z.status) for z in controls]
         self._status = x
@@ -422,7 +425,7 @@ class MainWin(QMainWindow):
             self.setWindowTitle('puddletag')
             return
         
-        if isinstance(dirs, basestring):
+        if isinstance(dirs, six.string_types):
             dirs = [dirs]
 
         dirs = [encode_fn(d) for d in dirs]
@@ -450,7 +453,7 @@ class MainWin(QMainWindow):
         filedlg = QFileDialog()
         filedlg.setFileMode(filedlg.DirectoryOnly)
         filedlg.setResolveSymlinks(False)
-        filename = unicode(filedlg.getExistingDirectory(self,
+        filename = six.text_type(filedlg.getExistingDirectory(self,
             translate("Main Window", 'Import directory...'), dirname ,QFileDialog.ShowDirsOnly))
         return filename
 
@@ -485,7 +488,7 @@ class MainWin(QMainWindow):
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         if self._lastdir:
-            cparser.set('main', 'lastfolder', unicode(self._lastdir[0], 'utf8'))
+            cparser.set('main', 'lastfolder', six.text_type(self._lastdir[0], 'utf8'))
         cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', QVariant(self.saveState()))
 
@@ -529,21 +532,21 @@ class MainWin(QMainWindow):
     def loadPlayList(self):
         filedlg = QFileDialog()
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
-        filename = unicode(filedlg.getOpenFileName(self,
+        filename = six.text_type(filedlg.getOpenFileName(self,
             translate("Playlist", translate("Playlist", 'Select m3u file...')), ))
         if not filename:
             return
         try:
             files = m3u.readm3u(filename)
             self.emit(SIGNAL('loadFiles'), files, None, None, None, filename)
-        except (OSError, IOError), e:
+        except (OSError, IOError) as e:
             QMessageBox.information(self._table,
                 translate("Defaults", 'Error'),
                 translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror),
                 QMessageBox.Ok, QMessageBox.NoButton)
-        except Exception, e:
+        except Exception as e:
             QMessageBox.information(self._table, translate("Defaults", 'Error'),
-                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(unicode(e)),
+                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(six.text_type(e)),
                 QMessageBox.Ok)
 
     def openDir(self, filename=None, append=False):
@@ -559,26 +562,26 @@ class MainWin(QMainWindow):
             if not filename:
                 return
         else:
-            if not isinstance(filename, basestring):
+            if not isinstance(filename, six.string_types):
                 filename = filename[0]
 
             filename = os.path.abspath(filename)
 
-            if isinstance(filename, unicode):
+            if isinstance(filename, six.text_type):
                 filename = encode_fn(filename)
         self.emit(SIGNAL('loadFiles'), None, [filename], append)
 
     def openPrefs(self):
-        win = SettingsDialog(PuddleDock._controls.values(), self, status)
+        win = SettingsDialog(list(PuddleDock._controls.values()), self, status)
         win.show()
 
     def removeShortcuts(self, menu_title, actions):
         if menu_title in self._menus:
             menu = self._menus[menu_title][0]
         if actions:
-            children = dict([(unicode(z.text()), z) for z in menu.actions()])
+            children = dict([(six.text_type(z.text()), z) for z in menu.actions()])
             for action in actions:
-                if isinstance(action, basestring):
+                if isinstance(action, six.string_types):
                     action = children[action]
                 menu.removeAction(action)
                 try:
@@ -598,7 +601,7 @@ class MainWin(QMainWindow):
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         
         gensettings = {}
-        controls = PuddleDock._controls.values()
+        controls = list(PuddleDock._controls.values())
         for control in controls:
             if hasattr(control, 'loadSettings'):
                 control.loadSettings()
@@ -678,7 +681,7 @@ class MainWin(QMainWindow):
             dirname = constants.HOMEDIR
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
         default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
-        f = unicode(QFileDialog.getSaveFileName(self,
+        f = six.text_type(QFileDialog.getSaveFileName(self,
             translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default)))
         if f:
             if settings.get('playlist', 'extinfo', 1, True):
@@ -743,7 +746,7 @@ class MainWin(QMainWindow):
                     if update:
                         lib_updates.append(update)
                     yield None
-                except EnvironmentError, e:
+                except EnvironmentError as e:
                     failed_rows.append(row)
                     filename = model.taginfo[row][PATH]
                     m = rename_error_msg(e, filename)
@@ -790,7 +793,7 @@ class MainWin(QMainWindow):
         def finished():
             fin()
             if 'rename_dirs' in state:
-                self.renameDirs(state['rename_dirs'].items())
+                self.renameDirs(list(state['rename_dirs'].items()))
         s = progress(func, translate("Defaults", 'Writing '), len(rows),
             finished)
         s(self)
@@ -816,7 +819,7 @@ class MainWin(QMainWindow):
         setRowData = model.setRowData
 
         [setRowData(row, d, undo=False, temp=True) for row in rows]
-        columns = filter(None, map(model.columns.get, d))
+        columns = [_f for _f in map(model.columns.get, d) if _f]
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))
@@ -832,7 +835,7 @@ class MainWin(QMainWindow):
 
         [setRowData(row, d, undo=False, temp=True) for row, d in
             zip(rows, tags)]
-        columns = filter(None, map(model.columns.get, d))
+        columns = [_f for _f in map(model.columns.get, d) if _f]
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))
@@ -881,7 +884,7 @@ class MainWin(QMainWindow):
                 try:
                     setRowData(row, {tag: filename}, True, True)
                     yield None
-                except EnvironmentError, e:
+                except EnvironmentError as e:
                     m = translate("Dir Renaming",
                         'An error occured while renaming <b>%1</b> to ' \
                         '<b>%2</b>. (%3)').arg(audio[PATH]).arg(filename).arg(e.strerror)
@@ -905,7 +908,7 @@ class MainWin(QMainWindow):
                 self._table.changeFolder(olddir, newdir)
                 if self._lastdir and olddir in self._lastdir:
                     self._lastdir[self._lastdir.index(olddir)] = newdir
-            except (IOError, OSError), detail:
+            except (IOError, OSError) as detail:
                 msg = translate("Dir Renaming", "I couldn't rename: <i>%1</i> to <b>%2</b> (%3)").arg(olddir).arg(newdir).arg(detail.strerror)
                 if index == len(dirs) - 1:
                     dirlen = 1

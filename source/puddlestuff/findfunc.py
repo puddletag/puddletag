@@ -1,19 +1,25 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import pdb
-import audioinfo, os, string, re
+import os, string, re
+from . import audioinfo
 from decimal import Decimal
 from pyparsing import (Word, alphas,Literal, OneOrMore, alphanums, 
     nums, delimitedList, Combine, QuotedString, 
     CharsNotIn, originalTextFor, nestedExpr, 
     Optional)
-from puddleobjects import PuddleConfig, safe_name
-from funcprint import pprint
+from .puddleobjects import PuddleConfig, safe_name
+from .funcprint import pprint
 from puddlestuff.util import PluginFunction, translate, to_list, to_string
-import cPickle as pickle
+import six.moves.cPickle as pickle
+import six
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 stringtags = audioinfo.stringtags
 from copy import deepcopy
-from constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
+from .constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
 import glob
 from collections import defaultdict
 from functools import partial
@@ -28,7 +34,7 @@ FUNC_MODULE = 'module'
 ARGS = 'arguments'
 KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
 
-whitespace = set(unicode(string.whitespace))
+whitespace = set(six.text_type(string.whitespace))
 
 class ParseError(Exception):
     def __init__(self, message):
@@ -39,10 +45,8 @@ class FuncError(ParseError): pass
 
 class MultiValueError(FuncError): pass
 
-from functions import functions
-
 def arglen_error(e, passed, function, to_raise = True):
-    varnames = function.func_code.co_varnames[:function.func_code.co_argcount]
+    varnames = function.__code__.co_varnames[:function.__code__.co_argcount]
     args_len = len(passed)
     param_len = len(varnames)
     message = None
@@ -50,15 +54,15 @@ def arglen_error(e, passed, function, to_raise = True):
         message = translate('Functions',
             'At most %1 arguments expected. %2 given.')
     elif args_len < param_len:
-        default_len = len(function.func_defaults) if \
-            function.func_defaults else 0
+        default_len = len(function.__defaults__) if \
+            function.__defaults__ else 0
         if args_len < (param_len - default_len):
             message = translate('Functions',
             'At least %1 arguments expected. %2 given.')
     else:
         raise e
     if message is not None:
-        message = message.arg(unicode(param_len)).arg(unicode(args_len))
+        message = message.arg(six.text_type(param_len)).arg(six.text_type(args_len))
     else:
         raise e
     if to_raise:
@@ -110,7 +114,7 @@ def filenametotag(pattern, filename, checkext = False, split_dirs=True):
         filename = os.path.splitext(filename)[0]
 
     e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
-    patterns = filter(None, pattern.split(u'/'))
+    patterns = [_f for _f in pattern.split(u'/') if _f]
     if split_dirs:
         filenames = filename.split(u'/')[-len(patterns):]
     else:
@@ -126,7 +130,7 @@ def filenametotag(pattern, filename, checkext = False, split_dirs=True):
             else:
                 mydict[key] = new_fields[key]
     if mydict:
-        if mydict.has_key("dummy"):
+        if "dummy" in mydict:
             del(mydict["dummy"])
         return mydict
     return {}
@@ -139,7 +143,7 @@ def get_old_action(filename):
     these are stored as pickled objects.
 
     Returns [list of Function objects, action name]."""
-    if isinstance(filename, basestring):
+    if isinstance(filename, six.string_types):
         f = open(filename, "rb")
     else:
         f = filename
@@ -149,6 +153,7 @@ def get_old_action(filename):
     return [funcs, name]
 
 def load_macro_info(filename):
+    from .functions import functions
     modules = defaultdict(lambda: defaultdict(lambda: {}))
     for function in functions.values():
         if isinstance(function, PluginFunction):
@@ -231,7 +236,7 @@ def func_tokens(dictionary, parse_action):
 
 def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts):
 
-    varnames = func.func_code.co_varnames[:func.func_code.co_argcount]
+    varnames = func.__code__.co_varnames[:func.__code__.co_argcount]
 
     #arguments will contain only a list of user supplied arguments
     #Eg. for the function $format(%artist%) the user will specify
@@ -260,7 +265,7 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
             except ValueError:
                 raise ParseError(SYNTAX_ARG_ERROR % (funcname, no + 1))
         else:
-            if isinstance(arg, basestring) and fmt:
+            if isinstance(arg, six.string_types) and fmt:
                 topass[param] = replacevars(arg, *dicts)
             else:
                 topass[param] = arg
@@ -290,8 +295,9 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     '''
     
     #Get function
+    from .functions import functions
     try:
-        if isinstance(funcname, basestring):
+        if isinstance(funcname, six.string_types):
             func = functions[funcname]
         else:
             func = funcname
@@ -311,11 +317,11 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
         if ret is None:
             return u''
         return ret
-    except TypeError, e:
+    except TypeError as e:
         message = SYNTAX_ERROR.arg(funcname)
         message = message.arg(arglen_error(e, topass, func, False))
         raise ParseError(message)
-    except FuncError, e:
+    except FuncError as e:
         message = SYNTAX_ERROR.arg(funcname).arg(e.message)
         raise ParseError(message)
 
@@ -534,7 +540,9 @@ def replacevars(pattern, *dicts):
 
     """
     r_vars = {}
-    map(r_vars.update, [z for z in dicts if z])
+    for z in dicts:
+        if z:
+            r_vars.update(z)
     
     in_quote = False
     in_field = False
@@ -581,7 +589,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
         state = {}
     if '__counter' not in state:
         state['__counter'] = 0
-    state['__counter'] = unicode(int(state['__counter']) + 1)
+    state['__counter'] = six.text_type(int(state['__counter']) + 1)
 
     r_tags = audio
    
@@ -603,7 +611,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
             temp = func.runFunction(val, audio, state, None, r_tags)
             if temp is None:
                 continue
-            if isinstance(temp, basestring):
+            if isinstance(temp, six.string_types):
                 ret[field] = temp
             elif hasattr(temp, 'items'):
                 ret.update(temp)
@@ -613,7 +621,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
             elif hasattr(temp[0], 'items'):
                 [ret.update(z) for z in temp]
                 break
-            elif isinstance(temp[0], basestring):
+            elif isinstance(temp[0], six.string_types):
                 if field in FILETAGS:
                     ret[field] = temp[0]
                 else:
@@ -658,7 +666,7 @@ def saveAction(filename, actionname, funcs):
     """Saves an action to filename.
 
     funcs is a list of funcs, and actionname is...er...the name of the action."""
-    if isinstance(filename, basestring):
+    if isinstance(filename, six.string_types):
         fileobj = open(filename, 'wb')
     else:
         fileobj = filename
@@ -710,7 +718,7 @@ def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     Amy Winehouse - 012 - Shitty Song.mp3"""
 
     #First check if a filename was passed or a dictionary.
-    if not isinstance(filename, basestring):
+    if not isinstance(filename, six.string_types):
         #if it was a dictionary, then use that as the tags.
         tags = filename
     else:
@@ -757,7 +765,7 @@ def tagtotag(pattern, text, expression):
         return  u''
     mydict={}
     for i in range(len(tags)):
-        if mydict.has_key(taglist[i]):
+        if taglist[i] in mydict:
             mydict[taglist[i]] = ''.join([mydict[taglist[i]],tags[i]])
         else:
             mydict[taglist[i]]=tags[i]
@@ -779,7 +787,8 @@ class Function:
     See the functions module for more info."""
 
     def __init__(self, funcname, fields=None):
-        if isinstance(funcname, basestring):
+        from .functions import functions
+        if isinstance(funcname, six.string_types):
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
@@ -821,7 +830,7 @@ class Function:
 
         func = self.function
 
-        varnames = func.func_code.co_varnames[:func.func_code.co_argcount]
+        varnames = func.__code__.co_varnames[:func.__code__.co_argcount]
 
         if not varnames:
             return func()
@@ -891,7 +900,7 @@ class Function:
         self.fields = tag
 
     def addArg(self, arg):
-        if self.function.func_code.co_argcount > len(self.args) + 1:
+        if self.function.__code__.co_argcount > len(self.args) + 1:
             self.args.append(arg)
 
 class Macro(object):

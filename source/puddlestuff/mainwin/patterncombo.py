@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
 from puddlestuff.puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
     ListButtons)
 from puddlestuff.translations import translate
+import six
+from six.moves import range
 
 def load_patterns(filepath=None):
     settings = PuddleConfig(filepath)
@@ -24,13 +27,13 @@ class PatternCombo(QComboBox):
         QComboBox.__init__(self, parent)
         self._status = status
         status['patterns'] = self.items
-        status['patterntext'] = lambda: unicode(self.currentText())
+        status['patterntext'] = lambda: six.text_type(self.currentText())
 
         self.setEditable(True)
         if items:
             self.addItems(items)
         pchange = lambda text: self.emit(SIGNAL('patternchanged'),
-                                        unicode(text))
+                                        six.text_type(text))
         self.connect(self, SIGNAL('editTextChanged ( const QString &)'),
                      pchange)
         
@@ -51,7 +54,7 @@ class PatternCombo(QComboBox):
 
     def items(self):
         text = self.itemText
-        return [unicode(text(i)) for i in range(self.count())]
+        return [six.text_type(text(i)) for i in range(self.count())]
 
     def loadSettings(self):
         patterns, index = load_patterns()
@@ -60,7 +63,7 @@ class PatternCombo(QComboBox):
 
     def saveSettings(self):
         settings = PuddleConfig()
-        settings.set('editor', 'patterns', self.items())
+        settings.set('editor', 'patterns', list(self.items()))
         settings.set('editor', 'index', self.currentIndex())
 
 
@@ -106,13 +109,13 @@ class SettingsWin(QFrame):
             self._sortOrder = Qt.AscendingOrder
 
     def saveSettings(self):
-        patterns = [unicode(self.listbox.item(row).text()) for row in xrange(self.listbox.count())]
+        patterns = [six.text_type(self.listbox.item(row).text()) for row in range(self.listbox.count())]
         cparser = PuddleConfig()
         cparser.setSection('editor', 'patterns', patterns)
 
     def addPattern(self):
         l = self.listbox.item
-        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
@@ -130,7 +133,7 @@ class SettingsWin(QFrame):
         if row is None:
             row = self.listbox.currentRow()
         l = self.listbox.item
-        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem (self, 'puddletag', 
             translate("Pattern Settings", 'Enter a pattern'),
             patterns, row)
@@ -141,7 +144,7 @@ class SettingsWin(QFrame):
 
     def applySettings(self, control):
         item = self.listbox.item
-        patterns = [item(row).text() for row in xrange(self.listbox.count())]
+        patterns = [item(row).text() for row in range(self.listbox.count())]
         control.setItems(patterns)
 
 control = ('patterncombo', PatternCombo, False)

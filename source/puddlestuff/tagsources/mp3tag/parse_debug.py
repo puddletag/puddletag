@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 import codecs, pdb, re, sys
 from puddlestuff.tagsources.mp3tag import open_script, Cursor,Mp3TagSource
+from six.moves import map
+import six
+from six.moves import zip
 
 dbg_skip = ['ifnot',  'do', 'while']
 src_skip = ['endif', 'do', 'while', 'ifnot', 'else']
@@ -39,11 +44,11 @@ def parse_group(group):
             ret['line'] = group[i + 1].strip()
             ret['charno'] = group[i + 2].find('^')
     if params:
-        ret['params'] = [params[unicode(k)] for k in sorted(map(int, params))]
+        ret['params'] = [params[six.text_type(k)] for k in sorted(map(int, params))]
     return ret
 
 def parse_total_group(group):
-    fields = filter(None, group.split(u'\n output["')[1:])
+    fields = [_f for _f in group.split(u'\n output["')[1:] if _f]
     output = {}
     for field in fields:
         end_fieldname = field.find(u'"')
@@ -58,7 +63,7 @@ def parse_debug(text):
         if z.strip() == delim][1:]
     
     groups = [z.strip() for z in text.split(delim)[3:]]
-    return (zip(linenos, map(parse_group, groups[:-1])),
+    return (list(zip(linenos, list(map(parse_group, groups[:-1])))),
         parse_total_group(groups[-1]))
 
 def parse_file(fn):
@@ -83,16 +88,16 @@ def compare_retrieval(srcfn, html, debug, album=True):
             pdb.set_trace()
         src = source_parsed[i]
         #print src['cmd'], src['lineno']
-        src['params'] = [unicode(z) if not isinstance(z, unicode) else z for z in src['params']]
+        src['params'] = [six.text_type(z) if not isinstance(z, six.text_type) else z for z in src['params']]
         if 'params' not in dbg and src['params'] == []:
             dbg['params'] = []
         if dbg != src:
             if dbg.get('params') != src.get('params'):
                 src = src.copy()
-                src['params'] = filter(None, src['params'])
+                src['params'] = [_f for _f in src['params'] if _f]
                 if dbg != src:
                     pdb.set_trace()
-                    print i, [z for z in src if src[z] != dbg[z]]
+                    print(i, [z for z in src if src[z] != dbg[z]])
                     pdb.set_trace()
                     exit()
         i += 1

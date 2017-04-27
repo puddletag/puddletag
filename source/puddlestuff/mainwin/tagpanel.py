@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import pdb, sys, os, sip
@@ -6,6 +7,9 @@ from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
 from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
 import puddlestuff.resource as resource
+import six
+from six.moves import range
+from six.moves import zip
 pyqtRemoveInputHook()
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
 from functools import partial
@@ -30,15 +34,15 @@ def loadsettings(filepath = None):
     if numrows > -1:
         sections = settings.sections()
         d = {}
-        for row in xrange(numrows):
-            section = unicode(row)
+        for row in range(numrows):
+            section = six.text_type(row)
             tags = settings.get(section, 'tags', [''])
             titles = settings.get(section, 'titles', [''])
-            d[row] = zip(titles, tags)
+            d[row] = list(zip(titles, tags))
     else:
         titles = ['&Artist', '&Title', 'Al&bum', 'T&rack', u'&Year', "&Genre", '&Comment']
         tags = ['artist', 'title', 'album', 'track', u'year', 'genre', 'comment']
-        newtags = zip(titles, tags)
+        newtags = list(zip(titles, tags))
         d = {0:[newtags[0]], 1:[newtags[1]], 2: [newtags[2]],
              3:[newtags[3], newtags[4], newtags[5]] ,
              4:[newtags[6]]}
@@ -50,10 +54,10 @@ def savesettings(d, filepath=None):
         settings.filename = filepath
     else:
         settings.filename = os.path.join(settings.savedir, 'tagpanel')
-    settings.set('panel', 'numrows', unicode(len(d)))
+    settings.set('panel', 'numrows', six.text_type(len(d)))
     for row, rowtags in d.items():
-        settings.set(unicode(row), 'tags', [z[1] for z in rowtags])
-        settings.set(unicode(row), 'titles', [z[0] for z in rowtags])
+        settings.set(six.text_type(row), 'tags', [z[1] for z in rowtags])
+        settings.set(six.text_type(row), 'titles', [z[0] for z in rowtags])
 
 class Combo(QComboBox):
 
@@ -120,7 +124,7 @@ class FrameCombo(QGroupBox):
     def _disablePreview(self):
         self.__disconnectIndexChanged
         self.__indexFuncs = []
-        for field, combo in self.combos.iteritems():
+        for field, combo in six.iteritems(self.combos):
             edit = QLineEdit()
             combo.setLineEdit(edit)
             completer = combo.completer()
@@ -134,7 +138,7 @@ class FrameCombo(QGroupBox):
     
     def _enablePreview(self):
         self.__indexFuncs = []
-        for field, combo in self.combos.iteritems():
+        for field, combo in six.iteritems(self.combos):
             func = partial(self._emitChange, field)
             edit = QLineEdit()
             combo.setLineEdit(edit)
@@ -151,7 +155,7 @@ class FrameCombo(QGroupBox):
             combo.disconnect(combo, func)
     
     def _emitChange(self, field, text):
-        text = unicode(text)
+        text = six.text_type(text)
         if text == BLANK: text = u''
         elif text == KEEP:
             if self._audios:
@@ -182,14 +186,14 @@ class FrameCombo(QGroupBox):
             for field in tags:
                 if field in audio:
                     value = audio[field]
-                    if isinstance(value, basestring):
+                    if isinstance(value, six.string_types):
                         tags[field].add(value)
                     else:
                         tags[field].add(SEPARATOR.join(value))
                 else:
                     tags[field].add(u'')
 
-        for field, values in tags.iteritems():
+        for field, values in six.iteritems(tags):
             combo = combos[field]
             combo.addItems(sorted(values))
             if len(values) == 1: combo.setCurrentIndex(2)
@@ -206,7 +210,7 @@ class FrameCombo(QGroupBox):
         elif 'genre' in tags:
             combos['genre'].setCurrentIndex(0)
 
-        self._originalValues = dict([(field, unicode(combo.currentText()))
+        self._originalValues = dict([(field, six.text_type(combo.currentText()))
             for field, combo in self.combos.items()])
         self._originalValues['__image'] = self._status['images']
         [combo.blockSignals(False) for combo in combos.values()]
@@ -221,7 +225,7 @@ class FrameCombo(QGroupBox):
             tags['__image'] = images
         originals = {}
         for field, combo in combos.items():
-            curtext = unicode(combo.currentText())
+            curtext = six.text_type(combo.currentText())
             if self._originalValues[field] == curtext:
                 continue
             originals[field] = curtext
@@ -248,7 +252,7 @@ class FrameCombo(QGroupBox):
             combo = combos['genre']
             
             genres = self._status['genres']
-            new_genres = filter(None, unicode(combo.currentText()).split(SEPARATOR))
+            new_genres = [_f for _f in six.text_type(combo.currentText()).split(SEPARATOR) if _f]
 
             [genres.append(genre) for genre in new_genres 
                 if genre not in genres]
@@ -389,23 +393,23 @@ class PuddleTable(QTableWidget):
         curitem = self.item(row+1, self.currentItem().column())
         self.setCurrentItem(curitem)
 
-    rows = property(lambda x: xrange(x.rowCount()))
+    rows = property(lambda x: range(x.rowCount()))
 
     def setRowTexts(self, row, texts):
         item = self.item
-        for column, text in zip(range(self.columnCount()), texts):
+        for column, text in zip(list(range(self.columnCount())), texts):
             item(row, column).setText(text)
 
     def texts(self, row):
         item = self.item
-        return [unicode(item(row, z).text()) for z in range(self.columnCount())]
+        return [six.text_type(item(row, z).text()) for z in range(self.columnCount())]
 
     def items(self, row):
         item = self.item
         return [item(row, z) for z in range(self.columnCount())]
 
     def text(self, row, column):
-        return unicode(self.item(row, column).text())
+        return six.text_type(self.item(row, column).text())
 
     def selectedRows(self):
         return sorted(set(i.row() for i in self.selectedIndexes()))
@@ -448,7 +452,7 @@ class SettingsWin(QWidget):
             for row in table.rows:
                 try: rows.append(int(text(row, 2)))
                 except (TypeError, ValueError): pass
-            row = unicode(max(rows) + 1) if rows else u'1'
+            row = six.text_type(max(rows) + 1) if rows else u'1'
             table.add([TITLE, FIELD.lower(), row])
         else:
             table.add(texts)
@@ -461,7 +465,7 @@ class SettingsWin(QWidget):
         self._old = d
         for row in d:
             for z in d[row]:
-                self._table.add(z + (unicode(row),))
+                self._table.add(z + (six.text_type(row),))
 
     def applySettings(self, control = None):
         texts = self._table.texts

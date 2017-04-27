@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from puddlestuff.constants import RIGHTDOCK

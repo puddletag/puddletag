@@ -19,6 +19,8 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from __future__ import absolute_import
+from __future__ import print_function
 from xml.dom import minidom
 from collections import defaultdict
 import pdb
@@ -26,6 +28,7 @@ from os import path
 import sys
 import urllib, os
 import puddlestuff.audioinfo as audioinfo
+import six
 FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
@@ -45,7 +48,7 @@ def getFilename(filename):
     try:
         filename = filename.encode('latin1').decode('utf8')
     except UnicodeDecodeError:
-        print u"UnicodeDecodeError on: ", filename
+        print(u"UnicodeDecodeError on: ", filename)
         pass
 
     if filename.startswith(u'file://'):
@@ -77,11 +80,11 @@ u'last-seen': '__last_seen',
 u'bitrate': getBitRate,
 u'disc-number': u'discnumber'}
 
-setLength = lambda length: {'duration': unicode(audioinfo.lnglength(length))}
-setCreated = lambda created: {'first-seen': unicode(audioinfo.lngtime(created))}
-setBitrate = lambda bitrate: {'bitrate': unicode(audioinfo.lngfrequency(bitrate) / 1000)}
-setModified = lambda modified: {'last-seen': unicode(audioinfo.lngtime(modified))}
-setFilename = lambda filename: {u'location': u'file://' + unicode(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
+setLength = lambda length: {'duration': six.text_type(audioinfo.lnglength(length))}
+setCreated = lambda created: {'first-seen': six.text_type(audioinfo.lngtime(created))}
+setBitrate = lambda bitrate: {'bitrate': six.text_type(audioinfo.lngfrequency(bitrate) / 1000)}
+setModified = lambda modified: {'last-seen': six.text_type(audioinfo.lngtime(modified))}
+setFilename = lambda filename: {u'location': u'file://' + six.text_type(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
 
 RECONVERSION = {
     'title': 'title',
@@ -172,13 +175,13 @@ class DBParser(ContentHandler):
         parser.setContentHandler(self)
         try:
             parser.parse(filename)
-        except ValueError , detail:
+        except ValueError as detail:
             if not os.path.exists(filename):
                 msg = "%s does not exist." % filename
             else:
                 msg = "%s is not a valid Rhythmbox XML database." % filename
             raise musiclib.MusicLibError(0, msg)
-        except (IOError, OSError), detail:
+        except (IOError, OSError) as detail:
             if not os.path.exists(filename):
                 msg = "%s does not exist." % filename
             else:
@@ -202,7 +205,7 @@ class DBParser(ContentHandler):
         if name == 'rhythmdb':
             version = attrs.get('version')
             self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
-                u'  <rhythmdb version="%s">' % unicode(version)
+                u'  <rhythmdb version="%s">' % six.text_type(version)
             self.startElement = startelement
     
 
@@ -229,13 +232,13 @@ class RhythmDB(ContentHandler):
         parser.setContentHandler(self)
         try:
             parser.parse(filename)
-        except ValueError , detail:
+        except ValueError as detail:
             if not os.path.exists(filename):
                 msg = "%s does not exist." % filename
             else:
                 msg = "%s is not a valid Rhythmbox XML database." % filename
             raise musiclib.MusicLibError(0, msg)
-        except (IOError, OSError), detail:
+        except (IOError, OSError) as detail:
             if not os.path.exists(filename):
                 msg = "%s does not exist." % filename
             else:
@@ -258,7 +261,7 @@ class RhythmDB(ContentHandler):
         if name == 'rhythmdb':
             version = attrs.get('version')
             self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
-                        u'  <rhythmdb version="%s">' % unicode(version)
+                        u'  <rhythmdb version="%s">' % six.text_type(version)
             self.startElement = startelement
 
     def characters (self, ch):
@@ -332,7 +335,7 @@ class RhythmDB(ContentHandler):
         if tag not in SUPPORTEDTAGS:
             return
         if tag == 'artist':
-            return self.albums.keys()
+            return list(self.albums.keys())
         else:
             values = set()
             for album in self.tracks:
@@ -340,18 +343,18 @@ class RhythmDB(ContentHandler):
             return list(values)
 
     def getArtists(self):
-        return self.albums.keys()
+        return list(self.albums.keys())
 
     def getAlbums(self, artist):
         try:
-            return self.albums[artist].keys()
+            return list(self.albums[artist].keys())
         except KeyError:
             return None
 
     def getTracks(self, artist, albums = None):
         ret = []
         if albums is None:
-            albums = self.albums[artist].keys()
+            albums = list(self.albums[artist].keys())
 
         if artist in self.albums:
             stored = self.albums[artist]
@@ -423,7 +426,7 @@ class RhythmDB(ContentHandler):
                             tagname = key[len('___'):]
                         else:
                             temp = RECONVERSION[key](tagvalue)
-                            tagname = temp.keys()[0]
+                            tagname = list(temp.keys())[0]
                             tagvalue = temp[tagname]
                     except TypeError:
                         tagname = RECONVERSION[key]
@@ -491,7 +494,7 @@ class RhythmDB(ContentHandler):
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
-        self.dbpath = QLineEdit(path.join(unicode(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
+        self.dbpath = QLineEdit(path.join(six.text_type(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
 
         vbox = QVBoxLayout()
         label = QLabel('&Database Path')
@@ -511,25 +514,25 @@ class ConfigWindow(QWidget):
 
     def getFile(self):
         filedlg = QFileDialog()
-        filename = unicode(filedlg.getOpenFileName(self,
+        filename = six.text_type(filedlg.getOpenFileName(self,
             'Select RhythmBox database file.', self.dbpath.text()))
         if filename:
             self.dbpath.setText(filename)
 
     def getLibClass(self):
-        return RhythmDB(unicode(self.dbpath.text()))
+        return RhythmDB(six.text_type(self.dbpath.text()))
 
     def saveSettings(self):
         QSettings().setValue('Library/dbpath', QVariant(self.dbpath.text()))
 
 def loadLibrary():
     settings = QSettings()
-    return RhythmDB(unicode(settings.value('Library/dbpath').toString()))
+    return RhythmDB(six.text_type(settings.value('Library/dbpath').toString()))
 
 if __name__ == '__main__':
     k = DBParser()
     x, y = k.parse_file('rdb.xml')
     #import pdb
     #pdb.set_trace()
-    print [i for i, z in enumerate(y) if len(z) > 1]
-    print x.keys()[0], x[x.keys()[0]], y[34]
+    print([i for i, z in enumerate(y) if len(z) > 1])
+    print(list(x.keys())[0], x[list(x.keys())[0]], y[34])

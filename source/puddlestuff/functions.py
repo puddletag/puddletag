@@ -33,6 +33,7 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
+from __future__ import absolute_import
 import math
 import decimal, os, pdb, re, shutil, sys
 import string, time, traceback, unicodedata
@@ -46,8 +47,11 @@ from operator import itemgetter
 import pyparsing
 
 import puddlestuff.audioinfo as audioinfo
-from puddleobjects import (PuddleConfig, safe_name, fnmatch,
+from .puddleobjects import (PuddleConfig, safe_name, fnmatch,
     dircmp, natcasecmp, encode_fn, decode_fn)
+import six
+from six.moves import map
+from six.moves import range
 
 PATH = audioinfo.PATH
 DIRPATH = audioinfo.DIRPATH
@@ -60,7 +64,7 @@ D = decimal.Decimal
 
 def add(text,text1):
     try:
-        return unicode((D(unicode(text)) + D(unicode(text1))).normalize().to_eng_string())
+        return six.text_type((D(six.text_type(text)) + D(six.text_type(text1))).normalize().to_eng_string())
     except decimal.InvalidOperation:
         return
 
@@ -87,9 +91,9 @@ au,spinbox,1'''
             for i, tag in enumerate(state['__files'], 1):
                 if restart:
                     dircount[tag.dirpath] += 1
-                    count[i] = unicode(dircount[tag.dirpath])
+                    count[i] = six.text_type(dircount[tag.dirpath])
                 else:
-                    count[i] = unicode(i)
+                    count[i] = six.text_type(i)
 
         state['autonumbering'] = count
         
@@ -103,12 +107,12 @@ au,spinbox,1'''
         return tracknum
 
 def check_truth(text):
-    if isinstance(text, basestring):
+    if isinstance(text, six.string_types):
         text = text.strip()
     return 0 if ((not text) or (text == u'0')) else 1
 
 def and_(text, text1):
-    return unicode(check_truth(text) and check_truth(text1))
+    return six.text_type(check_truth(text) and check_truth(text1))
 
 def caps(text):
     #Capitalizes the first letter of each word in string and 
@@ -137,7 +141,7 @@ def ceiling(n_value):
 
 def char(text):
     try:
-        return unicode(ord(text))
+        return six.text_type(ord(text))
     except TypeError:
         return
 
@@ -150,7 +154,7 @@ def div(n_numerator, n_divisor):
     if n_divisor == 0:
         raise FuncError("Cannot divide by zero.")
     try:
-        return unicode((D(n_numerator) / D(n_divisor)).normalize())
+        return six.text_type((D(n_numerator) / D(n_divisor)).normalize())
     except decimal.InvalidOperation:
         return
     #ret = unicode(float(n_numerator) / n_divisor)
@@ -175,7 +179,7 @@ def filenametotag(m_tags, p_pattern):
     return findfunc.filenametotag(p_pattern, m_tags[PATH], True)
 
 def finddups(tracks, key='title', method=None):
-    from puddleobjects import dupes
+    from .puddleobjects import dupes
     li = []
     for z in tracks:
         try:
@@ -279,11 +283,11 @@ def left(text, n):
     try:
         n = int(n)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % unicode(n))
+        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n))
     return text[:n]
 
 def len_(text):
-    return unicode(len(text))
+    return six.text_type(len(text))
 
 def leql(text,text1):
 
@@ -365,7 +369,7 @@ def lower(text):
 def merge_values(m_text, separator=u';'):
     '''Merge field, "Merge field: $0, sep='$1'"
 &Separator, text, ;'''
-    if isinstance(m_text, basestring):
+    if isinstance(m_text, six.string_types):
         return m_text
     else:
         return separator.join(m_text)
@@ -374,7 +378,7 @@ def meta_sep(m_tags, p_field, p_sep=u', '):
     value = m_tags.get(p_field)
     if value is None:
         return None
-    elif isinstance(value, basestring):
+    elif isinstance(value, six.string_types):
         return value
     else:
         return p_sep.join(value)
@@ -390,7 +394,7 @@ def meta(m_tags, field, n_index=None):
         except IndexError:
             return u''
     else:
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return value
         return u', '.join(value)
 
@@ -399,18 +403,18 @@ def mid(text, n_start, n_len):
     try:
         n_start = int(n_start)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % unicode(n_start))
+        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n_start))
     
     try:
         n_len = int(n_len)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % unicode(n_len))
+        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n_len))
 
-    return unicode(text)[n_start: n_start + n_len]
+    return six.text_type(text)[n_start: n_start + n_len]
 
 def mod(n_x, n_y):
     try:
-        return unicode((n_x % n_y).normalize())
+        return six.text_type((n_x % n_y).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -504,7 +508,7 @@ def move(m_tags, p_pattern, r_tags, ext=True, state=None):
 def mul(n_x, n_y):
     D = decimal.Decimal
     try:
-        return unicode((D(n_x) * D(n_y)).normalize())
+        return six.text_type((D(n_x) * D(n_y)).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -546,7 +550,7 @@ def or_(text,text1):
 
 def rand():
     import random
-    return unicode(random.random())
+    return six.text_type(random.random())
 
 def _round(n_value):
     return round(n_value)
@@ -642,8 +646,8 @@ only as &whole word, check'''
     else:
         try:
             text = pat.sub(replaceword, text)
-        except Exception, e:
-            raise findfunc.FuncError(unicode(e))
+        except Exception as e:
+            raise findfunc.FuncError(six.text_type(e))
     return text
 
 class RegHelper(object):
@@ -702,8 +706,8 @@ Match &Case, check"""
                     return re.sub(u'(?i)' + regex, replace_tokens, value, 0)
                 else:
                     return re.sub(regex, replace_tokens, value, 0)
-        except re.error, e:
-            raise findfunc.FuncError(unicode(e))
+        except re.error as e:
+            raise findfunc.FuncError(six.text_type(e))
 
     return u"\\".join(replace_matches(z) for z in m_text)
 
@@ -721,7 +725,7 @@ def remove_dupes(m_text, matchcase=False):
     """Remove duplicate values, "Remove Dupes: $0, Match Case $1"
 Match &Case, check"""
     text = m_text
-    if isinstance(text, basestring):
+    if isinstance(text, six.string_types):
         return text
 
     
@@ -743,7 +747,7 @@ def right(text,n):
     try:
         n = int(n)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % unicode(n))
+        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n))
     if n == 0:
         return u''
     return text[-int(n):]
@@ -783,7 +787,7 @@ def rg2sc(gain, peak=None):
         " 00024CA8", # bogus
         ]
 
-    return unicode(''.join(values))
+    return six.text_type(''.join(values))
 
 def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
     """Export artwork to file, "Export Art: pattern='$1'"
@@ -803,7 +807,7 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
         return
 
     new_state = state.copy()
-    new_state['img_count'] = unicode(len(images))
+    new_state['img_count'] = six.text_type(len(images))
     for i, image in enumerate(images):
         data = image[audioinfo.DATA]
         new_state['img_desc'] = image.get(audioinfo.DESCRIPTION, u'')
@@ -818,7 +822,7 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
         extension = '.png' if 'png' in mime.lower() else '.jpg'
 
         new_state['img_mime'] = mime
-        new_state['img_counter'] = unicode(i + 1)
+        new_state['img_counter'] = six.text_type(i + 1)
         fn = tag_to_filename(pattern, m_tags, r_tags,
             False, new_state) + extension
 
@@ -851,7 +855,7 @@ Match &Case, check"""
         cmp = natcasecmp
     else:
         cmp = None
-    if isinstance(text, basestring):
+    if isinstance(text, six.string_types):
         return text
     if order == u'Ascending':
         return sorted(text, cmp)
@@ -861,7 +865,7 @@ Match &Case, check"""
 def split_by_sep(m_text, sep):
     """Split fields using separator, "Split using separator $0: sep='$1'"
 &Separator, text, ;"""
-    if isinstance(m_text, basestring):
+    if isinstance(m_text, six.string_types):
         return m_text
     else:
         ret = []
@@ -876,11 +880,11 @@ def strip(text):
 def find(text, text1):
     val = text.find(text1)
     if val >= 0:
-        return unicode(val)
+        return six.text_type(val)
     return u'-1'
 
 def sub(n_1, n_2):
-    return unicode(n_1 - n_2)
+    return six.text_type(n_1 - n_2)
 
 def tag_dir(m_tags, pattern, r_tags, state = None):
     '''Tag to Dir, "Tag->Dir: $1"
@@ -922,7 +926,7 @@ def texttotag(tags, input_text, p_pattern, output, state=None):
     if d:
         for key in d:
             output = output.replace(u'%' +
-                unicode(key), pat_escape(unicode(d[key])))
+                six.text_type(key), pat_escape(six.text_type(d[key])))
         return findfunc.parsefunc(output, tags, state=state)
     return None
 
@@ -963,22 +967,22 @@ def update_from_tag(r_tags, fields, tag='APEv2'):
             return
     except EnvironmentError:
         return
-    fields = filter(None, [z.strip() for z in fields.split(u';')])    
+    fields = [_f for _f in [z.strip() for z in fields.split(u';')] if _f]    
     if not fields:
         return tag.usertags
     else:
         if fields[0].startswith(u'~'):
-            return dict([(k,v) for k,v in tag.usertags.iteritems()
+            return dict([(k,v) for k,v in six.iteritems(tag.usertags)
                 if k not in fields])
         else:
-            return dict([(k,v) for k,v in tag.usertags.iteritems()
+            return dict([(k,v) for k,v in six.iteritems(tag.usertags)
                 if k in fields])
 
 def upper(text):
     return text.upper()
 
 def validate(text, to=None, chars=None):
-    from puddleobjects import safe_name
+    from .puddleobjects import safe_name
     if chars is None:
         return safe_name(text, to=to)
     else:
@@ -1056,6 +1060,6 @@ no_fields = [filenametotag, load_images, move, remove_except,
     save_artwork, tag_dir, update_from_tag]
 no_preview = [autonumbering, load_images, remove_tag, save_artwork]
 
-import findfunc
+from . import findfunc
 FuncError = findfunc.FuncError
 ParseError = findfunc.ParseError

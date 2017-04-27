@@ -7,12 +7,13 @@
 # Release version 1.4
 # CVS ID: $Id: CDDB.py,v 1.8 2003/08/31 23:18:43 che_fox Exp $
 
+from __future__ import absolute_import
 import urllib, string, socket, os, struct, re
 
 name = 'CDDB.py'
 version = 1.4
 
-if os.environ.has_key('EMAIL'):
+if 'EMAIL' in os.environ:
     (default_user, hostname) = string.split(os.environ['EMAIL'], '@')
 else:
     default_user = os.geteuid() or os.environ['USER'] or 'user'
@@ -123,7 +124,7 @@ def parse_read_reply(comments):
 	if keyword_match:
 	    (keyword, data) = keyword_match.groups()
 
-	    if result.has_key(keyword):
+	    if keyword in result:
 		result[keyword] = result[keyword] + data
 	    else:
 		result[keyword] = data

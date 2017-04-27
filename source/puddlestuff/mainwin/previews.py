@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from puddlestuff.puddleobjects import PuddleConfig
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -8,6 +9,7 @@ from copy import deepcopy
 from puddlestuff.constants import FILESSELECTED, FILESLOADED
 from puddlestuff.plugins import connect_shortcut
 from puddlestuff.translations import translate
+import six
 
 status = {}
 
@@ -58,7 +60,7 @@ def clear_selected_cells():
 
     ret = []
     for fields, f in izip(selected, files):
-        ret.append(dict([(k,v) for k,v in f.preview.iteritems()
+        ret.append(dict([(k,v) for k,v in six.iteritems(f.preview)
             if k not in fields]))
     emit('setpreview', ret)
 

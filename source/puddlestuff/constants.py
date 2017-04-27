@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import os, sys
 from PyQt4.QtCore import Qt, SIGNAL
 from os.path import dirname, join

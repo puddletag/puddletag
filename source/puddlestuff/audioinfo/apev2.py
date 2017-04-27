@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from copy import deepcopy
 
 from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError
@@ -7,16 +8,15 @@ from mutagen.monkeysaudio import MonkeysAudio, MonkeysAudioHeaderError
 from mutagen.musepack import Musepack, MusepackHeaderError
 from mutagen.wavpack import WavPack, WavPackHeaderError
 
-import util
-from util import (CaselessDict, FILENAME, MockTag, PATH,
+from . import util
+from .util import (CaselessDict, FILENAME, MockTag, PATH,
     cover_info, del_deco, fn_hash, get_mime, get_total,
     getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
     setdeco, str_filesize, unicode_list, usertags)
+import six
 
 ATTRIBUTES = ['length', 'accessed', 'size', 'created',
     'modified', 'filetype']
-
-import tag_versions
 
 COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
 
@@ -74,8 +74,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
 
         def _set_images(self, images):
             if images:
-                self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
-                    images)
+                self.__images = [parse_image(i, self.IMAGETAGS) for i in images]
             else:
                 self.__images = []
             cover_info(images, self.__tags)
@@ -163,7 +162,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 (u'Version', 'version')]
             for k, v in attr:
                 try:
-                    apeinfo.append([k, unicode(getattr(info, v))])
+                    apeinfo.append([k, six.text_type(getattr(info, v))])
                 except AttributeError:
                     continue
             return [('File', fileinfo), ("%s Info" % self.filetype, apeinfo)]
@@ -172,7 +171,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
 
         @keys_deco
         def keys(self):
-            return self.__tags.keys()
+            return list(self.__tags.keys())
 
         def link(self, filename):
             """Links the audio, filename
@@ -228,7 +227,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 [newtag.update(pic_to_bin(z)) for z in self.images]
             for field, value in usertags(self.__tags).items():
                 try:
-                    if isinstance(field, unicode):
+                    if isinstance(field, six.text_type):
                         field = field.encode('utf8')
                     newtag[field] = value
                 except AttributeError:
@@ -245,9 +244,10 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             self.mut_obj = mut_obj
             if images:
                 self.images = images
-            self._originaltags = tags.keys()
+            self._originaltags = list(tags.keys())
 
         def update_tag_list(self):
+            from . import tag_versions
             l = tag_versions.tags_in_file(self.filepath,
                 [tag_versions.ID3_V1, tag_versions.ID3_V2])
             if l:
@@ -269,9 +269,9 @@ class MusePackTag(mp_base):
                     (u'Modified', self.modified)]
         mpinfo = [(u'Bitrate', self.bitrate),
                    (u'Frequency', self.frequency),
-                   (u'Channels', unicode(info.channels)),
+                   (u'Channels', six.text_type(info.channels)),
                    (u'Length', self.length),
-                   (u'Stream Version', unicode(info.version))]
+                   (u'Stream Version', six.text_type(info.version))]
         return [(u'File', fileinfo), (u"Musepack Info", mpinfo)]
 
     info = property(_info)
@@ -290,9 +290,9 @@ class MonkeysAudioTag(ma_base):
                     (u'Modified', self.modified)]
         mainfo = [(u'Bitrate', u'Lossless'),
                    (u'Frequency', self.frequency),
-                   (u'Channels', unicode(info.channels)),
+                   (u'Channels', six.text_type(info.channels)),
                    (u'Length', self.length),
-                   (u'Stream Version', unicode(info.version))]
+                   (u'Stream Version', six.text_type(info.version))]
         return [(u'File', fileinfo), (u"Monkey's Audio", mainfo)]
 
     info = property(_info)
@@ -309,7 +309,7 @@ class WavPackTag(wv_base):
                     (u'Filename', self[FILENAME]),
                     (u'Modified', self.modified)]
         wpinfo = [(u'Frequency', self.frequency),
-                  (u'Channels', unicode(info.channels)),
+                  (u'Channels', six.text_type(info.channels)),
                   (u'Length', self.length),
                   (u'Bitrate', u'Lossless')]
         return [(u'File', fileinfo), (u"WavPack Info", wpinfo)]

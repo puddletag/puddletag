@@ -18,8 +18,11 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from __future__ import absolute_import
+from __future__ import print_function
 import MySQLdb as mysql
 import sys, os, pdb
+import six
 sys.path.insert(1, '..')
 try:
     import puddlestuff.audioinfo as audioinfo
@@ -69,7 +72,7 @@ PROKYONTAGS = {'__path': 'filename',
 
 def prokyontag(tag):
     ret = PROKYONTAGS[tag]
-    if isinstance(ret, basestring):
+    if isinstance(ret, six.string_types):
         return ret
     else:
         return ret(tag)
@@ -90,7 +93,7 @@ class Prokyon(MySQLLib):
             try:
                 artist = track[21]
             except:
-                print track.tags
+                print(track.tags)
                 raise
 
         if album is None:
@@ -135,7 +138,7 @@ class Prokyon(MySQLLib):
         s = 'SELECT DISTINCT BINARY ' + PROKYONTAGS[tag] + ' FROM tracks ' + \
             'ORDER BY ' + PROKYONTAGS[tag]
         self.cursor.execute(s)
-        return [unicode(artist[0], 'utf8') for artist in self.cursor.fetchall()]
+        return [six.text_type(artist[0], 'utf8') for artist in self.cursor.fetchall()]
 
     def children(self, parent, parentvalue, child):
         self.cursor.execute("SELECT DISTINCT BINARY " + PROKYONTAGS[child] + \
@@ -181,8 +184,8 @@ class Prokyon(MySQLLib):
         for album in albums:
             try:
                 album = self.utflatin(album)
-            except Exception, e:
-                print 'artist:',artist, 'album',album
+            except Exception as e:
+                print('artist:',artist, 'album',album)
                 raise e
             if not album:
                 self.cursor.execute(u"""SELECT path, filename, bitrate,
@@ -292,7 +295,7 @@ class Prokyon(MySQLLib):
                             (fileid, newpath, newfilename, mixed['___medium'], mixed['__modified'],
                             mixed['___mimetype'], mixed['___version'], mixed['___layer'],
                             mixed['___mode'], freq(mixed['__bitrate']) / 1000, freq(mixed["__frequency"]),
-                            leng(mixed["__length"]), long(mixed["__size"]),
+                            leng(mixed["__length"]), int(mixed["__size"]),
                             mixed["artist"], mixed["title"], mixed['___lyricsid'], mixed['___synclyricsid'], mixed['album'], mixed['track'],
                             mixed['year'], genretoint(mixed['genre']), mixed["comment"],
                             mixed['___notes'], mixed['___rating']))
@@ -398,10 +401,10 @@ class ConfigWindow(QWidget):
         self.setLayout(vbox)
 
     def getLibClass(self):
-        username = unicode(self.username.text())
-        passwd = unicode(self.passwd.text())
-        database = unicode(self.database.text())
-        port = long(self.port.text())
+        username = six.text_type(self.username.text())
+        passwd = six.text_type(self.passwd.text())
+        database = six.text_type(self.database.text())
+        port = int(self.port.text())
 
         return Prokyon('tracks', user = username, passwd = passwd, db = database, port = port)
 
@@ -432,12 +435,12 @@ class ConfigWindow(QWidget):
 def loadLibrary():
     settings = QSettings()
     settings.beginGroup('Library')
-    username = unicode(settings.value('username').toString())
-    passwd = unicode(settings.value('passwd').toString())
-    database = unicode(settings.value('database').toString())
+    username = six.text_type(settings.value('username').toString())
+    passwd = six.text_type(settings.value('passwd').toString())
+    database = six.text_type(settings.value('database').toString())
     port = settings.value('port').toLongLong()[0]
     return Prokyon(user = username, passwd = passwd, db = database, port = port)
 
 if __name__ == "__main__":
     p = Prokyon('tracks', user = "prokyon", passwd = 'prokyon', db = 'prokyon')
-    print [p.getTracks(z, p.getAlbums(z)) for z in p.getArtists()[:10]]
+    print([p.getTracks(z, p.getAlbums(z)) for z in p.getArtists()[:10]])

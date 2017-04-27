@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import htmlentitydefs, re, os
+from __future__ import absolute_import
+import six.moves.html_entities, re, os
 
 from copy import deepcopy
 from itertools import izip
@@ -7,6 +8,8 @@ from sgmllib import SGMLParser
 
 from puddlestuff.functions import replace_regex
 from puddlestuff.audioinfo import CaselessDict
+from six.moves import map
+import six
 
 conditionals = set(['if', 'ifnot'])
 
@@ -334,7 +337,7 @@ def _set(cursor, field, value=None):
             cursor.cache = u""
     else:
         cursor.output[field] = value if \
-            isinstance(value, unicode) else unicode(value)
+            isinstance(value, six.text_type) else six.text_type(value)
 
 def _while(cursor, condition, numtimes=None):
     cursor.num_loop -= 1
@@ -363,7 +366,7 @@ def _while(cursor, condition, numtimes=None):
     elif cursor.output and cursor.tracks:
         if cursor.output != cursor._domodified:
             cursor.tracks.append(cursor.output)
-            map(cursor.track_fields.add, (z.lower() for z in cursor.output))
+            [cursor.track_fields.add(z.lower()) for z in cursor.output]
 
 def unspace(cursor):
     cursor.line = cursor.line.strip()

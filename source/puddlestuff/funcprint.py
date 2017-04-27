@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import re, pdb
 from functools import partial
 from copy import copy
 from puddlestuff.constants import YES, NO
+import six
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
 
 def perfunc(match, d):
@@ -37,9 +39,9 @@ def func(match, d):
             d[number] = NO
         elif d[number] is True:
             d[number] = YES
-        elif isinstance(d[number], (int, long)):
-            d[number] = unicode(d[number])
-        elif not isinstance(d[number], basestring):
+        elif isinstance(d[number], six.integer_types):
+            d[number] = six.text_type(d[number])
+        elif not isinstance(d[number], six.string_types):
             if d[number]:
                 d[number] = YES
             else:
@@ -53,9 +55,9 @@ def func(match, d):
             d[number] = YES
         elif d[number] is True:
             d[number] = NO
-        elif isinstance(d[number], (int, long)):
-            d[number] = unicode(d[number])
-        elif not isinstance(d[number], basestring):
+        elif isinstance(d[number], six.integer_types):
+            d[number] = six.text_type(d[number])
+        elif not isinstance(d[number], six.string_types):
             if d[number]:
                 d[number] = YES
             else:

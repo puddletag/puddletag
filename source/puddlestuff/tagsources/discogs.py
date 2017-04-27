@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 import cStringIO
 from copy import deepcopy
 import gzip
@@ -13,6 +15,7 @@ from puddlestuff.constants import CHECKBOX, COMBO, TEXT
 from puddlestuff.tagsources import (
     find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
 from puddlestuff.util import translate
+import six
 
 R_ID_DEFAULT = 'discogs_id'
 R_ID = R_ID_DEFAULT
@@ -81,13 +84,13 @@ def convert_dict(d, keys=None):
 
 def check_values(d):
     ret = {}
-    for key, v in d.iteritems():
+    for key, v in six.iteritems(d):
         if key in INVALID_KEYS or isempty(v):
             continue
         if hasattr(v, '__iter__') and hasattr(v, 'items'):
             continue
         elif not hasattr(v, '__iter__'):
-            v = unicode(v)
+            v = six.text_type(v)
         elif isinstance(v, str):
             v = v.decode('utf8')
 
@@ -156,7 +159,7 @@ def parse_album_json(data):
         desc = fmt.get('descriptions', fmt.get('name', u''))
         if not desc:
             continue
-        if isinstance(desc, basestring):
+        if isinstance(desc, six.string_types):
             formats.append(desc)
         else:
             formats.extend(desc)
@@ -164,13 +167,12 @@ def parse_album_json(data):
     if formats:
         info['format'] = list(set(formats))
     info['artist'] = [z['name'] for z in data.get('artists', [])]
-    info['artist'] = u" & ".join(filter(None, info['artist']))
+    info['artist'] = u" & ".join([_f for _f in info['artist'] if _f])
     info['involvedpeople_album'] = \
         u':'.join(u'%s;%s' % (z['name'], z['role'])
                   for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
-    info['catno'] = filter(None,
-                           (z.get('catno') for z in data.get('labels', [])))
+    info['catno'] = [_f for _f in (z.get('catno') for z in data.get('labels', [])) if _f]
 
     info['companies'] = u';'.join(
         u'%s %s' % (z['entity_type_name'], z['name'])
@@ -229,13 +231,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
     If None, no image is retrieved."""
-    if isinstance(info, (int, long)):
-        r_id = unicode(info)
+    if isinstance(info, six.integer_types):
+        r_id = six.text_type(info)
         info = {}
         write_log(
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
         rls_type = u'release'
-    elif isinstance(info, basestring):
+    elif isinstance(info, six.string_types):
         r_id = info
         info = {}
         write_log(
@@ -269,7 +271,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     data.append({DATA: urlopen(large)})
                 except RetrievalError as e:
                     write_log(translate(
-                        'Discogs', u'Error retrieving image:') + unicode(e))
+                        'Discogs', u'Error retrieving image:') + six.text_type(e))
             else:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % small)
@@ -277,7 +279,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     data.append({DATA: urlopen(small)})
                 except RetrievalError as e:
                     write_log(translate(
-                        'Discogs', u'Error retrieving image:') + unicode(e))
+                        'Discogs', u'Error retrieving image:') + six.text_type(e))
         if data:
             info.update({'__image': data})
 
@@ -315,12 +317,12 @@ def urlopen(url):
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
-            msg = unicode(e)
+            msg = six.text_type(e)
         raise RetrievalError(msg)
     except socket.error as e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
@@ -363,8 +365,8 @@ class Discogs(object):
 
         try:
             return [self.retrieve(r_id)]
-        except Exception, e:
-            raise RetrievalError(unicode(e))
+        except Exception as e:
+            raise RetrievalError(six.text_type(e))
 
     def search(self, album, artists):
 
@@ -412,4 +414,4 @@ info = Discogs
 if __name__ == '__main__':
 
     k = Discogs()
-    print k.keyword_search(":r 911637")
+    print(k.keyword_search(":r 911637"))

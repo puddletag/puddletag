@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
 
 import mutagen, mutagen.id3 as id3, mutagen.mp3
+import six
+from six.moves import map
+from six.moves import zip
 
 try:
     from mutagen.aiff import AIFF, _IFFID3
@@ -18,11 +22,11 @@ except ImportError:
 from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
     UrlFrame)
 
-import util
-from _compatid3 import CompatID3
+from . import util
+from ._compatid3 import CompatID3
 
-from constants import MODES
-from util import (CaselessDict, FILENAME, MockTag, PATH,
+from .constants import MODES
+from .util import (CaselessDict, FILENAME, MockTag, PATH,
     cover_info, del_deco, fn_hash, get_mime, get_total,
     getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
     setdeco, str_filesize, unicode_list, usertags)
@@ -58,14 +62,12 @@ def handle(audio):
         for k, v in handler(frame).items():
             lower = k.lower()
             if lower in keys:
-                ret[keys[lower]].append(v) if isinstance(v, basestring) \
+                ret[keys[lower]].append(v) if isinstance(v, six.string_types) \
                     else ret[keys[lower]].extend(v)
             else:
                 keys[lower] = k
                 ret[k] = v
     return ret
-
-import tag_versions
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
     'modified', 'filetype')
@@ -98,7 +100,7 @@ def create_text(title, value):
     return {title: frame}
 
 def get_text(textframe):
-    return [unicode(z) for z in textframe.text]
+    return [six.text_type(z) for z in textframe.text]
 
 def set_text(frame, value):
     frame.text = TextFrame(encoding, value).text
@@ -201,7 +203,7 @@ def create_time(title, value):
 
 def set_time(frame, value):
     text = TimeStampTextFrame(encoding, value).text
-    if not filter(None, text):
+    if not [_f for _f in text if _f]:
         return
     frame.text = text
     frame.encoding = encoding
@@ -259,7 +261,7 @@ def get_url(frame):
     return [frame.url]
 
 def set_url(frame, value):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
         value = value[0]
     frame.url = UrlFrame(value).url
     return True
@@ -287,7 +289,7 @@ def create_uurl(title, value):
 
 def uurl_handler(title):
     def set_uurl(frames, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = [value]
         while frames:
             frames.pop()
@@ -339,7 +341,7 @@ def get_paired(frame):
     return [u';'.join([u':'.join(z) for z in frame.people])]
 
 def set_paired(frame, text):
-    if not isinstance(text, basestring):
+    if not isinstance(text, six.string_types):
         text = text[0]
     value = [people.split(u':') for people in text.split(u';')]
     temp = []
@@ -394,10 +396,10 @@ def create_playcount(value):
     return {}
 
 def get_playcount(frame):
-    return [unicode(frame.count)]
+    return [six.text_type(frame.count)]
 
 def set_playcount(frame, value):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
         value = value[0]
     try:
         frame.count = int(value)
@@ -412,9 +414,9 @@ def playcount_handler(frame):
     return {u'playcount': frame}
 
 def create_popm(values):
-    if isinstance(values, basestring):
+    if isinstance(values, six.string_types):
         values = [values]
-    frames = filter(None, map(lambda v: set_popm(id3.POPM(), v), values))
+    frames = [_f for _f in [set_popm(id3.POPM(), v) for v in values] if _f]
     if frames:
         return popm_handler(frames)
     return {}
@@ -422,13 +424,13 @@ def create_popm(values):
 def get_popm(frame):
     if not hasattr(frame, 'count'):
         frame.count = 0
-    return u':'.join([frame.email, unicode(frame.rating),
-        unicode(frame.count)])
+    return u':'.join([frame.email, six.text_type(frame.rating),
+        six.text_type(frame.count)])
 
 def to_string(value):
     if isinstance(value, str):
         return value.decode('utf8')
-    elif isinstance(value, unicode):
+    elif isinstance(value, six.text_type):
         return value
     else:
         return to_string(value[0])
@@ -449,9 +451,9 @@ def set_popm(frame, value):
 
 def popm_handler(frames):
     def set_values(frames, values):
-        if isinstance(values, basestring):
+        if isinstance(values, six.string_types):
             values = [values]
-        temp = filter(None, [set_popm(id3.POPM(), v) for v in values])
+        temp = [_f for _f in [set_popm(id3.POPM(), v) for v in values] if _f]
         if not temp:
             return
         while frames:
@@ -468,12 +470,12 @@ def popm_handler(frames):
     return {'popularimeter': frame}
 
 def create_ufid(key, value):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
         try:
             value = value[0]
         except IndexError:
             return {}
-    if isinstance(value, unicode):
+    if isinstance(value, six.text_type):
         value = value.decode('utf8')
     owner = key[len('ufid:'):]
     frame = id3.UFID(owner, value)
@@ -482,12 +484,12 @@ def create_ufid(key, value):
     return {u'ufid:' + frame.owner: frame}
 
 def set_ufid(frame, value):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
         try:
             value = value[0]
         except IndexError:
             return {}
-    if isinstance(value, unicode):
+    if isinstance(value, six.text_type):
         value = value.decode('utf8')
     frame.data = value
 
@@ -507,13 +509,13 @@ def ufid_handler(frames):
     return d
 
 def _parse_rgain(value):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
         try:
             value = value[0]
         except IndexError:
             return
 
-    if isinstance(value, unicode):
+    if isinstance(value, six.text_type):
         value = value.decode('utf8')
 
     values = [z.strip() for z in value.split(':')]
@@ -546,7 +548,7 @@ def set_rgain(frame, value):
     frame.peak = peak
 
 def get_rgain(frame):
-    return u':'.join(map(unicode, [frame.channel, frame.gain, frame.peak]))
+    return u':'.join(map(six.text_type, [frame.channel, frame.gain, frame.peak]))
 
 def rgain_handler(frames):
     d = {}
@@ -565,7 +567,7 @@ def create_uslt(value):
     return {}
 
 def set_uslt(f, value):
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
         value = [value]
 
     frames = []
@@ -609,8 +611,8 @@ def set_uslt(f, value):
 def get_uslt(frames):
     def text(f, attr):
         ret = getattr(f, attr, u'')
-        return ret if isinstance(ret, unicode) else \
-            unicode(ret, 'utf8', 'replace')
+        return ret if isinstance(ret, six.text_type) else \
+            six.text_type(ret, 'utf8', 'replace')
     ret = [u'%s|%s|%s' % (text(frame, 'lang'), text(frame, 'desc'),
             text(frame, 'text')) for frame in frames]
     return lambda: ret
@@ -686,7 +688,7 @@ class ID3(CompatID3):
         try:
             desc = tag.desc
             while tag.HashKey in self:
-                tag.desc = desc + unicode(i)
+                tag.desc = desc + six.text_type(i)
                 i += 1
         except AttributeError:
             "Nothing to do"
@@ -756,8 +758,7 @@ def tag_factory(id3_filetype):
 
         def _set_images(self, images):
             if images:
-                self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
-                    images)
+                self.__images = [parse_image(i, self.IMAGETAGS) for i in images]
             else:
                 self.__images = []
             cover_info(images, self.__tags)
@@ -877,14 +878,14 @@ def tag_factory(id3_filetype):
                     return get_total(self)
                 else:
                     return self.__tags[key]
-            elif not isinstance(key, basestring):
+            elif not isinstance(key, six.string_types):
                 return self.__tags[key]
             else:
                 return self.__tags[key].get_value()
 
         @setdeco
         def __setitem__(self, key, value):
-            if not isinstance(key, basestring):
+            if not isinstance(key, six.string_types):
                 self.__tags[key] = value
                 return
             if key.startswith('__'):
@@ -932,7 +933,7 @@ def tag_factory(id3_filetype):
 
         @keys_deco
         def keys(self):
-            return self.__tags.keys()
+            return list(self.__tags.keys())
 
         def link(self, filename):
             """Links the audio, filename
@@ -949,7 +950,7 @@ def tag_factory(id3_filetype):
                 #Get the image data.
                 apics = audio.tags.getall("APIC")
                 if apics:
-                    self.images = map(bin_to_pic, apics)
+                    self.images = list(map(bin_to_pic, apics))
                 else:
                     self.images = [];
 
@@ -968,7 +969,7 @@ def tag_factory(id3_filetype):
             except AttributeError:
                 self.__tags['__tag_read'] = u''
             self.mut_obj = audio
-            self._originaltags = audio.keys()
+            self._originaltags = list(audio.keys())
             self.update_tag_list()
             return self
 
@@ -985,7 +986,7 @@ def tag_factory(id3_filetype):
             audio = self.mut_obj
             util.MockTag.save(self)
 
-            userkeys = usertags(self.__tags).keys()
+            userkeys = list(usertags(self.__tags).keys())
             frames = []
             [frames.append(frame) if not hasattr(frame, 'frames') else
                 frames.extend(frame.frames) for key, frame in self.__tags.items()
@@ -998,7 +999,7 @@ def tag_factory(id3_filetype):
             old_apics = [z for z in audio if z.startswith(u'APIC')]
             if self.__images:
                 newimages = []
-                for image in filter(None, map(pic_to_bin, self.__images)):
+                for image in [_f for _f in map(pic_to_bin, self.__images) if _f]:
                     i = 0
                     while image.HashKey in newimages:
                         i += 1
@@ -1043,14 +1044,14 @@ def tag_factory(id3_filetype):
 
             self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
             self.update_tag_list()
-            self._originaltags = audio.keys()
+            self._originaltags = list(audio.keys())
 
         def set_fundamentals(self, tags, mut_obj, images=None):
             self.__tags = tags
             self.mut_obj = mut_obj
             if images:
                 self.images = images
-            self._originaltags = tags.keys()
+            self._originaltags = list(tags.keys())
             self.set_attrs(ATTRIBUTES, tags)
 
         def to_encoding(self, encoding = UTF8):
@@ -1068,6 +1069,7 @@ def tag_factory(id3_filetype):
                 raise
 
         def update_tag_list(self):
+            from . import tag_versions
             tag = self.__tags['__tag_read']
             l = tag_versions.tags_in_file(self.filepath)
             if l:

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from importlib import import_module
 import os
 from os.path import join, exists
@@ -15,6 +16,7 @@ from puddlestuff.constants import CONFIGDIR
 from puddlestuff.findfunc import tagtofilename
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.util import translate
+import six
 
 
 class FoundEncoding(Exception):
@@ -79,7 +81,7 @@ def find_id(tracks, field):
     for track in tracks:
         if field in track:
             value = track[field]
-            if isinstance(value, basestring):
+            if isinstance(value, six.string_types):
                 return value
             else:
                 return value[0]
@@ -193,7 +195,7 @@ def urlopen(url, mask=True, code=False):
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
-            msg = unicode(e)
+            msg = six.text_type(e)
         try:
             raise RetrievalError(msg, e.code)
         except AttributeError:

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import csv, os
 from PyQt4.QtGui import QFileDialog, QApplication
 from PyQt4.QtCore import SIGNAL
@@ -11,6 +12,8 @@ from puddlestuff.puddleobjects import encode_fn, decode_fn
 from os.path import abspath, dirname, normcase, normpath, splitdrive, realpath
 from os.path import join as path_join, commonprefix
 import os
+import six
+from six.moves import zip
 
 def commonpath(a, b):
     """Returns the longest common to 'paths' path.
@@ -129,7 +132,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     filedlg = QFileDialog()
     filedlg.setFileMode(filedlg.DirectoryOnly)
-    filename = unicode(filedlg.getExistingDirectory(None,
+    filename = six.text_type(filedlg.getExistingDirectory(None,
         'Open Folder'))
     tags = []
     for z in os.listdir(filename):
@@ -137,8 +140,8 @@ if __name__ == '__main__':
             tag = audioinfo.Tag(os.path.join(filename,z))
             if tag:
                 tags.append(tag)
-        except Exception, e:
-            unicode(e)
-    folder = unicode(filedlg.getSaveFileName(None,
+        except Exception as e:
+            six.text_type(e)
+    folder = six.text_type(filedlg.getSaveFileName(None,
             'Save File'))
     exportm3u(tags, folder)

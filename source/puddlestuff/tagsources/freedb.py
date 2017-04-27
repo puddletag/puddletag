@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import CDDB
+from __future__ import absolute_import
+from __future__ import print_function
+from . import CDDB
+import six
+from six.moves import map
 CDDB.proto = 6 # utf8 instead of latin1
 import os, pdb
 from os import path
@@ -17,7 +21,7 @@ import time
 CLIENTINFO = {'client_name': "puddletag",
     'client_version': puddlestuff.version_string}
 
-def sumdigits(n): return sum(map(long, str(n)))
+def sumdigits(n): return sum(map(int, str(n)))
 
 def sort_func(key, default):
     def func(audio):
@@ -70,7 +74,7 @@ def convert_info(info):
 def convert_tracks(disc):
     tracks = []
     for tracknum, title in sorted(disc.items()):
-        track = {'track': unicode(tracknum + 1)}
+        track = {'track': six.text_type(tracknum + 1)}
         if u' / ' in title:
             track['artist'], track['title'] = [z.strip() for z in
                 decode_str(title).split(u' / ', 1)]
@@ -81,7 +85,7 @@ def convert_tracks(disc):
             
 
 def decode_str(s):
-    return s if isinstance(s, unicode) else s.decode('utf8', 'replace')
+    return s if isinstance(s, six.text_type) else s.decode('utf8', 'replace')
 
 def query(category, discid, xcode='utf8:utf8'):
     #from quodlibet's cddb plugin by Michael Urman
@@ -92,7 +96,7 @@ def query(category, discid, xcode='utf8:utf8'):
     if read != 210: return None
 
     xf, xt = xcode.split(':')
-    for key, value in info.iteritems():
+    for key, value in six.iteritems(info):
         try: value = value.decode('utf-8', 'replace').strip().encode(
             xf, 'replace').decode(xt, 'replace')
         except AttributeError: pass
@@ -112,7 +116,7 @@ def query(category, discid, xcode='utf8:utf8'):
 def retrieve(category, discid):
     try:
         info, tracks = query(category, discid)
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         raise RetrievalError(e.strerror)
     if 'disc_id' not in info:
         info['disc_id'] = discid
@@ -136,7 +140,7 @@ def search(tracklist):
 def search_by_id(discid):
     try:
         stat, discs = CDDB.query(discid, **CLIENTINFO)
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         raise RetrievalError(e.strerror)
     if stat not in [200, 211]:
         return []
@@ -199,6 +203,6 @@ if __name__ == '__main__':
     import puddlestuff.audioinfo as audioinfo
     import glob
     import pdb
-    files = map(audioinfo.Tag, 
-        glob.glob("/mnt/multimedia/Music/Ratatat - Classics/*.mp3"))
-    print search(files)
+    files = list(map(audioinfo.Tag, 
+        glob.glob("/mnt/multimedia/Music/Ratatat - Classics/*.mp3")))
+    print(search(files))

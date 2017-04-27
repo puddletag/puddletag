@@ -1,10 +1,13 @@
 # -*- coding: utf-8-*-
+from __future__ import absolute_import
 import sys, pdb, os
 from puddlestuff.puddleobjects import PuddleConfig, winsettings, OKCancel
 from puddlestuff.constants import CONFIGDIR
 import puddlestuff.loadshortcuts as ls
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import six
+from six.moves import range
 pyqtRemoveInputHook()
 from puddlestuff.translations import translate
 
@@ -49,10 +52,10 @@ class ActionEditorWidget(QLabel):
             other = QString(QKeySequence(event.key()))
         
         if other:
-            key_string = u"+".join(self.modifiers.values() + [unicode(other),])
+            key_string = u"+".join(list(self.modifiers.values()) + [six.text_type(other),])
             self.valid = True
         else:
-            key_string = u"+".join(self.modifiers.values())
+            key_string = u"+".join(list(self.modifiers.values()))
         
         self.setText(key_string)
     
@@ -62,19 +65,19 @@ class ActionEditorWidget(QLabel):
             return
         
         if event.key() == Qt.Key_Shift:
-            if self.modifiers.has_key(Qt.Key_Shift):
+            if Qt.Key_Shift in self.modifiers:
                 del self.modifiers[Qt.Key_Shift]
         elif event.key() == Qt.Key_Control:
-            if self.modifiers.has_key(Qt.Key_Control):
+            if Qt.Key_Control in self.modifiers:
                 del self.modifiers[Qt.Key_Control]
         elif event.key() == Qt.Key_Meta:
-            if self.modifiers.has_key(Qt.Key_Meta):
+            if Qt.Key_Meta in self.modifiers:
                 del self.modifiers[Qt.Key_Meta]
         elif event.key() == Qt.Key_Alt:
-            if self.modifiers.has_key(Qt.Key_Alt):
+            if Qt.Key_Alt in self.modifiers:
                 del self.modifiers[Qt.Key_Alt]
         
-        self.setText(u"+".join(self.modifiers.values()))
+        self.setText(u"+".join(list(self.modifiers.values())))
         
         if len(self.modifiers) == 0:
             self.releaseKeyboard()
@@ -275,7 +278,7 @@ class ActionEditorDialog(QWidget):
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
 
         for action in actions:
-            shortcut = cparser.get('shortcuts', unicode(action.text()), '')
+            shortcut = cparser.get('shortcuts', six.text_type(action.text()), '')
             if shortcut:
                 action.setShortcut(QKeySequence(shortcut))
     
@@ -285,8 +288,8 @@ class ActionEditorDialog(QWidget):
         
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
         for action in actions:
-            shortcut = unicode(action.shortcut().toString())
-            cparser.set('shortcuts', unicode(action.text()), shortcut)
+            shortcut = six.text_type(action.shortcut().toString())
+            cparser.set('shortcuts', six.text_type(action.text()), shortcut)
     
     saveSettings = classmethod(saveSettings)
     

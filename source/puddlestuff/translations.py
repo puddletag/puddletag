@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt4.QtGui import QApplication
 import re
 import logging
+import six
 
-class UnicodeMod(unicode):
+class UnicodeMod(six.text_type):
     """Emulates the arg method of QStrings. Not meant for use anywhere other
     than the translate function above."""
 
@@ -21,30 +23,30 @@ class UnicodeMod(unicode):
             text = text.decode('utf8', 'replace')
         if isinstance(value, str):
             value = value.decode('utf8', 'replace')
-        elif isinstance(value, (int, long)):
-            value = unicode(value)
+        elif isinstance(value, six.integer_types):
+            value = six.text_type(value)
         return UnicodeMod(self.replace(lowest.group(), value))
 
     def __add__(self, other):
-        return UnicodeMod(unicode.__add__(self, other))
+        return UnicodeMod(six.text_type.__add__(self, other))
 
     def __radd__(self, other):
-        return UnicodeMod(other.__add__(unicode(self)))
+        return UnicodeMod(other.__add__(six.text_type(self)))
 
     def __mod__(self, other):
-        return UnicodeMod(unicode.__mod__(self, other))
+        return UnicodeMod(six.text_type.__mod__(self, other))
 
     def __format__(self, fmt=None):
-        return UnicodeMod(unicode.__format__(self, fmt))
+        return UnicodeMod(six.text_type.__format__(self, fmt))
 
     def __getitem__(self, item):
-        return UnicodeMod(unicode.__getitem__(self, item))
+        return UnicodeMod(six.text_type.__getitem__(self, item))
 
     def __rmul__(self, v):
-        return UnicodeMod(unicode.__rmul__(self, v))
+        return UnicodeMod(six.text_type.__rmul__(self, v))
 
     def __mul__(self, v):
-        return UnicodeMod(unicode.__mul__(self, v))
+        return UnicodeMod(six.text_type.__mul__(self, v))
 
 def translate(k,v):
     if isinstance(v, str):

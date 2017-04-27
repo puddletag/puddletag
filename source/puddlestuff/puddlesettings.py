@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import sys, resource, os
 
 from copy import copy, deepcopy
@@ -19,6 +20,8 @@ from puddlestuff.constants import TRANSDIR
 from puddlestuff.pluginloader import PluginConfig
 from puddlestuff.shortcutsettings import ActionEditorDialog
 from puddlestuff.translations import translate
+import six
+from six.moves import range
 
 config_widgets = []
 
@@ -98,7 +101,7 @@ class SettingsLineEdit(QWidget):
         self.setLayout(vbox)
 
     def _value(self):
-        return self._desc, unicode(self._text.text())
+        return self._desc, six.text_type(self._text.text())
 
     def _setValue(self, value):
         self._text.setText(self._desc, value)
@@ -117,7 +120,7 @@ class GeneralSettings(QWidget):
         def create_control(desc, val):
             if isinstance(val, bool):
                 return SettingsCheckBox(val, desc)
-            elif isinstance(val, basestring):
+            elif isinstance(val, six.string_types):
                 return SettingsLineEdit(desc, val)
 
         vbox = QVBoxLayout()
@@ -181,7 +184,7 @@ class GeneralSettings(QWidget):
         cparser = PuddleConfig()
         index = self._lang_combo.currentIndex()
         if index > 1:
-            cparser.set('main', 'lang', unicode(self._lang_combo.currentText()))
+            cparser.set('main', 'lang', six.text_type(self._lang_combo.currentText()))
         elif index == 0:
             cparser.set('main', 'lang', u'auto')
         elif index == 1:
@@ -244,9 +247,9 @@ class Playlist(QWidget):
                 return 0
         cparser = PuddleConfig()
         cparser.setSection('playlist', 'extinfo', checktoint(self.extinfo))
-        cparser.setSection('playlist', 'extpattern', unicode(self.extpattern.text()))
+        cparser.setSection('playlist', 'extpattern', six.text_type(self.extpattern.text()))
         cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
-        cparser.setSection('playlist', 'filepattern', unicode(self.filename.text()))
+        cparser.setSection('playlist', 'filepattern', six.text_type(self.filename.text()))
         cparser.setSection('playlist', 'windows_separator', checktoint(self.windows_separator))
 
 class TagMappings(QWidget):
@@ -343,7 +346,7 @@ class TagMappings(QWidget):
         text = []
         mappings = {}
         item = self._table.item
-        itemtext = lambda row, column: unicode(item(row, column).text())
+        itemtext = lambda row, column: six.text_type(item(row, column).text())
         for row in range(self._table.rowCount()):
             tag = itemtext(row, 0)
             original = itemtext(row, 1)
@@ -364,7 +367,7 @@ class TagMappings(QWidget):
         row = table.currentRow()
         if row < 0: return
         item = table.item
-        itemtext = lambda column: unicode(item(row, column).text())
+        itemtext = lambda column: six.text_type(item(row, column).text())
         texts = [itemtext(z) for z in range(3)]
         row = table.rowCount()
         table.insertRow(row)
@@ -456,13 +459,13 @@ class Tags(QWidget):
             audioinfo.id3.v2_option = 3
             cparser.set('id3tags', 'v2_option', 3)
 
-        filespec = unicode(self._filespec.text())
+        filespec = six.text_type(self._filespec.text())
         control.filespec = filespec
         filespec = [z.strip() for z in filespec.split(';')]
         cparser.set('table', 'filespec', filespec)
         cparser.set('tags', 'cover_pattern',
-            unicode(self.coverPattern.text()))
-        self._status['cover_pattern'] = unicode(self.coverPattern.text())
+            six.text_type(self.coverPattern.text()))
+        self._status['cover_pattern'] = six.text_type(self.coverPattern.text())
 
 
 class ListModel(QAbstractListModel):
@@ -678,9 +681,9 @@ class SettingsDialog(QDialog):
         for z in self._widgets.values():
             try:
                 z[1].applySettings(z[2])
-            except SettingsError, e:
+            except SettingsError as e:
                 QMessageBox.warning(self, 'puddletag',
-                    translate('Settings', 'An error occurred while saving the settings of <b>%1</b>: %2').arg(z[0]).arg(unicode(e)))
+                    translate('Settings', 'An error occurred while saving the settings of <b>%1</b>: %2').arg(z[0]).arg(six.text_type(e)))
                 return
         self.close()
 

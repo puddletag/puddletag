@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import sys, os, unittest, time, pdb, shutil
 from os import path
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import cPickle as pickle
+import six.moves.cPickle as pickle
 import mutagen, pyparsing, puddlestuff
 from puddlestuff.puddleobjects import OKCancel
 import puddlestuff.resource

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from puddleobjects import PuddleConfig, get_icon
+from __future__ import absolute_import
+from .puddleobjects import PuddleConfig, get_icon
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb, resource,os
-from constants import CONFIGDIR, DATADIR
+from .constants import CONFIGDIR, DATADIR
 import StringIO
-from util import open_resourcefile
+from .util import open_resourcefile
 from puddlestuff.translations import translate
+import six
 
 __version__ = 29
 
@@ -49,7 +51,7 @@ def get_menus(section, filepath=None):
     return menus
 
 def menubar(menus, actions):
-    texts = [unicode(action.text()) for action in actions]
+    texts = [six.text_type(action.text()) for action in actions]
 
     menubar = QMenuBar()
     winmenu = None
@@ -80,7 +82,7 @@ def context_menu(section, actions, filepath=None):
     order = [translate('Menus', z) for z in cparser.get(section, 'order', [])]
     if not order:
         return
-    texts = [unicode(action.text()) for action in actions]
+    texts = [six.text_type(action.text()) for action in actions]
     menu = QMenu()
     for action in order:
         if action in texts:
@@ -90,7 +92,7 @@ def context_menu(section, actions, filepath=None):
     return menu
 
 def toolbar(groups, actions, controls=None):
-    texts = [unicode(action.text()) for action in actions]
+    texts = [six.text_type(action.text()) for action in actions]
     if controls:
         controls = dict([('widget-' + z, v) for z,v in controls.items()])
     toolbar = QToolBar('Toolbar')

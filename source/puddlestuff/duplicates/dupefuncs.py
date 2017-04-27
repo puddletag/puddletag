@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, pdb
@@ -81,4 +83,4 @@ if __name__ == '__main__':
     algos = [algo(['artist', 'title'], 0.80, ratio), algo(['artist', 'title'], 0.70, ratio)]
     for z in dupesinlib(lib, algos):
         if z:
-            print z
+            print(z)

@@ -3,10 +3,13 @@
 #this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
 #while we're at it, we also wrap url fetching.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import re
 import urllib2
 
 import lxml.html
+import six
 
 def classify(seq, key_func):
     result = {}
@@ -30,8 +33,8 @@ class SoupWrapper(object):
                 kwargs.update(args[1])
             else:
                 kwargs['class'] = args[1]
-        query_items = kwargs.items()
-        query_items = classify(query_items, lambda x: isinstance(x[1], (str, unicode)))
+        query_items = list(kwargs.items())
+        query_items = classify(query_items, lambda x: isinstance(x[1], (str, six.text_type)))
         regular_items = query_items.get(True, [])
         re_items = query_items.get(False, [])
         xpath_query = ' and '.join("@%s='%s'" % (key, value) for key, value in regular_items)
@@ -60,12 +63,12 @@ class SoupWrapper(object):
         for x in self.element:
             yield SoupWrapper(x)
     def __getitem__(self, idx):
-        if isinstance(idx, (str, unicode)):
+        if isinstance(idx, (str, six.text_type)):
             if idx in self.element.attrib:
                 return self.element.attrib[idx]
             else:
                 return self.find(idx)
-        if isinstance(idx, (int, long)):
+        if isinstance(idx, six.integer_types):
             return SoupWrapper(self.element[idx])
         if isinstance(idx, slice):
             return [SoupWrapper(x) for x in self.element[idx]]
@@ -119,7 +122,7 @@ def fetch_parsed(url):
     try:
         p = parse(page)
     except:
-        print url
+        print(url)
         raise
     return p
 
@@ -128,6 +131,6 @@ def fetch_soup(url):
     try:
         p = parse(page)
     except:
-        print url
+        print(url)
         raise
     return SoupWrapper(p, page)

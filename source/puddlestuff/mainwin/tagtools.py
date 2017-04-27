@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from PyQt4.QtCore import SIGNAL, QObject
 from PyQt4.QtGui import QAction, QMessageBox, QApplication
 from functools import partial
@@ -8,6 +9,7 @@ from mutagen import id3, apev2
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.puddleobjects import progress
 from puddlestuff.translations import translate
+from six.moves import zip
 
 id3_tag = audioinfo.id3.Tag
 ape_tag = audioinfo.apev2.Tag
@@ -52,7 +54,7 @@ def remove_tag(tag, parent):
             try:
                 _remove_tag(f, tag)
                 yield None
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = translate("Defaults",
                     'An error occured while writing to <b>%1</b>. (%2)')

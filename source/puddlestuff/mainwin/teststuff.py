@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -11,6 +12,8 @@ from puddlestuff.audioinfo.util import (strlength, strbitrate, strfrequency, use
                   READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
                   getdeco, setdeco, str_filesize)
 from itertools import imap
+import six
+from six.moves import map
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
 import tags
@@ -79,12 +82,12 @@ class Tag(audioinfo.MockTag):
 
         if key not in INFOTAGS and isempty(value):
             del(self[key])
-        elif key in INFOTAGS or isinstance(key, (int, long)):
+        elif key in INFOTAGS or isinstance(key, six.integer_types):
             self._tags[key] = value
-        elif (key not in INFOTAGS) and isinstance(value, (basestring, int, long)):
-            self._tags[key.lower()] = [unicode(value)]
+        elif (key not in INFOTAGS) and isinstance(value, (six.string_types, int, int)):
+            self._tags[key.lower()] = [six.text_type(value)]
         else:
-            self._tags[key.lower()] = [unicode(z) for z in value]
+            self._tags[key.lower()] = [six.text_type(z) for z in value]
 
     def mutvalues(self):
         #Retrieves key, value pairs according to id3.
@@ -129,7 +132,7 @@ class TestWidget(QWidget):
     
     def _load1000(self):
         table = PuddleDock._controls['table']
-        table.model().load(map(Tag, tags.tags))
+        table.model().load(list(map(Tag, tags.tags)))
         table.model().saveModification = False
     
     def _loadMany(self):
@@ -138,14 +141,14 @@ class TestWidget(QWidget):
             'Enter the number of files to fill the file-view with.', 10)
         if num:
             #pdb.set_trace()
-            model.load(map(Tag, tags.tags[:num]))
+            model.load(list(map(Tag, tags.tags[:num])))
             model.saveModification = False
 
     def _saveTags(self):
         files = self._status['allfiles']
         f = open('savedfiles', 'w')
         f.write(u'# -*- coding: utf-8 -*-\ntags = [%s]' % 
-            u',\n'.join((unicode(z.tags) for z in files)).decode('utf8'))
+            u',\n'.join((six.text_type(z.tags) for z in files)).decode('utf8'))
         f.close()
 
 control = ('Puddle Testing', TestWidget, RIGHTDOCK, False)

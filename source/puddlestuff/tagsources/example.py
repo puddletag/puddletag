@@ -18,6 +18,8 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+from __future__ import absolute_import
+from __future__ import print_function
 import sys, pdb, os, time
 from puddlestuff.puddleobjects import gettags, getfiles, PuddleConfig
 from collections import defaultdict
@@ -125,5 +127,5 @@ name = 'OldExample'
 if __name__ == '__main__':
     x = Example()
     d = x.search('Angie Stone', ['The Very Best Of'])
-    print x.retrieve(d[0][0])
+    print(x.retrieve(d[0][0]))
     

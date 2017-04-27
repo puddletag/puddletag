@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
-import algwin
+from __future__ import absolute_import
+from . import algwin
 
 init = algwin.init

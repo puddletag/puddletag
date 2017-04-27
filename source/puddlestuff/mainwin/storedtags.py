@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -7,13 +8,14 @@ from puddlestuff.puddleobjects import PuddleThread, natcasecmp
 from puddlestuff import audioinfo
 import puddlestuff.audioinfo.tag_versions as tag_versions
 import pdb, time
+import six
 
 mutex = QMutex()
 
 def sort_dict(d):
     ret = []
-    for key, val in d.iteritems():
-        if isinstance(val, basestring):
+    for key, val in six.iteritems(d):
+        if isinstance(val, six.string_types):
             ret.append((key, val))
         else:
             ret.extend((key, v) for v in val)
@@ -63,7 +65,7 @@ class StoredTags(QScrollArea):
             try:
                 audio = audioinfo._Tag(filepath)
                 tags = tag_versions.tags_in_file(filepath)
-            except (OSError, IOError), e:
+            except (OSError, IOError) as e:
                 audio = {'Error': [e.strerror]}
 
             if isinstance(audio, audioinfo.id3.Tag):

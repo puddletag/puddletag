@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, os, traceback
@@ -7,12 +8,17 @@ from puddlestuff.puddleobjects import (create_buddy, ListBox,
     ListButtons, load_actions, OKCancel, PuddleConfig)
 from puddlestuff.constants import ACTIONDIR
 from functools import partial
-from findfunc import load_macro_info as load_action
+from .findfunc import load_macro_info as load_action
 import pdb
 import puddlestuff.puddletag
 from puddlestuff.shortcutsettings import ActionEditorDialog
 import puddlestuff.puddleobjects as puddleobjects
 from puddlestuff.translations import translate
+from six.moves import filter
+from six.moves import map
+import six
+from six.moves import range
+from six.moves import zip
 
 FILENAME = os.path.join(ACTIONDIR, 'action_shortcuts')
 
@@ -46,8 +52,7 @@ def create_action_shortcuts(method, parent=None):
 def get_shortcuts(default=None):
     from puddlestuff.puddletag import status
     if status['actions']:
-        ret = filter(None,
-            (unicode(z.shortcut().toString()) for z in status['actions']))
+        ret = [_f for _f in (six.text_type(z.shortcut().toString()) for z in status['actions']) if _f]
     else:
         ret = []
     if default:
@@ -76,7 +81,7 @@ def load_settings(filename=None, actions=None):
 
 def save_shortcut(name, filenames):
     cparser = PuddleConfig(FILENAME)
-    section = SHORTCUT_SECTION + unicode(len(cparser.sections()))
+    section = SHORTCUT_SECTION + six.text_type(len(cparser.sections()))
     cparser.set(section, NAME, name)
     cparser.set(section, FILENAMES, filenames)
 
@@ -96,7 +101,7 @@ class Shortcut(QAction):
         self.funcs = self.get_funcs()
         self.connect(self, SIGNAL('triggered()'), self.runAction)
 
-        self._watcher = QFileSystemWatcher(filter(os.path.exists, filenames),
+        self._watcher = QFileSystemWatcher(list(filter(os.path.exists, filenames)),
             self)
         self._watcher.connect(self._watcher,
             SIGNAL('fileChanged(const QString&)'), self._checkFile)
@@ -214,10 +219,10 @@ class Editor(QDialog):
 
     def okClicked(self):
         alist = self._newActionList
-        items = map(alist.item, xrange(alist.count()))
+        items = list(map(alist.item, range(alist.count())))
         actions = [item._action[1] for item in items]
-        self.emit(SIGNAL('actionChanged'), unicode(self._name.text()), actions,
-            unicode(self._shortcut.text()) if self._shortcut.valid else u'')
+        self.emit(SIGNAL('actionChanged'), six.text_type(self._name.text()), actions,
+            six.text_type(self._shortcut.text()) if self._shortcut.valid else u'')
         self.close()
 
     def setActions(self, actions):
@@ -310,14 +315,14 @@ class ShortcutEditor(QDialog):
         
         cparser = PuddleConfig(FILENAME)
         for i, item in enumerate(self._listbox.items()):
-            section = SHORTCUT_SECTION + unicode(i)
+            section = SHORTCUT_SECTION + six.text_type(i)
             cparser.set(section, NAME, item.actionName)
             cparser.set(section, FILENAMES, item.filenames)
 
         from puddlestuff.mainwin.funcs import applyaction
 
         shortcuts = create_action_shortcuts(applyaction, control)
-        for item, shortcut in zip(self._listbox.items(), shortcuts):
+        for item, shortcut in zip(list(self._listbox.items()), shortcuts):
             if item.shortcut:
                 shortcut.setShortcut(item.shortcut)
         add_shortcuts('&Actions', shortcuts, save=True)
@@ -379,7 +384,7 @@ class ShortcutEditor(QDialog):
 
         from puddlestuff.puddletag import status
         if status['actions']:
-            shortcuts = dict((unicode(a.text()), unicode(a.shortcut().toString()))
+            shortcuts = dict((six.text_type(a.text()), six.text_type(a.shortcut().toString()))
                 for a in status['actions'])
         else:
             shortcuts = {}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import string
 
 from collections import defaultdict
@@ -6,13 +7,15 @@ from PyQt4.QtCore import QFile, QIODevice
 from PyQt4.QtGui import QAction, QApplication
 from StringIO import StringIO
 from copy import copy, deepcopy
-from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
+from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
 from errno import EEXIST
 import os, pdb, re
-from puddleobjects import (encode_fn, decode_fn, issubfolder, natcasecmp,
+from .puddleobjects import (encode_fn, decode_fn, issubfolder, natcasecmp,
     open_resourcefile, safe_name)
 import puddlestuff.translations
+import six
+from six.moves import map
 translate = puddlestuff.translations.translate
 import errno, traceback
 from puddlestuff.constants import BLANK, SEPARATOR, LOG_FILENAME
@@ -49,7 +52,7 @@ def rename_error_msg(e, filename):
             '<p>Reason: <b>%2</b> ('
             '<i>See %3 for debug info.</i>)</p>')
         m = m.arg(filename)
-        m = m.arg(unicode(e) if e.strerror is None else e.strerror)
+        m = m.arg(six.text_type(e) if e.strerror is None else e.strerror)
         m = m.arg(LOG_FILENAME)
         return m
 
@@ -63,7 +66,7 @@ def rename(oldpath, newpath):
     if not os.path.exists(os.path.dirname(newpath)):
         try:
             os.makedirs(os.path.dirname(newpath))
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             e.strerror = translate('Errors', "Couldn't create "
                 "intermediate directory: %s")
             e.strerror %= decode_fn(os.path.dirname(newpath))
@@ -72,11 +75,11 @@ def rename(oldpath, newpath):
     try:
         os.rename(oldpath, newpath)
         return True
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         try:
             shutil.move(oldpath, newpath)
             return True
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             raise RenameError(e, oldpath, newpath)
 
 
@@ -86,7 +89,7 @@ def rename_dir(filename, olddir, newdir):
     try:
         os.renames(olddir, newdir)
         return True
-    except EnvironmentError, e:
+    except EnvironmentError as e:
         if issubfolder(olddir, newdir, None):
             e.strerror = translate('Errors',
                 "Cannot move directory to a subdirectory within itself.")
@@ -126,7 +129,7 @@ def equal(audio1, audio2, tags=('artist', 'album', 'title')):
 def fields_from_text(text):
     if not text:
         return []
-    return filter(None, map(string.strip, text.split(u',')))
+    return [_f for _f in map(string.strip, text.split(u',')) if _f]
 
 def matching(audios, listing):
     ret = {}
@@ -141,7 +144,7 @@ def matching(audios, listing):
 def m_to_string(v):
     if isempty(v):
         return escape_html(BLANK)
-    elif isinstance(v, unicode):
+    elif isinstance(v, six.text_type):
         return escape_html(v)
     elif isinstance(v, str):
         return escape_html(v.decode('utf8', 'replace'))
@@ -151,15 +154,15 @@ def m_to_string(v):
 def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
     image_tr = translate('Defaults', '%s images')
     if tags:
-        if isinstance(tags, basestring):
+        if isinstance(tags, six.string_types):
             return tags
         elif not hasattr(tags, 'items'):
-            return SEPARATOR.join(filter(lambda x: x is not None, tags))
+            return SEPARATOR.join([x for x in tags if x is not None])
 
         if show_read_only:
-            items = ((k,v) for k, v in tags.iteritems() if k != '__image')
+            items = ((k,v) for k, v in six.iteritems(tags) if k != '__image')
         else:
-            items = ((k,v) for k,v in tags.iteritems() if
+            items = ((k,v) for k,v in six.iteritems(tags) if
                 k not in READONLY and k != '__image')
 
         map_func = lambda v: fmt % (v[0], m_to_string(v[1]))
@@ -241,9 +244,9 @@ def sorted_split_by_field(tracks, field='artist'):
     return ret
 
 def to_list(value):
-    if isinstance(value, (str, int, long, float)):
-        value = [unicode(value)]
-    elif isinstance(value, unicode):
+    if isinstance(value, (str, int, int, float)):
+        value = [six.text_type(value)]
+    elif isinstance(value, six.text_type):
         value = [value]
     return value
 
@@ -252,10 +255,10 @@ def to_string(value):
         return u''
     elif isinstance(value, str):
         return value.decode('utf8')
-    elif isinstance(value, unicode):
+    elif isinstance(value, six.text_type):
         return value
-    elif isinstance(value, (float, int, long)):
-        return unicode(value)
+    elif isinstance(value, (float, int, int)):
+        return six.text_type(value)
     else:
         return to_string(value[0])
 
@@ -316,7 +319,7 @@ def write(audio, tags, save_mtime = True, justrename=False):
             setmodtime(audio.filepath, audio.accessed, audio.modified)
         else:
             os.utime(audio.dirpath, None)
-    except EnvironmentError, ex:
+    except EnvironmentError as ex:
         logging.error("Could not set modification time for file or directory.")
         logging.exception(ex)
     return undo
@@ -356,7 +359,7 @@ class PluginFunction(object):
     def __init__(self, name, function, pprint, args=None, desc=None):
         self.name = name
         self.function = function
-        self.func_code = function.func_code
+        self.__code__ = function.__code__
         self.print_string = pprint
         self.desc = desc
         self.args = args
@@ -366,7 +369,7 @@ class PluginFunction(object):
         for arg in args:
             arg = list(arg)
             if arg[1] == puddlestuff.constants.CHECKBOX:
-                arg[2] = unicode(bool(arg[2]))
+                arg[2] = six.text_type(bool(arg[2]))
             newargs.append(arg)
         self.args = newargs
 

@@ -19,8 +19,10 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+from __future__ import absolute_import
 import MySQLdb as mysql
 import sys, os, pdb
+import six
 try:
     import puddlestuff.audioinfo as audioinfo
 except ImportError:
@@ -91,16 +93,16 @@ class Amarok(MySQLLib):
                     'title': track[6],
                     'year': year,
                     'comment': track[8],
-                    'track': unicode(track[9]),
-                    'discnumber': unicode(track[10]),
+                    'track': six.text_type(track[9]),
+                    'discnumber': six.text_type(track[10]),
                     '__bitrate': audioinfo.strbitrate(track[11] * 1000),
                     '__length': audioinfo.strlength(track[12]),
                     '__frequency': audioinfo.strfrequency(track[13]),
-                    '__size': unicode(track[14]),
-                    '___filetype': unicode(track[15]),
-                    '___sampler': unicode(track[16]),
-                    'bpm': unicode(track[17]),
-                    '___deviceid': unicode(track[18]),
+                    '__size': six.text_type(track[14]),
+                    '___filetype': six.text_type(track[15]),
+                    '___sampler': six.text_type(track[16]),
+                    'bpm': six.text_type(track[17]),
+                    '___deviceid': six.text_type(track[18]),
                     '__path': os.path.basename(filename),
                     '__ext': os.path.splitext(filename)[1][1:],
                     '__library': 'amarok'}
@@ -205,7 +207,7 @@ class Amarok(MySQLLib):
                             mixed['title'], ids['year'], mixed['comment'],
                             mixed['track'], mixed['discnumber'],
                             freq(mixed['__bitrate']) / 1000, leng(mixed["__length"]),
-                            freq(mixed["__frequency"]), long(mixed["__size"]),
+                            freq(mixed["__frequency"]), int(mixed["__size"]),
                             mixed['___filetype'], mixed['___sampler'], mixed['bpm'],
                             mixed['___deviceid']))
 
@@ -280,10 +282,10 @@ class ConfigWindow(QWidget):
         self.setLayout(vbox)
 
     def getLibClass(self):
-        username = unicode(self.username.text())
-        passwd = unicode(self.passwd.text())
-        database = unicode(self.database.text())
-        port = long(self.port.text())
+        username = six.text_type(self.username.text())
+        passwd = six.text_type(self.passwd.text())
+        database = six.text_type(self.database.text())
+        port = int(self.port.text())
 
         return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 
@@ -314,9 +316,9 @@ class ConfigWindow(QWidget):
 def loadLibrary():
     settings = QSettings()
     settings.beginGroup('Library')
-    username = unicode(settings.value('username').toString())
-    passwd = unicode(settings.value('passwd').toString())
-    database = unicode(settings.value('database').toString())
+    username = six.text_type(settings.value('username').toString())
+    passwd = six.text_type(settings.value('passwd').toString())
+    database = six.text_type(settings.value('database').toString())
     port = settings.value('port').toLongLong()[0]
     return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 

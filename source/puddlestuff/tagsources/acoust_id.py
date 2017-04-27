@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 import contextlib
-import httplib
+import six.moves.http_client
 import logging
 import os, pdb
 import time
@@ -7,6 +8,8 @@ import urllib2
 
 from collections import defaultdict
 from itertools import chain, izip, product, starmap
+import six
+from six.moves import map
 
 try:
     import acoustid
@@ -14,7 +17,7 @@ try:
     #lib causes lockups.
     acoustid.have_audioread = False
 except ImportError:
-    import _acoustid as acoustid
+    from . import _acoustid as acoustid
 
 import puddlestuff.audioinfo as audioinfo
 
@@ -88,13 +91,13 @@ def convert_for_submit(tags):
     valid_keys = set(['artist', 'album', 'title', 'track', 'discno',
         'mbid', 'year', 'bitrate', 'puid', 'trackno'])
     
-    ret = dict((cipher.get(k, k) , v) for k,v in stringtags(tags).iteritems()
+    ret = dict((cipher.get(k, k) , v) for k,v in six.iteritems(stringtags(tags))
         if cipher.get(k, k) in valid_keys and v)
     bitrate = ret['bitrate'].split(u' ')[0]
     if bitrate == 0:
         del(ret['bitrate'])
     else:
-        ret['bitrate'] = unicode(bitrate)
+        ret['bitrate'] = six.text_type(bitrate)
 
     return ret
 
@@ -133,21 +136,21 @@ def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
             
 def parse_release_data(rel):
     info = {}
-    info['__numtracks'] = unicode(rel.get('track_count', ''))
+    info['__numtracks'] = six.text_type(rel.get('track_count', ''))
     info['album'] = rel.get('title', u'')
 
     if 'date' in rel:
         date = rel['date']
-        info['year'] = u'-'.join(unicode(z).zfill(2) for z in
+        info['year'] = u'-'.join(six.text_type(z).zfill(2) for z in
             map(date.get, ('year', 'month', 'day')) if z)
     info['country'] = rel.get('country', u'')
-    info['discs'] = unicode(rel.get('medium_count', ''))
+    info['discs'] = six.text_type(rel.get('medium_count', ''))
     info['#album_id'] = rel['id']
     info['mbrainz_album_id'] = rel['id']
     if 'mediums' in rel:
-        info['track'] = unicode(
+        info['track'] = six.text_type(
             rel['mediums'][0]['tracks'][0].get('position', ""))
-    return dict((k,v) for k,v in info.iteritems() if not isempty(v))
+    return dict((k,v) for k,v in six.iteritems(info) if not isempty(v))
 
 def parse_lookup_result(data, albums=False, fp=None):
     if data['status'] != 'ok':
@@ -192,11 +195,11 @@ def parse_recording_data(data, info=None):
         track['mbrainz_artist_id'] = data['artists'][0]['id']
 
     if 'releases' in data:
-        album_info = map(parse_release_data, data['releases'])
+        album_info = list(map(parse_release_data, data['releases']))
     else:
         album_info = []
 
-    track = dict((k,v) for k,v in track.iteritems() if not isempty(v))
+    track = dict((k,v) for k,v in six.iteritems(track) if not isempty(v))
 
     if 'artist' in track:
         for album in album_info:
@@ -268,9 +271,9 @@ class AcoustID(object):
         try:
             with contextlib.closing(urllib2.urlopen(req)) as f:
                 return f.read(), f.info()
-        except urllib2.HTTPError, exc:
+        except urllib2.HTTPError as exc:
             raise acoustid.WebServiceError('HTTP status %i' % exc.code, exc.read())
-        except httplib.BadStatusLine:
+        except six.moves.http_client.BadStatusLine:
             raise acoustid.WebServiceError('bad HTTP status line')
         except IOError:
             raise acoustid.WebServiceError('connection failed')
@@ -304,12 +307,12 @@ class AcoustID(object):
                 write_log(translate('AcoustID', "Parsing Data"))
                 
                 info = parse_lookup_result(data, fp=fp)
-            except acoustid.FingerprintGenerationError, e:
-                write_log(FP_ERROR_MSG.arg(unicode(e)))
+            except acoustid.FingerprintGenerationError as e:
+                write_log(FP_ERROR_MSG.arg(six.text_type(e)))
                 continue
-            except acoustid.WebServiceError, e:
-                set_status(WEB_ERROR_MSG.arg(unicode(e)))
-                write_log(WEB_ERROR_MSG.arg(unicode(e)))
+            except acoustid.WebServiceError as e:
+                set_status(WEB_ERROR_MSG.arg(six.text_type(e)))
+                write_log(WEB_ERROR_MSG.arg(six.text_type(e)))
                 break
 
             if hasattr(info, 'items'):
@@ -350,8 +353,8 @@ class AcoustID(object):
                     dur, fp = fingerprint_file(fn.filepath)
 
                 info = {
-                    'duration':unicode(dur),
-                    'fingerprint': unicode(fp),
+                    'duration':six.text_type(dur),
+                    'fingerprint': six.text_type(fp),
                     }
 
                 info.update(convert_for_submit(fn))
@@ -365,14 +368,14 @@ class AcoustID(object):
                     acoustid.submit(API_KEY, self.__user_key, data)
                     data = []
 
-            except acoustid.FingerprintGenerationError, e:
+            except acoustid.FingerprintGenerationError as e:
                 traceback.print_exc()
-                write_log(FP_ERROR_MSG.arg(unicode(e)))
+                write_log(FP_ERROR_MSG.arg(six.text_type(e)))
                 continue
-            except acoustid.WebServiceError, e:
+            except acoustid.WebServiceError as e:
                 traceback.print_exc()
-                set_status(SUBMIT_ERROR_MSG.arg(unicode(e)))
-                write_log(SUBMIT_ERROR_MSG.arg(unicode(e)))
+                set_status(SUBMIT_ERROR_MSG.arg(six.text_type(e)))
+                write_log(SUBMIT_ERROR_MSG.arg(six.text_type(e)))
                 break
 
     def retrieve(self, info):

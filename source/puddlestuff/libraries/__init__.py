@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from os.path import join, dirname
 from os import listdir
 from fnmatch import fnmatch

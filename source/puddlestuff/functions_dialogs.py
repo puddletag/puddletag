@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt4.QtGui import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
                          QVBoxLayout, QWidget, QLineEdit)
 from PyQt4.QtCore import SIGNAL
@@ -69,6 +70,6 @@ class AutoNumbering(QWidget):
             self._padlength.value()]
         return x
 
-from functions import autonumbering
+from .functions import autonumbering
 
 dialogs = {autonumbering: AutoNumbering}
