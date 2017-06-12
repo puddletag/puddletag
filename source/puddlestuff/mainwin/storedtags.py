@@ -4,7 +4,7 @@ import sys, os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
-from puddlestuff.puddleobjects import PuddleThread, natcasecmp
+from puddlestuff.puddleobjects import PuddleThread, natural_sort_key
 from puddlestuff import audioinfo
 import puddlestuff.audioinfo.tag_versions as tag_versions
 import pdb, time
@@ -19,7 +19,7 @@ def sort_dict(d):
             ret.append((key, val))
         else:
             ret.extend((key, v) for v in val)
-    ret.sort(cmp =natcasecmp)
+    ret.sort(key=lambda v: natural_sort_key(v[0]))
     return ret
 
 class StoredTags(QScrollArea):

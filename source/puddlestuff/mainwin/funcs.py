@@ -537,7 +537,10 @@ def update_status(enable = True):
     else:
         selected = selected[0]
     try:
-        val = tf(pattern, tag, state=state.copy()).decode('utf8')
+        try:
+            val = tf(pattern, tag, state=state.copy()).decode('utf8')
+        except AttributeError:
+            val = tf(pattern, tag, state=state.copy())
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError as e:

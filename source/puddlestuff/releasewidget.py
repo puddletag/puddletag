@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import sys, pdb
 import traceback
 from puddlestuff.puddleobjects import (unique, OKCancel, PuddleThread,
-    PuddleConfig, winsettings, natcasecmp)
+                                       PuddleConfig, winsettings, natural_sort_key)
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4 import QtCore, QtGui
@@ -140,9 +140,9 @@ class RootItem(object):
         return 0
     
     def sort(self, order=None, reverse=False):
-        sortfunc = lambda item: u''.join([
-            to_string(item.itemData.get(key, u'')) for key in order]).lower()
-        self.childItems.sort(natcasecmp, sortfunc, reverse)
+        sortfunc = lambda item: natural_sort_key(u''.join([
+            to_string(item.itemData.get(key, u'')) for key in order]).lower())
+        self.childItems.sort(key=sortfunc, reverse=reverse)
         
 
 class TreeItem(RootItem):
@@ -321,30 +321,30 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if role == Qt.DisplayRole:
             item = index.internalPointer()
-            return QVariant(item.data(index.column()))
+            return item.data(index.column())
         elif role == Qt.ToolTipRole:
             item = index.internalPointer()
-            return QVariant(tooltip(item.itemData, self.mapping))
+            return tooltip(item.itemData, self.mapping)
         elif role == Qt.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
                 return None
             if item.expanded:
-                return QVariant(self.expandedIcon)
+                return self.expandedIcon
             else:
-                return QVariant(self.collapsedIcon)
+                return self.collapsedIcon
         elif role == Qt.CheckStateRole:
             item = index.internalPointer()
             if self.isTrack(item) and '#exact' in item.itemData:
                 if item.checked:
-                    return QVariant(Qt.Checked)
+                    return Qt.Checked
                 else:
-                    return QVariant(Qt.Unchecked)
-        return QVariant()
+                    return Qt.Unchecked
+        return None
 
     def fetchMore(self, index):
         item = index.internalPointer()
@@ -408,9 +408,9 @@ class TreeModel(QtCore.QAbstractItemModel):
             role == QtCore.Qt.DisplayRole:
             ret = RETRIEVED_ALBUMS % u' / '.join(self.sortOrder)
             
-            return QVariant(QString(ret))
+            return QString(ret)
 
-        return QtCore.QVariant()
+        return None
 
     def index(self, row, column, parent):
         if row < 0 or column < 0 or row >= self.rowCount(parent) or \

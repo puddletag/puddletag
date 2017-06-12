@@ -28,7 +28,7 @@ def to_utf8(parent=None):
                     f.to_encoding(3)
                     f.link(f.filepath)
                 yield None
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = unicode(QApplication.translate("Defaults",
                     'An error occured while converting <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
@@ -57,7 +57,7 @@ def update_to_24(parent=None):
                     f.save(v1=1)
                     f.link(f.filepath)
                 yield None
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = unicode(QApplication.translate("Defaults",
                     'An error occured while updating <b>%1</b>. (%2)').arg(filename).arg(e.strerror))

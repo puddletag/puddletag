@@ -20,10 +20,9 @@ except ImportError:
     DSF = None
 
 from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
-    UrlFrame)
+                         UrlFrame, ID3)
 
 from . import util
-from ._compatid3 import CompatID3
 
 from .constants import MODES
 from .util import (CaselessDict, FILENAME, MockTag, PATH,
@@ -677,7 +676,7 @@ def pic_to_bin(image):
         mime = get_mime(data)
     return APIC(encoding, mime, imagetype, description, data)
 
-class ID3(CompatID3):
+class ID3(ID3):
     """ID3 reader to replace mutagen's just to allow the reading of APIC
     tags with the same description, ala Mp3tag."""
     PEDANTIC = True
@@ -1036,11 +1035,8 @@ def tag_factory(id3_filetype):
                     audio.tags.update_to_v24()
                     audio.tags.save(v1=v1, v2=4)
                 else:
-                    c = ID3()
-                    c.filename = self.filepath
-                    c.update(audio)
-                    c.update_to_v23()
-                    c.save(v1=v1, v2=3)
+                    audio.tags.update_to_v23()
+                    audio.tags.save(v1=v1, v2=3)
 
             self.__tags['__tag_read'] = u'ID3v2.4' if v2 == 4 else u'ID3v2.3'
             self.update_tag_list()

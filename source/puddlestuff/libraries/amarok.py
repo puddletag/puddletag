@@ -290,10 +290,10 @@ class ConfigWindow(QWidget):
         return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 
     def saveSettings(self):
-        username = QVariant(self.username.text())
-        passwd = QVariant(self.passwd.text())
-        database = QVariant(self.database.text())
-        port = QVariant(self.port.text())
+        username = self.username.text()
+        passwd = self.passwd.text()
+        database = self.database.text()
+        port = self.port.text()
 
         settings = QSettings()
         settings.beginGroup('Library')

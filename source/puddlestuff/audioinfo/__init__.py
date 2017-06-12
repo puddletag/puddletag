@@ -100,7 +100,7 @@ def Tag(filename):
     finally:
         fileobj.close()
     results = list(zip(results, options))
-    results.sort()
+    results.sort(key=lambda v: v[0])
     score, Kind = results[-1]
     if score > 0: return Kind[1](filename)
     else: return None

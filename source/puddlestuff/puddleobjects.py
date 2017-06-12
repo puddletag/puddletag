@@ -281,10 +281,11 @@ def _setupsaves(func):
 
 @_setupsaves
 def savewinsize(name, dialog, settings):
-    settings.setValue(name, QVariant(dialog.saveGeometry()))
+    settings.setValue(name, dialog.saveGeometry())
 
 @_setupsaves
 def winsettings(name, dialog, settings):
+    print (settings)
     dialog.restoreGeometry(settings.value(name))
     cevent = dialog.closeEvent
     def closeEvent(self, event=None):
@@ -609,6 +610,11 @@ class compare:
         return self.natcmp(u"".join(a).lower(), u"".join(b).lower())
 
 natcasecmp = compare().natcasecmp
+
+# https://stackoverflow.com/a/16090640
+def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    return [int(text) if text.isdigit() else text.lower()
+            for text in re.split(_nsre, s)]    
 
 def dupes(l, method = None):
     if method is None:
@@ -1792,7 +1798,10 @@ class PicWidget(QWidget):
                 self.setNone()
                 return
 
-            if data.startswith('<?xml'):
+            if isinstance(data, bytes) and data.startswith(b'<?xml'):
+                image = data
+                break
+            elif isinstance(data, str) and data.startswith('<?xml'):
                 image = data
                 break
             else:

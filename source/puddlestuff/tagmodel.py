@@ -13,7 +13,7 @@ from . import audioinfo
 from .audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
     usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
     EXTENSION, CaselessDict)
-from .puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
+from .puddleobjects import (unique, safe_name, partial, natural_sort_key, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
     progress, PuddleConfig, singleerror, winsettings, issubfolder,
     timemethod, encode_fn, decode_fn, fnmatch)
@@ -315,7 +315,7 @@ def _Tag(model):
         finally:
             fileobj.close()
         results = list(zip(results, options))
-        results.sort()
+        results.sort(key=lambda x: x[0])
         score, Kind = results[-1]
 
         if score > 0: return Kind[1](filename)
@@ -678,7 +678,7 @@ class TagModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
-            return QVariant()
+            return None
         
         if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
             try:
@@ -686,11 +686,11 @@ class TagModel(QAbstractTableModel):
                 tag = self.headerdata[index.column()][1]
                 val = self._toString(audio[tag])
             except (KeyError, IndexError):
-                return QVariant()
+                return None
 
             if role == Qt.ToolTipRole:
                 if not self.showToolTip:
-                    return QVariant()
+                    return None
                 if self.previewMode and \
                     audio.preview and tag in audio.preview:
                     try:
@@ -705,14 +705,14 @@ class TagModel(QAbstractTableModel):
                         tooltip = val
                 else:
                     tooltip = val
-                return QVariant(QString(tooltip))
-            return QVariant(val)
+                return QString(tooltip)
+            return val
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]
             if audio.color:
-                return QVariant(audio.color)
+                return audio.color
             elif self.previewMode and audio.preview:
-                return QVariant(self.previewBackground)
+                return self.previewBackground
         elif role == Qt.FontRole:
             
             field = self.headerdata[index.column()][1]
@@ -726,8 +726,8 @@ class TagModel(QAbstractTableModel):
                     f.setBold(True)
                 else:
                     f.setItalic(True)
-            return QVariant(f)
-        return QVariant()
+            return f
+        return None
 
     def deleteTag(self, row=None, audio=None, delete=True):
         if row is not None:
@@ -757,16 +757,16 @@ class TagModel(QAbstractTableModel):
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
+                return int(Qt.AlignLeft|Qt.AlignVCenter)
+            return int(Qt.AlignRight|Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         if orientation == Qt.Horizontal:
             try:
-                return QVariant(QString(self.headerdata[section][0]))
+                return QString(self.headerdata[section][0])
             except IndexError:
-                return QVariant()
-        return QVariant(int(section + 1))
+                return None
+        return int(section + 1)
     
     def highlight(self, rows):
         rows = rows[::]
@@ -849,7 +849,7 @@ class TagModel(QAbstractTableModel):
         if append:
             for field in self.sortFields:
                 getter = lambda audio: audio.get(field, u'')
-                taginfo.sort(natcasecmp, getter, self.reverseSort)
+                taginfo.sort(key=lambda a: natural_sort_key(a.get(field, u'')), reverse=self.reverseSort)
 
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
@@ -1164,14 +1164,12 @@ class TagModel(QAbstractTableModel):
 
         if files and rows:
             for field in fields:
-                f = lambda audio: audio.get(field, u'')
-                files.sort(natcasecmp, f, reverse)
+                files.sort(key=lambda a:natural_sort_key(a.get(field, u'')), reverse=reverse)
             for index, row in enumerate(rows):
                 self.taginfo[row] = files[index]
         else:
             for field in fields:
-                f = lambda audio: audio.get(field, u'')
-                self.taginfo.sort(natcasecmp, f, reverse)                
+                self.taginfo.sort(key=lambda a:natural_sort_key(a.get(field, u'')), reverse=reverse)
 
         self.reverseSort = reverse
         self.sortFields = fields
@@ -1275,7 +1273,7 @@ class TagDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         try:
-            model.setData(index, QVariant(editor.text()))
+            model.setData(index, editor.text())
         except EnvironmentError as e:
             editor.writeError = e
 

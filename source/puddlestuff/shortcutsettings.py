@@ -11,7 +11,7 @@ from six.moves import range
 pyqtRemoveInputHook()
 from puddlestuff.translations import translate
 
-from PyQt4.QtCore import QEvent, QRect, QString, Qt, QVariant, SIGNAL
+from PyQt4.QtCore import QEvent, QRect, QString, Qt, SIGNAL
 from PyQt4.QtGui import qApp, QBrush, QColor, QDialog, QHBoxLayout, \
     QItemDelegate, QKeySequence, QLabel, QPainter, QPalette, QPen, \
     QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout
@@ -188,7 +188,7 @@ class ActionEditorDelegate(QItemDelegate):
     def setModelData(self, editor, model, index):
         if editor.text() != self._edited:
             index.model().edited = True
-        model.setData(index, QVariant(editor.text()))
+        model.setData(index, editor.text())
     
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)

@@ -441,7 +441,7 @@ class MainWin(QMainWindow):
         if initial not in dirs:
             initial = dirs[0]
 
-        if isinstance(initial, str):
+        if isinstance(initial, bytes):
             initial = initial.decode('utf8', 'replace')
         
         if len(dirs) > 1:
@@ -491,12 +491,12 @@ class MainWin(QMainWindow):
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         if self._lastdir:
-            cparser.set('main', 'lastfolder', six.text_type(self._lastdir[0], 'utf8'))
+            cparser.set('main', 'lastfolder', self._lastdir[0])
         cparser.set("main", "maximized", self.isMaximized())
-        settings.setValue('main/state', QVariant(self.saveState()))
+        settings.setValue('main/state', self.saveState())
 
         headstate = self._table.horizontalHeader().saveState()
-        settings.setValue('table/header', QVariant(headstate))
+        settings.setValue('table/header', headstate)
         genres.save_genres(status['genres'])
         e.accept()
 
@@ -663,8 +663,8 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 1)
 
         h = self._table.horizontalHeader()
-        h.restoreState(settings.value('table/header').toByteArray())
-        self.restoreState(settings.value('main/state').toByteArray())
+        h.restoreState(settings.value('table/header'))
+        self.restoreState(settings.value('main/state'))
         
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
