@@ -141,15 +141,14 @@ class DirView(QTreeView):
                 model.refresh(i)
         
         for d in [z[1] for z in dirs] + selected:
-            if isinstance(d, str):
-                d = QString.fromLocal8Bit(d)
             self.selectIndex(getindex(d))
         self._load = True
 
     def loadSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.IniFormat)
         header = self.header()
-        header.restoreState(settings.value('dirview/header'))
+        if settings.value('dirview/header'):
+            header.restoreState(settings.value('dirview/header'))
         hide = bool(settings.value('dirview/hide', True))
         self.setHeaderHidden(hide)
 

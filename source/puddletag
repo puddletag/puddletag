@@ -15,7 +15,8 @@ import six
 
 try:
     import sip
-    sip.setapi('QString', 1)
+    sip.setapi('QString', 2)
+    sip.setapi('QVariant', 2)
 except ImportError:
     pass
 

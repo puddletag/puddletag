@@ -45,7 +45,7 @@ PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
 
 _config_dir = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.path.expanduser("~"), '.config'))
-CONFIGDIR = os.path.join(_config_dir, 'puddletag')
+CONFIGDIR = os.path.join(_config_dir, 'puddletag2')
 HOMEDIR = os.path.expanduser('~')
 
 CONFIG = join(CONFIGDIR, 'puddletag.conf')
@@ -53,7 +53,7 @@ QT_CONFIG = join(CONFIGDIR, 'qt.conf')
 
 _data_dir = os.environ.get('XDG_DATA_HOME', os.path.join(os.path.expanduser("~"), '.local/share'))
 
-SAVEDIR = os.path.join(_data_dir, 'puddletag')
+SAVEDIR = os.path.join(CONFIGDIR, 'data')
 LOG_FILENAME = os.path.join(CONFIGDIR, 'puddletag.log')
 PLUGINDIR = join(SAVEDIR, 'plugins')
 

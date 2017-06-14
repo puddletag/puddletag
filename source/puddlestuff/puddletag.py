@@ -663,8 +663,10 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 1)
 
         h = self._table.horizontalHeader()
-        h.restoreState(settings.value('table/header'))
-        self.restoreState(settings.value('main/state'))
+        if settings.value('table/header'):
+            h.restoreState(settings.value('table/header'))
+        if settings.value('main/state'):
+            self.restoreState(settings.value('main/state'))
         
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])

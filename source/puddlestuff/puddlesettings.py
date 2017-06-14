@@ -489,7 +489,7 @@ class ListModel(QAbstractListModel):
             return None
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
-                return QString(self.options[index.row()][0])
+                return self.options[index.row()][0]
             except IndexError: return None
         return None
 

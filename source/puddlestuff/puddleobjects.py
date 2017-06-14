@@ -231,7 +231,7 @@ class PuddleConfig(object):
 
     def set(self, section = None, key = None, value = None):
         settings = self.data
-        if isinstance(value, QString):
+        if isinstance(value, (str, bytes)):
             value = six.text_type(value)
         if section in self.data:
             settings[section][key] = value
@@ -274,19 +274,20 @@ class PuddleConfig(object):
 
     filename = property(_getFilename, _setFilename)
 
-def _setupsaves(func):
+def autosave_geometry(func):
     filename = os.path.join(CONFIGDIR, 'windowsizes')
     settings = QSettings(filename, QSettings.IniFormat)
-    return lambda x, y: func(x, y, settings)
+    return lambda name, dialog: func(name, dialog, settings)
 
-@_setupsaves
+@autosave_geometry
 def savewinsize(name, dialog, settings):
     settings.setValue(name, dialog.saveGeometry())
 
-@_setupsaves
+@autosave_geometry
 def winsettings(name, dialog, settings):
-    print (settings)
-    dialog.restoreGeometry(settings.value(name))
+    geometry = settings.value(name)
+    if geometry is not None:
+        dialog.restoreGeometry(geometry)
     cevent = dialog.closeEvent
     def closeEvent(self, event=None):
         savewinsize(name, dialog)
@@ -847,7 +848,7 @@ def progress(func, pstring, maximum, threadfin = None):
         if maximum  == 1:
             errors = next(f)
             if errors and \
-                not isinstance(errors, (QString, int, int, six.string_types)):
+                not isinstance(errors, (int, int, six.string_types)):
                 errormsg(parent, errors[0], 1)
             if threadfin:
                 threadfin()
@@ -860,8 +861,8 @@ def progress(func, pstring, maximum, threadfin = None):
             while not win.wasCanceled:
                 try:
                     temp = next(f)
-                    if isinstance(temp, (QString, str, six.text_type)):
-                        thread.emit(SIGNAL('message(QString)'), QString(temp))
+                    if isinstance(temp, (str, six.text_type)):
+                        thread.emit(SIGNAL('message(QString)'), temp)
                     elif isinstance(temp, six.integer_types):
                         thread.emit(SIGNAL('set_max(int)'), temp)
                     elif temp is not None:
@@ -888,7 +889,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     try: focusedpar.setFocus()
                     except RuntimeError: pass
                 return
-            elif isinstance(args[0], QString):
+            elif isinstance(args[0], str):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)
                     if ret is True:
@@ -1721,8 +1722,7 @@ class PicWidget(QWidget):
 
         if not filename:
             default_fn = os.path.join(
-                os.path.dirname(self.lastfilename), 'folder.jpg')
-            default_fn = QString.fromLocal8Bit(default_fn)
+                os.path.dirname(self.lastfilename), 'folder.jpg').encode('utf8')
             filedlg = QFileDialog()
             filename = six.text_type(filedlg.getOpenFileName(self,
                 translate("Artwork", 'Select Image...'), default_fn,
@@ -1885,9 +1885,10 @@ class PicWidget(QWidget):
             tempfilename = 'folder.jpg'
         if self.currentImage > -1:
             filedlg = QFileDialog()
-            filename = filedlg.getSaveFileName(self,
+            filename = filedlg.getSaveFileName(
+                self,
                 translate("Artwork", 'Save artwork as...'),
-                QString.fromLocal8Bit(tempfilename),
+                tempfilename.encode('utf8'),
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
             if not filename:
                 return

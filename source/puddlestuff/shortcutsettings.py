@@ -11,7 +11,7 @@ from six.moves import range
 pyqtRemoveInputHook()
 from puddlestuff.translations import translate
 
-from PyQt4.QtCore import QEvent, QRect, QString, Qt, SIGNAL
+from PyQt4.QtCore import QEvent, QRect, Qt, SIGNAL
 from PyQt4.QtGui import qApp, QBrush, QColor, QDialog, QHBoxLayout, \
     QItemDelegate, QKeySequence, QLabel, QPainter, QPalette, QPen, \
     QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout
@@ -49,7 +49,7 @@ class ActionEditorWidget(QLabel):
         elif event.key() == Qt.Key_Alt:
             self.modifiers[Qt.Key_Alt] = u"Alt"
         else:
-            other = QString(QKeySequence(event.key()))
+            other = str(QKeySequence(event.key()))
         
         if other:
             key_string = u"+".join(list(self.modifiers.values()) + [six.text_type(other),])

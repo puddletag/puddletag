@@ -705,7 +705,7 @@ class TagModel(QAbstractTableModel):
                         tooltip = val
                 else:
                     tooltip = val
-                return QString(tooltip)
+                return tooltip
             return val
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]
@@ -763,7 +763,7 @@ class TagModel(QAbstractTableModel):
             return None
         if orientation == Qt.Horizontal:
             try:
-                return QString(self.headerdata[section][0])
+                return self.headerdata[section][0]
             except IndexError:
                 return None
         return int(section + 1)
