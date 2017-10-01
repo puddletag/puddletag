@@ -58,7 +58,7 @@ TRACK_KEYS = {
 INVALID_KEYS = [
     'status', 'resource_url', 'tracklist', 'thumb', 'formats', 'artists',
     'extraartists', 'images', 'videos', 'master_id', 'labels', 'companies',
-    'series', 'released_formatted', 'identifiers']
+    'series', 'released_formatted', 'identifiers', 'sub_tracks']
 
 
 class LastTime(object):
