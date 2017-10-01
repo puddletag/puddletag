@@ -194,11 +194,13 @@ def urlopen(url, mask=True, code=False):
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = unicode(e)
+            
         try:
             raise RetrievalError(msg, e.code)
         except AttributeError:
+            msg = e.args[1] if len(e.args) > 1 else e.args[0]
             raise RetrievalError(
-                translate("Defaults", "Connection Error: %s ") % e.args[1])
+                translate("Defaults", "Connection Error: %s ") % msg)
     except socket.error as e:
         msg = u'%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
