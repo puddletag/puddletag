@@ -1025,7 +1025,8 @@ def tag_factory(id3_filetype):
                     audio.tags.save(v2_version=3) #AIFF doesn't support id3v1
                 else:
                     audio.tags.save() #AIFF doesn't support id3v1
-            if DSF is not None and id3_filetype is DSFFileType:
+                    
+            elif DSF is not None and id3_filetype is DSFFileType:
                 if v2 == 3:
                     audio.tags.save(v2_version=3) #DSF doesn't support id3v1
                 else:
