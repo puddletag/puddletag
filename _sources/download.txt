@@ -35,7 +35,7 @@ Install the dependencies as listed above. For Debian-based distros, you can run 
 
 .. code-block:: bash
 
-    apt-get install python-qt4 python-pyparsing python-mutagen
+    apt-get install python-qt4 python-pyparsing python-mutagen python-configobj
 
 + Now download the source tarball |source_link|_ (SHA1 |source_sha|).
 + Unzip it.
