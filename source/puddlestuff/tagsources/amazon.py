@@ -20,6 +20,7 @@ from puddlestuff.util import translate
 default_access_key = base64.b64decode('QUtJQUozS0JZUlVZUU41UFZRR0E=')
 default_secret_key = base64.b64decode('dmh6Q0ZaSEF6N0VvMmN5REt3STVnS1liU3ZFTCtSckx3c0tmanZEdA==')
 
+associateId = ''
 access_key = default_access_key
 secret_key = default_secret_key
 
@@ -51,7 +52,7 @@ def check_binding(node):
 
 def create_aws_url(aws_access_key_id, secret, query_dictionary):
     """Creates the query url that'll be used to query Amazon's service."""
-    query_dictionary["AWSAccessKeyId"] = aws_access_key_id
+    query_dictionary["SubscriptionId"] = aws_access_key_id
     query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
         time.gmtime())
 
@@ -60,7 +61,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
     query = urllib.urlencode(sorted(items))
 
     try:
-        hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
+        hm = hmac.new(str(secret), "GET\nwebservices.amazon.com\n/onca/xml\n" \
             + query, hashlib.sha256)
     except TypeError:
         raise RetrievalError(translate('Amazon',
@@ -119,7 +120,7 @@ def keyword_search(keywords):
             "Service":u"AWSECommerceService",
             'ItemPage': u'1',
             'Keywords': keywords,
-            'AssociateTag': u'puddletag-20'}
+            'AssociateTag': associateId}
     url = create_aws_url(access_key, secret_key, query_pairs)
     xml = urlopen(url)
     return parse_search_xml(xml)
@@ -200,7 +201,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         "Service":u"AWSECommerceService",
         'ItemId': asin,
         'ResponseGroup': u'Tracks',
-        'AssociateTag': u'puddletag-20'}
+        'AssociateTag': associateId}
     url = create_aws_url(access_key, secret_key, query_pairs)
 
     if isinstance(info, basestring):
@@ -329,6 +330,7 @@ class Amazon(object):
                 [[translate('Amazon', 'Small'),
                     translate('Amazon', 'Medium'),
                     translate('Amazon', 'Large')], 1]],
+            [translate('Amazon', 'Associates ID'), TEXT, u''],
             [translate('Amazon', 'Access Key (Stored '
                 'as plain-text. Leave empty for default.)'), TEXT, u''],
             [translate('Amazon', 'Secret Key (Stored '
@@ -415,11 +417,15 @@ class Amazon(object):
     def applyPrefs(self, args):
         self._getcover = args[0]
         self.covertype = image_types[args[1]]
+
+        global associateId
+        associateId = args[2]
+
         global access_key
         global secret_key
-        if args[2]:
-            access_key = args[2]
-            secret_key = args[3]
+        if args[3]:
+            access_key = args[3]
+            secret_key = args[4]
         else:
             access_key = default_access_key
             secret_key = default_secret_key
