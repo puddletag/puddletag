@@ -10,7 +10,7 @@ import time
 
 def init(parent=None):
     action = QAction('Add 2 seconds to modified time', parent)
-    action.connect(action, SIGNAL('triggered()'), lambda: add_seconds(parent))
+    action.triggered.connect(lambda: add_seconds(parent))
     action.setShortcut('Ctrl+M')
     
     def sep():

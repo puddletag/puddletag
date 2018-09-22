@@ -65,26 +65,26 @@ def clear_selected_cells():
 def create_actions(parent):
     enable_preview = QAction('Enabl&e Preview Mode', parent)
     enable_preview.setShortcut('Ctrl+Shift+P')
-    obj.connect(enable_preview, SIGNAL('triggered()'), toggle_preview_mode)
+    enable_preview.triggered.connect(toggle_preview_mode)
 
     clear_selection = PreviewAction('Clear Selected &Files', parent)
     clear_selection.setShortcut('Ctrl+Shift+F')
-    obj.connect(clear_selection, SIGNAL('triggered()'), clear_selected)
+    clear_selection.triggered.connect(clear_selected)
     
     write = PreviewAction('&Write Previews', parent)
     write.setShortcut('Ctrl+W')
     
-    obj.connect(write, SIGNAL('triggered()'), lambda: emit('writepreview'))
+    write.triggered.connect(lambda: emit('writepreview'))
     
     revert = PreviewAction('&Undo Last Clear', parent)
     revert.setShortcut('Ctrl+Shift+Z')
-    obj.connect(revert, SIGNAL('triggered()'), undo_last)
+    revert.triggered.connect(undo_last)
     
     sort = QAction('Sort &By', parent)
-    obj.connect(sort, SIGNAL('triggered()'), sort_by_fields)
+    sort.triggered.connect(sort_by_fields)
 
     clear_cells = PreviewAction('Clear Selected &Cells', parent)
-    obj.connect(clear_cells, SIGNAL('triggered()'), clear_selected_cells)
+    clear_cells.triggered.connect(clear_selected_cells)
     
     cparser = PuddleConfig()
     options = cparser.get('table', 'sortoptions', 
@@ -114,7 +114,7 @@ def set_sort_options(options):
         action = QAction(u'/'.join(option), parent)
         action.sortOption = option
         menu.addAction(action)
-        obj.connect(action, SIGNAL('triggered()'), sort_by_fields)
+        action.triggered.connect(sort_by_fields)
         sort_actions.append(action)
     _sort_action.setMenu(menu)
     status['sort_actions'] = sort_actions
@@ -138,10 +138,16 @@ def undo_last():
     if _previews:
         emit('setpreview', _previews.pop())
 
-obj = QObject()
+class _SignalObject (QObject):
+    enable_preview_mode = pyqtSignal(name='enable_preview_mode')
+    disable_preview_mode = pyqtSignal(name='disable_preview_mode')
+    setpreview = pyqtSignal([list], [dict], name='setpreview')
+    writepreview = pyqtSignal(name='writepreview')
+
+obj = _SignalObject()
 obj.emits = ['enable_preview_mode', 'disable_preview_mode', 'setpreview',
     'writepreview']
 obj.receives = []
 
 def emit(sig, *args):
-    obj.emit(SIGNAL(sig), *args)
+    getattr(obj, sig).emit(*args)

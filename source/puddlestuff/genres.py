@@ -42,8 +42,8 @@ class Genres(QWidget):
         self.listbox.connectToListButtons(buttons)
         self.listbox.setAutoScroll(False)
 
-        self.connect(buttons, SIGNAL('add'), self.add)
-        self.connect(buttons, SIGNAL('edit'), self.edit)
+        buttons.add.connect(self.add)
+        buttons.edit.connect(self.edit)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.listbox,1)

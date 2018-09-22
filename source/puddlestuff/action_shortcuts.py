@@ -94,12 +94,11 @@ class Shortcut(QAction):
             self.setShortcut(shortcut)
         self.filenames = filenames
         self.funcs = self.get_funcs()
-        self.connect(self, SIGNAL('triggered()'), self.runAction)
+        self.triggered.connect(self.runAction)
 
         self._watcher = QFileSystemWatcher(filter(os.path.exists, filenames),
             self)
-        self._watcher.connect(self._watcher,
-            SIGNAL('fileChanged(const QString&)'), self._checkFile)
+        self._watcher.fileChanged.connect(self._checkFile)
 
     def _checkFile(self, filename):
         #There's some fucked up behaviour going on with QFileSystemWatcher.
@@ -110,15 +109,13 @@ class Shortcut(QAction):
         #Disconnecting and reconnecting doesn't work either.
         #Nor does using blockSignals
         
-        self._watcher.disconnect(self._watcher,
-            SIGNAL('fileChanged(const QString&)'), self._checkFile)
+        self._watcher.fileChanged.disconnect(self._checkFile)
         filename = filename.toLocal8Bit().data()
         if not os.path.exists(filename):
             self.filenames.remove(filename)
         self.funcs = self.get_funcs()
         self._watcher = QFileSystemWatcher(self.filenames, self)
-        self._watcher.connect(self._watcher,
-            SIGNAL('fileChanged(const QString&)'), self._checkFile)
+        self._watcher.fileChanged.connect(self._checkFile)
 
     def get_funcs(self, filenames=None):
         if filenames is None:
@@ -134,6 +131,7 @@ class Shortcut(QAction):
         
 
 class Editor(QDialog):
+    actionChanged = pyqtSignal(unicode, list, unicode, name='actionChanged');
     def __init__(self, title='Add Action', shortcut=u'', actions=None, names=None, shortcuts=None, parent=None):
         super(Editor, self).__init__(parent)
         self.setWindowTitle(title)
@@ -148,30 +146,29 @@ class Editor(QDialog):
         self._shortcut = puddleobjects.ShortcutEditor(shortcuts)
         self._shortcut.setText(shortcut)
         clear = QPushButton(translate('Shortcuts', '&Clear'))
-        self.connect(clear, SIGNAL('clicked()'), self._shortcut.clear)
+        clear.clicked.connect(self._shortcut.clear)
         
         if names is None:
             names = []
         self._names = names
         
         self._actionList = ListBox()
-        self.connect(self._actionList,
-            SIGNAL('itemDoubleClicked (QListWidgetItem *)'), self._addAction)
+        self._actionList.itemDoubleClicked.connect(self._addAction)
         self._newActionList = ListBox()
         listbuttons = ListButtons()
         listbuttons.duplicateButton.hide()
         listbuttons.insertStretch(0)
-        self.connect(listbuttons, SIGNAL('add'), self._addAction)
+        listbuttons.add.connect(self._addAction)
 
         self._newActionList.connectToListButtons(listbuttons)
 
         okcancel = OKCancel()
-        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.close)
         self._ok = okcancel.okButton
-        self.connect(self._name, SIGNAL('textChanged(const QString)'), self.enableOk)
+        self._name.textChanged.connect(self.enableOk)
         scut_status = QLabel('')
-        self.connect(self._shortcut, SIGNAL('validityChanged'),
+        self._shortcut.validityChanged.connect(
             lambda v: scut_status.setText(u'') if v or (not self._shortcut.text()) else
                 scut_status.setText(translate('Shortcuts', "Invalid shortcut sequence.")))
         okcancel.insertWidget(0, scut_status)
@@ -216,7 +213,7 @@ class Editor(QDialog):
         alist = self._newActionList
         items = map(alist.item, xrange(alist.count()))
         actions = [item._action[1] for item in items]
-        self.emit(SIGNAL('actionChanged'), unicode(self._name.text()), actions,
+        self.actionChanged.emit(unicode(self._name.text()), actions,
             unicode(self._shortcut.text()) if self._shortcut.valid else u'')
         self.close()
 
@@ -257,11 +254,10 @@ class ShortcutEditor(QDialog):
 
         listbuttons = ListButtons()
         listbuttons.insertStretch(0)
-        self.connect(listbuttons, SIGNAL('add'), self._addShortcut)
-        self.connect(listbuttons, SIGNAL('edit'), self._editShortcut)
-        self.connect(listbuttons, SIGNAL('duplicate'), self._duplicate)
-        self.connect(self._listbox,
-            SIGNAL('itemDoubleClicked (QListWidgetItem *)'), self._editShortcut)
+        listbuttons.add.connect(self._addShortcut)
+        listbuttons.edit.connect(self._editShortcut)
+        listbuttons.duplicate.connect(self._duplicate)
+        self._listbox.itemDoubleClicked.connect(self._editShortcut)
         
         self._listbox.connectToListButtons(listbuttons)
 
@@ -277,8 +273,8 @@ class ShortcutEditor(QDialog):
             vbox.addLayout(okcancel)
         self.setLayout(vbox)
 
-        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.close)
 
         if load:
             self.loadSettings()
@@ -289,7 +285,7 @@ class ShortcutEditor(QDialog):
             
         win = Editor('Add Shortcut', u'', self._actions, self.names(), shortcuts, self)
         win.setModal(True)
-        self.connect(win, SIGNAL('actionChanged'), self.addShortcut)
+        win.actionChanged.connect(self.addShortcut)
         win.show()
 
     def addShortcut(self, name, filenames, shortcut=u'', select=True):
@@ -336,7 +332,7 @@ class ShortcutEditor(QDialog):
         win = Editor('Duplicate Shortcut', u'', self._actions, self.names(), shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, u'')
         win.setModal(True)
-        self.connect(win, SIGNAL('actionChanged'), self.addShortcut)
+        win.actionChanged.connect(self.addShortcut)
         win.show()
 
     def _editShortcut(self):
@@ -352,7 +348,7 @@ class ShortcutEditor(QDialog):
         win = Editor('Edit Shortcut', item.shortcut, self._actions, names, shortcuts, self)
         win.setAttrs(item.actionName, self._actions, item.filenames, item.shortcut)
         win.setModal(True)
-        self.connect(win, SIGNAL('actionChanged'),
+        win.actionChanged.connect(
             partial(self.editShortcut, item))
         win.show()
 

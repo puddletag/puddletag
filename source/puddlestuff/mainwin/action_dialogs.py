@@ -21,9 +21,8 @@ class ActionDialog(ActionWindow):
         self.okcancel.cancelButton.hide()
         self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda funcs: applyaction(self._status['selectedfiles'], funcs)
-        self.connect(self._apply, SIGNAL('clicked()'),
-            partial(self.okClicked, False))
-        self.connect(self, SIGNAL('donewithmyshit'), write)
+        self._apply.clicked.connect(partial(self.okClicked, False))
+        self.donewithmyshit.connect(write)
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._apply)
@@ -81,10 +80,9 @@ class FunctionDialog(CreateFunction):
         self.okcancel.cancelButton.hide()
         self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda func: run_func(self._status['selectedfiles'], func)
-        self.connect(self._apply, SIGNAL('clicked()'),
-            partial(self.okClicked, False))
-        self.connect(self, SIGNAL('valschanged'), write)
-        self.disconnect(self.okcancel, SIGNAL('cancel'), self.close)
+        self._apply.clicked.connect(partial(self.okClicked, False))
+        self.valschanged.connect(write)
+        self.okcancel.cancel.disconnect(self.close)
         
         hbox = QHBoxLayout()
         hbox.addStretch()
@@ -98,7 +96,7 @@ class FunctionDialog(CreateFunction):
         try:
             f, selected = self._status['firstselection']
         except IndexError:
-            widget.emit(SIGNAL('updateExample'), u'')
+            widget.updateExample.emit(u'')
             return
 
         field = selected.keys()[0]

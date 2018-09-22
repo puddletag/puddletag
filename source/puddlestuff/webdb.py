@@ -140,6 +140,7 @@ def split_strip(stringlist):
     return [[field.strip() for field in s.split(u',')] for s in stringlist]
 
 class FieldsEdit(QWidget):
+    fieldsChanged = pyqtSignal(list, name='fieldsChanged')
     def __init__(self, tags=None, parent=None):
         QWidget.__init__(self, parent)
         if not tags:
@@ -154,13 +155,13 @@ class FieldsEdit(QWidget):
         layout.addWidget(label, 0)
         layout.addWidget(self._text, 1)
 
-        self.connect(self._text, SIGNAL('textChanged(QString)'),
+        self._text.textChanged.connect(
             self.emitTags)
 
         self.setLayout(layout)
 
     def emitTags(self, text=None):
-        self.emit(SIGNAL('fieldsChanged'), self.tags(text))
+        self.fieldsChanged.emit(self.tags(text))
 
     def setTags(self, tags):
         self._text.setText(u', '.join(tags))
@@ -179,6 +180,7 @@ class FieldsEdit(QWidget):
 
 class SimpleDialog(QDialog):
     """Class for simple dialog creation."""
+    editingFinished = pyqtSignal(list, name='editingFinished')
     def __init__(self, title, controls, parent = None):
         """title => Dialog's title.
         controls is a list of 3-element-lists.
@@ -241,8 +243,8 @@ class SimpleDialog(QDialog):
                 
             self._controls.append(control)
         okcancel = OKCancel()
-        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.close)
         vbox.addLayout(okcancel)
         vbox.addStretch()
         self.setLayout(vbox)
@@ -258,10 +260,11 @@ class SimpleDialog(QDialog):
                 values.append(control.isChecked())
             elif isinstance(control, QSpinBox):
                 values.append(control.value())
-        self.emit(SIGNAL('editingFinished'), values)
+        self.editingFinished.emit(values)
         self.close()
 
 class SortOptionEditor(QDialog):
+    options = pyqtSignal(list, name='options')
     def __init__(self, options, parent = None):
         """options is a list of strings. Each a comma-delimited field list.
 
@@ -269,7 +272,7 @@ class SortOptionEditor(QDialog):
         """
 
         QDialog.__init__(self, parent)
-        connect = lambda c, signal, s: self.connect(c, SIGNAL(signal), s)
+        connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.listbox = ListBox()
         self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
 
@@ -290,8 +293,8 @@ class SortOptionEditor(QDialog):
         connect(buttons, "add", self.addPattern)
         connect(buttons, "edit", self.editItem)
         buttons.duplicateButton.setVisible(False)
-        self.connect(okcancel, SIGNAL('ok'), self.applySettings)
-        self.connect(okcancel, SIGNAL('cancel'), self.applySettings)
+        okcancel.ok.connect(self.applySettings)
+        okcancel.cancel.connect(self.applySettings)
         self.listbox.connectToListButtons(buttons)
         self.listbox.editButton = buttons.editButton
         connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
@@ -336,7 +339,7 @@ class SortOptionEditor(QDialog):
         options = [unicode(item(row).text())
             for row in xrange(self.listbox.count())]
         self.close()
-        self.emit(SIGNAL('options'), options)
+        self.options.emit(options)
 
 class SettingsDialog(QWidget):
     def __init__(self, parent = None, status = None):
@@ -358,7 +361,7 @@ class SettingsDialog(QWidget):
         self._sortoptions = QComboBox()
         sortlabel.setBuddy(self._sortoptions)
         editoptions = QPushButton(translate("Defaults", '&Edit'))
-        self.connect(editoptions, SIGNAL('clicked()'), self._editOptions)
+        editoptions.clicked.connect(self._editOptions)
         
         ua_label = QLabel(translate("WebDB",
             'User-Agent to when accessing web sites.'))
@@ -507,7 +510,7 @@ class SettingsDialog(QWidget):
         text = self._sortoptions.itemText
         win = SortOptionEditor([text(i) for i in 
             range(self._sortoptions.count())], self)
-        self.connect(win, SIGNAL('options'), self._setSortOptions)
+        win.options.connect(self._setSortOptions)
         win.setModal(True)
         win.show()
     
@@ -557,11 +560,17 @@ def tag_source_search(ts, group, files):
     return ret, files
 
 class MainWin(QWidget):
+    writepreview = pyqtSignal(name='writepreview')
+    setpreview = pyqtSignal([list], [dict], name='setpreview')
+    clearpreview = pyqtSignal(name='clearpreview')
+    enable_preview_mode = pyqtSignal(name='enable_preview_mode')
+    logappend = pyqtSignal(str, name='logappend')
+    disable_preview_mode = pyqtSignal(name='disable_preview_mode')
     def __init__(self, status, parent = None):
         QWidget.__init__(self, parent)
         self.settingsdialog = SettingsDialog
 
-        connect = lambda obj, sig, slot: self.connect(obj, SIGNAL(sig), slot)
+        connect = lambda obj, sig, slot: getattr(obj, sig).connect(slot)
 
         self.setWindowTitle("Tag Sources")
 
@@ -589,7 +598,7 @@ class MainWin(QWidget):
 
         self.sourcelist = QComboBox()
         self.sourcelist.addItems([ts.name for ts in self.__sources])
-        connect(self.sourcelist, 'currentIndexChanged (int)', self.changeSource)
+        connect(self.sourcelist, 'currentIndexChanged', self.changeSource)
 
         sourcelabel = QLabel(translate("WebDB", 'Sour&ce: '))
         sourcelabel.setBuddy(self.sourcelist)
@@ -598,27 +607,27 @@ class MainWin(QWidget):
         preferences.setIcon(QIcon(':/preferences.png'))
         preferences.setToolTip(translate("WebDB", 'Configure'))
         self.__preferencesButton = preferences
-        connect(preferences, 'clicked()', self.configure)
+        connect(preferences, 'clicked', self.configure)
 
         self.searchEdit = QLineEdit()
         self.searchEdit.setToolTip(DEFAULT_SEARCH_TIP)
-        connect(self.searchEdit, 'returnPressed()', self.search)
+        connect(self.searchEdit, 'returnPressed', self.search)
 
         self.searchButton = QPushButton(translate("WebDB", "&Search"))
         self.searchButton.setDefault(True)
         self.searchButton.setAutoDefault(True)
-        connect(self.searchButton, "clicked()", self.search)
+        connect(self.searchButton, "clicked", self.search)
 
         self.submitButton = QPushButton(translate("WebDB",
             "S&ubmit Tags"))
-        connect(self.submitButton, "clicked()", self.submit)
+        connect(self.submitButton, "clicked", self.submit)
 
         write_preview = QPushButton(translate("WebDB", '&Write'))
-        connect(write_preview, "clicked()", self.writePreview)
+        connect(write_preview, "clicked", self.writePreview)
         
         clear = QPushButton(translate("Previews", "Clea&r preview"))
-        connect(clear, "clicked()",
-            lambda: self.emit(SIGNAL('disable_preview_mode')))
+        connect(clear, "clicked",
+            lambda: self.disable_preview_mode.emit())
 
         self.label = QLabel(translate("WebDB",
             "Select files and click on Search to retrieve metadata."))
@@ -642,7 +651,7 @@ class MainWin(QWidget):
         infolabel.setOpenExternalLinks(True)
         connect(self.listbox, 'infoChanged', infolabel.setText)
 
-        connect(status_obj, 'logappend', SIGNAL('logappend'))
+        connect(status_obj, 'logappend', self.logappend)
 
         sourcebox = QHBoxLayout()
         sourcebox.addWidget(sourcelabel)
@@ -724,13 +733,13 @@ class MainWin(QWidget):
                     pref[2] = value
             win = SimpleDialog(self.curSource.name, prefs, self)
         win.setModal(True)
-        self.connect(win, SIGNAL('editingFinished'), self._applyPrefs)
+        win.editingFinished.connect(self._applyPrefs)
         win.show()
     
     def emit_preview(self, tags):
         if not self.__updateEmpty.isChecked():
-            self.emit(SIGNAL('enable_preview_mode'))
-            self.emit(SIGNAL('setpreview'), tags)
+            self.enable_preview_mode.emit()
+            self.setpreview.emit(tags)
         else:
             files = self._status['selectedfiles']
             previews = []
@@ -740,13 +749,13 @@ class MainWin(QWidget):
                     if field not in f:
                         temp[field] = r[field]
                 previews.append(temp)
-            self.emit(SIGNAL('enable_preview_mode'))
-            self.emit(SIGNAL('setpreview'), previews)
+            self.enable_preview_mode.emit()
+            self.setpreview.emit(previews)
 
     def emitExact(self, d):
         if not self.__updateEmpty.isChecked():
-            self.emit(SIGNAL('enable_preview_mode'))
-            self.emit(SIGNAL('setpreview'), d)
+            self.enable_preview_mode.emit()
+            self.setpreview.emit(d)
         else:
             previews = []
             for f, r in d.items():
@@ -755,8 +764,8 @@ class MainWin(QWidget):
                     if field not in f:
                         temp[field] = r[field]
                 previews.append(temp)
-            self.emit(SIGNAL('enable_preview_mode'))
-            self.emit(SIGNAL('setpreview'), previews)
+            self.enable_preview_mode.emit()
+            self.setpreview.emit(previews)
 
     def loadSettings(self):
         settings = PuddleConfig(os.path.join(CONFIGDIR, 'tagsources.conf'))
@@ -820,7 +829,7 @@ class MainWin(QWidget):
                 self.listbox.setReleases(releases, files)
             else:
                 self.listbox.setReleases(releases)
-            self.listbox.emit(SIGNAL('infoChanged'), '')
+            self.listbox.infoChanged.emit('')
 
     def search(self):
         if not self.searchButton.isEnabled():
@@ -853,7 +862,7 @@ class MainWin(QWidget):
                     'An unhandled error occurred: %1').arg(unicode(e))
         self.searchButton.setEnabled(False)
         t = PuddleThread(search, self)
-        self.connect(t, SIGNAL('threadfinished'), self.setResults)
+        t.threadfinished.connect(self.setResults)
         t.start()
 
     def submit(self):
@@ -879,7 +888,7 @@ class MainWin(QWidget):
             return translate("WebDB", "Submission completed.")
 
         t = PuddleThread(submit, self)
-        self.connect(t, SIGNAL('threadfinished'), end)
+        t.threadfinished.connect(end)
         t.start()
 
     def saveSettings(self):
@@ -901,7 +910,7 @@ class MainWin(QWidget):
             self.listbox.setMapping({})
 
     def writePreview(self):
-        self.emit(SIGNAL('writepreview'))
+        self.writepreview.emit()
         self.label.setText(translate("WebDB", "<b>Tags were written.</b>"))
 
 control = ('Tag Sources', MainWin, RIGHTDOCK, False)

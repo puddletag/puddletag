@@ -70,6 +70,8 @@ def loadsets():
     return sets
 
 class DupeTree(QTreeWidget):
+    loadtags = pyqtSignal(list, name='loadtags')
+    toplevel = pyqtSignal('QTreeWidgetItem', name='toplevel')
     def __init__(self, *args, **kwargs):
         QTreeWidget.__init__(self,*args)
         self.emits = ['loadtags']
@@ -98,7 +100,7 @@ class DupeTree(QTreeWidget):
 
     def selectionChanged(self, selected, deselected):
         QTreeWidget.selectionChanged(self, selected, deselected)
-        self.emit(SIGNAL('loadtags'), self.selectedFiles())
+        self.loadtags.emit(self.selectedFiles())
 
     def loadDupes(self, lib, algos, dispformat, maintag = 'artist'):
         self.clear()
@@ -117,10 +119,10 @@ class DupeTree(QTreeWidget):
                         [child.addChild(QTreeWidgetItem([
                             tagtofilename(dispformat[1],x)])) for x in
                                 sorted(z[1:], key=title_sort)]
-                    self.emit(SIGNAL('toplevel'), item)
+                    self.toplevel.emit(item)
                 yield None
         s = progress(what, 'Checking ', len(artists))
-        self.connect(self, SIGNAL('toplevel'), self._addItem)
+        self.toplevel.connect(self._addItem)
         if self.parentWidget():
             s(self.parentWidget())
         else:
@@ -173,9 +175,9 @@ class DupeTree(QTreeWidget):
         #delete = QAction('Delete duplicates', self)
         #remove = QAction('Remove from listing', self)
 
-        #self.connect(delete, SIGNAL('triggered()'), self._move)
-        #self.connect(create, SIGNAL('triggered()'), self._delete)
-        #self.connect(rename, SIGNAL('triggered()'), self._remove)
+        #delete.triggered.connect(self._move)
+        #create.triggered.connect(self._delete)
+        #rename.triggered.connect(self._remove)
         #[menu.addAction(z) for z in [move, remove, delete]]
         #menu.exec_(event.globalPos())
 
@@ -189,6 +191,7 @@ class DupeTree(QTreeWidget):
         #pass
 
 class AlgWin(QWidget):
+    okCLickedSignal = pyqtSignal(Algo, name='okClicked')
     def __init__(self, parent=None, alg = None):
         QWidget.__init__(self, parent)
         winsettings('algwin', self)
@@ -208,8 +211,8 @@ class AlgWin(QWidget):
         okcancel = OKCancel()
         okcancel.okButton.setDefault(True)
 
-        self.connect(okcancel, SIGNAL("ok") , self.okClicked)
-        self.connect(okcancel, SIGNAL("cancel"),self.close)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.close)
 
         vbox = QVBoxLayout()
         [vbox.addWidget(z) for z in [taglabel,self.tags, perlabel, self.threshold,
@@ -261,10 +264,11 @@ class AlgWin(QWidget):
         return Algo(tags, threshold, func, matchcase)
 
     def okClicked(self):
-        self.emit(SIGNAL('okClicked'), self.saveAlgo())
+        self.okClickedSignal.emit(self.saveAlgo())
         self.close()
 
 class SetDialog(QDialog):
+    setAvailable = pyqtSignal(list, name='setAvailable')
     def __init__(self, parent=None):
         QDialog.__init__(self,parent)
         winsettings('setdialog', self)
@@ -278,7 +282,7 @@ class SetDialog(QDialog):
         comboadd = QToolButton()
         comboadd.setIcon(QIcon(':/filenew.png'))
         comboadd.setToolTip('Add set')
-        self.connect(comboadd, SIGNAL('clicked()'), self.addSet)
+        comboadd.clicked.connect(self.addSet)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.setscombo)
@@ -321,8 +325,8 @@ class SetDialog(QDialog):
 
         okcancel = OKCancel()
         vbox.addLayout(okcancel)
-        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.cancelClicked)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.cancelClicked)
         self.setLayout(vbox)
 
         self.fill(loadsets())
@@ -351,8 +355,7 @@ class SetDialog(QDialog):
         self.setscombo.addItems([z[0] for z in sets])
         self.currentSet = sets[0]
         self.setscombo.setCurrentIndex(0)
-        self.connect(self.setscombo, SIGNAL('currentIndexChanged (int)'),
-                        self.changeSet)
+        self.setscombo.currentIndexChanged.connect(self.changeSet)
 
     def _setCurrentSet(self, s):
         [text.setText(disp) for text, disp in zip(self.texts, s[1])]
@@ -386,7 +389,7 @@ class SetDialog(QDialog):
     def add(self):
         win = AlgWin(self)
         win.setModal(True)
-        self.connect(win, SIGNAL('okClicked'), self.addBuddy)
+        win.okClickedSignal.connect(self.addBuddy)
         win.show()
 
     def addBuddy(self, alg):
@@ -396,7 +399,7 @@ class SetDialog(QDialog):
     def edit(self):
         win = AlgWin(self, self.currentSet[2][self.listbox.currentRow()])
         win.setModal(True)
-        self.connect(win, SIGNAL('okClicked'), self.editBuddy)
+        win.okClickedSignal.connect(self.editBuddy)
         win.show()
 
     def editBuddy(self, alg):
@@ -421,7 +424,7 @@ class SetDialog(QDialog):
                    'maintag': unicode(self.maintag.currentText())}
         saveset(**prevset)
         self.close()
-        self.emit(SIGNAL('setAvailable'), *self.currentSet)
+        self.setAvailable.emit(self.currentSet)
 
     def cancelClicked(self):
         self.close()
@@ -439,7 +442,7 @@ def init(parent=None):
     action = QAction('Dupes in Lib', parent)
     #if not status['library']:
         #action.setEnabled(False)
-    parent.connect(action, SIGNAL('triggered()'), lambda: load_window(parent))
+    action.triggered.connect(lambda: load_window(parent))
     add_shortcuts('&Tools', [action])
     
 

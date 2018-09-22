@@ -43,7 +43,7 @@ class StoredTags(QScrollArea):
         self._grid.setMargin(3)
         widget.setLayout(self._grid)
         self.setWidget(widget)
-        #self.connect(widget, SIGNAL('wheelEvent'), self._hScroll)
+        #widget.wheelEvent.connect(self._hScroll)
 
     def load(self):
         audios = self._status['selectedfiles']
@@ -123,7 +123,7 @@ class StoredTags(QScrollArea):
             self._loading = False
 
         thread = PuddleThread(retrieve_tag, self)
-        thread.connect(thread, SIGNAL('threadfinished'), _load)
+        thread.threadfinished.connect(_load)
         #print 'starting thread', time.time()
         thread.start()
 

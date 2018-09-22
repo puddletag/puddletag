@@ -503,7 +503,7 @@ class ConfigWindow(QWidget):
         hbox.addStretch()
         hbox.addWidget(openfile)
         vbox.addLayout(hbox)
-        self.connect(openfile, SIGNAL('clicked()'), self.getFile)
+        openfile.clicked.connect(self.getFile)
         vbox.addStretch()
         self.setLayout(vbox)
         self.dbpath.selectAll()

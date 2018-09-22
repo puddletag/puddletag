@@ -21,8 +21,8 @@ class LogDialog(QWidget):
         copy = QPushButton(translate("Logs", '&Copy'))
         clear = QPushButton(translate("Logs", '&Clear'))
 
-        self.connect(copy, SIGNAL('clicked()'), self._copy)
-        self.connect(clear, SIGNAL('clicked()'), self._clear)
+        copy.clicked.connect(self._copy)
+        clear.clicked.connect(self._clear)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self._text)

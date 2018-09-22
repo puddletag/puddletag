@@ -34,5 +34,5 @@ def init(parent=None):
         return k
 
     action = QAction('Export tags', parent)
-    action.connect(action, SIGNAL('triggered()'), export_tags)
+    action.triggered.connect(export_tags)
     add_shortcuts('&Plugins', [sep(), action, sep()])

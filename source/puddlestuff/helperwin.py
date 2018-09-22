@@ -31,6 +31,7 @@ ITALICS = 2
 TAG_DISP = u"<b>%s: </b> %s, "
 
 class AutonumberDialog(QDialog):
+    newtracks = pyqtSignal(int, int, 'Qt::CheckState', int, str, str, 'Qt::CheckState', name='newtracks')
     def __init__(self, parent=None, minval=0, numtracks = 0,
         enablenumtracks = False):
             
@@ -77,7 +78,7 @@ class AutonumberDialog(QDialog):
             self._numtracks.setValue(numtracks)
         self._restart_numbering = QCheckBox(translate('Autonumbering Wizard',
             "&Restart numbering at each directory group."))
-        self.connect(self._restart_numbering, SIGNAL("stateChanged(int)"),
+        self._restart_numbering.stateChanged.connect(
                      self.showDirectorySplittingOptions)
 
         vbox.addLayout(hbox(self._separator, self._numtracks))
@@ -117,12 +118,12 @@ class AutonumberDialog(QDialog):
         vbox.addLayout(okcancel)
         self.setLayout(vbox)
 
-        self.connect(okcancel,SIGNAL('ok'), self.emitValuesAndSave)
-        self.connect(okcancel,SIGNAL('cancel'),self.close)
-        self.connect(self._separator, SIGNAL("stateChanged(int)"),
+        okcancel.ok.connect(self.emitValuesAndSave)
+        okcancel.cancel.connect(self.close)
+        self._separator.stateChanged.connect(
             lambda v: self._numtracks.setEnabled(v == Qt.Checked))
         
-        # self.connect(self._restart_numbering, SIGNAL("stateChanged(int)"),
+        # self._restart_numbering.stateChanged.connect(
         #              self.showDirectorySplittingOptions)
 
         self._separator.setChecked(enablenumtracks)
@@ -157,7 +158,7 @@ class AutonumberDialog(QDialog):
 
         self.close()
         
-        self.emit(SIGNAL("newtracks"),
+        self.newtracks.emit(
                   self._start.value(),
                   numtracks,
                   self._restart_numbering.checkState(),
@@ -209,6 +210,7 @@ class AutonumberDialog(QDialog):
 
 class ImportTextFile(QDialog):
     """Dialog that importing a text file to retrieve tags from."""
+    Newtags = pyqtSignal(list, unicode, name='Newtags')
     def __init__(self,parent = None, filename = None, clipboard = None):
         QDialog.__init__(self, parent)
         
@@ -246,7 +248,7 @@ class ImportTextFile(QDialog):
             translate('Text File -> Tag', "&Select File"))
         getclip = QPushButton(
             translate('Text File -> Tag', "&Paste Clipboard"))
-        self.connect(getclip, SIGNAL('clicked()'), self.openClipBoard)
+        getclip.clicked.connect(self.openClipBoard)
 
         hbox.addWidget(self.openfile)
         hbox.addWidget(getclip)
@@ -256,9 +258,9 @@ class ImportTextFile(QDialog):
         grid.addLayout(hbox, 3, 0, 1, 4)
         self.setLayout(grid)
 
-        self.connect(self.openfile,SIGNAL("clicked()"),self.openFile)
-        self.connect(self.cancel, SIGNAL("clicked()"),self.close)
-        self.connect(self.ok, SIGNAL("clicked()"), self.emitValues)
+        self.openfile.clicked.connect(self.openFile)
+        self.cancel.clicked.connect(self.close)
+        self.ok.clicked.connect(self.emitValues)
 
         if clipboard:
             self.openClipBoard()
@@ -272,7 +274,7 @@ class ImportTextFile(QDialog):
     def emitValues(self):
         """When I'm done, emit a signal with the updated tags."""
         self.close()
-        self.emit(SIGNAL("Newtags"), self.dicttags,
+        self.Newtags.emit(self.dicttags,
             unicode(self.patterncombo.currentText()))
 
     def fillTags(self, string = None): #string is there purely for the SIGNAL
@@ -328,8 +330,8 @@ class ImportTextFile(QDialog):
         self.setLines()
         self.fillTags()
         self.show()
-        self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
-        self.connect(self.patterncombo, SIGNAL("editTextChanged(QString)"),
+        self.file.textChanged.connect(self.setLines)
+        self.patterncombo.editTextChanged.connect(
             self.fillTags)
         self.lastDir = os.path.dirname(filename)
 
@@ -340,9 +342,8 @@ class ImportTextFile(QDialog):
         self.setLines()
         self.fillTags()
         self.show()
-        self.connect(self.file, SIGNAL("textChanged()"), self.setLines)
-        self.connect(self.patterncombo,
-            SIGNAL("editTextChanged(QString)"), self.fillTags)
+        self.file.textChanged.connect(self.setLines)
+        self.patterncombo.editTextChanged.connect(self.fillTags)
 
     def setLines(self):
         self.lines = unicode(self.file.document().toPlainText())
@@ -378,6 +379,7 @@ class EditField(QDialog):
     in the form {field: value}.
     (Because the user might choose to edit a different tag,
     then the one that was chosen and you'd want to delete that one)"""
+    donewithmyshit = pyqtSignal(unicode, unicode, object, name='donewithmyshit')
 
     def __init__(self, field=None, parent=None, field_list=None, edit=True):
 
@@ -423,14 +425,14 @@ class EditField(QDialog):
         self.vbox.addLayout(okcancel)
         self.setLayout(self.vbox)
 
-        self.connect(okcancel, SIGNAL("ok"), self.ok)
-        self.connect(okcancel, SIGNAL("cancel"), self.close)
+        okcancel.ok.connect(self.ok)
+        okcancel.cancel.connect(self.close)
 
         self.value.setFocus() if self.__oldField else self.tagcombo.setFocus()
 
     def ok(self):
         self.close()
-        self.emit(SIGNAL("donewithmyshit"),
+        self.donewithmyshit.emit(
             unicode(self.tagcombo.currentText()),
             unicode(self.value.toPlainText()),
             self.__oldField)
@@ -499,7 +501,7 @@ class VerticalHeader(QHeaderView):
         self.setDefaultSectionSize(self.minimumSectionSize() + 4)
         self.setMinimumSectionSize(1)
 
-        self.connect(self, SIGNAL('sectionResized(int, int, int)'),
+        self.sectionResized.connect(
             self._resize)
 
     def _resize(self, row, oldsize, newsize):
@@ -591,6 +593,8 @@ class ExTags(QDialog):
     """A dialog that shows you the tags in a file
 
     In addition, any attached cover art is shown."""
+    rowChanged = pyqtSignal(object, name='rowChanged')
+    extendedtags = pyqtSignal(dict, name='extendedtags')
     def __init__(self, parent=None, row=None, files=None, preview_mode=False,
         artwork=True, status=None):
 
@@ -626,19 +630,18 @@ class ExTags(QDialog):
         header.setSortIndicator (0, Qt.AscendingOrder)
 
         self.piclabel = PicWidget(buttons = True)
-        self.connect(self.piclabel, SIGNAL('imageChanged'),
+        self.piclabel.imageChanged.connect(
             self._imageChanged)
 
         if not isinstance(self.piclabel.removepic, QAction):
-            self.connect(self.piclabel.removepic, SIGNAL('clicked()'),
+            self.piclabel.removepic.clicked.connect(
                 self.removePic)
         else:
-            self.connect(self.piclabel.removepic,
-                SIGNAL('triggered()'), self.removePic)
+            self.piclabel.removepic.triggered.connect(self.removePic)
 
         if row >= 0 and files:
             buttons = MoveButtons(files, row)
-            self.connect(buttons, SIGNAL('indexChanged'), self._prevnext)
+            buttons.indexChanged.connect(self._prevnext)
             buttons.setVisible(True)
         else:
             buttons = MoveButtons([], row)
@@ -653,7 +656,7 @@ class ExTags(QDialog):
         self._reset.setToolTip(translate('Extended Tags',
                 'Resets the selected fields to their original value.'))
         self._reset.setIcon(get_icon('edit-undo', ':/undo.png'))
-        self.connect(self._reset, SIGNAL('clicked()'), self.resetFields)
+        self._reset.clicked.connect(self.resetFields)
 
         self.listbuttons = ListButtons()
         self.listbuttons.layout().addWidget(self._reset)
@@ -690,18 +693,15 @@ class ExTags(QDialog):
         layout.addLayout(self.okcancel)
         self.setLayout(layout)
 
-        self.connect(self.okcancel, SIGNAL("cancel"), self.closeMe)
-        self.connect(self.table,
-            SIGNAL("itemDoubleClicked(QTableWidgetItem *)"), self.editField)
-        self.connect(self.table,
-            SIGNAL("itemSelectionChanged()"), self._checkListBox)
-        self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
+        self.okcancel.cancel.connect(self.closeMe)
+        self.table.itemDoubleClicked.connect(self.editField)
+        self.table.itemSelectionChanged.connect(self._checkListBox)
+        self.okcancel.ok.connect(self.okClicked)
         
-        clicked = SIGNAL('clicked()')
-        self.connect(self.listbuttons, SIGNAL('edit'), self.editField)
-        self.connect(self.listbuttons.addButton, clicked, self.addField)
-        self.connect(self.listbuttons.removeButton, clicked, self.removeField)
-        self.connect(self.listbuttons, SIGNAL('duplicate'), self.duplicate)
+        self.listbuttons.edit.connect(self.editField)
+        self.listbuttons.addButton.clicked.connect(self.addField)
+        self.listbuttons.removeButton.clicked.connect(self.removeField)
+        self.listbuttons.duplicate.connect(self.duplicate)
 
         self.setMinimumSize(450, 350)
 
@@ -717,7 +717,7 @@ class ExTags(QDialog):
         win = EditField(parent=self, field_list=self.get_fieldlist)
         win.setModal(True)
         win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editFieldBuddy)
+        win.donewithmyshit.connect(self.editFieldBuddy)
 
     def _checkListBox(self):
         if self.table.rowCount() <= 0:
@@ -776,7 +776,7 @@ class ExTags(QDialog):
                 buddy = partial(self.editFieldBuddy, duplicate=True)
             else:
                 buddy = self.editFieldBuddy
-            self.connect(win, SIGNAL("donewithmyshit"), buddy)
+            win.donewithmyshit.connect(buddy)
 
     def editFieldBuddy(self, tag, value, prevtag = None, duplicate=False):
         rowcount = self.table.rowCount()
@@ -979,7 +979,7 @@ class ExTags(QDialog):
         if self.filechanged:
             self.save()
         self.loadFiles([self._files[row]])
-        self.emit(SIGNAL('rowChanged'), row)
+        self.rowChanged.emit(row)
 
     def get_item(self, row, column=None):
         if column is None: #Assume QModelIndex passed
@@ -1048,11 +1048,10 @@ class ExTags(QDialog):
             self.piclabel.context = 'No Images'
             self.piclabel.removepic.setEnabled(False)
             if not isinstance(self.piclabel.removepic, QAction):
-                self.disconnect(self.piclabel.removepic, SIGNAL('clicked()'),
+                self.piclabel.removepic.clicked.disconnect(
                     self.removePic)
             else:
-                self.discconnect(self.piclabel.removepic,
-                    SIGNAL('triggered()'), self.removePic)
+                self.piclabel.removepic.triggered.disconnect(self.removePic)
             
             
             self.piclabel.setImages(None)
@@ -1079,7 +1078,7 @@ class ExTags(QDialog):
         newtags = [z for z in tags if z not in self.get_fieldlist]
         if newtags and newtags != ['__image']:
             settaglist(newtags + self.get_fieldlist)
-        self.emit(SIGNAL('extendedtags'), tags)
+        self.extendedtags.emit(tags)
 
     def _settag(self, row, field, value, status=None, preview=False,
                 check=False, multi=False):
@@ -1136,7 +1135,7 @@ class ConfirmationErrorDialog(QDialog):
         checkbox = QCheckBox(
             translate("Defaults", "Never show this message again."))
 
-        self.connect(ok, SIGNAL('clicked()'), partial(self.saveState, name))
+        ok.clicked.connect(partial(self.saveState, name))
 
         labelbox = QHBoxLayout()
         labelbox.addWidget(icon)

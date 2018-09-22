@@ -145,24 +145,21 @@ class ActionEditorDelegate(QItemDelegate):
             if event.type() == QEvent.KeyPress:
                 obj.keyPressEvent(event)
                 if obj.valid:
-                    self.emit(SIGNAL("commitData(QWidget *)"), self.editor)
-                    self.emit(SIGNAL("closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)"),
-                              self.editor, QItemDelegate.NoHint)
+                    self.commitData.emit(self.editor)
+                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
             
             elif event.type() == QEvent.KeyRelease:
                 obj.keyReleaseEvent(event)
                 if obj.text().isEmpty():
-                    self.emit(SIGNAL("closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)"),
-                              self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
             
             elif event.type() == QEvent.MouseButtonPress:
                 obj.mousePressEvent(event)
                 if obj.valid:
-                    self.emit(SIGNAL("commitData(QWidget *)"), self.editor)
-                    self.emit(SIGNAL("closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)"),
-                              self.editor, QItemDelegate.NoHint)
+                    self.commitData.emit(self.editor)
+                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
         
         return False
@@ -219,8 +216,7 @@ class ActionEditorDialog(QWidget):
         self.actionTable.verticalHeader().hide()
         self.actionTable.setItemDelegate(ActionEditorDelegate(self))
         
-        self.connect(self.actionTable, SIGNAL("cellChanged(int, int)"),
-                     self.validateAction)
+        self.actionTable.cellChanged.connect(self.validateAction)
         
         row = 0
         for action in self.actions:

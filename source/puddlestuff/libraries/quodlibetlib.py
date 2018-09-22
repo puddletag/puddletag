@@ -358,7 +358,7 @@ class InitWidget(QWidget):
 
         hbox = QHBoxLayout()
         select_db = QPushButton(translate("QuodLibet", "..."))
-        self.connect(select_db, SIGNAL('clicked()'), self.select_db)
+        select_db.clicked.connect(self.select_db)
         hbox.addWidget(self.dbpath)
         hbox.addWidget(select_db)
         vbox.addLayout(hbox)

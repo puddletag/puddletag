@@ -143,7 +143,7 @@ class GeneralSettings(QWidget):
             if i > 0:
                 self._lang_combo.setCurrentIndex(i)
         
-        self.connect(edit_sort_options, SIGNAL('clicked()'), 
+        edit_sort_options.clicked.connect(
             self.editSortOptions)
 
         hbox = QHBoxLayout()
@@ -168,7 +168,7 @@ class GeneralSettings(QWidget):
 
         from puddlestuff.webdb import SortOptionEditor
         win = SortOptionEditor(options, self)
-        self.connect(win, SIGNAL('options'), self.applySortOptions)
+        win.options.connect(self.applySortOptions)
         win.show()
     
     def applySortOptions(self, options):
@@ -209,7 +209,7 @@ class Playlist(QWidget):
         self.extpattern.setText(cparser.load('playlist', 'extpattern','%artist% - %title%'))
 
         self.extinfo = QCheckBox(translate("Playlist Settings", '&Write extended info'), self)
-        self.connect(self.extinfo, SIGNAL('stateChanged(int)'), self.extpattern.setEnabled)
+        self.extinfo.stateChanged.connect(self.extpattern.setEnabled)
         self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo',1, True)))
         self.extpattern.setEnabled(self.extinfo.checkState())
 
@@ -286,7 +286,7 @@ class TagMappings(QWidget):
         buttons.connectToWidget(self)
         buttons.moveupButton.setVisible(False)
         buttons.movedownButton.setVisible(False)
-        self.connect(buttons, SIGNAL('duplicate'), self.duplicate)
+        buttons.duplicate.connect(self.duplicate)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
@@ -505,11 +505,12 @@ class ListModel(QAbstractListModel):
 class SettingsList(QListView):
     """Just want a list that emits a selectionChanged signal, with
     the currently selected row."""
+    selectionChangedSignal = pyqtSignal(int, name='selectionChanged')
     def __init__(self, parent = None):
         QListView.__init__(self, parent)
 
     def selectionChanged(self, selected, deselected):
-        self.emit(SIGNAL("selectionChanged"), selected.indexes()[0].row())
+        self.selectionChangedSignal.emit(selected.indexes()[0].row())
 
 class StatusWidgetItem(QTableWidgetItem):
     def __init__(self, text, color):
@@ -563,15 +564,15 @@ class ColorEdit(QWidget):
         vbox.addWidget(label)
         vbox.addWidget(self.listbox)
         self.setLayout(vbox)
-        self.connect(self.listbox, SIGNAL('cellDoubleClicked(int,int)'), self.edit)
+        self.listbox.cellDoubleClicked.connect(self.edit)
 
     def edit(self, row, column):
         self._status = (row, self.listbox.item(row, column).background())
         win = QColorDialog(self)
         win.setCurrentColor(self.listbox.item(row, column).background().color())
-        self.connect(win, SIGNAL('currentColorChanged(const QColor&)'),
+        win.currentColorChanged.connect(
             self.intermediateColor)
-        self.connect(win, SIGNAL('rejected()'), self.setColor)
+        win.rejected.connect(self.setColor)
         win.open()
 
     def setColor(self):
@@ -649,7 +650,7 @@ class SettingsDialog(QDialog):
         self.grid.setColumnStretch(1, 2)
         self.setLayout(self.grid)
 
-        self.connect(self.listbox, SIGNAL("selectionChanged"), self.showOption)
+        self.listbox.selectionChangedSignal.connect(self.showOption)
 
         selection = QItemSelection()
         self.selectionModel= QItemSelectionModel(self.model)
@@ -662,9 +663,9 @@ class SettingsDialog(QDialog):
         self.okbuttons.okButton.setDefault(True)
         self.grid.addLayout(self.okbuttons, 1,0,1,2)
 
-        self.connect(self.okbuttons,SIGNAL("ok"), self.saveSettings)
-        self.connect(self, SIGNAL("accepted"),self.saveSettings)
-        self.connect(self.okbuttons,SIGNAL("cancel"), self.close)
+        self.okbuttons.ok.connect(self.saveSettings)
+        self.accepted.connect(self.saveSettings)
+        self.okbuttons.cancel.connect(self.close)
 
     def showOption(self, option):
         widget = self._widgets[option][1]

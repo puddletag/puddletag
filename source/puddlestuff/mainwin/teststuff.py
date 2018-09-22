@@ -92,24 +92,25 @@ class Tag(audioinfo.MockTag):
 
 
 class TestWidget(QWidget):
+    setpreview = pyqtSignal(dict, name='setpreview')
     def __init__(self, parent=None, status = None):
         QWidget.__init__(self, parent)
         self.emits = ['setpreview']
         self.receives = []
         button = QPushButton('Set Previews')
-        self.connect(button, SIGNAL('clicked()'), self._changePreview)
+        button.clicked.connect(self._changePreview)
         self._status = status
         
         load1000button = QPushButton('Load 1000')
-        self.connect(load1000button, SIGNAL('clicked()'), self._load1000)
+        load1000button.clicked.connect(self._load1000)
         self._status = status
         
         save_tags = QPushButton('Save Files')
-        self.connect(save_tags, SIGNAL('clicked()'), self._saveTags)
+        save_tags.clicked.connect(self._saveTags)
         self._status = status
         
         load_many = QPushButton('Load Many')
-        self.connect(load_many, SIGNAL('clicked()'), self._loadMany)
+        load_many.clicked.connect(self._loadMany)
         self._status = status
 
         box = QVBoxLayout()
@@ -125,7 +126,7 @@ class TestWidget(QWidget):
         d = {}
         for f in files:
             d[f] = {'artist': 'Preview Artist', 'title': 'Preview Title'}
-        self.emit(SIGNAL('setpreview'), d)
+        self.setpreview.emit(d)
     
     def _load1000(self):
         table = PuddleDock._controls['table']

@@ -91,7 +91,7 @@ class AboutPuddletag(QDialog):
         ok = OKCancel()
         ok.cancelButton.setVisible(False)
         vbox.addLayout(ok)
-        self.connect(ok, SIGNAL('ok'), self.close)
+        ok.ok.connect(self.close)
         self.setLayout(vbox)
 
 if __name__ == '__main__':

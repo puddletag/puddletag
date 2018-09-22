@@ -88,6 +88,7 @@ class ChildItem(TreeWidgetItem):
 
 class LibChooseDialog(QDialog):
     """Dialog used to choose a library to load."""
+    adddock = pyqtSignal(str, 'QDialog', int, name='adddock')
     def __init__(self, parent = None):
         """Dialogs that allows users to load music libraries.
 
@@ -147,12 +148,12 @@ class LibChooseDialog(QDialog):
 
         self.listbox.addItems([z['name'] for z in self.libattrs])
         self.stackwidgets = [z['module'].InitWidget() for z in  self.libattrs]
-        self.connect(self.listbox, SIGNAL('currentRowChanged (int)'),
+        self.listbox.currentRowChanged.connect(
             self.changeWidget)
 
         okcancel = OKCancel()
-        self.connect(okcancel, SIGNAL('ok'), self.loadLib)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self.loadLib)
+        okcancel.cancel.connect(self.close)
 
         self.stack = QStackedWidget()
         self.stack.setFrameStyle(QFrame.Box)
@@ -206,12 +207,13 @@ class LibChooseDialog(QDialog):
                 QMessageBox.NoButton)
         else:
             dialog = partial(LibraryDialog, library)
-            self.emit(SIGNAL('adddock'),
+            self.adddock.emit(
                 translate('MusicLib', 'Music Library'), dialog, RIGHTDOCK)
             self.close()
 
 class LibraryDialog(QWidget):
     """Widget containing a LibraryTree widget and searching options."""
+    loadtags = pyqtSignal(list, name='loadtags')
     def __init__(self, library, parent=None, status = None):
         """Creates a library browser widget.
 
@@ -227,9 +229,9 @@ class LibraryDialog(QWidget):
 
         self.searchtext = QLineEdit()
         searchbutton = QPushButton(translate('MusicLib', '&Search'))
-        self.connect(self.searchtext, SIGNAL('returnPressed()'),
+        self.searchtext.returnPressed.connect(
                 self.searchTree)
-        self.connect(searchbutton, SIGNAL('clicked()'),
+        searchbutton.clicked.connect(
             self.searchTree)
 
         self._library = library
@@ -237,7 +239,7 @@ class LibraryDialog(QWidget):
 
         self.tree = LibraryTree(library)
         self.loadLib = self.tree.loadLib
-        self.connect(self.tree, SIGNAL('loadtags'), SIGNAL('loadtags'))
+        self.tree.loadtags.connect(self.loadtags)
         self.receives = [('deletedfromlib', self.tree.updateDeleted),
             ('libfilesedited', self.tree.updateEdited)]
 
@@ -272,6 +274,7 @@ class LibraryDialog(QWidget):
         self.tree.search(unicode(self.searchtext.text()))
 
 class LibraryTree(QTreeWidget):
+    loadtags = pyqtSignal(list, name='loadtags')
     def __init__(self, library, parent = None):
         QTreeWidget.__init__(self, parent)
         self.__searchResults = []
@@ -284,9 +287,9 @@ class LibraryTree(QTreeWidget):
         self.CLOSED_ICON = self.style().standardIcon(QStyle.SP_DirClosedIcon)
         self.OPEN_ICON = self.style().standardIcon(QStyle.SP_DirOpenIcon)
 
-        self.connect(self, SIGNAL('itemCollapsed (QTreeWidgetItem *)'),
+        self.itemCollapsed.connect(
             lambda item: item.setIcon(0, self.CLOSED_ICON))
-        self.connect(self, SIGNAL('itemExpanded (QTreeWidgetItem *)'),
+        self.itemExpanded.connect(
             lambda item: item.setIcon(0, self.OPEN_ICON))
 
         self.library = library
@@ -339,16 +342,15 @@ class LibraryTree(QTreeWidget):
                 tracks = get_artist_tracks(item.artist)
             total.extend(tracks)
 
-        self.emit(SIGNAL('loadtags'), total)
+        self.loadtags.emit(total)
 
     def loadLib(self, library):
         if self.library:
             self.library.close()
         self.fillFromLib(library)
         self.library = library
-        self.disconnect(self,
-            SIGNAL('itemSelectionChanged()'), self.getTracks)
-        self.connect(self, SIGNAL('itemSelectionChanged()'), self.getTracks)
+        self.itemSelectionChanged.disconnect(self.getTracks)
+        self.itemSelectionChanged.connect(self.getTracks)
 
     def populate(self, data, select = False):
         icon = self.CLOSED_ICON
@@ -463,7 +465,7 @@ if __name__ == "__main__":
     lib = quodlibetlib.QuodLibet('~/.quodlibet/songs')
     qb = LibraryDialog(lib, status = {})
     def b(l): print len(l)
-    QObject.connect(qb, SIGNAL('loadtags'), b)
+    qb.loadtags.connect(b)
     
     qb.show()
     app.exec_()

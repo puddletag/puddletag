@@ -145,8 +145,7 @@ class PluginConfig(QDialog):
             item.plugin = plugin
             self._listbox.addItem(item)
         
-        self.connect(self._listbox, 
-            SIGNAL('currentItemChanged(QListWidgetItem*, QListWidgetItem *)'),
+        self._listbox.currentItemChanged.connect(
             lambda item, previous: info_display.changeInfo(item.plugin))
     
     def get_to_load(self):

@@ -171,15 +171,15 @@ def trans_imagetypes():
         (translate("Cover Type", 'Publisher/Studio logotype'), translate("Cover Type", 'PL'))]
 
 class CoverButton(QPushButton):
+    currentIndexChanged = pyqtSignal(int, name='currentIndexChanged')
     def __init__(self, *args):
         QPushButton.__init__(self, *args)
         menu = QMenu(self)
 
-        triggered = SIGNAL('triggered()')
         def create(title, short, index):
             text = u'[%s] %s' % (short, title)
             action = QAction(text, self)
-            self.connect(action, triggered, lambda: self.setCurrentIndex(index))
+            action.triggered.connect(lambda: self.setCurrentIndex(index))
             return action
 
         actions = [create(title, short, index) for index, (title, short) 
@@ -194,7 +194,7 @@ class CoverButton(QPushButton):
             self.setText(imagetypes[index][1])
         except IndexError:
             self.setText(imagetypes[DEFAULT_COVER][1])
-        self.emit(SIGNAL('currentIndexChanged (int)'), index)
+        self.currentIndexChanged.emit(index)
         self._index = index
     
     def currentIndex(self):
@@ -863,23 +863,23 @@ def progress(func, pstring, maximum, threadfin = None):
             while not win.wasCanceled:
                 try:
                     temp = f.next()
-                    if isinstance(temp, (QString, str, unicode)):
-                        thread.emit(SIGNAL('message(QString)'), QString(temp))
+                    if isinstance(temp, (str, unicode)):
+                        thread.message.emit(QString(temp))
                     elif isinstance(temp, (int, long)):
-                        thread.emit(SIGNAL('set_max(int)'), temp)
+                        thread.set_max.emit(temp)
                     elif temp is not None:
-                        thread.emit(SIGNAL('error(QString, int)'),
+                        thread.error.emit(
                             temp[0], temp[1])
                         err = True
                         break
                     else:
-                        thread.emit(SIGNAL('win(int)'), i)
+                        thread.win.emit(i)
                 except StopIteration:
                     break
                 i += 1
 
             if not err:
-                thread.emit(SIGNAL('win(int)'), -1)
+                thread.win.emit(-1)
 
         def threadexit(*args):
             if args[0] == -1:
@@ -897,7 +897,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     if ret is True:
                         parent.showmessage = False
                     elif ret is False:
-                        thread.emit(SIGNAL('win(int)'), -1)
+                        thread.win.emit(-1)
                         return
                 if not win.isVisible():
                     win.show()
@@ -915,10 +915,10 @@ def progress(func, pstring, maximum, threadfin = None):
             win.pbar.setMaximum(value)
 
         thread = PuddleThread(threadfunc, parent)
-        thread.connect(thread, SIGNAL('win(int)'), threadexit)
-        thread.connect(thread, SIGNAL('error(QString, int)'), threadexit)
-        thread.connect(thread, SIGNAL('message(QString)'), set_message)
-        thread.connect(thread, SIGNAL('set_max(int)'), set_max)
+        thread.win.connect(threadexit)
+        thread.error.connect(threadexit)
+        thread.message.connect(set_message)
+        thread.set_max.connect(set_max)
         thread.start()
     return s
 
@@ -933,6 +933,7 @@ def timemethod(method):
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""
+    headerChanged = pyqtSignal([list], [object, list], name='headerChanged')
     def __init__(self, tags=None, parent=None, showok=True, showedits=True):
 
         QDialog.__init__(self, parent)
@@ -969,25 +970,24 @@ class HeaderSetting(QDialog):
         self.grid.setColumnStretch(1,1)
         self.grid.setColumnStretch(0,2)
 
-        self.connect(self.listbox,
-            SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"),
+        self.listbox.currentItemChanged.connect(
             self.fillEdits)
 
-        self.connect(self.listbox, SIGNAL("itemSelectionChanged()"),self.enableEdits)
+        self.listbox.itemSelectionChanged.connect(self.enableEdits)
 
         self.okbuttons = OKCancel()
         if showok is True:
             self.grid.addLayout(self.okbuttons, 2,0,1,2)
         self.setLayout(self.grid)
 
-        self.connect(self.okbuttons, SIGNAL("ok"), self.okClicked)
-        self.connect(self.okbuttons, SIGNAL("cancel"), self.close)
-        self.connect(self.textname, SIGNAL("textChanged (const QString&)"), self.updateList)
-        self.connect(self.buttonlist, SIGNAL("add"), self.add)
-        self.connect(self.buttonlist, SIGNAL("moveup"), self.moveup)
-        self.connect(self.buttonlist, SIGNAL("movedown"), self.movedown)
-        self.connect(self.buttonlist, SIGNAL("remove"), self.remove)
-        self.connect(self.buttonlist, SIGNAL("duplicate"), self.duplicate)
+        self.okbuttons.ok.connect(self.okClicked)
+        self.okbuttons.cancel.connect(self.close)
+        self.textname.textChanged.connect(self.updateList)
+        self.buttonlist.add.connect(self.add)
+        self.buttonlist.moveup.connect(self.moveup)
+        self.buttonlist.movedown.connect(self.movedown)
+        self.buttonlist.remove.connect(self.remove)
+        self.buttonlist.duplicate.connect(self.duplicate)
 
         self.listbox.setCurrentRow(0)
 
@@ -1001,8 +1001,8 @@ class HeaderSetting(QDialog):
 
     def remove(self):
         if len(self.tags) == 1: return
-        self.disconnect(self.textname, SIGNAL("textChanged (const QString&)"), self.updateList)
-        self.disconnect(self.listbox, SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"), self.fillEdits)
+        self.textname.textChanged.disconnect(self.updateList)
+        self.listbox.currentItemChanged.disconnect(self.fillEdits)
         self.listbox.removeSelected(self.tags)
         row = self.listbox.currentRow()
         #self.listbox.clear()
@@ -1015,8 +1015,8 @@ class HeaderSetting(QDialog):
         else:
             self.listbox.setCurrentRow(self.listbox.count() -1)
         self.fillEdits(self.listbox.currentItem(), None)
-        self.connect(self.textname, SIGNAL("textChanged (const QString&)"), self.updateList)
-        self.connect(self.listbox, SIGNAL("currentItemChanged (QListWidgetItem *,QListWidgetItem *)"), self.fillEdits)
+        self.textname.textChanged.connect(self.updateList)
+        self.listbox.currentItemChanged.connect(self.fillEdits)
 
     def moveup(self):
         self.listbox.moveUp(self.tags)
@@ -1046,7 +1046,7 @@ class HeaderSetting(QDialog):
         if row > -1:
             self.tags[row][0] = unicode(self.textname.text())
             self.tags[row][1] = unicode(self.tag.currentText())
-        self.emit(SIGNAL("headerChanged"),[z for z in self.tags])
+        self.headerChanged.emit([z for z in self.tags])
         self.close()
 
     def add(self):
@@ -1111,9 +1111,9 @@ class ListBox(QListWidget):
         yourlist is used a the argument in these functions if
         no other yourlist is passed."""
         self.editButton = listbuttons.editButton
-        self.connect(listbuttons, SIGNAL('moveup'), self.moveUp)
-        self.connect(listbuttons, SIGNAL('movedown'), self.moveDown)
-        self.connect(listbuttons, SIGNAL('remove'), self.removeSelected)
+        listbuttons.moveup.connect(self.moveUp)
+        listbuttons.movedown.connect(self.moveDown)
+        listbuttons.remove.connect(self.removeSelected)
         self.yourlist = yourlist
 
     def removeSelected(self, yourlist = None, rows = None):
@@ -1213,6 +1213,12 @@ class ListButtons(QVBoxLayout):
     buttons name. e.g. add sends SIGNAL("add").
 
     You can find them all in the widgets attribute."""
+    addSignal = pyqtSignal(name='add')
+    removeSignal = pyqtSignal(name='remove')
+    moveupSignal = pyqtSignal(name='moveup')
+    movedownSignal = pyqtSignal(name='movedown')
+    editSignal = pyqtSignal(name='edit')
+    duplicateSignal = pyqtSignal(name='duplicate')
 
     def __init__(self, parent = None):
         QVBoxLayout.__init__(self, parent)
@@ -1244,13 +1250,12 @@ class ListButtons(QVBoxLayout):
         [z.setIconSize(QSize(16,16)) for z in self.widgets]
         self.addStretch()
 
-        clicked = SIGNAL("clicked()")
-        self.connect(self.addButton, clicked, self.addClicked)
-        self.connect(self.removeButton, clicked, self.removeClicked)
-        self.connect(self.moveupButton, clicked, self.moveupClicked)
-        self.connect(self.movedownButton, clicked, self.movedownClicked)
-        self.connect(self.editButton, clicked, self.editClicked)
-        self.connect(self.duplicateButton, clicked, self.duplicateClicked)
+        self.addButton.clicked.connect(self.addClicked)
+        self.removeButton.clicked.connect(self.removeClicked)
+        self.moveupButton.clicked.connect(self.moveupClicked)
+        self.movedownButton.clicked.connect(self.movedownClicked)
+        self.editButton.clicked.connect(self.editClicked)
+        self.duplicateButton.clicked.connect(self.duplicateClicked)
 
     def connectToWidget(self, widget, add=None, edit=None, remove=None,
                         moveup=None, movedown=None, duplicate=None):
@@ -1264,33 +1269,34 @@ class ListButtons(QVBoxLayout):
         connections = dict([(z,v) for z,v in zip(l,
                                 [add, edit, remove, moveup, movedown,
                                 duplicate]) if v])
-        connect = lambda a: self.connect(self, SIGNAL(a),
+        connect = lambda a: getattr(self, a).connect(
                     connections[a] if a in connections else getattr(widget, a))
         map(connect, l)
 
     def addClicked(self):
-        self.emit(SIGNAL("add"))
+        self.addSignal.emit()
 
     def setEnabled(self, value):
         [w.setEnabled(value) for w in self.widgets]
         super(ListButtons, self).setEnabled(value)
 
     def removeClicked(self):
-        self.emit(SIGNAL("remove"))
+        self.removeSignal.emit()
 
     def moveupClicked(self):
-        self.emit(SIGNAL("moveup"))
+        self.moveupSignal.emit()
 
     def movedownClicked(self):
-        self.emit(SIGNAL("movedown"))
+        self.movedownSignal.emit()
 
     def editClicked(self):
-        self.emit(SIGNAL("edit"))
+        self.editSignal.emit()
 
     def duplicateClicked(self):
-        self.emit(SIGNAL('duplicate'))
+        self.duplicateSignal.emit()
 
 class MoveButtons(QWidget):
+    indexChanged = pyqtSignal(int, name='indexChanged')
     def __init__(self, arrayname, index = 0, orientation = HORIZONTAL, parent = None):
         QWidget.__init__(self, parent)
         self.next = QPushButton(translate("List Buttons", '&>>'))
@@ -1309,8 +1315,8 @@ class MoveButtons(QWidget):
 
         self.setLayout(box)
         self.index = index
-        self.connect(self.next, SIGNAL('clicked()'), self.nextClicked)
-        self.connect(self.prev, SIGNAL('clicked()'), self.prevClicked)
+        self.next.clicked.connect(self.nextClicked)
+        self.prev.clicked.connect(self.prevClicked)
 
     def _setCurrentIndex(self, index):
         try:
@@ -1339,7 +1345,7 @@ class MoveButtons(QWidget):
             self.prev.show()
             self.next.show()
 
-        self.emit(SIGNAL('indexChanged'), index)
+        self.indexChanged.emit(index)
 
     def _getCurrentIndex(self):
         return self._currentindex
@@ -1357,6 +1363,8 @@ class MoveButtons(QWidget):
 
 class OKCancel(QHBoxLayout):
     """Yes, I know about QDialogButtonBox, but I'm not using PyQt5.2 here."""
+    ok = pyqtSignal(name='ok')
+    cancel = pyqtSignal(name='cancel')
     def __init__(self, parent = None):
         QHBoxLayout.__init__(self, parent)
         #QDialogButtonBox.__init__(self, parent)
@@ -1377,14 +1385,14 @@ class OKCancel(QHBoxLayout):
         #self.addWidget(self.okButton)
         #self.addWidget(self.cancelButton)
 
-        self.connect(self.okButton, SIGNAL("clicked()"), self.yes)
-        self.connect(self.cancelButton, SIGNAL("clicked()"), self.no)
+        self.okButton.clicked.connect(self.yes)
+        self.cancelButton.clicked.connect(self.no)
 
     def yes(self):
-        self.emit(SIGNAL("ok"))
+        self.ok.emit()
 
     def no(self):
-        self.emit(SIGNAL("cancel"))
+        self.cancel.emit()
 
 class LongInfoMessage(QDialog):
     def __init__(self, title, question, html, parent =None):
@@ -1399,8 +1407,8 @@ class LongInfoMessage(QDialog):
 
         okcancel = OKCancel()
 
-        self.connect(okcancel, SIGNAL('ok'), self._ok)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self._ok)
+        okcancel.cancel.connect(self.close)
 
         vbox = QVBoxLayout()
         self.setWindowTitle(title)
@@ -1415,6 +1423,8 @@ class LongInfoMessage(QDialog):
 
 
 class ArtworkLabel(QGraphicsView):
+    newImages = pyqtSignal(list, name='newImages')
+    clicked = pyqtSignal(name='clicked')
     def __init__(self, *args, **kwargs):
         super(ArtworkLabel, self).__init__(*args, **kwargs)
 
@@ -1452,13 +1462,13 @@ class ArtworkLabel(QGraphicsView):
         mime = event.mimeData()
         if mime.hasUrls():
             filenames = [unicode(z.toString()) for z in mime.urls()]
-            self.emit(SIGNAL('newImages'), *filenames)
+            self.newImages.emit(filenames)
         super(ArtworkLabel, self).dropEvent(event)
 
     def mousePressEvent(self, event):
         super(ArtworkLabel, self).mousePressEvent(event)
         if event.buttons() == Qt.LeftButton:
-            self.emit(SIGNAL('clicked()'))
+            self.clicked.emit()
 
     def resizeEvent(self, event=None):
         if event is not None:
@@ -1504,7 +1514,7 @@ class PicWidget(QWidget):
     saveToFile -> Save the current image to file.
     showbuttons -> If True, the >> and << buttons are always shown. If False,
                     they are shown depending on context."""
-
+    imageChanged = pyqtSignal(name='imageChanged')
     def __init__ (self, images = None, imagetags = None, parent = None, 
         readonly = None, buttons = False):
         """Initialises the widget.
@@ -1537,7 +1547,7 @@ class PicWidget(QWidget):
         self._itags = []
 
         self.label.setAlignment(Qt.AlignCenter)
-        self.connect(self.label, SIGNAL('newImages'), 
+        self.label.newImages.connect(
             lambda *filenames: self.addImages(self.loadPics(*filenames)))
 
         self._image_desc = QLineEdit(self)
@@ -1553,8 +1563,7 @@ class PicWidget(QWidget):
             '<p>For ID3 tags the description has to be different for each '
             "cover as per the ID3 spec. If they don't differ then spaces "
             'are appended to the description when the tag is saved.</p>'))
-        self.connect(self._image_desc, SIGNAL('textEdited (const QString&)'),
-            self.setDescription)
+        self._image_desc.textEdited.connect(self.setDescription)
         controls = QVBoxLayout()
 
         if buttons:
@@ -1581,8 +1590,7 @@ class PicWidget(QWidget):
         self._image_type.setToolTip(
             translate("Artwork",
                 '<p>Select a cover type for the artwork.</p>'))
-        self.connect(self._image_type, SIGNAL('currentIndexChanged (int)'),
-                            self.setType)
+        self._image_type.currentIndexChanged.connect(self.setType)
 
         self.showbuttons = True
 
@@ -1594,8 +1602,8 @@ class PicWidget(QWidget):
         self.next.setArrowType(Qt.RightArrow)
         self.prev = QToolButton()
         self.prev.setArrowType(Qt.LeftArrow)
-        self.connect(self.next, SIGNAL('clicked()'), self.nextImage)
-        self.connect(self.prev, SIGNAL('clicked()'), self.prevImage)
+        self.next.clicked.connect(self.nextImage)
+        self.prev.clicked.connect(self.prevImage)
 
         self._contextlabel = QLabel()
         self._contextlabel.setVisible(False)
@@ -1632,7 +1640,7 @@ class PicWidget(QWidget):
             vbox.addLayout(movebuttons)
         vbox.setAlignment(Qt.AlignCenter)
 
-        self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
+        self.label.clicked.connect(self.maxImage)
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
@@ -1652,7 +1660,7 @@ class PicWidget(QWidget):
             listbuttons.insertWidget(3,self.savepic)
             listbuttons.moveupButton.hide()
             listbuttons.movedownButton.hide()
-            signal = SIGNAL('clicked()')
+            signal = 'clicked'
             hbox.addLayout(listbuttons)
 
         else:
@@ -1668,13 +1676,13 @@ class PicWidget(QWidget):
 
             self.editpic = QAction(translate("Artwork", "&Change cover"), self)
             self.label.addAction(self.editpic)
-            signal = SIGNAL('triggered()')
+            signal = 'triggered'
 
-        self.connect(self.addpic, signal, self.addImage)
-        self.connect(self.removepic, signal, self.removeImage)
+        getattr(self.addpic, signal).connect(self.addImage)
+        getattr(self.removepic, signal).connect(self.removeImage)
         self.edit = partial(self.addImage, True)
-        self.connect(self.editpic, signal, self.edit)
-        self.connect(self.savepic, signal, self.saveToFile)
+        getattr(self.editpic, signal).connect(self.edit)
+        getattr(self.savepic, signal).connect(self.saveToFile)
 
         self.win = PicWin(parent = self)
         self._currentImage = -1
@@ -1706,13 +1714,13 @@ class PicWidget(QWidget):
         '''Sets the description of the current image to the text in the
             description text box.'''
         self.images[self.currentImage]['description'] = unicode(text)
-        self.emit(SIGNAL('imageChanged'))
+        self.imageChanged.emit()
 
     def setType(self, index):
         """Like setDescription, but for imagetype"""
         try:
             self.images[self.currentImage]['imagetype'] = index
-            self.emit(SIGNAL('imageChanged'))
+            self.imageChanged.emit()
         except IndexError:
             pass
 
@@ -1747,7 +1755,7 @@ class PicWidget(QWidget):
                 else:
                     self.images.append(pic)
                     self.currentImage = len(self.images) - 1
-            self.emit(SIGNAL('imageChanged'))
+            self.imageChanged.emit()
     
     def addImages(self, images):
         if not self._itags or not images:
@@ -1758,7 +1766,7 @@ class PicWidget(QWidget):
             self.currentImage = index
         else:
             self.setImages(images)
-        self.emit(SIGNAL('imageChanged'))
+        self.imageChanged.emit()
 
     def close(self):
         self.win.close()
@@ -1928,7 +1936,7 @@ class PicWidget(QWidget):
                 self.currentImage = len(self.images) - 1
             else:
                 self.currentImage =  self.currentImage
-        self.emit(SIGNAL('imageChanged'))
+        self.imageChanged.emit()
 
     def loadPics(self, *filenames):
         """Loads pictures from the filenames"""
@@ -2019,7 +2027,7 @@ class PicWin(QDialog):
         if pixmap is not None:
             self.setImage(pixmap)
 
-        self.connect(self.label, SIGNAL('clicked()'), self.close)
+        self.label.clicked.connect(self.close)
 
     def setImage(self, pixmap):
         maxsize = QDesktopWidget().availableGeometry().size()
@@ -2038,6 +2046,7 @@ class PicWin(QDialog):
             
 
 class ProgressWin(QDialog):
+    canceled = pyqtSignal(name='canceled')
     def __init__(self, parent=None, maximum = 100, progresstext = '', showcancel = True):
         QDialog.__init__(self, parent)
         self._infunc = False
@@ -2075,8 +2084,8 @@ class ProgressWin(QDialog):
         vbox.addLayout(cbox)
         self.setLayout(vbox)
         self.wasCanceled = False
-        self.connect(self, SIGNAL('rejected()'), self.cancel)
-        self.connect(cancel, SIGNAL('clicked()'), self.cancel)
+        self.rejected.connect(self.cancel)
+        cancel.clicked.connect(self.cancel)
         
         if maximum > 0:
             self.setValue(1)
@@ -2085,7 +2094,7 @@ class ProgressWin(QDialog):
             self._timer.setInterval(100)
             def update():
                 self.setValue(self.pbar.value() + 1)
-            self.connect(self._timer, SIGNAL('timeout()'), update)
+            self._timer.timeout.connect(update)
 
         if maximum <= 0:
             self._timer.start()
@@ -2105,7 +2114,7 @@ class ProgressWin(QDialog):
 
     def cancel(self):
         self.wasCanceled = True
-        self.emit(SIGNAL('canceled()'))
+        self.canceled.emit()
         self.close()
 
     def closeEvent(self, event):
@@ -2119,6 +2128,7 @@ class ProgressWin(QDialog):
     value = property(_value)
 
 class PuddleCombo(QWidget):
+    editTextChanged = pyqtSignal(unicode, name='editTextChanged')
     def __init__(self, name, default = None, parent = None):
         QWidget.__init__(self, parent)
         hbox = QHBoxLayout()
@@ -2130,7 +2140,7 @@ class PuddleCombo(QWidget):
         self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
         self.remove.setToolTip(translate("Combo Box", 'Remove current item.'))
         self.remove.setIconSize(QSize(13, 13))
-        self.connect(self.remove, SIGNAL('clicked()'), (self.removeCurrent))
+        self.remove.clicked.connect(self.removeCurrent)
 
         hbox.addWidget(self.combo)
         hbox.addWidget(self.remove)
@@ -2151,7 +2161,7 @@ class PuddleCombo(QWidget):
         newitems = []
         [newitems.append(z) for z in items if z not in newitems]
         self.combo.addItems(newitems)
-        self.connect(self.combo, SIGNAL('editTextChanged(const QString&)'),
+        self.combo.editTextChanged.connect(
                 self._editTextChanged)
 
     def load(self, name = None, default = None):
@@ -2176,7 +2186,7 @@ class PuddleCombo(QWidget):
         self.combo.removeItem(self.combo.currentIndex())
 
     def _editTextChanged(self, text):
-        self.emit(SIGNAL('editTextChanged(const QString&)'), text)
+        self.editTextChanged.emit(text)
     
     def closeEvent(self, event):
         QWidget.closeEvent(self, event)
@@ -2187,6 +2197,7 @@ class PuddleDock(QDockWidget):
     """A normal QDockWidget that emits a 'visibilitychanged' signal
     when...uhm...it changes visibility."""
     _controls = {}
+    visibilitychanged = pyqtSignal(bool, name='visibilitychanged')
 
     def __init__(self, title, control=None, parent=None, status=None):
         QDockWidget.__init__(self, translate("Dialogs", title), parent)
@@ -2200,7 +2211,7 @@ class PuddleDock(QDockWidget):
 
     def setVisible(self, visible):
         QDockWidget.setVisible(self, visible)
-        self.emit(SIGNAL('visibilitychanged'), visible)
+        self.visibilitychanged.emit(visible)
 
 class PuddleHeader(QHeaderView):
     def __init__(self, orientation = Qt.Horizontal, parent = None):
@@ -2230,7 +2241,7 @@ class PuddleHeader(QHeaderView):
                 action.setChecked(False)
             else:
                 action.setChecked(True)
-            self.connect(action, SIGNAL('toggled(bool)'), change_visibility)
+            action.toggled.connect(change_visibility)
             return action
 
         header_actions = [create_action(section) 
@@ -2265,9 +2276,17 @@ class PuddleThread(QThread):
     """puddletag rudimentary threading.
     pass a command to run in another thread. The result
     is stored in retval."""
+    threadfinished = pyqtSignal(object, name='threadfinished')
+    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    enable_preview_mode = pyqtSignal(name='enable_preview_mode')
+    setpreview = pyqtSignal(dict, name='setpreview')
+    message = pyqtSignal(unicode, name='message')
+    set_max = pyqtSignal(int, name='set_max')
+    error = pyqtSignal([unicode, int], name='error')
+    win = pyqtSignal(int, name='win')
     def __init__(self, command, parent = None):
         QThread.__init__(self, parent)
-        self.connect(self, SIGNAL('finished()'), self._finish)
+        self.finished.connect(self._finish)
         self.command = command
         self.retval = None
 
@@ -2280,11 +2299,12 @@ class PuddleThread(QThread):
 
     def _finish(self):
         if hasattr(self, 'retval'):
-            self.emit(SIGNAL('threadfinished'), self.retval)
+            self.threadfinished.emit(self.retval)
         else:
-            self.emit(SIGNAL('threadfinished'), None)
+            self.threadfinished.emit(None)
 
 class ShortcutEditor(QLineEdit):
+    validityChanged = pyqtSignal(bool, name='validityChanged')
     def __init__(self, shortcuts=None, *args, **kwargs):
         QLineEdit.__init__(self, *args, **kwargs)
         winsettings('shortcutcapture', self)
@@ -2328,7 +2348,7 @@ class ShortcutEditor(QLineEdit):
 
     def _setValid(self, value):
         self._valid = value
-        self.emit(SIGNAL('validityChanged'), value)
+        self.validityChanged.emit(value)
 
     valid = property(_getValid, _setValid)
 

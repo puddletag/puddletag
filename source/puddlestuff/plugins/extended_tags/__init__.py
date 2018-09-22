@@ -10,6 +10,7 @@ from puddlestuff.puddleobjects import (settaglist)
 from puddlestuff.audioinfo import commontags
 
 class ExTagsPlugin(ExTags):
+    onetomany = pyqtSignal(dict, name='onetomany')
     def __init__(self, parent = None, row=None, files=None, status=False):
         super(ExTags, self).__init__(parent)
 
@@ -36,7 +37,7 @@ class ExTagsPlugin(ExTags):
             self.loadFiles(files)
 
         action = QAction('Save Extended', self)
-        self.connect(action, SIGNAL('triggered()'), self.save)
+        action.triggered.connect(self.save)
         action.setShortcut('Ctrl+Shift+S')
 
         def sep():
@@ -49,7 +50,7 @@ class ExTagsPlugin(ExTags):
         win = EditField(parent=self, taglist=self.get_fieldlist)
         win.setModal(True)
         win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+        win.donewithmyshit.connect(self.editTagBuddy)
 
     def _imageChanged(self):
         self.filechanged = True
@@ -105,7 +106,7 @@ class ExTagsPlugin(ExTags):
         if newtags and newtags != ['__image']:
             settaglist(newtags + self.get_fieldlist)
         tags.update({'__image': self._status['images']})
-        self.emit(SIGNAL('onetomany'), tags)
+        self.onetomany.emit(tags)
 
     def _tag(self, row, status = None):
         getitem = self.table.item

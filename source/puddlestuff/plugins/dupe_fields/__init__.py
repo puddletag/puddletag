@@ -6,7 +6,10 @@ from PyQt5.QtWidgets import *
 
 from puddlestuff.plugins import status, add_shortcuts, connect_control
 
-obj = QObject()
+class _SignalObject(QObject):
+    highlight = pyqtSignal(list, name='highlight')
+
+obj = _SignalObject()
 
 def highlight_dupe_field():
     field, ok = QInputDialog.getText(None, 'puddletag', 'Field to compare')
@@ -32,11 +35,11 @@ def highlight_dupe_field():
                 highlight.append(f)
         value = f.get(field)
         prev = f
-    obj.emit(SIGNAL('highlight'), highlight)
+    obj.highlight.emit(highlight)
     obj.sender().setChecked(True)
 
 def remove_highlight():
-    obj.emit(SIGNAL('highlight'), [])
+    obj.highlight.emit([])
     obj.sender().setChecked(False)
 
 def init(parent=None):
@@ -48,7 +51,7 @@ def init(parent=None):
 
     action = QAction('Dupe highlight', parent)
     action.setCheckable(True)
-    action.connect(action, SIGNAL('toggled(bool)'),
+    action.toggled.connect(
         lambda v: highlight_dupe_field() if v else remove_highlight())
     add_shortcuts('&Plugins', [sep(), action, sep()])
 
