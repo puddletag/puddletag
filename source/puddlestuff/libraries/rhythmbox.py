@@ -29,8 +29,8 @@ import puddlestuff.audioinfo as audioinfo
 FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 try:
     import puddlestuff.musiclib as musiclib
 except:

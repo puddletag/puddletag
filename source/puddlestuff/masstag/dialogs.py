@@ -4,8 +4,8 @@ import glob, os, pdb, string, sys
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 from puddlestuff.constants import RIGHTDOCK
 from puddlestuff.puddleobjects import (create_buddy, natcasecmp, ratio,

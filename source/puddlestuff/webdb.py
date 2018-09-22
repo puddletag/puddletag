@@ -6,8 +6,9 @@ from collections import defaultdict
 from copy import copy, deepcopy
 from functools import partial
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import *
 
 import puddlestuff
 

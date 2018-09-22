@@ -1,7 +1,8 @@
 ## -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
+from PyQt5.QtCore import *
 import sys,os, audioinfo, resource, pdb
 from operator import itemgetter
 from copy import copy, deepcopy

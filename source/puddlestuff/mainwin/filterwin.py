@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import (QWidget, QLabel, QComboBox,
+from PyQt5.QtWidgets import (QWidget, QLabel, QComboBox,
     QLineEdit, QHBoxLayout, QPushButton, QApplication)
-from PyQt4.QtCore import SIGNAL, QTimer
+from PyQt5.QtCore import QTimer
 from puddlestuff.puddleobjects import gettaglist, create_buddy, PuddleCombo
 from puddlestuff.constants import BOTTOMDOCK
 from puddlestuff.translations import translate

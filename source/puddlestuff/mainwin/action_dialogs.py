@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from puddlestuff.actiondlg import ActionWindow, CreateFunction
 from puddlestuff.constants import RIGHTDOCK, SELECTIONCHANGED
-from PyQt4.QtGui import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
-from PyQt4.QtCore import SIGNAL, Qt
+from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
+from PyQt5.QtCore import Qt
 from puddlestuff.mainwin.funcs import run_func, applyaction
 from puddlestuff.puddleobjects import PuddleConfig
 from functools import partial

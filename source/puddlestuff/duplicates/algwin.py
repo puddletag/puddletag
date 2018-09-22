@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QDrag, QPixmap, QContextMenuEvent, QDoubleValidator, \
+    QIcon
+from PyQt5.QtCore import *
 import sys, os, pdb
 import puddlestuff.constants, puddlestuff.resource
 from decimal import Decimal

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4 import QtGui
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5 import QtGui
 import sys, findfunc, pdb, os, resource, string, functions
 from copy import copy, deepcopy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \

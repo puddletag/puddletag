@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import *
 from copy import deepcopy
 from functools import partial
 import os, shutil, pdb, mutex

@@ -7,8 +7,8 @@ from os.path import splitext, exists
 from configobj import ConfigObj
 import logging
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 from puddlestuff.translations import translate
 
 NAME = 'name'

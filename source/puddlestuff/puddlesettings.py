@@ -5,8 +5,9 @@ import sys, resource, os
 
 from copy import copy, deepcopy
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QBrush, QColor, QPalette
+from PyQt5.QtCore import *
 
 
 from puddlestuff import genres, confirmations, audioinfo

@@ -7,8 +7,8 @@ import cPickle as pickle
 from collections import defaultdict
 from functools import partial
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 import quodlibet.config
 from quodlibet.parse import Query

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import mutagen, os, cPickle as pickle, sys, traceback
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 from puddlestuff.plugins import status, add_shortcuts, connect_control
 

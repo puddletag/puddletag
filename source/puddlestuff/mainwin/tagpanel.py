@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QBrush
 import pdb, sys, os, sip
 from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
 from puddlestuff.audioinfo.util import commonimages

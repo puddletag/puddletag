@@ -5,9 +5,11 @@
 Contains objects used throughout puddletag"""
 
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4.QtSvg import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QIcon, QTextOption, QBrush, QPixmap, QImage, \
+    QKeySequence
+from PyQt5.QtCore import *
+from PyQt5.QtSvg import *
 import json, sys, os,pdb,shutil
 from collections import defaultdict
 
@@ -24,7 +26,7 @@ import traceback
 import time, re
 from glob import glob
 from constants import ACTIONDIR, SAVEDIR, CONFIGDIR
-from PyQt4.QtCore import QFile, QIODevice
+from PyQt5.QtCore import QFile, QIODevice
 from StringIO import StringIO
 import itertools
 import logging
@@ -200,7 +202,7 @@ class CoverButton(QPushButton):
 
 class PuddleConfig(object):
     """Module that allows you to values from INI config files, similar to
-    Qt's Settings module (Created it because PyQt4.4.3 has problems with
+    Qt's Settings module (Created it because PyQt5.4.3 has problems with
     saving and loading lists.
 
     Only two functions of interest:
@@ -1354,7 +1356,7 @@ class MoveButtons(QWidget):
         self.index = self.index
 
 class OKCancel(QHBoxLayout):
-    """Yes, I know about QDialogButtonBox, but I'm not using PyQt4.2 here."""
+    """Yes, I know about QDialogButtonBox, but I'm not using PyQt5.2 here."""
     def __init__(self, parent = None):
         QHBoxLayout.__init__(self, parent)
         #QDialogButtonBox.__init__(self, parent)

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys, os, unittest, time, pdb, shutil
 from os import path
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QPixmap
 import cPickle as pickle
 import mutagen, pyparsing, puddlestuff
 from puddlestuff.puddleobjects import OKCancel

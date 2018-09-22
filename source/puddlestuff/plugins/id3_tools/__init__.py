@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QObject, SIGNAL
-from PyQt4.QtGui import QApplication, QMessageBox, QAction
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QApplication, QMessageBox, QAction
 from puddlestuff.constants import FILESSELECTED
 from puddlestuff.puddleobjects import progress
 from puddlestuff import audioinfo

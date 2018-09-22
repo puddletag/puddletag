@@ -15,8 +15,8 @@ from collections import defaultdict
 from functools import partial
 from itertools import izip
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 import puddlestuff.libraries as libraries
 

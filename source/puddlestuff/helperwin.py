@@ -7,8 +7,9 @@ import os, pdb, sys
 from copy import deepcopy
 from functools import partial
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QPalette, QBrush, QColor
+from PyQt5.QtCore import *
 
 from puddlestuff.util import pprint_tag
 import puddlestuff.findfunc as findfunc

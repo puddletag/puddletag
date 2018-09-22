@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 from puddlestuff.plugins import add_shortcuts, status
 from datetime import timedelta, datetime
 import os

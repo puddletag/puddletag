@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import sys, os
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QBrush
 from puddlestuff.constants import RIGHTDOCK, LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PicWidget, open_resourcefile
 from puddlestuff.audioinfo.util import commonimages
 from puddlestuff.constants import KEEP, BLANK
-from PyQt4.QtSvg import QSvgGenerator
+from PyQt5.QtSvg import QSvgGenerator
 
 from xml.dom import minidom
 

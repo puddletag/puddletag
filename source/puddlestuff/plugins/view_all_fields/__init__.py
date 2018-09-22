@@ -2,8 +2,8 @@
 
 import os
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 from puddlestuff.constants import SAVEDIR
 from puddlestuff.plugins import add_config_widget, add_shortcuts, status

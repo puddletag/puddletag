@@ -8,7 +8,7 @@ import socket
 import urlparse
 import urllib2
 
-from PyQt4.QtCore import QObject, SIGNAL
+from PyQt5.QtCore import QObject
 
 import puddlestuff
 from puddlestuff.constants import CONFIGDIR

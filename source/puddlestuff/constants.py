@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, sys
-from PyQt4.QtCore import Qt, SIGNAL
+from PyQt5.QtCore import Qt
 from os.path import dirname, join
 from puddlestuff.translations import translate
 

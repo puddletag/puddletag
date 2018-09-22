@@ -4,7 +4,7 @@ from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.translations import translate
 import os
 
-from PyQt4.QtGui import QApplication, QWidget, QCheckBox, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
 
 NAME = 'name'
 DESC = 'description'
