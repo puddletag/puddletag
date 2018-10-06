@@ -294,7 +294,7 @@ class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
     info = property(_info)
 
 filetypes = [
-    (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
+    (OggVorbis, Ogg_Tag, u'VorbisComment', None),
     (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]
 
 if OggOpus:
