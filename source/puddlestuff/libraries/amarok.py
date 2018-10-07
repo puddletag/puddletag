@@ -289,10 +289,10 @@ class ConfigWindow(QWidget):
         return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 
     def saveSettings(self):
-        username = QVariant(self.username.text())
-        passwd = QVariant(self.passwd.text())
-        database = QVariant(self.database.text())
-        port = QVariant(self.port.text())
+        username = self.username.text()
+        passwd = self.passwd.text()
+        database = self.database.text()
+        port = self.port.text()
 
         settings = QSettings()
         settings.beginGroup('Library')
@@ -304,10 +304,10 @@ class ConfigWindow(QWidget):
 
     def loadSettings(self):
         settings.beginGroup('Library')
-        self.username.setText(settings.value('username').toString())
-        self.passwd.setText(settings.value('passwd').toString())
-        self.database.setText(settings.value('database').toString())
-        self.port.setText(settings.value('port').toString())
+        self.username.setText(settings.value('username'))
+        self.passwd.setText(settings.value('passwd'))
+        self.database.setText(settings.value('database'))
+        self.port.setText(settings.value('port'))
         settings.endGroup()
 
         return dict(user = username, passwd = passwd, db = database, port = port)
@@ -315,10 +315,10 @@ class ConfigWindow(QWidget):
 def loadLibrary():
     settings = QSettings()
     settings.beginGroup('Library')
-    username = unicode(settings.value('username').toString())
-    passwd = unicode(settings.value('passwd').toString())
-    database = unicode(settings.value('database').toString())
-    port = settings.value('port').toLongLong()[0]
+    username = unicode(settings.value('username'))
+    passwd = unicode(settings.value('passwd'))
+    database = unicode(settings.value('database'))
+    port = long(settings.value('port'))
     return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 
 

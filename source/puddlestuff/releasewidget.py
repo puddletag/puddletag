@@ -249,7 +249,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         QtCore.QAbstractItemModel.__init__(self, parent)
         
         self.mapping = {}
-        rootData = map(QtCore.QVariant, [translate("WebDB", 'Retrieved Albums')])
+        rootData = [translate("WebDB", 'Retrieved Albums')]
         self.rootItem = RootItem(rootData)
         
         self._albumPattern = ''
@@ -323,30 +323,30 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if role == Qt.DisplayRole:
             item = index.internalPointer()
-            return QVariant(item.data(index.column()))
+            return item.data(index.column())
         elif role == Qt.ToolTipRole:
             item = index.internalPointer()
-            return QVariant(tooltip(item.itemData, self.mapping))
+            return tooltip(item.itemData, self.mapping)
         elif role == Qt.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
                 return None
             if item.expanded:
-                return QVariant(self.expandedIcon)
+                return self.expandedIcon
             else:
-                return QVariant(self.collapsedIcon)
+                return self.collapsedIcon
         elif role == Qt.CheckStateRole:
             item = index.internalPointer()
             if self.isTrack(item) and '#exact' in item.itemData:
                 if item.checked:
-                    return QVariant(Qt.Checked)
+                    return Qt.Checked
                 else:
-                    return QVariant(Qt.Unchecked)
-        return QVariant()
+                    return Qt.Unchecked
+        return None
 
     def fetchMore(self, index):
         item = index.internalPointer()
@@ -412,7 +412,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             
             return ret
 
-        return QtCore.QVariant()
+        return None
 
     def index(self, row, column, parent):
         if row < 0 or column < 0 or row >= self.rowCount(parent) or \

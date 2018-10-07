@@ -290,7 +290,7 @@ def _setupsaves(func):
 
 @_setupsaves
 def savewinsize(name, dialog, settings):
-    settings.setValue(name, QVariant(dialog.saveGeometry()))
+    settings.setValue(name, dialog.saveGeometry())
 
 @_setupsaves
 def winsettings(name, dialog, settings):
@@ -2230,7 +2230,7 @@ class PuddleHeader(QHeaderView):
         model = self.model()
 
         def create_action(section):
-            title = model.headerData(section, self.orientation()).toString()
+            title = unicode(model.headerData(section, self.orientation()))
             action = QAction(title, self)
             action.setCheckable(True)
             def change_visibility(value):

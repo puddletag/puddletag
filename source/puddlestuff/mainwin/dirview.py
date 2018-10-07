@@ -152,7 +152,7 @@ class DirView(QTreeView):
         header = self.header()
         if settings.value('dirview/header'):
             header.restoreState(settings.value('dirview/header'))
-        hide = settings.value('dirview/hide', QVariant(True)).toBool()
+        hide = bool(settings.value('dirview/hide', True))
         self.setHeaderHidden(hide)
 
         if self.isVisible() == False:
@@ -261,8 +261,8 @@ class DirView(QTreeView):
     def saveSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.IniFormat)
         settings.setValue('dirview/header', 
-            QVariant(self.header().saveState()))
-        settings.setValue('dirview/hide', QVariant(self.isHeaderHidden()))
+            self.header().saveState())
+        settings.setValue('dirview/hide', self.isHeaderHidden())
 
     def selectionChanged(self, selected, deselected):
         QTreeView.selectionChanged(self, selected, deselected)

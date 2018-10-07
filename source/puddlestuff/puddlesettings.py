@@ -474,22 +474,22 @@ class ListModel(QAbstractListModel):
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
+                return int(Qt.AlignLeft|Qt.AlignVCenter)
+            return int(Qt.AlignRight|Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         if orientation == Qt.Horizontal:
-            return QVariant(self.headerdata[section])
-        return QVariant(int(section + 1))
+            return self.headerdata[section]
+        return int(section + 1)
 
     def data(self, index, role = Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.options)):
-            return QVariant()
+            return None
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
                 return self.options[index.row()][0]
-            except IndexError: return QVariant()
-        return QVariant()
+            except IndexError: return None
+        return None
 
     def widget(self, row):
         return self.options[row][1]

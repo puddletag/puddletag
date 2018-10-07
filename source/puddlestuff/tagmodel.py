@@ -671,7 +671,7 @@ class TagModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
-            return QVariant()
+            return None
         
         if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
             try:
@@ -679,11 +679,11 @@ class TagModel(QAbstractTableModel):
                 tag = self.headerdata[index.column()][1]
                 val = self._toString(audio[tag])
             except (KeyError, IndexError):
-                return QVariant()
+                return None
 
             if role == Qt.ToolTipRole:
                 if not self.showToolTip:
-                    return QVariant()
+                    return None
                 if self.previewMode and \
                     audio.preview and tag in audio.preview:
                     try:
@@ -699,13 +699,13 @@ class TagModel(QAbstractTableModel):
                 else:
                     tooltip = val
                 return tooltip
-            return QVariant(val)
+            return val
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]
             if audio.color:
-                return QVariant(audio.color)
+                return audio.color
             elif self.previewMode and audio.preview:
-                return QVariant(self.previewBackground)
+                return self.previewBackground
         elif role == Qt.FontRole:
             
             field = self.headerdata[index.column()][1]
@@ -719,8 +719,8 @@ class TagModel(QAbstractTableModel):
                     f.setBold(True)
                 else:
                     f.setItalic(True)
-            return QVariant(f)
-        return QVariant()
+            return f
+        return None
 
     def deleteTag(self, row=None, audio=None, delete=True):
         if row is not None:
@@ -750,16 +750,16 @@ class TagModel(QAbstractTableModel):
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
+                return int(Qt.AlignLeft|Qt.AlignVCenter)
+            return int(Qt.AlignRight|Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         if orientation == Qt.Horizontal:
             try:
                 return self.headerdata[section][0]
             except IndexError:
-                return QVariant()
-        return QVariant(long(section + 1))
+                return None
+        return long(section + 1)
     
     def highlight(self, rows):
         rows = rows[::]
@@ -1010,7 +1010,7 @@ class TagModel(QAbstractTableModel):
             column = index.column()
             tag = self.headerdata[column][1]
             currentfile = self.taginfo[index.row()]
-            newvalue = unicode(value.toString())
+            newvalue = unicode(value)
             realtag = currentfile.mapping.get(tag, tag)
             if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
                 QApplication.restoreOverrideCursor()
@@ -1259,7 +1259,7 @@ class TagDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         try:
-            model.setData(index, QVariant(editor.text()))
+            model.setData(index, editor.text())
         except EnvironmentError, e:
             editor.writeError = e
 

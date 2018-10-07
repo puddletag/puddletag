@@ -133,9 +133,9 @@ class ActionEditorDelegate(QItemDelegate):
     
     def createEditor(self, parent, option, index):
 
-        self._edited = index.data().toString()
+        self._edited = unicode(index.data())
     
-        self.editor = ActionEditorWidget(index.data().toString(), parent)
+        self.editor = ActionEditorWidget(unicode(index.data()), parent)
         self.editor.installEventFilter(self)
         return self.editor
     
@@ -174,16 +174,16 @@ class ActionEditorDelegate(QItemDelegate):
         painter.setPen(QPen(option.palette.color(QPalette.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
             Qt.TextShowMnemonic | Qt.AlignLeft | Qt.AlignVCenter,
-            index.data().toString())
+            unicode(index.data()))
     
     def setEditorData(self, editor, index):
     
-        editor.setText(index.data().toString())
+        editor.setText(unicode(index.data()))
     
     def setModelData(self, editor, model, index):
         if editor.text() != self._edited:
             index.model().edited = True
-        model.setData(index, QVariant(editor.text()))
+        model.setData(index, editor.text())
     
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)

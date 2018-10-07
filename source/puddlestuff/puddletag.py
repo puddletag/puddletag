@@ -485,10 +485,10 @@ class MainWin(QMainWindow):
         if self._lastdir:
             cparser.set('main', 'lastfolder', unicode(self._lastdir[0], 'utf8'))
         cparser.set("main", "maximized", self.isMaximized())
-        settings.setValue('main/state', QVariant(self.saveState()))
+        settings.setValue('main/state', self.saveState())
 
         headstate = self._table.horizontalHeader().saveState()
-        settings.setValue('table/header', QVariant(headstate))
+        settings.setValue('table/header', headstate)
         genres.save_genres(status['genres'])
         e.accept()
 

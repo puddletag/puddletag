@@ -520,11 +520,11 @@ class ConfigWindow(QWidget):
         return RhythmDB(unicode(self.dbpath.text()))
 
     def saveSettings(self):
-        QSettings().setValue('Library/dbpath', QVariant(self.dbpath.text()))
+        QSettings().setValue('Library/dbpath', self.dbpath.text())
 
 def loadLibrary():
     settings = QSettings()
-    return RhythmDB(unicode(settings.value('Library/dbpath').toString()))
+    return RhythmDB(unicode(settings.value('Library/dbpath')))
 
 if __name__ == '__main__':
     k = DBParser()
