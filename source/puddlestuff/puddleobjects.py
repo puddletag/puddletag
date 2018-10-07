@@ -474,7 +474,7 @@ def get_languages(dirs=None):
     d = QDir(':/')
     if d.cd('translations'):
         files.extend([os.path.join(u':/translations', t) for t in
-            map(unicode, d.entryList('*.qm'))])
+            map(unicode, d.entryList(['*.qm']))])
 
     ret = {}
     get_name = lambda s: os.path.splitext(os.path.basename(s))[0]
