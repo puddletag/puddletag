@@ -294,7 +294,8 @@ def savewinsize(name, dialog, settings):
 
 @_setupsaves
 def winsettings(name, dialog, settings):
-    dialog.restoreGeometry(settings.value(name).toByteArray())
+    if settings.value(name):
+        dialog.restoreGeometry(settings.value(name))
     cevent = dialog.closeEvent
     def closeEvent(self, event=None):
         savewinsize(name, dialog)

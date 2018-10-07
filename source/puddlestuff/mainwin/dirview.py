@@ -150,7 +150,8 @@ class DirView(QTreeView):
     def loadSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.IniFormat)
         header = self.header()
-        header.restoreState(settings.value('dirview/header').toByteArray())
+        if settings.value('dirview/header'):
+            header.restoreState(settings.value('dirview/header'))
         hide = settings.value('dirview/hide', QVariant(True)).toBool()
         self.setHeaderHidden(hide)
 
