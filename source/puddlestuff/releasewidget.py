@@ -410,7 +410,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             role == QtCore.Qt.DisplayRole:
             ret = RETRIEVED_ALBUMS % u' / '.join(self.sortOrder)
             
-            return QVariant(QString(ret))
+            return ret
 
         return QtCore.QVariant()
 

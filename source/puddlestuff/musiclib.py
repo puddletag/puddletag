@@ -48,7 +48,7 @@ class MusicLibError(Exception):
 
 class TreeWidgetItem(QTreeWidgetItem):
     def __lt__(self, item):
-        if self.text(0).toUpper() < item.text(0).toUpper():
+        if self.text(0).upper() < item.text(0).upper():
             return True
         return False
 

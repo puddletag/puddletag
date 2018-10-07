@@ -110,7 +110,7 @@ class Shortcut(QAction):
         #Nor does using blockSignals
         
         self._watcher.fileChanged.disconnect(self._checkFile)
-        filename = filename.toLocal8Bit().data()
+        filename = filename
         if not os.path.exists(filename):
             self.filenames.remove(filename)
         self.funcs = self.get_funcs()

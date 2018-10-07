@@ -480,7 +480,7 @@ class StatusWidgetItem(QTableWidgetItem):
     status = property(_get_status, _set_status)
 
     def __lt__(self, item):
-        if self.text().toUpper() < item.text().toUpper():
+        if self.text().upper() < item.text().upper():
             return True
         return False
 

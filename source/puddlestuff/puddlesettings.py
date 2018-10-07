@@ -487,7 +487,7 @@ class ListModel(QAbstractListModel):
             return QVariant()
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
-                return QVariant(QString(self.options[index.row()][0]))
+                return self.options[index.row()][0]
             except IndexError: return QVariant()
         return QVariant()
 

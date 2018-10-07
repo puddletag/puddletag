@@ -698,7 +698,7 @@ class TagModel(QAbstractTableModel):
                         tooltip = val
                 else:
                     tooltip = val
-                return QVariant(QString(tooltip))
+                return tooltip
             return QVariant(val)
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]
@@ -756,7 +756,7 @@ class TagModel(QAbstractTableModel):
             return QVariant()
         if orientation == Qt.Horizontal:
             try:
-                return QVariant(QString(self.headerdata[section][0]))
+                return self.headerdata[section][0]
             except IndexError:
                 return QVariant()
         return QVariant(long(section + 1))
@@ -1676,7 +1676,7 @@ class TagTable(QTableView):
             self.model().moveRows(mime.draggedRows, row)
             self.restoreSelection()
         else:
-            filenames = [str(z.path().toLocal8Bit()) for z
+            filenames = [z.path() for z
                 in event.mimeData().urls()]
 
             dirs = []

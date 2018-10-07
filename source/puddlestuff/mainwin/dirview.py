@@ -129,7 +129,7 @@ class DirView(QTreeView):
         parents = set([os.path.dirname(z[0]) for z in dirs])
 
         def get_str(f):
-            return model.filePath(f).toLocal8Bit().data()
+            return model.filePath(f)
 
         selected = map(get_str, self.selectedIndexes())
 
@@ -143,7 +143,7 @@ class DirView(QTreeView):
         
         for d in [z[1] for z in dirs] + selected:
             if isinstance(d, str):
-                d = QString.fromLocal8Bit(d)
+                d = d.encode('utf8')
             self.selectIndex(getindex(d))
         self._load = True
 
@@ -271,9 +271,9 @@ class DirView(QTreeView):
             return
             
         getfilename = self.model().filePath
-        dirs = list(set([getfilename(i).toLocal8Bit().data() for
+        dirs = list(set([getfilename(i) for
             i in selected.indexes()]))
-        old = list(set([getfilename(i).toLocal8Bit().data() for
+        old = list(set([getfilename(i) for
             i in deselected.indexes()]))
         if self._lastselection:
             if len(old) == self._lastselection:

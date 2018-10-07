@@ -375,7 +375,7 @@ class InitWidget(QWidget):
             self.dbpath.setText(filename)
 
     def library(self):
-        dbpath = self.dbpath.text().toLocal8Bit()
+        dbpath = self.dbpath.text()
         try:
             return QuodLibet(dbpath)
         except (IOError, OSError), e:

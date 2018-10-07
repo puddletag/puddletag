@@ -47,7 +47,7 @@ class ActionEditorWidget(QLabel):
         elif event.key() == Qt.Key_Alt:
             self.modifiers[Qt.Key_Alt] = u"Alt"
         else:
-            other = QString(QKeySequence(event.key()))
+            other = unicode(QKeySequence(event.key()))
         
         if other:
             key_string = u"+".join(self.modifiers.values() + [unicode(other),])
@@ -95,7 +95,7 @@ class ActionEditorWidget(QLabel):
     
     def paintEvent(self, event):
     
-        if not self.text().isEmpty():
+        if self.text():
         
             painter = QPainter()
             painter.begin(self)
@@ -151,7 +151,7 @@ class ActionEditorDelegate(QItemDelegate):
             
             elif event.type() == QEvent.KeyRelease:
                 obj.keyReleaseEvent(event)
-                if obj.text().isEmpty():
+                if not obj.text():
                     self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
             
@@ -221,7 +221,7 @@ class ActionEditorDialog(QWidget):
         row = 0
         for action in self.actions:
         
-            if action.text().isEmpty():
+            if not action.text():
                 continue
             
             self.actionTable.insertRow(self.actionTable.rowCount())
@@ -260,7 +260,7 @@ class ActionEditorDialog(QWidget):
         row = 0
         for action in self.actions:
         
-            if not action.text().isEmpty():
+            if action.text():
                 action.setText(self.actionTable.item(row, 0).text())
                 action.setShortcut(QKeySequence(self.actionTable.item(row, 1).text()))
                 row += 1
@@ -296,7 +296,7 @@ class ActionEditorDialog(QWidget):
         shortcutText = QKeySequence(item.text()).toString()
         thisRow = self.actionTable.row(item)
         
-        if not shortcutText.isEmpty():
+        if shortcutText:
             for row in range(self.actionTable.rowCount()):
                 if row == thisRow:
                     continue

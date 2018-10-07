@@ -240,7 +240,7 @@ class PuddleConfig(object):
 
     def set(self, section = None, key = None, value = None):
         settings = self.data
-        if isinstance(value, QString):
+        if isinstance(value, str):
             value = unicode(value)
         if section in self.data:
             settings[section][key] = value
@@ -851,7 +851,7 @@ def progress(func, pstring, maximum, threadfin = None):
         if maximum  == 1:
             errors = f.next()
             if errors and \
-                not isinstance(errors, (QString, int, long, basestring)):
+                not isinstance(errors, (unicode, str, int, long, basestring)):
                 errormsg(parent, errors[0], 1)
             if threadfin:
                 threadfin()
@@ -865,7 +865,7 @@ def progress(func, pstring, maximum, threadfin = None):
                 try:
                     temp = f.next()
                     if isinstance(temp, (str, unicode)):
-                        thread.message.emit(QString(temp))
+                        thread.message.emit(temp)
                     elif isinstance(temp, (int, long)):
                         thread.set_max.emit(temp)
                     elif temp is not None:
@@ -892,7 +892,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     try: focusedpar.setFocus()
                     except RuntimeError: pass
                 return
-            elif isinstance(args[0], QString):
+            elif isinstance(args[0], (unicode, str)):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)
                     if ret is True:
@@ -1734,8 +1734,7 @@ class PicWidget(QWidget):
 
         if not filename:
             default_fn = os.path.join(
-                os.path.dirname(self.lastfilename), 'folder.jpg')
-            default_fn = QString.fromLocal8Bit(default_fn)
+                os.path.dirname(self.lastfilename), 'folder.jpg').encode('utf8')
             filedlg = QFileDialog()
             filename = unicode(filedlg.getOpenFileName(self,
                 translate("Artwork", 'Select Image...'), default_fn,
@@ -1895,9 +1894,10 @@ class PicWidget(QWidget):
             tempfilename = 'folder.jpg'
         if self.currentImage > -1:
             filedlg = QFileDialog()
-            filename = filedlg.getSaveFileName(self,
+            filename = filedlg.getSaveFileName(
+                self,
                 translate("Artwork", 'Save artwork as...'),
-                QString.fromLocal8Bit(tempfilename),
+                tempfilename.encode('utf8'),
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
             if not filename:
                 return

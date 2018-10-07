@@ -815,7 +815,7 @@ class MainWin(QWidget):
 
     def setResults(self, retval):
         self.searchButton.setEnabled(True)
-        if isinstance(retval, (basestring, QString)):
+        if isinstance(retval, (basestring, unicode, str)):
             self.label.setText(retval)
         else:
             releases, files = retval
