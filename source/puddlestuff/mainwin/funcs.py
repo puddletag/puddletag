@@ -83,6 +83,7 @@ def clipboard_to_tag(parent=None):
 
 def connect_status(actions):
     connect = lambda a: getattr(obj, a.status).connect(a.setStatusTip)
+    actions = filter(lambda x: x.status, actions)
     map(connect, actions)
 
 def copy():
