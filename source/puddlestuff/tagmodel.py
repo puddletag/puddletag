@@ -967,8 +967,9 @@ class TagModel(QAbstractTableModel):
         #of files currently in the model then the TableView isn't updated.
         #Why the fuck I don't know, but this signal, intercepted by the table,
         #updates the view and makes everything work okay.
+        self.beginResetModel()
         self.modelReset.emit()
-        QAbstractTableModel.reset(self)
+        self.endResetModel()
 
     def rowColors(self, rows = None, clear=False):
         """Changes the background of rows to green.
