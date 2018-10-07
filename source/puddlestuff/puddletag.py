@@ -299,7 +299,9 @@ class MainWin(QMainWindow):
 
         layout = QVBoxLayout()
         layout.addWidget(self._table)
-        win.setLayout(layout)
+        layoutWidget = QWidget()
+        layoutWidget.setLayout(layout)
+        win.addWidget(layoutWidget)
         self.setCentralWidget(win)
 
         PuddleDock._controls = {
