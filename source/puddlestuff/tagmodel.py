@@ -1275,7 +1275,7 @@ class TableHeader(QHeaderView):
         if tags is not None: self.tags = tags
         self.setClickable(True)
         self.setHighlightSections(True)
-        self.setMovable(True)
+        self.setSectionsMovable(True)
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
 
