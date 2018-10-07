@@ -288,11 +288,11 @@ class SortOptionEditor(QDialog):
 
         connect(buttons, "add", self.addPattern)
         connect(buttons, "edit", self.editItem)
-        buttons.duplicate.setVisible(False)
+        buttons.duplicateButton.setVisible(False)
         self.connect(okcancel, SIGNAL('ok'), self.applySettings)
         self.connect(okcancel, SIGNAL('cancel'), self.applySettings)
         self.listbox.connectToListButtons(buttons)
-        self.listbox.editButton = buttons.edit
+        self.listbox.editButton = buttons.editButton
         connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
                     self._doubleClicked)
 

@@ -656,8 +656,8 @@ class ExTags(QDialog):
 
         self.listbuttons = ListButtons()
         self.listbuttons.layout().addWidget(self._reset)
-        self.listbuttons.moveup.hide()
-        self.listbuttons.movedown.hide()
+        self.listbuttons.moveupButton.hide()
+        self.listbuttons.movedownButton.hide()
 
         listframe = QFrame()
         listframe.setFrameStyle(QFrame.Box)
@@ -698,8 +698,8 @@ class ExTags(QDialog):
         
         clicked = SIGNAL('clicked()')
         self.connect(self.listbuttons, SIGNAL('edit'), self.editField)
-        self.connect(self.listbuttons.add, clicked, self.addField)
-        self.connect(self.listbuttons.remove, clicked, self.removeField)
+        self.connect(self.listbuttons.addButton, clicked, self.addField)
+        self.connect(self.listbuttons.removeButton, clicked, self.removeField)
         self.connect(self.listbuttons, SIGNAL('duplicate'), self.duplicate)
 
         self.setMinimumSize(450, 350)
@@ -721,20 +721,20 @@ class ExTags(QDialog):
     def _checkListBox(self):
         if self.table.rowCount() <= 0:
             self.table.setEnabled(False)
-            self.listbuttons.edit.setEnabled(False)
-            self.listbuttons.remove.setEnabled(False)
-            self.listbuttons.duplicate.setEnabled(False)
+            self.listbuttons.editButton.setEnabled(False)
+            self.listbuttons.removeButton.setEnabled(False)
+            self.listbuttons.duplicateButton.setEnabled(False)
             self._reset.setEnabled(False)
         else:
             self.table.setEnabled(True)
             self._reset.setEnabled(True)
             if len(self.table.selectedIndexes()) / 2 > 1:
-                self.listbuttons.edit.setEnabled(False)
-                self.listbuttons.duplicate.setEnabled(False)
+                self.listbuttons.editButton.setEnabled(False)
+                self.listbuttons.duplicateButton.setEnabled(False)
             else:
-                self.listbuttons.edit.setEnabled(True)
-                self.listbuttons.remove.setEnabled(True)
-                self.listbuttons.duplicate.setEnabled(True)
+                self.listbuttons.editButton.setEnabled(True)
+                self.listbuttons.removeButton.setEnabled(True)
+                self.listbuttons.duplicateButton.setEnabled(True)
         self.table.resizeColumnToContents(0)
     
     def closeEvent(self,event):

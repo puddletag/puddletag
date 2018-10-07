@@ -499,13 +499,13 @@ class SettingsWin(QWidget):
     def _enableButtons(self):
         table = self._table
         if table.rowCount() <= 0:
-            self._buttons.edit.setEnabled(False)
-            self._buttons.duplicate.setEnabled(False)
-            self._buttons.remove.setEnabled(False)
+            self._buttons.editButton.setEnabled(False)
+            self._buttons.duplicateButton.setEnabled(False)
+            self._buttons.removeButton.setEnabled(False)
         elif self._table.selectedRows():
-            self._buttons.edit.setEnabled(True)
-            self._buttons.duplicate.setEnabled(True)
-            self._buttons.remove.setEnabled(True)
+            self._buttons.editButton.setEnabled(True)
+            self._buttons.duplicateButton.setEnabled(True)
+            self._buttons.removeButton.setEnabled(True)
 
     def duplicate(self):
         table = self._table

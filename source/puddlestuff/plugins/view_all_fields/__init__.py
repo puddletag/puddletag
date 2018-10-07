@@ -112,9 +112,9 @@ class ButtonsAndList(QFrame):
 
         connect(buttons, "add", self.addItem)
         connect(buttons, "edit", self.editItem)
-        buttons.duplicate.setVisible(False)
+        buttons.duplicateButton.setVisible(False)
         self.listbox.connectToListButtons(buttons)
-        self.listbox.editButton = buttons.edit
+        self.listbox.editButton = buttons.editButton
         connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
                     self._doubleClicked)
         self.addText = add_text

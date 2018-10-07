@@ -946,7 +946,7 @@ class HeaderSetting(QDialog):
         self.tag.addItems(sorted(INFOTAGS) + gettaglist())
         self.tag.setEditable(True)
         self.buttonlist = ListButtons()
-        self.buttonlist.edit.setVisible(False)
+        self.buttonlist.editButton.setVisible(False)
 
         if showedits:
             self.vboxgrid.addWidget(QLabel(translate("Column Settings", "Title")),0,0)
@@ -1108,7 +1108,7 @@ class ListBox(QListWidget):
 
         yourlist is used a the argument in these functions if
         no other yourlist is passed."""
-        self.editButton = listbuttons.edit
+        self.editButton = listbuttons.editButton
         self.connect(listbuttons, SIGNAL('moveup'), self.moveUp)
         self.connect(listbuttons, SIGNAL('movedown'), self.moveDown)
         self.connect(listbuttons, SIGNAL('remove'), self.removeSelected)
@@ -1214,28 +1214,28 @@ class ListButtons(QVBoxLayout):
 
     def __init__(self, parent = None):
         QVBoxLayout.__init__(self, parent)
-        self.add = QToolButton()
-        self.add.setIcon(get_icon('list-add', ':/filenew.png'))
-        self.add.setToolTip(translate("List Buttons", 'Add'))
-        self.remove = QToolButton()
-        self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
-        self.remove.setToolTip(translate("List Buttons", 'Remove'))
-        self.remove.setShortcut('Delete')
-        self.moveup = QToolButton()
-        self.moveup.setArrowType(Qt.UpArrow)
-        self.moveup.setToolTip(translate("List Buttons", 'Move Up'))
-        self.movedown = QToolButton()
-        self.movedown.setArrowType(Qt.DownArrow)
-        self.movedown.setToolTip(translate("List Buttons", 'Move Down'))
-        self.edit = QToolButton()
-        self.edit.setIcon(get_icon('document-edit', ':/edit.png'))
-        self.edit.setToolTip(translate("List Buttons", 'Edit'))
-        self.duplicate = QToolButton()
-        self.duplicate.setIcon(get_icon('edit-copy', ':/duplicate.png'))
-        self.duplicate.setToolTip(translate("List Buttons", 'Duplicate'))
+        self.addButton = QToolButton()
+        self.addButton.setIcon(get_icon('list-add', ':/filenew.png'))
+        self.addButton.setToolTip(translate("List Buttons", 'Add'))
+        self.removeButton = QToolButton()
+        self.removeButton.setIcon(get_icon('list-remove', ':/remove.png'))
+        self.removeButton.setToolTip(translate("List Buttons", 'Remove'))
+        self.removeButton.setShortcut('Delete')
+        self.moveupButton = QToolButton()
+        self.moveupButton.setArrowType(Qt.UpArrow)
+        self.moveupButton.setToolTip(translate("List Buttons", 'Move Up'))
+        self.movedownButton = QToolButton()
+        self.movedownButton.setArrowType(Qt.DownArrow)
+        self.movedownButton.setToolTip(translate("List Buttons", 'Move Down'))
+        self.editButton = QToolButton()
+        self.editButton.setIcon(get_icon('document-edit', ':/edit.png'))
+        self.editButton.setToolTip(translate("List Buttons", 'Edit'))
+        self.duplicateButton = QToolButton()
+        self.duplicateButton.setIcon(get_icon('edit-copy', ':/duplicate.png'))
+        self.duplicateButton.setToolTip(translate("List Buttons", 'Duplicate'))
 
-        self.widgets = [self.add, self.edit, self.duplicate,
-            self.remove, self.moveup, self.movedown]
+        self.widgets = [self.addButton, self.editButton, self.duplicateButton,
+            self.removeButton, self.moveupButton, self.movedownButton]
         [self.addWidget(widget) for widget in self.widgets]
         self.insertStretch(4)
         self.insertSpacing(4,6)
@@ -1243,12 +1243,12 @@ class ListButtons(QVBoxLayout):
         self.addStretch()
 
         clicked = SIGNAL("clicked()")
-        self.connect(self.add, clicked, self.addClicked)
-        self.connect(self.remove, clicked, self.removeClicked)
-        self.connect(self.moveup, clicked, self.moveupClicked)
-        self.connect(self.movedown, clicked, self.movedownClicked)
-        self.connect(self.edit, clicked, self.editClicked)
-        self.connect(self.duplicate, clicked, self.duplicateClicked)
+        self.connect(self.addButton, clicked, self.addClicked)
+        self.connect(self.removeButton, clicked, self.removeClicked)
+        self.connect(self.moveupButton, clicked, self.moveupClicked)
+        self.connect(self.movedownButton, clicked, self.movedownClicked)
+        self.connect(self.editButton, clicked, self.editClicked)
+        self.connect(self.duplicateButton, clicked, self.duplicateClicked)
 
     def connectToWidget(self, widget, add=None, edit=None, remove=None,
                         moveup=None, movedown=None, duplicate=None):
@@ -1640,16 +1640,16 @@ class PicWidget(QWidget):
 
         if buttons:
             listbuttons = ListButtons()
-            listbuttons.duplicate.hide()
-            self.addpic = listbuttons.add
-            self.removepic = listbuttons.remove
-            self.editpic = listbuttons.edit
+            listbuttons.duplicateButton.hide()
+            self.addpic = listbuttons.addButton
+            self.removepic = listbuttons.removeButton
+            self.editpic = listbuttons.editButton
             self.savepic = QToolButton()
             self.savepic.setIcon(QIcon(':/save.png'))
             self.savepic.setIconSize(QSize(16,16))
             listbuttons.insertWidget(3,self.savepic)
-            listbuttons.moveup.hide()
-            listbuttons.movedown.hide()
+            listbuttons.moveupButton.hide()
+            listbuttons.movedownButton.hide()
             signal = SIGNAL('clicked()')
             hbox.addLayout(listbuttons)
 

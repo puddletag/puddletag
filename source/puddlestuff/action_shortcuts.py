@@ -159,7 +159,7 @@ class Editor(QDialog):
             SIGNAL('itemDoubleClicked (QListWidgetItem *)'), self._addAction)
         self._newActionList = ListBox()
         listbuttons = ListButtons()
-        listbuttons.duplicate.hide()
+        listbuttons.duplicateButton.hide()
         listbuttons.insertStretch(0)
         self.connect(listbuttons, SIGNAL('add'), self._addAction)
 

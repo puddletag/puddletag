@@ -283,8 +283,8 @@ class TagMappings(QWidget):
         header.setStretchLastSection(True)
         buttons = ListButtons()
         buttons.connectToWidget(self)
-        buttons.moveup.setVisible(False)
-        buttons.movedown.setVisible(False)
+        buttons.moveupButton.setVisible(False)
+        buttons.movedownButton.setVisible(False)
         self.connect(buttons, SIGNAL('duplicate'), self.duplicate)
 
         hbox = QHBoxLayout()
