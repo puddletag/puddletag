@@ -199,7 +199,7 @@ class FunctionDialog(QWidget):
         self.tagcombo = QComboBox(self)
         self.tagcombo.setToolTip(FIELDS_TOOLTIP)
         self.tagcombo.setEditable(True)
-        self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
+        self.tagcombo.setCompleter(QCompleter(self.tagcombo))
         self.tagcombo.addItems(fields)
 
         self.tagcombo.editTextChanged.connect(self.showexample)
