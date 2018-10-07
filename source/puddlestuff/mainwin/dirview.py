@@ -24,6 +24,10 @@ class DirView(QTreeView):
     loadFiles = pyqtSignal(object, list, bool, name='loadFiles')
     def __init__(self, parent = None, subfolders = False, status=None):
         QTreeView.__init__(self,parent)
+
+        self._load = False #If True a loadFiles signal is emitted when
+                           #an index is clicked. See selectionChanged.
+
         dirmodel = QDirModel()
         dirmodel.setSorting(QDir.IgnoreCase)
         dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
@@ -41,8 +45,7 @@ class DirView(QTreeView):
         self.subfolders = subfolders
         self.setSelectionMode(self.ExtendedSelection)
         self._lastselection = 0 #If > 0 appends files. See selectionChanged
-        self._load = True #If True a loadFiles signal is emitted when
-                          #an index is clicked. See selectionChanged.
+        self._load = True
         self.setDragEnabled(False)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
