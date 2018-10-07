@@ -40,7 +40,7 @@ class StoredTags(QScrollArea):
         widget = QWidget()
         self._grid = QGridLayout()
         self._grid.setColumnStretch(1, 1)
-        self._grid.setMargin(3)
+        self._grid.setContentsMargins(3,3,3,3)
         widget.setLayout(self._grid)
         self.setWidget(widget)
         #widget.wheelEvent.connect(self._hScroll)

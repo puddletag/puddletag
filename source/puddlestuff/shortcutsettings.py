@@ -243,7 +243,7 @@ class ActionEditorDialog(QWidget):
                 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(help)
-        mainLayout.setMargin(8)
+        mainLayout.setContentsMargins(8,8,8,8)
         mainLayout.setSpacing(8)
         mainLayout.addWidget(self.actionTable)
         self.setLayout(mainLayout)

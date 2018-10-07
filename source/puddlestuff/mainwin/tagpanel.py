@@ -280,7 +280,7 @@ class FrameCombo(QGroupBox):
                     sip.delete(box)
         else:
             vbox = QVBoxLayout()
-            vbox.setMargin(0)
+            vbox.setContentsMargins(0,0,0,0)
         self.combos = {}
         self.labels = {}
         self._hboxes = []
@@ -290,7 +290,7 @@ class FrameCombo(QGroupBox):
             labelbox = QHBoxLayout()
             labelbox.setContentsMargins(6, 1, 1, 1)
             widgetbox = QHBoxLayout()
-            widgetbox.setMargin(0)
+            widgetbox.setContentsMargins(0,0,0,0)
             for tag in tags:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])

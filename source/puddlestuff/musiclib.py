@@ -248,7 +248,7 @@ class LibraryDialog(QWidget):
         searchbox.addWidget(searchbutton)
 
         vbox = QVBoxLayout()
-        vbox.setMargin(0)
+        vbox.setContentsMargins(0,0,0,0)
         vbox.addLayout(searchbox)
         vbox.addWidget(self.tree)
         self.setLayout(vbox)

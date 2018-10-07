@@ -675,7 +675,7 @@ class ExTags(QDialog):
             imageframe = QFrame()
             imageframe.setFrameStyle(QFrame.Box)
             vbox = QVBoxLayout()
-            vbox.setMargin(0)
+            vbox.setContentsMargins(0,0,0,0)
             vbox.addWidget(self.piclabel)
             vbox.addStretch()
             vbox.addStrut(0)

@@ -89,7 +89,7 @@ class SettingsLineEdit(QWidget):
     def __init__(self, desc, default, parent=None):
         QWidget.__init__(self, parent)
         vbox = QVBoxLayout()
-        vbox.setMargin(0)
+        vbox.setContentsMargins(0,0,0,0)
         self._text = QLineEdit(default)
         label = QLabel(translate("GenSettings", desc))
         self._desc = desc

@@ -1634,7 +1634,7 @@ class PicWidget(QWidget):
         h.addStretch()
         vbox.addLayout(h)
         
-        vbox.setMargin(0)
+        vbox.setContentsMargins(0,0,0,0)
         vbox.addLayout(controls)
         if buttons:
             vbox.addLayout(movebuttons)
@@ -2020,7 +2020,7 @@ class PicWin(QDialog):
         self.label = ArtworkLabel()
 
         vbox = QVBoxLayout()
-        vbox.setMargin(0)
+        vbox.setContentsMargins(0,0,0,0)
         vbox.addWidget(self.label)
         self.setLayout(vbox)
 
@@ -2132,7 +2132,7 @@ class PuddleCombo(QWidget):
     def __init__(self, name, default = None, parent = None):
         QWidget.__init__(self, parent)
         hbox = QHBoxLayout()
-        hbox.setMargin(0)
+        hbox.setContentsMargins(0,0,0,0)
         self.combo = QComboBox()
         self.combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
 

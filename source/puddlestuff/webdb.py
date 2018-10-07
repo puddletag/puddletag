@@ -151,7 +151,7 @@ class FieldsEdit(QWidget):
         label.setBuddy(self._text)
 
         layout = QHBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0,0,0,0)
         layout.addWidget(label, 0)
         layout.addWidget(self._text, 1)
 
