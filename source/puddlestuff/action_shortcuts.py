@@ -168,7 +168,7 @@ class Editor(QDialog):
         okcancel = OKCancel()
         self.connect(okcancel, SIGNAL('ok'), self.okClicked)
         self.connect(okcancel, SIGNAL('cancel'), self.close)
-        self._ok = okcancel.ok
+        self._ok = okcancel.okButton
         self.connect(self._name, SIGNAL('textChanged(const QString)'), self.enableOk)
         scut_status = QLabel('')
         self.connect(self._shortcut, SIGNAL('validityChanged'),

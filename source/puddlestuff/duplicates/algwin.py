@@ -204,7 +204,7 @@ class AlgWin(QWidget):
         self.matchcase = QCheckBox('&Match Case')
 
         okcancel = OKCancel()
-        okcancel.ok.setDefault(True)
+        okcancel.okButton.setDefault(True)
 
         self.connect(okcancel, SIGNAL("ok") , self.okClicked)
         self.connect(okcancel, SIGNAL("cancel"),self.close)

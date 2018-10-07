@@ -17,8 +17,8 @@ class ActionDialog(ActionWindow):
             self._status = kwargs['status']
             del(kwargs['status'])
         super(ActionDialog, self).__init__(*args, **kwargs)
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
         self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda funcs: applyaction(self._status['selectedfiles'], funcs)
         self.connect(self._apply, SIGNAL('clicked()'),
@@ -77,8 +77,8 @@ class FunctionDialog(CreateFunction):
             self._status = kwargs['status']
             del(kwargs['status'])
         super(FunctionDialog, self).__init__(*args, **kwargs)
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
         self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda func: run_func(self._status['selectedfiles'], func)
         self.connect(self._apply, SIGNAL('clicked()'),

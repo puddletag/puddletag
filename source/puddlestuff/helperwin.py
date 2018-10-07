@@ -238,8 +238,8 @@ class ImportTextFile(QDialog):
         self.patterncombo.setDuplicatesEnabled(False)
 
         okcancel = OKCancel()
-        self.ok = okcancel.ok
-        self.cancel = okcancel.cancel
+        self.ok = okcancel.okButton
+        self.cancel = okcancel.cancelButton
 
         self.openfile = QPushButton(
             translate('Text File -> Tag', "&Select File"))
@@ -404,7 +404,7 @@ class EditField(QDialog):
         label1.setBuddy(self.value)
         
         okcancel = OKCancel()
-        okcancel.ok.setText(translate('Edit Field', 'A&dd'))
+        okcancel.okButton.setText(translate('Edit Field', 'A&dd'))
 
         if field is not None:
             x = self.tagcombo.findText(field[0])
@@ -415,7 +415,7 @@ class EditField(QDialog):
                 self.tagcombo.setEditText(field[0])
             self.value.setPlainText(field[1])
             if edit:
-                okcancel.ok.setText(translate('Edit Field', 'E&dit'))
+                okcancel.okButton.setText(translate('Edit Field', 'E&dit'))
 
         map(self.vbox.addWidget, [label, self.tagcombo, label1, self.value])
 

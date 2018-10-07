@@ -60,14 +60,14 @@ class ShortcutDialog(QDialog):
         self._text = ShortcutEditor(shortcuts)
 
         okcancel = OKCancel()
-        okcancel.cancel.setText(translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
-        okcancel.ok.setEnabled(False)
+        okcancel.cancelButton.setText(translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
+        okcancel.okButton.setEnabled(False)
         
         self.connect(okcancel, SIGNAL('ok'), self.okClicked)
         self.connect(okcancel, SIGNAL('cancel'), self.close)
 
         self.connect(self._text, SIGNAL('validityChanged'),
-            okcancel.ok.setEnabled)
+            okcancel.okButton.setEnabled)
 
         vbox = QVBoxLayout()
         vbox.addWidget(label)
@@ -100,7 +100,7 @@ class ShortcutName(QDialog):
         self._text = QLineEdit(default)
 
         okcancel = OKCancel()
-        self._ok = okcancel.ok
+        self._ok = okcancel.okButton
         self.enableOK(self._text.text())
 
         self.connect(okcancel, SIGNAL('ok'), self.okClicked)
@@ -623,9 +623,9 @@ class CreateAction(QDialog):
 
     def enableOK(self):
         if self.listbox.count() > 0:
-            self.okcancel.ok.setEnabled(True)
+            self.okcancel.okButton.setEnabled(True)
         else:
-            self.okcancel.ok.setEnabled(False)
+            self.okcancel.okButton.setEnabled(False)
 
     def moveDown(self):
         self.listbox.moveDown(self.functions)
@@ -716,7 +716,7 @@ class ActionWindow(QDialog):
             self.listbox.addItem(item)
 
         self.okcancel = OKCancel()
-        self.okcancel.ok.setDefault(True)
+        self.okcancel.okButton.setDefault(True)
         x = QAction(translate('Actions', 'Assign &Shortcut'), self)
         self.shortcutButton = QToolButton()
         self.shortcutButton.setDefaultAction(x)
@@ -834,10 +834,10 @@ class ActionWindow(QDialog):
         enable = [row for row in range(self.listbox.count()) if
                     item(row).checkState() == Qt.Checked]
         if enable:
-            self.okcancel.ok.setEnabled(True)
+            self.okcancel.okButton.setEnabled(True)
             self.shortcutButton.setEnabled(True)
         else:
-            self.okcancel.ok.setEnabled(False)
+            self.okcancel.okButton.setEnabled(False)
             self.shortcutButton.setEnabled(False)
     
     def renameAction(self, item):

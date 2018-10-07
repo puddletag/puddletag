@@ -25,8 +25,8 @@ class ExTagsPlugin(ExTags):
         super(ExTagsPlugin, self).__init__(parent, row, files, status, False)
         self.setMinimumSize(50,50)
 
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
 
         self.previewMode = False
         self.canceled = False

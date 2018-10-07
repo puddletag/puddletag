@@ -88,7 +88,7 @@ class AboutPuddletag(QDialog):
         vbox.addLayout(version_layout)
         vbox.addWidget(tab, 1)
         ok = OKCancel()
-        ok.cancel.setVisible(False)
+        ok.cancelButton.setVisible(False)
         vbox.addLayout(ok)
         self.connect(ok, SIGNAL('ok'), self.close)
         self.setLayout(vbox)

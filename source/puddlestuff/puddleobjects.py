@@ -1362,21 +1362,21 @@ class OKCancel(QHBoxLayout):
         #self.addStretch()
         dbox = QDialogButtonBox()
 
-        self.ok = dbox.addButton(dbox.Ok)
-        self.cancel = dbox.addButton(dbox.Cancel)
+        self.okButton = dbox.addButton(dbox.Ok)
+        self.cancelButton = dbox.addButton(dbox.Cancel)
         self.addStretch()
         self.addWidget(dbox)
 
-        self.ok.setText(translate('Defaults', 'OK'))
-        self.cancel.setText(translate('Defaults', 'Cancel'))
-        #self.cancel = QPushButton("&Cancel")
-        #self.ok.setDefault(True)
+        self.okButton.setText(translate('Defaults', 'OK'))
+        self.cancelButton.setText(translate('Defaults', 'Cancel'))
+        #self.cancelButton = QPushButton("&Cancel")
+        #self.okButton.setDefault(True)
 
-        #self.addWidget(self.ok)
-        #self.addWidget(self.cancel)
+        #self.addWidget(self.okButton)
+        #self.addWidget(self.cancelButton)
 
-        self.connect(self.ok, SIGNAL("clicked()"), self.yes)
-        self.connect(self.cancel, SIGNAL("clicked()"), self.no)
+        self.connect(self.okButton, SIGNAL("clicked()"), self.yes)
+        self.connect(self.cancelButton, SIGNAL("clicked()"), self.no)
 
     def yes(self):
         self.emit(SIGNAL("ok"))

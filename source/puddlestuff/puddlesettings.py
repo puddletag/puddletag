@@ -658,7 +658,7 @@ class SettingsDialog(QDialog):
         self.selectionModel.select(selection, QItemSelectionModel.Select)
 
         self.okbuttons = OKCancel()
-        self.okbuttons.ok.setDefault(True)
+        self.okbuttons.okButton.setDefault(True)
         self.grid.addLayout(self.okbuttons, 1,0,1,2)
 
         self.connect(self.okbuttons,SIGNAL("ok"), self.saveSettings)

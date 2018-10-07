@@ -52,7 +52,7 @@ class MassTagEdit(QDialog):
         self.tag_sources = tag_sources
 
         okcancel = OKCancel()
-        okcancel.ok.setDefault(True)
+        okcancel.okButton.setDefault(True)
 
         self.buttonlist = ListButtons()
 
@@ -201,7 +201,7 @@ class MTProfileEdit(QDialog):
         self.listbox = ListBox()
 
         self.okcancel = OKCancel()
-        self.okcancel.ok.setDefault(True)
+        self.okcancel.okButton.setDefault(True)
 
         self.buttonlist = ListButtons()
 
