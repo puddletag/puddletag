@@ -36,7 +36,7 @@ class DirView(QTreeView):
         dirmodel.setResolveSymlinks(False)
         header = PuddleHeader(Qt.Horizontal, self)
         self.setHeader(header)
-        self.header().setResizeMode(QHeaderView.ResizeToContents)
+        self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         self.setModel(dirmodel)
         [self.hideColumn(column) for column in range(1,4)]
