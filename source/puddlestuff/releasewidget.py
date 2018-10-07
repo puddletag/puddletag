@@ -91,7 +91,7 @@ class Header(QHeaderView):
     sortChanged = pyqtSignal(list, name='sortChanged')
     def __init__(self, parent = None):
         QHeaderView.__init__(self, Qt.Horizontal, parent)
-        self.setClickable(True)
+        self.setSectionsClickable(True)
         self.setStretchLastSection(True)
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)

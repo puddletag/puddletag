@@ -1273,7 +1273,7 @@ class TableHeader(QHeaderView):
     def __init__(self, orientation, tags = None, parent = None):
         QHeaderView.__init__(self, orientation, parent)
         if tags is not None: self.tags = tags
-        self.setClickable(True)
+        self.setSectionsClickable(True)
         self.setHighlightSections(True)
         self.setSectionsMovable(True)
         self.setSortIndicatorShown(True)

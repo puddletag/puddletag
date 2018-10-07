@@ -2224,7 +2224,7 @@ class PuddleHeader(QHeaderView):
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
         self.setSectionsMovable(True)
-        self.setClickable(True)
+        self.setSectionsClickable(True)
     
     def getMenu(self, actions = None):
         model = self.model()
