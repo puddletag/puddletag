@@ -510,7 +510,8 @@ class SettingsList(QListView):
         QListView.__init__(self, parent)
 
     def selectionChanged(self, selected, deselected):
-        self.selectionChangedSignal.emit(selected.indexes()[0].row())
+        if selected.indexes():
+            self.selectionChangedSignal.emit(selected.indexes()[0].row())
 
 class StatusWidgetItem(QTableWidgetItem):
     def __init__(self, text, color):
