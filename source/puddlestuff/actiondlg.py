@@ -146,7 +146,7 @@ class ScrollLabel(QScrollArea):
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
         if h.isVisible():
-            numsteps = e.delta() / 5
+            numsteps = e.angleDelta().y() / 5
             h.setValue(h.value() - numsteps)
             e.accept()
         else:
