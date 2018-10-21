@@ -1123,7 +1123,7 @@ class TagModel(QAbstractTableModel):
         self.fileChanged.emit()
 
     def sibling(self, row, column, index = QModelIndex()):
-        if row < (self.rowCount() - 1) and row >= 0:
+        if row <= (self.rowCount() - 1) and row >= 0:
             return self.index(row + 1, column)
 
     def sort(self, column, order=Qt.DescendingOrder):
