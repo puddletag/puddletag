@@ -510,9 +510,9 @@ class ConfigWindow(QWidget):
         self.dbpath.setFocus()
 
     def getFile(self):
-        filedlg = QFileDialog()
-        filename = unicode(filedlg.getOpenFileName(self,
-            'Select RhythmBox database file.', self.dbpath.text()))
+        selectedFile = QFileDialog.getOpenFileName(self,
+            'Select RhythmBox database file.', self.dbpath.text())
+        filename = selectedFile[0]
         if filename:
             self.dbpath.setText(filename)
 

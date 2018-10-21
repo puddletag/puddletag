@@ -1735,10 +1735,10 @@ class PicWidget(QWidget):
         if not filename:
             default_fn = os.path.join(
                 os.path.dirname(self.lastfilename), 'folder.jpg').encode('utf8')
-            filedlg = QFileDialog()
-            filename = unicode(filedlg.getOpenFileName(self,
+            selectedFile = QFileDialog.getOpenFileName(self,
                 translate("Artwork", 'Select Image...'), default_fn,
-                                                       translate("Artwork", "JPEG & PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)")))
+                translate("Artwork", "JPEG & PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)"))
+            filename = selectedFile[0]
 
         if not filename:
             return
@@ -1893,15 +1893,14 @@ class PicWidget(QWidget):
         else:
             tempfilename = 'folder.jpg'
         if self.currentImage > -1:
-            filedlg = QFileDialog()
-            filename = filedlg.getSaveFileName(
+            selectedFile = QFileDialog.getSaveFileName(
                 self,
                 translate("Artwork", 'Save artwork as...'),
                 tempfilename.encode('utf8'),
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
+            filename = selectedFile[0]
             if not filename:
                 return
-            filt = unicode(filedlg.selectedNameFilter())
             if not self.pixmap.save(filename):
                 QMessageBox.critical(self, translate("Defaults", 'Error'),
                     translate("Artwork", 'Writing to <b>%1</b> failed.').arg(filename))

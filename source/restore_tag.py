@@ -25,7 +25,8 @@ def save_tags(files, fn):
     output.close()
 
 def export_tags():
-    fn = QFileDialog.getSaveFilename(None, "Save tags", last_fn['fn'], "*.*")
+    selectedFile = QFileDialog.getSaveFileName(None, "Save tags", last_fn['fn'], "*.*")
+    fn = selectedFile[0]
     if fn:
         save_tags(f.filepath for f in status['all_tags'])
         last_fn['fn'] = os.path.dirname(fn)

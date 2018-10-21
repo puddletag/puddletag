@@ -300,9 +300,9 @@ class ImportTextFile(QDialog):
             dirpath = self.lastDir
 
         if not filename:
-            filedlg = QFileDialog()
-            filename = unicode(filedlg.getOpenFileName(self,
-                'OpenFolder', dirpath))
+            selectedFile = QFileDialog.getOpenFileName(self,
+                'OpenFolder', dirpath)
+            filename = selectedFile[0]
 
         if not filename:
             return True

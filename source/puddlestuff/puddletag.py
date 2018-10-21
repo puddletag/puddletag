@@ -522,10 +522,10 @@ class MainWin(QMainWindow):
         statusbar.messageChanged.connect(statuslabel.setText)
 
     def loadPlayList(self):
-        filedlg = QFileDialog()
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
-        filename = unicode(filedlg.getOpenFileName(self,
-            translate("Playlist", translate("Playlist", 'Select m3u file...')), ))
+        selectedFile = QFileDialog.getOpenFileName(self,
+            translate("Playlist", translate("Playlist", 'Select m3u file...')), )
+        filename = selectedFile[0]
         if not filename:
             return
         try:
@@ -675,8 +675,9 @@ class MainWin(QMainWindow):
             dirname = constants.HOMEDIR
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
         default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
-        f = unicode(QFileDialog.getSaveFileName(self,
-            translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default)))
+        selectedFile = QFileDialog.getSaveFileName(self,
+            translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default))
+        f = selectedFile[0]
         if f:
             if settings.get('playlist', 'extinfo', 1, True):
                 pattern = settings.get('playlist', 'extpattern','%artist% - %title%')

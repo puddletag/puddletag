@@ -367,10 +367,10 @@ class InitWidget(QWidget):
         self.setLayout(vbox)
 
     def select_db(self):
-        filedlg = QFileDialog()
-        filename = filedlg.getOpenFileName(self,
+        selectedFile = QFileDialog.getOpenFileName(self,
             translate("QuodLibet", 'Select QuodLibet library file...'),
             self.dbpath.text())
+        filename = selectedFile[0]
         if filename:
             self.dbpath.setText(filename)
 
