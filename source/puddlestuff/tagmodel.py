@@ -291,7 +291,11 @@ def _Tag(model):
     extensions = dict([(k, filetypes[v[0]]) for k, v in extensions.items()])
     
     def ReplacementTag(filename):
-        fileobj = file(filename, "rb")
+        try:
+            fileobj = file(filename, "rb")
+        except IOError:
+            logging.info("Can't open file", filename)
+            return None
         ext = splitext(filename)[1][1:]
         try:
             return extensions[ext][1](filename)
