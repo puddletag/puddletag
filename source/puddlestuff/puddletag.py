@@ -246,7 +246,7 @@ class PreviewLabel(QLabel):
         self.valueChanged.emit(self._enabled)
 
 class MainWin(QMainWindow):
-    loadFiles = pyqtSignal([list, object, object, object, unicode], [object, list, bool], name='loadFiles')
+    loadFiles = pyqtSignal([object, list, bool], [list, object, object, object, unicode], name='loadFiles')
     always = pyqtSignal(bool, name='always')
     dirsmoved = pyqtSignal(list, name='dirsmoved')
     libfilesedited = pyqtSignal(list, name='libfilesedited')
@@ -561,6 +561,7 @@ class MainWin(QMainWindow):
 
             if isinstance(filename, unicode):
                 filename = encode_fn(filename)
+        
         self.loadFiles.emit(None, [filename], append)
 
     def openPrefs(self):
