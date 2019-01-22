@@ -259,7 +259,7 @@ class Ogg_Tag(vorbis_tag(OggVorbis, u'Ogg Vorbis')):
     info = property(_info)
 
 if OggOpus:
-    class Opus_Tag(vorbis_tag(OggOpus, u'Opus')):
+    class Opus_Tag(vorbis_tag(OggOpus, u'Ogg Opus')):
         def _info(self):
             info = self.mut_obj.info
             fileinfo = [
@@ -293,9 +293,14 @@ class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
 
     info = property(_info)
 
-filetypes = [
-    (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
-    (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]
+filetypes = []
+
 
 if OggOpus:
+    filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus.ogg'))
     filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus'))
+
+filetypes.extend([
+    (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
+    (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]
+)

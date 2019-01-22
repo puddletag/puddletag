@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import re
 import mutagen
 from util import *
 from constants import *
@@ -84,11 +84,11 @@ def Tag(filename):
     for more info."""
 
     fileobj = file(filename, "rb")
+
+    match = re.search('\.(%s)$' % '|'.join(extensions), filename)
     ext = splitext(filename)
-    try:
-        return extensions[ext][1](filename)
-    except KeyError:
-        pass
+    if match:
+        return extensions[match.groups()[0]][1](filename)
 
     try:
         header = fileobj.read(128)
