@@ -1514,7 +1514,6 @@ class PicWidget(QWidget):
         buttons -> If True, then the Add, Edit, etc. Buttons are shown.
                    If False, then these functions can be found by right clicking
                    on the picture."""
-
         self._contextFormat = translate("Artwork Context", '%1/%2')
         
         QWidget.__init__(self, parent)
@@ -1537,6 +1536,9 @@ class PicWidget(QWidget):
         self.label.setAlignment(Qt.AlignCenter)
         self.connect(self.label, SIGNAL('newImages'), 
             lambda *filenames: self.addImages(self.loadPics(*filenames)))
+
+        self._image_size = QLabel()
+        self._image_size.setAlignment(Qt.AlignHCenter)
 
         self._image_desc = QLineEdit(self)
         
@@ -1614,7 +1616,19 @@ class PicWidget(QWidget):
             movebuttons.addStretch()
 
         vbox = QVBoxLayout()
-        h = QHBoxLayout(); h.addStretch(); h.addWidget(self.label,1)
+        v = QVBoxLayout()
+        if buttons:
+            v.addWidget(self.label)
+            v.addWidget(self._image_size)
+        else:
+            v.addStretch()
+            v.addWidget(self.label)
+            v.addWidget(self._image_size)
+            v.addStretch()
+
+        h = QHBoxLayout();
+        h.addStretch();
+        h.addLayout(v)
         if not buttons:
             h.addLayout(movebuttons)
             context_box = QHBoxLayout()
@@ -1628,6 +1642,7 @@ class PicWidget(QWidget):
         vbox.addLayout(controls)
         if buttons:
             vbox.addLayout(movebuttons)
+        vbox.addStretch()
         vbox.setAlignment(Qt.AlignCenter)
 
         self.connect(self.label, SIGNAL('clicked()'), self.maxImage)
@@ -1830,6 +1845,12 @@ class PicWidget(QWidget):
                 self.pixmap = image
                 self.label.setPixmap(self.pixmap, data)
                 self.win.setImage(self.pixmap)
+
+        if isinstance(image, QPixmap):
+            self._image_size.setText(str(image.width()) + "x" + str(image.height()))
+        else:
+            self._image_size.setText("")
+
         self._lastdata = data
         self._image_desc.blockSignals(True)
         desc = self.images[num].get('description',
@@ -1898,6 +1919,7 @@ class PicWidget(QWidget):
     def setNone(self):
         self.label.setFrameStyle(QFrame.Box)
         self.label.setPixmap(QPixmap())
+        self._image_size.setText("")
         self.pixmap = None
         self.images = []
         self._image_desc.setEnabled(False)
