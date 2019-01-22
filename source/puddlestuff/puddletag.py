@@ -147,6 +147,10 @@ def connect_control(control, controls):
             if signal in control.emits:
                 getattr(control, signal).connect(slot)
 
+def action_triggered_slot(control, command):
+    "QAction.triggerred slot adds a checked=False param which we want to ignore"
+    return lambda: getattr(control, command)()
+
 def connect_actions(actions, controls):
     """Connect the triggered() signals in actions to the respective
     slot in controls if it exists. Just a message is shown if it
@@ -179,7 +183,7 @@ def connect_actions(actions, controls):
         elif action.control in controls:
             c = controls[action.control]
             if hasattr(c, command):
-                action.triggered.connect(getattr(c, command))
+                action.triggered.connect(action_triggered_slot(c, command))
             else:
                 logging.debug(action.command + ' slot not found for ' + action.text())
 
@@ -447,7 +451,8 @@ class MainWin(QMainWindow):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         filedlg = QFileDialog()
         filedlg.setFileMode(filedlg.DirectoryOnly)
-        filedlg.setResolveSymlinks(False)
+        # not supported in PyQt5
+        # filedlg.setResolveSymlinks(False) 
         filename = unicode(filedlg.getExistingDirectory(self,
             translate("Main Window", 'Import directory...'), dirname ,QFileDialog.ShowDirsOnly))
         return filename
@@ -549,6 +554,7 @@ class MainWin(QMainWindow):
 
         If appenddir = True, the folder is appended.
         Otherwise, the folder is just loaded."""
+
         if filename is None:
             filename = self._getDir()
             if not filename:
