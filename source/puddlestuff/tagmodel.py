@@ -3,6 +3,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
 from PyQt5.QtCore import *
+import re
 import sys,os, audioinfo, resource, pdb
 from operator import itemgetter
 from copy import copy, deepcopy
@@ -288,19 +289,20 @@ def _Tag(model):
     options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind
         in audioinfo.options]
     filetypes = dict([(z[0],z) for z in options])
-    extensions = dict([(k, filetypes[v[0]]) for k, v in extensions.items()])
+
+    extension_regex = re.compile('\.(%s)$' % '|'.join(extensions))
     
     def ReplacementTag(filename):
+
         try:
             fileobj = file(filename, "rb")
         except IOError:
             logging.info("Can't open file", filename)
             return None
-        ext = splitext(filename)[1][1:]
-        try:
-            return extensions[ext][1](filename)
-        except KeyError:
-            pass
+
+        match = extension_regex.search(filename)
+        if match:
+            return extensions[match.groups()[0]][1](filename)
 
         try:
             header = fileobj.read(128)
