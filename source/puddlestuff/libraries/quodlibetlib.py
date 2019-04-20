@@ -7,8 +7,8 @@ import cPickle as pickle
 from collections import defaultdict
 from functools import partial
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtWidgets import QCompleter, QDirModel, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
 import quodlibet.config
 from quodlibet.parse import Query

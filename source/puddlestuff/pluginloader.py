@@ -7,8 +7,8 @@ from os.path import splitext, exists
 from configobj import ConfigObj
 import logging
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from puddlestuff.translations import translate
 
 NAME = 'name'

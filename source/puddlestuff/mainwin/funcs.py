@@ -4,8 +4,7 @@ import puddlestuff.findfunc as findfunc
 from puddlestuff.puddleobjects import (dircmp, safe_name, natcasecmp,
     LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
 import puddlestuff.actiondlg as actiondlg
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal
 import os, pdb
 path = os.path
 from collections import defaultdict, OrderedDict

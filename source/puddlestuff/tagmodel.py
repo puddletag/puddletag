@@ -1,8 +1,11 @@
 ## -*- coding: utf-8 -*-
 
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+  QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
+  QVBoxLayout
 from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
+  QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
 import re
 import sys,os, audioinfo, resource, pdb
 from operator import itemgetter

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys, os
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QMutex, Qt
+from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
 from PyQt5.QtGui import QFont
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PuddleThread, natcasecmp

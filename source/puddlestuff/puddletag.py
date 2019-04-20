@@ -9,8 +9,8 @@ status = PuddleStatus()
 import logging
 import tagmodel
 from tagmodel import TagTable
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 from PyQt5.QtGui import QDesktopServices, QIcon
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo

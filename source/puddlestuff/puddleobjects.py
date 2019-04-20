@@ -5,11 +5,14 @@
 Contains objects used throughout puddletag"""
 
 
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
+  QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
+  QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
+  QTextEdit, QToolButton, QVBoxLayout, QWidget
 from PyQt5.QtGui import QIcon, QTextOption, QBrush, QPixmap, QImage, \
     QKeySequence
-from PyQt5.QtCore import *
-from PyQt5.QtSvg import *
+from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 import json, sys, os,pdb,shutil
 from collections import defaultdict
 

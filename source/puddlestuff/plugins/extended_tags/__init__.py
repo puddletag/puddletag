@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QAction
 from puddlestuff.constants import (LEFTDOCK, SELECTIONCHANGED,
     FILESSELECTED, KEEP, BLANK)
 from puddlestuff.plugins import add_shortcuts, connect_shortcut

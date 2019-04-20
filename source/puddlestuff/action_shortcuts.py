@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QFileSystemWatcher, QItemSelectionModel, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
 import sys, os, traceback
 
 from puddlestuff.puddleobjects import (create_buddy, ListBox,

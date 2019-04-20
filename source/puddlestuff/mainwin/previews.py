@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from puddlestuff.puddleobjects import PuddleConfig
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtWidgets import QAction, QMenu
 from functools import partial
 from itertools import izip
 from copy import deepcopy

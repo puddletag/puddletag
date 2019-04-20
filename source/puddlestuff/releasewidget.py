@@ -4,8 +4,8 @@ import sys, pdb
 import traceback
 from puddlestuff.puddleobjects import (unique, OKCancel, PuddleThread,
     PuddleConfig, winsettings, natcasecmp)
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 from PyQt5 import QtCore, QtGui
 from collections import defaultdict
 from copy import deepcopy

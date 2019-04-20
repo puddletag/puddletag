@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import mutagen, os, cPickle as pickle, sys, traceback
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from puddlestuff.plugins import status, add_shortcuts
 

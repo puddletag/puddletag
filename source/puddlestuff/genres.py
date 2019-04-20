@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
+from PyQt5.QtCore import Qt
 import sys, resource, os, audioinfo
 from puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
     PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)

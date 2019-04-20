@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys, os, unittest, time, pdb, shutil
 from os import path
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import PYQT_VERSION_STR, Qt
+from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QPixmap
 import cPickle as pickle
 import mutagen, pyparsing, puddlestuff

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
+  QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
+  QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5 import QtGui
 import sys, findfunc, pdb, os, resource, string, functions
 from copy import copy, deepcopy

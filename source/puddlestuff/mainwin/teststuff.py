@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys, os
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
 from puddlestuff.constants import RIGHTDOCK
 from puddlestuff.puddleobjects import PuddleThread, natcasecmp, PuddleDock
 from puddlestuff import audioinfo

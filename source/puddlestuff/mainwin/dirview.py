@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from copy import deepcopy
 from functools import partial
 import os, shutil, pdb, mutex

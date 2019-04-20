@@ -6,9 +6,11 @@ from collections import defaultdict
 from copy import copy, deepcopy
 from functools import partial
 
-from PyQt5.QtCore import *
+from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
+  QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
+  QWidget
 
 import puddlestuff
 

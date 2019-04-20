@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
+  QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
+  QWidget
 from PyQt5.QtGui import QDrag, QPixmap, QContextMenuEvent, QDoubleValidator, \
     QIcon
-from PyQt5.QtCore import *
+from PyQt5.QtCore import Qt, pyqtSignal
 import sys, os, pdb
 import puddlestuff.constants, puddlestuff.resource
 from decimal import Decimal

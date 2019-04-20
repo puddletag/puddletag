@@ -15,8 +15,10 @@ from collections import defaultdict
 from functools import partial
 from itertools import izip
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QObject, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QDialog, QFrame, QHBoxLayout, QLineEdit, \
+  QListWidget, QMessageBox, QPushButton, QStackedWidget, QStyle, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
+  QWidget
 
 import puddlestuff.libraries as libraries
 

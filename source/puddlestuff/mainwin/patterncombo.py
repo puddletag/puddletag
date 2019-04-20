@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+  QShortcut, QVBoxLayout
+from PyQt5.QtCore import Qt, pyqtSignal
 import sys
 from puddlestuff.puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
     ListButtons)

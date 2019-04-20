@@ -4,8 +4,9 @@ import glob, os, pdb, string, sys
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QMutex, QObject, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
+  QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
 from puddlestuff.constants import RIGHTDOCK
 from puddlestuff.puddleobjects import (create_buddy, natcasecmp, ratio,

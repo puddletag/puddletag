@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
+  QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from PyQt5.QtGui import QBrush
 import pdb, sys, os, sip
 from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY

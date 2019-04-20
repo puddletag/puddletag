@@ -5,8 +5,7 @@ try:
 except ImportError:
   import pickle
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from puddlestuff.plugins import status
 

@@ -2,8 +2,9 @@
 
 import os
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+  QPushButton, QVBoxLayout
 
 from puddlestuff.constants import SAVEDIR
 from puddlestuff.plugins import add_config_widget, add_shortcuts, status

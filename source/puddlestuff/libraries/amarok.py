@@ -28,9 +28,10 @@ except ImportError:
     import audioinfo
 from operator import itemgetter
 FILENAME = audioinfo.FILENAME
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QSettings
+
 from mutagen.id3 import TCON
 GENRES = TCON.GENRES
 try:
