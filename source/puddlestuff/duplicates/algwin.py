@@ -432,7 +432,7 @@ class SetDialog(QDialog):
 def load_window(parent):
     import puddlestuff.libraries.quodlibetlib as quodlibet
     from puddlestuff.constants import HOMEDIR
-    lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs')
+    lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs'))
     from Levenshtein import ratio
     algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]
     qb = parent.addDock('Duplicates', DupeTree, RIGHTDOCK, connect=True)
@@ -449,7 +449,7 @@ def init(parent=None):
 if __name__ == "__main__":
     import puddlestuff.libraries.quodlibetlib as quodlibet
     from puddlestuff.constants import HOMEDIR
-    lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs')
+    lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs'))
     from Levenshtein import ratio
     algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]
     app = QApplication(sys.argv)
