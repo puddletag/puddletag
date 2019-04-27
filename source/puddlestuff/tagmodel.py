@@ -305,7 +305,7 @@ def _Tag(model):
 
         match = extension_regex.search(filename)
         if match:
-            return extensions[match.groups()[0]][1](filename)
+            return filetypes[extensions[match.groups()[0]][0]][1](filename)
 
         try:
             header = fileobj.read(128)
