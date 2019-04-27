@@ -951,6 +951,7 @@ class ActionWindow(QDialog):
                 filename = u"%s_%d" % (base, i) + u'.action'
                 i += 1
             macro.save(filename)
+            macro.filename = filename
         return filename
 
     def add(self):
