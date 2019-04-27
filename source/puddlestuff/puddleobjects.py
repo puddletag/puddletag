@@ -937,7 +937,7 @@ def timemethod(method):
 
 class HeaderSetting(QDialog):
     """A dialog that allows you to edit the header of a TagTable widget."""
-    headerChanged = pyqtSignal([list], [object, list], name='headerChanged')
+    headerChanged = pyqtSignal([list, list], name='headerChanged')
     def __init__(self, tags=None, parent=None, showok=True, showedits=True):
 
         QDialog.__init__(self, parent)

@@ -1279,7 +1279,7 @@ class TableHeader(QHeaderView):
 
     Call it with tags in the usual form, to set the top header."""
     saveSelection = pyqtSignal(name='saveSelection')
-    headerChanged = pyqtSignal(list, list, name='headerChanged')
+    headerChanged = pyqtSignal([list, list], name='headerChanged')
     def __init__(self, orientation, tags = None, parent = None):
         QHeaderView.__init__(self, orientation, parent)
         if tags is not None: self.tags = tags
