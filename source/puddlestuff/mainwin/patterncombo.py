@@ -136,7 +136,7 @@ class SettingsWin(QFrame):
         if ok:
             item = l(row)
             item.setText(text)
-            self.listbox.setItemSelected(item, True)
+            item.setSelected(True)
 
     def applySettings(self, control):
         item = self.listbox.item

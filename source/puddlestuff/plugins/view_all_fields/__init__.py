@@ -157,7 +157,7 @@ class ButtonsAndList(QFrame):
         if ok:
             item = l(row)
             item.setText(text)
-            self.listbox.setItemSelected(item, True)
+            item.setSelected(True)
 
     def getItems(self):
         return [item.text() for item in self.listbox.items()]

@@ -1160,7 +1160,7 @@ class ListBox(QListWidget):
         if 0 in rows:
             return
 
-        [self.setItemSelected(item, False) for item in self.selectedItems()]
+        [item.setSelected(False) for item in self.selectedItems()]
         for i in range(len(rows)):
             row = rows[i]
             item = self.takeItem(row)
@@ -1169,7 +1169,7 @@ class ListBox(QListWidget):
                 temp = copy(yourlist[row - 1])
                 yourlist[row - 1] = yourlist[row]
                 yourlist[row] = temp
-        [self.setItemSelected(self.item(row - 1), True) for row in rows]
+        [self.item(row - 1).setSelected(True) for row in rows]
         self.setCurrentRow(currentrow)
 
     def moveDown(self, yourlist = None, rows = None):
@@ -1178,7 +1178,7 @@ class ListBox(QListWidget):
             rows = [self.row(item) for item in self.selectedItems()]
         if self.count() - 1 in rows:
             return
-        [self.setItemSelected(item, False) for item in self.selectedItems()]
+        [item.setSelected(False) for item in self.selectedItems()]
         if not yourlist:
             yourlist = self.yourlist
         rows = sorted(rows)
@@ -1202,7 +1202,7 @@ class ListBox(QListWidget):
                 yourlist[group] = temp
             self.insertItem(group, item)
 
-        [self.setItemSelected(self.item(row + 1), True) for row in rows]
+        [self.item(row + 1).setSelected(True) for row in rows]
 
     def selectedItems(self):
         return filter(lambda item: item.isSelected(),

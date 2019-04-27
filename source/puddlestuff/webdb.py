@@ -334,7 +334,7 @@ class SortOptionEditor(QDialog):
         if ok:
             item = l(row)
             item.setText(text)
-            self.listbox.setItemSelected(item, True)
+            item.setSelected(True)
 
     def applySettings(self):
         item = self.listbox.item
