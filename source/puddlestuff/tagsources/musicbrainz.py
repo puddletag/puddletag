@@ -14,6 +14,7 @@ from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
 import six
+from six.moves.urllib import error as urllib2error
 
 SERVER = 'http://musicbrainz.org/ws/2/'
 
@@ -556,7 +557,7 @@ class MusicBrainz(object):
 
         try:
             xml = urlopen(search_album(album, artist, limit))
-        except urllib2.URLError as e:
+        except urllib2error.URLError as e:
             write_log(u'Error: While retrieving search page %s' %
                         six.text_type(e))
             raise RetrievalError(six.text_type(e))

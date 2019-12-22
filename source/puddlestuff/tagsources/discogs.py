@@ -9,6 +9,7 @@ import re
 import socket
 import time
 from six.moves.urllib import request as urllib2
+from six.moves.urllib import error as urllib2error
 
 from puddlestuff.audioinfo import DATA, isempty
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
@@ -313,7 +314,7 @@ def urlopen(url):
 
     try:
         data = urllib2.urlopen(request).read()
-    except urllib2.URLError as e:
+    except urllib2error.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:

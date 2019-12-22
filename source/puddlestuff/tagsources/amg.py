@@ -17,6 +17,7 @@ from puddlestuff.puddleobjects import PuddleConfig, ratio
 from puddlestuff.audioinfo import isempty, CaselessDict
 import six
 from six.moves import zip
+from six.moves.urllib import error as urllib2error
 
 class OldURLError(RetrievalError):
     pass
@@ -497,7 +498,7 @@ def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
         except KeyError:
             write_log('No cover found.')
             cover = None
-        except urllib2.URLError as e:
+        except urllib2error.URLError as e:
             write_log(u'Error: While retrieving cover %s - %s' % 
                 (info['#cover-url'], six.text_type(e)))
             cover = None
@@ -586,7 +587,7 @@ class AllMusic(object):
         write_log(u'Searching for %s' % album)
         try:
             searchpage = search(album)
-        except urllib2.URLError as e:
+        except urllib2error.URLError as e:
             write_log(u'Error: While retrieving search page %s' % 
                         six.text_type(e))
             raise RetrievalError(six.text_type(e))
@@ -626,7 +627,7 @@ class AllMusic(object):
                 info, tracks, cover = retrieve_album(url, self._getcover)
             else:
                 info, tracks, cover = retrieve_album(url, self._getcover)
-        except urllib2.URLError as e:
+        except urllib2error.URLError as e:
             write_log(u'Error: While retrieving album URL %s - %s' % 
                 (url, six.text_type(e)))
             raise RetrievalError(six.text_type(e))

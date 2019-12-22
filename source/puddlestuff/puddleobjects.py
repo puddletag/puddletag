@@ -1725,7 +1725,7 @@ class PicWidget(QWidget):
                 os.path.dirname(self.lastfilename), 'folder.jpg').encode('utf8')
             filedlg = QFileDialog()
             filename = six.text_type(filedlg.getOpenFileName(self,
-                translate("Artwork", 'Select Image...'), default_fn,
+                translate("Artwork", 'Select Image...'), str(default_fn).rstrip("'"),
                                                        translate("Artwork", "JPEG & PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)")))
 
         if not filename:
@@ -1949,7 +1949,7 @@ class PicWidget(QWidget):
                     data = urlopen(filename)
                 except (ValueError, RetrievalError):
                     try:
-                        data = open(filename, 'r').read()
+                        data = open(filename, 'rb').read()
                     except EnvironmentError:
                         continue
 

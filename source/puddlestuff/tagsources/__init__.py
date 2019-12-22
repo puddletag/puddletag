@@ -13,6 +13,7 @@ except ImportError:
 import socket
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib import request as urllib2
+from six.moves.urllib import error as urllib2error
 
 from PyQt4.QtCore import QObject, SIGNAL
 
@@ -196,7 +197,7 @@ def urlopen(url, mask=True, code=False):
             return page.read(), page.code
         else:
             return page.read()
-    except urllib2.URLError as e:
+    except urllib2error.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
