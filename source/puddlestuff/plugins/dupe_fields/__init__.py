@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-import mutagen, os, cPickle as pickle, sys, traceback
+from __future__ import absolute_import
+import mutagen, os, six.moves.cPickle as pickle, sys, traceback
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QInputDialog
 
 from puddlestuff.plugins import status, add_shortcuts, connect_control
+import six
 
 class _SignalObject(QObject):
     highlight = pyqtSignal(list, name='highlight')
@@ -16,7 +18,7 @@ def highlight_dupe_field():
     if not ok:
         return
 
-    field = unicode(field)
+    field = six.text_type(field)
     files = status['selectedfiles']
     if not files or len(files) <= 1:
         return

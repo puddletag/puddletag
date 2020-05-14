@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
 from PyQt5.QtCore import Qt
 import sys, resource, os, audioinfo
-from puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
+from .puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
     PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
 
 from puddlestuff.constants import CONFIGDIR
+import six
+from six.moves import range
 
 def load_genres(filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     try:
-        return [unicode(z.strip(), 'utf8') for z in
+        return [six.text_type(z.strip(), 'utf8') for z in
             open(filepath, 'r').readlines()]
     except (IOError, OSError):
         return audioinfo.GENRES[::]
@@ -71,6 +74,6 @@ class Genres(QWidget):
 
     def applySettings(self, control=None):
         item = self.listbox.item
-        genres = [unicode(item(row).text()) for row in
-            xrange(self.listbox.count())]
+        genres = [six.text_type(item(row).text()) for row in
+            range(self.listbox.count())]
         self._status['genres'] = genres

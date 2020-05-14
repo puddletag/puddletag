@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 import sys, tempfile
 from subprocess import call
 
@@ -6,6 +8,7 @@ import puddlestuff.findfunc as findfunc
 import puddlestuff.loadshortcuts as loadshortcuts
 
 from puddlestuff.puddleobjects import PuddleConfig
+from six.moves import map
 
 usage = '''Usage: python update_translation.py [-h] [-q] language
 
@@ -45,7 +48,7 @@ def parse_functions():
             func_strings.append(tr(x.funcname))
             for controls in x._getControls(None):
                 del(controls[1])
-                func_strings.extend(map(tr, controls))
+                func_strings.extend(list(map(tr, controls)))
         except AttributeError:
             pass
 
@@ -77,7 +80,7 @@ def parse_shortcuts():
     loadshortcuts.check_file(fn, ':/menus')
     cparser = PuddleConfig(fn)
 
-    action_strings.extend(map(tr, cparser.data['menu']))
+    action_strings.extend(list(map(tr, cparser.data['menu'])))
     menus.close()
 
     return action_strings
@@ -126,12 +129,12 @@ try:
         verbose = False
         lang = sys.argv[2]
 except IndexError:
-    print 'Error: No language specified\n'
-    print usage
+    print('Error: No language specified\n')
+    print(usage)
     sys.exit(1)
 
 if lang in ('--help', '-h'):
-    print usage
+    print(usage)
     sys.exit(0)
 
 f = open('puddletag.pro', 'r+')
@@ -146,7 +149,7 @@ for line in f.readlines():
 f.close()
 
 if verbose:
-    print 'Updating translations...\n'
+    print('Updating translations...\n')
 
 write_translations()
 
@@ -156,8 +159,8 @@ try:
     else:
         call(['pylupdate4', 'puddletag.pro'])
 except OSError:
-    print 'Error: pylupdate4 is not installed.'
+    print('Error: pylupdate4 is not installed.')
     sys.exit(2)
 
 if verbose:
-    print '\nOpen %s in Qt Linguist in order to edit the translation.' % tr.strip()
+    print('\nOpen %s in Qt Linguist in order to edit the translation.' % tr.strip())

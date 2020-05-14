@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from puddlestuff.puddleobjects import PuddleConfig
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QMenu
 from functools import partial
-from itertools import izip
+
 from copy import deepcopy
 from puddlestuff.constants import FILESSELECTED, FILESLOADED
 from puddlestuff.plugins import connect_shortcut
 from puddlestuff.translations import translate
+import six
+from six.moves import zip
 
 status = {}
 
@@ -57,8 +60,8 @@ def clear_selected_cells():
     _previews.append(dict([(f, f.preview) for f in files]))
 
     ret = []
-    for fields, f in izip(selected, files):
-        ret.append(dict([(k,v) for k,v in f.preview.iteritems()
+    for fields, f in zip(selected, files):
+        ret.append(dict([(k,v) for k,v in six.iteritems(f.preview)
             if k not in fields]))
     emit('setpreview', ret)
 

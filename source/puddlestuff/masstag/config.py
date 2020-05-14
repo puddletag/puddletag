@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import glob, os, sys
 
 from puddlestuff.constants import CONFIGDIR
 from puddlestuff.masstag import (fields_from_text, MassTagProfile,
     TagSourceProfile)
 from puddlestuff.puddleobjects import encode_fn, PuddleConfig
+from six.moves import range
 
 PROFILEDIR = os.path.join(CONFIGDIR, 'masstagging')
 CONFIG = os.path.join(CONFIGDIR, 'masstagging.conf')

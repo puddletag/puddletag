@@ -2,6 +2,7 @@
 audioinfo.Tag objects).
 
 Data is stored as json."""
+from __future__ import absolute_import
 import base64, json, os, sys, traceback
 
 from optparse import OptionParser
@@ -9,6 +10,7 @@ from optparse import OptionParser
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo import tag_to_json
 import logging
+from six.moves import map
     
 def tags_to_json(dirpath, fields=None):
     ret = []
@@ -80,17 +82,17 @@ def restore_backup(fn):
             'Error: A file was backed up without a file path.'
         try:
             audio = audioinfo.Tag(fn)
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             "Error: Couldn't restore", fn, str(e)
             continue
-        except Exception, e:
+        except Exception as e:
             "Error: Couldn't restore", fn, str(e)
             continue
 
         if '__image' in tag:
             images = tag['__image']
             del(tag['__image'])
-            audio.images = map(b64_to_img, images)
+            audio.images = list(map(b64_to_img, images))
 
         audio.clear()
         audio.update(tag)

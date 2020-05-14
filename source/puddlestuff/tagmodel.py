@@ -1,5 +1,6 @@
 ## -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
   QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
   QVBoxLayout
@@ -12,27 +13,31 @@ from operator import itemgetter
 from copy import copy, deepcopy
 from subprocess import Popen
 from os import path
-import audioinfo
-from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
+from . import audioinfo
+from .audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
     usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
     EXTENSION, CaselessDict)
-from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
+from .puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
     progress, PuddleConfig, singleerror, winsettings, issubfolder,
     timemethod, encode_fn, decode_fn, fnmatch)
-from musiclib import MusicLibError
+from .musiclib import MusicLibError
 import time, re
 from errno import EEXIST
 import traceback
-from itertools import izip
+from six.moves import map
+from six.moves import range
+
 from collections import defaultdict
-from util import write, rename_file, real_filetags, to_string
-from constants import SELECTIONCHANGED, SEPARATOR, BLANK
+from .util import write, rename_file, real_filetags, to_string
+from .constants import SELECTIONCHANGED, SEPARATOR, BLANK
 import puddlestuff.confirmations as confirmations
 import logging, shutil
 from puddlestuff.translations import translate
 from puddlestuff.util import rename_error_msg
 from puddlestuff.audio_filter import parse as filter_audio
+import six
+from six.moves import zip
 
 the_break = False
 
@@ -97,7 +102,7 @@ def caseless(tag, audio):
         return tag
     smalltag = tag.lower()
     try:
-        return [z for z in audio if isinstance(z, basestring) and z.lower() == smalltag][0]
+        return [z for z in audio if isinstance(z, six.string_types) and z.lower() == smalltag][0]
     except IndexError:
         return tag
 
@@ -184,10 +189,10 @@ def model_tag(model, base = audioinfo.AbstractTag):
         def clean(self):
             for k, v in self.preview.items():
                 real = self.realvalue(k, u'')
-                if not isinstance(real, basestring):
+                if not isinstance(real, six.string_types):
                     real = u''.join(real)
 
-                if not isinstance(v, basestring):
+                if not isinstance(v, six.string_types):
                     v = u''.join(v)
 
                 if real == v:
@@ -217,10 +222,10 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 if k == '__image':
                     continue
                 real = self.realvalue(k, u'')
-                if not isinstance(real, basestring):
+                if not isinstance(real, six.string_types):
                     real = u''.join(real)
 
-                if not isinstance(v, basestring):
+                if not isinstance(v, six.string_types):
                     v = u''.join(v)
 
                 if real == v:
@@ -234,14 +239,14 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 return super(ModelTag, self).__getitem__(key)
 
         def keys(self):
-            keys = super(ModelTag, self).keys()
+            keys = list(super(ModelTag, self).keys())
             if model.previewMode and self.preview:
                 [keys.append(key) for key in self.preview 
                     if key not in keys]
             return keys
 
         def __len__(self):
-            return len(self.keys())
+            return len(list(self.keys()))
             
         def realvalue(self, key, default=None):
             try:
@@ -298,7 +303,7 @@ def _Tag(model):
     def ReplacementTag(filename):
 
         try:
-            fileobj = file(filename, "rb")
+            fileobj = open(filename, "rb")
         except IOError:
             logging.info("Can't open file", filename)
             return None
@@ -409,15 +414,15 @@ class ColumnSettings(HeaderSetting):
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
         
         if not checked:
-            checked = range(len(tags))
+            checked = list(range(len(tags)))
         [z.setCheckState(Qt.Checked) if i in checked
             else z.setCheckState(Qt.Unchecked) for i,z in enumerate(items)]
 
     def applySettings(self, control = None):        
         row = self.listbox.currentRow()
         if row > -1:
-            self.tags[row][0] = unicode(self.textname.text())
-            self.tags[row][1] = unicode(self.tag.currentText())
+            self.tags[row][0] = six.text_type(self.textname.text())
+            self.tags[row][1] = six.text_type(self.tag.currentText())
         checked = [z for z in range(self.listbox.count()) if
             self.listbox.item(z).checkState()]
         titles = [z[0] for z in self.tags]
@@ -467,7 +472,7 @@ class TagModel(QAbstractTableModel):
     previewModeChanged = pyqtSignal(bool, name='previewModeChanged')
     dirsmoved = pyqtSignal(list, name='dirsmoved')
     libfilesedited = pyqtSignal(list, name='libfilesedited')
-    setDataError = pyqtSignal(unicode, name='setDataError')
+    setDataError = pyqtSignal(six.text_type, name='setDataError')
     enableUndo = pyqtSignal(bool, name='enableUndo')
     def __init__(self, headerdata, taginfo = None):
         """Load tags.
@@ -669,13 +674,13 @@ class TagModel(QAbstractTableModel):
         return len(self.headerdata)
     
     def _toString(self, val):
-        if isinstance(val, basestring):
+        if isinstance(val, six.string_types):
             return val.replace(u'\n', u' ')
         else:
             try:
                 return u'\\\\'.join(val).replace(u'\n', u' ')
             except TypeError:
-                return unicode(val)
+                return six.text_type(val)
 
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
@@ -768,7 +773,7 @@ class TagModel(QAbstractTableModel):
                 return self.headerdata[section][0]
             except IndexError:
                 return None
-        return long(section + 1)
+        return int(section + 1)
     
     def highlight(self, rows):
         rows = rows[::]
@@ -933,7 +938,7 @@ class TagModel(QAbstractTableModel):
                 return index(tag)
             except ValueError:
                 return len(self.taginfo)
-        rows = map(row_index, tags + self._colored)
+        rows = list(map(row_index, tags + self._colored))
         if rows:
             top = self.index(min(rows), 0)
             bottom = self.index(max(rows), self.columnCount() - 1)
@@ -1019,14 +1024,14 @@ class TagModel(QAbstractTableModel):
             column = index.column()
             tag = self.headerdata[column][1]
             currentfile = self.taginfo[index.row()]
-            newvalue = unicode(value)
+            newvalue = six.text_type(value)
             realtag = currentfile.mapping.get(tag, tag)
             if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
                 QApplication.restoreOverrideCursor()
                 return False
 
             if tag not in FILETAGS:
-                newvalue = filter(None, newvalue.split(SEPARATOR))
+                newvalue = [_f for _f in newvalue.split(SEPARATOR) if _f]
             if newvalue == currentfile.get(tag, u'') and not dontwrite:
                 QApplication.restoreOverrideCursor()
                 return False
@@ -1208,7 +1213,7 @@ class TagModel(QAbstractTableModel):
             rows.append(row)
             if self.previewMode:
                 audio.update(undo_tags)
-                for k, v in undo_tags.iteritems():
+                for k, v in six.iteritems(undo_tags):
                     if v == [] and k in audio.preview:
                         del(audio.preview[k])
             else:
@@ -1269,7 +1274,7 @@ class TagDelegate(QStyledItemDelegate):
     def setModelData(self, editor, model, index):
         try:
             model.setData(index, editor.text())
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             editor.writeError = e
 
 
@@ -1344,7 +1349,7 @@ class TagTable(QTableView):
     libfilesedited = pyqtSignal(list, name='libfilesedited')
     previewModeChanged = pyqtSignal(bool, name='previewModeChanged')
     onetomany = pyqtSignal(dict, name='onetomany')
-    setDataError = pyqtSignal(unicode, name='setDataError')
+    setDataError = pyqtSignal(six.text_type, name='setDataError')
     dirsmoved = pyqtSignal(list, name='dirsmoved')
     itemSelectionChanged = pyqtSignal(name='itemSelectionChanged')
     def __init__(self, headerdata = None, parent = None):
@@ -1472,7 +1477,7 @@ class TagTable(QTableView):
                 
             return ((field, f.get(field, u'')) for field in selected)
         
-        return map(dict, (get_selected(*z) for z in zip(audios, sorted(rows))))
+        return list(map(dict, (get_selected(*z) for z in zip(audios, sorted(rows)))))
 
     def _firstSelection(self):
         if not self.selectedRows:
@@ -1573,12 +1578,12 @@ class TagTable(QTableView):
                 try:
                     deltag(row)
                     yield None
-                except (OSError, IOError), e:
+                except (OSError, IOError) as e:
                     msg = translate('Table', "An error occurred while " \
                         "deleting the tag of %1: <b>%2</b>")
                     msg = msg.arg(e.filename).arg(e.strerror)
                     yield msg, len(self.selectedRows)
-                except NotImplementedError, e:
+                except NotImplementedError as e:
                     f = self.model().taginfo[row]
                     filename = f[PATH]
                     ext = f[EXTENSION]
@@ -1638,7 +1643,7 @@ class TagTable(QTableView):
         libtags = []
         def func():
             temprows = sorted(selectedRows[::])
-            for ((i, row), audio) in izip(enumerate(selectedRows), selected):
+            for ((i, row), audio) in zip(enumerate(selectedRows), selected):
                 try:
                     filename = audio.filepath
                     os.remove(filename)
@@ -1648,7 +1653,7 @@ class TagTable(QTableView):
                     removeRows(temprows[i])
                     temprows = [z - 1 for z in temprows]
                     yield None
-                except (OSError, IOError), detail:
+                except (OSError, IOError) as detail:
                     msg = u"I couldn't delete <b>%s</b> (%s)" % (filename,
                             detail.strerror)
                     if row == temprows[-1]:
@@ -1733,7 +1738,7 @@ class TagTable(QTableView):
         if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
             return
         filenames = [z.filepath for z in self.selectedTags]
-        urls = map(QUrl.fromLocalFile, map(decode_fn, filenames))
+        urls = list(map(QUrl.fromLocalFile, list(map(decode_fn, filenames))))
         mimeData = QMimeData()
         mimeData.setUrls(urls)
         if event.modifiers() == Qt.MetaModifier:
@@ -1822,10 +1827,10 @@ class TagTable(QTableView):
             files = []
         if not dirs:
             dirs = []
-        elif isinstance(dirs, basestring):
+        elif isinstance(dirs, six.string_types):
             dirs = [dirs]
 
-        dirs = map(encode_fn, dirs)
+        dirs = list(map(encode_fn, dirs))
 
         files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
 
@@ -2006,13 +2011,13 @@ class TagTable(QTableView):
         if not self.selectedRows: return
         if hasattr(self, "playcommand"):
             
-            li = map(encode_fn, self.playcommand)
+            li = list(map(encode_fn, self.playcommand))
                 
             li.extend([z.filepath for z in self.selectedTags])
 
             try:
                 Popen(li)
-            except (OSError), detail:
+            except (OSError) as detail:
                 if detail.errno != 2:
                     QMessageBox.critical(self, translate("Defaults", "Error"),
                         translate("Table",
@@ -2035,15 +2040,14 @@ class TagTable(QTableView):
     def reloadSelected(self, files = None):
         self._restore = self.saveSelection()
 
-        loaded_dirs = map(encode_fn, self.dirs)
+        loaded_dirs = list(map(encode_fn, self.dirs))
         if files is None:
             files = self.model().taginfo
 
         taginfo = self.model().taginfo
-        dirs = set(map(lambda i: taginfo[i].dirpath, self.selectedRows))
+        dirs = set([taginfo[i].dirpath for i in self.selectedRows])
 
-        is_sub = lambda fn: filter(None,
-            [issubfolder(z,fn) for z in dirs])
+        is_sub = lambda fn: [_f for _f in [issubfolder(z,fn) for z in dirs] if _f]
 
         sub_files = []
         for f in files:
@@ -2070,7 +2074,7 @@ class TagTable(QTableView):
 
     def reloadFiles(self, files=None):
         self._restore = self.saveSelection()
-        dirs = map(encode_fn, self.dirs)
+        dirs = list(map(encode_fn, self.dirs))
         files = [z.filepath for z in self.model().taginfo if z.dirpath
             not in dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
@@ -2216,7 +2220,7 @@ class TagTable(QTableView):
         fields = [field for title, field in self.model().headerdata]
         filenames = defaultdict(lambda: set())
         selection = self.currentRowSelection()
-        for row, columns in self.currentRowSelection().iteritems():
+        for row, columns in six.iteritems(self.currentRowSelection()):
             filenames[taginfo[row].filepath] = set(fields[c] for c in columns)
         self.__savedSelection = filenames
         return filenames
@@ -2402,7 +2406,7 @@ class TagTable(QTableView):
 
         to_select = {}
 
-        for d, columns in selected.iteritems():
+        for d, columns in six.iteritems(selected):
             if len(columns) == len(dirpaths[d]) and len(selected) == 1:
                 to_select = self.nextDir(dirpaths, previous)
                 if to_select:
@@ -2415,7 +2419,7 @@ class TagTable(QTableView):
                 for row in dirpaths[d]:
                     to_select[row] = columns[-1]
         
-        for row, column in to_select.iteritems():
+        for row, column in six.iteritems(to_select):
             index = modelindex(row, column)
             merge(QItemSelection(index, index), QItemSelectionModel.Select)
 

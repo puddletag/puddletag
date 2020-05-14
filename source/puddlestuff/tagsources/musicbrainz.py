@@ -1,4 +1,6 @@
-import json, pdb, re, sys, time, urllib, urllib2
+from __future__ import absolute_import
+from __future__ import print_function
+import json, pdb, re, sys, time, six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 
 from collections import defaultdict
 from itertools import chain
@@ -11,6 +13,7 @@ from puddlestuff.constants import CHECKBOX, COMBO
 from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
+import six
 
 SERVER = 'http://musicbrainz.org/ws/2/'
 
@@ -66,7 +69,7 @@ mb_imagetypes = {
 
 def children_to_text(node):
     if istext(node): return
-    info = dict(node.attributes.items())
+    info = dict(list(node.attributes.items()))
     for ch in node.childNodes:
         if istext(ch): continue
         key = ch.tagName
@@ -77,7 +80,7 @@ def children_to_text(node):
     return info
 
 def convert_dict(d, fm):
-    return dict((fm.get(k, k), v) for k, v in d.iteritems() if
+    return dict((fm.get(k, k), v) for k, v in six.iteritems(d) if
         not isempty(v))
 
 def fix_xml(xml):
@@ -169,7 +172,7 @@ def parse_artist_search(xml):
     for node in nodes:
         if istext(node):
             continue
-        info = dict(node.attributes.items())
+        info = dict(list(node.attributes.items()))
         for ch in node.childNodes:
             if istext(node):
                 continue
@@ -202,7 +205,7 @@ def parse_medium_list(r_node):
 
     mediums = [convert_dict(m, ALBUM_KEYS) for m in mediums]
     info = mediums[0]
-    info.update({'discs': unicode(len(mediums))})
+    info.update({'discs': six.text_type(len(mediums))})
     return info
 
 def parse_node(node, header_tag, sub_tag, check_tag):
@@ -277,7 +280,7 @@ def parse_track_list(node):
     for i, t in enumerate(parse_node(node, 'track-list', 'track', 'position')):
         track = t['recording']
         rem_keys = set(track).union(TO_REMOVE)
-        track.update((k,v) for k,v in t.iteritems() if k not in rem_keys)
+        track.update((k,v) for k,v in six.iteritems(t) if k not in rem_keys)
 
         if u'puid-list' in track:
             track['musicip_puid'] = track['puid-list']['id']
@@ -295,9 +298,9 @@ def parse_track_list(node):
             track['artist'] = u''.join('%s%s' % a for a in names)
 
         for k, v in track.items():
-            if not isinstance(track[k], (basestring, list)):
+            if not isinstance(track[k], (six.string_types, list)):
                 del(track[k])
-            elif isinstance(v, list) and not isinstance(v[0], basestring):
+            elif isinstance(v, list) and not isinstance(v[0], six.string_types):
                 del(track[k])
 
         if u'length' in track:
@@ -315,7 +318,7 @@ def parse_track_relation(relation):
 
 def rec_children_to_text(node):
     if istext(node): return
-    info = dict(node.attributes.items())
+    info = dict(list(node.attributes.items()))
     for ch in node.childNodes:
         if istext(ch):
             continue
@@ -348,7 +351,7 @@ def retrieve_cover_links(album_id, extra=None):
     write_log(translate("MusicBrainz", "Retrieving cover: %s") % url)
     try:
         data, code = urlopen(url, code=True)
-    except RetrievalError, e:
+    except RetrievalError as e:
         if e.code == 404:
             raise RetrievalError(translate("MusicBrainz",
                 "No images exist for this album."), 404)
@@ -401,33 +404,33 @@ def retrieve_front_cover(album_id):
     
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
-        if isinstance(album, unicode):
+        if isinstance(album, six.text_type):
             album = solr_escape(album.encode('utf8'))
 
-        return SERVER + 'release/?query=' + urllib.quote_plus(album) + \
+        return SERVER + 'release/?query=' + six.moves.urllib.parse.quote_plus(album) + \
             '&limit=%d&offset=%d' % (limit, offset)
 
     if artist:
-        if isinstance(artist, unicode):
+        if isinstance(artist, six.text_type):
             artist = artist.encode('utf8')
-        query = 'artistname:' + urllib.quote_plus(solr_escape(artist))
+        query = 'artistname:' + six.moves.urllib.parse.quote_plus(solr_escape(artist))
 
     if album:
-        if isinstance(album, unicode):
+        if isinstance(album, six.text_type):
             album = solr_escape(album.encode('utf8'))
         if artist:
-            query = 'release:' + urllib.quote_plus(album) + \
+            query = 'release:' + six.moves.urllib.parse.quote_plus(album) + \
                 '%20AND%20' + query
         else:
-            query = 'release:' + urllib.quote_plus(album)
+            query = 'release:' + six.moves.urllib.parse.quote_plus(album)
 
     return SERVER + 'release/?query=' + query.replace('%3A', '') + \
         '&limit=%d&offset=%d' % (limit, offset)
 
 def search_artist(artist, limit=25, offset=0):
-    if isinstance(artist, unicode):
+    if isinstance(artist, six.text_type):
         artist = artist.encode('utf8')
-    query = urllib.urlencode({
+    query = six.moves.urllib.parse.urlencode({
         'query': solr_escape(artist),
         'limit': limit,
         'offset': offset,
@@ -493,7 +496,7 @@ class MusicBrainz(object):
                 url = search_album('arid:' +
                     solr_escape(artist_id.encode('utf8')), limit=100, own=True)
                 return parse_album_search(urlopen(url))
-            except RetrievalError, e:
+            except RetrievalError as e:
                 msg = translate("MusicBrainz",
                     '<b>Error:</b> While retrieving %1: %2')
                 write_log(msg.arg(artist_id).arg(escape(e)))
@@ -502,7 +505,7 @@ class MusicBrainz(object):
             r_id = s[len(u':b'):].strip()
             try:
                 return [self.retrieve(r_id)]
-            except RetrievalError, e:
+            except RetrievalError as e:
                 msg = translate("MusicBrainz",
                     "<b>Error:</b> While retrieving Album ID %1 (%2)")
                 write_log(msg.arg(r_id).arg(escape(e)))
@@ -510,7 +513,7 @@ class MusicBrainz(object):
         else:
             try:
                 params = parse_searchstring(s)
-            except RetrievalError, e:
+            except RetrievalError as e:
                 return parse_album_search(urlopen(search_album(s, limit=100)))
             if not params:
                 return
@@ -530,7 +533,7 @@ class MusicBrainz(object):
             artist = u'Various Artists'
         elif artists:
             if hasattr(artists, 'items'):
-                artist = artists.keys()[0]
+                artist = list(artists.keys())[0]
             else:
                 artist = artists[0]
 
@@ -540,23 +543,23 @@ class MusicBrainz(object):
         write_log(u'Searching for %s' % album)
 
         if hasattr(artists, "items"):
-            album_id = find_id(chain(*artists.values()), "mbrainz_album_id")
+            album_id = find_id(chain(*list(artists.values())), "mbrainz_album_id")
             if album_id:
                 try:
                     write_log(translate("MusicBrainz",
                         "Found album id %s in tracks. Retrieving") % album_id)
                     return [retrieve_album(album_id)]
-                except RetrievalError, e:
+                except RetrievalError as e:
                     msg = translate("MusicBrainz",
                         "<b>Error:</b> While retrieving Album ID %1 (%2)")
                     write_log(msg.arg(album_id).arg(escape(e)))
 
         try:
             xml = urlopen(search_album(album, artist, limit))
-        except urllib2.URLError, e:
+        except six.moves.urllib.error.URLError as e:
             write_log(u'Error: While retrieving search page %s' %
-                        unicode(e))
-            raise RetrievalError(unicode(e))
+                        six.text_type(e))
+            raise RetrievalError(six.text_type(e))
         write_log(u'Retrieved search results.')
         self.__lasttime = time.time()
         return parse_album_search(xml)
@@ -583,12 +586,12 @@ class MusicBrainz(object):
                 image = retrieve_front_cover(album_id)
                 if image:
                     return [image]
-            except RetrievalError, e:
+            except RetrievalError as e:
                 import traceback
                 traceback.print_exc()
-                print
+                print()
                 write_log(translate("MusicBrainz",
-                    "Error retrieving image: %s") % unicode(e))
+                    "Error retrieving image: %s") % six.text_type(e))
                 return []
         else:
             return retrieve_covers(album_id, self.__image_size)
@@ -607,4 +610,4 @@ if __name__ == '__main__':
     #x = c.search('New Again', 'Taking Back Sunday')
     tracks = parse_album(xml)[1]
     for z in tracks:
-        print z['title'], z['track']
+        print(z['title'], z['track'])

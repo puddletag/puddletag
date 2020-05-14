@@ -2,6 +2,7 @@
 """Dialog's that crop up along the application, but are used at at most
 one place, and aren't that complicated are put here."""
 
+from __future__ import absolute_import
 import os, pdb, sys
 
 from copy import deepcopy
@@ -17,14 +18,17 @@ from puddlestuff.util import pprint_tag
 import puddlestuff.findfunc as findfunc
 import puddlestuff.resource
 
-from audioinfo import commontags, PATH, FILE_FIELDS
+from .audioinfo import commontags, PATH, FILE_FIELDS
 from puddlestuff.constants import HOMEDIR, KEEP
-from puddleobjects import (
+from .puddleobjects import (
     get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
     PicWidget, PuddleConfig, natcasecmp)
 from puddlestuff.translations import translate
 from puddlestuff.util import to_string
+import six
+from six.moves import map
+from six.moves import range
 
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
@@ -165,8 +169,8 @@ class AutonumberDialog(QDialog):
                   numtracks,
                   self._restart_numbering.checkState(),
                   self._padlength.value(),
-                  unicode(self.grouping.text()),
-                  unicode(self.output_field.currentText()),
+                  six.text_type(self.grouping.text()),
+                  six.text_type(self.output_field.currentText()),
                   self.count_by_group.checkState()
         )
         
@@ -212,7 +216,7 @@ class AutonumberDialog(QDialog):
 
 class ImportTextFile(QDialog):
     """Dialog that importing a text file to retrieve tags from."""
-    Newtags = pyqtSignal(list, unicode, name='Newtags')
+    Newtags = pyqtSignal(list, six.text_type, name='Newtags')
     def __init__(self,parent = None, filename = None, clipboard = None):
         QDialog.__init__(self, parent)
         
@@ -277,7 +281,7 @@ class ImportTextFile(QDialog):
         """When I'm done, emit a signal with the updated tags."""
         self.close()
         self.Newtags.emit(self.dicttags,
-            unicode(self.patterncombo.currentText()))
+            six.text_type(self.patterncombo.currentText()))
 
     def fillTags(self, string = None): #string is there purely for the SIGNAL
         """Fill the tag textbox."""
@@ -291,7 +295,7 @@ class ImportTextFile(QDialog):
         self.tags.clear()
         for z in self.lines.split(u"\n"):
             self.dicttags.append(findfunc.filenametotag(
-                unicode(self.patterncombo.currentText()), z, False, False))
+                six.text_type(self.patterncombo.currentText()), z, False, False))
         if self.dicttags:
             self.tags.setHtml(
                 u"<br/>".join([formattag(z) for z in self.dicttags]))
@@ -311,7 +315,7 @@ class ImportTextFile(QDialog):
 
         try:
             f = open(filename, 'r')
-        except (IOError, OSError), detail:
+        except (IOError, OSError) as detail:
             errormsg = translate('Text File -> Tag',
                 "The file <b>%1</b> couldn't be loaded.<br /> "
                 "Do you want to choose another?")
@@ -338,7 +342,7 @@ class ImportTextFile(QDialog):
         self.lastDir = os.path.dirname(filename)
 
     def openClipBoard(self):
-        text = unicode(QApplication.clipboard().text())
+        text = six.text_type(QApplication.clipboard().text())
         self.lines = text.split(u'\n')
         self.file.setPlainText(text)
         self.setLines()
@@ -348,7 +352,7 @@ class ImportTextFile(QDialog):
         self.patterncombo.editTextChanged.connect(self.fillTags)
 
     def setLines(self):
-        self.lines = unicode(self.file.document().toPlainText())
+        self.lines = six.text_type(self.file.document().toPlainText())
         self.fillTags()
 
 
@@ -381,7 +385,7 @@ class EditField(QDialog):
     in the form {field: value}.
     (Because the user might choose to edit a different tag,
     then the one that was chosen and you'd want to delete that one)"""
-    donewithmyshit = pyqtSignal(unicode, unicode, object, name='donewithmyshit')
+    donewithmyshit = pyqtSignal(six.text_type, six.text_type, object, name='donewithmyshit')
 
     def __init__(self, field=None, parent=None, field_list=None, edit=True):
 
@@ -422,7 +426,7 @@ class EditField(QDialog):
             if edit:
                 okcancel.okButton.setText(translate('Edit Field', 'E&dit'))
 
-        map(self.vbox.addWidget, [label, self.tagcombo, label1, self.value])
+        list(map(self.vbox.addWidget, [label, self.tagcombo, label1, self.value]))
 
         self.vbox.addLayout(okcancel)
         self.setLayout(self.vbox)
@@ -435,8 +439,8 @@ class EditField(QDialog):
     def ok(self):
         self.close()
         self.donewithmyshit.emit(
-            unicode(self.tagcombo.currentText()),
-            unicode(self.value.toPlainText()),
+            six.text_type(self.tagcombo.currentText()),
+            six.text_type(self.value.toPlainText()),
             self.__oldField)
 
 class StatusWidgetItem(QTableWidgetItem):
@@ -813,11 +817,11 @@ class ExTags(QDialog):
     def get_field(self, row, status = None):
         getitem = self.table.item
         item = getitem(row, 0)
-        tag = unicode(item.text())
+        tag = six.text_type(item.text())
         try:
-            value = unicode(getitem(row, 1).text())
+            value = six.text_type(getitem(row, 1).text())
         except AttributeError:
-            value = unicode(self.table.cellWidget(row, 1).currentText())
+            value = six.text_type(self.table.cellWidget(row, 1).currentText())
         if status:
             return (tag, value, item.status)
         else:
@@ -838,7 +842,7 @@ class ExTags(QDialog):
             EDIT: QBrush(edit), REMOVE: QBrush(remove)}
 
         item = self.table.item
-        for row in xrange(self.table.rowCount()):
+        for row in range(self.table.rowCount()):
             field_item = self.get_item(row, 0)
             field_item.statusColors = self._colors
             field_item.status = field_item.status
@@ -852,7 +856,7 @@ class ExTags(QDialog):
         tags = {}
         lowered = {}
         listitems = [get_field(row, True) for row
-            in xrange(self.table.rowCount())]
+            in range(self.table.rowCount())]
 
         for field, val, status in listitems:
             if status != REMOVE:
@@ -904,7 +908,7 @@ class ExTags(QDialog):
 
             row = 0
 
-            for field, values in common.iteritems():
+            for field, values in six.iteritems(common):
                 if field in italics:
                     preview = UNCHANGED
                 #field in italics => field in previews.
@@ -916,7 +920,7 @@ class ExTags(QDialog):
                     self._settag(row, field, values, multi=True)
                     row += 1
                 else:
-                    if isinstance(values, basestring):
+                    if isinstance(values, six.string_types):
                         self._settag(row, field, values, None, preview)
                         row += 1
                     else:
@@ -950,7 +954,7 @@ class ExTags(QDialog):
                 preview = BOLD
             else:
                 preview = UNCHANGED
-            if isinstance(val, basestring):
+            if isinstance(val, six.string_types):
                 items.append([key, val, None, preview])
             else:
                 [items.append([key, z, None, preview]) for z in val]
@@ -1092,7 +1096,7 @@ class ExTags(QDialog):
             field_item = StatusWidgetItem(field, status,
                 self._colors, preview)
             tb.setItem(row, 0, field_item)
-            if not multi and (len(value) == 1 or isinstance(value, basestring)):
+            if not multi and (len(value) == 1 or isinstance(value, six.string_types)):
                 valitem = StatusWidgetItem(to_string(value), status, self._colors, preview)
                 tb.setItem(row, 1, valitem)
             else:
@@ -1109,9 +1113,9 @@ class ExTags(QDialog):
 
         if check:
             lowered_tag = field.lower()
-            for row in xrange(tb.rowCount()):
+            for row in range(tb.rowCount()):
                 item = tb.item(row, 0)
-                text = unicode(item.text())
+                text = six.text_type(item.text())
                 if text != field and text.lower() == lowered_tag:
                     item.setText(field)
                     if item.status not in [ADD, REMOVE]:
@@ -1168,7 +1172,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     dirpath = '/home/keith/Desktop/Daft.Punk-Random.Access.Memories-2013-FLAC.-NewsHost-1023'
     import glob
-    tags = map(puddlestuff.audioinfo.Tag, glob.glob(os.path.join(dirpath, "*.flac")))
+    tags = list(map(puddlestuff.audioinfo.Tag, glob.glob(os.path.join(dirpath, "*.flac"))))
     for tag in tags:
         tag.preview = {}
         tag.equal_fields = lambda: []

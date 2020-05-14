@@ -12,13 +12,15 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
+from __future__ import absolute_import
 import os
 import json
-import urllib
-import urllib2
-import httplib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+import six.moves.http_client
 import contextlib
 import errno
+import six
 try:
     import audioread
     have_audioread = True
@@ -141,11 +143,11 @@ def _send_request(req):
     tuple containing the response data and headers.
     """
     try:
-        with contextlib.closing(urllib2.urlopen(req)) as f:
+        with contextlib.closing(six.moves.urllib.request.urlopen(req)) as f:
             return f.read(), f.info()
-    except urllib2.HTTPError, exc:
+    except six.moves.urllib.error.HTTPError as exc:
         raise WebServiceError('HTTP status %i' % exc.code, exc.read())
-    except httplib.BadStatusLine:
+    except six.moves.http_client.BadStatusLine:
         raise WebServiceError('bad HTTP status line')
     except IOError:
         raise WebServiceError('connection failed')
@@ -159,15 +161,15 @@ def _api_request(url, params):
     # Python 2.x operates on bytestrings, so a Unicode error is raised
     # if non-ASCII characters are passed in a Unicode string.)
     byte_params = {}
-    for key, value in params.iteritems():
-        if isinstance(key, unicode):
+    for key, value in six.iteritems(params):
+        if isinstance(key, six.text_type):
             key = key.encode('utf8')
-        if isinstance(value, unicode):
+        if isinstance(value, six.text_type):
             value = value.encode('utf8')
         byte_params[key] = value
 
-    body = _compress(urllib.urlencode(byte_params))
-    req = urllib2.Request(url, body, {
+    body = _compress(six.moves.urllib.parse.urlencode(byte_params))
+    req = six.moves.urllib.request.Request(url, body, {
         'Content-Encoding': 'gzip',
         'Accept-Encoding': 'gzip',
     })
@@ -263,7 +265,7 @@ def _fingerprint_file_fpcalc(path, maxlength):
     try:
         proc = subprocess.Popen(command, stdout=subprocess.PIPE)
         output, _ = proc.communicate()
-    except OSError, exc:
+    except OSError as exc:
         if exc.errno == errno.ENOENT:
             raise NoBackendError("fpcalc not found")
         else:
@@ -345,7 +347,7 @@ def submit(apikey, userkey, data):
     for i, d in enumerate(data):
         if "duration" not in d or "fingerprint" not in d:
             raise FingerprintSubmissionError("missing required parameters")
-        for k, v in d.iteritems():
+        for k, v in six.iteritems(d):
             args["%s.%s" % (k, i)] = v
 
     response = _api_request(_get_submit_url(), args)

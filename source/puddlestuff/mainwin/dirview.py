@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
@@ -8,6 +9,9 @@ import os, shutil, pdb, mutex
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleThread, 
     issubfolder, PuddleHeader)
 from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
+import six
+from six.moves import map
+from six.moves import range
 mutex = mutex.mutex()
 qmutex = QMutex()
 from puddlestuff.translations import translate
@@ -131,7 +135,7 @@ class DirView(QTreeView):
         def get_str(f):
             return model.filePath(f)
 
-        selected = map(get_str, self.selectedIndexes())
+        selected = list(map(get_str, self.selectedIndexes()))
 
         for p in parents:
             if exists(p):
@@ -209,7 +213,7 @@ class DirView(QTreeView):
             self._load = load
             return
 
-        if isinstance(dirlist, basestring):
+        if isinstance(dirlist, six.string_types):
             dirlist = [dirlist]
         self._threadRunning = True
         self.setEnabled(False)
@@ -226,7 +230,7 @@ class DirView(QTreeView):
                     continue
                 if isinstance(d, str):
                     try:
-                        d = unicode(d, 'utf8')
+                        d = six.text_type(d, 'utf8')
                     except (UnicodeEncodeError, UnicodeDecodeError):
                         pass
                 index = getindex(d)

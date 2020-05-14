@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import os
 
 from PyQt5.QtCore import Qt
@@ -12,6 +13,8 @@ from puddlestuff.puddleobjects import (natcasecmp, ListButtons,
     ListBox, PuddleConfig)
 from puddlestuff.tagmodel import TableHeader
 from puddlestuff.translations import translate
+import six
+from six.moves import range
 
 CONFIGPATH = os.path.join(SAVEDIR, 'view_all_fields')
 ADD_TEXT = translate('Defaults', "Add item?")
@@ -44,7 +47,7 @@ def show_all_fields(fields=None):
         if f in keys:
             keys.remove(f)
 
-    data = map(lambda k: (k, k), fields + sorted(keys, cmp=natcasecmp))
+    data = [(k, k) for k in fields + sorted(keys, cmp=natcasecmp)]
     tb = status['table']
     tb.model().setHeader(data)
     hd = TableHeader(Qt.Horizontal, data)
@@ -133,7 +136,7 @@ class ButtonsAndList(QFrame):
 
     def addItem(self):
         l = self.listbox.item
-        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
@@ -151,7 +154,7 @@ class ButtonsAndList(QFrame):
         if row is None:
             row = self.listbox.currentRow()
         l = self.listbox.item
-        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem (self, 'puddletag',
             self.addText, patterns, row)
         if ok:

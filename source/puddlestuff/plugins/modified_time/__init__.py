@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtWidgets import QAction, QApplication, QMessageBox
 from puddlestuff.plugins import add_shortcuts, status
 from datetime import timedelta, datetime
@@ -6,6 +7,8 @@ import os
 from puddlestuff.audioinfo import lngtime
 from puddlestuff.puddleobjects import progress
 import time
+import six
+from six.moves import zip
 
 def init(parent=None):
     action = QAction('Add 2 seconds to modified time', parent)
@@ -34,9 +37,9 @@ def add_seconds(parent=None):
             accessed_time = lngtime(f['__accessed'])
             try:
                 os.utime(f.filepath, (accessed_time, time.mktime(modified_time.timetuple())))
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
-                m = unicode(QApplication.translate("Defaults",
+                m = six.text_type(QApplication.translate("Defaults",
                     'An error occured while setting the modification time of <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1

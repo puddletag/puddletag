@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
     
 import os, time, pdb, traceback
-import cPickle as pickle
+import six.moves.cPickle as pickle
 
 from collections import defaultdict
 from functools import partial
@@ -22,6 +24,9 @@ from puddlestuff.audioinfo.util import (del_deco, fn_hash, getdeco,
 from puddlestuff.constants import HOMEDIR
 from puddlestuff.musiclib import MusicLibError
 from puddlestuff.util import to_string, translate
+import six
+from six.moves import filter
+from six.moves import range
 
 model_tag = audioinfo.model_tag
 
@@ -30,7 +35,7 @@ ATTRIBUTES = ['length', 'accessed', 'size', 'created',
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
-    return unicode(bitrate/1000) + u' kb/s'
+    return six.text_type(bitrate/1000) + u' kb/s'
 
 def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
@@ -45,9 +50,9 @@ mapping.update({
     'tracknumber': lambda value: {'track': [value]},
     '~#bitrate' : lambda value: {'__bitrate': strbitrate(value)},
     '~#length': lambda value: {'__length': strlength(value)},
-    '~#playcount': lambda value: {'playcount': [unicode(value)]},
-    '~#rating': lambda value: {'rating': [unicode(value)]},
-    '~#skipcount': lambda value: {'__skipcount': [unicode(value)]},
+    '~#playcount': lambda value: {'playcount': [six.text_type(value)]},
+    '~#rating': lambda value: {'rating': [six.text_type(value)]},
+    '~#skipcount': lambda value: {'__skipcount': [six.text_type(value)]},
     '~mountpoint': lambda value: {'__mountpoint': value},
     '~#mtime': lambda value : {'__modified': strtime(value)},
     '~picture': lambda value: {'__picture': value},
@@ -88,15 +93,15 @@ class Tag(MockTag):
         self._libtags = libtags
 
         for key, value in libtags.items():
-            if not value and not isinstance(value, (int, long)):
+            if not value and not isinstance(value, six.integer_types):
                 continue
             if key in mapping:
                 tags.update(mapping[key](value))
             else:
-                if not isinstance(value, unicode): #Strings
-                    try: value = unicode(value, 'utf8', 'replace')
+                if not isinstance(value, six.text_type): #Strings
+                    try: value = six.text_type(value, 'utf8', 'replace')
                     except (TypeError, ValueError):
-                        try: value = unicode(value) #Usually numbers
+                        try: value = six.text_type(value) #Usually numbers
                         except:
                             traceback.print_exc()
                             continue
@@ -164,7 +169,7 @@ class Tag(MockTag):
 
     @keys_deco
     def keys(self):
-        return self.__tags.keys()
+        return list(self.__tags.keys())
 
     def save(self, justrename = False):
         libtags = self._libtags
@@ -184,7 +189,7 @@ class Tag(MockTag):
 
     def _tolibformat(self):
         libtags = {}
-        tags = stringtags(self.__tags).items()
+        tags = list(stringtags(self.__tags).items())
         for key, value in tags:
             if key in revmapping:
                 libtags.update(revmapping[key](value))
@@ -230,7 +235,7 @@ class QuodLibet(object):
             if secondary == 'album' and maintag == 'artist':
                 tracks = (Tag(self, track) for track in
                     self._cached[mainval][secvalue] if exists(track))
-                return filter(None, tracks)
+                return [_f for _f in tracks if _f]
             else:
                 def getvalue(track):
                     if (track.get(maintag) == mainval) and (
@@ -247,7 +252,7 @@ class QuodLibet(object):
                 if track.get(maintag) == mainval:
                     return Tag(self, track)
 
-        return filter(getvalue, self._tracks)
+        return list(filter(getvalue, self._tracks))
 
     def distinct_values(self, field):
         return set([track.get(field, u'') for track in self._tracks])
@@ -257,12 +262,12 @@ class QuodLibet(object):
             self._tracks if track.get(parent, u'') == value])
             
     def _artists(self):
-        return self._cached.keys()
+        return list(self._cached.keys())
 
     artists = property(_artists)
 
     def get_albums(self, artist):
-        return self._cached[artist].keys()
+        return list(self._cached[artist].keys())
 
     def save(self):
         if not self.edited:
@@ -286,13 +291,13 @@ class QuodLibet(object):
     def tree(self):
         title = 'title'
         for artist in self.artists:
-            print artist
+            print(artist)
             albums = self.get_albums(artist)
             for album in albums:
-                print u'  ', album
+                print(u'  ', album)
                 tracks = self.get_tracks('artist', artist, 'album', album)
                 for track in tracks:
-                    print u'      ', track[title][0] if title in track else u''
+                    print(u'      ', track[title][0] if title in track else u'')
 
     def close(self):
         pass
@@ -378,7 +383,7 @@ class InitWidget(QWidget):
         dbpath = self.dbpath.text()
         try:
             return QuodLibet(dbpath)
-        except (IOError, OSError), e:
+        except (IOError, OSError) as e:
             raise MusicLibError(0, translate(
                 "QuodLibet", '%1 (%2)').arg(e.strerror).arg(e.filename))
         except (pickle.UnpicklingError, EOFError):
@@ -392,7 +397,7 @@ if __name__ == '__main__':
     artists = lib.artists
     import random
     d = defaultdict(lambda: defaultdict(lambda: []))
-    for nothing in xrange(20):
+    for nothing in range(20):
         artist = artists[random.randint(0, len(artists))]
         for album, tracks in lib._cached[artist].items():
             d[artist][album] = [Tag(lib, t).usertags for t in tracks]

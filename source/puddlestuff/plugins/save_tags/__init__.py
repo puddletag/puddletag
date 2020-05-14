@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import mutagen, os, cPickle as pickle, sys, traceback
+from __future__ import absolute_import
+import mutagen, os, six.moves.cPickle as pickle, sys, traceback
 
 from PyQt5.QtWidgets import QAction, QFileDialog
 

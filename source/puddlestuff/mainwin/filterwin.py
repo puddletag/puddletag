@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtWidgets import (QWidget, QLabel, QComboBox,
     QLineEdit, QHBoxLayout, QPushButton, QApplication)
 from PyQt5.QtCore import QTimer, pyqtSignal
 from puddlestuff.puddleobjects import gettaglist, create_buddy, PuddleCombo
 from puddlestuff.constants import BOTTOMDOCK
 from puddlestuff.translations import translate
+import six
 
 class DelayedEdit(QLineEdit):
     delayedText = pyqtSignal(str, name='delayedText')
@@ -32,7 +34,7 @@ class DelayedEdit(QLineEdit):
         timer.start()
 
 class FilterView(QWidget):
-    filter = pyqtSignal(unicode, name='filter')
+    filter = pyqtSignal(six.text_type, name='filter')
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.emits = ['filter']
@@ -47,7 +49,7 @@ class FilterView(QWidget):
         self.setLayout(hbox)
 
         emit_filter = lambda: self.filter.emit(
-            unicode(edit.text()))
+            six.text_type(edit.text()))
         go_button.clicked.connect(emit_filter)
         edit.returnPressed.connect(emit_filter)
         self.combo.combo.activated.connect(

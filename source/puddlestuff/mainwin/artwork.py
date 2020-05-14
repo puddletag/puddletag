@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import sys, os
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
@@ -13,6 +14,7 @@ from xml.dom import minidom
 
 import tempfile
 import pdb
+from six.moves import zip
 
 def svg_to_pic(data, desc):
     return {'data': data, 'size': len(data),

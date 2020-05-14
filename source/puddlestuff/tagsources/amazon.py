@@ -7,7 +7,9 @@
 
 #Imports and constants.
 #-----------------------------------------------------------
-import base64, hmac, hashlib, re, time, urllib2, urllib
+from __future__ import absolute_import
+from __future__ import print_function
+import base64, hmac, hashlib, re, time, six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse, six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
 from xml.dom import minidom
 
@@ -16,6 +18,7 @@ from puddlestuff.tagsources import (write_log, RetrievalError,
     urlopen, parse_searchstring)
 from puddlestuff.audioinfo import DATA
 from puddlestuff.util import translate
+import six
 
 default_access_key = base64.b64decode('QUtJQUozS0JZUlVZUU41UFZRR0E=')
 default_secret_key = base64.b64decode('dmh6Q0ZaSEF6N0VvMmN5REt3STVnS1liU3ZFTCtSckx3c0tmanZEdA==')
@@ -57,7 +60,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
 
     items = [(key, value.encode('utf8')) for key, value in
         query_dictionary.items()]
-    query = urllib.urlencode(sorted(items))
+    query = six.moves.urllib.parse.urlencode(sorted(items))
 
     try:
         hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
@@ -65,7 +68,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
     except TypeError:
         raise RetrievalError(translate('Amazon',
             'Invalid Access or Secret Key'))
-    signature = urllib2.quote(base64.b64encode(hm.digest()))
+    signature = six.moves.urllib.parse.quote(base64.b64encode(hm.digest()))
 
     query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
         query, signature)
@@ -190,7 +193,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
     """Retrieves album from the information in info. 
     image must be either one of image_types or None. 
     If None, no image is retrieved."""
-    if isinstance(info, basestring):
+    if isinstance(info, six.string_types):
         asin = info
     else:
         asin = info['#asin']
@@ -203,7 +206,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         'AssociateTag': u'puddletag-20'}
     url = create_aws_url(access_key, secret_key, query_pairs)
 
-    if isinstance(info, basestring):
+    if isinstance(info, six.string_types):
         write_log(translate('Amazon',
             'Retrieving using ASIN: %s') % asin)
     else:
@@ -212,7 +215,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
                 info.get('artist', u'')).arg(info.get('album', u'')))
     xml = urlopen(url)
     
-    if isinstance(info, basestring):
+    if isinstance(info, six.string_types):
         tracks = parse_album_xml(xml)
     else:
         tracks = parse_album_xml(xml, info['album'])
@@ -391,7 +394,7 @@ class Amazon(object):
                 artist = u'Various Artists'
             else:
                 try:
-                    artist = artists.keys()[0]
+                    artist = list(artists.keys())[0]
                 except AttributeError:
                     artist = artists[0]
         else:
@@ -431,4 +434,4 @@ info = Amazon
 
 if __name__ == '__main__':
     x = Amazon()
-    print x.keyword_search('amy winehouse')
+    print(x.keyword_search('amy winehouse'))

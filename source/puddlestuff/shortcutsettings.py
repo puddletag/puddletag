@@ -1,4 +1,5 @@
 # -*- coding: utf-8-*-
+from __future__ import absolute_import
 import sys, pdb, os
 from puddlestuff.puddleobjects import PuddleConfig, winsettings, OKCancel
 from puddlestuff.constants import CONFIGDIR
@@ -8,6 +9,8 @@ from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
 from PyQt5.QtWidgets import QApplication, QDialog, QFrame, QHBoxLayout, QItemDelegate, QLabel, \
     QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from PyQt5.QtGui import QBrush, QColor, QKeySequence, QPainter, QPalette, QPen
+import six
+from six.moves import range
 pyqtRemoveInputHook()
 
 from puddlestuff.translations import translate
@@ -45,13 +48,13 @@ class ActionEditorWidget(QLabel):
         elif event.key() == Qt.Key_Alt:
             self.modifiers[Qt.Key_Alt] = u"Alt"
         else:
-            other = unicode(QKeySequence(event.key()))
+            other = six.text_type(QKeySequence(event.key()))
         
         if other:
-            key_string = u"+".join(self.modifiers.values() + [unicode(other),])
+            key_string = u"+".join(list(self.modifiers.values()) + [six.text_type(other),])
             self.valid = True
         else:
-            key_string = u"+".join(self.modifiers.values())
+            key_string = u"+".join(list(self.modifiers.values()))
         
         self.setText(key_string)
     
@@ -61,19 +64,19 @@ class ActionEditorWidget(QLabel):
             return
         
         if event.key() == Qt.Key_Shift:
-            if self.modifiers.has_key(Qt.Key_Shift):
+            if Qt.Key_Shift in self.modifiers:
                 del self.modifiers[Qt.Key_Shift]
         elif event.key() == Qt.Key_Control:
-            if self.modifiers.has_key(Qt.Key_Control):
+            if Qt.Key_Control in self.modifiers:
                 del self.modifiers[Qt.Key_Control]
         elif event.key() == Qt.Key_Meta:
-            if self.modifiers.has_key(Qt.Key_Meta):
+            if Qt.Key_Meta in self.modifiers:
                 del self.modifiers[Qt.Key_Meta]
         elif event.key() == Qt.Key_Alt:
-            if self.modifiers.has_key(Qt.Key_Alt):
+            if Qt.Key_Alt in self.modifiers:
                 del self.modifiers[Qt.Key_Alt]
         
-        self.setText(u"+".join(self.modifiers.values()))
+        self.setText(u"+".join(list(self.modifiers.values())))
         
         if len(self.modifiers) == 0:
             self.releaseKeyboard()
@@ -131,9 +134,9 @@ class ActionEditorDelegate(QItemDelegate):
     
     def createEditor(self, parent, option, index):
 
-        self._edited = unicode(index.data())
+        self._edited = six.text_type(index.data())
     
-        self.editor = ActionEditorWidget(unicode(index.data()), parent)
+        self.editor = ActionEditorWidget(six.text_type(index.data()), parent)
         self.editor.installEventFilter(self)
         return self.editor
     
@@ -172,11 +175,11 @@ class ActionEditorDelegate(QItemDelegate):
         painter.setPen(QPen(option.palette.color(QPalette.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
             Qt.TextShowMnemonic | Qt.AlignLeft | Qt.AlignVCenter,
-            unicode(index.data()))
+            six.text_type(index.data()))
     
     def setEditorData(self, editor, index):
     
-        editor.setText(unicode(index.data()))
+        editor.setText(six.text_type(index.data()))
     
     def setModelData(self, editor, model, index):
         if editor.text() != self._edited:
@@ -270,7 +273,7 @@ class ActionEditorDialog(QWidget):
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
 
         for action in actions:
-            shortcut = cparser.get('shortcuts', unicode(action.text()), '')
+            shortcut = cparser.get('shortcuts', six.text_type(action.text()), '')
             if shortcut:
                 action.setShortcut(QKeySequence(shortcut))
     
@@ -280,8 +283,8 @@ class ActionEditorDialog(QWidget):
         
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
         for action in actions:
-            shortcut = unicode(action.shortcut().toString())
-            cparser.set('shortcuts', unicode(action.text()), shortcut)
+            shortcut = six.text_type(action.shortcut().toString())
+            cparser.set('shortcuts', six.text_type(action.text()), shortcut)
     
     saveSettings = classmethod(saveSettings)
     

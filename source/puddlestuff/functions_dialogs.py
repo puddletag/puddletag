@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtWidgets import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
                          QVBoxLayout, QWidget, QLineEdit)
 from puddlestuff.translations import translate
@@ -68,6 +69,6 @@ class AutoNumbering(QWidget):
             self._padlength.value()]
         return x
 
-from functions import autonumbering
+from .functions import autonumbering
 
 dialogs = {autonumbering: AutoNumbering}

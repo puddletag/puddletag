@@ -5,6 +5,8 @@
 Contains objects used throughout puddletag"""
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 from PyQt5.QtWidgets import QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
   QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
   QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
@@ -19,16 +21,21 @@ from collections import defaultdict
 from itertools import groupby # for unique function.
 from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
-import audioinfo
-from audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
+from . import audioinfo
+from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
     encode_fn, decode_fn, INFOTAGS)
 from operator import itemgetter
+import six
+from six.moves import filter
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 path = os.path
 from configobj import ConfigObj, ConfigObjError
 import traceback
 import time, re
 from glob import glob
-from constants import ACTIONDIR, SAVEDIR, CONFIGDIR
+from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
 from PyQt5.QtCore import QFile, QIODevice
 from StringIO import StringIO
 import itertools
@@ -98,11 +105,11 @@ except AttributeError:
         r = n if r is None else r
         if r > n:
             return
-        indices = range(n)
-        cycles = range(n, n-r, -1)
+        indices = list(range(n))
+        cycles = list(range(n, n-r, -1))
         yield tuple(pool[i] for i in indices[:r])
         while n:
-            for i in reversed(range(r)):
+            for i in reversed(list(range(r))):
                 cycles[i] -= 1
                 if cycles[i] == 0:
                     indices[i:] = indices[i+1:] + indices[i:i+1]
@@ -188,7 +195,7 @@ class CoverButton(QPushButton):
         actions = [create(title, short, index) for index, (title, short) 
                     in enumerate(imagetypes)]
 
-        map(menu.addAction, actions)
+        list(map(menu.addAction, actions))
         self.setMenu(menu)
         self.setCurrentIndex(3)
     
@@ -231,11 +238,11 @@ class PuddleConfig(object):
             if value is True or value == 'True':
                 return True
             return False
-        elif getint or isinstance(default, (long,int)):
+        elif getint or isinstance(default, six.integer_types):
             try:
                 return int(value)
             except TypeError:
-                return map(int, value)
+                return list(map(int, value))
         else:
             if value is None:
                 return default
@@ -244,7 +251,7 @@ class PuddleConfig(object):
     def set(self, section = None, key = None, value = None):
         settings = self.data
         if isinstance(value, str):
-            value = unicode(value)
+            value = six.text_type(value)
         if section in self.data:
             settings[section][key] = value
         else:
@@ -282,7 +289,7 @@ class PuddleConfig(object):
         return self._filename
 
     def sections(self):
-        return self.data.keys()
+        return list(self.data.keys())
 
     filename = property(_getFilename, _setFilename)
 
@@ -320,7 +327,7 @@ def _levenshtein(s1, s2):
     if not s1:
         return len(s2)
 
-    previous_row = xrange(len(s2) + 1)
+    previous_row = range(len(s2) + 1)
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
         for j, c2 in enumerate(s2):
@@ -443,8 +450,8 @@ def dircmp1(a, b):
 
 def issubfolder(parent, child, level = 1):
     parent, child = removeslash(parent), removeslash(child)
-    if isinstance(parent, unicode):
-        sep = unicode(os.path.sep)
+    if isinstance(parent, six.text_type):
+        sep = six.text_type(os.path.sep)
     else:
         sep = os.path.sep
     if level is not None:
@@ -477,7 +484,7 @@ def get_languages(dirs=None):
     d = QDir(':/')
     if d.cd('translations'):
         files.extend([os.path.join(u':/translations', t) for t in
-            map(unicode, d.entryList(['*.qm']))])
+            map(six.text_type, d.entryList(['*.qm']))])
 
     ret = {}
     get_name = lambda s: os.path.splitext(os.path.basename(s))[0]
@@ -525,7 +532,7 @@ def safe_name(name, chars=r'/\*?"|:', to=None):
     if not to:
         to = ""
     else:
-        to = unicode(to)
+        to = six.text_type(to)
     escaped = ""
     for ch in name:
         if ch not in chars: escaped = escaped + ch
@@ -613,7 +620,7 @@ class compare:
         except: return s
     def natsort_key(self, s):
         "Used internally to get a tuple by which s is sorted."
-        return map(self.try_int, re.findall(r'(\d+|\D+)', s))
+        return list(map(self.try_int, re.findall(r'(\d+|\D+)', s)))
     def natcmp(self, a, b):
         "Natural string comparison, case sensitive."
         return cmp(self.natsort_key(a), self.natsort_key(b))
@@ -646,7 +653,7 @@ def dupes(l, method = None):
     return [z for z in groups if len(z) > 1]
 
 def getfiles(files, subfolders = False):
-    if isinstance(files, basestring):
+    if isinstance(files, six.string_types):
         files = [files]
 
     isdir = os.path.isdir
@@ -659,7 +666,7 @@ def getfiles(files, subfolders = False):
             if not isdir(f):
                 yield f
             else:
-                dirname, subs, fnames = os.walk(f).next()
+                dirname, subs, fnames = next(os.walk(f))
                 for fname in fnames:
                     yield join(dirname, fname)
     else:
@@ -730,7 +737,7 @@ def fnmatch(pattern, files, matchcase=False):
         match = re.compile(regexp).match
     else:
         match = re.compile(regexp, re.I).match
-    return filter(match, files)
+    return list(filter(match, files))
 
 def gettaglist():
     cparser = PuddleConfig()
@@ -752,7 +759,7 @@ def settaglist(tags):
     f.close()
 
 def load_actions():
-    import findfunc
+    from . import findfunc
     basename = os.path.basename
 
     funcs = {}
@@ -784,7 +791,7 @@ def load_actions():
     files = glob(os.path.join(ACTIONDIR, u'*.action'))
     if firstrun and not files:
         filenames = [':/caseconversion.action', ':/standard.action']
-        files = map(open_resourcefile, filenames)
+        files = list(map(open_resourcefile, filenames))
         set_value('firstrun', False)
 
         for fileobj, filename in zip(files, filenames):
@@ -852,9 +859,9 @@ def progress(func, pstring, maximum, threadfin = None):
             f = func()
 
         if maximum  == 1:
-            errors = f.next()
+            errors = next(f)
             if errors and \
-                not isinstance(errors, (unicode, str, int, long, basestring)):
+                not isinstance(errors, (six.text_type, str, int, int, six.string_types)):
                 errormsg(parent, errors[0], 1)
             if threadfin:
                 threadfin()
@@ -866,10 +873,10 @@ def progress(func, pstring, maximum, threadfin = None):
             err = False
             while not win.wasCanceled:
                 try:
-                    temp = f.next()
-                    if isinstance(temp, (str, unicode)):
+                    temp = next(f)
+                    if isinstance(temp, (str, six.text_type)):
                         thread.message.emit(temp)
-                    elif isinstance(temp, (int, long)):
+                    elif isinstance(temp, six.integer_types):
                         thread.set_max.emit(temp)
                     elif temp is not None:
                         thread.error.emit(
@@ -895,7 +902,7 @@ def progress(func, pstring, maximum, threadfin = None):
                     try: focusedpar.setFocus()
                     except RuntimeError: pass
                 return
-            elif isinstance(args[0], (unicode, str)):
+            elif isinstance(args[0], (six.text_type, str)):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)
                     if ret is True:
@@ -931,7 +938,7 @@ def timemethod(method):
         name = method.__name__
         t = time.time()
         ret = method(*args, **kwargs)
-        print name, time.time() - t
+        print(name, time.time() - t)
         return ret
     return f
 
@@ -1035,8 +1042,8 @@ class HeaderSetting(QDialog):
         row = self.listbox.row(prev)
         try: #An error is raised if the last item has just been removed
             if row > -1:
-                self.tags[row][0] = unicode(self.textname.text())
-                self.tags[row][1] = unicode(self.tag.currentText())
+                self.tags[row][0] = six.text_type(self.textname.text())
+                self.tags[row][1] = six.text_type(self.tag.currentText())
         except IndexError:
             pass
 
@@ -1048,8 +1055,8 @@ class HeaderSetting(QDialog):
     def okClicked(self):
         row = self.listbox.currentRow()
         if row > -1:
-            self.tags[row][0] = unicode(self.textname.text())
-            self.tags[row][1] = unicode(self.tag.currentText())
+            self.tags[row][0] = six.text_type(self.textname.text())
+            self.tags[row][1] = six.text_type(self.tag.currentText())
         self.headerChanged.emit([z for z in self.tags])
         self.close()
 
@@ -1097,7 +1104,7 @@ class ListBox(QListWidget):
         self.setSelectionMode(self.ExtendedSelection)
 
     def items(self):
-        return map(self.item, xrange(self.count()))
+        return list(map(self.item, range(self.count())))
 
     def selectionChanged(self, selected, deselected):
         if self.editButton:
@@ -1205,8 +1212,7 @@ class ListBox(QListWidget):
         [self.item(row + 1).setSelected(True) for row in rows]
 
     def selectedItems(self):
-        return filter(lambda item: item.isSelected(),
-            map(self.item, xrange(self.count())))
+        return [item for item in map(self.item, range(self.count())) if item.isSelected()]
 
 class ListButtons(QVBoxLayout):
     """A Layout that contains five buttons usually
@@ -1275,7 +1281,7 @@ class ListButtons(QVBoxLayout):
                                 duplicate]) if v])
         connect = lambda a: getattr(self, a).connect(
                     connections[a] if a in connections else getattr(widget, a))
-        map(connect, l)
+        list(map(connect, l))
 
     def addClicked(self):
         self.addSignal.emit()
@@ -1465,7 +1471,7 @@ class ArtworkLabel(QGraphicsView):
     def dropEvent(self, event):
         mime = event.mimeData()
         if mime.hasUrls():
-            filenames = [unicode(z.toString()) for z in mime.urls()]
+            filenames = [six.text_type(z.toString()) for z in mime.urls()]
             self.newImages.emit(filenames)
         super(ArtworkLabel, self).dropEvent(event)
 
@@ -1732,7 +1738,7 @@ class PicWidget(QWidget):
     def setDescription(self, text):
         '''Sets the description of the current image to the text in the
             description text box.'''
-        self.images[self.currentImage]['description'] = unicode(text)
+        self.images[self.currentImage]['description'] = six.text_type(text)
         self.imageChanged.emit()
 
     def setType(self, index):
@@ -1877,7 +1883,7 @@ class PicWidget(QWidget):
             self._image_type.setCurrentIndex(3)
         self._image_type.blockSignals(False)
         self._currentImage = num
-        self.context = unicode(self._contextFormat.arg(unicode(num + 1)).arg(unicode(len(self.images))))
+        self.context = six.text_type(self._contextFormat.arg(six.text_type(num + 1)).arg(six.text_type(len(self.images))))
         self.label.setFrameStyle(QFrame.NoFrame)        
         self.enableButtons()
         #self.resizeEvent()
@@ -2153,7 +2159,7 @@ class ProgressWin(QDialog):
     value = property(_value)
 
 class PuddleCombo(QWidget):
-    editTextChanged = pyqtSignal(unicode, name='editTextChanged')
+    editTextChanged = pyqtSignal(six.text_type, name='editTextChanged')
     def __init__(self, name, default = None, parent = None):
         QWidget.__init__(self, parent)
         hbox = QHBoxLayout()
@@ -2199,8 +2205,8 @@ class PuddleCombo(QWidget):
         self.combo.addItems(cparser.load(self.name, 'values', default))
 
     def save(self):
-        values = [unicode(self.combo.itemText(index)) for index in xrange(self.combo.count())]
-        values.append(unicode(self.combo.currentText()))
+        values = [six.text_type(self.combo.itemText(index)) for index in range(self.combo.count())]
+        values.append(six.text_type(self.combo.currentText()))
         cparser = PuddleConfig(self.filename)
         try:
             cparser.setSection(self.name, 'values', values)
@@ -2254,7 +2260,7 @@ class PuddleHeader(QHeaderView):
         model = self.model()
 
         def create_action(section):
-            title = unicode(model.headerData(section, self.orientation()))
+            title = six.text_type(model.headerData(section, self.orientation()))
             action = QAction(title, self)
             action.setCheckable(True)
             def change_visibility(value):
@@ -2302,12 +2308,12 @@ class PuddleThread(QThread):
     pass a command to run in another thread. The result
     is stored in retval."""
     threadfinished = pyqtSignal(object, name='threadfinished')
-    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    statusChanged = pyqtSignal(six.text_type, name='statusChanged')
     enable_preview_mode = pyqtSignal(name='enable_preview_mode')
     setpreview = pyqtSignal(dict, name='setpreview')
-    message = pyqtSignal(unicode, name='message')
+    message = pyqtSignal(six.text_type, name='message')
     set_max = pyqtSignal(int, name='set_max')
-    error = pyqtSignal([unicode, int], name='error')
+    error = pyqtSignal([six.text_type, int], name='error')
     win = pyqtSignal(int, name='win')
     def __init__(self, command, parent = None):
         QThread.__init__(self, parent)
@@ -2354,9 +2360,9 @@ class ShortcutEditor(QLineEdit):
 
         if event.key() not in mod_keys:
             if text:
-                text += u'+' + unicode(QKeySequence(event.key()).toString())
+                text += u'+' + six.text_type(QKeySequence(event.key()).toString())
             else:
-                text = unicode(QKeySequence(event.key()).toString())
+                text = six.text_type(QKeySequence(event.key()).toString())
 
             if text and text not in self._shortcuts:
                 valid = True

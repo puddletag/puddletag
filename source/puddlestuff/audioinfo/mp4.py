@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import imghdr, pdb
 
 from copy import copy, deepcopy
-from itertools import imap
+from six.moves import zip
+
 
 from mutagen.mp4 import MP4,  MP4Cover
 
-import tag_versions, util
+from . import tag_versions, util
 
-from util import (usertags, strlength, strbitrate, READONLY, isempty,
+from .util import (usertags, strlength, strbitrate, READONLY, isempty,
     getfilename, strfrequency, getinfo, FILENAME, PATH,
     INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
     FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
     del_deco, cover_info, info_to_dict, parse_image, get_total)
+import six
+from six.moves import map
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
     'modified', 'bitspersample', 'channels')
@@ -80,11 +84,11 @@ def setbool(value):
 
 def settext(text):
     if isinstance(text, str):
-        return [unicode(text)]
-    elif isinstance(text, unicode):
+        return [six.text_type(text)]
+    elif isinstance(text, six.text_type):
         return [text]
     else:
-        return [unicode(z) for z in text]
+        return [six.text_type(z) for z in text]
 
 def gettext(value):
     return value
@@ -92,7 +96,7 @@ def gettext(value):
 def settuple(value):
     temp = []
     for tup in value:
-        if isinstance(tup, basestring):
+        if isinstance(tup, six.string_types):
             values = [z.strip() for z in tup.split(u'/')]
             try:
                 temp.append(tuple([int(z) for z in values][:2]))
@@ -103,13 +107,13 @@ def settuple(value):
     return temp
 
 def gettuple(value):
-    return [unicode(track) + u'/' + unicode(total) for track, total in value]
+    return [six.text_type(track) + u'/' + six.text_type(total) for track, total in value]
 
 def getint(value):
-    return [unicode(z) for z in value]
+    return [six.text_type(z) for z in value]
 
 def setint(value):
-    if isinstance(value, (int, long, basestring)):
+    if isinstance(value, (int, int, six.string_types)):
         return [int(value)]
     temp = []
     for z in value:
@@ -246,7 +250,7 @@ class Tag(util.MockTag):
 
     @setdeco
     def __setitem__(self, key, value):
-        if isinstance(key, (int, long)):
+        if isinstance(key, six.integer_types):
             self.__tags[key] = value
             return
         elif key.startswith('__'):
@@ -301,9 +305,9 @@ class Tag(util.MockTag):
 
         mp4info = [('Bitrate', self.bitrate),
                    ('Frequency', self.frequency),
-                   ('Channels', unicode(info.channels)),
+                   ('Channels', six.text_type(info.channels)),
                    ('Length', self.length),
-                   ('Bits per sample', unicode(info.bits_per_sample))]
+                   ('Bits per sample', six.text_type(info.bits_per_sample))]
 
         return [('File', fileinfo), ('MP4 Info', mp4info)]
 
@@ -326,7 +330,7 @@ class Tag(util.MockTag):
                              #frames. Values are the tag as represented by puddletag.
 
         if audio.tags: #Not empty
-            keys = audio.keys()
+            keys = list(audio.keys())
             try:
                 self.images = map(bin_to_pic, audio['covr'])
                 keys.remove('covr')
@@ -365,11 +369,11 @@ class Tag(util.MockTag):
                         field_value = []
                         for v in audio[key]:
                             if isinstance(v, str):
-                                field_value.append(unicode(v, 'utf8'))
-                            elif isinstance(v, unicode):
+                                field_value.append(six.text_type(v, 'utf8'))
+                            elif isinstance(v, six.text_type):
                                 field_value.append(v)
                             else:
-                                field_value.append(unicode(v))
+                                field_value.append(six.text_type(v))
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 
@@ -389,7 +393,7 @@ class Tag(util.MockTag):
 
     @keys_deco
     def keys(self):
-        return self.__tags.keys()
+        return list(self.__tags.keys())
 
     def save(self):
         if self.mut_obj.tags is None:
@@ -426,7 +430,7 @@ class Tag(util.MockTag):
                 newtag[self.__freeform[tag].encode('utf8')] = encode(self.__tags[tag])
 
         if self.images:
-            newtag['covr'] = filter(None, map(pic_to_bin, self.images))
+            newtag['covr'] = [_f for _f in map(pic_to_bin, self.images) if _f]
 
         toremove = [z for z in audio.keys() if
             z not in newtag and z not in self.__errors]

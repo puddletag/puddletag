@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import mutagen, os, sys
 try:
-  import cPickle as pickle
+  import six.moves.cPickle as pickle
 except ImportError:
   import pickle
 

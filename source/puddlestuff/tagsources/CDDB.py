@@ -7,12 +7,13 @@
 # Release version 1.4
 # CVS ID: $Id: CDDB.py,v 1.8 2003/08/31 23:18:43 che_fox Exp $
 
-import urllib, string, socket, os, struct, re
+from __future__ import absolute_import
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, string, socket, os, struct, re
 
 name = 'CDDB.py'
 version = 1.4
 
-if os.environ.has_key('EMAIL'):
+if 'EMAIL' in os.environ:
     (default_user, hostname) = string.split(os.environ['EMAIL'], '@')
 else:
     default_user = os.geteuid() or os.environ['USER'] or 'user'
@@ -34,13 +35,13 @@ def query(track_info, server_url=default_server,
     for i in track_info[2:]:
 	query_str = query_str + ('%d ' % i)
 	
-    query_str = urllib.quote_plus(string.rstrip(query_str))
+    query_str = six.moves.urllib.parse.quote_plus(string.rstrip(query_str))
 
     url = "%s?cmd=cddb+query+%s&hello=%s+%s+%s+%s&proto=%i" % \
 	  (server_url, query_str, user, host, client_name,
            client_version, proto)
 
-    response = urllib.urlopen(url)
+    response = six.moves.urllib.request.urlopen(url)
     
     # Four elements in header: status, category, disc-id, title
     header = string.split(string.rstrip(response.readline()), ' ', 3)
@@ -82,7 +83,7 @@ def read(category, disc_id, server_url=default_server,
 	  (server_url, category, disc_id, user, host, client_name,
            client_version, proto)
 
-    response = urllib.urlopen(url)
+    response = six.moves.urllib.request.urlopen(url)
     
     header = string.split(string.rstrip(response.readline()), ' ', 3)
 
@@ -123,7 +124,7 @@ def parse_read_reply(comments):
 	if keyword_match:
 	    (keyword, data) = keyword_match.groups()
 
-	    if result.has_key(keyword):
+	    if keyword in result:
 		result[keyword] = result[keyword] + data
 	    else:
 		result[keyword] = data

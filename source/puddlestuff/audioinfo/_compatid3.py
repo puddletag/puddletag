@@ -18,12 +18,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+from __future__ import absolute_import
 import struct
 from struct import pack, unpack
 import mutagen
 from mutagen._util import insert_bytes
 from mutagen.id3 import ID3, Frame, Frames, Frames_2_2, TextFrame, TORY, \
     TYER, TIME, APIC, IPLS, TDAT, MakeID3v1
+from six.moves import range
+from six.moves import zip
 try:
     from mutagen.id3 import BitPaddedInt
 except ImportError:
@@ -73,9 +76,9 @@ class CompatID3(ID3):
 
         # Sort frames by 'importance'
         order = ["TALB", "TPE1", "TIT2", "TRCK", "TPOS", "TDRC", "TCON"]
-        order = dict(zip(order, range(len(order))))
+        order = dict(list(zip(order, list(range(len(order))))))
         last = len(order)
-        frames = self.items()
+        frames = list(self.items())
         frames.sort(lambda a, b: cmp(order.get(a[0][:4], last),
                                      order.get(b[0][:4], last)))
 
@@ -85,7 +88,7 @@ class CompatID3(ID3):
         if not framedata:
             try:
                 self.delete(filename)
-            except EnvironmentError, err:
+            except EnvironmentError as err:
                 from errno import ENOENT
                 if err.errno != ENOENT: raise
             return
@@ -95,7 +98,7 @@ class CompatID3(ID3):
 
         if filename is None: filename = self.filename
         try: f = open(filename, 'rb+')
-        except IOError, err:
+        except IOError as err:
             from errno import ENOENT
             if err.errno != ENOENT: raise
             f = open(filename, 'ab') # create, then reopen
@@ -123,7 +126,7 @@ class CompatID3(ID3):
 
             try:
                 f.seek(-128, 2)
-            except IOError, err:
+            except IOError as err:
                 from errno import EINVAL
                 if err.errno != EINVAL: raise
                 f.seek(0, 2) # ensure read won't get "TAG"

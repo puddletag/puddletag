@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 import pdb, string
 
 from collections import defaultdict
@@ -16,9 +18,12 @@ from puddlestuff.translations import translate
 from puddlestuff.util import sorted_split_by_field, split_by_field, to_string
 from puddlestuff.webdb import (strip as strip_fields, DEFAULT_REGEXP,
     apply_regexps)
+import six
+from six.moves import map
+from six.moves import zip
 
 def set_status(v):
-    print v
+    print(v)
 
 NO_MATCH_OPTIONS = [
     translate('Masstagging', 'Continue'),
@@ -126,8 +131,7 @@ def brute_force_results(audios, retrieved):
     return matched
 
 def check_result(result, audios):
-    track_nums = filter(None,
-        [to_string(audio.get('track', None)) for audio in audios])
+    track_nums = [_f for _f in [to_string(audio.get('track', None)) for audio in audios] if _f]
 
     if result.tracks is None:
         return True
@@ -148,8 +152,8 @@ def check_result(result, audios):
 def combine_tracks(track1, track2, repl=None):
     ret = defaultdict(lambda: [])
     
-    for key, value in track2.items() + track1.items():
-        if isinstance(value, basestring):
+    for key, value in list(track2.items()) + list(track1.items()):
+        if isinstance(value, six.string_types):
             if value not in ret[key]:
                 ret[key].append(value)
         else:
@@ -169,7 +173,7 @@ def combine_tracks(track1, track2, repl=None):
 def fields_from_text(text):
     if not text:
         return []
-    return filter(None, map(string.strip, text.split(u',')))
+    return [_f for _f in map(string.strip, text.split(u',')) if _f]
 
 def dict_difference(dict1, dict2):
     """Returns a dictonary containing key/value pairs from dict2 where key
@@ -182,8 +186,8 @@ def dict_difference(dict1, dict2):
 
 def find_best(matches, files, minimum=0.7):
     group = split_by_field(files, 'album', 'artist')
-    album = group.keys()[0]
-    artists = group[album].keys()
+    album = list(group.keys())[0]
+    artists = list(group[album].keys())
     if len(artists) == 1:
         artist = artists[0]
     else:
@@ -215,7 +219,7 @@ def find_best(matches, files, minimum=0.7):
 
 def get_artist_album(files):
     tags = split_by_field(files, 'album', 'artist')
-    album = tags.keys()[0]
+    album = list(tags.keys())[0]
     artists = tags[album]
     if len(artists) > 1:
         return VARIOUS, album
@@ -271,7 +275,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
     def get_best(f_index, t_indexes):
         if not t_indexes:
             return
-        items = t_indexes.items()
+        items = list(t_indexes.items())
         best_match = max(items, key=itemgetter(1))
         t_i = best_match[0]
 
@@ -294,8 +298,8 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
 
         assigned[t_i] = f_index
 
-    for f_index, t_indexes in matched.iteritems():
-        best_match = max(t_indexes.items(), key=itemgetter(1))
+    for f_index, t_indexes in six.iteritems(matched):
+        best_match = max(list(t_indexes.items()), key=itemgetter(1))
         t_index = best_match[0]
         while t_index in assigned:
             prev_matched = assigned[t_index]
@@ -306,14 +310,14 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
                 del(t_indexes[t_index])
                 if not t_indexes:
                     break
-                best_match = max(t_indexes.items(), key=itemgetter(1))
+                best_match = max(list(t_indexes.items()), key=itemgetter(1))
                 t_index = best_match[0]
 
         if t_indexes:
             assigned[t_index] = f_index
 
     ret_indexes = {}
-    for t_index, f_index in assigned.iteritems():
+    for t_index, f_index in six.iteritems(assigned):
         try:
             ret[files[f_index].cls] = tracks[t_index]
             ret_indexes[t_index] = files[f_index].cls
@@ -333,7 +337,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
         ret.update(brute_force_results(unmatched_files, unmatched_tracks))
 
     if existing:
-        ret = dict((f, dict_difference(f, r)) for f, r in ret.iteritems())
+        ret = dict((f, dict_difference(f, r)) for f, r in six.iteritems(ret))
 
     if as_index:
         return ret, ret_indexes
@@ -344,14 +348,14 @@ def merge_track(audio, info):
 
     for key in info.keys():
         if not key.startswith('#'):
-            if isinstance(info[key], basestring):
+            if isinstance(info[key], six.string_types):
                 track[key] = info[key]
             else:
                 track[key] = info[key][::]
 
     for key in audio.keys():
         if not key.startswith('#'):
-            if isinstance(audio[key], basestring):
+            if isinstance(audio[key], six.string_types):
                 track[key] = audio[key]
             else:
                 track[key] = audio[key][::]
@@ -459,7 +463,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
     if not_found and found:
         set_status(RECHECKING % found[0].tag_source.name)
         audios_copy = []
-        for t, m in zip(map(deepcopy, files), found[0].result.merged):
+        for t, m in zip(list(map(deepcopy, files)), found[0].result.merged):
             audios_copy.append(combine_tracks(t,m))
 
         new_mtp = MassTagProfile(translate("Masstagging", 'Rechecking'),
@@ -510,7 +514,7 @@ def replace_tracknumbers(files, tracks):
             except (ValueError, TypeError, KeyError):
                 continue
             if f_tracknum > t_tracknum:
-                f['track'] = [unicode(f_tracknum - offset )]
+                f['track'] = [six.text_type(f_tracknum - offset )]
 
 def split_files(audios, pattern):
 
@@ -526,7 +530,7 @@ def split_files(audios, pattern):
     for dirpath, files in sorted_split_by_field(audios, '__dirpath'):
         album_groups = sorted_split_by_field(files, 'album')
         for album, album_files in album_groups:
-            tag_groups.append(map(copy_audio, album_files))
+            tag_groups.append(list(map(copy_audio, album_files)))
 
     return tag_groups
 
@@ -568,7 +572,7 @@ class MassTagProfile(object):
 
         if regexps:
             changed_files = \
-                map(lambda f: apply_regexps(f, regexps), files)
+                [apply_regexps(f, regexps) for f in files]
             rxp_album = changed_files[0][0]
             changed_files = [z[1] for z in changed_files]
 
@@ -586,7 +590,7 @@ class MassTagProfile(object):
                     results.extend(rxp_results)
                     profile.clear_results()
                 profile.results = results
-            except RetrievalError, e:
+            except RetrievalError as e:
                 if errors is None:
                     raise e
                 if errors(e, profile):
@@ -619,7 +623,7 @@ class Result(object):
         self.__info = value
 
         if self.__tracks:
-            self.merged = map(lambda a: merge_track(a, value), self.__tracks)
+            self.merged = [merge_track(a, value) for a in self.__tracks]
         else:
             self.merged = []
 
@@ -638,7 +642,7 @@ class Result(object):
         if self.tag_source:
             try:
                 self.info, self.tracks = self.tag_source.retrieve(self.info)
-            except RetrievalError, e:
+            except RetrievalError as e:
                 if errors is None:
                     raise
                 if errors(e):
@@ -695,7 +699,7 @@ class TagSourceProfile(object):
             else:
                 self.result = result
                 return self.result
-        except RetrievalError, e:
+        except RetrievalError as e:
             if errors is None:
                 raise
             if errors(e, self):
@@ -715,9 +719,8 @@ class TagSourceProfile(object):
         assert files
 
         files = split_by_field(files, *tag_source.group_by)
-        search_value = files.keys()[0]
-        self.results = map(lambda x: Result(*x),
-            tag_source.search(search_value, files[search_value]))
+        search_value = list(files.keys())[0]
+        self.results = [Result(*x) for x in tag_source.search(search_value, files[search_value])]
         for r in self.results:
             r.tag_source = self.tag_source
         return self.results
@@ -729,7 +732,7 @@ if __name__ == '__main__':
     sources = dict((t.name, t) for t in tagsources)
     source = sources['Local TSource Plugin']()
     source.applyPrefs([u'/mnt/multimedia/testlib'])
-    print source._dirs
+    print(source._dirs)
     
     
     

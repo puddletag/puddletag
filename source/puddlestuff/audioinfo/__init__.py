@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import re
 import mutagen
-from util import *
-from constants import *
+from .util import *
+from .constants import *
+import six
+from six.moves import map
+from six.moves import zip
 
 AbstractTag = MockTag
 
@@ -31,7 +35,7 @@ def loadmapping(filepath, default=None):
     return mappings
 
 def register_tag(mut_obj, tag, tag_name, tag_exts=None):
-    if isinstance(tag_exts, basestring):
+    if isinstance(tag_exts, six.string_types):
         extensions[tag_exts] = [mut_obj, tag, tag_name]
     elif tag_exts is not None:
         for e in tag_exts:
@@ -83,7 +87,7 @@ def Tag(filename):
     There are caveats associated with each module, so check out their docstrings
     for more info."""
 
-    fileobj = file(filename, "rb")
+    fileobj = open(filename, "rb")
 
     match = re.search('\.(%s)$' % '|'.join(extensions), filename)
     ext = splitext(filename)
@@ -95,20 +99,20 @@ def Tag(filename):
         results = [Kind[0].score(filename, fileobj, header) for Kind in options]
     finally:
         fileobj.close()
-    results = zip(results, options)
+    results = list(zip(results, options))
     results.sort()
     score, Kind = results[-1]
     if score > 0: return Kind[1](filename)
     else: return None
 
-import id3, vorbis, apev2, mp4
+from . import id3, vorbis, apev2, mp4
 tag_modules = (id3, vorbis, apev2, mp4)
 
 for m in tag_modules:
     if hasattr(m, 'filetype'):
         register_tag(*m.filetype)
     if hasattr(m, 'filetypes'):
-        map(lambda x: register_tag(*x), m.filetypes)
+        list(map(lambda x: register_tag(*x), m.filetypes))
 
 setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
 

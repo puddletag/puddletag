@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QAction
 from puddlestuff.constants import (LEFTDOCK, SELECTIONCHANGED,
@@ -8,6 +9,7 @@ from puddlestuff.helperwin import (BOLD, UNCHANGED, ITALICS, EditField,
     ExTags)
 from puddlestuff.puddleobjects import (settaglist)
 from puddlestuff.audioinfo import commontags
+import six
 
 class ExTagsPlugin(ExTags):
     onetomany = pyqtSignal(dict, name='onetomany')
@@ -80,7 +82,7 @@ class ExTagsPlugin(ExTags):
             previews = previews.intersection(audio.preview)
             italics = italics.intersection(audio.equal_fields())
         row = 0
-        for field, values in common.iteritems():
+        for field, values in six.iteritems(common):
             if field in previews and field not in italics:
                 preview = BOLD
             else:
@@ -89,7 +91,7 @@ class ExTagsPlugin(ExTags):
                 self._settag(row, field, KEEP)
                 row += 1
             else:
-                if isinstance(values, basestring):
+                if isinstance(values, six.string_types):
                     self._settag(row, field, values, None, preview)
                     row += 1
                 else:
@@ -111,8 +113,8 @@ class ExTagsPlugin(ExTags):
     def _tag(self, row, status = None):
         getitem = self.table.item
         item = getitem(row, 0)
-        tag = unicode(item.text())
-        value = unicode(getitem(row, 1).text())
+        tag = six.text_type(item.text())
+        value = six.text_type(getitem(row, 1).text())
         if status:
             return (tag, value, item.status)
         else:

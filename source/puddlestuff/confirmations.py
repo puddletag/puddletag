@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 from puddlestuff.constants import CONFIGDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.translations import translate
 import os
 
 from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
+import six
 
 NAME = 'name'
 DESC = 'description'
@@ -50,7 +53,7 @@ def save(filename=None, confirmations=None):
         confirmations = _confirmations
     
     for i, name in enumerate(confirmations):
-        set_value = lambda k,v: cparser.set(SECTION + unicode(i), k, v)
+        set_value = lambda k,v: cparser.set(SECTION + six.text_type(i), k, v)
         set_value(NAME, name)
         set_value(VALUE, confirmations[name][0])
         set_value(DESC, confirmations[name][1])
@@ -71,7 +74,7 @@ class Settings(QWidget):
         self.setLayout(layout)
 
     def applySettings(self, control=None):
-        for name, control in self._controls.iteritems():
+        for name, control in six.iteritems(self._controls):
             _confirmations[name][0] = control.isChecked()
         save()
 
@@ -79,7 +82,7 @@ if __name__ == '__main__':
     app = QApplication([])
     add('First True', True)
     add('Name', False, 'Description')
-    print _confirmations
+    print(_confirmations)
     win = Settings()
     win.show()
     app.exec_()

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QMessageBox, QAction
 from puddlestuff.constants import FILESSELECTED
@@ -8,6 +9,8 @@ from puddlestuff import audioinfo
 from puddlestuff.plugins import add_shortcuts, connect_shortcut, status
 from puddlestuff.util import separator
 from functools import partial
+import six
+from six.moves import zip
 
 obj = QObject()
 id3_tag = audioinfo.id3.Tag
@@ -28,9 +31,9 @@ def to_utf8(parent=None):
                     f.to_encoding(3)
                     f.link(f.filepath)
                 yield None
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
-                m = unicode(QApplication.translate("Defaults",
+                m = six.text_type(QApplication.translate("Defaults",
                     'An error occured while converting <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1
@@ -57,9 +60,9 @@ def update_to_24(parent=None):
                     f.save(v1=1)
                     f.link(f.filepath)
                 yield None
-            except (IOError, OSError), e:
+            except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
-                m = unicode(QApplication.translate("Defaults",
+                m = six.text_type(QApplication.translate("Defaults",
                     'An error occured while updating <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1

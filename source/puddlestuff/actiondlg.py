@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
   QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
   QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
@@ -9,20 +10,24 @@ import sys, findfunc, pdb, os, resource, string, functions
 from copy import copy, deepcopy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
         QuotedString, Literal, NotAny, nums
-import cPickle as pickle
-from puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
+import six.moves.cPickle as pickle
+from .puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
     winsettings, gettaglist, settaglist, safe_name, ShortcutEditor)
-from findfunc import Function, apply_macros, apply_actions, Macro
-from puddleobjects import PuddleConfig, PuddleCombo
-from audioinfo import INFOTAGS, READONLY, usertags, isempty
+from .findfunc import Function, apply_macros, apply_actions, Macro
+from .puddleobjects import PuddleConfig, PuddleCombo
+from .audioinfo import INFOTAGS, READONLY, usertags, isempty
 from functools import partial
-from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
+from .constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
     SAVEDIR, CONFIGDIR, ACTIONDIR, BLANK)
-from util import (open_resourcefile, PluginFunction, escape_html,
+from .util import (open_resourcefile, PluginFunction, escape_html,
     translate, pprint_tag)
-import functions_dialogs
+from . import functions_dialogs
 from puddlestuff.puddleobjects import ShortcutEditor
-from puddletag import status
+from .puddletag import status
+import six
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 
 READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(CONFIGDIR, 'function_settings')
@@ -54,7 +59,7 @@ def displaytags(tags):
     return text
 
 class ShortcutDialog(QDialog):
-    shortcutChanged = pyqtSignal(unicode, name='shortcutChanged')
+    shortcutChanged = pyqtSignal(six.text_type, name='shortcutChanged')
     def __init__(self, shortcuts=None, parent=None):
         super(ShortcutDialog, self).__init__(parent)
         self.setWindowTitle('puddletag')
@@ -81,14 +86,14 @@ class ShortcutDialog(QDialog):
         self._shortcuts = shortcuts
 
     def okClicked(self):
-        self.shortcutChanged.emit(unicode(self._text.text()))
+        self.shortcutChanged.emit(six.text_type(self._text.text()))
         self.ok = True
         self.close()
 
     def getShortcut(self):
         self.exec_()
         if self._text.valid:
-            return unicode(self._text.text()), self.ok
+            return six.text_type(self._text.text()), self.ok
         else:
             return u'', self.ok
 
@@ -122,14 +127,14 @@ class ShortcutName(QDialog):
         self.close()
 
     def enableOK(self, text):
-        if text and unicode(text) not in self._texts:
+        if text and six.text_type(text) not in self._texts:
             self._ok.setEnabled(True)
         else:
             self._ok.setEnabled(False)
 
     def getText(self):
         self.exec_()
-        return unicode(self._text.text()), self.ok
+        return six.text_type(self._text.text()), self.ok
 
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
@@ -271,15 +276,15 @@ class FunctionDialog(QWidget):
                     elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
                         newargs.append(False)
                 else:
-                    if isinstance(method(), (int, long)):
+                    if isinstance(method(), six.integer_types):
                         newargs.append(method())
                     else:
-                        newargs.append(unicode(method()))
+                        newargs.append(six.text_type(method()))
             [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
 
         fields = [z.strip() for z in
-            unicode(self.tagcombo.currentText()).split(",") if z]
+            six.text_type(self.tagcombo.currentText()).split(",") if z]
 
         if self.func.function in functions.no_fields:
             self.func.setTag(['just nothing to do with this'])
@@ -296,8 +301,7 @@ class FunctionDialog(QWidget):
         if ctype == 'combo':
             func = control.currentText
             if default:
-                control.addItems(map(
-                    lambda d: translate('Functions', d), default))
+                control.addItems([translate('Functions', d) for d in default])
         elif ctype == 'text':
             self.textcombos.append(control)
             func = control.currentText
@@ -356,10 +360,10 @@ class FunctionDialog(QWidget):
                 fields = findfunc.parse_field_list(self.func.tag, audio,
                     self._selectedFields)
                 files = status['selectedfiles']
-                files = unicode(len(files)) if files else u'1'
+                files = six.text_type(len(files)) if files else u'1'
                 state = {'__counter': u'0', '__total_files': files}
                 val = apply_actions([self.func], audio, state, fields)
-            except findfunc.ParseError, e:
+            except findfunc.ParseError as e:
                 val = u'<b>%s</b>' % (e.message)
             if val is not None:
                 self.updateExample.emit(val)
@@ -441,8 +445,7 @@ class CreateFunction(QDialog):
         self.vbox = QVBoxLayout()
         self.functions = QComboBox()
         self.functions.addItems(
-            sorted(map(lambda x: translate('Functions', x[0]),
-                funcnames)))
+            sorted([translate('Functions', x[0]) for x in funcnames]))
         self.vbox.addWidget(self.functions)
 
         self.stack = QStackedWidget()
@@ -529,7 +532,7 @@ class CreateFunction(QDialog):
         elif func is not None and func not in functions.no_fields:
             msg = translate('Actions',
                 "Please enter some fields to write to.")
-            if not filter(None, fields):
+            if not [_f for _f in fields if _f]:
                 QMessageBox.information(self, 'puddletag', msg)
                 return False
         return True
@@ -611,11 +614,11 @@ class CreateAction(QDialog):
     def updateExample(self):
         try:
             files = status['selectedfiles']
-            files = unicode(len(files)) if files else u'1'
+            files = six.text_type(len(files)) if files else u'1'
             state = {'__counter': u'0', '__total_files': files}
             tags = apply_actions(self.functions, self.example, state)
             self._examplelabel.setText(displaytags(tags))
-        except findfunc.ParseError, e:
+        except findfunc.ParseError as e:
             self._examplelabel.setText(e.message)
 
     def enableEditButtons(self, val):
@@ -777,10 +780,10 @@ class ActionWindow(QDialog):
         
         if name and ok:
             import puddlestuff.puddletag
-            shortcuts = [unicode(z.shortcut().toString()) for z in
+            shortcuts = [six.text_type(z.shortcut().toString()) for z in
                 puddlestuff.puddletag.status['actions']]
             (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
-            name = unicode(name)
+            name = six.text_type(name)
             
             from puddlestuff.action_shortcuts import (
                 create_action_shortcut, save_shortcut)
@@ -794,7 +797,7 @@ class ActionWindow(QDialog):
             save_shortcut(name, filenames)
 
     def editShortcuts(self):
-        import action_shortcuts
+        from . import action_shortcuts
         win = action_shortcuts.ShortcutEditor(True, self, True)
         win.setModal(True)
         win.show()
@@ -844,7 +847,7 @@ class ActionWindow(QDialog):
             self.shortcutButton.setEnabled(False)
     
     def renameAction(self, item):
-        name = unicode(item.text())
+        name = six.text_type(item.text())
         names = [m.name for m in self.macros.values()]
         row = self.listbox.row(item)
         
@@ -891,7 +894,7 @@ class ActionWindow(QDialog):
         files = glob(os.path.join(ACTIONDIR, u'*.action'))
         if firstrun and not files:
             filenames = [':/caseconversion.action', ':/standard.action']
-            files = map(open_resourcefile, filenames)
+            files = list(map(open_resourcefile, filenames))
             set_value('firstrun', False)
 
             for fileobj, filename in zip(files, filenames):
@@ -916,7 +919,7 @@ class ActionWindow(QDialog):
         
         if selectedrows:
             files = status['selectedfiles']
-            total = unicode(len(files)) if files else u'1'
+            total = six.text_type(len(files)) if files else u'1'
             state = {'__counter': u'0', '__total_files': total}
 
             macros = [self.macros[i] for i in selectedrows]
@@ -924,7 +927,7 @@ class ActionWindow(QDialog):
                 tags = apply_macros(macros, self.example, state,
                     self._quickaction)
                 self._examplelabel.setText(displaytags(tags))
-            except findfunc.ParseError, e:
+            except findfunc.ParseError as e:
                 self._examplelabel.setText(e.message)
             self._examplelabel.show()
         else:
@@ -977,7 +980,7 @@ class ActionWindow(QDialog):
 
     def addBuddy(self, actions):
         m = Macro()
-        m.name = unicode(self.listbox.item(self.listbox.count() - 1).text())
+        m.name = six.text_type(self.listbox.item(self.listbox.count() - 1).text())
         m.actions = actions
         self.saveMacro(m)
         self.macros[self.listbox.count() - 1] = m
@@ -1052,7 +1055,7 @@ class ActionWindow(QDialog):
         if not (ok and text):
             return
 
-        name = unicode(text)
+        name = six.text_type(text)
         actions = deepcopy(self.macros[row].actions)
 
         win = CreateAction(self, actions, example=self.example)
@@ -1076,7 +1079,7 @@ class ActionWindow(QDialog):
         self.macros[self.listbox.count() - 1] = m
 
     def shortcutNames(self):
-        from action_shortcuts import load_settings
+        from .action_shortcuts import load_settings
         return [name for name, filename in load_settings()[1]]
         
 

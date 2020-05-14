@@ -1,4 +1,6 @@
+from __future__ import absolute_import
 from decimal import Decimal
+import six
 try:
     from Levenshtein import ratio, jaro, jaro_winkler
     def _ratio(a, b):
@@ -53,7 +55,7 @@ class Algo(object):
         self.matchcase = matchcase
     
     def _setFunc(self, func):
-        if isinstance(func, basestring):
+        if isinstance(func, six.string_types):
             funcnames = [f.__name__ for f in funcs]
             try:
                 func = funcs[funcnames.index(func)]

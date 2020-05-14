@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
   QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
   QWidget
@@ -9,14 +10,16 @@ import sys, os, pdb
 import puddlestuff.constants, puddlestuff.resource
 from decimal import Decimal
 from puddlestuff.puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
-from matchfuncs import Algo, funcinfo, funcs, _ratio
-from dupefuncs import dupesinlib
+from .matchfuncs import Algo, funcinfo, funcs, _ratio
+from .dupefuncs import dupesinlib
 from puddlestuff.findfunc import tagtofilename
 from puddlestuff.puddleobjects import progress, winsettings
 import time
 from puddlestuff.constants import SAVEDIR, RIGHTDOCK
 from puddlestuff.plugins import add_shortcuts, connect_shortcut
 from puddlestuff.puddletag import status
+import six
+from six.moves import zip
 
 title_sort = lambda a: a.get('title', u'')
 dupe_sort = lambda a: a[0].get('title', u'')
@@ -41,7 +44,7 @@ def saveset(setname, disp, algs, maintag):
     cparser.set('info', 'name', setname)
     cparser.set('info', 'disp', disp)
     for i, a in enumerate(algs):
-        setname = u'alg' + unicode(i)
+        setname = u'alg' + six.text_type(i)
         for key, val in a.items():
             cparser.set(setname, key, val)
 
@@ -108,7 +111,7 @@ class DupeTree(QTreeWidget):
         self.clear()
         dupes = dupesinlib(lib, algos, maintag = maintag)
         self.dupes = []
-        artists = dupes.next()
+        artists = next(dupes)
         def what():
             for i, d in enumerate(dupes):
                 a = artists[i]
@@ -256,9 +259,9 @@ class AlgWin(QWidget):
             self.matchcase.setCheckState(Qt.Unchecked)
 
     def saveAlgo(self):
-        tags = [x for x in [z.strip() for z in unicode(self.tags.text()).split("|")] if x != ""]
+        tags = [x for x in [z.strip() for z in six.text_type(self.tags.text()).split("|")] if x != ""]
         func = funcs[self.alcombo.currentIndex()]
-        threshold = float(unicode(self.threshold.text())) / 100
+        threshold = float(six.text_type(self.threshold.text())) / 100
         matchcase = False
         if self.matchcase.checkState() == Qt.Checked:
             matchcase = True
@@ -346,7 +349,7 @@ class SetDialog(QDialog):
         text = gettext()
         if text:
             self.setscombo.addItem(text)
-            self._sets.append([unicode(text), ['', ''], []])
+            self._sets.append([six.text_type(text), ['', ''], []])
             self.setscombo.setCurrentIndex(self.setscombo.count() - 1)
 
     def fill(self, sets):
@@ -378,9 +381,9 @@ class SetDialog(QDialog):
     def changeSet(self, index):
         i = self._previndex
         prevset = {'setname': self._sets[i][0],
-                   'disp': [unicode(text.text()) for text in self.texts],
+                   'disp': [six.text_type(text.text()) for text in self.texts],
                    'algs': self._sets[i][2],
-                   'maintag': unicode(self.maintag.currentText())}
+                   'maintag': six.text_type(self.maintag.currentText())}
         self._sets[i][1] = prevset['disp']
         self._sets[i][2] = prevset['algs']
         self._sets[i][3] = prevset['maintag']
@@ -421,9 +424,9 @@ class SetDialog(QDialog):
     def okClicked(self):
         i = self.setscombo.currentIndex()
         prevset = {'setname': self._sets[i][0],
-                   'disp': [unicode(text.text()) for text in self.texts],
+                   'disp': [six.text_type(text.text()) for text in self.texts],
                    'algs': self._sets[i][2],
-                   'maintag': unicode(self.maintag.currentText())}
+                   'maintag': six.text_type(self.maintag.currentText())}
         saveset(**prevset)
         self.close()
         self.setAvailable.emit(self.currentSet)

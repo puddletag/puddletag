@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import glob, os, pdb, string, sys
 
 from collections import defaultdict
@@ -22,6 +23,7 @@ from puddlestuff.masstag import (NO_MATCH_OPTIONS, combine_tracks,
 from puddlestuff.masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
     load_all_mtps, mtp_from_file, save_mtp)
 from puddlestuff.webdb import strip as strip_fields
+import six
 
 class _SignalObject (QObject):
     statusChanged = pyqtSignal(str, name='statusChanged')
@@ -39,11 +41,11 @@ mutex = QMutex()
 
 def search_error(error, profile):
     set_status(translate('Masstagging',
-        'An error occured during the search: <b>%s</b>') % unicode(error))
+        'An error occured during the search: <b>%s</b>') % six.text_type(error))
 
 def retrieval_error(error, profile):
     set_status(translate('Masstagging',
-        'An error occured during album retrieval: <b>%s</b>') % unicode(error))
+        'An error occured during album retrieval: <b>%s</b>') % six.text_type(error))
 
 class MassTagEdit(QDialog):
     profilesChanged = pyqtSignal(list, name='profilesChanged')
@@ -133,7 +135,7 @@ class MassTagEdit(QDialog):
 
     def loadProfiles(self, dirpath=PROFILEDIR):
         profiles = load_all_mtps(dirpath, self.tag_sources)
-        self.setProfiles(filter(None, profiles))
+        self.setProfiles([_f for _f in profiles if _f])
 
     def moveDown(self):
         self.listbox.moveDown(self._profiles)
@@ -344,11 +346,11 @@ class MTProfileEdit(QDialog):
 
     def okClicked(self):
         fields = [z.strip() for z in
-            unicode(self.matchFields.text()).split(u',')]
+            six.text_type(self.matchFields.text()).split(u',')]
 
-        mtp = MassTagProfile(unicode(self._name.text()),
-            unicode(self._desc.text()), fields, None,
-            unicode(self.pattern.text()), self._tsps,
+        mtp = MassTagProfile(six.text_type(self._name.text()),
+            six.text_type(self._desc.text()), fields, None,
+            six.text_type(self.pattern.text()), self._tsps,
             self.albumBound.value() / 100.0,
             self.trackBound.value() / 100.0, self.jfdi.isChecked(),
             self.existing.isChecked(), u'')
@@ -466,8 +468,8 @@ class TSProfileEdit(QDialog):
     def _okClicked(self):
         source = self.tag_sources[self.source.currentIndex()]
         no_result = self.no_match.currentIndex()
-        fields = fields_from_text(unicode(self.fields.text()))
-        replace_fields = fields_from_text(unicode(self.replace_fields.text()))
+        fields = fields_from_text(six.text_type(self.fields.text()))
+        replace_fields = fields_from_text(six.text_type(self.replace_fields.text()))
 
         profile = TagSourceProfile(None, source, fields, no_result,
             replace_fields)
@@ -540,8 +542,8 @@ class MassTagWindow(QWidget):
 
     def _appendLog(self, text):
         mutex.lock()
-        if not isinstance(text, unicode):
-            text = unicode(text, 'utf8', 'replace')
+        if not isinstance(text, six.text_type):
+            text = six.text_type(text, 'utf8', 'replace')
         if text.startswith(u':insert'):
             text = text[len(u':insert'):]
             pos = len(self._log.toPlainText()) - 1
@@ -625,10 +627,10 @@ class MassTagWindow(QWidget):
             'An error occured during album retrieval: <b>%s</b>')
 
         def search_error(error, mtp):
-            thread.statusChanged.emit(search_msg % unicode(error))
+            thread.statusChanged.emit(search_msg % six.text_type(error))
 
         def retrieval_error(error, mtp):
-            thread.statusChanged.emit(retrieve_msg % unicode(error))
+            thread.statusChanged.emit(retrieve_msg % six.text_type(error))
 
         def run_masstag():
             replace_fields = []

@@ -6,6 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+from __future__ import absolute_import
 from PyQt5 import QtCore
 
 qt_resource_data = "\

@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import util, struct, pdb
 from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
-from util import (strlength, strbitrate, strfrequency, usertags, PATH,
+from .util import (strlength, strbitrate, strfrequency, usertags, PATH,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
     READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
     getdeco, setdeco, str_filesize, fn_hash, cover_info,
     get_mime, to_string, unicode_list, CaselessDict, keys_deco,
     del_deco, get_total, set_total, info_to_dict, parse_image)
 from copy import copy
-import tag_versions
+from . import tag_versions
+import six
+from six.moves import map
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
     'modified', 'filetype')
@@ -110,7 +113,7 @@ class Tag(util.MockTag):
         'wwwcopyright': 'CopyrightURL',
         'year': 'WM/Year',
     }
-    __translate = dict([(v, k) for k, v in __rtranslate.iteritems()])
+    __translate = dict([(v, k) for k, v in six.iteritems(__rtranslate)])
 
     def __init__(self, filename=None):
         self.__images = []
@@ -131,7 +134,7 @@ class Tag(util.MockTag):
 
     def _setImages(self, images):
         if images:
-            self.__images = map(parse_image, images)
+            self.__images = list(map(parse_image, images))
         else:
             self.__images = []
         cover_info(images, self.__tags)
@@ -202,7 +205,7 @@ class Tag(util.MockTag):
 
         wmainfo = [('Bitrate', self.bitrate),
                    ('Frequency', self.frequency),
-                   ('Channels', unicode(info.channels)),
+                   ('Channels', six.text_type(info.channels)),
                    ('Length', self.length)]
         return [('File', fileinfo), ('ASF Info', wmainfo)]
 
@@ -210,7 +213,7 @@ class Tag(util.MockTag):
 
     @keys_deco
     def keys(self):
-        return self.__tags.keys()
+        return list(self.__tags.keys())
 
     def link(self, filename):
         """Links the audio, filename
@@ -222,16 +225,16 @@ class Tag(util.MockTag):
         if audio is None:
             return
 
-        for name, values in audio.tags.iteritems():
+        for name, values in six.iteritems(audio.tags):
             try:
-                self.__tags[self.__translate[name]] = map(unicode, values)
+                self.__tags[self.__translate[name]] = list(map(six.text_type, values))
             except KeyError:
                 if isinstance(values[0], ASFUnicodeAttribute):
                     if not '/' in name and name not in self.__tags:
-                        self.__tags[name] = map(unicode, values)
+                        self.__tags[name] = list(map(six.text_type, values))
 
         if 'WM/Picture' in audio:
-            self.images = map(bin_to_pic, audio['WM/Picture'])
+            self.images = list(map(bin_to_pic, audio['WM/Picture']))
 
         self.__tags.update(info_to_dict(audio.info))
         self.__tags.update(tags)
@@ -261,7 +264,7 @@ class Tag(util.MockTag):
             except KeyError:
                 newtag[field] = value
 
-        pics = map(pic_to_bin, self.images)
+        pics = list(map(pic_to_bin, self.images))
         if pics:
             newtag['WM/Picture'] = pics
 

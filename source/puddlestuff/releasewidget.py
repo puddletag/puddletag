@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import sys, pdb
 import traceback
 from puddlestuff.puddleobjects import (unique, OKCancel, PuddleThread,
@@ -17,6 +18,8 @@ from functools import partial
 from puddlestuff.util import pprint_tag, to_string
 from puddlestuff.audioinfo import stringtags
 from puddlestuff.translations import translate
+import six
+from six.moves import map
 
 CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
@@ -35,7 +38,7 @@ def inline_display(pattern, tags):
 def fillItem(item, info, tracks, trackpattern):
     item.itemData = info
     if tracks is not None:
-        item.itemData['__numtracks'] = unicode(len(tracks))
+        item.itemData['__numtracks'] = six.text_type(len(tracks))
         [item.appendChild(ChildItem(track, trackpattern, item))
                     for track in tracks]
         item.hasTracks = True
@@ -82,7 +85,7 @@ def tooltip(tag, mapping = None):
     if not tag:
         return translate("WebDB", "<b>Error in pattern</b>")
     mapping = {} if mapping is None else mapping
-    tag = dict((mapping.get(k, k), v) for k,v in tag.iteritems()
+    tag = dict((mapping.get(k, k), v) for k,v in six.iteritems(tag)
         if not k.startswith('#'))
         
     return pprint_tag(tag)
@@ -239,7 +242,7 @@ class ChildItem(RootItem):
 
 class TreeModel(QtCore.QAbstractItemModel):
     retrieving = pyqtSignal(name='retrieving')
-    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    statusChanged = pyqtSignal(six.text_type, name='statusChanged')
     collapse = pyqtSignal(int, name='collapse')
     retrievalDone = pyqtSignal(name='retrievalDone')
     exactChanged = pyqtSignal(object, name='exactChanged')
@@ -356,14 +359,14 @@ class TreeModel(QtCore.QAbstractItemModel):
         def fetch_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
-            except RetrievalError, e:
+            except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("WebDB", 'An error occured: %1').arg(unicode(e)))
+                    translate("WebDB", 'An error occured: %1').arg(six.text_type(e)))
                 return
-            except Exception, e:
+            except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
+                    translate("WebDB", 'An unhandled error occured: %1').arg(six.text_type(e)))
                 return
 
         item.retrieving = True
@@ -451,14 +454,14 @@ class TreeModel(QtCore.QAbstractItemModel):
         def retrieval_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
-            except RetrievalError, e:
+            except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("WebDB", 'An error occured: %1').arg(unicode(e)))
+                    translate("WebDB", 'An error occured: %1').arg(six.text_type(e)))
                 return None
-            except Exception, e:
+            except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
+                    translate("WebDB", 'An unhandled error occured: %1').arg(six.text_type(e)))
                 return None
 
         def finished(val):
@@ -521,8 +524,8 @@ class ReleaseWidget(QTreeView):
     exact = pyqtSignal(dict, name='exact')
     exactMatches = pyqtSignal(dict, name='exactMatches')
     preview = pyqtSignal([list], [dict], name='preview')
-    infoChanged = pyqtSignal(unicode, name='infoChanged')
-    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    infoChanged = pyqtSignal(six.text_type, name='infoChanged')
+    statusChanged = pyqtSignal(six.text_type, name='statusChanged')
     exactChanged = pyqtSignal(object, name='exactChanged')
     retrieving = pyqtSignal(name='retrieving')
     retrievalDone = pyqtSignal(name='retrievalDone')
@@ -610,8 +613,8 @@ class ReleaseWidget(QTreeView):
         self.exactMatches.emit(ret)
     
     def emitTracks(self, tracks):
-        tracks = map(dict, tracks)
-        tracks = map(self.cleanTrack, tracks)
+        tracks = list(map(dict, tracks))
+        tracks = list(map(self.cleanTrack, tracks))
         #import pdb
         #pdb.set_trace()
         if tracks:
@@ -619,7 +622,7 @@ class ReleaseWidget(QTreeView):
                 tracks[:len(self._status['selectedrows'])])
         else:
             rows = self._status['selectedrows']
-            self.preview.emit(map(lambda x: {}, rows))
+            self.preview.emit([{} for x in rows])
     
     def exactChanged(self, item):
         if item.checked:

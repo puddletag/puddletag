@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import codecs, pdb, re, os, sys, traceback
 
 from copy import deepcopy
-from htmlentitydefs import name2codepoint as n2cp
+from six.moves.html_entities import name2codepoint as n2cp
 
 from pyparsing import (nums, printables, Combine, Optional,
     QuotedString, Word, ZeroOrMore)
 
-from funcs import FUNCTIONS
+from .funcs import FUNCTIONS
 from puddlestuff.audioinfo.util import CaselessDict
 from puddlestuff.constants import CHECKBOX
 from puddlestuff.functions import format_value
@@ -16,6 +18,10 @@ from puddlestuff.tagsources import (urlopen, get_encoding,
     write_log, retrieve_cover, set_status)
 from puddlestuff.util import convert_dict as _convert_dict
 from puddlestuff.translations import translate
+import six
+from six.moves import map
+from six import unichr
+from six.moves import zip
 
 class ParseError(Exception): pass
 
@@ -49,7 +55,7 @@ def convert_entities(s):
     
 
 def convert_value(value):
-    value = filter(None, (z.strip() for z in value.split(u'|')))
+    value = [_f for _f in (z.strip() for z in value.split(u'|')) if _f]
     value = [convert_entities(v.replace(u'\\r\\n', u'\n')) for v in value]
     if len(value) == 1:
         return value[0]
@@ -57,7 +63,7 @@ def convert_value(value):
 
 def convert_dict(d, keys = MTAG_KEYS):
     d = dict((i,z) for i,z in ((k.lower(), convert_value(v)) for
-        k,v in d.iteritems()) if z)
+        k,v in six.iteritems(d)) if z)
     return _convert_dict(d, keys)
 
 def find_idents(lines):
@@ -102,9 +108,9 @@ def find_idents(lines):
 
     parser = lambda arg: parse_func(*arg)
     if search_source is not None:
-        search_source = filter(None, map(parser, search_source))
+        search_source = [_f for _f in map(parser, search_source) if _f]
     return (idents, search_source,
-        filter(None, map(parser, album_source)))
+        [_f for _f in map(parser, album_source) if _f])
 
 def open_script(filename):
     f = codecs.open(filename, 'r', encoding='utf8')
@@ -121,7 +127,7 @@ def parse_album_page(page, album_source, url=None):
     info = convert_dict(cursor.album)
     if hasattr(cursor.tracks, 'items'):
         tracks = []
-        for field, values in cursor.tracks.iteritems():
+        for field, values in six.iteritems(cursor.tracks):
             values = convert_value(values)
             if tracks:
                 for d, v in zip(tracks, values):
@@ -129,7 +135,7 @@ def parse_album_page(page, album_source, url=None):
             else:
                 tracks = [{field: v} for v in values]
     else:
-        tracks = filter(None, map(convert_dict, cursor.tracks))
+        tracks = [_f for _f in map(convert_dict, cursor.tracks) if _f]
     return (info, tracks)
 
 def parse_func(lineno, line):
@@ -141,7 +147,7 @@ def parse_func(lineno, line):
     arg_string = line[len(funcname):]
     args = (z[0]
         for z in ARGUMENT.searchString(arg_string).asList())
-    args = [i.replace(u'\\\\', u'\\') if isinstance(i, basestring) else i
+    args = [i.replace(u'\\\\', u'\\') if isinstance(i, six.string_types) else i
         for i in args]
     if funcname and not funcname.startswith(u'#'):
         return funcname.lower(), lineno, args
@@ -153,9 +159,9 @@ def parse_ident(line):
 def parse_lines(lines):
     for line in lines:
         if line.startswith('['):
-            print parse_ident(line)
+            print(parse_ident(line))
         else:
-            print parse_func(line)
+            print(parse_func(line))
 
 def parse_search_page(indexformat, page, search_source, url=None):
     fields = [z[1:-1] for z in indexformat.split('|')]
@@ -171,9 +177,9 @@ def parse_search_page(indexformat, page, search_source, url=None):
     max_i = len(values) - 1
     for cached in values:
         values = [z.strip() for z in cached.split('|')]
-        album = dict(zip(fields, values))
+        album = dict(list(zip(fields, values)))
         albums.append(album)
-    return filter(None, map(convert_dict, albums))
+    return [_f for _f in map(convert_dict, albums) if _f]
 
 class Cursor(object):
     def __init__(self, text, source_lines):
@@ -248,7 +254,7 @@ class Cursor(object):
             self._debug_file.write((u'\n' + text).encode('utf8'))
             self._debug_file.flush()
         elif self.debug:
-            print text
+            print(text)
 
     def parse_page(self, debug=False):
         self.next_cmd = 0
@@ -261,10 +267,10 @@ class Cursor(object):
         i = 0
         while (not self.stop) and (self.next_cmd < len(self.source)):
 
-            self.log(unicode(self.output))
+            self.log(six.text_type(self.output))
             cmd, lineno, args = self.source[self.cmd_index]
 
-            self.log(unicode(self.source[self.cmd_index]))
+            self.log(six.text_type(self.source[self.cmd_index]))
 
             #if lineno == 106 or lineno == 108:
                 #pdb.set_trace()
@@ -352,7 +358,7 @@ class Mp3TagSource(object):
         return [(info, []) for info in infos]
 
     def retrieve(self, info):
-        if isinstance(info, basestring):
+        if isinstance(info, six.string_types):
             text = info.replace(u' ', self._separator)
             info = {}
         else:
@@ -376,14 +382,14 @@ class Mp3TagSource(object):
         write_log(translate('Mp3tag', u'Parsing album page.'))
         set_status(translate('Mp3tag', u'Parsing album page...'))
         new_info, tracks = parse_album_page(page, self.album_source, url)
-        info.update(dict((k,v) for k,v in new_info.iteritems() if v))
+        info.update(dict((k,v) for k,v in six.iteritems(new_info) if v))
         
         if self._get_cover and COVER in info:
             cover_url = new_info[COVER]
-            if isinstance(cover_url, basestring):
+            if isinstance(cover_url, six.string_types):
                 info.update(retrieve_cover(cover_url))
             else:
-                info.update(map(retrieve_cover, cover_url))
+                info.update(list(map(retrieve_cover, cover_url)))
         if not tracks:
             tracks = None
         return info, tracks
@@ -411,7 +417,7 @@ if __name__ == '__main__':
     tagsources = load_mp3tag_sources('.')
     albums = tagsources[2].search(u'Goth-Erotika')
     tagsources[2]._get_cover = False
-    print tagsources[2].retrieve(albums[0][0])
+    print(tagsources[2].retrieve(albums[0][0]))
     #pdb.set_trace()
     #import puddlestuff.tagsources
     #encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')

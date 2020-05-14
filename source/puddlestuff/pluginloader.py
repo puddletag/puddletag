@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import os, traceback, sys
 from puddlestuff.puddleobjects import PuddleConfig, winsettings
 from puddlestuff.constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
@@ -10,6 +11,8 @@ import logging
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from puddlestuff.translations import translate
+from six.moves import range
+from six.moves import zip
 
 NAME = 'name'
 AUTHOR = 'author'
@@ -35,9 +38,9 @@ def get_plugins(plugindir):
         config_data = dict(ConfigObj(info_path))
         values = [config_data.get(INFO_SECTION, {}).get(prop, '') for prop in PROPERTIES]
 
-        if len(filter(None, values)) < len(PROPERTIES):
+        if len([_f for _f in values if _f]) < len(PROPERTIES):
             continue
-        d = dict(zip(PROPERTIES, values))
+        d = dict(list(zip(PROPERTIES, values)))
         d[MODULE_NAME] = module
         infos.append(d)
     return infos
