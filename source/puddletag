@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 import json, sys, os, shutil
 
 from optparse import OptionParser
 from glob import glob
 import logging
+import six
 
 def convert_ini_files():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -53,7 +56,7 @@ def _migrate_action_shortcut_filenames():
         data = json.loads(fo.read());
     
     old_dir = os.path.join(os.getenv('HOME'), '.puddletag', 'actions')
-    for key, shortcut in data.iteritems():
+    for key, shortcut in six.iteritems(data):
         shortcut['filenames'] = [z.replace(old_dir, ACTIONDIR) for z in shortcut['filenames']]
 
     with open(filename, 'w') as fo:
@@ -132,7 +135,7 @@ def check_libs():
         try:
             __import__(lib[0])
         except ImportError:
-            print (msg % lib)
+            print((msg % lib))
             errors.append(msg % lib)
             found = False
 
@@ -192,7 +195,7 @@ def load_language(qapp, langfile=None):
 
     if langfile:
         if not langfile.endswith('.qm'):
-            print translate('Defaults', 'Invalid translation file.')
+            print(translate('Defaults', 'Invalid translation file.'))
             langargs = None
         else:
             langargs = os.path.basename(langfile), os.path.dirname(langfile)
@@ -210,7 +213,7 @@ def load_language(qapp, langfile=None):
                 langargs = os.path.basename(f), os.path.dirname(f)
 
         if not langargs and lang != 'default':
-            locale = unicode(QLocale.system().name())
+            locale = six.text_type(QLocale.system().name())
             if locale in langs:
                 f = langs[locale]
                 langargs = os.path.basename(f), os.path.dirname(f)
@@ -226,7 +229,7 @@ def load_language(qapp, langfile=None):
             locale = langargs[0][len('puddletag_'):-len('.qm')]
             translator.load("qt_" + locale,
                 QLibraryInfo.location(QLibraryInfo.TranslationsPath))
-            print "Locale: " + locale
+            print("Locale: " + locale)
             translators.append(translator)
 
         translator = QTranslator()
@@ -237,11 +240,11 @@ def load_language(qapp, langfile=None):
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
              QLibraryInfo.location(QLibraryInfo.TranslationsPath))
-        print "Locale: " + unicode(QLocale.system().name())
+        print("Locale: " + six.text_type(QLocale.system().name()))
         translators.append(translator)
 
     else:
-        print "Loading default (ie. no) translation."
+        print("Loading default (ie. no) translation.")
 
     for t in reversed(translators):
         qapp.installTranslator(t)
@@ -268,10 +271,10 @@ def print_info():
     """Print program info."""
     from puddlestuff import version_string, changeset
     if changeset:
-        print translate('Defaults', 'puddletag Version: %1, Changeset: %2').arg(
-            version_string).arg(changeset)
+        print(translate('Defaults', 'puddletag Version: %1, Changeset: %2').arg(
+            version_string).arg(changeset))
     else:
-        print translate('Defaults', 'puddletag Version: %s' % version_string)
+        print(translate('Defaults', 'puddletag Version: %s' % version_string))
 
 class StdOut(object):
     """Class to redirect stdout/in/err."""

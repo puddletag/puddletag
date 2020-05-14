@@ -19,11 +19,16 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from __future__ import absolute_import
+from __future__ import print_function
 from optparse import OptionParser
 import sys,os,shutil
 from puddlestuff.findfunc import *
 from puddlestuff.audioinfo import Tag
 import pdb
+import six
+from six.moves import zip
+from six.moves import input
 
 noprints = ['__path', '__ext', '__modified', '__accessed', '__folder']
 sortorder = ['__filename', '__size', '__length', '__bitrate', '__frequency', '__created']
@@ -32,7 +37,7 @@ normal  = chr(0x1b) + "[0m";
 red   = chr(0x1b) + "[31m";
 
 def printerror(text):
-    print red + text + normal
+    print(red + text + normal)
 def sortedkeys(keys):
     sortkeys = [z for z in sortorder if z in keys]
     others = sorted(set(keys).difference(sortkeys))
@@ -49,7 +54,7 @@ def safe_name(name, to = None):
     if not to:
         to = ""
     else:
-        to = unicode(to)
+        to = six.text_type(to)
     escaped = ""
     for ch in name:
         if ch not in r'/\*?;"|:': escaped = escaped + ch
@@ -92,7 +97,7 @@ def parseoptions(classes):
     (options,args)=parser.parse_args()
 
     actions = [{z[len('action'):]: getattr(options,z)} for z in dir(options) if z.startswith('action')]
-    actions = [z for z in actions if z.values()[0] is not None]
+    actions = [z for z in actions if list(z.values())[0] is not None]
     return (options, actions)
 
 class PuddleRunAction:
@@ -182,7 +187,7 @@ class SetTag:
 
         tags = args[0:arglen:2]
         values = args[1:arglen:2]
-        self.tags = zip(tags,values)
+        self.tags = list(zip(tags,values))
 
     def run(self, tags):
         return dict([(tag, value) for tag, value in self.tags])
@@ -232,10 +237,10 @@ class SetMul:
 
 def pprint(tags):
     temp = []
-    keys = [z for z in sortedkeys(tags.keys()) if z not in noprints]
+    keys = [z for z in sortedkeys(list(tags.keys())) if z not in noprints]
     for tag in keys:
         value = tags[tag]
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             value = u'[' + ','.join(value) + u']'
         temp.append(tag + u': ' + bold + value + normal)
     return u"\n".join(temp)
@@ -259,14 +264,14 @@ def renameFile(original, tags):
 def writeTags(original, tags):
     try:
         renameFile(original, tags)
-    except (OSError, IOError), e:
+    except (OSError, IOError) as e:
         printerror("Couldn't rename to " + original[FILENAME] + ": " + e.strerror)
         return
 
     try:
         original.update(tags)
         original.save()
-    except (OSError, IOError), detail:
+    except (OSError, IOError) as detail:
         printerror(u"Couldn't write to file, " + original['__filename'] + u'\n')
 
 def main():
@@ -277,16 +282,16 @@ def main():
     identifier = QuotedString('"') | Combine(NotAny('\\') + Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
     tags = delimitedList(identifier)
     commands = []
-    for command, args in [action.items()[0] for action in actions]:
+    for command, args in [list(action.items())[0] for action in actions]:
         #Instantiate the class for the command
         cl = classes[command]()
         try:
             if not files and cl.files:
                 raise PuddleError(u'No files were specified to ' + command)
             cl.setup(*args)
-        except PuddleError, e:
-            printerror(u'Error: ' + unicode(e))
-            print u'usage: ' + cl.usage
+        except PuddleError as e:
+            printerror(u'Error: ' + six.text_type(e))
+            print(u'usage: ' + cl.usage)
             sys.exit(0)
         #except TypeError, e:
             #text = unicode(e)
@@ -307,11 +312,11 @@ def main():
     for f in files:
         try:
             tag = audioinfo.Tag(f)
-        except (IOError, OSError), e:
+        except (IOError, OSError) as e:
             try:
                 printerror("Couldn't read " + f + ': ' + e.strerror)
             except AttributeError:
-                printerror(u"Couldn't read " + f + ': ' + unicode(e))
+                printerror(u"Couldn't read " + f + ': ' + six.text_type(e))
             continue
         if tag is not None:
             tags = tag.tags
@@ -323,10 +328,10 @@ def main():
                 for z in tags:
                     if not (z in tag and tag[z] == tags[z]):
                         changes[z] = tags[z]
-                print 'Original: \n', pprint(tag.tags), '\n'
-                print 'Changes: \n', pprint(changes), '\n'
-                print "Do you want to write the changes to the file? [Y/n]"
-                s = raw_input()
+                print('Original: \n', pprint(tag.tags), '\n')
+                print('Changes: \n', pprint(changes), '\n')
+                print("Do you want to write the changes to the file? [Y/n]")
+                s = input()
                 if not(s == u'n' or s == u'N'):
                     writeTags(tag, tags)
             elif options.verbose:
@@ -334,8 +339,8 @@ def main():
                 for z in tags:
                     if not (z in tag and tag[z] == tags[z]):
                         changes[z] = tags[z]
-                print 'Original: \n', pprint(tag.tags), '\n'
-                print 'Changes: \n', pprint(changes), '\n'
+                print('Original: \n', pprint(tag.tags), '\n')
+                print('Changes: \n', pprint(changes), '\n')
                 u'Now writing...' + tag['__filename']
                 writeTags(tag, tags)
             elif options.test:
@@ -343,10 +348,10 @@ def main():
                 for z in tags:
                     if not (z in tag and tag[z] == tags[z]):
                         changes[z] = tags[z]
-                print 'Original: \n', pprint(tag.tags), '\n'
-                print 'Changes: \n', pprint(changes), '\n'
+                print('Original: \n', pprint(tag.tags), '\n')
+                print('Changes: \n', pprint(changes), '\n')
             else:
-                print options.test
+                print(options.test)
                 #writeTags(tag, tags)
 
 if __name__ == '__main__':
