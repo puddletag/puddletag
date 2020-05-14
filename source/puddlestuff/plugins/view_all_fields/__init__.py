@@ -2,8 +2,9 @@
 
 import os
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+  QPushButton, QVBoxLayout
 
 from puddlestuff.constants import SAVEDIR
 from puddlestuff.plugins import add_config_widget, add_shortcuts, status
@@ -72,7 +73,7 @@ def init(parent=None):
 
     action = QAction('Show all fields', parent)
     action.setCheckable(True)
-    action.connect(action, SIGNAL('toggled(bool)'), show_fields)
+    action.toggled.connect(show_fields)
     add_shortcuts('&Plugins', [sep(), action, sep()])
     add_config_widget(Settings)
 
@@ -82,7 +83,7 @@ class ButtonsAndList(QFrame):
             
         QFrame.__init__(self, parent)
         self.title = title
-        connect = lambda c, signal, s: self.connect(c, SIGNAL(signal), s)
+        connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.setFrameStyle(QFrame.Box)
         self.listbox = ListBox()
         self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
@@ -94,7 +95,7 @@ class ButtonsAndList(QFrame):
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Defaults", '&Sort'))
         self._sortOrder = Qt.AscendingOrder
-        connect(sortlistbox, 'clicked()', self._sortListBox)
+        connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
         vbox.addStretch()
@@ -112,10 +113,10 @@ class ButtonsAndList(QFrame):
 
         connect(buttons, "add", self.addItem)
         connect(buttons, "edit", self.editItem)
-        buttons.duplicate.setVisible(False)
+        buttons.duplicateButton.setVisible(False)
         self.listbox.connectToListButtons(buttons)
-        self.listbox.editButton = buttons.edit
-        connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
+        self.listbox.editButton = buttons.editButton
+        connect(self.listbox, 'itemDoubleClicked',
                     self._doubleClicked)
         self.addText = add_text
 
@@ -156,7 +157,7 @@ class ButtonsAndList(QFrame):
         if ok:
             item = l(row)
             item.setText(text)
-            self.listbox.setItemSelected(item, True)
+            item.setSelected(True)
 
     def getItems(self):
         return [item.text() for item in self.listbox.items()]

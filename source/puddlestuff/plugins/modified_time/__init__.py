@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtWidgets import QAction, QApplication, QMessageBox
 from puddlestuff.plugins import add_shortcuts, status
 from datetime import timedelta, datetime
 import os
@@ -10,7 +9,7 @@ import time
 
 def init(parent=None):
     action = QAction('Add 2 seconds to modified time', parent)
-    action.connect(action, SIGNAL('triggered()'), lambda: add_seconds(parent))
+    action.triggered.connect(lambda: add_seconds(parent))
     action.setShortcut('Ctrl+M')
     
     def sep():

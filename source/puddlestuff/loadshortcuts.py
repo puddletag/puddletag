@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from puddleobjects import PuddleConfig, get_icon
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
 import sys, pdb, resource,os
 from constants import CONFIGDIR, DATADIR
 import StringIO

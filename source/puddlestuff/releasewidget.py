@@ -4,9 +4,9 @@ import sys, pdb
 import traceback
 from puddlestuff.puddleobjects import (unique, OKCancel, PuddleThread,
     PuddleConfig, winsettings, natcasecmp)
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4 import QtCore, QtGui
+from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
+from PyQt5 import QtCore, QtGui
 from collections import defaultdict
 from copy import deepcopy
 
@@ -88,9 +88,10 @@ def tooltip(tag, mapping = None):
     return pprint_tag(tag)
 
 class Header(QHeaderView):
+    sortChanged = pyqtSignal(list, name='sortChanged')
     def __init__(self, parent = None):
         QHeaderView.__init__(self, Qt.Horizontal, parent)
-        self.setClickable(True)
+        self.setSectionsClickable(True)
         self.setStretchLastSection(True)
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
@@ -101,8 +102,8 @@ class Header(QHeaderView):
         menu = QMenu(self)
         def create_action(order):
             action = QAction(u'/'.join(order), menu)
-            slot = lambda: self.emit(SIGNAL('sortChanged'), order[::])
-            self.connect(action, SIGNAL('triggered()'), slot)
+            slot = lambda: self.sortChanged.emit(order[::])
+            action.triggered.connect(slot)
             menu.addAction(action)
 
         [create_action(order) for order in self.sortOptions]
@@ -237,12 +238,18 @@ class ChildItem(RootItem):
         return 0
 
 class TreeModel(QtCore.QAbstractItemModel):
+    retrieving = pyqtSignal(name='retrieving')
+    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    collapse = pyqtSignal(int, name='collapse')
+    retrievalDone = pyqtSignal(name='retrievalDone')
+    exactChanged = pyqtSignal(object, name='exactChanged')
+    exactMatches = pyqtSignal(list, name='exactMatches')
     def __init__(self, data = None, album_pattern=None, 
         track_pattern='%track% - %title%', tagsource=None, parent=None):
         QtCore.QAbstractItemModel.__init__(self, parent)
         
         self.mapping = {}
-        rootData = map(QtCore.QVariant, [translate("WebDB", 'Retrieved Albums')])
+        rootData = [translate("WebDB", 'Retrieved Albums')]
         self.rootItem = RootItem(rootData)
         
         self._albumPattern = ''
@@ -271,8 +278,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         parent = QModelIndex()
         top = self.index(0,0, parent)
         bottom = self.index(self.rowCount(parent) - 1, 0, parent)
-        self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
-            'QModelIndex&)'), top, bottom)
+        self.dataChanged.emit(top, bottom)
 
     albumPattern = property(_get_albumPattern, _set_albumPattern)
 
@@ -298,8 +304,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 top = self.index(0,0, parent_index)
                 bottom = self.index(self.rowCount(parent_index)
                     - 1, 0, parent_index)
-                self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
-                        'QModelIndex&)'), top, bottom)
+                self.dataChanged.emit(top, bottom)
 
     trackPattern = property(_get_trackPattern, _set_trackPattern)
 
@@ -318,52 +323,52 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if role == Qt.DisplayRole:
             item = index.internalPointer()
-            return QVariant(item.data(index.column()))
+            return item.data(index.column())
         elif role == Qt.ToolTipRole:
             item = index.internalPointer()
-            return QVariant(tooltip(item.itemData, self.mapping))
+            return tooltip(item.itemData, self.mapping)
         elif role == Qt.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
                 return None
             if item.expanded:
-                return QVariant(self.expandedIcon)
+                return self.expandedIcon
             else:
-                return QVariant(self.collapsedIcon)
+                return self.collapsedIcon
         elif role == Qt.CheckStateRole:
             item = index.internalPointer()
             if self.isTrack(item) and '#exact' in item.itemData:
                 if item.checked:
-                    return QVariant(Qt.Checked)
+                    return Qt.Checked
                 else:
-                    return QVariant(Qt.Unchecked)
-        return QVariant()
+                    return Qt.Unchecked
+        return None
 
     def fetchMore(self, index):
         item = index.internalPointer()
         if item.retrieving:
             return
-        self.emit(SIGNAL('retrieving'))
+        self.retrieving.emit()
         def fetch_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
-                self.emit(SIGNAL("statusChanged"), 
+                self.statusChanged.emit(
                     translate("WebDB", 'An error occured: %1').arg(unicode(e)))
                 return
             except Exception, e:
                 traceback.print_exc()
-                self.emit(SIGNAL("statusChanged"),
+                self.statusChanged.emit(
                     translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
                 return
 
         item.retrieving = True
         thread = PuddleThread(fetch_func, self)
-        self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieving album tracks..."))
+        self.statusChanged.emit(translate("WebDB", "Retrieving album tracks..."))
         thread.start()
         while thread.isRunning():
             QApplication.processEvents()
@@ -371,12 +376,12 @@ class TreeModel(QtCore.QAbstractItemModel):
         if val:
             info, tracks = val
             fillItem(item, info, tracks, self.trackPattern)
-            self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
+            self.statusChanged.emit(translate("WebDB", "Retrieval complete."))
             item.retrieving = False
         else:
             if not item.childCount():
-                self.emit(SIGNAL('collapse'), index)
-        self.emit(SIGNAL('retrievalDone()'))
+                self.collapse.emit(index)
+        self.retrievalDone.emit()
 
     def hasChildren(self, index):
         item = index.internalPointer()
@@ -405,9 +410,9 @@ class TreeModel(QtCore.QAbstractItemModel):
             role == QtCore.Qt.DisplayRole:
             ret = RETRIEVED_ALBUMS % u' / '.join(self.sortOrder)
             
-            return QVariant(QString(ret))
+            return ret
 
-        return QtCore.QVariant()
+        return None
 
     def index(self, row, column, parent):
         if row < 0 or column < 0 or row >= self.rowCount(parent) or \
@@ -442,37 +447,36 @@ class TreeModel(QtCore.QAbstractItemModel):
         if (not self.tagsource) or (item not in self.rootItem.childItems) or \
             (item.childItems) or not item.hasTracks:
             return
-        self.emit(SIGNAL('retrieving'))
+        self.retrieving.emit()
         def retrieval_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError, e:
-                self.emit(SIGNAL("statusChanged"), 
+                self.statusChanged.emit(
                     translate("WebDB", 'An error occured: %1').arg(unicode(e)))
                 return None
             except Exception, e:
                 traceback.print_exc()
-                self.emit(SIGNAL("statusChanged"),
+                self.statusChanged.emit(
                     translate("WebDB", 'An unhandled error occured: %1').arg(unicode(e)))
                 return None
 
         def finished(val):
             if val is None:
-                self.emit(SIGNAL('retrievalDone()'))
+                self.retrievalDone.emit()
                 return
             fillItem(item, val[0], val[1], self.trackPattern)
             item.retrieving = False
-            self.emit(SIGNAL('dataChanged (const QModelIndex&, const '
-                'QModelIndex&)'), index, index)
-            self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieval complete."))
-            self.emit(SIGNAL('retrievalDone()'))
+            self.dataChanged.emit(index, index)
+            self.statusChanged.emit(translate("WebDB", "Retrieval complete."))
+            self.retrievalDone.emit()
             if fin_func:
                 fin_func()
 
         item.retrieving = True
-        self.emit(SIGNAL("statusChanged"), translate("WebDB", "Retrieving tracks..."))
+        self.statusChanged.emit(translate("WebDB", "Retrieving tracks..."))
         thread = PuddleThread(retrieval_func, parent=self)
-        thread.connect(thread, SIGNAL('threadfinished'), finished)
+        thread.threadfinished.connect(finished)
         thread.start()
 
     def rowCount(self, parent):
@@ -490,7 +494,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         if index.isValid() and self.isTrack(index):
             item = index.internalPointer()
             item.checked = not item.checked
-            self.emit(SIGNAL('exactChanged'), item)
+            self.exactChanged.emit(item)
             return True
 
     def setupModelData(self, data):
@@ -503,16 +507,26 @@ class TreeModel(QtCore.QAbstractItemModel):
             self.rootItem.appendChild(parent)
         self.sort()
         if exact_matches:
-            self.emit(SIGNAL('exactMatches'), exact_matches)
+            self.exactMatches.emit(exact_matches)
 
     def sort(self, column=0, order=Qt.AscendingOrder):
+        self.beginResetModel()
         if order == Qt.AscendingOrder:
             self.rootItem.sort(self.sortOrder)
         else:
             self.rootItem.sort(self.sortOrder, True)
-        self.reset()
+        self.endResetModel()
 
 class ReleaseWidget(QTreeView):
+    exact = pyqtSignal(dict, name='exact')
+    exactMatches = pyqtSignal(dict, name='exactMatches')
+    preview = pyqtSignal([list], [dict], name='preview')
+    infoChanged = pyqtSignal(unicode, name='infoChanged')
+    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    exactChanged = pyqtSignal(object, name='exactChanged')
+    retrieving = pyqtSignal(name='retrieving')
+    retrievalDone = pyqtSignal(name='retrievalDone')
+    itemSelectionChanged = pyqtSignal(name='itemSelectionChanged')
     def __init__(self, status, tagsource, parent=None):
         QTreeView.__init__(self, parent)
         self.setSelectionMode(self.ExtendedSelection)
@@ -531,7 +545,7 @@ class ReleaseWidget(QTreeView):
         self.matchFields = ['artist', 'title']
 
         header = Header(self)
-        self.connect(header, SIGNAL('sortChanged'), self.sort)
+        header.sortChanged.connect(self.sort)
         self.setHeader(header)
         model = TreeModel()
         self.setModel(model)
@@ -584,7 +598,7 @@ class ReleaseWidget(QTreeView):
         for f, t in exact.items():
             t = strip(t, self.tagsToWrite, mapping=self.mapping)
             ret[f] = t
-        self.emit(SIGNAL('exact'), ret)
+        self.exact.emit(ret)
         return ret
 
     def emitInitialExact(self, exact):
@@ -593,7 +607,7 @@ class ReleaseWidget(QTreeView):
         for track in exact:
             ret[track['#exact']] = self.cleanTrack(track)
 
-        self.emit(SIGNAL('exactMatches'), ret)
+        self.exactMatches.emit(ret)
     
     def emitTracks(self, tracks):
         tracks = map(dict, tracks)
@@ -601,19 +615,19 @@ class ReleaseWidget(QTreeView):
         #import pdb
         #pdb.set_trace()
         if tracks:
-            self.emit(SIGNAL('preview'), 
+            self.preview.emit(
                 tracks[:len(self._status['selectedrows'])])
         else:
             rows = self._status['selectedrows']
-            self.emit(SIGNAL('preview'), map(lambda x: {}, rows))
+            self.preview.emit(map(lambda x: {}, rows))
     
     def exactChanged(self, item):
         if item.checked:
             track = strip(item.itemData, self.tagsToWrite, 
                 mapping = self.mapping)
-            self.emit(SIGNAL('preview'), {item.itemData['#exact']: track})
+            self.preview.emit({item.itemData['#exact']: track})
         else:
-            self.emit(SIGNAL('preview'), {item.itemData['#exact']: {}})
+            self.preview.emit({item.itemData['#exact']: {}})
 
     def selectionChanged(self, selected=None, deselected=None):
         if selected or deselected:
@@ -642,11 +656,11 @@ class ReleaseWidget(QTreeView):
             for item in albums:
                 if u'#extrainfo' in item.itemData:
                     desc, url = item.itemData[u'#extrainfo']
-                    self.emit(SIGNAL('infoChanged'), 
+                    self.infoChanged.emit(
                         u'<a href="%s">%s</a>' % (url, desc))
                     break
         self.emitTracks(tracks)
-        self.emit(SIGNAL('itemSelectionChanged()'))
+        self.itemSelectionChanged.emit()
 
     def _setCollapsedFlag(self, index):
         item = index.internalPointer()
@@ -658,22 +672,21 @@ class ReleaseWidget(QTreeView):
 
     def setModel(self, model):
         QTreeView.setModel(self, model)
-        connect = lambda signal, slot: self.connect(self, SIGNAL(signal), 
+        connect = lambda signal, slot: getattr(self, signal).connect(
             slot)
-        modelconnect = lambda signal, slot: self.connect(model,
-            SIGNAL(signal), slot)
+        modelconnect = lambda signal, slot: getattr(model, signal).connect(slot)
         func = partial(model.retrieve, fin_func=self.selectionChanged)
-        #connect('activated (const QModelIndex&)', func)
-        connect('expanded (const QModelIndex&)', self._setExpandedFlag)
-        connect('collapsed (const QModelIndex&)', self._setCollapsedFlag)
-        connect('clicked (const QModelIndex&)', func)
-        self.connect(model, SIGNAL('statusChanged'), SIGNAL('statusChanged'))
-        self.connect(model, SIGNAL('exactChanged'), self.exactChanged)
+        #connect('activated', func)
+        connect('expanded', self._setExpandedFlag)
+        connect('collapsed', self._setCollapsedFlag)
+        connect('clicked', func)
+        model.statusChanged.connect(self.statusChanged)
+        model.exactChanged.connect(self.exactChanged)
         modelconnect('exactMatches', self.emitInitialExact)
-        modelconnect('retrieving', SIGNAL('retrieving'))
-        modelconnect('retrievalDone()', SIGNAL('retrievalDone()'))
+        modelconnect('retrieving', self.retrieving)
+        modelconnect('retrievalDone', self.retrievalDone)
         modelconnect('retrieving', lambda: self.setEnabled(False))
-        modelconnect('retrievalDone()', lambda: self.setEnabled(True))
+        modelconnect('retrievalDone', lambda: self.setEnabled(True))
         modelconnect('collapse', self.collapse)
         model.tagsource = self.tagSource
         model.mapping = self.mapping
@@ -688,13 +701,13 @@ class ReleaseWidget(QTreeView):
         if files:
             matches = find_best(releases, files, self.albumBound)
             if not matches:
-                self.emit(SIGNAL('statusChanged'), translate(
+                self.statusChanged.emit(translate(
                     'WebDB', 'No matching albums were found.'))
             elif len(matches) > 1:
-                self.emit(SIGNAL('statusChanged'), translate(
+                self.statusChanged.emit(translate(
                     'WebDB', 'More than one album matches. None will be retrieved.'))
             else:
-                self.emit(SIGNAL('statusChanged'), translate(
+                self.statusChanged.emit(translate(
                     'WebDB', 'Retrieving album.'))
                 model = self.model()
                 children = [z.itemData for z in model.rootItem.childItems]

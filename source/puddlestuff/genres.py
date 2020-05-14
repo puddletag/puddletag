@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
+from PyQt5.QtCore import Qt
 import sys, resource, os, audioinfo
 from puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
     PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
@@ -42,8 +42,8 @@ class Genres(QWidget):
         self.listbox.connectToListButtons(buttons)
         self.listbox.setAutoScroll(False)
 
-        self.connect(buttons, SIGNAL('add'), self.add)
-        self.connect(buttons, SIGNAL('edit'), self.edit)
+        buttons.add.connect(self.add)
+        buttons.edit.connect(self.edit)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.listbox,1)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 import re
 import logging
 

@@ -4,8 +4,9 @@ import glob, os, pdb, string, sys
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QMutex, QObject, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
+  QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
 from puddlestuff.constants import RIGHTDOCK
 from puddlestuff.puddleobjects import (create_buddy, natcasecmp, ratio,
@@ -22,10 +23,14 @@ from puddlestuff.masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
     load_all_mtps, mtp_from_file, save_mtp)
 from puddlestuff.webdb import strip as strip_fields
 
-status_obj = QObject()
+class _SignalObject (QObject):
+    statusChanged = pyqtSignal(str, name='statusChanged')
+    logappend = pyqtSignal(str, name='logappend')
+
+status_obj = _SignalObject()
 
 def set_status(msg):
-    status_obj.emit(SIGNAL('statusChanged'), msg)
+    status_obj.statusChanged.emit(msg)
     QApplication.processEvents()
 
 puddlestuff.masstag.set_status = set_status
@@ -41,6 +46,7 @@ def retrieval_error(error, profile):
         'An error occured during album retrieval: <b>%s</b>') % unicode(error))
 
 class MassTagEdit(QDialog):
+    profilesChanged = pyqtSignal(list, name='profilesChanged')
     def __init__(self, tag_sources, profiles=None, parent = None):
         super(MassTagEdit, self).__init__(parent)
 
@@ -52,12 +58,11 @@ class MassTagEdit(QDialog):
         self.tag_sources = tag_sources
 
         okcancel = OKCancel()
-        okcancel.ok.setDefault(True)
+        okcancel.okButton.setDefault(True)
 
         self.buttonlist = ListButtons()
 
-        connect = lambda control, signal, slot: self.connect(
-            control, SIGNAL(signal), slot)
+        connect = lambda control, signal, slot: getattr(control, signal).connect(slot)
 
         connect(okcancel, "ok" , self.okClicked)
         connect(okcancel, "cancel",self.close)
@@ -67,9 +72,8 @@ class MassTagEdit(QDialog):
         connect(self.buttonlist, "movedown", self.moveDown)
         connect(self.buttonlist, "remove", self.remove)
         connect(self.buttonlist, "duplicate", self.dupClicked)
-        connect(self.listbox, "itemDoubleClicked (QListWidgetItem *)",
-            self.editClicked)
-        connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
+        connect(self.listbox, "itemDoubleClicked", self.editClicked)
+        connect(self.listbox, "currentRowChanged", self.enableListButtons)
 
         self.enableListButtons(self.listbox.currentRow())
 
@@ -91,7 +95,7 @@ class MassTagEdit(QDialog):
     def addClicked(self):
         win = MTProfileEdit(self.tag_sources, parent=self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profileChanged'), self.addProfile)
+        win.profileChanged.connect(self.addProfile)
         win.show()
 
     def addProfile(self, profile):
@@ -105,7 +109,7 @@ class MassTagEdit(QDialog):
             return
         win = MTProfileEdit(self.tag_sources, deepcopy(self._profiles[row]), self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profileChanged'), self.addProfile)
+        win.profileChanged.connect(self.addProfile)
         win.show()
 
     def editClicked(self, item=None):
@@ -118,8 +122,7 @@ class MassTagEdit(QDialog):
             return
         win = MTProfileEdit(self.tag_sources, self._profiles[row], self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profileChanged'),
-            partial(self.replaceProfile, row))
+        win.profileChanged.connect(partial(self.replaceProfile, row))
         win.show()
 
     def enableListButtons(self, val):
@@ -139,7 +142,7 @@ class MassTagEdit(QDialog):
         self.listbox.moveUp(self._profiles)
 
     def okClicked(self):
-        self.emit(SIGNAL('profilesChanged'), self._profiles)
+        self.profilesChanged.emit(self._profiles)
         self.saveProfiles(PROFILEDIR, self._profiles)
         self.close()
 
@@ -184,6 +187,7 @@ class MassTagEdit(QDialog):
             self.listbox.addItem(profile.name)
         
 class MTProfileEdit(QDialog):
+    profileChanged = pyqtSignal(MassTagProfile, name='profileChanged')
     def __init__(self, tag_sources, profile=None, parent=None):
         super(MTProfileEdit, self).__init__(parent)
 
@@ -201,7 +205,7 @@ class MTProfileEdit(QDialog):
         self.listbox = ListBox()
 
         self.okcancel = OKCancel()
-        self.okcancel.ok.setDefault(True)
+        self.okcancel.okButton.setDefault(True)
 
         self.buttonlist = ListButtons()
 
@@ -272,8 +276,7 @@ class MTProfileEdit(QDialog):
         self.grid.addWidget(self.existing, 8, 0, 1, 2)
         self.grid.addLayout(self.okcancel, 9, 0, 1, 2)
 
-        connect = lambda control, signal, slot: self.connect(
-            control, SIGNAL(signal), slot)
+        connect = lambda control, signal, slot: getattr(control, signal).connect(slot)
 
         connect(self.okcancel, "ok" , self.okClicked)
         connect(self.okcancel, "cancel",self.close)
@@ -283,9 +286,8 @@ class MTProfileEdit(QDialog):
         connect(self.buttonlist, "movedown", self.moveDown)
         connect(self.buttonlist, "remove", self.remove)
         connect(self.buttonlist, "duplicate", self.dupClicked)
-        connect(self.listbox, "itemDoubleClicked (QListWidgetItem *)",
-            self.editClicked)
-        connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
+        connect(self.listbox, "itemDoubleClicked", self.editClicked)
+        connect(self.listbox, "currentRowChanged", self.enableListButtons)
 
         if profile is not None:
             self.setProfile(profile)
@@ -294,7 +296,7 @@ class MTProfileEdit(QDialog):
     def addClicked(self):
         win = TSProfileEdit(self.tag_sources, None, self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profileChanged'), self.addTSProfile)
+        win.profileChanged.connect(self.addTSProfile)
         win.show()
 
     def addTSProfile(self, profile):
@@ -308,7 +310,7 @@ class MTProfileEdit(QDialog):
             return
         win = TSProfileEdit(self.tag_sources, self._tsps[row], self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profileChanged'), self.addTSProfile)
+        win.profileChanged.connect(self.addTSProfile)
         win.show()
 
     def editClicked(self, item=None):
@@ -321,8 +323,7 @@ class MTProfileEdit(QDialog):
             return
         win = TSProfileEdit(self.tag_sources, self._tsps[row], self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profileChanged'),
-            partial(self.replaceTSProfile, row))
+        win.profileChanged.connect(partial(self.replaceTSProfile, row))
         win.show()
 
     def replaceTSProfile(self, row, profile):
@@ -352,7 +353,7 @@ class MTProfileEdit(QDialog):
             self.trackBound.value() / 100.0, self.jfdi.isChecked(),
             self.existing.isChecked(), u'')
 
-        self.emit(SIGNAL('profileChanged'), mtp)
+        self.profileChanged.emit(mtp)
         self.close()
 
     def remove(self):
@@ -375,6 +376,7 @@ class MTProfileEdit(QDialog):
         self.existing.setChecked(profile.leave_existing)
 
 class TSProfileEdit(QDialog):
+    profileChanged = pyqtSignal(TagSourceProfile, name='profileChanged')
     def __init__(self, tag_sources, profile=None, parent=None):
         super(TSProfileEdit, self).__init__(parent)
         self.setWindowTitle(translate('Profile Editor',
@@ -451,8 +453,8 @@ class TSProfileEdit(QDialog):
             'stop and any previously retrieved results will be used.</p>'))
 
         okcancel = OKCancel()
-        self.connect(okcancel, SIGNAL('ok'), self._okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self._okClicked)
+        okcancel.cancel.connect(self.close)
         layout.addLayout(okcancel)
 
         layout.addStretch()
@@ -471,7 +473,7 @@ class TSProfileEdit(QDialog):
             replace_fields)
         
         self.close()
-        self.emit(SIGNAL('profileChanged'), profile)
+        self.profileChanged.emit(profile)
 
     def setProfile(self, profile):
         source_index = self.source.findText(profile.tag_source.name)
@@ -482,6 +484,11 @@ class TSProfileEdit(QDialog):
         self.replace_fields.setText(u', '.join(profile.replace_fields))
 
 class MassTagWindow(QWidget):
+    setpreview = pyqtSignal(name='setpreview')
+    clearpreview = pyqtSignal(name='clearpreview')
+    enable_preview_mode = pyqtSignal(name='enable_preview_mode')
+    writepreview = pyqtSignal(name='writepreview')
+    disable_preview_mode = pyqtSignal(name='disable_preview_mode')
     def __init__(self, parent=None, status=None):
         super(MassTagWindow, self).__init__(parent)
         self.receives = []
@@ -504,14 +511,13 @@ class MassTagWindow(QWidget):
 
         self._status = status
 
-        self.connect(status_obj, SIGNAL('statusChanged'), self._appendLog)
-        self.connect(status_obj, SIGNAL('logappend'), self._appendLog)
-        self.connect(self.profileCombo, SIGNAL('currentIndexChanged(int)'),
-            self.changeProfile)
-        self.connect(self._startButton, SIGNAL('clicked()'), self.lookup)
-        self.connect(configure, SIGNAL('clicked()'), self.configure)
-        self.connect(write, SIGNAL('clicked()'), self.writePreview)
-        self.connect(clear, SIGNAL('clicked()'), self.clearPreview)
+        status_obj.statusChanged.connect(self._appendLog)
+        status_obj.logappend.connect(self._appendLog)
+        self.profileCombo.currentIndexChanged.connect(self.changeProfile)
+        self._startButton.clicked.connect(self.lookup)
+        configure.clicked.connect(self.configure)
+        write.clicked.connect(self.writePreview)
+        clear.clicked.connect(self.clearPreview)
 
         buttons = QHBoxLayout()
         buttons.addWidget(configure)
@@ -560,12 +566,12 @@ class MassTagWindow(QWidget):
         
 
     def clearPreview(self):
-        self.emit(SIGNAL('disable_preview_mode'))
+        self.disable_preview_mode.emit()
 
     def configure(self):
         win = MassTagEdit(self.tag_sources, self.profiles, self)
         win.setModal(True)
-        self.connect(win, SIGNAL('profilesChanged'), self.setProfiles)
+        win.profilesChanged.connect(self.setProfiles)
         win.show()
 
     def lookup(self):
@@ -593,8 +599,7 @@ class MassTagWindow(QWidget):
         if not profiles:
             self.profileCombo.clear()
             return
-        self.disconnect(self.profileCombo, SIGNAL('currentIndexChanged(int)'),
-            self.changeProfile)
+        self.profileCombo.currentIndexChanged.disconnect(self.changeProfile)
         old = self.profileCombo.currentText()
         self.profileCombo.clear()
         self.profileCombo.addItems([p.name for p in profiles])
@@ -606,8 +611,7 @@ class MassTagWindow(QWidget):
 
         if self.profile.desc:
             self.profileCombo.setToolTip(self.profile.desc)
-        self.connect(self.profileCombo, SIGNAL('currentIndexChanged(int)'),
-            self.changeProfile)
+        self.profileCombo.currentIndexChanged.connect(self.changeProfile)
 
     def _start(self):
         mtp = self.profile
@@ -621,12 +625,10 @@ class MassTagWindow(QWidget):
             'An error occured during album retrieval: <b>%s</b>')
 
         def search_error(error, mtp):
-            thread.emit(SIGNAL('statusChanged'),
-                search_msg % unicode(error))
+            thread.statusChanged.emit(search_msg % unicode(error))
 
         def retrieval_error(error, mtp):
-            thread.emit(SIGNAL('statusChanged'),
-                retrieve_msg % unicode(error))
+            thread.statusChanged.emit(retrieve_msg % unicode(error))
 
         def run_masstag():
             replace_fields = []
@@ -643,8 +645,8 @@ class MassTagWindow(QWidget):
                         mtp.jfdi, mtp.leave_existing, True)[0]
 
                 if ret:
-                    thread.emit(SIGNAL('enable_preview_mode'))
-                    thread.emit(SIGNAL('setpreview'), ret)
+                    thread.enable_preview_mode.emit()
+                    thread.setpreview.emit(ret)
 
                 set_status('<hr width="45%" /><br />')
 
@@ -656,16 +658,15 @@ class MassTagWindow(QWidget):
             self.__flag.stop = False
 
         thread = PuddleThread(run_masstag, self)
-        self.connect(thread, SIGNAL('setpreview'), SIGNAL('setpreview'))
-        self.connect(thread, SIGNAL('enable_preview_mode'),
-            SIGNAL('enable_preview_mode'))
-        self.connect(thread, SIGNAL('threadfinished'), finished)
-        self.connect(thread, SIGNAL('statusChanged'), set_status)
+        thread.setpreview.connect(self.setpreview)
+        thread.enable_preview_mode.connect(self.enable_preview_mode)
+        thread.threadfinished.connect(finished)
+        thread.statusChanged.connect(set_status)
         
         thread.start()
 
     def writePreview(self):
-        self.emit(SIGNAL('writepreview'))
+        self.writepreview.emit()
 
 control = ('Mass Tagging', MassTagWindow, RIGHTDOCK, False)
 

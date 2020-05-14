@@ -7,8 +7,8 @@ from os.path import splitext, exists
 from configobj import ConfigObj
 import logging
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from puddlestuff.translations import translate
 
 NAME = 'name'
@@ -145,8 +145,7 @@ class PluginConfig(QDialog):
             item.plugin = plugin
             self._listbox.addItem(item)
         
-        self.connect(self._listbox, 
-            SIGNAL('currentItemChanged(QListWidgetItem*, QListWidgetItem *)'),
+        self._listbox.currentItemChanged.connect(
             lambda item, previous: info_display.changeInfo(item.plugin))
     
     def get_to_load(self):

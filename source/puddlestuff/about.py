@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys, os, unittest, time, pdb, shutil
 from os import path
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import PYQT_VERSION_STR, Qt
+from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
+from PyQt5.QtGui import QPixmap
 import cPickle as pickle
 import mutagen, pyparsing, puddlestuff
 from puddlestuff.puddleobjects import OKCancel
@@ -88,9 +89,9 @@ class AboutPuddletag(QDialog):
         vbox.addLayout(version_layout)
         vbox.addWidget(tab, 1)
         ok = OKCancel()
-        ok.cancel.setVisible(False)
+        ok.cancelButton.setVisible(False)
         vbox.addLayout(ok)
-        self.connect(ok, SIGNAL('ok'), self.close)
+        ok.ok.connect(self.close)
         self.setLayout(vbox)
 
 if __name__ == '__main__':

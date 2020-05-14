@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import SIGNAL, QObject
-from PyQt4.QtGui import QAction, QMessageBox, QApplication
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QAction, QMessageBox, QApplication
 from functools import partial
 import traceback
 from mutagen import id3, apev2

@@ -5,8 +5,7 @@ try:
 except ImportError:
   import pickle
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtWidgets import QAction, QFileDialog
 
 from puddlestuff.plugins import status
 
@@ -25,7 +24,8 @@ def save_tags(files, fn):
     output.close()
 
 def export_tags():
-    fn = QFileDialog.getSaveFilename(None, "Save tags", last_fn['fn'], "*.*")
+    selectedFile = QFileDialog.getSaveFileName(None, "Save tags", last_fn['fn'], "*.*")
+    fn = selectedFile[0]
     if fn:
         save_tags(f.filepath for f in status['all_tags'])
         last_fn['fn'] = os.path.dirname(fn)
@@ -39,5 +39,5 @@ def init(parent=None):
         return k
 
     action = QAction('Export tags', parent)
-    action.connect(action, SIGNAL('toggled(bool)'), export_tags)
+    action.toggled.connect(export_tags)
     add_shortcuts('&Plugins', [sep(), action, sep()])

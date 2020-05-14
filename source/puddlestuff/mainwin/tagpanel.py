@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
+  QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtGui import QBrush
 import pdb, sys, os, sip
 from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
 from puddlestuff.audioinfo.util import commonimages
@@ -16,9 +18,6 @@ except ImportError:
 from puddlestuff.translations import translate
 from puddlestuff.constants import CONFIGDIR
 
-TEXTEDITED = SIGNAL('textEdited(const QString&)')
-EDITFINISHED = SIGNAL('editingFinished()')
-INDEXCHANGED = SIGNAL('currentIndexChanged(const QString&)')
 
 def loadsettings(filepath = None):
     settings = PuddleConfig()
@@ -61,8 +60,7 @@ class Combo(QComboBox):
         super(Combo, self).__init__(*args, **kwargs)
         self._edited = False
         def k(text): self._edited = True
-        self.connect(self, SIGNAL('editTextChanged(const QString&)'),
-            k)        
+        self.editTextChanged.connect(k)
 
     def setEditText(self, text):
         self._edited = False
@@ -84,12 +82,13 @@ class Combo(QComboBox):
         return super(Combo, self).focusOutEvent(event)
 
 class Thread(QThread):
+    update = pyqtSignal(object, name='update')
     def __init__(self, values, parent=None):
         self._values = values
         QThread.__init__(self, parent)
 
     def run(self):
-        self.emit(SIGNAL('update'), self._values)
+        self.update.emit(self._values)
 
 class FrameCombo(QGroupBox):
     """A group box with combos that allow to edit
@@ -104,6 +103,9 @@ class FrameCombo(QGroupBox):
     which is a dictionary key = tag, value = respective combobox.
     """
 
+    onetomany = pyqtSignal(dict, name='onetomany')
+    onetomanypreview = pyqtSignal(dict, name='onetomanypreview')
+    manypreview = pyqtSignal(list, name='manypreview')
     def __init__(self,tags = None,parent= None, status=None):
         self.settingsdialog = SettingsWin
         QGroupBox.__init__(self,parent)
@@ -141,10 +143,10 @@ class FrameCombo(QGroupBox):
             completer = combo.completer()
             completer.setCaseSensitivity(Qt.CaseSensitive)
             completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
-            self.connect(edit, TEXTEDITED, func)
-            combo.connect(combo, INDEXCHANGED, func)
+            edit.textEdited.connect(func)
+            combo.currentIndexChanged.connect(func)
             self.__indexFuncs.append((combo, func))
-            self.connect(edit, EDITFINISHED, self.save)
+            edit.editingFinished.connect(self.save)
 
     def __disconnectIndexChanged(self):
         for combo, func in self.__indexFuncs:
@@ -155,14 +157,13 @@ class FrameCombo(QGroupBox):
         if text == BLANK: text = u''
         elif text == KEEP:
             if self._audios:
-                self.emit(SIGNAL('manypreview'),
-                    [{field: a.get(field, u'')} for a in self._audios])
+                self.manypreview.emit([{field: a.get(field, u'')} for a in self._audios])
         else:
             if field in INFOTAGS:
                 value = text
             else:
                 value = text.split(SEPARATOR)
-        self.emit(SIGNAL('onetomanypreview'), {field: text})
+        self.onetomanypreview.emit({field: text})
 
     def fillCombos(self, *args):
         audios = self._status['selectedfiles']
@@ -243,7 +244,7 @@ class FrameCombo(QGroupBox):
             return
 
         self._originalValues.update(originals)
-        self.emit(SIGNAL('onetomany'), tags)
+        self.onetomany.emit(tags)
         if 'genre' in combos:
             combo = combos['genre']
             
@@ -280,7 +281,7 @@ class FrameCombo(QGroupBox):
                     sip.delete(box)
         else:
             vbox = QVBoxLayout()
-            vbox.setMargin(0)
+            vbox.setContentsMargins(0,0,0,0)
         self.combos = {}
         self.labels = {}
         self._hboxes = []
@@ -290,7 +291,7 @@ class FrameCombo(QGroupBox):
             labelbox = QHBoxLayout()
             labelbox.setContentsMargins(6, 1, 1, 1)
             widgetbox = QHBoxLayout()
-            widgetbox.setMargin(0)
+            widgetbox.setContentsMargins(0,0,0,0)
             for tag in tags:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
@@ -365,7 +366,7 @@ class PuddleTable(QTableWidget):
         for i in range(len(rows)):
             self.removeRow(rows[i])
             rows = [z - 1 for z in rows]
-        self.emit(SIGNAL('itemSelectionChanged()'))
+        self.itemSelectionChanged.emit()
 
     def moveUp(self):
         row = self.currentRow()
@@ -434,10 +435,8 @@ class SettingsWin(QWidget):
         hbox.addLayout(self._buttons, 0)
         self.setLayout(hbox)
 
-        self.connect(self._table, SIGNAL('cellChanged(int,int)'),
-            self._checkItem)
-        self.connect(self._table, SIGNAL('itemSelectionChanged()'),
-            self._enableButtons)
+        self._table.cellChanged.connect(self._checkItem)
+        self._table.itemSelectionChanged.connect(self._enableButtons)
         self.fill()
 
     def add(self, texts = None):
@@ -499,13 +498,13 @@ class SettingsWin(QWidget):
     def _enableButtons(self):
         table = self._table
         if table.rowCount() <= 0:
-            self._buttons.edit.setEnabled(False)
-            self._buttons.duplicate.setEnabled(False)
-            self._buttons.remove.setEnabled(False)
+            self._buttons.editButton.setEnabled(False)
+            self._buttons.duplicateButton.setEnabled(False)
+            self._buttons.removeButton.setEnabled(False)
         elif self._table.selectedRows():
-            self._buttons.edit.setEnabled(True)
-            self._buttons.duplicate.setEnabled(True)
-            self._buttons.remove.setEnabled(True)
+            self._buttons.editButton.setEnabled(True)
+            self._buttons.duplicateButton.setEnabled(True)
+            self._buttons.removeButton.setEnabled(True)
 
     def duplicate(self):
         table = self._table

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+  QShortcut, QVBoxLayout
+from PyQt5.QtCore import Qt, pyqtSignal
 import sys
 from puddlestuff.puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
     ListButtons)
@@ -17,6 +18,7 @@ def load_patterns(filepath=None):
 
 class PatternCombo(QComboBox):
     name = 'toolbar-patterncombo'
+    patternchanged = pyqtSignal(unicode, name='patternchanged')
     def __init__(self, items=None, parent=None, status=None):
         self.emits = ['patternchanged']
         self.receives = [('patterns', self.setItems)]
@@ -29,10 +31,8 @@ class PatternCombo(QComboBox):
         self.setEditable(True)
         if items:
             self.addItems(items)
-        pchange = lambda text: self.emit(SIGNAL('patternchanged'),
-                                        unicode(text))
-        self.connect(self, SIGNAL('editTextChanged ( const QString &)'),
-                     pchange)
+        pchange = lambda text: self.patternchanged.emit(unicode(text))
+        self.editTextChanged.connect(pchange)
         
         shortcut = QShortcut(self)
         shortcut.setKey('F8')
@@ -43,7 +43,7 @@ class PatternCombo(QComboBox):
             else:
                 self.lineEdit().selectAll()
                 self.setFocus()
-        self.connect(shortcut, SIGNAL('activated()'), set_focus)
+        shortcut.activated.connect(set_focus)
 
     def setItems(self, texts):
         self.clear()
@@ -68,7 +68,7 @@ class SettingsWin(QFrame):
     def __init__(self, parent = None, cenwid = None, status=None):
         QFrame.__init__(self, parent)
         self.title = translate('Settings', "Patterns")
-        connect = lambda c, signal, s: self.connect(c, SIGNAL(signal), s)
+        connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.setFrameStyle(QFrame.Box)
         self.listbox = ListBox()
         self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
@@ -82,7 +82,7 @@ class SettingsWin(QFrame):
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Pattern Settings", '&Sort'))
         self._sortOrder = Qt.AscendingOrder
-        connect(sortlistbox, 'clicked()', self._sortListBox)
+        connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
         vbox.addStretch()
@@ -91,11 +91,10 @@ class SettingsWin(QFrame):
 
         connect(buttons, "add", self.addPattern)
         connect(buttons, "edit", self.editItem)
-        buttons.duplicate.setVisible(False)
+        buttons.duplicateButton.setVisible(False)
         self.listbox.connectToListButtons(buttons)
-        self.listbox.editButton = buttons.edit
-        connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
-                    self._doubleClicked)
+        self.listbox.editButton = buttons.editButton
+        connect(self.listbox, 'itemDoubleClicked', self._doubleClicked)
 
     def _sortListBox(self):
         if self._sortOrder == Qt.AscendingOrder:
@@ -137,7 +136,7 @@ class SettingsWin(QFrame):
         if ok:
             item = l(row)
             item.setText(text)
-            self.listbox.setItemSelected(item, True)
+            item.setSelected(True)
 
     def applySettings(self, control):
         item = self.listbox.item

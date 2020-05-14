@@ -29,8 +29,8 @@ import puddlestuff.audioinfo as audioinfo
 FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QDir, QSettings, QUrl
+from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 try:
     import puddlestuff.musiclib as musiclib
 except:
@@ -503,16 +503,16 @@ class ConfigWindow(QWidget):
         hbox.addStretch()
         hbox.addWidget(openfile)
         vbox.addLayout(hbox)
-        self.connect(openfile, SIGNAL('clicked()'), self.getFile)
+        openfile.clicked.connect(self.getFile)
         vbox.addStretch()
         self.setLayout(vbox)
         self.dbpath.selectAll()
         self.dbpath.setFocus()
 
     def getFile(self):
-        filedlg = QFileDialog()
-        filename = unicode(filedlg.getOpenFileName(self,
-            'Select RhythmBox database file.', self.dbpath.text()))
+        selectedFile = QFileDialog.getOpenFileName(self,
+            'Select RhythmBox database file.', self.dbpath.text())
+        filename = selectedFile[0]
         if filename:
             self.dbpath.setText(filename)
 
@@ -520,11 +520,11 @@ class ConfigWindow(QWidget):
         return RhythmDB(unicode(self.dbpath.text()))
 
     def saveSettings(self):
-        QSettings().setValue('Library/dbpath', QVariant(self.dbpath.text()))
+        QSettings().setValue('Library/dbpath', self.dbpath.text())
 
 def loadLibrary():
     settings = QSettings()
-    return RhythmDB(unicode(settings.value('Library/dbpath').toString()))
+    return RhythmDB(unicode(settings.value('Library/dbpath')))
 
 if __name__ == '__main__':
     k = DBParser()

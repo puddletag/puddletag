@@ -9,8 +9,9 @@ status = PuddleStatus()
 import logging
 import tagmodel
 from tagmodel import TagTable
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
+from PyQt5.QtGui import QDesktopServices, QIcon
 import pdb, resource
 import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
 import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
@@ -127,30 +128,28 @@ def connect_controls(controls):
         for sig in c.emits:
             emits[sig].append(c) if sig in emits else emits.update({sig:[c]})
 
-    connect = QObject.connect
-
     for c in controls:
         for signal, slot in c.receives:
             if signal in emits:
-                [connect(i, SIGNAL(signal), slot) for i in emits[signal]]
+                [getattr(i, signal).connect(slot) for i in emits[signal]]
 
 def connect_control(control, controls):
     emits = defaultdict(lambda: [])
     for c in controls:
         [emits[sig].append(c) for sig in c.emits]
 
-    connect = QObject.connect
-
     for signal, slot in control.receives:
         if signal in emits:
-            [connect(c, SIGNAL(signal), slot) for c in emits[signal]]
+            [getattr(c, signal).connect(slot) for c in emits[signal]]
 
     for c in controls:
         for signal, slot in c.receives:
             if signal in control.emits:
-                connect(control, SIGNAL(signal), slot)
+                getattr(control, signal).connect(slot)
 
-TRIGGERED = SIGNAL('triggered()')
+def action_triggered_slot(control, command):
+    "QAction.triggerred slot adds a checked=False param which we want to ignore"
+    return lambda: getattr(control, command)()
 
 def connect_actions(actions, controls):
     """Connect the triggered() signals in actions to the respective
@@ -160,40 +159,31 @@ def connect_actions(actions, controls):
     for c in controls.values():
         for sig in c.emits:
             emits[sig].append(c) if sig in emits else emits.update({sig:[c]})
-    connect = QObject.connect
     for action in actions:
         if action.enabled in emits:
-            if action.enabled in ENABLESIGNALS:
-                [connect(c, ENABLESIGNALS[action.enabled], action.setEnabled)
-                        for c in emits[action.enabled]]
-            else:
-                [connect(c, SIGNAL(action.enabled), action.setEnabled)
-                        for c in emits[action.enabled]]
+            [getattr(c, action.enabled).connect(action.setEnabled)
+                for c in emits[action.enabled]]
         else:
             logging.debug('No enable signal found for ' + action.text())
             action.setEnabled(False)
             continue
         if action.togglecheck and action.togglecheck in emits:
-            if action.togglecheck in ENABLESIGNALS:
-                [connect(c, ENABLESIGNALS[action.togglecheck], action.setEnabled)
-                    for c in emits[action.togglecheck]]
-            else:
-                [connect(c, SIGNAL(action.togglecheck), action.setEnabled)
-                    for c in emits[action.togglecheck]]
+            [getattr(c, action.togglecheck).connect(action.setEnabled)
+                for c in emits[action.togglecheck]]
         command = action.command
         if action.control == 'mainwin' and hasattr(mainfuncs, command):
             f = getattr(mainfuncs, command)
             if 'parent' in f.func_code.co_varnames:
                 f = partial(f, parent=c)
             if action.togglecheck:
-                connect(action, SIGNAL('toggled(bool)'), f)
+                action.toggled.connect(f)
             else:
-                connect(action, TRIGGERED, f)
+                action.triggered.connect(f)
             continue
         elif action.control in controls:
             c = controls[action.control]
             if hasattr(c, command):
-                connect(action, TRIGGERED, getattr(c, command))
+                action.triggered.connect(action_triggered_slot(c, command))
             else:
                 logging.debug(action.command + ' slot not found for ' + action.text())
 
@@ -209,7 +199,7 @@ def help_menu(parent):
     menu = QMenu(translate("Menus", 'Help'), parent)
     open_url = lambda url: QDesktopServices.openUrl(QUrl(url))
 
-    connect = lambda c,s: c.connect(c, SIGNAL('triggered()'), s)
+    connect = lambda c,s: c.triggered.connect(s)
     
     doc_link = QAction(translate("Menus", 'Online &Documentation'),
         parent)
@@ -250,15 +240,25 @@ def load_plugins():
     return plugins[constants.DIALOGS], plugins[constants.MODULES]
 
 class PreviewLabel(QLabel):
+    valueChanged = pyqtSignal(bool, name='valueChanged')
     def __init__(self, *args, **kwargs):
         super(PreviewLabel, self).__init__(*args, **kwargs)
         self._enabled = False
     
     def mouseDoubleClickEvent(self, event):
         self._enabled = not self._enabled
-        self.emit(SIGNAL('valueChanged'), self._enabled)
+        self.valueChanged.emit(self._enabled)
 
 class MainWin(QMainWindow):
+    loadFiles = pyqtSignal([object, list, bool], [list, object, object, object, unicode], name='loadFiles')
+    always = pyqtSignal(bool, name='always')
+    dirsmoved = pyqtSignal(list, name='dirsmoved')
+    libfilesedited = pyqtSignal(list, name='libfilesedited')
+    enable_preview_mode = pyqtSignal(name='enable_preview_mode')
+    disable_preview_mode = pyqtSignal(name='disable_preview_mode')
+    filesloaded = pyqtSignal(bool, name='filesloaded')
+    filesselected = pyqtSignal(bool, name='filesselected')
+    viewfilled = pyqtSignal(bool, name='viewfilled')
     def __init__(self):
         QMainWindow.__init__(self)
 
@@ -298,12 +298,14 @@ class MainWin(QMainWindow):
         self.setWindowTitle("puddletag")
         self.setDockNestingEnabled(True)
         self._table = TagTable()
-        self.connect(self._table, SIGNAL('dirsmoved'), self.updateDirs)
+        self._table.dirsmoved.connect(self.updateDirs)
         win = QSplitter()
 
         layout = QVBoxLayout()
         layout.addWidget(self._table)
-        win.setLayout(layout)
+        layoutWidget = QWidget()
+        layoutWidget.setLayout(layout)
+        win.addWidget(layoutWidget)
         self.setCentralWidget(win)
 
         PuddleDock._controls = {
@@ -368,7 +370,7 @@ class MainWin(QMainWindow):
                 logging.exception("Error while loading Plugin dialog.")
 
         self.restoreSettings()
-        self.emit(SIGNAL('always'), True)
+        self.always.emit(True)
 
     def addDock(self, name, dialog, position, visibility=True, connect=True):
         controls = PuddleDock._controls.values()
@@ -405,7 +407,7 @@ class MainWin(QMainWindow):
         def status(k):
             if k in x: return x[value]()
         controls = controls.values()
-        connect = self.connect(c, SIGNAL('getstatus'), status)
+        connect = c.getstatus.connect(status)
         [x.update(z.status) for z in controls]
         self._status = x
         self.connect(control, 'getstatus', getstatus)
@@ -449,7 +451,8 @@ class MainWin(QMainWindow):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         filedlg = QFileDialog()
         filedlg.setFileMode(filedlg.DirectoryOnly)
-        filedlg.setResolveSymlinks(False)
+        # not supported in PyQt5
+        # filedlg.setResolveSymlinks(False) 
         filename = unicode(filedlg.getExistingDirectory(self,
             translate("Main Window", 'Import directory...'), dirname ,QFileDialog.ShowDirsOnly))
         return filename
@@ -458,10 +461,10 @@ class MainWin(QMainWindow):
         self.openDir(filename, append=True)
 
     def _filesLoaded(self, val):
-        self.emit(SIGNAL('filesloaded'), val)
+        self.filesloaded.emit(val)
 
     def _filesSelected(self, val):
-        self.emit(SIGNAL('filesselected'), val)
+        self.filesselected.emit(val)
 
     def applyGenSettings(self, settings, level=None):
         pass
@@ -487,10 +490,10 @@ class MainWin(QMainWindow):
         if self._lastdir:
             cparser.set('main', 'lastfolder', unicode(self._lastdir[0], 'utf8'))
         cparser.set("main", "maximized", self.isMaximized())
-        settings.setValue('main/state', QVariant(self.saveState()))
+        settings.setValue('main/state', self.saveState())
 
         headstate = self._table.horizontalHeader().saveState()
-        settings.setValue('table/header', QVariant(headstate))
+        settings.setValue('table/header', headstate)
         genres.save_genres(status['genres'])
         e.accept()
 
@@ -514,28 +517,25 @@ class MainWin(QMainWindow):
         
         def change_preview(value):
             if value:
-                self.emit(SIGNAL('enable_preview_mode'))
+                self.enable_preview_mode.emit()
             else:
-                self.emit(SIGNAL('disable_preview_mode'))
+                self.disable_preview_mode.emit()
         
-        self.connect(preview_status, SIGNAL('valueChanged'),
-            change_preview)
-        self.connect(self._table.model(), SIGNAL('previewModeChanged'),
-            set_preview_status)
+        preview_status.valueChanged.connect(change_preview)
+        self._table.model().previewModeChanged.connect(set_preview_status)
         statusbar.setMaximumHeight(statusbar.height())
-        self.connect(statusbar,SIGNAL("messageChanged (const QString&)"),
-            statuslabel.setText)
+        statusbar.messageChanged.connect(statuslabel.setText)
 
     def loadPlayList(self):
-        filedlg = QFileDialog()
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
-        filename = unicode(filedlg.getOpenFileName(self,
-            translate("Playlist", translate("Playlist", 'Select m3u file...')), ))
+        selectedFile = QFileDialog.getOpenFileName(self,
+            translate("Playlist", translate("Playlist", 'Select m3u file...')), )
+        filename = selectedFile[0]
         if not filename:
             return
         try:
             files = m3u.readm3u(filename)
-            self.emit(SIGNAL('loadFiles'), files, None, None, None, filename)
+            self.loadFiles.emit(files, None, None, None, filename)
         except (OSError, IOError), e:
             QMessageBox.information(self._table,
                 translate("Defaults", 'Error'),
@@ -554,6 +554,7 @@ class MainWin(QMainWindow):
 
         If appenddir = True, the folder is appended.
         Otherwise, the folder is just loaded."""
+
         if filename is None:
             filename = self._getDir()
             if not filename:
@@ -566,7 +567,8 @@ class MainWin(QMainWindow):
 
             if isinstance(filename, unicode):
                 filename = encode_fn(filename)
-        self.emit(SIGNAL('loadFiles'), None, [filename], append)
+        
+        self.loadFiles.emit(None, [filename], append)
 
     def openPrefs(self):
         win = SettingsDialog(PuddleDock._controls.values(), self, status)
@@ -657,8 +659,10 @@ class MainWin(QMainWindow):
             control.applyGenSettings(val, 1)
 
         h = self._table.horizontalHeader()
-        h.restoreState(settings.value('table/header').toByteArray())
-        self.restoreState(settings.value('main/state').toByteArray())
+        if settings.value('table/header'):
+            h.restoreState(settings.value('table/header'))
+        if settings.value('main/state'):
+            self.restoreState(settings.value('main/state'))
         
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
@@ -678,8 +682,9 @@ class MainWin(QMainWindow):
             dirname = constants.HOMEDIR
         filepattern = settings.get('playlist', 'filepattern','puddletag.m3u')
         default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
-        f = unicode(QFileDialog.getSaveFileName(self,
-            translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default)))
+        selectedFile = QFileDialog.getSaveFileName(self,
+            translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default))
+        f = selectedFile[0]
         if f:
             if settings.get('playlist', 'extinfo', 1, True):
                 pattern = settings.get('playlist', 'extpattern','%artist% - %title%')
@@ -691,7 +696,7 @@ class MainWin(QMainWindow):
             m3u.exportm3u(tags, f, pattern, reldir, windows_separator)
 
     def _viewFilled(self, val):
-        self.emit(SIGNAL('viewfilled'), val)
+        self.viewfilled.emit(val)
 
     def _updateStatus(self, files):
         if not files:
@@ -724,7 +729,7 @@ class MainWin(QMainWindow):
             model.undolevel += 1
             self._table.selectionChanged()
             if not model.previewMode:
-                self.emit(SIGNAL('libfilesedited'), lib_updates)
+                self.libfilesedited.emit(lib_updates)
         lib_updates = []
 
         failed_rows = [rows[0]] #First element=last row used.
@@ -820,8 +825,7 @@ class MainWin(QMainWindow):
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))
-            model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                start, end)
+            model.dataChanged.emit(start, end)
 
     def writeManyPreview(self, tags):
         if not status['previewmode']:
@@ -836,8 +840,7 @@ class MainWin(QMainWindow):
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))
-            model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                start, end)
+            model.dataChanged.emit(start, end)
 
     def _writePreview(self):
         taginfo = self._table.model().taginfo
@@ -917,7 +920,7 @@ class MainWin(QMainWindow):
                         showmessage = False
                     elif ret is False:
                         break
-        self.emit(SIGNAL('dirsmoved'), dirs)
+        self.dirsmoved.emit(dirs)
         self._dirChanged(self._lastdir)
         self._table.restoreSelection()
     
@@ -947,7 +950,7 @@ class MainWin(QMainWindow):
             self._table.changeFolder(olddir, newdir, False)
             if last and olddir in last:
                 last[last.index(olddir)] = newdir
-        self.emit(SIGNAL('dirsmoved'), dirs)
+        self.dirsmoved.emit(dirs)
         self._dirChanged(last)
 
 if __name__ == '__main__':

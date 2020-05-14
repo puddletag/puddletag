@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 import sys, pdb
 
 def dupes(tracks, tags, func, matchcase = False, threshold = 1, prevdupe = None):

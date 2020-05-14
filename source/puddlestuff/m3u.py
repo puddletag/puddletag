@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv, os
-from PyQt4.QtGui import QFileDialog, QApplication
-from PyQt4.QtCore import SIGNAL
+from PyQt5.QtWidgets import QFileDialog, QApplication
 import sys
 from puddlestuff.findfunc import tagtofilename
 from puddlestuff.audioinfo.util import lnglength

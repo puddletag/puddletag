@@ -5,8 +5,11 @@ import sys, resource, os
 
 from copy import copy, deepcopy
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
+  QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
+  QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtGui import QBrush, QColor, QPalette
+from PyQt5.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
 
 
 from puddlestuff import genres, confirmations, audioinfo
@@ -88,7 +91,7 @@ class SettingsLineEdit(QWidget):
     def __init__(self, desc, default, parent=None):
         QWidget.__init__(self, parent)
         vbox = QVBoxLayout()
-        vbox.setMargin(0)
+        vbox.setContentsMargins(0,0,0,0)
         self._text = QLineEdit(default)
         label = QLabel(translate("GenSettings", desc))
         self._desc = desc
@@ -142,7 +145,7 @@ class GeneralSettings(QWidget):
             if i > 0:
                 self._lang_combo.setCurrentIndex(i)
         
-        self.connect(edit_sort_options, SIGNAL('clicked()'), 
+        edit_sort_options.clicked.connect(
             self.editSortOptions)
 
         hbox = QHBoxLayout()
@@ -167,7 +170,7 @@ class GeneralSettings(QWidget):
 
         from puddlestuff.webdb import SortOptionEditor
         win = SortOptionEditor(options, self)
-        self.connect(win, SIGNAL('options'), self.applySortOptions)
+        win.options.connect(self.applySortOptions)
         win.show()
     
     def applySortOptions(self, options):
@@ -208,7 +211,7 @@ class Playlist(QWidget):
         self.extpattern.setText(cparser.load('playlist', 'extpattern','%artist% - %title%'))
 
         self.extinfo = QCheckBox(translate("Playlist Settings", '&Write extended info'), self)
-        self.connect(self.extinfo, SIGNAL('stateChanged(int)'), self.extpattern.setEnabled)
+        self.extinfo.stateChanged.connect(self.extpattern.setEnabled)
         self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo',1, True)))
         self.extpattern.setEnabled(self.extinfo.checkState())
 
@@ -283,9 +286,9 @@ class TagMappings(QWidget):
         header.setStretchLastSection(True)
         buttons = ListButtons()
         buttons.connectToWidget(self)
-        buttons.moveup.setVisible(False)
-        buttons.movedown.setVisible(False)
-        self.connect(buttons, SIGNAL('duplicate'), self.duplicate)
+        buttons.moveupButton.setVisible(False)
+        buttons.movedownButton.setVisible(False)
+        buttons.duplicate.connect(self.duplicate)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self._table, 1)
@@ -473,22 +476,22 @@ class ListModel(QAbstractListModel):
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
+                return int(Qt.AlignLeft|Qt.AlignVCenter)
+            return int(Qt.AlignRight|Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         if orientation == Qt.Horizontal:
-            return QVariant(self.headerdata[section])
-        return QVariant(int(section + 1))
+            return self.headerdata[section]
+        return int(section + 1)
 
     def data(self, index, role = Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.options)):
-            return QVariant()
+            return None
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
-                return QVariant(QString(self.options[index.row()][0]))
-            except IndexError: return QVariant()
-        return QVariant()
+                return unicode(self.options[index.row()][0])
+            except IndexError: return None
+        return None
 
     def widget(self, row):
         return self.options[row][1]
@@ -504,11 +507,13 @@ class ListModel(QAbstractListModel):
 class SettingsList(QListView):
     """Just want a list that emits a selectionChanged signal, with
     the currently selected row."""
+    selectionChangedSignal = pyqtSignal(int, name='selectionChanged')
     def __init__(self, parent = None):
         QListView.__init__(self, parent)
 
     def selectionChanged(self, selected, deselected):
-        self.emit(SIGNAL("selectionChanged"), selected.indexes()[0].row())
+        if selected.indexes():
+            self.selectionChangedSignal.emit(selected.indexes()[0].row())
 
 class StatusWidgetItem(QTableWidgetItem):
     def __init__(self, text, color):
@@ -562,15 +567,15 @@ class ColorEdit(QWidget):
         vbox.addWidget(label)
         vbox.addWidget(self.listbox)
         self.setLayout(vbox)
-        self.connect(self.listbox, SIGNAL('cellDoubleClicked(int,int)'), self.edit)
+        self.listbox.cellDoubleClicked.connect(self.edit)
 
     def edit(self, row, column):
         self._status = (row, self.listbox.item(row, column).background())
         win = QColorDialog(self)
         win.setCurrentColor(self.listbox.item(row, column).background().color())
-        self.connect(win, SIGNAL('currentColorChanged(const QColor&)'),
+        win.currentColorChanged.connect(
             self.intermediateColor)
-        self.connect(win, SIGNAL('rejected()'), self.setColor)
+        win.rejected.connect(self.setColor)
         win.open()
 
     def setColor(self):
@@ -648,7 +653,7 @@ class SettingsDialog(QDialog):
         self.grid.setColumnStretch(1, 2)
         self.setLayout(self.grid)
 
-        self.connect(self.listbox, SIGNAL("selectionChanged"), self.showOption)
+        self.listbox.selectionChangedSignal.connect(self.showOption)
 
         selection = QItemSelection()
         self.selectionModel= QItemSelectionModel(self.model)
@@ -658,12 +663,12 @@ class SettingsDialog(QDialog):
         self.selectionModel.select(selection, QItemSelectionModel.Select)
 
         self.okbuttons = OKCancel()
-        self.okbuttons.ok.setDefault(True)
+        self.okbuttons.okButton.setDefault(True)
         self.grid.addLayout(self.okbuttons, 1,0,1,2)
 
-        self.connect(self.okbuttons,SIGNAL("ok"), self.saveSettings)
-        self.connect(self, SIGNAL("accepted"),self.saveSettings)
-        self.connect(self.okbuttons,SIGNAL("cancel"), self.close)
+        self.okbuttons.ok.connect(self.saveSettings)
+        self.accepted.connect(self.saveSettings)
+        self.okbuttons.cancel.connect(self.close)
 
     def showOption(self, option):
         widget = self._widgets[option][1]

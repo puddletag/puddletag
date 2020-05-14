@@ -7,8 +7,8 @@ import cPickle as pickle
 from collections import defaultdict
 from functools import partial
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtWidgets import QCompleter, QDirModel, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
 import quodlibet.config
 from quodlibet.parse import Query
@@ -358,7 +358,7 @@ class InitWidget(QWidget):
 
         hbox = QHBoxLayout()
         select_db = QPushButton(translate("QuodLibet", "..."))
-        self.connect(select_db, SIGNAL('clicked()'), self.select_db)
+        select_db.clicked.connect(self.select_db)
         hbox.addWidget(self.dbpath)
         hbox.addWidget(select_db)
         vbox.addLayout(hbox)
@@ -367,15 +367,15 @@ class InitWidget(QWidget):
         self.setLayout(vbox)
 
     def select_db(self):
-        filedlg = QFileDialog()
-        filename = filedlg.getOpenFileName(self,
+        selectedFile = QFileDialog.getOpenFileName(self,
             translate("QuodLibet", 'Select QuodLibet library file...'),
             self.dbpath.text())
+        filename = selectedFile[0]
         if filename:
             self.dbpath.setText(filename)
 
     def library(self):
-        dbpath = self.dbpath.text().toLocal8Bit()
+        dbpath = self.dbpath.text()
         try:
             return QuodLibet(dbpath)
         except (IOError, OSError), e:

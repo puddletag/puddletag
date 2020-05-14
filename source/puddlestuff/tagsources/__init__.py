@@ -8,7 +8,7 @@ import socket
 import urlparse
 import urllib2
 
-from PyQt4.QtCore import QObject, SIGNAL
+from PyQt5.QtCore import QObject, pyqtSignal
 
 import puddlestuff
 from puddlestuff.constants import CONFIGDIR
@@ -36,6 +36,9 @@ class SubmissionError(WebServiceError):
         WebServiceError.__init__(self, msg)
         self.code = code
 
+class _SignalObject(QObject):
+    statusChanged = pyqtSignal(unicode, name='statusChanged')
+    logappend = pyqtSignal(unicode, name='logappend')
 
 cparser = PuddleConfig()
 
@@ -44,7 +47,7 @@ COVER_PATTERN = u'%artist% - %album%'
 SAVECOVERS = False
 
 mapping = {}
-status_obj = QObject()
+status_obj = _SignalObject()
 useragent = "puddletag/" + puddlestuff.version_string
 
 
@@ -145,7 +148,7 @@ def set_mapping(m):
 
 
 def set_status(msg):
-    status_obj.emit(SIGNAL('statusChanged'), msg)
+    status_obj.statusChanged.emit(msg)
 
 
 def get_useragent():
@@ -210,7 +213,7 @@ def urlopen(url, mask=True, code=False):
 
 
 def write_log(text):
-    status_obj.emit(SIGNAL('logappend'), text)
+    status_obj.logappend.emit(text)
 
 
 class MetaProcessor(SGMLParser):

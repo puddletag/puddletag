@@ -2,8 +2,8 @@
 import string
 
 from collections import defaultdict
-from PyQt4.QtCore import QFile, QIODevice
-from PyQt4.QtGui import QAction, QApplication
+from PyQt5.QtCore import QFile, QIODevice
+from PyQt5.QtWidgets import QAction, QApplication
 from StringIO import StringIO
 from copy import copy, deepcopy
 from audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,

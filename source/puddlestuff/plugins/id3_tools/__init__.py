@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QObject, SIGNAL
-from PyQt4.QtGui import QApplication, QMessageBox, QAction
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QApplication, QMessageBox, QAction
 from puddlestuff.constants import FILESSELECTED
 from puddlestuff.puddleobjects import progress
 from puddlestuff import audioinfo
@@ -73,10 +73,10 @@ def update_to_24(parent=None):
 def init(parent=None):
     action = QAction('&Update to ID3v2.4', parent)
     connect_shortcut(action, FILESSELECTED)
-    parent.connect(action, SIGNAL('triggered()'), partial(update_to_24, parent))
+    action.triggered.connect(partial(update_to_24, parent))
 
     convert = QAction('&Convert to UTF-8', parent)
     connect_shortcut(convert, FILESSELECTED)
-    parent.connect(convert, SIGNAL('triggered()'), partial(to_utf8, parent))
+    convert.triggered.connect(partial(to_utf8, parent))
     
     add_shortcuts('Ta&g Tools', [separator(), action, convert, separator()])

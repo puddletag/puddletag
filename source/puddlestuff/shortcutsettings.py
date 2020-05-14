@@ -3,15 +3,14 @@ import sys, pdb, os
 from puddlestuff.puddleobjects import PuddleConfig, winsettings, OKCancel
 from puddlestuff.constants import CONFIGDIR
 import puddlestuff.loadshortcuts as ls
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-pyqtRemoveInputHook()
-from puddlestuff.translations import translate
 
-from PyQt4.QtCore import QEvent, QRect, QString, Qt, QVariant, SIGNAL
-from PyQt4.QtGui import qApp, QBrush, QColor, QDialog, QHBoxLayout, \
-    QItemDelegate, QKeySequence, QLabel, QPainter, QPalette, QPen, \
-    QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout
+from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
+from PyQt5.QtWidgets import QApplication, QDialog, QFrame, QHBoxLayout, QItemDelegate, QLabel, \
+    QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtGui import QBrush, QColor, QKeySequence, QPainter, QPalette, QPen
+pyqtRemoveInputHook()
+
+from puddlestuff.translations import translate
 
 
 class ActionEditorWidget(QLabel):
@@ -46,7 +45,7 @@ class ActionEditorWidget(QLabel):
         elif event.key() == Qt.Key_Alt:
             self.modifiers[Qt.Key_Alt] = u"Alt"
         else:
-            other = QString(QKeySequence(event.key()))
+            other = unicode(QKeySequence(event.key()))
         
         if other:
             key_string = u"+".join(self.modifiers.values() + [unicode(other),])
@@ -94,7 +93,7 @@ class ActionEditorWidget(QLabel):
     
     def paintEvent(self, event):
     
-        if not self.text().isEmpty():
+        if self.text():
         
             painter = QPainter()
             painter.begin(self)
@@ -132,9 +131,9 @@ class ActionEditorDelegate(QItemDelegate):
     
     def createEditor(self, parent, option, index):
 
-        self._edited = index.data().toString()
+        self._edited = unicode(index.data())
     
-        self.editor = ActionEditorWidget(index.data().toString(), parent)
+        self.editor = ActionEditorWidget(unicode(index.data()), parent)
         self.editor.installEventFilter(self)
         return self.editor
     
@@ -144,24 +143,21 @@ class ActionEditorDelegate(QItemDelegate):
             if event.type() == QEvent.KeyPress:
                 obj.keyPressEvent(event)
                 if obj.valid:
-                    self.emit(SIGNAL("commitData(QWidget *)"), self.editor)
-                    self.emit(SIGNAL("closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)"),
-                              self.editor, QItemDelegate.NoHint)
+                    self.commitData.emit(self.editor)
+                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
             
             elif event.type() == QEvent.KeyRelease:
                 obj.keyReleaseEvent(event)
-                if obj.text().isEmpty():
-                    self.emit(SIGNAL("closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)"),
-                              self.editor, QItemDelegate.NoHint)
+                if not obj.text():
+                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
             
             elif event.type() == QEvent.MouseButtonPress:
                 obj.mousePressEvent(event)
                 if obj.valid:
-                    self.emit(SIGNAL("commitData(QWidget *)"), self.editor)
-                    self.emit(SIGNAL("closeEditor(QWidget *, QAbstractItemDelegate::EndEditHint)"),
-                              self.editor, QItemDelegate.NoHint)
+                    self.commitData.emit(self.editor)
+                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
                 return True
         
         return False
@@ -176,16 +172,16 @@ class ActionEditorDelegate(QItemDelegate):
         painter.setPen(QPen(option.palette.color(QPalette.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
             Qt.TextShowMnemonic | Qt.AlignLeft | Qt.AlignVCenter,
-            index.data().toString())
+            unicode(index.data()))
     
     def setEditorData(self, editor, index):
     
-        editor.setText(index.data().toString())
+        editor.setText(unicode(index.data()))
     
     def setModelData(self, editor, model, index):
         if editor.text() != self._edited:
             index.model().edited = True
-        model.setData(index, QVariant(editor.text()))
+        model.setData(index, editor.text())
     
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
@@ -218,13 +214,12 @@ class ActionEditorDialog(QWidget):
         self.actionTable.verticalHeader().hide()
         self.actionTable.setItemDelegate(ActionEditorDelegate(self))
         
-        self.connect(self.actionTable, SIGNAL("cellChanged(int, int)"),
-                     self.validateAction)
+        self.actionTable.cellChanged.connect(self.validateAction)
         
         row = 0
         for action in self.actions:
         
-            if action.text().isEmpty():
+            if not action.text():
                 continue
             
             self.actionTable.insertRow(self.actionTable.rowCount())
@@ -246,7 +241,7 @@ class ActionEditorDialog(QWidget):
                 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(help)
-        mainLayout.setMargin(8)
+        mainLayout.setContentsMargins(8,8,8,8)
         mainLayout.setSpacing(8)
         mainLayout.addWidget(self.actionTable)
         self.setLayout(mainLayout)
@@ -263,7 +258,7 @@ class ActionEditorDialog(QWidget):
         row = 0
         for action in self.actions:
         
-            if not action.text().isEmpty():
+            if action.text():
                 action.setText(self.actionTable.item(row, 0).text())
                 action.setShortcut(QKeySequence(self.actionTable.item(row, 1).text()))
                 row += 1
@@ -299,7 +294,7 @@ class ActionEditorDialog(QWidget):
         shortcutText = QKeySequence(item.text()).toString()
         thisRow = self.actionTable.row(item)
         
-        if not shortcutText.isEmpty():
+        if shortcutText:
             for row in range(self.actionTable.rowCount()):
                 if row == thisRow:
                     continue

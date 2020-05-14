@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QAction
 from puddlestuff.constants import (LEFTDOCK, SELECTIONCHANGED,
     FILESSELECTED, KEEP, BLANK)
 from puddlestuff.plugins import add_shortcuts, connect_shortcut
@@ -10,6 +10,7 @@ from puddlestuff.puddleobjects import (settaglist)
 from puddlestuff.audioinfo import commontags
 
 class ExTagsPlugin(ExTags):
+    onetomany = pyqtSignal(dict, name='onetomany')
     def __init__(self, parent = None, row=None, files=None, status=False):
         super(ExTags, self).__init__(parent)
 
@@ -25,8 +26,8 @@ class ExTagsPlugin(ExTags):
         super(ExTagsPlugin, self).__init__(parent, row, files, status, False)
         self.setMinimumSize(50,50)
 
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
 
         self.previewMode = False
         self.canceled = False
@@ -36,7 +37,7 @@ class ExTagsPlugin(ExTags):
             self.loadFiles(files)
 
         action = QAction('Save Extended', self)
-        self.connect(action, SIGNAL('triggered()'), self.save)
+        action.triggered.connect(self.save)
         action.setShortcut('Ctrl+Shift+S')
 
         def sep():
@@ -49,7 +50,7 @@ class ExTagsPlugin(ExTags):
         win = EditField(parent=self, taglist=self.get_fieldlist)
         win.setModal(True)
         win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+        win.donewithmyshit.connect(self.editTagBuddy)
 
     def _imageChanged(self):
         self.filechanged = True
@@ -105,7 +106,7 @@ class ExTagsPlugin(ExTags):
         if newtags and newtags != ['__image']:
             settaglist(newtags + self.get_fieldlist)
         tags.update({'__image': self._status['images']})
-        self.emit(SIGNAL('onetomany'), tags)
+        self.onetomany.emit(tags)
 
     def _tag(self, row, status = None):
         getitem = self.table.item

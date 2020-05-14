@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, sys
-from PyQt4.QtCore import Qt, SIGNAL
+from PyQt5.QtCore import Qt, QObject, pyqtSignal
 from os.path import dirname, join
 from puddlestuff.translations import translate
 
@@ -110,6 +110,5 @@ ALWAYS = 'always'
 FILESLOADED = 'filesloaded'
 VIEWFILLED = 'viewfilled'
 FILESSELECTED = 'filesselected'
-
-ENABLESIGNALS = dict((k, SIGNAL(k)) for k in
+ENABLESIGNALS = dict((k, k) for k in
     [ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED])

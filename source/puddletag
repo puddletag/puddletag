@@ -120,7 +120,7 @@ def check_libs():
             'http://code.google.com/p/configobj/'),
          ('pyparsing', '(python-pyparsing or python-parsing in most distros)',
             'http://pyparsing.wikispaces.com/'),
-         ('PyQt4', '(python-qt4 usually)',
+         ('PyQt5', '(python-qt5 usually)',
             'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 
     found = True
@@ -142,7 +142,7 @@ def check_libs():
 
     try:
         if not found:
-            from PyQt4.QtGui import QApplication, QMessageBox
+            from PyQt5.QtWidgets import QApplication, QMessageBox
             app = QApplication([])
             QMessageBox.critical(None, 'puddletag', '\n'.join(errors))
     except:
@@ -294,8 +294,9 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
-    from PyQt4.QtGui import QApplication, QPixmap, QSplashScreen, QIcon
-    from PyQt4.QtCore import (pyqtRemoveInputHook, QTranslator,
+    from PyQt5.QtGui import QPixmap, QIcon
+    from PyQt5.QtWidgets import QApplication, QSplashScreen
+    from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
         QLibraryInfo, QLocale)
     import pdb, logging
     from configobj import ConfigObj

@@ -4,8 +4,7 @@ import puddlestuff.findfunc as findfunc
 from puddlestuff.puddleobjects import (dircmp, safe_name, natcasecmp,
     LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
 import puddlestuff.actiondlg as actiondlg
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal
 import os, pdb
 path = os.path
 from collections import defaultdict, OrderedDict
@@ -57,7 +56,7 @@ def auto_numbering(parent=None):
 
     win = helperwin.AutonumberDialog(parent, 1, numtracks, False)
     win.setModal(True)
-    win.connect(win, SIGNAL("newtracks"), partial(number_tracks, tags))
+    win.newtracks.connect(partial(number_tracks, tags))
     win.show()
 
 def clipboard_to_tag(parent=None):
@@ -77,12 +76,13 @@ def clipboard_to_tag(parent=None):
         cparser.set('importwindow', 'lastpattern', pattern)
         emit('writeselected', taglist)
     
-    win.connect(win, SIGNAL("Newtags"), fin_edit)
+    win.Newtags.connect(fin_edit)
     
     win.show()
 
 def connect_status(actions):
-    connect = lambda a: obj.connect(obj, SIGNAL(a.status), a.setStatusTip)
+    connect = lambda a: getattr(obj, a.status).connect(a.setStatusTip)
+    actions = filter(lambda x: x.status, actions)
     map(connect, actions)
 
 def copy():
@@ -168,11 +168,10 @@ def extended_tags(parent=None):
     else:
         win = helperwin.ExTags(files = status['selectedfiles'], parent=parent)
     win.setModal(True)
-    obj.connect(win, SIGNAL('rowChanged'),
-        status['table'].selectRow)
+    win.rowChanged.connect(status['table'].selectRow)
     win.loadSettings()
     x = lambda val: emit('onetomany', val)
-    obj.connect(win, SIGNAL('extendedtags'), x)
+    win.extendedtags.connect(x)
     win.show()
 
 def filename_to_tag():
@@ -234,7 +233,7 @@ def load_musiclib(parent=None):
             "puddletag.sourceforge.net</a> for more details."))
         return
     m.setModal(True)
-    obj.connect(m, SIGNAL('adddock'), emit_received('adddock'))
+    m.adddock.connect(emit_received('adddock'))
     m.show()
 
 
@@ -360,16 +359,14 @@ def run_action(parent=None, quickaction=False):
 
     if quickaction:
         func = partial(applyquickaction, files)
-        win.connect(win, SIGNAL("donewithmyshit"), func)
+        win.donewithmyshit.connect(func)
     else:
         func = partial(applyaction, files)
-        win.connect(win, SIGNAL("donewithmyshit"), func)
+        win.donewithmyshit.connect(func)
     action_tool = PuddleDock._controls['Actions']
-    parent.connect(win, SIGNAL('actionOrderChanged'),
-        action_tool.updateOrder)
+    win.actionOrderChanged.connect(action_tool.updateOrder)
     if not quickaction:
-        parent.connect(win, SIGNAL('checkedChanged'),
-            action_tool.updateChecked)
+        win.checkedChanged.connect(action_tool.updateChecked)
     win.show()
 
 def run_function(parent=None, prevfunc=None):
@@ -394,7 +391,7 @@ def run_function(parent=None, prevfunc=None):
         f = actiondlg.CreateFunction(parent=parent,
             selected_fields=selected_fields, example=example, text=text)
 
-    f.connect(f, SIGNAL("valschanged"), partial(run_func, selectedfiles))
+    f.valschanged.connect(partial(run_func, selectedfiles))
     f.setModal(True)
     f.show()
 
@@ -438,7 +435,7 @@ def search_replace(parent=None):
     dialog = actiondlg.CreateFunction(prevfunc=func, parent=parent,
         selected_fields=selected.keys(), example=audio, text=text)
 
-    dialog.connect(dialog, SIGNAL("valschanged"), partial(run_func, selectedfiles))
+    dialog.valschanged.connect(partial(run_func, selectedfiles))
     dialog.setModal(True)
     dialog.controls[0].combo.setFocus()
     dialog.show()
@@ -483,7 +480,7 @@ def text_file_to_tag(parent=None):
         cparser.set('importwindow', 'lastpattern', pattern)
         emit('writeselected', taglist)
 
-    win.connect(win, SIGNAL("Newtags"), fin_edit)
+    win.Newtags.connect(fin_edit)
     win.show()
 
 def update_status(enable = True):
@@ -536,7 +533,20 @@ def update_status(enable = True):
     except findfunc.ParseError, e:
         emit('formatstatus', bold_error % e.message)
 
-obj = QObject()
+class _SignalObject (QObject):
+    writeselected = pyqtSignal([object], [list], [dict], name='writeselected')
+    ftstatus = pyqtSignal(str, name='ftstatus')
+    tfstatus = pyqtSignal(unicode, name='tfstatus')
+    renamedirstatus = pyqtSignal(unicode, name='renamedirstatus')
+    formatstatus = pyqtSignal(str, name='formatstatus')
+    renamedirs = pyqtSignal(list, name='renamedirs')
+    onetomany = pyqtSignal(dict, name='onetomany')
+    renameselected = pyqtSignal(name='renameselected')
+    adddock = pyqtSignal(str, 'QDialog', int, name='adddock')
+    highlight = pyqtSignal(list, name='highlight')
+    writeaction = pyqtSignal([object, object, dict], name='writeaction')
+
+obj = _SignalObject()
 obj.emits = ['writeselected', 'ftstatus', 'tfstatus', 'renamedirstatus',
     'formatstatus', 'renamedirs', 'onetomany', 'renameselected',
     'adddock', 'highlight', 'writeaction']
@@ -545,8 +555,8 @@ obj.receives = [('filesselected', update_status),
 
 def emit_received(signal):
     def emit(*args):
-        obj.emit(SIGNAL(signal), *args)
+        getattr(obj, signal).emit(*args)
     return emit
 
 def emit(sig, *args):
-    obj.emit(SIGNAL(sig), *args)
+    getattr(obj, sig).emit(*args)

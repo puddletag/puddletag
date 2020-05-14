@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys, os
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QMutex, Qt
+from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
+from PyQt5.QtGui import QFont
 from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED
 from puddlestuff.puddleobjects import PuddleThread, natcasecmp
 from puddlestuff import audioinfo
@@ -39,10 +40,10 @@ class StoredTags(QScrollArea):
         widget = QWidget()
         self._grid = QGridLayout()
         self._grid.setColumnStretch(1, 1)
-        self._grid.setMargin(3)
+        self._grid.setContentsMargins(3,3,3,3)
         widget.setLayout(self._grid)
         self.setWidget(widget)
-        #self.connect(widget, SIGNAL('wheelEvent'), self._hScroll)
+        #widget.wheelEvent.connect(self._hScroll)
 
     def load(self):
         audios = self._status['selectedfiles']
@@ -122,7 +123,7 @@ class StoredTags(QScrollArea):
             self._loading = False
 
         thread = PuddleThread(retrieve_tag, self)
-        thread.connect(thread, SIGNAL('threadfinished'), _load)
+        thread.threadfinished.connect(_load)
         #print 'starting thread', time.time()
         thread.start()
 
@@ -133,7 +134,7 @@ class StoredTags(QScrollArea):
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
         if not self.verticalScrollBar().isVisible() and h.isVisible():
-            numsteps = e.delta() / 5
+            numsteps = e.angleDelta().y() / 5
             h.setValue(h.value() - numsteps)
             e.accept()
         else:
