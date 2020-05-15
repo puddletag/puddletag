@@ -619,6 +619,8 @@ natcasecmp = compare().natcasecmp
 
 # https://stackoverflow.com/a/16090640
 def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    if isinstance(s, list):
+        s = s[0]
     return [int(text) if text.isdigit() else text.lower()
             for text in re.split(_nsre, s)]
 

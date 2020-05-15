@@ -134,7 +134,7 @@ class LibChooseDialog(QDialog):
             except Exception as detail:
                 msg = translate('MusicLib', 'Error loading %1: %2\n')
                 msg = msg.arg(libname).arg(six.text_type(detail))
-                sys.stderr.write(msg.encode('utf8'))
+                sys.stderr.write(msg)
                 continue
             
             try: name = lib.name

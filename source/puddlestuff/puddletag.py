@@ -494,7 +494,7 @@ class MainWin(QMainWindow):
         cparser = PuddleConfig()
         settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
         if self._lastdir:
-            cparser.set('main', 'lastfolder', six.text_type(self._lastdir[0], 'utf8'))
+            cparser.set('main', 'lastfolder', self._lastdir[0])
         cparser.set("main", "maximized", self.isMaximized())
         settings.setValue('main/state', self.saveState())
 
