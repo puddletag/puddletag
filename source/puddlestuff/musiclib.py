@@ -15,8 +15,10 @@ import pdb, sys
 
 from collections import defaultdict
 from functools import partial
-from six.moves import map
-from six.moves import range
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 
 
 from PyQt5.QtCore import QObject, Qt, pyqtRemoveInputHook, pyqtSignal
@@ -32,7 +34,8 @@ from puddlestuff.puddleobjects import (winsettings, OKCancel,
 from puddlestuff.util import to_string
 from puddlestuff.translations import translate
 import six
-from six.moves import zip
+from six.moves import map
+from six.moves import range
 
 pyqtRemoveInputHook()
 

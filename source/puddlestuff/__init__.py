@@ -4,8 +4,8 @@ import subprocess
 import os
 from os.path import dirname
 
-version_string = '1.2.0'
-version = (1, 2, 0)
+version_string = '2.0.0'
+version = (2, 0, 0)
 changeset = None
 
 filedir = dirname(dirname(dirname(__file__)))

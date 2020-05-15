@@ -5,13 +5,13 @@ import string
 from collections import defaultdict
 from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtWidgets import QAction, QApplication
-from StringIO import StringIO
+from six import StringIO
 from copy import copy, deepcopy
 from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
     EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
 from errno import EEXIST
 import os, pdb, re
-from .puddleobjects import (encode_fn, decode_fn, issubfolder, natcasecmp,
+from .puddleobjects import (encode_fn, decode_fn, issubfolder, natural_sort_key,
     open_resourcefile, safe_name)
 import puddlestuff.translations
 import six
@@ -146,7 +146,7 @@ def m_to_string(v):
         return escape_html(BLANK)
     elif isinstance(v, six.text_type):
         return escape_html(v)
-    elif isinstance(v, str):
+    elif isinstance(v, bytes):
         return escape_html(v.decode('utf8', 'replace'))
     else:
         return escape_html(SEPARATOR.join(v))
@@ -167,7 +167,7 @@ def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
 
         map_func = lambda v: fmt % (v[0], m_to_string(v[1]))
 
-        items = sorted(items, cmp=natcasecmp, key=itemgetter(0))
+        items = sorted(items, key=itemgetter(0))
 
         if u'__image' in tags:
             items.insert(0, ('__image', image_tr % len(tags['__image'])))
@@ -253,7 +253,7 @@ def to_list(value):
 def to_string(value):
     if isempty(value):
         return u''
-    elif isinstance(value, str):
+    elif isinstance(value, bytes):
         return value.decode('utf8')
     elif isinstance(value, six.text_type):
         return value

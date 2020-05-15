@@ -6,7 +6,9 @@ from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox,
   QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5 import QtGui
-import sys, findfunc, pdb, os, resource, string, functions
+import sys,  pdb, os, resource, string
+from . import findfunc, functions
+
 from copy import copy, deepcopy
 from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
         QuotedString, Literal, NotAny, nums

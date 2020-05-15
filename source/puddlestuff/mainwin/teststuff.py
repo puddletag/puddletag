@@ -11,7 +11,7 @@ from puddlestuff.audioinfo.util import (strlength, strbitrate, strfrequency, use
                   getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
                   READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
                   getdeco, setdeco, str_filesize)
-
+from itertools import imap
 import six
 from six.moves import map
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
@@ -133,7 +133,7 @@ class TestWidget(QWidget):
     
     def _load1000(self):
         table = PuddleDock._controls['table']
-        table.model().load(map(Tag, tags.tags))
+        table.model().load(list(map(Tag, tags.tags)))
         table.model().saveModification = False
     
     def _loadMany(self):
@@ -142,7 +142,7 @@ class TestWidget(QWidget):
             'Enter the number of files to fill the file-view with.', 10)
         if num:
             #pdb.set_trace()
-            model.load(map(Tag, tags.tags[:num]))
+            model.load(list(map(Tag, tags.tags[:num])))
             model.saveModification = False
 
     def _saveTags(self):

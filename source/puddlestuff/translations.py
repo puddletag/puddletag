@@ -19,9 +19,9 @@ class UnicodeMod(six.text_type):
         else:
             lowest = sorted(matches, key=lambda m: m.groups())[0]
         text = lowest.group()
-        if isinstance(text, str):
+        if isinstance(text, bytes):
             text = text.decode('utf8', 'replace')
-        if isinstance(value, str):
+        if isinstance(value, bytes):
             value = value.decode('utf8', 'replace')
         elif isinstance(value, six.integer_types):
             value = six.text_type(value)
@@ -49,7 +49,7 @@ class UnicodeMod(six.text_type):
         return UnicodeMod(six.text_type.__mul__(self, v))
 
 def translate(k,v):
-    if isinstance(v, str):
+    if isinstance(v, bytes):
         v = v.decode('utf8', 'replace')
     try:
         return UnicodeMod(QApplication.translate(k,v))

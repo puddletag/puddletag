@@ -4,7 +4,12 @@ from importlib import import_module
 import os
 from os.path import join, exists
 import re
-from sgmllib import SGMLParser
+
+try:
+    from HTMLParser import HTMLParser
+except ImportError:
+    from html.parser import HTMLParser
+
 import socket
 import six.moves.urllib.parse
 import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
@@ -218,11 +223,11 @@ def write_log(text):
     status_obj.logappend.emit(text)
 
 
-class MetaProcessor(SGMLParser):
+class MetaProcessor(HTMLParser):
     def reset(self):
         self.pieces = []
         self.encoding = None
-        SGMLParser.reset(self)
+        HTMLParser.reset(self)
 
     def start_meta(self, text):
         text = [tuple([x.lower() for x in z]) for z in text]

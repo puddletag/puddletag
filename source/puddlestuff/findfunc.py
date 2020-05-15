@@ -2,7 +2,8 @@
 
 from __future__ import absolute_import
 import pdb
-import audioinfo, os, string, re
+import os, string, re
+from . import audioinfo
 from decimal import Decimal
 from pyparsing import (Word, alphas,Literal, OneOrMore, alphanums, 
     nums, delimitedList, Combine, QuotedString, 
@@ -167,7 +168,7 @@ def load_macro_info(filename):
 
     def get_func_index(funcname):
         if funcname.startswith('Func'):
-            return int(funcname[4:].strip())
+            return funcname[4:].strip()
         else:
             return funcname
 

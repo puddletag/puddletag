@@ -4,8 +4,6 @@ from __future__ import absolute_import
 import imghdr, pdb
 
 from copy import copy, deepcopy
-from six.moves import zip
-
 
 from mutagen.mp4 import MP4,  MP4Cover
 
@@ -18,6 +16,7 @@ from .util import (usertags, strlength, strbitrate, READONLY, isempty,
     del_deco, cover_info, info_to_dict, parse_image, get_total)
 import six
 from six.moves import map
+from six.moves import zip
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
     'modified', 'bitspersample', 'channels')
@@ -285,8 +284,7 @@ class Tag(util.MockTag):
 
     def _set_images(self, images):
         if images:
-            self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
-                images)
+            self.__images = [parse_image(i, self.IMAGETAGS) for i in images]
         else:
             self.__images = []
         cover_info(images, self.__tags)
@@ -332,7 +330,7 @@ class Tag(util.MockTag):
         if audio.tags: #Not empty
             keys = list(audio.keys())
             try:
-                self.images = map(bin_to_pic, audio['covr'])
+                self.images = list(map(bin_to_pic, audio['covr']))
                 keys.remove('covr')
             except KeyError:
                 self.images = []
@@ -368,7 +366,7 @@ class Tag(util.MockTag):
                     try:
                         field_value = []
                         for v in audio[key]:
-                            if isinstance(v, str):
+                            if isinstance(v, bytes):
                                 field_value.append(six.text_type(v, 'utf8'))
                             elif isinstance(v, six.text_type):
                                 field_value.append(v)

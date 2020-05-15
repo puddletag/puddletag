@@ -2,7 +2,8 @@
 from __future__ import absolute_import
 from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
 from PyQt5.QtCore import Qt
-import sys, resource, os, audioinfo
+import sys, resource, os
+from . import audioinfo
 from .puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
     PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
 
@@ -14,8 +15,7 @@ def load_genres(filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     try:
-        return [six.text_type(z.strip(), 'utf8') for z in
-            open(filepath, 'r').readlines()]
+        return open(filepath, 'r').readlines()
     except (IOError, OSError):
         return audioinfo.GENRES[::]
 
@@ -23,8 +23,7 @@ def save_genres(genres, filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     f = open(filepath, 'w')
-    text = '\n'.join([z.encode('utf8') for z in genres])
-    f.write(text)
+    f.write('\n'.join(genres))
     f.close()
 
 class Genres(QWidget):

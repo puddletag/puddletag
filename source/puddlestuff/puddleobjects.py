@@ -37,7 +37,7 @@ import time, re
 from glob import glob
 from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
 from PyQt5.QtCore import QFile, QIODevice
-from StringIO import StringIO
+from six import StringIO
 import itertools
 import logging
 
@@ -68,30 +68,17 @@ mod_keys = {
     Qt.KeypadModifier: u'',
     Qt.GroupSwitchModifier: u'',}
 
-def keycmp(a, b):
-    if a == b:
+def keycmp(modifier):
+    if modifier == Qt.CTRL:
+        return 4
+    elif modifier == Qt.SHIFT:
+        return 3
+    elif modifier == Qt.ALT:
+        return 2
+    elif modifier == Qt.META:
+        return 1
+    else:
         return 0
-    if a == Qt.CTRL:
-        return -1
-    elif b == Qt.CTRL:
-        return 1
-
-    if a == Qt.SHIFT:
-        return -1
-    elif b == Qt.SHIFT:
-        return 1
-
-    if a == Qt.ALT:
-        return -1
-    elif b == Qt.ALT:
-        return 1
-
-    if a == Qt.META:
-        return -1
-    elif b == Qt.META:
-        return 1
-
-    return 0
 
 try:
     permutations = itertools.permutations
@@ -128,7 +115,7 @@ for i in range(1,len(mod_keys)):
         mod = keys[0]
         for key in keys[1:]:
             mod = mod | key
-        modifiers[int(mod)] = u'+'.join(mod_keys[key] for key in sorted(keys, cmp=keycmp) if mod_keys[key])
+        modifiers[int(mod)] = u'+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
 
 mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
 
@@ -250,7 +237,7 @@ class PuddleConfig(object):
 
     def set(self, section = None, key = None, value = None):
         settings = self.data
-        if isinstance(value, str):
+        if isinstance(value, (str, bytes)):
             value = six.text_type(value)
         if section in self.data:
             settings[section][key] = value
@@ -630,6 +617,11 @@ class compare:
 
 natcasecmp = compare().natcasecmp
 
+# https://stackoverflow.com/a/16090640
+def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    return [int(text) if text.isdigit() else text.lower()
+            for text in re.split(_nsre, s)]
+
 def dupes(l, method = None):
     if method is None:
         method = lambda a,b: int(a==b)
@@ -688,7 +680,7 @@ def gettag(f):
     try:
         return audioinfo.Tag(f)
     except:
-        logging.exception(u'Error loading file %s', f.decode('utf8', 'replace'))
+        logging.exception(u'Error loading file %s', f)
         return
 
 def translate_filename_pattern(pat):
@@ -743,8 +735,8 @@ def gettaglist():
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
     try:
-        lines = sorted(set([z.strip().decode('utf8')
-            for z in open(filename, 'r').read().split('\n')]))
+        lines = sorted(set([z.strip()
+            for z in open(filename, 'rt').read().split('\n')]))
     except (IOError, OSError):
         lines = audioinfo.FIELDS[::]
     return lines
@@ -813,7 +805,7 @@ def load_actions():
 def open_resourcefile(filename):
     f = QFile(filename)
     f.open(QIODevice.ReadOnly)
-    return StringIO(f.readAll())
+    return StringIO(str(f.readAll()))
 
 def progress(func, pstring, maximum, threadfin = None):
     """To be used for functions that need a threaded progressbar.
@@ -1536,6 +1528,7 @@ class PicWidget(QWidget):
         buttons -> If True, then the Add, Edit, etc. Buttons are shown.
                    If False, then these functions can be found by right clicking
                    on the picture."""
+
         self._contextFormat = translate("Artwork Context", '%1/%2')
         
         QWidget.__init__(self, parent)
@@ -1834,7 +1827,10 @@ class PicWidget(QWidget):
                 self.setNone()
                 return
 
-            if data.startswith('<?xml'):
+            if isinstance(data, bytes) and data.startswith(b'<?xml'):
+                image = data
+                break
+            elif isinstance(data, str) and data.startswith('<?xml'):
                 image = data
                 break
             else:

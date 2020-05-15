@@ -4,7 +4,7 @@ from .puddleobjects import PuddleConfig, get_icon
 from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
 import sys, pdb, resource,os
 from .constants import CONFIGDIR, DATADIR
-import StringIO
+from six import StringIO
 from .util import open_resourcefile
 from puddlestuff.translations import translate
 import six

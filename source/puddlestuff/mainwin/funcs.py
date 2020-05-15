@@ -8,13 +8,16 @@ import puddlestuff.actiondlg as actiondlg
 from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal
 import os, pdb
 import six
-from six.moves import zip
 from six.moves import map
+from six.moves import zip
 path = os.path
 from collections import defaultdict, OrderedDict
 import puddlestuff.helperwin as helperwin
 from functools import partial
-
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
 from operator import itemgetter
 import puddlestuff.musiclib, puddlestuff.about as about
@@ -49,7 +52,7 @@ def applyquickaction(files, funcs):
     
     selected = status['selectedtags']
     state = {'__total_files': six.text_type(len(selected))}
-    t = (qa(funcs, f, state, list(s.keys())) for f, s in zip(files, selected))
+    t = (qa(funcs, f, state, list(s.keys())) for f, s in izip(files, selected))
     emit('writeselected', t)
 
 def auto_numbering(parent=None):
@@ -329,8 +332,8 @@ def paste_onto():
     tags = []
     while len(tags) < len(selected):
         tags.extend(clip)
-    emit('writeselected', (dict(zip(s, list(cliptag.values())))
-                            for s, cliptag in zip(selected, tags)))
+    emit('writeselected', (dict(list(zip(s, list(cliptag.values()))))
+                            for s, cliptag in izip(selected, tags)))
 
 def rename_dirs(parent=None):
     """Changes the directory of the currently selected files, to
@@ -407,7 +410,7 @@ def run_func(selectedfiles, func):
     state = {'__total_files': six.text_type(len(selectedtags))}
 
     def tagiter():
-        for i, (selected, f) in enumerate(zip(selectedtags, selectedfiles)):
+        for i, (selected, f) in enumerate(izip(selectedtags, selectedfiles)):
             state['__counter'] = six.text_type(i + 1)
             fields = findfunc.parse_field_list(func.tag, f, list(selected.keys()))
             rowtags = f.tags
@@ -531,7 +534,10 @@ def update_status(enable = True):
     else:
         selected = selected[0]
     try:
-        val = tf(pattern, tag, state=state.copy()).decode('utf8')
+        try:
+            val = tf(pattern, tag, state=state.copy()).decode('utf8')
+        except AttributeError:
+            val = tf(pattern, tag, state=state.copy())
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError as e:

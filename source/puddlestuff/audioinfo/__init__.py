@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+
 from __future__ import absolute_import
-import re
 import mutagen
 from .util import *
 from .constants import *
@@ -88,11 +88,11 @@ def Tag(filename):
     for more info."""
 
     fileobj = open(filename, "rb")
-
-    match = re.search('\.(%s)$' % '|'.join(extensions), filename)
     ext = splitext(filename)
-    if match:
-        return extensions[match.groups()[0]][1](filename)
+    try:
+        return extensions[ext][1](filename)
+    except KeyError:
+        pass
 
     try:
         header = fileobj.read(128)
@@ -100,7 +100,7 @@ def Tag(filename):
     finally:
         fileobj.close()
     results = list(zip(results, options))
-    results.sort()
+    results.sort(key=lambda v: v[0])
     score, Kind = results[-1]
     if score > 0: return Kind[1](filename)
     else: return None

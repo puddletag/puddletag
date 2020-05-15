@@ -733,6 +733,3 @@ if __name__ == '__main__':
     source = sources['Local TSource Plugin']()
     source.applyPrefs([u'/mnt/multimedia/testlib'])
     print(source._dirs)
-    
-    
-    

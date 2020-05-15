@@ -18,8 +18,6 @@ import six
 ATTRIBUTES = ['length', 'accessed', 'size', 'created',
     'modified', 'filetype']
 
-from . import tag_versions
-
 COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
 
 class DefaultHeaderError(RuntimeError): pass
@@ -249,6 +247,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             self._originaltags = list(tags.keys())
 
         def update_tag_list(self):
+            from . import tag_versions
             l = tag_versions.tags_in_file(self.filepath,
                 [tag_versions.ID3_V1, tag_versions.ID3_V2])
             if l:

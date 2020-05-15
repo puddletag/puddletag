@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from __future__ import print_function
-import cStringIO
+from six import StringIO
 from copy import deepcopy
 import gzip
 import json
@@ -91,7 +91,7 @@ def check_values(d):
             continue
         elif not hasattr(v, '__iter__'):
             v = six.text_type(v)
-        elif isinstance(v, str):
+        elif isinstance(v, bytes):
             v = v.decode('utf8')
 
         ret[key] = v
@@ -327,7 +327,7 @@ def urlopen(url):
         raise RetrievalError(msg)
 
     try:
-        data = gzip.GzipFile(fileobj=cStringIO.StringIO(data)).read()
+        data = gzip.GzipFile(fileobj=StringIO(data)).read()
     except IOError:
         "Gzipped data not returned."
 

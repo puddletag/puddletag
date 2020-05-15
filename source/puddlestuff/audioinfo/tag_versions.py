@@ -42,7 +42,7 @@ def has_apev2(fn):
         return False
 
     footer = fileobj.read()
-    return "APETAGEX" in footer
+    return b"APETAGEX" in footer
 
 def has_v1(fn):
     close_file = isinstance(fn, six.string_types)

@@ -405,4 +405,3 @@ if __name__ == '__main__':
     win.loadSettings()
     win.show()
     app.exec_()
-    

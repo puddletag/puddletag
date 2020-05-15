@@ -561,7 +561,10 @@ def to_string(value, errors='strict'):
     if not value:
         return u''
     elif isinstance(value, str):
-        return value.decode('utf8', errors)
+        try:
+            return value.decode('utf8', errors)
+        except AttributeError:
+            return value
     elif isinstance(value, six.text_type):
         return value
     elif isinstance(value, six.integer_types):

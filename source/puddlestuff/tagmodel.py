@@ -8,7 +8,8 @@ from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
 from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
   QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
 import re
-import sys,os, audioinfo, resource, pdb
+import sys,os, resource, pdb
+from . import audioinfo
 from operator import itemgetter
 from copy import copy, deepcopy
 from subprocess import Popen
@@ -17,7 +18,7 @@ from . import audioinfo
 from .audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
     usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
     EXTENSION, CaselessDict)
-from .puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
+from .puddleobjects import (unique, safe_name, partial, natural_sort_key, gettag,
     HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
     progress, PuddleConfig, singleerror, winsettings, issubfolder,
     timemethod, encode_fn, decode_fn, fnmatch)
@@ -25,8 +26,14 @@ from .musiclib import MusicLibError
 import time, re
 from errno import EEXIST
 import traceback
+import six
 from six.moves import map
 from six.moves import range
+from six.moves import zip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 
 from collections import defaultdict
 from .util import write, rename_file, real_filetags, to_string
@@ -36,8 +43,7 @@ import logging, shutil
 from puddlestuff.translations import translate
 from puddlestuff.util import rename_error_msg
 from puddlestuff.audio_filter import parse as filter_audio
-import six
-from six.moves import zip
+
 
 the_break = False
 
@@ -95,7 +101,7 @@ def loadsettings(filepath=None):
     audioinfo.id3.v2_option = v2_option
     filespec = u';'.join(settings.get('table', 'filespec', []))
 
-    return (zip(titles, tags), fontsize, rowsize, filespec)
+    return (list(zip(titles, tags)), fontsize, rowsize, filespec)
 
 def caseless(tag, audio):
     if tag in audio:
@@ -317,8 +323,8 @@ def _Tag(model):
             results = [Kind[0].score(filename, fileobj, header) for Kind in options]
         finally:
             fileobj.close()
-        results = zip(results, options)
-        results.sort()
+        results = list(zip(results, options))
+        results.sort(key=lambda x: x[0])
         score, Kind = results[-1]
 
         if score > 0: return Kind[1](filename)
@@ -855,7 +861,7 @@ class TagModel(QAbstractTableModel):
         if append:
             for field in self.sortFields:
                 getter = lambda audio: audio.get(field, u'')
-                taginfo.sort(natcasecmp, getter, self.reverseSort)
+                taginfo.sort(key=lambda a: natural_sort_key(a.get(field, u'')), reverse=self.reverseSort)
 
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
@@ -1137,7 +1143,7 @@ class TagModel(QAbstractTableModel):
         self.fileChanged.emit()
 
     def sibling(self, row, column, index = QModelIndex()):
-        if row <= (self.rowCount() - 1) and row >= 0:
+        if row < (self.rowCount() - 1) and row >= 0:
             return self.index(row + 1, column)
 
     def sort(self, column, order=Qt.DescendingOrder):
@@ -1164,14 +1170,12 @@ class TagModel(QAbstractTableModel):
 
         if files and rows:
             for field in fields:
-                f = lambda audio: audio.get(field, u'')
-                files.sort(natcasecmp, f, reverse)
+                files.sort(key=lambda a:natural_sort_key(a.get(field, u'')), reverse=reverse)
             for index, row in enumerate(rows):
                 self.taginfo[row] = files[index]
         else:
             for field in fields:
-                f = lambda audio: audio.get(field, u'')
-                self.taginfo.sort(natcasecmp, f, reverse)                
+                self.taginfo.sort(key=lambda a:natural_sort_key(a.get(field, u'')), reverse=reverse)
 
         self.reverseSort = reverse
         self.sortFields = fields
@@ -1643,7 +1647,7 @@ class TagTable(QTableView):
         libtags = []
         def func():
             temprows = sorted(selectedRows[::])
-            for ((i, row), audio) in zip(enumerate(selectedRows), selected):
+            for ((i, row), audio) in izip(enumerate(selectedRows), selected):
                 try:
                     filename = audio.filepath
                     os.remove(filename)

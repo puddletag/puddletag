@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import sys, pdb
 import traceback
 from puddlestuff.puddleobjects import (unique, OKCancel, PuddleThread,
-    PuddleConfig, winsettings, natcasecmp)
+    PuddleConfig, winsettings, natural_sort_key)
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 from PyQt5 import QtCore, QtGui
@@ -141,9 +141,9 @@ class RootItem(object):
         return 0
     
     def sort(self, order=None, reverse=False):
-        sortfunc = lambda item: u''.join([
-            to_string(item.itemData.get(key, u'')) for key in order]).lower()
-        self.childItems.sort(natcasecmp, sortfunc, reverse)
+        sortfunc = lambda item: natural_sort_key(u''.join([
+            to_string(item.itemData.get(key, u'')) for key in order]).lower())
+        self.childItems.sort(key=sortfunc, reverse=reverse)
         
 
 class TreeItem(RootItem):

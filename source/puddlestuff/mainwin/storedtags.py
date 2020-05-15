@@ -20,7 +20,7 @@ def sort_dict(d):
             ret.append((key, val))
         else:
             ret.extend((key, v) for v in val)
-    ret.sort(cmp =natcasecmp)
+    ret.sort(key=lambda v: natural_sort_key(v[0]))
     return ret
 
 class StoredTags(QScrollArea):

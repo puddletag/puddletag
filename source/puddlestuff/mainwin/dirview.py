@@ -5,14 +5,13 @@ from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from copy import deepcopy
 from functools import partial
-import os, shutil, pdb, mutex
+import os, shutil, pdb
 from puddlestuff.puddleobjects import (PuddleConfig, PuddleThread, 
     issubfolder, PuddleHeader)
 from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 import six
 from six.moves import map
 from six.moves import range
-mutex = mutex.mutex()
 qmutex = QMutex()
 from puddlestuff.translations import translate
 from puddlestuff.tagmodel import has_previews
@@ -146,8 +145,6 @@ class DirView(QTreeView):
                 model.refresh(i)
         
         for d in [z[1] for z in dirs] + selected:
-            if isinstance(d, str):
-                d = d.encode('utf8')
             self.selectIndex(getindex(d))
         self._load = True
 
@@ -228,7 +225,7 @@ class DirView(QTreeView):
             for d in dirlist:
                 if not os.path.exists(d):
                     continue
-                if isinstance(d, str):
+                if isinstance(d, bytes):
                     try:
                         d = six.text_type(d, 'utf8')
                     except (UnicodeEncodeError, UnicodeDecodeError):
@@ -275,9 +272,9 @@ class DirView(QTreeView):
             return
             
         getfilename = self.model().filePath
-        dirs = list(set([getfilename(i) for
+        dirs = list(set([getfilename(i).toLocal8Bit().data() for
             i in selected.indexes()]))
-        old = list(set([getfilename(i) for
+        old = list(set([getfilename(i).toLocal8Bit().data() for
             i in deselected.indexes()]))
         if self._lastselection:
             if len(old) == self._lastselection:

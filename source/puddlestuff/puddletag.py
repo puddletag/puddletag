@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import sys, os
-from puddlestuff.puddleobjects import (PuddleConfig, PuddleDock, winsettings,
+from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
     progress, PuddleStatus, errormsg, dircmp, encode_fn, get_icon)
 import six
+from six.moves import map
 from six.moves import zip
 from six.moves import map
 
@@ -17,10 +18,7 @@ from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 from PyQt5.QtGui import QDesktopServices, QIcon
 import pdb, resource
-from . import mainwin.dirview, mainwin.tagpanel, mainwin.patterncombo
-from . import mainwin.filterwin, mainwin.storedtags, mainwin.logdialog
-from . import mainwin.action_dialogs, mainwin.tagtools
-from . import mainwin.previews, mainwin.artwork
+from . import mainwin
 import puddlestuff.masstag.dialogs
 import puddlestuff.webdb
 from . import loadshortcuts as ls
@@ -30,7 +28,10 @@ from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings, update
 import puddlestuff.mainwin.funcs as mainfuncs
 from puddlestuff.helperwin import ConfirmationErrorDialog
 from functools import partial
-
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 import puddlestuff.audioinfo as audioinfo
 from puddlestuff.util import rename_error_msg, RenameError, DirRenameError
 from .audioinfo import lnglength, strlength, PATH, str_filesize
@@ -41,7 +42,8 @@ from . import constants, shortcutsettings
 
 import puddlestuff.findfunc, puddlestuff.tagsources
 import puddlestuff.confirmations as confirmations
-import action_shortcuts, traceback
+from . import action_shortcuts
+import traceback
 from . import plugins
 from puddlestuff.translations import translate
 from copy import copy
@@ -441,7 +443,7 @@ class MainWin(QMainWindow):
         if initial not in dirs:
             initial = dirs[0]
 
-        if isinstance(initial, str):
+        if isinstance(initial, bytes):
             initial = initial.decode('utf8', 'replace')
         
         if len(dirs) > 1:
@@ -745,7 +747,7 @@ class MainWin(QMainWindow):
             return
 
         def func():
-            for row, f in zip(rows, tagiter):
+            for row, f in izip(rows, tagiter):
                 failed_rows[0] = row
                 try:
                     update = setRowData(row, f, undo=True)
@@ -872,7 +874,7 @@ class MainWin(QMainWindow):
             self._table.selectionChanged()
 
         if model.previewMode:
-            for row, audio, filename in zip(rows, files, filenames):
+            for row, audio, filename in izip(rows, files, filenames):
                 tag = PATH
                 if tag in audio.mapping:
                     tag = audio.mapping[tag]
@@ -881,7 +883,7 @@ class MainWin(QMainWindow):
             return
 
         def func():
-            for row, audio, filename in zip(rows, files, filenames):
+            for row, audio, filename in izip(rows, files, filenames):
                 tag = PATH
                 if tag in audio.mapping:
                     tag = audio.mapping[tag]

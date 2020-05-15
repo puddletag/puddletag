@@ -741,7 +741,7 @@ Match &Case, check"""
             if z.lower() not in lowered:
                 lowered.add(z.lower())
                 ret.append(z)
-	return ret
+        return ret
 
 def right(text,n):
     try:
