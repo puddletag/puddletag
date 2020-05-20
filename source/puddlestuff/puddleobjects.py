@@ -1487,7 +1487,7 @@ class ArtworkLabel(QGraphicsView):
 
     def setPixmap(self, pixmap, data=None):
         if isinstance(pixmap, str):
-            renderer = QSvgRenderer (QByteArray(pixmap), self._svg)
+            renderer = QSvgRenderer (QByteArray(bytes(pixmap, 'utf-8')), self._svg)
             self._svg.setSharedRenderer(renderer)
             self._pixmap.setVisible(False)
             self._svg.setVisible(True)
