@@ -270,9 +270,9 @@ class DirView(QTreeView):
             return
             
         getfilename = self.model().filePath
-        dirs = list(set([getfilename(i).toLocal8Bit().data() for
+        dirs = list(set([getfilename(i) for
             i in selected.indexes()]))
-        old = list(set([getfilename(i).toLocal8Bit().data() for
+        old = list(set([getfilename(i) for
             i in deselected.indexes()]))
         if self._lastselection:
             if len(old) == self._lastselection:
