@@ -13,16 +13,16 @@ from PyQt5.QtGui import QBrush, QColor, QPalette
 from PyQt5.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
 
 
-from puddlestuff import genres, confirmations, audioinfo
+from . import genres, confirmations, audioinfo
 
-from puddlestuff.puddleobjects import (ListButtons, OKCancel, HeaderSetting,
+from .puddleobjects import (ListButtons, OKCancel, HeaderSetting,
     ListBox, PuddleConfig, winsettings, get_languages, create_buddy)
     
-from puddlestuff.action_shortcuts import ShortcutEditor
-from puddlestuff.constants import TRANSDIR
-from puddlestuff.pluginloader import PluginConfig
-from puddlestuff.shortcutsettings import ActionEditorDialog
-from puddlestuff.translations import translate
+from .action_shortcuts import ShortcutEditor
+from .constants import TRANSDIR
+from .pluginloader import PluginConfig
+from .shortcutsettings import ActionEditorDialog
+from .translations import translate
 import six
 from six.moves import range
 
@@ -171,14 +171,14 @@ class GeneralSettings(QWidget):
             ['__filename,track,__dirpath','track, album', 
             '__filename,album,__dirpath'])
 
-        from puddlestuff.webdb import SortOptionEditor
+        from .webdb import SortOptionEditor
         win = SortOptionEditor(options, self)
         win.options.connect(self.applySortOptions)
         win.show()
     
     def applySortOptions(self, options):
-        import puddlestuff.mainwin.previews
-        puddlestuff.mainwin.previews.set_sort_options(options)
+        from .mainwin import previews
+        previews.set_sort_options(options)
         cparser = PuddleConfig()
         cparser.set('table', 'sortoptions', options)
 

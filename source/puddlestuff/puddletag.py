@@ -19,33 +19,32 @@ from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, 
 from PyQt5.QtGui import QDesktopServices, QIcon
 import pdb, resource
 from . import mainwin
-import puddlestuff.masstag.dialogs
-import puddlestuff.webdb
+from .masstag import dialogs
+from . import webdb
 from . import loadshortcuts as ls
 from . import m3u, findfunc, genres
 
-from puddlestuff.puddlesettings import SettingsDialog, load_gen_settings, update_settings
-import puddlestuff.mainwin.funcs as mainfuncs
-from puddlestuff.helperwin import ConfirmationErrorDialog
+from .puddlesettings import SettingsDialog, load_gen_settings, update_settings
+from .mainwin import funcs as mainfuncs
+from .helperwin import ConfirmationErrorDialog
 from functools import partial
 try:
     from itertools import izip
 except ImportError:
     izip = zip
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.util import rename_error_msg, RenameError, DirRenameError
+from . import audioinfo
+from .util import rename_error_msg, RenameError, DirRenameError
 from .audioinfo import lnglength, strlength, PATH, str_filesize
 from errno import EEXIST
 from operator import itemgetter
 from collections import defaultdict
 from . import constants, shortcutsettings
 
-import puddlestuff.findfunc, puddlestuff.tagsources
-import puddlestuff.confirmations as confirmations
+from . import findfunc, tagsources, confirmations
 from . import action_shortcuts
 import traceback
 from . import plugins
-from puddlestuff.translations import translate
+from .translations import translate
 from copy import copy
 
 pyqtRemoveInputHook()
@@ -81,8 +80,8 @@ def create_tool_windows(parent, extra=None):
     cparser.filename = ls.menu_path
     widgets = (mainwin.tagpanel, mainwin.artwork,
         mainwin.dirview, mainwin.patterncombo, mainwin.filterwin,
-        puddlestuff.webdb, mainwin.storedtags, mainwin.logdialog,
-        puddlestuff.masstag.dialogs)
+        webdb, mainwin.storedtags, mainwin.logdialog,
+        dialogs)
     
     controls = [z.control for z in widgets]
     controls.extend(mainwin.action_dialogs.controls)
@@ -236,12 +235,13 @@ def help_menu(parent):
     return menu
 
 def load_plugins():
-    from puddlestuff.pluginloader import load_plugins
+    from .pluginloader import load_plugins
+    from . import functions, musiclib
     plugins = load_plugins()
-    puddlestuff.findfunc.functions.update(plugins[constants.FUNCTIONS])
-    puddlestuff.functions.no_preview.extend(plugins[constants.FUNCTIONS_NO_PREVIEW])
-    puddlestuff.tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
-    puddlestuff.musiclib.extralibs = plugins[constants.MUSICLIBS]
+    findfunc.functions.update(plugins[constants.FUNCTIONS])
+    functions.no_preview.extend(plugins[constants.FUNCTIONS_NO_PREVIEW])
+    tagsources.tagsources.extend(plugins[constants.TAGSOURCE])
+    musiclib.extralibs = plugins[constants.MUSICLIBS]
 
     return plugins[constants.DIALOGS], plugins[constants.MODULES]
 

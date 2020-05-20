@@ -3,11 +3,11 @@ from __future__ import absolute_import
 import sys, os
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
-from puddlestuff.constants import RIGHTDOCK
-from puddlestuff.puddleobjects import PuddleThread, natcasecmp, PuddleDock
-from puddlestuff import audioinfo
+from ..constants import RIGHTDOCK
+from ..puddleobjects import PuddleThread, natcasecmp, PuddleDock
+from .. import audioinfo
 import pdb
-from puddlestuff.audioinfo.util import (strlength, strbitrate, strfrequency, usertags, PATH,
+from ..audioinfo.util import (strlength, strbitrate, strfrequency, usertags, PATH,
                   getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
                   READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
                   getdeco, setdeco, str_filesize)

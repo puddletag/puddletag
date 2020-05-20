@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import logging.config
-from puddlestuff.constants import LOG_FILENAME
+from .constants import LOG_FILENAME
 import logging
 
 def init_logger(level):

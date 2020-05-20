@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from puddlestuff.puddleobjects import PuddleConfig
+from ..puddleobjects import PuddleConfig
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QMenu
 from functools import partial
@@ -9,9 +9,9 @@ try:
 except ImportError:
     izip = zip
 from copy import deepcopy
-from puddlestuff.constants import FILESSELECTED, FILESLOADED
-from puddlestuff.plugins import connect_shortcut
-from puddlestuff.translations import translate
+from ..constants import FILESSELECTED, FILESLOADED
+from ..plugins import connect_shortcut
+from ..translations import translate
 import six
 
 status = {}

@@ -3,10 +3,10 @@ from __future__ import absolute_import
 import csv, os
 from PyQt5.QtWidgets import QFileDialog, QApplication
 import sys
-from puddlestuff.findfunc import tagtofilename
-from puddlestuff.audioinfo.util import lnglength
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.puddleobjects import encode_fn, decode_fn
+from .findfunc import tagtofilename
+from .audioinfo.util import lnglength
+from . import audioinfo
+from .puddleobjects import encode_fn, decode_fn
 
 from os.path import abspath, dirname, normcase, normpath, splitdrive, realpath
 from os.path import join as path_join, commonprefix

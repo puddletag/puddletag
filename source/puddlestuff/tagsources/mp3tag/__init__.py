@@ -11,13 +11,13 @@ from pyparsing import (nums, printables, Combine, Optional,
     QuotedString, Word, ZeroOrMore)
 
 from .funcs import FUNCTIONS
-from puddlestuff.audioinfo.util import CaselessDict
-from puddlestuff.constants import CHECKBOX
-from puddlestuff.functions import format_value
-from puddlestuff.tagsources import (urlopen, get_encoding,
+from ...audioinfo.util import CaselessDict
+from ...constants import CHECKBOX
+from ...functions import format_value
+from .. import (urlopen, get_encoding,
     write_log, retrieve_cover, set_status)
-from puddlestuff.util import convert_dict as _convert_dict
-from puddlestuff.translations import translate
+from ...util import convert_dict as _convert_dict
+from ...translations import translate
 import six
 from six.moves import map
 from six import unichr
@@ -409,7 +409,7 @@ def load_mp3tag_sources(dirpath='.'):
             continue
     return classes
 
-from puddlestuff.tagsources.discogs import urlopen
+from ..discogs import urlopen
 
 if __name__ == '__main__':
     #text = open(sys.argv[1], 'r').read()

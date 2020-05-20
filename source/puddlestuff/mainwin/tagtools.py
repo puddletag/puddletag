@@ -6,9 +6,9 @@ from PyQt5.QtWidgets import QAction, QMessageBox, QApplication
 from functools import partial
 import traceback
 from mutagen import id3, apev2
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.puddleobjects import progress
-from puddlestuff.translations import translate
+from .. import audioinfo
+from ..puddleobjects import progress
+from ..translations import translate
 from six.moves import zip
 
 id3_tag = audioinfo.id3.Tag

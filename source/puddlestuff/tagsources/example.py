@@ -21,12 +21,12 @@
 from __future__ import absolute_import
 from __future__ import print_function
 import sys, pdb, os, time
-from puddlestuff.puddleobjects import gettags, getfiles, PuddleConfig
+from ..puddleobjects import gettags, getfiles, PuddleConfig
 from collections import defaultdict
-from puddlestuff.constants import TAGSOURCE, HOMEDIR, TEXT, COMBO, CHECKBOX
-from puddlestuff.util import matching, split_by_tag
-from puddlestuff.tagsources import set_status, write_log
-from puddlestuff.audioinfo import stringtags
+from ..constants import TAGSOURCE, HOMEDIR, TEXT, COMBO, CHECKBOX
+from ..util import matching, split_by_tag
+from ..tagsources import set_status, write_log
+from ..audioinfo import stringtags
 #print 'example2'
 
 properties = {'type': TAGSOURCE}

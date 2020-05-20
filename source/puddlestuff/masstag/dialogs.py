@@ -9,20 +9,20 @@ from PyQt5.QtCore import QMutex, QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
   QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
-from puddlestuff.constants import RIGHTDOCK
-from puddlestuff.puddleobjects import (create_buddy, natcasecmp, ratio,
+from ..constants import RIGHTDOCK
+from ..puddleobjects import (create_buddy, natcasecmp, ratio,
     winsettings, ListButtons, ListBox, OKCancel, PuddleConfig, PuddleThread)
-from puddlestuff.tagsources import RetrievalError
-from puddlestuff.translations import translate
-from puddlestuff.util import to_list, to_string
+from ..tagsources import RetrievalError
+from ..translations import translate
+from ..util import to_list, to_string
 
-import puddlestuff.masstag
-from puddlestuff.masstag import (NO_MATCH_OPTIONS, combine_tracks,
+from .. import masstag
+from ..masstag import (NO_MATCH_OPTIONS, combine_tracks,
     fields_from_text, match_files, masstag, merge_tsp_tracks,
     split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
-from puddlestuff.masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
+from ..masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
     load_all_mtps, mtp_from_file, save_mtp)
-from puddlestuff.webdb import strip as strip_fields
+from ..webdb import strip as strip_fields
 import six
 
 class _SignalObject (QObject):
@@ -35,7 +35,7 @@ def set_status(msg):
     status_obj.statusChanged.emit(msg)
     QApplication.processEvents()
 
-puddlestuff.masstag.set_status = set_status
+masstag.set_status = set_status
 
 mutex = QMutex()
 
@@ -674,10 +674,9 @@ control = ('Mass Tagging', MassTagWindow, RIGHTDOCK, False)
 
 if __name__ == '__main__':
     app = QApplication([])
-    import puddlestuff.puddletag
-    puddlestuff.puddletag.load_plugins()
-    import puddlestuff.tagsources
-    sources = [z() for z in puddlestuff.tagsources.tagsources]
+    from .. import puddletag, tagsources
+    puddletag.load_plugins()
+    sources = [z() for z in tagsources.tagsources]
     tsp = TagSourceProfile(None, sources[-1], ['field1' , 'field2'],
         1, ['repl1', 'repl2'])
     #win = TSProfileEdit(sources, tsp)

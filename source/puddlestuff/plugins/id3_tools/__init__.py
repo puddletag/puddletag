@@ -3,11 +3,11 @@
 from __future__ import absolute_import
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QMessageBox, QAction
-from puddlestuff.constants import FILESSELECTED
-from puddlestuff.puddleobjects import progress
-from puddlestuff import audioinfo
-from puddlestuff.plugins import add_shortcuts, connect_shortcut, status
-from puddlestuff.util import separator
+from ...constants import FILESSELECTED
+from ...puddleobjects import progress
+from ... import audioinfo
+from .. import add_shortcuts, connect_shortcut, status
+from ...util import separator
 from functools import partial
 import six
 from six.moves import zip

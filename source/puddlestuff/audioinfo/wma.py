@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
-import util, struct, pdb
+from . import util
+import struct, pdb
 from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
 from .util import (strlength, strbitrate, strfrequency, usertags, PATH,
     getfilename, lnglength, getinfo, FILENAME, INFOTAGS,

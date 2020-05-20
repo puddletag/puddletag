@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 import sys, pdb
 import traceback
-from puddlestuff.puddleobjects import (unique, OKCancel, PuddleThread,
+from .puddleobjects import (unique, OKCancel, PuddleThread,
     PuddleConfig, winsettings, natural_sort_key)
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
@@ -11,13 +11,13 @@ from PyQt5 import QtCore, QtGui
 from collections import defaultdict
 from copy import deepcopy
 
-from puddlestuff.tagsources import RetrievalError, status_obj, write_log
-from puddlestuff.constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
-from puddlestuff.findfunc import parsefunc
+from .tagsources import RetrievalError, status_obj, write_log
+from .constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
+from .findfunc import parsefunc
 from functools import partial
-from puddlestuff.util import pprint_tag, to_string
-from puddlestuff.audioinfo import stringtags
-from puddlestuff.translations import translate
+from .util import pprint_tag, to_string
+from .audioinfo import stringtags
+from .translations import translate
 import six
 from six.moves import map
 
@@ -48,7 +48,7 @@ def fillItem(item, info, tracks, trackpattern):
     item.dispPattern = item.dispPattern
 
 def get_tagsources():
-    from puddlestuff.tagsources import exampletagsource, musicbrainz
+    from .tagsources import exampletagsource, musicbrainz
     return exampletagsource.info[0](), musicbrainz.info[0]()
 
 def strip(audio, taglist, reverse = False, mapping=None):
@@ -587,7 +587,7 @@ class ReleaseWidget(QTreeView):
         if not item.hasTracks:
             return
         preview = {}
-        from puddlestuff.masstag import match_files
+        from .masstag import match_files
         tracks = item.tracks()
         copies = []
         for f in files:
@@ -695,7 +695,7 @@ class ReleaseWidget(QTreeView):
         model.mapping = self.mapping
     
     def setReleases(self, releases, files=None):
-        from puddlestuff.masstag import find_best
+        from .masstag import find_best
         self.model().setupModelData(releases)
         #FIXME: The expander isn't shown if I don't do this. However
         #I can still click on it...Qt bug probably.

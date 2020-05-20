@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import json
-import puddlestuff.findfunc as findfunc
-from puddlestuff.puddleobjects import (dircmp, safe_name, natcasecmp,
+from .. import findfunc
+from ..puddleobjects import (dircmp, safe_name, natcasecmp,
     LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
-import puddlestuff.actiondlg as actiondlg
+from .. import actiondlg
 from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal
 import os, pdb
 import six
@@ -12,21 +12,21 @@ from six.moves import map
 from six.moves import zip
 path = os.path
 from collections import defaultdict, OrderedDict
-import puddlestuff.helperwin as helperwin
+from .. import helperwin
 from functools import partial
 try:
     from itertools import izip
 except ImportError:
     izip = zip
-from puddlestuff.audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
+from ..audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
 from operator import itemgetter
-import puddlestuff.musiclib, puddlestuff.about as about
+from .. import musiclib, about as about
 import traceback
-from puddlestuff.util import split_by_tag, translate, to_string
-import puddlestuff.functions as functions
+from ..util import split_by_tag, translate, to_string
+from .. import functions
 from .tagtools import *
-import puddlestuff.confirmations as confirmations
-from puddlestuff.constants import HOMEDIR, SEPARATOR
+from .. import confirmations
+from ..constants import HOMEDIR, SEPARATOR
 
 status = {}
 
@@ -231,8 +231,8 @@ def in_lib(state, parent=None):
 
 def load_musiclib(parent=None):
     try:
-        m = puddlestuff.musiclib.LibChooseDialog(parent)
-    except puddlestuff.musiclib.MusicLibError:
+        m = musiclib.LibChooseDialog(parent)
+    except musiclib.MusicLibError:
         QMessageBox.critical(parent, translate("MusicLib", 'No libraries found'),
            translate("MusicLib", "No supported music libraries were found. Most likely "
             "the required dependencies aren't installed. Visit the "
@@ -344,7 +344,7 @@ def rename_dirs(parent=None):
     if not pattern:
         return
 
-    func = puddlestuff.findfunc.Function('tag_dir')
+    func = findfunc.Function('tag_dir')
     func.args = [pattern]
     func.tag = ['sthaoeusnthaoeusnthaosnethu']
 
@@ -435,7 +435,7 @@ def search_replace(parent=None):
     try: text = to_string(list(selected.values())[0])
     except IndexError: text = translate('Defaults', u'')
 
-    func = puddlestuff.findfunc.Function('replace')
+    func = findfunc.Function('replace')
     func.args = [text, text, False, False]
     func.tag = ['__selected']
 

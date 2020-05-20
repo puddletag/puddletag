@@ -5,22 +5,19 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroup
   QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from PyQt5.QtGui import QBrush
 import pdb, sys, os, sip
-from puddlestuff.audioinfo import GENRES, INFOTAGS, READONLY
-from puddlestuff.audioinfo.util import commonimages
-from puddlestuff.puddleobjects import ListButtons, PuddleConfig, PicWidget
-import puddlestuff.resource as resource
+from ..audioinfo import GENRES, INFOTAGS, READONLY
+from ..audioinfo.util import commonimages
+from ..puddleobjects import ListButtons, PuddleConfig, PicWidget
+from .. import resource
 import six
 from six.moves import range
 from six.moves import zip
 pyqtRemoveInputHook()
-from puddlestuff.constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
+from ..constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
 from functools import partial
-try:
-    from puddlestuff.puddlesettings import SettingsError
-except ImportError:
-    pass
-from puddlestuff.translations import translate
-from puddlestuff.constants import CONFIGDIR
+from ..puddlesettings import SettingsError
+from ..translations import translate
+from ..constants import CONFIGDIR
 
 
 def loadsettings(filepath = None):

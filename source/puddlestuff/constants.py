@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import os, sys
 from PyQt5.QtCore import Qt, QObject, pyqtSignal
 from os.path import dirname, join
-from puddlestuff.translations import translate
+from .translations import translate
 
 YES = translate('Defaults', 'Yes')
 NO = translate('Defaults', 'No')
@@ -15,7 +15,7 @@ SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
 SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
 def trans_strings():
-    from puddlestuff.translations import translate
+    from .translations import translate
     
     global YES
     global NO

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from puddlestuff.actiondlg import ActionWindow, CreateFunction
-from puddlestuff.constants import RIGHTDOCK, SELECTIONCHANGED
+from ..actiondlg import ActionWindow, CreateFunction
+from ..constants import RIGHTDOCK, SELECTIONCHANGED
 from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
 from PyQt5.QtCore import Qt
-from puddlestuff.mainwin.funcs import run_func, applyaction
-from puddlestuff.puddleobjects import PuddleConfig
+from ..mainwin.funcs import run_func, applyaction
+from ..puddleobjects import PuddleConfig
 from functools import partial
 import pdb
-from puddlestuff.translations import translate
+from ..translations import translate
 from six.moves import range
 
 class ActionDialog(ActionWindow):

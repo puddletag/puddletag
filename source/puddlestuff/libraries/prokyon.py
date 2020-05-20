@@ -23,25 +23,15 @@ from __future__ import print_function
 import MySQLdb as mysql
 import sys, os, pdb
 import six
-sys.path.insert(1, '..')
-try:
-    import puddlestuff.audioinfo as audioinfo
-except ImportError:
-    import audioinfo
+from .. import audioinfo
 FILENAME = audioinfo.FILENAME
 from PyQt5.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import QSettings
 from mutagen.id3 import TCON
 GENRES = TCON.GENRES
-try:
-    import puddlestuff.musiclib as musiclib
-except ImportError:
-    import musiclib
-try:
-    from mysqllib import MySQLLib
-except ImportError:
-    from puddlestuff.libraries.mysqllib import MySQLLib
+from .. import musiclib
+from ..libraries.mysqllib import MySQLLib
 
 name = "Prokyon"
 description = "Prokyon Database"

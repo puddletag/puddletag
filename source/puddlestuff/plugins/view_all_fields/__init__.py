@@ -7,12 +7,12 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
   QPushButton, QVBoxLayout
 
-from puddlestuff.constants import SAVEDIR
-from puddlestuff.plugins import add_config_widget, add_shortcuts, status
-from puddlestuff.puddleobjects import (natcasecmp, ListButtons,
+from ...constants import SAVEDIR
+from .. import add_config_widget, add_shortcuts, status
+from ...puddleobjects import (natcasecmp, ListButtons,
     ListBox, PuddleConfig)
-from puddlestuff.tagmodel import TableHeader
-from puddlestuff.translations import translate
+from ...tagmodel import TableHeader
+from ...translations import translate
 import six
 from six.moves import range
 

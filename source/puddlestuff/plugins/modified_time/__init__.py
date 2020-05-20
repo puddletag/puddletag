@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from PyQt5.QtWidgets import QAction, QApplication, QMessageBox
-from puddlestuff.plugins import add_shortcuts, status
+from .. import add_shortcuts, status
 from datetime import timedelta, datetime
 import os
-from puddlestuff.audioinfo import lngtime
-from puddlestuff.puddleobjects import progress
+from ...audioinfo import lngtime
+from ...puddleobjects import progress
 import time
 import six
 from six.moves import zip

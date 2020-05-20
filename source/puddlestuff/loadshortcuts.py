@@ -6,7 +6,7 @@ import sys, pdb, resource,os
 from .constants import CONFIGDIR, DATADIR
 from six import StringIO
 from .util import open_resourcefile
-from puddlestuff.translations import translate
+from .translations import translate
 import six
 
 __version__ = 29

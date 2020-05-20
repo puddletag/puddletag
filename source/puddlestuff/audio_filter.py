@@ -4,10 +4,9 @@ from __future__ import print_function
 import pdb, sys, logging
 from pyparsing import *
 
-import puddlestuff.findfunc as findfunc
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.util import to_string
-from puddlestuff.puddleobjects import gettaglist, timemethod
+from . import findfunc, audioinfo
+from .util import to_string
+from .puddleobjects import gettaglist, timemethod
 import time
 import re
 import six

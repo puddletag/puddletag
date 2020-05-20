@@ -10,11 +10,11 @@ import socket
 import time
 import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 
-from puddlestuff.audioinfo import DATA, isempty
-from puddlestuff.constants import CHECKBOX, COMBO, TEXT
-from puddlestuff.tagsources import (
+from ..audioinfo import DATA, isempty
+from ..constants import CHECKBOX, COMBO, TEXT
+from ..tagsources import (
     find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
-from puddlestuff.util import translate
+from ..util import translate
 import six
 
 R_ID_DEFAULT = 'discogs_id'

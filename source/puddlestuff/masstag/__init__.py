@@ -7,16 +7,14 @@ from collections import defaultdict
 from copy import deepcopy
 from operator import itemgetter
 
-import puddlestuff
-
-from puddlestuff.audioinfo import FILENAME
-from puddlestuff.constants import VARIOUS
-from puddlestuff.findfunc import filenametotag
-from puddlestuff.puddleobjects import natcasecmp, ratio
-from puddlestuff.tagsources import RetrievalError
-from puddlestuff.translations import translate
-from puddlestuff.util import sorted_split_by_field, split_by_field, to_string
-from puddlestuff.webdb import (strip as strip_fields, DEFAULT_REGEXP,
+from ..audioinfo import FILENAME
+from ..constants import VARIOUS
+from ..findfunc import filenametotag
+from ..puddleobjects import natcasecmp, ratio
+from ..tagsources import RetrievalError
+from ..translations import translate
+from ..util import sorted_split_by_field, split_by_field, to_string
+from ..webdb import (strip as strip_fields, DEFAULT_REGEXP,
     apply_regexps)
 import six
 from six.moves import map
@@ -151,7 +149,7 @@ def check_result(result, audios):
 
 def combine_tracks(track1, track2, repl=None):
     ret = defaultdict(lambda: [])
-    
+
     for key, value in list(track2.items()) + list(track1.items()):
         if isinstance(value, six.string_types):
             if value not in ret[key]:
@@ -261,7 +259,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
     assigned = {}
     matched = defaultdict(lambda: {})
     b = False
-    
+
     for f_index, f in enumerate(files):
         scores = {}
         for t_index, track in enumerate(tracks):
@@ -451,7 +449,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             else:
                 result = None
                 break
-            
+
         if result is None:
             set_status(NO_MATCHES % tsp.tag_source.name)
             not_found.append(tsp)
@@ -651,7 +649,7 @@ class Result(object):
                     return {}, []
             return self.info, self.tracks
         return {}, []
-            
+
 
 class TagSourceProfile(object):
     def __init__(self, files=None, tag_source=None, fields=None,
@@ -726,9 +724,9 @@ class TagSourceProfile(object):
         return self.results
 
 if __name__ == '__main__':
-    import puddlestuff.puddletag
-    puddlestuff.puddletag.load_plugins()
-    from puddlestuff.tagsources import tagsources
+    from .. import puddletag
+    puddletag.load_plugins()
+    from ..tagsources import tagsources
     sources = dict((t.name, t) for t in tagsources)
     source = sources['Local TSource Plugin']()
     source.applyPrefs([u'/mnt/multimedia/testlib'])

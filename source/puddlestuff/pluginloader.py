@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 import os, traceback, sys
-from puddlestuff.puddleobjects import PuddleConfig, winsettings
-from puddlestuff.constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
+from .puddleobjects import PuddleConfig, winsettings
+from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
                                    DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)
 from os.path import splitext, exists
 from configobj import ConfigObj
@@ -10,7 +10,7 @@ import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
-from puddlestuff.translations import translate
+from .translations import translate
 from six.moves import range
 from six.moves import zip
 

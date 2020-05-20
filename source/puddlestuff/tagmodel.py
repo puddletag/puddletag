@@ -38,11 +38,11 @@ except ImportError:
 from collections import defaultdict
 from .util import write, rename_file, real_filetags, to_string
 from .constants import SELECTIONCHANGED, SEPARATOR, BLANK
-import puddlestuff.confirmations as confirmations
+from . import confirmations
 import logging, shutil
-from puddlestuff.translations import translate
-from puddlestuff.util import rename_error_msg
-from puddlestuff.audio_filter import parse as filter_audio
+from .translations import translate
+from .util import rename_error_msg
+from .audio_filter import parse as filter_audio
 
 
 the_break = False

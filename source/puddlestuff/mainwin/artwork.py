@@ -4,10 +4,10 @@ import sys, os
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QBrush
-from puddlestuff.constants import RIGHTDOCK, LEFTDOCK, SELECTIONCHANGED
-from puddlestuff.puddleobjects import PicWidget, open_resourcefile
-from puddlestuff.audioinfo.util import commonimages
-from puddlestuff.constants import KEEP, BLANK
+from ..constants import RIGHTDOCK, LEFTDOCK, SELECTIONCHANGED
+from ..puddleobjects import PicWidget, open_resourcefile
+from ..audioinfo.util import commonimages
+from ..constants import KEEP, BLANK
 from PyQt5.QtSvg import QSvgGenerator
 
 from xml.dom import minidom

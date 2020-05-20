@@ -7,7 +7,7 @@ from . import audioinfo
 from .puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
     PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
 
-from puddlestuff.constants import CONFIGDIR
+from .constants import CONFIGDIR
 import six
 from six.moves import range
 

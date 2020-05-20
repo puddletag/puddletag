@@ -13,19 +13,17 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGroupB
   QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
   QWidget
 
-import puddlestuff
-
-from puddlestuff.releasewidget import ReleaseWidget
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.constants import (TEXT, COMBO, SPINBOX,
+from .releasewidget import ReleaseWidget
+from . import audioinfo, version_string
+from .constants import (TEXT, COMBO, SPINBOX,
                                    CHECKBOX, RIGHTDOCK, CONFIGDIR)
-from puddlestuff.findfunc import parsefunc
-from puddlestuff.functions import replace_regex
+from .findfunc import parsefunc, FuncError
+from .functions import replace_regex
 from .puddleobjects import (create_buddy, unique, winsettings,
     ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
-from puddlestuff.tagsources import (tagsources, status_obj, set_useragent,
+from .tagsources import (tagsources, status_obj, set_useragent,
     write_log, RetrievalError, mp3tag, SubmissionError)
-from puddlestuff.util import (isempty, pprint_tag,
+from .util import (isempty, pprint_tag,
     split_by_field, to_string, translate)
 import logging
 import six
@@ -73,7 +71,7 @@ def apply_regexps(audio, regexps=None):
                 audio[field] = val
                 if not changed and val != text:
                     changed = val
-        except puddlestuff.findfunc.FuncError:
+        except FuncError:
             continue
     return changed, audio
 
@@ -497,7 +495,7 @@ class SettingsDialog(QWidget):
         self._albumdisp.setText(albumformat)
 
         self._ua.setText(cparser.get('tagsources',
-            'useragent', 'puddletag/' + puddlestuff.version_string))
+            'useragent', 'puddletag/' + version_string))
 
         self.albumBound.setValue(
             cparser.get('tagsources', 'album_bound', 70, True))

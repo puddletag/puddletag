@@ -15,8 +15,8 @@ import six
 from six.moves import map
 
 try:
-    import puddlestuff
-    app_name = 'puddletag v%s' % puddlestuff.version_string
+    from .. import version_string
+    app_name = 'puddletag v%s' % version_string
 except ImportError:
     app_name = 'puddletag'
 
@@ -522,7 +522,7 @@ def strtime(seconds):
 
 def tag_to_json(audio, fields=None):
 
-    import puddlestuff.audioinfo as audioinfo
+    from .. import audioinfo
     if isinstance(audio, six.string_types):
         try:
             audio = audioinfo.Tag(audio)

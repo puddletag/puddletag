@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInput
   QShortcut, QVBoxLayout
 from PyQt5.QtCore import Qt, pyqtSignal
 import sys
-from puddlestuff.puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
+from ..puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
     ListButtons)
-from puddlestuff.translations import translate
+from ..translations import translate
 import six
 from six.moves import range
 

@@ -44,7 +44,7 @@ import logging
 MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
     QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
-from puddlestuff.translations import translate
+from .translations import translate
 
 # Parameters for string distance function.
 # Words that can be moved to the end of a string using a comma.
@@ -1907,7 +1907,7 @@ class PicWidget(QWidget):
     def saveToFile(self):
         """Opens a dialog that allows the user to save,
         the image in the current file to disk."""
-        from puddlestuff.functions import save_artwork
+        from .functions import save_artwork
 
         if self.currentFile is not None and self.filePattern:
             tempfilename = save_artwork(self.currentFile,
@@ -1970,7 +1970,7 @@ class PicWidget(QWidget):
     def loadPics(self, *filenames):
         """Loads pictures from the filenames"""
         #I really need to sort out these circular references.
-        from puddlestuff.tagsources import RetrievalError, urlopen 
+        from .tagsources import RetrievalError, urlopen
         images = []
         
         for filename in filenames:

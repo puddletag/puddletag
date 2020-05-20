@@ -2,10 +2,10 @@
 from __future__ import absolute_import
 import glob, os, sys
 
-from puddlestuff.constants import CONFIGDIR
-from puddlestuff.masstag import (fields_from_text, MassTagProfile,
+from ..constants import CONFIGDIR
+from ..masstag import (fields_from_text, MassTagProfile,
     TagSourceProfile)
-from puddlestuff.puddleobjects import encode_fn, PuddleConfig
+from ..puddleobjects import encode_fn, PuddleConfig
 from six.moves import range
 
 PROFILEDIR = os.path.join(CONFIGDIR, 'masstagging')
@@ -145,6 +145,6 @@ def save_mtp(mtp, filename=CONFIG):
         cparser.set(section, 'replace_fields', u','.join(tsp.replace_fields))
 
 if __name__ == '__main__':
-    from puddlestuff.tagsources import tagsources
+    from ..tagsources import tagsources
     fns = glob.glob(PROFILEDIR + u'/Local.conf')
     convert_mtps(PROFILEDIR)

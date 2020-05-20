@@ -6,20 +6,18 @@ from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt,
 from copy import deepcopy
 from functools import partial
 import os, shutil, pdb
-from puddlestuff.puddleobjects import (PuddleConfig, PuddleThread, 
+from ..puddleobjects import (PuddleConfig, PuddleThread,
     issubfolder, PuddleHeader)
-from puddlestuff.constants import LEFTDOCK, HOMEDIR, QT_CONFIG
+from ..constants import LEFTDOCK, HOMEDIR, QT_CONFIG
 import six
 from six.moves import map
 from six.moves import range
 qmutex = QMutex()
-from puddlestuff.translations import translate
-from puddlestuff.tagmodel import has_previews
-try:
-    from puddlestuff.puddlesettings import (load_gen_settings,
+from ..translations import translate
+from ..tagmodel import has_previews
+from ..puddlesettings import (load_gen_settings,
         save_gen_settings)
-except ImportError:
-    pass
+
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""

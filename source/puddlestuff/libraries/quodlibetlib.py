@@ -15,15 +15,15 @@ from PyQt5.QtWidgets import QCompleter, QDirModel, QFileDialog, QHBoxLayout, QLa
 import quodlibet.config
 from quodlibet.parse import Query
 
-import puddlestuff.audioinfo as audioinfo
+from .. import audioinfo
 
-from puddlestuff.audioinfo.tag_versions import tags_in_file
-from puddlestuff.audioinfo.util import (del_deco, fn_hash, getdeco,
+from ..audioinfo.tag_versions import tags_in_file
+from ..audioinfo.util import (del_deco, fn_hash, getdeco,
     isempty, keys_deco, lngfrequency, lnglength, lngtime, set_total, setdeco,
     stringtags, strlength, unicode_list, CaselessDict, MockTag)
-from puddlestuff.constants import HOMEDIR
-from puddlestuff.musiclib import MusicLibError
-from puddlestuff.util import to_string, translate
+from ..constants import HOMEDIR
+from ..musiclib import MusicLibError
+from ..util import to_string, translate
 import six
 from six.moves import filter
 from six.moves import range

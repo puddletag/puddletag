@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 import codecs, pdb, re, sys
-from puddlestuff.tagsources.mp3tag import open_script, Cursor,Mp3TagSource
+from ..mp3tag import open_script, Cursor,Mp3TagSource
 from six.moves import map
 import six
 from six.moves import zip

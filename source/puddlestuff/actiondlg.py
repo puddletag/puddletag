@@ -24,7 +24,7 @@ from .constants import (TEXT, COMBO, CHECKBOX, SEPARATOR,
 from .util import (open_resourcefile, PluginFunction, escape_html,
     translate, pprint_tag)
 from . import functions_dialogs
-from puddlestuff.puddleobjects import ShortcutEditor
+from .puddleobjects import ShortcutEditor
 from .puddletag import status
 import six
 from six.moves import map
@@ -781,13 +781,13 @@ class ActionWindow(QDialog):
         (name, ok) = ShortcutName(self.shortcutNames(), names[0]).getText()
         
         if name and ok:
-            import puddlestuff.puddletag
+            from . import puddletag
             shortcuts = [six.text_type(z.shortcut().toString()) for z in
-                puddlestuff.puddletag.status['actions']]
+                puddletag.status['actions']]
             (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
             name = six.text_type(name)
             
-            from puddlestuff.action_shortcuts import (
+            from .action_shortcuts import (
                 create_action_shortcut, save_shortcut)
 
             filenames = [m.filename for m in macros]

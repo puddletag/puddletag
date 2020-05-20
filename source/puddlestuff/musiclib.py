@@ -26,13 +26,13 @@ from PyQt5.QtWidgets import QAbstractItemView, QApplication, QDialog, QFrame, QH
   QListWidget, QMessageBox, QPushButton, QStackedWidget, QStyle, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
   QWidget
 
-import puddlestuff.libraries as libraries
+from . import libraries
 
-from puddlestuff.constants import RIGHTDOCK
-from puddlestuff.puddleobjects import (winsettings, OKCancel,
+from .constants import RIGHTDOCK
+from .puddleobjects import (winsettings, OKCancel,
     ProgressWin, PuddleThread)
-from puddlestuff.util import to_string
-from puddlestuff.translations import translate
+from .util import to_string
+from .translations import translate
 import six
 from six.moves import map
 from six.moves import range
@@ -471,7 +471,7 @@ control = (translate('MusicLib', 'Music Library'),
     LibraryDialog, RIGHTDOCK, False)
 
 if __name__ == "__main__":
-    from puddlestuff.libraries import quodlibetlib
+    from .libraries import quodlibetlib
     app = QApplication(sys.argv)
     lib = quodlibetlib.QuodLibet('~/.quodlibet/songs')
     qb = LibraryDialog(lib, status = {})

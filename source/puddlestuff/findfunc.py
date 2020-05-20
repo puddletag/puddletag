@@ -11,7 +11,7 @@ from pyparsing import (Word, alphas,Literal, OneOrMore, alphanums,
     Optional)
 from .puddleobjects import PuddleConfig, safe_name
 from .funcprint import pprint
-from puddlestuff.util import PluginFunction, translate, to_list, to_string
+from .util import PluginFunction, translate, to_list, to_string
 import six.moves.cPickle as pickle
 import six
 from six.moves import map

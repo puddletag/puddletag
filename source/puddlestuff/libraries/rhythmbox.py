@@ -27,17 +27,14 @@ import pdb
 from os import path
 import sys
 import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, os
-import puddlestuff.audioinfo as audioinfo
+from .. import audioinfo
 import six
 FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 from PyQt5.QtCore import QDir, QSettings, QUrl
 from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
-try:
-    import puddlestuff.musiclib as musiclib
-except:
-    import musiclib
+from .. import musiclib
 
 name = "Rhythmbox"
 description = "Rhythmbox Database"

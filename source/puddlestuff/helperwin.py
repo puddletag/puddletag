@@ -14,18 +14,17 @@ from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox,
 from PyQt5.QtGui import QPalette, QBrush, QColor
 from PyQt5.QtCore import QItemSelectionModel, Qt, pyqtRemoveInputHook, pyqtSignal
 
-from puddlestuff.util import pprint_tag
-import puddlestuff.findfunc as findfunc
-import puddlestuff.resource
+from .util import pprint_tag
+from . import findfunc, resource, audioinfo
 
 from .audioinfo import commontags, PATH, FILE_FIELDS
-from puddlestuff.constants import HOMEDIR, KEEP
+from .constants import HOMEDIR, KEEP
 from .puddleobjects import (
     get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
     PicWidget, PuddleConfig, natcasecmp)
-from puddlestuff.translations import translate
-from puddlestuff.util import to_string
+from .translations import translate
+from .util import to_string
 import six
 from six.moves import map
 from six.moves import range
@@ -892,7 +891,7 @@ class ExTags(QDialog):
             self.setWindowTitle(
                 translate('Extended Tags', 'Different files.'))
             
-            from puddlestuff.tagmodel import status
+            from .tagmodel import status
             k = status['table'].model().taginfo[0]
             common, numvalues, imagetags = commontags(audios)
             images = common['__image']
@@ -1172,7 +1171,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     dirpath = '/home/keith/Desktop/Daft.Punk-Random.Access.Memories-2013-FLAC.-NewsHost-1023'
     import glob
-    tags = list(map(puddlestuff.audioinfo.Tag, glob.glob(os.path.join(dirpath, "*.flac"))))
+    tags = list(map(audioinfo.Tag, glob.glob(os.path.join(dirpath, "*.flac"))))
     for tag in tags:
         tag.preview = {}
         tag.equal_fields = lambda: []

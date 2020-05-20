@@ -3,9 +3,9 @@ from __future__ import absolute_import
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QTextEdit, QVBoxLayout, QWidget
 from PyQt5.QtGui import QTextOption
 from PyQt5.QtCore import QMutex
-from puddlestuff.constants import RIGHTDOCK
+from ..constants import RIGHTDOCK
 import sys
-from puddlestuff.translations import translate
+from ..translations import translate
 
 mutex = QMutex()
 

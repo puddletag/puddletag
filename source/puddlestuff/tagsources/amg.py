@@ -9,12 +9,12 @@ import codecs
 import sys, pdb, re, time, os
 from functools import partial
 from collections import defaultdict
-from puddlestuff.util import split_by_tag
-from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
+from ..util import split_by_tag
+from ..tagsources import (write_log, set_status, RetrievalError,
     urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
-from puddlestuff.constants import CHECKBOX, TEXT
-from puddlestuff.puddleobjects import PuddleConfig, ratio
-from puddlestuff.audioinfo import isempty, CaselessDict
+from ..constants import CHECKBOX, TEXT
+from ..puddleobjects import PuddleConfig, ratio
+from ..audioinfo import isempty, CaselessDict
 import six
 from six.moves import zip
 

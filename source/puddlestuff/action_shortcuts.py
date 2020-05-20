@@ -4,16 +4,16 @@ from PyQt5.QtCore import QFileSystemWatcher, QItemSelectionModel, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
 import sys, os, traceback
 
-from puddlestuff.puddleobjects import (create_buddy, ListBox,
+from .puddleobjects import (create_buddy, ListBox,
     ListButtons, load_actions, OKCancel, PuddleConfig)
-from puddlestuff.constants import ACTIONDIR
+from .constants import ACTIONDIR
 from functools import partial
 from .findfunc import load_macro_info as load_action
 import pdb
-import puddlestuff.puddletag
-from puddlestuff.shortcutsettings import ActionEditorDialog
-import puddlestuff.puddleobjects as puddleobjects
-from puddlestuff.translations import translate
+from . import puddletag
+from .shortcutsettings import ActionEditorDialog
+from . import puddleobjects as puddleobjects
+from .translations import translate
 from six.moves import filter
 from six.moves import map
 import six
@@ -29,16 +29,16 @@ SHORTCUT_SECTION = 'Shortcut'
 def create_action_shortcut(name, filenames, scut_key=None, method=None, parent=None, add=False):
     
     if not method:
-        from puddlestuff.mainwin.funcs import applyaction
+        from .mainwin.funcs import applyaction
         method = applyaction
 
     if not parent:
-        parent = puddlestuff.puddletag.status['mainwin']
+        parent = puddletag.status['mainwin']
 
     shortcut = Shortcut(name, filenames, method, parent, scut_key)
 
     if add:
-        from puddlestuff.puddletag import add_shortcuts
+        from .puddletag import add_shortcuts
         add_shortcuts('&Actions', [shortcut], save=bool(scut_key))
     return shortcut
 
@@ -50,7 +50,7 @@ def create_action_shortcuts(method, parent=None):
     return menu_shortcuts
 
 def get_shortcuts(default=None):
-    from puddlestuff.puddletag import status
+    from .puddletag import status
     if status['actions']:
         ret = [_f for _f in (six.text_type(z.shortcut().toString()) for z in status['actions']) if _f]
     else:
@@ -303,7 +303,7 @@ class ShortcutEditor(QDialog):
             self._listbox.setCurrentItem(item, QItemSelectionModel.ClearAndSelect)
 
     def applySettings(self, control = None):
-        from puddlestuff.puddletag import remove_shortcuts, add_shortcuts
+        from .puddletag import remove_shortcuts, add_shortcuts
         remove_shortcuts('&Actions', self._names)
 
         f = open(FILENAME, 'w')
@@ -315,7 +315,7 @@ class ShortcutEditor(QDialog):
             cparser.set(section, NAME, item.actionName)
             cparser.set(section, FILENAMES, item.filenames)
 
-        from puddlestuff.mainwin.funcs import applyaction
+        from .mainwin.funcs import applyaction
 
         shortcuts = create_action_shortcuts(applyaction, control)
         for item, shortcut in zip(list(self._listbox.items()), shortcuts):
@@ -378,7 +378,7 @@ class ShortcutEditor(QDialog):
         else:
             self._actions = actions
 
-        from puddlestuff.puddletag import status
+        from .puddletag import status
         if status['actions']:
             shortcuts = dict((six.text_type(a.text()), six.text_type(a.shortcut().toString()))
                 for a in status['actions'])

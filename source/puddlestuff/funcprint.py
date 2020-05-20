@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import re, pdb
 from functools import partial
 from copy import copy
-from puddlestuff.constants import YES, NO
+from .constants import YES, NO
 import six
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
 

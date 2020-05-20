@@ -8,11 +8,11 @@ from sgmllib import SGMLParser
 from xml.dom import minidom, Node
 from xml.sax.saxutils import escape, quoteattr
 
-from puddlestuff.audioinfo import IMAGETYPES, get_mime, strlength
-from puddlestuff.constants import CHECKBOX, COMBO
-from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
+from ..audioinfo import IMAGETYPES, get_mime, strlength
+from ..constants import CHECKBOX, COMBO
+from ..tagsources import (find_id, write_log, RetrievalError,
     urlopen, parse_searchstring)
-from puddlestuff.util import isempty, translate
+from ..util import isempty, translate
 import six
 
 SERVER = 'http://musicbrainz.org/ws/2/'

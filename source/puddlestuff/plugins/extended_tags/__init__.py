@@ -2,13 +2,13 @@
 from __future__ import absolute_import
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QAction
-from puddlestuff.constants import (LEFTDOCK, SELECTIONCHANGED,
+from ...constants import (LEFTDOCK, SELECTIONCHANGED,
     FILESSELECTED, KEEP, BLANK)
-from puddlestuff.plugins import add_shortcuts, connect_shortcut
-from puddlestuff.helperwin import (BOLD, UNCHANGED, ITALICS, EditField,
+from ...plugins import add_shortcuts, connect_shortcut
+from ...helperwin import (BOLD, UNCHANGED, ITALICS, EditField,
     ExTags)
-from puddlestuff.puddleobjects import (settaglist)
-from puddlestuff.audioinfo import commontags
+from ...puddleobjects import (settaglist)
+from ...audioinfo import commontags
 import six
 
 class ExTagsPlugin(ExTags):

@@ -7,17 +7,17 @@ from PyQt5.QtGui import QDrag, QPixmap, QContextMenuEvent, QDoubleValidator, \
     QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
 import sys, os, pdb
-import puddlestuff.constants, puddlestuff.resource
+from .. import constants, resource
 from decimal import Decimal
-from puddlestuff.puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
+from ..puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
 from .matchfuncs import Algo, funcinfo, funcs, _ratio
 from .dupefuncs import dupesinlib
-from puddlestuff.findfunc import tagtofilename
-from puddlestuff.puddleobjects import progress, winsettings
+from ..findfunc import tagtofilename
+from ..puddleobjects import progress, winsettings
 import time
-from puddlestuff.constants import SAVEDIR, RIGHTDOCK
-from puddlestuff.plugins import add_shortcuts, connect_shortcut
-from puddlestuff.puddletag import status
+from ..constants import SAVEDIR, RIGHTDOCK
+from ..plugins import add_shortcuts, connect_shortcut
+from ..puddletag import status
 import six
 from six.moves import zip
 
@@ -435,8 +435,8 @@ class SetDialog(QDialog):
         self.close()
 
 def load_window(parent):
-    import puddlestuff.libraries.quodlibetlib as quodlibet
-    from puddlestuff.constants import HOMEDIR
+    from ..libraries import quodlibetlib as quodlibet
+    from ..constants import HOMEDIR
     lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs'))
     from Levenshtein import ratio
     algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]
@@ -452,8 +452,8 @@ def init(parent=None):
     
 
 if __name__ == "__main__":
-    import puddlestuff.libraries.quodlibetlib as quodlibet
-    from puddlestuff.constants import HOMEDIR
+    from ..libraries import quodlibetlib as quodlibet
+    from ..constants import HOMEDIR
     lib = quodlibet.QuodLibet(os.path.join(HOMEDIR, '.quodlibet/songs'))
     from Levenshtein import ratio
     algos = [Algo(['artist', 'title'], 0.80, ratio), Algo(['artist', 'title'], 0.70, ratio)]

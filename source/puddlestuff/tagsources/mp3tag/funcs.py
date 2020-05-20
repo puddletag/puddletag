@@ -16,8 +16,8 @@ try:
 except ImportError:
     from html.parser import HTMLParser
 
-from puddlestuff.functions import replace_regex
-from puddlestuff.audioinfo import CaselessDict
+from ...functions import replace_regex
+from ...audioinfo import CaselessDict
 from six.moves import zip
 
 conditionals = set(['if', 'ifnot'])

@@ -13,11 +13,11 @@ import base64, hmac, hashlib, re, time, six.moves.urllib.request, six.moves.urll
 
 from xml.dom import minidom
 
-from puddlestuff.constants import CHECKBOX, COMBO, TEXT
-from puddlestuff.tagsources import (write_log, RetrievalError,
+from ..constants import CHECKBOX, COMBO, TEXT
+from ..tagsources import (write_log, RetrievalError,
     urlopen, parse_searchstring)
-from puddlestuff.audioinfo import DATA
-from puddlestuff.util import translate
+from ..audioinfo import DATA
+from ..util import translate
 import six
 
 default_access_key = base64.b64decode('QUtJQUozS0JZUlVZUU41UFZRR0E=')

@@ -1,9 +1,9 @@
 # -*- coding: utf-8-*-
 from __future__ import absolute_import
 import sys, pdb, os
-from puddlestuff.puddleobjects import PuddleConfig, winsettings, OKCancel
-from puddlestuff.constants import CONFIGDIR
-import puddlestuff.loadshortcuts as ls
+from .puddleobjects import PuddleConfig, winsettings, OKCancel
+from .constants import CONFIGDIR
+from . import loadshortcuts as ls
 
 from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
 from PyQt5.QtWidgets import QApplication, QDialog, QFrame, QHBoxLayout, QItemDelegate, QLabel, \
@@ -13,7 +13,7 @@ import six
 from six.moves import range
 pyqtRemoveInputHook()
 
-from puddlestuff.translations import translate
+from .translations import translate
 
 
 class ActionEditorWidget(QLabel):

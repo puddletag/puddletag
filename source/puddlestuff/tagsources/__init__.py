@@ -16,11 +16,12 @@ import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-import puddlestuff
-from puddlestuff.constants import CONFIGDIR
-from puddlestuff.findfunc import tagtofilename
-from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.util import translate
+from .. import version_string
+
+from ..constants import CONFIGDIR
+from ..findfunc import tagtofilename
+from ..puddleobjects import PuddleConfig
+from ..util import translate
 import six
 
 
@@ -55,7 +56,7 @@ SAVECOVERS = False
 
 mapping = {}
 status_obj = _SignalObject()
-useragent = "puddletag/" + puddlestuff.version_string
+useragent = "puddletag/" + version_string
 
 
 def get_encoding(page, decode=False, default=None):
@@ -162,7 +163,7 @@ def get_useragent():
     if useragent:
         return useragent
     else:
-        return 'puddetag/' + puddlestuff.version_string
+        return 'puddetag/' + version_string
 
 
 def set_useragent(agent):

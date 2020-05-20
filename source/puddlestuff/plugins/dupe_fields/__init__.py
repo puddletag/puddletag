@@ -5,7 +5,7 @@ import mutagen, os, six.moves.cPickle as pickle, sys, traceback
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QInputDialog
 
-from puddlestuff.plugins import status, add_shortcuts, connect_control
+from .. import status, add_shortcuts, connect_control
 import six
 
 class _SignalObject(QObject):

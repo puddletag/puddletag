@@ -9,17 +9,17 @@ CDDB.proto = 6 # utf8 instead of latin1
 import os, pdb
 from os import path
 from gettext import ngettext
-from puddlestuff.util import to_string
+from ..util import to_string
 from collections import defaultdict
-from puddlestuff.constants import TAGSOURCE
-import puddlestuff.audioinfo as audioinfo
-from puddlestuff.tagsources import RetrievalError
-import puddlestuff
-from puddlestuff.util import translate
+from ..constants import TAGSOURCE
+from .. import audioinfo
+from ..tagsources import RetrievalError
+from .. import version_string
+from ..util import translate
 import time
 
 CLIENTINFO = {'client_name': "puddletag",
-    'client_version': puddlestuff.version_string}
+    'client_version': version_string}
 
 def sumdigits(n): return sum(map(int, str(n)))
 
@@ -200,7 +200,7 @@ info = FreeDB
 
 if __name__ == '__main__':
     #return [({'#discid': '0200d001', '#category': 'soundtrack', 'album': u'German'}, [])]
-    import puddlestuff.audioinfo as audioinfo
+    from .. import audioinfo
     import glob
     import pdb
     files = list(map(audioinfo.Tag, 

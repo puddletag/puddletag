@@ -3,9 +3,9 @@ from __future__ import absolute_import
 from PyQt5.QtWidgets import (QWidget, QLabel, QComboBox,
     QLineEdit, QHBoxLayout, QPushButton, QApplication)
 from PyQt5.QtCore import QTimer, pyqtSignal
-from puddlestuff.puddleobjects import gettaglist, create_buddy, PuddleCombo
-from puddlestuff.constants import BOTTOMDOCK
-from puddlestuff.translations import translate
+from ..puddleobjects import gettaglist, create_buddy, PuddleCombo
+from ..constants import BOTTOMDOCK
+from ..translations import translate
 import six
 
 class DelayedEdit(QLineEdit):

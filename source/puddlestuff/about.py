@@ -6,10 +6,11 @@ from PyQt5.QtCore import PYQT_VERSION_STR, Qt
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QPixmap
 import six.moves.cPickle as pickle
-import mutagen, pyparsing, puddlestuff
-from puddlestuff.puddleobjects import OKCancel
-import puddlestuff.resource
-from puddlestuff.translations import translate
+import mutagen, pyparsing
+from . import version_string, changeset
+from .puddleobjects import OKCancel
+from . import resource
+from .translations import translate
 
 desc  = translate("About", '''puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.
 
@@ -66,15 +67,15 @@ class AboutPuddletag(QDialog):
         lib_versions = ', '.join(['<b>PyQt  %s' % PYQT_VERSION_STR,
             'Mutagen %s' % mutagen.version_string,
             'Pyparsing %s</b>' %pyparsing.__version__])
-        if puddlestuff.changeset:
+        if changeset:
             version = translate("About",
                 '<h2>puddletag %1 (Changeset %2)</h2> %3')
-            version = version.arg(puddlestuff.version_string)
-            version = version.arg(puddlestuff.changeset).arg(lib_versions)
+            version = version.arg(version_string)
+            version = version.arg(changeset).arg(lib_versions)
         else:
             version = translate("About",
                 '<h2>puddletag %1</h2> %2')
-            version = version.arg(puddlestuff.version_string)
+            version = version.arg(version_string)
             version = version.arg(lib_versions)
         label = QLabel(version)
 

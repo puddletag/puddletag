@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from __future__ import print_function
-from puddlestuff.constants import CONFIGDIR
-from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.translations import translate
+from .constants import CONFIGDIR
+from .puddleobjects import PuddleConfig
+from .translations import translate
 import os
 
 from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout

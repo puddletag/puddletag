@@ -13,12 +13,12 @@ from errno import EEXIST
 import os, pdb, re
 from .puddleobjects import (encode_fn, decode_fn, issubfolder, natural_sort_key,
     open_resourcefile, safe_name)
-import puddlestuff.translations
+from . import translations, constants
 import six
 from six.moves import map
-translate = puddlestuff.translations.translate
+translate = translations.translate
 import errno, traceback
-from puddlestuff.constants import BLANK, SEPARATOR, LOG_FILENAME
+from .constants import BLANK, SEPARATOR, LOG_FILENAME
 from operator import itemgetter
 
 import logging
@@ -368,7 +368,7 @@ class PluginFunction(object):
         newargs = []
         for arg in args:
             arg = list(arg)
-            if arg[1] == puddlestuff.constants.CHECKBOX:
+            if arg[1] == constants.CHECKBOX:
                 arg[2] = six.text_type(bool(arg[2]))
             newargs.append(arg)
         self.args = newargs

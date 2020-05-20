@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 from PyQt5.QtWidgets import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
                          QVBoxLayout, QWidget, QLineEdit)
-from puddlestuff.translations import translate
+from .translations import translate
 
 def sanitize(type_, value, default=None):
     if type_ is int:

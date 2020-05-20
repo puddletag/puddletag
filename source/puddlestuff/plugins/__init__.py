@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from collections import defaultdict
-from puddlestuff.constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGNALS
-from puddlestuff.puddlesettings import add_config_widget, SettingsError
+from ..constants import ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED, ENABLESIGNALS
+from ..puddlesettings import add_config_widget, SettingsError
 import logging
 
 status = {}

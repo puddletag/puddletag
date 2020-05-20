@@ -46,7 +46,7 @@ from operator import itemgetter
 
 import pyparsing
 
-import puddlestuff.audioinfo as audioinfo
+from . import audioinfo
 from .puddleobjects import (PuddleConfig, safe_name, fnmatch,
     dircmp, natcasecmp, encode_fn, decode_fn)
 import six
