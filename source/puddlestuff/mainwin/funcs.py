@@ -290,7 +290,7 @@ def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='
     for group_num, tags in enumerate(six.itervalues(folders)):
         if numtracks == -2:
             total = len(tags)
-        elif numtracks is -1:
+        elif numtracks == -1:
             total = None
         elif numtracks >= 0:
             total = numtracks
