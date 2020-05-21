@@ -807,7 +807,7 @@ def load_actions():
 def open_resourcefile(filename):
     f = QFile(filename)
     f.open(QIODevice.ReadOnly)
-    return StringIO(str(f.readAll()))
+    return StringIO(str(f.readAll().data(), encoding='utf-8'))
 
 def progress(func, pstring, maximum, threadfin = None):
     """To be used for functions that need a threaded progressbar.
