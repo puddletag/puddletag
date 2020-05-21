@@ -1145,6 +1145,7 @@ class TagModel(QAbstractTableModel):
     def sibling(self, row, column, index = QModelIndex()):
         if row < (self.rowCount() - 1) and row >= 0:
             return self.index(row + 1, column)
+        return QModelIndex();
 
     def sort(self, column, order=Qt.DescendingOrder):
         try:
