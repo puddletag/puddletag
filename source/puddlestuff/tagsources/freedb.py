@@ -52,9 +52,9 @@ def convert_info(info):
         'disc_id': '#discid',
         'title': 'album'}
 
-    for key, value in info.items():
-        if key not in ['disc_id', 'category'] and isinstance(value, str):
-            info[key] = value.decode('utf8', 'replace')
+    for key in list(info.keys()):
+        if key not in ['disc_id', 'category'] and isinstance(info[key], str):
+            info[key] = decode_str(info[key])
         if key in keys:
             info[keys[key]] = info[key]
             del(info[key])

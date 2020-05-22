@@ -213,7 +213,8 @@ def rename_file(audio, tags):
     return renamed
 
 def split_by_tag(tracks, main='artist', secondary='album'):
-    get = lambda t,f : to_string(track.get(f)).strip()
+    def get(t, f):
+        return to_string(t.get(f)).strip()
     
     if secondary:
         ret = defaultdict(lambda: defaultdict(lambda: []))

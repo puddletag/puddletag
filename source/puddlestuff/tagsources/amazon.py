@@ -58,7 +58,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
     query_dictionary["Timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ",
         time.gmtime())
 
-    items = [(key, value.encode('utf8')) for key, value in
+    items = [(key, value) for key, value in
         query_dictionary.items()]
     query = six.moves.urllib.parse.urlencode(sorted(items))
 

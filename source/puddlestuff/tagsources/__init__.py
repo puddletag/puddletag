@@ -79,7 +79,7 @@ def get_encoding(page, decode=False, default=None):
         encoding = default
 
     if decode:
-        return encoding, page.decode(encoding, 'replace') if encoding else page
+        return encoding  # , page.decode(encoding, 'replace') if encoding else page
     else:
         return encoding
 
@@ -101,9 +101,9 @@ def iri_to_uri(iri):
     parts = six.moves.urllib.parse.urlparse(iri)
     return six.moves.urllib.parse.urlunparse(
         part.encode('idna') if i == 1
-        else url_encode_non_ascii(part.encode('utf-8'))
+        else part.encode('utf-8')
         for i, part in enumerate(parts)
-    )
+    ).decode()
 
 
 def parse_searchstring(text):
@@ -197,9 +197,9 @@ def urlopen(url, mask=True, code=False):
             raise RetrievalError(
                 translate("Tag Sources", "Page doesn't exist"))
         if code:
-            return page.read(), page.code
+            return page.read().decode(), page.code
         else:
-            return page.read()
+            return page.read().decode()
     except six.moves.urllib.error.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
