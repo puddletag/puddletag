@@ -5,7 +5,7 @@ from PyQt5.QtCore import QMutex, Qt
 from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
 from PyQt5.QtGui import QFont
 from ..constants import LEFTDOCK, SELECTIONCHANGED
-from ..puddleobjects import PuddleThread, natcasecmp
+from ..puddleobjects import PuddleThread, natural_sort_key
 from .. import audioinfo
 from ..audioinfo import tag_versions
 import pdb, time
