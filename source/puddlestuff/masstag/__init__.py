@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from __future__ import print_function
-import pdb, string
+import pdb
 
 from collections import defaultdict
 from copy import deepcopy
@@ -171,7 +171,7 @@ def combine_tracks(track1, track2, repl=None):
 def fields_from_text(text):
     if not text:
         return []
-    return [_f for _f in map(string.strip, text.split(u',')) if _f]
+    return [_f for _f in map(str.strip, text.split(u',')) if _f]
 
 def dict_difference(dict1, dict2):
     """Returns a dictonary containing key/value pairs from dict2 where key
