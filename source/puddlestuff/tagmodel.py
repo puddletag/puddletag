@@ -1469,7 +1469,10 @@ class TagTable(QTableView):
             self.resizeColumnsToContents()
             self.model().modelReset.connect(self.resizeColumnsToContents)
         else:
-            self.disconnect()
+            try:
+                self.model().modelReset.connect(self.resizeColumnsToContents)
+            except TypeError:
+                logging.debug("Tried to disconnect un-connected Resize-Slot")
 
     def _getSelectedTags(self):
         columns = dict([(v,k) for k,v in self.model().columns.items()])
