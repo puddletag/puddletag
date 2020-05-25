@@ -1,3 +1,5 @@
+**WARNING**: this is a development branch to update puddletag to PyQt5 and Python3; expect bugs, if so report them in the issues session of github.
+
 # puddletag
 
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
