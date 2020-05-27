@@ -747,8 +747,7 @@ def settaglist(tags):
     cparser = PuddleConfig()
     filename = os.path.join(cparser.savedir, 'usertags')
     f = open(filename, 'w')
-    text = u'\n'.join(sorted([z for z in tags if not z.startswith('__')]))
-    text = text.encode('utf8')
+    text = '\n'.join(sorted([z for z in tags if not z.startswith('__')]))
     f.write(text)
     f.close()
 

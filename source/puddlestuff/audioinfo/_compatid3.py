@@ -79,8 +79,7 @@ class CompatID3(ID3):
         order = dict(list(zip(order, list(range(len(order))))))
         last = len(order)
         frames = list(self.items())
-        frames.sort(lambda a, b: cmp(order.get(a[0][:4], last),
-                                     order.get(b[0][:4], last)))
+        frames.sort(key=lambda a: order.get(a[0][:4], last))
 
         framedata = [self.__save_frame(frame, v2) for (key, frame) in frames]
         framedata.extend([data for data in self.unknown_frames
@@ -93,7 +92,7 @@ class CompatID3(ID3):
                 if err.errno != ENOENT: raise
             return
 
-        framedata = ''.join(framedata)
+        framedata = b''.join(framedata)
         framesize = len(framedata)
 
         if filename is None: filename = self.filename
@@ -112,11 +111,11 @@ class CompatID3(ID3):
 
             if insize >= framesize: outsize = insize
             else: outsize = (framesize + 1023) & ~0x3FF
-            framedata += '\x00' * (outsize - framesize)
+            framedata += b'\x00' * (outsize - framesize)
 
             framesize = BitPaddedInt.to_str(outsize, width=4)
             flags = 0
-            header = pack('>3sBBB4s', 'ID3', v2, 0, flags, framesize)
+            header = pack('>3sBBB4s', b'ID3', v2, 0, flags, framesize)
             data = header + framedata
 
             if (insize < outsize):
@@ -150,7 +149,7 @@ class CompatID3(ID3):
         if v2 == 3: bits=8
         else: bits=7
         datasize = BitPaddedInt.to_str(len(framedata), width=4, bits=bits)
-        header = pack('>4s4sH', type(frame).__name__, datasize, flags)
+        header = pack('>4s4sH', bytes(type(frame).__name__, encoding='utf-8'), datasize, flags)
         return header + framedata
 
     def update_to_v23(self):

@@ -71,7 +71,7 @@ def add(text,text1):
 _padding = u'0'
 def _pad(text, numlen):
     if len(text) < numlen:
-        text = _padding * ((numlen - len(text)) / len(_padding)) + text
+        text = _padding * ((numlen - len(text)) // len(_padding)) + text
     return text
 
 def autonumbering(r_tags, minimum=1, restart=False, padding=1, state=None):
@@ -79,7 +79,6 @@ def autonumbering(r_tags, minimum=1, restart=False, padding=1, state=None):
 oi,spinbox,1
 aoeu,check, False
 au,spinbox,1'''
-
     if 'autonumbering' not in state:
         dircount = defaultdict(lambda: 0)
         count = {}
