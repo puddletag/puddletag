@@ -268,6 +268,7 @@ class PuddleConfig(object):
             fo.write(json.dumps(dict(self.data), indent=2))
 
     def _setFilename(self, filename):
+        logging.debug(f'reading config file {filename}')
         self._filename = filename
         self.savedir = os.path.dirname(filename)
         self.reload()
