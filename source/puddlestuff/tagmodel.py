@@ -776,7 +776,7 @@ class TagModel(QAbstractTableModel):
             return None
         if orientation == Qt.Horizontal:
             try:
-                return self.headerdata[section][0]
+                return str(self.headerdata[section][0])
             except IndexError:
                 return None
         return int(section + 1)
