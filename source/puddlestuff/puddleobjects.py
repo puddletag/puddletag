@@ -888,6 +888,7 @@ def progress(func, pstring, maximum, threadfin = None):
 
         def threadexit(*args):
             if args[0] == -1:
+                win.close()
                 win.destroy()
                 QApplication.processEvents()
                 if threadfin:                    

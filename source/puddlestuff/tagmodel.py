@@ -1866,6 +1866,9 @@ class TagTable(QTableView):
         else:
             self.dirs = dirs
 
+        if not files and not dirs:
+          return
+
         tags = []
         if len(dirs) == 1:
             reading_dir = translate("Defaults",
