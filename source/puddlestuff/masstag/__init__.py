@@ -20,6 +20,8 @@ import six
 from six.moves import map
 from six.moves import zip
 
+import functools
+
 def set_status(v):
     print(v)
 
@@ -485,11 +487,10 @@ def replace_tracknumbers(files, tracks):
     if len(files) != len(tracks):
         return
 
-    files = sorted(files, cmp=natcasecmp,
-        key=lambda f: to_string(f.get('track', f[FILENAME])))
+    files = sorted(files, key=lambda f: to_string(f.get('track', f[FILENAME])))
     try:
-        tracks = sorted(tracks, cmp=natcasecmp, key=itemgetter('track'))
-        tracks = sorted(tracks, cmp=natcasecmp, key=itemgetter('discnumber'))
+        tracks = sorted(tracks, key=itemgetter('track'))
+        tracks = sorted(tracks, key=itemgetter('discnumber'))
     except KeyError:
         return
 
