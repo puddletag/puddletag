@@ -146,7 +146,7 @@ def undo_last():
 class _SignalObject (QObject):
     enable_preview_mode = pyqtSignal(name='enable_preview_mode')
     disable_preview_mode = pyqtSignal(name='disable_preview_mode')
-    setpreview = pyqtSignal([list], [dict], name='setpreview')
+    setpreview = pyqtSignal(object, name='setpreview')
     writepreview = pyqtSignal(name='writepreview')
 
 obj = _SignalObject()

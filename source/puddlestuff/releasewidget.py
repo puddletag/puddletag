@@ -523,7 +523,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 class ReleaseWidget(QTreeView):
     exact = pyqtSignal(dict, name='exact')
     exactMatches = pyqtSignal(dict, name='exactMatches')
-    preview = pyqtSignal([list], [dict], name='preview')
+    preview = pyqtSignal(object, name='preview')
     infoChanged = pyqtSignal(six.text_type, name='infoChanged')
     statusChanged = pyqtSignal(six.text_type, name='statusChanged')
     exactChanged = pyqtSignal(object, name='exactChanged')

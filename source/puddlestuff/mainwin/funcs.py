@@ -544,7 +544,7 @@ def update_status(enable = True):
         emit('formatstatus', bold_error % e.message)
 
 class _SignalObject (QObject):
-    writeselected = pyqtSignal([object], [list], [dict], name='writeselected')
+    writeselected = pyqtSignal(object, name='writeselected')
     ftstatus = pyqtSignal(str, name='ftstatus')
     tfstatus = pyqtSignal(six.text_type, name='tfstatus')
     renamedirstatus = pyqtSignal(six.text_type, name='renamedirstatus')

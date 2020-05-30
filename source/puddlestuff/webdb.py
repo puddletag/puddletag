@@ -564,7 +564,7 @@ def tag_source_search(ts, group, files):
 
 class MainWin(QWidget):
     writepreview = pyqtSignal(name='writepreview')
-    setpreview = pyqtSignal([list], [dict], name='setpreview')
+    setpreview = pyqtSignal(object, name='setpreview')
     clearpreview = pyqtSignal(name='clearpreview')
     enable_preview_mode = pyqtSignal(name='enable_preview_mode')
     logappend = pyqtSignal(str, name='logappend')
