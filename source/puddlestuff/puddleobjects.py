@@ -1754,7 +1754,7 @@ class PicWidget(QWidget):
 
         if not filename:
             default_fn = os.path.join(
-                os.path.dirname(self.lastfilename), 'folder.jpg').encode('utf8')
+                os.path.dirname(self.lastfilename), 'folder.jpg')
             selectedFile = QFileDialog.getOpenFileName(self,
                 translate("Artwork", 'Select Image...'), default_fn,
                 translate("Artwork", "JPEG & PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)"))
@@ -1925,7 +1925,7 @@ class PicWidget(QWidget):
             selectedFile = QFileDialog.getSaveFileName(
                 self,
                 translate("Artwork", 'Save artwork as...'),
-                tempfilename.encode('utf8'),
+                tempfilename,
                 translate("Artwork", "JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)"))
             filename = selectedFile[0]
             if not filename:
@@ -1987,7 +1987,7 @@ class PicWidget(QWidget):
                     data = urlopen(filename)
                 except (ValueError, RetrievalError):
                     try:
-                        data = open(filename, 'r').read()
+                        data = open(filename, 'rb').read()
                     except EnvironmentError:
                         continue
 
