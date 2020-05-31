@@ -197,9 +197,9 @@ def urlopen(url, mask=True, code=False):
             raise RetrievalError(
                 translate("Tag Sources", "Page doesn't exist"))
         if code:
-            return page.read().decode(), page.code
+            return page.read(), page.code
         else:
-            return page.read().decode()
+            return page.read()
     except six.moves.urllib.error.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)

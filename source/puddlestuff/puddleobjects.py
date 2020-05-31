@@ -1974,6 +1974,8 @@ class PicWidget(QWidget):
         from .tagsources import RetrievalError, urlopen
         images = []
         
+        if isinstance(filenames, tuple):
+            filenames = filenames[0]
         for filename in filenames:
             image = QImage()
             if filename.startswith(":/"):
