@@ -541,7 +541,7 @@ class MainWin(QMainWindow):
             return
         try:
             files = m3u.readm3u(filename)
-            self.loadFiles.emit(filename, files, True)
+            self.loadFiles.emit(files, None, None, None, filename)
         except (OSError, IOError) as e:
             QMessageBox.information(self._table,
                 translate("Defaults", 'Error'),
