@@ -22,7 +22,7 @@ from .constants import HOMEDIR, KEEP
 from .puddleobjects import (
     get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
-    PicWidget, PuddleConfig, natcasecmp)
+    PicWidget, PuddleConfig, natsort_case_key)
 from .translations import translate
 from .util import to_string
 import six
@@ -520,7 +520,7 @@ class StatusWidgetCombo(QComboBox):
         self.statusColors = colors
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
         
-        items = sorted(items, cmp=natcasecmp)
+        items = sorted(items, key=natsort_case_key)
         if len(items) > 1:
             items.append(r'\\'.join(items))
         self.addItem(KEEP)

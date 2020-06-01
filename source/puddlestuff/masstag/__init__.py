@@ -10,7 +10,7 @@ from operator import itemgetter
 from ..audioinfo import FILENAME
 from ..constants import VARIOUS
 from ..findfunc import filenametotag
-from ..puddleobjects import natcasecmp, ratio
+from ..puddleobjects import natsort_case_key, ratio
 from ..tagsources import RetrievalError
 from ..translations import translate
 from ..util import sorted_split_by_field, split_by_field, to_string
@@ -119,10 +119,10 @@ class MassTagFlag(object):
 def brute_force_results(audios, retrieved):
     matched = {}
 
-    audios = sorted(audios, natcasecmp,
+    audios = sorted(audios, natsort_case_key,
         lambda f: to_string(f.get('track', f['__filename'])))
 
-    retrieved = sorted(retrieved, natcasecmp,
+    retrieved = sorted(retrieved, natsort_case_key,
         lambda t: to_string(t.get('track', t.get('title' , u''))))
 
     for audio, result in zip(audios, retrieved):

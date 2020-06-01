@@ -4,7 +4,7 @@ import sys, os
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
 from ..constants import RIGHTDOCK
-from ..puddleobjects import PuddleThread, natcasecmp, PuddleDock
+from ..puddleobjects import PuddleThread, PuddleDock
 from .. import audioinfo
 import pdb
 from ..audioinfo.util import (strlength, strbitrate, strfrequency, usertags, PATH,

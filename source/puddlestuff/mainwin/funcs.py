@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 import json
 from .. import findfunc
-from ..puddleobjects import (dircmp, safe_name, natcasecmp,
+from ..puddleobjects import (dircmp, safe_name,
     LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
 from .. import actiondlg
 from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal

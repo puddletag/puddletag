@@ -602,21 +602,12 @@ def unique(seq, stable = False):
 
 class compare:
     "Natural sorting class."
-    def try_int(self, s):
-        "Convert to integer if possible."
-        try: return int(s)
-        except: return s
-    def natsort_key(self, s):
+    def natsort_case_key(self, s):
         "Used internally to get a tuple by which s is sorted."
-        return list(map(self.try_int, re.findall(r'(\d+|\D+)', s)))
-    def natcmp(self, a, b):
-        "Natural string comparison, case sensitive."
-        return cmp(self.natsort_key(a), self.natsort_key(b))
-    def natcasecmp(self, a, b):
-        "Natural string comparison, ignores case."
-        return self.natcmp(u"".join(a).lower(), u"".join(b).lower())
+        convert = lambda text: int(text) if text.isdigit() else text.lower()
+        return [convert(c) for c in re.split('([0-9]+)', s)]
 
-natcasecmp = compare().natcasecmp
+natsort_case_key = compare().natsort_case_key
 
 # https://stackoverflow.com/a/16090640
 def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
