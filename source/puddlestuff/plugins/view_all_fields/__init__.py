@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDi
 
 from ...constants import SAVEDIR
 from .. import add_config_widget, add_shortcuts, status
-from ...puddleobjects import (natcasecmp, ListButtons,
+from ...puddleobjects import (natsort_case_key, ListButtons,
     ListBox, PuddleConfig)
 from ...tagmodel import TableHeader
 from ...translations import translate
@@ -47,7 +47,7 @@ def show_all_fields(fields=None):
         if f in keys:
             keys.remove(f)
 
-    data = [(k, k) for k in fields + sorted(keys, cmp=natcasecmp)]
+    data = [(k, k) for k in fields + sorted(keys, key=natsort_case_key)]
     tb = status['table']
     tb.model().setHeader(data)
     hd = TableHeader(Qt.Horizontal, data)

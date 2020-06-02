@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLa
   QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
 from ..constants import RIGHTDOCK
-from ..puddleobjects import (create_buddy, natcasecmp, ratio,
+from ..puddleobjects import (create_buddy, ratio,
     winsettings, ListButtons, ListBox, OKCancel, PuddleConfig, PuddleThread)
 from ..tagsources import RetrievalError
 from ..translations import translate

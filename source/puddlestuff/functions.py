@@ -48,7 +48,7 @@ import pyparsing
 
 from . import audioinfo
 from .puddleobjects import (PuddleConfig, safe_name, fnmatch,
-    dircmp, natcasecmp, encode_fn, decode_fn)
+    dircmp, natsort_case_key, encode_fn, decode_fn)
 import six
 from six.moves import map
 from six.moves import range
@@ -851,15 +851,15 @@ def sort_field(m_text, order='Ascending', matchcase=False):
 Match &Case, check"""
     text = m_text
     if not matchcase:
-        cmp = natcasecmp
+        key = natsort_case_key
     else:
-        cmp = None
+        key = None
     if isinstance(text, six.string_types):
         return text
     if order == u'Ascending':
-        return sorted(text, cmp)
+        return sorted(text, key=key)
     else:
-        return sorted(text, cmp, reverse=True)
+        return sorted(text, key=key, reverse=True)
 
 def split_by_sep(m_text, sep):
     """Split fields using separator, "Split using separator $0: sep='$1'"
