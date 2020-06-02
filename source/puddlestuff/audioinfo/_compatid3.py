@@ -144,7 +144,7 @@ class CompatID3(ID3):
     def __save_frame(self, frame, v2):
         flags = 0
         if self.PEDANTIC and isinstance(frame, TextFrame):
-            if len(str(frame)) == 0: return ''
+            if len(str(frame)) == 0: return b''
         framedata = frame._writeData()
         if v2 == 3: bits=8
         else: bits=7
