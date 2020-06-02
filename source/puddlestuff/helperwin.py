@@ -321,11 +321,9 @@ class ImportTextFile(QDialog):
 
             ret = QMessageBox.question(self,
                 translate('Text File -> Tag', "Error"),
-                translate('Text File -> Tag', errormsg.arg(filename)),
-                translate('Text File -> Tag', "&Yes"),
-                translate('Text File -> Tag', "&No"))
+                translate('Text File -> Tag', errormsg.arg(filename)))
 
-            if ret == 0:
+            if ret == QMessageBox.Yes:
                 return self.openFile()
             else:
                 return detail

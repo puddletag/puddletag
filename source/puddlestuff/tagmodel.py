@@ -142,8 +142,7 @@ def has_previews(tags=None, parent=None, msg=None):
             break
 
     if previews and confirmations.should_show('preview_mode'):
-        ret = QMessageBox.question(parent, 'puddletag', msg,
-            QMessageBox.Yes, QMessageBox.No)
+        ret = QMessageBox.question(parent, 'puddletag', msg)
         if ret != QMessageBox.Yes:
             return True
     return False
@@ -1636,12 +1635,10 @@ class TagTable(QTableView):
     
         if delfiles and showmsg:
             result = QMessageBox.question(self, "puddletag",
-                translate("Table", "Are you sure you want to delete the selected files?"),
-                translate("Defaults", "&Yes"),
-                translate("Defaults", "&No"), "", 1, 1)
+                translate("Table", "Are you sure you want to delete the selected files?"))
         else:
-            result = 0
-        if result != 0:
+            result = QMessageBox.Yes
+        if result != QMessageBox.Yes:
             return
         selected = self.selectedTags
         selectedRows = self.selectedRows
@@ -2034,12 +2031,10 @@ class TagTable(QTableView):
                         translate("Table",
                                 "An error occurred while trying to play the selected files: <b>%1</b> "
                                 "<br />Does the music player you defined (<b>%2</b>)"
-                                " exist?").arg(detail.strerror).arg(" ".join(self.playcommand)),
-                            QMessageBox.Ok, QMessageBox.NoButton)
+                                " exist?").arg(detail.strerror).arg(" ".join(self.playcommand)))
                 else:
                     QMessageBox.critical(self, translate("Defaults", "Error"),
-                        translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(" ".join(self.playcommand)),
-                            QMessageBox.Ok, QMessageBox.NoButton)
+                        translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(" ".join(self.playcommand)))
     
     def previewMode(self, value):
         if not value:

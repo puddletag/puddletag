@@ -213,9 +213,7 @@ class LibChooseDialog(QDialog):
                 'An error occured while loading the %1 library: <b>%2</b>')
             msg = msg.arg(self.currentlib['name']).arg(error_msg)
             
-            QMessageBox.critical(self, translate('Defaults', "Error"),
-                msg, QMessageBox.Ok, QMessageBox.NoButton,
-                QMessageBox.NoButton)
+            QMessageBox.critical(self, translate('Defaults', "Error"), msg)
         else:
             dialog = partial(LibraryDialog, library)
             self.adddock.emit(

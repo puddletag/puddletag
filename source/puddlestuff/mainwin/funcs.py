@@ -149,13 +149,21 @@ def check_copy_data(data):
             "Do you want to go ahead?"))
 
         msgbox.setIcon(QMessageBox.Question)
-        msgbox.addButton(translate("Defaults", "&Yes"),
+        yesBtn = msgbox.addButton(translate("Defaults", "&Yes"),
             QMessageBox.YesRole)
-        msgbox.addButton(translate("Defaults", "No"),
+        noBtn = msgbox.addButton(translate("Defaults", "No"),
             QMessageBox.NoRole)
-        msgbox.addButton(translate("Messages", "Copy without images."),
+        noImgBtn = msgbox.addButton(translate("Messages", "Copy without images."),
             QMessageBox.ApplyRole)
-        return msgbox.exec_()
+
+        msgbox.exec_()
+
+        if msgbox.lockedButton() is yesBtn:
+          return 0
+        elif msgbox.lockedButton() is noBtn:
+          return 1
+        elif msgbox.lockedButton() is noImgBtn:
+          return 2
     else:
         return 0
 

@@ -41,8 +41,6 @@ from six import StringIO
 import itertools
 import logging
 
-MSGARGS = (QMessageBox.Warning, QMessageBox.Yes or QMessageBox.Default,
-    QMessageBox.No or QMessageBox.Escape, QMessageBox.YesAll)
 from functools import partial
 from .translations import translate
 
@@ -485,8 +483,7 @@ def get_languages(dirs=None):
     return ret
 
 def singleerror(parent, msg):
-    QMessageBox.warning(parent, 'Error', msg, QMessageBox.Ok,
-        QMessageBox.NoButton)
+    QMessageBox.warning(parent, 'Error', msg)
 
 def errormsg(parent, msg, maximum):
     """Shows a messagebox containing an error message indicating that
@@ -502,13 +499,16 @@ def errormsg(parent, msg, maximum):
         False if No.
         None if just yes."""
     if maximum > 1:
-        mb = QMessageBox(translate("Defaults", 'Error'),
+        mb = QMessageBox(QMessageBox.Warning, translate("Defaults", 'Error'),
             msg + translate("Defaults", "<br /> Do you want to continue?"),
-            *(MSGARGS + (parent, )))
+            QMessageBox.Yes or QMessageBox.No or QMessageBox.YesToAll,
+            parent)
+        mb.setDefaultButton(QMessageBox.Yes)
+        mb.setEscapeButton(QMessageBox.No)
         ret = mb.exec_()
         if ret == QMessageBox.No:
             return False
-        elif ret == QMessageBox.YesAll:
+        elif ret == QMessageBox.YesToAll:
             return True
     else:
         singleerror(parent, msg)

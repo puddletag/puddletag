@@ -545,12 +545,10 @@ class MainWin(QMainWindow):
         except (OSError, IOError) as e:
             QMessageBox.information(self._table,
                 translate("Defaults", 'Error'),
-                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror),
-                QMessageBox.Ok, QMessageBox.NoButton)
+                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror))
         except Exception as e:
             QMessageBox.information(self._table, translate("Defaults", 'Error'),
-                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(six.text_type(e)),
-                QMessageBox.Ok)
+                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(six.text_type(e)))
 
     def openDir(self, filename=None, append=False):
         """Opens a folder. If filename != None, then
