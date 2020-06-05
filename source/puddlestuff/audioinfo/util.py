@@ -509,12 +509,13 @@ def strlength(value):
     """Converts the value in seconds to HH:MM:SS format.
 
     If HH = 00: returns the value in MM:SS format"""
-    seconds = six.text_type(int(value % 60)).zfill(2)
-    if value/3600 >= 1:
-        return u'%d:%s:%s' % (int(value / 3600),
-            six.text_type(int(value % 3600) / 60).zfill(2), seconds)
+    seconds = value % 60
+    minutes = (value % 3600) // 60
+    hours = value // 3600
+    if hours > 0:
+        return '%02d:%02d:%02d' % (hours, minutes, seconds)
     else:
-        return u"%d:%s" % (value / 60, seconds)
+        return '%02d:%02d' % (minutes, seconds)
 
 def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
