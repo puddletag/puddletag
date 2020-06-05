@@ -526,7 +526,6 @@ class ReleaseWidget(QTreeView):
     preview = pyqtSignal(object, name='preview')
     infoChanged = pyqtSignal(six.text_type, name='infoChanged')
     statusChanged = pyqtSignal(six.text_type, name='statusChanged')
-    exactChanged = pyqtSignal(object, name='exactChanged')
     retrieving = pyqtSignal(name='retrieving')
     retrievalDone = pyqtSignal(name='retrievalDone')
     itemSelectionChanged = pyqtSignal(name='itemSelectionChanged')
@@ -735,7 +734,7 @@ class ReleaseWidget(QTreeView):
         self.mapping = mapping
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     model = TreeModel()
     model.setupModelData(data)
 

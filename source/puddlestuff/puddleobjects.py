@@ -279,17 +279,14 @@ class PuddleConfig(object):
 
     filename = property(_getFilename, _setFilename)
 
-def _setupsaves(func):
+def _getSettings():
     filename = os.path.join(CONFIGDIR, 'windowsizes')
-    settings = QSettings(filename, QSettings.IniFormat)
-    return lambda x, y: func(x, y, settings)
+    return QSettings(filename, QSettings.IniFormat)
 
-@_setupsaves
-def savewinsize(name, dialog, settings):
+def savewinsize(name, dialog, settings = _getSettings()):
     settings.setValue(name, dialog.saveGeometry())
 
-@_setupsaves
-def winsettings(name, dialog, settings):
+def winsettings(name, dialog, settings = _getSettings()):
     if settings.value(name):
         dialog.restoreGeometry(settings.value(name))
     cevent = dialog.closeEvent

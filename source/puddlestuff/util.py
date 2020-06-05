@@ -129,7 +129,7 @@ def equal(audio1, audio2, tags=('artist', 'album', 'title')):
 def fields_from_text(text):
     if not text:
         return []
-    return [_f for _f in map(string.strip, text.split(u',')) if _f]
+    return [_f for _f in map(str.strip, text.split(',')) if _f]
 
 def matching(audios, listing):
     ret = {}

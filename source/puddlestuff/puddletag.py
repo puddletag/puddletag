@@ -408,16 +408,6 @@ class MainWin(QMainWindow):
         if save:
             shortcutsettings.ActionEditorDialog.saveSettings(status['actions'])
 
-    def _status(self, controls):
-        x = {}
-        def status(k):
-            if k in x: return x[value]()
-        controls = list(controls.values())
-        connect = c.getstatus.connect(status)
-        [x.update(z.status) for z in controls]
-        self._status = x
-        self.connect(control, 'getstatus', getstatus)
-
     def _clearPreview(self):
         self._table.model().unSetTestData()
 
@@ -840,7 +830,7 @@ class MainWin(QMainWindow):
 
         [setRowData(row, d, undo=False, temp=True) for row, d in
             zip(rows, tags)]
-        columns = [_f for _f in map(model.columns.get, d) if _f]
+        columns = set([model.columns.get(tagname) for tag in tags for tagname in tag if tagname in model.columns])
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))

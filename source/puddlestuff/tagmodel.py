@@ -310,7 +310,7 @@ def _Tag(model):
         try:
             fileobj = open(filename, "rb")
         except IOError:
-            logging.info("Can't open file", filename)
+            logging.info("Can't open file %s", filename)
             return None
 
         match = extension_regex.search(filename)
@@ -511,6 +511,7 @@ class TagModel(QAbstractTableModel):
         self._previewUndo = defaultdict(lambda: {})
         self.sortFields = []
         self.reverseSort = True
+        self._savedundolevel = None
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)

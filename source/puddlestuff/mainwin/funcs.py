@@ -63,7 +63,7 @@ def auto_numbering(parent=None):
 
     win = helperwin.AutonumberDialog(parent, 1, numtracks, False)
     win.setModal(True)
-    win.newtracks.connect(partial(number_tracks, tags))
+    win.newtracks.connect(partial(number_tracks, tags, parent))
     win.show()
 
 def clipboard_to_tag(parent=None):
@@ -259,7 +259,7 @@ def _pad(trknum, total, padlen):
         text = six.text_type(trknum).zfill(padlen)
     return text
 
-def number_tracks(tags, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False):
+def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False):
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.

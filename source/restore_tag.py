@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import traceback
 import mutagen, os, sys
 try:
   import six.moves.cPickle as pickle

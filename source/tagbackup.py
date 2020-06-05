@@ -8,7 +8,7 @@ import base64, json, os, sys, traceback
 from optparse import OptionParser
 
 from puddlestuff import audioinfo
-from puddlestuff.audioinfo import tag_to_json
+from puddlestuff.audioinfo import tag_to_json, b64_to_img
 import logging
 from six.moves import map
     

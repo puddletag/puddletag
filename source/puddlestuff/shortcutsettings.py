@@ -6,7 +6,7 @@ from .constants import CONFIGDIR
 from . import loadshortcuts as ls
 
 from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
-from PyQt5.QtWidgets import QApplication, QDialog, QFrame, QHBoxLayout, QItemDelegate, QLabel, \
+from PyQt5.QtWidgets import qApp, QApplication, QDialog, QFrame, QHBoxLayout, QItemDelegate, QLabel, \
     QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from PyQt5.QtGui import QBrush, QColor, QKeySequence, QPainter, QPalette, QPen
 import six

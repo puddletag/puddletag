@@ -116,6 +116,7 @@ class FrameCombo(QGroupBox):
                 if v else self._disablePreview()),]
         self.combos = {}
         self.labels = {}
+        self._hboxes = []
         self._status = status
         self._originalValues = {}
         self.__indexFuncs = []
@@ -154,7 +155,11 @@ class FrameCombo(QGroupBox):
             combo.disconnect(combo, func)
     
     def _emitChange(self, field, text):
-        text = six.text_type(text)
+        if type(text) is int:
+            text = self.combos[field].itemText(text)
+        else:
+            text = six.text_type(text)
+
         if text == BLANK: text = u''
         elif text == KEEP:
             if self._audios:
