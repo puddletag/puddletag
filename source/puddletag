@@ -306,6 +306,7 @@ if __name__ == '__main__':
     pyqtRemoveInputHook()
 
     #Load puddletag modules.
+    import puddlestuff.resource # Needs to be first as other modules use it.
     import puddlestuff.constants
 
     migrate_settings()
