@@ -2,16 +2,17 @@
 audioinfo.Tag objects).
 
 Data is stored as json."""
-from __future__ import absolute_import
-import base64, json, os, sys, traceback
-
+import json
+import logging
+import os
 from optparse import OptionParser
+
+from six.moves import map
 
 from ... import audioinfo
 from ...audioinfo import tag_to_json
-import logging
-from six.moves import map
-    
+
+
 def tags_to_json(dirpath, fields=None):
     ret = []
     for fn in os.listdir(dirpath):

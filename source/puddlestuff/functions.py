@@ -33,25 +33,24 @@ This line is further split into three parts
     The Second contains the control itself, either text, combo or check
     The third contains the default arguments as shown to the user."""
 
-from __future__ import absolute_import
+import decimal
 import math
-import decimal, os, pdb, re, shutil, sys
-import string, time, traceback, unicodedata
-
+import os
+import re
+import string
+import traceback
+import unicodedata
 from collections import defaultdict
-
-from copy import deepcopy
 from functools import partial
-from operator import itemgetter
 
 import pyparsing
-
-from . import audioinfo
-from .puddleobjects import (PuddleConfig, safe_name, fnmatch,
-    dircmp, natsort_case_key, encode_fn, decode_fn)
 import six
 from six.moves import map
 from six.moves import range
+
+from . import audioinfo
+from .audioinfo import encode_fn
+from .puddleobjects import (safe_name, fnmatch, natsort_case_key)
 
 PATH = audioinfo.PATH
 DIRPATH = audioinfo.DIRPATH

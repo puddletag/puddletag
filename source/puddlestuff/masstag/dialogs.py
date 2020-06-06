@@ -1,29 +1,22 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import glob, os, pdb, string, sys
-
-from collections import defaultdict
+import glob
+import os
 from copy import deepcopy
 from functools import partial
+
+import six
 from PyQt5.QtCore import QMutex, QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
-  QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
-
-from ..constants import RIGHTDOCK
-from ..puddleobjects import (create_buddy, ratio,
-    winsettings, ListButtons, ListBox, OKCancel, PuddleConfig, PuddleThread)
-from ..tagsources import RetrievalError
-from ..translations import translate
-from ..util import to_list, to_string
+    QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
 from .. import masstag
-from ..masstag import (NO_MATCH_OPTIONS, combine_tracks,
-    fields_from_text, match_files, masstag, merge_tsp_tracks,
-    split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
-from ..masstag.config import (PROFILEDIR, CONFIG, convert_mtps,
-    load_all_mtps, mtp_from_file, save_mtp)
-from ..webdb import strip as strip_fields
-import six
+from ..constants import RIGHTDOCK
+from ..masstag import (NO_MATCH_OPTIONS, fields_from_text, match_files, masstag, merge_tsp_tracks,
+                       split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
+from ..masstag.config import (PROFILEDIR, convert_mtps,
+                              load_all_mtps, save_mtp)
+from ..puddleobjects import (create_buddy, winsettings, ListButtons, ListBox, OKCancel, PuddleConfig, PuddleThread)
+from ..translations import translate
+
 
 class _SignalObject (QObject):
     statusChanged = pyqtSignal(str, name='statusChanged')

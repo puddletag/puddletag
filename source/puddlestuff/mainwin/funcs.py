@@ -1,32 +1,30 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
 import json
-from .. import findfunc
-from ..puddleobjects import (dircmp, safe_name,
-    LongInfoMessage, PuddleConfig, PuddleDock, encode_fn, decode_fn)
-from .. import actiondlg
-from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal
-import os, pdb
+import os
+from collections import OrderedDict
+
 import six
+from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal, QObject
+from PyQt5.QtWidgets import QApplication
 from six.moves import map
 from six.moves import zip
-path = os.path
-from collections import defaultdict, OrderedDict
+
+from .. import actiondlg
+from .. import findfunc
 from .. import helperwin
-from functools import partial
+from ..puddleobjects import (PuddleConfig, PuddleDock)
+
 try:
     from itertools import izip
 except ImportError:
     izip = zip
-from ..audioinfo import stringtags, PATH, DIRPATH, EXTENSION, FILETAGS, tag_to_json
-from operator import itemgetter
+from ..audioinfo import PATH, DIRPATH, FILETAGS, tag_to_json, encode_fn, decode_fn
 from .. import musiclib, about as about
-import traceback
 from ..util import split_by_tag, translate, to_string
 from .. import functions
 from .tagtools import *
-from .. import confirmations
-from ..constants import HOMEDIR, SEPARATOR
+from ..constants import HOMEDIR
+
+path = os.path
 
 status = {}
 

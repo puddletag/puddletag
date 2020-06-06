@@ -1,17 +1,18 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
-  QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
-from PyQt5.QtGui import QBrush
-import pdb, sys, os, sip
-from ..audioinfo import GENRES, INFOTAGS, READONLY
-from ..audioinfo.util import commonimages
-from ..puddleobjects import ListButtons, PuddleConfig, PicWidget
-from .. import resource
+import os
+import sip
+import sys
+
 import six
+from PyQt5.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtGui import QBrush
+from PyQt5.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
+    QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from six.moves import range
 from six.moves import zip
+
+from ..audioinfo import INFOTAGS
+from ..puddleobjects import ListButtons, PuddleConfig
+
 pyqtRemoveInputHook()
 from ..constants import LEFTDOCK, SELECTIONCHANGED, BLANK, KEEP, SEPARATOR
 from functools import partial

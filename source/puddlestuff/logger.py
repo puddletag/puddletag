@@ -1,7 +1,8 @@
-from __future__ import absolute_import
-import logging.config
-from .constants import LOG_FILENAME
 import logging
+import logging.config
+
+from .constants import LOG_FILENAME
+
 
 def init_logger(level):
     config = {

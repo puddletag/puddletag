@@ -1,33 +1,29 @@
 # -*- coding: utf-8 -*-
 """Dialog's that crop up along the application, but are used at at most
 one place, and aren't that complicated are put here."""
-
-from __future__ import absolute_import
-import os, pdb, sys
-
+import os
+import sys
 from copy import deepcopy
-from functools import partial
 
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
-  QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox, \
-  QPlainTextEdit, QPushButton, QSpinBox, QTableWidget, QTableWidgetItem, QTextEdit, QToolButton, QVBoxLayout
-from PyQt5.QtGui import QPalette, QBrush, QColor
+import six
 from PyQt5.QtCore import QItemSelectionModel, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtGui import QPalette, QBrush, QColor
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
+    QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox, \
+    QPlainTextEdit, QPushButton, QSpinBox, QTableWidget, QTableWidgetItem, QTextEdit, QToolButton, QVBoxLayout
+from six.moves import map
+from six.moves import range
 
-from .util import pprint_tag
-from . import findfunc, resource, audioinfo
-
-from .audioinfo import commontags, PATH, FILE_FIELDS
+from . import findfunc, audioinfo
+from .audioinfo import commontags, PATH
 from .constants import HOMEDIR, KEEP
 from .puddleobjects import (
     get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
     PicWidget, PuddleConfig, natsort_case_key)
 from .translations import translate
+from .util import pprint_tag
 from .util import to_string
-import six
-from six.moves import map
-from six.moves import range
 
 ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0

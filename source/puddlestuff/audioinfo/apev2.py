@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
 from copy import deepcopy
 
+import six
 from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError
 from mutagen.monkeysaudio import MonkeysAudio, MonkeysAudioHeaderError
 from mutagen.musepack import Musepack, MusepackHeaderError
@@ -10,10 +8,9 @@ from mutagen.wavpack import WavPack, WavPackHeaderError
 
 from . import util
 from .util import (CaselessDict, FILENAME, MockTag, PATH,
-    cover_info, del_deco, fn_hash, get_mime, get_total,
-    getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
-    setdeco, str_filesize, unicode_list, usertags)
-import six
+                   cover_info, del_deco, fn_hash, get_mime, get_total,
+                   getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
+                   setdeco, str_filesize, unicode_list, usertags)
 
 ATTRIBUTES = ['length', 'accessed', 'size', 'created',
     'modified', 'filetype']

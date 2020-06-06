@@ -1,14 +1,16 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QAction, QApplication, QMessageBox
-from .. import add_shortcuts, status
-from datetime import timedelta, datetime
 import os
+import time
+from datetime import timedelta, datetime
+
+import six
+from PyQt5.QtWidgets import QAction, QApplication, QMessageBox
+from six.moves import zip
+
+from .. import status
 from ...audioinfo import lngtime
 from ...puddleobjects import progress
-import time
-import six
-from six.moves import zip
+from ...puddletag import add_shortcuts
+
 
 def init(parent=None):
     action = QAction('Add 2 seconds to modified time', parent)

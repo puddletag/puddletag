@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import (QWidget, QLabel, QComboBox,
-    QLineEdit, QHBoxLayout, QPushButton, QApplication)
-from PyQt5.QtCore import QTimer, pyqtSignal
-from ..puddleobjects import gettaglist, create_buddy, PuddleCombo
-from ..constants import BOTTOMDOCK
-from ..translations import translate
 import six
+from PyQt5.QtCore import QTimer, pyqtSignal
+from PyQt5.QtWidgets import (QWidget, QLineEdit, QPushButton)
+
+from ..constants import BOTTOMDOCK
+from ..puddleobjects import create_buddy, PuddleCombo
+from ..translations import translate
+
 
 class DelayedEdit(QLineEdit):
     delayedText = pyqtSignal(str, name='delayedText')

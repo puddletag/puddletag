@@ -1,19 +1,22 @@
-from __future__ import absolute_import
-from __future__ import print_function
-import json, pdb, re, sys, time, six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
-
+import json
+import re
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+import time
 from collections import defaultdict
 from itertools import chain
+from xml.sax.saxutils import escape, quoteattr
+
+import six
 from sgmllib import SGMLParser
 from xml.dom import minidom, Node
-from xml.sax.saxutils import escape, quoteattr
 
 from ..audioinfo import IMAGETYPES, get_mime, strlength
 from ..constants import CHECKBOX, COMBO
 from ..tagsources import (find_id, write_log, RetrievalError,
-    urlopen, parse_searchstring)
+                          urlopen, parse_searchstring)
 from ..util import isempty, translate
-import six
 
 SERVER = 'http://musicbrainz.org/ws/2/'
 

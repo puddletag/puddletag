@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
+from copy import deepcopy
 
-from __future__ import absolute_import
-from copy import copy, deepcopy
-
-from mutagen.oggvorbis import OggVorbis
 import six
+from mutagen.oggvorbis import OggVorbis
 from six.moves import map
+
 try:
     from mutagen.oggopus import OggOpus
 except ImportError:
@@ -15,13 +13,11 @@ from mutagen.flac import Picture, FLAC
 import base64
 
 from . import util
-from .util import (strlength, strbitrate, strfrequency, usertags, PATH,
-    getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-    READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-    getdeco, setdeco, str_filesize, unicode_list,
-    CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
-    MONO, STEREO, get_total, set_total, parse_image, info_to_dict,
-    get_mime)
+from .util import (usertags, PATH,
+                   FILENAME, isempty, getdeco, setdeco, str_filesize, unicode_list,
+                   CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
+                   get_total, set_total, parse_image, info_to_dict,
+                   get_mime)
 from .tag_versions import tags_in_file
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')

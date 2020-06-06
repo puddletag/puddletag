@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from functools import partial
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem
+from six.moves import range
+
 from ..actiondlg import ActionWindow, CreateFunction
 from ..constants import RIGHTDOCK, SELECTIONCHANGED
-from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
-from PyQt5.QtCore import Qt
 from ..mainwin.funcs import run_func, applyaction
 from ..puddleobjects import PuddleConfig
-from functools import partial
-import pdb
 from ..translations import translate
-from six.moves import range
+
 
 class ActionDialog(ActionWindow):
     def __init__(self, *args, **kwargs):

@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import pdb, sys, logging
+import logging
+import re
+
+import six
 from pyparsing import *
+from six.moves import map
 
 from . import findfunc, audioinfo
+from .puddleobjects import gettaglist
 from .util import to_string
-from .puddleobjects import gettaglist, timemethod
-import time
-import re
-import six
-from six.moves import map
+
 
 def str_cmp(a, b):
     if not isinstance(a, six.string_types):

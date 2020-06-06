@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QAction, QMessageBox, QApplication
-from functools import partial
 import traceback
+from functools import partial
+
+from PyQt5.QtWidgets import QMessageBox
 from mutagen import id3, apev2
+from six.moves import zip
+
 from .. import audioinfo
 from ..puddleobjects import progress
 from ..translations import translate
-from six.moves import zip
 
 id3_tag = audioinfo.id3.Tag
 ape_tag = audioinfo.apev2.Tag

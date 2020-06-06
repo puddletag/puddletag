@@ -1,22 +1,21 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
-from copy import deepcopy
-from functools import partial
-import os, shutil, pdb
-from ..puddleobjects import (PuddleConfig, PuddleThread,
-    issubfolder, PuddleHeader)
-from ..constants import LEFTDOCK, HOMEDIR, QT_CONFIG
+import os
+
 import six
+from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 from six.moves import map
 from six.moves import range
-qmutex = QMutex()
-from ..translations import translate
-from ..tagmodel import has_previews
+
+from ..constants import LEFTDOCK, QT_CONFIG
+from ..puddleobjects import (PuddleConfig, PuddleThread,
+                             PuddleHeader)
 from ..puddlesettings import (load_gen_settings,
-        save_gen_settings)
+                              save_gen_settings)
+from ..tagmodel import has_previews
+from ..translations import translate
+
+qmutex = QMutex()
 
 
 class DirView(QTreeView):

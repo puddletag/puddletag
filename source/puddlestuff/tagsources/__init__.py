@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from importlib import import_module
 import os
-from os.path import join, exists
 import re
+from importlib import import_module
+from os.path import join, exists
 
 try:
     from HTMLParser import HTMLParser

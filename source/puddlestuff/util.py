@@ -1,30 +1,24 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import string
-
-from collections import defaultdict
-from PyQt5.QtCore import QFile, QIODevice
-from PyQt5.QtWidgets import QAction, QApplication
-from six import StringIO
-from copy import copy, deepcopy
-from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
-    EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty)
-from errno import EEXIST
-import os, pdb, re
-from .puddleobjects import (encode_fn, decode_fn, issubfolder, natural_sort_key,
-    open_resourcefile, safe_name)
-from . import translations, constants
-import six
-from six.moves import map
-translate = translations.translate
-import errno, traceback
-from .constants import BLANK, SEPARATOR, LOG_FILENAME
-from operator import itemgetter
-
 import logging
-
-from xml.sax.saxutils import escape as escape_html
+import os
 import shutil
+import traceback
+from collections import defaultdict
+from copy import copy, deepcopy
+from errno import EEXIST
+from operator import itemgetter
+from xml.sax.saxutils import escape as escape_html
+
+import six
+from PyQt5.QtWidgets import QAction
+from six.moves import map
+
+from . import translations, constants
+from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
+                        EXTENSION, MockTag, DIRPATH, DIRNAME, READONLY, fn_hash, isempty, encode_fn, decode_fn)
+from .constants import BLANK, SEPARATOR, LOG_FILENAME
+from .puddleobjects import (issubfolder, safe_name)
+
+translate = translations.translate
 
 ARTIST = 'artist'
 ALBUM = 'album'

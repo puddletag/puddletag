@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 #Copyright (C) 2008-2009 concentricpuddle
 
 #This file is part of puddletag, a semi-good music tag editor.
@@ -18,15 +15,12 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-from __future__ import absolute_import
-from __future__ import print_function
-import sys, pdb, os, time
+
+import os
+
+from ..constants import TAGSOURCE, HOMEDIR, TEXT
 from ..puddleobjects import gettags, getfiles, PuddleConfig
-from collections import defaultdict
-from ..constants import TAGSOURCE, HOMEDIR, TEXT, COMBO, CHECKBOX
-from ..util import matching, split_by_tag
-from ..tagsources import set_status, write_log
-from ..audioinfo import stringtags
+
 #print 'example2'
 
 properties = {'type': TAGSOURCE}

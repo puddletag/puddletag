@@ -1,20 +1,17 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
 import os
 
+import six
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
-  QPushButton, QVBoxLayout
+    QPushButton, QVBoxLayout
+from six.moves import range
 
-from ...constants import SAVEDIR
 from .. import add_config_widget, add_shortcuts, status
+from ...constants import SAVEDIR
 from ...puddleobjects import (natsort_case_key, ListButtons,
-    ListBox, PuddleConfig)
+                              ListBox, PuddleConfig)
 from ...tagmodel import TableHeader
 from ...translations import translate
-import six
-from six.moves import range
 
 CONFIGPATH = os.path.join(SAVEDIR, 'view_all_fields')
 ADD_TEXT = translate('Defaults', "Add item?")

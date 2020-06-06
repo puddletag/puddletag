@@ -1,32 +1,26 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import sys
-    
-import os, time, pdb, traceback
-import six.moves.cPickle as pickle
-
+import os
+import time
+import traceback
 from collections import defaultdict
 from functools import partial
 
+import quodlibet.config
+import six
+import six.moves.cPickle as pickle
 from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtWidgets import QCompleter, QDirModel, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
-
-import quodlibet.config
 from quodlibet.parse import Query
+from six.moves import filter
+from six.moves import range
 
 from .. import audioinfo
-
 from ..audioinfo.tag_versions import tags_in_file
 from ..audioinfo.util import (del_deco, fn_hash, getdeco,
-    isempty, keys_deco, lngfrequency, lnglength, lngtime, set_total, setdeco,
-    stringtags, strlength, unicode_list, CaselessDict, MockTag)
+                              isempty, keys_deco, lngfrequency, lnglength, lngtime, set_total, setdeco,
+                              stringtags, strlength, unicode_list, CaselessDict, MockTag)
 from ..constants import HOMEDIR
 from ..musiclib import MusicLibError
 from ..util import to_string, translate
-import six
-from six.moves import filter
-from six.moves import range
 
 model_tag = audioinfo.model_tag
 

@@ -18,13 +18,12 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
 
-from __future__ import absolute_import
-import MySQLdb as mysql
-import sys, os, pdb
 import six
+
 from .. import audioinfo
-from operator import itemgetter
+
 FILENAME = audioinfo.FILENAME
 from PyQt5.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
 from PyQt5.QtGui import QIntValidator

@@ -7,8 +7,12 @@
 # Release version 1.4
 # CVS ID: $Id: CDDB.py,v 1.8 2003/08/31 23:18:43 che_fox Exp $
 
-from __future__ import absolute_import
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, socket, os, struct, re
+import os
+import re
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+import socket
 
 name = 'CDDB.py'
 version = 1.4

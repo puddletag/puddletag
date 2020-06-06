@@ -1,25 +1,20 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-import sys, pdb
+import sys
 import traceback
-from .puddleobjects import (unique, OKCancel, PuddleThread,
-    PuddleConfig, winsettings, natural_sort_key)
+from copy import deepcopy
+from functools import partial
+
+import six
+from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
-from PyQt5 import QtCore, QtGui
-from collections import defaultdict
-from copy import deepcopy
-
-from .tagsources import RetrievalError, status_obj, write_log
-from .constants import TEXT, COMBO, CHECKBOX, RIGHTDOCK
-from .findfunc import parsefunc
-from functools import partial
-from .util import pprint_tag, to_string
-from .audioinfo import stringtags
-from .translations import translate
-import six
 from six.moves import map
+
+from .findfunc import parsefunc
+from .puddleobjects import (PuddleThread,
+                            natural_sort_key)
+from .tagsources import RetrievalError
+from .translations import translate
+from .util import pprint_tag, to_string
 
 CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable

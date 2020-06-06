@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
+from functools import partial
 
-from __future__ import absolute_import
+import six
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QMessageBox, QAction
+from six.moves import zip
+
+from .. import connect_shortcut, status
+from ... import audioinfo
 from ...constants import FILESSELECTED
 from ...puddleobjects import progress
-from ... import audioinfo
-from .. import add_shortcuts, connect_shortcut, status
+from ...puddletag import add_shortcuts
 from ...util import separator
-from functools import partial
-import six
-from six.moves import zip
 
 obj = QObject()
 id3_tag = audioinfo.id3.Tag

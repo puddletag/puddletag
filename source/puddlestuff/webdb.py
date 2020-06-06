@@ -1,34 +1,31 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import glob, os, pdb, sys, traceback
+import glob
+import logging
+import os
+import sys
+import traceback
+from copy import deepcopy
 
-from collections import defaultdict
-from copy import copy, deepcopy
-from functools import partial
-
+import six
 from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
-  QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
-  QWidget
-
-from .releasewidget import ReleaseWidget
-from . import audioinfo, version_string
-from .constants import (TEXT, COMBO, SPINBOX,
-                                   CHECKBOX, RIGHTDOCK, CONFIGDIR)
-from .findfunc import parsefunc, FuncError
-from .functions import replace_regex
-from .puddleobjects import (create_buddy, unique, winsettings,
-    ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
-from .tagsources import (tagsources, status_obj, set_useragent,
-    write_log, RetrievalError, mp3tag, SubmissionError)
-from .util import (isempty, pprint_tag,
-    split_by_field, to_string, translate)
-import logging
-import six
+    QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
+    QWidget
 from six.moves import range
 from six.moves import zip
+
+from . import audioinfo, version_string
+from .constants import (TEXT, COMBO, SPINBOX,
+                        CHECKBOX, RIGHTDOCK, CONFIGDIR)
+from .findfunc import FuncError
+from .functions import replace_regex
+from .puddleobjects import (create_buddy, winsettings,
+                            ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
+from .releasewidget import ReleaseWidget
+from .tagsources import (tagsources, status_obj, set_useragent,
+                         write_log, RetrievalError, mp3tag, SubmissionError)
+from .util import (isempty, pprint_tag,
+                   split_by_field, to_string, translate)
 
 pyqtRemoveInputHook()
 

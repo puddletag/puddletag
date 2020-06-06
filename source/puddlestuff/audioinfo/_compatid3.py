@@ -17,16 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-from __future__ import absolute_import
 import struct
 from struct import pack, unpack
+
 import mutagen
 from mutagen._util import insert_bytes
-from mutagen.id3 import ID3, Frame, Frames, Frames_2_2, TextFrame, TORY, \
+from mutagen.id3 import ID3, Frames, Frames_2_2, TextFrame, TORY, \
     TYER, TIME, APIC, IPLS, TDAT, MakeID3v1
 from six.moves import range
 from six.moves import zip
+
 try:
     from mutagen.id3 import BitPaddedInt
 except ImportError:

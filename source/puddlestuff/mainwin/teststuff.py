@@ -1,22 +1,19 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import sys, os
+import six
+import tags
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
-from ..constants import RIGHTDOCK
-from ..puddleobjects import PuddleThread, PuddleDock
-from .. import audioinfo
-import pdb
-from ..audioinfo.util import (strlength, strbitrate, strfrequency, usertags, PATH,
-                  getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-                  READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-                  getdeco, setdeco, str_filesize)
-from itertools import imap
-import six
 from six.moves import map
+
+from .. import audioinfo
+from ..audioinfo.util import (PATH,
+                              FILENAME, INFOTAGS,
+                              READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
+                              getdeco, setdeco)
+from ..constants import RIGHTDOCK
+from ..puddleobjects import PuddleDock
+
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
-import tags
 
 class Tag(audioinfo.MockTag):
     """Use as base for all tag classes."""

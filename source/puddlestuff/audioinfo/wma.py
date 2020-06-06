@@ -1,19 +1,15 @@
-# -*- coding: utf-8 -*-
+import struct
 
-from __future__ import absolute_import
-from . import util
-import struct, pdb
-from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
-from .util import (strlength, strbitrate, strfrequency, usertags, PATH,
-    getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-    READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-    getdeco, setdeco, str_filesize, fn_hash, cover_info,
-    get_mime, to_string, unicode_list, CaselessDict, keys_deco,
-    del_deco, get_total, set_total, info_to_dict, parse_image)
-from copy import copy
-from . import tag_versions
 import six
+from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
 from six.moves import map
+
+from . import tag_versions
+from . import util
+from .util import (usertags, PATH,
+                   FILENAME, isempty, getdeco, setdeco, str_filesize, fn_hash, cover_info,
+                   get_mime, unicode_list, CaselessDict, keys_deco,
+                   del_deco, get_total, set_total, info_to_dict, parse_image)
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
     'modified', 'filetype')

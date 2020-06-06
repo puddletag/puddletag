@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
+import os
+
+import six
+from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
+
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig
 from .translations import translate
-import os
-
-from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
-import six
 
 NAME = 'name'
 DESC = 'description'

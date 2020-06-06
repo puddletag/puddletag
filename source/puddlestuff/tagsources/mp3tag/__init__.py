@@ -1,27 +1,26 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import print_function
-import codecs, pdb, re, os, sys, traceback
-
+import codecs
+import os
+import re
+import traceback
 from copy import deepcopy
+
+import six
+from pyparsing import (nums, printables, Combine, Optional,
+                       QuotedString, Word, ZeroOrMore)
+from six import unichr
+from six.moves import map
+from six.moves import zip
 from six.moves.html_entities import name2codepoint as n2cp
 
-from pyparsing import (nums, printables, Combine, Optional,
-    QuotedString, Word, ZeroOrMore)
-
 from .funcs import FUNCTIONS
+from .. import (urlopen, get_encoding,
+                write_log, retrieve_cover, set_status)
 from ...audioinfo.util import CaselessDict
 from ...constants import CHECKBOX
 from ...functions import format_value
-from .. import (urlopen, get_encoding,
-    write_log, retrieve_cover, set_status)
-from ...util import convert_dict as _convert_dict
 from ...translations import translate
-import six
-from six.moves import map
-from six import unichr
-from six.moves import zip
+from ...util import convert_dict as _convert_dict
+
 
 class ParseError(Exception): pass
 

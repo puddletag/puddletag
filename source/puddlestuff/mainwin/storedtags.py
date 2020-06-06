@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import sys, os
+import os
+
+import six
 from PyQt5.QtCore import QMutex, Qt
-from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
 from PyQt5.QtGui import QFont
-from ..constants import LEFTDOCK, SELECTIONCHANGED
-from ..puddleobjects import PuddleThread, natural_sort_key
+from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
+
 from .. import audioinfo
 from ..audioinfo import tag_versions
-import pdb, time
-import six
+from ..constants import LEFTDOCK, SELECTIONCHANGED
+from ..puddleobjects import PuddleThread, natural_sort_key
 
 mutex = QMutex()
 

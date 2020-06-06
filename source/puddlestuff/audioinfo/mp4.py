@@ -1,22 +1,16 @@
-# -*- coding: utf-8 -*-
+import imghdr
+from copy import deepcopy
 
-from __future__ import absolute_import
-import imghdr, pdb
-
-from copy import copy, deepcopy
-
-from mutagen.mp4 import MP4,  MP4Cover
-
-from . import tag_versions, util
-
-from .util import (usertags, strlength, strbitrate, READONLY, isempty,
-    getfilename, strfrequency, getinfo, FILENAME, PATH,
-    INFOTAGS, getdeco, setdeco, EXTENSION, DIRPATH,
-    FILETAGS, str_filesize, DIRNAME, fn_hash, CaselessDict, keys_deco,
-    del_deco, cover_info, info_to_dict, parse_image, get_total)
 import six
+from mutagen.mp4 import MP4, MP4Cover
 from six.moves import map
 from six.moves import zip
+
+from . import tag_versions, util
+from .util import (usertags, isempty,
+                   FILENAME, PATH,
+                   getdeco, setdeco, FILETAGS, str_filesize, fn_hash, CaselessDict, keys_deco,
+                   del_deco, cover_info, info_to_dict, parse_image, get_total)
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
     'modified', 'bitspersample', 'channels')

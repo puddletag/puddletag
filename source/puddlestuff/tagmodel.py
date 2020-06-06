@@ -1,45 +1,40 @@
-## -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
-  QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
-  QVBoxLayout
-from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
-from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
-  QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
+import os
 import re
-import sys,os, resource, pdb
-from . import audioinfo
-from operator import itemgetter
+import sys
+import time
 from copy import copy, deepcopy
-from subprocess import Popen
+from operator import itemgetter
 from os import path
-from . import audioinfo
-from .audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
-    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
-    EXTENSION, CaselessDict)
-from .puddleobjects import (unique, safe_name, partial, natural_sort_key, gettag,
-    HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
-    progress, PuddleConfig, singleerror, winsettings, issubfolder,
-    timemethod, encode_fn, decode_fn, fnmatch)
-from .musiclib import MusicLibError
-import time, re
-from errno import EEXIST
-import traceback
+from subprocess import Popen
+
 import six
+from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
+    QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
+from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
+    QVBoxLayout
 from six.moves import map
 from six.moves import range
 from six.moves import zip
+
+from . import audioinfo
+from .audioinfo import (PATH, FILENAME, DIRPATH, FILETAGS, READONLY, INFOTAGS, DIRNAME,
+                        EXTENSION, CaselessDict, encode_fn, decode_fn)
+from .puddleobjects import (unique, partial, natural_sort_key, gettag,
+                            HeaderSetting, getfiles, progress, PuddleConfig, singleerror, winsettings, issubfolder,
+                            fnmatch)
+
 try:
     from itertools import izip
 except ImportError:
     izip = zip
 
 from collections import defaultdict
-from .util import write, rename_file, real_filetags, to_string
+from .util import write, to_string
 from .constants import SELECTIONCHANGED, SEPARATOR, BLANK
 from . import confirmations
-import logging, shutil
+import logging
 from .translations import translate
 from .util import rename_error_msg
 from .audio_filter import parse as filter_audio

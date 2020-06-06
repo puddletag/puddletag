@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import sys, os, unittest, time, pdb, shutil
-from os import path
+import mutagen
+import pyparsing
 from PyQt5.QtCore import PYQT_VERSION_STR, Qt
-from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 from PyQt5.QtGui import QPixmap
-import six.moves.cPickle as pickle
-import mutagen, pyparsing
+from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
+
 from . import version_string, changeset
 from .puddleobjects import OKCancel
-from . import resource
 from .translations import translate
 
 desc  = translate("About", '''puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.

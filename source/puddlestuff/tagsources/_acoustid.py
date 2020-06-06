@@ -11,16 +11,17 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-
-from __future__ import absolute_import
-import os
-import json
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
-import six.moves.http_client
 import contextlib
 import errno
+import json
+import os
+
 import six
+import six.moves.http_client
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+
 try:
     import audioread
     have_audioread = True
@@ -35,7 +36,7 @@ import subprocess
 import threading
 import time
 import gzip
-from StringIO import StringIO
+from io import StringIO
 
 API_BASE_URL = 'http://api.acoustid.org/v2/'
 DEFAULT_META = 'recordings'

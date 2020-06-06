@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Usage python get_tag.py filename | dirname"""
-from __future__ import absolute_import
-from __future__ import print_function
-import mutagen, sys, os, six.moves.cPickle as pickle
+import mutagen
+import os
+import six.moves.cPickle as pickle
+import sys
 
 if len(sys.argv) < 3:
     print("""Usage: python get_tag.py filename|dirname output""")

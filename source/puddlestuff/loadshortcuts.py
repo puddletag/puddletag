@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from .puddleobjects import PuddleConfig, get_icon
-from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
-import sys, pdb, resource,os
-from .constants import CONFIGDIR, DATADIR
-from six import StringIO
-from .util import open_resourcefile
-from .translations import translate
+import os
+import sys
+
 import six
+from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
+
+from .constants import CONFIGDIR
+from .puddleobjects import PuddleConfig, get_icon, open_resourcefile
+from .translations import translate
+
 
 __version__ = 29
 

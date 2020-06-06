@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QTextEdit, QVBoxLayout, QWidget
-from PyQt5.QtGui import QTextOption
 from PyQt5.QtCore import QMutex
+from PyQt5.QtGui import QTextOption
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QTextEdit, QVBoxLayout, QWidget
+
 from ..constants import RIGHTDOCK
-import sys
 from ..translations import translate
 
 mutex = QMutex()

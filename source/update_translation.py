@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import sys, tempfile
+import sys
+import tempfile
 from subprocess import call
 
 import puddlestuff.findfunc as findfunc
 import puddlestuff.loadshortcuts as loadshortcuts
-
 from puddlestuff.puddleobjects import PuddleConfig
 from six.moves import map
 

@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
+import six
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QAction
-from ...constants import (LEFTDOCK, SELECTIONCHANGED,
-    FILESSELECTED, KEEP, BLANK)
-from ...plugins import add_shortcuts, connect_shortcut
-from ...helperwin import (BOLD, UNCHANGED, ITALICS, EditField,
-    ExTags)
-from ...puddleobjects import (settaglist)
+
 from ...audioinfo import commontags
-import six
+from ...constants import (LEFTDOCK, SELECTIONCHANGED,
+                          KEEP)
+from ...helperwin import (BOLD, UNCHANGED, EditField,
+                          ExTags)
+from ...puddletag import add_shortcuts
+from ...puddleobjects import (settaglist)
+
 
 class ExTagsPlugin(ExTags):
     onetomany = pyqtSignal(dict, name='onetomany')

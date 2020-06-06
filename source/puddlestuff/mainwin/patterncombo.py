@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
-  QShortcut, QVBoxLayout
-from PyQt5.QtCore import Qt, pyqtSignal
 import sys
-from ..puddleobjects import (PuddleStatus, PuddleConfig, ListBox,
-    ListButtons)
-from ..translations import translate
+
 import six
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+    QShortcut, QVBoxLayout
 from six.moves import range
+
+from ..puddleobjects import (PuddleConfig, ListBox,
+                             ListButtons)
+from ..translations import translate
+
 
 def load_patterns(filepath=None):
     settings = PuddleConfig(filepath)

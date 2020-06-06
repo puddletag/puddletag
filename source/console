@@ -19,16 +19,14 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from __future__ import absolute_import
-from __future__ import print_function
+import os
+import sys
 from optparse import OptionParser
-import sys,os,shutil
-from puddlestuff.findfunc import *
-from puddlestuff.audioinfo import Tag
-import pdb
+
 import six
-from six.moves import zip
+from puddlestuff.findfunc import *
 from six.moves import input
+from six.moves import zip
 
 noprints = ['__path', '__ext', '__modified', '__accessed', '__folder']
 sortorder = ['__filename', '__size', '__length', '__bitrate', '__frequency', '__created']

@@ -1,25 +1,22 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
-  QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
-  QWidget
-from PyQt5.QtGui import QDrag, QPixmap, QContextMenuEvent, QDoubleValidator, \
-    QIcon
-from PyQt5.QtCore import Qt, pyqtSignal
-import sys, os, pdb
-from .. import constants, resource
-from decimal import Decimal
-from ..puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
-from .matchfuncs import Algo, funcinfo, funcs, _ratio
-from .dupefuncs import dupesinlib
-from ..findfunc import tagtofilename
-from ..puddleobjects import progress, winsettings
-import time
-from ..constants import SAVEDIR, RIGHTDOCK
-from ..plugins import add_shortcuts, connect_shortcut
-from ..puddletag import status
+import os
+import sys
+
 import six
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QDoubleValidator, \
+    QIcon
+from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
+    QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
+    QWidget
 from six.moves import zip
+
+from .dupefuncs import dupesinlib
+from .matchfuncs import Algo, funcinfo, funcs, _ratio
+from ..constants import SAVEDIR, RIGHTDOCK
+from ..findfunc import tagtofilename
+from ..puddletag import add_shortcuts
+from ..puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
+from ..puddleobjects import progress, winsettings
 
 title_sort = lambda a: a.get('title', u'')
 dupe_sort = lambda a: a[0].get('title', u'')

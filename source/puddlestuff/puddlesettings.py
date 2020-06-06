@@ -1,30 +1,21 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import os
+import sys
+from copy import deepcopy
 
-from __future__ import absolute_import
-import sys, resource, os
-
-from copy import copy, deepcopy
-
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
-  QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
-  QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
-from PyQt5.QtGui import QBrush, QColor, QPalette
+import six
 from PyQt5.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
-
+from PyQt5.QtGui import QBrush, QColor, QPalette
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
+    QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
+    QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from six.moves import range
 
 from . import genres, confirmations, audioinfo
-
-from .puddleobjects import (ListButtons, OKCancel, HeaderSetting,
-    ListBox, PuddleConfig, winsettings, get_languages, create_buddy)
-    
-from .action_shortcuts import ShortcutEditor
 from .constants import TRANSDIR
 from .pluginloader import PluginConfig
+from .puddleobjects import (ListButtons, OKCancel, PuddleConfig, winsettings, get_languages, create_buddy)
 from .shortcutsettings import ActionEditorDialog
 from .translations import translate
-import six
-from six.moves import range
 
 config_widgets = []
 

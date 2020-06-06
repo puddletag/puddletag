@@ -1,19 +1,19 @@
-# -*- coding: utf-8-*-
-from __future__ import absolute_import
-import sys, pdb, os
-from .puddleobjects import PuddleConfig, winsettings, OKCancel
-from .constants import CONFIGDIR
-from . import loadshortcuts as ls
+import os
+import sys
 
-from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
-from PyQt5.QtWidgets import qApp, QApplication, QDialog, QFrame, QHBoxLayout, QItemDelegate, QLabel, \
-    QPushButton, QStyle, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
-from PyQt5.QtGui import QBrush, QColor, QKeySequence, QPainter, QPalette, QPen
 import six
+from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
+from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
+from PyQt5.QtWidgets import qApp, QApplication, QFrame, QItemDelegate, QLabel, \
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 from six.moves import range
-pyqtRemoveInputHook()
 
+from . import loadshortcuts as ls
+from .constants import CONFIGDIR
+from .puddleobjects import PuddleConfig
 from .translations import translate
+
+pyqtRemoveInputHook()
 
 
 class ActionEditorWidget(QLabel):

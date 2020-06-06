@@ -1,18 +1,18 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import os, traceback, sys
-from .puddleobjects import PuddleConfig, winsettings
-from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
-                                   DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)
-from os.path import splitext, exists
-from configobj import ConfigObj
 import logging
+import os
+import sys
+from os.path import exists
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
-from .translations import translate
+from configobj import ConfigObj
 from six.moves import range
 from six.moves import zip
+
+from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
+                        DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)
+from .puddleobjects import PuddleConfig, winsettings
+from .translations import translate
 
 NAME = 'name'
 AUTHOR = 'author'

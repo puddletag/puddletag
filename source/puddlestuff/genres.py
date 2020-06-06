@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
-from PyQt5.QtCore import Qt
-import sys, resource, os
-from . import audioinfo
-from .puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
-    PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
+import os
 
-from .constants import CONFIGDIR
 import six
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
 from six.moves import range
+
+from . import audioinfo
+from .constants import CONFIGDIR
+from .puddleobjects import (ListButtons, ListBox)
+
 
 def load_genres(filepath=None):
     if not filepath:

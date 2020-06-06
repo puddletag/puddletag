@@ -9,17 +9,14 @@ LibraryWidget->Shows a tree view of library with search edit.
 LibraryTree->Actual widget used to show library info.
 
 """
-from __future__ import absolute_import
-from __future__ import print_function
-import pdb, sys
-
+import sys
 from collections import defaultdict
 from functools import partial
+
 try:
     from itertools import izip
 except ImportError:
     izip = zip
-
 
 from PyQt5.QtCore import QObject, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAbstractItemView, QApplication, QDialog, QFrame, QHBoxLayout, QLineEdit, \

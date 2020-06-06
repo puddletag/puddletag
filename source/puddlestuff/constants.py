@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import os, sys
-from PyQt5.QtCore import Qt, QObject, pyqtSignal
+import os
+import sys
 from os.path import dirname, join
+
+from PyQt5.QtCore import Qt
+
 from .translations import translate
 
 YES = translate('Defaults', 'Yes')

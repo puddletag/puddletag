@@ -1,40 +1,34 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import sys, os
-from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
-    progress, PuddleStatus, errormsg, dircmp, encode_fn, get_icon)
+import logging
+import os
+import sys
+from functools import partial
+
 import six
+from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
+from PyQt5.QtGui import QDesktopServices, QIcon
+from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 from six.moves import map
 from six.moves import zip
-from six.moves import map
 
-status = PuddleStatus()
-
-import logging
-from . import tagmodel
-from .tagmodel import TagTable
-from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
-from PyQt5.QtGui import QDesktopServices, QIcon
-import pdb, resource
-from . import mainwin
-from .masstag import dialogs
-from . import webdb
 from . import loadshortcuts as ls
-from . import m3u, findfunc, genres
-
-from .puddlesettings import SettingsDialog, load_gen_settings, update_settings
+from . import m3u, genres
+from . import mainwin
+from . import tagmodel
+from . import webdb
 from .mainwin import funcs as mainfuncs
-from .helperwin import ConfirmationErrorDialog
-from functools import partial
+from .masstag import dialogs
+from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
+                            progress, PuddleStatus, errormsg, dircmp, get_icon)
+from .puddlesettings import SettingsDialog, load_gen_settings, update_settings
+from .tagmodel import TagTable
+
 try:
     from itertools import izip
 except ImportError:
     izip = zip
 from . import audioinfo
-from .util import rename_error_msg, RenameError, DirRenameError
-from .audioinfo import lnglength, strlength, PATH, str_filesize
+from .util import rename_error_msg
+from .audioinfo import lnglength, strlength, PATH, str_filesize, encode_fn
 from errno import EEXIST
 from operator import itemgetter
 from collections import defaultdict
@@ -45,12 +39,10 @@ from . import action_shortcuts
 import traceback
 from . import plugins
 from .translations import translate
-from copy import copy
+
+status = PuddleStatus()
 
 pyqtRemoveInputHook()
-
-from .constants import (ALWAYS, FILESLOADED, VIEWFILLED,
-    FILESSELECTED, ENABLESIGNALS, MODULES)
 
 #A global variable that hold the status of
 #various puddletag statuses.

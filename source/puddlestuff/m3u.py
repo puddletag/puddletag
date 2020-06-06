@@ -1,18 +1,17 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import csv, os
-from PyQt5.QtWidgets import QFileDialog, QApplication
-import sys
-from .findfunc import tagtofilename
-from .audioinfo.util import lnglength
-from . import audioinfo
-from .puddleobjects import encode_fn, decode_fn
-
-from os.path import abspath, dirname, normcase, normpath, splitdrive, realpath
-from os.path import join as path_join, commonprefix
+import csv
 import os
+import sys
+from os.path import abspath, dirname, normcase, normpath, splitdrive
+from os.path import join as path_join
+
 import six
+from PyQt5.QtWidgets import QFileDialog, QApplication
 from six.moves import zip
+
+from . import audioinfo
+from .audioinfo.util import lnglength, encode_fn
+from .findfunc import tagtofilename
+
 
 def commonpath(a, b):
     """Returns the longest common to 'paths' path.

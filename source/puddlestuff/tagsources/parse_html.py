@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
-
 #this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
 #while we're at it, we also wrap url fetching.
 
-from __future__ import absolute_import
-from __future__ import print_function
 import re
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 
 import lxml.html
 import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+
 
 def classify(seq, key_func):
     result = {}

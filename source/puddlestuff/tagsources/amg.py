@@ -1,22 +1,22 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import sys, json
+import json
+import os
 import re
-from . import parse_html
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
-import codecs
-import sys, pdb, re, time, os
-from functools import partial
-from collections import defaultdict
-from ..util import split_by_tag
-from ..tagsources import (write_log, set_status, RetrievalError,
-    urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
-from ..constants import CHECKBOX, TEXT
-from ..puddleobjects import PuddleConfig, ratio
-from ..audioinfo import isempty, CaselessDict
+import sys
+import time
+
 import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 from six.moves import zip
+
+from . import parse_html
+from ..audioinfo import isempty, CaselessDict
+from ..constants import CHECKBOX
+from ..puddleobjects import ratio
+from ..tagsources import (write_log, set_status, RetrievalError,
+                          urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
+
 
 class OldURLError(RetrievalError):
     pass

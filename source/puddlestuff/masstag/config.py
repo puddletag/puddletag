@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import glob, os, sys
+import glob
+import os
+
+from six.moves import range
 
 from ..constants import CONFIGDIR
 from ..masstag import (fields_from_text, MassTagProfile,
-    TagSourceProfile)
-from ..puddleobjects import encode_fn, PuddleConfig
-from six.moves import range
+                       TagSourceProfile)
+from ..puddleobjects import PuddleConfig
+from ..audioinfo import encode_fn
 
 PROFILEDIR = os.path.join(CONFIGDIR, 'masstagging')
 CONFIG = os.path.join(CONFIGDIR, 'masstagging.conf')
@@ -145,6 +146,5 @@ def save_mtp(mtp, filename=CONFIG):
         cparser.set(section, 'replace_fields', u','.join(tsp.replace_fields))
 
 if __name__ == '__main__':
-    from ..tagsources import tagsources
     fns = glob.glob(PROFILEDIR + u'/Local.conf')
     convert_mtps(PROFILEDIR)

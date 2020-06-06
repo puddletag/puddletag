@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import sys, os
+import tempfile
+
 from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QBrush
-from ..constants import RIGHTDOCK, LEFTDOCK, SELECTIONCHANGED
-from ..puddleobjects import PicWidget, open_resourcefile
+from PyQt5.QtSvg import QSvgGenerator
+from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from six.moves import zip
+
 from ..audioinfo.util import commonimages
 from ..constants import KEEP, BLANK
-from PyQt5.QtSvg import QSvgGenerator
+from ..constants import RIGHTDOCK, SELECTIONCHANGED
+from ..puddleobjects import PicWidget
 
-from xml.dom import minidom
-
-import tempfile
-import pdb
-from six.moves import zip
 
 def svg_to_pic(data, desc):
     return {'data': data, 'size': len(data),

@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import pdb
-
 from collections import defaultdict
 from copy import deepcopy
 from operator import itemgetter
+
+import six
+from six.moves import map
+from six.moves import zip
 
 from ..audioinfo import FILENAME
 from ..constants import VARIOUS
@@ -15,12 +14,8 @@ from ..tagsources import RetrievalError
 from ..translations import translate
 from ..util import sorted_split_by_field, split_by_field, to_string
 from ..webdb import (strip as strip_fields, DEFAULT_REGEXP,
-    apply_regexps)
-import six
-from six.moves import map
-from six.moves import zip
+                     apply_regexps)
 
-import functools
 
 def set_status(v):
     print(v)

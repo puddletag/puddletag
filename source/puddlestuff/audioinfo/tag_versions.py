@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import os, struct, sys, time
-from mutagen.id3 import ParseID3v1
-import mutagen.id3
+import struct
 
-from . import id3
-from . import apev2
+import mutagen.id3
 import six
+from mutagen.id3 import ParseID3v1
 from six.moves import map
+
+from . import apev2
+from . import id3
+
 APEv2_Tag = apev2.Tag
 
 _v2_nums = set([2,3,4])

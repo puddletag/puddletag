@@ -1,48 +1,45 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
-Contains objects used throughout puddletag"""
+Contains objects used throughout puddletag
+"""
 
-
-from __future__ import absolute_import
-from __future__ import print_function
-from PyQt5.QtWidgets import QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
-  QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
-  QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
-  QTextEdit, QToolButton, QVBoxLayout, QWidget
-from PyQt5.QtGui import QIcon, QTextOption, QBrush, QPixmap, QImage, \
-    QKeySequence
-from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
-from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-import json, sys, os,pdb,shutil
+import itertools
+import json
+import logging
+import os
+import re
+import sys
+import time
+from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
-
-from itertools import groupby # for unique function.
-from bisect import bisect_left, insort_left # for unique function.
 from copy import copy
-from . import audioinfo
-from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
-    encode_fn, decode_fn, INFOTAGS)
-from operator import itemgetter
+from functools import partial
+from glob import glob
+from itertools import groupby  # for unique function.
+
 import six
+from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtCore import QFile, QIODevice
+from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
+    QKeySequence
+from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
+from PyQt5.QtWidgets import QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
+    QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
+    QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
+    QTextEdit, QToolButton, QVBoxLayout, QWidget
+from configobj import ConfigObjError
+from six import StringIO
 from six.moves import filter
 from six.moves import map
 from six.moves import range
 from six.moves import zip
-path = os.path
-from configobj import ConfigObj, ConfigObjError
-import traceback
-import time, re
-from glob import glob
-from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
-from PyQt5.QtCore import QFile, QIODevice
-from six import StringIO
-import itertools
-import logging
 
-from functools import partial
+from . import audioinfo
+from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
+                        INFOTAGS)
+from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
 from .translations import translate
+
+path = os.path
 
 # Parameters for string distance function.
 # Words that can be moved to the end of a string using a comma.

@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import print_function
-from . import CDDB
 import six
 from six.moves import map
+
+from . import CDDB
+
 CDDB.proto = 6 # utf8 instead of latin1
-import os, pdb
-from os import path
-from gettext import ngettext
 from ..util import to_string
 from collections import defaultdict
-from ..constants import TAGSOURCE
-from .. import audioinfo
 from ..tagsources import RetrievalError
 from .. import version_string
 from ..util import translate
@@ -202,7 +195,7 @@ if __name__ == '__main__':
     #return [({'#discid': '0200d001', '#category': 'soundtrack', 'album': u'German'}, [])]
     from .. import audioinfo
     import glob
-    import pdb
-    files = list(map(audioinfo.Tag, 
+
+    files = list(map(audioinfo.Tag,
         glob.glob("/mnt/multimedia/Music/Ratatat - Classics/*.mp3")))
     print(search(files))

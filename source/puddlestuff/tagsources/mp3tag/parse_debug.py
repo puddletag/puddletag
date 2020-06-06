@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-import codecs, pdb, re, sys
-from ..mp3tag import open_script, Cursor,Mp3TagSource
-from six.moves import map
+import codecs
+import pdb
+
 import six
+from six.moves import map
 from six.moves import zip
+
+from ..mp3tag import open_script, Cursor
 
 dbg_skip = ['ifnot',  'do', 'while']
 src_skip = ['endif', 'do', 'while', 'ifnot', 'else']

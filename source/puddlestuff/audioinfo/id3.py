@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
 from collections import defaultdict
 from copy import deepcopy
 from functools import partial
 
-import mutagen, mutagen.id3 as id3, mutagen.mp3
+import mutagen.id3 as id3
+import mutagen.mp3
 import six
 from six.moves import map
 from six.moves import zip

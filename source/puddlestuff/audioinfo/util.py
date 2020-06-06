@@ -1,18 +1,20 @@
-## -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-import base64, calendar, imghdr, json, logging, pdb, os, sys, time
-import mutagen
+import base64
+import calendar
+import imghdr
 import logging
-
-from errno import ENOENT
+import os
+import sys
+import time
+from copy import deepcopy
 from decimal import Decimal
-from copy import copy, deepcopy
+from errno import ENOENT
 from os import path, stat
 
-from .constants import *
+import mutagen
 import six
 from six.moves import map
+
+from .constants import *
 
 try:
     from .. import version_string
@@ -582,7 +584,7 @@ def usertags(tag):
 def unicode_list(value):
     """Modifies the passed value to a unicode list.
 
-    >>>unicode_list("value')
+    >>>unicode_list("value")
     [u'value']
     >>>unicode_list(['value1', u'value2']
     [u'value1', u'value2']

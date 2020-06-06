@@ -1,6 +1,5 @@
-from __future__ import absolute_import
-from decimal import Decimal
 import six
+
 try:
     from Levenshtein import ratio, jaro, jaro_winkler
     def _ratio(a, b):

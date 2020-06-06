@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+import os
+from functools import partial
+
+import six
 from PyQt5.QtCore import QFileSystemWatcher, QItemSelectionModel, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
-import sys, os, traceback
-
-from .puddleobjects import (create_buddy, ListBox,
-    ListButtons, load_actions, OKCancel, PuddleConfig)
-from .constants import ACTIONDIR
-from functools import partial
-from .findfunc import load_macro_info as load_action
-import pdb
-from . import puddletag
-from .shortcutsettings import ActionEditorDialog
-from . import puddleobjects as puddleobjects
-from .translations import translate
 from six.moves import filter
 from six.moves import map
-import six
 from six.moves import range
 from six.moves import zip
+
+from . import puddleobjects as puddleobjects
+from . import puddletag
+from .constants import ACTIONDIR
+from .findfunc import load_macro_info as load_action
+from .puddleobjects import (create_buddy, ListBox,
+                            ListButtons, load_actions, OKCancel, PuddleConfig)
+from .translations import translate
 
 FILENAME = os.path.join(ACTIONDIR, 'action_shortcuts')
 
@@ -398,7 +396,6 @@ class ShortcutEditor(QDialog):
         return [item.actionName for item in self._listbox.items()]
 
 if __name__ == '__main__':
-    import sys
     app = QApplication([])
     actions = load_actions()
     win = ShortcutEditor(buttons=True)

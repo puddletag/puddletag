@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import mutagen, os, six.moves.cPickle as pickle, sys, traceback
-
+import six
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QInputDialog
 
-from .. import status, add_shortcuts, connect_control
-import six
+from .. import status, connect_control
+from ...puddletag import add_shortcuts
+
 
 class _SignalObject(QObject):
     highlight = pyqtSignal(list, name='highlight')

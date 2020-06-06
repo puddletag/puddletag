@@ -5,20 +5,23 @@
 #Comments (or you've created a tag source you'd like
 #to share) can be directed at concentricpuddle@gmail.com
 
-#Imports and constants.
-#-----------------------------------------------------------
-from __future__ import absolute_import
-from __future__ import print_function
-import base64, hmac, hashlib, re, time, six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse, six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import base64
+import hashlib
+import hmac
+import re
+import time
 
+import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 from xml.dom import minidom
 
+from ..audioinfo import DATA
 from ..constants import CHECKBOX, COMBO, TEXT
 from ..tagsources import (write_log, RetrievalError,
-    urlopen, parse_searchstring)
-from ..audioinfo import DATA
+                          urlopen, parse_searchstring)
 from ..util import translate
-import six
 
 default_access_key = base64.b64decode('QUtJQUozS0JZUlVZUU41UFZRR0E=')
 default_secret_key = base64.b64decode('dmh6Q0ZaSEF6N0VvMmN5REt3STVnS1liU3ZFTCtSckx3c0tmanZEdA==')

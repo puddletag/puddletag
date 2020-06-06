@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-import mutagen
-from .util import *
-from .constants import *
-import six
-from six.moves import map
 from six.moves import zip
+
+from .constants import *
+from .util import *
 
 AbstractTag = MockTag
 

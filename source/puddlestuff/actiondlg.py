@@ -1,35 +1,29 @@
 # -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
-  QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
-  QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5 import QtGui
-import sys,  pdb, os, resource, string
-from . import findfunc, functions
-
+import os
+import string
+import sys
 from copy import copy, deepcopy
-from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
-        QuotedString, Literal, NotAny, nums
-import six.moves.cPickle as pickle
-from .puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
-    winsettings, gettaglist, settaglist, safe_name, ShortcutEditor)
-from .findfunc import Function, apply_macros, apply_actions, Macro
-from .puddleobjects import PuddleConfig, PuddleCombo
-from .audioinfo import INFOTAGS, READONLY, usertags, isempty
 from functools import partial
-from .constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
-    SAVEDIR, CONFIGDIR, ACTIONDIR, BLANK)
-from .util import (open_resourcefile, PluginFunction, escape_html,
-    translate, pprint_tag)
-from . import functions_dialogs
-from .puddleobjects import ShortcutEditor
-from .puddletag import status
+
 import six
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
+    QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
+    QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
+from pyparsing import delimitedList, alphanums, Combine, Word, QuotedString
 from six.moves import map
 from six.moves import range
 from six.moves import zip
+
+from . import findfunc, functions
+from . import functions_dialogs
+from .audioinfo import INFOTAGS, READONLY
+from .constants import (TEXT, COMBO, CHECKBOX, SAVEDIR, CONFIGDIR, ACTIONDIR)
+from .findfunc import Function, apply_macros, apply_actions, Macro
+from .puddleobjects import (ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist, safe_name, open_resourcefile)
+from .puddleobjects import PuddleConfig, PuddleCombo
+from .puddleobjects import ShortcutEditor
+from .util import (PluginFunction, translate, pprint_tag)
 
 READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(CONFIGDIR, 'function_settings')
@@ -361,6 +355,7 @@ class FunctionDialog(QWidget):
                     return
                 fields = findfunc.parse_field_list(self.func.tag, audio,
                     self._selectedFields)
+                from .puddletag import status
                 files = status['selectedfiles']
                 files = six.text_type(len(files)) if files else u'1'
                 state = {'__counter': u'0', '__total_files': files}
@@ -615,6 +610,7 @@ class CreateAction(QDialog):
 
     def updateExample(self):
         try:
+            from .puddletag import status
             files = status['selectedfiles']
             files = six.text_type(len(files)) if files else u'1'
             state = {'__counter': u'0', '__total_files': files}
@@ -920,6 +916,7 @@ class ActionWindow(QDialog):
         selectedrows = [i for i,z in enumerate(items) if z.checkState() == Qt.Checked]
         
         if selectedrows:
+            from .puddletag import status
             files = status['selectedfiles']
             total = six.text_type(len(files)) if files else u'1'
             state = {'__counter': u'0', '__total_files': total}

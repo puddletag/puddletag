@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import re, pdb
-from functools import partial
+import re
 from copy import copy
-from .constants import YES, NO
+from functools import partial
+
 import six
+
+from .constants import YES, NO
+
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
 
 def perfunc(match, d):

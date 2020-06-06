@@ -1,10 +1,12 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import mutagen, os, six.moves.cPickle as pickle, sys, traceback
+import os
+import traceback
 
+import mutagen
+import six.moves.cPickle as pickle
 from PyQt5.QtWidgets import QAction, QFileDialog
 
-from .. import status, add_shortcuts
+from .. import status
+from ...puddletag import add_shortcuts
 
 last_fn = {'fn': '~'}
 

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-from __future__ import absolute_import
-from __future__ import print_function
-import json, sys, os, shutil
-
-from optparse import OptionParser
+import json
+import os
+import shutil
+import sys
 from glob import glob
-import logging
+from optparse import OptionParser
+
 import six
+
 
 def convert_ini_files():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -48,7 +48,7 @@ def settings_to_json(filename):
         pass
 
 def _migrate_action_shortcut_filenames():
-    from puddlestuff.constants import SAVEDIR, ACTIONDIR
+    from puddlestuff.constants import ACTIONDIR
     filename = os.path.join(ACTIONDIR, 'action_shortcuts')
     if not os.path.exists(filename):
         return
@@ -301,12 +301,11 @@ if __name__ == '__main__':
     from PyQt5.QtWidgets import QApplication, QSplashScreen
     from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
         QLibraryInfo, QLocale)
-    import pdb, logging
+    import logging
     from configobj import ConfigObj
     pyqtRemoveInputHook()
 
     #Load puddletag modules.
-    from puddlestuff import resource #Needs to be first as other modules use it.
     import puddlestuff.constants
 
     migrate_settings()

@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-import six.moves.html_entities, re, os
-
 from copy import deepcopy
-from six.moves import map
+
+import re
 import six
+import six.moves.html_entities
+from six.moves import map
 
 try:
     from itertools import izip
@@ -18,7 +17,6 @@ except ImportError:
 
 from ...functions import replace_regex
 from ...audioinfo import CaselessDict
-from six.moves import zip
 
 conditionals = set(['if', 'ifnot'])
 

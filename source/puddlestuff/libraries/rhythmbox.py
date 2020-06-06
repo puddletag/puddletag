@@ -19,22 +19,23 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from __future__ import absolute_import
-from __future__ import print_function
-from xml.dom import minidom
+import os
 from collections import defaultdict
-import pdb
 from os import path
-import sys
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error, os
-from .. import audioinfo
-import six
-FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
+
+import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 from PyQt5.QtCore import QDir, QSettings, QUrl
 from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
+
+from .. import audioinfo
 from .. import musiclib
+
+FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 
 name = "Rhythmbox"
 description = "Rhythmbox Database"

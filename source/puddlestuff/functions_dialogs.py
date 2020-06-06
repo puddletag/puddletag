@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 from PyQt5.QtWidgets import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
-                         QVBoxLayout, QWidget, QLineEdit)
+                             QVBoxLayout, QWidget)
+
 from .translations import translate
+
 
 def sanitize(type_, value, default=None):
     if type_ is int:

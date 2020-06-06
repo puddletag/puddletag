@@ -1,21 +1,21 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-from six import StringIO
-from copy import deepcopy
 import gzip
 import json
 import re
 import socket
 import time
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+from copy import deepcopy
+
+import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
+from six import StringIO
 
 from ..audioinfo import DATA, isempty
 from ..constants import CHECKBOX, COMBO, TEXT
 from ..tagsources import (
     find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
 from ..util import translate
-import six
 
 R_ID_DEFAULT = 'discogs_id'
 R_ID = R_ID_DEFAULT

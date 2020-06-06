@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-import pdb
-import os, string, re
-from . import audioinfo
+import glob
+import os
+import re
+import string
+from collections import defaultdict
+from copy import deepcopy
 from decimal import Decimal
-from pyparsing import (Word, alphas,Literal, OneOrMore, alphanums, 
-    nums, delimitedList, Combine, QuotedString, 
-    CharsNotIn, originalTextFor, nestedExpr, 
-    Optional)
-from .puddleobjects import PuddleConfig, safe_name
-from .funcprint import pprint
-from .util import PluginFunction, translate, to_list, to_string
-import six.moves.cPickle as pickle
+from functools import partial
+
 import six
+import six.moves.cPickle as pickle
+from pyparsing import (Word, alphas, Literal, OneOrMore, alphanums,
+                       nums, delimitedList, Combine, QuotedString,
+                       CharsNotIn, originalTextFor, nestedExpr,
+                       Optional)
 from six.moves import map
 from six.moves import range
 from six.moves import zip
-stringtags = audioinfo.stringtags
-from copy import deepcopy
+
+from . import audioinfo
 from .constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
-import glob
-from collections import defaultdict
-from functools import partial
+from .funcprint import pprint
+from .puddleobjects import PuddleConfig, safe_name
+from .util import PluginFunction, translate, to_list, to_string
+
 numtimes = 0
-import string
+stringtags = audioinfo.stringtags
 
 NOT_ALL = audioinfo.INFOTAGS + ['__image']
 FILETAGS = audioinfo.FILETAGS

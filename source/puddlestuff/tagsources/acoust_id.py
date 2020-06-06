@@ -1,16 +1,15 @@
-from __future__ import absolute_import
 import contextlib
-import six.moves.http_client
-import logging
-import os, pdb
+import os
 import time
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
-
-from collections import defaultdict
 from itertools import chain, product, starmap
+
 import six
-from six.moves import zip
+import six.moves.http_client
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 from six.moves import map
+from six.moves import zip
 
 try:
     import acoustid

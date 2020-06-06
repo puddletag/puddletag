@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from PyQt5.QtWidgets import QApplication
-import re
 import logging
+import re
+
 import six
+from PyQt5.QtWidgets import QApplication
+
 
 class UnicodeMod(six.text_type):
     """Emulates the arg method of QStrings. Not meant for use anywhere other
