@@ -46,8 +46,8 @@ def displaytags(tags):
     if not text:
         return translate('Functions Dialog', '<b>No change.</b>')
 
-    if text.endswith(u'<br />'):
-        text = text[:-len(u'<br />')]
+    if text.endswith('<br />'):
+        text = text[:-len('<br />')]
     return text
 
 class ShortcutDialog(QDialog):
@@ -87,7 +87,7 @@ class ShortcutDialog(QDialog):
         if self._text.valid:
             return str(self._text.text()), self.ok
         else:
-            return u'', self.ok
+            return '', self.ok
 
 class ShortcutName(QDialog):
     def __init__(self, texts, default=u'', parent=None):
@@ -353,11 +353,11 @@ class FunctionDialog(QWidget):
                     self._selectedFields)
                 from .puddletag import status
                 files = status['selectedfiles']
-                files = str(len(files)) if files else u'1'
-                state = {'__counter': u'0', '__total_files': files}
+                files = str(len(files)) if files else '1'
+                state = {'__counter': '0', '__total_files': files}
                 val = apply_actions([self.func], audio, state, fields)
             except findfunc.ParseError as e:
-                val = u'<b>%s</b>' % (e.message)
+                val = '<b>%s</b>' % (e.message)
             if val is not None:
                 self.updateExample.emit(val)
             else:
@@ -379,7 +379,7 @@ class FunctionDialog(QWidget):
 
     def setArguments(self, fields=None, args=None):
         if fields is not None:
-            text = u', '.join(fields)
+            text = ', '.join(fields)
             index = self.tagcombo.findText(text)
             if index != -1:
                 self.tagcombo.setCurrentIndex(index)
@@ -519,7 +519,7 @@ class CreateFunction(QDialog):
         func = self.stack.currentWidget().func
         msg = translate('Actions',
             "Error: Using <b>__selected</b> in Actions is not allowed.")
-        if not self.allowSelected and u'__selected' in fields:
+        if not self.allowSelected and '__selected' in fields:
             QMessageBox.warning(self, 'puddletag', msg)
             return False
         elif func is not None and func not in functions.no_fields:
@@ -532,7 +532,7 @@ class CreateFunction(QDialog):
 
     def loadSettings(self):
         cparser = PuddleConfig()
-        func_name = cparser.get('functions', 'last_used', u'')
+        func_name = cparser.get('functions', 'last_used', '')
         if not func_name:
             return
 
@@ -550,7 +550,7 @@ class CreateFunction(QDialog):
 
     def updateExample(self, text):
         if not text:
-            self.exlabel.setText(u'')
+            self.exlabel.setText('')
         else:
             self.exlabel.setText(displaytags(text))
 
@@ -608,8 +608,8 @@ class CreateAction(QDialog):
         try:
             from .puddletag import status
             files = status['selectedfiles']
-            files = str(len(files)) if files else u'1'
-            state = {'__counter': u'0', '__total_files': files}
+            files = str(len(files)) if files else '1'
+            state = {'__counter': '0', '__total_files': files}
             tags = apply_actions(self.functions, self.example, state)
             self._examplelabel.setText(displaytags(tags))
         except findfunc.ParseError as e:
@@ -874,7 +874,7 @@ class ActionWindow(QDialog):
             if order:
                 old_order = dict([(basename(z), i) for i,z in  
                     enumerate(order)])
-                files = glob(os.path.join(ACTIONDIR, u'*.action'))
+                files = glob(os.path.join(ACTIONDIR, '*.action'))
                 order = {}
                 for i, action_fn in enumerate(files):
                     try:
@@ -885,7 +885,7 @@ class ActionWindow(QDialog):
                 order = [z[1] for z in sorted(order.items())]
                 set_value('order', order)
 
-        files = glob(os.path.join(ACTIONDIR, u'*.action'))
+        files = glob(os.path.join(ACTIONDIR, '*.action'))
         if firstrun and not files:
             filenames = [':/caseconversion.action', ':/standard.action']
             files = list(map(open_resourcefile, filenames))
@@ -896,7 +896,7 @@ class ActionWindow(QDialog):
                 f = open(filename, 'w')
                 f.write(fileobj.read())
                 f.close()
-            files = glob(os.path.join(ACTIONDIR, u'*.action'))
+            files = glob(os.path.join(ACTIONDIR, '*.action'))
 
         files = [z for z in order if z in files] + \
             [z for z in files if z not in order]
@@ -914,8 +914,8 @@ class ActionWindow(QDialog):
         if selectedrows:
             from .puddletag import status
             files = status['selectedfiles']
-            total = str(len(files)) if files else u'1'
-            state = {'__counter': u'0', '__total_files': total}
+            total = str(len(files)) if files else '1'
+            state = {'__counter': '0', '__total_files': total}
 
             macros = [self.macros[i] for i in selectedrows]
             try:    
@@ -942,11 +942,11 @@ class ActionWindow(QDialog):
             macro.save()
         else:
             name = macro.name
-            filename = os.path.join(ACTIONDIR, safe_name(name) + u'.action')
+            filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
             base = os.path.splitext(filename)[0]
             i = 0
             while os.path.exists(filename):
-                filename = u"%s_%d" % (base, i) + u'.action'
+                filename = "%s_%d" % (base, i) + '.action'
                 i += 1
             macro.save(filename)
             macro.filename = filename
@@ -1082,6 +1082,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
-    qb = ActionWindow([(u'Path', u'__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), (u'Year', u'date')])
+    qb = ActionWindow([('Path', '__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), ('Year', 'date')])
     qb.show()
     app.exec_()

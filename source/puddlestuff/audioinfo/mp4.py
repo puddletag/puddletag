@@ -87,7 +87,7 @@ def settuple(value):
     temp = []
     for tup in value:
         if isinstance(tup, str):
-            values = [z.strip() for z in tup.split(u'/')]
+            values = [z.strip() for z in tup.split('/')]
             try:
                 temp.append(tuple([int(z) for z in values][:2]))
             except (TypeError, IndexError):
@@ -97,7 +97,7 @@ def settuple(value):
     return temp
 
 def gettuple(value):
-    return [str(track) + u'/' + str(total) for track, total in value]
+    return [str(track) + '/' + str(total) for track, total in value]
 
 def getint(value):
     return [str(z) for z in value]
@@ -348,10 +348,6 @@ class Tag(util.MockTag):
                     tags[TAGS[key]] = convert(TAGS[key], audio[key])
                 else:
                     field = key[key.find(':', key.find(':') +1) + 1:]
-                    try:
-                        field = field.decode('utf8')
-                    except UnicodeDecodeError:
-                        field = field.decode('latin1')
 
                     self.__freeform[field] = key
                     try:
@@ -373,7 +369,7 @@ class Tag(util.MockTag):
         self.__tags.update(info_to_dict(audio.info))
         self.__tags.update(tags)
         self.revmapping, self.mapping = revmap, mapping
-        self.__tags['__tag_read'] = u'MP4'
+        self.__tags['__tag_read'] = 'MP4'
         self.filetype = 'MP4'
         self.__tags['__filetype'] = self.filetype
         self.set_attrs(ATTRIBUTES, self.__tags)
@@ -416,7 +412,7 @@ class Tag(util.MockTag):
             try:
                 newtag[REVTAGS[tag]] = value
             except KeyError:
-                newtag[self.__freeform[tag].encode('utf8')] = encode(self.__tags[tag])
+                newtag[self.__freeform[tag]] = encode(self.__tags[tag])
 
         if self.images:
             newtag['covr'] = [_f for _f in map(pic_to_bin, self.images) if _f]
@@ -438,8 +434,8 @@ class Tag(util.MockTag):
     def update_tag_list(self):
         l = tag_versions.tags_in_file(self.filepath)
         if l:
-            self.__tags['__tag'] = u'MP4, ' + u', '.join(l)
+            self.__tags['__tag'] = 'MP4, ' + ', '.join(l)
         else:
-            self.__tags['__tag'] = u'MP4'
+            self.__tags['__tag'] = 'MP4'
 
 filetype = (MP4, Tag, 'MP4', ['m4a', 'mp4', 'm4v'])

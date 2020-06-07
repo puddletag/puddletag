@@ -68,14 +68,14 @@ class StoredTags(QScrollArea):
                 audio = {'Error': [e.strerror]}
 
             if isinstance(audio, audioinfo.id3.Tag):
-                if u'ID3v2.4' in tags:
-                    tags.remove(u'ID3v2.4')
-                if u'ID3v2.3' in tags:
-                    tags.remove(u'ID3v2.3')
-                if u'ID3v2.2' in tags:
-                    tags.remove(u'ID3v2.2')
+                if 'ID3v2.4' in tags:
+                    tags.remove('ID3v2.4')
+                if 'ID3v2.3' in tags:
+                    tags.remove('ID3v2.3')
+                if 'ID3v2.2' in tags:
+                    tags.remove('ID3v2.2')
             elif hasattr(audio, 'apev2') and audio.apev2:
-                if u'APEv2' in tags:
+                if 'APEv2' in tags:
                     tags.remove('APEv2')
 
             ret = [(audio['__tag_read'], sort_dict(audio.usertags))]
@@ -108,7 +108,7 @@ class StoredTags(QScrollArea):
                 t_label.setFont(self._boldfont)
                 grid.addWidget(t_label, offset - 1, 0)
                 for row, (tag, value) in enumerate(values):
-                    field = QLabel(u'%s:' % tag)
+                    field = QLabel('%s:' % tag)
                     field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
                     grid.addWidget(field, row + offset, 0)
                     vlabel = QLabel(value)

@@ -115,17 +115,17 @@ def tags_in_file(fn, to_check = (ID3_V1, ID3_V2, APEv2)):
     fileobj = open(fn, 'rb') if isinstance(fn, str) else fn
 
     if ID3_V1 in to_check and ID3_V2 in to_check:
-        tags = [u'ID3v' + u'.'.join(map(str, z)) for z in id3_tags(fileobj)]
+        tags = [u'ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
     elif ID3_V1 in to_check:
         tags = [u'ID3v1.1'] if has_v1(fileobj) else []
     elif ID3_V2 in to_check:
         tags = get_v2(fileobj)
-        tags = [u'ID3v' + u'.'.join(map(str, tags))] if tags else []
+        tags = [u'ID3v' + '.'.join(map(str, tags))] if tags else []
     else:
         tags = []
 
     if APEv2 in to_check and has_apev2(fn):
-        tags.append(u'APEv2')
+        tags.append('APEv2')
     return tags
 
 _value_types = {
@@ -135,11 +135,11 @@ _value_types = {
     
 def tag_values(fn, tag):
     tag = tag.lower()
-    if tag.startswith(u'id3v1'):
+    if tag.startswith('id3v1'):
         tag = ID3_V1
-    elif tag.startswith(u'id3v2'):
+    elif tag.startswith('id3v2'):
         tag = ID3_V2
-    elif tag.startswith(u'ape'):
+    elif tag.startswith('ape'):
         tag = APEv2
 
     if tag not in TAG_TYPES:

@@ -49,22 +49,22 @@ class Amarok(MySQLLib):
 
         if convert:
             if track[4]:
-                self.cursor.execute(u"SELECT DISTINCT BINARY name FROM composer WHERE id = BINARY %s", (track[4],))
+                self.cursor.execute("SELECT DISTINCT BINARY name FROM composer WHERE id = BINARY %s", (track[4],))
                 composer = self.cursor.fetchall()[0][0]
             else:
-                composer = u""
+                composer = ""
 
             if track[5]:
-                self.cursor.execute(u"SELECT DISTINCT BINARY name FROM genre WHERE id = BINARY %s", (track[5],))
+                self.cursor.execute("SELECT DISTINCT BINARY name FROM genre WHERE id = BINARY %s", (track[5],))
                 genre = self.cursor.fetchall()[0][0]
             else:
-                genre = u""
+                genre = ""
 
             if track[7]:
-                self.cursor.execute(u"SELECT DISTINCT BINARY name FROM year WHERE id = BINARY %s", (track[7],))
+                self.cursor.execute("SELECT DISTINCT BINARY name FROM year WHERE id = BINARY %s", (track[7],))
                 year = self.cursor.fetchall()[0][0]
             else:
-                year = u""
+                year = ""
         else:
             composer = track[4]
             genre = track[5]
@@ -100,18 +100,18 @@ class Amarok(MySQLLib):
                                 self.latinutf))
 
     def getArtists(self):
-        self.cursor.execute(u"SELECT DISTINCT BINARY name FROM artist ORDER BY name")
+        self.cursor.execute("SELECT DISTINCT BINARY name FROM artist ORDER BY name")
         artists = self.cursor.fetchall()
         return [self.latinutf(artist[0]) for artist in artists]
 
     def getAlbums(self, artist):
-        self.cursor.execute(u"SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (self.utflatin(artist),))
+        self.cursor.execute("SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (self.utflatin(artist),))
         fileid = self.cursor.fetchall()[0][0]
-        self.cursor.execute(u"SELECT DISTINCT BINARY album FROM tags WHERE artist = BINARY %s", (fileid,))
+        self.cursor.execute("SELECT DISTINCT BINARY album FROM tags WHERE artist = BINARY %s", (fileid,))
         albumids = [z[0] for z in self.cursor.fetchall()]
         albums = []
         for albumid in albumids:
-            self.cursor.execute(u"SELECT DISTINCT BINARY name FROM album WHERE id = BINARY %s", (albumid,))
+            self.cursor.execute("SELECT DISTINCT BINARY name FROM album WHERE id = BINARY %s", (albumid,))
             albums.append(self.latinutf(self.cursor.fetchall()[0][0]))
         return albums
 
@@ -119,20 +119,20 @@ class Amarok(MySQLLib):
         ret = []
         if not albums:
             albums = self.getAlbums(artist)
-        if self.cursor.execute(u"SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (self.utflatin(artist),)):
+        if self.cursor.execute("SELECT DISTINCT BINARY id FROM artist WHERE name = BINARY %s", (self.utflatin(artist),)):
             artistid = self.cursor.fetchall()[0][0]
 
-        if not self.cursor.execute(u"""SELECT DISTINCT BINARY album FROM tags WHERE artist = BINARY %s""", (artistid,)):
+        if not self.cursor.execute("""SELECT DISTINCT BINARY album FROM tags WHERE artist = BINARY %s""", (artistid,)):
             return []
 
         albumids = {}
         for albumid in [z[0] for z in self.cursor.fetchall()]:
-            self.cursor.execute(u"""SELECT DISTINCT BINARY name FROM album WHERE id = BINARY %s""", (albumid,))
+            self.cursor.execute("""SELECT DISTINCT BINARY name FROM album WHERE id = BINARY %s""", (albumid,))
             albumids[self.cursor.fetchall()[0][0]] = albumid
 
         for album in albums:
             albumid = albumids[album]
-            self.cursor.execute(u"""SELECT url, dir, createdate, modifydate,
+            self.cursor.execute("""SELECT url, dir, createdate, modifydate,
                                 composer, genre, title, year, comment,
                                 track, discnumber, bitrate, length, samplerate,
                                 filesize, filetype, sampler, bpm, deviceid
@@ -143,13 +143,13 @@ class Amarok(MySQLLib):
         return ret
 
     def _delTrack(self, track):
-        self.cursor.execute('DELETE FROM tags WHERE url = %s', (u"." + track[FILENAME],))
+        self.cursor.execute('DELETE FROM tags WHERE url = %s', ("." + track[FILENAME],))
 
-        for key in (u'genre', u'year', u'album', u'composer', u'artist'):
-            if self.cursor.execute(u'SELECT id FROM ' + key + u' WHERE name = BINARY %s', (track[key],)):
+        for key in ('genre', 'year', 'album', 'composer', 'artist'):
+            if self.cursor.execute('SELECT id FROM ' + key + ' WHERE name = BINARY %s', (track[key],)):
                 keyid = self.cursor.fetchall()[0][0]
-            if not self.cursor.execute(u'SELECT ' + key + u' FROM tags WHERE ' + key + u' = BINARY %s', (keyid,)):
-                self.cursor.execute(u'DELETE FROM ' + key + u' WHERE id = %s', (keyid,))
+            if not self.cursor.execute('SELECT ' + key + ' FROM tags WHERE ' + key + ' = BINARY %s', (keyid,)):
+                self.cursor.execute('DELETE FROM ' + key + ' WHERE id = %s', (keyid,))
 
     def delTracks(self, tracks):
         stringtags = audioinfo.stringtags
@@ -175,17 +175,17 @@ class Amarok(MySQLLib):
             mixed = old.copy()
             mixed.update(new)
             ids = {}
-            for key in (u'genre', u'year', u'album', u'composer', u'artist'):
-                if self.cursor.execute(u'SELECT id FROM ' + key + u' WHERE name = BINARY %s', (new[key],)):
+            for key in ('genre', 'year', 'album', 'composer', 'artist'):
+                if self.cursor.execute('SELECT id FROM ' + key + ' WHERE name = BINARY %s', (new[key],)):
                     keyid = self.cursor.fetchall()[0][0]
                 else:
-                    self.cursor.execute(u'INSERT INTO ' + key + u' VALUES (NULL, %s)', (new[key], ))
+                    self.cursor.execute('INSERT INTO ' + key + ' VALUES (NULL, %s)', (new[key], ))
                     self.cursor.execute('SELECT LAST_INSERT_ID()')
                     keyid = self.cursor.fetchall()[0][0]
                 ids[key] = keyid
 
-            url = u"." + new['__filename']
-            folder = u"." + dirname(new['__filename'])
+            url = "." + new['__filename']
+            folder = "." + dirname(new['__filename'])
             self.cursor.execute("""REPLACE INTO tags VALUES (%s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
@@ -204,7 +204,7 @@ class Amarok(MySQLLib):
                 self._delTrack(old)
 
     def search(self, term):
-        self.cursor.execute(u'''SELECT tags.url, tags.dir, tags.createdate,
+        self.cursor.execute('''SELECT tags.url, tags.dir, tags.createdate,
             tags.modifydate, composer.name as composer,
             genre.name as genre, tags.title, year.name as year, tags.comment,
             tags.track, tags.discnumber, tags.bitrate, tags.length,

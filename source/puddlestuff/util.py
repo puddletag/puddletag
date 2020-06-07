@@ -143,7 +143,7 @@ def m_to_string(v):
     else:
         return escape_html(SEPARATOR.join(v))
 
-def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
+def pprint_tag(tags, fmt="<b>%s</b>: %s<br />", show_read_only=False):
     image_tr = translate('Defaults', '%s images')
     if tags:
         if isinstance(tags, str):
@@ -161,10 +161,10 @@ def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
 
         items = sorted(items, key=itemgetter(0))
 
-        if u'__image' in tags:
+        if '__image' in tags:
             items.insert(0, ('__image', image_tr % len(tags['__image'])))
 
-        return u"".join(map(map_func, items))
+        return "".join(map(map_func, items))
 
 def rename_file(audio, tags):
     """If tags(a dictionary) contains a PATH key, then the file
@@ -245,7 +245,7 @@ def to_list(value):
 
 def to_string(value):
     if isempty(value):
-        return u''
+        return ''
     elif isinstance(value, bytes):
         return value.decode('utf8')
     elif isinstance(value, str):
@@ -266,7 +266,7 @@ def write(audio, tags, save_mtime = True, justrename=False):
     tags = deepcopy(tags)
     renamed = False
     if audio.library and (ARTIST in tags or ALBUM in tags):
-        artist = audio.get(ARTIST, u'')
+        artist = audio.get(ARTIST, '')
     else:
         artist = None
 
@@ -280,7 +280,7 @@ def write(audio, tags, save_mtime = True, justrename=False):
     undo = dict([(field, copy(audio.get(field, [])))
         for field in tags if
             (field not in fn_fields and 
-                tags.get(field, u'') != audio.get(field, u''))])
+                tags.get(field, '') != audio.get(field, ''))])
 
     if '__image' in tags:
         if not audio.IMAGETAGS:

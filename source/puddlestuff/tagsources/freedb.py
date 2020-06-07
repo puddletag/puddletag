@@ -24,8 +24,8 @@ def sort_func(key, default):
 
 def calculate_discid(album):
     #from quodlibet's cddb plugin by Michael Urman
-    album = sorted(album, key=sort_func('__filename', u''))
-    album = sorted(album, key=sort_func('track', u'1'))
+    album = sorted(album, key=sort_func('__filename', ''))
+    album = sorted(album, key=sort_func('track', '1'))
     lengths = [audioinfo.lnglength(to_string(song['__length']))
         for song in album]
     total_time = 0
@@ -51,7 +51,7 @@ def convert_info(info):
     if 'artist' not in info and 'album' in info:
         try:
             info['artist'], info['album'] = [z.strip() for z in
-                info['album'].split(u' / ', 1)]
+                info['album'].split(' / ', 1)]
         except (TypeError, ValueError):
             pass
     if '#discid' in info:
@@ -65,9 +65,9 @@ def convert_tracks(disc):
     tracks = []
     for tracknum, title in sorted(disc.items()):
         track = {'track': str(tracknum + 1)}
-        if u' / ' in title:
+        if ' / ' in title:
             track['artist'], track['title'] = [z.strip() for z in
-                decode_str(title).split(u' / ', 1)]
+                decode_str(title).split(' / ', 1)]
         else:
             track['title'] = title
         tracks.append(track)
@@ -189,7 +189,7 @@ class FreeDB(object):
 info = FreeDB
 
 if __name__ == '__main__':
-    #return [({'#discid': '0200d001', '#category': 'soundtrack', 'album': u'German'}, [])]
+    #return [({'#discid': '0200d001', '#category': 'soundtrack', 'album': 'German'}, [])]
     from .. import audioinfo
     import glob
 

@@ -13,7 +13,7 @@ def connect_shortcut(action, enabled, disabled=None, togglecheck=None):
         [getattr(c, enabled).connect(
             action.setEnabled) for c in emits[enabled]]
     else:
-        logging.error(u'No enable signal found for ' + action.text())
+        logging.error('No enable signal found for ' + action.text())
         action.setEnabled(False)
 
     if togglecheck and togglecheck in emits:

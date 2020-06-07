@@ -14,10 +14,10 @@ NUM_IMAGES = '__num_images'
 PARENT_DIR = '__parent_dir'
 PATH = "__path"
 
-MONO = u'Mono'
-JOINT_STEREO = u'Joint-Stereo'
-DUAL_CHANNEL = u'Dual-Channel'
-STEREO = u'Stereo'
+MONO = 'Mono'
+JOINT_STEREO = 'Joint-Stereo'
+DUAL_CHANNEL = 'Dual-Channel'
+STEREO = 'Stereo'
 
 MIMETYPE = 'mime'
 DESCRIPTION = 'description'

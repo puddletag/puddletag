@@ -50,13 +50,13 @@ SD_PATTERNS = [
 ]
 
 mod_keys = {
-    Qt.ShiftModifier: u'Shift',
-    Qt.MetaModifier: u'Meta',
-    Qt.AltModifier: u'Alt',
-    Qt.ControlModifier: u'Ctrl',
-    Qt.NoModifier: u'',
-    Qt.KeypadModifier: u'',
-    Qt.GroupSwitchModifier: u'',}
+    Qt.ShiftModifier: 'Shift',
+    Qt.MetaModifier: 'Meta',
+    Qt.AltModifier: 'Alt',
+    Qt.ControlModifier: 'Ctrl',
+    Qt.NoModifier: '',
+    Qt.KeypadModifier: '',
+    Qt.GroupSwitchModifier: '',}
 
 def keycmp(modifier):
     if modifier == Qt.CTRL:
@@ -105,7 +105,7 @@ for i in range(1,len(mod_keys)):
         mod = keys[0]
         for key in keys[1:]:
             mod = mod | key
-        modifiers[int(mod)] = u'+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
+        modifiers[int(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
 
 mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
 
@@ -164,7 +164,7 @@ class CoverButton(QPushButton):
         menu = QMenu(self)
 
         def create(title, short, index):
-            text = u'[%s] %s' % (short, title)
+            text = '[%s] %s' % (short, title)
             action = QAction(text, self)
             action.triggered.connect(lambda: self.setCurrentIndex(index))
             return action
@@ -458,7 +458,7 @@ def get_languages(dirs=None):
             files.extend(glob(os.path.join(d, "*.qm")))
     d = QDir(':/')
     if d.cd('translations'):
-        files.extend([os.path.join(u':/translations', t) for t in
+        files.extend([os.path.join(':/translations', t) for t in
             map(str, d.entryList(['*.qm']))])
 
     ret = {}
@@ -663,7 +663,7 @@ def gettag(f):
     try:
         return audioinfo.Tag(f)
     except:
-        logging.exception(u'Error loading file %s', f)
+        logging.exception('Error loading file %s', f)
         return
 
 def translate_filename_pattern(pat):
@@ -706,8 +706,8 @@ def translate_filename_pattern(pat):
     return res + '\Z'
 
 def fnmatch(pattern, files, matchcase=False):
-    regexp = u'|'.join(map(translate_filename_pattern, 
-        [z.strip() for z in pattern.split(u';')]))
+    regexp = '|'.join(map(translate_filename_pattern, 
+        [z.strip() for z in pattern.split(';')]))
     if matchcase:
         match = re.compile(regexp).match
     else:
@@ -752,7 +752,7 @@ def load_actions():
         if order:
             old_order = dict([(basename(z), i) for i,z in
                 enumerate(order)])
-            files = glob(os.path.join(ACTIONDIR, u'*.action'))
+            files = glob(os.path.join(ACTIONDIR, '*.action'))
             order = {}
             for f in files:
                 try:
@@ -762,7 +762,7 @@ def load_actions():
             order = [z[1] for z in sorted(order.items())]
             set_value('order', order)
 
-    files = glob(os.path.join(ACTIONDIR, u'*.action'))
+    files = glob(os.path.join(ACTIONDIR, '*.action'))
     if firstrun and not files:
         filenames = [':/caseconversion.action', ':/standard.action']
         files = list(map(open_resourcefile, filenames))
@@ -773,7 +773,7 @@ def load_actions():
             f = open(filename, 'w')
             f.write(fileobj.read())
             f.close()
-        files = glob(os.path.join(ACTIONDIR, u'*.action'))
+        files = glob(os.path.join(ACTIONDIR, '*.action'))
 
     files = [z for z in order if z in files] + \
         [z for z in files if z not in order]
@@ -1519,9 +1519,9 @@ class PicWidget(QWidget):
         self.sizePolicy().setVerticalStretch(0)
         self.sizePolicy().setHorizontalStretch(3)
 
-        self.lastfilename = u'~'
+        self.lastfilename = '~'
         self.currentFile = None
-        self.filePattern = u'folder.jpg'
+        self.filePattern = 'folder.jpg'
 
         self.label = ArtworkLabel()
         self.label.setFrameStyle(QFrame.Box)
@@ -1924,7 +1924,7 @@ class PicWidget(QWidget):
         self._image_type.setEnabled(False)
         [action.setEnabled(False) for action in
                     (self.editpic, self.savepic, self.removepic)]
-        self.context = u'No Images'
+        self.context = 'No Images'
         self._lastdata = None
 
     def setImages(self, images, imagetags = None, default=0):
@@ -1977,7 +1977,7 @@ class PicWidget(QWidget):
                 pic = {'data': data, 'height': image.height(),
                        'width': image.width(), 'size': len(data),
                        'mime': 'image/jpeg',
-                       'description': u"",
+                       'description': "",
                        'imagetype': 3}
                 images.append(pic)
 
@@ -1990,7 +1990,7 @@ class PicWidget(QWidget):
             pic = {'data': d, 'height': image.height(),
                    'width': image.width(), 'size': len(data),
                    'mime': 'image/jpeg',
-                   'description': u"",
+                   'description': "",
                    'imagetype': 3}
             images.append(pic)
         return images
@@ -2046,7 +2046,7 @@ class PicWin(QDialog):
         self.label.setPixmap(pixmap)
         if hasattr(pixmap, 'size'):
             size = pixmap.size()
-            res = u": %sx%s" % (size.width(), size.height())
+            res = ": %sx%s" % (size.width(), size.height())
             self.setWindowTitle(self.windowTitle() + res)
             if size.height() < maxsize.height() and size.width() < maxsize.width():
                 self.setMinimumSize(size)
@@ -2082,7 +2082,7 @@ class ProgressWin(QDialog):
                 self.label.setVisible(False)
             else:
                 self.label.setText(progresstext)
-            self.ptext = u''
+            self.ptext = ''
 
         cancel = QPushButton(translate("Defaults", 'Cancel'))
         cbox = QHBoxLayout()
@@ -2334,14 +2334,14 @@ class ShortcutEditor(QLineEdit):
 
     def keyPressEvent(self, event):
 
-        text = u''
+        text = ''
 
         if event.modifiers():
             text = modifiers[int(event.modifiers())]
 
         if event.key() not in mod_keys:
             if text:
-                text += u'+' + str(QKeySequence(event.key()).toString())
+                text += '+' + str(QKeySequence(event.key()).toString())
             else:
                 text = str(QKeySequence(event.key()).toString())
 
@@ -2368,7 +2368,7 @@ if __name__ == '__main__':
     class MainWin(QDialog):
         def __init__(self, parent = None):
             QDialog.__init__(self, parent)
-            self.combo = PuddleCombo('patterncombo', [u'%artist% - $num(%track%, 2) - %title%', u'%artist% - %title%', u'%artist% - %album%', u'%artist% - Track %track%', u'%artist% - %title%', u'%artist%'])
+            self.combo = PuddleCombo('patterncombo', [u'%artist% - $num(%track%, 2) - %title%', '%artist% - %title%', '%artist% - %album%', '%artist% - Track %track%', '%artist% - %title%', '%artist%'])
 
             hbox = QHBoxLayout()
             hbox.addWidget(self.combo)

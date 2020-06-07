@@ -39,7 +39,7 @@ Matches exactly."""
 funcs.append(exact)
 
 def funcinfo(func):
-    return (func.__doc__.split(u'\n')[0], u'\n'.join(func.__doc__.split(u'\n')[2:]))
+    return (func.__doc__.split('\n')[0], '\n'.join(func.__doc__.split('\n')[2:]))
 
 class Algo(object):
     def __init__(self, tags = None, threshold = 0.85, func = _ratio, matchcase = True):
@@ -69,7 +69,7 @@ class Algo(object):
     def pprint(self):
         threshold = '%.2f' % (self.threshold * 100) + '%'
         funcname = self.funcname
-        tags = u' | '.join(self.tags)
+        tags = ' | '.join(self.tags)
         matchcase = ''
         if self.matchcase:
             matchcase = ' - Match Case'

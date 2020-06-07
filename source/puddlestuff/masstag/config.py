@@ -33,15 +33,15 @@ def convert_mtp(filename):
         
     cparser = PuddleConfig(filename)
     info_section = 'info'
-    name = cparser.get(info_section, NAME, u'')
+    name = cparser.get(info_section, NAME, '')
     numsources = cparser.get(info_section, 'numsources', 0)
     album_bound = cparser.get(info_section, ALBUM_BOUND, 70) / 100.0
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
     pattern = cparser.get(info_section, PATTERN,
-        u'%artist% - %album%/%track% - %title%')
+        '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
-    desc = cparser.get(info_section, DESC, u'')
+    desc = cparser.get(info_section, DESC, '')
     existing = cparser.get(info_section, EXISTING_ONLY, False)
 
     ts_profiles = []
@@ -50,8 +50,8 @@ def convert_mtp(filename):
         get = lambda key, default: cparser.get(section, key, default)
 
         source = DummyTS()
-        source.name = get('source', u'')
-        fields = fields_from_text(get('fields', u''))
+        source.name = get('source', '')
+        fields = fields_from_text(get('fields', ''))
         no_result = get('no_match', 0)
 
         ts_profiles.append(TagSourceProfile(None, source, fields,
@@ -59,13 +59,13 @@ def convert_mtp(filename):
     
     return MassTagProfile(name, desc, match_fields, None,
             pattern, ts_profiles, album_bound, track_bound, jfdi, existing,
-            u'')
+            '')
 
 def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
     if tag_sources is None:
         tag_sources = {}
     mtps = [mtp_from_file(fn, tag_sources) for fn
-        in glob.glob(dirpath + u'/*.mtp')]
+        in glob.glob(dirpath + '/*.mtp')]
     try:
         order = open(os.path.join(dirpath, 'order'), 'r').read().split('\n')
     except EnvironmentError:
@@ -99,19 +99,19 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
     pattern = cparser.get(info_section, PATTERN,
         '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
-    desc = cparser.get(info_section, DESC, u'')
+    desc = cparser.get(info_section, DESC, '')
     leave_existing = cparser.get(info_section, EXISTING_ONLY, False)
-    regexps = u''
+    regexps = ''
 
     ts_profiles = []
     for num in range(numsources):
         section = 'config%s' % num
         get = lambda key, default: cparser.get(section, key, default)
 
-        source = tag_sources.get(get('source', u''), None)
+        source = tag_sources.get(get('source', ''), None)
         no_result = get('no_match', 0)
-        fields = fields_from_text(get('fields', u''))
-        replace_fields = fields_from_text(get('replace_fields', u''))
+        fields = fields_from_text(get('fields', ''))
+        replace_fields = fields_from_text(get('replace_fields', ''))
 
         ts_profiles.append(TagSourceProfile(None, source, fields,
             no_result, replace_fields))
@@ -137,12 +137,12 @@ def save_mtp(mtp, filename=CONFIG):
     cparser.set(info_section, 'numsources', len(mtp.profiles))
     for num, tsp in enumerate(mtp.profiles):
         section = 'config%s' % num
-        name = tsp.tag_source.name if tsp.tag_source else u''
+        name = tsp.tag_source.name if tsp.tag_source else ''
         cparser.set(section, 'source', name)
         cparser.set(section, 'if_no_result', tsp.if_no_result)
-        cparser.set(section, 'fields', u','.join(tsp.fields))
-        cparser.set(section, 'replace_fields', u','.join(tsp.replace_fields))
+        cparser.set(section, 'fields', ','.join(tsp.fields))
+        cparser.set(section, 'replace_fields', ','.join(tsp.replace_fields))
 
 if __name__ == '__main__':
-    fns = glob.glob(PROFILEDIR + u'/Local.conf')
+    fns = glob.glob(PROFILEDIR + '/Local.conf')
     convert_mtps(PROFILEDIR)

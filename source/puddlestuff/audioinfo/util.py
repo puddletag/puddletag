@@ -119,7 +119,7 @@ def cover_info(images, d=None):
     """Finds cover metadata in images.
 
     Returns dictionary:
-        {__num_images: unicode(len(images)) else u'0'
+        {__num_images: unicode(len(images)) else '0'
         __image_mimetype: mimetype of images[0]
         __image_type: type of images[0]}
 
@@ -128,8 +128,8 @@ def cover_info(images, d=None):
     """
     info = {}
     if not images:
-        info[NUM_IMAGES] = u'0'
-        info[IMAGE_MIMETYPE] = u''
+        info[NUM_IMAGES] = '0'
+        info[IMAGE_MIMETYPE] = ''
     else:
         info[NUM_IMAGES] = str(len(images))
         image = images[0]
@@ -213,8 +213,8 @@ def getinfo(filename):
         "__size" : str(size),
         '__file_size': str_filesize(size),
         '__file_size_bytes': str(size),
-        '__file_size_kb': u'%d KB' % int(size / 1024),
-        '__file_size_mb': u'%.2f MB' % (size / 1024.0**2),
+        '__file_size_kb': '%d KB' % int(size / 1024),
+        '__file_size_mb': '%.2f MB' % (size / 1024.0**2),
 
         "__created": strtime(created),
         '__file_create_date': get_time('%Y-%m-%d', created),
@@ -241,18 +241,18 @@ def getinfo(filename):
 def get_mime(data):
     """Retrieve the mimetype of the image, data (a bytestring).
 
-    Returns either u'image/jpeg', u'image/png' or ''."""
+    Returns either 'image/jpeg', 'image/png' or ''."""
     mime = imghdr.what(None, data)
     if mime:
-        return u'image/' + mime
+        return 'image/' + mime
     else:
-        return u''
+        return ''
 
 def get_total(tag):
     """If tag['track'] is of format x/y returns, y."""
     value = to_string(tag['track'])
     try:
-        return value.split(u'/')[1].strip()
+        return value.split('/')[1].strip()
     except IndexError:
         raise KeyError('__total')
 
@@ -285,7 +285,7 @@ def info_to_dict(info):
         tags["__bitrate"] = strbitrate(info.bitrate)
         tags["__bitrate_num"] = str(int(info.bitrate / 1000))
     except AttributeError: 
-        tags[u"__bitrate"] = u'0 kb/s'
+        tags["__bitrate"] = '0 kb/s'
         tags["__bitrate_num"] = 0
 
     try: tags['__bitspersample'] = str(info.bits_per_sample)
@@ -326,7 +326,7 @@ def isempty(value):
         The value evaluates to False and as not a number.
         All of value's members are False. eg
 
-    >>>isempty(u'')
+    >>>isempty('')
     True
     >>>isempty([u'', None])
     True
@@ -366,12 +366,12 @@ def lnglength(value):
     """Converts a string representation of length to seconds.
 
     length can be in HH:MM:SS or MM:SS format."""
-    if len(value.split(u':')) == 3:
-        (hours, minutes, seconds) = list(map(float, value.split(u':')))
+    if len(value.split(':')) == 3:
+        (hours, minutes, seconds) = list(map(float, value.split(':')))
         (hours, minutes, seconds) = (int(hours), int(minutes), int(seconds))
         return (hours * 3600) + (minutes * 60) + seconds
     else:
-        (minutes, seconds) = list(map(float, value.split(u':')))
+        (minutes, seconds) = list(map(float, value.split(':')))
         (minutes, seconds) = (int(minutes), int(seconds))
         return (minutes * 60) + seconds
 
@@ -389,7 +389,7 @@ def path_to_string(value):
         return path_to_string(value[0])
 
 _image_defaults = {
-    DESCRIPTION: lambda i: i.get(DESCRIPTION, u''),
+    DESCRIPTION: lambda i: i.get(DESCRIPTION, ''),
     MIMETYPE: lambda i: get_mime(i[DATA]) if MIMETYPE in i else \
         get_mime(i[DATA]),
     IMAGETYPE: lambda i: i.get(IMAGETYPE, DEFAULT_COVER),
@@ -429,7 +429,7 @@ def setmodtime(fn, atime, mtime):
 
 def set_total(tag, value):
     """If tag['track'] is of format x/y set's y to value."""
-    track = to_string(tag['track']).split(u'/', 1)
+    track = to_string(tag['track']).split('/', 1)
     
     if isempty(value) and track:
         tag['track'] = track[0]
@@ -438,34 +438,34 @@ def set_total(tag, value):
     value = to_string(value)
     if not (value and track):
         return False
-    tag['track'] = track[0] + u'/' + value
+    tag['track'] = track[0] + '/' + value
     return True
 
 def strbitrate(bitrate):
     """Converts the bitrate in bits/s to a string in kb/s."""
-    return str(bitrate / 1000) + u' kb/s'
+    return str(bitrate / 1000) + ' kb/s'
 
 _sizes = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB'}
 def str_filesize(size):
     """Convert size in bytes to it's string representation and returns it.
 
     >>>str_filesize(1024)
-    u'1 KB'
+    '1 KB'
     >>>str_filesize(88)
-    u'88 B'
+    '88 B'
     >>>str_filesize(1024**3)
-    u'1.00 GB'
+    '1.00 GB'
     """
     valid = [z for z in _sizes if size / (1024.0**z) > 1]
     val = max(valid)
     if val < 2:
-        return u'%d %s' % (size/(1024**val), _sizes[val])
+        return '%d %s' % (size/(1024**val), _sizes[val])
     else:
-        return u'%.2f %s' % (size/(1024.0**val), _sizes[val])
+        return '%.2f %s' % (size/(1024.0**val), _sizes[val])
 
 def strfrequency(value):
     """Converts the frequency Hz to a string in kHz."""
-    return u"%.1f kHz" % (value / 1000.0)
+    return "%.1f kHz" % (value / 1000.0)
 
 def stringtags(tag, leaveNone = False):
     """Converts each value in tag to a string.
@@ -476,8 +476,8 @@ def stringtags(tag, leaveNone = False):
 
     leaveNone = False will remove any values
     considered empty from being part of the returned dictionary.
-    eg. u'', [''], None.
-    Otherwise, they're returned as u''    
+    eg. '', [''], None.
+    Otherwise, they're returned as ''    
     """
 
     newtag = {}
@@ -490,7 +490,7 @@ def stringtags(tag, leaveNone = False):
             continue
 
         if leaveNone and isempty(v):
-            newtag[i] = u''
+            newtag[i] = ''
             continue
         elif (not v) or (hasattr(v, '__iter__') and len(v) == 1 and not v[0]):
             continue
@@ -560,12 +560,7 @@ def to_string(value, errors='strict'):
 
     If it's a list, the first index is used."""
     if not value:
-        return u''
-    elif isinstance(value, str):
-        try:
-            return value.decode('utf8', errors)
-        except AttributeError:
-            return value
+        return ''
     elif isinstance(value, str):
         return value
     elif isinstance(value, int):
@@ -584,8 +579,8 @@ def unicode_list(value):
 
     >>>unicode_list("value")
     [u'value']
-    >>>unicode_list(['value1', u'value2']
-    [u'value1', u'value2']
+    >>>unicode_list(['value1', 'value2']
+    [u'value1', 'value2']
     """
     if not value:
         return []
@@ -664,7 +659,7 @@ class MockTag(object):
     def __init__(self, filename = None):
         object.__init__(self)
         self._info = {}
-        self.__filepath = u''
+        self.__filepath = ''
         if filename:
             self.link(filename)
 

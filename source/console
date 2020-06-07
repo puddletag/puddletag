@@ -178,7 +178,7 @@ class SetTag:
         if arglen == 0:
             raise PuddleError("Dude, I need some tags to modify.")
         elif arglen % 2 != 0:
-            raise PuddleError(u"I need a value for the " + args[-1] + ' tag.')
+            raise PuddleError("I need a value for the " + args[-1] + ' tag.')
 
         tags = args[0:arglen:2]
         values = args[1:arglen:2]
@@ -236,9 +236,9 @@ def pprint(tags):
     for tag in keys:
         value = tags[tag]
         if not isinstance(value, str):
-            value = u'[' + ','.join(value) + u']'
-        temp.append(tag + u': ' + bold + value + normal)
-    return u"\n".join(temp)
+            value = '[' + ','.join(value) + ']'
+        temp.append(tag + ': ' + bold + value + normal)
+    return "\n".join(temp)
 
 def renameFile(original, tags):
     if PATH in tags:
@@ -267,7 +267,7 @@ def writeTags(original, tags):
         original.update(tags)
         original.save()
     except (OSError, IOError) as detail:
-        printerror(u"Couldn't write to file, " + original['__filename'] + u'\n')
+        printerror("Couldn't write to file, " + original['__filename'] + '\n')
 
 def main():
     classes = {'runaction': PuddleRunAction, 'set': SetTag, 'setmul': SetMul,
@@ -282,11 +282,11 @@ def main():
         cl = classes[command]()
         try:
             if not files and cl.files:
-                raise PuddleError(u'No files were specified to ' + command)
+                raise PuddleError('No files were specified to ' + command)
             cl.setup(*args)
         except PuddleError as e:
-            printerror(u'Error: ' + str(e))
-            print(u'usage: ' + cl.usage)
+            printerror('Error: ' + str(e))
+            print('usage: ' + cl.usage)
             sys.exit(0)
         #except TypeError, e:
             #text = unicode(e)
@@ -311,7 +311,7 @@ def main():
             try:
                 printerror("Couldn't read " + f + ': ' + e.strerror)
             except AttributeError:
-                printerror(u"Couldn't read " + f + ': ' + str(e))
+                printerror("Couldn't read " + f + ': ' + str(e))
             continue
         if tag is not None:
             tags = tag.tags
@@ -327,7 +327,7 @@ def main():
                 print('Changes: \n', pprint(changes), '\n')
                 print("Do you want to write the changes to the file? [Y/n]")
                 s = input()
-                if not(s == u'n' or s == u'N'):
+                if not(s == 'n' or s == 'N'):
                     writeTags(tag, tags)
             elif options.verbose:
                 changes = {}
@@ -336,7 +336,7 @@ def main():
                         changes[z] = tags[z]
                 print('Original: \n', pprint(tag.tags), '\n')
                 print('Changes: \n', pprint(changes), '\n')
-                u'Now writing...' + tag['__filename']
+                'Now writing...' + tag['__filename']
                 writeTags(tag, tags)
             elif options.test:
                 changes = {}

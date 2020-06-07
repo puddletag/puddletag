@@ -11,7 +11,7 @@ YES = translate('Defaults', 'Yes')
 NO = translate('Defaults', 'No')
 BLANK = translate('Defaults', '<blank>')
 KEEP = translate('Defaults', '<keep>')
-VARIOUS = translate('Defaults', u'Various')
+VARIOUS = translate('Defaults', 'Various')
 MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
 SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
 SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
@@ -32,12 +32,12 @@ def trans_strings():
     NO = translate('Defaults', 'No')
     BLANK = translate('Defaults', '<blank>')
     KEEP = translate('Defaults', '<keep>')
-    VARIOUS = translate('Defaults', u'Various Artists')
+    VARIOUS = translate('Defaults', 'Various Artists')
     MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
     SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
     SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
-SEPARATOR = u'\\\\'
+SEPARATOR = '\\\\'
 
 FS_ENC = sys.getfilesystemencoding()
 
@@ -85,8 +85,8 @@ BOTTOMDOCK = Qt.BottomDockWidgetArea
 TOPDOCK = Qt.TopDockWidgetArea
 
 #Tag constants
-PATH = u"__path"
-FILENAME = u"__filename"
+PATH = "__path"
+FILENAME = "__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
 DIRNAME = '__dirname'

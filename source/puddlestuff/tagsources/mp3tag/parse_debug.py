@@ -7,36 +7,36 @@ dbg_skip = ['ifnot',  'do', 'while']
 src_skip = ['endif', 'do', 'while', 'ifnot', 'else']
 
 def parse_group(group):
-    group = group.strip().split(u'\n')
+    group = group.strip().split('\n')
     ret =  {}
     params = {}
-    desc = u''
+    desc = ''
     prevout = False
     for i, line in enumerate(group):
         if prevout and line.strip():
-            if line.strip().endswith(u"<"):
+            if line.strip().endswith("<"):
                 ret['output'] += "\n" + line.strip()[:-1]
                 prevout = False
             else:
-                ret['output'] += "\n" + line.replace(u'\r', u'')
+                ret['output'] += "\n" + line.replace('\r', '')
             continue
         prevout = False
         try:
-            desc, value = [z.strip() for z in line.split(u':', 1)]
+            desc, value = [z.strip() for z in line.split(':', 1)]
             desc = desc.lower()
         except ValueError:
             continue
         
-        if desc == u'script-line':
+        if desc == 'script-line':
             ret['lineno'] = int(value)
-        elif desc == u'command':
+        elif desc == 'command':
             ret['cmd'] = value
-        elif desc == u'output':
-            ret['output'] = value[1:-1] if value.endswith(u"<") else value[1:]
+        elif desc == 'output':
+            ret['output'] = value[1:-1] if value.endswith("<") else value[1:]
             prevout = True
-        elif desc.startswith(u'parameter'):
+        elif desc.startswith('parameter'):
             params[desc.split()[1]] = value[1:-1]
-        elif desc == u'line and position':
+        elif desc == 'line and position':
             ret['line'] = group[i + 1].strip()
             ret['charno'] = group[i + 2].find('^')
     if params:
@@ -44,18 +44,18 @@ def parse_group(group):
     return ret
 
 def parse_total_group(group):
-    fields = [_f for _f in group.split(u'\n output["')[1:] if _f]
+    fields = [_f for _f in group.split('\n output["')[1:] if _f]
     output = {}
     for field in fields:
-        end_fieldname = field.find(u'"')
+        end_fieldname = field.find('"')
         fieldname = field[:end_fieldname].strip()
-        text = field[field.find(u'=', end_fieldname):].strip()[1:-1]
+        text = field[field.find('=', end_fieldname):].strip()[1:-1]
         output[fieldname] = text
     return output
 
 def parse_debug(text):
-    delim = u'-' * 60
-    linenos = [i for i, z in enumerate(text.split(u'\n'))
+    delim = '-' * 60
+    linenos = [i for i, z in enumerate(text.split('\n'))
         if z.strip() == delim][1:]
     
     groups = [z.strip() for z in text.split(delim)[3:]]
@@ -101,5 +101,5 @@ def compare_retrieval(srcfn, html, debug, album=True):
 if __name__ == '__main__':
     doc_path = "~/Documents/python/puddletag-hg/source/tests"
     fn = doc_path + 'discogs_xml_all.src'
-    compare_retrieval(fn, codecs.open(doc_path + "w", 'rU', 'utf8').read().replace(u'\r', u'\n'),
+    compare_retrieval(fn, codecs.open(doc_path + "w", 'rU', 'utf8').read().replace('\r', '\n'),
         codecs.open(doc_path + "debug.txt", 'rU', 'utf16').read(), True)

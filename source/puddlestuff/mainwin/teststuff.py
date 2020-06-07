@@ -143,8 +143,8 @@ class TestWidget(QWidget):
     def _saveTags(self):
         files = self._status['allfiles']
         f = open('savedfiles', 'w')
-        f.write(u'# -*- coding: utf-8 -*-\ntags = [%s]' % 
-            u',\n'.join((str(z.tags) for z in files)).decode('utf8'))
+        f.write('# -*- coding: utf-8 -*-\ntags = [%s]' %
+            ',\n'.join((str(z.tags) for z in files)))
         f.close()
 
 control = ('Puddle Testing', TestWidget, RIGHTDOCK, False)

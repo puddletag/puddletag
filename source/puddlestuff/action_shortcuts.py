@@ -167,7 +167,7 @@ class Editor(QDialog):
         self._name.textChanged.connect(self.enableOk)
         scut_status = QLabel('')
         self._shortcut.validityChanged.connect(
-            lambda v: scut_status.setText(u'') if v or (not self._shortcut.text()) else
+            lambda v: scut_status.setText('') if v or (not self._shortcut.text()) else
                 scut_status.setText(translate('Shortcuts', "Invalid shortcut sequence.")))
         okcancel.insertWidget(0, scut_status)
 
@@ -212,7 +212,7 @@ class Editor(QDialog):
         items = list(map(alist.item, range(alist.count())))
         actions = [item._action[1] for item in items]
         self.actionChanged.emit(str(self._name.text()), actions,
-            str(self._shortcut.text()) if self._shortcut.valid else u'')
+            str(self._shortcut.text()) if self._shortcut.valid else '')
         self.close()
 
     def setActions(self, actions):
@@ -220,7 +220,7 @@ class Editor(QDialog):
         self._actions = []
         for funcs, name, filename in actions:
             item = QListWidgetItem(name)
-            item.setToolTip(u'\n'.join([func.description() for func in funcs]))
+            item.setToolTip('\n'.join([func.description() for func in funcs]))
             item._action = [name, filename]
             self._actionList.addItem(item)
 
@@ -236,7 +236,7 @@ class Editor(QDialog):
         if filenames:
             for filename in filenames:
                 item = QListWidgetItem(names.get(filename, translate('Shortcuts', '(Deleted)')))
-                item._action = [names.get(filename, u''), filename]
+                item._action = [names.get(filename, ''), filename]
                 self._newActionList.addItem(item)
 
     def setShortcut(self, text):
@@ -281,7 +281,7 @@ class ShortcutEditor(QDialog):
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
             
-        win = Editor('Add Shortcut', u'', self._actions, self.names(), shortcuts, self)
+        win = Editor('Add Shortcut', '', self._actions, self.names(), shortcuts, self)
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
         win.show()
@@ -327,8 +327,8 @@ class ShortcutEditor(QDialog):
             return
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
-        win = Editor('Duplicate Shortcut', u'', self._actions, self.names(), shortcuts, self)
-        win.setAttrs(item.actionName, self._actions, item.filenames, u'')
+        win = Editor('Duplicate Shortcut', '', self._actions, self.names(), shortcuts, self)
+        win.setAttrs(item.actionName, self._actions, item.filenames, '')
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
         win.show()
@@ -383,7 +383,7 @@ class ShortcutEditor(QDialog):
                 name = cparser.get(section, NAME, 'Default')
                 self._names.append(name)
                 filenames = cparser.get(section, FILENAMES, [])
-                shortcut = shortcuts.get(name, u'')
+                shortcut = shortcuts.get(name, '')
                 self.addShortcut(name, filenames, shortcut, select=False)
                 self._hotkeys.append(shortcut)
 

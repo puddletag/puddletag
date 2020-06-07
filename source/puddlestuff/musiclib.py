@@ -378,8 +378,8 @@ class LibraryTree(QTreeWidget):
         grouped = defaultdict(lambda: defaultdict(lambda: []))
 
         def add_track(track):
-            artist = to_string(track.get(artist_field, u''))
-            album = to_string(track.get(album_field, u''))
+            artist = to_string(track.get(artist_field, ''))
+            album = to_string(track.get(album_field, ''))
             grouped[artist][album].append(track)
 
         list(map(add_track, tracks))
@@ -394,7 +394,7 @@ class LibraryTree(QTreeWidget):
         if self.__searchResults:
             return
         if tracks:
-            data = set([to_string(track.get['artist'], u'')
+            data = set([to_string(track.get['artist'], '')
                 for track in tracks])
         else:
             data = set(artists)

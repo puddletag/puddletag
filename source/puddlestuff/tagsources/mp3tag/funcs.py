@@ -132,7 +132,7 @@ def ifnot(cursor, text):
 
 def joinlines(cursor, num):
     ret = cursor.lines[:num]
-    cursor.all_lines[cursor.lineno] = u''.join(ret)
+    cursor.all_lines[cursor.lineno] = ''.join(ret)
     del(cursor.all_lines[cursor.lineno: cursor.lineno + num])
     cursor.lineno = cursor.lineno
 
@@ -168,13 +168,13 @@ def killtag(cursor, tag, repl=u' '):
     if tag == '*':
         parser = TagProcessor()
         parser.feed(cursor.line)
-        text = u'%s%s%s' % (u' ', repl.join(parser.pieces), u' ')
-        cursor.log(cursor.line  + u' becomes ' + text + u'\n')
+        text = '%s%s%s' % (' ', repl.join(parser.pieces), ' ')
+        cursor.log(cursor.line  + ' becomes ' + text + '\n')
         cursor.line = text
         return
     else:
         leave, to_rep = cursor.line[:cursor.charno], cursor.line[cursor.charno:]
-        cursor.line = leave + to_rep.replace(u'<%s>' % tag, repl)
+        cursor.line = leave + to_rep.replace('<%s>' % tag, repl)
 
 def movechar(cursor, num):
     cursor.charno = cursor.charno + num
@@ -196,7 +196,7 @@ def outputto(cursor, text):
         else:
             cursor.output[cursor.field] = cursor.cache
         field = cursor.field
-        cursor.cache = u''
+        cursor.cache = ''
         cursor.tracks = {}
         cursor.output = CaselessDict()
         cursor.field = 'title'
@@ -231,7 +231,7 @@ def saynchars(cursor, num):
     cursor.charno += num
 
 def saynewline(cursor):
-    cursor.cache += u'\n'
+    cursor.cache += '\n'
 
 def saynextnumber(cursor):
     try:
@@ -248,18 +248,18 @@ def saynextword(cursor):
     cursor.charno += len(word)
 
 def sayoutput(cursor, field):
-    if field.lower().strip() == u'tracks' and cursor.tracks:
-        field = u'title'
+    if field.lower().strip() == 'tracks' and cursor.tracks:
+        field = 'title'
 
     
     track_field = [field.lower(), cursor.field.lower()]
     track_field = cursor.track_fields.intersection(track_field)
-    track_field = track_field or (cursor.field.lower() == u'track')
+    track_field = track_field or (cursor.field.lower() == 'track')
     
     if track_field and cursor.tracks:
         field = field.lower()
         if field in cursor.output:
-            v = [z.strip() for z in cursor.output[field].split(u"|")]
+            v = [z.strip() for z in cursor.output[field].split("|")]
             v_len = len(v)
         for i, t in enumerate(cursor.tracks):
             if field in t:
@@ -267,7 +267,7 @@ def sayoutput(cursor, field):
             elif v and i < v_len:
                 t[cursor.field] = v[i]
     else:
-        v = cursor.output.get(field, u'')
+        v = cursor.output.get(field, '')
         cursor.cache += v
 
 def sayregexp(cursor, rexp, separator=None, check=None):
@@ -320,7 +320,7 @@ def sayuntilml(cursor, text):
             cache.append(line)
         else:
             cache.append(line[:index])
-            cursor.cache += u'\n'.join(cache)
+            cursor.cache += '\n'.join(cache)
             cursor.charno = index + 1
             cursor.lineno += i
             return
@@ -330,7 +330,7 @@ def _set(cursor, field, value=None):
         if field in cursor.output:
             del(cursor.output[field])
         elif cursor.field == field:
-            cursor.cache = u""
+            cursor.cache = ""
     else:
         cursor.output[field] = value if \
             isinstance(value, str) else str(value)
@@ -357,7 +357,7 @@ def _while(cursor, condition, numtimes=None):
 
     if cursor.tracks == {}:
         cursor.tracks = [{'title': z.strip()} for z in
-            cursor.cache.split(u'|')]
+            cursor.cache.split('|')]
         cursor.track_fields.add('title')
     elif cursor.output and cursor.tracks:
         if cursor.output != cursor._domodified:

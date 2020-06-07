@@ -91,7 +91,7 @@ class Prokyon(MySQLLib):
         try:
             genre = GENRES[track[8]]
         except (IndexError, TypeError):
-            genre = u''
+            genre = ''
 
         temp = {'__filename': join(track[0], track[1]),
             '__path': track[1],
@@ -133,7 +133,7 @@ class Prokyon(MySQLLib):
     def children(self, parent, parentvalue, child):
         self.cursor.execute("SELECT DISTINCT BINARY " + PROKYONTAGS[child] + \
                 " FROM tracks WHERE " + PROKYONTAGS[parent] + " = BINARY %s",
-                (parentvalue.encode('utf8')))
+                (parentvalue))
         return [self.latinutf(album[0]) for album in self.cursor.fetchall()]
 
     def tracksByTag(self, parent, parentvalue, child = None, childval = None):
@@ -146,7 +146,7 @@ class Prokyon(MySQLLib):
                     version, mode, lyrics_id, synced_lyrics_id, notes,rating,
                     medium, artist, album FROM tracks WHERE """ + \
                     PROKYONTAGS[parent] + " = BINARY %s"
-            self.cursor.execute(s,  (parentvalue.encode('utf8'),))
+            self.cursor.execute(s,  (parentvalue,))
             tracks = self.cursor.fetchall()
         else:
             if childval is None:
@@ -162,7 +162,7 @@ class Prokyon(MySQLLib):
                     medium, artist, album FROM tracks WHERE """ + \
                     PROKYONTAGS[parent] + " = BINARY %s AND " + \
                     PROKYONTAGS[child] + " = BINARY %s"
-                self.cursor.execute(s, (parentvalue.encode('utf8'), childval.encode('utf8')))
+                self.cursor.execute(s, (parentvalue, childval))
                 tracks = self.cursor.fetchall()
         return [musiclib.Tag(self, self.convertTrack(track)) for track in tracks]
 
@@ -178,14 +178,14 @@ class Prokyon(MySQLLib):
                 print('artist:',artist, 'album',album)
                 raise e
             if not album:
-                self.cursor.execute(u"""SELECT path, filename, bitrate,
+                self.cursor.execute("""SELECT path, filename, bitrate,
                 samplerate, length, title, tracknumber, year, genre,
                 comment, size, lastModified, layer, mimetype,
                 version, mode, lyrics_id, synced_lyrics_id, notes,rating,
                 medium FROM tracks WHERE artist = BINARY %s
                 AND (album = '' or album is NULL)""", (artist,))
             else:
-                self.cursor.execute(u"""SELECT path, filename, bitrate,
+                self.cursor.execute("""SELECT path, filename, bitrate,
                 samplerate, length, title, tracknumber, year, genre,
                 comment, size, lastModified, layer, mimetype,
                 version, mode, lyrics_id, synced_lyrics_id, notes,rating,
@@ -251,9 +251,9 @@ class Prokyon(MySQLLib):
             for z in ['artist', 'album', 'title']:
                 try:
                     if mixed[z] is None:
-                        mixed[z] = u""
+                        mixed[z] = ""
                 except KeyError:
-                    mixed[z] = u""
+                    mixed[z] = ""
 
             oldfilename = utflatin(basename(old['__filename']))
             oldpath = utflatin(dirname(old['__filename']))
@@ -334,7 +334,7 @@ class Prokyon(MySQLLib):
                 "No need to do any removing since old['album'] does not exist in the database."
 
     def search(self, term):
-        self.cursor.execute(u"""SELECT path, filename, bitrate,
+        self.cursor.execute("""SELECT path, filename, bitrate,
                 samplerate, length, title, tracknumber, year, genre,
                 comment, size, lastModified, layer, mimetype,
                 version, mode, lyrics_id, notes,rating,

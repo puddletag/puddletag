@@ -33,16 +33,16 @@ WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
 SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: %1")
 SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: %1 to %2 of %3.")
 FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
-FILE_MSG = translate('AcoustID', u'File #%1: %2')
+FILE_MSG = translate('AcoustID', 'File #%1: %2')
 
 API_KEY = "gT8GJxhO"
 
 def album_hash(d):
-    h = u''
-    if u'album' in d:
+    h = ''
+    if 'album' in d:
         h = d[u'album']
 
-    if u'year' in d:
+    if 'year' in d:
         h += d[u'year']
 
     return hash(h)
@@ -90,7 +90,7 @@ def convert_for_submit(tags):
     
     ret = dict((cipher.get(k, k) , v) for k,v in stringtags(tags).items()
         if cipher.get(k, k) in valid_keys and v)
-    bitrate = ret['bitrate'].split(u' ')[0]
+    bitrate = ret['bitrate'].split(' ')[0]
     if bitrate == 0:
         del(ret['bitrate'])
     else:
@@ -134,13 +134,13 @@ def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
 def parse_release_data(rel):
     info = {}
     info['__numtracks'] = str(rel.get('track_count', ''))
-    info['album'] = rel.get('title', u'')
+    info['album'] = rel.get('title', '')
 
     if 'date' in rel:
         date = rel['date']
-        info['year'] = u'-'.join(str(z).zfill(2) for z in
+        info['year'] = '-'.join(str(z).zfill(2) for z in
             map(date.get, ('year', 'month', 'day')) if z)
-    info['country'] = rel.get('country', u'')
+    info['country'] = rel.get('country', '')
     info['discs'] = str(rel.get('medium_count', ''))
     info['#album_id'] = rel['id']
     info['mbrainz_album_id'] = rel['id']
@@ -187,7 +187,7 @@ def parse_recording_data(data, info=None):
         track['__length'] = audioinfo.strlength(data['duration'])
     track['acoustid_id'] = data['id']
 
-    track['artist'] = data.get('artists', [{'name': u""}])[0]['name']
+    track['artist'] = data.get('artists', [{'name': ""}])[0]['name']
     if track['artist']:
         track['mbrainz_artist_id'] = data['artists'][0]['id']
 
@@ -208,7 +208,7 @@ def parse_recording_data(data, info=None):
 def retrieve_album_info(album, tracks):
     if not album:
         return album, tracks
-    msg = u'<b>%s - %s</b>' % tuple(map(escape_html,
+    msg = '<b>%s - %s</b>' % tuple(map(escape_html,
         (album['artist'], album['album'])))
     msg = RETRIEVE_MB_MSG.arg(msg)
     write_log(msg)
@@ -253,7 +253,7 @@ class AcoustID(object):
         self.min_score = 0.80
         self.preferences = [
             [translate("AcoustID", 'Minimum Score'), SPINBOX, [0, 100, 80]],
-            [translate("AcoustID", "AcoustID Key"), TEXT, u""]
+            [translate("AcoustID", "AcoustID Key"), TEXT, ""]
             ]
         self.__lasttime = time.time()
         acoustid._send_request = self._send_request

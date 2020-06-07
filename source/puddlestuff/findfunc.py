@@ -113,9 +113,9 @@ def filenametotag(pattern, filename, checkext = False, split_dirs=True):
         filename = os.path.splitext(filename)[0]
 
     e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
-    patterns = [_f for _f in pattern.split(u'/') if _f]
+    patterns = [_f for _f in pattern.split('/') if _f]
     if split_dirs:
-        filenames = filename.split(u'/')[-len(patterns):]
+        filenames = filename.split('/')[-len(patterns):]
     else:
         filenames = [filename]
     mydict = {}
@@ -161,7 +161,7 @@ def load_macro_info(filename):
             modules[function.__module__][function.__name__] = function
     cparser = PuddleConfig(filename)
     funcs = []
-    name = cparser.get('info', 'name', u'')
+    name = cparser.get('info', 'name', '')
 
     def get_func_index(funcname):
         if funcname.startswith('Func'):
@@ -170,11 +170,11 @@ def load_macro_info(filename):
             return funcname
 
     for section in sorted(cparser.sections(), key=get_func_index):
-        if section.startswith(u'Func'):
+        if section.startswith('Func'):
             get = partial(cparser.get, section)
-            func_name = get(FUNC_NAME, u'')
+            func_name = get(FUNC_NAME, '')
             fields = get(FIELDS, [])
-            func_module = get(FUNC_MODULE, u'')
+            func_module = get(FUNC_MODULE, '')
             arguments = get(ARGS, [])
             try:
                 func = Function(modules[func_module][func_name], fields)
@@ -185,7 +185,7 @@ def load_macro_info(filename):
             newargs = []
             for i, (control, arg) in enumerate(zip(func.controls, arguments)):
                 if control == CHECKBOX:
-                    if arg == False or arg == u'False':
+                    if arg == False or arg == 'False':
                         newargs.append(False)
                     else:
                         newargs.append(True)
@@ -217,12 +217,12 @@ def func_tokens(dictionary, parse_action):
 
     def replace_token(tokens):
         index = int(tokens.num)
-        return dictionary.get(index, u'')
+        return dictionary.get(index, '')
 
     rx_tok.setParseAction(replace_token)
 
     strip = lambda s, l, tok: tok[0].strip()
-    text_tok = CharsNotIn(u',').setParseAction(strip)
+    text_tok = CharsNotIn(',').setParseAction(strip)
     quote_tok = QuotedString('"')
 
     if dictionary:
@@ -312,7 +312,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     try:
         ret = func(**topass)
         if ret is None:
-            return u''
+            return ''
         return ret
     except TypeError as e:
         message = SYNTAX_ERROR.arg(funcname)
@@ -340,12 +340,12 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
              Used by some functions in puddlestuff.functions
 
     >>> audio = {'artist': [u'Artist1'], 'track':u'10'}
-    >>> parsefunc(u'%track% - %artist%', audio)
+    >>> parsefunc('%track% - %artist%', audio)
     Artist1 - 10
-    >>> state = {'__count': u'5'}
-    >>> parsefunc(u'$num(%track%, 2)/$num(%__count%, 2). %artist%', audio,
+    >>> state = {'__count': '5'}
+    >>> parsefunc('$num(%track%, 2)/$num(%__count%, 2). %artist%', audio,
     ... state = state)
-    u'05/05. Artist1'
+    '05/05. Artist1'
 
     """
 
@@ -390,15 +390,15 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             if in_func:
                 raise ParseError(SYNTAX_ERROR.arg(func[0]).arg(br_error))
             if token:
-                tokens.append(replacevars(u''.join(token), tags))
+                tokens.append(replacevars(''.join(token), tags))
             break
         
-        if c == u'"' and not escape:
+        if c == '"' and not escape:
             if in_func:
                 token.append(c)
             in_quote = not in_quote
-        elif c == u'"' and escape and in_func:
-            token.append(u'\\"')
+        elif c == '"' and escape and in_func:
+            token.append('\\"')
             i += 1
             escape = False
             continue
@@ -409,7 +409,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             continue
         elif in_quote:
             token.append(c)
-        elif c == u'\\' and not escape:
+        elif c == '\\' and not escape:
             escape = True
             i += 1
             try:
@@ -421,8 +421,8 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
                 token.append(c)
                 escape = False
             continue
-        elif c == u'$' and not (escape or (field_open >= 0)):
-            func_name = re.search(u'^\$(\w+)\(', s[i:])
+        elif c == '$' and not (escape or (field_open >= 0)):
+            func_name = re.search('^\$(\w+)\(', s[i:])
             if not func_name:
                 token.append(c)
                 i += 1
@@ -434,7 +434,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
                 i += offset + 1
                 continue
 
-            tokens.append(replacevars(u''.join(token), tags))
+            tokens.append(replacevars(''.join(token), tags))
             token = []
             func = []
             func_name = func_name.groups(0)[0]
@@ -443,13 +443,13 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             i += len(func_name) + 1
         elif in_func and not in_quote and not token and c in whitespace:
             'just increment counter'
-        elif c == u',' and in_func and not in_quote:
-            func.append(u''.join(token))
+        elif c == ',' and in_func and not in_quote:
+            func.append(''.join(token))
             token = []
-        elif c == u')' and in_func:
+        elif c == ')' and in_func:
             in_func = False
-            if token or s[i-1] == u',':
-                func.append(u''.join(token))
+            if token or s[i-1] == ',':
+                func.append(''.join(token))
 
             func_parsed = run_format_func(func[0], func[1:], m_audio, s_audio, state=state, extra=extra)
             if ret_i:
@@ -459,14 +459,14 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
         else:
             token.append(c)
             if path_sep and c == path_sep and not in_func:
-                paths.append(len(u''.join(tokens) + replacevars(u''.join(token), tags)) - 1)
+                paths.append(len(''.join(tokens) + replacevars(''.join(token), tags)) - 1)
         escape = False
         i += 1
 
     if path_sep and not ret_i:
-        return paths, u''.join(tokens)
+        return paths, ''.join(tokens)
     else:
-        return u''.join(tokens)
+        return ''.join(tokens)
 
 def parse_field_list(fields, audio, selected=None):
     fields = fields[::]
@@ -530,10 +530,10 @@ def replacevars(pattern, *dicts):
     Returns the parsed string. If a key isn't found, but in the format
     string, it'll be removed.
 
-    >>> replacevars('%artist%', {'artist': u'ARTIST'})
-    u'ARTIST'
-    >>> replacevars('one %two%', {"three": u'VALUE'})
-    u'one '
+    >>> replacevars('%artist%', {'artist': 'ARTIST'})
+    'ARTIST'
+    >>> replacevars('one %two%', {"three": 'VALUE'})
+    'one '
 
     """
     r_vars = {}
@@ -550,28 +550,28 @@ def replacevars(pattern, *dicts):
             next_char = pattern[i + 1]
         except IndexError:
             next_char = None
-        if c == u'\\' and next_char == '"' and not escape:
+        if c == '\\' and next_char == '"' and not escape:
             escape = True
             continue
         elif escape:
             escape = False
-        elif c == u'"':
+        elif c == '"':
             in_quote = not in_quote
             continue
-        elif c == u'%' and not in_quote:
+        elif c == '%' and not in_quote:
 
             if not in_field:
                 field_start = len(ret)
                 in_field = True
             elif in_field:
                 in_field = False
-                field = u''.join(ret[field_start:])
+                field = ''.join(ret[field_start:])
                 del(ret[field_start:])
-                ret.append(r_vars.get(field, u''))
+                ret.append(r_vars.get(field, ''))
             continue
         ret.append(c)
 
-    return u''.join(ret)
+    return ''.join(ret)
 
 
 def apply_actions(actions, audio, state=None, ovr_fields=None):
@@ -602,7 +602,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
         ret = {}
 
         for field in fields:
-            val = audio.get(field, u'')
+            val = audio.get(field, '')
             temp = func.runFunction(val, audio, state, None, r_tags)
             if temp is None:
                 continue
@@ -757,7 +757,7 @@ def tagtotag(pattern, text, expression):
         tags = re.search(pattern, text).groups()
     except AttributeError:
         #No matches were found
-        return  u''
+        return  ''
     mydict={}
     for i in range(len(tags)):
         if taglist[i] in mydict:
@@ -873,7 +873,7 @@ class Function:
             return func(**topass)
 
     def description(self):
-        d = [u", ".join(self.tag)] + self.args
+        d = [", ".join(self.tag)] + self.args
         return pprint(translate('Functions', self.info[1]), d)
         
     def _getControls(self, index=1):
@@ -900,9 +900,9 @@ class Function:
 class Macro(object):
     def __init__(self, filename=None):
         object.__init__(self)
-        self.name = u''
+        self.name = ''
         self.actions = []
-        self.filename = u''
+        self.filename = ''
         if filename is not None:
             self.load(filename)
 

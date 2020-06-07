@@ -65,7 +65,7 @@ def clipboard_to_tag(parent=None):
     cparser = PuddleConfig()
     last_dir = cparser.get('importwindow', 'lastdir', HOMEDIR)
     win.lastDir = last_dir
-    last_pattern = cparser.get('importwindow', 'lastpattern', u'')
+    last_pattern = cparser.get('importwindow', 'lastpattern', '')
     if last_pattern:
         win.patterncombo.setEditText(last_pattern)
 
@@ -87,7 +87,7 @@ def copy():
     selected = status['selectedtags']
     mime = QMimeData()
     mime.setText(json.dumps(list(map(tag_to_json, selected))))
-    ba = QByteArray(str(selected).encode('utf8'))
+    ba = QByteArray(str(selected))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
@@ -113,19 +113,19 @@ def copy_whole():
         return
 
     mime.setText(data)
-    ba = QByteArray(str(tags).encode('utf8'))
+    ba = QByteArray(str(tags))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
 def cut():
     selected = status['selectedtags']
-    ba = QByteArray(str(selected).encode('utf8'))
+    ba = QByteArray(str(selected))
     mime = QMimeData()
     mime.setText(json.dumps(list(map(tag_to_json, selected))))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
-    emit('writeselected', (dict([(z, u"") for z in s if z not in FILETAGS])
+    emit('writeselected', (dict([(z, "") for z in s if z not in FILETAGS])
         for s in selected))
 
 def check_copy_data(data):
@@ -247,7 +247,7 @@ def load_musiclib(parent=None):
 
 def _pad(trknum, total, padlen):
     if total is not None:
-        text = str(trknum).zfill(padlen) + u"/" + str(total).zfill(padlen)
+        text = str(trknum).zfill(padlen) + "/" + str(total).zfill(padlen)
     else:
         text = str(trknum).zfill(padlen)
     return text
@@ -316,7 +316,7 @@ def paste():
         'application/x-puddletag-tags').data()
     if not data:
         return
-    clip = eval(data.decode('utf8'), {"__builtins__":None},{})
+    clip = eval(data, {"__builtins__":None},{})
     tags = []
     while len(tags) < len(rows):
         tags.extend(clip)
@@ -328,7 +328,7 @@ def paste_onto():
         'application/x-puddletag-tags').data()
     if not data:
         return
-    clip = eval(data.decode('utf8'), {"__builtins__":None}, {})
+    clip = eval(data, {"__builtins__":None}, {})
     selected = status['selectedtags']
     tags = []
     while len(tags) < len(selected):
@@ -417,7 +417,7 @@ def run_func(selectedfiles, func):
             rowtags = f.tags
             ret = {}
             for field in fields:
-                val = function(rowtags.get(field, u''), rowtags, state, r_tags=f)
+                val = function(rowtags.get(field, ''), rowtags, state, r_tags=f)
                 if val is not None:
                     if hasattr(val, 'items'):
                         ret.update(val)
@@ -434,7 +434,7 @@ def search_replace(parent=None):
     audio, selected = status['firstselection']
 
     try: text = to_string(list(selected.values())[0])
-    except IndexError: text = translate('Defaults', u'')
+    except IndexError: text = translate('Defaults', '')
 
     func = findfunc.Function('replace')
     func.args = [text, text, False, False]
@@ -479,7 +479,7 @@ def text_file_to_tag(parent=None):
     win.setModal(True)
     win.patterncombo.addItems(status['patterns'])
 
-    last_pattern = cparser.get('importwindow', 'lastpattern', u'')
+    last_pattern = cparser.get('importwindow', 'lastpattern', '')
     if last_pattern:
         win.patterncombo.setEditText(last_pattern)
 
@@ -499,7 +499,7 @@ def update_status(enable = True):
         return
     tag = files[0]
 
-    state = {'__counter': u'1', '__total_files': str(len(files))}
+    state = {'__counter': '1', '__total_files': str(len(files))}
 
     x = findfunc.filenametotag(pattern, tag[PATH], True)
     emit('ftstatus', display_tag(x))
@@ -514,7 +514,7 @@ def update_status(enable = True):
                 "New Filename: <b>%1</b>").arg(
                     decode_fn(newfilename)))
         else:
-            emit('tfstatus', u'<b>No change</b>')
+            emit('tfstatus', '<b>No change</b>')
     except findfunc.ParseError as e:
         emit('tfstatus', bold_error % e.message)
 
@@ -535,10 +535,7 @@ def update_status(enable = True):
     else:
         selected = selected[0]
     try:
-        try:
-            val = tf(pattern, tag, state=state.copy()).decode('utf8')
-        except AttributeError:
-            val = tf(pattern, tag, state=state.copy())
+        val = tf(pattern, tag, state=state.copy())
         newtag = dict([(key, val) for key in selected])
         emit('formatstatus', display_tag(newtag))
     except findfunc.ParseError as e:

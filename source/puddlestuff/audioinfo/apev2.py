@@ -148,14 +148,14 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
 
         def _info(self):
             info = self.mut_obj.info
-            fileinfo = [(u'Path', self[PATH]),
-                        (u'Size', str_filesize(int(self.size))),
-                        (u'Filename', self[FILENAME]),
-                        (u'Modified', self.modified)]
+            fileinfo = [('Path', self[PATH]),
+                        ('Size', str_filesize(int(self.size))),
+                        ('Filename', self[FILENAME]),
+                        ('Modified', self.modified)]
             apeinfo = [('Length', self.length)]
             attr = [
-                (u'Channels', 'channels'),
-                (u'Version', 'version')]
+                ('Channels', 'channels'),
+                ('Version', 'version')]
             for k, v in attr:
                 try:
                     apeinfo.append([k, str(getattr(info, v))])
@@ -203,7 +203,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             self.images = images
             self.__tags.update(info_to_dict(audio.info))
             self.__tags.update(tags)
-            self.__tags['__tag_read'] = u'APEv2'
+            self.__tags['__tag_read'] = 'APEv2'
             self.set_attrs(attrib_fields)
             self.filetype = filetype
             self.__tags['__filetype'] = filetype
@@ -223,8 +223,6 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 [newtag.update(pic_to_bin(z)) for z in self.images]
             for field, value in usertags(self.__tags).items():
                 try:
-                    if isinstance(field, str):
-                        field = field.encode('utf8')
                     newtag[field] = value
                 except AttributeError:
                     pass
@@ -247,77 +245,77 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             l = tag_versions.tags_in_file(self.filepath,
                 [tag_versions.ID3_V1, tag_versions.ID3_V2])
             if l:
-                self.__tags['__tag'] = u'APEv2, ' + u', '.join(l)
+                self.__tags['__tag'] = 'APEv2, ' + ', '.join(l)
             else:
-                self.__tags['__tag'] = u'APEv2'
+                self.__tags['__tag'] = 'APEv2'
     return APEv2Base
 
-mp_base = get_class(Musepack, u'Musepack',
+mp_base = get_class(Musepack, 'Musepack',
     ATTRIBUTES + ['frequency', 'bitrate', 'version', 'channels'],
     MusepackHeaderError)
 
 class MusePackTag(mp_base):
     def _info(self):
         info = self.mut_obj.info
-        fileinfo = [(u'Path', self[PATH]),
-                    (u'Size', str_filesize(int(self.size))),
-                    (u'Filename', self[FILENAME]),
-                    (u'Modified', self.modified)]
-        mpinfo = [(u'Bitrate', self.bitrate),
-                   (u'Frequency', self.frequency),
-                   (u'Channels', str(info.channels)),
-                   (u'Length', self.length),
-                   (u'Stream Version', str(info.version))]
-        return [(u'File', fileinfo), (u"Musepack Info", mpinfo)]
+        fileinfo = [('Path', self[PATH]),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self[FILENAME]),
+                    ('Modified', self.modified)]
+        mpinfo = [('Bitrate', self.bitrate),
+                   ('Frequency', self.frequency),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length),
+                   ('Stream Version', str(info.version))]
+        return [('File', fileinfo), ("Musepack Info", mpinfo)]
 
     info = property(_info)
 
 
-ma_base = get_class(MonkeysAudio, u"Monkey's Audio",
+ma_base = get_class(MonkeysAudio, "Monkey's Audio",
     ATTRIBUTES + ['bitrate', 'frequency', 'version', 'channels'],
     MonkeysAudioHeaderError)
 
 class MonkeysAudioTag(ma_base):
     def _info(self):
         info = self.mut_obj.info
-        fileinfo = [(u'Path', self[PATH]),
-                    (u'Size', str_filesize(int(self.size))),
-                    (u'Filename', self[FILENAME]),
-                    (u'Modified', self.modified)]
-        mainfo = [(u'Bitrate', u'Lossless'),
-                   (u'Frequency', self.frequency),
-                   (u'Channels', str(info.channels)),
-                   (u'Length', self.length),
-                   (u'Stream Version', str(info.version))]
-        return [(u'File', fileinfo), (u"Monkey's Audio", mainfo)]
+        fileinfo = [('Path', self[PATH]),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self[FILENAME]),
+                    ('Modified', self.modified)]
+        mainfo = [('Bitrate', 'Lossless'),
+                   ('Frequency', self.frequency),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length),
+                   ('Stream Version', str(info.version))]
+        return [('File', fileinfo), ("Monkey's Audio", mainfo)]
 
     info = property(_info)
 
 
-wv_base = get_class(WavPack, u'WavPack',
+wv_base = get_class(WavPack, 'WavPack',
     ATTRIBUTES + ['frequency', 'bitrate'], WavPackHeaderError)
 
 class WavPackTag(wv_base):
     def _info(self):
         info = self.mut_obj.info
-        fileinfo = [(u'Path', self[PATH]),
-                    (u'Size', str_filesize(int(self.size))),
-                    (u'Filename', self[FILENAME]),
-                    (u'Modified', self.modified)]
-        wpinfo = [(u'Frequency', self.frequency),
-                  (u'Channels', str(info.channels)),
-                  (u'Length', self.length),
-                  (u'Bitrate', u'Lossless')]
-        return [(u'File', fileinfo), (u"WavPack Info", wpinfo)]
+        fileinfo = [('Path', self[PATH]),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self[FILENAME]),
+                    ('Modified', self.modified)]
+        wpinfo = [('Frequency', self.frequency),
+                  ('Channels', str(info.channels)),
+                  ('Length', self.length),
+                  ('Bitrate', 'Lossless')]
+        return [('File', fileinfo), ("WavPack Info", wpinfo)]
 
     info = property(_info)
 
 
-Tag = get_class(APEv2File, u'APEv2', ATTRIBUTES)
+Tag = get_class(APEv2File, 'APEv2', ATTRIBUTES)
 
 filetypes = [
-    (APEv2File, Tag , u'APEv2'),
-    (MonkeysAudio, MonkeysAudioTag, u'APEv2',
+    (APEv2File, Tag , 'APEv2'),
+    (MonkeysAudio, MonkeysAudioTag, 'APEv2',
         ['ape', 'apl']),
-    (WavPack, WavPackTag, u'APEv2', 'wv'),
-    (Musepack, Tag, u'APEv2', 'mpc')]
+    (WavPack, WavPackTag, 'APEv2', 'wv'),
+    (Musepack, Tag, 'APEv2', 'mpc')]

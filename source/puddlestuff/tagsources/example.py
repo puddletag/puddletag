@@ -36,7 +36,7 @@ except:
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
     for key in tags:
         if (key in audio1) and (key in audio2):
-            if u''.join(audio1[key]).lower() != u''.join(audio2[key]).lower():
+            if ''.join(audio1[key]).lower() != ''.join(audio2[key]).lower():
                 return False
         else:
             return False
@@ -59,12 +59,11 @@ class Example(object):
     def search(self, artist, albums):
         ret = []
         matches = {}
-        #set_status(u'Searching %s - %s' % (artist, albums[0]))
-        ##write_log(u'Retrieving %s %s' % (artist, albums[0]))
-        artist = artist.encode('utf8')
-        albumtuple = [z.split(' - ', 1) for z in self._dirs 
+        #set_status('Searching %s - %s' % (artist, albums[0]))
+        ##write_log('Retrieving %s %s' % (artist, albums[0]))
+        albumtuple = [z.split(' - ', 1) for z in self._dirs
             if z.startswith(artist) and ' - ' in z]
-        albumtuple = [(i.decode('utf8'), z.decode('utf8')) for i, z  in albumtuple]
+        albumtuple = [(i, z) for i, z in albumtuple]
         releases = []
         for z in albumtuple:
             if len(z) > 1:
@@ -73,18 +72,17 @@ class Example(object):
             #set_status('No releases found')
             #write_log('No releases found for %s' % artist)
         #else:
-            #write_log('Found albums <b>%s</b>' % u', '.join(releases))
-        artist = artist.decode('utf8')
+            #write_log('Found albums <b>%s</b>' % ', '.join(releases))
         matched = []
         low_releases = [z.lower() for z in releases]
         for album in albums:
             info = {'album': album, 'artist': artist}
-            info['#extrainfo'] = ('Home Folder', u'file://' + HOMEDIR)
+            info['#extrainfo'] = ('Home Folder', 'file://' + HOMEDIR)
             if album.lower() in low_releases:
                 if album.lower() in low_releases:
                     return [(info, [])]
         get_info = lambda album: {'artist': artist, 'album': album,
-            u'#extrainfo': ('Home Folder', u'file:///' + HOMEDIR)}
+            '#extrainfo': ('Home Folder', 'file:///' + HOMEDIR)}
         return [(get_info(album), []) for album in releases]
 
     def retrieve(self, info):
@@ -95,7 +93,7 @@ class Example(object):
             artist = info['artist']
             album = info['album']
             self.counter += 1
-        dirpath = u'%s/%s - %s' % (self.musicdir, artist, album)
+        dirpath = '%s/%s - %s' % (self.musicdir, artist, album)
         files = []
         for f in gettags(getfiles(dirpath)):
             if f:
@@ -112,7 +110,6 @@ class Example(object):
         self.preferences[0][2] = musicdir
         isdir = os.path.isdir
         join = os.path.join
-        musicdir = musicdir.encode('utf8')
         self._dirs = [z for z in os.listdir(musicdir) if isdir(join(musicdir,z))]
 
 info = [Example, None]

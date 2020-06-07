@@ -48,7 +48,7 @@ FIELDLIST_TIP = translate("WebDB",
     '__image</b> will write all fields but the '
     'composer and __image fields.')
 
-DEFAULT_REGEXP = {'album': [u'(.*?)([\(\[\{].*[\)\]\}])', u'$1']}
+DEFAULT_REGEXP = {'album': [u'(.*?)([\(\[\{].*[\)\]\}])', '$1']}
 
 def apply_regexps(audio, regexps=None):
     if regexps is None:
@@ -76,10 +76,10 @@ def display_tag(tag):
 
     if not tag:
         return translate("WebDB", "<b>Nothing to display.</b>")
-    fmt = u"<b>%s</b>: %s<br />"
+    fmt = "<b>%s</b>: %s<br />"
     text = pprint_tag(tag, fmt, True)
-    if text.endswith(u'<br />'):
-        text = text[:-len(u'<br />')]
+    if text.endswith('<br />'):
+        text = text[:-len('<br />')]
     return text
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
@@ -135,7 +135,7 @@ def split_strip(stringlist):
     >>> split_strip(['artist, title', 'album,genre'])
     [['artist', 'title'], ['album', 'genre']]
     '''
-    return [[field.strip() for field in s.split(u',')] for s in stringlist]
+    return [[field.strip() for field in s.split(',')] for s in stringlist]
 
 class FieldsEdit(QWidget):
     fieldsChanged = pyqtSignal(list, name='fieldsChanged')
@@ -145,7 +145,7 @@ class FieldsEdit(QWidget):
             tags = []
         label = QLabel()
         label.setText(translate("Defaults", '&Fields'))
-        self._text = QLineEdit(u', '.join(tags))
+        self._text = QLineEdit(', '.join(tags))
         label.setBuddy(self._text)
 
         layout = QHBoxLayout()
@@ -162,7 +162,7 @@ class FieldsEdit(QWidget):
         self.fieldsChanged.emit(self.tags(text))
 
     def setTags(self, tags):
-        self._text.setText(u', '.join(tags))
+        self._text.setText(', '.join(tags))
         
     def setToolTip(self, value):
         QWidget.setToolTip(self, value)
@@ -171,9 +171,9 @@ class FieldsEdit(QWidget):
     def tags(self, text=None):
         if not text:
             return [_f for _f in [z.strip() for z in
-                str(self._text.text()).split(u',')] if _f]
+                str(self._text.text()).split(',')] if _f]
         else:
-            return [_f for _f in [z.strip() for z in str(text).split(u',')] if _f]
+            return [_f for _f in [z.strip() for z in str(text).split(',')] if _f]
 
 class SimpleDialog(QDialog):
     """Class for simple dialog creation."""
@@ -372,7 +372,7 @@ class SettingsDialog(QWidget):
             "by filename and corresponding (unmatched) tracks will "
             "matched.</p>"))
 
-        self.matchFields = QLineEdit(u'artist, title')
+        self.matchFields = QLineEdit('artist, title')
         self.matchFields.setToolTip(translate('Profile Editor',
             "<p>The fields listed here will be used in determining "
             "whether a track matches the retrieved track. Each "
@@ -456,7 +456,7 @@ class SettingsDialog(QWidget):
 
         listbox.jfdi = self.jfdi.isChecked()
         listbox.matchFields = [z.strip() for z in
-            str(self.matchFields.text()).split(u',')]
+            str(self.matchFields.text()).split(',')]
         listbox.albumBound = self.albumBound.value() / 100.0
         listbox.trackBound = self.trackBound.value() / 100.0
         
@@ -480,12 +480,12 @@ class SettingsDialog(QWidget):
         self._text.setText(trackpattern)
 
         sortoptions = cparser.get('tagsources', 'sortoptions',
-            [u'artist, album', u'album, artist'])
+            [u'artist, album', 'album, artist'])
         self._sortoptions.clear()
         self._sortoptions.addItems(sortoptions)
 
         albumformat = cparser.get('tagsources', 'albumpattern',
-            u'%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
+            '%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
         self._albumdisp.setText(albumformat)
 
         self._ua.setText(cparser.get('tagsources',
@@ -500,7 +500,7 @@ class SettingsDialog(QWidget):
 
         fields = cparser.get('tagsources', 'match_fields',
             ['artist', 'title'])
-        fields = u', '.join(z.strip() for z in fields)
+        fields = ', '.join(z.strip() for z in fields)
         self.matchFields.setText(fields)
     
     def _editOptions(self):
@@ -777,15 +777,15 @@ class MainWin(QWidget):
             index = 0
         self.sourcelist.setCurrentIndex(index)
         self.__fieldsEdit.setTags(self.__sourceFields[index])
-        df = get('trackpattern', u'%track% - %title%')
+        df = get('trackpattern', '%track% - %title%')
         self.listbox.trackPattern = df
 
         albumformat = get('albumpattern',
-            u'%artist% - %album%$if(%__numtracks%, [%__numtracks%], "")')
+            '%artist% - %album%$if(%__numtracks%, [%__numtracks%], "")')
         self.listbox.albumPattern = albumformat
 
         sort_options = get('sortoptions',
-            [u'artist, album', u'album, artist'])
+            [u'artist, album', 'album, artist'])
         sort_options = split_strip(sort_options)
         self.listbox.setSortOptions(sort_options)
 

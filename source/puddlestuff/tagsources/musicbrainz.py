@@ -104,7 +104,7 @@ def solr_escape(value):
     >>> solr_escape(r'foo\\+') == r'foo\\+'
     True
     """
-#    value = value.replace(u'/', u' ')
+#    value = value.replace('/', ' ')
     return ESCAPE_CHARS_RE.sub(r'\\\g<char>', value)
 
 def node_to_text(node):
@@ -131,11 +131,11 @@ def parse_album_search(xml):
     return ret
         
 def parse_artist_credit(node):
-    artists = parse_node(node, u'artist-credit', u'name-credit', u'artist')
+    artists = parse_node(node, 'artist-credit', 'name-credit', 'artist')
     if not artists:
         return {}
 
-    artist = u', '.join(z[u'artist'][u'name'] for z in artists)
+    artist = ', '.join(z[u'artist'][u'name'] for z in artists)
     if len(artists) == 1:
         artist_id = artists[0]['artist']['id']
         return {
@@ -150,15 +150,15 @@ def parse_artist_relation(relations):
     ret = defaultdict(lambda: [])
     for r in to_list(relations[u'relation']):
         field = r['type']
-        desc = u''
+        desc = ''
 
-        if u'attribute-list' in r:
-            desc = u', '.join(to_list(r[u'attribute-list']['attribute']))
-        if u'artist' in r:
+        if 'attribute-list' in r:
+            desc = ', '.join(to_list(r[u'attribute-list']['attribute']))
+        if 'artist' in r:
             if not desc:
                 desc = r[u'artist'][u'name']
             else:
-                if r[u'direction'] == u'backward':
+                if r[u'direction'] == 'backward':
                     field = '%s %s' % (desc, field)
                 else:
                     field = '%s %s' % (field, desc)
@@ -185,15 +185,15 @@ def parse_artist_search(xml):
     return ret
 
 def parse_label_list(release_node):
-    labels = parse_node(release_node, u'label-info-list', u'label-info',
-        u'label')
+    labels = parse_node(release_node, 'label-info-list', 'label-info',
+        'label')
 
 
-    catalogs = [z[u'catalog-number'] for z in labels if u'catalog-number' in z]
+    catalogs = [z[u'catalog-number'] for z in labels if 'catalog-number' in z]
     label_names = [z[u'label'][u'name'] for z in labels
-        if u'label' in z and u'name' in z[u'label']]
+        if 'label' in z and 'name' in z[u'label']]
     label_ids = [z[u'label'][u'id'] for z in labels
-        if u'label' in z and u'id' in z[u'label']]
+        if 'label' in z and 'id' in z[u'label']]
     return {
         'label': label_names,
         'mbrainz_label_id': label_ids,
@@ -201,7 +201,7 @@ def parse_label_list(release_node):
         }
     
 def parse_medium_list(r_node):
-    mediums = parse_node(r_node, u'medium-list', u'medium', u'format')
+    mediums = parse_node(r_node, 'medium-list', 'medium', 'format')
     if not mediums:
         return {}
 
@@ -213,7 +213,7 @@ def parse_medium_list(r_node):
 def parse_node(node, header_tag, sub_tag, check_tag):
     ret = []
     nodes = [z for z in node.childNodes if
-        getattr(z, "tagName", u'') == header_tag]
+        getattr(z, "tagName", '') == header_tag]
     for node in nodes:
         info = children_to_text(node)
         for ch in node.getElementsByTagName(sub_tag):
@@ -233,10 +233,10 @@ def parse_recording_relation(relations):
         recording = relation['recording']
         desc = None
 
-        if u'artist-credit' in recording:
+        if 'artist-credit' in recording:
             artists = []
             for cr in to_list(recording[u'artist-credit']['name-credit']):
-                if u'join-phrase' in cr:
+                if 'join-phrase' in cr:
                     artists.append(cr[u'join-phrase'])
                 artists.append(cr[u'artist'][u'name'])
 
@@ -245,11 +245,11 @@ def parse_recording_relation(relations):
                 if z not in unique_artists:
                     unique_artists.append(z)
                 
-            desc = u' '.join(unique_artists)
+            desc = ' '.join(unique_artists)
 
-        if u'title' in recording:
+        if 'title' in recording:
             if desc:
-                desc = recording[u'title'] + u' by ' + desc
+                desc = recording[u'title'] + ' by ' + desc
             else:
                 desc = recording[u'title']
         if desc is not None:
@@ -265,11 +265,11 @@ def parse_release(node):
     info = convert_dict(info, ALBUM_KEYS)
     info['#album_id'] = info[u'mbrainz_album_id']
 
-    if u'count' in info:
+    if 'count' in info:
         del(info['count'])
 
     if 'disambiguation' in info:
-        info['album'] = u"%s (%s)" % (info['album'], info['disambiguation'])
+        info['album'] = "%s (%s)" % (info['album'], info['disambiguation'])
         del(info['disambiguation'])
     
     tracks = []
@@ -284,20 +284,20 @@ def parse_track_list(node):
         rem_keys = set(track).union(TO_REMOVE)
         track.update((k,v) for k,v in t.items() if k not in rem_keys)
 
-        if u'puid-list' in track:
+        if 'puid-list' in track:
             track['musicip_puid'] = track['puid-list']['id']
             del(track['puid-list'])
     
-        if not isempty(track.get(u'relation-list')):
+        if not isempty(track.get('relation-list')):
             for r in to_list(track['relation-list']):
                 track.update(parse_track_relation(r))
 
         feat = to_list(track.get('artist-credit', {}).get('name-credit'))
         if feat:
-            names = [(z['artist']['name'], z.get('joinphrase', u''))
+            names = [(z['artist']['name'], z.get('joinphrase', ''))
                 for z in feat]
 
-            track['artist'] = u''.join('%s%s' % a for a in names)
+            track['artist'] = ''.join('%s%s' % a for a in names)
 
         for k, v in track.items():
             if not isinstance(track[k], (str, list)):
@@ -305,16 +305,16 @@ def parse_track_list(node):
             elif isinstance(v, list) and not isinstance(v[0], str):
                 del(track[k])
 
-        if u'length' in track:
+        if 'length' in track:
             track['length'] = strlength(int(track[u'length']) / 1000)
 
         tracks.append(convert_dict(track, TRACK_KEYS))
     return tracks
 
 def parse_track_relation(relation):
-    if relation[u'target-type'] == u'recording':
+    if relation[u'target-type'] == 'recording':
         return parse_recording_relation(relation)
-    elif relation[u'target-type'] == u'artist':
+    elif relation[u'target-type'] == 'artist':
         return parse_artist_relation(relation)
     return {}
 
@@ -379,12 +379,12 @@ def retrieve_cover_links(album_id, extra=None):
 def retrieve_covers(cover_links, size=LARGE):
     ret = []
     for cover in cover_links['images']:
-        desc = cover.get('comment', u"")
+        desc = cover.get('comment', "")
         cover_type = cover['types'][0]
         if cover_type in mb_imagetypes:
             cover_type = imagetypes[mb_imagetypes[cover_type]]
         else:
-            cover_type = imagetypes[u"Other"]
+            cover_type = imagetypes["Other"]
         if cover == SMALL:
             image_url = cover['thumbnails']['small']
         elif cover == LARGE:
@@ -407,19 +407,17 @@ def retrieve_front_cover(album_id):
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
         if isinstance(album, str):
-            album = solr_escape(album.encode('utf8'))
+            album = solr_escape(album)
 
         return SERVER + 'release/?query=' + urllib.parse.quote_plus(album) + \
             '&limit=%d&offset=%d' % (limit, offset)
 
     if artist:
-        if isinstance(artist, str):
-            artist = artist.encode('utf8')
         query = 'artistname:' + urllib.parse.quote_plus(solr_escape(artist))
 
     if album:
         if isinstance(album, str):
-            album = solr_escape(album.encode('utf8'))
+            album = solr_escape(album)
         if artist:
             query = 'release:' + urllib.parse.quote_plus(album) + \
                 '%20AND%20' + query
@@ -430,8 +428,6 @@ def search_album(album=None, artist=None, limit=25, offset=0, own=False):
         '&limit=%d&offset=%d' % (limit, offset)
 
 def search_artist(artist, limit=25, offset=0):
-    if isinstance(artist, str):
-        artist = artist.encode('utf8')
     query = urllib.parse.urlencode({
         'query': solr_escape(artist),
         'limit': limit,
@@ -470,7 +466,7 @@ class XMLEscaper(SGMLParser):
 
 
 class MusicBrainz(object):
-    name = u'MusicBrainz'
+    name = 'MusicBrainz'
 
     group_by = [u'album', 'artist']
     def __init__(self):
@@ -492,19 +488,19 @@ class MusicBrainz(object):
             ]
 
     def keyword_search(self, s):
-        if s.startswith(u':a'):
+        if s.startswith(':a'):
             artist_id = s[len(':a'):].strip()
             try:
                 url = search_album('arid:' +
-                    solr_escape(artist_id.encode('utf8')), limit=100, own=True)
+                    solr_escape(artist_id), limit=100, own=True)
                 return parse_album_search(urlopen(url))
             except RetrievalError as e:
                 msg = translate("MusicBrainz",
                     '<b>Error:</b> While retrieving %1: %2')
                 write_log(msg.arg(artist_id).arg(escape(e)))
                 raise
-        elif s.startswith(u':b'):
-            r_id = s[len(u':b'):].strip()
+        elif s.startswith(':b'):
+            r_id = s[len(':b'):].strip()
             try:
                 return [self.retrieve(r_id)]
             except RetrievalError as e:
@@ -532,7 +528,7 @@ class MusicBrainz(object):
         if isempty(artists):
             artist = None
         if len(artists) > 1:
-            artist = u'Various Artists'
+            artist = 'Various Artists'
         elif artists:
             if hasattr(artists, 'items'):
                 artist = list(artists.keys())[0]
@@ -542,7 +538,7 @@ class MusicBrainz(object):
         if not album and not artist:
             raise RetrievalError('Album or Artist required.')
 
-        write_log(u'Searching for %s' % album)
+        write_log('Searching for %s' % album)
 
         if hasattr(artists, "items"):
             album_id = find_id(chain(*list(artists.values())), "mbrainz_album_id")
@@ -559,10 +555,10 @@ class MusicBrainz(object):
         try:
             xml = urlopen(search_album(album, artist, limit))
         except urllib.error.URLError as e:
-            write_log(u'Error: While retrieving search page %s' %
+            write_log('Error: While retrieving search page %s' %
                         str(e))
             raise RetrievalError(str(e))
-        write_log(u'Retrieved search results.')
+        write_log('Retrieved search results.')
         self.__lasttime = time.time()
         return parse_album_search(xml)
 
@@ -606,7 +602,7 @@ class MusicBrainz(object):
 info = MusicBrainz
 
 if __name__ == '__main__':
-    #retrieve_album(u'f504ebe7-8fb4-40e5-aa55-b6384bdf863e')
+    #retrieve_album('f504ebe7-8fb4-40e5-aa55-b6384bdf863e')
     #c = MusicBrainz()
     xml = open('/home/keith/Desktop/mb.xml', 'r').read()
     #x = c.search('New Again', 'Taking Back Sunday')

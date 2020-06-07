@@ -34,7 +34,7 @@ NUMBER = Combine(Optional('-') + Word(nums)).setParseAction(getnum)
 COVER = '#cover-url'
 
 ARGUMENT = STRING | NUMBER
-ARGUMENT.ignore(u'#' + ZeroOrMore(Word(printables)))
+ARGUMENT.ignore('#' + ZeroOrMore(Word(printables)))
 
 MTAG_KEYS = {
     '_length': '__length',
@@ -46,12 +46,12 @@ MTAG_KEYS = {
 def convert_entities(s):
     s = re.sub('&#(\d+);', lambda m: chr(int(m.groups(0)[0])), s)
     return re.sub('&(\w)+;',
-        lambda m: n2cp.get(m.groups(0), u'&%s;' % m.groups(0)[0]), s)
+        lambda m: n2cp.get(m.groups(0), '&%s;' % m.groups(0)[0]), s)
     
 
 def convert_value(value):
-    value = [_f for _f in (z.strip() for z in value.split(u'|')) if _f]
-    value = [convert_entities(v.replace(u'\\r\\n', u'\n')) for v in value]
+    value = [_f for _f in (z.strip() for z in value.split('|')) if _f]
+    value = [convert_entities(v.replace('\\r\\n', '\n')) for v in value]
     if len(value) == 1:
         return value[0]
     return value
@@ -66,11 +66,11 @@ def find_idents(lines):
     idents = {}
     for i, line in enumerate(lines):
         line = line.strip()
-        if line.startswith(u'['):
+        if line.startswith('['):
             name, value = parse_ident(line)
             idents[name.lower()] = value
             ident_lines[i] = name.lower()
-        elif not line or line.startswith(u'#'):
+        elif not line or line.startswith('#'):
             continue
 
     values = sorted(ident_lines)
@@ -142,9 +142,9 @@ def parse_func(lineno, line):
     arg_string = line[len(funcname):]
     args = (z[0]
         for z in ARGUMENT.searchString(arg_string).asList())
-    args = [i.replace(u'\\\\', u'\\') if isinstance(i, str) else i
+    args = [i.replace('\\\\', '\\') if isinstance(i, str) else i
         for i in args]
-    if funcname and not funcname.startswith(u'#'):
+    if funcname and not funcname.startswith('#'):
         return funcname.lower(), lineno, args
 
 def parse_ident(line):
@@ -179,11 +179,11 @@ def parse_search_page(indexformat, page, search_source, url=None):
 class Cursor(object):
     def __init__(self, text, source_lines):
         self.text = text
-        self.all_lines = [z + u' ' for z in text.split(u'\n')] + [u' ']
+        self.all_lines = [z + ' ' for z in text.split('\n')] + [u' ']
         self.all_lowered = [z.lower() for z in self.all_lines]
         self.lineno = 0
         self.charno = 0
-        self.cache = u''
+        self.cache = ''
         self.source = source_lines
         self.debug = False
         self._field = ''
@@ -216,7 +216,7 @@ class Cursor(object):
 
     def _set_field(self, value):
         self.output[self._field] = self.cache
-        self.cache = self.output.get(value, u'')
+        self.cache = self.output.get(value, '')
         self._field = value
 
     field = property(_get_field, _set_field)
@@ -246,7 +246,7 @@ class Cursor(object):
 
     def log(self, text):
         if self.debug and self.debug_file:
-            self._debug_file.write((u'\n' + text).encode('utf8'))
+            self._debug_file.write(('\n' + text))
             self._debug_file.flush()
         elif self.debug:
             print(text)
@@ -308,11 +308,11 @@ class Mp3TagSource(object):
         self.search_source = search_source
         self.album_source = album_source
         self._search_base = idents['indexurl'] if search_source else ''
-        self._separator = idents.get('wordseperator', u'+')
-        self.searchby = idents.get('searchby', u'')
+        self._separator = idents.get('wordseperator', '+')
+        self.searchby = idents.get('searchby', '')
         self.group_by = ['album' if '$' in idents['searchby'] \
             else idents['searchby'][1:-1], None]
-        self.name = idents['name'] + u' [M]'
+        self.name = idents['name'] + ' [M]'
         self.indexformat = idents['indexformat'] if search_source else ''
         self.album_url = idents.get('albumurl', '')
         self.tooltip = tooltip = """<p>Enter search keywords here. If empty,
@@ -338,23 +338,23 @@ class Mp3TagSource(object):
             album = self.retrieve(keywords)
             return [album] if album else []
         
-        url = self._search_base.replace(u'%s', keywords)
+        url = self._search_base.replace('%s', keywords)
 
-        write_log(translate('Mp3tag', u'Retrieving search page: %s') % url)
-        set_status(translate('Mp3tag', u'Retrieving search page...'))
+        write_log(translate('Mp3tag', 'Retrieving search page: %s') % url)
+        set_status(translate('Mp3tag', 'Retrieving search page...'))
         if self.html is None:
             page = get_encoding(urlopen(url), True, 'utf8')[1]
         else:
             page = get_encoding(self.html, True, 'utf8')[1]
 
-        write_log(translate('Mp3tag', u'Parsing search page.'))
-        set_status(translate('Mp3tag', u'Parsing search page...'))
+        write_log(translate('Mp3tag', 'Parsing search page.'))
+        set_status(translate('Mp3tag', 'Parsing search page...'))
         infos = parse_search_page(self.indexformat, page, self.search_source, url)
         return [(info, []) for info in infos]
 
     def retrieve(self, info):
         if isinstance(info, str):
-            text = info.replace(u' ', self._separator)
+            text = info.replace(' ', self._separator)
             info = {}
         else:
             info = deepcopy(info)
@@ -368,14 +368,14 @@ class Mp3TagSource(object):
         info['#url'] = url
 
         try:
-            write_log(translate('Mp3tag', u'Retrieving album page: %s') % url)
-            set_status(translate('Mp3tag', u'Retrieving album page...'))
+            write_log(translate('Mp3tag', 'Retrieving album page: %s') % url)
+            set_status(translate('Mp3tag', 'Retrieving album page...'))
             page = get_encoding(urlopen(url), True, 'utf8')[1]
         except:
-            page = u''
+            page = ''
 
-        write_log(translate('Mp3tag', u'Parsing album page.'))
-        set_status(translate('Mp3tag', u'Parsing album page...'))
+        write_log(translate('Mp3tag', 'Parsing album page.'))
+        set_status(translate('Mp3tag', 'Parsing album page...'))
         new_info, tracks = parse_album_page(page, self.album_source, url)
         info.update(dict((k,v) for k,v in new_info.items() if v))
         
@@ -410,7 +410,7 @@ if __name__ == '__main__':
     #text = open(sys.argv[1], 'r').read()
     #text = open(sys.argv[1], 'r').read()
     tagsources = load_mp3tag_sources('.')
-    albums = tagsources[2].search(u'Goth-Erotika')
+    albums = tagsources[2].search('Goth-Erotika')
     tagsources[2]._get_cover = False
     print(tagsources[2].retrieve(albums[0][0]))
     #pdb.set_trace()
@@ -433,5 +433,5 @@ if __name__ == '__main__':
     ##c.parse_page()
     ###print c.cache
     ###print c.tracks[0]
-    ##print u'\n'.join(u'%s: %s' % z for z in c.album.items())
+    ##print '\n'.join('%s: %s' % z for z in c.album.items())
     

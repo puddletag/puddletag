@@ -594,24 +594,24 @@ class MainWin(QMainWindow):
             'main', 'lastfolder', constants.HOMEDIR))]
 
         mapping = {
-            u'VorbisComment':
-                {u'date': u'year',
-                u'tracknumber': u'track',
-                u'musicbrainz_albumid': u'mbrainz_album_id',
-                u'musicbrainz_artistid': u'mbrainz_artist_id',
-                u'musicbrainz_trackid': u'mbrainz_track_id'},
-            u'MP4':
-                {u'MusicBrainz Track Id': u'mbrainz_track_id',
-                u'MusicBrainz Artist Id': u'mbrainz_artist_id',
-                u'MusicBrainz Album Id': u'mbrainz_album_id'},
-            u'ID3':
-                {u'ufid:http://musicbrainz.org': u'mbrainz_track_id',
-                u'MusicBrainz Album Id': u'mbrainz_album_id',
-                u'MusicBrainz Artist Id': u'mbrainz_artist_id'},
-            u'APEv2':
-                {u'musicbrainz_albumid': u'mbrainz_album_id',
-                u'musicbrainz_artistid': u'mbrainz_artist_id',
-                u'musicbrainz_trackid': u'mbrainz_track_id'}}
+            'VorbisComment':
+                {u'date': 'year',
+                'tracknumber': 'track',
+                'musicbrainz_albumid': 'mbrainz_album_id',
+                'musicbrainz_artistid': 'mbrainz_artist_id',
+                'musicbrainz_trackid': 'mbrainz_track_id'},
+            'MP4':
+                {u'MusicBrainz Track Id': 'mbrainz_track_id',
+                'MusicBrainz Artist Id': 'mbrainz_artist_id',
+                'MusicBrainz Album Id': 'mbrainz_album_id'},
+            'ID3':
+                {u'ufid:http://musicbrainz.org': 'mbrainz_track_id',
+                'MusicBrainz Album Id': 'mbrainz_album_id',
+                'MusicBrainz Artist Id': 'mbrainz_artist_id'},
+            'APEv2':
+                {u'musicbrainz_albumid': 'mbrainz_album_id',
+                'musicbrainz_artistid': 'mbrainz_artist_id',
+                'musicbrainz_trackid': 'mbrainz_track_id'}}
 
         filepath = os.path.join(cparser.savedir, 'mappings')
         audioinfo.setmapping(audioinfo.loadmapping(filepath, mapping))

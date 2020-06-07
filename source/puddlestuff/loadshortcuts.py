@@ -58,7 +58,7 @@ def menubar(menus, actions):
     for title, actionlist in menus:
         menu = menubar.addMenu(translate("Menus", title))
         _menus[title] = [menu]
-        if title == u'&Windows':
+        if title == '&Windows':
             winmenu = menu
             tr_section = 'Dialogs'
         else:

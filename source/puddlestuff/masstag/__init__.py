@@ -52,7 +52,7 @@ NAME = 'name'
 DESC = 'description'
 EXISTING_ONLY = 'field_exists'
 
-DEFAULT_PATTERN = u'%artist% - %album%/%track% - %title%'
+DEFAULT_PATTERN = '%artist% - %album%/%track% - %title%'
 DEFAULT_NAME = translate('Masstagging', 'Default Profile')
 
 POLLING = translate("Masstagging", '<b>Polling: %s</b>')
@@ -64,16 +64,16 @@ MATCH_ALBUM = translate("Masstagging",
     'Retrieving matching album. Album=<b>%1</b>')
 MATCH_NO_INFO = translate("Masstagging", 'Retrieving matching album.')
 
-SEARCHING_ARTIST_ALBUM = u':insert' + translate("Masstagging",
+SEARCHING_ARTIST_ALBUM = ':insert' + translate("Masstagging",
     'Starting search for: <br />artist=<b>%1</b> '
     '<br />album=<b>%2</b><br />')
-SEARCHING_ARTIST = u':insert' + translate("Masstagging",
+SEARCHING_ARTIST = ':insert' + translate("Masstagging",
     'Starting search for: <br />artist=<b>%1</b>'
     '<br />album=No album name found.')
-SEARCHING_ALBUM = u':insert' + translate("Masstagging",
+SEARCHING_ALBUM = ':insert' + translate("Masstagging",
     'Starting search for: <br />album=<b>%1</b>'
     '<br />artist=No artist found.')
-SEARCHING_NO_INFO = u':insert' + translate("Masstagging",
+SEARCHING_NO_INFO = ':insert' + translate("Masstagging",
     'No artist or album info found in files. Starting search.')
 
 RESULTS_FOUND = translate("Masstagging", '<b>%d</b> results found.')
@@ -114,7 +114,7 @@ def brute_force_results(audios, retrieved):
         lambda f: to_string(f.get('track', f['__filename'])))
 
     retrieved = sorted(retrieved, natsort_case_key,
-        lambda t: to_string(t.get('track', t.get('title' , u''))))
+        lambda t: to_string(t.get('track', t.get('title' , ''))))
 
     for audio, result in zip(audios, retrieved):
         matched[audio] = result
@@ -164,7 +164,7 @@ def combine_tracks(track1, track2, repl=None):
 def fields_from_text(text):
     if not text:
         return []
-    return [_f for _f in map(str.strip, text.split(u',')) if _f]
+    return [_f for _f in map(str.strip, text.split(',')) if _f]
 
 def dict_difference(dict1, dict2):
     """Returns a dictonary containing key/value pairs from dict2 where key
@@ -237,7 +237,7 @@ def get_match_str(info):
 get_lower = lambda f, key, default=u'': to_string(f.get(key,default)).lower()
 
 def ratio_compare(d1, d2, key):
-    return ratio(get_lower(d1, key, u'a'), get_lower(d2, key, u'b'))
+    return ratio(get_lower(d1, key, 'a'), get_lower(d2, key, 'b'))
 
 def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
     existing=False, as_index=False):
@@ -536,7 +536,7 @@ class MassTagProfile(object):
 
         self.album_bound = album_bound
         self.desc = desc
-        self.fields = [u'artist', u'title'] if fields is None else fields
+        self.fields = [u'artist', 'title'] if fields is None else fields
         self.file_pattern = file_pattern
         self.files = [] if files is None else files
         self.jfdi = jfdi

@@ -110,9 +110,9 @@ def set_sort_options(options):
     parent = _sort_action.parentWidget()
     menu = QMenu(parent)
     sort_actions = []
-    options = [[z.strip() for z in option.split(u',')] for option in options]
+    options = [[z.strip() for z in option.split(',')] for option in options]
     for option in options:
-        action = QAction(u'/'.join(option), parent)
+        action = QAction('/'.join(option), parent)
         action.sortOption = option
         menu.addAction(action)
         action.triggered.connect(sort_by_fields)

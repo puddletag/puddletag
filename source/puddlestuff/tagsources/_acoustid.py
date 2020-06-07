@@ -161,10 +161,6 @@ def _api_request(url, params):
     # if non-ASCII characters are passed in a Unicode string.)
     byte_params = {}
     for key, value in params.items():
-        if isinstance(key, str):
-            key = key.encode('utf8')
-        if isinstance(value, str):
-            value = value.encode('utf8')
         byte_params[key] = value
 
     body = _compress(urllib.parse.urlencode(byte_params))

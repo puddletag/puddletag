@@ -42,14 +42,9 @@ author = 'concentricpuddle'
 
 def getFilename(filename):
     filename = urllib.request.url2pathname(filename)
-    try:
-        filename = filename.encode('latin1').decode('utf8')
-    except UnicodeDecodeError:
-        print(u"UnicodeDecodeError on: ", filename)
-        pass
 
-    if filename.startswith(u'file://'):
-        filename = filename[len(u'file://'):]
+    if filename.startswith('file://'):
+        filename = filename[len('file://'):]
         return {'__dirpath': path.dirname(filename),
                 PATH: filename,
                 FILENAME: path.basename(filename),
@@ -60,28 +55,28 @@ getTime = lambda date: audioinfo.strtime(int(date))
 getCreated = lambda created: {u'__created': getTime(created)}
 getModified = lambda modified: {u'__modified': getTime(modified)}
 getLength = lambda length: {u'__length': audioinfo.strlength(int(length))}
-getBitRate = lambda bitrate: {u'__bitrate': bitrate + u' kb/s'}
+getBitRate = lambda bitrate: {u'__bitrate': bitrate + ' kb/s'}
 
 
-CONVERSION = {u'title': u'title',
-u'genre': u'genre',
-u'artist': u'artist',
-u'album': u'album',
-u'track-number': u'track',
+CONVERSION = {u'title': 'title',
+u'genre': 'genre',
+u'artist': 'artist',
+u'album': 'album',
+u'track-number': 'track',
 u'duration': getLength,
-u'file-size': u'__size',
+u'file-size': '__size',
 u'location': getFilename,
 u'first-seen': getCreated,
 u'mtime': getModified,
 u'last-seen': '__last_seen',
 u'bitrate': getBitRate,
-u'disc-number': u'discnumber'}
+u'disc-number': 'discnumber'}
 
 setLength = lambda length: {'duration': str(audioinfo.lnglength(length))}
 setCreated = lambda created: {'first-seen': str(audioinfo.lngtime(created))}
 setBitrate = lambda bitrate: {'bitrate': str(audioinfo.lngfrequency(bitrate) / 1000)}
 setModified = lambda modified: {'last-seen': str(audioinfo.lngtime(modified))}
-setFilename = lambda filename: {u'location': u'file://' + str(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
+setFilename = lambda filename: {u'location': 'file://' + str(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
 
 RECONVERSION = {
     'title': 'title',
@@ -142,8 +137,8 @@ class DBParser(ContentHandler):
                 f = ((k, v.strip()) for k,v in tag.items())
                 tag = dict((k,v) for k,v in f if v)
 
-                album = tag.get('album', u'')
-                artist = tag.get('artist', u'')
+                album = tag.get('album', '')
+                artist = tag.get('artist', '')
 
                 albums = self.albums[artist]
                 if album not in albums:
@@ -201,8 +196,8 @@ class DBParser(ContentHandler):
                 self.values[name] = ""
         if name == 'rhythmdb':
             version = attrs.get('version')
-            self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
-                u'  <rhythmdb version="%s">' % str(version)
+            self.head = '<?xml version="1.0" standalone="yes"?>\n' \
+                '  <rhythmdb version="%s">' % str(version)
             self.startElement = startelement
     
 
@@ -257,8 +252,8 @@ class RhythmDB(ContentHandler):
                 self.values[name] = ""
         if name == 'rhythmdb':
             version = attrs.get('version')
-            self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
-                        u'  <rhythmdb version="%s">' % str(version)
+            self.head = '<?xml version="1.0" standalone="yes"?>\n' \
+                        '  <rhythmdb version="%s">' % str(version)
             self.startElement = startelement
 
     def characters (self, ch):
@@ -416,7 +411,7 @@ class RhythmDB(ContentHandler):
         entry = [self.head + "\n"]
         for album in self.tracks:
             for track in album:
-                entry.append(u'  <entry type="song">\n')
+                entry.append('  <entry type="song">\n')
                 for key, tagvalue in track.items():
                     try:
                         if key.startswith('___'):
@@ -429,9 +424,9 @@ class RhythmDB(ContentHandler):
                         tagname = RECONVERSION[key]
                     except KeyError:
                         continue
-                    entry.append(u'    <%s>%s</%s>\n' % (self._escapedText(tagname), self._escapedText(tagvalue), self._escapedText(tagname)))
-                entry.append(u'  </entry>\n')
-                f.write((u"".join(entry)).encode('utf-8'))
+                    entry.append('    <%s>%s</%s>\n' % (self._escapedText(tagname), self._escapedText(tagvalue), self._escapedText(tagname)))
+                entry.append('  </entry>\n')
+                f.write(("".join(entry)))
                 entry = []
 
         entry = []
@@ -441,7 +436,7 @@ class RhythmDB(ContentHandler):
                     (self._escapedText(val), self._escapedText(value[val]),
                     self._escapedText(val))) for val in value]
             entry.append("  </entry>\n")
-            f.write((u"".join(entry)).encode('utf-8'))
+            f.write(("".join(entry)))
             entry = []
         f.write("</rhythmdb>")
         f.close()
@@ -491,7 +486,7 @@ class RhythmDB(ContentHandler):
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
-        self.dbpath = QLineEdit(path.join(str(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
+        self.dbpath = QLineEdit(path.join(str(QDir.homePath()), ".gnome2/rhythmbox/rhythmdb.xml"))
 
         vbox = QVBoxLayout()
         label = QLabel('&Database Path')

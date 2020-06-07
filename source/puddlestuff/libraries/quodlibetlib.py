@@ -26,7 +26,7 @@ ATTRIBUTES = ['length', 'accessed', 'size', 'created',
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
-    return str(bitrate/1000) + u' kb/s'
+    return str(bitrate/1000) + ' kb/s'
 
 def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
@@ -77,7 +77,7 @@ class Tag(MockTag):
         tags = self.__tags
 
         tags.update(self.load(libtags['~filename'])[0])
-        tags['__tag_read'] = u'QuodLibet'
+        tags['__tag_read'] = 'QuodLibet'
 
         self.library = libclass
         self.remove = partial(libclass.delete, track=libtags)
@@ -166,10 +166,10 @@ class Tag(MockTag):
         libtags = self._libtags
         tags = self.__tags
         newartist = to_string(tags.get('artist', [u'']))
-        oldartist = libtags.get('artist', u'')
+        oldartist = libtags.get('artist', '')
 
         newalbum = to_string(tags.get('album', [u'']))
-        oldalbum = libtags.get('album', u'')
+        oldalbum = libtags.get('album', '')
 
         self._libtags.update(self._tolibformat())
         self._libtags.write()
@@ -195,9 +195,9 @@ class Tag(MockTag):
     def update_tag_list(self):
         l = tags_in_file(self.filepath)
         if l:
-            self.__tags['__tag'] = u'QuodLibet, ' + u', '.join(l)
+            self.__tags['__tag'] = 'QuodLibet, ' + ', '.join(l)
         else:
-            self.__tags['__tag'] = u'QuodLibet'
+            self.__tags['__tag'] = 'QuodLibet'
 
 Tag = audioinfo.model_tag(Tag)
 
@@ -214,7 +214,7 @@ class QuodLibet(object):
         self._filepath = filepath
         cached = defaultdict(lambda: defaultdict(lambda: []))
         for track in self._tracks:
-            cached[track.get('artist', u'')][track.get('album', u'')
+            cached[track.get('artist', '')][track.get('album', '')
                 ].append(track)
         self._cached = cached
 
@@ -246,11 +246,11 @@ class QuodLibet(object):
         return list(filter(getvalue, self._tracks))
 
     def distinct_values(self, field):
-        return set([track.get(field, u'') for track in self._tracks])
+        return set([track.get(field, '') for track in self._tracks])
 
     def distinct_children(self, parent, value, child):
-        return set([track.get(child, u'') for track in
-            self._tracks if track.get(parent, u'') == value])
+        return set([track.get(child, '') for track in
+            self._tracks if track.get(parent, '') == value])
             
     def _artists(self):
         return list(self._cached.keys())
@@ -263,14 +263,14 @@ class QuodLibet(object):
     def save(self):
         if not self.edited:
             return
-        filepath = self._filepath + u'.puddletag'
+        filepath = self._filepath + '.puddletag'
         pickle.dump(self._tracks, open(filepath, 'wb'))
-        os.rename(self._filepath, self._filepath +  u'.bak')
+        os.rename(self._filepath, self._filepath +  '.bak')
         os.rename(filepath, self._filepath)
 
     def delete(self, track):
-        artist = to_string(track.get('artist', u''))
-        album = to_string(track.get('album', u''))
+        artist = to_string(track.get('artist', ''))
+        album = to_string(track.get('album', ''))
         self._cached[artist][album].remove(track)
         self._tracks.remove(track)
         if not self._cached[artist][album]:
@@ -285,10 +285,10 @@ class QuodLibet(object):
             print(artist)
             albums = self.get_albums(artist)
             for album in albums:
-                print(u'  ', album)
+                print('  ', album)
                 tracks = self.get_tracks('artist', artist, 'album', album)
                 for track in tracks:
-                    print(u'      ', track[title][0] if title in track else u'')
+                    print('      ', track[title][0] if title in track else '')
 
     def close(self):
         pass
@@ -311,8 +311,8 @@ class QuodLibet(object):
             del(cached[artist][album])
         if not cached[artist]:
             del(cached[artist])
-        trackartist = track.get('artist', u'')
-        trackalbum = track.get('album', u'')
+        trackartist = track.get('artist', '')
+        trackalbum = track.get('album', '')
         cached[trackartist][trackalbum].append(track)
 
 class DirModel(QDirModel):
@@ -341,8 +341,8 @@ class DirLineEdit(QLineEdit):
 class InitWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.dbpath = DirLineEdit(os.path.join(HOMEDIR, u".quodlibet/songs"))
-        self.configpath = DirLineEdit(os.path.join(HOMEDIR, u".quodlibet/config"))
+        self.dbpath = DirLineEdit(os.path.join(HOMEDIR, ".quodlibet/songs"))
+        self.configpath = DirLineEdit(os.path.join(HOMEDIR, ".quodlibet/config"))
 
         vbox = QVBoxLayout()
         def label(text, control):
@@ -381,7 +381,7 @@ class InitWidget(QWidget):
             raise MusicLibError(0, translate("QuodLibet",
                 '%1 is an invalid QuodLibet music library file.').arg(dbpath))
 
-name = u'Quodlibet'
+name = 'Quodlibet'
 
 if __name__ == '__main__':
     lib = QuodLibet('/home/keith/.quodlibet/songs')

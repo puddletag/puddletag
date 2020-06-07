@@ -43,7 +43,7 @@ class _SignalObject(QObject):
 cparser = PuddleConfig()
 
 COVERDIR = cparser.get('tagsources', 'coverdir', join(CONFIGDIR, 'covers'))
-COVER_PATTERN = u'%artist% - %album%'
+COVER_PATTERN = '%artist% - %album%'
 SAVECOVERS = False
 
 mapping = {}
@@ -70,10 +70,7 @@ def get_encoding(page, decode=False, default=None):
     if not encoding and default:
         encoding = default
 
-    if decode:
-        return encoding  # , page.decode(encoding, 'replace') if encoding else page
-    else:
-        return encoding
+    return encoding
 
 
 def find_id(tracks, field):
@@ -100,7 +97,7 @@ def iri_to_uri(iri):
 
 def parse_searchstring(text):
     try:
-        text = [z.split(u';') for z in text.split(u'|') if z]
+        text = [z.split(';') for z in text.split('|') if z]
         return [(z.strip(), v.strip()) for z, v in text]
     except ValueError:
         raise RetrievalError(
@@ -123,7 +120,7 @@ def save_cover(info, data, filetype):
 def save_file(filename, data):
     path = join(filename, COVERDIR)
     if exists(path):
-        save_file(u'%s0' % filename)
+        save_file('%s0' % filename)
         return
     f = open(filename, 'wb')
     f.write(data)
@@ -194,7 +191,7 @@ def urlopen(url, mask=True, code=False):
             return page.read()
     except urllib.error.URLError as e:
         try:
-            msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+            msg = '%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = str(e)
             
@@ -205,10 +202,10 @@ def urlopen(url, mask=True, code=False):
             raise RetrievalError(
                 translate("Defaults", "Connection Error: %s ") % msg)
     except socket.error as e:
-        msg = u'%s (%s)' % (e.strerror, e.code)
+        msg = '%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
     except EnvironmentError as e:
-        msg = u'%s (%s)' % (e.strerror, e.code)
+        msg = '%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
 
 

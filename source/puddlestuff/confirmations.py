@@ -32,8 +32,8 @@ def _load(filename):
     confirmations = {}
     for section in cparser.sections():
         if section.startswith(SECTION):
-            name = cparser.get(section, NAME, u'')
-            desc = cparser.get(section, DESC, u'')
+            name = cparser.get(section, NAME, '')
+            desc = cparser.get(section, DESC, '')
             value = cparser.get(section, VALUE, True)
             confirmations[name] = [value, desc]
     return confirmations

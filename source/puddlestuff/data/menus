@@ -5,7 +5,7 @@
   "shortcuts": {
     "__dirpath/album/track": "Alt+Meta+1"
   }, 
-  "menu": {
+  "men": {
     "&File": [
       "&Open Folder", 
       "&Add Folder", 

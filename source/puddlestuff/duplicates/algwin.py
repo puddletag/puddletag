@@ -16,8 +16,8 @@ from ..puddletag import add_shortcuts
 from ..puddleobjects import ListButtons, ListBox, OKCancel, PuddleConfig
 from ..puddleobjects import progress, winsettings
 
-title_sort = lambda a: a.get('title', u'')
-dupe_sort = lambda a: a[0].get('title', u'')
+title_sort = lambda a: a.get('title', '')
+dupe_sort = lambda a: a[0].get('title', '')
 
 DEFAULTSET = {'setname': 'Default',
     'algs': [Algo(['artist', 'title'], 0.85, _ratio, False)],
@@ -39,7 +39,7 @@ def saveset(setname, disp, algs, maintag):
     cparser.set('info', 'name', setname)
     cparser.set('info', 'disp', disp)
     for i, a in enumerate(algs):
-        setname = u'alg' + str(i)
+        setname = 'alg' + str(i)
         for key, val in a.items():
             cparser.set(setname, key, val)
 
@@ -148,7 +148,7 @@ class DupeTree(QTreeWidget):
         ##because XMMS doesn't seem to work well with Qt's URL's
         #for z in self.selectedFiles():
             #url = QUrl.fromLocalFile(z['__filename'])
-            #plainText = plainText + unicode(url.toString()) + u"\n"
+            #plainText = plainText + unicode(url.toString()) + "\n"
             #tags.append(url)
         #mimeData = QMimeData()
         #mimeData.setUrls(tags)
@@ -233,7 +233,7 @@ class AlgWin(QWidget):
         self.alcombo.clear()
         self.alcombo.addItems(names)
         self.alcombo.setCurrentIndex(0)
-        tooltip = u"<dl>%s</dl>" % u''.join([u'<dt><b>%s<b></dt> <dd>%s</dd>' % z for z in x])
+        tooltip = "<dl>%s</dl>" % ''.join([u'<dt><b>%s<b></dt> <dd>%s</dd>' % z for z in x])
         self.alcombo.setToolTip(tooltip)
         if alg:
             self.loadAlgo(alg)

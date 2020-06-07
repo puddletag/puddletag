@@ -2,9 +2,9 @@
 
 def dupes(tracks, tags, func, matchcase = False, threshold = 1, prevdupe = None):
     if matchcase:
-        strings = [[(i, t.get(field, u'')) for i, t in enumerate(tracks)] for field in tags]
+        strings = [[(i, t.get(field, '')) for i, t in enumerate(tracks)] for field in tags]
     else:
-        strings = [[(i, t.get(field, u'').lower())
+        strings = [[(i, t.get(field, '').lower())
             for i, t in enumerate(tracks)] for field in tags]
     if prevdupe:
         ret = prevdupe

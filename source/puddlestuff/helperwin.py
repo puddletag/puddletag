@@ -26,7 +26,7 @@ ADD, EDIT, REMOVE = (1, 2, 3)
 UNCHANGED = 0
 BOLD = 1
 ITALICS = 2
-TAG_DISP = u"<b>%s: </b> %s, "
+TAG_DISP = "<b>%s: </b> %s, "
 
 class AutonumberDialog(QDialog):
     newtracks = pyqtSignal(int, int, 'Qt::CheckState', int, str, str, 'Qt::CheckState', name='newtracks')
@@ -107,8 +107,8 @@ class AutonumberDialog(QDialog):
         vbox.addLayout(hbox(label, self.output_field))
         self.custom_numbering_widgets.extend([label, self.output_field])
 
-        self.count_by_group = QCheckBox(translate(u'Autonumbering Wizard',
-                                                    u'Increase counter only on group change'))
+        self.count_by_group = QCheckBox(translate('Autonumbering Wizard',
+                                                    'Increase counter only on group change'))
         vbox.addWidget(self.count_by_group)
         self.custom_numbering_widgets.append(self.count_by_group)
 
@@ -281,16 +281,16 @@ class ImportTextFile(QDialog):
             if tags:
                 return pprint_tag(tags, TAG_DISP, True)[:-2]
             else:
-                return u""
+                return ""
 
         self.dicttags = []
         self.tags.clear()
-        for z in self.lines.split(u"\n"):
+        for z in self.lines.split("\n"):
             self.dicttags.append(findfunc.filenametotag(
                 str(self.patterncombo.currentText()), z, False, False))
         if self.dicttags:
             self.tags.setHtml(
-                u"<br/>".join([formattag(z) for z in self.dicttags]))
+                "<br/>".join([formattag(z) for z in self.dicttags]))
 
     def openFile(self, filename=None, dirpath=None):
         """Open the file and fills the textboxes."""
@@ -321,8 +321,8 @@ class ImportTextFile(QDialog):
             else:
                 return detail
 
-        self.lines = [z.decode('utf8', 'replace') for z in f.readlines()]
-        self.file.setPlainText(u"".join(self.lines))
+        self.lines = f.readlines()
+        self.file.setPlainText("".join(self.lines))
         self.setLines()
         self.fillTags()
         self.show()
@@ -333,7 +333,7 @@ class ImportTextFile(QDialog):
 
     def openClipBoard(self):
         text = str(QApplication.clipboard().text())
-        self.lines = text.split(u'\n')
+        self.lines = text.split('\n')
         self.file.setPlainText(text)
         self.setLines()
         self.fillTags()

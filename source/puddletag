@@ -202,7 +202,7 @@ def load_language(qapp, langfile=None):
 
     if not langargs:
         cparser = PuddleConfig()
-        lang = cparser.get('main', 'lang', u'auto')
+        lang = cparser.get('main', 'lang', 'auto')
         langs = get_languages([TRANSDIR])
 
         if lang != 'auto':

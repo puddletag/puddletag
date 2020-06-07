@@ -19,10 +19,10 @@ NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
 RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
 
-default_albumpattern = u'%artist% - %album% $if(%__numtracks%, ' \
-    u'[%__numtracks%], "")'
+default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
+    '[%__numtracks%], "")'
 
-no_disp_fields = [u'__numtracks', u'__image']
+no_disp_fields = [u'__numtracks', '__image']
 
 pyqtRemoveInputHook()
 def inline_display(pattern, tags):
@@ -36,7 +36,7 @@ def fillItem(item, info, tracks, trackpattern):
                     for track in tracks]
         item.hasTracks = True
     else:
-        item.itemData['__numtracks'] = u'0'
+        item.itemData['__numtracks'] = '0'
         item.hasTracks = False
     item.dispPattern = item.dispPattern
 
@@ -92,12 +92,12 @@ class Header(QHeaderView):
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
         self.sortOptions = [z.split(',') for z in 
-            [u'artist,album', u'album,artist', u'__numtracks,album']]
+            [u'artist,album', 'album,artist', '__numtracks,album']]
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         def create_action(order):
-            action = QAction(u'/'.join(order), menu)
+            action = QAction('/'.join(order), menu)
             slot = lambda: self.sortChanged.emit(order[::])
             action.triggered.connect(slot)
             menu.addAction(action)
@@ -134,8 +134,8 @@ class RootItem(object):
         return 0
     
     def sort(self, order=None, reverse=False):
-        sortfunc = lambda item: natural_sort_key(u''.join([
-            to_string(item.itemData.get(key, u'')) for key in order]).lower())
+        sortfunc = lambda item: natural_sort_key(''.join([
+            to_string(item.itemData.get(key, '')) for key in order]).lower())
         self.childItems.sort(key=sortfunc, reverse=reverse)
         
 
@@ -174,7 +174,7 @@ class TreeItem(RootItem):
     def tracks(self):
         if self.hasTracks:
             info = self.itemData.copy()
-            if u'__numtracks' in info:
+            if '__numtracks' in info:
                 del(info[u'__numtracks'])
             def get_track(item):
                 track = info.copy()
@@ -196,7 +196,7 @@ class ChildItem(RootItem):
     def __init__(self, data, pattern, parent=None):
         self.parentItem = parent
         self.itemData = data
-        if u'#exact' in data:
+        if '#exact' in data:
             self.checked = True
             self.exact = data['#exact']
         else:
@@ -220,7 +220,7 @@ class ChildItem(RootItem):
     
     def track(self):
         track = self.parentItem.itemData.copy()
-        if u'__numtracks' in track:
+        if '__numtracks' in track:
             del(track['__numtracks'])
         track.update(self.itemData.copy())
         return track
@@ -404,7 +404,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and \
             role == QtCore.Qt.DisplayRole:
-            ret = RETRIEVED_ALBUMS % u' / '.join(self.sortOrder)
+            ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
             
             return ret
 
@@ -649,10 +649,10 @@ class ReleaseWidget(QTreeView):
             [tracks.extend(item.tracks()) for item in albums 
                 if item.hasTracks]
             for item in albums:
-                if u'#extrainfo' in item.itemData:
+                if '#extrainfo' in item.itemData:
                     desc, url = item.itemData[u'#extrainfo']
                     self.infoChanged.emit(
-                        u'<a href="%s">%s</a>' % (url, desc))
+                        '<a href="%s">%s</a>' % (url, desc))
                     break
         self.emitTracks(tracks)
         self.itemSelectionChanged.emit()

@@ -43,9 +43,9 @@ RETURN_ONLY = 1
 
 def _default_audio_player():
     if sys.platform.startswith("linux"):
-        return u'xdg-open'
+        return 'xdg-open'
     elif sys.platform == "darwin":
-        return u'open -a iTunes'
+        return 'open -a iTunes'
     return "clementine -p"
 
 def commontag(tag, tags):
@@ -86,7 +86,7 @@ def loadsettings(filepath=None):
     v2_option = settings.get('id3tags', 'v2_option', 4)
     audioinfo.id3.v1_option = v1_option
     audioinfo.id3.v2_option = v2_option
-    filespec = u';'.join(settings.get('table', 'filespec', []))
+    filespec = ';'.join(settings.get('table', 'filespec', []))
 
     return (list(zip(titles, tags)), fontsize, rowsize, filespec)
 
@@ -180,12 +180,12 @@ def model_tag(model, base = audioinfo.AbstractTag):
 
         def clean(self):
             for k, v in self.preview.items():
-                real = self.realvalue(k, u'')
+                real = self.realvalue(k, '')
                 if not isinstance(real, str):
-                    real = u''.join(real)
+                    real = ''.join(real)
 
                 if not isinstance(v, str):
-                    v = u''.join(v)
+                    v = ''.join(v)
 
                 if real == v:
                     del(self.preview[k])
@@ -213,12 +213,12 @@ def model_tag(model, base = audioinfo.AbstractTag):
             for k, v in self.preview.items():
                 if k == '__image':
                     continue
-                real = self.realvalue(k, u'')
+                real = self.realvalue(k, '')
                 if not isinstance(real, str):
-                    real = u''.join(real)
+                    real = ''.join(real)
 
                 if not isinstance(v, str):
-                    v = u''.join(v)
+                    v = ''.join(v)
 
                 if real == v:
                     ret.append(k)
@@ -328,16 +328,16 @@ class Properties(QDialog):
         and the other as the value.
 
         .e.g
-        [('File', [('Filename', u'/Hip Hop Songs/Nas-These Are Our Heroes .mp3'),
-                  ('Size', u'6151 kB'),
-                  ('Path', u'Nas - These Are Our Heroes .mp3'),
+        [('File', [('Filename', '/Hip Hop Songs/Nas-These Are Our Heroes .mp3'),
+                  ('Size', '6151 kB'),
+                  ('Path', 'Nas - These Are Our Heroes .mp3'),
                   ('Modified', '2009-07-28 14:04:05'),
-                  ('ID3 Version', u'ID3v2.4')]),
-        ('Version', [('Version', u'MPEG 1 Layer 3'),
-                    ('Bitrate', u'192 kb/s'),
-                    ('Frequency', u'44.1 kHz'),
+                  ('ID3 Version', 'ID3v2.4')]),
+        ('Version', [('Version', 'MPEG 1 Layer 3'),
+                    ('Bitrate', '192 kb/s'),
+                    ('Frequency', '44.1 kHz'),
                     ('Mode', 'Stereo'),
-                    ('Length', u'4:22')])]
+                    ('Length', '4:22')])]
         """
         QDialog.__init__(self, parent)
         winsettings('fileinfo', self)
@@ -352,10 +352,10 @@ class Properties(QDialog):
             framegrid = QGridLayout()
             framegrid.setColumnStretch(1,1)
             for row, value in enumerate(items):
-                prop = QLabel(value[0] + u':')
+                prop = QLabel(value[0] + ':')
                 prop.setTextInteractionFlags(interaction)
                 framegrid.addWidget(prop, row, 0)
-                propvalue = QLabel(u'<b>%s</b>' % value[1])
+                propvalue = QLabel('<b>%s</b>' % value[1])
 
                 propvalue.setTextInteractionFlags(interaction)
                 framegrid.addWidget(propvalue, row, 1)
@@ -668,10 +668,10 @@ class TagModel(QAbstractTableModel):
     
     def _toString(self, val):
         if isinstance(val, str):
-            return val.replace(u'\n', u' ')
+            return val.replace('\n', ' ')
         else:
             try:
-                return u'\\\\'.join(val).replace(u'\n', u' ')
+                return '\\\\'.join(val).replace('\n', ' ')
             except TypeError:
                 return str(val)
 
@@ -721,7 +721,7 @@ class TagModel(QAbstractTableModel):
                 f.setPointSize(self.fontSize)
             audio = self.taginfo[row]
             if field in audio.preview:
-                real = audio.realvalue(field, u'')
+                real = audio.realvalue(field, '')
                 if self._toString(audio[field]) != self._toString(real):
                     f.setBold(True)
                 else:
@@ -847,8 +847,8 @@ class TagModel(QAbstractTableModel):
 
         if append:
             for field in self.sortFields:
-                getter = lambda audio: audio.get(field, u'')
-                taginfo.sort(key=lambda a: natural_sort_key(a.get(field, u'')), reverse=self.reverseSort)
+                getter = lambda audio: audio.get(field, '')
+                taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
 
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
@@ -1025,7 +1025,7 @@ class TagModel(QAbstractTableModel):
 
             if tag not in FILETAGS:
                 newvalue = [_f for _f in newvalue.split(SEPARATOR) if _f]
-            if newvalue == currentfile.get(tag, u'') and not dontwrite:
+            if newvalue == currentfile.get(tag, '') and not dontwrite:
                 QApplication.restoreOverrideCursor()
                 return False
             if dontwrite:
@@ -1072,7 +1072,7 @@ class TagModel(QAbstractTableModel):
             if temporary:
                 for field in tags:
                     if field not in audio._temp:
-                        audio._temp[field] = audio.get(field, u'')
+                        audio._temp[field] = audio.get(field, '')
             preview = audio.preview
             undo_val = dict([(tag, copy(audio[tag])) if tag in audio
                 else (tag, []) for tag in tags])
@@ -1084,7 +1084,7 @@ class TagModel(QAbstractTableModel):
                 self._addUndo(audio, undo_val)
             return
         else:
-            artist = audio.get('artist', u'')
+            artist = audio.get('artist', '')
             undo_val = write(audio, tags, self.saveModification, justrename)
             if undo and undo_val:
                 self._addUndo(audio, undo_val)
@@ -1158,12 +1158,12 @@ class TagModel(QAbstractTableModel):
 
         if files and rows:
             for field in fields:
-                files.sort(key=lambda a:natural_sort_key(a.get(field, u'')), reverse=reverse)
+                files.sort(key=lambda a:natural_sort_key(a.get(field, '')), reverse=reverse)
             for index, row in enumerate(rows):
                 self.taginfo[row] = files[index]
         else:
             for field in fields:
-                self.taginfo.sort(key=lambda a:natural_sort_key(a.get(field, u'')), reverse=reverse)
+                self.taginfo.sort(key=lambda a:natural_sort_key(a.get(field, '')), reverse=reverse)
 
         self.reverseSort = reverse
         self.sortFields = fields
@@ -1470,7 +1470,7 @@ class TagTable(QTableView):
         def get_selected(f, row):
             selected = (columns[column] for column in rows[row])
                 
-            return ((field, f.get(field, u'')) for field in selected)
+            return ((field, f.get(field, '')) for field in selected)
         
         return list(map(dict, (get_selected(*z) for z in zip(audios, sorted(rows)))))
 
@@ -1488,7 +1488,7 @@ class TagTable(QTableView):
 
         audio = self.model().taginfo[row]
         
-        return audio, dict((field, audio.get(field, u'')) for field in fields)
+        return audio, dict((field, audio.get(field, '')) for field in fields)
 
     def applyGenSettings(self, d, startlevel=None):
         self.saveSelection()
@@ -1647,7 +1647,7 @@ class TagTable(QTableView):
                     temprows = [z - 1 for z in temprows]
                     yield None
                 except (OSError, IOError) as detail:
-                    msg = u"I couldn't delete <b>%s</b> (%s)" % (filename,
+                    msg = "I couldn't delete <b>%s</b> (%s)" % (filename,
                             detail.strerror)
                     if row == temprows[-1]:
                         yield msg, 1
@@ -1718,7 +1718,7 @@ class TagTable(QTableView):
         if event.buttons() != Qt.LeftButton:
             return
         mimeData = QMimeData()
-        plainText = u""
+        plainText = ""
         tags= []
         if hasattr(self, "selectedRows"):
             selectedRows = self.selectedRows[::]

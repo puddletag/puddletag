@@ -39,7 +39,7 @@ class FilterView(QWidget):
         self.receives = []
         edit = QLineEdit()
         self.combo = PuddleCombo('filter_text')
-        self.combo.setEditText(u'')
+        self.combo.setEditText('')
         self.combo.combo.setLineEdit(edit)
         hbox = create_buddy(translate("Defaults", "Filter: "), self.combo)
         go_button = QPushButton(translate('Defaults', 'Go'))

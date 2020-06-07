@@ -19,7 +19,7 @@ def loadmapping(filepath, default=None):
             return {}
     mappings = {}
     for l in lines:
-        tags = [z.strip() for z in l.split(u',')]
+        tags = [z.strip() for z in l.split(',')]
         if len(tags) == 3: #Tag, Source, Target
             try:
                 mappings[tags[0]].update({tags[1]: tags[2]})

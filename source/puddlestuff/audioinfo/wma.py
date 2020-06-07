@@ -32,7 +32,8 @@ def bin_to_pic(image):
         util.MIMETYPE: mime.decode("utf-16-le"),
         util.DATA: image_data,
         util.IMAGETYPE: type,
-        util.DESCRIPTION: description.decode("utf-16-le"),}
+        util.DESCRIPTION: description.decode("utf-16-le"),
+    }
 
 def pic_to_bin(image):
     data = image[util.DATA]
@@ -42,7 +43,7 @@ def pic_to_bin(image):
         if not mime:
             return
     type = image.get(util.IMAGETYPE, 3)
-    description = image.get(util.DESCRIPTION, u'')
+    description = image.get(util.DESCRIPTION, '')
     tag_data = struct.pack("<bi", type, len(data))
     tag_data += mime.encode("utf-16-le") + "\x00\x00"
     tag_data += description.encode("utf-16-le") + "\x00\x00"
@@ -233,9 +234,9 @@ class Tag(util.MockTag):
 
         self.__tags.update(info_to_dict(audio.info))
         self.__tags.update(tags)
-        self.__tags['__filetype'] = u'ASF'
-        self.filetype = u'ASF'
-        self.__tags['__tag_read'] = u'ASF'
+        self.__tags['__filetype'] = 'ASF'
+        self.filetype = 'ASF'
+        self.__tags['__tag_read'] = 'ASF'
         self.set_attrs(ATTRIBUTES)
         self.mut_obj = audio
         self.update_tag_list()
@@ -272,8 +273,8 @@ class Tag(util.MockTag):
     def update_tag_list(self):
         l = tag_versions.tags_in_file(self.filepath)
         if l:
-            self.__tags['__tag'] = u'ASF, ' + u', '.join(l)
+            self.__tags['__tag'] = 'ASF, ' + ', '.join(l)
         else:
-            self.__tags['__tag'] = u'ASF'
+            self.__tags['__tag'] = 'ASF'
 
 filetype = (ASF, Tag, 'WMA', ['wma', 'wmv'])

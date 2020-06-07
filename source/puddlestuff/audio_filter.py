@@ -11,10 +11,10 @@ from .util import to_string
 
 def str_cmp(a, b):
     if not isinstance(a, str):
-        a = u'\\'.join(a)
+        a = '\\'.join(a)
 
     if not isinstance(b, str):
-        b = u'\\'.join(b)
+        b = '\\'.join(b)
 
     return a.lower() == b.lower()
 
@@ -23,15 +23,15 @@ FIELDS = set(z.lower() for z in gettaglist()).union(audioinfo.FILETAGS)
 def parse_arg(audio, text):
     if not isinstance(text, str):
         return text
-    if text[0] == u'%' and text[-1] == u'%':
-        return to_string(audio.get(text[1:-1], u''))
+    if text[0] == '%' and text[-1] == '%':
+        return to_string(audio.get(text[1:-1], ''))
     elif text in FIELDS:
-        return to_string(audio.get(text, u''))
+        return to_string(audio.get(text, ''))
     else:
-        if text[0] == u'"' and text[-1] == u'"':
+        if text[0] == '"' and text[-1] == '"':
             text = text[1:-1]
         return findfunc.parsefunc(text, audio)
-    return u""
+    return ""
 
 def wrap_nonzero(nonzero):
     def __nonzero__(self):
@@ -76,7 +76,7 @@ class BoolNot(BoolOperand):
             for v in self.audio.values():
                 if isinstance(v, str):
                     v = [v]
-                v = u'\\\\'.join(v).lower()
+                v = '\\\\'.join(v).lower()
                 if arg in v:
                     return False
             return True
@@ -156,7 +156,7 @@ bool_exprs = [
     (CaselessLiteral("not"), 1, opAssoc.RIGHT, BoolNot),
     ]
 
-field_expr = Combine(u'%' + Word(alphanums + '_') + u'%')
+field_expr = Combine('%' + Word(alphanums + '_') + '%')
 tokens = QuotedString('"', unquoteResults=False) \
     | field_expr | Word(alphanums + '_')
 bool_expr = operatorPrecedence(tokens, bool_exprs)
@@ -174,7 +174,7 @@ def parse(audio, expr):
             elif isinstance(value, (int, float)):
                 value = [str(value)]
             try:
-                if res in u'\\\\'.join(value).lower():
+                if res in '\\\\'.join(value).lower():
                     return True
             except TypeError as e:
                 continue

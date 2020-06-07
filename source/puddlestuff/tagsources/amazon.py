@@ -49,8 +49,8 @@ IMAGEKEYS = {'SmallImage': SMALLIMAGE,
 def check_binding(node):
     """Checks whether a returned item as an Audio CD."""
     try:
-        binding = node.getElementsByTagName(u'Binding')[0].firstChild.data
-        return binding == u'Audio CD'
+        binding = node.getElementsByTagName('Binding')[0].firstChild.data
+        return binding == 'Audio CD'
     except IndexError:
         return
 
@@ -102,13 +102,13 @@ def check_matches(albums, artist=None, album_name=None):
 
 def get_asin(node):
     """Retrieves the ASIN of a node."""
-    return node.getElementsByTagName(u'ASIN')[0].firstChild.data
+    return node.getElementsByTagName('ASIN')[0].firstChild.data
 
 def get_image_url(node):
-    return node.getElementsByTagName(u'URL')[0].firstChild.data
+    return node.getElementsByTagName('URL')[0].firstChild.data
 
 def get_site_url(node):
-    return node.getElementsByTagName(u'DetailPageURL')[0].firstChild.data
+    return node.getElementsByTagName('DetailPageURL')[0].firstChild.data
 
 def get_text(node):
     """Returns the textual data in a node."""
@@ -118,13 +118,13 @@ def keyword_search(keywords):
     write_log(translate('Amazon',
         'Retrieving search results for keywords: %s') % keywords)
     query_pairs = {
-            "Operation": u"ItemSearch",
-            'SearchIndex': u'Music',
-            "ResponseGroup":u"ItemAttributes,Images",
-            "Service":u"AWSECommerceService",
-            'ItemPage': u'1',
+            "Operation": "ItemSearch",
+            'SearchIndex': 'Music',
+            "ResponseGroup":"ItemAttributes,Images",
+            "Service":"AWSECommerceService",
+            'ItemPage': '1',
             'Keywords': keywords,
-            'AssociateTag': u'puddletag-20'}
+            'AssociateTag': 'puddletag-20'}
     url = create_aws_url(access_key, secret_key, query_pairs)
     xml = urlopen(url)
     return parse_search_xml(xml)
@@ -153,7 +153,7 @@ def parse_album_xml(text, album=None):
             tracknumber = track_node.attributes['Number'].value
             if album:
                 tracks.append({'track': tracknumber, 'title': title,
-                    'album': u'%s (Disc %s)' % (album, discnum + 1)})
+                    'album': '%s (Disc %s)' % (album, discnum + 1)})
             else:
                 tracks.append({'track': tracknumber, 'title': title})
     return tracks
@@ -185,7 +185,7 @@ def parse_search_xml(text):
             if image_items:
                 info[IMAGEKEYS[key]] = get_image_url(image_items[0])
         info['#extrainfo'] = (translate('Amazon', '%s at Amazon.com') %
-            info.get('album', u''), get_site_url(item))
+            info.get('album', ''), get_site_url(item))
         info['#asin'] = get_asin(item)
         info['asin'] = info['#asin']
         ret.append(info)
@@ -201,11 +201,11 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         asin = info['#asin']
 
     query_pairs = {
-        "Operation": u"ItemLookup",
-        "Service":u"AWSECommerceService",
+        "Operation": "ItemLookup",
+        "Service":"AWSECommerceService",
         'ItemId': asin,
-        'ResponseGroup': u'Tracks',
-        'AssociateTag': u'puddletag-20'}
+        'ResponseGroup': 'Tracks',
+        'AssociateTag': 'puddletag-20'}
     url = create_aws_url(access_key, secret_key, query_pairs)
 
     if isinstance(info, str):
@@ -214,7 +214,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
     else:
         write_log(translate('Amazon',
             'Retrieving XML: %1 - %2').arg(
-                info.get('artist', u'')).arg(info.get('album', u'')))
+                info.get('artist', '')).arg(info.get('album', '')))
     xml = urlopen(url)
     
     if isinstance(info, str):
@@ -234,12 +234,12 @@ def retrieve_cover(url):
 
 def search(artist=None, album=None):
     if artist and album:
-        keywords = u'+'.join([artist, album])
+        keywords = '+'.join([artist, album])
     elif artist:
         keywords = artist
     else:
         keywords = album
-    keywords = re.sub('(\s+)', u'+', keywords)
+    keywords = re.sub('(\s+)', '+', keywords)
     return keyword_search(keywords)
 
 #A couple of things you should be aware of.
@@ -269,14 +269,14 @@ class Amazon(object):
     #The values passed to Object.search will be album (a string) 
     #and dictionary containing the different artists as keys and
     #a list of tags (dictionaries) as the values.
-    group_by = [u'album', u'artist']
+    group_by = [u'album', 'artist']
     
     #So for these values the values passed to Object.search may be
-    #(u"Give Up", artist={u'The Postal Service': [track listing...]})
+    #("Give Up", artist={u'The Postal Service': [track listing...]})
     
     #Each element of track listing is a dictionary of field: value keys
     #containing file-specific info., eg. 
-    # {'track': [u'10'], 'title': [u'Natural Anthem'], '__length': u'5:07'}
+    # {'track': [u'10'], 'title': [u'Natural Anthem'], '__length': '5:07'}
     # values are usually lists and "builtin" values are strings.
     #All strings are unicode, so don't worry about conversions.
 
@@ -335,9 +335,9 @@ class Amazon(object):
                     translate('Amazon', 'Medium'),
                     translate('Amazon', 'Large')], 1]],
             [translate('Amazon', 'Access Key (Stored '
-                'as plain-text. Leave empty for default.)'), TEXT, u''],
+                'as plain-text. Leave empty for default.)'), TEXT, ''],
             [translate('Amazon', 'Secret Key (Stored '
-                'as plain-text. Leave empty for default.)'), TEXT, u''],
+                'as plain-text. Leave empty for default.)'), TEXT, ''],
             ]
 
     def keyword_search(self, text):
@@ -369,7 +369,7 @@ class Amazon(object):
         #albuminfo is a dictionary containing information applicable to
         #the whole album name like 
         #{'artist': [u'The Postal Service'], 'album': [u'Give Up'], 
-        #    'year': u'2003'}
+        #    'year': '2003'}
         #Values can be either strings or lists of strings,
         #but all strings must be unicode!
 
@@ -379,8 +379,8 @@ class Amazon(object):
 
         #Tracks use the same format as albums, but contain info specific to a
         #a track eg. [
-        #    {'title': u'The District Sleeps tonight', 'track': u'1'},
-        #    {'title': u'Such Great Heights', u'2'}
+        #    {'title': 'The District Sleeps tonight', 'track': '1'},
+        #    {'title': 'Such Great Heights', '2'}
         #    .....
         #    ]
         
@@ -393,7 +393,7 @@ class Amazon(object):
 
         if artists:
             if len(artists) > 1:
-                artist = u'Various Artists'
+                artist = 'Various Artists'
             else:
                 try:
                     artist = list(artists.keys())[0]

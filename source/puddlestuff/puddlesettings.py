@@ -49,8 +49,8 @@ def update_settings():
 
     if "ID3" in mapping:
         id3 = mapping['ID3']
-        keys = {u'MusicBrainz Album ID': u'MusicBrainz Album Id',
-            u'MusicBrainz Artist ID': u'MusicBrainz Artist Id'}
+        keys = {u'MusicBrainz Album ID': 'MusicBrainz Album Id',
+            'MusicBrainz Artist ID': 'MusicBrainz Artist Id'}
         for k in keys:
             if k in id3:
                 id3[keys[k]] =id3[k]
@@ -129,10 +129,10 @@ class GeneralSettings(QWidget):
             translate('GenSettings', 'Default')])
         self._lang_combo.setCurrentIndex(0)
 
-        lang = PuddleConfig().get('main', 'lang', u'auto')
+        lang = PuddleConfig().get('main', 'lang', 'auto')
         self._lang_combo.addItems(list(get_languages([TRANSDIR])))
 
-        if lang != u'auto':
+        if lang != 'auto':
             i = self._lang_combo.findText(lang, Qt.MatchFixedString)
             if i > 0:
                 self._lang_combo.setCurrentIndex(i)
@@ -178,9 +178,9 @@ class GeneralSettings(QWidget):
         if index > 1:
             cparser.set('main', 'lang', str(self._lang_combo.currentText()))
         elif index == 0:
-            cparser.set('main', 'lang', u'auto')
+            cparser.set('main', 'lang', 'auto')
         elif index == 1:
-            cparser.set('main', 'lang', u'default')
+            cparser.set('main', 'lang', 'default')
         
         vals =  dict([c.settingValue for c in self._controls])
         for c in controls:
@@ -433,7 +433,7 @@ class Tags(QWidget):
         v2_option = cparser.get('id3tags', 'v2_option', 4)
         if v2_option == 3:
             self.id3_v23.setChecked(True)
-        filespec = u';'.join(cparser.get('table', 'filespec', []))
+        filespec = ';'.join(cparser.get('table', 'filespec', []))
         self._filespec.setText(filespec)
         cover_pattern = cparser.get('tags', 'cover_pattern', 'folder')
         self.coverPattern.setText(cover_pattern)

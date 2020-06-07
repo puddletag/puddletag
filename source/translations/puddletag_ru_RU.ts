@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="ru_RU" sourcelanguage="en_US">
+<!DOCTYPE TS><TS version="2.0" language="ru_R" sourcelanguage="en_US">
 <context>
     <name>About</name>
     <message>

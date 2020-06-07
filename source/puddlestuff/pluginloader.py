@@ -20,7 +20,7 @@ VERSION = 'version'
 INFO_SECTION = 'info'
 MODULE_NAME = 'module'
 
-PLUGIN_DIRS = [os.path.join(SAVEDIR, u'plugins'),
+PLUGIN_DIRS = [os.path.join(SAVEDIR, 'plugins'),
     os.path.join(os.path.dirname(__file__), 'plugins')]
 
 PROPERTIES = [NAME, AUTHOR, DESC, PT_VERSION, VERSION]
@@ -60,7 +60,7 @@ def load_plugins(plugins=None, parent=None):
         [plugins.extend(get_plugins(d)) for d in PLUGIN_DIRS]
 
     
-    plugins.sort(key=lambda d: d.get(NAME, u''))
+    plugins.sort(key=lambda d: d.get(NAME, ''))
 
     for plugin in plugins:
         if plugin[MODULE_NAME] not in to_load:
@@ -68,7 +68,7 @@ def load_plugins(plugins=None, parent=None):
         try:
             module = __import__(plugin[MODULE_NAME])
         except:
-            logging.exception(u'Failed to load plugin: ' + plugin['name'])
+            logging.exception('Failed to load plugin: ' + plugin['name'])
             continue
         if hasattr(module, 'functions'):
             functions.update(module.functions)
@@ -108,7 +108,7 @@ class InfoWidget(QLabel):
             translate('Plugin Settings', 'Version')]
         properties = [NAME, AUTHOR, DESC, VERSION]
         
-        text = u'<br />'.join([u'<b>%s:</b> %s' % (disp, info[prop]) for 
+        text = '<br />'.join([u'<b>%s:</b> %s' % (disp, info[prop]) for 
             disp, prop in zip(labels, properties)])
         self.setText(text)
 
@@ -135,7 +135,7 @@ class PluginConfig(QDialog):
         
         cparser = PuddleConfig()
         to_load = cparser.get('plugins', 'to_load', [])
-        plugins.sort(key=lambda d: d.get(NAME, u''))
+        plugins.sort(key=lambda d: d.get(NAME, ''))
         for plugin in plugins:
             item = QListWidgetItem()
             item.setText(plugin[NAME])

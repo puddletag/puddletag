@@ -155,10 +155,10 @@ class MassTagEdit(QDialog):
         filenames = {}
         order = []
         for profile in profiles:
-            filename = profile.name + u'.mtp'
+            filename = profile.name + '.mtp'
             i = 0
             while filename in filenames:
-                filename = u'%s_%d%s' % (profile.name, i, u'.mtp')
+                filename = '%s_%d%s' % (profile.name, i, '.mtp')
                 i += 1
             filenames[filename] = profile
             order.append(profile.name)
@@ -172,7 +172,7 @@ class MassTagEdit(QDialog):
         for filename, profile in filenames.items():
             save_mtp(profile, os.path.join(dirpath, filename))
         f = open(os.path.join(dirpath, 'order'), 'w')
-        f.write(u'\n'.join(order))
+        f.write('\n'.join(order))
         f.close()
 
     def setProfiles(self, profiles):
@@ -338,14 +338,14 @@ class MTProfileEdit(QDialog):
 
     def okClicked(self):
         fields = [z.strip() for z in
-            str(self.matchFields.text()).split(u',')]
+            str(self.matchFields.text()).split(',')]
 
         mtp = MassTagProfile(str(self._name.text()),
             str(self._desc.text()), fields, None,
             str(self.pattern.text()), self._tsps,
             self.albumBound.value() / 100.0,
             self.trackBound.value() / 100.0, self.jfdi.isChecked(),
-            self.existing.isChecked(), u'')
+            self.existing.isChecked(), '')
 
         self.profileChanged.emit(mtp)
         self.close()
@@ -362,7 +362,7 @@ class MTProfileEdit(QDialog):
         [self.listbox.addItem(tsp.tag_source.name) for tsp in self._tsps]
         self.albumBound.setValue(profile.album_bound * 100)
         self.pattern.setText(profile.file_pattern)
-        self.matchFields.setText(u', '.join(profile.fields))
+        self.matchFields.setText(', '.join(profile.fields))
         self.trackBound.setValue(profile.track_bound * 100)
         self.jfdi.setChecked(profile.jfdi)
         self._name.setText(profile.name)
@@ -474,8 +474,8 @@ class TSProfileEdit(QDialog):
         if source_index != -1:
             self.source.setCurrentIndex(source_index)
         self.no_match.setCurrentIndex(profile.if_no_result)
-        self.fields.setText(u', '.join(profile.fields))
-        self.replace_fields.setText(u', '.join(profile.replace_fields))
+        self.fields.setText(', '.join(profile.fields))
+        self.replace_fields.setText(', '.join(profile.replace_fields))
 
 class MassTagWindow(QWidget):
     setpreview = pyqtSignal(name='setpreview')
@@ -536,8 +536,8 @@ class MassTagWindow(QWidget):
         mutex.lock()
         if not isinstance(text, str):
             text = str(text, 'utf8', 'replace')
-        if text.startswith(u':insert'):
-            text = text[len(u':insert'):]
+        if text.startswith(':insert'):
+            text = text[len(':insert'):]
             pos = len(self._log.toPlainText()) - 1
             pos = 0 if pos < 0 else pos
             self._log.textCursor().setPosition(pos)
@@ -675,7 +675,7 @@ if __name__ == '__main__':
     mtp = MassTagProfile('Searching', 'Testing Search',
         ['artist', 'title'], None, '%artist% - ktg',
         [tsp], 0.70, 0.90, False, True,
-        {'album': [u'(.*?)\s+\(.*\)', u'$1']})
+        {'album': [u'(.*?)\s+\(.*\)', '$1']})
     #win = MTProfileEdit(sources, mtp)
     
     win = MassTagEdit(sources)

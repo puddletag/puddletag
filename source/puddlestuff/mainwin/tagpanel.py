@@ -34,8 +34,8 @@ def loadsettings(filepath = None):
             titles = settings.get(section, 'titles', [''])
             d[row] = list(zip(titles, tags))
     else:
-        titles = ['&Artist', '&Title', 'Al&bum', 'T&rack', u'&Year', "&Genre", '&Comment']
-        tags = ['artist', 'title', 'album', 'track', u'year', 'genre', 'comment']
+        titles = ['&Artist', '&Title', 'Al&bum', 'T&rack', '&Year', "&Genre", '&Comment']
+        tags = ['artist', 'title', 'album', 'track', 'year', 'genre', 'comment']
         newtags = list(zip(titles, tags))
         d = {0:[newtags[0]], 1:[newtags[1]], 2: [newtags[2]],
              3:[newtags[3], newtags[4], newtags[5]] ,
@@ -158,10 +158,10 @@ class FrameCombo(QGroupBox):
         else:
             text = str(text)
 
-        if text == BLANK: text = u''
+        if text == BLANK: text = ''
         elif text == KEEP:
             if self._audios:
-                self.manypreview.emit([{field: a.get(field, u'')} for a in self._audios])
+                self.manypreview.emit([{field: a.get(field, '')} for a in self._audios])
         else:
             if field in INFOTAGS:
                 value = text
@@ -192,7 +192,7 @@ class FrameCombo(QGroupBox):
                     else:
                         tags[field].add(SEPARATOR.join(value))
                 else:
-                    tags[field].add(u'')
+                    tags[field].add('')
 
         for field, values in tags.items():
             combo = combos[field]
@@ -269,7 +269,7 @@ class FrameCombo(QGroupBox):
         row being before the comments row. You'd do something like...
 
         >>>tags = [('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'),
-        ...        ('Track', 'track'), ("Comments",'comment'), ('Genre', 'genre'), (u'Year', u'date')]
+        ...        ('Track', 'track'), ("Comments",'comment'), ('Genre', 'genre'), ('Year', 'date')]
         >>>rows = {0:[0], 1:[1], 2:[2], 3[3,4,6],4:[5]
         >>>f = FrameCombo()
         >>>f.setCombo(tags, rows)"""
@@ -428,7 +428,7 @@ class SettingsWin(QWidget):
         QDialog.__init__(self, parent)
         self.title = translate('Settings', 'Tag Panel')
         self._table = PuddleTable([TITLE, FIELD, ROW],
-            [TITLE, FIELD, u'0'], self)
+            [TITLE, FIELD, '0'], self)
         self._buttons = ListButtons()
         self._buttons.connectToWidget(self._table, add=self.add,
             edit=self.edit, moveup=self._table.moveUp,
@@ -451,7 +451,7 @@ class SettingsWin(QWidget):
             for row in table.rows:
                 try: rows.append(int(text(row, 2)))
                 except (TypeError, ValueError): pass
-            row = str(max(rows) + 1) if rows else u'1'
+            row = str(max(rows) + 1) if rows else '1'
             table.add([TITLE, FIELD.lower(), row])
         else:
             table.add(texts)

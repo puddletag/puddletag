@@ -39,7 +39,7 @@ def image_to_bin(image):
     props = {}
     data = image[util.DATA]
     description = image.get(util.DESCRIPTION)
-    if not description: description = u''
+    if not description: description = ''
 
     mime = image.get(util.MIMETYPE)
     if mime is None: mime = get_mime(data)
@@ -66,7 +66,7 @@ def vorbis_tag(base, name):
 
             self.filetype = name
             self.__tags['__filetype'] = self.filetype
-            self.__tags['__tag_read'] = u'VorbisComment'
+            self.__tags['__tag_read'] = 'VorbisComment'
 
             util.MockTag.__init__(self, filename)
 
@@ -231,60 +231,60 @@ def vorbis_tag(base, name):
         def update_tag_list(self):
             l = tags_in_file(self.filepath)
             if l:
-                self.__tags['__tag'] = u'VorbisComment, ' + u', '.join(l)
+                self.__tags['__tag'] = 'VorbisComment, ' + ', '.join(l)
             else:
-                self.__tags['__tag'] = u'VorbisComment'
+                self.__tags['__tag'] = 'VorbisComment'
     return Tag
 
-class Ogg_Tag(vorbis_tag(OggVorbis, u'Ogg Vorbis')):
+class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
 
     def _info(self):
         info = self.mut_obj.info
         fileinfo = [
-            (u'Path', self[PATH]),
-            (u'Size', str_filesize(int(self.size))),
-            (u'Filename', self[FILENAME]),
-            (u'Modified', self.modified)]
+            ('Path', self[PATH]),
+            ('Size', str_filesize(int(self.size))),
+            ('Filename', self[FILENAME]),
+            ('Modified', self.modified)]
 
-        ogginfo = [(u'Bitrate', self.bitrate),
-                (u'Frequency', self.frequency),
-                (u'Channels', str(info.channels)),
-                (u'Length', self.length)]
-        return [(u'File', fileinfo), (u'Ogg Info', ogginfo)]
+        ogginfo = [('Bitrate', self.bitrate),
+                ('Frequency', self.frequency),
+                ('Channels', str(info.channels)),
+                ('Length', self.length)]
+        return [('File', fileinfo), ('Ogg Info', ogginfo)]
 
     info = property(_info)
 
 if OggOpus:
-    class Opus_Tag(vorbis_tag(OggOpus, u'Ogg Opus')):
+    class Opus_Tag(vorbis_tag(OggOpus, 'Ogg Opus')):
         def _info(self):
             info = self.mut_obj.info
             fileinfo = [
-                (u'Path', self[PATH]),
-                (u'Size', str_filesize(int(self.size))),
-                (u'Filename', self[FILENAME]),
-                (u'Modified', self.modified)]
+                ('Path', self[PATH]),
+                ('Size', str_filesize(int(self.size))),
+                ('Filename', self[FILENAME]),
+                ('Modified', self.modified)]
 
-            ogginfo = [(u'Bitrate', self.bitrate),
-                       (u'Channels', str(info.channels)),
-                       (u'Length', self.length)]
-            return [(u'File', fileinfo), (u'Opus Info', ogginfo)]
+            ogginfo = [('Bitrate', self.bitrate),
+                       ('Channels', str(info.channels)),
+                       ('Length', self.length)]
+            return [('File', fileinfo), ('Opus Info', ogginfo)]
 
         info = property(_info)
 
 
-class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
+class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
     def _info(self):
         info = self.mut_obj.info
-        fileinfo = [(u'Path', self[PATH]),
-                    (u'Size', str_filesize(int(self.size))),
-                    (u'Filename', self[FILENAME]),
-                    (u'Modified', self.modified)]
+        fileinfo = [('Path', self[PATH]),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self[FILENAME]),
+                    ('Modified', self.modified)]
 
-        ogginfo = [(u'Bitrate', u'Lossless'),
-                (u'Frequency', self.frequency),
-                (u'Bits Per Sample', self.bitspersample),
-                (u'Channels', str(info.channels)),
-                (u'Length', self.length)]
+        ogginfo = [('Bitrate', 'Lossless'),
+                ('Frequency', self.frequency),
+                ('Bits Per Sample', self.bitspersample),
+                ('Channels', str(info.channels)),
+                ('Length', self.length)]
         return [('File', fileinfo), ('FLAC Info', ogginfo)]
 
     info = property(_info)
@@ -297,6 +297,6 @@ if OggOpus:
     filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus'))
 
 filetypes.extend([
-    (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
-    (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]
+    (OggVorbis, Ogg_Tag, 'VorbisComment', 'ogg'),
+    (FLAC, FLAC_Tag, 'VorbisComment', 'flac')]
 )

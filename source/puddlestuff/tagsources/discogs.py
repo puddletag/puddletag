@@ -101,7 +101,7 @@ def keyword_search(keywords):
     write_log(
         translate("Discogs",
                   'Retrieving search results for keywords: %s') % keywords)
-    keywords = re.sub('(\s+)', u'+', keywords)
+    keywords = re.sub('(\s+)', '+', keywords)
     url = SEARCH_URL % keywords
     text = urlopen(url)
     return parse_search_json(json.loads(text))
@@ -110,7 +110,7 @@ def keyword_search(keywords):
 def parse_tracklist(tlist):
     tracks = []
     for t in tlist:
-        if not t.get(u'duration') and not t.get('position'):
+        if not t.get('duration') and not t.get('position'):
             continue
         title = t['title']
         people = []
@@ -118,31 +118,31 @@ def parse_tracklist(tlist):
         for person in t.get('extraartists', {}):
             name = person['name']
             if person.get('join'):
-                title = title + u' ' + person.get('join') + u' ' + name
-            elif person.get('role', u'') == u'Featuring':
+                title = title + ' ' + person.get('join') + ' ' + name
+            elif person.get('role', '') == 'Featuring':
                 featuring.append(name)
             else:
-                people.append(u"%s:%s" % (person['name'], person['role']))
+                people.append("%s:%s" % (person['name'], person['role']))
 
         if featuring:
-            title = title + u' featuring ' + u', '.join(featuring)
+            title = title + ' featuring ' + ', '.join(featuring)
 
         info = convert_dict(t)
         artist = []
         a_len = len(t.get('artists', []))
-        for i, a in enumerate(t.get(u'artists', [])):
-            if a_len > 1 and a.get(u'join'):
-                artist.append(u'%s %s ' % (a[u'name'], a[u'join']))
+        for i, a in enumerate(t.get('artists', [])):
+            if a_len > 1 and a.get('join'):
+                artist.append('%s %s ' % (a[u'name'], a[u'join']))
             else:
                 if i < a_len - 1:
-                    artist.append(u'%s & ' % a[u'name'])
+                    artist.append('%s & ' % a[u'name'])
                 else:
                     artist.append(a[u'name'])
-        info['artist'] = u''.join(artist).strip()
+        info['artist'] = ''.join(artist).strip()
         info['title'] = title
 
         if people:
-            info['involvedpeople_track'] = u';'.join(people)
+            info['involvedpeople_track'] = ';'.join(people)
         tracks.append(check_values(info))
     return tracks
 
@@ -154,7 +154,7 @@ def parse_album_json(data):
 
     formats = []
     for fmt in data.get('formats', []):
-        desc = fmt.get('descriptions', fmt.get('name', u''))
+        desc = fmt.get('descriptions', fmt.get('name', ''))
         if not desc:
             continue
         if isinstance(desc, str):
@@ -165,15 +165,15 @@ def parse_album_json(data):
     if formats:
         info['format'] = list(set(formats))
     info['artist'] = [z['name'] for z in data.get('artists', [])]
-    info['artist'] = u" & ".join([_f for _f in info['artist'] if _f])
+    info['artist'] = " & ".join([_f for _f in info['artist'] if _f])
     info['involvedpeople_album'] = \
-        u':'.join(u'%s;%s' % (z['name'], z['role'])
+        ':'.join('%s;%s' % (z['name'], z['role'])
                   for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
     info['catno'] = [_f for _f in (z.get('catno') for z in data.get('labels', [])) if _f]
 
-    info['companies'] = u';'.join(
-        u'%s %s' % (z['entity_type_name'], z['name'])
+    info['companies'] = ';'.join(
+        '%s %s' % (z['entity_type_name'], z['name'])
         for z in data.get('companies', []))
     info['album'] = data['title']
     cleaned_data = convert_dict(check_values(data), ALBUM_KEYS)
@@ -204,10 +204,10 @@ def parse_search_json(data):
     for result in results:
         info = result.copy()
         try:
-            artist, album = result['title'].split(u' - ')
+            artist, album = result['title'].split(' - ')
         except ValueError:
             album = result['title']
-            artist = u''
+            artist = ''
 
         info = convert_dict(info, ALBUM_KEYS)
 
@@ -234,13 +234,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         info = {}
         write_log(
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
-        rls_type = u'release'
+        rls_type = 'release'
     elif isinstance(info, str):
         r_id = info
         info = {}
         write_log(
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
-        rls_type = u'release'
+        rls_type = 'release'
     else:
         if rls_type is None and '#release_type' in info:
             rls_type = info['#release_type']
@@ -249,7 +249,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
             translate("Discogs", 'Retrieving album %s') % (info['album']))
 
     site_url = SITE_MASTER_URL if rls_type == MASTER else SITE_RELEASE_URL
-    site_url += r_id.encode('utf8')
+    site_url += r_id
 
     url = MASTER_URL % r_id if rls_type == MASTER else RELEASE_URL % r_id
 
@@ -269,7 +269,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     data.append({DATA: urlopen(large)})
                 except RetrievalError as e:
                     write_log(translate(
-                        'Discogs', u'Error retrieving image:') + str(e))
+                        'Discogs', 'Error retrieving image:') + str(e))
             else:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % small)
@@ -277,7 +277,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     data.append({DATA: urlopen(small)})
                 except RetrievalError as e:
                     write_log(translate(
-                        'Discogs', u'Error retrieving image:') + str(e))
+                        'Discogs', 'Error retrieving image:') + str(e))
         if data:
             info.update({'__image': data})
 
@@ -291,7 +291,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
 def search(artist=None, album=None):
     if artist and album:
-        keywords = u' '.join([artist, album])
+        keywords = ' '.join([artist, album])
     elif artist:
         keywords = artist
     else:
@@ -313,15 +313,15 @@ def urlopen(url):
         data = urllib.request.urlopen(request).read()
     except urllib.error.URLError as e:
         try:
-            msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+            msg = '%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = str(e)
         raise RetrievalError(msg)
     except socket.error as e:
-        msg = u'%s (%s)' % (e.strerror, e.errno)
+        msg = '%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
     except EnvironmentError as e:
-        msg = u'%s (%s)' % (e.strerror, e.errno)
+        msg = '%s (%s)' % (e.strerror, e.errno)
         raise RetrievalError(msg)
 
     try:
@@ -334,7 +334,7 @@ def urlopen(url):
 
 class Discogs(object):
     name = 'Discogs.com'
-    group_by = [u'album', u'artist']
+    group_by = [u'album', 'artist']
     tooltip = translate("Discogs", """<p><b>Discogs only support searching by release id</b></p>
         <p>Enter the release id Eg. "1257896" to search.</p>""")
 
@@ -369,7 +369,7 @@ class Discogs(object):
     def search(self, album, artists):
 
         if len(artists) > 1:
-            artist = u'Various Artists'
+            artist = 'Various Artists'
         else:
             artist = [z for z in artists][0]
 

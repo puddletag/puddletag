@@ -97,12 +97,12 @@ class FunctionDialog(CreateFunction):
         try:
             f, selected = self._status['firstselection']
         except IndexError:
-            widget.updateExample.emit(u'')
+            widget.updateExample.emit('')
             return
 
         field = list(selected.keys())[0]
         self.example = f
-        self._text = f.get(field, u'')
+        self._text = f.get(field, '')
 
         widget._combotags = list(selected.keys())
         

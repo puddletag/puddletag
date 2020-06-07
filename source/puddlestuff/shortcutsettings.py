@@ -38,21 +38,21 @@ class ActionEditorWidget(QLabel):
         other = None
         
         if event.key() == Qt.Key_Shift:
-            self.modifiers[Qt.Key_Shift] = u"Shift"
+            self.modifiers[Qt.Key_Shift] = "Shift"
         elif event.key() == Qt.Key_Control:
-            self.modifiers[Qt.Key_Control] = u"Ctrl"
+            self.modifiers[Qt.Key_Control] = "Ctrl"
         elif event.key() == Qt.Key_Meta:
-            self.modifiers[Qt.Key_Meta] = u"Meta"
+            self.modifiers[Qt.Key_Meta] = "Meta"
         elif event.key() == Qt.Key_Alt:
-            self.modifiers[Qt.Key_Alt] = u"Alt"
+            self.modifiers[Qt.Key_Alt] = "Alt"
         else:
             other = str(QKeySequence(event.key()))
         
         if other:
-            key_string = u"+".join(list(self.modifiers.values()) + [str(other),])
+            key_string = "+".join(list(self.modifiers.values()) + [str(other),])
             self.valid = True
         else:
-            key_string = u"+".join(list(self.modifiers.values()))
+            key_string = "+".join(list(self.modifiers.values()))
         
         self.setText(key_string)
     
@@ -74,7 +74,7 @@ class ActionEditorWidget(QLabel):
             if Qt.Key_Alt in self.modifiers:
                 del self.modifiers[Qt.Key_Alt]
         
-        self.setText(u"+".join(list(self.modifiers.values())))
+        self.setText("+".join(list(self.modifiers.values())))
         
         if len(self.modifiers) == 0:
             self.releaseKeyboard()

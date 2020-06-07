@@ -28,12 +28,12 @@ def perfunc(match, d):
 
 def func(match, d):
     matchtext = match.group()
-    if matchtext.startswith(u'\\'):
+    if matchtext.startswith('\\'):
         return matchtext[1:]
     try:
         number = int(matchtext[1:])
         if number >= len(d):
-            return u''
+            return ''
 
         if d[number] is False:
             d[number] = NO
