@@ -1,9 +1,7 @@
 import struct
 
 import mutagen.id3
-import six
 from mutagen.id3 import ParseID3v1
-from six.moves import map
 
 from . import apev2
 from . import id3
@@ -19,14 +17,14 @@ APEv2 = 'ape_v2'
 TAG_TYPES = [ID3_V1, ID3_V2, APEv2]
 
 def apev2_values(fn):
-    assert isinstance(fn, six.string_types)
+    assert isinstance(fn, str)
 
     return APEv2_Tag(fn).usertags
 
 def convert_id3_frames(frames):
     mapping = id3.Tag.mapping
     return dict((mapping.get(k, k) , v.get_value())
-        for k,v in six.iteritems(id3.handle(frames)))
+        for k,v in id3.handle(frames)).items()
 
 def fullread(fileobj, size):
     data = fileobj.read(size)
@@ -34,7 +32,7 @@ def fullread(fileobj, size):
     return data
 
 def has_apev2(fn):
-    fileobj = open(fn, 'rb') if isinstance(fn, six.string_types) else fn
+    fileobj = open(fn, 'rb') if isinstance(fn, str) else fn
 
     try: fileobj.seek(-160, 2)
     except IOError:
@@ -44,7 +42,7 @@ def has_apev2(fn):
     return b"APETAGEX" in footer
 
 def has_v1(fn):
-    close_file = isinstance(fn, six.string_types)
+    close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
 
     try:
@@ -56,7 +54,7 @@ def has_v1(fn):
             fileobj.close()
 
 def get_v2(fn):
-    close_file = isinstance(fn, six.string_types)
+    close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
 
     size = 5
@@ -72,7 +70,7 @@ def get_v2(fn):
     return
 
 def id3v1_values(fn):
-    close_file = isinstance(fn, six.string_types)
+    close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
 
     fileobj.seek(-128, 2)
@@ -83,7 +81,7 @@ def id3v1_values(fn):
         return convert_id3_frames(frames)
 
 def id3v2_values(fn):
-    assert isinstance(fn, six.string_types)
+    assert isinstance(fn, str)
 
     try:
         frames = mutagen.id3.ID3(fn)
@@ -94,7 +92,7 @@ def id3v2_values(fn):
     
 
 def id3_tags(fn):
-    close_file = isinstance(fn, six.string_types)
+    close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
     version = []
 
@@ -114,15 +112,15 @@ def id3_tags(fn):
     return version
 
 def tags_in_file(fn, to_check = (ID3_V1, ID3_V2, APEv2)):
-    fileobj = open(fn, 'rb') if isinstance(fn, six.string_types) else fn
+    fileobj = open(fn, 'rb') if isinstance(fn, str) else fn
 
     if ID3_V1 in to_check and ID3_V2 in to_check:
-        tags = [u'ID3v' + u'.'.join(map(six.text_type, z)) for z in id3_tags(fileobj)]
+        tags = [u'ID3v' + u'.'.join(map(str, z)) for z in id3_tags(fileobj)]
     elif ID3_V1 in to_check:
         tags = [u'ID3v1.1'] if has_v1(fileobj) else []
     elif ID3_V2 in to_check:
         tags = get_v2(fileobj)
-        tags = [u'ID3v' + u'.'.join(map(six.text_type, tags))] if tags else []
+        tags = [u'ID3v' + u'.'.join(map(str, tags))] if tags else []
     else:
         tags = []
 

@@ -1,5 +1,3 @@
-import six
-
 try:
     from Levenshtein import ratio, jaro, jaro_winkler
     def _ratio(a, b):
@@ -54,7 +52,7 @@ class Algo(object):
         self.matchcase = matchcase
     
     def _setFunc(self, func):
-        if isinstance(func, six.string_types):
+        if isinstance(func, str):
             funcnames = [f.__name__ for f in funcs]
             try:
                 func = funcs[funcnames.index(func)]

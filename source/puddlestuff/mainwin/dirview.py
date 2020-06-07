@@ -1,11 +1,8 @@
 import os
 
-import six
 from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
-from six.moves import map
-from six.moves import range
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
@@ -207,7 +204,7 @@ class DirView(QTreeView):
             self._load = load
             return
 
-        if isinstance(dirlist, six.string_types):
+        if isinstance(dirlist, str):
             dirlist = [dirlist]
         self._threadRunning = True
         self.setEnabled(False)
@@ -224,7 +221,7 @@ class DirView(QTreeView):
                     continue
                 if isinstance(d, bytes):
                     try:
-                        d = six.text_type(d, 'utf8')
+                        d = str(d, 'utf8')
                     except (UnicodeEncodeError, UnicodeDecodeError):
                         pass
                 index = getindex(d)

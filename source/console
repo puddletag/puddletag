@@ -23,10 +23,7 @@ import os
 import sys
 from optparse import OptionParser
 
-import six
 from puddlestuff.findfunc import *
-from six.moves import input
-from six.moves import zip
 
 noprints = ['__path', '__ext', '__modified', '__accessed', '__folder']
 sortorder = ['__filename', '__size', '__length', '__bitrate', '__frequency', '__created']
@@ -52,7 +49,7 @@ def safe_name(name, to = None):
     if not to:
         to = ""
     else:
-        to = six.text_type(to)
+        to = str(to)
     escaped = ""
     for ch in name:
         if ch not in r'/\*?;"|:': escaped = escaped + ch
@@ -238,7 +235,7 @@ def pprint(tags):
     keys = [z for z in sortedkeys(list(tags.keys())) if z not in noprints]
     for tag in keys:
         value = tags[tag]
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             value = u'[' + ','.join(value) + u']'
         temp.append(tag + u': ' + bold + value + normal)
     return u"\n".join(temp)
@@ -288,7 +285,7 @@ def main():
                 raise PuddleError(u'No files were specified to ' + command)
             cl.setup(*args)
         except PuddleError as e:
-            printerror(u'Error: ' + six.text_type(e))
+            printerror(u'Error: ' + str(e))
             print(u'usage: ' + cl.usage)
             sys.exit(0)
         #except TypeError, e:
@@ -314,7 +311,7 @@ def main():
             try:
                 printerror("Couldn't read " + f + ': ' + e.strerror)
             except AttributeError:
-                printerror(u"Couldn't read " + f + ': ' + six.text_type(e))
+                printerror(u"Couldn't read " + f + ': ' + str(e))
             continue
         if tag is not None:
             tags = tag.tags

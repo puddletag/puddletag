@@ -1,10 +1,7 @@
 import imghdr
 from copy import deepcopy
 
-import six
 from mutagen.mp4 import MP4, MP4Cover
-from six.moves import map
-from six.moves import zip
 
 from . import tag_versions, util
 from .util import (usertags, isempty,
@@ -77,11 +74,11 @@ def setbool(value):
 
 def settext(text):
     if isinstance(text, str):
-        return [six.text_type(text)]
-    elif isinstance(text, six.text_type):
+        return [str(text)]
+    elif isinstance(text, str):
         return [text]
     else:
-        return [six.text_type(z) for z in text]
+        return [str(z) for z in text]
 
 def gettext(value):
     return value
@@ -89,7 +86,7 @@ def gettext(value):
 def settuple(value):
     temp = []
     for tup in value:
-        if isinstance(tup, six.string_types):
+        if isinstance(tup, str):
             values = [z.strip() for z in tup.split(u'/')]
             try:
                 temp.append(tuple([int(z) for z in values][:2]))
@@ -100,13 +97,13 @@ def settuple(value):
     return temp
 
 def gettuple(value):
-    return [six.text_type(track) + u'/' + six.text_type(total) for track, total in value]
+    return [str(track) + u'/' + str(total) for track, total in value]
 
 def getint(value):
-    return [six.text_type(z) for z in value]
+    return [str(z) for z in value]
 
 def setint(value):
-    if isinstance(value, (int, int, six.string_types)):
+    if isinstance(value, (int, int, str)):
         return [int(value)]
     temp = []
     for z in value:
@@ -243,7 +240,7 @@ class Tag(util.MockTag):
 
     @setdeco
     def __setitem__(self, key, value):
-        if isinstance(key, six.integer_types):
+        if isinstance(key, int):
             self.__tags[key] = value
             return
         elif key.startswith('__'):
@@ -297,9 +294,9 @@ class Tag(util.MockTag):
 
         mp4info = [('Bitrate', self.bitrate),
                    ('Frequency', self.frequency),
-                   ('Channels', six.text_type(info.channels)),
+                   ('Channels', str(info.channels)),
                    ('Length', self.length),
-                   ('Bits per sample', six.text_type(info.bits_per_sample))]
+                   ('Bits per sample', str(info.bits_per_sample))]
 
         return [('File', fileinfo), ('MP4 Info', mp4info)]
 
@@ -361,11 +358,11 @@ class Tag(util.MockTag):
                         field_value = []
                         for v in audio[key]:
                             if isinstance(v, bytes):
-                                field_value.append(six.text_type(v, 'utf8'))
-                            elif isinstance(v, six.text_type):
+                                field_value.append(str(v, 'utf8'))
+                            elif isinstance(v, str):
                                 field_value.append(v)
                             else:
-                                field_value.append(six.text_type(v))
+                                field_value.append(str(v))
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 

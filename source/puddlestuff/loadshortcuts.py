@@ -2,7 +2,6 @@
 import os
 import sys
 
-import six
 from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
 
 from .constants import CONFIGDIR
@@ -51,7 +50,7 @@ def get_menus(section, filepath=None):
     return menus
 
 def menubar(menus, actions):
-    texts = [six.text_type(action.text()) for action in actions]
+    texts = [str(action.text()) for action in actions]
 
     menubar = QMenuBar()
     winmenu = None
@@ -82,7 +81,7 @@ def context_menu(section, actions, filepath=None):
     order = [translate('Menus', z) for z in cparser.get(section, 'order', [])]
     if not order:
         return
-    texts = [six.text_type(action.text()) for action in actions]
+    texts = [str(action.text()) for action in actions]
     menu = QMenu()
     for action in order:
         if action in texts:
@@ -92,7 +91,7 @@ def context_menu(section, actions, filepath=None):
     return menu
 
 def toolbar(groups, actions, controls=None):
-    texts = [six.text_type(action.text()) for action in actions]
+    texts = [str(action.text()) for action in actions]
     if controls:
         controls = dict([('widget-' + z, v) for z,v in controls.items()])
     toolbar = QToolBar('Toolbar')

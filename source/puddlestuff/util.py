@@ -8,9 +8,7 @@ from errno import EEXIST
 from operator import itemgetter
 from xml.sax.saxutils import escape as escape_html
 
-import six
 from PyQt5.QtWidgets import QAction
-from six.moves import map
 
 from . import translations, constants
 from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
@@ -46,7 +44,7 @@ def rename_error_msg(e, filename):
             '<p>Reason: <b>%2</b> ('
             '<i>See %3 for debug info.</i>)</p>')
         m = m.arg(filename)
-        m = m.arg(six.text_type(e) if e.strerror is None else e.strerror)
+        m = m.arg(str(e) if e.strerror is None else e.strerror)
         m = m.arg(LOG_FILENAME)
         return m
 
@@ -138,7 +136,7 @@ def matching(audios, listing):
 def m_to_string(v):
     if isempty(v):
         return escape_html(BLANK)
-    elif isinstance(v, six.text_type):
+    elif isinstance(v, str):
         return escape_html(v)
     elif isinstance(v, bytes):
         return escape_html(v.decode('utf8', 'replace'))
@@ -148,15 +146,15 @@ def m_to_string(v):
 def pprint_tag(tags, fmt=u"<b>%s</b>: %s<br />", show_read_only=False):
     image_tr = translate('Defaults', '%s images')
     if tags:
-        if isinstance(tags, six.string_types):
+        if isinstance(tags, str):
             return tags
         elif not hasattr(tags, 'items'):
             return SEPARATOR.join([x for x in tags if x is not None])
 
         if show_read_only:
-            items = ((k,v) for k, v in six.iteritems(tags) if k != '__image')
+            items = ((k,v) for k, v in tags.items() if k != '__image')
         else:
-            items = ((k,v) for k,v in six.iteritems(tags) if
+            items = ((k,v) for k,v in tags.items() if
                 k not in READONLY and k != '__image')
 
         map_func = lambda v: fmt % (v[0], m_to_string(v[1]))
@@ -240,8 +238,8 @@ def sorted_split_by_field(tracks, field='artist'):
 
 def to_list(value):
     if isinstance(value, (str, int, int, float)):
-        value = [six.text_type(value)]
-    elif isinstance(value, six.text_type):
+        value = [str(value)]
+    elif isinstance(value, str):
         value = [value]
     return value
 
@@ -250,10 +248,10 @@ def to_string(value):
         return u''
     elif isinstance(value, bytes):
         return value.decode('utf8')
-    elif isinstance(value, six.text_type):
+    elif isinstance(value, str):
         return value
     elif isinstance(value, (float, int, int)):
-        return six.text_type(value)
+        return str(value)
     else:
         return to_string(value[0])
 
@@ -364,7 +362,7 @@ class PluginFunction(object):
         for arg in args:
             arg = list(arg)
             if arg[1] == constants.CHECKBOX:
-                arg[2] = six.text_type(bool(arg[2]))
+                arg[2] = str(bool(arg[2]))
             newargs.append(arg)
         self.args = newargs
 

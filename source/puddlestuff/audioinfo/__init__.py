@@ -1,5 +1,3 @@
-from six.moves import zip
-
 from .constants import *
 from .util import *
 
@@ -30,7 +28,7 @@ def loadmapping(filepath, default=None):
     return mappings
 
 def register_tag(mut_obj, tag, tag_name, tag_exts=None):
-    if isinstance(tag_exts, six.string_types):
+    if isinstance(tag_exts, str):
         extensions[tag_exts] = [mut_obj, tag, tag_name]
     elif tag_exts is not None:
         for e in tag_exts:

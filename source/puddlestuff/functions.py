@@ -44,9 +44,6 @@ from collections import defaultdict
 from functools import partial
 
 import pyparsing
-import six
-from six.moves import map
-from six.moves import range
 
 from . import audioinfo
 from .audioinfo import encode_fn
@@ -63,7 +60,7 @@ D = decimal.Decimal
 
 def add(text,text1):
     try:
-        return six.text_type((D(six.text_type(text)) + D(six.text_type(text1))).normalize().to_eng_string())
+        return str((D(str(text)) + D(str(text1))).normalize().to_eng_string())
     except decimal.InvalidOperation:
         return
 
@@ -89,9 +86,9 @@ au,spinbox,1'''
             for i, tag in enumerate(state['__files'], 1):
                 if restart:
                     dircount[tag.dirpath] += 1
-                    count[i] = six.text_type(dircount[tag.dirpath])
+                    count[i] = str(dircount[tag.dirpath])
                 else:
-                    count[i] = six.text_type(i)
+                    count[i] = str(i)
 
         state['autonumbering'] = count
         
@@ -105,12 +102,12 @@ au,spinbox,1'''
         return tracknum
 
 def check_truth(text):
-    if isinstance(text, six.string_types):
+    if isinstance(text, str):
         text = text.strip()
     return 0 if ((not text) or (text == u'0')) else 1
 
 def and_(text, text1):
-    return six.text_type(check_truth(text) and check_truth(text1))
+    return str(check_truth(text) and check_truth(text1))
 
 def caps(text):
     #Capitalizes the first letter of each word in string and 
@@ -139,7 +136,7 @@ def ceiling(n_value):
 
 def char(text):
     try:
-        return six.text_type(ord(text))
+        return str(ord(text))
     except TypeError:
         return
 
@@ -152,7 +149,7 @@ def div(n_numerator, n_divisor):
     if n_divisor == 0:
         raise FuncError("Cannot divide by zero.")
     try:
-        return six.text_type((D(n_numerator) / D(n_divisor)).normalize())
+        return str((D(n_numerator) / D(n_divisor)).normalize())
     except decimal.InvalidOperation:
         return
     #ret = unicode(float(n_numerator) / n_divisor)
@@ -281,11 +278,11 @@ def left(text, n):
     try:
         n = int(n)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n))
+        raise FuncError(u'Integer expected, got "%s"' % str(n))
     return text[:n]
 
 def len_(text):
-    return six.text_type(len(text))
+    return str(len(text))
 
 def leql(text,text1):
 
@@ -367,7 +364,7 @@ def lower(text):
 def merge_values(m_text, separator=u';'):
     '''Merge field, "Merge field: $0, sep='$1'"
 &Separator, text, ;'''
-    if isinstance(m_text, six.string_types):
+    if isinstance(m_text, str):
         return m_text
     else:
         return separator.join(m_text)
@@ -376,7 +373,7 @@ def meta_sep(m_tags, p_field, p_sep=u', '):
     value = m_tags.get(p_field)
     if value is None:
         return None
-    elif isinstance(value, six.string_types):
+    elif isinstance(value, str):
         return value
     else:
         return p_sep.join(value)
@@ -392,7 +389,7 @@ def meta(m_tags, field, n_index=None):
         except IndexError:
             return u''
     else:
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return value
         return u', '.join(value)
 
@@ -401,18 +398,18 @@ def mid(text, n_start, n_len):
     try:
         n_start = int(n_start)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n_start))
+        raise FuncError(u'Integer expected, got "%s"' % str(n_start))
     
     try:
         n_len = int(n_len)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n_len))
+        raise FuncError(u'Integer expected, got "%s"' % str(n_len))
 
-    return six.text_type(text)[n_start: n_start + n_len]
+    return str(text)[n_start: n_start + n_len]
 
 def mod(n_x, n_y):
     try:
-        return six.text_type((n_x % n_y).normalize())
+        return str((n_x % n_y).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -506,7 +503,7 @@ def move(m_tags, p_pattern, r_tags, ext=True, state=None):
 def mul(n_x, n_y):
     D = decimal.Decimal
     try:
-        return six.text_type((D(n_x) * D(n_y)).normalize())
+        return str((D(n_x) * D(n_y)).normalize())
     except decimal.InvalidOperation:
         return
 
@@ -548,7 +545,7 @@ def or_(text,text1):
 
 def rand():
     import random
-    return six.text_type(random.random())
+    return str(random.random())
 
 def _round(n_value):
     return round(n_value)
@@ -645,7 +642,7 @@ only as &whole word, check'''
         try:
             text = pat.sub(replaceword, text)
         except Exception as e:
-            raise findfunc.FuncError(six.text_type(e))
+            raise findfunc.FuncError(str(e))
     return text
 
 class RegHelper(object):
@@ -705,7 +702,7 @@ Match &Case, check"""
                 else:
                     return re.sub(regex, replace_tokens, value, 0)
         except re.error as e:
-            raise findfunc.FuncError(six.text_type(e))
+            raise findfunc.FuncError(str(e))
 
     return u"\\".join(replace_matches(z) for z in m_text)
 
@@ -723,7 +720,7 @@ def remove_dupes(m_text, matchcase=False):
     """Remove duplicate values, "Remove Dupes: $0, Match Case $1"
 Match &Case, check"""
     text = m_text
-    if isinstance(text, six.string_types):
+    if isinstance(text, str):
         return text
 
     
@@ -745,7 +742,7 @@ def right(text,n):
     try:
         n = int(n)
     except (TypeError, ValueError):
-        raise FuncError(u'Integer expected, got "%s"' % six.text_type(n))
+        raise FuncError(u'Integer expected, got "%s"' % str(n))
     if n == 0:
         return u''
     return text[-int(n):]
@@ -785,7 +782,7 @@ def rg2sc(gain, peak=None):
         " 00024CA8", # bogus
         ]
 
-    return six.text_type(''.join(values))
+    return str(''.join(values))
 
 def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
     """Export artwork to file, "Export Art: pattern='$1'"
@@ -805,7 +802,7 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
         return
 
     new_state = state.copy()
-    new_state['img_count'] = six.text_type(len(images))
+    new_state['img_count'] = str(len(images))
     for i, image in enumerate(images):
         data = image[audioinfo.DATA]
         new_state['img_desc'] = image.get(audioinfo.DESCRIPTION, u'')
@@ -820,7 +817,7 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
         extension = '.png' if 'png' in mime.lower() else '.jpg'
 
         new_state['img_mime'] = mime
-        new_state['img_counter'] = six.text_type(i + 1)
+        new_state['img_counter'] = str(i + 1)
         fn = tag_to_filename(pattern, m_tags, r_tags,
             False, new_state) + extension
 
@@ -853,7 +850,7 @@ Match &Case, check"""
         key = natsort_case_key
     else:
         key = None
-    if isinstance(text, six.string_types):
+    if isinstance(text, str):
         return text
     if order == u'Ascending':
         return sorted(text, key=key)
@@ -863,7 +860,7 @@ Match &Case, check"""
 def split_by_sep(m_text, sep):
     """Split fields using separator, "Split using separator $0: sep='$1'"
 &Separator, text, ;"""
-    if isinstance(m_text, six.string_types):
+    if isinstance(m_text, str):
         return m_text
     else:
         ret = []
@@ -878,11 +875,11 @@ def strip(text):
 def find(text, text1):
     val = text.find(text1)
     if val >= 0:
-        return six.text_type(val)
+        return str(val)
     return u'-1'
 
 def sub(n_1, n_2):
-    return six.text_type(n_1 - n_2)
+    return str(n_1 - n_2)
 
 def tag_dir(m_tags, pattern, r_tags, state = None):
     '''Tag to Dir, "Tag->Dir: $1"
@@ -924,7 +921,7 @@ def texttotag(tags, input_text, p_pattern, output, state=None):
     if d:
         for key in d:
             output = output.replace(u'%' +
-                six.text_type(key), pat_escape(six.text_type(d[key])))
+                str(key), pat_escape(str(d[key])))
         return findfunc.parsefunc(output, tags, state=state)
     return None
 
@@ -970,10 +967,10 @@ def update_from_tag(r_tags, fields, tag='APEv2'):
         return tag.usertags
     else:
         if fields[0].startswith(u'~'):
-            return dict([(k,v) for k,v in six.iteritems(tag.usertags)
+            return dict([(k,v) for k,v in tag.usertags.items()
                 if k not in fields])
         else:
-            return dict([(k,v) for k,v in six.iteritems(tag.usertags)
+            return dict([(k,v) for k,v in tag.usertags.items()
                 if k in fields])
 
 def upper(text):

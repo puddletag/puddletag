@@ -2,13 +2,11 @@ import os
 import sys
 from copy import deepcopy
 
-import six
 from PyQt5.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPalette
 from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
     QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
     QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
-from six.moves import range
 
 from . import genres, confirmations, audioinfo
 from .constants import TRANSDIR
@@ -95,7 +93,7 @@ class SettingsLineEdit(QWidget):
         self.setLayout(vbox)
 
     def _value(self):
-        return self._desc, six.text_type(self._text.text())
+        return self._desc, str(self._text.text())
 
     def _setValue(self, value):
         self._text.setText(self._desc, value)
@@ -114,7 +112,7 @@ class GeneralSettings(QWidget):
         def create_control(desc, val):
             if isinstance(val, bool):
                 return SettingsCheckBox(val, desc)
-            elif isinstance(val, six.string_types):
+            elif isinstance(val, str):
                 return SettingsLineEdit(desc, val)
 
         vbox = QVBoxLayout()
@@ -178,7 +176,7 @@ class GeneralSettings(QWidget):
         cparser = PuddleConfig()
         index = self._lang_combo.currentIndex()
         if index > 1:
-            cparser.set('main', 'lang', six.text_type(self._lang_combo.currentText()))
+            cparser.set('main', 'lang', str(self._lang_combo.currentText()))
         elif index == 0:
             cparser.set('main', 'lang', u'auto')
         elif index == 1:
@@ -241,9 +239,9 @@ class Playlist(QWidget):
                 return 0
         cparser = PuddleConfig()
         cparser.setSection('playlist', 'extinfo', checktoint(self.extinfo))
-        cparser.setSection('playlist', 'extpattern', six.text_type(self.extpattern.text()))
+        cparser.setSection('playlist', 'extpattern', str(self.extpattern.text()))
         cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
-        cparser.setSection('playlist', 'filepattern', six.text_type(self.filename.text()))
+        cparser.setSection('playlist', 'filepattern', str(self.filename.text()))
         cparser.setSection('playlist', 'windows_separator', checktoint(self.windows_separator))
 
 class TagMappings(QWidget):
@@ -340,7 +338,7 @@ class TagMappings(QWidget):
         text = []
         mappings = {}
         item = self._table.item
-        itemtext = lambda row, column: six.text_type(item(row, column).text())
+        itemtext = lambda row, column: str(item(row, column).text())
         for row in range(self._table.rowCount()):
             tag = itemtext(row, 0)
             original = itemtext(row, 1)
@@ -361,7 +359,7 @@ class TagMappings(QWidget):
         row = table.currentRow()
         if row < 0: return
         item = table.item
-        itemtext = lambda column: six.text_type(item(row, column).text())
+        itemtext = lambda column: str(item(row, column).text())
         texts = [itemtext(z) for z in range(3)]
         row = table.rowCount()
         table.insertRow(row)
@@ -453,13 +451,13 @@ class Tags(QWidget):
             audioinfo.id3.v2_option = 3
             cparser.set('id3tags', 'v2_option', 3)
 
-        filespec = six.text_type(self._filespec.text())
+        filespec = str(self._filespec.text())
         control.filespec = filespec
         filespec = [z.strip() for z in filespec.split(';')]
         cparser.set('table', 'filespec', filespec)
         cparser.set('tags', 'cover_pattern',
-            six.text_type(self.coverPattern.text()))
-        self._status['cover_pattern'] = six.text_type(self.coverPattern.text())
+            str(self.coverPattern.text()))
+        self._status['cover_pattern'] = str(self.coverPattern.text())
 
 
 class ListModel(QAbstractListModel):
@@ -483,7 +481,7 @@ class ListModel(QAbstractListModel):
             return None
         if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
             try:
-                return six.text_type(self.options[index.row()][0])
+                return str(self.options[index.row()][0])
             except IndexError: return None
         return None
 
@@ -679,7 +677,7 @@ class SettingsDialog(QDialog):
                 z[1].applySettings(z[2])
             except SettingsError as e:
                 QMessageBox.warning(self, 'puddletag',
-                    translate('Settings', 'An error occurred while saving the settings of <b>%1</b>: %2').arg(z[0]).arg(six.text_type(e)))
+                    translate('Settings', 'An error occurred while saving the settings of <b>%1</b>: %2').arg(z[0]).arg(str(e)))
                 return
         self.close()
 

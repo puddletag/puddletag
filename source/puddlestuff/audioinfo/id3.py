@@ -4,9 +4,6 @@ from functools import partial
 
 import mutagen.id3 as id3
 import mutagen.mp3
-import six
-from six.moves import map
-from six.moves import zip
 
 try:
     from mutagen.aiff import AIFF, _IFFID3
@@ -61,7 +58,7 @@ def handle(audio):
         for k, v in handler(frame).items():
             lower = k.lower()
             if lower in keys:
-                ret[keys[lower]].append(v) if isinstance(v, six.string_types) \
+                ret[keys[lower]].append(v) if isinstance(v, str) \
                     else ret[keys[lower]].extend(v)
             else:
                 keys[lower] = k
@@ -101,7 +98,7 @@ def create_text(title, value):
     return {title: frame}
 
 def get_text(textframe):
-    return [six.text_type(z) for z in textframe.text]
+    return [str(z) for z in textframe.text]
 
 def set_text(frame, value):
     frame.text = TextFrame(encoding, value).text
@@ -262,7 +259,7 @@ def get_url(frame):
     return [frame.url]
 
 def set_url(frame, value):
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         value = value[0]
     frame.url = UrlFrame(value).url
     return True
@@ -290,7 +287,7 @@ def create_uurl(title, value):
 
 def uurl_handler(title):
     def set_uurl(frames, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = [value]
         while frames:
             frames.pop()
@@ -342,7 +339,7 @@ def get_paired(frame):
     return [u';'.join([u':'.join(z) for z in frame.people])]
 
 def set_paired(frame, text):
-    if not isinstance(text, six.string_types):
+    if not isinstance(text, str):
         text = text[0]
     value = [people.split(u':') for people in text.split(u';')]
     temp = []
@@ -397,10 +394,10 @@ def create_playcount(value):
     return {}
 
 def get_playcount(frame):
-    return [six.text_type(frame.count)]
+    return [str(frame.count)]
 
 def set_playcount(frame, value):
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         value = value[0]
     try:
         frame.count = int(value)
@@ -415,7 +412,7 @@ def playcount_handler(frame):
     return {u'playcount': frame}
 
 def create_popm(values):
-    if isinstance(values, six.string_types):
+    if isinstance(values, str):
         values = [values]
     frames = [_f for _f in [set_popm(id3.POPM(), v) for v in values] if _f]
     if frames:
@@ -425,13 +422,13 @@ def create_popm(values):
 def get_popm(frame):
     if not hasattr(frame, 'count'):
         frame.count = 0
-    return u':'.join([frame.email, six.text_type(frame.rating),
-        six.text_type(frame.count)])
+    return u':'.join([frame.email, str(frame.rating),
+        str(frame.count)])
 
 def to_string(value):
     if isinstance(value, str):
         return value.decode('utf8')
-    elif isinstance(value, six.text_type):
+    elif isinstance(value, str):
         return value
     else:
         return to_string(value[0])
@@ -452,7 +449,7 @@ def set_popm(frame, value):
 
 def popm_handler(frames):
     def set_values(frames, values):
-        if isinstance(values, six.string_types):
+        if isinstance(values, str):
             values = [values]
         temp = [_f for _f in [set_popm(id3.POPM(), v) for v in values] if _f]
         if not temp:
@@ -471,12 +468,12 @@ def popm_handler(frames):
     return {'popularimeter': frame}
 
 def create_ufid(key, value):
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         try:
             value = value[0]
         except IndexError:
             return {}
-    if isinstance(value, six.text_type):
+    if isinstance(value, str):
         value = value.decode('utf8')
     owner = key[len('ufid:'):]
     frame = id3.UFID(owner, value)
@@ -485,12 +482,12 @@ def create_ufid(key, value):
     return {u'ufid:' + frame.owner: frame}
 
 def set_ufid(frame, value):
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         try:
             value = value[0]
         except IndexError:
             return {}
-    if isinstance(value, six.text_type):
+    if isinstance(value, str):
         value = value.decode('utf8')
     frame.data = value
 
@@ -510,13 +507,13 @@ def ufid_handler(frames):
     return d
 
 def _parse_rgain(value):
-    if not isinstance(value, six.string_types):
+    if not isinstance(value, str):
         try:
             value = value[0]
         except IndexError:
             return
 
-    if isinstance(value, six.text_type):
+    if isinstance(value, str):
         value = value.decode('utf8')
 
     values = [z.strip() for z in value.split(':')]
@@ -549,7 +546,7 @@ def set_rgain(frame, value):
     frame.peak = peak
 
 def get_rgain(frame):
-    return u':'.join(map(six.text_type, [frame.channel, frame.gain, frame.peak]))
+    return u':'.join(map(str, [frame.channel, frame.gain, frame.peak]))
 
 def rgain_handler(frames):
     d = {}
@@ -568,7 +565,7 @@ def create_uslt(value):
     return {}
 
 def set_uslt(f, value):
-    if isinstance(value, six.string_types):
+    if isinstance(value, str):
         value = [value]
 
     frames = []
@@ -612,8 +609,8 @@ def set_uslt(f, value):
 def get_uslt(frames):
     def text(f, attr):
         ret = getattr(f, attr, u'')
-        return ret if isinstance(ret, six.text_type) else \
-            six.text_type(ret, 'utf8', 'replace')
+        return ret if isinstance(ret, str) else \
+            str(ret, 'utf8', 'replace')
     ret = [u'%s|%s|%s' % (text(frame, 'lang'), text(frame, 'desc'),
             text(frame, 'text')) for frame in frames]
     return lambda: ret
@@ -689,7 +686,7 @@ class ID3(CompatID3):
         try:
             desc = tag.desc
             while tag.HashKey in self:
-                tag.desc = desc + six.text_type(i)
+                tag.desc = desc + str(i)
                 i += 1
         except AttributeError:
             "Nothing to do"
@@ -879,14 +876,14 @@ def tag_factory(id3_filetype):
                     return get_total(self)
                 else:
                     return self.__tags[key]
-            elif not isinstance(key, six.string_types):
+            elif not isinstance(key, str):
                 return self.__tags[key]
             else:
                 return self.__tags[key].get_value()
 
         @setdeco
         def __setitem__(self, key, value):
-            if not isinstance(key, six.string_types):
+            if not isinstance(key, str):
                 self.__tags[key] = value
                 return
             if key.startswith('__'):

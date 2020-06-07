@@ -1,6 +1,5 @@
 import os
 
-import six
 from PyQt5.QtCore import QMutex, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
@@ -14,8 +13,8 @@ mutex = QMutex()
 
 def sort_dict(d):
     ret = []
-    for key, val in six.iteritems(d):
-        if isinstance(val, six.string_types):
+    for key, val in d.items():
+        if isinstance(val, str):
             ret.append((key, val))
         else:
             ret.extend((key, v) for v in val)

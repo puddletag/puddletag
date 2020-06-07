@@ -1,8 +1,6 @@
-import six
 import tags
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
-from six.moves import map
 
 from .. import audioinfo
 from ..audioinfo.util import (PATH,
@@ -79,12 +77,12 @@ class Tag(audioinfo.MockTag):
 
         if key not in INFOTAGS and isempty(value):
             del(self[key])
-        elif key in INFOTAGS or isinstance(key, six.integer_types):
+        elif key in INFOTAGS or isinstance(key, int):
             self._tags[key] = value
-        elif (key not in INFOTAGS) and isinstance(value, (six.string_types, int, int)):
-            self._tags[key.lower()] = [six.text_type(value)]
+        elif (key not in INFOTAGS) and isinstance(value, (str, int, int)):
+            self._tags[key.lower()] = [str(value)]
         else:
-            self._tags[key.lower()] = [six.text_type(z) for z in value]
+            self._tags[key.lower()] = [str(z) for z in value]
 
     def mutvalues(self):
         #Retrieves key, value pairs according to id3.
@@ -146,7 +144,7 @@ class TestWidget(QWidget):
         files = self._status['allfiles']
         f = open('savedfiles', 'w')
         f.write(u'# -*- coding: utf-8 -*-\ntags = [%s]' % 
-            u',\n'.join((six.text_type(z.tags) for z in files)).decode('utf8'))
+            u',\n'.join((str(z.tags) for z in files)).decode('utf8'))
         f.close()
 
 control = ('Puddle Testing', TestWidget, RIGHTDOCK, False)

@@ -1,10 +1,8 @@
 import os
 
-import six
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
     QPushButton, QVBoxLayout
-from six.moves import range
 
 from .. import add_config_widget, add_shortcuts, status
 from ...constants import SAVEDIR
@@ -133,7 +131,7 @@ class ButtonsAndList(QFrame):
 
     def addItem(self):
         l = self.listbox.item
-        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [str(l(z).text()) for z in range(self.listbox.count())]
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
@@ -151,7 +149,7 @@ class ButtonsAndList(QFrame):
         if row is None:
             row = self.listbox.currentRow()
         l = self.listbox.item
-        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [str(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem (self, 'puddletag',
             self.addText, patterns, row)
         if ok:

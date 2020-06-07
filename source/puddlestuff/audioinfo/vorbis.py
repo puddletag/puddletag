@@ -1,8 +1,6 @@
 from copy import deepcopy
 
-import six
 from mutagen.oggvorbis import OggVorbis
-from six.moves import map
 
 try:
     from mutagen.oggopus import OggOpus
@@ -147,8 +145,8 @@ def vorbis_tag(base, name):
                 else:
                     return
             else:
-                if isinstance(value, six.integer_types):
-                    self.__tags[key.lower()] = [six.text_type(value)]
+                if isinstance(value, int):
+                    self.__tags[key.lower()] = [str(value)]
                 else:
                     self.__tags[key.lower()] = unicode_list(value)
 
@@ -250,7 +248,7 @@ class Ogg_Tag(vorbis_tag(OggVorbis, u'Ogg Vorbis')):
 
         ogginfo = [(u'Bitrate', self.bitrate),
                 (u'Frequency', self.frequency),
-                (u'Channels', six.text_type(info.channels)),
+                (u'Channels', str(info.channels)),
                 (u'Length', self.length)]
         return [(u'File', fileinfo), (u'Ogg Info', ogginfo)]
 
@@ -267,7 +265,7 @@ if OggOpus:
                 (u'Modified', self.modified)]
 
             ogginfo = [(u'Bitrate', self.bitrate),
-                       (u'Channels', six.text_type(info.channels)),
+                       (u'Channels', str(info.channels)),
                        (u'Length', self.length)]
             return [(u'File', fileinfo), (u'Opus Info', ogginfo)]
 
@@ -285,7 +283,7 @@ class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
         ogginfo = [(u'Bitrate', u'Lossless'),
                 (u'Frequency', self.frequency),
                 (u'Bits Per Sample', self.bitspersample),
-                (u'Channels', six.text_type(info.channels)),
+                (u'Channels', str(info.channels)),
                 (u'Length', self.length)]
         return [('File', fileinfo), ('FLAC Info', ogginfo)]
 

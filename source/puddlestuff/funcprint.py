@@ -3,8 +3,6 @@ import re
 from copy import copy
 from functools import partial
 
-import six
-
 from .constants import YES, NO
 
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
@@ -41,9 +39,9 @@ def func(match, d):
             d[number] = NO
         elif d[number] is True:
             d[number] = YES
-        elif isinstance(d[number], six.integer_types):
-            d[number] = six.text_type(d[number])
-        elif not isinstance(d[number], six.string_types):
+        elif isinstance(d[number], int):
+            d[number] = str(d[number])
+        elif not isinstance(d[number], str):
             if d[number]:
                 d[number] = YES
             else:
@@ -57,9 +55,9 @@ def func(match, d):
             d[number] = YES
         elif d[number] is True:
             d[number] = NO
-        elif isinstance(d[number], six.integer_types):
-            d[number] = six.text_type(d[number])
-        elif not isinstance(d[number], six.string_types):
+        elif isinstance(d[number], int):
+            d[number] = str(d[number])
+        elif not isinstance(d[number], str):
             if d[number]:
                 d[number] = YES
             else:

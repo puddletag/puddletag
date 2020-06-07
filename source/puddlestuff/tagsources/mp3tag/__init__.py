@@ -3,14 +3,10 @@ import os
 import re
 import traceback
 from copy import deepcopy
+from html.entities import name2codepoint as n2cp
 
-import six
 from pyparsing import (nums, printables, Combine, Optional,
                        QuotedString, Word, ZeroOrMore)
-from six import unichr
-from six.moves import map
-from six.moves import zip
-from six.moves.html_entities import name2codepoint as n2cp
 
 from .funcs import FUNCTIONS
 from .. import (urlopen, get_encoding,
@@ -48,7 +44,7 @@ MTAG_KEYS = {
     'track temp': 'track'}
 
 def convert_entities(s):
-    s = re.sub('&#(\d+);', lambda m: unichr(int(m.groups(0)[0])), s)
+    s = re.sub('&#(\d+);', lambda m: chr(int(m.groups(0)[0])), s)
     return re.sub('&(\w)+;',
         lambda m: n2cp.get(m.groups(0), u'&%s;' % m.groups(0)[0]), s)
     
@@ -62,7 +58,7 @@ def convert_value(value):
 
 def convert_dict(d, keys = MTAG_KEYS):
     d = dict((i,z) for i,z in ((k.lower(), convert_value(v)) for
-        k,v in six.iteritems(d)) if z)
+        k,v in d.items()) if z)
     return _convert_dict(d, keys)
 
 def find_idents(lines):
@@ -126,7 +122,7 @@ def parse_album_page(page, album_source, url=None):
     info = convert_dict(cursor.album)
     if hasattr(cursor.tracks, 'items'):
         tracks = []
-        for field, values in six.iteritems(cursor.tracks):
+        for field, values in cursor.tracks.items():
             values = convert_value(values)
             if tracks:
                 for d, v in zip(tracks, values):
@@ -146,7 +142,7 @@ def parse_func(lineno, line):
     arg_string = line[len(funcname):]
     args = (z[0]
         for z in ARGUMENT.searchString(arg_string).asList())
-    args = [i.replace(u'\\\\', u'\\') if isinstance(i, six.string_types) else i
+    args = [i.replace(u'\\\\', u'\\') if isinstance(i, str) else i
         for i in args]
     if funcname and not funcname.startswith(u'#'):
         return funcname.lower(), lineno, args
@@ -266,10 +262,10 @@ class Cursor(object):
         i = 0
         while (not self.stop) and (self.next_cmd < len(self.source)):
 
-            self.log(six.text_type(self.output))
+            self.log(str(self.output))
             cmd, lineno, args = self.source[self.cmd_index]
 
-            self.log(six.text_type(self.source[self.cmd_index]))
+            self.log(str(self.source[self.cmd_index]))
 
             #if lineno == 106 or lineno == 108:
                 #pdb.set_trace()
@@ -357,7 +353,7 @@ class Mp3TagSource(object):
         return [(info, []) for info in infos]
 
     def retrieve(self, info):
-        if isinstance(info, six.string_types):
+        if isinstance(info, str):
             text = info.replace(u' ', self._separator)
             info = {}
         else:
@@ -381,11 +377,11 @@ class Mp3TagSource(object):
         write_log(translate('Mp3tag', u'Parsing album page.'))
         set_status(translate('Mp3tag', u'Parsing album page...'))
         new_info, tracks = parse_album_page(page, self.album_source, url)
-        info.update(dict((k,v) for k,v in six.iteritems(new_info) if v))
+        info.update(dict((k,v) for k,v in new_info.items() if v))
         
         if self._get_cover and COVER in info:
             cover_url = new_info[COVER]
-            if isinstance(cover_url, six.string_types):
+            if isinstance(cover_url, str):
                 info.update(retrieve_cover(cover_url))
             else:
                 info.update(list(map(retrieve_cover, cover_url)))

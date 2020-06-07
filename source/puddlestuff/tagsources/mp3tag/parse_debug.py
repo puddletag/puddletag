@@ -1,10 +1,6 @@
 import codecs
 import pdb
 
-import six
-from six.moves import map
-from six.moves import zip
-
 from ..mp3tag import open_script, Cursor
 
 dbg_skip = ['ifnot',  'do', 'while']
@@ -44,7 +40,7 @@ def parse_group(group):
             ret['line'] = group[i + 1].strip()
             ret['charno'] = group[i + 2].find('^')
     if params:
-        ret['params'] = [params[six.text_type(k)] for k in sorted(map(int, params))]
+        ret['params'] = [params[str(k)] for k in sorted(map(int, params))]
     return ret
 
 def parse_total_group(group):
@@ -88,7 +84,7 @@ def compare_retrieval(srcfn, html, debug, album=True):
             pdb.set_trace()
         src = source_parsed[i]
         #print src['cmd'], src['lineno']
-        src['params'] = [six.text_type(z) if not isinstance(z, six.text_type) else z for z in src['params']]
+        src['params'] = [str(z) if not isinstance(z, str) else z for z in src['params']]
         if 'params' not in dbg and src['params'] == []:
             dbg['params'] = []
         if dbg != src:

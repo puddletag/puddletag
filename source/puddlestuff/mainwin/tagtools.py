@@ -3,7 +3,6 @@ from functools import partial
 
 from PyQt5.QtWidgets import QMessageBox
 from mutagen import id3, apev2
-from six.moves import zip
 
 from .. import audioinfo
 from ..puddleobjects import progress

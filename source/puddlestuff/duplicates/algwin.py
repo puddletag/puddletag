@@ -1,14 +1,12 @@
 import os
 import sys
 
-import six
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QDoubleValidator, \
     QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
     QWidget
-from six.moves import zip
 
 from .dupefuncs import dupesinlib
 from .matchfuncs import Algo, funcinfo, funcs, _ratio
@@ -41,7 +39,7 @@ def saveset(setname, disp, algs, maintag):
     cparser.set('info', 'name', setname)
     cparser.set('info', 'disp', disp)
     for i, a in enumerate(algs):
-        setname = u'alg' + six.text_type(i)
+        setname = u'alg' + str(i)
         for key, val in a.items():
             cparser.set(setname, key, val)
 
@@ -256,9 +254,9 @@ class AlgWin(QWidget):
             self.matchcase.setCheckState(Qt.Unchecked)
 
     def saveAlgo(self):
-        tags = [x for x in [z.strip() for z in six.text_type(self.tags.text()).split("|")] if x != ""]
+        tags = [x for x in [z.strip() for z in str(self.tags.text()).split("|")] if x != ""]
         func = funcs[self.alcombo.currentIndex()]
-        threshold = float(six.text_type(self.threshold.text())) / 100
+        threshold = float(str(self.threshold.text())) / 100
         matchcase = False
         if self.matchcase.checkState() == Qt.Checked:
             matchcase = True
@@ -346,7 +344,7 @@ class SetDialog(QDialog):
         text = gettext()
         if text:
             self.setscombo.addItem(text)
-            self._sets.append([six.text_type(text), ['', ''], []])
+            self._sets.append([str(text), ['', ''], []])
             self.setscombo.setCurrentIndex(self.setscombo.count() - 1)
 
     def fill(self, sets):
@@ -378,9 +376,9 @@ class SetDialog(QDialog):
     def changeSet(self, index):
         i = self._previndex
         prevset = {'setname': self._sets[i][0],
-                   'disp': [six.text_type(text.text()) for text in self.texts],
+                   'disp': [str(text.text()) for text in self.texts],
                    'algs': self._sets[i][2],
-                   'maintag': six.text_type(self.maintag.currentText())}
+                   'maintag': str(self.maintag.currentText())}
         self._sets[i][1] = prevset['disp']
         self._sets[i][2] = prevset['algs']
         self._sets[i][3] = prevset['maintag']
@@ -421,9 +419,9 @@ class SetDialog(QDialog):
     def okClicked(self):
         i = self.setscombo.currentIndex()
         prevset = {'setname': self._sets[i][0],
-                   'disp': [six.text_type(text.text()) for text in self.texts],
+                   'disp': [str(text.text()) for text in self.texts],
                    'algs': self._sets[i][2],
-                   'maintag': six.text_type(self.maintag.currentText())}
+                   'maintag': str(self.maintag.currentText())}
         saveset(**prevset)
         self.close()
         self.setAvailable.emit(self.currentSet)

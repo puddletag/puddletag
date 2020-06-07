@@ -4,9 +4,7 @@ import sys
 from os.path import abspath, dirname, normcase, normpath, splitdrive
 from os.path import join as path_join
 
-import six
 from PyQt5.QtWidgets import QFileDialog, QApplication
-from six.moves import zip
 
 from . import audioinfo
 from .audioinfo.util import lnglength, encode_fn
@@ -130,7 +128,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     filedlg = QFileDialog()
     filedlg.setFileMode(filedlg.DirectoryOnly)
-    filename = six.text_type(filedlg.getExistingDirectory(None,
+    filename = str(filedlg.getExistingDirectory(None,
         'Open Folder'))
     tags = []
     for z in os.listdir(filename):
@@ -139,7 +137,7 @@ if __name__ == '__main__':
             if tag:
                 tags.append(tag)
         except Exception as e:
-            six.text_type(e)
-    folder = six.text_type(filedlg.getSaveFileName(None,
+            str(e)
+    folder = str(filedlg.getSaveFileName(None,
             'Save File'))
     exportm3u(tags, folder)

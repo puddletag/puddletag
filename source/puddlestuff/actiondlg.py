@@ -5,15 +5,11 @@ import sys
 from copy import copy, deepcopy
 from functools import partial
 
-import six
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
     QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
 from pyparsing import delimitedList, alphanums, Combine, Word, QuotedString
-from six.moves import map
-from six.moves import range
-from six.moves import zip
 
 from . import findfunc, functions
 from . import functions_dialogs
@@ -55,7 +51,7 @@ def displaytags(tags):
     return text
 
 class ShortcutDialog(QDialog):
-    shortcutChanged = pyqtSignal(six.text_type, name='shortcutChanged')
+    shortcutChanged = pyqtSignal(str, name='shortcutChanged')
     def __init__(self, shortcuts=None, parent=None):
         super(ShortcutDialog, self).__init__(parent)
         self.setWindowTitle('puddletag')
@@ -82,14 +78,14 @@ class ShortcutDialog(QDialog):
         self._shortcuts = shortcuts
 
     def okClicked(self):
-        self.shortcutChanged.emit(six.text_type(self._text.text()))
+        self.shortcutChanged.emit(str(self._text.text()))
         self.ok = True
         self.close()
 
     def getShortcut(self):
         self.exec_()
         if self._text.valid:
-            return six.text_type(self._text.text()), self.ok
+            return str(self._text.text()), self.ok
         else:
             return u'', self.ok
 
@@ -123,14 +119,14 @@ class ShortcutName(QDialog):
         self.close()
 
     def enableOK(self, text):
-        if text and six.text_type(text) not in self._texts:
+        if text and str(text) not in self._texts:
             self._ok.setEnabled(True)
         else:
             self._ok.setEnabled(False)
 
     def getText(self):
         self.exec_()
-        return six.text_type(self._text.text()), self.ok
+        return str(self._text.text()), self.ok
 
 class ScrollLabel(QScrollArea):
     def __init__(self, text = '', parent=None):
@@ -272,15 +268,15 @@ class FunctionDialog(QWidget):
                     elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
                         newargs.append(False)
                 else:
-                    if isinstance(method(), six.integer_types):
+                    if isinstance(method(), int):
                         newargs.append(method())
                     else:
-                        newargs.append(six.text_type(method()))
+                        newargs.append(str(method()))
             [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
 
         fields = [z.strip() for z in
-            six.text_type(self.tagcombo.currentText()).split(",") if z]
+            str(self.tagcombo.currentText()).split(",") if z]
 
         if self.func.function in functions.no_fields:
             self.func.setTag(['just nothing to do with this'])
@@ -357,7 +353,7 @@ class FunctionDialog(QWidget):
                     self._selectedFields)
                 from .puddletag import status
                 files = status['selectedfiles']
-                files = six.text_type(len(files)) if files else u'1'
+                files = str(len(files)) if files else u'1'
                 state = {'__counter': u'0', '__total_files': files}
                 val = apply_actions([self.func], audio, state, fields)
             except findfunc.ParseError as e:
@@ -612,7 +608,7 @@ class CreateAction(QDialog):
         try:
             from .puddletag import status
             files = status['selectedfiles']
-            files = six.text_type(len(files)) if files else u'1'
+            files = str(len(files)) if files else u'1'
             state = {'__counter': u'0', '__total_files': files}
             tags = apply_actions(self.functions, self.example, state)
             self._examplelabel.setText(displaytags(tags))
@@ -778,10 +774,10 @@ class ActionWindow(QDialog):
         
         if name and ok:
             from . import puddletag
-            shortcuts = [six.text_type(z.shortcut().toString()) for z in
+            shortcuts = [str(z.shortcut().toString()) for z in
                 puddletag.status['actions']]
             (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
-            name = six.text_type(name)
+            name = str(name)
             
             from .action_shortcuts import (
                 create_action_shortcut, save_shortcut)
@@ -845,7 +841,7 @@ class ActionWindow(QDialog):
             self.shortcutButton.setEnabled(False)
     
     def renameAction(self, item):
-        name = six.text_type(item.text())
+        name = str(item.text())
         names = [m.name for m in self.macros.values()]
         row = self.listbox.row(item)
         
@@ -918,7 +914,7 @@ class ActionWindow(QDialog):
         if selectedrows:
             from .puddletag import status
             files = status['selectedfiles']
-            total = six.text_type(len(files)) if files else u'1'
+            total = str(len(files)) if files else u'1'
             state = {'__counter': u'0', '__total_files': total}
 
             macros = [self.macros[i] for i in selectedrows]
@@ -979,7 +975,7 @@ class ActionWindow(QDialog):
 
     def addBuddy(self, actions):
         m = Macro()
-        m.name = six.text_type(self.listbox.item(self.listbox.count() - 1).text())
+        m.name = str(self.listbox.item(self.listbox.count() - 1).text())
         m.actions = actions
         self.saveMacro(m)
         self.macros[self.listbox.count() - 1] = m
@@ -1054,7 +1050,7 @@ class ActionWindow(QDialog):
         if not (ok and text):
             return
 
-        name = six.text_type(text)
+        name = str(text)
         actions = deepcopy(self.macros[row].actions)
 
         win = CreateAction(self, actions, example=self.example)

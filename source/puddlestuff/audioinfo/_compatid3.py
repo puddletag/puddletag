@@ -24,8 +24,6 @@ import mutagen
 from mutagen._util import insert_bytes
 from mutagen.id3 import ID3, Frames, Frames_2_2, TextFrame, TORY, \
     TYER, TIME, APIC, IPLS, TDAT, MakeID3v1
-from six.moves import range
-from six.moves import zip
 
 try:
     from mutagen.id3 import BitPaddedInt

@@ -2,12 +2,11 @@
 #while we're at it, we also wrap url fetching.
 
 import re
+import urllib.error
+import urllib.parse
+import urllib.request
 
 import lxml.html
-import six
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
 
 
 def classify(seq, key_func):
@@ -33,7 +32,7 @@ class SoupWrapper(object):
             else:
                 kwargs['class'] = args[1]
         query_items = list(kwargs.items())
-        query_items = classify(query_items, lambda x: isinstance(x[1], (str, six.text_type)))
+        query_items = classify(query_items, lambda x: isinstance(x[1], (str, str)))
         regular_items = query_items.get(True, [])
         re_items = query_items.get(False, [])
         xpath_query = ' and '.join("@%s='%s'" % (key, value) for key, value in regular_items)
@@ -62,12 +61,12 @@ class SoupWrapper(object):
         for x in self.element:
             yield SoupWrapper(x)
     def __getitem__(self, idx):
-        if isinstance(idx, (str, six.text_type)):
+        if isinstance(idx, (str, str)):
             if idx in self.element.attrib:
                 return self.element.attrib[idx]
             else:
                 return self.find(idx)
-        if isinstance(idx, six.integer_types):
+        if isinstance(idx, int):
             return SoupWrapper(self.element[idx])
         if isinstance(idx, slice):
             return [SoupWrapper(x) for x in self.element[idx]]
@@ -110,7 +109,7 @@ class SoupWrapper(object):
         return SoupWrapper(self.element.getparent())
 
 def fetch_page(url):
-    return six.moves.urllib.request.urlopen(url).read()
+    return urllib.request.urlopen(url).read()
 
 def parse(page):
     p = lxml.html.document_fromstring(page)

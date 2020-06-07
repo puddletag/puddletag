@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import pickle
 import traceback
 
 import mutagen
-
-try:
-  import six.moves.cPickle as pickle
-except ImportError:
-  import pickle
-
 from PyQt5.QtWidgets import QAction, QFileDialog
-
 from puddlestuff.plugins import status
 
 last_fn = {'fn': '~'}

@@ -2,10 +2,6 @@ from collections import defaultdict
 from copy import deepcopy
 from operator import itemgetter
 
-import six
-from six.moves import map
-from six.moves import zip
-
 from ..audioinfo import FILENAME
 from ..constants import VARIOUS
 from ..findfunc import filenametotag
@@ -148,7 +144,7 @@ def combine_tracks(track1, track2, repl=None):
     ret = defaultdict(lambda: [])
 
     for key, value in list(track2.items()) + list(track1.items()):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if value not in ret[key]:
                 ret[key].append(value)
         else:
@@ -293,7 +289,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
 
         assigned[t_i] = f_index
 
-    for f_index, t_indexes in six.iteritems(matched):
+    for f_index, t_indexes in matched.items():
         best_match = max(list(t_indexes.items()), key=itemgetter(1))
         t_index = best_match[0]
         while t_index in assigned:
@@ -312,7 +308,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
             assigned[t_index] = f_index
 
     ret_indexes = {}
-    for t_index, f_index in six.iteritems(assigned):
+    for t_index, f_index in assigned.items():
         try:
             ret[files[f_index].cls] = tracks[t_index]
             ret_indexes[t_index] = files[f_index].cls
@@ -332,7 +328,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
         ret.update(brute_force_results(unmatched_files, unmatched_tracks))
 
     if existing:
-        ret = dict((f, dict_difference(f, r)) for f, r in six.iteritems(ret))
+        ret = dict((f, dict_difference(f, r)) for f, r in ret.items())
 
     if as_index:
         return ret, ret_indexes
@@ -343,14 +339,14 @@ def merge_track(audio, info):
 
     for key in info.keys():
         if not key.startswith('#'):
-            if isinstance(info[key], six.string_types):
+            if isinstance(info[key], str):
                 track[key] = info[key]
             else:
                 track[key] = info[key][::]
 
     for key in audio.keys():
         if not key.startswith('#'):
-            if isinstance(audio[key], six.string_types):
+            if isinstance(audio[key], str):
                 track[key] = audio[key]
             else:
                 track[key] = audio[key][::]
@@ -508,7 +504,7 @@ def replace_tracknumbers(files, tracks):
             except (ValueError, TypeError, KeyError):
                 continue
             if f_tracknum > t_tracknum:
-                f['track'] = [six.text_type(f_tracknum - offset )]
+                f['track'] = [str(f_tracknum - offset )]
 
 def split_files(audios, pattern):
 

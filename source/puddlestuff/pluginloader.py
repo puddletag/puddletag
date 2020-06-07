@@ -6,8 +6,6 @@ from os.path import exists
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from configobj import ConfigObj
-from six.moves import range
-from six.moves import zip
 
 from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
                         DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)

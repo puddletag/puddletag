@@ -3,12 +3,9 @@ import os
 import sys
 from functools import partial
 
-import six
 from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtGui import QDesktopServices, QIcon
 from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
-from six.moves import map
-from six.moves import zip
 
 from . import loadshortcuts as ls
 from . import m3u, genres
@@ -22,10 +19,6 @@ from .puddleobjects import (PuddleConfig, PuddleDock, winsettings,
 from .puddlesettings import SettingsDialog, load_gen_settings, update_settings
 from .tagmodel import TagTable
 
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
 from . import audioinfo
 from .util import rename_error_msg
 from .audioinfo import lnglength, strlength, PATH, str_filesize, encode_fn
@@ -188,7 +181,7 @@ def connect_action_shortcuts(actions):
     cparser = PuddleConfig()
     cparser.filename = ls.menu_path
     for action in actions:
-        shortcut = cparser.get('shortcuts', six.text_type(action.text()), '')
+        shortcut = cparser.get('shortcuts', str(action.text()), '')
         if shortcut:
             action.setShortcut(shortcut)
 
@@ -412,7 +405,7 @@ class MainWin(QMainWindow):
             self.setWindowTitle('puddletag')
             return
         
-        if isinstance(dirs, six.string_types):
+        if isinstance(dirs, str):
             dirs = [dirs]
 
         dirs = [encode_fn(d) for d in dirs]
@@ -441,7 +434,7 @@ class MainWin(QMainWindow):
         filedlg.setFileMode(filedlg.DirectoryOnly)
         # not supported in PyQt5
         # filedlg.setResolveSymlinks(False) 
-        filename = six.text_type(filedlg.getExistingDirectory(self,
+        filename = str(filedlg.getExistingDirectory(self,
             translate("Main Window", 'Import directory...'), dirname ,QFileDialog.ShowDirsOnly))
         return filename
 
@@ -530,7 +523,7 @@ class MainWin(QMainWindow):
                 translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror))
         except Exception as e:
             QMessageBox.information(self._table, translate("Defaults", 'Error'),
-                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(six.text_type(e)))
+                translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(str(e)))
 
     def openDir(self, filename=None, append=False):
         """Opens a folder. If filename != None, then
@@ -546,12 +539,12 @@ class MainWin(QMainWindow):
             if not filename:
                 return
         else:
-            if not isinstance(filename, six.string_types):
+            if not isinstance(filename, str):
                 filename = filename[0]
 
             filename = os.path.abspath(filename)
 
-            if isinstance(filename, six.text_type):
+            if isinstance(filename, str):
                 filename = encode_fn(filename)
         
         self.loadFiles.emit(None, [filename], append, None, None)
@@ -564,9 +557,9 @@ class MainWin(QMainWindow):
         if menu_title in self._menus:
             menu = self._menus[menu_title][0]
         if actions:
-            children = dict([(six.text_type(z.text()), z) for z in menu.actions()])
+            children = dict([(str(z.text()), z) for z in menu.actions()])
             for action in actions:
-                if isinstance(action, six.string_types):
+                if isinstance(action, str):
                     action = children[action]
                 menu.removeAction(action)
                 try:
@@ -727,7 +720,7 @@ class MainWin(QMainWindow):
             return
 
         def func():
-            for row, f in izip(rows, tagiter):
+            for row, f in zip(rows, tagiter):
                 failed_rows[0] = row
                 try:
                     update = setRowData(row, f, undo=True)
@@ -854,7 +847,7 @@ class MainWin(QMainWindow):
             self._table.selectionChanged()
 
         if model.previewMode:
-            for row, audio, filename in izip(rows, files, filenames):
+            for row, audio, filename in zip(rows, files, filenames):
                 tag = PATH
                 if tag in audio.mapping:
                     tag = audio.mapping[tag]
@@ -863,7 +856,7 @@ class MainWin(QMainWindow):
             return
 
         def func():
-            for row, audio, filename in izip(rows, files, filenames):
+            for row, audio, filename in zip(rows, files, filenames):
                 tag = PATH
                 if tag in audio.mapping:
                     tag = audio.mapping[tag]

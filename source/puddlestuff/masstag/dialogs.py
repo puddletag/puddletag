@@ -3,7 +3,6 @@ import os
 from copy import deepcopy
 from functools import partial
 
-import six
 from PyQt5.QtCore import QMutex, QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
     QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
@@ -34,11 +33,11 @@ mutex = QMutex()
 
 def search_error(error, profile):
     set_status(translate('Masstagging',
-        'An error occured during the search: <b>%s</b>') % six.text_type(error))
+        'An error occured during the search: <b>%s</b>') % str(error))
 
 def retrieval_error(error, profile):
     set_status(translate('Masstagging',
-        'An error occured during album retrieval: <b>%s</b>') % six.text_type(error))
+        'An error occured during album retrieval: <b>%s</b>') % str(error))
 
 class MassTagEdit(QDialog):
     profilesChanged = pyqtSignal(list, name='profilesChanged')
@@ -339,11 +338,11 @@ class MTProfileEdit(QDialog):
 
     def okClicked(self):
         fields = [z.strip() for z in
-            six.text_type(self.matchFields.text()).split(u',')]
+            str(self.matchFields.text()).split(u',')]
 
-        mtp = MassTagProfile(six.text_type(self._name.text()),
-            six.text_type(self._desc.text()), fields, None,
-            six.text_type(self.pattern.text()), self._tsps,
+        mtp = MassTagProfile(str(self._name.text()),
+            str(self._desc.text()), fields, None,
+            str(self.pattern.text()), self._tsps,
             self.albumBound.value() / 100.0,
             self.trackBound.value() / 100.0, self.jfdi.isChecked(),
             self.existing.isChecked(), u'')
@@ -461,8 +460,8 @@ class TSProfileEdit(QDialog):
     def _okClicked(self):
         source = self.tag_sources[self.source.currentIndex()]
         no_result = self.no_match.currentIndex()
-        fields = fields_from_text(six.text_type(self.fields.text()))
-        replace_fields = fields_from_text(six.text_type(self.replace_fields.text()))
+        fields = fields_from_text(str(self.fields.text()))
+        replace_fields = fields_from_text(str(self.replace_fields.text()))
 
         profile = TagSourceProfile(None, source, fields, no_result,
             replace_fields)
@@ -535,8 +534,8 @@ class MassTagWindow(QWidget):
 
     def _appendLog(self, text):
         mutex.lock()
-        if not isinstance(text, six.text_type):
-            text = six.text_type(text, 'utf8', 'replace')
+        if not isinstance(text, str):
+            text = str(text, 'utf8', 'replace')
         if text.startswith(u':insert'):
             text = text[len(u':insert'):]
             pos = len(self._log.toPlainText()) - 1
@@ -620,10 +619,10 @@ class MassTagWindow(QWidget):
             'An error occured during album retrieval: <b>%s</b>')
 
         def search_error(error, mtp):
-            thread.statusChanged.emit(search_msg % six.text_type(error))
+            thread.statusChanged.emit(search_msg % str(error))
 
         def retrieval_error(error, mtp):
-            thread.statusChanged.emit(retrieve_msg % six.text_type(error))
+            thread.statusChanged.emit(retrieve_msg % str(error))
 
         def run_masstag():
             replace_fields = []

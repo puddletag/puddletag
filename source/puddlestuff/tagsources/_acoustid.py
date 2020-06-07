@@ -13,14 +13,12 @@
 # included in all copies or substantial portions of the Software.
 import contextlib
 import errno
+import http.client
 import json
 import os
-
-import six
-import six.moves.http_client
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
+import urllib.error
+import urllib.parse
+import urllib.request
 
 try:
     import audioread
@@ -144,11 +142,11 @@ def _send_request(req):
     tuple containing the response data and headers.
     """
     try:
-        with contextlib.closing(six.moves.urllib.request.urlopen(req)) as f:
+        with contextlib.closing(urllib.request.urlopen(req)) as f:
             return f.read(), f.info()
-    except six.moves.urllib.error.HTTPError as exc:
+    except urllib.error.HTTPError as exc:
         raise WebServiceError('HTTP status %i' % exc.code, exc.read())
-    except six.moves.http_client.BadStatusLine:
+    except http.client.BadStatusLine:
         raise WebServiceError('bad HTTP status line')
     except IOError:
         raise WebServiceError('connection failed')
@@ -162,15 +160,15 @@ def _api_request(url, params):
     # Python 2.x operates on bytestrings, so a Unicode error is raised
     # if non-ASCII characters are passed in a Unicode string.)
     byte_params = {}
-    for key, value in six.iteritems(params):
-        if isinstance(key, six.text_type):
+    for key, value in params.items():
+        if isinstance(key, str):
             key = key.encode('utf8')
-        if isinstance(value, six.text_type):
+        if isinstance(value, str):
             value = value.encode('utf8')
         byte_params[key] = value
 
-    body = _compress(six.moves.urllib.parse.urlencode(byte_params))
-    req = six.moves.urllib.request.Request(url, body, {
+    body = _compress(urllib.parse.urlencode(byte_params))
+    req = urllib.request.Request(url, body, {
         'Content-Encoding': 'gzip',
         'Accept-Encoding': 'gzip',
     })
@@ -348,7 +346,7 @@ def submit(apikey, userkey, data):
     for i, d in enumerate(data):
         if "duration" not in d or "fingerprint" not in d:
             raise FingerprintSubmissionError("missing required parameters")
-        for k, v in six.iteritems(d):
+        for k, v in d.items():
             args["%s.%s" % (k, i)] = v
 
     response = _api_request(_get_submit_url(), args)

@@ -2,7 +2,7 @@ import os
 import traceback
 
 import mutagen
-import six.moves.cPickle as pickle
+import pickle
 from PyQt5.QtWidgets import QAction, QFileDialog
 
 from .. import status

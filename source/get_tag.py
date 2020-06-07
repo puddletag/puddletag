@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Usage python get_tag.py filename | dirname"""
-import mutagen
 import os
-import six.moves.cPickle as pickle
+import pickle
 import sys
+
+import mutagen
 
 if len(sys.argv) < 3:
     print("""Usage: python get_tag.py filename|dirname output""")

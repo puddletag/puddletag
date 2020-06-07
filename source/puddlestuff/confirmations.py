@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 
-import six
 from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
 
 from .constants import CONFIGDIR
@@ -52,7 +51,7 @@ def save(filename=None, confirmations=None):
         confirmations = _confirmations
     
     for i, name in enumerate(confirmations):
-        set_value = lambda k,v: cparser.set(SECTION + six.text_type(i), k, v)
+        set_value = lambda k,v: cparser.set(SECTION + str(i), k, v)
         set_value(NAME, name)
         set_value(VALUE, confirmations[name][0])
         set_value(DESC, confirmations[name][1])
@@ -73,7 +72,7 @@ class Settings(QWidget):
         self.setLayout(layout)
 
     def applySettings(self, control=None):
-        for name, control in six.iteritems(self._controls):
+        for name, control in self._controls.items():
             _confirmations[name][0] = control.isChecked()
         save()
 

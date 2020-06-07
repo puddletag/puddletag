@@ -9,7 +9,6 @@ from optparse import OptionParser
 
 from puddlestuff import audioinfo
 from puddlestuff.audioinfo import tag_to_json, b64_to_img
-from six.moves import map
 
 
 def tags_to_json(dirpath, fields=None):

@@ -1,12 +1,10 @@
 import os
 import sys
 
-import six
 from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
 from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
 from PyQt5.QtWidgets import qApp, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
-from six.moves import range
 
 from . import loadshortcuts as ls
 from .constants import CONFIGDIR
@@ -48,10 +46,10 @@ class ActionEditorWidget(QLabel):
         elif event.key() == Qt.Key_Alt:
             self.modifiers[Qt.Key_Alt] = u"Alt"
         else:
-            other = six.text_type(QKeySequence(event.key()))
+            other = str(QKeySequence(event.key()))
         
         if other:
-            key_string = u"+".join(list(self.modifiers.values()) + [six.text_type(other),])
+            key_string = u"+".join(list(self.modifiers.values()) + [str(other),])
             self.valid = True
         else:
             key_string = u"+".join(list(self.modifiers.values()))
@@ -134,9 +132,9 @@ class ActionEditorDelegate(QItemDelegate):
     
     def createEditor(self, parent, option, index):
 
-        self._edited = six.text_type(index.data())
+        self._edited = str(index.data())
     
-        self.editor = ActionEditorWidget(six.text_type(index.data()), parent)
+        self.editor = ActionEditorWidget(str(index.data()), parent)
         self.editor.installEventFilter(self)
         return self.editor
     
@@ -175,11 +173,11 @@ class ActionEditorDelegate(QItemDelegate):
         painter.setPen(QPen(option.palette.color(QPalette.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
             Qt.TextShowMnemonic | Qt.AlignLeft | Qt.AlignVCenter,
-            six.text_type(index.data()))
+            str(index.data()))
     
     def setEditorData(self, editor, index):
     
-        editor.setText(six.text_type(index.data()))
+        editor.setText(str(index.data()))
     
     def setModelData(self, editor, model, index):
         if editor.text() != self._edited:
@@ -273,7 +271,7 @@ class ActionEditorDialog(QWidget):
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
 
         for action in actions:
-            shortcut = cparser.get('shortcuts', six.text_type(action.text()), '')
+            shortcut = cparser.get('shortcuts', str(action.text()), '')
             if shortcut:
                 action.setShortcut(QKeySequence(shortcut))
     
@@ -283,8 +281,8 @@ class ActionEditorDialog(QWidget):
         
         cparser = PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts'))
         for action in actions:
-            shortcut = six.text_type(action.shortcut().toString())
-            cparser.set('shortcuts', six.text_type(action.text()), shortcut)
+            shortcut = str(action.shortcut().toString())
+            cparser.set('shortcuts', str(action.text()), shortcut)
     
     saveSettings = classmethod(saveSettings)
     

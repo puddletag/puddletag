@@ -5,14 +5,11 @@ import sys
 import traceback
 from copy import deepcopy
 
-import six
 from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
-from six.moves import range
-from six.moves import zip
 
 from . import audioinfo, version_string
 from .constants import (TEXT, COMBO, SPINBOX,
@@ -58,7 +55,7 @@ def apply_regexps(audio, regexps=None):
         regexps = DEFAULT_REGEXP
     audio = deepcopy(audio)
     changed = False
-    for field, (regexp, output) in six.iteritems(regexps):
+    for field, (regexp, output) in regexps.items():
         if field not in audio:
             continue
         text = to_string(audio[field])
@@ -74,7 +71,7 @@ def apply_regexps(audio, regexps=None):
 
 def display_tag(tag):
     """Used to display tags in in a human parseable format."""
-    tag = dict((k,v) for k,v in six.iteritems(tag) if
+    tag = dict((k,v) for k,v in tag.items() if
         not k.startswith('#') and not isempty(v))
 
     if not tag:
@@ -174,9 +171,9 @@ class FieldsEdit(QWidget):
     def tags(self, text=None):
         if not text:
             return [_f for _f in [z.strip() for z in
-                six.text_type(self._text.text()).split(u',')] if _f]
+                str(self._text.text()).split(u',')] if _f]
         else:
-            return [_f for _f in [z.strip() for z in six.text_type(text).split(u',')] if _f]
+            return [_f for _f in [z.strip() for z in str(text).split(u',')] if _f]
 
 class SimpleDialog(QDialog):
     """Class for simple dialog creation."""
@@ -253,7 +250,7 @@ class SimpleDialog(QDialog):
         values = []
         for control in self._controls:
             if isinstance(control, QLineEdit):
-                values.append(six.text_type(control.text()))
+                values.append(str(control.text()))
             elif isinstance(control, QComboBox):
                 values.append(control.currentIndex())
             elif isinstance(control, QCheckBox):
@@ -302,7 +299,7 @@ class SortOptionEditor(QDialog):
 
     def addPattern(self):
         l = self.listbox.item
-        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [str(l(z).text()) for z in range(self.listbox.count())]
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
@@ -323,7 +320,7 @@ class SortOptionEditor(QDialog):
         if row is None:
             row = self.listbox.currentRow()
         l = self.listbox.item
-        patterns = [six.text_type(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [str(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem(self,
             translate("WebDB", 'Edit sort option'),
             translate("WebDB",
@@ -336,7 +333,7 @@ class SortOptionEditor(QDialog):
 
     def applySettings(self):
         item = self.listbox.item
-        options = [six.text_type(item(row).text())
+        options = [str(item(row).text())
             for row in range(self.listbox.count())]
         self.close()
         self.options.emit(options)
@@ -440,26 +437,26 @@ class SettingsDialog(QWidget):
 
     def applySettings(self, control):
         listbox = control.listbox
-        text = six.text_type(self._text.text())
+        text = str(self._text.text())
         listbox.trackPattern = text
 
-        albumdisp = six.text_type(self._albumdisp.text())
+        albumdisp = str(self._albumdisp.text())
         listbox.albumPattern = albumdisp
 
         sort_combo = self._sortoptions
-        sort_options_text = [six.text_type(sort_combo.itemText(i)) for i in 
+        sort_options_text = [str(sort_combo.itemText(i)) for i in 
             range(sort_combo.count())]
         sort_options = split_strip(sort_options_text)
         listbox.setSortOptions(sort_options)
 
         listbox.sort(sort_options[sort_combo.currentIndex()])
         
-        useragent = six.text_type(self._ua.toPlainText())
+        useragent = str(self._ua.toPlainText())
         set_useragent(useragent)
 
         listbox.jfdi = self.jfdi.isChecked()
         listbox.matchFields = [z.strip() for z in
-            six.text_type(self.matchFields.text()).split(u',')]
+            str(self.matchFields.text()).split(u',')]
         listbox.albumBound = self.albumBound.value() / 100.0
         listbox.trackBound = self.trackBound.value() / 100.0
         
@@ -815,7 +812,7 @@ class MainWin(QWidget):
 
     def setResults(self, retval):
         self.searchButton.setEnabled(True)
-        if isinstance(retval, (six.string_types, six.text_type, str)):
+        if isinstance(retval, (str, str, str)):
             self.label.setText(retval)
         else:
             releases, files = retval
@@ -840,7 +837,7 @@ class MainWin(QWidget):
         self.label.setText(translate("WebDB", 'Searching...'))
         text = None
         if self.searchEdit.text() and self.searchEdit.isEnabled():
-            text = six.text_type(self.searchEdit.text())
+            text = str(self.searchEdit.text())
         elif not files:
             self.label.setText(translate("WebDB",
                 '<b>Select some files or enter search paramaters.</b>'))
@@ -855,11 +852,11 @@ class MainWin(QWidget):
                     return tag_source_search(self.curSource, group, files)
             except RetrievalError as e:
                 return translate('WebDB',
-                    'An error occured: %1').arg(six.text_type(e))
+                    'An error occured: %1').arg(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate('WebDB',
-                    'An unhandled error occurred: %1').arg(six.text_type(e))
+                    'An unhandled error occurred: %1').arg(str(e))
         self.searchButton.setEnabled(False)
         t = PuddleThread(search, self)
         t.threadfinished.connect(self.setResults)
@@ -879,11 +876,11 @@ class MainWin(QWidget):
             except SubmissionError as e:
                 traceback.print_exc()
                 return translate('WebDB',
-                    'An error occured: %1').arg(six.text_type(e))
+                    'An error occured: %1').arg(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate('WebDB',
-                    'An unhandled error occurred: %1').arg(six.text_type(e))
+                    'An unhandled error occurred: %1').arg(str(e))
 
             return translate("WebDB", "Submission completed.")
 

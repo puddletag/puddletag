@@ -13,11 +13,6 @@ import sys
 from collections import defaultdict
 from functools import partial
 
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
-
 from PyQt5.QtCore import QObject, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAbstractItemView, QApplication, QDialog, QFrame, QHBoxLayout, QLineEdit, \
   QListWidget, QMessageBox, QPushButton, QStackedWidget, QStyle, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
@@ -30,9 +25,6 @@ from .puddleobjects import (winsettings, OKCancel,
     ProgressWin, PuddleThread)
 from .util import to_string
 from .translations import translate
-import six
-from six.moves import map
-from six.moves import range
 
 pyqtRemoveInputHook()
 
@@ -130,7 +122,7 @@ class LibChooseDialog(QDialog):
                     raise Exception(translate('MusicLib', 'Invalid library'))
             except Exception as detail:
                 msg = translate('MusicLib', 'Error loading %1: %2\n')
-                msg = msg.arg(libname).arg(six.text_type(detail))
+                msg = msg.arg(libname).arg(str(detail))
                 sys.stderr.write(msg)
                 continue
             
@@ -186,7 +178,7 @@ class LibChooseDialog(QDialog):
         try:
             return self.stack.currentWidget().library()
         except MusicLibError as details:
-            return six.text_type(details.strerror)
+            return str(details.strerror)
 
     def loadLib(self):
         """Loads the currently selected library.
@@ -204,7 +196,7 @@ class LibChooseDialog(QDialog):
         library = t.retval
         p.close()
         QApplication.processEvents()
-        if isinstance(library, six.string_types):
+        if isinstance(library, str):
             error_msg = library
             msg = translate('MusicLib',
                 'An error occured while loading the %1 library: <b>%2</b>')
@@ -277,7 +269,7 @@ class LibraryDialog(QWidget):
             QApplication.processEvents()
 
     def searchTree(self):
-        self.tree.search(six.text_type(self.searchtext.text()))
+        self.tree.search(str(self.searchtext.text()))
 
 class LibraryTree(QTreeWidget):
     loadtags = pyqtSignal(list, name='loadtags')

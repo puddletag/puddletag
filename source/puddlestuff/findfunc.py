@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import glob
 import os
+import pickle
 import re
 import string
 from collections import defaultdict
@@ -8,15 +9,10 @@ from copy import deepcopy
 from decimal import Decimal
 from functools import partial
 
-import six
-import six.moves.cPickle as pickle
 from pyparsing import (Word, alphas, Literal, OneOrMore, alphanums,
                        nums, delimitedList, Combine, QuotedString,
                        CharsNotIn, originalTextFor, nestedExpr,
                        Optional)
-from six.moves import map
-from six.moves import range
-from six.moves import zip
 
 from . import audioinfo
 from .constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
@@ -35,7 +31,7 @@ FUNC_MODULE = 'module'
 ARGS = 'arguments'
 KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
 
-whitespace = set(six.text_type(string.whitespace))
+whitespace = set(str(string.whitespace))
 
 class ParseError(Exception):
     def __init__(self, message):
@@ -65,7 +61,7 @@ def arglen_error(e, passed, function, to_raise = True):
     else:
         raise e
     if message is not None:
-        message = message.arg(six.text_type(param_len)).arg(six.text_type(args_len))
+        message = message.arg(str(param_len)).arg(str(args_len))
     else:
         raise e
     if to_raise:
@@ -146,7 +142,7 @@ def get_old_action(filename):
     these are stored as pickled objects.
 
     Returns [list of Function objects, action name]."""
-    if isinstance(filename, six.string_types):
+    if isinstance(filename, str):
         f = open(filename, "rb")
     else:
         f = filename
@@ -267,7 +263,7 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
             except ValueError:
                 raise ParseError(SYNTAX_ARG_ERROR % (funcname, no + 1))
         else:
-            if isinstance(arg, six.string_types) and fmt:
+            if isinstance(arg, str) and fmt:
                 topass[param] = replacevars(arg, *dicts)
             else:
                 topass[param] = arg
@@ -298,7 +294,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     
     #Get function
     try:
-        if isinstance(funcname, six.string_types):
+        if isinstance(funcname, str):
             func = functions[funcname]
         else:
             func = funcname
@@ -588,7 +584,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
         state = {}
     if '__counter' not in state:
         state['__counter'] = 0
-    state['__counter'] = six.text_type(int(state['__counter']) + 1)
+    state['__counter'] = str(int(state['__counter']) + 1)
 
     r_tags = audio
    
@@ -610,7 +606,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
             temp = func.runFunction(val, audio, state, None, r_tags)
             if temp is None:
                 continue
-            if isinstance(temp, six.string_types):
+            if isinstance(temp, str):
                 ret[field] = temp
             elif hasattr(temp, 'items'):
                 ret.update(temp)
@@ -620,7 +616,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
             elif hasattr(temp[0], 'items'):
                 [ret.update(z) for z in temp]
                 break
-            elif isinstance(temp[0], six.string_types):
+            elif isinstance(temp[0], str):
                 if field in FILETAGS:
                     ret[field] = temp[0]
                 else:
@@ -665,7 +661,7 @@ def saveAction(filename, actionname, funcs):
     """Saves an action to filename.
 
     funcs is a list of funcs, and actionname is...er...the name of the action."""
-    if isinstance(filename, six.string_types):
+    if isinstance(filename, str):
         fileobj = open(filename, 'wb')
     else:
         fileobj = filename
@@ -717,7 +713,7 @@ def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     Amy Winehouse - 012 - Shitty Song.mp3"""
 
     #First check if a filename was passed or a dictionary.
-    if not isinstance(filename, six.string_types):
+    if not isinstance(filename, str):
         #if it was a dictionary, then use that as the tags.
         tags = filename
     else:
@@ -786,7 +782,7 @@ class Function:
     See the functions module for more info."""
 
     def __init__(self, funcname, fields=None):
-        if isinstance(funcname, six.string_types):
+        if isinstance(funcname, str):
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function

@@ -2,9 +2,7 @@
 import logging
 import re
 
-import six
 from pyparsing import *
-from six.moves import map
 
 from . import findfunc, audioinfo
 from .puddleobjects import gettaglist
@@ -12,10 +10,10 @@ from .util import to_string
 
 
 def str_cmp(a, b):
-    if not isinstance(a, six.string_types):
+    if not isinstance(a, str):
         a = u'\\'.join(a)
 
-    if not isinstance(b, six.string_types):
+    if not isinstance(b, str):
         b = u'\\'.join(b)
 
     return a.lower() == b.lower()
@@ -23,7 +21,7 @@ def str_cmp(a, b):
 FIELDS = set(z.lower() for z in gettaglist()).union(audioinfo.FILETAGS)
 
 def parse_arg(audio, text):
-    if not isinstance(text, six.string_types):
+    if not isinstance(text, str):
         return text
     if text[0] == u'%' and text[-1] == u'%':
         return to_string(audio.get(text[1:-1], u''))
@@ -51,7 +49,7 @@ class BoolOperand(object):
 class BoolAnd(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('and: ' + six.text_type(self.args))
+        logging.debug('and: ' + str(self.args))
         for a in self.args:
             if not bool(a):
                 return False
@@ -60,7 +58,7 @@ class BoolAnd(BoolOperand):
 class BoolOr(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('or: ' + six.text_type(self.args))
+        logging.debug('or: ' + str(self.args))
         for a in self.args:
             if bool(a):
                 return True
@@ -72,11 +70,11 @@ class BoolNot(BoolOperand):
 
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('not: ' + six.text_type(self.arg))
-        if isinstance(self.arg, six.string_types):
+        logging.debug('not: ' + str(self.arg))
+        if isinstance(self.arg, str):
             arg = self.arg.lower()
             for v in self.audio.values():
-                if isinstance(v, six.string_types):
+                if isinstance(v, str):
                     v = [v]
                 v = u'\\\\'.join(v).lower()
                 if arg in v:
@@ -87,7 +85,7 @@ class BoolNot(BoolOperand):
 class Greater(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('greater: ' + six.text_type(self.args))
+        logging.debug('greater: ' + str(self.args))
         try: self.args = list(map(float, self.args))
         except ValueError: pass
         return self.args[0] > self.args[1]
@@ -95,7 +93,7 @@ class Greater(BoolOperand):
 class Less(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('less: ' + six.text_type(self.args))
+        logging.debug('less: ' + str(self.args))
         try: self.args = list(map(float, self.args))
         except ValueError: pass
         return self.args[0] < self.args[1]
@@ -103,7 +101,7 @@ class Less(BoolOperand):
 class Equal(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('equal: ' + six.text_type(self.args))
+        logging.debug('equal: ' + str(self.args))
         return str_cmp(self.args[0], self.args[1])
 
 class Missing(BoolOperand):
@@ -111,7 +109,7 @@ class Missing(BoolOperand):
         self.arg = t[0][1]
 
     def __nonzero__(self):
-        logging.debug('missing: ' + six.text_type(self.arg))
+        logging.debug('missing: ' + str(self.arg))
         if getattr(self, "audio", None):
             return not (self.arg in self.audio)
         return False
@@ -121,7 +119,7 @@ class Present(BoolOperand):
         self.arg = t[0][1]
 
     def __nonzero__(self):
-        logging.debug('present: ' + six.text_type(self.arg))
+        logging.debug('present: ' + str(self.arg))
         if getattr(self, "audio", None):
             return (self.arg in self.audio)
         return False
@@ -129,19 +127,19 @@ class Present(BoolOperand):
 class BoolIs(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('is: ' + six.text_type(self.args))
+        logging.debug('is: ' + str(self.args))
         return str_cmp(self.args[0], self.args[1])
 
 class Has(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('has: ' + six.text_type(self.args))
+        logging.debug('has: ' + str(self.args))
         return self.args[1].lower() in self.args[0].lower()
 
 class Matches(BoolOperand):
     @wrap_nonzero
     def __nonzero__(self):
-        logging.debug('matches: ' + six.text_type(self.args))
+        logging.debug('matches: ' + str(self.args))
         return not re.search(self.args[1].lower(), self.args[0].lower()) is None
     
 bool_exprs = [
@@ -168,13 +166,13 @@ def parse(audio, expr):
     for i in bool_exprs:
         i[3].audio = audio
     res = bool_expr.parseString(expr)[0]
-    if isinstance(res, six.string_types):
+    if isinstance(res, str):
         res = res.lower()
         for field, value in audio.items():
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 value = [value]
             elif isinstance(value, (int, float)):
-                value = [six.text_type(value)]
+                value = [str(value)]
             try:
                 if res in u'\\\\'.join(value).lower():
                     return True

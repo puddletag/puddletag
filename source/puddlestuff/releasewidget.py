@@ -3,11 +3,9 @@ import traceback
 from copy import deepcopy
 from functools import partial
 
-import six
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
-from six.moves import map
 
 from .findfunc import parsefunc
 from .puddleobjects import (PuddleThread,
@@ -33,7 +31,7 @@ def inline_display(pattern, tags):
 def fillItem(item, info, tracks, trackpattern):
     item.itemData = info
     if tracks is not None:
-        item.itemData['__numtracks'] = six.text_type(len(tracks))
+        item.itemData['__numtracks'] = str(len(tracks))
         [item.appendChild(ChildItem(track, trackpattern, item))
                     for track in tracks]
         item.hasTracks = True
@@ -80,7 +78,7 @@ def tooltip(tag, mapping = None):
     if not tag:
         return translate("WebDB", "<b>Error in pattern</b>")
     mapping = {} if mapping is None else mapping
-    tag = dict((mapping.get(k, k), v) for k,v in six.iteritems(tag)
+    tag = dict((mapping.get(k, k), v) for k,v in tag.items()
         if not k.startswith('#'))
         
     return pprint_tag(tag)
@@ -237,7 +235,7 @@ class ChildItem(RootItem):
 
 class TreeModel(QtCore.QAbstractItemModel):
     retrieving = pyqtSignal(name='retrieving')
-    statusChanged = pyqtSignal(six.text_type, name='statusChanged')
+    statusChanged = pyqtSignal(str, name='statusChanged')
     collapse = pyqtSignal(int, name='collapse')
     retrievalDone = pyqtSignal(name='retrievalDone')
     exactChanged = pyqtSignal(object, name='exactChanged')
@@ -356,12 +354,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("WebDB", 'An error occured: %1').arg(six.text_type(e)))
+                    translate("WebDB", 'An error occured: %1').arg(str(e)))
                 return
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("WebDB", 'An unhandled error occured: %1').arg(six.text_type(e)))
+                    translate("WebDB", 'An unhandled error occured: %1').arg(str(e)))
                 return
 
         item.retrieving = True
@@ -451,12 +449,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("WebDB", 'An error occured: %1').arg(six.text_type(e)))
+                    translate("WebDB", 'An error occured: %1').arg(str(e)))
                 return None
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("WebDB", 'An unhandled error occured: %1').arg(six.text_type(e)))
+                    translate("WebDB", 'An unhandled error occured: %1').arg(str(e)))
                 return None
 
         def finished(val):
@@ -519,8 +517,8 @@ class ReleaseWidget(QTreeView):
     exact = pyqtSignal(dict, name='exact')
     exactMatches = pyqtSignal(dict, name='exactMatches')
     preview = pyqtSignal(object, name='preview')
-    infoChanged = pyqtSignal(six.text_type, name='infoChanged')
-    statusChanged = pyqtSignal(six.text_type, name='statusChanged')
+    infoChanged = pyqtSignal(str, name='infoChanged')
+    statusChanged = pyqtSignal(str, name='statusChanged')
     retrieving = pyqtSignal(name='retrieving')
     retrievalDone = pyqtSignal(name='retrievalDone')
     itemSelectionChanged = pyqtSignal(name='itemSelectionChanged')

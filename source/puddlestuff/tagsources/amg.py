@@ -3,12 +3,9 @@ import os
 import re
 import sys
 import time
-
-import six
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
-from six.moves import zip
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from . import parse_html
 from ..audioinfo import isempty, CaselessDict
@@ -71,7 +68,7 @@ def find_id(tracks, field=None):
     for track in tracks:
         if field in track:
             value = track[field]
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 return value.replace(u' ', u'').lower()
             else:
                 return value[0].replace(u' ', u'').lower()
@@ -81,7 +78,7 @@ def convert(value):
     text = value.strip()
     text = re.sub('\s{2,}', white_replace, text)
     if isinstance(text, str):
-        return six.text_type(text)
+        return str(text)
     return text
 
 def convert_year(info):
@@ -91,7 +88,7 @@ def convert_year(info):
     info['year'] = info['release date']
     del(info['release date'])
 
-    if not isinstance(info['year'], six.string_types):
+    if not isinstance(info['year'], str):
         info['year'] = info['year'][0]
     try:
         year = time.strptime(info['year'], '%B %d, %Y')
@@ -106,7 +103,7 @@ def convert_year(info):
 
 def create_search(terms):
     terms = re.sub(u'[%]', u'', terms.strip())
-    return search_adress % six.moves.urllib.parse.quote(re.sub('(\s+)', u' ',
+    return search_adress % urllib.parse.quote(re.sub('(\s+)', u' ',
         terms).encode('utf8'))
 
 def equal(audio1, audio2, play=False, tags=('artist', 'album')):
@@ -201,7 +198,7 @@ def parse_albumpage(page, artist=None, album=None):
     
     #info.update(parse_similar(swipe))
     
-    info = dict((spanmap.get(k,k),v) for k, v in six.iteritems(info) if not isempty(v))
+    info = dict((spanmap.get(k,k),v) for k, v in info.items() if not isempty(v))
         
     return [info, parse_tracks(album_soup, info)]
 
@@ -330,7 +327,7 @@ def parse_search_element(td, id_field=ALBUM_ID):
 
     info[id_field] = re.search('-(mw\d+)$', info['#albumurl']).groups()[0]
     
-    return dict((k,v) for k, v in six.iteritems(info) if not isempty(v))
+    return dict((k,v) for k, v in info.items() if not isempty(v))
 
 def parse_searchpage(page, artist=None, album=None, id_field=ALBUM_ID):
     """Parses a search page and gets relevant info.
@@ -438,7 +435,7 @@ def parse_track(tr, fields, performance_title=None):
         track['title'] = performance_title + u': ' + track['title']
     if 'artist' not in track and 'performer' in track:
         track['artist'] = track['performer']
-    return dict((spanmap.get(k,k),v) for k,v in six.iteritems(track) if spanmap.get(k,k) and not isempty(v))
+    return dict((spanmap.get(k,k),v) for k,v in track.items() if spanmap.get(k,k) and not isempty(v))
 
 
 def replace_feat(album_info, track_info):
@@ -453,7 +450,7 @@ def replace_feat(album_info, track_info):
         return
 
     for k,v in track_info.items():
-        if isinstance(v, six.string_types) and v.strip().startswith('feat:'):
+        if isinstance(v, str) and v.strip().startswith('feat:'):
             track_info[k] = artist + u' ' + v.strip()
 
     if 'featuring' in track_info:
@@ -465,7 +462,7 @@ def parse_tracks(content, album_info):
         return None
     tracks = []
     for i, disc in enumerate(discs):
-        disc_info = {'discnumber': six.text_type(i + 1)}
+        disc_info = {'discnumber': str(i + 1)}
         disc_tracks = parse_track_table(disc.table)
         for track in disc_tracks:
             if len(discs) > 1:
@@ -497,9 +494,9 @@ def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
         except KeyError:
             write_log('No cover found.')
             cover = None
-        except six.moves.urllib.error.URLError as e:
+        except urllib.error.URLError as e:
             write_log(u'Error: While retrieving cover %s - %s' % 
-                (info['#cover-url'], six.text_type(e)))
+                (info['#cover-url'], str(e)))
             cover = None
     else:
         cover = None
@@ -586,10 +583,10 @@ class AllMusic(object):
         write_log(u'Searching for %s' % album)
         try:
             searchpage = search(album)
-        except six.moves.urllib.error.URLError as e:
+        except urllib.error.URLError as e:
             write_log(u'Error: While retrieving search page %s' % 
-                        six.text_type(e))
-            raise RetrievalError(six.text_type(e))
+                        str(e))
+            raise RetrievalError(str(e))
         write_log(u'Retrieved search results.')
         
         search_results = parse_searchpage(searchpage, artist, album)
@@ -626,10 +623,10 @@ class AllMusic(object):
                 info, tracks, cover = retrieve_album(url, self._getcover)
             else:
                 info, tracks, cover = retrieve_album(url, self._getcover)
-        except six.moves.urllib.error.URLError as e:
+        except urllib.error.URLError as e:
             write_log(u'Error: While retrieving album URL %s - %s' % 
-                (url, six.text_type(e)))
-            raise RetrievalError(six.text_type(e))
+                (url, str(e)))
+            raise RetrievalError(str(e))
         if cover:
             info.update(cover)
         albuminfo = albuminfo.copy()

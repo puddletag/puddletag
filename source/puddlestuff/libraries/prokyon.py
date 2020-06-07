@@ -21,8 +21,6 @@
 import os
 import pdb
 
-import six
-
 from .. import audioinfo
 
 FILENAME = audioinfo.FILENAME
@@ -64,7 +62,7 @@ PROKYONTAGS = {'__path': 'filename',
 
 def prokyontag(tag):
     ret = PROKYONTAGS[tag]
-    if isinstance(ret, six.string_types):
+    if isinstance(ret, str):
         return ret
     else:
         return ret(tag)
@@ -130,7 +128,7 @@ class Prokyon(MySQLLib):
         s = 'SELECT DISTINCT BINARY ' + PROKYONTAGS[tag] + ' FROM tracks ' + \
             'ORDER BY ' + PROKYONTAGS[tag]
         self.cursor.execute(s)
-        return [six.text_type(artist[0], 'utf8') for artist in self.cursor.fetchall()]
+        return [str(artist[0], 'utf8') for artist in self.cursor.fetchall()]
 
     def children(self, parent, parentvalue, child):
         self.cursor.execute("SELECT DISTINCT BINARY " + PROKYONTAGS[child] + \
@@ -393,9 +391,9 @@ class ConfigWindow(QWidget):
         self.setLayout(vbox)
 
     def getLibClass(self):
-        username = six.text_type(self.username.text())
-        passwd = six.text_type(self.passwd.text())
-        database = six.text_type(self.database.text())
+        username = str(self.username.text())
+        passwd = str(self.passwd.text())
+        database = str(self.database.text())
         port = int(self.port.text())
 
         return Prokyon('tracks', user = username, passwd = passwd, db = database, port = port)
@@ -427,9 +425,9 @@ class ConfigWindow(QWidget):
 def loadLibrary():
     settings = QSettings()
     settings.beginGroup('Library')
-    username = six.text_type(settings.value('username'))
-    passwd = six.text_type(settings.value('passwd'))
-    database = six.text_type(settings.value('database'))
+    username = str(settings.value('username'))
+    passwd = str(settings.value('passwd'))
+    database = str(settings.value('database'))
     port = int(settings.value('port'))
     return Prokyon(user = username, passwd = passwd, db = database, port = port)
 

@@ -1,26 +1,20 @@
 import os
 import re
+import socket
+import urllib.error
+import urllib.parse
+import urllib.request
+from html.parser import HTMLParser
 from importlib import import_module
 from os.path import join, exists
-
-try:
-    from HTMLParser import HTMLParser
-except ImportError:
-    from html.parser import HTMLParser
-
-import socket
-import six.moves.urllib.parse
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from .. import version_string
-
 from ..constants import CONFIGDIR
 from ..findfunc import tagtofilename
 from ..puddleobjects import PuddleConfig
 from ..util import translate
-import six
 
 
 class FoundEncoding(Exception):
@@ -43,8 +37,8 @@ class SubmissionError(WebServiceError):
         self.code = code
 
 class _SignalObject(QObject):
-    statusChanged = pyqtSignal(six.text_type, name='statusChanged')
-    logappend = pyqtSignal(six.text_type, name='logappend')
+    statusChanged = pyqtSignal(str, name='statusChanged')
+    logappend = pyqtSignal(str, name='logappend')
 
 cparser = PuddleConfig()
 
@@ -88,7 +82,7 @@ def find_id(tracks, field):
     for track in tracks:
         if field in track:
             value = track[field]
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 return value
             else:
                 return value[0]
@@ -96,8 +90,8 @@ def find_id(tracks, field):
 
 # From http://stackoverflow.com/questions/4389572 by bobince
 def iri_to_uri(iri):
-    parts = six.moves.urllib.parse.urlparse(iri)
-    return six.moves.urllib.parse.urlunparse(
+    parts = urllib.parse.urlparse(iri)
+    return urllib.parse.urlunparse(
         part.encode('idna') if i == 1
         else part.encode('utf-8')
         for i, part in enumerate(parts)
@@ -184,10 +178,10 @@ def url_encode_non_ascii(b):
 
 def urlopen(url, mask=True, code=False):
     try:
-        request = six.moves.urllib.request.Request(url)
+        request = urllib.request.Request(url)
         if useragent:
             request.add_header('User-Agent', useragent)
-        page = six.moves.urllib.request.build_opener().open(request)
+        page = urllib.request.build_opener().open(request)
         if page.code == 403:
             raise RetrievalError(
                 translate("Tag Sources", 'HTTPError 403: Forbidden'))
@@ -198,11 +192,11 @@ def urlopen(url, mask=True, code=False):
             return page.read(), page.code
         else:
             return page.read()
-    except six.moves.urllib.error.URLError as e:
+    except urllib.error.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
-            msg = six.text_type(e)
+            msg = str(e)
             
         try:
             raise RetrievalError(msg, e.code)

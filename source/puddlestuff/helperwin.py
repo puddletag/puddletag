@@ -5,14 +5,11 @@ import os
 import sys
 from copy import deepcopy
 
-import six
 from PyQt5.QtCore import QItemSelectionModel, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtGui import QPalette, QBrush, QColor
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox, \
     QPlainTextEdit, QPushButton, QSpinBox, QTableWidget, QTableWidgetItem, QTextEdit, QToolButton, QVBoxLayout
-from six.moves import map
-from six.moves import range
 
 from . import findfunc, audioinfo
 from .audioinfo import commontags, PATH
@@ -164,8 +161,8 @@ class AutonumberDialog(QDialog):
                   numtracks,
                   self._restart_numbering.checkState(),
                   self._padlength.value(),
-                  six.text_type(self.grouping.text()),
-                  six.text_type(self.output_field.currentText()),
+                  str(self.grouping.text()),
+                  str(self.output_field.currentText()),
                   self.count_by_group.checkState()
         )
         
@@ -211,7 +208,7 @@ class AutonumberDialog(QDialog):
 
 class ImportTextFile(QDialog):
     """Dialog that importing a text file to retrieve tags from."""
-    Newtags = pyqtSignal(list, six.text_type, name='Newtags')
+    Newtags = pyqtSignal(list, str, name='Newtags')
     def __init__(self,parent = None, filename = None, clipboard = None):
         QDialog.__init__(self, parent)
         
@@ -276,7 +273,7 @@ class ImportTextFile(QDialog):
         """When I'm done, emit a signal with the updated tags."""
         self.close()
         self.Newtags.emit(self.dicttags,
-            six.text_type(self.patterncombo.currentText()))
+            str(self.patterncombo.currentText()))
 
     def fillTags(self, string = None): #string is there purely for the SIGNAL
         """Fill the tag textbox."""
@@ -290,7 +287,7 @@ class ImportTextFile(QDialog):
         self.tags.clear()
         for z in self.lines.split(u"\n"):
             self.dicttags.append(findfunc.filenametotag(
-                six.text_type(self.patterncombo.currentText()), z, False, False))
+                str(self.patterncombo.currentText()), z, False, False))
         if self.dicttags:
             self.tags.setHtml(
                 u"<br/>".join([formattag(z) for z in self.dicttags]))
@@ -335,7 +332,7 @@ class ImportTextFile(QDialog):
         self.lastDir = os.path.dirname(filename)
 
     def openClipBoard(self):
-        text = six.text_type(QApplication.clipboard().text())
+        text = str(QApplication.clipboard().text())
         self.lines = text.split(u'\n')
         self.file.setPlainText(text)
         self.setLines()
@@ -345,7 +342,7 @@ class ImportTextFile(QDialog):
         self.patterncombo.editTextChanged.connect(self.fillTags)
 
     def setLines(self):
-        self.lines = six.text_type(self.file.document().toPlainText())
+        self.lines = str(self.file.document().toPlainText())
         self.fillTags()
 
 
@@ -378,7 +375,7 @@ class EditField(QDialog):
     in the form {field: value}.
     (Because the user might choose to edit a different tag,
     then the one that was chosen and you'd want to delete that one)"""
-    donewithmyshit = pyqtSignal(six.text_type, six.text_type, object, name='donewithmyshit')
+    donewithmyshit = pyqtSignal(str, str, object, name='donewithmyshit')
 
     def __init__(self, field=None, parent=None, field_list=None, edit=True):
 
@@ -432,8 +429,8 @@ class EditField(QDialog):
     def ok(self):
         self.close()
         self.donewithmyshit.emit(
-            six.text_type(self.tagcombo.currentText()),
-            six.text_type(self.value.toPlainText()),
+            str(self.tagcombo.currentText()),
+            str(self.value.toPlainText()),
             self.__oldField)
 
 class StatusWidgetItem(QTableWidgetItem):
@@ -810,11 +807,11 @@ class ExTags(QDialog):
     def get_field(self, row, status = None):
         getitem = self.table.item
         item = getitem(row, 0)
-        tag = six.text_type(item.text())
+        tag = str(item.text())
         try:
-            value = six.text_type(getitem(row, 1).text())
+            value = str(getitem(row, 1).text())
         except AttributeError:
-            value = six.text_type(self.table.cellWidget(row, 1).currentText())
+            value = str(self.table.cellWidget(row, 1).currentText())
         if status:
             return (tag, value, item.status)
         else:
@@ -901,7 +898,7 @@ class ExTags(QDialog):
 
             row = 0
 
-            for field, values in six.iteritems(common):
+            for field, values in common.items():
                 if field in italics:
                     preview = UNCHANGED
                 #field in italics => field in previews.
@@ -913,7 +910,7 @@ class ExTags(QDialog):
                     self._settag(row, field, values, multi=True)
                     row += 1
                 else:
-                    if isinstance(values, six.string_types):
+                    if isinstance(values, str):
                         self._settag(row, field, values, None, preview)
                         row += 1
                     else:
@@ -947,7 +944,7 @@ class ExTags(QDialog):
                 preview = BOLD
             else:
                 preview = UNCHANGED
-            if isinstance(val, six.string_types):
+            if isinstance(val, str):
                 items.append([key, val, None, preview])
             else:
                 [items.append([key, z, None, preview]) for z in val]
@@ -1089,7 +1086,7 @@ class ExTags(QDialog):
             field_item = StatusWidgetItem(field, status,
                 self._colors, preview)
             tb.setItem(row, 0, field_item)
-            if not multi and (len(value) == 1 or isinstance(value, six.string_types)):
+            if not multi and (len(value) == 1 or isinstance(value, str)):
                 valitem = StatusWidgetItem(to_string(value), status, self._colors, preview)
                 tb.setItem(row, 1, valitem)
             else:
@@ -1108,7 +1105,7 @@ class ExTags(QDialog):
             lowered_tag = field.lower()
             for row in range(tb.rowCount()):
                 item = tb.item(row, 0)
-                text = six.text_type(item.text())
+                text = str(item.text())
                 if text != field and text.lower() == lowered_tag:
                     item.setText(field)
                     if item.status not in [ADD, REMOVE]:

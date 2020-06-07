@@ -11,8 +11,6 @@ from errno import ENOENT
 from os import path, stat
 
 import mutagen
-import six
-from six.moves import map
 
 from .constants import *
 
@@ -99,7 +97,7 @@ def commontags(audios):
             audio = usertags(audio)
 
         for field, value in audio.items():
-            value = list(value) if not isinstance(value, six.string_types) else [value]
+            value = list(value) if not isinstance(value, str) else [value]
             if field in combined:
                 if combined[field] == value:
                     tags[field] += 1
@@ -115,7 +113,7 @@ def commontags(audios):
 def converttag(tag):
     """Converts each value in tag to a list if the key doesn't begin with __."""
     return dict((k, unicode_list(v)) if not k.startswith('__') else (k, v)
-        for k, v in six.iteritems(tag))
+        for k, v in tag.items())
 
 def cover_info(images, d=None):
     """Finds cover metadata in images.
@@ -133,7 +131,7 @@ def cover_info(images, d=None):
         info[NUM_IMAGES] = u'0'
         info[IMAGE_MIMETYPE] = u''
     else:
-        info[NUM_IMAGES] = six.text_type(len(images))
+        info[NUM_IMAGES] = str(len(images))
         image = images[0]
         if MIMETYPE in image:
             info[IMAGE_MIMETYPE] = image[MIMETYPE]
@@ -156,7 +154,7 @@ def cover_info(images, d=None):
 
 def decode_fn(filename, errors='replace'):
     """Decodes a filename from the filesystem encoding."""
-    if isinstance(filename, six.text_type):
+    if isinstance(filename, str):
         return filename
     else:
         return filename.decode(FS_ENC, errors)
@@ -212,9 +210,9 @@ def getinfo(filename):
     modified = fileinfo[ST_MTIME]
     created = fileinfo[ST_CTIME]
     return ({
-        "__size" : six.text_type(size),
+        "__size" : str(size),
         '__file_size': str_filesize(size),
-        '__file_size_bytes': six.text_type(size),
+        '__file_size_bytes': str(size),
         '__file_size_kb': u'%d KB' % int(size / 1024),
         '__file_size_mb': u'%.2f MB' % (size / 1024.0**2),
 
@@ -222,19 +220,19 @@ def getinfo(filename):
         '__file_create_date': get_time('%Y-%m-%d', created),
         '__file_create_datetime':
             get_time('%Y-%m-%d %H:%M:%S', created),
-        '__file_create_datetime_raw': six.text_type(created),
+        '__file_create_datetime_raw': str(created),
 
         "__modified": strtime(modified),
         '__file_mod_date': get_time('%Y-%m-%d', modified),
         '__file_mod_datetime':
             get_time('%Y-%m-%d %H:%M:%S', modified),
-        '__file_mod_datetime_raw': six.text_type(modified),
+        '__file_mod_datetime_raw': str(modified),
 
         '__accessed': strtime(accessed),
         '__file_access_date': get_time('%Y-%m-%d', accessed),
         '__file_access_datetime':
             get_time('%Y-%m-%d %H:%M:%S', accessed),
-        '__file_access_datetime_raw': six.text_type(accessed),
+        '__file_access_datetime_raw': str(accessed),
 
         '__app': app_name,
 
@@ -280,23 +278,23 @@ def info_to_dict(info):
     try: tags["__length"] = strlength(info.length)
     except AttributeError: pass
 
-    try: tags["__length_seconds"] = six.text_type(int(info.length))
+    try: tags["__length_seconds"] = str(int(info.length))
     except AttributeError: pass
 
     try: 
         tags["__bitrate"] = strbitrate(info.bitrate)
-        tags["__bitrate_num"] = six.text_type(int(info.bitrate / 1000))
+        tags["__bitrate_num"] = str(int(info.bitrate / 1000))
     except AttributeError: 
         tags[u"__bitrate"] = u'0 kb/s'
         tags["__bitrate_num"] = 0
 
-    try: tags['__bitspersample'] = six.text_type(info.bits_per_sample)
+    try: tags['__bitspersample'] = str(info.bits_per_sample)
     except AttributeError: pass
 
-    try: tags['__channels'] = six.text_type(info.channels)
+    try: tags['__channels'] = str(info.channels)
     except AttributeError: pass
 
-    try: tags['__layer'] = six.text_type(info.layer)
+    try: tags['__layer'] = str(info.layer)
     except AttributeError: pass
 
     if isinstance(info, mutagen.mp3.MPEGInfo):
@@ -306,17 +304,17 @@ def info_to_dict(info):
         try: tags['__mode'] = MONO if info.channels == 1 else STEREO
         except AttributeError: pass
 
-    try: tags['__titlegain'] = six.text_type(info.title_gain)
+    try: tags['__titlegain'] = str(info.title_gain)
     except AttributeError: pass
 
 
-    try: tags['__albumgain'] = six.text_type(info.album_gain)
+    try: tags['__albumgain'] = str(info.album_gain)
     except AttributeError: pass
 
-    try: tags['__version'] = six.text_type(info.version)
+    try: tags['__version'] = str(info.version)
     except AttributeError: pass
 
-    try: tags['__md5sig'] = six.text_type(info.md5_signature)
+    try: tags['__md5sig'] = str(info.md5_signature)
     except AttributeError: pass
 
     return tags
@@ -335,12 +333,12 @@ def isempty(value):
     >>>isempty([0])
     False
     """
-    if isinstance(value, six.integer_types):
+    if isinstance(value, int):
         return False
     if not value:
         return True
     try:
-        return not [z for z in value if z or isinstance(z, six.integer_types)]
+        return not [z for z in value if z or isinstance(z, int)]
     except TypeError:
         return False
 
@@ -385,7 +383,7 @@ def path_to_string(value):
     """Convert the path to a bytestring."""
     if not value:
         return ''
-    elif isinstance(value, six.string_types):
+    elif isinstance(value, str):
         return encode_fn(value)
     else:
         return path_to_string(value[0])
@@ -404,7 +402,7 @@ def parse_image(image, keys=None):
     return dict((k, _image_defaults[k](image)) for k in keys)
 
 def reversedict(d):
-    return dict((v,k) for k,v in six.iteritems(d))
+    return dict((v,k) for k,v in d.items())
 
 def setdeco(func):
     """Decorates the __setitem__ method of a Tag object using it's mapping.
@@ -445,7 +443,7 @@ def set_total(tag, value):
 
 def strbitrate(bitrate):
     """Converts the bitrate in bits/s to a string in kb/s."""
-    return six.text_type(bitrate / 1000) + u' kb/s'
+    return str(bitrate / 1000) + u' kb/s'
 
 _sizes = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB'}
 def str_filesize(size):
@@ -497,11 +495,11 @@ def stringtags(tag, leaveNone = False):
         elif (not v) or (hasattr(v, '__iter__') and len(v) == 1 and not v[0]):
             continue
 
-        if isinstance(v, six.string_types):
+        if isinstance(v, str):
             newtag[i] = v
         elif isinstance(v, (int, float)):
-            newtag[i] = six.text_type(v)
-        elif isinstance(i, six.string_types) and not isinstance(v, six.string_types):
+            newtag[i] = str(v)
+        elif isinstance(i, str) and not isinstance(v, str):
             newtag[i] = v[0]
         else:
             newtag[i] = v
@@ -526,7 +524,7 @@ def strtime(seconds):
 def tag_to_json(audio, fields=None):
 
     from .. import audioinfo
-    if isinstance(audio, six.string_types):
+    if isinstance(audio, str):
         try:
             audio = audioinfo.Tag(audio)
         except:
@@ -568,16 +566,16 @@ def to_string(value, errors='strict'):
             return value.decode('utf8', errors)
         except AttributeError:
             return value
-    elif isinstance(value, six.text_type):
+    elif isinstance(value, str):
         return value
-    elif isinstance(value, six.integer_types):
-        return six.text_type(value)
+    elif isinstance(value, int):
+        return str(value)
     else:
         return to_string(value[0])
 
 def usertags(tag):
     """Return dictionary of all editable key, value pairs found in tag."""
-    ret = dict((z,v) for z,v in six.iteritems(tag) if isinstance(z, six.string_types)
+    ret = dict((z,v) for z,v in tag.items() if isinstance(z, str)
         and not z.startswith('__'))
     return ret
 
@@ -591,12 +589,12 @@ def unicode_list(value):
     """
     if not value:
         return []
-    if isinstance(value, six.text_type):
-        return [six.text_type(value)]
+    if isinstance(value, str):
+        return [str(value)]
     elif isinstance(value, str):
-        return [six.text_type(value, 'utf8', 'replace')]
-    elif isinstance(value, six.integer_types):
-        return [six.text_type(value)]
+        return [str(value, 'utf8', 'replace')]
+    elif isinstance(value, int):
+        return [str(value)]
     else:
         return [to_string(v, 'replace') for v in value if v]
 

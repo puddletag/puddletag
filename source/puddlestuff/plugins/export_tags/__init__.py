@@ -7,8 +7,6 @@ import logging
 import os
 from optparse import OptionParser
 
-from six.moves import map
-
 from ... import audioinfo
 from ...audioinfo import tag_to_json
 

@@ -1,6 +1,3 @@
-import six
-from six.moves import map
-
 from . import CDDB
 
 CDDB.proto = 6 # utf8 instead of latin1
@@ -67,7 +64,7 @@ def convert_info(info):
 def convert_tracks(disc):
     tracks = []
     for tracknum, title in sorted(disc.items()):
-        track = {'track': six.text_type(tracknum + 1)}
+        track = {'track': str(tracknum + 1)}
         if u' / ' in title:
             track['artist'], track['title'] = [z.strip() for z in
                 decode_str(title).split(u' / ', 1)]
@@ -78,7 +75,7 @@ def convert_tracks(disc):
             
 
 def decode_str(s):
-    return s if isinstance(s, six.text_type) else s.decode('utf8', 'replace')
+    return s if isinstance(s, str) else s.decode('utf8', 'replace')
 
 def query(category, discid, xcode='utf8:utf8'):
     #from quodlibet's cddb plugin by Michael Urman
@@ -89,7 +86,7 @@ def query(category, discid, xcode='utf8:utf8'):
     if read != 210: return None
 
     xf, xt = xcode.split(':')
-    for key, value in six.iteritems(info):
+    for key, value in info.items():
         try: value = value.decode('utf-8', 'replace').strip().encode(
             xf, 'replace').decode(xt, 'replace')
         except AttributeError: pass

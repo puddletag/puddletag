@@ -3,13 +3,11 @@ import json
 import re
 import socket
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from copy import deepcopy
-
-import six
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
-from six import StringIO
+from io import StringIO
 
 from ..audioinfo import DATA, isempty
 from ..constants import CHECKBOX, COMBO, TEXT
@@ -84,13 +82,13 @@ def convert_dict(d, keys=None):
 
 def check_values(d):
     ret = {}
-    for key, v in six.iteritems(d):
+    for key, v in d.items():
         if key in INVALID_KEYS or isempty(v):
             continue
         if hasattr(v, '__iter__') and hasattr(v, 'items'):
             continue
         elif not hasattr(v, '__iter__'):
-            v = six.text_type(v)
+            v = str(v)
         elif isinstance(v, bytes):
             v = v.decode('utf8')
 
@@ -159,7 +157,7 @@ def parse_album_json(data):
         desc = fmt.get('descriptions', fmt.get('name', u''))
         if not desc:
             continue
-        if isinstance(desc, six.string_types):
+        if isinstance(desc, str):
             formats.append(desc)
         else:
             formats.extend(desc)
@@ -231,13 +229,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
     If None, no image is retrieved."""
-    if isinstance(info, six.integer_types):
-        r_id = six.text_type(info)
+    if isinstance(info, int):
+        r_id = str(info)
         info = {}
         write_log(
             translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
         rls_type = u'release'
-    elif isinstance(info, six.string_types):
+    elif isinstance(info, str):
         r_id = info
         info = {}
         write_log(
@@ -271,7 +269,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     data.append({DATA: urlopen(large)})
                 except RetrievalError as e:
                     write_log(translate(
-                        'Discogs', u'Error retrieving image:') + six.text_type(e))
+                        'Discogs', u'Error retrieving image:') + str(e))
             else:
                 write_log(
                     translate("Discogs", 'Retrieving cover: %s') % small)
@@ -279,7 +277,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                     data.append({DATA: urlopen(small)})
                 except RetrievalError as e:
                     write_log(translate(
-                        'Discogs', u'Error retrieving image:') + six.text_type(e))
+                        'Discogs', u'Error retrieving image:') + str(e))
         if data:
             info.update({'__image': data})
 
@@ -303,7 +301,7 @@ def search(artist=None, album=None):
 
 def urlopen(url):
     url = iri_to_uri(url)
-    request = six.moves.urllib.request.Request(url)
+    request = urllib.request.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
     request.add_header('User-Agent', get_useragent())
 
@@ -312,12 +310,12 @@ def urlopen(url):
     __lasttime.time = time.time()
 
     try:
-        data = six.moves.urllib.request.urlopen(request).read()
-    except six.moves.urllib.error.URLError as e:
+        data = urllib.request.urlopen(request).read()
+    except urllib.error.URLError as e:
         try:
             msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
-            msg = six.text_type(e)
+            msg = str(e)
         raise RetrievalError(msg)
     except socket.error as e:
         msg = u'%s (%s)' % (e.strerror, e.errno)
@@ -366,7 +364,7 @@ class Discogs(object):
         try:
             return [self.retrieve(r_id)]
         except Exception as e:
-            raise RetrievalError(six.text_type(e))
+            raise RetrievalError(str(e))
 
     def search(self, album, artists):
 

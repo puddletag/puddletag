@@ -1,4 +1,3 @@
-import six
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QAction, QInputDialog
 
@@ -16,7 +15,7 @@ def highlight_dupe_field():
     if not ok:
         return
 
-    field = six.text_type(field)
+    field = str(field)
     files = status['selectedfiles']
     if not files or len(files) <= 1:
         return

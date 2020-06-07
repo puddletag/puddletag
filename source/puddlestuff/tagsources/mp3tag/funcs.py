@@ -1,19 +1,8 @@
 from copy import deepcopy
 
 import re
-import six
-import six.moves.html_entities
-from six.moves import map
 
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
-
-try:
-    from HTMLParser import HTMLParser
-except ImportError:
-    from html.parser import HTMLParser
+from html.parser import HTMLParser
 
 from ...functions import replace_regex
 from ...audioinfo import CaselessDict
@@ -344,7 +333,7 @@ def _set(cursor, field, value=None):
             cursor.cache = u""
     else:
         cursor.output[field] = value if \
-            isinstance(value, six.text_type) else six.text_type(value)
+            isinstance(value, str) else str(value)
 
 def _while(cursor, condition, numtimes=None):
     cursor.num_loop -= 1

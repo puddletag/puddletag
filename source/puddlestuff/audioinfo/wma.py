@@ -1,8 +1,6 @@
 import struct
 
-import six
 from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
-from six.moves import map
 
 from . import tag_versions
 from . import util
@@ -110,7 +108,7 @@ class Tag(util.MockTag):
         'wwwcopyright': 'CopyrightURL',
         'year': 'WM/Year',
     }
-    __translate = dict([(v, k) for k, v in six.iteritems(__rtranslate)])
+    __translate = dict([(v, k) for k, v in __rtranslate.items()])
 
     def __init__(self, filename=None):
         self.__images = []
@@ -202,7 +200,7 @@ class Tag(util.MockTag):
 
         wmainfo = [('Bitrate', self.bitrate),
                    ('Frequency', self.frequency),
-                   ('Channels', six.text_type(info.channels)),
+                   ('Channels', str(info.channels)),
                    ('Length', self.length)]
         return [('File', fileinfo), ('ASF Info', wmainfo)]
 
@@ -222,13 +220,13 @@ class Tag(util.MockTag):
         if audio is None:
             return
 
-        for name, values in six.iteritems(audio.tags):
+        for name, values in audio.tags.items():
             try:
-                self.__tags[self.__translate[name]] = list(map(six.text_type, values))
+                self.__tags[self.__translate[name]] = list(map(str, values))
             except KeyError:
                 if isinstance(values[0], ASFUnicodeAttribute):
                     if not '/' in name and name not in self.__tags:
-                        self.__tags[name] = list(map(six.text_type, values))
+                        self.__tags[name] = list(map(str, values))
 
         if 'WM/Picture' in audio:
             self.images = list(map(bin_to_pic, audio['WM/Picture']))

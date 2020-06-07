@@ -20,15 +20,14 @@
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections import defaultdict
 from os import path
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
-import six
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
 from PyQt5.QtCore import QDir, QSettings, QUrl
 from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
@@ -42,7 +41,7 @@ description = "Rhythmbox Database"
 author = 'concentricpuddle'
 
 def getFilename(filename):
-    filename = six.moves.urllib.request.url2pathname(filename)
+    filename = urllib.request.url2pathname(filename)
     try:
         filename = filename.encode('latin1').decode('utf8')
     except UnicodeDecodeError:
@@ -78,11 +77,11 @@ u'last-seen': '__last_seen',
 u'bitrate': getBitRate,
 u'disc-number': u'discnumber'}
 
-setLength = lambda length: {'duration': six.text_type(audioinfo.lnglength(length))}
-setCreated = lambda created: {'first-seen': six.text_type(audioinfo.lngtime(created))}
-setBitrate = lambda bitrate: {'bitrate': six.text_type(audioinfo.lngfrequency(bitrate) / 1000)}
-setModified = lambda modified: {'last-seen': six.text_type(audioinfo.lngtime(modified))}
-setFilename = lambda filename: {u'location': u'file://' + six.text_type(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
+setLength = lambda length: {'duration': str(audioinfo.lnglength(length))}
+setCreated = lambda created: {'first-seen': str(audioinfo.lngtime(created))}
+setBitrate = lambda bitrate: {'bitrate': str(audioinfo.lngfrequency(bitrate) / 1000)}
+setModified = lambda modified: {'last-seen': str(audioinfo.lngtime(modified))}
+setFilename = lambda filename: {u'location': u'file://' + str(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
 
 RECONVERSION = {
     'title': 'title',
@@ -203,7 +202,7 @@ class DBParser(ContentHandler):
         if name == 'rhythmdb':
             version = attrs.get('version')
             self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
-                u'  <rhythmdb version="%s">' % six.text_type(version)
+                u'  <rhythmdb version="%s">' % str(version)
             self.startElement = startelement
     
 
@@ -259,7 +258,7 @@ class RhythmDB(ContentHandler):
         if name == 'rhythmdb':
             version = attrs.get('version')
             self.head = u'<?xml version="1.0" standalone="yes"?>\n' \
-                        u'  <rhythmdb version="%s">' % six.text_type(version)
+                        u'  <rhythmdb version="%s">' % str(version)
             self.startElement = startelement
 
     def characters (self, ch):
@@ -492,7 +491,7 @@ class RhythmDB(ContentHandler):
 class ConfigWindow(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
-        self.dbpath = QLineEdit(path.join(six.text_type(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
+        self.dbpath = QLineEdit(path.join(str(QDir.homePath()), u".gnome2/rhythmbox/rhythmdb.xml"))
 
         vbox = QVBoxLayout()
         label = QLabel('&Database Path')
@@ -518,14 +517,14 @@ class ConfigWindow(QWidget):
             self.dbpath.setText(filename)
 
     def getLibClass(self):
-        return RhythmDB(six.text_type(self.dbpath.text()))
+        return RhythmDB(str(self.dbpath.text()))
 
     def saveSettings(self):
         QSettings().setValue('Library/dbpath', self.dbpath.text())
 
 def loadLibrary():
     settings = QSettings()
-    return RhythmDB(six.text_type(settings.value('Library/dbpath')))
+    return RhythmDB(str(settings.value('Library/dbpath')))
 
 if __name__ == '__main__':
     k = DBParser()

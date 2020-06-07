@@ -5,7 +5,6 @@ from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QBrush
 from PyQt5.QtSvg import QSvgGenerator
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
-from six.moves import zip
 
 from ..audioinfo.util import commonimages
 from ..constants import KEEP, BLANK

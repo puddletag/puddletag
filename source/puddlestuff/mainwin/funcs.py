@@ -2,21 +2,14 @@ import json
 import os
 from collections import OrderedDict
 
-import six
 from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal, QObject
 from PyQt5.QtWidgets import QApplication
-from six.moves import map
-from six.moves import zip
 
 from .. import actiondlg
 from .. import findfunc
 from .. import helperwin
 from ..puddleobjects import (PuddleConfig, PuddleDock)
 
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
 from ..audioinfo import PATH, DIRPATH, FILETAGS, tag_to_json, encode_fn, decode_fn
 from .. import musiclib, about as about
 from ..util import split_by_tag, translate, to_string
@@ -35,7 +28,7 @@ def applyaction(files=None, funcs=None):
         r = findfunc.apply_macros
     else:
         r = findfunc.apply_actions
-    state = {'__total_files': six.text_type(len(files))}
+    state = {'__total_files': str(len(files))}
     state['__files'] = files
     def func():
         for i, f in enumerate(files):
@@ -49,8 +42,8 @@ def applyquickaction(files, funcs):
         qa = findfunc.apply_actions
     
     selected = status['selectedtags']
-    state = {'__total_files': six.text_type(len(selected))}
-    t = (qa(funcs, f, state, list(s.keys())) for f, s in izip(files, selected))
+    state = {'__total_files': str(len(selected))}
+    t = (qa(funcs, f, state, list(s.keys())) for f, s in zip(files, selected))
     emit('writeselected', t)
 
 def auto_numbering(parent=None):
@@ -94,7 +87,7 @@ def copy():
     selected = status['selectedtags']
     mime = QMimeData()
     mime.setText(json.dumps(list(map(tag_to_json, selected))))
-    ba = QByteArray(six.text_type(selected).encode('utf8'))
+    ba = QByteArray(str(selected).encode('utf8'))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
@@ -120,13 +113,13 @@ def copy_whole():
         return
 
     mime.setText(data)
-    ba = QByteArray(six.text_type(tags).encode('utf8'))
+    ba = QByteArray(str(tags).encode('utf8'))
     mime.setData('application/x-puddletag-tags', ba)
     QApplication.clipboard().setMimeData(mime)
 
 def cut():
     selected = status['selectedtags']
-    ba = QByteArray(six.text_type(selected).encode('utf8'))
+    ba = QByteArray(str(selected).encode('utf8'))
     mime = QMimeData()
     mime.setText(json.dumps(list(map(tag_to_json, selected))))
     mime.setData('application/x-puddletag-tags', ba)
@@ -172,7 +165,7 @@ def display_tag(tag):
     if not tag:
         return "<b>Error: Pattern does not match filename.</b>"
     s = "%s: <b>%s</b>, "
-    tostr = lambda i: i if isinstance(i, six.string_types) else i[0]
+    tostr = lambda i: i if isinstance(i, str) else i[0]
     return "".join([s % (z, tostr(v)) for z, v in tag.items()])[:-2]
 
 def extended_tags(parent=None):
@@ -206,9 +199,9 @@ def format(parent=None, preview = None):
     ret = []
     tf = findfunc.tagtofilename
 
-    state = {'__total_files': six.text_type(len(files))}
+    state = {'__total_files': str(len(files))}
     for i, (audio, s) in enumerate(zip(files, selected)):
-        state['__counter'] = six.text_type(i + 1)
+        state['__counter'] = str(i + 1)
         val = tf(pattern, audio, state = state)
         ret.append(dict([(tag, val) for tag in s]))
     emit('writeselected', ret)
@@ -254,9 +247,9 @@ def load_musiclib(parent=None):
 
 def _pad(trknum, total, padlen):
     if total is not None:
-        text = six.text_type(trknum).zfill(padlen) + u"/" + six.text_type(total).zfill(padlen)
+        text = str(trknum).zfill(padlen) + u"/" + str(total).zfill(padlen)
     else:
-        text = six.text_type(trknum).zfill(padlen)
+        text = str(trknum).zfill(padlen)
     return text
 
 def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False):
@@ -283,7 +276,7 @@ def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split
         folders = OrderedDict()
         for tag_index, tag in enumerate(tags):
             key = findfunc.parsefunc(split_field, tag)
-            if not isinstance(key, six.string_types):
+            if not isinstance(key, str):
                 key = tag.stringtags().get(split_field)
             
             if key in folders:
@@ -295,7 +288,7 @@ def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split
 
 
     taglist = {}
-    for group_num, tags in enumerate(six.itervalues(folders)):
+    for group_num, tags in enumerate(folders.items()):
         if numtracks == -2:
             total = len(tags)
         elif numtracks == -1:
@@ -341,7 +334,7 @@ def paste_onto():
     while len(tags) < len(selected):
         tags.extend(clip)
     emit('writeselected', (dict(list(zip(s, list(cliptag.values()))))
-                            for s, cliptag in izip(selected, tags)))
+                            for s, cliptag in zip(selected, tags)))
 
 def rename_dirs(parent=None):
     """Changes the directory of the currently selected files, to
@@ -415,11 +408,11 @@ def run_func(selectedfiles, func):
     selectedtags = status['selectedtags']
     
     function = func.runFunction
-    state = {'__total_files': six.text_type(len(selectedtags))}
+    state = {'__total_files': str(len(selectedtags))}
 
     def tagiter():
-        for i, (selected, f) in enumerate(izip(selectedtags, selectedfiles)):
-            state['__counter'] = six.text_type(i + 1)
+        for i, (selected, f) in enumerate(zip(selectedtags, selectedfiles)):
+            state['__counter'] = str(i + 1)
             fields = findfunc.parse_field_list(func.tag, f, list(selected.keys()))
             rowtags = f.tags
             ret = {}
@@ -465,11 +458,11 @@ def tag_to_file():
     files = status['selectedfiles']
 
     tf = functions.move
-    state = {'__total_files': six.text_type(len(files))}
+    state = {'__total_files': str(len(files))}
 
     def rename():
         for i, f in enumerate(files):
-            state['__counter'] = six.text_type(i + 1)
+            state['__counter'] = str(i + 1)
             yield tf(f, pattern, f, state=state)
 
     emit('writeselected', rename())
@@ -506,7 +499,7 @@ def update_status(enable = True):
         return
     tag = files[0]
 
-    state = {'__counter': u'1', '__total_files': six.text_type(len(files))}
+    state = {'__counter': u'1', '__total_files': str(len(files))}
 
     x = findfunc.filenametotag(pattern, tag[PATH], True)
     emit('ftstatus', display_tag(x))
@@ -554,8 +547,8 @@ def update_status(enable = True):
 class _SignalObject (QObject):
     writeselected = pyqtSignal(object, name='writeselected')
     ftstatus = pyqtSignal(str, name='ftstatus')
-    tfstatus = pyqtSignal(six.text_type, name='tfstatus')
-    renamedirstatus = pyqtSignal(six.text_type, name='renamedirstatus')
+    tfstatus = pyqtSignal(str, name='tfstatus')
+    renamedirstatus = pyqtSignal(str, name='renamedirstatus')
     formatstatus = pyqtSignal(str, name='formatstatus')
     renamedirs = pyqtSignal(list, name='renamedirs')
     onetomany = pyqtSignal(dict, name='onetomany')

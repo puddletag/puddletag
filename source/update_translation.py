@@ -6,7 +6,6 @@ from subprocess import call
 import puddlestuff.findfunc as findfunc
 import puddlestuff.loadshortcuts as loadshortcuts
 from puddlestuff.puddleobjects import PuddleConfig
-from six.moves import map
 
 usage = '''Usage: python update_translation.py [-h] [-q] language
 

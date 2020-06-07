@@ -2,11 +2,10 @@ import os
 import time
 from datetime import timedelta, datetime
 
-import six
 from PyQt5.QtWidgets import QAction, QApplication, QMessageBox
-from six.moves import zip
 
 from .. import status
+from ... import audioinfo
 from ...audioinfo import lngtime
 from ...puddleobjects import progress
 from ...puddletag import add_shortcuts
@@ -41,7 +40,7 @@ def add_seconds(parent=None):
                 os.utime(f.filepath, (accessed_time, time.mktime(modified_time.timetuple())))
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
-                m = six.text_type(QApplication.translate("Defaults",
+                m = str(QApplication.translate("Defaults",
                     'An error occured while setting the modification time of <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1

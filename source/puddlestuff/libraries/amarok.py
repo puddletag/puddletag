@@ -20,8 +20,6 @@
 
 import os
 
-import six
-
 from .. import audioinfo
 
 FILENAME = audioinfo.FILENAME
@@ -84,16 +82,16 @@ class Amarok(MySQLLib):
                     'title': track[6],
                     'year': year,
                     'comment': track[8],
-                    'track': six.text_type(track[9]),
-                    'discnumber': six.text_type(track[10]),
+                    'track': str(track[9]),
+                    'discnumber': str(track[10]),
                     '__bitrate': audioinfo.strbitrate(track[11] * 1000),
                     '__length': audioinfo.strlength(track[12]),
                     '__frequency': audioinfo.strfrequency(track[13]),
-                    '__size': six.text_type(track[14]),
-                    '___filetype': six.text_type(track[15]),
-                    '___sampler': six.text_type(track[16]),
-                    'bpm': six.text_type(track[17]),
-                    '___deviceid': six.text_type(track[18]),
+                    '__size': str(track[14]),
+                    '___filetype': str(track[15]),
+                    '___sampler': str(track[16]),
+                    'bpm': str(track[17]),
+                    '___deviceid': str(track[18]),
                     '__path': os.path.basename(filename),
                     '__ext': os.path.splitext(filename)[1][1:],
                     '__library': 'amarok'}
@@ -273,9 +271,9 @@ class ConfigWindow(QWidget):
         self.setLayout(vbox)
 
     def getLibClass(self):
-        username = six.text_type(self.username.text())
-        passwd = six.text_type(self.passwd.text())
-        database = six.text_type(self.database.text())
+        username = str(self.username.text())
+        passwd = str(self.passwd.text())
+        database = str(self.database.text())
         port = int(self.port.text())
 
         return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
@@ -307,9 +305,9 @@ class ConfigWindow(QWidget):
 def loadLibrary():
     settings = QSettings()
     settings.beginGroup('Library')
-    username = six.text_type(settings.value('username'))
-    passwd = six.text_type(settings.value('passwd'))
-    database = six.text_type(settings.value('database'))
+    username = str(settings.value('username'))
+    passwd = str(settings.value('passwd'))
+    database = str(settings.value('database'))
     port = int(settings.value('port'))
     return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
 

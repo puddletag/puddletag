@@ -1,17 +1,14 @@
 import os
+import pickle
 import time
 import traceback
 from collections import defaultdict
 from functools import partial
 
 import quodlibet.config
-import six
-import six.moves.cPickle as pickle
 from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtWidgets import QCompleter, QDirModel, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 from quodlibet.parse import Query
-from six.moves import filter
-from six.moves import range
 
 from .. import audioinfo
 from ..audioinfo.tag_versions import tags_in_file
@@ -29,7 +26,7 @@ ATTRIBUTES = ['length', 'accessed', 'size', 'created',
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
-    return six.text_type(bitrate/1000) + u' kb/s'
+    return str(bitrate/1000) + u' kb/s'
 
 def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
@@ -44,9 +41,9 @@ mapping.update({
     'tracknumber': lambda value: {'track': [value]},
     '~#bitrate' : lambda value: {'__bitrate': strbitrate(value)},
     '~#length': lambda value: {'__length': strlength(value)},
-    '~#playcount': lambda value: {'playcount': [six.text_type(value)]},
-    '~#rating': lambda value: {'rating': [six.text_type(value)]},
-    '~#skipcount': lambda value: {'__skipcount': [six.text_type(value)]},
+    '~#playcount': lambda value: {'playcount': [str(value)]},
+    '~#rating': lambda value: {'rating': [str(value)]},
+    '~#skipcount': lambda value: {'__skipcount': [str(value)]},
     '~mountpoint': lambda value: {'__mountpoint': value},
     '~#mtime': lambda value : {'__modified': strtime(value)},
     '~picture': lambda value: {'__picture': value},
@@ -87,15 +84,15 @@ class Tag(MockTag):
         self._libtags = libtags
 
         for key, value in libtags.items():
-            if not value and not isinstance(value, six.integer_types):
+            if not value and not isinstance(value, int):
                 continue
             if key in mapping:
                 tags.update(mapping[key](value))
             else:
-                if not isinstance(value, six.text_type): #Strings
-                    try: value = six.text_type(value, 'utf8', 'replace')
+                if not isinstance(value, str): #Strings
+                    try: value = str(value, 'utf8', 'replace')
                     except (TypeError, ValueError):
-                        try: value = six.text_type(value) #Usually numbers
+                        try: value = str(value) #Usually numbers
                         except:
                             traceback.print_exc()
                             continue

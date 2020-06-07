@@ -26,7 +26,7 @@ There are also Functions, which can do things like replace text, trim it, do cas
 
 Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey’s Audio (.ape) and WavPack (wv).  
 
-This is a fork of the [original](https://github.com/keithgg/puddletag) which incorporates PyQt5 and Python 3.  
+This is a fork of the [original](https://github.com/keithgg/puddletag) which incorporates PyQt5 and Python 3 (Python 2 support has been dropped).
 
 ## 2. License
 
@@ -35,15 +35,14 @@ This is a fork of the [original](https://github.com/keithgg/puddletag) which inc
 ## 3. Prerequisites  
 
 * [Python3](https://www.python.org/)  
-* [python-six](https://pypi.org/project/six/)  
-* [configobj](https://pypi.org/project/configobj/)  
+* [configobj](https://pypi.org/project/configobj/)
 * [pyparsing](https://pypi.org/project/pyparsing/)  
 * [PyQt5](https://pypi.org/project/pyqt5/)  
 * [Mutagen](https://pypi.org/project/mutagen/)  
 
 On Debian, you can install all prerequisites with the command:  
 
-`apt-get install python3 python3-six python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg`   
+`apt-get install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg`
 
 The package names may be different in different distributions.  
 

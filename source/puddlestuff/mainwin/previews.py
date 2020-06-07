@@ -5,15 +5,10 @@ from PyQt5.QtWidgets import QAction, QMenu
 
 from ..puddleobjects import PuddleConfig
 
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
 from copy import deepcopy
 from ..constants import FILESSELECTED
 from ..plugins import connect_shortcut
 from ..translations import translate
-import six
 
 status = {}
 
@@ -63,8 +58,8 @@ def clear_selected_cells():
     _previews.append(dict([(f, f.preview) for f in files]))
 
     ret = []
-    for fields, f in izip(selected, files):
-        ret.append(dict([(k,v) for k,v in six.iteritems(f.preview)
+    for fields, f in zip(selected, files):
+        ret.append(dict([(k,v) for k,v in f.preview.items()
             if k not in fields]))
     emit('setpreview', ret)
 

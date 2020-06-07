@@ -1,4 +1,3 @@
-import six
 from PyQt5.QtCore import QTimer, pyqtSignal
 from PyQt5.QtWidgets import (QWidget, QLineEdit, QPushButton)
 
@@ -33,7 +32,7 @@ class DelayedEdit(QLineEdit):
         timer.start()
 
 class FilterView(QWidget):
-    filter = pyqtSignal(six.text_type, name='filter')
+    filter = pyqtSignal(str, name='filter')
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.emits = ['filter']
@@ -48,7 +47,7 @@ class FilterView(QWidget):
         self.setLayout(hbox)
 
         emit_filter = lambda: self.filter.emit(
-            six.text_type(edit.text()))
+            str(edit.text()))
         go_button.clicked.connect(emit_filter)
         edit.returnPressed.connect(emit_filter)
         self.combo.combo.activated.connect(

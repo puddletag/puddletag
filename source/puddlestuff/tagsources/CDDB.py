@@ -9,10 +9,10 @@
 
 import os
 import re
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
 import socket
+import urllib.error
+import urllib.parse
+import urllib.request
 
 name = 'CDDB.py'
 version = 1.4
@@ -39,13 +39,13 @@ def query(track_info, server_url=default_server,
     for i in track_info[2:]:
         query_str = query_str + ('%d ' % i)
 
-    query_str = six.moves.urllib.parse.quote_plus(query_str.rstrip())
+    query_str = urllib.parse.quote_plus(query_str.rstrip())
 
     url = "%s?cmd=cddb+query+%s&hello=%s+%s+%s+%s&proto=%i" % \
           (server_url, query_str, user, host, client_name,
            client_version, proto)
 
-    response = six.moves.urllib.request.urlopen(url)
+    response = urllib.request.urlopen(url)
 
     # Four elements in header: status, category, disc-id, title
     header = response.readline().decode().rstrip().split(' ', 3)
@@ -87,7 +87,7 @@ def read(category, disc_id, server_url=default_server,
           (server_url, category, disc_id, user, host, client_name,
            client_version, proto)
 
-    response = six.moves.urllib.request.urlopen(url)
+    response = urllib.request.urlopen(url)
 
     header = response.readline().decode().rstrip().split(' ', 3)
 

@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 
-import six
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
-from six.moves import range
 
 from . import audioinfo
 from .constants import CONFIGDIR
@@ -73,6 +71,6 @@ class Genres(QWidget):
 
     def applySettings(self, control=None):
         item = self.listbox.item
-        genres = [six.text_type(item(row).text()) for row in
+        genres = [str(item(row).text()) for row in
             range(self.listbox.count())]
         self._status['genres'] = genres

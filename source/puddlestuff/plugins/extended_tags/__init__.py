@@ -1,4 +1,3 @@
-import six
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QAction
 
@@ -82,7 +81,7 @@ class ExTagsPlugin(ExTags):
             previews = previews.intersection(audio.preview)
             italics = italics.intersection(audio.equal_fields())
         row = 0
-        for field, values in six.iteritems(common):
+        for field, values in common.items():
             if field in previews and field not in italics:
                 preview = BOLD
             else:
@@ -91,7 +90,7 @@ class ExTagsPlugin(ExTags):
                 self._settag(row, field, KEEP)
                 row += 1
             else:
-                if isinstance(values, six.string_types):
+                if isinstance(values, str):
                     self._settag(row, field, values, None, preview)
                     row += 1
                 else:
@@ -113,8 +112,8 @@ class ExTagsPlugin(ExTags):
     def _tag(self, row, status = None):
         getitem = self.table.item
         item = getitem(row, 0)
-        tag = six.text_type(item.text())
-        value = six.text_type(getitem(row, 1).text())
+        tag = str(item.text())
+        value = str(getitem(row, 1).text())
         if status:
             return (tag, value, item.status)
         else:

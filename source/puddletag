@@ -8,8 +8,6 @@ import sys
 from glob import glob
 from optparse import OptionParser
 
-import six
-
 
 def convert_ini_files():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -56,7 +54,7 @@ def _migrate_action_shortcut_filenames():
         data = json.loads(fo.read());
     
     old_dir = os.path.join(os.getenv('HOME'), '.puddletag', 'actions')
-    for key, shortcut in six.iteritems(data):
+    for key, shortcut in data.items():
         shortcut['filenames'] = [z.replace(old_dir, ACTIONDIR) for z in shortcut['filenames']]
 
     with open(filename, 'w') as fo:
@@ -213,7 +211,7 @@ def load_language(qapp, langfile=None):
                 langargs = os.path.basename(f), os.path.dirname(f)
 
         if not langargs and lang != 'default':
-            locale = six.text_type(QLocale.system().name())
+            locale = str(QLocale.system().name())
             if locale in langs:
                 f = langs[locale]
                 langargs = os.path.basename(f), os.path.dirname(f)
@@ -240,7 +238,7 @@ def load_language(qapp, langfile=None):
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
              QLibraryInfo.location(QLibraryInfo.TranslationsPath))
-        print("Locale: " + six.text_type(QLocale.system().name()))
+        print("Locale: " + str(QLocale.system().name()))
         translators.append(translator)
 
     else:

@@ -10,11 +10,10 @@ import hashlib
 import hmac
 import re
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
-import six
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
 from xml.dom import minidom
 
 from ..audioinfo import DATA
@@ -63,7 +62,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
 
     items = [(key, value) for key, value in
         query_dictionary.items()]
-    query = six.moves.urllib.parse.urlencode(sorted(items))
+    query = urllib.parse.urlencode(sorted(items))
 
     try:
         hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
@@ -71,7 +70,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
     except TypeError:
         raise RetrievalError(translate('Amazon',
             'Invalid Access or Secret Key'))
-    signature = six.moves.urllib.parse.quote(base64.b64encode(hm.digest()))
+    signature = urllib.parse.quote(base64.b64encode(hm.digest()))
 
     query = "http://webservices.amazon.com/onca/xml?%s&Signature=%s" % (
         query, signature)
@@ -196,7 +195,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
     """Retrieves album from the information in info. 
     image must be either one of image_types or None. 
     If None, no image is retrieved."""
-    if isinstance(info, six.string_types):
+    if isinstance(info, str):
         asin = info
     else:
         asin = info['#asin']
@@ -209,7 +208,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
         'AssociateTag': u'puddletag-20'}
     url = create_aws_url(access_key, secret_key, query_pairs)
 
-    if isinstance(info, six.string_types):
+    if isinstance(info, str):
         write_log(translate('Amazon',
             'Retrieving using ASIN: %s') % asin)
     else:
@@ -218,7 +217,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
                 info.get('artist', u'')).arg(info.get('album', u'')))
     xml = urlopen(url)
     
-    if isinstance(info, six.string_types):
+    if isinstance(info, str):
         tracks = parse_album_xml(xml)
     else:
         tracks = parse_album_xml(xml, info['album'])

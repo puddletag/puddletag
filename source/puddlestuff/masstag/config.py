@@ -1,8 +1,6 @@
 import glob
 import os
 
-from six.moves import range
-
 from ..constants import CONFIGDIR
 from ..masstag import (fields_from_text, MassTagProfile,
                        TagSourceProfile)
