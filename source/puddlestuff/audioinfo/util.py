@@ -616,7 +616,7 @@ class CaselessDict(dict):
 
     def __deepcopy__(self, memo):
         cls = CaselessDict()
-        for key, value in dict.iteritems(self):
+        for key, value in self.items():
             cls[key] = deepcopy(value)
         return cls
 
