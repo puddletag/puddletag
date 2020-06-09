@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 from collections import OrderedDict
 
 from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal, QObject
@@ -20,6 +21,8 @@ from ..constants import HOMEDIR
 path = os.path
 
 status = {}
+
+_TAGS_MIME_TYPE = 'application/x.puddletag.tags'
 
 def applyaction(files=None, funcs=None):
     if files is None:
@@ -83,15 +86,26 @@ def connect_status(actions):
     actions = [x for x in actions if x.status]
     list(map(connect, actions))
 
-def copy():
-    selected = status['selectedtags']
+def _setClipboardTags(tags):
+    """ Save the given list of tags in the clipboard, both as json and binary. """
     mime = QMimeData()
-    mime.setText(json.dumps(list(map(tag_to_json, selected))))
-    ba = QByteArray(str(selected))
-    mime.setData('application/x-puddletag-tags', ba)
+
+    binaryData = pickle.dumps(tags)
+    mime.setData(_TAGS_MIME_TYPE, binaryData)
+
+    # This is only to support pasting outside of puddletag
+    jsonData = json.dumps(list(map(tag_to_json, tags)))
+    mime.setText(jsonData)
+
     QApplication.clipboard().setMimeData(mime)
 
+def copy():
+    """ Save the selected tags to the clipboard. """
+    selected = status['selectedtags']
+    _setClipboardTags(selected)
+
 def copy_whole():
+    """ Save all tags of the selected files to the clipboard. """
     tags = []
     mime = QMimeData()
     
@@ -108,31 +122,24 @@ def copy_whole():
     to_copy = check_copy_data(data)
     if to_copy == 2:
         tags = [usertags(f, False) for f in status['selectedfiles']]
-        data = json.dumps(list(map(tag_to_json, tags)))
     elif to_copy == 1:
         return
 
-    mime.setText(data)
-    ba = QByteArray(str(tags))
-    mime.setData('application/x-puddletag-tags', ba)
-    QApplication.clipboard().setMimeData(mime)
+    _setClipboardTags(tags)
 
 def cut():
+    """ Copy the selected tags in the clipboard, and set them blank. """
     selected = status['selectedtags']
-    ba = QByteArray(str(selected))
-    mime = QMimeData()
-    mime.setText(json.dumps(list(map(tag_to_json, selected))))
-    mime.setData('application/x-puddletag-tags', ba)
-    QApplication.clipboard().setMimeData(mime)
+    _setClipboardTags(selected)
 
     emit('writeselected', (dict([(z, "") for z in s if z not in FILETAGS])
         for s in selected))
 
 def check_copy_data(data):
-    #0 = yes
-    #1 = no
-    #2 = no images
-    if len(data) > 5242880:
+    """ If the given JSON data is bigger than 5MiB, show a dialog.
+        Returns 0 if the user wants to copy all, 1 if not, and 2 if
+        all except the images."""
+    if len(data) > 5*1024*1024:
         msgbox = QMessageBox()
         msgbox.setText(translate("Messages",
             "That's a large amount of data to copy.\n"
@@ -308,15 +315,22 @@ def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split
 
     emit('writeselected', taglist)
 
+def _getClipboardTags():
+    """ Returns the list of tags from the clipboard (if any) """
+    if not QApplication.clipboard().mimeData().hasFormat(_TAGS_MIME_TYPE):
+        return None
+    binaryData = QApplication.clipboard().mimeData().data(_TAGS_MIME_TYPE).data()
+    tags = pickle.loads(binaryData)
+    return tags
+
 def paste():
+    """ Write tags from the clipboard to the selected files. """
     rows = status['selectedrows']
     if not rows:
         return
-    data = QApplication.clipboard().mimeData().data(
-        'application/x-puddletag-tags').data()
-    if not data:
+    clip = _getClipboardTags()
+    if not clip:
         return
-    clip = eval(data, {"__builtins__":None},{})
     tags = []
     while len(tags) < len(rows):
         tags.extend(clip)
@@ -324,11 +338,10 @@ def paste():
     emit('writeselected', tags)
 
 def paste_onto():
-    data = QApplication.clipboard().mimeData().data(
-        'application/x-puddletag-tags').data()
-    if not data:
+    """ Write the tag values from the clipboard into the selected tags. """
+    clip = _getClipboardTags()
+    if not clip:
         return
-    clip = eval(data, {"__builtins__":None}, {})
     selected = status['selectedtags']
     tags = []
     while len(tags) < len(selected):

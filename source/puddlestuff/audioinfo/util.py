@@ -37,7 +37,7 @@ splitext = lambda x: path.splitext(x)[1][1:].lower()
 
 def b64_to_img(img):
     ret = img.copy()
-    ret['data'] = base64.b64decode(img['data'])
+    ret['data'] = base64.b64decode(img['data'].encode('ascii'))
     return ret
 
 def commonimages(images):
@@ -258,7 +258,7 @@ def get_total(tag):
 
 def img_to_b64(img):
     ret = img.copy()
-    ret['data'] = base64.b64encode(img['data'])
+    ret['data'] = base64.b64encode(img['data']).decode('ascii')
     return ret
         
 def info_to_dict(info):
