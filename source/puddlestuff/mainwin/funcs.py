@@ -288,7 +288,7 @@ def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split
 
 
     taglist = {}
-    for group_num, tags in enumerate(folders.items()):
+    for group_num, tags in enumerate(folders.values()):
         if numtracks == -2:
             total = len(tags)
         elif numtracks == -1:
