@@ -33,7 +33,7 @@ def bin_to_image(pic):
         'imagetype': pic.type}
 
 def image_to_base64(image):
-    return base64.standard_b64encode(image_to_bin(image).write())
+    return base64.standard_b64encode(image_to_bin(image).write()).decode('ascii')
 
 def image_to_bin(image):
     props = {}
