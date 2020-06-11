@@ -1457,7 +1457,7 @@ class TagTable(QTableView):
             self.model().modelReset.connect(self.resizeColumnsToContents)
         else:
             try:
-                self.model().modelReset.connect(self.resizeColumnsToContents)
+                self.model().modelReset.disconnect(self.resizeColumnsToContents)
             except TypeError:
                 logging.debug("Tried to disconnect un-connected Resize-Slot")
 
