@@ -1533,7 +1533,7 @@ class PicWidget(QWidget):
 
         self.label.setAlignment(Qt.AlignCenter)
         self.label.newImages.connect(
-            lambda *filenames: self.addImages(self.loadPics(*filenames)))
+            lambda filenames: self.addImages(self.loadPics(*filenames)))
 
         self._image_size = QLabel()
         self._image_size.setAlignment(Qt.AlignHCenter)
@@ -1949,13 +1949,14 @@ class PicWidget(QWidget):
         self.imageChanged.emit()
 
     def loadPics(self, *filenames):
-        """Loads pictures from the filenames"""
+        """Loads pictures from the filenames.
+
+        The filenames need to be passes as str arguments, one filename
+        per argument. Lists and tuples need to be unpacked by the caller."""
         #I really need to sort out these circular references.
         from .tagsources import RetrievalError, urlopen
         images = []
         
-        if isinstance(filenames, tuple):
-            filenames = filenames[0]
         for filename in filenames:
             image = QImage()
             if filename.startswith(":/"):
