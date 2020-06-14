@@ -115,13 +115,13 @@ def check_libs():
 
     If some not found, show/print a message.
     Exit if requirements aren't met."""
-    _libs = [('mutagen', '(usually python-mutagen or just mutagen)',
+    _libs = [('mutagen', '(usually python3-mutagen or just mutagen)',
             'http://code.google.com/p/mutagen/'),
-         ('configobj', '(usually python-configobj)',
+         ('configobj', '(usually python3-configobj)',
             'http://code.google.com/p/configobj/'),
-         ('pyparsing', '(python-pyparsing or python-parsing in most distros)',
+         ('pyparsing', '(python3-pyparsing or python3-parsing in most distros)',
             'http://pyparsing.wikispaces.com/'),
-         ('PyQt5', '(python-qt5 usually)',
+         ('PyQt5', '(python3-pyqt5 usually)',
             'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 
     found = True
