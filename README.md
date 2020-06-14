@@ -57,13 +57,6 @@ cd puddletag
 PYTHONPATH=source/ ./source/puddletag
 ```
 
-Documentation on usage is at [docs.puddletag.net](http://docs.puddletag.net/docs.html)
-
-
-- You can run puddletag from that directory by typing ./puddletag in your console.  
-- Alternatively, install it by running python setup.py install as root in the unzipped directory.  
-- puddletag should appear in your Multimedia (or Sounds etc.) menu. If not run 'desktop-file-install puddletag.desktop' as root in the unzipped directory.  
-
 
 ## 5. Support
 
