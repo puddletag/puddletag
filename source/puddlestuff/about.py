@@ -9,7 +9,7 @@ from . import version_string, changeset
 from .puddleobjects import OKCancel
 from .translations import translate
 
-desc  = translate("About", '''puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.
+desc = translate("About", '''puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.
 
 <br /><br />Features include: Batch editing of tags, renaming files using tags, retrieving tags from filenames, using Actions to automate repetitive tasks, importing your music library and loads of other awesome stuff. <br /><br />
 
@@ -36,8 +36,9 @@ The <b>Oxygen team</b> for the Oxygen icons.
 
 """)
 
+
 class ScrollLabel(QWidget):
-    def __init__(self, text, alignment = Qt.AlignCenter, parent=None):
+    def __init__(self, text, alignment=Qt.AlignCenter, parent=None):
         QWidget.__init__(self, parent)
         vbox = QVBoxLayout()
         self.setLayout(vbox)
@@ -60,18 +61,18 @@ class AboutPuddletag(QDialog):
         QDialog.__init__(self, parent)
         self.setWindowTitle(translate("About", 'About puddletag'))
         icon = QLabel()
-        icon.setPixmap(QPixmap(':/appicon.png').scaled(48,48))
+        icon.setPixmap(QPixmap(':/appicon.png').scaled(48, 48))
         lib_versions = ', '.join(['<b>PyQt  %s' % PYQT_VERSION_STR,
-            'Mutagen %s' % mutagen.version_string,
-            'Pyparsing %s</b>' %pyparsing.__version__])
+                                  'Mutagen %s' % mutagen.version_string,
+                                  'Pyparsing %s</b>' % pyparsing.__version__])
         if changeset:
             version = translate("About",
-                '<h2>puddletag %1 (Changeset %2)</h2> %3')
+                                '<h2>puddletag %1 (Changeset %2)</h2> %3')
             version = version.arg(version_string)
             version = version.arg(changeset).arg(lib_versions)
         else:
             version = translate("About",
-                '<h2>puddletag %1</h2> %2')
+                                '<h2>puddletag %1</h2> %2')
             version = version.arg(version_string)
             version = version.arg(lib_versions)
         label = QLabel(version)
@@ -79,7 +80,7 @@ class AboutPuddletag(QDialog):
         tab = QTabWidget()
         tab.addTab(ScrollLabel(desc), translate('About', '&About'))
         tab.addTab(ScrollLabel(thanks, Qt.AlignLeft),
-            translate('About', '&Thanks'))
+                   translate('About', '&Thanks'))
 
         vbox = QVBoxLayout()
         version_layout = QHBoxLayout()
@@ -92,6 +93,7 @@ class AboutPuddletag(QDialog):
         vbox.addLayout(ok)
         ok.ok.connect(self.close)
         self.setLayout(vbox)
+
 
 if __name__ == '__main__':
     app = QApplication([])

@@ -12,13 +12,15 @@ from .util import (CaselessDict, FILENAME, MockTag, PATH,
                    setdeco, str_filesize, unicode_list, usertags)
 
 ATTRIBUTES = ['length', 'accessed', 'size', 'created',
-    'modified', 'filetype']
+              'modified', 'filetype']
 
 COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
 
+
 class DefaultHeaderError(RuntimeError): pass
 
-def bin_to_pic(value, covertype = 3):
+
+def bin_to_pic(value, covertype=3):
     ret = {}
     start = value.find('\x00')
     ret[util.DESCRIPTION] = value[:start].decode('utf8', 'replace')
@@ -30,6 +32,7 @@ def bin_to_pic(value, covertype = 3):
 
     return ret
 
+
 def pic_to_bin(pic):
     desc = pic[util.DESCRIPTION].encode('utf8')
     data = pic[util.DATA]
@@ -40,6 +43,7 @@ def pic_to_bin(pic):
     if data:
         return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
     return {}
+
 
 def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
     class APEv2Base(MockTag):
@@ -60,7 +64,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
         def get_filepath(self):
             return MockTag.get_filepath(self)
 
-        def set_filepath(self,  val):
+        def set_filepath(self, val):
             self.__tags.update(MockTag.set_filepath(self, val))
 
         filepath = property(get_filepath, set_filepath)
@@ -80,13 +84,13 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
         def __contains__(self, key):
             if key == '__image':
                 return bool(self.images)
-            
+
             elif key == '__total':
                 try:
                     return bool(get_total(self))
                 except (KeyError, ValueError):
                     return False
-            
+
             if self.revmapping:
                 key = self.revmapping.get(key, key)
             return key in self.__tags
@@ -96,7 +100,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             cls.mapping = self.mapping
             cls.revmapping = self.revmapping
             cls.set_fundamentals(deepcopy(self.__tags),
-                self.mut_obj, self.images)
+                                 self.mut_obj, self.images)
             cls.filepath = self.filepath
             return cls
 
@@ -107,7 +111,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             elif key.startswith('__'):
                 return
             else:
-                del(self.__tags[key])
+                del (self.__tags[key])
 
         @getdeco
         def __getitem__(self, key):
@@ -119,7 +123,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
 
         @setdeco
         def __setitem__(self, key, value):
-            
+
             if key == '__image':
                 self.images = value
                 return
@@ -134,7 +138,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 return
             elif isempty(value):
                 if key in self:
-                    del(self[key])
+                    del (self[key])
             else:
                 value = unicode_list(value)
                 if isempty(value): return
@@ -143,7 +147,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
         def delete(self):
             self.mut_obj.delete()
             for key in self.usertags:
-                del(self.__tags[self.revmapping.get(key, key)])
+                del (self.__tags[self.revmapping.get(key, key)])
             self.images = []
 
         def _info(self):
@@ -178,7 +182,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             self.__images = []
             try:
                 tags, audio = self.load(filename, mutagen_file)
-            except no_header: #Try loading just APEv2
+            except no_header:  # Try loading just APEv2
                 tags, audio = self.load(filename, APEv2File)
             except APENoHeaderError:
                 audio = mutagen_file()
@@ -227,9 +231,9 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 except AttributeError:
                     pass
             toremove = [z for z in audio if z
-                not in newtag and audio[z].kind == 0]
+                        not in newtag and audio[z].kind == 0]
             for z in toremove:
-                del(audio[z])
+                del (audio[z])
             audio.tags.update(newtag)
             audio.save()
 
@@ -243,16 +247,19 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
         def update_tag_list(self):
             from . import tag_versions
             l = tag_versions.tags_in_file(self.filepath,
-                [tag_versions.ID3_V1, tag_versions.ID3_V2])
+                                          [tag_versions.ID3_V1, tag_versions.ID3_V2])
             if l:
                 self.__tags['__tag'] = 'APEv2, ' + ', '.join(l)
             else:
                 self.__tags['__tag'] = 'APEv2'
+
     return APEv2Base
 
+
 mp_base = get_class(Musepack, 'Musepack',
-    ATTRIBUTES + ['frequency', 'bitrate', 'version', 'channels'],
-    MusepackHeaderError)
+                    ATTRIBUTES + ['frequency', 'bitrate', 'version', 'channels'],
+                    MusepackHeaderError)
+
 
 class MusePackTag(mp_base):
     def _info(self):
@@ -262,18 +269,19 @@ class MusePackTag(mp_base):
                     ('Filename', self[FILENAME]),
                     ('Modified', self.modified)]
         mpinfo = [('Bitrate', self.bitrate),
-                   ('Frequency', self.frequency),
-                   ('Channels', str(info.channels)),
-                   ('Length', self.length),
-                   ('Stream Version', str(info.version))]
+                  ('Frequency', self.frequency),
+                  ('Channels', str(info.channels)),
+                  ('Length', self.length),
+                  ('Stream Version', str(info.version))]
         return [('File', fileinfo), ("Musepack Info", mpinfo)]
 
     info = property(_info)
 
 
 ma_base = get_class(MonkeysAudio, "Monkey's Audio",
-    ATTRIBUTES + ['bitrate', 'frequency', 'version', 'channels'],
-    MonkeysAudioHeaderError)
+                    ATTRIBUTES + ['bitrate', 'frequency', 'version', 'channels'],
+                    MonkeysAudioHeaderError)
+
 
 class MonkeysAudioTag(ma_base):
     def _info(self):
@@ -283,17 +291,18 @@ class MonkeysAudioTag(ma_base):
                     ('Filename', self[FILENAME]),
                     ('Modified', self.modified)]
         mainfo = [('Bitrate', 'Lossless'),
-                   ('Frequency', self.frequency),
-                   ('Channels', str(info.channels)),
-                   ('Length', self.length),
-                   ('Stream Version', str(info.version))]
+                  ('Frequency', self.frequency),
+                  ('Channels', str(info.channels)),
+                  ('Length', self.length),
+                  ('Stream Version', str(info.version))]
         return [('File', fileinfo), ("Monkey's Audio", mainfo)]
 
     info = property(_info)
 
 
 wv_base = get_class(WavPack, 'WavPack',
-    ATTRIBUTES + ['frequency', 'bitrate'], WavPackHeaderError)
+                    ATTRIBUTES + ['frequency', 'bitrate'], WavPackHeaderError)
+
 
 class WavPackTag(wv_base):
     def _info(self):
@@ -314,8 +323,8 @@ class WavPackTag(wv_base):
 Tag = get_class(APEv2File, 'APEv2', ATTRIBUTES)
 
 filetypes = [
-    (APEv2File, Tag , 'APEv2'),
+    (APEv2File, Tag, 'APEv2'),
     (MonkeysAudio, MonkeysAudioTag, 'APEv2',
-        ['ape', 'apl']),
+     ['ape', 'apl']),
     (WavPack, WavPackTag, 'APEv2', 'wv'),
     (Musepack, Tag, 'APEv2', 'mpc')]

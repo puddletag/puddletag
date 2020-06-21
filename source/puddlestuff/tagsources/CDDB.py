@@ -1,4 +1,3 @@
-
 # Module for retrieving CDDB v1 data from CDDB servers via HTTP
 
 # Written 17 Nov 1999 by Ben Gertzfield <che@debian.org>
@@ -27,10 +26,10 @@ else:
 proto = 5
 default_server = 'http://freedb.freedb.org/~cddb/cddb.cgi'
 
+
 def query(track_info, server_url=default_server,
           user=default_user, host=hostname, client_name=name,
           client_version=version):
-
     disc_id = track_info[0]
     num_tracks = track_info[1]
 
@@ -52,37 +51,37 @@ def query(track_info, server_url=default_server,
 
     header[0] = int(header[0])
 
-    if header[0] == 200:                # OK
-        result = { 'category': header[1], 'disc_id': header[2], 'title':
-                   header[3] }
+    if header[0] == 200:  # OK
+        result = {'category': header[1], 'disc_id': header[2], 'title':
+            header[3]}
 
-        return [ header[0], result ]
+        return [header[0], result]
 
-    elif header[0] == 211 or header[0] == 210: # multiple matches
+    elif header[0] == 211 or header[0] == 210:  # multiple matches
         result = []
 
         for line in response.readlines():
             line = line.decode().rstrip()
 
-            if line == '.':             # end of matches
+            if line == '.':  # end of matches
                 break
-                                        # otherwise:
-                                        # split into 3 pieces, not 4
-                                        # (thanks to bgp for the fix!)
+                # otherwise:
+                # split into 3 pieces, not 4
+                # (thanks to bgp for the fix!)
             match = line.split(' ', 2)
 
-            result.append({ 'category': match[0], 'disc_id': match[1], 'title':
-                            match[2] })
+            result.append({'category': match[0], 'disc_id': match[1], 'title':
+                match[2]})
 
-        return [ header[0], result ]
+        return [header[0], result]
 
     else:
-        return [ header[0], None ]
+        return [header[0], None]
+
 
 def read(category, disc_id, server_url=default_server,
          user=default_user, host=hostname, client_name=name,
          client_version=version):
-
     url = "%s?cmd=cddb+read+%s+%s&hello=%s+%s+%s+%s&proto=%i" % \
           (server_url, category, disc_id, user, host, client_name,
            client_version, proto)
@@ -92,7 +91,7 @@ def read(category, disc_id, server_url=default_server,
     header = response.readline().decode().rstrip().split(' ', 3)
 
     header[0] = int(header[0])
-    if header[0] == 210 or header[0] == 417: # success or access denied
+    if header[0] == 210 or header[0] == 417:  # success or access denied
         reply = []
 
         for line in response.readlines():
@@ -107,15 +106,15 @@ def read(category, disc_id, server_url=default_server,
 
             reply.append(line)
 
-        if header[0] == 210:            # success, parse the reply
-            return [ header[0], parse_read_reply(reply) ]
-        else:                           # access denied. :(
-            return [ header[0], reply ]
+        if header[0] == 210:  # success, parse the reply
+            return [header[0], parse_read_reply(reply)]
+        else:  # access denied. :(
+            return [header[0], reply]
     else:
-        return [ header[0], None ]
+        return [header[0], None]
+
 
 def parse_read_reply(comments):
-
     len_re = re.compile(r'#\s*Disc length:\s*(\d+)\s*seconds')
     revis_re = re.compile(r'#\s*Revision:\s*(\d+)')
     submit_re = re.compile(r'#\s*Submitted via:\s*(.+)')

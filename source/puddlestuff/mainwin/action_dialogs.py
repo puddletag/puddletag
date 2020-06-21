@@ -16,7 +16,7 @@ class ActionDialog(ActionWindow):
         self.receives = [(SELECTIONCHANGED, self._update)]
         if 'status' in kwargs:
             self._status = kwargs['status']
-            del(kwargs['status'])
+            del (kwargs['status'])
         super(ActionDialog, self).__init__(*args, **kwargs)
         self.okcancel.okButton.hide()
         self.okcancel.cancelButton.hide()
@@ -69,13 +69,14 @@ class ActionDialog(ActionWindow):
         if self.example:
             self.updateExample()
 
+
 class FunctionDialog(CreateFunction):
     def __init__(self, *args, **kwargs):
         self.emits = []
         self.receives = [(SELECTIONCHANGED, self._update)]
         if 'status' in kwargs:
             self._status = kwargs['status']
-            del(kwargs['status'])
+            del (kwargs['status'])
         super(FunctionDialog, self).__init__(*args, **kwargs)
         self.okcancel.okButton.hide()
         self.okcancel.cancelButton.hide()
@@ -84,7 +85,7 @@ class FunctionDialog(CreateFunction):
         self._apply.clicked.connect(partial(self.okClicked, False))
         self.valschanged.connect(write)
         self.okcancel.cancel.disconnect(self.close)
-        
+
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._apply)
@@ -105,7 +106,7 @@ class FunctionDialog(CreateFunction):
         self._text = f.get(field, '')
 
         widget._combotags = list(selected.keys())
-        
+
         widget._text = self._text
         widget.example = f
 
@@ -117,7 +118,7 @@ class FunctionDialog(CreateFunction):
     def showEvent(self, event):
         self._update()
         return super(FunctionDialog, self).showEvent(event)
-        
+
 
 controls = [
     ("Functions", FunctionDialog, RIGHTDOCK, False),

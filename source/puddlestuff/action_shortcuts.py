@@ -19,8 +19,8 @@ NAME = 'name'
 FILENAMES = 'filenames'
 SHORTCUT_SECTION = 'Shortcut'
 
+
 def create_action_shortcut(name, filenames, scut_key=None, method=None, parent=None, add=False):
-    
     if not method:
         from .mainwin.funcs import applyaction
         method = applyaction
@@ -35,12 +35,14 @@ def create_action_shortcut(name, filenames, scut_key=None, method=None, parent=N
         add_shortcuts('&Actions', [shortcut], save=bool(scut_key))
     return shortcut
 
+
 def create_action_shortcuts(method, parent=None):
     actions, shortcuts = load_settings()
     menu_shortcuts = []
     for name, filenames in shortcuts:
         menu_shortcuts.append(Shortcut(name, filenames, method, parent))
     return menu_shortcuts
+
 
 def get_shortcuts(default=None):
     from .puddletag import status
@@ -52,6 +54,7 @@ def get_shortcuts(default=None):
         return set(ret + default)
     else:
         return set(ret)
+
 
 def load_settings(filename=None, actions=None):
     if filename is None:
@@ -72,11 +75,13 @@ def load_settings(filename=None, actions=None):
             shortcuts.append([name, filenames])
     return actions, shortcuts
 
+
 def save_shortcut(name, filenames):
     cparser = PuddleConfig(FILENAME)
     section = SHORTCUT_SECTION + str(len(cparser.sections()))
     cparser.set(section, NAME, name)
     cparser.set(section, FILENAMES, filenames)
+
 
 class Shortcut(QAction):
     def __init__(self, name, filenames, method, parent, shortcut=u''):
@@ -87,7 +92,7 @@ class Shortcut(QAction):
         self.command = None
         self.togglecheck = None
         self._method = method
-        
+
         if shortcut:
             self.setShortcut(shortcut)
         self.filenames = filenames
@@ -95,18 +100,18 @@ class Shortcut(QAction):
         self.triggered.connect(self.runAction)
 
         self._watcher = QFileSystemWatcher(list(filter(os.path.exists, filenames)),
-            self)
+                                           self)
         self._watcher.fileChanged.connect(self._checkFile)
 
     def _checkFile(self, filename):
-        #There's some fucked up behaviour going on with QFileSystemWatcher.
-        #Without the code here, this method will be called 404 times
-        #whenever the file changes. I spent the last hour trying
-        #to figure it out and I'm giving up and brute forcing it.
+        # There's some fucked up behaviour going on with QFileSystemWatcher.
+        # Without the code here, this method will be called 404 times
+        # whenever the file changes. I spent the last hour trying
+        # to figure it out and I'm giving up and brute forcing it.
 
-        #Disconnecting and reconnecting doesn't work either.
-        #Nor does using blockSignals
-        
+        # Disconnecting and reconnecting doesn't work either.
+        # Nor does using blockSignals
+
         self._watcher.fileChanged.disconnect(self._checkFile)
         filename = filename
         if not os.path.exists(filename):
@@ -125,11 +130,12 @@ class Shortcut(QAction):
         return funcs
 
     def runAction(self):
-        return self._method(funcs = self.funcs)
-        
+        return self._method(funcs=self.funcs)
+
 
 class Editor(QDialog):
     actionChanged = pyqtSignal(str, list, str, name='actionChanged');
+
     def __init__(self, title='Add Action', shortcut=u'', actions=None, names=None, shortcuts=None, parent=None):
         super(Editor, self).__init__(parent)
         self.setWindowTitle(title)
@@ -137,7 +143,7 @@ class Editor(QDialog):
         self._items = {}
 
         self._name = QLineEdit('Name')
-        
+
         if shortcut and shortcut in shortcuts:
             shortcuts.remove(shortcut)
 
@@ -145,11 +151,11 @@ class Editor(QDialog):
         self._shortcut.setText(shortcut)
         clear = QPushButton(translate('Shortcuts', '&Clear'))
         clear.clicked.connect(self._shortcut.clear)
-        
+
         if names is None:
             names = []
         self._names = names
-        
+
         self._actionList = ListBox()
         self._actionList.itemDoubleClicked.connect(self._addAction)
         self._newActionList = ListBox()
@@ -168,7 +174,7 @@ class Editor(QDialog):
         scut_status = QLabel('')
         self._shortcut.validityChanged.connect(
             lambda v: scut_status.setText('') if v or (not self._shortcut.text()) else
-                scut_status.setText(translate('Shortcuts', "Invalid shortcut sequence.")))
+            scut_status.setText(translate('Shortcuts', "Invalid shortcut sequence.")))
         okcancel.insertWidget(0, scut_status)
 
         hbox = QHBoxLayout()
@@ -176,7 +182,7 @@ class Editor(QDialog):
             create_buddy('Actions', self._actionList, QVBoxLayout()), 1)
         hbox.addLayout(listbuttons, 0)
         hbox.addLayout(create_buddy('Actions to run for shortcut',
-            self._newActionList, QVBoxLayout()), 1)
+                                    self._newActionList, QVBoxLayout()), 1)
 
         layout = QVBoxLayout()
         layout.addLayout(create_buddy('Shortcut &Name: ', self._name))
@@ -199,7 +205,7 @@ class Editor(QDialog):
         new_item._action = item._action
         self._newActionList.addItem(new_item)
         self._newActionList.setCurrentItem(new_item,
-            QItemSelectionModel.ClearAndSelect)
+                                           QItemSelectionModel.ClearAndSelect)
 
     def enableOk(self, text):
         if not text or text in self._names:
@@ -212,7 +218,7 @@ class Editor(QDialog):
         items = list(map(alist.item, range(alist.count())))
         actions = [item._action[1] for item in items]
         self.actionChanged.emit(str(self._name.text()), actions,
-            str(self._shortcut.text()) if self._shortcut.valid else '')
+                                str(self._shortcut.text()) if self._shortcut.valid else '')
         self.close()
 
     def setActions(self, actions):
@@ -242,6 +248,7 @@ class Editor(QDialog):
     def setShortcut(self, text):
         self._shortcut.setText(text)
 
+
 class ShortcutEditor(QDialog):
     def __init__(self, load=False, parent=None, buttons=False):
         super(ShortcutEditor, self).__init__(parent)
@@ -256,7 +263,7 @@ class ShortcutEditor(QDialog):
         listbuttons.edit.connect(self._editShortcut)
         listbuttons.duplicate.connect(self._duplicate)
         self._listbox.itemDoubleClicked.connect(self._editShortcut)
-        
+
         self._listbox.connectToListButtons(listbuttons)
 
         hbox = QHBoxLayout()
@@ -280,7 +287,7 @@ class ShortcutEditor(QDialog):
     def _addShortcut(self):
         shortcuts = get_shortcuts().difference(self._hotkeys).union(
             i.shortcut for i in self._listbox.items() if i.shortcut)
-            
+
         win = Editor('Add Shortcut', '', self._actions, self.names(), shortcuts, self)
         win.setModal(True)
         win.actionChanged.connect(self.addShortcut)
@@ -295,13 +302,13 @@ class ShortcutEditor(QDialog):
         if select:
             self._listbox.setCurrentItem(item, QItemSelectionModel.ClearAndSelect)
 
-    def applySettings(self, control = None):
+    def applySettings(self, control=None):
         from .puddletag import remove_shortcuts, add_shortcuts
         remove_shortcuts('&Actions', self._names)
 
         f = open(FILENAME, 'w')
         f.close()
-        
+
         cparser = PuddleConfig(FILENAME)
         for i, item in enumerate(self._listbox.items()):
             section = SHORTCUT_SECTION + str(i)
@@ -374,7 +381,7 @@ class ShortcutEditor(QDialog):
         from .puddletag import status
         if status['actions']:
             shortcuts = dict((str(a.text()), str(a.shortcut().toString()))
-                for a in status['actions'])
+                             for a in status['actions'])
         else:
             shortcuts = {}
 
@@ -389,6 +396,7 @@ class ShortcutEditor(QDialog):
 
     def names(self):
         return [item.actionName for item in self._listbox.items()]
+
 
 if __name__ == '__main__':
     app = QApplication([])

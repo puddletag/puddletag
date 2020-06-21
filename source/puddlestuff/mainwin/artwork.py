@@ -14,18 +14,20 @@ from ..puddleobjects import PicWidget
 
 def svg_to_pic(data, desc):
     return {'data': data, 'size': len(data),
-        'description': desc, 'imagetype': 3}
+            'description': desc, 'imagetype': 3}
+
 
 def get_font(rect, *text):
     font = QFont()
     metrics = QFontMetrics
     lengths = [(t, metrics(font).width(t)) for t in text]
-    lowest = max(lengths, key = lambda x: x[1])
+    lowest = max(lengths, key=lambda x: x[1])
     size = 12
     while QFontMetrics(font).width(lowest[0]) < rect.width() - 30:
         font.setPointSize(size)
         size += 1
     return font
+
 
 def create_svg(text, font, rect=None):
     if not rect:
@@ -52,8 +54,9 @@ def create_svg(text, font, rect=None):
     f.close()
     return svg
 
+
 class ArtworkWidget(QWidget):
-    def __init__(self, parent=None, status = None):
+    def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.receives = [(SELECTIONCHANGED, self.fill)]
         self.emits = []
@@ -95,15 +98,15 @@ class ArtworkWidget(QWidget):
         self.picwidget.lastfilename = audios[0].filepath
         images = commonimages(images)
         self.picwidget.setImageTags(imagetags)
-        
+
         if images == 0:
-            self.picwidget.setImages(pics, default = 0)
+            self.picwidget.setImages(pics, default=0)
             self.picwidget.context = 'Cover Varies'
         elif images is None:
-            self.picwidget.setImages(pics, default = 1)
+            self.picwidget.setImages(pics, default=1)
         else:
             pics.extend(images)
-            self.picwidget.setImages(pics, default = 2)
+            self.picwidget.setImages(pics, default=2)
         self.picwidget.readonly = [0, 1]
 
         if imagetags:
@@ -121,14 +124,14 @@ class ArtworkWidget(QWidget):
             font = get_font(QRect(0, 0, 200, 200), KEEP, BLANK)
             data = (create_svg(KEEP, font), create_svg(BLANK, font))
             self._readOnly = tuple([svg_to_pic(datum, desc) for datum, desc
-                in zip(data, (KEEP, BLANK))])
+                                    in zip(data, (KEEP, BLANK))])
         return self._readOnly
-    
+
     def images(self):
         images = None
-        if self.picwidget.currentImage == 1: #<blank>
+        if self.picwidget.currentImage == 1:  # <blank>
             images = []
-        elif self.picwidget.currentImage > 1: #<keep> is 0, so everything else.
+        elif self.picwidget.currentImage > 1:  # <keep> is 0, so everything else.
             images = self.picwidget.images[2:]
         return images
 
@@ -137,5 +140,6 @@ class ArtworkWidget(QWidget):
         if self._audios:
             self.fill(self._audios)
             self._audios = []
+
 
 control = ('Artwork', ArtworkWidget, RIGHTDOCK, False)

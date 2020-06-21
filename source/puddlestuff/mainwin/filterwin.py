@@ -8,6 +8,7 @@ from ..translations import translate
 
 class DelayedEdit(QLineEdit):
     delayedText = pyqtSignal(str, name='delayedText')
+
     def __init__(self, text=None, parent=None):
         if parent is None and text is None:
             QLineEdit.__init__(self)
@@ -31,8 +32,10 @@ class DelayedEdit(QLineEdit):
         timer.timeout.connect(self.__timerslot)
         timer.start()
 
+
 class FilterView(QWidget):
     filter = pyqtSignal(str, name='filter')
+
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.emits = ['filter']

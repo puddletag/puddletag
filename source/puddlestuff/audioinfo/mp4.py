@@ -10,10 +10,10 @@ from .util import (usertags, isempty,
                    del_deco, cover_info, info_to_dict, parse_image, get_total)
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
-    'modified', 'bitspersample', 'channels')
+              'modified', 'bitspersample', 'channels')
 
-#mp4 tags, like id3 can only have a fixed number of tags. The ones on the left
-#with the corresponding tag as recognized by puddletag on the right...
+# mp4 tags, like id3 can only have a fixed number of tags. The ones on the left
+# with the corresponding tag as recognized by puddletag on the right...
 
 TAGS = {
     '\xa9nam': 'title',
@@ -48,21 +48,23 @@ TAGS = {
 
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
 
-#Because these values are storted in different ways, text for album, tuple
-#for tracks, I created to a bunch of functions, to handle the reading
-#and writing of these.
+# Because these values are storted in different ways, text for album, tuple
+# for tracks, I created to a bunch of functions, to handle the reading
+# and writing of these.
 
-#Functions are in get and set pairs.
-#get functions take a value mutagen expects it and returns it in puddletag's format.
-#set functions do the opposite.
+# Functions are in get and set pairs.
+# get functions take a value mutagen expects it and returns it in puddletag's format.
+# set functions do the opposite.
 
 encode = lambda x: [z.encode('utf8') for z in x]
+
 
 def getbool(value):
     if value:
         return [u'Yes']
     else:
         return [u'No']
+
 
 def setbool(value):
     if value == 'No':
@@ -72,6 +74,7 @@ def setbool(value):
     else:
         return False
 
+
 def settext(text):
     if isinstance(text, str):
         return [str(text)]
@@ -80,8 +83,10 @@ def settext(text):
     else:
         return [str(z) for z in text]
 
+
 def gettext(value):
     return value
+
 
 def settuple(value):
     temp = []
@@ -96,11 +101,14 @@ def settuple(value):
             temp.append(tup)
     return temp
 
+
 def gettuple(value):
     return [str(track) + '/' + str(total) for track, total in value]
 
+
 def getint(value):
     return [str(z) for z in value]
+
 
 def setint(value):
     if isinstance(value, (int, int, str)):
@@ -112,6 +120,7 @@ def setint(value):
         except ValueError:
             continue
     return temp
+
 
 FUNCS = {
     'title': (gettext, settext),
@@ -148,6 +157,7 @@ FUNCS = {
     'totaldiscs': (getint, setint),
     'bpm': (getint, setint)}
 
+
 def bin_to_pic(cover):
     try:
         format = cover.imageformat
@@ -157,6 +167,7 @@ def bin_to_pic(cover):
         return {'data': cover, 'mime': 'image/png'}
     else:
         return {'data': cover, 'mime': 'image/jpeg'}
+
 
 def pic_to_bin(image):
     data = image[util.DATA]
@@ -168,6 +179,7 @@ def pic_to_bin(image):
     else:
         return
     return MP4Cover(data, format)
+
 
 class Tag(util.MockTag):
     """Class for AAC tags."""
@@ -186,7 +198,7 @@ class Tag(util.MockTag):
     def get_filepath(self):
         return util.MockTag.get_filepath(self)
 
-    def set_filepath(self,  val):
+    def set_filepath(self, val):
         self.__tags.update(util.MockTag.set_filepath(self, val))
 
     filepath = property(get_filepath, set_filepath)
@@ -194,13 +206,13 @@ class Tag(util.MockTag):
     def __contains__(self, key):
         if key == '__image':
             return bool(self.images)
-        
+
         elif key == '__total':
             try:
                 return bool(get_total(self))
             except (KeyError, ValueError):
                 return False
-        
+
         if self.revmapping:
             key = self.revmapping.get(key, key)
         return key in self.__tags
@@ -210,18 +222,18 @@ class Tag(util.MockTag):
         cls.mapping = self.mapping
         cls.revmapping = self.revmapping
         cls.set_fundamentals(deepcopy(self.__tags), deepcopy(self.images),
-            self.mut_obj, deepcopy(self.__freeform), deepcopy(self.__errors))
+                             self.mut_obj, deepcopy(self.__freeform), deepcopy(self.__errors))
         cls.filepath = self.filepath
         return cls
 
     @del_deco
     def __delitem__(self, key):
         if key == '__image':
-            self.images = []  
+            self.images = []
         elif key.startswith('__'):
             return
         else:
-            del(self.__tags[key])
+            del (self.__tags[key])
 
     @getdeco
     def __getitem__(self, key):
@@ -253,7 +265,7 @@ class Tag(util.MockTag):
             return
         elif isempty(value):
             if key in self:
-                del(self[key])
+                del (self[key])
             return
         else:
             try:
@@ -261,7 +273,7 @@ class Tag(util.MockTag):
                 if value:
                     self.__tags[key] = new_val
             except KeyError:
-                #User defined tags.
+                # User defined tags.
                 self.__freeform[key] = '----:com.apple.iTunes:%s' % key
                 self.__tags[key] = settext(value)
             except ValueError:
@@ -270,7 +282,7 @@ class Tag(util.MockTag):
     def delete(self):
         self.mut_obj.delete()
         for key in self.usertags:
-            del(self.__tags[self.revmapping.get(key, key)])
+            del (self.__tags[self.revmapping.get(key, key)])
         self.images = []
 
     def _set_images(self, images):
@@ -315,10 +327,10 @@ class Tag(util.MockTag):
         revmap, mapping = self.revmapping, self.mapping
         self.revmapping, self.mapping = {}, {}
 
-        self.__freeform = {} #Keys are tags as required by mutagen i.e. The '----'
-                             #frames. Values are the tag as represented by puddletag.
+        self.__freeform = {}  # Keys are tags as required by mutagen i.e. The '----'
+        # frames. Values are the tag as represented by puddletag.
 
-        if audio.tags: #Not empty
+        if audio.tags:  # Not empty
             keys = list(audio.keys())
             try:
                 self.images = list(map(bin_to_pic, audio['covr']))
@@ -328,26 +340,26 @@ class Tag(util.MockTag):
 
             convert = lambda k, v: FUNCS[k][1](v)
 
-            #I want 'trkn', to split into track and totaltracks, like Mp3tag.
+            # I want 'trkn', to split into track and totaltracks, like Mp3tag.
             if 'trkn' in keys:
                 tags['track'] = convert('track',
-                    [z[0] for z in audio['trkn']])
+                                        [z[0] for z in audio['trkn']])
                 tags['totaltracks'] = convert('totaltracks',
-                    [z[1] for z in audio['trkn']])
+                                              [z[1] for z in audio['trkn']])
                 keys.remove('trkn')
 
-            #Same as above
+            # Same as above
             if 'disk' in keys:
                 tags['disc'] = convert('disc', [z[0] for z in audio['disk']])
                 tags['totaldiscs'] = convert('totaldiscs',
-                    [z[1] for z in audio['disk']])
+                                             [z[1] for z in audio['disk']])
                 keys.remove('disk')
 
             for key in keys:
                 if key in TAGS:
                     tags[TAGS[key]] = convert(TAGS[key], audio[key])
                 else:
-                    field = key[key.find(':', key.find(':') +1) + 1:]
+                    field = key[key.find(':', key.find(':') + 1) + 1:]
 
                     self.__freeform[field] = key
                     try:
@@ -362,9 +374,9 @@ class Tag(util.MockTag):
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 
-        for k,v in tags.items():
+        for k, v in tags.items():
             if not v:
-                del(tags[k])
+                del (tags[k])
 
         self.__tags.update(info_to_dict(audio.info))
         self.__tags.update(tags)
@@ -389,7 +401,7 @@ class Tag(util.MockTag):
 
         newtag = {}
         tuples = (('track', ['trkn', 'totaltracks']),
-            ('disc', ['disk', 'totaldiscs']))
+                  ('disc', ['disk', 'totaldiscs']))
         tags = self.__tags
         for tag, values in tuples:
             if tag in tags:
@@ -397,7 +409,7 @@ class Tag(util.MockTag):
                 if values[1] in tags:
                     total = tags[values[1]]
                     newtag[values[0]] = [(int(t), int(total)) for t, total in
-                        zip(denom, total)]
+                                         zip(denom, total)]
                 else:
                     newtag[values[0]] = [(int(z), 0) for z in denom]
             elif values[1] in tags:
@@ -406,8 +418,8 @@ class Tag(util.MockTag):
 
         tags = usertags(self.__tags)
         tags = [(z, tags[z]) for z in tags
-            if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
-        
+                if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
+
         for tag, value in tags:
             try:
                 newtag[REVTAGS[tag]] = value
@@ -418,9 +430,9 @@ class Tag(util.MockTag):
             newtag['covr'] = [_f for _f in map(pic_to_bin, self.images) if _f]
 
         toremove = [z for z in audio.keys() if
-            z not in newtag and z not in self.__errors]
+                    z not in newtag and z not in self.__errors]
         for key in toremove:
-            del(audio[key])
+            del (audio[key])
         audio.update(newtag)
         audio.save()
 
@@ -437,5 +449,6 @@ class Tag(util.MockTag):
             self.__tags['__tag'] = 'MP4, ' + ', '.join(l)
         else:
             self.__tags['__tag'] = 'MP4'
+
 
 filetype = (MP4, Tag, 'MP4', ['m4a', 'mp4', 'm4v'])

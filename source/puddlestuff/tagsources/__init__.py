@@ -36,9 +36,11 @@ class SubmissionError(WebServiceError):
         WebServiceError.__init__(self, msg)
         self.code = code
 
+
 class _SignalObject(QObject):
     statusChanged = pyqtSignal(str, name='statusChanged')
     logappend = pyqtSignal(str, name='logappend')
+
 
 cparser = PuddleConfig()
 
@@ -194,7 +196,7 @@ def urlopen(url, mask=True, code=False):
             msg = '%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
             msg = str(e)
-            
+
         try:
             raise RetrievalError(msg, e.code)
         except AttributeError:

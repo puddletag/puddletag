@@ -19,8 +19,9 @@ def sanitize(type_, value, default=None):
     else:
         return value
 
+
 class AutoNumbering(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
         def hbox(*widgets):
@@ -69,6 +70,7 @@ class AutoNumbering(QWidget):
             self._restart_numbering.isChecked(),
             self._padlength.value()]
         return x
+
 
 from .functions import autonumbering
 

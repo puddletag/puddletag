@@ -9,6 +9,7 @@ options = []
 mapping = {}
 revmapping = {}
 
+
 def loadmapping(filepath, default=None):
     try:
         lines = open(filepath, 'r').read().split('\n')
@@ -20,12 +21,13 @@ def loadmapping(filepath, default=None):
     mappings = {}
     for l in lines:
         tags = [z.strip() for z in l.split(',')]
-        if len(tags) == 3: #Tag, Source, Target
+        if len(tags) == 3:  # Tag, Source, Target
             try:
                 mappings[tags[0]].update({tags[1]: tags[2]})
             except KeyError:
                 mappings[tags[0]] = ({tags[1]: tags[2]})
     return mappings
+
 
 def register_tag(mut_obj, tag, tag_name, tag_exts=None):
     if isinstance(tag_exts, str):
@@ -36,13 +38,14 @@ def register_tag(mut_obj, tag, tag_name, tag_exts=None):
 
     options.append([mut_obj, tag, tag_name])
 
+
 def setmapping(m):
     global revmapping
     global mapping
 
     mapping = m
     for z in mapping:
-        revmapping[z] = CaselessDict([(value,key) for key, value in mapping[z].items()])
+        revmapping[z] = CaselessDict([(value, key) for key, value in mapping[z].items()])
     for z in extensions.values():
         try:
             if z[2] in mapping:
@@ -53,6 +56,7 @@ def setmapping(m):
                 z[1].revmapping.update(revmapping['global'])
         except IndexError:
             pass
+
 
 def Tag(filename):
     """Class that operates on audio tags.
@@ -95,10 +99,14 @@ def Tag(filename):
     results = list(zip(results, options))
     results.sort(key=lambda v: v[0])
     score, Kind = results[-1]
-    if score > 0: return Kind[1](filename)
-    else: return None
+    if score > 0:
+        return Kind[1](filename)
+    else:
+        return None
+
 
 from . import id3, vorbis, apev2, mp4
+
 tag_modules = (id3, vorbis, apev2, mp4)
 
 for m in tag_modules:
