@@ -5,6 +5,7 @@ from ..util import to_string
 from collections import defaultdict
 from ..tagsources import RetrievalError
 from .. import version_string
+from .. import audioinfo
 from ..util import translate
 import time
 
@@ -72,7 +73,7 @@ def convert_tracks(disc):
             track['title'] = title
         tracks.append(track)
     return tracks
-            
+
 
 def decode_str(s):
     return s if isinstance(s, str) else s.decode('utf8', 'replace')
@@ -160,7 +161,7 @@ class FreeDB(object):
         object.__init__(self)
         self.__retrieved = {}
         self.__lasttime = time.time()
-    
+
     def search(self, album, files):
         if time.time() - self.__lasttime < 1000:
             time.sleep(1)
@@ -183,7 +184,7 @@ class FreeDB(object):
             info, tracks = retrieve_from_info(info)
             self.__retrieved[info['#discid']] = [info, tracks]
             return info, tracks
-        
+
         return info
 
 info = FreeDB

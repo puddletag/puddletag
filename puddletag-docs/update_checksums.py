@@ -33,12 +33,12 @@ def get_sha1_sum(filename):
 def update_checksums(filename, build_dir):
     files = find_sources(build_dir)
     source_sha = get_sha1_sum(files['source'])
-    
+
     context = {
         'version': puddlestuff.version_string,
         'source_sha': source_sha,
         'beta_source_sha': source_sha,
-        
+
     }
     with open(filename, 'w') as fo:
         fo.write(TEMPLATE.format(**context))
@@ -48,11 +48,10 @@ def find_sources(build_dir):
     return {
         'source': source_path,
     }
-    
+
 
 if __name__ == '__main__':
     output = sys.argv[1]
     build_dir = sys.argv[2]
     update_checksums(output, build_dir)
-    print "Checksums updated"
-            
+    print("Checksums updated")

@@ -14,14 +14,14 @@ def clean_files(dirpath):
             continue
         try:
             with open(path, 'r+') as fo:
-                print "Fixing: " + path
+                print("Fixing: " + path)
                 text = fo.read()
                 text = remove_h1(text)
                 fo.seek(0)
                 fo.write(text)
                 fo.truncate()
         except (IOError, OSError):
-            print "Could not edit: " + path
+            print("Could not edit: " + path)
 
 if __name__ == "__main__":
     input_dir = sys.argv[1]
