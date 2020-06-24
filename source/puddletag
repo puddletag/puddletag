@@ -11,16 +11,16 @@ from optparse import OptionParser
 
 def convert_ini_files():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
-    
+
     config_files = [
-        'puddletag.conf', 'combos', 
-        'gensettings', 'menus', 'shortcuts', 
+        'puddletag.conf', 'combos',
+        'gensettings', 'menus', 'shortcuts',
         'tagpanel', 'tagsources.conf',
         'function_settings', 'user_shortcuts', 'view_all_fields',
     ]
 
     data_files = glob(os.path.join(SAVEDIR, 'actions/*')) + \
-        glob(os.path.join(SAVEDIR, 'masstagging/*'))
+                 glob(os.path.join(SAVEDIR, 'masstagging/*'))
 
     files = [os.path.join(CONFIGDIR, fn) for fn in config_files] + data_files
 
@@ -28,12 +28,13 @@ def convert_ini_files():
         if os.path.exists(fn):
             settings_to_json(fn)
 
+
 def settings_to_json(filename):
     data = open(filename, 'r').read()
 
     try:
         json.loads(data)
-        return #Valid json so already converted.
+        return  # Valid json so already converted.
     except:
         pass
 
@@ -45,6 +46,7 @@ def settings_to_json(filename):
     except:
         pass
 
+
 def _migrate_action_shortcut_filenames():
     from puddlestuff.constants import ACTIONDIR
     filename = os.path.join(ACTIONDIR, 'action_shortcuts')
@@ -52,13 +54,14 @@ def _migrate_action_shortcut_filenames():
         return
     with open(filename, 'r') as fo:
         data = json.loads(fo.read());
-    
+
     old_dir = os.path.join(os.getenv('HOME'), '.puddletag', 'actions')
     for key, shortcut in data.items():
         shortcut['filenames'] = [z.replace(old_dir, ACTIONDIR) for z in shortcut['filenames']]
 
     with open(filename, 'w') as fo:
         fo.write(json.dumps(data, indent=2))
+
 
 def migrate_settings():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
@@ -70,7 +73,7 @@ def migrate_settings():
     if (os.path.exists(old_dir)):
         dirnames = [
             'plugins', 'actions', 'masstagging', 'mp3tag_sources', 'translations']
-        
+
         for dirname in dirnames:
             src = os.path.join(old_dir, dirname)
             dest = os.path.join(SAVEDIR, dirname)
@@ -89,6 +92,7 @@ def migrate_settings():
     convert_ini_files()
     _migrate_action_shortcut_filenames()
 
+
 def _migrate_action_shortcuts():
     from puddlestuff.constants import SAVEDIR, ACTIONDIR
     from puddlestuff.puddleobjects import PuddleConfig
@@ -96,7 +100,7 @@ def _migrate_action_shortcuts():
 
     if not os.path.exists(filename):
         return
-        
+
     try:
         cparser = PuddleConfig(filename)
     except:
@@ -110,25 +114,26 @@ def _migrate_action_shortcuts():
                 filenames.append(os.path.join(ACTIONDIR, os.path.basename(filename)))
             cparser.set(section, 'filenames', filenames)
 
+
 def check_libs():
     """Check for required libs.
 
     If some not found, show/print a message.
     Exit if requirements aren't met."""
     _libs = [('mutagen', '(usually python3-mutagen or just mutagen)',
-            'http://code.google.com/p/mutagen/'),
-         ('configobj', '(usually python3-configobj)',
-            'http://code.google.com/p/configobj/'),
-         ('pyparsing', '(python3-pyparsing or python3-parsing in most distros)',
-            'http://pyparsing.wikispaces.com/'),
-         ('PyQt5', '(python3-pyqt5 usually)',
-            'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
+              'http://code.google.com/p/mutagen/'),
+             ('configobj', '(usually python3-configobj)',
+              'http://code.google.com/p/configobj/'),
+             ('pyparsing', '(python3-pyparsing or python3-parsing in most distros)',
+              'http://pyparsing.wikispaces.com/'),
+             ('PyQt5', '(python3-pyqt5 usually)',
+              'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 
     found = True
     errors = []
     msg = "Error: The %s module wasn't found. Please check that it's installed " \
-            "properly. Download it from your distro's repository" \
-            " %s or directly from %s \n"
+          "properly. Download it from your distro's repository" \
+          " %s or directly from %s \n"
     for lib in _libs:
         try:
             __import__(lib[0])
@@ -138,8 +143,8 @@ def check_libs():
             found = False
 
     msg = "Error: %s module wasn't found. %s. Please check that it's " \
-        "installed properly. You can download it from your distro's " \
-        "repository (%s), or download directly from %s.\n"
+          "installed properly. You can download it from your distro's " \
+          "repository (%s), or download directly from %s.\n"
 
     try:
         if not found:
@@ -148,9 +153,10 @@ def check_libs():
             QMessageBox.critical(None, 'puddletag', '\n'.join(errors))
     except:
         pass
-    
+
     if not found:
         sys.exit(1)
+
 
 def init(options, qapp):
     """Initializes things that need to be initialized.
@@ -159,7 +165,7 @@ def init(options, qapp):
     from puddlestuff.logger import init_logger
 
     if options.version:
-        #It's already printed.
+        # It's already printed.
         exit()
 
     if options.debug:
@@ -180,6 +186,7 @@ def init(options, qapp):
         except ValueError:
             logging.error('Invalid fontsize specified.')
 
+
 def load_language(qapp, langfile=None):
     """Loads the language file to be used by puddletag.
 
@@ -188,7 +195,7 @@ def load_language(qapp, langfile=None):
                 Should be a path to a Qt translation file (.qm)."""
     TRANSDIR = puddlestuff.constants.TRANSDIR
 
-    global translators #Needs to live throughout app.
+    global translators  # Needs to live throughout app.
     translators = []
 
     if langfile:
@@ -219,14 +226,14 @@ def load_language(qapp, langfile=None):
     if langargs and langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+                        QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         translators.append(translator)
 
         if 'puddletag_' in langargs[0]:
             translator = QTranslator()
             locale = langargs[0][len('puddletag_'):-len('.qm')]
             translator.load("qt_" + locale,
-                QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+                            QLibraryInfo.location(QLibraryInfo.TranslationsPath))
             print("Locale: " + locale)
             translators.append(translator)
 
@@ -237,7 +244,7 @@ def load_language(qapp, langfile=None):
     elif langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-             QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+                        QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         print("Locale: " + str(QLocale.system().name()))
         translators.append(translator)
 
@@ -249,21 +256,23 @@ def load_language(qapp, langfile=None):
     puddlestuff.constants.trans_strings()
     puddlestuff.puddleobjects.trans_imagetypes()
 
+
 def parse_cmd_options():
     usage = "Usage: %prog [options] [directory path]"
     parser = OptionParser(usage=usage)
-    
+
     parser.add_option("--langfile", dest="langfile",
-        default='',
-        help="Path to a translation (.qm) file.", metavar="LANGFILE")
+                      default='',
+                      help="Path to a translation (.qm) file.", metavar="LANGFILE")
     parser.add_option("--fontsize", type='float',
-        dest="fontsize", help="Default fontsize to use (in points).")
+                      dest="fontsize", help="Default fontsize to use (in points).")
     parser.add_option("-d", "--debug", action="store_true",
-        dest="debug", default=False, help="Show (useless) debug messages.")
+                      dest="debug", default=False, help="Show (useless) debug messages.")
     parser.add_option("-v", "--version", action="store_true",
-        dest="version", default=False, help="Show version info and exit.")
+                      dest="version", default=False, help="Show version info and exit.")
 
     return parser.parse_args()
+
 
 def print_info():
     """Print program info."""
@@ -274,8 +283,10 @@ def print_info():
     else:
         print(translate('Defaults', 'puddletag Version: %s' % version_string))
 
+
 class StdOut(object):
     """Class to redirect stdout/in/err."""
+
     def __init__(self, old_write, new_write):
         """old_write should be the original sys.stdout.out
         new_write is a function is what sys.stdout.out will be replaced with.
@@ -298,26 +309,27 @@ if __name__ == '__main__':
     from PyQt5.QtGui import QPixmap, QIcon
     from PyQt5.QtWidgets import QApplication, QSplashScreen
     from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
-        QLibraryInfo, QLocale)
+                              QLibraryInfo, QLocale)
     import logging
     from configobj import ConfigObj
+
     pyqtRemoveInputHook()
 
-    #Load puddletag modules.
-    import puddlestuff.resource # Needs to be first as other modules use it.
+    # Load puddletag modules.
+    import puddlestuff.resource  # Needs to be first as other modules use it.
     import puddlestuff.constants
 
     migrate_settings()
     from puddlestuff.puddleobjects import get_languages, PuddleConfig
     from puddlestuff.translations import translate
 
-    #Init.
+    # Init.
     print_info()
     app = QApplication(sys.argv)
     options, filenames = parse_cmd_options()
     init(options, app)
 
-    #Depends on init being called first.
+    # Depends on init being called first.
     from puddlestuff.puddletag import MainWin
     from puddlestuff.puddlesettings import load_gen_settings
 
@@ -334,7 +346,7 @@ if __name__ == '__main__':
     win.setVisible(True)
     app.processEvents()
 
-    #Check if dirnames passed on command line.
+    # Check if dirnames passed on command line.
     if filenames:
         dirname = filenames[0]
         if dirname and os.path.exists(dirname):

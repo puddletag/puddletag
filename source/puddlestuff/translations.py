@@ -47,16 +47,18 @@ class UnicodeMod(str):
     def __mul__(self, v):
         return UnicodeMod(str.__mul__(self, v))
 
-def translate(k,v):
+
+def translate(k, v):
     if isinstance(v, bytes):
         v = v.decode('utf8', 'replace')
     try:
-        return UnicodeMod(QApplication.translate(k,v))
+        return UnicodeMod(QApplication.translate(k, v))
     except TypeError:
         return v
 
+
 def dont_execute():
-    #General Translations
+    # General Translations
     translate("GenSettings", 'Su&bfolders')
     translate("GenSettings", 'Show &gridlines')
     translate("GenSettings", 'Show tooltips in file-view:')
@@ -66,13 +68,11 @@ def dont_execute():
     translate("GenSettings", 'Program to &play files with:')
     translate("GenSettings", '&Load last folder at startup')
 
-    
-
-    #Artwork
+    # Artwork
     translate("Artwork Context", 'Cover Varies')
     translate("Artwork Context", 'No Images')
 
-    #Menus
+    # Menus
     translate("Menus", 'Enabl&e Preview Mode')
     translate("Menus", 'Clear Selected &Files')
     translate("Menus", '&Write Previews')
@@ -148,7 +148,7 @@ def dont_execute():
     translate("Menus", "&File")
     translate("Menus", "&Actions")
 
-    #Functions
+    # Functions
     translate("Functions", "Tag->File: $1")
     translate("Functions", "Tag to filename")
     translate("Functions", "&Pattern")
@@ -251,7 +251,7 @@ def dont_execute():
     translate("Functions", "Filename to Tag")
     translate("Functions", "&Pattern")
 
-    #Dialogs
+    # Dialogs
     translate("Dialogs", "Tag Panel")
     translate("Dialogs", "Artwork")
     translate("Dialogs", "Filesystem")

@@ -33,31 +33,36 @@ KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
 
 whitespace = set(str(string.whitespace))
 
+
 class ParseError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
         self.message = message
 
+
 class FuncError(ParseError): pass
+
 
 class MultiValueError(FuncError): pass
 
+
 from .functions import functions
 
-def arglen_error(e, passed, function, to_raise = True):
+
+def arglen_error(e, passed, function, to_raise=True):
     varnames = function.__code__.co_varnames[:function.__code__.co_argcount]
     args_len = len(passed)
     param_len = len(varnames)
     message = None
     if args_len > param_len:
         message = translate('Functions',
-            'At most %1 arguments expected. %2 given.')
+                            'At most %1 arguments expected. %2 given.')
     elif args_len < param_len:
         default_len = len(function.__defaults__) if \
             function.__defaults__ else 0
         if args_len < (param_len - default_len):
             message = translate('Functions',
-            'At least %1 arguments expected. %2 given.')
+                                'At least %1 arguments expected. %2 given.')
     else:
         raise e
     if message is not None:
@@ -68,6 +73,7 @@ def arglen_error(e, passed, function, to_raise = True):
         raise ParseError(message)
     else:
         return message
+
 
 def convert_actions(dirpath, new_dir):
     backup = os.path.join(dirpath, 'actions.bak')
@@ -82,7 +88,8 @@ def convert_actions(dirpath, new_dir):
         os.rename(filename, path_join(backup, basename(filename)))
         save_macro(path_join(new_dir, basename(filename)), name, funcs)
 
-def filenametotag(pattern, filename, checkext = False, split_dirs=True):
+
+def filenametotag(pattern, filename, checkext=False, split_dirs=True):
     """Retrieves tag values from your filename
         pattern is the rule with which to extract
         the tags from filename. Which does not have to
@@ -130,9 +137,10 @@ def filenametotag(pattern, filename, checkext = False, split_dirs=True):
                 mydict[key] = new_fields[key]
     if mydict:
         if "dummy" in mydict:
-            del(mydict["dummy"])
+            del (mydict["dummy"])
         return mydict
     return {}
+
 
 def get_old_action(filename):
     """Gets the action from filename, where filename is either a string or
@@ -150,6 +158,7 @@ def get_old_action(filename):
     funcs = pickle.load(f)
     f.close()
     return [funcs, name]
+
 
 def load_macro_info(filename):
     modules = defaultdict(lambda: defaultdict(lambda: {}))
@@ -198,14 +207,16 @@ def load_macro_info(filename):
             else:
                 func.args = arguments
             funcs.append(func)
-    return [funcs, name]    
+    return [funcs, name]
+
 
 def load_macro_from_name(name):
     filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
     return Macro(filename)
 
+
 def func_tokens(dictionary, parse_action):
-    func_name = Word(alphas+'_', alphanums+'_')
+    func_name = Word(alphas + '_', alphanums + '_')
 
     func_ident = Combine('$' + func_name.copy()('funcname'))
     func_tok = func_ident + originalTextFor(nestedExpr())('args')
@@ -232,21 +243,21 @@ def func_tokens(dictionary, parse_action):
 
     return func_tok, arglist, rx_tok
 
-def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts):
 
+def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts):
     varnames = func.__code__.co_varnames[:func.__code__.co_argcount]
 
-    #arguments will contain only a list of user supplied arguments
-    #Eg. for the function $format(%artist%) the user will specify
-    #only the %artist%, whereas calling the function requires
-    #the tags in order to look it up.
-    #This, and below replaces the tags with their corresponding order.
-    
+    # arguments will contain only a list of user supplied arguments
+    # Eg. for the function $format(%artist%) the user will specify
+    # only the %artist%, whereas calling the function requires
+    # the tags in order to look it up.
+    # This, and below replaces the tags with their corresponding order.
+
     topass = {}
     othervars = []
 
     key_args = set(KEYWORD_ARGS).union(reserved)
-    
+
     for i, v in enumerate(varnames):
         if v in key_args:
             topass[v] = reserved[v]
@@ -270,8 +281,9 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
 
     return topass
 
+
 def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
-    state=None):
+                    state=None):
     '''Runs the function function using the arguments specified from pudlestuff.function.
 
     Arguments:
@@ -291,8 +303,8 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
              Used by some functions in puddlestuff.functions
     
     '''
-    
-    #Get function
+
+    # Get function
     try:
         if isinstance(funcname, str):
             func = functions[funcname]
@@ -304,10 +316,10 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
 
     extra = {} if extra is None else extra
     s_audio = stringtags(m_audio) if s_audio is None else s_audio
-    
+
     reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state}
     dicts = [s_audio, extra, state]
-    topass = get_function_arguments(funcname, func, arguments,  reserved, True, *dicts)
+    topass = get_function_arguments(funcname, func, arguments, reserved, True, *dicts)
 
     try:
         ret = func(**topass)
@@ -321,6 +333,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     except FuncError as e:
         message = SYNTAX_ERROR.arg(funcname).arg(e.message)
         raise ParseError(message)
+
 
 def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, path_sep=None):
     """Parses format strings. Returns the parsed string.
@@ -349,26 +362,25 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
 
     """
 
-    #Yes I know this is a big ass function...but it works and I can't
-    #see a way to split it without making it complicated.
-    
+    # Yes I know this is a big ass function...but it works and I can't
+    # see a way to split it without making it complicated.
+
     tokens = []
     token = []
-    #List containing a function with it's arguments
-    #Will look like ['replace', arg1, arg2, arg3]
-    #functions get evaluated as soon as closing bracket found.
+    # List containing a function with it's arguments
+    # Will look like ['replace', arg1, arg2, arg3]
+    # functions get evaluated as soon as closing bracket found.
     func = []
-    #Flag determining if current within a function. Used for making comma's
-    #significant
+    # Flag determining if current within a function. Used for making comma's
+    # significant
     in_func = False
     in_quote = False
-    #field_open == -1 if not current in the middle of processing a field
-    #eg. %artist%. Otherwise contains the index in s that the field started.
+    # field_open == -1 if not current in the middle of processing a field
+    # eg. %artist%. Otherwise contains the index in s that the field started.
     field_open = -1
-    #Determine if next char should be escaped.
+    # Determine if next char should be escaped.
     escape = False
-        
-    
+
     s_audio = stringtags(m_audio) if s_audio is None else s_audio
     state = {} if state is None else state
     tags = s_audio.copy()
@@ -381,18 +393,17 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
 
     paths = []
 
-    
     i = 0
     while 1:
         try:
             c = s[i]
-        except IndexError:  #  Parsing's done.
+        except IndexError:  # Parsing's done.
             if in_func:
                 raise ParseError(SYNTAX_ERROR.arg(func[0]).arg(br_error))
             if token:
                 tokens.append(replacevars(''.join(token), tags))
             break
-        
+
         if c == '"' and not escape:
             if in_func:
                 token.append(c)
@@ -448,7 +459,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             token = []
         elif c == ')' and in_func:
             in_func = False
-            if token or s[i-1] == ',':
+            if token or s[i - 1] == ',':
                 func.append(''.join(token))
 
             func_parsed = run_format_func(func[0], func[1:], m_audio, s_audio, state=state, extra=extra)
@@ -468,6 +479,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     else:
         return ''.join(tokens)
 
+
 def parse_field_list(fields, audio, selected=None):
     fields = fields[::]
     not_fields = [i for i, z in enumerate(fields) if z.startswith('~')]
@@ -486,7 +498,7 @@ def parse_field_list(fields, audio, selected=None):
                 not_fields.remove('__selected')
         fields = fields[:index]
         fields.extend([key for key in audio if key not in
-            not_fields and key not in NOT_ALL])
+                       not_fields and key not in NOT_ALL])
 
     if '__all' in fields:
         while '__all' in fields:
@@ -500,19 +512,24 @@ def parse_field_list(fields, audio, selected=None):
             fields.extend(selected)
     return list(set(fields))
 
+
 # This function is from name2id3 by  Kristian Kvilekval
 def re_escape(rex):
     """Escape regular expression special characters"""
     escaped = ""
     for ch in rex:
-        if ch in r'^$[]\+*?.(){},|' : escaped = escaped + '\\' + ch
-        else: escaped = escaped + ch
+        if ch in r'^$[]\+*?.(){},|':
+            escaped = escaped + '\\' + ch
+        else:
+            escaped = escaped + ch
     return escaped
+
 
 def removeSpaces(text):
     for char in string.whitespace:
         text = text.replace(char, '')
     return text.lower()
+
 
 def replacevars(pattern, *dicts):
     """Replaces occurrences of %key% with the d[key] in the string pattern.
@@ -538,7 +555,7 @@ def replacevars(pattern, *dicts):
     """
     r_vars = {}
     list(map(r_vars.update, [z for z in dicts if z]))
-    
+
     in_quote = False
     in_field = False
     ret = []
@@ -566,7 +583,7 @@ def replacevars(pattern, *dicts):
             elif in_field:
                 in_field = False
                 field = ''.join(ret[field_start:])
-                del(ret[field_start:])
+                del (ret[field_start:])
                 ret.append(r_vars.get(field, ''))
             continue
         ret.append(c)
@@ -579,7 +596,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
 
     actions can be a list of Function objects or a filename of an action file (see load_action).
     audio must dictionary-like object."""
-    
+
     if state is None:
         state = {}
     if '__counter' not in state:
@@ -587,7 +604,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
     state['__counter'] = str(int(state['__counter']) + 1)
 
     r_tags = audio
-   
+
     if hasattr(audio, 'tags'):
         audio = deepcopy(audio.tags)
     else:
@@ -629,6 +646,7 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
             audio.update(ret)
     return dict([(z, audio[z]) for z in changed])
 
+
 def apply_macros(macros, audio, state, fields=None):
     actions = []
     for m in macros:
@@ -638,12 +656,13 @@ def apply_macros(macros, audio, state, fields=None):
         return apply_actions(actions, audio, state, fields)
     else:
         return apply_actions(actions, audio, state)
-    
+
 
 def runQuickAction(funcs, audio, state, tag):
     """Same as runAction, except that all funcs are 
     applied not in the values stored but on audio[tag]."""
     return apply_macros(funcs, audio, state, tag)
+
 
 def save_macro(filename, name, funcs):
     f = open(filename, 'w')
@@ -657,6 +676,7 @@ def save_macro(filename, name, funcs):
         set_value(i, FUNC_MODULE, func.function.__module__)
         set_value(i, ARGS, func.args)
 
+
 def saveAction(filename, actionname, funcs):
     """Saves an action to filename.
 
@@ -667,6 +687,7 @@ def saveAction(filename, actionname, funcs):
         fileobj = filename
     pickle.dump(actionname, fileobj)
     pickle.dump(funcs, fileobj)
+
 
 def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     """
@@ -712,9 +733,9 @@ def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     >>>tagtofilename(pattern, filename, True, '.mp3')
     Amy Winehouse - 012 - Shitty Song.mp3"""
 
-    #First check if a filename was passed or a dictionary.
+    # First check if a filename was passed or a dictionary.
     if not isinstance(filename, str):
-        #if it was a dictionary, then use that as the tags.
+        # if it was a dictionary, then use that as the tags.
         tags = filename
     else:
         tags = audioinfo.Tag(filename)
@@ -728,6 +749,7 @@ def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     else:
         return parsefunc(pattern, tags, state=state) + os.path.extsep + tags["__ext"]
 
+
 def tagtotag(pattern, text, expression):
     """See filenametotag for an implementation example and explanation.
 
@@ -740,6 +762,7 @@ def tagtotag(pattern, text, expression):
     """
     pattern = re_escape(pattern)
     taglist = []
+
     def what(s, loc, tok):
         global numtimes
         taglist.append(tok[0])
@@ -747,6 +770,7 @@ def tagtotag(pattern, text, expression):
         if numtimes == 0:
             return "(.*)"
         return "(.*?)"
+
     expression.setParseAction(what)
     global numtimes
     numtimes = len([z for z in expression.scanString(pattern)])
@@ -756,15 +780,16 @@ def tagtotag(pattern, text, expression):
     try:
         tags = re.search(pattern, text).groups()
     except AttributeError:
-        #No matches were found
-        return  ''
-    mydict={}
+        # No matches were found
+        return ''
+    mydict = {}
     for i in range(len(tags)):
         if taglist[i] in mydict:
-            mydict[taglist[i]] = ''.join([mydict[taglist[i]],tags[i]])
+            mydict[taglist[i]] = ''.join([mydict[taglist[i]], tags[i]])
         else:
-            mydict[taglist[i]]=tags[i]
+            mydict[taglist[i]] = tags[i]
     return mydict
+
 
 class Function:
     """Basically, a wrapper for functions, but makes it easier to
@@ -787,7 +812,7 @@ class Function:
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
             self.doc = [u','.join([funcname.name, funcname.print_string])] + \
-                [','.join(z) for z in funcname.args]
+                       [','.join(z) for z in funcname.args]
             self.info = [funcname.name, funcname.print_string]
         else:
             self.function = funcname
@@ -800,13 +825,13 @@ class Function:
         else:
             self.tag = ''
         self.args = None
-        
+
         self.controls = self._getControls()
 
     def reInit(self):
-        #Since this class gets pickled in ActionWindow, the class is never 'destroyed'
-        #Since, a functions docstring wouldn't be reflected back to puddletag
-        #if it were changed calling this function to 're-read' it is a good idea.
+        # Since this class gets pickled in ActionWindow, the class is never 'destroyed'
+        # Since, a functions docstring wouldn't be reflected back to puddletag
+        # if it were changed calling this function to 're-read' it is a good idea.
         if not self.function.__doc__:
             return
         self.doc = self.function.__doc__.split("\n")
@@ -819,8 +844,8 @@ class Function:
     def setArgs(self, args):
         self.args = args
 
-    def runFunction (self, text=None, m_tags=None, state=None,
-        tags=None, r_tags=None):
+    def runFunction(self, text=None, m_tags=None, state=None,
+                    tags=None, r_tags=None):
 
         func = self.function
 
@@ -828,7 +853,7 @@ class Function:
 
         if not varnames:
             return func()
-            
+
         s_audio = stringtags(m_tags) if tags is None else tags
         m_audio = m_tags
         state = {} if state is None else state
@@ -837,21 +862,21 @@ class Function:
         text = to_string(text)
 
         reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
-            'r_tags': r_tags, 'm_text': m_text}
-        
+                    'r_tags': r_tags, 'm_text': m_text}
+
         if varnames[0] in reserved:
             reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
-                'r_tags': r_tags, 'text': to_string(text),
-                'm_text': m_text}
+                        'r_tags': r_tags, 'text': to_string(text),
+                        'm_text': m_text}
             topass = get_function_arguments("", func, self.args, reserved,
-                False, *[s_audio, state])
+                                            False, *[s_audio, state])
             return func(**topass)
         else:
             reserved = {'tags': s_audio, 'm_tags': m_audio, 'state': state,
-                'r_tags': r_tags}
+                        'r_tags': r_tags}
             topass = get_function_arguments("", func,
-                [text] + self.args, reserved, False, *[s_audio, state])
-            
+                                            [text] + self.args, reserved, False, *[s_audio, state])
+
         try:
             first_arg = [z for z in varnames if z not in reserved][0]
         except IndexError:
@@ -875,14 +900,14 @@ class Function:
     def description(self):
         d = [", ".join(self.tag)] + self.args
         return pprint(translate('Functions', self.info[1]), d)
-        
+
     def _getControls(self, index=1):
         identifier = QuotedString('"') | CharsNotIn(',')
         arglist = delimitedList(identifier)
         docstr = self.doc[1:]
         if index:
             return [(arglist.parseString(line)[index]).strip()
-                for line in docstr]
+                    for line in docstr]
         else:
             ret = []
             for line in docstr:
@@ -896,6 +921,7 @@ class Function:
     def addArg(self, arg):
         if self.function.__code__.co_argcount > len(self.args) + 1:
             self.args.append(arg)
+
 
 class Macro(object):
     def __init__(self, filename=None):
@@ -922,6 +948,5 @@ class Macro(object):
     def save(self, filename=None):
         if filename is None:
             filename = self.filename
-    
+
         save_macro(filename, self.name, self.actions)
-        

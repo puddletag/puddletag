@@ -50,6 +50,7 @@ class LogDialog(QWidget):
         else:
             self._text.setPlaintext(text)
 
+
 control = ('Logs', LogDialog, RIGHTDOCK, False)
 
 if __name__ == '__main__':

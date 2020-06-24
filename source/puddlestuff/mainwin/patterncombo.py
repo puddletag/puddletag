@@ -12,15 +12,17 @@ from ..translations import translate
 def load_patterns(filepath=None):
     settings = PuddleConfig(filepath)
     return [settings.get('editor', 'patterns',
-                            ['%artist% - $num(%track%,2) - %title%',
-                            '%artist% - %album% - $num(%track%,2) - %title%',
-                            '%artist% - %title%', '%artist% - %album%',
-                            '%artist% - Track %track%', '%artist% - %title%']),
-           settings.get('editor', 'index', 0, True)]
+                         ['%artist% - $num(%track%,2) - %title%',
+                          '%artist% - %album% - $num(%track%,2) - %title%',
+                          '%artist% - %title%', '%artist% - %album%',
+                          '%artist% - Track %track%', '%artist% - %title%']),
+            settings.get('editor', 'index', 0, True)]
+
 
 class PatternCombo(QComboBox):
     name = 'toolbar-patterncombo'
     patternchanged = pyqtSignal(str, name='patternchanged')
+
     def __init__(self, items=None, parent=None, status=None):
         self.emits = ['patternchanged']
         self.receives = [('patterns', self.setItems)]
@@ -35,16 +37,18 @@ class PatternCombo(QComboBox):
             self.addItems(items)
         pchange = lambda text: self.patternchanged.emit(str(text))
         self.editTextChanged.connect(pchange)
-        
+
         shortcut = QShortcut(self)
         shortcut.setKey('F8')
         shortcut.setContext(Qt.ApplicationShortcut)
+
         def set_focus():
             if self.hasFocus():
                 status['table'].setFocus()
             else:
                 self.lineEdit().selectAll()
                 self.setFocus()
+
         shortcut.activated.connect(set_focus)
 
     def setItems(self, texts):
@@ -67,7 +71,7 @@ class PatternCombo(QComboBox):
 
 
 class SettingsWin(QFrame):
-    def __init__(self, parent = None, cenwid = None, status=None):
+    def __init__(self, parent=None, cenwid=None, status=None):
         QFrame.__init__(self, parent)
         self.title = translate('Settings', "Patterns")
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
@@ -117,8 +121,8 @@ class SettingsWin(QFrame):
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
-        (text, ok) = QInputDialog().getItem(self, 'puddletag', 
-            translate("Pattern Settings", 'Enter a pattern'), patterns, row)
+        (text, ok) = QInputDialog().getItem(self, 'puddletag',
+                                            translate("Pattern Settings", 'Enter a pattern'), patterns, row)
         if ok:
             self.listbox.clearSelection()
             self.listbox.addItem(text)
@@ -132,9 +136,9 @@ class SettingsWin(QFrame):
             row = self.listbox.currentRow()
         l = self.listbox.item
         patterns = [str(l(z).text()) for z in range(self.listbox.count())]
-        (text, ok) = QInputDialog().getItem (self, 'puddletag', 
-            translate("Pattern Settings", 'Enter a pattern'),
-            patterns, row)
+        (text, ok) = QInputDialog().getItem(self, 'puddletag',
+                                            translate("Pattern Settings", 'Enter a pattern'),
+                                            patterns, row)
         if ok:
             item = l(row)
             item.setText(text)
@@ -144,6 +148,7 @@ class SettingsWin(QFrame):
         item = self.listbox.item
         patterns = [item(row).text() for row in range(self.listbox.count())]
         control.setItems(patterns)
+
 
 control = ('patterncombo', PatternCombo, False)
 

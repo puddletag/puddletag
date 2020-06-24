@@ -13,11 +13,12 @@ from ...util import separator
 obj = QObject()
 id3_tag = audioinfo.id3.Tag
 
+
 def to_utf8(parent=None):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
-            QApplication.translate("Previews",
-                'You need to disable preview mode first.'))
+                                QApplication.translate("Previews",
+                                                       'You need to disable preview mode first.'))
         return
     files = status['selectedfiles']
     rows = status['selectedrows']
@@ -32,21 +33,22 @@ def to_utf8(parent=None):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = str(QApplication.translate("Defaults",
-                    'An error occured while converting <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
+                                               'An error occured while converting <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1
                 else:
                     yield m, len(rows)
 
     s = progress(func, QApplication.translate("ID3 Plugin",
-        'Converting '), len(files))
+                                              'Converting '), len(files))
     s(parent)
+
 
 def update_to_24(parent=None):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
-            QApplication.translate("Previews",
-                'You need to disable preview mode first.'))
+                                QApplication.translate("Previews",
+                                                       'You need to disable preview mode first.'))
         return
     files = status['selectedfiles']
     rows = status['selectedrows']
@@ -61,15 +63,16 @@ def update_to_24(parent=None):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = str(QApplication.translate("Defaults",
-                    'An error occured while updating <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
+                                               'An error occured while updating <b>%1</b>. (%2)').arg(filename).arg(e.strerror))
                 if row == rows[-1]:
                     yield m, 1
                 else:
                     yield m, len(rows)
 
     s = progress(func, QApplication.translate("ID3 Plugin",
-        'Updating '), len(files))
+                                              'Updating '), len(files))
     s(parent)
+
 
 def init(parent=None):
     action = QAction('&Update to ID3v2.4', parent)
@@ -79,5 +82,5 @@ def init(parent=None):
     convert = QAction('&Convert to UTF-8', parent)
     connect_shortcut(convert, FILESSELECTED)
     convert.triggered.connect(partial(to_utf8, parent))
-    
+
     add_shortcuts('Ta&g Tools', [separator(), action, convert, separator()])

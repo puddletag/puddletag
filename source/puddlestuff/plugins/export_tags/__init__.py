@@ -23,29 +23,31 @@ def tags_to_json(dirpath, fields=None):
             ret.append(tag)
     return ret
 
+
 def backup_dir(dirpath, fn, fields=None):
     fo = open(fn, 'w')
     fo.write(json.dumps(tags_to_json(dirpath, fields)))
     fo.close()
+
 
 def main():
     usage = "Usage: %prog [-f FIELDS] [-b dirpath | -r] filename"
     parser = OptionParser(usage=usage)
 
     parser.add_option("-b", "--backup", dest="backup",
-        default='',
-        help="Backs up all audio tags in dirpath to filename.",
-        metavar="BACKUP")
+                      default='',
+                      help="Backs up all audio tags in dirpath to filename.",
+                      metavar="BACKUP")
     parser.add_option("-r", "--restore", dest="restore",
-        default='',
-        help="Restores audio tags found in filename.",
-        metavar="RESTORE", action="store_true")
+                      default='',
+                      help="Restores audio tags found in filename.",
+                      metavar="RESTORE", action="store_true")
     parser.add_option("-f", "--fields", dest="fields",
-        default='',
-        help="Comma separated list of fields. "
-            "Backed up data will be restricted to this list, but if "
-            "restored will overwrite the complete file.",
-        metavar="FIELDS", action='store')
+                      default='',
+                      help="Comma separated list of fields. "
+                           "Backed up data will be restricted to this list, but if "
+                           "restored will overwrite the complete file.",
+                      metavar="FIELDS", action='store')
 
     options, filenames = parser.parse_args()
     if not (options.backup or options.restore):
@@ -72,8 +74,8 @@ def main():
     elif options.restore:
         restore_backup(filename)
 
+
 def restore_backup(fn):
-    
     for i, tag in enumerate(json.loads(open(fn, 'r').read())):
         try:
             fn = tag['__path']
@@ -90,12 +92,13 @@ def restore_backup(fn):
 
         if '__image' in tag:
             images = tag['__image']
-            del(tag['__image'])
+            del (tag['__image'])
             audio.images = list(map(b64_to_img, images))
 
         audio.clear()
         audio.update(tag)
         audio.save()
+
 
 if __name__ == '__main__':
     main()

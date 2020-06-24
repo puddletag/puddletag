@@ -43,7 +43,7 @@ def relpath(target, base_path=os.curdir):
 
     Base can be a directory specified either as absolute or relative
     to current directory."""
-    #http://code.activestate.com/recipes/302594/
+    # http://code.activestate.com/recipes/302594/
 
     base_path = normcase(abspath(normpath(base_path)))
     target = normcase(abspath(normpath(target)))
@@ -74,9 +74,10 @@ def relpath(target, base_path=os.curdir):
 
     return ret
 
+
 def readm3u(path):
-    #From http://forums.fedoraforum.org/showthread.php?p=1224109
-    fileHandle = open (path, 'r')
+    # From http://forums.fedoraforum.org/showthread.php?p=1224109
+    fileHandle = open(path, 'r')
     reader = csv.reader(open(path, "r"))
     olddir = os.path.abspath(os.curdir)
     os.chdir(os.path.dirname(path))
@@ -85,7 +86,7 @@ def readm3u(path):
     mp3Files = []
 
     for row in reader:
-        if len(row)<1:
+        if len(row) < 1:
             # Skip blanks
             continue
         elif row[0].startswith("#"):
@@ -99,7 +100,8 @@ def readm3u(path):
     os.chdir(olddir)
     return mp3Files
 
-def exportm3u(tags, tofile, format = None, reldir = False, winsep=False):
+
+def exportm3u(tags, tofile, format=None, reldir=False, winsep=False):
     header = ['#EXTM3U']
 
     if reldir:
@@ -116,28 +118,29 @@ def exportm3u(tags, tofile, format = None, reldir = False, winsep=False):
     else:
         text = header
         extinfo = ('#EXTINF: %s, %s' % (str(lnglength(f.length)),
-            encode_fn(tagtofilename(format, f, False))) for f in tags)
-        [text.extend([z,y]) for z,y in zip(extinfo, filenames)]
+                                        encode_fn(tagtofilename(format, f, False))) for f in tags)
+        [text.extend([z, y]) for z, y in zip(extinfo, filenames)]
         text = '\n'.join(text)
 
     playlist = open(tofile, 'w')
     playlist.write(text)
     playlist.close()
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     filedlg = QFileDialog()
     filedlg.setFileMode(filedlg.DirectoryOnly)
     filename = str(filedlg.getExistingDirectory(None,
-        'Open Folder'))
+                                                'Open Folder'))
     tags = []
     for z in os.listdir(filename):
         try:
-            tag = audioinfo.Tag(os.path.join(filename,z))
+            tag = audioinfo.Tag(os.path.join(filename, z))
             if tag:
                 tags.append(tag)
         except Exception as e:
             str(e)
     folder = str(filedlg.getSaveFileName(None,
-            'Save File'))
+                                         'Save File'))
     exportm3u(tags, folder)

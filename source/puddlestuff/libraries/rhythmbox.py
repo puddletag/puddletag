@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-#rhythmbox.py
+# rhythmbox.py
 
-#Copyright (C) 2008-2009 concentricpuddle
+# Copyright (C) 2008-2009 concentricpuddle
 
-#This file is part of puddletag, a semi-good music tag editor.
+# This file is part of puddletag, a semi-good music tag editor.
 
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
 import urllib.error
@@ -40,6 +40,7 @@ name = "Rhythmbox"
 description = "Rhythmbox Database"
 author = 'concentricpuddle'
 
+
 def getFilename(filename):
     filename = urllib.request.url2pathname(filename)
 
@@ -51,26 +52,26 @@ def getFilename(filename):
                 "__ext": path.splitext(filename)[1][1:],
                 "__dirname": path.basename(path.dirname(filename))}
 
+
 getTime = lambda date: audioinfo.strtime(int(date))
 getCreated = lambda created: {u'__created': getTime(created)}
 getModified = lambda modified: {u'__modified': getTime(modified)}
 getLength = lambda length: {u'__length': audioinfo.strlength(int(length))}
 getBitRate = lambda bitrate: {u'__bitrate': bitrate + ' kb/s'}
 
-
 CONVERSION = {u'title': 'title',
-u'genre': 'genre',
-u'artist': 'artist',
-u'album': 'album',
-u'track-number': 'track',
-u'duration': getLength,
-u'file-size': '__size',
-u'location': getFilename,
-u'first-seen': getCreated,
-u'mtime': getModified,
-u'last-seen': '__last_seen',
-u'bitrate': getBitRate,
-u'disc-number': 'discnumber'}
+              u'genre': 'genre',
+              u'artist': 'artist',
+              u'album': 'album',
+              u'track-number': 'track',
+              u'duration': getLength,
+              u'file-size': '__size',
+              u'location': getFilename,
+              u'first-seen': getCreated,
+              u'mtime': getModified,
+              u'last-seen': '__last_seen',
+              u'bitrate': getBitRate,
+              u'disc-number': 'discnumber'}
 
 setLength = lambda length: {'duration': str(audioinfo.lnglength(length))}
 setCreated = lambda created: {'first-seen': str(audioinfo.lngtime(created))}
@@ -94,15 +95,17 @@ RECONVERSION = {
 
 SUPPORTEDTAGS = ['artist', 'genre', 'title', 'track', '__size', 'album']
 
+
 class DBParser(ContentHandler):
     indent = " " * 4
-    def __init__ (self):
-        #Information is stored as follows:
-        #self.albums is a dictionary with each key being an artist.
-        #self.albums[key] is also a dictionary with album names as keys
-        #and an integer specifying the index of the album in self.tracks
-        #self.tracks being a list of lists, each of which contains the
-        #track metadata for an album as dictionaries.
+
+    def __init__(self):
+        # Information is stored as follows:
+        # self.albums is a dictionary with each key being an artist.
+        # self.albums[key] is also a dictionary with album names as keys
+        # and an integer specifying the index of the album in self.tracks
+        # self.tracks being a list of lists, each of which contains the
+        # track metadata for an album as dictionaries.
         self.tagval = ""
         self.name = ""
         self.stargetting = False
@@ -114,7 +117,7 @@ class DBParser(ContentHandler):
         self.extras = False
         self.extratype = ""
 
-    def characters (self, ch):
+    def characters(self, ch):
         try:
             self.values[self.current] += ch
         except KeyError:
@@ -133,9 +136,9 @@ class DBParser(ContentHandler):
                         tag[CONVERSION[field]] = value.strip()
                     except KeyError:
                         tag['#' + field] = value.strip()
-                
-                f = ((k, v.strip()) for k,v in tag.items())
-                tag = dict((k,v) for k,v in f if v)
+
+                f = ((k, v.strip()) for k, v in tag.items())
+                tag = dict((k, v) for k, v in f if v)
 
                 album = tag.get('album', '')
                 artist = tag.get('artist', '')
@@ -147,8 +150,8 @@ class DBParser(ContentHandler):
                 else:
                     self.tracks[albums[album]].append(tag)
             else:
-                x = ((k, v.strip()) for k,v in self.values.items())
-                x = dict((k,v) for k,v in x if v)
+                x = ((k, v.strip()) for k, v in self.values.items())
+                x = dict((k, v) for k, v in x if v)
                 x['name'] = self.extratype
                 self.extratype = ""
                 self.extravalues.append(x)
@@ -194,22 +197,24 @@ class DBParser(ContentHandler):
             if self.stargetting and name != 'entry':
                 self.current = name
                 self.values[name] = ""
+
         if name == 'rhythmdb':
             version = attrs.get('version')
             self.head = '<?xml version="1.0" standalone="yes"?>\n' \
-                '  <rhythmdb version="%s">' % str(version)
+                        '  <rhythmdb version="%s">' % str(version)
             self.startElement = startelement
-    
+
 
 class RhythmDB(ContentHandler):
     indent = " " * 4
-    def __init__ (self, filename):
-        #Information is stored as follows:
-        #self.albums is a dictionary with each key being an artist.
-        #self.albums[key] is also a dictionary with album names as keys
-        #and an integer specifying the index of the album in self.tracks
-        #self.tracks being a list of lists, each of which contains the
-        #track metadata for an album as dictionaries.
+
+    def __init__(self, filename):
+        # Information is stored as follows:
+        # self.albums is a dictionary with each key being an artist.
+        # self.albums[key] is also a dictionary with album names as keys
+        # and an integer specifying the index of the album in self.tracks
+        # self.tracks being a list of lists, each of which contains the
+        # track metadata for an album as dictionaries.
         self.tagval = ""
         self.name = ""
         self.stargetting = False
@@ -250,13 +255,14 @@ class RhythmDB(ContentHandler):
             if self.stargetting and name != 'entry':
                 self.current = name
                 self.values[name] = ""
+
         if name == 'rhythmdb':
             version = attrs.get('version')
             self.head = '<?xml version="1.0" standalone="yes"?>\n' \
                         '  <rhythmdb version="%s">' % str(version)
             self.startElement = startelement
 
-    def characters (self, ch):
+    def characters(self, ch):
         try:
             self.values[self.current] += ch
         except KeyError:
@@ -286,14 +292,14 @@ class RhythmDB(ContentHandler):
                     index = albums[audio['album']]
                     self.tracks[index].append(audio)
             else:
-                x = dict([(z, v.strip()) for z,v in self.values.items()])
+                x = dict([(z, v.strip()) for z, v in self.values.items()])
                 x['name'] = self.extratype
                 self.extratype = ""
                 self.extravalues.append(x)
                 self.extras = False
             self.values = {}
 
-    def tracksByTag(self, parent, parentvalue, child = None, childval = None):
+    def tracksByTag(self, parent, parentvalue, child=None, childval=None):
         if parent not in SUPPORTEDTAGS:
             return
         if parent == 'artist' and child == 'album':
@@ -343,7 +349,7 @@ class RhythmDB(ContentHandler):
         except KeyError:
             return None
 
-    def getTracks(self, artist, albums = None):
+    def getTracks(self, artist, albums=None):
         ret = []
         if albums is None:
             albums = list(self.albums[artist].keys())
@@ -372,12 +378,12 @@ class RhythmDB(ContentHandler):
             if artist != prevartist or album != prevalbum:
                 dbtracks = self.tracks[self.albums[artist][album]]
                 filenames = [z[FILENAME] for z in dbtracks]
-            del(dbtracks[filenames.index(track[FILENAME])])
+            del (dbtracks[filenames.index(track[FILENAME])])
             filenames.remove(track[FILENAME])
             if not dbtracks:
-                del(self.albums[artist][album])
+                del (self.albums[artist][album])
             if not self.albums[artist]:
-                del(self.albums[artist])
+                del (self.albums[artist])
 
     def saveTracks(self, tracks):
         for old, new in tracks:
@@ -433,8 +439,8 @@ class RhythmDB(ContentHandler):
         for value in self.extravalues:
             entry.append('  <entry type ="%s">\n' % value['name'])
             [entry.append('    <%s>%s</%s>\n' %
-                    (self._escapedText(val), self._escapedText(value[val]),
-                    self._escapedText(val))) for val in value]
+                          (self._escapedText(val), self._escapedText(value[val]),
+                           self._escapedText(val))) for val in value]
             entry.append("  </entry>\n")
             f.write(("".join(entry)))
             entry = []
@@ -483,8 +489,9 @@ class RhythmDB(ContentHandler):
                     break
         return tracks
 
+
 class ConfigWindow(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.dbpath = QLineEdit(path.join(str(QDir.homePath()), ".gnome2/rhythmbox/rhythmdb.xml"))
 
@@ -506,7 +513,7 @@ class ConfigWindow(QWidget):
 
     def getFile(self):
         selectedFile = QFileDialog.getOpenFileName(self,
-            'Select RhythmBox database file.', self.dbpath.text())
+                                                   'Select RhythmBox database file.', self.dbpath.text())
         filename = selectedFile[0]
         if filename:
             self.dbpath.setText(filename)
@@ -517,14 +524,16 @@ class ConfigWindow(QWidget):
     def saveSettings(self):
         QSettings().setValue('Library/dbpath', self.dbpath.text())
 
+
 def loadLibrary():
     settings = QSettings()
     return RhythmDB(str(settings.value('Library/dbpath')))
 
+
 if __name__ == '__main__':
     k = DBParser()
     x, y = k.parse_file('rdb.xml')
-    #import pdb
-    #pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     print([i for i, z in enumerate(y) if len(z) > 1])
     print(list(x.keys())[0], x[list(x.keys())[0]], y[34])
