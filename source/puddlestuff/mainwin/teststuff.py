@@ -13,6 +13,7 @@ from ..puddleobjects import PuddleDock
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified')
 
+
 class Tag(audioinfo.MockTag):
     """Use as base for all tag classes."""
     IMAGETAGS = ()
@@ -20,25 +21,25 @@ class Tag(audioinfo.MockTag):
     revmapping = {}
 
     _hash = {PATH: 'filepath',
-             FILENAME:'filename',
+             FILENAME: 'filename',
              EXTENSION: 'ext',
              DIRPATH: 'dirpath'}
-    
-    def __init__(self, dictionary = None):
-        #self.IMAGETAGS = tuple(set([IMAGETAGS[random.randint(0,3)] for z in IMAGETAGS]))
+
+    def __init__(self, dictionary=None):
+        # self.IMAGETAGS = tuple(set([IMAGETAGS[random.randint(0,3)] for z in IMAGETAGS]))
         self.IMAGETAGS = ()
         self.images = []
-        #if audioinfo.DATA not in self.IMAGETAGS:
-            #self.IMAGETAGS = (,)
-        #else:
-            #images = set([random.randint(0, 11) for z in xrange(11)])
-            #self.images = [self.image(**{'data': pictures[i],
-                        #'imagetype': random.randint(0,21),
-                        #'description': unicode(i)}) for i in images]
+        # if audioinfo.DATA not in self.IMAGETAGS:
+        # self.IMAGETAGS = (,)
+        # else:
+        # images = set([random.randint(0, 11) for z in xrange(11)])
+        # self.images = [self.image(**{'data': pictures[i],
+        # 'imagetype': random.randint(0,21),
+        # 'description': unicode(i)}) for i in images]
 
         if dictionary:
             self.link(dictionary)
-        
+
         self._set_attrs(ATTRIBUTES)
 
     def link(self, dictionary):
@@ -52,7 +53,7 @@ class Tag(audioinfo.MockTag):
         return Tag(self._tags.copy())
 
     @getdeco
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         """Get the tag value from self._tags. There is a slight
         caveat in that this method will never return a KeyError exception.
         Rather it'll return ''."""
@@ -62,13 +63,13 @@ class Tag(audioinfo.MockTag):
         try:
             return self._tags[key]
         except KeyError:
-            #This is a bit of a bother since there will never be a KeyError exception
-            #But its needed for the sort method in tagmodel.TagModel, .i.e it fails
-            #if a key doesn't exist.
+            # This is a bit of a bother since there will never be a KeyError exception
+            # But its needed for the sort method in tagmodel.TagModel, .i.e it fails
+            # if a key doesn't exist.
             return ""
 
     @setdeco
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         if key in READONLY:
             return
         elif key in FILETAGS:
@@ -76,7 +77,7 @@ class Tag(audioinfo.MockTag):
             return
 
         if key not in INFOTAGS and isempty(value):
-            del(self[key])
+            del (self[key])
         elif key in INFOTAGS or isinstance(key, int):
             self._tags[key] = value
         elif (key not in INFOTAGS) and isinstance(value, (str, int, int)):
@@ -85,28 +86,29 @@ class Tag(audioinfo.MockTag):
             self._tags[key.lower()] = [str(z) for z in value]
 
     def mutvalues(self):
-        #Retrieves key, value pairs according to id3.
+        # Retrieves key, value pairs according to id3.
         return [self._tags[key] for key in self if type(key) is not int and not key.startswith('__')]
 
 
 class TestWidget(QWidget):
     setpreview = pyqtSignal(dict, name='setpreview')
-    def __init__(self, parent=None, status = None):
+
+    def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.emits = ['setpreview']
         self.receives = []
         button = QPushButton('Set Previews')
         button.clicked.connect(self._changePreview)
         self._status = status
-        
+
         load1000button = QPushButton('Load 1000')
         load1000button.clicked.connect(self._load1000)
         self._status = status
-        
+
         save_tags = QPushButton('Save Files')
         save_tags.clicked.connect(self._saveTags)
         self._status = status
-        
+
         load_many = QPushButton('Load Many')
         load_many.clicked.connect(self._loadMany)
         self._status = status
@@ -125,18 +127,18 @@ class TestWidget(QWidget):
         for f in files:
             d[f] = {'artist': 'Preview Artist', 'title': 'Preview Title'}
         self.setpreview.emit(d)
-    
+
     def _load1000(self):
         table = PuddleDock._controls['table']
         table.model().load(list(map(Tag, tags.tags)))
         table.model().saveModification = False
-    
+
     def _loadMany(self):
         model = PuddleDock._controls['table'].model()
-        num, ok = QInputDialog.getInt(self, 'puddletag', 
-            'Enter the number of files to fill the file-view with.', 10)
+        num, ok = QInputDialog.getInt(self, 'puddletag',
+                                      'Enter the number of files to fill the file-view with.', 10)
         if num:
-            #pdb.set_trace()
+            # pdb.set_trace()
             model.load(list(map(Tag, tags.tags[:num])))
             model.saveModification = False
 
@@ -144,7 +146,8 @@ class TestWidget(QWidget):
         files = self._status['allfiles']
         f = open('savedfiles', 'w')
         f.write('# -*- coding: utf-8 -*-\ntags = [%s]' %
-            ',\n'.join((str(z.tags) for z in files)))
+                ',\n'.join((str(z.tags) for z in files)))
         f.close()
+
 
 control = ('Puddle Testing', TestWidget, RIGHTDOCK, False)

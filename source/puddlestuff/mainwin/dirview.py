@@ -19,11 +19,12 @@ class DirView(QTreeView):
     """The treeview used to select a directory."""
     removeFolders = pyqtSignal(list, bool, name='removeFolders')
     loadFiles = pyqtSignal(object, list, bool, name='loadFiles')
-    def __init__(self, parent = None, subfolders = False, status=None):
-        QTreeView.__init__(self,parent)
 
-        self._load = False #If True a loadFiles signal is emitted when
-                           #an index is clicked. See selectionChanged.
+    def __init__(self, parent=None, subfolders=False, status=None):
+        QTreeView.__init__(self, parent)
+
+        self._load = False  # If True a loadFiles signal is emitted when
+        # an index is clicked. See selectionChanged.
 
         dirmodel = QDirModel()
         dirmodel.setSorting(QDir.IgnoreCase)
@@ -36,12 +37,12 @@ class DirView(QTreeView):
         self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         self.setModel(dirmodel)
-        [self.hideColumn(column) for column in range(1,4)]
+        [self.hideColumn(column) for column in range(1, 4)]
 
         self.header().hide()
         self.subfolders = subfolders
         self.setSelectionMode(self.ExtendedSelection)
-        self._lastselection = 0 #If > 0 appends files. See selectionChanged
+        self._lastselection = 0  # If > 0 appends files. See selectionChanged
         self._load = True
         self.setDragEnabled(False)
         self.setAcceptDrops(True)
@@ -50,7 +51,7 @@ class DirView(QTreeView):
         self._threadRunning = False
 
         self._select = True
-        
+
         self.expanded.connect(lambda discarded: self.resizeColumnToContents(0))
 
     def checkPreviews(self, deselected):
@@ -62,8 +63,8 @@ class DirView(QTreeView):
         the user chooses to go ahead or there are no un-commited previews.
         """
         msg = translate('Previews', 'Some files have uncommited previews. '
-            'Changes will be lost once you load a directory. <br />'
-            'Do you still want to load a new directory?<br />')
+                                    'Changes will be lost once you load a directory. <br />'
+                                    'Do you still want to load a new directory?<br />')
         if not has_previews(parent=self.parentWidget(), msg=msg):
             return False
         select = self._select
@@ -81,32 +82,32 @@ class DirView(QTreeView):
         self.selectionModel().clearSelection()
         self.blockSignals(False)
         self.removeFolders.emit([], True)
-    
+
     def contextMenuEvent(self, event):
 
-        connect = lambda o,s: o.triggered.connect(s)
-        
+        connect = lambda o, s: o.triggered.connect(s)
+
         menu = QMenu(self)
         refresh = QAction(translate("Dirview",
-            'Refresh Directory'), self)
+                                    'Refresh Directory'), self)
 
         index = self.indexAt(event.pos())
         connect(refresh, lambda: self.model().refresh(index))
-        
+
         header = self.header()
         if self.header().isHidden():
             show_header = QAction(translate("Dirview",
-                'Show Header'), self)
+                                            'Show Header'), self)
             connect(show_header, header.show)
         else:
             show_header = QAction(translate("Dirview",
-                'Hide Header'), self)
+                                            'Hide Header'), self)
             connect(show_header, header.hide)
-        
+
         open_dir = QAction(translate(
             'Dirview', 'Open in File Manager'), self)
         connect(open_dir, lambda: self.openExtern(index))
-        
+
         menu.addAction(refresh)
         menu.addAction(show_header)
         menu.addAction(open_dir)
@@ -137,7 +138,7 @@ class DirView(QTreeView):
                     p = os.path.dirname(p)
                     i = getindex(p)
                 model.refresh(i)
-        
+
         for d in [z[1] for z in dirs] + selected:
             self.selectIndex(getindex(d))
         self._load = True
@@ -152,7 +153,7 @@ class DirView(QTreeView):
 
         if self.isVisible() == False:
             return
-        
+
         cparser = PuddleConfig()
         d = cparser.get('main', 'lastfolder', '/')
         while not os.path.exists(d):
@@ -167,16 +168,16 @@ class DirView(QTreeView):
                 parents.append(index)
                 index = index.parent()
             return parents
-        
+
         def expandindexes(indexes):
             self.setEnabled(False)
             [self.expand(index) for index in indexes]
             self.setEnabled(True)
-        
+
         thread = PuddleThread(expand_thread_func, self)
         thread.threadfinished.connect(expandindexes)
         thread.start()
-    
+
     def mousePressEvent(self, event):
         if event.buttons() == Qt.RightButton:
             return
@@ -249,14 +250,15 @@ class DirView(QTreeView):
             self._load = load
             self._threadRunning = False
             qmutex.unlock()
+
         dirthread = PuddleThread(func, self)
         dirthread.threadfinished.connect(finished)
         dirthread.start()
-    
+
     def saveSettings(self):
         settings = QSettings(QT_CONFIG, QSettings.IniFormat)
-        settings.setValue('dirview/header', 
-            self.header().saveState())
+        settings.setValue('dirview/header',
+                          self.header().saveState())
         settings.setValue('dirview/hide', self.isHeaderHidden())
 
     def selectionChanged(self, selected, deselected):
@@ -264,12 +266,12 @@ class DirView(QTreeView):
         if not self._load:
             self._lastselection = len(self.selectedIndexes())
             return
-            
+
         getfilename = self.model().filePath
         dirs = list(set([getfilename(i) for
-            i in selected.indexes()]))
+                         i in selected.indexes()]))
         old = list(set([getfilename(i) for
-            i in deselected.indexes()]))
+                        i in deselected.indexes()]))
         if self._lastselection:
             if len(old) == self._lastselection:
                 append = False
@@ -296,15 +298,16 @@ class DirView(QTreeView):
         while parent.isValid():
             self.expand(index)
             parent = parent.parent()
-        
+
 
 class DirViewWidget(QWidget):
     loadFiles = pyqtSignal(object, list, bool, name='loadFiles')
     removeFolders = pyqtSignal(list, bool, name='removeFolders')
-    def __init__(self, parent = None, subfolders = False, status=None):
+
+    def __init__(self, parent=None, subfolders=False, status=None):
         super(DirViewWidget, self).__init__(parent)
         self._status = status
-        
+
         self.dirview = DirView(self, subfolders, status)
         self.dirview.loadFiles.connect(self.loadFiles)
         self.dirview.removeFolders.connect(self.removeFolders)
@@ -312,11 +315,11 @@ class DirViewWidget(QWidget):
         self.receives = [
             ('dirschanged', self.dirview.selectDirs),
             ('dirsmoved', self.dirview.dirMoved),
-            ]
+        ]
         self.emits = ['loadFiles', 'removeFolders']
 
         self.subfolderCheck = QCheckBox(translate('Dirview', 'Subfolders'),
-            self)
+                                        self)
         self.subfolderCheck.stateChanged.connect(self.setSubFolders)
 
         layout = QVBoxLayout()

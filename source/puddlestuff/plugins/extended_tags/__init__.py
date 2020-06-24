@@ -12,20 +12,21 @@ from ...puddleobjects import (settaglist)
 
 class ExTagsPlugin(ExTags):
     onetomany = pyqtSignal(dict, name='onetomany')
-    def __init__(self, parent = None, row=None, files=None, status=False):
+
+    def __init__(self, parent=None, row=None, files=None, status=False):
         super(ExTags, self).__init__(parent)
 
         self._status = status
 
         def set_pmode(v): self.previewMode = v
-        
+
         self.receives = [
             (SELECTIONCHANGED, self.loadFiles),
             ('previewModeChanged', set_pmode)]
         self.emits = ['onetomany']
 
         super(ExTagsPlugin, self).__init__(parent, row, files, status, False)
-        self.setMinimumSize(50,50)
+        self.setMinimumSize(50, 50)
 
         self.okcancel.okButton.hide()
         self.okcancel.cancelButton.hide()
@@ -45,6 +46,7 @@ class ExTagsPlugin(ExTags):
             k = QAction(self)
             k.setSeparator(True)
             return k
+
         add_shortcuts('&Plugins', [sep(), action, sep()])
 
     def addTag(self):
@@ -74,7 +76,7 @@ class ExTagsPlugin(ExTags):
 
         common, numvalues, imagetags = commontags(audios)
         if '__image' in common:
-            del(common['__image'])
+            del (common['__image'])
         previews = set(audios[0].preview)
         italics = set(audios[0].equal_fields())
         for audio in audios[1:]:
@@ -109,7 +111,7 @@ class ExTagsPlugin(ExTags):
         tags.update({'__image': self._status['images']})
         self.onetomany.emit(tags)
 
-    def _tag(self, row, status = None):
+    def _tag(self, row, status=None):
         getitem = self.table.item
         item = getitem(row, 0)
         tag = str(item.text())
@@ -119,4 +121,5 @@ class ExTagsPlugin(ExTags):
         else:
             return (tag, value)
 
-dialogs = [('Extended Tags', ExTagsPlugin, LEFTDOCK, False),]
+
+dialogs = [('Extended Tags', ExTagsPlugin, LEFTDOCK, False), ]

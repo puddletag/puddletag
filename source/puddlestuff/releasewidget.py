@@ -14,44 +14,49 @@ from .tagsources import RetrievalError
 from .translations import translate
 from .util import pprint_tag, to_string
 
-CHECKEDFLAG = Qt.ItemIsEnabled |Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
+CHECKEDFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
 RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
 
 default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
-    '[%__numtracks%], "")'
+                       '[%__numtracks%], "")'
 
 no_disp_fields = [u'__numtracks', '__image']
 
 pyqtRemoveInputHook()
+
+
 def inline_display(pattern, tags):
     return parsefunc(pattern, tags)
+
 
 def fillItem(item, info, tracks, trackpattern):
     item.itemData = info
     if tracks is not None:
         item.itemData['__numtracks'] = str(len(tracks))
         [item.appendChild(ChildItem(track, trackpattern, item))
-                    for track in tracks]
+         for track in tracks]
         item.hasTracks = True
     else:
         item.itemData['__numtracks'] = '0'
         item.hasTracks = False
     item.dispPattern = item.dispPattern
 
+
 def get_tagsources():
     from .tagsources import exampletagsource, musicbrainz
     return exampletagsource.info[0](), musicbrainz.info[0]()
 
-def strip(audio, taglist, reverse = False, mapping=None):
+
+def strip(audio, taglist, reverse=False, mapping=None):
     if not taglist:
         if mapping:
-            return dict([(mapping.get(key, key), audio[key]) for 
-                key in audio if not key.startswith('#')])
+            return dict([(mapping.get(key, key), audio[key]) for
+                         key in audio if not key.startswith('#')])
         else:
-            return dict([(key, audio[key]) for key in audio if 
-                        not key.startswith('#')])
+            return dict([(key, audio[key]) for key in audio if
+                         not key.startswith('#')])
     tags = taglist[::]
     if tags and tags[0].startswith('~'):
         reverse = True
@@ -61,41 +66,45 @@ def strip(audio, taglist, reverse = False, mapping=None):
     if reverse:
         if mapping:
             return dict([(mapping.get(key, key), audio[key]) for key in audio if key not in
-                tags and not key.startswith('#')])
+                         tags and not key.startswith('#')])
         else:
             return dict([(key, audio[key]) for key in audio if key not in
-                tags and not key.startswith('#')])
+                         tags and not key.startswith('#')])
     else:
         if mapping:
-            return dict([(mapping.get(key, key), audio[key]) for 
-                key in taglist if key in audio and not key.startswith('#')])
+            return dict([(mapping.get(key, key), audio[key]) for
+                         key in taglist if key in audio and not key.startswith('#')])
         else:
-            return dict([(key, audio[key]) for key in taglist if 
-                key in audio and not key.startswith('#')])
+            return dict([(key, audio[key]) for key in taglist if
+                         key in audio and not key.startswith('#')])
 
-def tooltip(tag, mapping = None):
+
+def tooltip(tag, mapping=None):
     """Used to display tags in in a human parseable format."""
     if not tag:
         return translate("WebDB", "<b>Error in pattern</b>")
     mapping = {} if mapping is None else mapping
-    tag = dict((mapping.get(k, k), v) for k,v in tag.items()
-        if not k.startswith('#'))
-        
+    tag = dict((mapping.get(k, k), v) for k, v in tag.items()
+               if not k.startswith('#'))
+
     return pprint_tag(tag)
+
 
 class Header(QHeaderView):
     sortChanged = pyqtSignal(list, name='sortChanged')
-    def __init__(self, parent = None):
+
+    def __init__(self, parent=None):
         QHeaderView.__init__(self, Qt.Horizontal, parent)
         self.setSectionsClickable(True)
         self.setStretchLastSection(True)
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
-        self.sortOptions = [z.split(',') for z in 
-            [u'artist,album', 'album,artist', '__numtracks,album']]
+        self.sortOptions = [z.split(',') for z in
+                            [u'artist,album', 'album,artist', '__numtracks,album']]
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
+
         def create_action(order):
             action = QAction('/'.join(order), menu)
             slot = lambda: self.sortChanged.emit(order[::])
@@ -105,12 +114,12 @@ class Header(QHeaderView):
         [create_action(order) for order in self.sortOptions]
         menu.exec_(event.globalPos())
 
+
 class RootItem(object):
     def __init__(self, data, parent=None):
         self.parentItem = parent
         self.itemData = data
         self.childItems = []
-
 
     def appendChild(self, item):
         self.childItems.append(item)
@@ -132,12 +141,12 @@ class RootItem(object):
 
     def row(self):
         return 0
-    
+
     def sort(self, order=None, reverse=False):
         sortfunc = lambda item: natural_sort_key(''.join([
             to_string(item.itemData.get(key, '')) for key in order]).lower())
         self.childItems.sort(key=sortfunc, reverse=reverse)
-        
+
 
 class TreeItem(RootItem):
     def __init__(self, data, pattern, parent=None):
@@ -149,17 +158,17 @@ class TreeItem(RootItem):
         self.hasTracks = True
         self.expanded = False
         self.retrieving = False
-    
+
     def data(self, column):
         return self._display
-    
+
     def _getDisp(self):
         return self._pattern
-    
+
     def _setDisp(self, pattern):
         self._pattern = pattern
         self._display = inline_display(pattern, self.itemData)
-    
+
     dispPattern = property(_getDisp, _setDisp)
 
     def exact_matches(self):
@@ -170,20 +179,22 @@ class TreeItem(RootItem):
                 track['#exact'] = c.exact
                 ret.append(track)
         return ret
-    
+
     def tracks(self):
         if self.hasTracks:
             info = self.itemData.copy()
             if '__numtracks' in info:
-                del(info[u'__numtracks'])
+                del (info[u'__numtracks'])
+
             def get_track(item):
                 track = info.copy()
                 track.update(item.itemData.copy())
                 return track
+
             return [get_track(item) for item in self.childItems]
         else:
             return None
-    
+
     def parent(self):
         return self.parentItem
 
@@ -192,7 +203,8 @@ class TreeItem(RootItem):
             return self.parentItem.childItems.index(self)
         return 0
 
-class ChildItem(RootItem):   
+
+class ChildItem(RootItem):
     def __init__(self, data, pattern, parent=None):
         self.parentItem = parent
         self.itemData = data
@@ -208,23 +220,23 @@ class ChildItem(RootItem):
 
     def data(self, column):
         return self._display
-    
+
     def _getDisp(self):
         return self._pattern
-    
+
     def _setDisp(self, pattern):
         self._pattern = pattern
         self._display = inline_display(pattern, self.itemData)
 
     dispPattern = property(_getDisp, _setDisp)
-    
+
     def track(self):
         track = self.parentItem.itemData.copy()
         if '__numtracks' in track:
-            del(track['__numtracks'])
+            del (track['__numtracks'])
         track.update(self.itemData.copy())
         return track
-    
+
     def parent(self):
         return self.parentItem
 
@@ -233,6 +245,7 @@ class ChildItem(RootItem):
             return self.parentItem.childItems.index(self)
         return 0
 
+
 class TreeModel(QtCore.QAbstractItemModel):
     retrieving = pyqtSignal(name='retrieving')
     statusChanged = pyqtSignal(str, name='statusChanged')
@@ -240,14 +253,15 @@ class TreeModel(QtCore.QAbstractItemModel):
     retrievalDone = pyqtSignal(name='retrievalDone')
     exactChanged = pyqtSignal(object, name='exactChanged')
     exactMatches = pyqtSignal(list, name='exactMatches')
-    def __init__(self, data = None, album_pattern=None, 
-        track_pattern='%track% - %title%', tagsource=None, parent=None):
+
+    def __init__(self, data=None, album_pattern=None,
+                 track_pattern='%track% - %title%', tagsource=None, parent=None):
         QtCore.QAbstractItemModel.__init__(self, parent)
-        
+
         self.mapping = {}
         rootData = [translate("WebDB", 'Retrieved Albums')]
         self.rootItem = RootItem(rootData)
-        
+
         self._albumPattern = ''
         if album_pattern is None:
             self.albumPattern = default_albumpattern
@@ -266,13 +280,13 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def _get_albumPattern(self):
         return self._albumPattern
-    
+
     def _set_albumPattern(self, value):
         self._albumPattern = value
         for item in self.rootItem.childItems:
             item.dispPattern = value
         parent = QModelIndex()
-        top = self.index(0,0, parent)
+        top = self.index(0, 0, parent)
         bottom = self.index(self.rowCount(parent) - 1, 0, parent)
         self.dataChanged.emit(top, bottom)
 
@@ -280,16 +294,16 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def _get_sortOrder(self):
         return self._sortOrder
-    
+
     def _set_sortOrder(self, value):
         self._sortOrder = value
         self.sort()
-    
+
     sortOrder = property(_get_sortOrder, _set_sortOrder)
 
     def _get_trackPattern(self):
         return self._trackPattern
-    
+
     def _set_trackPattern(self, value):
         self._trackPattern = value
         for row, parent_item in enumerate(self.rootItem.childItems):
@@ -297,9 +311,9 @@ class TreeModel(QtCore.QAbstractItemModel):
                 for track in parent_item.childItems:
                     track.dispPattern = value
                 parent_index = self.index(row, 0, QModelIndex())
-                top = self.index(0,0, parent_index)
+                top = self.index(0, 0, parent_index)
                 bottom = self.index(self.rowCount(parent_index)
-                    - 1, 0, parent_index)
+                                    - 1, 0, parent_index)
                 self.dataChanged.emit(top, bottom)
 
     trackPattern = property(_get_trackPattern, _set_trackPattern)
@@ -307,7 +321,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def canFetchMore(self, index):
         item = index.internalPointer()
         if item in self.rootItem.childItems and not item.childItems \
-            and item.hasTracks:
+                and item.hasTracks:
             return True
         return False
 
@@ -349,6 +363,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         if item.retrieving:
             return
         self.retrieving.emit()
+
         def fetch_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
@@ -389,12 +404,12 @@ class TreeModel(QtCore.QAbstractItemModel):
             if not item.retrieving:
                 return True
         return False
-    
+
     def isTrack(self, item):
         if (item == self.rootItem) or (item in self.rootItem.childItems):
             return False
         return True
-    
+
     def flags(self, index):
         item = index.internalPointer()
         if self.isTrack(item) and '#exact' in item.itemData:
@@ -403,16 +418,16 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and \
-            role == QtCore.Qt.DisplayRole:
+                role == QtCore.Qt.DisplayRole:
             ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
-            
+
             return ret
 
         return None
 
     def index(self, row, column, parent):
         if row < 0 or column < 0 or row >= self.rowCount(parent) or \
-            column >= self.columnCount(parent):
+                column >= self.columnCount(parent):
             return QtCore.QModelIndex()
 
         if not parent.isValid():
@@ -441,9 +456,10 @@ class TreeModel(QtCore.QAbstractItemModel):
     def retrieve(self, index, fin_func=None):
         item = index.internalPointer()
         if (not self.tagsource) or (item not in self.rootItem.childItems) or \
-            (item.childItems) or not item.hasTracks:
+                (item.childItems) or not item.hasTracks:
             return
         self.retrieving.emit()
+
         def retrieval_func():
             try:
                 return self.tagsource.retrieve(item.itemData)
@@ -486,7 +502,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         return parentItem.childCount()
 
-    def setData(self, index, value, role = Qt.CheckStateRole):
+    def setData(self, index, value, role=Qt.CheckStateRole):
         if index.isValid() and self.isTrack(index):
             item = index.internalPointer()
             item.checked = not item.checked
@@ -513,6 +529,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             self.rootItem.sort(self.sortOrder, True)
         self.endResetModel()
 
+
 class ReleaseWidget(QTreeView):
     exact = pyqtSignal(dict, name='exact')
     exactMatches = pyqtSignal(dict, name='exactMatches')
@@ -522,6 +539,7 @@ class ReleaseWidget(QTreeView):
     retrieving = pyqtSignal(name='retrieving')
     retrievalDone = pyqtSignal(name='retrievalDone')
     itemSelectionChanged = pyqtSignal(name='itemSelectionChanged')
+
     def __init__(self, status, tagsource, parent=None):
         QTreeView.__init__(self, parent)
         self.setSelectionMode(self.ExtendedSelection)
@@ -547,34 +565,34 @@ class ReleaseWidget(QTreeView):
 
     def _get_albumPattern(self):
         return self._albumPattern
-    
+
     def _set_albumPattern(self, value):
         self._albumPattern = value
         self.model().albumPattern = value
 
     albumPattern = property(_get_albumPattern, _set_albumPattern)
-    
+
     def _get_trackPattern(self):
         return self._trackPattern
-    
+
     def _set_trackPattern(self, value):
         self._trackPattern = value
         self.model().trackPattern = value
 
     trackPattern = property(_get_trackPattern, _set_trackPattern)
-    
+
     def _get_tagSource(self):
         return self._tagSource
-    
+
     def _set_tagSource(self, source):
         self._tagSource = source
         self.model().tagsource = source
-    
+
     tagSource = property(_get_tagSource, _set_tagSource)
 
     def cleanTrack(self, track):
         return strip(track, self.tagsToWrite, mapping=self.mapping)
-    
+
     def emitExactMatches(self, item, files):
         if not item.hasTracks:
             return
@@ -588,7 +606,7 @@ class ReleaseWidget(QTreeView):
             copies.append(cp)
 
         exact = match_files(copies, tracks, self.trackBound, self.matchFields,
-            self.jfdi, False)
+                            self.jfdi, False)
         ret = {}
         for f, t in exact.items():
             t = strip(t, self.tagsToWrite, mapping=self.mapping)
@@ -598,28 +616,28 @@ class ReleaseWidget(QTreeView):
 
     def emitInitialExact(self, exact):
         ret = {}
-        
+
         for track in exact:
             ret[track['#exact']] = self.cleanTrack(track)
 
         self.exactMatches.emit(ret)
-    
+
     def emitTracks(self, tracks):
         tracks = list(map(dict, tracks))
         tracks = list(map(self.cleanTrack, tracks))
-        #import pdb
-        #pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
         if tracks:
             self.preview.emit(
                 tracks[:len(self._status['selectedrows'])])
         else:
             rows = self._status['selectedrows']
             self.preview.emit([{} for x in rows])
-    
+
     def exactChanged(self, item):
         if item.checked:
-            track = strip(item.itemData, self.tagsToWrite, 
-                mapping = self.mapping)
+            track = strip(item.itemData, self.tagsToWrite,
+                          mapping=self.mapping)
             self.preview.emit({item.itemData['#exact']: track})
         else:
             self.preview.emit({item.itemData['#exact']: {}})
@@ -632,22 +650,22 @@ class ReleaseWidget(QTreeView):
 
         items = [index.internalPointer() for index in self.selectedIndexes()]
         if len(items) == 1 and not isTrack(items[0]) \
-            and not items[0].hasTracks:
+                and not items[0].hasTracks:
             copytag = items[0].itemData.copy
             tags = self.tagsToWrite
-            tracks = [strip(copytag(), tags, mapping=self.mapping) for z in 
-                self._status['selectedrows']]
+            tracks = [strip(copytag(), tags, mapping=self.mapping) for z in
+                      self._status['selectedrows']]
         else:
             singles = []
             albums = []
-            [singles.append(item) if isTrack(item) else 
-                albums.append(item) for item in items]
+            [singles.append(item) if isTrack(item) else
+             albums.append(item) for item in items]
             tracks = []
             for item in singles:
                 if not item.parentItem in albums:
                     tracks.append(item.track())
-            [tracks.extend(item.tracks()) for item in albums 
-                if item.hasTracks]
+            [tracks.extend(item.tracks()) for item in albums
+             if item.hasTracks]
             for item in albums:
                 if '#extrainfo' in item.itemData:
                     desc, url = item.itemData[u'#extrainfo']
@@ -660,7 +678,7 @@ class ReleaseWidget(QTreeView):
     def _setCollapsedFlag(self, index):
         item = index.internalPointer()
         item.expanded = False
-    
+
     def _setExpandedFlag(self, index):
         item = index.internalPointer()
         item.expanded = True
@@ -671,7 +689,7 @@ class ReleaseWidget(QTreeView):
             slot)
         modelconnect = lambda signal, slot: getattr(model, signal).connect(slot)
         func = partial(model.retrieve, fin_func=self.selectionChanged)
-        #connect('activated', func)
+        # connect('activated', func)
         connect('expanded', self._setExpandedFlag)
         connect('collapsed', self._setCollapsedFlag)
         connect('clicked', func)
@@ -685,14 +703,14 @@ class ReleaseWidget(QTreeView):
         modelconnect('collapse', self.collapse)
         model.tagsource = self.tagSource
         model.mapping = self.mapping
-    
+
     def setReleases(self, releases, files=None):
         from .masstag import find_best
         self.model().setupModelData(releases)
-        #FIXME: The expander isn't shown if I don't do this. However
-        #I can still click on it...Qt bug probably.
+        # FIXME: The expander isn't shown if I don't do this. However
+        # I can still click on it...Qt bug probably.
         QApplication.processEvents()
-        
+
         if files:
             matches = find_best(releases, files, self.albumBound)
             if not matches:
@@ -712,26 +730,27 @@ class ReleaseWidget(QTreeView):
                     x = lambda: self.emitExactMatches(
                         model.rootItem.childItems[row], files)
                     model.retrieve(index, x)
-    
+
     def setSortOptions(self, options):
         self.header().sortOptions = options
-    
+
     def sort(self, order):
         self.model().sortOrder = order
         self.model().sort()
         if order in self.header().sortOptions:
             self.lastSortIndex = self.header().sortOptions.index(order)
-    
+
     def setMapping(self, mapping):
         self.model().mapping = mapping
         self.mapping = mapping
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     model = TreeModel()
     model.setupModelData(data)
 
-    view = ReleaseWidget(1,get_tagsources()[0])
+    view = ReleaseWidget(1, get_tagsources()[0])
     view.setModel(model)
     view.setWindowTitle("Simple Tree Model")
     view.show()

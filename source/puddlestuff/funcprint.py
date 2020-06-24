@@ -7,6 +7,7 @@ from .constants import YES, NO
 
 pattern = re.compile(r'(%\d+\(.+\))|([\\]*\$\d+)')
 
+
 def perfunc(match, d):
     matchtext = match.group()
     if matchtext.startswith('\\'):
@@ -20,11 +21,12 @@ def perfunc(match, d):
         text = matchtext[1:-1]
         if pattern.search(text):
             try:
-                subfunc = partial(func, d = d)
+                subfunc = partial(func, d=d)
                 return pattern.sub(subfunc, text)
             except KeyError:
                 return ''
         return matchtext
+
 
 def func(match, d):
     matchtext = match.group()
@@ -66,11 +68,12 @@ def func(match, d):
         permatch = pattern.search(text)
         if permatch:
             try:
-                subfunc = partial(perfunc, d = d)
-                return pattern.sub(subfunc,text)
+                subfunc = partial(perfunc, d=d)
+                return pattern.sub(subfunc, text)
             except (KeyError, IndexError):
                 return ''
         return text
+
 
 def pprint(text, args):
     args = copy(args)

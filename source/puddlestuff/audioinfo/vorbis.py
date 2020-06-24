@@ -21,19 +21,23 @@ from .tag_versions import tags_in_file
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
-    'modified', 'bitspersample')
+              'modified', 'bitspersample')
 
 COVER_KEY = 'metadata_block_picture'
+
 
 def base64_to_image(value):
     return bin_to_image(Picture(base64.standard_b64decode(value)))
 
+
 def bin_to_image(pic):
     return {'data': pic.data, 'description': pic.desc, 'mime': pic.mime,
-        'imagetype': pic.type}
+            'imagetype': pic.type}
+
 
 def image_to_base64(image):
     return base64.standard_b64encode(image_to_bin(image).write()).decode('ascii')
+
 
 def image_to_bin(image):
     props = {}
@@ -54,6 +58,7 @@ def image_to_bin(image):
     [setattr(p, z, props[z]) for z in PICARGS if z in props]
     return p
 
+
 def vorbis_tag(base, name):
     class Tag(util.MockTag):
         IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA, util.IMAGETYPE)
@@ -73,7 +78,7 @@ def vorbis_tag(base, name):
         def get_filepath(self):
             return util.MockTag.get_filepath(self)
 
-        def set_filepath(self,  val):
+        def set_filepath(self, val):
             self.__tags.update(util.MockTag.set_filepath(self, val))
 
         filepath = property(get_filepath, set_filepath)
@@ -89,17 +94,17 @@ def vorbis_tag(base, name):
             cover_info(images, self.__tags)
 
         images = property(_get_images, _set_images)
-                
+
         def __contains__(self, key):
             if key == '__image':
                 return bool(self.images)
-            
+
             elif key == '__total':
                 try:
                     return bool(get_total(self))
                 except (KeyError, ValueError):
                     return False
-        
+
             if self.revmapping:
                 key = self.revmapping.get(key, key)
             return key in self.__tags
@@ -109,7 +114,7 @@ def vorbis_tag(base, name):
             cls.mapping = self.mapping
             cls.revmapping = self.revmapping
             cls.set_fundamentals(deepcopy(self.__tags),
-                self.mut_obj, self.images)
+                                 self.mut_obj, self.images)
             cls.filepath = self.filepath
             return cls
 
@@ -120,7 +125,7 @@ def vorbis_tag(base, name):
             elif key.startswith('__'):
                 return
             else:
-                del(self.__tags[key])
+                del (self.__tags[key])
 
         @getdeco
         def __getitem__(self, key):
@@ -141,7 +146,7 @@ def vorbis_tag(base, name):
                     setattr(self, fn_hash[key], value)
             elif isempty(value):
                 if key in self:
-                    del(self[key])
+                    del (self[key])
                 else:
                     return
             else:
@@ -153,7 +158,7 @@ def vorbis_tag(base, name):
         def delete(self):
             self.mut_obj.delete()
             for key in self.usertags:
-                del(self.__tags[self.revmapping.get(key, key)])
+                del (self.__tags[self.revmapping.get(key, key)])
             self.images = []
 
         @keys_deco
@@ -206,7 +211,7 @@ def vorbis_tag(base, name):
                 if base == FLAC:
                     audio.clear_pictures()
                     list(map(lambda p: audio.add_picture(image_to_bin(p)),
-                        self.__images))
+                             self.__images))
                 else:
                     newtag[COVER_KEY] = [_f for _f in map(image_to_base64, self.__images) if _f]
             else:
@@ -215,7 +220,7 @@ def vorbis_tag(base, name):
 
             toremove = [z for z in audio if z not in newtag]
             for z in toremove:
-                del(audio[z])
+                del (audio[z])
             audio.update(newtag)
             audio.save()
 
@@ -234,7 +239,9 @@ def vorbis_tag(base, name):
                 self.__tags['__tag'] = 'VorbisComment, ' + ', '.join(l)
             else:
                 self.__tags['__tag'] = 'VorbisComment'
+
     return Tag
+
 
 class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
 
@@ -247,12 +254,13 @@ class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
             ('Modified', self.modified)]
 
         ogginfo = [('Bitrate', self.bitrate),
-                ('Frequency', self.frequency),
-                ('Channels', str(info.channels)),
-                ('Length', self.length)]
+                   ('Frequency', self.frequency),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length)]
         return [('File', fileinfo), ('Ogg Info', ogginfo)]
 
     info = property(_info)
+
 
 if OggOpus:
     class Opus_Tag(vorbis_tag(OggOpus, 'Ogg Opus')):
@@ -281,16 +289,16 @@ class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
                     ('Modified', self.modified)]
 
         ogginfo = [('Bitrate', 'Lossless'),
-                ('Frequency', self.frequency),
-                ('Bits Per Sample', self.bitspersample),
-                ('Channels', str(info.channels)),
-                ('Length', self.length)]
+                   ('Frequency', self.frequency),
+                   ('Bits Per Sample', self.bitspersample),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length)]
         return [('File', fileinfo), ('FLAC Info', ogginfo)]
 
     info = property(_info)
 
-filetypes = []
 
+filetypes = []
 
 if OggOpus:
     filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus.ogg'))

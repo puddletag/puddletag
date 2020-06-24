@@ -1,22 +1,22 @@
-#amarok.py
+# amarok.py
 
-#Copyright (C) 2008-2009 concentricpuddle
+# Copyright (C) 2008-2009 concentricpuddle
 
-#This file is part of puddletag, a semi-good music tag editor.
+# This file is part of puddletag, a semi-good music tag editor.
 
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
 
@@ -28,6 +28,7 @@ from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import QSettings
 
 from mutagen.id3 import TCON
+
 GENRES = TCON.GENRES
 from .. import musiclib
 from ..libraries.mysqllib import MySQLLib
@@ -39,9 +40,10 @@ author = 'concentricpuddle'
 join = os.path.join
 dirname = os.path.dirname
 
+
 class Amarok(MySQLLib):
 
-    def convertTrack(self, track, artist = None, album = None, convert = True):
+    def convertTrack(self, track, artist=None, album=None, convert=True):
         if artist is None:
             artist = track[-2]
         if album is None:
@@ -72,32 +74,32 @@ class Amarok(MySQLLib):
 
         filename = track[0][1:]
         temp = {'__filename': filename,
-                    '__folder': dirname(filename),
-                    '__created': audioinfo.strtime(track[2]),
-                    '__modified': audioinfo.strtime(track[3]),
-                    'album': album,
-                    'artist': artist,
-                    'composer': composer,
-                    'genre': genre,
-                    'title': track[6],
-                    'year': year,
-                    'comment': track[8],
-                    'track': str(track[9]),
-                    'discnumber': str(track[10]),
-                    '__bitrate': audioinfo.strbitrate(track[11] * 1000),
-                    '__length': audioinfo.strlength(track[12]),
-                    '__frequency': audioinfo.strfrequency(track[13]),
-                    '__size': str(track[14]),
-                    '___filetype': str(track[15]),
-                    '___sampler': str(track[16]),
-                    'bpm': str(track[17]),
-                    '___deviceid': str(track[18]),
-                    '__path': os.path.basename(filename),
-                    '__ext': os.path.splitext(filename)[1][1:],
-                    '__library': 'amarok'}
+                '__folder': dirname(filename),
+                '__created': audioinfo.strtime(track[2]),
+                '__modified': audioinfo.strtime(track[3]),
+                'album': album,
+                'artist': artist,
+                'composer': composer,
+                'genre': genre,
+                'title': track[6],
+                'year': year,
+                'comment': track[8],
+                'track': str(track[9]),
+                'discnumber': str(track[10]),
+                '__bitrate': audioinfo.strbitrate(track[11] * 1000),
+                '__length': audioinfo.strlength(track[12]),
+                '__frequency': audioinfo.strfrequency(track[13]),
+                '__size': str(track[14]),
+                '___filetype': str(track[15]),
+                '___sampler': str(track[16]),
+                'bpm': str(track[17]),
+                '___deviceid': str(track[18]),
+                '__path': os.path.basename(filename),
+                '__ext': os.path.splitext(filename)[1][1:],
+                '__library': 'amarok'}
 
         return (self.applyToDict(self.applyToDict(temp, self.valuetostring),
-                                self.latinutf))
+                                 self.latinutf))
 
     def getArtists(self):
         self.cursor.execute("SELECT DISTINCT BINARY name FROM artist ORDER BY name")
@@ -158,7 +160,6 @@ class Amarok(MySQLLib):
         for track in tracks:
             self._delTrack(app(stringtags(track, True), utflatin))
 
-
     def saveTracks(self, tracks):
         basename = os.path.basename
         freq = audioinfo.lngfrequency
@@ -170,7 +171,7 @@ class Amarok(MySQLLib):
 
         for old, new in tracks:
             (old, new) = (app(stringtags(old, True), utflatin),
-                                app(stringtags(new, True), utflatin))
+                          app(stringtags(new, True), utflatin))
 
             mixed = old.copy()
             mixed.update(new)
@@ -179,7 +180,7 @@ class Amarok(MySQLLib):
                 if self.cursor.execute('SELECT id FROM ' + key + ' WHERE name = BINARY %s', (new[key],)):
                     keyid = self.cursor.fetchall()[0][0]
                 else:
-                    self.cursor.execute('INSERT INTO ' + key + ' VALUES (NULL, %s)', (new[key], ))
+                    self.cursor.execute('INSERT INTO ' + key + ' VALUES (NULL, %s)', (new[key],))
                     self.cursor.execute('SELECT LAST_INSERT_ID()')
                     keyid = self.cursor.fetchall()[0][0]
                 ids[key] = keyid
@@ -191,14 +192,14 @@ class Amarok(MySQLLib):
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
                             %s)""",
-                            (url, folder, lngtime(mixed['__created']), lngtime(mixed['__modified']),
-                            ids['album'], ids['artist'], ids['composer'], ids['genre'],
-                            mixed['title'], ids['year'], mixed['comment'],
-                            mixed['track'], mixed['discnumber'],
-                            freq(mixed['__bitrate']) / 1000, leng(mixed["__length"]),
-                            freq(mixed["__frequency"]), int(mixed["__size"]),
-                            mixed['___filetype'], mixed['___sampler'], mixed['bpm'],
-                            mixed['___deviceid']))
+                                (url, folder, lngtime(mixed['__created']), lngtime(mixed['__modified']),
+                                 ids['album'], ids['artist'], ids['composer'], ids['genre'],
+                                 mixed['title'], ids['year'], mixed['comment'],
+                                 mixed['track'], mixed['discnumber'],
+                                 freq(mixed['__bitrate']) / 1000, leng(mixed["__length"]),
+                                 freq(mixed["__frequency"]), int(mixed["__size"]),
+                                 mixed['___filetype'], mixed['___sampler'], mixed['bpm'],
+                                 mixed['___deviceid']))
 
             if old[FILENAME] != new[FILENAME]:
                 self._delTrack(old)
@@ -223,13 +224,13 @@ class Amarok(MySQLLib):
             OR UCASE(album.name) REGEXP UCASE(%s) OR UCASE(tags.title) REGEXP
             UCASE(%s) OR UCASE(tags.composer) REGEXP UCASE(%s) OR
             UCASE(genre.name) REGEXP UCASE(%s) OR UCASE(year.name)
-            REGEXP UCASE(%s)) limit 1000''', (term, ) * 7)
+            REGEXP UCASE(%s)) limit 1000''', (term,) * 7)
 
         return [musiclib.Tag(self, self.convertTrack(z, convert=False)) for z in self.cursor.fetchall()]
 
     def updateSearch(self, term, tracks):
         tags = ['artist', 'title', FILENAME, '__path', 'album', 'genre', 'comment'
-        , 'composer', 'year']
+            , 'composer', 'year']
         term = term.lower()
         tracks = []
         for audio in files:
@@ -240,8 +241,9 @@ class Amarok(MySQLLib):
                     break
         return tracks
 
+
 class ConfigWindow(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setWindowTitle("Import Library")
 
@@ -266,7 +268,7 @@ class ConfigWindow(QWidget):
 
         vbox = QVBoxLayout()
         [vbox.addWidget(z) for z in [userlabel, self.username, passlabel,
-            self.passwd, datalabel, self.database, portlabel, self.port]]
+                                     self.passwd, datalabel, self.database, portlabel, self.port]]
         vbox.addStretch()
         self.setLayout(vbox)
 
@@ -276,7 +278,7 @@ class ConfigWindow(QWidget):
         database = str(self.database.text())
         port = int(self.port.text())
 
-        return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
+        return Amarok('tags', user=username, passwd=passwd, db=database, port=port)
 
     def saveSettings(self):
         username = self.username.text()
@@ -286,7 +288,7 @@ class ConfigWindow(QWidget):
 
         settings = QSettings()
         settings.beginGroup('Library')
-        settings.setValue('username',username)
+        settings.setValue('username', username)
         settings.setValue('passwd', passwd)
         settings.setValue('database', database)
         settings.setValue('port', port)
@@ -300,7 +302,8 @@ class ConfigWindow(QWidget):
         self.port.setText(settings.value('port'))
         settings.endGroup()
 
-        return dict(user = username, passwd = passwd, db = database, port = port)
+        return dict(user=username, passwd=passwd, db=database, port=port)
+
 
 def loadLibrary():
     settings = QSettings()
@@ -309,13 +312,12 @@ def loadLibrary():
     passwd = str(settings.value('passwd'))
     database = str(settings.value('database'))
     port = int(settings.value('port'))
-    return Amarok('tags', user = username, passwd = passwd, db = database, port = port)
+    return Amarok('tags', user=username, passwd=passwd, db=database, port=port)
 
-
-#if __name__ == "__main__":
-    #db = Amarok(user = 'amarok', passwd = 'amarok', db = 'amarok')
-    #artist = db.getArtists()[10]
-    #i = db.getTracks(artist,db.getAlbums(artist))[0]
-    #y = i.copy()
-    #y[FILENAME] = './media/multi/Music/ktg.mp3'
-    #db.saveTracks([(i,y)])
+# if __name__ == "__main__":
+# db = Amarok(user = 'amarok', passwd = 'amarok', db = 'amarok')
+# artist = db.getArtists()[10]
+# i = db.getTracks(artist,db.getAlbums(artist))[0]
+# y = i.copy()
+# y[FILENAME] = './media/multi/Music/ktg.mp3'
+# db.saveTracks([(i,y)])

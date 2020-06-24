@@ -1,5 +1,5 @@
-#this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
-#while we're at it, we also wrap url fetching.
+# this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
+# while we're at it, we also wrap url fetching.
 
 import re
 import urllib.error
@@ -19,10 +19,12 @@ def classify(seq, key_func):
             result[key] = [item]
     return result
 
+
 class SoupWrapper(object):
-    def __init__(self, element, source = None):
+    def __init__(self, element, source=None):
         self.element = element
         self.source = source
+
     def find_all(self, *args, **kwargs):
         if isinstance(args[0], dict):
             kwargs.update(args[0])
@@ -52,14 +54,17 @@ class SoupWrapper(object):
                     new_results.append(x)
             results = new_results
         return [SoupWrapper(x) for x in results]
+
     def find(self, *args, **kwargs):
         r = self.find_all(*args, **kwargs)
         if r:
             return r[0]
         return None
+
     def __iter__(self):
         for x in self.element:
             yield SoupWrapper(x)
+
     def __getitem__(self, idx):
         if isinstance(idx, (str, str)):
             if idx in self.element.attrib:
@@ -70,13 +75,16 @@ class SoupWrapper(object):
             return SoupWrapper(self.element[idx])
         if isinstance(idx, slice):
             return [SoupWrapper(x) for x in self.element[idx]]
+
     def __getattr__(self, name):
         if name in self.element.attrib:
             return self.element.attrib[name]
         return self.find(name)
+
     @property
     def string(self):
         return self.element.text_content()
+
     def all_text(self):
         result = []
         if self.element.text:
@@ -85,7 +93,8 @@ class SoupWrapper(object):
             if x.tail:
                 result.append(x.tail)
         return ''.join(result)
-    def all_recursive_text(self, should_continue = lambda node: True):
+
+    def all_recursive_text(self, should_continue=lambda node: True):
         r = []
         if self.element.text:
             r.append(self.element.text)
@@ -95,25 +104,32 @@ class SoupWrapper(object):
             if node.element.tail:
                 r.append(node.element.tail)
         return ' '.join(r)
+
     @property
     def contents(self):
         return [SoupWrapper(x) for x in self.element]
+
     @property
     def name(self):
         return self.element.tag
+
     @property
     def tag(self):
         return self.element.tag
+
     @property
     def parent(self):
         return SoupWrapper(self.element.getparent())
 
+
 def fetch_page(url):
     return urllib.request.urlopen(url).read()
+
 
 def parse(page):
     p = lxml.html.document_fromstring(page)
     return p
+
 
 def fetch_parsed(url):
     page = fetch_page(url)
@@ -123,6 +139,7 @@ def fetch_parsed(url):
         print(url)
         raise
     return p
+
 
 def fetch_soup(url):
     page = fetch_page(url)

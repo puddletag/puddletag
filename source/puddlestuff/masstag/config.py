@@ -20,8 +20,10 @@ DESC = 'desc'
 EXISTING_ONLY = 'leave_existing'
 REPLACE_FIELDS = 'replace_fields'
 
+
 class DummyTS(object):
     group_by = []
+
 
 def convert_mtps(dirpath=PROFILEDIR):
     for fn in glob.glob(PROFILEDIR + '/*.conf'):
@@ -29,8 +31,8 @@ def convert_mtps(dirpath=PROFILEDIR):
         os.rename(fn, os.path.splitext(fn)[0] + '.old')
         save_mtp(mtp, os.path.join(dirpath, encode_fn(mtp.name)) + '.mtp')
 
+
 def convert_mtp(filename):
-        
     cparser = PuddleConfig(filename)
     info_section = 'info'
     name = cparser.get(info_section, NAME, '')
@@ -39,7 +41,7 @@ def convert_mtp(filename):
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
     pattern = cparser.get(info_section, PATTERN,
-        '%artist% - %album%/%track% - %title%')
+                          '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
     desc = cparser.get(info_section, DESC, '')
     existing = cparser.get(info_section, EXISTING_ONLY, False)
@@ -55,17 +57,18 @@ def convert_mtp(filename):
         no_result = get('no_match', 0)
 
         ts_profiles.append(TagSourceProfile(None, source, fields,
-            no_result))
-    
+                                            no_result))
+
     return MassTagProfile(name, desc, match_fields, None,
-            pattern, ts_profiles, album_bound, track_bound, jfdi, existing,
-            '')
+                          pattern, ts_profiles, album_bound, track_bound, jfdi, existing,
+                          '')
+
 
 def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
     if tag_sources is None:
         tag_sources = {}
     mtps = [mtp_from_file(fn, tag_sources) for fn
-        in glob.glob(dirpath + '/*.mtp')]
+            in glob.glob(dirpath + '/*.mtp')]
     try:
         order = open(os.path.join(dirpath, 'order'), 'r').read().split('\n')
     except EnvironmentError:
@@ -73,7 +76,7 @@ def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
 
     order = [z.strip() for z in order]
     first = []
-    last= []
+    last = []
 
     names = dict([(mtp.name, mtp) for mtp in mtps])
     mtps = [names[name] for name in order if name in names]
@@ -81,8 +84,8 @@ def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
 
     return mtps
 
-def mtp_from_file(filename=CONFIG, tag_sources=None):
 
+def mtp_from_file(filename=CONFIG, tag_sources=None):
     if tag_sources is None:
         tag_sources = {}
     else:
@@ -97,7 +100,7 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
     pattern = cparser.get(info_section, PATTERN,
-        '%artist% - %album%/%track% - %title%')
+                          '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
     desc = cparser.get(info_section, DESC, '')
     leave_existing = cparser.get(info_section, EXISTING_ONLY, False)
@@ -114,13 +117,14 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
         replace_fields = fields_from_text(get('replace_fields', ''))
 
         ts_profiles.append(TagSourceProfile(None, source, fields,
-            no_result, replace_fields))
+                                            no_result, replace_fields))
 
     mtp = MassTagProfile(name, desc, match_fields, None,
-        pattern, ts_profiles, album_bound, track_bound, jfdi,
-        leave_existing, regexps)
+                         pattern, ts_profiles, album_bound, track_bound, jfdi,
+                         leave_existing, regexps)
 
     return mtp
+
 
 def save_mtp(mtp, filename=CONFIG):
     cparser = PuddleConfig(filename)
@@ -128,7 +132,7 @@ def save_mtp(mtp, filename=CONFIG):
 
     cparser.set(info_section, NAME, mtp.name)
     for key in ['name', 'desc', 'file_pattern', 'fields',
-        'jfdi', 'leave_existing']:
+                'jfdi', 'leave_existing']:
         cparser.set(info_section, key, getattr(mtp, key))
 
     for key in ['album_bound', 'track_bound']:
@@ -142,6 +146,7 @@ def save_mtp(mtp, filename=CONFIG):
         cparser.set(section, 'if_no_result', tsp.if_no_result)
         cparser.set(section, 'fields', ','.join(tsp.fields))
         cparser.set(section, 'replace_fields', ','.join(tsp.replace_fields))
+
 
 if __name__ == '__main__':
     fns = glob.glob(PROFILEDIR + '/Local.conf')

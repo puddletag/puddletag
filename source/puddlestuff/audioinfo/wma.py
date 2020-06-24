@@ -10,30 +10,32 @@ from .util import (usertags, PATH,
                    del_deco, get_total, set_total, info_to_dict, parse_image)
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
-    'modified', 'filetype')
+              'modified', 'filetype')
 
-#From picard
+
+# From picard
 def bin_to_pic(image):
     data = image.value
     (type, size) = struct.unpack_from("<bi", data)
     pos = 5
     mime = ""
-    while data[pos:pos+2] != "\x00\x00":
-        mime += data[pos:pos+2]
+    while data[pos:pos + 2] != "\x00\x00":
+        mime += data[pos:pos + 2]
         pos += 2
     pos += 2
     description = ""
-    while data[pos:pos+2] != "\x00\x00":
-        description += data[pos:pos+2]
+    while data[pos:pos + 2] != "\x00\x00":
+        description += data[pos:pos + 2]
         pos += 2
     pos += 2
-    image_data = data[pos:pos+size]
+    image_data = data[pos:pos + size]
     return {
         util.MIMETYPE: mime.decode("utf-16-le"),
         util.DATA: image_data,
         util.IMAGETYPE: type,
         util.DESCRIPTION: description.decode("utf-16-le"),
     }
+
 
 def pic_to_bin(image):
     data = image[util.DATA]
@@ -49,6 +51,7 @@ def pic_to_bin(image):
     tag_data += description.encode("utf-16-le") + "\x00\x00"
     tag_data += data
     return ASFByteArrayAttribute(tag_data)
+
 
 class Tag(util.MockTag):
     IMAGETAGS = (util.MIMETYPE, util.DATA, util.IMAGETYPE, util.DESCRIPTION)
@@ -120,7 +123,7 @@ class Tag(util.MockTag):
     def get_filepath(self):
         return util.MockTag.get_filepath(self)
 
-    def set_filepath(self,  val):
+    def set_filepath(self, val):
         self.__tags.update(util.MockTag.set_filepath(self, val))
 
     filepath = property(get_filepath, set_filepath)
@@ -140,13 +143,13 @@ class Tag(util.MockTag):
     def __contains__(self, key):
         if key == '__image':
             return bool(self.images)
-        
+
         elif key == '__total':
             try:
                 return bool(get_total(self))
             except (KeyError, ValueError):
                 return False
-        
+
         if self.revmapping:
             key = self.revmapping.get(key, key)
         return key in self.__tags
@@ -160,7 +163,7 @@ class Tag(util.MockTag):
         return self.__tags[key]
 
     @setdeco
-    def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         if key.startswith('__'):
 
             if key == '__image':
@@ -172,7 +175,7 @@ class Tag(util.MockTag):
                     return
             return
         elif isempty(value):
-            del(self[key])
+            del (self[key])
         elif key in self.__rtranslate:
             self.__tags[key] = unicode_list(value)
 
@@ -183,12 +186,12 @@ class Tag(util.MockTag):
         elif key.startswith('__'):
             return
         else:
-            del(self.__tags[key])
+            del (self.__tags[key])
 
     def delete(self):
         self.mut_obj.clear()
         for key in self.usertags:
-            del(self.__tags[self.revmapping.get(key, key)])
+            del (self.__tags[self.revmapping.get(key, key)])
         self.images = []
         self.save()
 
@@ -214,8 +217,7 @@ class Tag(util.MockTag):
     def link(self, filename):
         """Links the audio, filename
         returns self if successful, None otherwise."""
-        
-        
+
         self.images = None
         tags, audio = self.load(filename, ASF)
         if audio is None:
@@ -266,7 +268,7 @@ class Tag(util.MockTag):
 
         toremove = [z for z in audio if z not in newtag]
         for z in toremove:
-            del(audio[z])
+            del (audio[z])
         audio.update(newtag)
         audio.save()
 
@@ -276,5 +278,6 @@ class Tag(util.MockTag):
             self.__tags['__tag'] = 'ASF, ' + ', '.join(l)
         else:
             self.__tags['__tag'] = 'ASF'
+
 
 filetype = (ASF, Tag, 'WMA', ['wma', 'wmv'])

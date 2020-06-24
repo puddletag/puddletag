@@ -17,12 +17,14 @@ def load_genres(filepath=None):
     except (IOError, OSError):
         return audioinfo.GENRES[::]
 
+
 def save_genres(genres, filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     f = open(filepath, 'w')
     f.write('\n'.join(genres))
     f.close()
+
 
 class Genres(QWidget):
     def __init__(self, parent=None, status=None):
@@ -46,7 +48,7 @@ class Genres(QWidget):
         buttons.edit.connect(self.edit)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(self.listbox,1)
+        hbox.addWidget(self.listbox, 1)
         hbox.addLayout(buttons, 0)
         self.setLayout(hbox)
 
@@ -72,5 +74,5 @@ class Genres(QWidget):
     def applySettings(self, control=None):
         item = self.listbox.item
         genres = [str(item(row).text()) for row in
-            range(self.listbox.count())]
+                  range(self.listbox.count())]
         self._status['genres'] = genres

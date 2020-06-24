@@ -1,23 +1,23 @@
 #!/usr/bin/env python
-#console.py
+# console.py
 
-#Copyright (C) 2008-2009 concentricpuddle
+# Copyright (C) 2008-2009 concentricpuddle
 
-#This file is part of puddletag, a semi-good music tag editor.
+# This file is part of puddletag, a semi-good music tag editor.
 
-#This program is free software; you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation; either version 2 of the License, or
-#(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
 import sys
@@ -28,21 +28,27 @@ from puddlestuff.findfunc import *
 noprints = ['__path', '__ext', '__modified', '__accessed', '__folder']
 sortorder = ['__filename', '__size', '__length', '__bitrate', '__frequency', '__created']
 bold = chr(0x1b) + "[1m";
-normal  = chr(0x1b) + "[0m";
-red   = chr(0x1b) + "[31m";
+normal = chr(0x1b) + "[0m";
+red = chr(0x1b) + "[31m";
+
 
 def printerror(text):
     print(red + text + normal)
+
+
 def sortedkeys(keys):
     sortkeys = [z for z in sortorder if z in keys]
     others = sorted(set(keys).difference(sortkeys))
     return sortkeys + others
 
+
 path, PATH, FILENAME = os.path, audioinfo.PATH, audioinfo.FILENAME
+
 
 class PuddleError(Exception): pass
 
-def safe_name(name, to = None):
+
+def safe_name(name, to=None):
     """Make a filename safe for use (remove some special chars)
 
     If any special chars are found they are replaced by to."""
@@ -52,10 +58,13 @@ def safe_name(name, to = None):
         to = str(to)
     escaped = ""
     for ch in name:
-        if ch not in r'/\*?;"|:': escaped = escaped + ch
-        else: escaped = escaped + to
+        if ch not in r'/\*?;"|:':
+            escaped = escaped + ch
+        else:
+            escaped = escaped + to
     if not escaped: return '""'
     return escaped
+
 
 def vararg_callback(option, opt_str, value, parser):
     assert value is None
@@ -65,7 +74,7 @@ def vararg_callback(option, opt_str, value, parser):
         arg = rargs[0]
 
         if ((arg[:2] == "--" and len(arg) > 2) or
-            (arg[:1] == "-" and len(arg) > 1 and arg[1] != "-")):
+                (arg[:1] == "-" and len(arg) > 1 and arg[1] != "-")):
             break
         else:
             value.append(arg)
@@ -73,14 +82,15 @@ def vararg_callback(option, opt_str, value, parser):
 
     setattr(parser.values, option.dest, value)
 
+
 def parseoptions(classes):
     usage = '%prog -switches --option [arguments] -f files'
-    parser=OptionParser(usage)
-    parser.add_option("-f","--filenames",dest="filename",action="callback",help="The filenames of the input files", callback=vararg_callback)
-    parser.add_option("-p","--preview",action="store_true", dest="preview",help="Ask for confirmation before writing.")
-    parser.add_option("-v","--verbose",action="store_true", dest="verbose",help="Rename the directory according to your pattern.")
-    parser.add_option("-t","--test",action="store_true", dest="test",help="Don't change anything, just print results.")
-    #parser.add_option("-c","--continue",action="store_false", dest="cont",help="Yes, when asked.")
+    parser = OptionParser(usage)
+    parser.add_option("-f", "--filenames", dest="filename", action="callback", help="The filenames of the input files", callback=vararg_callback)
+    parser.add_option("-p", "--preview", action="store_true", dest="preview", help="Ask for confirmation before writing.")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", help="Rename the directory according to your pattern.")
+    parser.add_option("-t", "--test", action="store_true", dest="test", help="Don't change anything, just print results.")
+    # parser.add_option("-c","--continue",action="store_false", dest="cont",help="Yes, when asked.")
     for cl in classes.values():
         parser.add_option('--' + cl.command, dest='action' + cl.command, help=cl.description, action='callback', callback=vararg_callback)
 
@@ -89,11 +99,12 @@ def parseoptions(classes):
     except IndexError:
         parser.print_help()
         sys.exit(0)
-    (options,args)=parser.parse_args()
+    (options, args) = parser.parse_args()
 
-    actions = [{z[len('action'):]: getattr(options,z)} for z in dir(options) if z.startswith('action')]
+    actions = [{z[len('action'):]: getattr(options, z)} for z in dir(options) if z.startswith('action')]
     actions = [z for z in actions if list(z.values())[0] is not None]
     return (options, actions)
+
 
 class PuddleRunAction:
     name = 'RunAction'
@@ -116,6 +127,7 @@ class PuddleRunAction:
     def run(self, f):
         return runAction(self.funcs, f)
 
+
 class Format:
     name = 'Format'
     command = 'format'
@@ -133,11 +145,11 @@ class Format:
         self.tags = tags
         self.pattern = pattern
 
-
     def run(self, tags):
-        #pdb.set_trace()
+        # pdb.set_trace()
         value = tagtofilename(self.pattern, tags)
         return dict([(tag, value) for tag in self.tags])
+
 
 class FileToTag:
     name = 'FileToTag'
@@ -166,6 +178,7 @@ class TagToFile:
     def run(self, tags):
         return {'__path': tagtofilename(self.pattern, tags['__path'])}
 
+
 class SetTag:
     name = 'SetTag'
     command = 'set'
@@ -182,7 +195,7 @@ class SetTag:
 
         tags = args[0:arglen:2]
         values = args[1:arglen:2]
-        self.tags = list(zip(tags,values))
+        self.tags = list(zip(tags, values))
 
     def run(self, tags):
         return dict([(tag, value) for tag, value in self.tags])
@@ -197,27 +210,27 @@ class SetMul:
 
     def setup(self, *args):
         for i, z in enumerate(args):
-            if '::' in z: #The separator
+            if '::' in z:  # The separator
                 y = z.strip()
-                if y == '::': #Something like ['what.py', 'artist', 'title', '::', 'what is ithis']
+                if y == '::':  # Something like ['what.py', 'artist', 'title', '::', 'what is ithis']
                     tags = args[:i]
-                    values = args[i+1:]
+                    values = args[i + 1:]
                     break
-                elif y.startswith('::'): #['what.py', 'artist', 'title', '::what is ithis']
+                elif y.startswith('::'):  # ['what.py', 'artist', 'title', '::what is ithis']
                     tags = args[:i]
                     values = args[i:]
                     values[0] = values[0][2:]
                     break
-                elif y.endswith('::'): #['what.py', 'artist', 'title::', 'what is ithis']
-                    tags = args[:i+1]
+                elif y.endswith('::'):  # ['what.py', 'artist', 'title::', 'what is ithis']
+                    tags = args[:i + 1]
                     tags[-1] = tags[-1][:-2]
-                    values = args[i+1:]
+                    values = args[i + 1:]
                     break
-                else: #['artist', 'title::"my name is"', 'what', 'is', 'this']
+                else:  # ['artist', 'title::"my name is"', 'what', 'is', 'this']
                     tag = y[:y.find('::')]
                     value = y[y.find('::') + 2:]
                     tags = list(args[:i]) + [tag]
-                    values =  [value] + list(args[i+1:])
+                    values = [value] + list(args[i + 1:])
                     break
         if tags:
             self.tags = tags
@@ -240,6 +253,7 @@ def pprint(tags):
         temp.append(tag + ': ' + bold + value + normal)
     return "\n".join(temp)
 
+
 def renameFile(original, tags):
     if PATH in tags:
         if path.splitext(tags[PATH])[1] == "":
@@ -256,6 +270,7 @@ def renameFile(original, tags):
         return {}
     return tags
 
+
 def writeTags(original, tags):
     try:
         renameFile(original, tags)
@@ -269,16 +284,17 @@ def writeTags(original, tags):
     except (OSError, IOError) as detail:
         printerror("Couldn't write to file, " + original['__filename'] + '\n')
 
+
 def main():
     classes = {'runaction': PuddleRunAction, 'set': SetTag, 'setmul': SetMul,
-                'format': Format}
+               'format': Format}
     options, actions = parseoptions(classes)
     files = options.filename
     identifier = QuotedString('"') | Combine(NotAny('\\') + Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
     tags = delimitedList(identifier)
     commands = []
     for command, args in [list(action.items())[0] for action in actions]:
-        #Instantiate the class for the command
+        # Instantiate the class for the command
         cl = classes[command]()
         try:
             if not files and cl.files:
@@ -288,20 +304,20 @@ def main():
             printerror('Error: ' + str(e))
             print('usage: ' + cl.usage)
             sys.exit(0)
-        #except TypeError, e:
-            #text = unicode(e)
-            #temp = []
-            #match = sre.search('\d+', text)
-            #temp.append(int(text[match.start(0):match.end(0)]))
-            #text = text[match.end(0): ]
-            #match = sre.search('\d+', text)
-            #temp.append(int(text[match.start(0):match.end(0)]))
-            #if temp[0] > temp[1]:
-                #print 'Not enough arguments were specified to --' + cl.command
-            #else:
-                #print 'Too many arguments were specified to --' + cl.command
-            #print 'Usage:', cl.usage
-            #sys.exit(0)
+        # except TypeError, e:
+        # text = unicode(e)
+        # temp = []
+        # match = sre.search('\d+', text)
+        # temp.append(int(text[match.start(0):match.end(0)]))
+        # text = text[match.end(0): ]
+        # match = sre.search('\d+', text)
+        # temp.append(int(text[match.start(0):match.end(0)]))
+        # if temp[0] > temp[1]:
+        # print 'Not enough arguments were specified to --' + cl.command
+        # else:
+        # print 'Too many arguments were specified to --' + cl.command
+        # print 'Usage:', cl.usage
+        # sys.exit(0)
         commands.append(cl.run)
 
     for f in files:
@@ -327,7 +343,7 @@ def main():
                 print('Changes: \n', pprint(changes), '\n')
                 print("Do you want to write the changes to the file? [Y/n]")
                 s = input()
-                if not(s == 'n' or s == 'N'):
+                if not (s == 'n' or s == 'N'):
                     writeTags(tag, tags)
             elif options.verbose:
                 changes = {}
@@ -347,7 +363,8 @@ def main():
                 print('Changes: \n', pprint(changes), '\n')
             else:
                 print(options.test)
-                #writeTags(tag, tags)
+                # writeTags(tag, tags)
+
 
 if __name__ == '__main__':
     try:

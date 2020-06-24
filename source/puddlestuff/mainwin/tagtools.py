@@ -18,9 +18,10 @@ _delete = {
     'ID3v1': partial(id3.delete, delete_v1=True, delete_v2=False),
     'ID3v2': partial(id3.delete, delete_v1=False, delete_v2=True),
     'ID3': partial(id3.delete, delete_v1=True, delete_v2=True),
-    }
+}
 
 status = {}
+
 
 def _remove_tag(f, tag):
     try:
@@ -37,11 +38,12 @@ def _remove_tag(f, tag):
         traceback.print_exc()
         return
 
+
 def remove_tag(tag, parent):
     if status['previewmode']:
         QMessageBox.information(parent, 'puddletag',
-            translate("Previews",
-                'Disable Preview Mode first to enable tag deletion.'))
+                                translate("Previews",
+                                          'Disable Preview Mode first to enable tag deletion.'))
         return
     files = status['selectedfiles']
     rows = status['selectedrows']
@@ -54,7 +56,7 @@ def remove_tag(tag, parent):
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
                 m = translate("Defaults",
-                    'An error occured while writing to <b>%1</b>. (%2)')
+                              'An error occured while writing to <b>%1</b>. (%2)')
                 m = m.arg(filename).arg(e.strerror)
                 if row == rows[-1]:
                     yield m, 1
@@ -63,13 +65,15 @@ def remove_tag(tag, parent):
         status['model'].undolevel += 1
 
     s = progress(func, translate("Tag Tools",
-        'Removing %s tag: ' % tag), len(files))
+                                 'Removing %s tag: ' % tag), len(files))
     s(parent)
+
 
 remove_apev2 = lambda parent=None: remove_tag('APEv2', parent)
 remove_id3 = lambda parent=None: remove_tag('ID3', parent)
 remove_id3v1 = lambda parent=None: remove_tag('ID3v1', parent)
 remove_id3v2 = lambda parent=None: remove_tag('ID3v2', parent)
+
 
 def set_status(stat):
     global status

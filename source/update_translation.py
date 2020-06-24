@@ -14,9 +14,10 @@ Options:
     -q Quiet mode (only error messages will be shown).
     -h Show this message.'''
 
+
 def parse_dialogs():
     from puddlestuff.mainwin import (tagpanel, artwork, dirview,
-        filterwin, storedtags, logdialog)
+                                     filterwin, storedtags, logdialog)
     import puddlestuff.masstag.dialogs as masstag
     import puddlestuff.webdb as webdb
     import puddlestuff.mainwin.action_dialogs as action_dialogs
@@ -27,14 +28,16 @@ def parse_dialogs():
 
     dialog_strings = []
     controls = [z.control for z in [tagpanel, artwork, dirview, filterwin,
-        webdb, storedtags, logdialog, masstag]]
+                                    webdb, storedtags, logdialog, masstag]]
 
     controls.extend(action_dialogs.controls)
 
     return [tr(c[0]) for c in controls]
 
+
 def parse_functions():
     func_strings = []
+
     def tr(s):
         return 'translate("Functions", "%s")' % s.replace('"', r'\"')
 
@@ -44,18 +47,19 @@ def parse_functions():
             func_strings.append(tr(x.info[1]))
             func_strings.append(tr(x.funcname))
             for controls in x._getControls(None):
-                del(controls[1])
+                del (controls[1])
                 func_strings.extend(list(map(tr, controls)))
         except AttributeError:
             pass
 
     return func_strings
 
+
 def parse_shortcuts():
     def tr(s):
         s = s.replace('"', r'\"')
         return 'translate("Menus", "%s")' % s
-        
+
     f = tempfile.NamedTemporaryFile('rb+')
     fn = f.name
 
@@ -66,7 +70,7 @@ def parse_shortcuts():
     setting = cparser.data
     for section in cparser.sections():
         if section.startswith('shortcut'):
-            values = dict([(str(k), v) for k,v in  setting[section].items()])
+            values = dict([(str(k), v) for k, v in setting[section].items()])
             action_strings.append(tr(values['name']))
             if 'tooltip' in values:
                 action_strings.append(tr(values['tooltip']))
@@ -81,6 +85,7 @@ def parse_shortcuts():
     menus.close()
 
     return action_strings
+
 
 def parse_menus():
     def tr(s):
@@ -97,10 +102,11 @@ def parse_menus():
     setting = cparser.data
     for section in cparser.sections():
         if section.startswith('shortcut'):
-            values = dict([(str(k), v) for k,v in  setting[section].items()])
+            values = dict([(str(k), v) for k, v in setting[section].items()])
             action_strings.append(tr(values['name']))
             if 'tooltip' in values:
                 action_strings.append(tr(values['tooltip']))
+
 
 def write_translations():
     f = open('puddlestuff/translations.py', 'r+')
@@ -117,6 +123,7 @@ def write_translations():
     f.write('\n')
     f.truncate()
     f.close()
+
 
 verbose = True
 
@@ -152,7 +159,7 @@ write_translations()
 
 try:
     if verbose:
-        call(['pylupdate4',  '-verbose', 'puddletag.pro'])
+        call(['pylupdate4', '-verbose', 'puddletag.pro'])
     else:
         call(['pylupdate4', 'puddletag.pro'])
 except OSError:

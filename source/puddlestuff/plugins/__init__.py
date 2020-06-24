@@ -2,6 +2,8 @@ import logging
 from collections import defaultdict
 
 status = {}
+
+
 def connect_shortcut(action, enabled, disabled=None, togglecheck=None):
     controls = status['dialogs']
     emits = defaultdict(lambda: [])
@@ -20,10 +22,11 @@ def connect_shortcut(action, enabled, disabled=None, togglecheck=None):
         [getattr(c, togglecheck).connect(
             action.setEnabled) for c in emits[togglecheck]]
 
+
 def connect_control(control):
     controls = status['dialogs']
     emits = defaultdict(lambda: [])
-        
+
     for c in controls.values():
         [emits[sig].append(c) for sig in c.emits]
 

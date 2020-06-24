@@ -65,6 +65,7 @@ INVALID_KEYS = [
 class LastTime(object):
     pass
 
+
 __lasttime = LastTime()
 __lasttime.time = time.time()
 
@@ -76,7 +77,7 @@ def convert_dict(d, keys=None):
     for key in keys:
         if key in d:
             d[keys[key]] = d[key]
-            del(d[key])
+            del (d[key])
     return d
 
 
@@ -168,7 +169,7 @@ def parse_album_json(data):
     info['artist'] = " & ".join([_f for _f in info['artist'] if _f])
     info['involvedpeople_album'] = \
         ':'.join('%s;%s' % (z['name'], z['role'])
-                  for z in data.get('extraartists', []))
+                 for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
     info['catno'] = [_f for _f in (z.get('catno') for z in data.get('labels', [])) if _f]
 
@@ -346,12 +347,12 @@ class Discogs(object):
         self.preferences = [
             [translate('Discogs', 'Retrieve Cover'), CHECKBOX, True],
             [translate("Discogs", 'Cover size to retrieve'), COMBO,
-                [[translate("Discogs", 'Small'),
-                    translate("Discogs", 'Large')], 1]],
+             [[translate("Discogs", 'Small'),
+               translate("Discogs", 'Large')], 1]],
             [translate("Discogs", 'Field to use for discogs_id'), TEXT, R_ID],
             [translate("Discogs", 'API Key (Stored as plain-text.'
                                   'Leave empty to use default.)'), TEXT, ''],
-            ]
+        ]
 
     def keyword_search(self, text):
 
@@ -410,6 +411,5 @@ class Discogs(object):
 info = Discogs
 
 if __name__ == '__main__':
-
     k = Discogs()
     print(k.keyword_search(":r 911637"))

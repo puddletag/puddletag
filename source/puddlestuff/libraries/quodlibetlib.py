@@ -22,11 +22,13 @@ from ..util import to_string, translate
 model_tag = audioinfo.model_tag
 
 ATTRIBUTES = ['length', 'accessed', 'size', 'created',
-    'modified', 'filetype']
+              'modified', 'filetype']
+
 
 def strbitrate(bitrate):
     """Returns a string representation of bitrate in kb/s."""
-    return str(bitrate/1000) + ' kb/s'
+    return str(bitrate / 1000) + ' kb/s'
+
 
 def strtime(seconds):
     """Converts UNIX time(in seconds) to more Human Readable format."""
@@ -34,35 +36,36 @@ def strtime(seconds):
 
 
 time_fields = ['~#added', '~#lastplayed', '~#laststarted']
-timefunc = lambda key: lambda value : {'__%s' % key[2:]: strtime(value)}
+timefunc = lambda key: lambda value: {'__%s' % key[2:]: strtime(value)}
 mapping = dict([(key, timefunc(key)) for key in time_fields])
 
 mapping.update({
     'tracknumber': lambda value: {'track': [value]},
-    '~#bitrate' : lambda value: {'__bitrate': strbitrate(value)},
+    '~#bitrate': lambda value: {'__bitrate': strbitrate(value)},
     '~#length': lambda value: {'__length': strlength(value)},
     '~#playcount': lambda value: {'playcount': [str(value)]},
     '~#rating': lambda value: {'rating': [str(value)]},
     '~#skipcount': lambda value: {'__skipcount': [str(value)]},
     '~mountpoint': lambda value: {'__mountpoint': value},
-    '~#mtime': lambda value : {'__modified': strtime(value)},
+    '~#mtime': lambda value: {'__modified': strtime(value)},
     '~picture': lambda value: {'__picture': value},
-    })
+})
 
-time_fields = ['__added', '__lastplayed', '__laststarted',]
-timefunc = lambda key: lambda value : {'~#%s' % key[2:]: lngtime(value)}
+time_fields = ['__added', '__lastplayed', '__laststarted', ]
+timefunc = lambda key: lambda value: {'~#%s' % key[2:]: lngtime(value)}
 revmapping = dict([(key, timefunc(key)) for key in time_fields])
 revmapping.update({
     'track': lambda value: {'tracknumber': value},
-    '__bitrate' : lambda value: {'~#bitrate': lngfrequency(value)},
+    '__bitrate': lambda value: {'~#bitrate': lngfrequency(value)},
     '__length': lambda value: {'~#length': lnglength(value)},
     'playcount': lambda value: {'~#playcount': int(value)},
     'rating': lambda value: {'~#rating': float(value)},
     '__skipcount': lambda value: {'~#skipcount': int(value)},
     '__mountpoint': lambda value: {'~mountpoint': value},
-    '__modified': lambda value : {'~#mtime': lngtime(value)},
+    '__modified': lambda value: {'~#mtime': lngtime(value)},
     '__picture': lambda value: {'~picture': to_string(value)},
-    })
+})
+
 
 class Tag(MockTag):
     """Use as base for all tag classes."""
@@ -89,15 +92,17 @@ class Tag(MockTag):
             if key in mapping:
                 tags.update(mapping[key](value))
             else:
-                if not isinstance(value, str): #Strings
-                    try: value = str(value, 'utf8', 'replace')
+                if not isinstance(value, str):  # Strings
+                    try:
+                        value = str(value, 'utf8', 'replace')
                     except (TypeError, ValueError):
-                        try: value = str(value) #Usually numbers
+                        try:
+                            value = str(value)  # Usually numbers
                         except:
                             traceback.print_exc()
                             continue
                 tags[key] = [value]
-        del(tags['~filename'])
+        del (tags['~filename'])
 
         self.filepath = libtags['~filename']
         self.set_attrs(ATTRIBUTES, self.__tags)
@@ -106,7 +111,7 @@ class Tag(MockTag):
     def get_filepath(self):
         return MockTag.get_filepath(self)
 
-    def set_filepath(self,  val):
+    def set_filepath(self, val):
         self.__tags.update(MockTag.set_filepath(self, val))
 
     filepath = property(get_filepath, set_filepath)
@@ -129,12 +134,12 @@ class Tag(MockTag):
             return
         else:
             if key == 'track':
-                del(self._libtags['tracknumber'])
-                del(self.__tags['track'])
+                del (self._libtags['tracknumber'])
+                del (self.__tags['track'])
             else:
                 if key in self._libtags:
-                    del(self._libtags[key])
-                    del(self.__tags[key])
+                    del (self._libtags[key])
+                    del (self.__tags[key])
 
     @getdeco
     def __getitem__(self, key):
@@ -149,7 +154,7 @@ class Tag(MockTag):
                 setattr(self, fn_hash[key], value)
         elif isempty(value):
             if key in self:
-                del(self[key])
+                del (self[key])
             else:
                 return
         else:
@@ -162,7 +167,7 @@ class Tag(MockTag):
     def keys(self):
         return list(self.__tags.keys())
 
-    def save(self, justrename = False):
+    def save(self, justrename=False):
         libtags = self._libtags
         tags = self.__tags
         newartist = to_string(tags.get('artist', [u'']))
@@ -199,7 +204,9 @@ class Tag(MockTag):
         else:
             self.__tags['__tag'] = 'QuodLibet'
 
+
 Tag = audioinfo.model_tag(Tag)
+
 
 class QuodLibet(object):
     def __init__(self, filepath):
@@ -215,29 +222,29 @@ class QuodLibet(object):
         cached = defaultdict(lambda: defaultdict(lambda: []))
         for track in self._tracks:
             cached[track.get('artist', '')][track.get('album', '')
-                ].append(track)
+            ].append(track)
         self._cached = cached
 
     def get_tracks(self, maintag, mainval, secondary=None, secvalue=None):
 
         exists = lambda t: os.path.exists(t['~filename'])
-        
+
         if secondary and secvalue:
             if secondary == 'album' and maintag == 'artist':
                 tracks = (Tag(self, track) for track in
-                    self._cached[mainval][secvalue] if exists(track))
+                          self._cached[mainval][secvalue] if exists(track))
                 return [_f for _f in tracks if _f]
             else:
                 def getvalue(track):
                     if (track.get(maintag) == mainval) and (
-                        track.get(secondary) == secvalue):
+                            track.get(secondary) == secvalue):
                         return Tag(self, track)
         else:
             if maintag == 'artist':
                 tracks = []
                 [tracks.extend(z) for z in self._cached[mainval].values()]
-                return [Tag(self, track) for track in tracks if 
-                    exists(track)]
+                return [Tag(self, track) for track in tracks if
+                        exists(track)]
 
             def getvalue(track):
                 if track.get(maintag) == mainval:
@@ -250,8 +257,8 @@ class QuodLibet(object):
 
     def distinct_children(self, parent, value, child):
         return set([track.get(child, '') for track in
-            self._tracks if track.get(parent, '') == value])
-            
+                    self._tracks if track.get(parent, '') == value])
+
     def _artists(self):
         return list(self._cached.keys())
 
@@ -265,7 +272,7 @@ class QuodLibet(object):
             return
         filepath = self._filepath + '.puddletag'
         pickle.dump(self._tracks, open(filepath, 'wb'))
-        os.rename(self._filepath, self._filepath +  '.bak')
+        os.rename(self._filepath, self._filepath + '.bak')
         os.rename(filepath, self._filepath)
 
     def delete(self, track):
@@ -274,9 +281,9 @@ class QuodLibet(object):
         self._cached[artist][album].remove(track)
         self._tracks.remove(track)
         if not self._cached[artist][album]:
-            del(self._cached[artist][album])
+            del (self._cached[artist][album])
             if not self._cached[artist]:
-                del(self._cached[artist])
+                del (self._cached[artist])
         self.edited = True
 
     def tree(self):
@@ -308,15 +315,16 @@ class QuodLibet(object):
         except ValueError:
             pass
         if not cached[artist][album]:
-            del(cached[artist][album])
+            del (cached[artist][album])
         if not cached[artist]:
-            del(cached[artist])
+            del (cached[artist])
         trackartist = track.get('artist', '')
         trackalbum = track.get('album', '')
         cached[trackartist][trackalbum].append(track)
 
+
 class DirModel(QDirModel):
-    
+
     def data(self, index, role=Qt.DisplayRole):
         if (role == Qt.DisplayRole and index.column() == 0):
             path = QDir.toNativeSeparators(self.filePath(index))
@@ -325,6 +333,7 @@ class DirModel(QDirModel):
             return path
         return QDirModel.data(self, index, role)
 
+
 class DirLineEdit(QLineEdit):
     def __init__(self, *args, **kwargs):
         super(DirLineEdit, self).__init__(*args, **kwargs)
@@ -332,11 +341,11 @@ class DirLineEdit(QLineEdit):
         completer.setCompletionMode(QCompleter.PopupCompletion)
         dirfilter = QDir.AllEntries | QDir.NoDotAndDotDot | QDir.Hidden
         sortflags = QDir.DirsFirst | QDir.IgnoreCase
-        
+
         dirmodel = QDirModel(['*'], dirfilter, sortflags, completer)
         completer.setModel(dirmodel)
         self.setCompleter(completer)
-        
+
 
 class InitWidget(QWidget):
     def __init__(self, parent=None):
@@ -345,6 +354,7 @@ class InitWidget(QWidget):
         self.configpath = DirLineEdit(os.path.join(HOMEDIR, ".quodlibet/config"))
 
         vbox = QVBoxLayout()
+
         def label(text, control):
             l = QLabel(text)
             l.setBuddy(control)
@@ -364,8 +374,8 @@ class InitWidget(QWidget):
 
     def select_db(self):
         selectedFile = QFileDialog.getOpenFileName(self,
-            translate("QuodLibet", 'Select QuodLibet library file...'),
-            self.dbpath.text())
+                                                   translate("QuodLibet", 'Select QuodLibet library file...'),
+                                                   self.dbpath.text())
         filename = selectedFile[0]
         if filename:
             self.dbpath.setText(filename)
@@ -379,7 +389,8 @@ class InitWidget(QWidget):
                 "QuodLibet", '%1 (%2)').arg(e.strerror).arg(e.filename))
         except (pickle.UnpicklingError, EOFError):
             raise MusicLibError(0, translate("QuodLibet",
-                '%1 is an invalid QuodLibet music library file.').arg(dbpath))
+                                             '%1 is an invalid QuodLibet music library file.').arg(dbpath))
+
 
 name = 'Quodlibet'
 
@@ -387,16 +398,15 @@ if __name__ == '__main__':
     lib = QuodLibet('/home/keith/.quodlibet/songs')
     artists = lib.artists
     import random
+
     d = defaultdict(lambda: defaultdict(lambda: []))
     for nothing in range(20):
         artist = artists[random.randint(0, len(artists))]
         for album, tracks in lib._cached[artist].items():
             d[artist][album] = [Tag(lib, t).usertags for t in tracks]
     import pprint
+
     f = {}
     for z in d:
         f[z] = dict(d[z])
     pprint.pprint(f)
-        
-            
-        
