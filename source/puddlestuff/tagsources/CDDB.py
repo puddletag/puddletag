@@ -24,7 +24,7 @@ else:
 
 # Use protocol version 5 to get DYEAR and DGENRE fields.
 proto = 5
-default_server = 'http://freedb.freedb.org/~cddb/cddb.cgi'
+default_server = 'http://gnudb.gnudb.org/~cddb/cddb.cgi'
 
 
 def query(track_info, server_url=default_server,
