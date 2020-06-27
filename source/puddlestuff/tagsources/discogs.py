@@ -326,7 +326,7 @@ def urlopen(url):
         raise RetrievalError(msg)
 
     try:
-        data = gzip.GzipFile(fileobj=StringIO(data)).read()
+        data = gzip.decompress(data)
     except IOError:
         "Gzipped data not returned."
 
