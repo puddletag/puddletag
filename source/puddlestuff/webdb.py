@@ -305,8 +305,7 @@ class SortOptionEditor(QDialog):
         okcancel.cancel.connect(self.applySettings)
         self.listbox.connectToListButtons(buttons)
         self.listbox.editButton = buttons.editButton
-        connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
-                self._doubleClicked)
+        connect(self.listbox, "itemDoubleClicked", self._doubleClicked)
 
     def addPattern(self):
         l = self.listbox.item
