@@ -712,7 +712,7 @@ class TagModel(QAbstractTableModel):
                     except KeyError:
                         real = BLANK
                     if real != val:
-                        tooltip = translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real))
+                        tooltip = str(translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real)))
                     else:
                         tooltip = val
                 else:
