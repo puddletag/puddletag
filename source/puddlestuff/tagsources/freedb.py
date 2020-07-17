@@ -5,6 +5,7 @@ from ..util import to_string
 from collections import defaultdict
 from ..tagsources import RetrievalError
 from .. import version_string
+from .. import audioinfo
 from ..util import translate
 import time
 
