@@ -1095,13 +1095,13 @@ def tag_factory(id3_filetype):
             else:
                 if v2 == 4:
                     audio.tags.update_to_v24()
-                    audio.tags.save(v1=v1, v2=4)
+                    audio.tags.save(v1=v1, v2_version=4)
                 else:
                     c = ID3()
                     c.filename = self.filepath
                     c.update(audio)
                     c.update_to_v23()
-                    c.save(v1=v1, v2=3)
+                    c.save(v1=v1, v2_version=3)
 
             self.__tags['__tag_read'] = 'ID3v2.4' if v2 == 4 else 'ID3v2.3'
             self.update_tag_list()
