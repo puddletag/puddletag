@@ -13,7 +13,7 @@ def load_genres(filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     try:
-        return [x.strip() for x in open(filepath, 'r').readlines()]
+        return [x.strip() for x in open(filepath, 'r').readlines() if x.strip()]
     except (IOError, OSError):
         return audioinfo.GENRES[::]
 
