@@ -1,16 +1,16 @@
-25 November 2008
-################
+3 December 2008
+###############
 
 Stuff that's added
 ------------------
 
-* A filter like in Mp3tag. F3 shows/hides it.
-* Musicbrainz support(Available on the toolbar and Tools -> Musicbrainz). Not sure how good it is. Send me a mail if you have any ideas on improving it.
-* The extended tags dialog is now available via the Tools menu(and by right clicking on the file-view).
+* Genres! Now you don't have to remember all of them.
+* Press Ctrl+W to switch between the file-view, pattern combo and the tag panel.
+* A splash screen for the long loads at the beginning to keep you company.
+* FLAC and APEv2 tags are now supported (only text tags, not images). Feedback on these would be appreciated as I have a serious lack of FLAC on my PC.
 
-Stuff that's fixed
-------------------
+Stuff that's fixed:
+-------------------
 
-* Saving a file's album art to disk now works.
-* The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.
-* Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.
+* The musicbrainz dialog doesn't freeze up puddletag anymore. Note that the threading is implemented in a very roughshod way though, so don't hesitate to contact me if behaves in unexpected ways.
+* The main window's layout in addition to its size is now saved.

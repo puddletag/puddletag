@@ -1,26 +1,7 @@
-27 November 2016 - 1.2.0
-########################
+3 August 2020 - some updates
+############################
 
-Minor fixes were made over the course of the year. This release is so that package maintainers can update their repos.
+Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I'll put out a release for testing. There is no timeline as yet and we'll take things as they go.
 
-A Debian package is no longer supplied, supporting two versions of Ubuntu and Debian from a single .deb would take way too much time. For Ubuntu users, `WebUpd8 <http://www.webupd8.org/>`_ keeps their `PPA <https://launchpad.net/~nilarimogard/+archive/ubuntu/webupd8>`_ up to date.
-
-Additions
-
-- Swedish translation (Åke Engelbrektson)
-- CJK Encoding for Encoding Conversion Function (XIE Dongping)
-- Spanish translation (José Vidal)
-
-Changes
-
-- Improved Amazon tag source album matching.
-- Czech translation (Pavel Fric)
-
-Fixes
-
-- #280 Turn off auto-saving "Enter description here" description for cover art
-- Parsing tracks in Discogs if only a single artist (Frank Sachsenheim)
-- Setting user-agent for Tag Sources (Frank Sachsenheim)
-- Support for latest mutagen (Bruno Bergot)
-   
-
+To prepare for this, we've moved puddletag to a new puddletag organisation. You can find it at https://github.com/puddletag/puddletag/ even though existing
+links should just redirect.

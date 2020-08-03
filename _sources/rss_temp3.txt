@@ -1,6 +1,9 @@
-15 November 2014 - 1.0.5
-########################
+13 May 2015 - Moving to Github.
+###############################
 
-This is a bug fix which fixes an issue in Actions where floating point values were handled incorrectly.
+With the shutdown of Google Code and the increasing dissatisfaction with SF, I've moved the code and issue tracker over to Github.
 
-`.tar.gz download <http://sourceforge.net/projects/puddletag/files/puddletag-1.0.5.tar.gz>`_ | `.deb download <http://sourceforge.net/projects/puddletag/files/puddletag_1.0.5-1_all.deb>`_
+`Linky <https://github.com/keithgg/puddletag>`_
+
+I'll move the rest of the site soon enough.
+

@@ -1,6 +1,25 @@
-22 June 2014 - New forum
-########################
+9 November 2014 - 1.0.4
+#######################
 
-SourceForge has retired the hosted apps offering so I'll be maintaining it for now. You can find the new forum at http://puddletag.sourceforge.net/forum.
+This one has been a long time coming. Not much new except bugfixes, but they should lessen some of the pain that some users have been experiencing.
 
-Since logins were managed by SF, you might not be able to log in using your old password. If so, you can just reset your password.
+Fixes
+-----
++ Regular expression parsing
++ Discogs API no longer working. Fixed it so that searches can be done using Discogs release id only.
++ Fixed comparison of boolean values in format strings.
++ Scripting function escaping wasn't working.
+
+Changes
+-------
+
++ All config options are stored as JSON. Should fix issues with not being able to store certain values.
+
+Added
+-----
+
++ $to_num scripting function. Converts text to numbers for easy comparison.
++ AIFF support.
++ Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag
+
+`.tar.gz download <http://sourceforge.net/projects/puddletag/files/puddletag-1.0.4.tar.gz>`_ | `.deb download <http://sourceforge.net/projects/puddletag/files/puddletag_1.0.4-1_all.deb>`_

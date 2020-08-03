@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 03 Aug 2020 18:50:43 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 03 Aug 2020 18:58:05 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
   &lt;div class="section" id="august-2020-some-updates"&gt;
 &lt;h1&gt;3 August 2020 - some updates&lt;/h1&gt;
 &lt;p&gt;Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I&amp;#8217;ll put out a release for testing. There is no timeline as yet and we&amp;#8217;ll take things as they go.&lt;/p&gt;
@@ -164,7 +164,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;http://hg.code.sf.net/p/puddletag/code
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;a class="reference download internal" href="_downloads/puddletag_cs.qm" download=""&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Contributions are always appreciated so please post on the forum (link above) if you&amp;#8217;d like to translate puddletag.&lt;/p&gt;
 &lt;p&gt;New beta coming this weekend.&lt;/p&gt;
 &lt;/div&gt;

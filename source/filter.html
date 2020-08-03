@@ -1,13 +1,4 @@
 
-
-  
-  
- 
-  
-  
- 
-
-
 <!DOCTYPE html>
 
 
@@ -19,9 +10,8 @@
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
@@ -36,9 +26,9 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -72,7 +62,7 @@
                 <li><a href="../download.html">Download</a></li>
                 <li><a href="../news.html">News</a></li>
                 <li><a href="../docs.html">Documentation</a></li>
-                <li><a href="https://github.com/keithgg/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="https://github.com/puddletag/puddletag/issues">Issue Tracker</a></li>
                 <li><a href="../screenshots.html">Screenshots</a></li>
                 <li><a href="../about.html">About</a></li>
             
@@ -117,7 +107,7 @@
 
         </div>
       </div>
-    <div class="col-md-9">
+    <div class="col-md-9 content">
       
   <div class="section" id="filter-expressions">
 <h1>Filter Expressions<a class="headerlink" href="#filter-expressions" title="Permalink to this headline">¶</a></h1>
@@ -125,22 +115,19 @@
 <p>The filter expression will be evaluated for each file loaded. If it evaluates to <em>True</em> for a file, then that file will be shown. Otherwise, puddletag will hide it. All comparisons are case-insensitive.</p>
 <div class="section" id="strings">
 <h2>Strings<a class="headerlink" href="#strings" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p class="first">Strings are either a single word containing no white-space eg. <em>Thisisvalid</em> is a valid string but <em>No spaces are allowed</em> is not a valid string.</p>
-</li>
-<li><p class="first">Anything enclosed in double-quotes will be regarded as a string. Eg <em>&#8220;You can do this&#8221;</em> or even <em>&#8220;artist&#8221;</em>.</p>
-</li>
+<ul class="simple">
+<li>Strings are either a single word containing no white-space eg. <em>Thisisvalid</em> is a valid string but <em>No spaces are allowed</em> is not a valid string.</li>
+<li>Anything enclosed in double-quotes will be regarded as a string. Eg <em>&#8220;You can do this&#8221;</em> or even <em>&#8220;artist&#8221;</em>.</li>
 <li><dl class="first docutils">
 <dt>Strings not enclosed in double quotes will be assumed to be a field. The field&#8217;s value as stored in the file will be used provided:</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>The field is listed in <a class="reference internal" href="tags.html"><span class="doc">Tag Reference</span></a>. If the field isn&#8217;t present in the file it&#8217;ll evaluate to an empty string. Eg <strong>artist</strong> or <strong>title</strong>, but not <strong>madeupfield</strong>.</li>
 <li>The field is present in the file. If not the string will be interpreted as normal text.</li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p class="first">Any text in the form <strong>%string%</strong> (if it&#8217;s not enclosed in quotes) will be assumed to be a field.</p>
-</li>
+<li>Any text in the form <strong>%string%</strong> (if it&#8217;s not enclosed in quotes) will be assumed to be a field.</li>
 </ul>
 </div>
 <div class="section" id="expressions">

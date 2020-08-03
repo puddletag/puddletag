@@ -39,7 +39,7 @@ Releases are very infrequent. Subscribe to the `RSS Feed <rss.xml>`_ to be notif
 
 Support
 -------
-Report any bugs or feedback on the issue tracker hosted at `Github <https://github.com/keithgg/puddletag/issues>`_. But check out the :doc:`documentation <docs>` first.
+Report any bugs or feedback on the issue tracker hosted at `Github <https://github.com/puddletag/puddletag/issues>`_. But check out the :doc:`documentation <docs>` first.
 
 | Last website update: |today|
 | Latest version: |version|

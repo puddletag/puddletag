@@ -1,13 +1,4 @@
 
-
-  
-  
- 
-  
-  
- 
-
-
 <!DOCTYPE html>
 
 
@@ -19,9 +10,8 @@
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.0.0/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
@@ -36,9 +26,9 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
@@ -72,7 +62,7 @@
                 <li><a href="../download.html">Download</a></li>
                 <li><a href="../news.html">News</a></li>
                 <li><a href="../docs.html">Documentation</a></li>
-                <li><a href="https://github.com/keithgg/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="https://github.com/puddletag/puddletag/issues">Issue Tracker</a></li>
                 <li><a href="../screenshots.html">Screenshots</a></li>
                 <li><a href="../about.html">About</a></li>
             
@@ -117,7 +107,7 @@
 
         </div>
       </div>
-    <div class="col-md-9">
+    <div class="col-md-9 content">
       
   <div class="section" id="plugins">
 <h1>Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h1>
@@ -127,7 +117,7 @@
 <p>puddletag plugins are stored in <strong>~/.puddletag/plugins</strong>. In order for a plugin to be registered the following tree structure is required.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">~/.</span><span class="n">puddletag</span><span class="o">/</span><span class="n">plugins</span>
     <span class="o">--</span>\<span class="n">modulename</span>
-    <span class="o">----</span>\<span class="n">__init__</span><span class="o">.</span><span class="n">py</span>
+    <span class="o">----</span>\<span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
     <span class="o">----</span>\<span class="n">info</span>
 </pre></div>
 </div>

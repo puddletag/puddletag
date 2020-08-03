@@ -1,24 +1,16 @@
-11 April 2012 - 1.0.0beta5
-##########################
+9 June 2012 - 1.0.0RC1
+######################
 
-**18 April 2012 - Updated to 1.0.0beta6 to fix issues with deb. This is the second last beta.**
+This release is the first RC with the final release planned for next week depending on feedback. All that's still needed is to update the docs, fix some outstanding bugs and package the plugins.
 
-This release contains a ton of fixes with regards to Tag Sources.
+As for the changes here, it's just some bug fixes. For a more comprehensive list see the :download:`changelog`. The most interesting ones are:
 
 Fixes
 -----
++   Loading a new directory would sometimes not unload previously loaded directory.
++   Mp3tag tag source are more compatible than before.
 
-+   MusicBrainz works.
-+   Discogs works better with regards to VA albums.
-+   Amazon works again.
-
-New Features
-------------
-+   **__md5_sig** field for FLAC.
-+   **$regex** scripting function.
-+   Dutch Translation by Fabian Bakkum.
-+   Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you're an 'advanced' user.
-
-That's it basically. If you want more, see the :download:`changelog`. Docs for the latest version have been uploaded `here <http://puddletag.sf.net/latest/docs.html>`_. I still have quite a bit of updating to do though.
-
-`Please let me know if you experience any issues. <http://code.google.com/p/puddletag/issues>`_
+Changes
+-------
++   The only dependency for AcoustID now is that you have 
+    `chromaprint <http://acoustid.org/chromaprint>`_ installed.

@@ -1,20 +1,18 @@
-21 September 2011 - Mercurial
-#############################
+22 January 2012 - 1.0.0beta1
+############################
 
-This is just a heads up that I've moved from Subversion to Mercurial. No real reason for this other than trying something new. I've been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.
+It's been a while I know, but I figured if I don't get this out now I might just
+leave it until next year.
 
-Quick commands to get started for those who don't know Mercurial:
+This is a beta, reason being that it's not anywhere near thoroughly tested, but
+it does contain important stuff like.
 
-To get a copy:
++   Masstagging improvements with regards to both matching (courtesy of `beets <http://beets.radbox.org/>`_)   and searching.
++   $ceiling, $eql, $floor, $round scripting functions.
++   Full support for Mp3tag tag sources.
++   Support for MusicBrainz and Discogs new APIs.
++   More than one file can be written to at a time in the file-view. Just select more than one file, edit a field as normal (like album) and Bob's your aunt.
 
-.. code-block:: bash
+Test it out and if you find any bugs feel free to `let me know <http://code.google.com/p/puddletag/issues>`_.
 
-    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
-
-To update, run in the previously retrieved dir:
-
-.. code-block:: bash
-
-    hg pull -u
-
-Enjoy. ;-)
+:ref:`Download <development_builds>`
