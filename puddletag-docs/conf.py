@@ -128,6 +128,7 @@ html_theme_options = {
     "navbar_pagenav": False,
     "source_link_position": "nothing",
     "globaltoc_depth": -1,
+    "bootswatch_theme": "flatly",
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
