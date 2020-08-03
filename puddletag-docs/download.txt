@@ -63,9 +63,6 @@ You can install puddletag from the Software Centre in recent versions of Ubuntu.
 
 A Debian package is no longer provided, because of the complexity of generating a deb for different Ubuntu versions.
 
-If you prefer using the latest version, `WebUpd8 <http://www.webupd8.org/>`_ provide puddletag packages in their `PPA <https://launchpad.net/~nilarimogard/+archive/ubuntu/webupd8>`_.
-
-
 .. _installing_on_fedora_14_and_later:
 
 Installing on Fedora 14 and later
@@ -90,7 +87,7 @@ Installing on OSX
 -----------------
 
 .. note:: The below section is outdated as Homebrew doesn't support PyQt4 anymore and the Vortexbox links are broken.
-          If you have further instructions on how to fix these, add an issue on `GitHub <https://github.com/keithgg/puddletag/issues>`_.
+          If you have further instructions on how to fix these, add an issue on `GitHub <https://github.com/puddletag/puddletag/issues>`_.
 
 
 Homebrew

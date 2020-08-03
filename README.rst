@@ -54,4 +54,4 @@ Releases are infrequent. Not more than a couple per year.
 Support
 =======
 
-Github issues: https://github.com/keithgg/puddletag/issues
+Github issues: https://github.com/puddletag/puddletag/issues
