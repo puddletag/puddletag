@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sun, 27 Nov 2016 08:37:40 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>27 November 2016 - 1.2.0</title><link>http://puddletag.sourceforge.net/news.html#november-2016-1-2-0</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 03 Aug 2020 18:50:43 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
+  &lt;div class="section" id="august-2020-some-updates"&gt;
+&lt;h1&gt;3 August 2020 - some updates&lt;/h1&gt;
+&lt;p&gt;Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I&amp;#8217;ll put out a release for testing. There is no timeline as yet and we&amp;#8217;ll take things as they go.&lt;/p&gt;
+&lt;p&gt;To prepare for this, we&amp;#8217;ve moved puddletag to a new puddletag organisation. You can find it at &lt;a class="reference external" href="https://github.com/puddletag/puddletag/"&gt;https://github.com/puddletag/puddletag/&lt;/a&gt; even though existing
+links should just redirect.&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Mon, 03 Aug 2020 00:00:00 GMT</pubDate></item><item><title>27 November 2016 - 1.2.0</title><link>http://puddletag.sourceforge.net/news.html#november-2016-1-2-0</link><description>
   &lt;div class="section" id="november-2016-1-2-0"&gt;
 &lt;h1&gt;27 November 2016 - 1.2.0&lt;/h1&gt;
 &lt;p&gt;Minor fixes were made over the course of the year. This release is so that package maintainers can update their repos.&lt;/p&gt;
@@ -273,16 +281,13 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog" download=""&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;Raphaël Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;span class="xref std std-ref"&gt;French translation&lt;/span&gt;.&lt;/p&gt;
 &lt;div class="section" id="new-features"&gt;
 &lt;h2&gt;New Features&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p class="first"&gt;Much improved masstagging.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p class="first"&gt;The &lt;a class="reference internal" href="source/function.html#export-artwork-to-file"&gt;&lt;span class="std std-ref"&gt;Export artwork to file&lt;/span&gt;&lt;/a&gt; Function.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p class="first"&gt;The filter behaves like Mp3tag&amp;#8217;s. Described in &lt;a class="reference internal" href="source/filter.html"&gt;&lt;span class="doc"&gt;Filter Expressions&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Much improved masstagging.&lt;/li&gt;
+&lt;li&gt;The &lt;a class="reference internal" href="source/function.html#export-artwork-to-file"&gt;&lt;span class="std std-ref"&gt;Export artwork to file&lt;/span&gt;&lt;/a&gt; Function.&lt;/li&gt;
+&lt;li&gt;The filter behaves like Mp3tag&amp;#8217;s. Described in &lt;a class="reference internal" href="source/filter.html"&gt;&lt;span class="doc"&gt;Filter Expressions&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;dl class="first docutils"&gt;
 &lt;dt&gt;For the Discogs tag source:&lt;/dt&gt;
-&lt;dd&gt;&lt;ul class="first last simple"&gt;
+&lt;dd&gt;&lt;ul class="first last"&gt;
 &lt;li&gt;Added the ability to retrieve track artists for Various Artist albums.&lt;/li&gt;
 &lt;li&gt;This required that the &lt;strong&gt;involvedpeople&lt;/strong&gt; field be renamed to &lt;strong&gt;involvedpeople_album&lt;/strong&gt; as a list of involved people were returned for each track too.&lt;/li&gt;
 &lt;li&gt;These people are added to the &lt;strong&gt;involvedpeople_track&lt;/strong&gt; field.&lt;/li&gt;

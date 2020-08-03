@@ -1,13 +1,4 @@
 
-
-  
-  
- 
-  
-  
- 
-
-
 <!DOCTYPE html>
 
 
@@ -19,9 +10,8 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-3.0.0/css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-3.0.0/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
@@ -37,9 +27,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/searchtools.js"></script>
-    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,6 +38,8 @@
   <script type="text/javascript">
     jQuery(function() { Search.loadIndex("searchindex.js"); });
   </script>
+  
+  <script type="text/javascript" id="searchindexloader"></script>
   
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -78,7 +70,7 @@
                 <li><a href="download.html">Download</a></li>
                 <li><a href="news.html">News</a></li>
                 <li><a href="docs.html">Documentation</a></li>
-                <li><a href="https://github.com/keithgg/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="https://github.com/puddletag/puddletag/issues">Issue Tracker</a></li>
                 <li><a href="screenshots.html">Screenshots</a></li>
                 <li><a href="about.html">About</a></li>
             
@@ -101,7 +93,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <h1 id="search-documentation">Search</h1>
   <div id="fallback" class="admonition warning">
@@ -118,12 +110,16 @@
     containing fewer words won't appear in the result list.
   </p>
 
-  <form class="form-search" action="" method="get">
-    <input type="text" name="q" class="input-medium search-query">
-    <button type="submit" class="btn">search</button>
+  
+  <form class="form-inline" action="" method="get">
+    <div class="form-group">
+      <input type="text" class="form-control" name="q" value="" />
+    </div>
+    <input type="submit" class="btn btn-default" value="search" />
     <span id="search-progress" style="padding-left: 10px"></span>
-  </form>
-
+  </form>  
+  
+  
   
   <div id="search-results">
   

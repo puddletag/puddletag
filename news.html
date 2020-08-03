@@ -1,13 +1,4 @@
 
-
-  
-  
- 
-  
-  
- 
-
-
 <!DOCTYPE html>
 
 
@@ -19,9 +10,8 @@
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-3.0.0/css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-3.0.0/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
@@ -36,9 +26,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -72,7 +62,7 @@
                 <li><a href="download.html">Download</a></li>
                 <li><a href="#">News</a></li>
                 <li><a href="docs.html">Documentation</a></li>
-                <li><a href="https://github.com/keithgg/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="https://github.com/puddletag/puddletag/issues">Issue Tracker</a></li>
                 <li><a href="screenshots.html">Screenshots</a></li>
                 <li><a href="about.html">About</a></li>
             
@@ -102,11 +92,18 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 content">
       
   <div class="section" id="news">
 <h1>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference download internal" href="rss.xml" download=""><code class="xref download docutils literal"><span class="pre">RSS</span> <span class="pre">Feed</span></code></a></p>
+<hr class="docutils" />
+<div class="section" id="august-2020-some-updates">
+<h2>3 August 2020 - some updates<a class="headerlink" href="#august-2020-some-updates" title="Permalink to this headline">¶</a></h2>
+<p>Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I&#8217;ll put out a release for testing. There is no timeline as yet and we&#8217;ll take things as they go.</p>
+<p>To prepare for this, we&#8217;ve moved puddletag to a new puddletag organisation. You can find it at <a class="reference external" href="https://github.com/puddletag/puddletag/">https://github.com/puddletag/puddletag/</a> even though existing
+links should just redirect.</p>
+</div>
 <hr class="docutils" />
 <div class="section" id="november-2016-1-2-0">
 <h2>27 November 2016 - 1.2.0<a class="headerlink" href="#november-2016-1-2-0" title="Permalink to this headline">¶</a></h2>
@@ -366,16 +363,13 @@ it does contain important stuff like.</p>
 <p>Quickly listed, I&#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&#8217;s a <a class="reference download internal" href="_downloads/changelog" download=""><code class="xref download docutils literal"><span class="pre">changelog</span></code></a> containing most everything done and <strong>Raphaël Rochet</strong> became the first person to translate puddletag by providing a <span class="xref std std-ref">French translation</span>.</p>
 <div class="section" id="id8">
 <h3>New Features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><p class="first">Much improved masstagging.</p>
-</li>
-<li><p class="first">The <a class="reference internal" href="source/function.html#export-artwork-to-file"><span class="std std-ref">Export artwork to file</span></a> Function.</p>
-</li>
-<li><p class="first">The filter behaves like Mp3tag&#8217;s. Described in <a class="reference internal" href="source/filter.html"><span class="doc">Filter Expressions</span></a></p>
-</li>
+<ul class="simple">
+<li>Much improved masstagging.</li>
+<li>The <a class="reference internal" href="source/function.html#export-artwork-to-file"><span class="std std-ref">Export artwork to file</span></a> Function.</li>
+<li>The filter behaves like Mp3tag&#8217;s. Described in <a class="reference internal" href="source/filter.html"><span class="doc">Filter Expressions</span></a></li>
 <li><dl class="first docutils">
 <dt>For the Discogs tag source:</dt>
-<dd><ul class="first last simple">
+<dd><ul class="first last">
 <li>Added the ability to retrieve track artists for Various Artist albums.</li>
 <li>This required that the <strong>involvedpeople</strong> field be renamed to <strong>involvedpeople_album</strong> as a list of involved people were returned for each track too.</li>
 <li>These people are added to the <strong>involvedpeople_track</strong> field.</li>
