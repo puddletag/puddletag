@@ -8,7 +8,7 @@ from collections import defaultdict
 from itertools import chain
 from xml.sax.saxutils import escape, quoteattr
 
-from sgmllib import SGMLParser
+from html.parser import HTMLParser
 from xml.dom import minidom, Node
 
 from ..audioinfo import IMAGETYPES, get_mime, strlength
@@ -470,9 +470,9 @@ def to_list(v, arg=None):
         return [v, arg] if arg is not None else [v]
 
 
-class XMLEscaper(SGMLParser):
+class XMLEscaper(HTMLParser):
     def reset(self):
-        SGMLParser.reset(self)
+        HTMLParser.reset(self)
         self._xml = []
 
     def handle_data(self, data):
