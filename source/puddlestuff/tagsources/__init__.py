@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import socket
@@ -244,5 +245,5 @@ for source in ('acoust_id', 'amazon', 'amg', 'discogs', 'freedb',
         tagsources.append(getattr(
             import_module('puddlestuff.tagsources.' + source),
             'info'))
-    except ImportError:
-        pass
+    except ImportError as ie:
+        logging.debug(f"error loading source '{source}: error={ie}")
