@@ -317,7 +317,7 @@ def parse_track_list(node):
 
             track['artist'] = ''.join('%s%s' % a for a in names)
 
-        for k, v in track.items():
+        for k, v in list(track.items()):
             if not isinstance(track[k], (str, list)):
                 del (track[k])
             elif isinstance(v, list) and not isinstance(v[0], str):
