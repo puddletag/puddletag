@@ -2,12 +2,13 @@ import logging
 import os
 import sys
 from os.path import exists
+from importlib import import_module
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from configobj import ConfigObj
 
-from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR,
+from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR, PLUGINDIR,
                         DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)
 from .puddleobjects import PuddleConfig, winsettings
 from .translations import translate
@@ -20,7 +21,7 @@ VERSION = 'version'
 INFO_SECTION = 'info'
 MODULE_NAME = 'module'
 
-PLUGIN_DIRS = [os.path.join(SAVEDIR, 'plugins'),
+PLUGIN_DIRS = [PLUGINDIR,
                os.path.join(os.path.dirname(__file__), 'plugins')]
 
 PROPERTIES = [NAME, AUTHOR, DESC, PT_VERSION, VERSION]
@@ -63,30 +64,24 @@ def load_plugins(plugins=None, parent=None):
 
     plugins.sort(key=lambda d: d.get(NAME, ''))
 
+    plugin_actions = {
+        'functions': functions.update,
+        'functions_no_preview':  functions_no_preview.extend,
+        'tagsources':  tagsources.extend,
+        'dialogs':  dialogs.extend,
+        'musiclibs':  musiclibs.extend
+        }
+
     for plugin in plugins:
-        if plugin[MODULE_NAME] not in to_load:
-            continue
-        try:
-            module = __import__(plugin[MODULE_NAME])
-        except:
-            logging.exception('Failed to load plugin: ' + plugin['name'])
-            continue
-        if hasattr(module, 'functions'):
-            functions.update(module.functions)
-
-        if hasattr(module, 'functions_no_preview'):
-            functions_no_preview.extend(module.functions_no_preview)
-
-        if hasattr(module, 'tagsources'):
-            tagsources.extend(module.tagsources)
-
-        if hasattr(module, 'dialogs'):
-            dialogs.extend(module.dialogs)
-
-        if hasattr(module, 'musiclibs'):
-            musiclibs.extend(module.musiclibs)
-
-        modules.append(module)
+        if plugin[MODULE_NAME] in to_load:
+            try:
+                module = import_module('puddlestuff.plugins.' + plugin[MODULE_NAME])
+                for attribute, action in plugin_actions.items():
+                    if hasattr(module, attribute):
+                        action(getattr(module, attribute))
+                modules.append(module)
+            except Exception as e:
+                logging.exception(f"Failed to load plugin {plugin[NAME]}; error={e}")                
 
     for d in PLUGIN_DIRS:
         del (sys.path[0])
