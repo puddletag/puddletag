@@ -1,3 +1,4 @@
+wheel
 Markdown==3.1.1
 PyRSS2Gen==1.1
 Sphinx==1.4.8

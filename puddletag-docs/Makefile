@@ -37,11 +37,11 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 
 html:
-	python2 createnews.py
+	python createnews.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	echo
-	python2 createnews.py fixnews
-	python2 fix_html.py "_build/html"
+	python createnews.py fixnews
+	python fix_html.py "_build/html"
 	echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 documentation:
