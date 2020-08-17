@@ -8,7 +8,7 @@ from htmlentitydefs import name2codepoint as n2cp
 def convert_entities(s):
     s = re.sub('&#(\d+);', lambda m: unichr(int(m.groups(0)[0])), s)
     return re.sub('&(\w)+;',
-        lambda m: n2cp.get(m.groups(0), u'&%s;' % m.groups(0)[0]), s)
+        lambda m: n2cp.get(m.groups(0), '&%s;' % m.groups(0)[0]), s)
 
 class RSSProcessor(HTMLParser):
     def reset(self):

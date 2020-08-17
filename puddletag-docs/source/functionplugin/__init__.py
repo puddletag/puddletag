@@ -12,7 +12,7 @@ from puddlestuff.functions import FuncError, format_value
 
 #Your function can be any normal python function. If you want it to accept
 #the tags of a file, just name the first or last argument 'tags'.
-#Fields can be read like a normal dictionary e.g tags.get('artist', u''). 
+#Fields can be read like a normal dictionary e.g tags.get('artist', ''). 
 #Never, ever assume that a specific field is present.
 def append_text(tags, text, combo, checkbox):
     try:
@@ -55,7 +55,7 @@ functions = {'append': append_text}
 from puddlestuff.util import PluginFunction
 
 func = PluginFunction('Append text to artist', append_text, 
-    u'Action Test: $0 -> Text: $1, Combo: $2, Checkbox: $3', 
+    'Action Test: $0 -> Text: $1, Combo: $2, Checkbox: $3', 
     [('Textbox: ', TEXT, 'Default text.'),
         ('ComboBox', COMBO, 'One', 'Two', 'Three'),
         ('Checkbox', CHECKBOX, False)])
@@ -73,7 +73,7 @@ func = PluginFunction('Append text to artist', append_text,
 #   For example, consider an Activities Function where the user has supplied
 #   'underwater' and selects 'swimming' as the first and second arguments 
 #   respectively. The result of which will be written to the artist field.
-#   The print_string u'Activities: $0 -> Where: $1, What: $2' would become
+#   The print_string 'Activities: $0 -> Where: $1, What: $2' would become
 #   'Activities: artist -> Where: underwater, What: swimming'
 #
 #4. The controls (a list of lists) to create the dialog that to configure
