@@ -1,20 +1,21 @@
-# -*- coding: utf-8 -*-
-from importlib import import_module
+import logging
 import os
-from os.path import join, exists
 import re
-from sgmllib import SGMLParser
 import socket
-import urlparse
-import urllib2
+import urllib.error
+import urllib.parse
+import urllib.request
+from html.parser import HTMLParser
+from importlib import import_module
+from os.path import join, exists
 
-from PyQt4.QtCore import QObject, SIGNAL
+from PyQt5.QtCore import QObject, pyqtSignal
 
-import puddlestuff
-from puddlestuff.constants import CONFIGDIR
-from puddlestuff.findfunc import tagtofilename
-from puddlestuff.puddleobjects import PuddleConfig
-from puddlestuff.util import translate
+from .. import version_string
+from ..constants import CONFIGDIR
+from ..findfunc import tagtofilename
+from ..puddleobjects import PuddleConfig
+from ..util import translate
 
 
 class FoundEncoding(Exception):
@@ -37,15 +38,20 @@ class SubmissionError(WebServiceError):
         self.code = code
 
 
+class _SignalObject(QObject):
+    statusChanged = pyqtSignal(str, name='statusChanged')
+    logappend = pyqtSignal(str, name='logappend')
+
+
 cparser = PuddleConfig()
 
 COVERDIR = cparser.get('tagsources', 'coverdir', join(CONFIGDIR, 'covers'))
-COVER_PATTERN = u'%artist% - %album%'
+COVER_PATTERN = '%artist% - %album%'
 SAVECOVERS = False
 
 mapping = {}
-status_obj = QObject()
-useragent = "puddletag/" + puddlestuff.version_string
+status_obj = _SignalObject()
+useragent = "puddletag/" + version_string
 
 
 def get_encoding(page, decode=False, default=None):
@@ -67,10 +73,7 @@ def get_encoding(page, decode=False, default=None):
     if not encoding and default:
         encoding = default
 
-    if decode:
-        return encoding, page.decode(encoding, 'replace') if encoding else page
-    else:
-        return encoding
+    return encoding
 
 
 def find_id(tracks, field):
@@ -79,7 +82,7 @@ def find_id(tracks, field):
     for track in tracks:
         if field in track:
             value = track[field]
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 return value
             else:
                 return value[0]
@@ -87,17 +90,17 @@ def find_id(tracks, field):
 
 # From http://stackoverflow.com/questions/4389572 by bobince
 def iri_to_uri(iri):
-    parts = urlparse.urlparse(iri)
-    return urlparse.urlunparse(
+    parts = urllib.parse.urlparse(iri)
+    return urllib.parse.urlunparse(
         part.encode('idna') if i == 1
-        else url_encode_non_ascii(part.encode('utf-8'))
+        else part.encode('utf-8')
         for i, part in enumerate(parts)
-    )
+    ).decode()
 
 
 def parse_searchstring(text):
     try:
-        text = [z.split(u';') for z in text.split(u'|') if z]
+        text = [z.split(';') for z in text.split('|') if z]
         return [(z.strip(), v.strip()) for z, v in text]
     except ValueError:
         raise RetrievalError(
@@ -120,7 +123,7 @@ def save_cover(info, data, filetype):
 def save_file(filename, data):
     path = join(filename, COVERDIR)
     if exists(path):
-        save_file(u'%s0' % filename)
+        save_file('%s0' % filename)
         return
     f = open(filename, 'wb')
     f.write(data)
@@ -145,14 +148,14 @@ def set_mapping(m):
 
 
 def set_status(msg):
-    status_obj.emit(SIGNAL('statusChanged'), msg)
+    status_obj.statusChanged.emit(msg)
 
 
 def get_useragent():
     if useragent:
         return useragent
     else:
-        return 'puddetag/' + puddlestuff.version_string
+        return 'puddetag/' + version_string
 
 
 def set_useragent(agent):
@@ -175,10 +178,10 @@ def url_encode_non_ascii(b):
 
 def urlopen(url, mask=True, code=False):
     try:
-        request = urllib2.Request(url)
+        request = urllib.request.Request(url)
         if useragent:
             request.add_header('User-Agent', useragent)
-        page = urllib2.build_opener().open(request)
+        page = urllib.request.build_opener().open(request)
         if page.code == 403:
             raise RetrievalError(
                 translate("Tag Sources", 'HTTPError 403: Forbidden'))
@@ -189,12 +192,12 @@ def urlopen(url, mask=True, code=False):
             return page.read(), page.code
         else:
             return page.read()
-    except urllib2.URLError as e:
+    except urllib.error.URLError as e:
         try:
-            msg = u'%s (%s)' % (e.reason.strerror, e.reason.errno)
+            msg = '%s (%s)' % (e.reason.strerror, e.reason.errno)
         except AttributeError:
-            msg = unicode(e)
-            
+            msg = str(e)
+
         try:
             raise RetrievalError(msg, e.code)
         except AttributeError:
@@ -202,22 +205,22 @@ def urlopen(url, mask=True, code=False):
             raise RetrievalError(
                 translate("Defaults", "Connection Error: %s ") % msg)
     except socket.error as e:
-        msg = u'%s (%s)' % (e.strerror, e.code)
+        msg = '%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
     except EnvironmentError as e:
-        msg = u'%s (%s)' % (e.strerror, e.code)
+        msg = '%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)
 
 
 def write_log(text):
-    status_obj.emit(SIGNAL('logappend'), text)
+    status_obj.logappend.emit(text)
 
 
-class MetaProcessor(SGMLParser):
+class MetaProcessor(HTMLParser):
     def reset(self):
         self.pieces = []
         self.encoding = None
-        SGMLParser.reset(self)
+        HTMLParser.reset(self)
 
     def start_meta(self, text):
         text = [tuple([x.lower() for x in z]) for z in text]
@@ -242,5 +245,5 @@ for source in ('acoust_id', 'amazon', 'amg', 'discogs', 'freedb',
         tagsources.append(getattr(
             import_module('puddlestuff.tagsources.' + source),
             'info'))
-    except ImportError:
-        pass
+    except ImportError as ie:
+        logging.debug(f"error loading source '{source}: error={ie}")

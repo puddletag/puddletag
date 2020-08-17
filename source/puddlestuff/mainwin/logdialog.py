@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from puddlestuff.constants import RIGHTDOCK
-import sys
-from puddlestuff.translations import translate
+from PyQt5.QtCore import QMutex
+from PyQt5.QtGui import QTextOption
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QTextEdit, QVBoxLayout, QWidget
+
+from ..constants import RIGHTDOCK
+from ..translations import translate
 
 mutex = QMutex()
 
@@ -20,8 +20,8 @@ class LogDialog(QWidget):
         copy = QPushButton(translate("Logs", '&Copy'))
         clear = QPushButton(translate("Logs", '&Clear'))
 
-        self.connect(copy, SIGNAL('clicked()'), self._copy)
-        self.connect(clear, SIGNAL('clicked()'), self._clear)
+        copy.clicked.connect(self._copy)
+        clear.clicked.connect(self._clear)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self._text)
@@ -49,6 +49,7 @@ class LogDialog(QWidget):
             self._text.setHtml(text)
         else:
             self._text.setPlaintext(text)
+
 
 control = ('Logs', LogDialog, RIGHTDOCK, False)
 

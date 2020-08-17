@@ -22,7 +22,7 @@ What you need
 =============
 
 - At least Python2.5 (not Python3) available from http://python.org.
-- PyQt4 (4.5 or greater) (http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
+- PyQt5 (http://www.riverbankcomputing.co.uk/software/pyqt/intro) for the GUI.
 - PyParsing (1.5.1 or greater) (http://pyparsing.wikispaces.com) takes care of the parsing...
 - Mutagen (1.20 recommended, 1.14 required) (https://github.com/quodlibet/mutagen) is used as the tagging lib and...
 
@@ -35,7 +35,7 @@ Downloading/Installing
 ======================
 
 - Install the dependencies listed above.
-- For Debian-based distros, run the following as root to install them aptitude install python-qt4 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
+- For Debian-based distros, run the following as root to install them aptitude install python-pyqt5 python-pyparsing python-mutagen python-configobj python-musicbrainz2 python-imaging
 - Download the source tarball from http://puddletag.sourceforge.net. (If this file came from that tarball, ignore everything on this line.)
 - Unzip it.
 - You can run puddletag from that directory by typing ./puddletag in your console.

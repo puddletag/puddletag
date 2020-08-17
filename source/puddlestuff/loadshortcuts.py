@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
-from puddleobjects import PuddleConfig, get_icon
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-import sys, pdb, resource,os
-from constants import CONFIGDIR, DATADIR
-import StringIO
-from util import open_resourcefile
-from puddlestuff.translations import translate
+import os
+import sys
+
+from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
+
+from .constants import CONFIGDIR
+from .puddleobjects import PuddleConfig, get_icon, open_resourcefile
+from .translations import translate
 
 __version__ = 29
 
 files = [open_resourcefile(filename)
-    for filename in [':/caseconversion.action', ':/standard.action']]
+         for filename in [':/caseconversion.action', ':/standard.action']]
 
 SEPARATOR = 'separator'
 ALWAYS = 'always'
 menu_path = os.path.join(CONFIGDIR, 'menus')
 shortcut_path = os.path.join(CONFIGDIR, 'shortcuts')
 
+
 def create_file(path, resource):
     text = open_resourcefile(resource).read()
     f = open(path, 'w')
     f.write(text)
     f.close()
+
 
 def check_file(path, resource):
     if not os.path.exists(path):
@@ -33,9 +35,11 @@ def check_file(path, resource):
         if version < __version__:
             create_file(path, resource)
 
+
 def create_files():
     check_file(menu_path, ':/menus')
     check_file(shortcut_path, ':/shortcuts')
+
 
 def get_menus(section, filepath=None):
     cparser = PuddleConfig()
@@ -48,8 +52,9 @@ def get_menus(section, filepath=None):
     menus = [(z, temp[z]) for z in settings[section + 'attrs']['order']]
     return menus
 
+
 def menubar(menus, actions):
-    texts = [unicode(action.text()) for action in actions]
+    texts = [str(action.text()) for action in actions]
 
     menubar = QMenuBar()
     winmenu = None
@@ -57,7 +62,7 @@ def menubar(menus, actions):
     for title, actionlist in menus:
         menu = menubar.addMenu(translate("Menus", title))
         _menus[title] = [menu]
-        if title == u'&Windows':
+        if title == '&Windows':
             winmenu = menu
             tr_section = 'Dialogs'
         else:
@@ -72,6 +77,7 @@ def menubar(menus, actions):
                 menu.addSeparator()
     return menubar, winmenu, _menus
 
+
 def context_menu(section, actions, filepath=None):
     cparser = PuddleConfig(filepath)
     if not filepath:
@@ -80,7 +86,7 @@ def context_menu(section, actions, filepath=None):
     order = [translate('Menus', z) for z in cparser.get(section, 'order', [])]
     if not order:
         return
-    texts = [unicode(action.text()) for action in actions]
+    texts = [str(action.text()) for action in actions]
     menu = QMenu()
     for action in order:
         if action in texts:
@@ -89,10 +95,11 @@ def context_menu(section, actions, filepath=None):
             menu.addSeparator()
     return menu
 
+
 def toolbar(groups, actions, controls=None):
-    texts = [unicode(action.text()) for action in actions]
+    texts = [str(action.text()) for action in actions]
     if controls:
-        controls = dict([('widget-' + z, v) for z,v in controls.items()])
+        controls = dict([('widget-' + z, v) for z, v in controls.items()])
     toolbar = QToolBar('Toolbar')
     for name, actionlist in groups:
         for action in actionlist:
@@ -103,9 +110,10 @@ def toolbar(groups, actions, controls=None):
         toolbar.addSeparator()
     return toolbar
 
-def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
-    tooltip=None, shortcut=None, status=None, togglecheck=None,
-    checkstate=None, icon_name=None):
+
+def create_action(win, name, control, command, icon=None, enabled=ALWAYS,
+                  tooltip=None, shortcut=None, status=None, togglecheck=None,
+                  checkstate=None, icon_name=None):
     if icon:
         action = QAction(get_icon(icon_name, icon), name, win)
     else:
@@ -120,7 +128,7 @@ def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
 
     if tooltip:
         action.setToolTip(translate('Menus', tooltip))
-    
+
     if togglecheck is not None:
         action.setCheckable(True)
         checked = int(checkstate)
@@ -134,6 +142,7 @@ def create_action(win, name, control, command, icon = None, enabled=ALWAYS,
 
     return action
 
+
 def get_actions(parent, filepath=None):
     cparser = PuddleConfig()
     if not filepath:
@@ -143,9 +152,10 @@ def get_actions(parent, filepath=None):
     actions = []
     for section in cparser.sections():
         if section.startswith('shortcut'):
-            values = dict([(str(k), v) for k,v in  setting[section].items()])
+            values = dict([(str(k), v) for k, v in setting[section].items()])
             actions.append(create_action(parent, **values))
     return actions
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,32 +1,35 @@
-# -*- coding: utf-8 -*-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from puddlestuff.constants import (LEFTDOCK, SELECTIONCHANGED,
-    FILESSELECTED, KEEP, BLANK)
-from puddlestuff.plugins import add_shortcuts, connect_shortcut
-from puddlestuff.helperwin import (BOLD, UNCHANGED, ITALICS, EditField,
-    ExTags)
-from puddlestuff.puddleobjects import (settaglist)
-from puddlestuff.audioinfo import commontags
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QAction
+
+from ...audioinfo import commontags
+from ...constants import (LEFTDOCK, SELECTIONCHANGED,
+                          KEEP)
+from ...helperwin import (BOLD, UNCHANGED, EditField,
+                          ExTags)
+from ...puddletag import add_shortcuts
+from ...puddleobjects import (settaglist)
+
 
 class ExTagsPlugin(ExTags):
-    def __init__(self, parent = None, row=None, files=None, status=False):
+    onetomany = pyqtSignal(dict, name='onetomany')
+
+    def __init__(self, parent=None, row=None, files=None, status=False):
         super(ExTags, self).__init__(parent)
 
         self._status = status
 
         def set_pmode(v): self.previewMode = v
-        
+
         self.receives = [
             (SELECTIONCHANGED, self.loadFiles),
             ('previewModeChanged', set_pmode)]
         self.emits = ['onetomany']
 
         super(ExTagsPlugin, self).__init__(parent, row, files, status, False)
-        self.setMinimumSize(50,50)
+        self.setMinimumSize(50, 50)
 
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
 
         self.previewMode = False
         self.canceled = False
@@ -36,20 +39,21 @@ class ExTagsPlugin(ExTags):
             self.loadFiles(files)
 
         action = QAction('Save Extended', self)
-        self.connect(action, SIGNAL('triggered()'), self.save)
+        action.triggered.connect(self.save)
         action.setShortcut('Ctrl+Shift+S')
 
         def sep():
             k = QAction(self)
             k.setSeparator(True)
             return k
+
         add_shortcuts('&Plugins', [sep(), action, sep()])
 
     def addTag(self):
         win = EditField(parent=self, taglist=self.get_fieldlist)
         win.setModal(True)
         win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editTagBuddy)
+        win.donewithmyshit.connect(self.editTagBuddy)
 
     def _imageChanged(self):
         self.filechanged = True
@@ -72,14 +76,14 @@ class ExTagsPlugin(ExTags):
 
         common, numvalues, imagetags = commontags(audios)
         if '__image' in common:
-            del(common['__image'])
+            del (common['__image'])
         previews = set(audios[0].preview)
         italics = set(audios[0].equal_fields())
         for audio in audios[1:]:
             previews = previews.intersection(audio.preview)
             italics = italics.intersection(audio.equal_fields())
         row = 0
-        for field, values in common.iteritems():
+        for field, values in common.items():
             if field in previews and field not in italics:
                 preview = BOLD
             else:
@@ -88,7 +92,7 @@ class ExTagsPlugin(ExTags):
                 self._settag(row, field, KEEP)
                 row += 1
             else:
-                if isinstance(values, basestring):
+                if isinstance(values, str):
                     self._settag(row, field, values, None, preview)
                     row += 1
                 else:
@@ -105,16 +109,17 @@ class ExTagsPlugin(ExTags):
         if newtags and newtags != ['__image']:
             settaglist(newtags + self.get_fieldlist)
         tags.update({'__image': self._status['images']})
-        self.emit(SIGNAL('onetomany'), tags)
+        self.onetomany.emit(tags)
 
-    def _tag(self, row, status = None):
+    def _tag(self, row, status=None):
         getitem = self.table.item
         item = getitem(row, 0)
-        tag = unicode(item.text())
-        value = unicode(getitem(row, 1).text())
+        tag = str(item.text())
+        value = str(getitem(row, 1).text())
         if status:
             return (tag, value, item.status)
         else:
             return (tag, value)
 
-dialogs = [('Extended Tags', ExTagsPlugin, LEFTDOCK, False),]
+
+dialogs = [('Extended Tags', ExTagsPlugin, LEFTDOCK, False), ]

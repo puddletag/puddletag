@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-import sys, resource, os, audioinfo
-from puddleobjects import (ListButtons, OKCancel, HeaderSetting, ListBox,
-    PuddleConfig, savewinsize, winsettings, encode_fn, decode_fn)
+import os
 
-from puddlestuff.constants import CONFIGDIR
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHBoxLayout, QListWidgetItem, QWidget
+
+from . import audioinfo
+from .constants import CONFIGDIR
+from .puddleobjects import (ListButtons, ListBox)
+
 
 def load_genres(filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     try:
-        return [unicode(z.strip(), 'utf8') for z in
-            open(filepath, 'r').readlines()]
+        return [x.strip() for x in open(filepath, 'r').readlines() if x.strip()]
     except (IOError, OSError):
         return audioinfo.GENRES[::]
+
 
 def save_genres(genres, filepath=None):
     if not filepath:
         filepath = os.path.join(CONFIGDIR, 'genres')
     f = open(filepath, 'w')
-    text = '\n'.join([z.encode('utf8') for z in genres])
-    f.write(text)
+    f.write('\n'.join(genres))
     f.close()
+
 
 class Genres(QWidget):
     def __init__(self, parent=None, status=None):
@@ -42,11 +44,11 @@ class Genres(QWidget):
         self.listbox.connectToListButtons(buttons)
         self.listbox.setAutoScroll(False)
 
-        self.connect(buttons, SIGNAL('add'), self.add)
-        self.connect(buttons, SIGNAL('edit'), self.edit)
+        buttons.add.connect(self.add)
+        buttons.edit.connect(self.edit)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(self.listbox,1)
+        hbox.addWidget(self.listbox, 1)
         hbox.addLayout(buttons, 0)
         self.setLayout(hbox)
 
@@ -71,6 +73,6 @@ class Genres(QWidget):
 
     def applySettings(self, control=None):
         item = self.listbox.item
-        genres = [unicode(item(row).text()) for row in
-            xrange(self.listbox.count())]
+        genres = [str(item(row).text()) for row in
+                  range(self.listbox.count())]
         self._status['genres'] = genres

@@ -1,29 +1,30 @@
 import contextlib
-import httplib
-import logging
-import os, pdb
+import http.client
+import os
 import time
-import urllib2
-
-from collections import defaultdict
-from itertools import chain, izip, product, starmap
+import traceback
+import urllib.error
+import urllib.parse
+import urllib.request
+from itertools import chain, product, starmap
 
 try:
     import acoustid
-    #Don't want it to use audioread as python-gst
-    #lib causes lockups.
+
+    # Don't want it to use audioread as python-gst
+    # lib causes lockups.
     acoustid.have_audioread = False
 except ImportError:
-    import _acoustid as acoustid
+    from . import _acoustid as acoustid
 
-import puddlestuff.audioinfo as audioinfo
+from .. import audioinfo
 
-from puddlestuff.audioinfo import stringtags
-from puddlestuff.constants import SPINBOX, TEXT
-from puddlestuff.tagsources import set_status, write_log, SubmissionError
-from puddlestuff.tagsources.musicbrainz import retrieve_album
-from puddlestuff.translations import translate
-from puddlestuff.util import escape_html, isempty, to_string
+from ..audioinfo import stringtags
+from ..constants import SPINBOX, TEXT
+from ..tagsources import set_status, write_log, SubmissionError
+from ..tagsources.musicbrainz import retrieve_album
+from ..translations import translate
+from ..util import escape_html, isempty, to_string
 
 CALCULATE_MSG = translate('AcoustID', "Calculating ID")
 RETRIEVE_MSG = translate('AcoustID', "Retrieving AcoustID data: %1 of %2.")
@@ -33,24 +34,26 @@ WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
 SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: %1")
 SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: %1 to %2 of %3.")
 FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
-FILE_MSG = translate('AcoustID', u'File #%1: %2')
+FILE_MSG = translate('AcoustID', 'File #%1: %2')
 
 API_KEY = "gT8GJxhO"
 
+
 def album_hash(d):
-    h = u''
-    if u'album' in d:
+    h = ''
+    if 'album' in d:
         h = d[u'album']
 
-    if u'year' in d:
+    if 'year' in d:
         h += d[u'year']
 
     return hash(h)
-   
+
+
 def best_match(albums, tracks):
     hashed = {}
-    data = (product(a, [t]) for a, t in izip(albums, tracks))
-    
+    data = (product(a, [t]) for a, t in zip(albums, tracks))
+
     for album, track in chain(*data):
         key = album_hash(album)
         if key not in hashed:
@@ -65,15 +68,16 @@ def best_match(albums, tracks):
     for key in sorted(hashed, key=lambda i: hashed[i][1], reverse=True):
         album, count, tracks = hashed[key]
         new_tracks = []
-        
+
         for t in tracks:
             if t['#exact'] not in matched_tracks:
                 new_tracks.append(t)
                 matched_tracks.append(t['#exact'])
         if not new_tracks: continue
         ret.append([album, new_tracks])
-        
+
     return ret
+
 
 def convert_for_submit(tags):
     cipher = {
@@ -83,20 +87,21 @@ def convert_for_submit(tags):
         'discnumber': 'discno',
         '__bitrate': 'bitrate',
         'musicip_puid': 'puid',
-        }
+    }
 
     valid_keys = set(['artist', 'album', 'title', 'track', 'discno',
-        'mbid', 'year', 'bitrate', 'puid', 'trackno'])
-    
-    ret = dict((cipher.get(k, k) , v) for k,v in stringtags(tags).iteritems()
-        if cipher.get(k, k) in valid_keys and v)
-    bitrate = ret['bitrate'].split(u' ')[0]
+                      'mbid', 'year', 'bitrate', 'puid', 'trackno'])
+
+    ret = dict((cipher.get(k, k), v) for k, v in stringtags(tags).items()
+               if cipher.get(k, k) in valid_keys and v)
+    bitrate = ret['bitrate'].split(' ')[0]
     if bitrate == 0:
-        del(ret['bitrate'])
+        del (ret['bitrate'])
     else:
-        ret['bitrate'] = unicode(bitrate)
+        ret['bitrate'] = str(bitrate)
 
     return ret
+
 
 def fingerprint_file(fn):
     try:
@@ -104,8 +109,8 @@ def fingerprint_file(fn):
     except TypeError:
         return acoustid._fingerprint_file_fpcalc(fn)
 
+
 def id_in_tag(tag):
-    
     if 'acoustid_fingerprint' in tag:
         fp = to_string(tag['acoustid_fingerprint'])
     else:
@@ -117,6 +122,7 @@ def id_in_tag(tag):
         return
 
     return (duration, fp)
+
 
 def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
     """Look up the metadata for an audio file. If ``parse`` is true,
@@ -130,24 +136,25 @@ def match(apikey, path, fp=None, dur=None, meta='releases recordings tracks'):
     response = acoustid.lookup(apikey, fp, dur, meta)
     return response, fp
 
-            
+
 def parse_release_data(rel):
     info = {}
-    info['__numtracks'] = unicode(rel.get('track_count', ''))
-    info['album'] = rel.get('title', u'')
+    info['__numtracks'] = str(rel.get('track_count', ''))
+    info['album'] = rel.get('title', '')
 
     if 'date' in rel:
         date = rel['date']
-        info['year'] = u'-'.join(unicode(z).zfill(2) for z in
-            map(date.get, ('year', 'month', 'day')) if z)
-    info['country'] = rel.get('country', u'')
-    info['discs'] = unicode(rel.get('medium_count', ''))
+        info['year'] = '-'.join(str(z).zfill(2) for z in
+                                map(date.get, ('year', 'month', 'day')) if z)
+    info['country'] = rel.get('country', '')
+    info['discs'] = str(rel.get('medium_count', ''))
     info['#album_id'] = rel['id']
     info['mbrainz_album_id'] = rel['id']
     if 'mediums' in rel:
-        info['track'] = unicode(
+        info['track'] = str(
             rel['mediums'][0]['tracks'][0].get('position', ""))
-    return dict((k,v) for k,v in info.iteritems() if not isempty(v))
+    return dict((k, v) for k, v in info.items() if not isempty(v))
+
 
 def parse_lookup_result(data, albums=False, fp=None):
     if data['status'] != 'ok':
@@ -166,7 +173,7 @@ def parse_lookup_result(data, albums=False, fp=None):
         return {
             'acoustid_id': result['id'],
             '#score': result['score'],
-            'acoustid_fingerprint': fp,}
+            'acoustid_fingerprint': fp, }
 
     if fp:
         info['acoustid_fingerprint'] = fp
@@ -174,6 +181,7 @@ def parse_lookup_result(data, albums=False, fp=None):
     tracks = [parse_recording_data(r, info) for r in result['recordings']]
 
     return tracks
+
 
 def parse_recording_data(data, info=None):
     track = {} if info is None else info.copy()
@@ -187,16 +195,16 @@ def parse_recording_data(data, info=None):
         track['__length'] = audioinfo.strlength(data['duration'])
     track['acoustid_id'] = data['id']
 
-    track['artist'] = data.get('artists', [{'name': u""}])[0]['name']
+    track['artist'] = data.get('artists', [{'name': ""}])[0]['name']
     if track['artist']:
         track['mbrainz_artist_id'] = data['artists'][0]['id']
 
     if 'releases' in data:
-        album_info = map(parse_release_data, data['releases'])
+        album_info = list(map(parse_release_data, data['releases']))
     else:
         album_info = []
 
-    track = dict((k,v) for k,v in track.iteritems() if not isempty(v))
+    track = dict((k, v) for k, v in track.items() if not isempty(v))
 
     if 'artist' in track:
         for album in album_info:
@@ -205,15 +213,16 @@ def parse_recording_data(data, info=None):
 
     return album_info, track
 
+
 def retrieve_album_info(album, tracks):
     if not album:
         return album, tracks
-    msg = u'<b>%s - %s</b>' % tuple(map(escape_html,
-        (album['artist'], album['album'])))
+    msg = '<b>%s - %s</b>' % tuple(map(escape_html,
+                                       (album['artist'], album['album'])))
     msg = RETRIEVE_MB_MSG.arg(msg)
     write_log(msg)
     set_status(msg)
-    
+
     info, new_tracks = retrieve_album(album['mbrainz_album_id'])
     for t in tracks:
         try:
@@ -227,8 +236,9 @@ def retrieve_album_info(album, tracks):
 
     return info, new_tracks
 
+
 def which(program):
-    #http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
+    # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -248,13 +258,14 @@ def which(program):
 class AcoustID(object):
     name = 'AcoustID'
     group_by = ['album', None]
+
     def __init__(self):
         object.__init__(self)
         self.min_score = 0.80
         self.preferences = [
             [translate("AcoustID", 'Minimum Score'), SPINBOX, [0, 100, 80]],
-            [translate("AcoustID", "AcoustID Key"), TEXT, u""]
-            ]
+            [translate("AcoustID", "AcoustID Key"), TEXT, ""]
+        ]
         self.__lasttime = time.time()
         acoustid._send_request = self._send_request
         self.__user_key = ""
@@ -266,15 +277,15 @@ class AcoustID(object):
         if time.time() - self.__lasttime < 0.4:
             time.sleep(time.time() - self.__lasttime + 0.1)
         try:
-            with contextlib.closing(urllib2.urlopen(req)) as f:
+            with contextlib.closing(urllib.request.urlopen(req)) as f:
                 return f.read(), f.info()
-        except urllib2.HTTPError, exc:
+        except urllib.error.HTTPError as exc:
             raise acoustid.WebServiceError('HTTP status %i' % exc.code, exc.read())
-        except httplib.BadStatusLine:
+        except http.client.BadStatusLine:
             raise acoustid.WebServiceError('bad HTTP status line')
         except IOError:
             raise acoustid.WebServiceError('connection failed')
-        
+
     def search(self, artist, fns=None):
 
         tracks = []
@@ -302,14 +313,14 @@ class AcoustID(object):
 
                 data, fp = match("gT8GJxhO", fn.filepath, fp, dur)
                 write_log(translate('AcoustID', "Parsing Data"))
-                
+
                 info = parse_lookup_result(data, fp=fp)
-            except acoustid.FingerprintGenerationError, e:
-                write_log(FP_ERROR_MSG.arg(unicode(e)))
+            except acoustid.FingerprintGenerationError as e:
+                write_log(FP_ERROR_MSG.arg(str(e)))
                 continue
-            except acoustid.WebServiceError, e:
-                set_status(WEB_ERROR_MSG.arg(unicode(e)))
-                write_log(WEB_ERROR_MSG.arg(unicode(e)))
+            except acoustid.WebServiceError as e:
+                set_status(WEB_ERROR_MSG.arg(str(e)))
+                write_log(WEB_ERROR_MSG.arg(str(e)))
                 break
 
             if hasattr(info, 'items'):
@@ -328,7 +339,7 @@ class AcoustID(object):
     def submit(self, fns):
         if not self.__user_key:
             raise SubmissionError(translate("AcoustID",
-                "Please enter AcoustID user key in settings."))
+                                            "Please enter AcoustID user key in settings."))
 
         fns_len = len(fns)
         data = []
@@ -350,9 +361,9 @@ class AcoustID(object):
                     dur, fp = fingerprint_file(fn.filepath)
 
                 info = {
-                    'duration':unicode(dur),
-                    'fingerprint': unicode(fp),
-                    }
+                    'duration': str(dur),
+                    'fingerprint': str(fp),
+                }
 
                 info.update(convert_for_submit(fn))
                 data.append(info)
@@ -365,14 +376,14 @@ class AcoustID(object):
                     acoustid.submit(API_KEY, self.__user_key, data)
                     data = []
 
-            except acoustid.FingerprintGenerationError, e:
+            except acoustid.FingerprintGenerationError as e:
                 traceback.print_exc()
-                write_log(FP_ERROR_MSG.arg(unicode(e)))
+                write_log(FP_ERROR_MSG.arg(str(e)))
                 continue
-            except acoustid.WebServiceError, e:
+            except acoustid.WebServiceError as e:
                 traceback.print_exc()
-                set_status(SUBMIT_ERROR_MSG.arg(unicode(e)))
-                write_log(SUBMIT_ERROR_MSG.arg(unicode(e)))
+                set_status(SUBMIT_ERROR_MSG.arg(str(e)))
+                write_log(SUBMIT_ERROR_MSG.arg(str(e)))
                 break
 
     def retrieve(self, info):
@@ -381,6 +392,7 @@ class AcoustID(object):
     def applyPrefs(self, args):
         self.min_score = args[0] / 100.0
         self.__user_key = args[1]
+
 
 if not which('fpcalc'):
     raise ImportError("fpcalc not found on system")

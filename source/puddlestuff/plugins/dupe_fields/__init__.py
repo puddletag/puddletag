@@ -1,19 +1,23 @@
-# -*- coding: utf-8 -*-
-import mutagen, os, cPickle as pickle, sys, traceback
+from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtWidgets import QAction, QInputDialog
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from .. import status, connect_control
+from ...puddletag import add_shortcuts
 
-from puddlestuff.plugins import status, add_shortcuts, connect_control
 
-obj = QObject()
+class _SignalObject(QObject):
+    highlight = pyqtSignal(list, name='highlight')
+
+
+obj = _SignalObject()
+
 
 def highlight_dupe_field():
     field, ok = QInputDialog.getText(None, 'puddletag', 'Field to compare')
     if not ok:
         return
 
-    field = unicode(field)
+    field = str(field)
     files = status['selectedfiles']
     if not files or len(files) <= 1:
         return
@@ -21,7 +25,7 @@ def highlight_dupe_field():
     highlight = []
     prev = files[0]
     value = prev.get(field)
-    
+
     for f in files[1:]:
         if f.get(field) == value:
             if value is not None:
@@ -32,15 +36,16 @@ def highlight_dupe_field():
                 highlight.append(f)
         value = f.get(field)
         prev = f
-    obj.emit(SIGNAL('highlight'), highlight)
+    obj.highlight.emit(highlight)
     obj.sender().setChecked(True)
 
+
 def remove_highlight():
-    obj.emit(SIGNAL('highlight'), [])
+    obj.highlight.emit([])
     obj.sender().setChecked(False)
 
-def init(parent=None):
 
+def init(parent=None):
     def sep():
         k = QAction(parent)
         k.setSeparator(True)
@@ -48,7 +53,7 @@ def init(parent=None):
 
     action = QAction('Dupe highlight', parent)
     action.setCheckable(True)
-    action.connect(action, SIGNAL('toggled(bool)'),
+    action.toggled.connect(
         lambda v: highlight_dupe_field() if v else remove_highlight())
     add_shortcuts('&Plugins', [sep(), action, sep()])
 
@@ -56,4 +61,3 @@ def init(parent=None):
     obj.receives = []
     obj.emits = ['highlight']
     connect_control(obj)
-    

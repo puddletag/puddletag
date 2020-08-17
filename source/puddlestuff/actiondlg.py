@@ -1,57 +1,60 @@
 # -*- coding: utf-8 -*-
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4 import QtGui
-import sys, findfunc, pdb, os, resource, string, functions
+import os
+import string
+import sys
 from copy import copy, deepcopy
-from pyparsing import delimitedList, alphanums, Combine, Word, ZeroOrMore, \
-        QuotedString, Literal, NotAny, nums
-import cPickle as pickle
-from puddleobjects import (ListBox, OKCancel, ListButtons, PuddleConfig,
-    winsettings, gettaglist, settaglist, safe_name, ShortcutEditor)
-from findfunc import Function, apply_macros, apply_actions, Macro
-from puddleobjects import PuddleConfig, PuddleCombo
-from audioinfo import INFOTAGS, READONLY, usertags, isempty
 from functools import partial
-from constants import (TEXT, COMBO, CHECKBOX, SEPARATOR, 
-    SAVEDIR, CONFIGDIR, ACTIONDIR, BLANK)
-from util import (open_resourcefile, PluginFunction, escape_html,
-    translate, pprint_tag)
-import functions_dialogs
-from puddlestuff.puddleobjects import ShortcutEditor
-from puddletag import status
+
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
+    QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
+    QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
+from pyparsing import delimitedList, alphanums, Combine, Word, QuotedString
+
+from . import findfunc, functions
+from . import functions_dialogs
+from .audioinfo import INFOTAGS, READONLY
+from .constants import (TEXT, COMBO, CHECKBOX, SAVEDIR, CONFIGDIR, ACTIONDIR)
+from .findfunc import Function, apply_macros, apply_actions, Macro
+from .puddleobjects import (ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist, safe_name, open_resourcefile)
+from .puddleobjects import PuddleConfig, PuddleCombo
+from .puddleobjects import ShortcutEditor
+from .util import (PluginFunction, translate, pprint_tag)
 
 READONLY = list(READONLY)
 FUNC_SETTINGS = os.path.join(CONFIGDIR, 'function_settings')
 
 FIELDS_TOOLTIP = translate('Functions Dialog',
-    """<p>Fields that will
-    get written to.</p>
+                           """<p>Fields that will
+                           get written to.</p>
+                       
+                           <ul>
+                           <li>Enter a list of comma-separated fields
+                           eg. <b>artist, title, album</b></li>
+                           <li>Use <b>__selected</b> to write only to the selected cells.
+                           It is not allowed when creating an action.</li>
+                           <li>Combinations like <b>__selected, artist, title</b> are
+                           allowed.</li>
+                           <li>But using <b>__selected</b> in Actions is <b>not</b>.</li>
+                           <li>'~' will write to all the the fields, except what follows it
+                           . Eg <b>~artist, title</b> will write to all but the artist and
+                           title fields found in the selected files.<li>
+                           </ul>""")
 
-    <ul>
-    <li>Enter a list of comma-separated fields
-    eg. <b>artist, title, album</b></li>
-    <li>Use <b>__selected</b> to write only to the selected cells.
-    It is not allowed when creating an action.</li>
-    <li>Combinations like <b>__selected, artist, title</b> are
-    allowed.</li>
-    <li>But using <b>__selected</b> in Actions is <b>not</b>.</li>
-    <li>'~' will write to all the the fields, except what follows it
-    . Eg <b>~artist, title</b> will write to all but the artist and
-    title fields found in the selected files.<li>
-    </ul>""")
 
 def displaytags(tags):
     text = pprint_tag(tags)
     if not text:
         return translate('Functions Dialog', '<b>No change.</b>')
 
-    if text.endswith(u'<br />'):
-        text = text[:-len(u'<br />')]
+    if text.endswith('<br />'):
+        text = text[:-len('<br />')]
     return text
 
+
 class ShortcutDialog(QDialog):
+    shortcutChanged = pyqtSignal(str, name='shortcutChanged')
+
     def __init__(self, shortcuts=None, parent=None):
         super(ShortcutDialog, self).__init__(parent)
         self.setWindowTitle('puddletag')
@@ -60,14 +63,13 @@ class ShortcutDialog(QDialog):
         self._text = ShortcutEditor(shortcuts)
 
         okcancel = OKCancel()
-        okcancel.cancel.setText(translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
-        okcancel.ok.setEnabled(False)
-        
-        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.cancelButton.setText(translate('Shortcut Editor', "&Don't assign keyboard shortcut."))
+        okcancel.okButton.setEnabled(False)
 
-        self.connect(self._text, SIGNAL('validityChanged'),
-            okcancel.ok.setEnabled)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.close)
+
+        self._text.validityChanged.connect(okcancel.okButton.setEnabled)
 
         vbox = QVBoxLayout()
         vbox.addWidget(label)
@@ -79,16 +81,17 @@ class ShortcutDialog(QDialog):
         self._shortcuts = shortcuts
 
     def okClicked(self):
-        self.emit(SIGNAL('shortcutChanged'), unicode(self._text.text()))
+        self.shortcutChanged.emit(str(self._text.text()))
         self.ok = True
         self.close()
 
     def getShortcut(self):
         self.exec_()
         if self._text.valid:
-            return unicode(self._text.text()), self.ok
+            return str(self._text.text()), self.ok
         else:
-            return u'', self.ok
+            return '', self.ok
+
 
 class ShortcutName(QDialog):
     def __init__(self, texts, default=u'', parent=None):
@@ -100,14 +103,13 @@ class ShortcutName(QDialog):
         self._text = QLineEdit(default)
 
         okcancel = OKCancel()
-        self._ok = okcancel.ok
+        self._ok = okcancel.okButton
         self.enableOK(self._text.text())
 
-        self.connect(okcancel, SIGNAL('ok'), self.okClicked)
-        self.connect(okcancel, SIGNAL('cancel'), self.close)
+        okcancel.ok.connect(self.okClicked)
+        okcancel.cancel.connect(self.close)
 
-        self.connect(self._text, SIGNAL('textChanged(const QString)'),
-            self.enableOK)
+        self._text.textChanged.connect(self.enableOK)
 
         vbox = QVBoxLayout()
         vbox.addWidget(label)
@@ -121,17 +123,18 @@ class ShortcutName(QDialog):
         self.close()
 
     def enableOK(self, text):
-        if text and unicode(text) not in self._texts:
+        if text and str(text) not in self._texts:
             self._ok.setEnabled(True)
         else:
             self._ok.setEnabled(False)
 
     def getText(self):
         self.exec_()
-        return unicode(self._text.text()), self.ok
+        return str(self._text.text()), self.ok
+
 
 class ScrollLabel(QScrollArea):
-    def __init__(self, text = '', parent=None):
+    def __init__(self, text='', parent=None):
         QScrollArea.__init__(self, parent)
         label = QLabel()
         label.setMargin(3)
@@ -147,12 +150,12 @@ class ScrollLabel(QScrollArea):
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
         if h.isVisible():
-            numsteps = e.delta() / 5
+            numsteps = e.angleDelta().y() / 5
             h.setValue(h.value() - numsteps)
             e.accept()
         else:
             QScrollArea.wheelEvent(self, e)
-    
+
     def setText(self, text):
         label = self.widget()
         label.setText(text)
@@ -160,27 +163,30 @@ class ScrollLabel(QScrollArea):
         height = label.sizeHint().height() + hbar.height()
         self.setMaximumHeight(height)
         self.setMinimumHeight(height)
-        
+
+
 class FunctionDialog(QWidget):
     "A dialog that allows you to edit or create a Function class."
 
     _controls = {'text': PuddleCombo, 'combo': QComboBox, 'check': QCheckBox}
-    
-    signals = {
-        TEXT: SIGNAL('editTextChanged(const QString&)'),
-        COMBO : SIGNAL('currentIndexChanged(int)'),
-        CHECKBOX : SIGNAL('stateChanged(int)'),
-        }
 
-    def __init__(self, funcname, selected_fields = False, userargs = None,
-        default_fields = None, parent = None, example = None, text = None):
+    signals = {
+        TEXT: 'editTextChanged',
+        COMBO: 'currentIndexChanged',
+        CHECKBOX: 'stateChanged',
+    }
+
+    updateExample = pyqtSignal(object, name='updateExample')
+
+    def __init__(self, funcname, selected_fields=False, userargs=None,
+                 default_fields=None, parent=None, example=None, text=None):
         """funcname is name the function you want to use(can be either string, or functions.py function).
         if combotags is true then a combobox with tags that the user can choose from are shown.
         userargs is the default values you want to fill the controls in the dialog with
         [make sure they don't exceed the number of arguments of funcname]."""
-        QWidget.__init__(self,parent)
+        QWidget.__init__(self, parent)
         identifier = QuotedString('"') | Combine(Word
-            (alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
+                                                 (alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
         tags = delimitedList(identifier)
         self.func = Function(funcname)
         docstr = self.func.doc[1:]
@@ -190,19 +196,18 @@ class FunctionDialog(QWidget):
 
         if selected_fields:
             fields = ['__all'] + sorted(INFOTAGS) + \
-                selected_fields + gettaglist()
+                     selected_fields + gettaglist()
         else:
             fields = ['__selected', '__all'] + sorted(INFOTAGS) + \
-                gettaglist()
+                     gettaglist()
 
         self.tagcombo = QComboBox(self)
         self.tagcombo.setToolTip(FIELDS_TOOLTIP)
         self.tagcombo.setEditable(True)
-        self.tagcombo.setAutoCompletionCaseSensitivity(Qt.CaseSensitive)
+        self.tagcombo.setCompleter(QCompleter(self.tagcombo))
         self.tagcombo.addItems(fields)
 
-        self.connect(self.tagcombo,
-            SIGNAL('editTextChanged(const QString&)'), self.showexample)
+        self.tagcombo.editTextChanged.connect(self.showexample)
 
         if self.func.function not in functions.no_fields:
             label = QLabel(translate('Defaults', "&Fields"))
@@ -229,7 +234,7 @@ class FunctionDialog(QWidget):
             self.widget = None
 
         self.textcombos = []
-        #Loop that creates all the controls
+        # Loop that creates all the controls
         self.controls = []
         for argno, line in enumerate(docstr):
             args = tags.parseString(line)
@@ -241,14 +246,14 @@ class FunctionDialog(QWidget):
 
             self.retval.append(func)
             self.controls.append(control)
-            self.connect(control, self.signals[ctype], self.showexample)
+            getattr(control, self.signals[ctype]).connect(self.showexample)
 
             if label:
                 self.vbox.addWidget(label)
             self.vbox.addWidget(control)
 
         self.setArguments(default_fields, userargs)
-            
+
         self.vbox.addStretch()
         self.setLayout(self.vbox)
         self.setMinimumSize(self.sizeHint())
@@ -269,15 +274,15 @@ class FunctionDialog(QWidget):
                     elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
                         newargs.append(False)
                 else:
-                    if isinstance(method(), (int, long)):
+                    if isinstance(method(), int):
                         newargs.append(method())
                     else:
-                        newargs.append(unicode(method()))
+                        newargs.append(str(method()))
             [z.save() for z in self.textcombos]
         self.func.setArgs(newargs)
 
         fields = [z.strip() for z in
-            unicode(self.tagcombo.currentText()).split(",") if z]
+                  str(self.tagcombo.currentText()).split(",") if z]
 
         if self.func.function in functions.no_fields:
             self.func.setTag(['just nothing to do with this'])
@@ -287,15 +292,14 @@ class FunctionDialog(QWidget):
 
     def _createControl(self, label, ctype, default=None):
         if ctype == 'text':
-            control = self._controls['text'](label, parent = self)
+            control = self._controls['text'](label, parent=self)
         else:
             control = self._controls[ctype](self)
 
         if ctype == 'combo':
             func = control.currentText
             if default:
-                control.addItems(map(
-                    lambda d: translate('Functions', d), default))
+                control.addItems([translate('Functions', d) for d in default])
         elif ctype == 'text':
             self.textcombos.append(control)
             func = control.currentText
@@ -347,23 +351,23 @@ class FunctionDialog(QWidget):
             audio = self.example
             try:
                 if self.func.function in functions.no_preview:
-                    self.emit(SIGNAL('updateExample'), 
+                    self.updateExample.emit(
                         translate('Functions Dialog',
-                            'No preview for is shown for this function.'))
+                                  'No preview for is shown for this function.'))
                     return
                 fields = findfunc.parse_field_list(self.func.tag, audio,
-                    self._selectedFields)
+                                                   self._selectedFields)
+                from .puddletag import status
                 files = status['selectedfiles']
-                files = unicode(len(files)) if files else u'1'
-                state = {'__counter': u'0', '__total_files': files}
+                files = str(len(files)) if files else '1'
+                state = {'__counter': '0', '__total_files': files}
                 val = apply_actions([self.func], audio, state, fields)
-            except findfunc.ParseError, e:
-                val = u'<b>%s</b>' % (e.message)
+            except findfunc.ParseError as e:
+                val = '<b>%s</b>' % (e.message)
             if val is not None:
-                self.emit(SIGNAL('updateExample'), val)
+                self.updateExample.emit(val)
             else:
-                self.emit(SIGNAL('updateExample'),
-                    translate('Functions Dialog', '<b>No change</b>'))
+                self.updateExample.emit(translate('Functions Dialog', '<b>No change</b>'))
 
     def _sanitize(self, ctype, value):
         if ctype in ['combo', 'text']:
@@ -381,7 +385,7 @@ class FunctionDialog(QWidget):
 
     def setArguments(self, fields=None, args=None):
         if fields is not None:
-            text = u', '.join(fields)
+            text = ', '.join(fields)
             index = self.tagcombo.findText(text)
             if index != -1:
                 self.tagcombo.setCurrentIndex(index)
@@ -409,57 +413,59 @@ class FunctionDialog(QWidget):
             elif isinstance(control, QSpinBox):
                 control.setValue(self._sanitize('spinbox', argument))
 
+
 class CreateFunction(QDialog):
     """A dialog to allow the creation of functions using only one window and a QStackedWidget.
     For each function in functions, a dialog is created and displayed in the stacked widget."""
+    valschanged = pyqtSignal(object, name='valschanged')
+
     def __init__(self, prevfunc=None, selected_fields=None, parent=None,
-        example=None, text=None):
+                 example=None, text=None):
         """tags is a list of the tags you want to show in the FunctionDialog.
         Each item should be in the form (DisplayName, tagname) as used in audioinfo.
         prevfunc is a Function object that is to be edited."""
-        QDialog.__init__(self,parent)
+        QDialog.__init__(self, parent)
         self.setWindowTitle(translate('Functions Dialog', "Functions"))
         winsettings('createfunction', self)
 
-        #Allow __selected field to be used.
+        # Allow __selected field to be used.
         self.allowSelected = True
 
         self.realfuncs = []
-        #Get all the function from the functions module.
+        # Get all the function from the functions module.
         for z, funcname in functions.functions.items():
             if isinstance(funcname, PluginFunction):
                 self.realfuncs.append(funcname)
             elif callable(funcname) and (not (funcname.__name__.startswith("__") or (funcname.__doc__ is None))):
                 self.realfuncs.append(z)
 
-        funcnames = [(Function(z).funcname, z) for z in  self.realfuncs]
-        funcnames.sort(key = lambda x: translate('Functions', x[0]))
+        funcnames = [(Function(z).funcname, z) for z in self.realfuncs]
+        funcnames.sort(key=lambda x: translate('Functions', x[0]))
         self.realfuncs = [z[1] for z in funcnames]
 
         self.vbox = QVBoxLayout()
         self.functions = QComboBox()
         self.functions.addItems(
-            sorted(map(lambda x: translate('Functions', x[0]),
-                funcnames)))
+            sorted([translate('Functions', x[0]) for x in funcnames]))
         self.vbox.addWidget(self.functions)
 
         self.stack = QStackedWidget()
         self.vbox.addWidget(self.stack)
         self.okcancel = OKCancel()
 
-        self.stackWidgets = {}    #Holds the created windows in the form self.functions.index: window
+        self.stackWidgets = {}  # Holds the created windows in the form self.functions.index: window
         self.setLayout(self.vbox)
         self.setMinimumHeight(self.sizeHint().height())
-        self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
-        self.connect(self.okcancel, SIGNAL('cancel'), self.close)
-        
+        self.okcancel.ok.connect(self.okClicked)
+        self.okcancel.cancel.connect(self.close)
+
         self.example = example
         self._text = text
         if not selected_fields:
             self.selectedFields = []
         else:
             self.selectedFields = selected_fields
-            
+
         self.exlabel = ScrollLabel('')
 
         if prevfunc is not None:
@@ -471,25 +477,25 @@ class CreateFunction(QDialog):
         else:
             self.createWindow(0)
 
-        self.connect(self.functions, SIGNAL("activated(int)"), self.createWindow)
+        self.functions.activated.connect(self.createWindow)
 
         self.vbox.addWidget(self.exlabel)
         self.vbox.addLayout(self.okcancel)
         self.setLayout(self.vbox)
 
-    def createWindow(self, index, fields = None, args = None):
+    def createWindow(self, index, fields=None, args=None):
         """Creates a Function dialog in the stack window
         if it doesn't exist already."""
         self.stack.setFrameStyle(QFrame.Box)
         if index not in self.stackWidgets:
             widget = FunctionDialog(self.realfuncs[index],
-                self.selectedFields, args, fields,
-                example=self.example, text=self._text)
+                                    self.selectedFields, args, fields,
+                                    example=self.example, text=self._text)
             if args is None:
                 widget.loadSettings()
             self.stackWidgets.update({index: widget})
             self.stack.addWidget(widget)
-            self.connect(widget, SIGNAL('updateExample'), self.updateExample)
+            widget.updateExample.connect(self.updateExample)
         self.stack.setCurrentWidget(self.stackWidgets[index])
         self.stackWidgets[index].showexample()
         self.controls = getattr(self.stackWidgets[index], 'controls', [])
@@ -505,36 +511,36 @@ class CreateFunction(QDialog):
 
         if close:
             self.close()
-        
+
         if w.func.tag:
             fields = gettaglist()
             new_fields = [z for z in w.func.tag if z not in fields]
             if new_fields:
                 settaglist(sorted(new_fields + fields))
-        
+
         for widget in self.stackWidgets.values():
             widget.saveSettings()
         self.saveSettings()
-        self.emit(SIGNAL("valschanged"), w.func)
+        self.valschanged.emit(w.func)
 
     def checkFields(self, fields):
         func = self.stack.currentWidget().func
         msg = translate('Actions',
-            "Error: Using <b>__selected</b> in Actions is not allowed.")
-        if not self.allowSelected and u'__selected' in fields:
+                        "Error: Using <b>__selected</b> in Actions is not allowed.")
+        if not self.allowSelected and '__selected' in fields:
             QMessageBox.warning(self, 'puddletag', msg)
             return False
         elif func is not None and func not in functions.no_fields:
             msg = translate('Actions',
-                "Please enter some fields to write to.")
-            if not filter(None, fields):
+                            "Please enter some fields to write to.")
+            if not [_f for _f in fields if _f]:
                 QMessageBox.information(self, 'puddletag', msg)
                 return False
         return True
 
     def loadSettings(self):
         cparser = PuddleConfig()
-        func_name = cparser.get('functions', 'last_used', u'')
+        func_name = cparser.get('functions', 'last_used', '')
         if not func_name:
             return
 
@@ -552,12 +558,15 @@ class CreateFunction(QDialog):
 
     def updateExample(self, text):
         if not text:
-            self.exlabel.setText(u'')
+            self.exlabel.setText('')
         else:
             self.exlabel.setText(displaytags(text))
 
+
 class CreateAction(QDialog):
     "An action is defined as a collection of functions. This dialog serves the purpose of creating an action"
+    donewithmyshit = pyqtSignal(list, name='donewithmyshit')
+
     def __init__(self, parent=None, prevfunctions=None, example=None):
         """tags is a list of the tags you want to show in the FunctionDialog.
         Each item should be in the form (DisplayName, tagname as used in audioinfo).
@@ -577,42 +586,43 @@ class CreateAction(QDialog):
         self.setLayout(self.grid)
         self.example = example
 
-        self.connect(self.okcancel, SIGNAL("cancel"), self.cancelClicked)
-        self.connect(self.okcancel, SIGNAL("ok"), self.okClicked)
-        self.connect(self.buttonlist, SIGNAL("add"), self.add)
-        self.connect(self.buttonlist, SIGNAL("edit"), self.edit)
-        self.connect(self.buttonlist, SIGNAL("moveup"), self.moveUp)
-        self.connect(self.buttonlist, SIGNAL("movedown"), self.moveDown)
-        self.connect(self.buttonlist, SIGNAL("remove"), self.remove)
-        self.connect(self.buttonlist, SIGNAL("duplicate"), self.duplicate)
-        self.connect(self.listbox, SIGNAL("currentRowChanged(int)"), self.enableEditButtons)
-        self.connect(self.listbox, SIGNAL("itemDoubleClicked (QListWidgetItem *)"), self.edit)
+        self.okcancel.cancel.connect(self.cancelClicked)
+        self.okcancel.ok.connect(self.okClicked)
+        self.buttonlist.add.connect(self.add)
+        self.buttonlist.edit.connect(self.edit)
+        self.buttonlist.moveup.connect(self.moveUp)
+        self.buttonlist.movedown.connect(self.moveDown)
+        self.buttonlist.remove.connect(self.remove)
+        self.buttonlist.duplicate.connect(self.duplicate)
+        self.listbox.currentRowChanged.connect(self.enableEditButtons)
+        self.listbox.itemDoubleClicked.connect(self.edit)
 
         if prevfunctions is not None:
             self.functions = copy(prevfunctions)
             self.listbox.addItems([function.description() for
-                function in self.functions])
+                                   function in self.functions])
 
         if example:
             self._examplelabel = ScrollLabel('')
-            self.grid.addWidget(self._examplelabel,1,0)
-            self.grid.setRowStretch(0,1)
-            self.grid.setRowStretch(1,0)
+            self.grid.addWidget(self._examplelabel, 1, 0)
+            self.grid.setRowStretch(0, 1)
+            self.grid.setRowStretch(1, 0)
             self.example = example
             self.updateExample()
-            self.grid.addLayout(self.okcancel,2,0,1,2)
+            self.grid.addLayout(self.okcancel, 2, 0, 1, 2)
         else:
-            self.grid.addLayout(self.okcancel,1,0,1,2)
+            self.grid.addLayout(self.okcancel, 1, 0, 1, 2)
         self.enableOK()
 
     def updateExample(self):
         try:
+            from .puddletag import status
             files = status['selectedfiles']
-            files = unicode(len(files)) if files else u'1'
-            state = {'__counter': u'0', '__total_files': files}
+            files = str(len(files)) if files else '1'
+            state = {'__counter': '0', '__total_files': files}
             tags = apply_actions(self.functions, self.example, state)
             self._examplelabel.setText(displaytags(tags))
-        except findfunc.ParseError, e:
+        except findfunc.ParseError as e:
             self._examplelabel.setText(e.message)
 
     def enableEditButtons(self, val):
@@ -623,9 +633,9 @@ class CreateAction(QDialog):
 
     def enableOK(self):
         if self.listbox.count() > 0:
-            self.okcancel.ok.setEnabled(True)
+            self.okcancel.okButton.setEnabled(True)
         else:
-            self.okcancel.ok.setEnabled(False)
+            self.okcancel.okButton.setEnabled(False)
 
     def moveDown(self):
         self.listbox.moveDown(self.functions)
@@ -643,15 +653,15 @@ class CreateAction(QDialog):
         self.win.allowSelected = False
         self.win.setModal(True)
         self.win.show()
-        self.connect(self.win, SIGNAL("valschanged"), self.addBuddy)
+        self.win.valschanged.connect(self.addBuddy)
 
     def edit(self):
         self.win = CreateFunction(self.functions[self.listbox.currentRow()],
-            parent=self, example = self.example)
+                                  parent=self, example=self.example)
         self.win.allowSelected = False
         self.win.setModal(True)
         self.win.show()
-        self.connect(self.win, SIGNAL("valschanged"), self.editBuddy)
+        self.win.valschanged.connect(self.editBuddy)
 
     def editBuddy(self, func):
         self.listbox.currentItem().setText(func.description())
@@ -667,20 +677,20 @@ class CreateAction(QDialog):
     def okClicked(self):
         self.accept()
         self.close()
-        self.emit(SIGNAL("donewithmyshit"), self.functions)
-        
+        self.donewithmyshit.emit(self.functions)
 
     def duplicate(self):
         self.win = CreateFunction(self.functions[self.listbox.currentRow()],
-            parent=self, example = self.example)
+                                  parent=self, example=self.example)
         self.win.allowSelected = False
         self.win.setModal(True)
         self.win.show()
-        self.connect(self.win, SIGNAL("valschanged"), self.addBuddy)
+        self.win.valschanged.connect(self.addBuddy)
 
     def cancelClicked(self):
         self.reject()
         self.close()
+
 
 class ActionWindow(QDialog):
     """Just a dialog that allows you to add, remove and edit actions
@@ -688,9 +698,13 @@ class ActionWindow(QDialog):
     It returns a list of lists.
     Each element of a list contains one complete action. While
     the elements of that action are just normal Function objects."""
-    def __init__(self, parent = None, example = None, quickaction = None):
+    donewithmyshit = pyqtSignal(list, name='donewithmyshit')
+    actionOrderChanged = pyqtSignal(name='actionOrderChanged')
+    checkedChanged = pyqtSignal(list, name='checkedChanged')
+
+    def __init__(self, parent=None, example=None, quickaction=None):
         """tags are the tags to be shown in the FunctionDialog"""
-        QDialog.__init__(self,parent)
+        QDialog.__init__(self, parent)
         self.setWindowTitle(translate('Actions', "Actions"))
         winsettings('actions', self)
         self._shortcuts = []
@@ -705,8 +719,8 @@ class ActionWindow(QDialog):
         cparser = PuddleConfig()
         self.__configKey = 'quick_actions' if quickaction else 'actions'
         to_check = cparser.get(self.__configKey, 'checked', [])
-        
-        for i,m in sorted(self.macros.items()):
+
+        for i, m in sorted(self.macros.items()):
             item = QListWidgetItem(m.name)
             item.setFlags(item.flags() | Qt.ItemIsEditable)
             if m.name in to_check:
@@ -716,7 +730,7 @@ class ActionWindow(QDialog):
             self.listbox.addItem(item)
 
         self.okcancel = OKCancel()
-        self.okcancel.ok.setDefault(True)
+        self.okcancel.okButton.setDefault(True)
         x = QAction(translate('Actions', 'Assign &Shortcut'), self)
         self.shortcutButton = QToolButton()
         self.shortcutButton.setDefaultAction(x)
@@ -726,7 +740,7 @@ class ActionWindow(QDialog):
             to edit shortcuts after the fact.</p>'''))
         menu = QMenu(self)
         edit_shortcuts = QAction(translate('Actions', 'Edit Shortcuts'), menu)
-        self.connect(edit_shortcuts, SIGNAL('triggered()'), self.editShortcuts)
+        edit_shortcuts.triggered.connect(self.editShortcuts)
         menu.addAction(edit_shortcuts)
         self.shortcutButton.setMenu(menu)
 
@@ -735,35 +749,32 @@ class ActionWindow(QDialog):
 
         self.buttonlist = ListButtons()
 
-        self.grid.addWidget(self.listbox,0, 0)
+        self.grid.addWidget(self.listbox, 0, 0)
         self.grid.setRowStretch(0, 1)
-        self.grid.addLayout(self.buttonlist, 0,1)
+        self.grid.addLayout(self.buttonlist, 0, 1)
         self.setLayout(self.grid)
 
-        connect = lambda obj, sig, slot: self.connect(obj, SIGNAL(sig), slot)
-
-        connect(self.okcancel, "ok" , self.okClicked)
-        connect(self.okcancel, "cancel",self.close)
-        connect(self.buttonlist, "add", self.add)
-        connect(self.buttonlist, "edit", self.edit)
-        connect(self.buttonlist, "moveup", self.moveUp)
-        connect(self.buttonlist, "movedown", self.moveDown)
-        connect(self.buttonlist, "remove", self.remove)
-        connect(self.buttonlist, "duplicate", self.duplicate)
-        connect(self.listbox, "itemDoubleClicked (QListWidgetItem *)", self.edit)
-        connect(self.listbox, "currentRowChanged(int)", self.enableListButtons)
-        connect(self.listbox, "itemChanged(QListWidgetItem *)", self.renameAction)
-        connect(self.listbox, "itemChanged(QListWidgetItem *)", self.enableOK)
-        connect(self.shortcutButton, 'clicked()', self.createShortcut)
+        self.okcancel.ok.connect(self.okClicked)
+        self.okcancel.cancel.connect(self.close)
+        self.buttonlist.add.connect(self.add)
+        self.buttonlist.edit.connect(self.edit)
+        self.buttonlist.moveup.connect(self.moveUp)
+        self.buttonlist.movedown.connect(self.moveDown)
+        self.buttonlist.remove.connect(self.remove)
+        self.buttonlist.duplicate.connect(self.duplicate)
+        self.listbox.itemDoubleClicked.connect(self.edit)
+        self.listbox.currentRowChanged.connect(self.enableListButtons)
+        self.listbox.itemChanged.connect(self.renameAction)
+        self.listbox.itemChanged.connect(self.enableOK)
+        self.shortcutButton.clicked.connect(self.createShortcut)
 
         self._examplelabel = ScrollLabel('')
-        self.grid.addWidget(self._examplelabel, 1, 0, 1,-1)
+        self.grid.addWidget(self._examplelabel, 1, 0, 1, -1)
         self.grid.setRowStretch(1, 0)
         if example is None:
             self._examplelabel.hide()
-        self.connect(self.listbox, SIGNAL('itemChanged (QListWidgetItem *)'),
-            self.updateExample)
-        self.grid.addLayout(self.okcancel,2,0,1,2)
+        self.listbox.itemChanged.connect(self.updateExample)
+        self.grid.addLayout(self.okcancel, 2, 0, 1, 2)
         self.updateExample()
         self.enableOK(None)
 
@@ -771,19 +782,19 @@ class ActionWindow(QDialog):
         macros = self.checked()
         names = [m.name for m in macros]
         (name, ok) = ShortcutName(self.shortcutNames(), names[0]).getText()
-        
+
         if name and ok:
-            import puddlestuff.puddletag
-            shortcuts = [unicode(z.shortcut().toString()) for z in
-                puddlestuff.puddletag.status['actions']]
+            from . import puddletag
+            shortcuts = [str(z.shortcut().toString()) for z in
+                         puddletag.status['actions']]
             (shortcut, ok) = ShortcutDialog(shortcuts).getShortcut()
-            name = unicode(name)
-            
-            from puddlestuff.action_shortcuts import (
+            name = str(name)
+
+            from .action_shortcuts import (
                 create_action_shortcut, save_shortcut)
 
             filenames = [m.filename for m in macros]
-                
+
             if shortcut and ok:
                 create_action_shortcut(name, filenames, shortcut, add=True)
             else:
@@ -791,7 +802,7 @@ class ActionWindow(QDialog):
             save_shortcut(name, filenames)
 
     def editShortcuts(self):
-        import action_shortcuts
+        from . import action_shortcuts
         win = action_shortcuts.ShortcutEditor(True, self, True)
         win.setModal(True)
         win.show()
@@ -806,21 +817,21 @@ class ActionWindow(QDialog):
         cparser = PuddleConfig()
         listbox = self.listbox
         rows = sorted([listbox.row(item) for item in
-            listbox.selectedItems()])
+                       listbox.selectedItems()])
 
         for row in rows:
             filename = self.macros[row].filename
             os.rename(filename, filename + '.deleted')
         self.listbox.removeSelected(self.macros)
-        
+
         macros = {}
         for i, key in enumerate(self.macros):
             macros[i] = self.macros[key]
 
         macros = self.macros
 
-        self.macros = dict((i, macros[k]) for i,k in
-            enumerate(sorted(macros)))
+        self.macros = dict((i, macros[k]) for i, k in
+                           enumerate(sorted(macros)))
 
     def enableListButtons(self, val):
         if val == -1:
@@ -828,23 +839,22 @@ class ActionWindow(QDialog):
         else:
             [button.setEnabled(True) for button in self.buttonlist.widgets[1:]]
 
-
     def enableOK(self, val):
         item = self.listbox.item
         enable = [row for row in range(self.listbox.count()) if
-                    item(row).checkState() == Qt.Checked]
+                  item(row).checkState() == Qt.Checked]
         if enable:
-            self.okcancel.ok.setEnabled(True)
+            self.okcancel.okButton.setEnabled(True)
             self.shortcutButton.setEnabled(True)
         else:
-            self.okcancel.ok.setEnabled(False)
+            self.okcancel.okButton.setEnabled(False)
             self.shortcutButton.setEnabled(False)
-    
+
     def renameAction(self, item):
-        name = unicode(item.text())
+        name = str(item.text())
         names = [m.name for m in self.macros.values()]
         row = self.listbox.row(item)
-        
+
         if name not in names:
             macro = self.macros[row]
             macro.name = name
@@ -862,7 +872,7 @@ class ActionWindow(QDialog):
         cparser = PuddleConfig()
         set_value = partial(cparser.set, 'puddleactions')
         get_value = partial(cparser.get, 'puddleactions')
-        
+
         firstrun = get_value('firstrun', True)
         set_value('firstrun', False)
         convert = get_value('convert', True)
@@ -872,9 +882,9 @@ class ActionWindow(QDialog):
             set_value('convert', False)
             findfunc.convert_actions(SAVEDIR, ACTIONDIR)
             if order:
-                old_order = dict([(basename(z), i) for i,z in  
-                    enumerate(order)])
-                files = glob(os.path.join(ACTIONDIR, u'*.action'))
+                old_order = dict([(basename(z), i) for i, z in
+                                  enumerate(order)])
+                files = glob(os.path.join(ACTIONDIR, '*.action'))
                 order = {}
                 for i, action_fn in enumerate(files):
                     try:
@@ -885,10 +895,10 @@ class ActionWindow(QDialog):
                 order = [z[1] for z in sorted(order.items())]
                 set_value('order', order)
 
-        files = glob(os.path.join(ACTIONDIR, u'*.action'))
+        files = glob(os.path.join(ACTIONDIR, '*.action'))
         if firstrun and not files:
             filenames = [':/caseconversion.action', ':/standard.action']
-            files = map(open_resourcefile, filenames)
+            files = list(map(open_resourcefile, filenames))
             set_value('firstrun', False)
 
             for fileobj, filename in zip(files, filenames):
@@ -896,10 +906,10 @@ class ActionWindow(QDialog):
                 f = open(filename, 'w')
                 f.write(fileobj.read())
                 f.close()
-            files = glob(os.path.join(ACTIONDIR, u'*.action'))
+            files = glob(os.path.join(ACTIONDIR, '*.action'))
 
         files = [z for z in order if z in files] + \
-            [z for z in files if z not in order]
+                [z for z in files if z not in order]
 
         return dict((i, Macro(f)) for i, f in enumerate(files))
 
@@ -909,19 +919,20 @@ class ActionWindow(QDialog):
             return
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
-        selectedrows = [i for i,z in enumerate(items) if z.checkState() == Qt.Checked]
-        
+        selectedrows = [i for i, z in enumerate(items) if z.checkState() == Qt.Checked]
+
         if selectedrows:
+            from .puddletag import status
             files = status['selectedfiles']
-            total = unicode(len(files)) if files else u'1'
-            state = {'__counter': u'0', '__total_files': total}
+            total = str(len(files)) if files else '1'
+            state = {'__counter': '0', '__total_files': total}
 
             macros = [self.macros[i] for i in selectedrows]
-            try:    
+            try:
                 tags = apply_macros(macros, self.example, state,
-                    self._quickaction)
+                                    self._quickaction)
                 self._examplelabel.setText(displaytags(tags))
-            except findfunc.ParseError, e:
+            except findfunc.ParseError as e:
                 self._examplelabel.setText(e.message)
             self._examplelabel.show()
         else:
@@ -941,20 +952,21 @@ class ActionWindow(QDialog):
             macro.save()
         else:
             name = macro.name
-            filename = os.path.join(ACTIONDIR, safe_name(name) + u'.action')
+            filename = os.path.join(ACTIONDIR, safe_name(name) + '.action')
             base = os.path.splitext(filename)[0]
             i = 0
             while os.path.exists(filename):
-                filename = u"%s_%d" % (base, i) + u'.action'
+                filename = "%s_%d" % (base, i) + '.action'
                 i += 1
             macro.save(filename)
+            macro.filename = filename
         return filename
 
     def add(self):
-        (text, ok) = QInputDialog.getText (self,
-            translate('Actions', "New Action"),
-            translate('Actions', "Enter a name for the new action."),
-            QLineEdit.Normal)
+        (text, ok) = QInputDialog.getText(self,
+                                          translate('Actions', "New Action"),
+                                          translate('Actions', "Enter a name for the new action."),
+                                          QLineEdit.Normal)
 
         if (ok is True) and text:
             item = QListWidgetItem(text)
@@ -963,36 +975,34 @@ class ActionWindow(QDialog):
             self.listbox.addItem(item)
         else:
             return
-        win = CreateAction(self, example = self.example)
+        win = CreateAction(self, example=self.example)
         win.setWindowTitle(translate('Actions', "Add Action: ") + \
-            self.listbox.item(self.listbox.count() - 1).text())
+                           self.listbox.item(self.listbox.count() - 1).text())
         win.setModal(True)
-        self.connect(win, SIGNAL("donewithmyshit"), self.addBuddy)            
-        self.connect(win, SIGNAL('rejected()'),
-            lambda: self.listbox.takeItem(self.listbox.count() - 1))
+        win.donewithmyshit.connect(self.addBuddy)
+        win.rejected.connect(lambda: self.listbox.takeItem(self.listbox.count() - 1))
         win.show()
 
     def addBuddy(self, actions):
         m = Macro()
-        m.name = unicode(self.listbox.item(self.listbox.count() - 1).text())
+        m.name = str(self.listbox.item(self.listbox.count() - 1).text())
         m.actions = actions
         self.saveMacro(m)
         self.macros[self.listbox.count() - 1] = m
 
     def edit(self):
         m = self.macros[self.listbox.currentRow()]
-        win = CreateAction(self, m.actions , example = self.example)
+        win = CreateAction(self, m.actions, example=self.example)
         win.setWindowTitle(
             translate('Actions', "Edit Action: ") + m.name)
         win.show()
-        self.connect(win, SIGNAL("donewithmyshit"), self.editBuddy)
+        win.donewithmyshit.connect(self.editBuddy)
 
     def editBuddy(self, actions):
         m = self.macros[self.listbox.currentRow()]
         m.actions = actions
         self.saveMacro(m)
         self.updateExample()
-        
 
     def checked(self):
         return [self.macros[row] for row in self.checkedRows()]
@@ -1000,8 +1010,8 @@ class ActionWindow(QDialog):
     def checkedRows(self):
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
-        checked = [i for i,z in enumerate(items) if
-            z.checkState() == Qt.Checked]
+        checked = [i for i, z in enumerate(items) if
+                   z.checkState() == Qt.Checked]
         return checked
 
     def saveChecked(self):
@@ -1017,7 +1027,7 @@ class ActionWindow(QDialog):
         if lastorder == order:
             return
         cparser.set('puddleactions', 'order', order)
-        self.emit(SIGNAL('actionOrderChanged'))
+        self.actionOrderChanged.emit()
 
     def close(self):
         self.saveOrder()
@@ -1032,8 +1042,8 @@ class ActionWindow(QDialog):
         if close:
             self.close()
 
-        self.emit(SIGNAL('checkedChanged'), self.checkedRows())
-        self.emit(SIGNAL("donewithmyshit"), macros)
+        self.checkedChanged.emit(self.checkedRows())
+        self.donewithmyshit.emit(macros)
 
     def duplicate(self):
         l = self.listbox
@@ -1042,14 +1052,14 @@ class ActionWindow(QDialog):
         row = l.currentRow()
         oldname = self.macros[row].name
 
-        (text, ok) = QInputDialog.getText (self,
-            translate('Actions', "Copy %s action" % oldname),
-            translate('Actions', "Enter a name for the new action."),
-            QLineEdit.Normal)
+        (text, ok) = QInputDialog.getText(self,
+                                          translate('Actions', "Copy %s action" % oldname),
+                                          translate('Actions', "Enter a name for the new action."),
+                                          QLineEdit.Normal)
         if not (ok and text):
             return
 
-        name = unicode(text)
+        name = str(text)
         actions = deepcopy(self.macros[row].actions)
 
         win = CreateAction(self, actions, example=self.example)
@@ -1058,7 +1068,7 @@ class ActionWindow(QDialog):
 
         win.show()
         dupebuddy = partial(self.duplicateBuddy, name)
-        self.connect(win, SIGNAL("donewithmyshit"), dupebuddy)
+        win.donewithmyshit.connect(dupebuddy)
 
     def duplicateBuddy(self, name, actions):
         item = QListWidgetItem(name)
@@ -1073,14 +1083,14 @@ class ActionWindow(QDialog):
         self.macros[self.listbox.count() - 1] = m
 
     def shortcutNames(self):
-        from action_shortcuts import load_settings
+        from .action_shortcuts import load_settings
         return [name for name, filename in load_settings()[1]]
-        
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
-    qb = ActionWindow([(u'Path', u'__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), (u'Year', u'date')])
+    qb = ActionWindow([('Path', '__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), ('Year', 'date')])
     qb.show()
     app.exec_()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
-import algwin
+from . import algwin
 
 init = algwin.init

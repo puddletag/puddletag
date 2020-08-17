@@ -1,13 +1,14 @@
-# -*- coding: utf-8 -*-
-from puddlestuff.actiondlg import ActionWindow, CreateFunction
-from puddlestuff.constants import RIGHTDOCK, SELECTIONCHANGED
-from PyQt4.QtGui import QPushButton, QHBoxLayout, QListWidgetItem, QApplication
-from PyQt4.QtCore import SIGNAL, Qt
-from puddlestuff.mainwin.funcs import run_func, applyaction
-from puddlestuff.puddleobjects import PuddleConfig
 from functools import partial
-import pdb
-from puddlestuff.translations import translate
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem
+
+from ..actiondlg import ActionWindow, CreateFunction
+from ..constants import RIGHTDOCK, SELECTIONCHANGED
+from ..mainwin.funcs import run_func, applyaction
+from ..puddleobjects import PuddleConfig
+from ..translations import translate
+
 
 class ActionDialog(ActionWindow):
     def __init__(self, *args, **kwargs):
@@ -15,15 +16,14 @@ class ActionDialog(ActionWindow):
         self.receives = [(SELECTIONCHANGED, self._update)]
         if 'status' in kwargs:
             self._status = kwargs['status']
-            del(kwargs['status'])
+            del (kwargs['status'])
         super(ActionDialog, self).__init__(*args, **kwargs)
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
         self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda funcs: applyaction(self._status['selectedfiles'], funcs)
-        self.connect(self._apply, SIGNAL('clicked()'),
-            partial(self.okClicked, False))
-        self.connect(self, SIGNAL('donewithmyshit'), write)
+        self._apply.clicked.connect(partial(self.okClicked, False))
+        self.donewithmyshit.connect(write)
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._apply)
@@ -69,23 +69,23 @@ class ActionDialog(ActionWindow):
         if self.example:
             self.updateExample()
 
+
 class FunctionDialog(CreateFunction):
     def __init__(self, *args, **kwargs):
         self.emits = []
         self.receives = [(SELECTIONCHANGED, self._update)]
         if 'status' in kwargs:
             self._status = kwargs['status']
-            del(kwargs['status'])
+            del (kwargs['status'])
         super(FunctionDialog, self).__init__(*args, **kwargs)
-        self.okcancel.ok.hide()
-        self.okcancel.cancel.hide()
+        self.okcancel.okButton.hide()
+        self.okcancel.cancelButton.hide()
         self._apply = QPushButton(translate("Defaults", 'Appl&y'))
         write = lambda func: run_func(self._status['selectedfiles'], func)
-        self.connect(self._apply, SIGNAL('clicked()'),
-            partial(self.okClicked, False))
-        self.connect(self, SIGNAL('valschanged'), write)
-        self.disconnect(self.okcancel, SIGNAL('cancel'), self.close)
-        
+        self._apply.clicked.connect(partial(self.okClicked, False))
+        self.valschanged.connect(write)
+        self.okcancel.cancel.disconnect(self.close)
+
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(self._apply)
@@ -98,15 +98,15 @@ class FunctionDialog(CreateFunction):
         try:
             f, selected = self._status['firstselection']
         except IndexError:
-            widget.emit(SIGNAL('updateExample'), u'')
+            widget.updateExample.emit('')
             return
 
-        field = selected.keys()[0]
+        field = list(selected.keys())[0]
         self.example = f
-        self._text = f.get(field, u'')
+        self._text = f.get(field, '')
 
-        widget._combotags = selected.keys()
-        
+        widget._combotags = list(selected.keys())
+
         widget._text = self._text
         widget.example = f
 
@@ -118,7 +118,7 @@ class FunctionDialog(CreateFunction):
     def showEvent(self, event):
         self._update()
         return super(FunctionDialog, self).showEvent(event)
-        
+
 
 controls = [
     ("Functions", FunctionDialog, RIGHTDOCK, False),

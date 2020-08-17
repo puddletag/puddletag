@@ -1,6 +1,8 @@
-import logging.config
-from puddlestuff.constants import LOG_FILENAME
 import logging
+import logging.config
+
+from .constants import LOG_FILENAME
+
 
 def init_logger(level):
     config = {
@@ -22,7 +24,7 @@ def init_logger(level):
                 "level": level,
                 "formatter": 'simple',
                 'filename': LOG_FILENAME,
-                'maxBytes': 1024 * 1024 * 10 # 10MB
+                'maxBytes': 1024 * 1024 * 10  # 10MB
             }
         },
         "root": {

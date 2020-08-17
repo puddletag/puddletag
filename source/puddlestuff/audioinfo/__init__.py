@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-import re
-import mutagen
-from util import *
-from constants import *
+from .constants import *
+from .util import *
 
 AbstractTag = MockTag
 
@@ -11,6 +8,7 @@ options = []
 
 mapping = {}
 revmapping = {}
+
 
 def loadmapping(filepath, default=None):
     try:
@@ -22,16 +20,17 @@ def loadmapping(filepath, default=None):
             return {}
     mappings = {}
     for l in lines:
-        tags = [z.strip() for z in l.split(u',')]
-        if len(tags) == 3: #Tag, Source, Target
+        tags = [z.strip() for z in l.split(',')]
+        if len(tags) == 3:  # Tag, Source, Target
             try:
                 mappings[tags[0]].update({tags[1]: tags[2]})
             except KeyError:
                 mappings[tags[0]] = ({tags[1]: tags[2]})
     return mappings
 
+
 def register_tag(mut_obj, tag, tag_name, tag_exts=None):
-    if isinstance(tag_exts, basestring):
+    if isinstance(tag_exts, str):
         extensions[tag_exts] = [mut_obj, tag, tag_name]
     elif tag_exts is not None:
         for e in tag_exts:
@@ -39,13 +38,14 @@ def register_tag(mut_obj, tag, tag_name, tag_exts=None):
 
     options.append([mut_obj, tag, tag_name])
 
+
 def setmapping(m):
     global revmapping
     global mapping
 
     mapping = m
     for z in mapping:
-        revmapping[z] = CaselessDict([(value,key) for key, value in mapping[z].items()])
+        revmapping[z] = CaselessDict([(value, key) for key, value in mapping[z].items()])
     for z in extensions.values():
         try:
             if z[2] in mapping:
@@ -56,6 +56,7 @@ def setmapping(m):
                 z[1].revmapping.update(revmapping['global'])
         except IndexError:
             pass
+
 
 def Tag(filename):
     """Class that operates on audio tags.
@@ -83,32 +84,36 @@ def Tag(filename):
     There are caveats associated with each module, so check out their docstrings
     for more info."""
 
-    fileobj = file(filename, "rb")
-
-    match = re.search('\.(%s)$' % '|'.join(extensions), filename)
+    fileobj = open(filename, "rb")
     ext = splitext(filename)
-    if match:
-        return extensions[match.groups()[0]][1](filename)
+    try:
+        return extensions[ext][1](filename)
+    except KeyError:
+        pass
 
     try:
         header = fileobj.read(128)
         results = [Kind[0].score(filename, fileobj, header) for Kind in options]
     finally:
         fileobj.close()
-    results = zip(results, options)
-    results.sort()
+    results = list(zip(results, options))
+    results.sort(key=lambda v: v[0])
     score, Kind = results[-1]
-    if score > 0: return Kind[1](filename)
-    else: return None
+    if score > 0:
+        return Kind[1](filename)
+    else:
+        return None
 
-import id3, vorbis, apev2, mp4
+
+from . import id3, vorbis, apev2, mp4
+
 tag_modules = (id3, vorbis, apev2, mp4)
 
 for m in tag_modules:
     if hasattr(m, 'filetype'):
         register_tag(*m.filetype)
     if hasattr(m, 'filetypes'):
-        map(lambda x: register_tag(*x), m.filetypes)
+        list(map(lambda x: register_tag(*x), m.filetypes))
 
 setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
 
