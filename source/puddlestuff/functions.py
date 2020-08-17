@@ -87,7 +87,7 @@ au,spinbox,1'''
 
         files = state.get('__files')
         if files is None:
-            count = {1: u'1'}
+            count = {1: '1'}
         else:
             for i, tag in enumerate(state['__files'], 1):
                 if restart:
@@ -396,7 +396,7 @@ def lower(text):
     return text.lower()
 
 
-def merge_values(m_text, separator=u';'):
+def merge_values(m_text, separator=';'):
     '''Merge field, "Merge field: $0, sep='$1'"
 &Separator, text, ;'''
     if isinstance(m_text, str):
@@ -405,7 +405,7 @@ def merge_values(m_text, separator=u';'):
         return separator.join(m_text)
 
 
-def meta_sep(m_tags, p_field, p_sep=u', '):
+def meta_sep(m_tags, p_field, p_sep=', '):
     value = m_tags.get(p_field)
     if value is None:
         return None
