@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
-import os, sys
-from PyQt4.QtCore import Qt, SIGNAL
+import os
+import sys
 from os.path import dirname, join
-from puddlestuff.translations import translate
+
+from PyQt5.QtCore import Qt
+
+from .translations import translate
 
 YES = translate('Defaults', 'Yes')
 NO = translate('Defaults', 'No')
 BLANK = translate('Defaults', '<blank>')
 KEEP = translate('Defaults', '<keep>')
-VARIOUS = translate('Defaults', u'Various')
-MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
+VARIOUS = translate('Defaults', 'Various')
+MUSICBRAINZ = translate('Defaults', 'MusicBrainz')
 SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
 SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
+
 def trans_strings():
-    from puddlestuff.translations import translate
-    
+    from .translations import translate
+
     global YES
     global NO
     global VARIOUS
@@ -29,16 +33,17 @@ def trans_strings():
     NO = translate('Defaults', 'No')
     BLANK = translate('Defaults', '<blank>')
     KEEP = translate('Defaults', '<keep>')
-    VARIOUS = translate('Defaults', u'Various Artists')
-    MUSICBRAINZ  = translate('Defaults', 'MusicBrainz')
+    VARIOUS = translate('Defaults', 'Various Artists')
+    MUSICBRAINZ = translate('Defaults', 'MusicBrainz')
     SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
     SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
-SEPARATOR = u'\\\\'
+
+SEPARATOR = '\\\\'
 
 FS_ENC = sys.getfilesystemencoding()
 
-#Paths
+# Paths
 
 PROGDIR = dirname(dirname(__file__))
 DATADIR = join(dirname(__file__), 'data')
@@ -59,14 +64,14 @@ PLUGINDIR = join(SAVEDIR, 'plugins')
 ACTIONDIR = join(SAVEDIR, 'actions')
 TRANSDIR = join(SAVEDIR, 'translations')
 
-#Values used for controls in creating functions in actiondlg
+# Values used for controls in creating functions in actiondlg
 TEXT = 'text'
 COMBO = 'combo'
 CHECKBOX = 'check'
 TAGLIST = 'taglist'
 SPINBOX = 'spinbox'
 
-#Plugin constants
+# Plugin constants
 FORMATFUNCTIONS = 'FORMATFUNCTIONS'
 FUNCTIONS = 'FUNCTIONS'
 FUNCTIONS_NO_PREVIEW = 'FUNCTIONS_NO_PREVIEW'
@@ -75,41 +80,40 @@ DIALOGS = 'DIALOGS'
 MUSICLIBS = 'MUSICLIBS'
 MODULES = 'MODULES'
 
-#Dock Positions
+# Dock Positions
 LEFTDOCK = Qt.LeftDockWidgetArea
 RIGHTDOCK = Qt.RightDockWidgetArea
 BOTTOMDOCK = Qt.BottomDockWidgetArea
 TOPDOCK = Qt.TopDockWidgetArea
 
-#Tag constants
-PATH = u"__path"
-FILENAME = u"__filename"
+# Tag constants
+PATH = "__path"
+FILENAME = "__filename"
 EXTENSION = '__ext'
 DIRPATH = '__dirpath'
 DIRNAME = '__dirname'
 FILENAME_NO_EXT = '__filename_no_ext'
 PARENT_DIR = '__parent_dir'
 READONLY = ('__bitrate', '__frequency', "__length",
-    "__modified", "__size", "__created", "__library")
+            "__modified", "__size", "__created", "__library")
 IMAGE = '__image'
 FILETAGS = [PATH, FILENAME, EXTENSION, DIRPATH, DIRNAME, FILENAME_NO_EXT,
-    PARENT_DIR]
+            PARENT_DIR]
 INFOTAGS = FILETAGS + list(READONLY)
 
-#SIGNALS
+# SIGNALS
 SELECTIONCHANGED = "tagselectionchanged"
 
-#Signals used in enabling/disabling actions.
-#An actions default state is to be disabled.
-#and action can use these signals to enable
-#Signals used in enabling/disabling actions.
-#An actions default state is to be disabled.
-#and action can use these signals to enable
-#itself. See the loadshortcuts module for more info.
+# Signals used in enabling/disabling actions.
+# An actions default state is to be disabled.
+# and action can use these signals to enable
+# Signals used in enabling/disabling actions.
+# An actions default state is to be disabled.
+# and action can use these signals to enable
+# itself. See the loadshortcuts module for more info.
 ALWAYS = 'always'
 FILESLOADED = 'filesloaded'
 VIEWFILLED = 'viewfilled'
 FILESSELECTED = 'filesselected'
-
-ENABLESIGNALS = dict((k, SIGNAL(k)) for k in
-    [ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED])
+ENABLESIGNALS = dict((k, k) for k in
+                     [ALWAYS, FILESLOADED, VIEWFILLED, FILESSELECTED])

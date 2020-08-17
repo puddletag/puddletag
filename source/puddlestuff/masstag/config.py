@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
-import glob, os, sys
+import glob
+import os
 
-from puddlestuff.constants import CONFIGDIR
-from puddlestuff.masstag import (fields_from_text, MassTagProfile,
-    TagSourceProfile)
-from puddlestuff.puddleobjects import encode_fn, PuddleConfig
+from ..constants import CONFIGDIR
+from ..masstag import (fields_from_text, MassTagProfile,
+                       TagSourceProfile)
+from ..puddleobjects import PuddleConfig
+from ..audioinfo import encode_fn
 
 PROFILEDIR = os.path.join(CONFIGDIR, 'masstagging')
 CONFIG = os.path.join(CONFIGDIR, 'masstagging.conf')
@@ -19,8 +20,10 @@ DESC = 'desc'
 EXISTING_ONLY = 'leave_existing'
 REPLACE_FIELDS = 'replace_fields'
 
+
 class DummyTS(object):
     group_by = []
+
 
 def convert_mtps(dirpath=PROFILEDIR):
     for fn in glob.glob(PROFILEDIR + '/*.conf'):
@@ -28,19 +31,19 @@ def convert_mtps(dirpath=PROFILEDIR):
         os.rename(fn, os.path.splitext(fn)[0] + '.old')
         save_mtp(mtp, os.path.join(dirpath, encode_fn(mtp.name)) + '.mtp')
 
+
 def convert_mtp(filename):
-        
     cparser = PuddleConfig(filename)
     info_section = 'info'
-    name = cparser.get(info_section, NAME, u'')
+    name = cparser.get(info_section, NAME, '')
     numsources = cparser.get(info_section, 'numsources', 0)
     album_bound = cparser.get(info_section, ALBUM_BOUND, 70) / 100.0
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
     pattern = cparser.get(info_section, PATTERN,
-        u'%artist% - %album%/%track% - %title%')
+                          '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
-    desc = cparser.get(info_section, DESC, u'')
+    desc = cparser.get(info_section, DESC, '')
     existing = cparser.get(info_section, EXISTING_ONLY, False)
 
     ts_profiles = []
@@ -49,22 +52,23 @@ def convert_mtp(filename):
         get = lambda key, default: cparser.get(section, key, default)
 
         source = DummyTS()
-        source.name = get('source', u'')
-        fields = fields_from_text(get('fields', u''))
+        source.name = get('source', '')
+        fields = fields_from_text(get('fields', ''))
         no_result = get('no_match', 0)
 
         ts_profiles.append(TagSourceProfile(None, source, fields,
-            no_result))
-    
+                                            no_result))
+
     return MassTagProfile(name, desc, match_fields, None,
-            pattern, ts_profiles, album_bound, track_bound, jfdi, existing,
-            u'')
+                          pattern, ts_profiles, album_bound, track_bound, jfdi, existing,
+                          '')
+
 
 def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
     if tag_sources is None:
         tag_sources = {}
     mtps = [mtp_from_file(fn, tag_sources) for fn
-        in glob.glob(dirpath + u'/*.mtp')]
+            in glob.glob(dirpath + '/*.mtp')]
     try:
         order = open(os.path.join(dirpath, 'order'), 'r').read().split('\n')
     except EnvironmentError:
@@ -72,7 +76,7 @@ def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
 
     order = [z.strip() for z in order]
     first = []
-    last= []
+    last = []
 
     names = dict([(mtp.name, mtp) for mtp in mtps])
     mtps = [names[name] for name in order if name in names]
@@ -80,8 +84,8 @@ def load_all_mtps(dirpath=PROFILEDIR, tag_sources=None):
 
     return mtps
 
-def mtp_from_file(filename=CONFIG, tag_sources=None):
 
+def mtp_from_file(filename=CONFIG, tag_sources=None):
     if tag_sources is None:
         tag_sources = {}
     else:
@@ -96,30 +100,31 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
     pattern = cparser.get(info_section, PATTERN,
-        '%artist% - %album%/%track% - %title%')
+                          '%artist% - %album%/%track% - %title%')
     jfdi = cparser.get(info_section, JFDI, True)
-    desc = cparser.get(info_section, DESC, u'')
+    desc = cparser.get(info_section, DESC, '')
     leave_existing = cparser.get(info_section, EXISTING_ONLY, False)
-    regexps = u''
+    regexps = ''
 
     ts_profiles = []
     for num in range(numsources):
         section = 'config%s' % num
         get = lambda key, default: cparser.get(section, key, default)
 
-        source = tag_sources.get(get('source', u''), None)
+        source = tag_sources.get(get('source', ''), None)
         no_result = get('no_match', 0)
-        fields = fields_from_text(get('fields', u''))
-        replace_fields = fields_from_text(get('replace_fields', u''))
+        fields = fields_from_text(get('fields', ''))
+        replace_fields = fields_from_text(get('replace_fields', ''))
 
         ts_profiles.append(TagSourceProfile(None, source, fields,
-            no_result, replace_fields))
+                                            no_result, replace_fields))
 
     mtp = MassTagProfile(name, desc, match_fields, None,
-        pattern, ts_profiles, album_bound, track_bound, jfdi,
-        leave_existing, regexps)
+                         pattern, ts_profiles, album_bound, track_bound, jfdi,
+                         leave_existing, regexps)
 
     return mtp
+
 
 def save_mtp(mtp, filename=CONFIG):
     cparser = PuddleConfig(filename)
@@ -127,7 +132,7 @@ def save_mtp(mtp, filename=CONFIG):
 
     cparser.set(info_section, NAME, mtp.name)
     for key in ['name', 'desc', 'file_pattern', 'fields',
-        'jfdi', 'leave_existing']:
+                'jfdi', 'leave_existing']:
         cparser.set(info_section, key, getattr(mtp, key))
 
     for key in ['album_bound', 'track_bound']:
@@ -136,13 +141,13 @@ def save_mtp(mtp, filename=CONFIG):
     cparser.set(info_section, 'numsources', len(mtp.profiles))
     for num, tsp in enumerate(mtp.profiles):
         section = 'config%s' % num
-        name = tsp.tag_source.name if tsp.tag_source else u''
+        name = tsp.tag_source.name if tsp.tag_source else ''
         cparser.set(section, 'source', name)
         cparser.set(section, 'if_no_result', tsp.if_no_result)
-        cparser.set(section, 'fields', u','.join(tsp.fields))
-        cparser.set(section, 'replace_fields', u','.join(tsp.replace_fields))
+        cparser.set(section, 'fields', ','.join(tsp.fields))
+        cparser.set(section, 'replace_fields', ','.join(tsp.replace_fields))
+
 
 if __name__ == '__main__':
-    from puddlestuff.tagsources import tagsources
-    fns = glob.glob(PROFILEDIR + u'/Local.conf')
+    fns = glob.glob(PROFILEDIR + '/Local.conf')
     convert_mtps(PROFILEDIR)

@@ -1,12 +1,14 @@
-# -*- coding: utf-8 -*-
-from PyQt4.QtGui import (QWidget, QLabel, QComboBox,
-    QLineEdit, QHBoxLayout, QPushButton, QApplication)
-from PyQt4.QtCore import SIGNAL, QTimer
-from puddlestuff.puddleobjects import gettaglist, create_buddy, PuddleCombo
-from puddlestuff.constants import BOTTOMDOCK
-from puddlestuff.translations import translate
+from PyQt5.QtCore import QTimer, pyqtSignal
+from PyQt5.QtWidgets import (QWidget, QLineEdit, QPushButton)
+
+from ..constants import BOTTOMDOCK
+from ..puddleobjects import create_buddy, PuddleCombo
+from ..translations import translate
+
 
 class DelayedEdit(QLineEdit):
+    delayedText = pyqtSignal(str, name='delayedText')
+
     def __init__(self, text=None, parent=None):
         if parent is None and text is None:
             QLineEdit.__init__(self)
@@ -19,36 +21,39 @@ class DelayedEdit(QLineEdit):
         self.__timer = QTimer(self)
         self.__timer.setInterval(350)
         self.__timer.setSingleShot(True)
-        self.connect(self, SIGNAL("textChanged(QString)"), self.__time)
+        self.textChanged.connect(self.__time)
 
     def __time(self, text):
         timer = self.__timer
         timer.stop()
         if self.__timerslot is not None:
-            self.disconnect(timer, SIGNAL('timeout()'), self.__timerslot)
-        self.__timerslot = lambda: self.emit(SIGNAL('delayedText'), text)
-        self.connect(timer, SIGNAL('timeout()'), self.__timerslot)
+            timer.timeout.disconnect(self.__timerslot)
+        self.__timerslot = lambda: self.delayedText.emit(text)
+        timer.timeout.connect(self.__timerslot)
         timer.start()
 
+
 class FilterView(QWidget):
+    filter = pyqtSignal(str, name='filter')
+
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.emits = ['filter']
         self.receives = []
         edit = QLineEdit()
         self.combo = PuddleCombo('filter_text')
-        self.combo.setEditText(u'')
+        self.combo.setEditText('')
         self.combo.combo.setLineEdit(edit)
         hbox = create_buddy(translate("Defaults", "Filter: "), self.combo)
         go_button = QPushButton(translate('Defaults', 'Go'))
         hbox.addWidget(go_button)
         self.setLayout(hbox)
 
-        emit_filter = lambda: self.emit(SIGNAL('filter'),
-            unicode(edit.text()))
-        self.connect(go_button, SIGNAL('clicked()'), emit_filter)
-        self.connect(edit, SIGNAL('returnPressed()'), emit_filter)
-        self.connect(self.combo.combo, SIGNAL('activated(int)'),
+        emit_filter = lambda: self.filter.emit(
+            str(edit.text()))
+        go_button.clicked.connect(emit_filter)
+        edit.returnPressed.connect(emit_filter)
+        self.combo.combo.activated.connect(
             lambda i: emit_filter())
 
     def saveSettings(self):

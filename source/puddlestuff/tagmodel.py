@@ -1,52 +1,52 @@
-## -*- coding: utf-8 -*-
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+import os
 import re
-import sys,os, audioinfo, resource, pdb
-from operator import itemgetter
+import sys
+import time
 from copy import copy, deepcopy
-from subprocess import Popen
+from operator import itemgetter
 from os import path
-import audioinfo
-from audioinfo import (PATH, FILENAME, DIRPATH, EXTENSION,
-    usertags, setmodtime, FILETAGS, READONLY, INFOTAGS, DIRNAME,
-    EXTENSION, CaselessDict)
-from puddleobjects import (unique, safe_name, partial, natcasecmp, gettag,
-    HeaderSetting, getfiles, ProgressWin, PuddleStatus, PuddleThread, 
-    progress, PuddleConfig, singleerror, winsettings, issubfolder,
-    timemethod, encode_fn, decode_fn, fnmatch)
-from musiclib import MusicLibError
-import time, re
-from errno import EEXIST
-import traceback
-from itertools import izip
+from subprocess import Popen
+
+from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
+    QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
+from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
+    QVBoxLayout
+
+from . import audioinfo
+from .audioinfo import (PATH, FILENAME, DIRPATH, FILETAGS, READONLY, INFOTAGS, DIRNAME,
+                        EXTENSION, CaselessDict, encode_fn, decode_fn)
+from .puddleobjects import (unique, partial, natural_sort_key, gettag,
+                            HeaderSetting, getfiles, progress, PuddleConfig, singleerror, winsettings, issubfolder,
+                            fnmatch)
+
 from collections import defaultdict
-from util import write, rename_file, real_filetags, to_string
-from constants import SELECTIONCHANGED, SEPARATOR, BLANK
-import puddlestuff.confirmations as confirmations
-import logging, shutil
-from puddlestuff.translations import translate
-from puddlestuff.util import rename_error_msg
-from puddlestuff.audio_filter import parse as filter_audio
+from .util import write, to_string
+from .constants import SELECTIONCHANGED, SEPARATOR, BLANK
+from . import confirmations
+import logging
+from .translations import translate
+from .util import rename_error_msg
+from .audio_filter import parse as filter_audio
 
 the_break = False
 
 status = {}
 
-SETDATAERROR = SIGNAL("setDataError")
 LIBRARY = '__library'
-ENABLEUNDO = SIGNAL('enableUndo')
 HIGHLIGHTCOLOR = Qt.green
 SHIFT_RETURN = 2
 RETURN_ONLY = 1
 
+
 def _default_audio_player():
     if sys.platform.startswith("linux"):
-        return u'xdg-open'
+        return 'xdg-open'
     elif sys.platform == "darwin":
-        return u'open -a iTunes'
+        return 'open -a iTunes'
     return "clementine -p"
+
 
 def commontag(tag, tags):
     x = defaultdict(lambda: [])
@@ -57,6 +57,7 @@ def commontag(tag, tags):
             x[''].append(audio)
     return x
 
+
 def not_in_dirs(files, dirs):
     if not dirs:
         return files
@@ -64,11 +65,12 @@ def not_in_dirs(files, dirs):
         d = encode_fn(d)
         return [z for z in files if not z.startswith(d)]
 
+
 def loadsettings(filepath=None):
     settings = PuddleConfig()
     if filepath:
         settings.filename = filepath
-    titles = settings.get('tableheader', 'titles',[
+    titles = settings.get('tableheader', 'titles', [
         translate('Fields', 'Filename'), translate('Fields', 'Artist'),
         translate('Fields', 'Title'), translate('Fields', 'Album'),
         translate('Fields', 'Track'), translate('Fields', 'Length'),
@@ -76,28 +78,30 @@ def loadsettings(filepath=None):
         translate('Fields', 'Genre'), translate('Fields', 'Comment'),
         translate('Fields', 'Dirpath')])
     tags = settings.get('tableheader', 'tags',
-        ['__filename', 'artist', 'title','album', 'track', 
-        '__length', 'year', '__bitrate','genre', 'comment', '__dirpath'])
-    #checked = settings.get('tableheader', 'enabled', range(len(tags)), True)
-    #checked = []
+                        ['__filename', 'artist', 'title', 'album', 'track',
+                         '__length', 'year', '__bitrate', 'genre', 'comment', '__dirpath'])
+    # checked = settings.get('tableheader', 'enabled', range(len(tags)), True)
+    # checked = []
     fontsize = settings.get('table', 'fontsize', 0, True)
     rowsize = settings.get('table', 'rowsize', -1, True)
     v1_option = settings.get('id3tags', 'v1_option', 2)
     v2_option = settings.get('id3tags', 'v2_option', 4)
     audioinfo.id3.v1_option = v1_option
     audioinfo.id3.v2_option = v2_option
-    filespec = u';'.join(settings.get('table', 'filespec', []))
+    filespec = ';'.join(settings.get('table', 'filespec', []))
 
-    return (zip(titles, tags), fontsize, rowsize, filespec)
+    return (list(zip(titles, tags)), fontsize, rowsize, filespec)
+
 
 def caseless(tag, audio):
     if tag in audio:
         return tag
     smalltag = tag.lower()
     try:
-        return [z for z in audio if isinstance(z, basestring) and z.lower() == smalltag][0]
+        return [z for z in audio if isinstance(z, str) and z.lower() == smalltag][0]
     except IndexError:
         return tag
+
 
 def has_previews(tags=None, parent=None, msg=None):
     """Disables preview mode. Returns True if disable successful, else False.
@@ -118,7 +122,7 @@ def has_previews(tags=None, parent=None, msg=None):
 
     if msg is None:
         msg = translate("Previews", 'Do you want to exit Preview Mode?')
-    
+
     if tags is None:
         tags = status['alltags']
 
@@ -129,11 +133,11 @@ def has_previews(tags=None, parent=None, msg=None):
             break
 
     if previews and confirmations.should_show('preview_mode'):
-        ret = QMessageBox.question(parent, 'puddletag', msg,
-            QMessageBox.Yes, QMessageBox.No)
+        ret = QMessageBox.question(parent, 'puddletag', msg)
         if ret != QMessageBox.Yes:
             return True
     return False
+
 
 def tag_in_file(tag, audio):
     if tag in audio:
@@ -144,13 +148,14 @@ def tag_in_file(tag, audio):
     except IndexError:
         return None
 
-def model_tag(model, base = audioinfo.AbstractTag):
+
+def model_tag(model, base=audioinfo.AbstractTag):
     class ModelTag(base):
         def __init__(self, *args, **kwargs):
             self.preview = CaselessDict()
             self.edited = None
             super(ModelTag, self).__init__(*args, **kwargs)
-        
+
         def _get_images(self):
             if not self.IMAGETAGS:
                 return []
@@ -158,7 +163,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 return self.preview['__image']
             else:
                 return base.images.fget(self)
-        
+
         def _set_images(self, value):
             if not self.IMAGETAGS:
                 return
@@ -166,7 +171,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 self.preview['__image'] = value
             else:
                 base.images.fset(self, value)
-        
+
         images = property(_get_images, _set_images)
 
         def __contains__(self, key):
@@ -181,24 +186,24 @@ def model_tag(model, base = audioinfo.AbstractTag):
 
         def clean(self):
             for k, v in self.preview.items():
-                real = self.realvalue(k, u'')
-                if not isinstance(real, basestring):
-                    real = u''.join(real)
+                real = self.realvalue(k, '')
+                if not isinstance(real, str):
+                    real = ''.join(real)
 
-                if not isinstance(v, basestring):
-                    v = u''.join(v)
+                if not isinstance(v, str):
+                    v = ''.join(v)
 
                 if real == v:
-                    del(self.preview[k])
+                    del (self.preview[k])
 
         def __delitem__(self, key):
             if key in INFOTAGS:
                 return
             if model.previewMode and key in self.preview:
-                del(self.preview[key])
+                del (self.preview[key])
             else:
                 super(ModelTag, self).__delitem__(key)
-        
+
         def delete(self, tag=None):
             if model.previewMode:
                 return
@@ -214,12 +219,12 @@ def model_tag(model, base = audioinfo.AbstractTag):
             for k, v in self.preview.items():
                 if k == '__image':
                     continue
-                real = self.realvalue(k, u'')
-                if not isinstance(real, basestring):
-                    real = u''.join(real)
+                real = self.realvalue(k, '')
+                if not isinstance(real, str):
+                    real = ''.join(real)
 
-                if not isinstance(v, basestring):
-                    v = u''.join(v)
+                if not isinstance(v, str):
+                    v = ''.join(v)
 
                 if real == v:
                     ret.append(k)
@@ -232,15 +237,15 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 return super(ModelTag, self).__getitem__(key)
 
         def keys(self):
-            keys = super(ModelTag, self).keys()
+            keys = list(super(ModelTag, self).keys())
             if model.previewMode and self.preview:
-                [keys.append(key) for key in self.preview 
-                    if key not in keys]
+                [keys.append(key) for key in self.preview
+                 if key not in keys]
             return keys
 
         def __len__(self):
-            return len(self.keys())
-            
+            return len(list(self.keys()))
+
         def realvalue(self, key, default=None):
             try:
                 return base.__getitem__(self, key)
@@ -248,7 +253,7 @@ def model_tag(model, base = audioinfo.AbstractTag):
                 if default is not None:
                     return default
                 raise
-        
+
         def __setitem__(self, key, value):
             if model.previewMode:
                 if key in FILETAGS:
@@ -256,66 +261,73 @@ def model_tag(model, base = audioinfo.AbstractTag):
 
                 if key not in READONLY:
                     if not value and key in self.preview:
-                        del(self.preview[key])
+                        del (self.preview[key])
                         return
                     self.preview[key] = value
             else:
                 super(ModelTag, self).__setitem__(key, value)
-        
+
         def remove_from_preview(self, key):
             if key == EXTENSION:
-                del(self.preview[key])
+                del (self.preview[key])
             elif key == FILENAME:
                 for k in [FILENAME, EXTENSION, PATH]:
                     if k in self.preview:
-                        del(self.preview[k])
+                        del (self.preview[k])
             elif key in FILETAGS:
                 for k in FILETAGS:
                     if k in self.preview:
-                        del(self.preview[k])
+                        del (self.preview[k])
             else:
-                del(self.preview[key])
-        
+                del (self.preview[key])
+
         def update(self, *args, **kwargs):
             if model.previewMode:
                 self.preview.update(*args, **kwargs)
             else:
                 super(ModelTag, self).update(*args, **kwargs)
+
     return ModelTag
+
 
 def _Tag(model):
     splitext = path.splitext
     extensions = audioinfo.extensions
 
     options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind
-        in audioinfo.options]
-    filetypes = dict([(z[0],z) for z in options])
+               in audioinfo.options]
+    filetypes = dict([(z[0], z) for z in options])
 
     extension_regex = re.compile('\.(%s)$' % '|'.join(extensions))
-    
+
     def ReplacementTag(filename):
+
         try:
-            fileobj = file(filename, "rb")
+            fileobj = open(filename, "rb")
         except IOError:
-            logging.info("Can't open file", filename)
+            logging.info("Can't open file %s", filename)
             return None
 
         match = extension_regex.search(filename)
         if match:
-            return extensions[match.groups()[0]][1](filename)
+            return filetypes[extensions[match.groups()[0]][0]][1](filename)
 
         try:
             header = fileobj.read(128)
             results = [Kind[0].score(filename, fileobj, header) for Kind in options]
         finally:
             fileobj.close()
-        results = zip(results, options)
-        results.sort()
+        results = list(zip(results, options))
+        results.sort(key=lambda x: x[0])
         score, Kind = results[-1]
 
-        if score > 0: return Kind[1](filename)
-        else: return None
+        if score > 0:
+            return Kind[1](filename)
+        else:
+            return None
+
     return ReplacementTag
+
 
 class Properties(QDialog):
     def __init__(self, info, parent=None):
@@ -328,16 +340,16 @@ class Properties(QDialog):
         and the other as the value.
 
         .e.g
-        [('File', [('Filename', u'/Hip Hop Songs/Nas-These Are Our Heroes .mp3'),
-                  ('Size', u'6151 kB'),
-                  ('Path', u'Nas - These Are Our Heroes .mp3'),
+        [('File', [('Filename', '/Hip Hop Songs/Nas-These Are Our Heroes .mp3'),
+                  ('Size', '6151 kB'),
+                  ('Path', 'Nas - These Are Our Heroes .mp3'),
                   ('Modified', '2009-07-28 14:04:05'),
-                  ('ID3 Version', u'ID3v2.4')]),
-        ('Version', [('Version', u'MPEG 1 Layer 3'),
-                    ('Bitrate', u'192 kb/s'),
-                    ('Frequency', u'44.1 kHz'),
+                  ('ID3 Version', 'ID3v2.4')]),
+        ('Version', [('Version', 'MPEG 1 Layer 3'),
+                    ('Bitrate', '192 kb/s'),
+                    ('Frequency', '44.1 kHz'),
                     ('Mode', 'Stereo'),
-                    ('Length', u'4:22')])]
+                    ('Length', '4:22')])]
         """
         QDialog.__init__(self, parent)
         winsettings('fileinfo', self)
@@ -350,29 +362,31 @@ class Properties(QDialog):
         for title, items in info:
             frame = QGroupBox(title)
             framegrid = QGridLayout()
-            framegrid.setColumnStretch(1,1)
+            framegrid.setColumnStretch(1, 1)
             for row, value in enumerate(items):
-                prop = QLabel(value[0] + u':')
+                prop = QLabel(value[0] + ':')
                 prop.setTextInteractionFlags(interaction)
                 framegrid.addWidget(prop, row, 0)
-                propvalue = QLabel(u'<b>%s</b>' % value[1])
+                propvalue = QLabel('<b>%s</b>' % value[1])
 
                 propvalue.setTextInteractionFlags(interaction)
                 framegrid.addWidget(propvalue, row, 1)
             frame.setLayout(framegrid)
             vbox.addWidget(frame)
         close = QPushButton('Close')
-        self.connect(close, SIGNAL('clicked()'), self.close)
+        close.clicked.connect(self.close)
         hbox = QHBoxLayout()
         hbox.addStretch()
         hbox.addWidget(close)
         vbox.addLayout(hbox)
         self.setLayout(vbox)
 
+
 class ColumnSettings(HeaderSetting):
     """A dialog that allows you to edit the header of a TagTable widget."""
     title = translate("Column Settings", 'Columns')
-    def __init__(self, parent = None, showok=False, status=None, table=None):
+
+    def __init__(self, parent=None, showok=False, status=None, table=None):
 
         self.tags, fontsize, rowsize, filespec = loadsettings()
 
@@ -382,13 +396,11 @@ class ColumnSettings(HeaderSetting):
             table = status['table']
 
         if table is not None:
-            
-            
             tags = table.model().headerdata
             hd = table.horizontalHeader()
 
             tags = ([hd.visualIndex(i), z, hd.isSectionHidden(i)] for i, z in
-                enumerate(tags))
+                    enumerate(tags))
             tags = sorted(tags)
             checked = [i for i, t in enumerate(tags) if not t[2]]
             tags = [tuple(z[1]) for z in tags]
@@ -396,43 +408,42 @@ class ColumnSettings(HeaderSetting):
             self.tags = tags
 
         HeaderSetting.__init__(self, self.tags, parent, showok, True)
-        
+
         if showok:
             winsettings('columnsettings', self)
-        
+
         self.setWindowFlags(Qt.Widget)
         label = QLabel(translate("Column Settings", 'Adjust visibility of columns.'))
         self.grid.addWidget(label, 0, 0)
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
-        
-        if not checked:
-            checked = range(len(tags))
-        [z.setCheckState(Qt.Checked) if i in checked
-            else z.setCheckState(Qt.Unchecked) for i,z in enumerate(items)]
 
-    def applySettings(self, control = None):        
+        if not checked:
+            checked = list(range(len(tags)))
+        [z.setCheckState(Qt.Checked) if i in checked
+         else z.setCheckState(Qt.Unchecked) for i, z in enumerate(items)]
+
+    def applySettings(self, control=None):
         row = self.listbox.currentRow()
         if row > -1:
-            self.tags[row][0] = unicode(self.textname.text())
-            self.tags[row][1] = unicode(self.tag.currentText())
+            self.tags[row][0] = str(self.textname.text())
+            self.tags[row][1] = str(self.tag.currentText())
         checked = [z for z in range(self.listbox.count()) if
-            self.listbox.item(z).checkState()]
+                   self.listbox.item(z).checkState()]
         titles = [z[0] for z in self.tags]
         tags = [z[1] for z in self.tags]
         cparser = PuddleConfig()
         cparser.set('tableheader', 'titles', titles)
         cparser.set('tableheader', 'tags', tags)
-        
 
         hidden = [i for i, z in enumerate(self.tags) if i not in checked]
-        
+
         if control:
             control.horizontalHeader().reset()
             control.setHeaderTags(self.tags, hidden)
             control.restoreSelection()
             control.horizontalHeader().reset()
         else:
-            self.emit(SIGNAL("headerChanged"), self.tags, hidden)
+            self.headerChanged.emit(self.tags, hidden)
 
     def add(self):
         HeaderSetting.add(self)
@@ -449,6 +460,7 @@ class ColumnSettings(HeaderSetting):
         self.applySettings()
         self.close()
 
+
 class TagModel(QAbstractTableModel):
     """The model used in TableShit
     Methods you shoud take not of are(read docstrings for more):
@@ -458,7 +470,16 @@ class TagModel(QAbstractTableModel):
     undo -> undo's changes
     setTestData and unSetTestData -> Used to display temporary values in the table.
     """
-    def __init__(self, headerdata, taginfo = None):
+    fileChanged = pyqtSignal(name='fileChanged')
+    aboutToSort = pyqtSignal(name='aboutToSort')
+    sorted = pyqtSignal(name='sorted')
+    previewModeChanged = pyqtSignal(bool, name='previewModeChanged')
+    dirsmoved = pyqtSignal(list, name='dirsmoved')
+    libfilesedited = pyqtSignal(list, name='libfilesedited')
+    setDataError = pyqtSignal(str, name='setDataError')
+    enableUndo = pyqtSignal(bool, name='enableUndo')
+
+    def __init__(self, headerdata, taginfo=None):
         """Load tags.
 
         headerdata must be a list of tuples
@@ -490,6 +511,7 @@ class TagModel(QAbstractTableModel):
         self._previewUndo = defaultdict(lambda: {})
         self.sortFields = []
         self.reverseSort = True
+        self._savedundolevel = None
 
         if taginfo is not None:
             self.taginfo = unique(taginfo)
@@ -511,9 +533,8 @@ class TagModel(QAbstractTableModel):
     def _setFontSize(self, size):
         self._fontSize = size
         top = self.index(self.rowCount(), 0)
-        bottom = self.index(self.rowCount() -1, self.columnCount() -1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-            top, bottom)
+        bottom = self.index(self.rowCount() - 1, self.columnCount() - 1)
+        self.dataChanged.emit(top, bottom)
 
     def _getFontSize(self):
         return self._fontSize
@@ -537,8 +558,7 @@ class TagModel(QAbstractTableModel):
         self._headerData = new_tags
 
         self.columns = dict((field, i) for i, (title, field) in
-            enumerate(new_tags))
-
+                            enumerate(new_tags))
 
     headerdata = property(_getHeaderData, _setHeaderData)
 
@@ -547,18 +567,17 @@ class TagModel(QAbstractTableModel):
 
     def _set_pBg(self, val):
         self._previewBackground = val
-        rows = [i for i,z in enumerate(self.taginfo) if z.preview]
+        rows = [i for i, z in enumerate(self.taginfo) if z.preview]
         if rows:
             top = self.index(min(rows), 0)
             bottom = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                top, bottom)
+            self.dataChanged.emit(top, bottom)
 
     previewBackground = property(_get_pBg, _set_pBg)
 
     def _get_previewMode(self):
         return self._previewMode
-    
+
     def _set_previewMode(self, value):
         if not value and self._previewMode:
             rows = []
@@ -569,8 +588,7 @@ class TagModel(QAbstractTableModel):
             if rows:
                 top = self.index(min(rows), 0)
                 bottom = self.index(max(rows), self.columnCount() - 1)
-                self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                    top, bottom)
+                self.dataChanged.emit(top, bottom)
 
             self.undolevel = self._savedundolevel
             self._previewUndo.clear()
@@ -578,7 +596,7 @@ class TagModel(QAbstractTableModel):
             self._savedundolevel = self.undolevel
         self._previewMode = value
         status['previewmode'] = value
-        self.emit(SIGNAL('previewModeChanged'), value)
+        self.previewModeChanged.emit(value)
 
     previewMode = property(_get_previewMode, _set_previewMode)
 
@@ -587,12 +605,11 @@ class TagModel(QAbstractTableModel):
 
     def _set_sBg(self, val):
         self._selectionBackground = val
-        rows = [i for i,z in enumerate(self.taginfo) if z.color]
+        rows = [i for i, z in enumerate(self.taginfo) if z.color]
         if rows:
             top = self.index(min(rows), 0)
             bottom = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                top, bottom)
+            self.dataChanged.emit(top, bottom)
 
     selectionBackground = property(_get_sBg, _set_sBg)
 
@@ -601,13 +618,13 @@ class TagModel(QAbstractTableModel):
 
     def _setUndoLevel(self, value):
         if value == 0:
-            self.emit(ENABLEUNDO, False)
+            self.enableUndo.emit(False)
             if self.previewMode:
                 self._previewUndo.clear()
             else:
                 self._undo.clear()
         else:
-            self.emit(ENABLEUNDO, True)
+            self.enableUndo.emit(True)
         self._undolevel = value
 
     undolevel = property(_getUndoLevel, _setUndoLevel)
@@ -643,51 +660,51 @@ class TagModel(QAbstractTableModel):
 
         folder = itemgetter(DIRPATH)
         tags = [(i, z) for i, z in enumerate(self.taginfo)
-            if z.dirpath.startswith(olddir)]
+                if z.dirpath.startswith(olddir)]
         libtags = []
         for i, audio in tags:
             if audio.dirpath == olddir:
                 audio.dirpath = newdir
-            elif issubfolder(olddir, audio.dirpath): #Newdir is a parent
+            elif issubfolder(olddir, audio.dirpath):  # Newdir is a parent
                 audio.dirpath = os.path.join(newdir, audio.dirname)
             if audio.library:
                 audio.save(True)
         rows = [z[0] for z in tags]
         if rows:
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
+            self.dataChanged.emit(
                 self.index(min(rows), 0), self.index(max(rows),
-                self.columnCount() - 1))
+                                                     self.columnCount() - 1))
 
     def columnCount(self, index=QModelIndex()):
         return len(self.headerdata)
-    
+
     def _toString(self, val):
-        if isinstance(val, basestring):
-            return val.replace(u'\n', u' ')
+        if isinstance(val, str):
+            return val.replace('\n', ' ')
         else:
             try:
-                return u'\\\\'.join(val).replace(u'\n', u' ')
+                return '\\\\'.join(val).replace('\n', ' ')
             except TypeError:
-                return unicode(val)
+                return str(val)
 
     def data(self, index, role=Qt.DisplayRole):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
-            return QVariant()
-        
+            return None
+
         if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
             try:
                 audio = self.taginfo[row]
                 tag = self.headerdata[index.column()][1]
                 val = self._toString(audio[tag])
             except (KeyError, IndexError):
-                return QVariant()
+                return None
 
             if role == Qt.ToolTipRole:
                 if not self.showToolTip:
-                    return QVariant()
+                    return None
                 if self.previewMode and \
-                    audio.preview and tag in audio.preview:
+                        audio.preview and tag in audio.preview:
                     try:
                         real = self._toString(audio.realvalue(tag))
                         if not real:
@@ -695,34 +712,34 @@ class TagModel(QAbstractTableModel):
                     except KeyError:
                         real = BLANK
                     if real != val:
-                        tooltip = translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real))
+                        tooltip = str(translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real)))
                     else:
                         tooltip = val
                 else:
                     tooltip = val
-                return QVariant(QString(tooltip))
-            return QVariant(val)
+                return tooltip
+            return val
         elif role == Qt.BackgroundColorRole:
             audio = self.taginfo[row]
             if audio.color:
-                return QVariant(audio.color)
+                return audio.color
             elif self.previewMode and audio.preview:
-                return QVariant(self.previewBackground)
+                return self.previewBackground
         elif role == Qt.FontRole:
-            
+
             field = self.headerdata[index.column()][1]
             f = QFont()
             if f.pointSize() != self.fontSize:
                 f.setPointSize(self.fontSize)
             audio = self.taginfo[row]
             if field in audio.preview:
-                real = audio.realvalue(field, u'')
+                real = audio.realvalue(field, '')
                 if self._toString(audio[field]) != self._toString(real):
                     f.setBold(True)
                 else:
                     f.setItalic(True)
-            return QVariant(f)
-        return QVariant()
+            return f
+        return None
 
     def deleteTag(self, row=None, audio=None, delete=True):
         if row is not None:
@@ -740,29 +757,29 @@ class TagModel(QAbstractTableModel):
         [self.deleteTag(row) for row in rows]
         self.undolevel += 1
 
-    def dropMimeData(self, data, action, row, column, parent = QModelIndex()):
+    def dropMimeData(self, data, action, row, column, parent=QModelIndex()):
         return True
 
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsEditable| Qt.ItemIsDropEnabled)
+        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
+                            Qt.ItemIsEditable | Qt.ItemIsDropEnabled)
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
+                return int(Qt.AlignLeft | Qt.AlignVCenter)
+            return int(Qt.AlignRight | Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         if orientation == Qt.Horizontal:
             try:
-                return QVariant(QString(self.headerdata[section][0]))
+                return str(self.headerdata[section][0])
             except IndexError:
-                return QVariant()
-        return QVariant(long(section + 1))
-    
+                return None
+        return int(section + 1)
+
     def highlight(self, rows):
         rows = rows[::]
         hcolor = self.selectionBackground
@@ -785,17 +802,16 @@ class TagModel(QAbstractTableModel):
         if rows:
             top = self.index(min(rows), 0)
             bottom = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                top, bottom)
+            self.dataChanged.emit(top, bottom)
 
-    def insertColumns(self, column, count, parent = QModelIndex(), data=None):
-        self.beginInsertColumns (parent, column, column + count)
+    def insertColumns(self, column, count, parent=QModelIndex(), data=None):
+        self.beginInsertColumns(parent, column, column + count)
         if data:
             self.headerdata.extend(data)
         else:
-            self.headerdata += [("","") for z in range(count - column+1)]
+            self.headerdata += [("", "") for z in range(count - column + 1)]
         self.endInsertColumns()
-        #self.emit(SIGNAL('modelReset')) #Because of the strange behaviour mentioned in reset.
+        # self.modelReset.emit() #Because of the strange behaviour mentioned in reset.
         return True
 
     def reloadTags(self, tags):
@@ -808,11 +824,10 @@ class TagModel(QAbstractTableModel):
             if not hasattr(z, 'library'):
                 z.library = None
 
-        fns = dict((f.filepath, i) for i,f in enumerate(self.taginfo))
+        fns = dict((f.filepath, i) for i, f in enumerate(self.taginfo))
 
         to_append = []
 
-        
         num_rows_to_insert = 0
 
         first = self.rowCount()
@@ -826,7 +841,7 @@ class TagModel(QAbstractTableModel):
         self.beginInsertRows(QModelIndex(), first, len(self.taginfo) - 1)
         self.endInsertRows()
 
-    def load(self, taginfo, headerdata=None, append = False):
+    def load(self, taginfo, headerdata=None, append=False):
         """Loads tags as in __init__.
         If append is true, then the tags are just appended."""
         if headerdata is not None:
@@ -843,21 +858,20 @@ class TagModel(QAbstractTableModel):
 
         if append:
             for field in self.sortFields:
-                getter = lambda audio: audio.get(field, u'')
-                taginfo.sort(natcasecmp, getter, self.reverseSort)
+                getter = lambda audio: audio.get(field, '')
+                taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
 
             filenames = [z.filepath for z in self.taginfo]
             self.taginfo.extend([z for z in taginfo if z.filepath
-                not in filenames])
+                                 not in filenames])
 
             first = self.rowCount()
             self.beginInsertRows(QModelIndex(), first, first + len(taginfo) - 1)
             self.endInsertRows()
 
             top = self.index(first, 0)
-            bottom = self.index(self.rowCount() -1, self.columnCount() -1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                            top, bottom)
+            bottom = self.index(self.rowCount() - 1, self.columnCount() - 1)
+            self.dataChanged.emit(top, bottom)
         else:
             top = self.index(0, 0)
             self.taginfo = taginfo
@@ -873,7 +887,7 @@ class TagModel(QAbstractTableModel):
         rows = sorted(rows)
 
         tags = [taginfo[i] for i in rows]
-        
+
         num_moved = len(rows)
 
         first = min(rows)
@@ -883,10 +897,10 @@ class TagModel(QAbstractTableModel):
         last = last if last > row else row
 
         top = self.index(first, 0)
-        bottom = self.index(last, self.columnCount() -1)
+        bottom = self.index(last, self.columnCount() - 1)
 
         while rows:
-            del(taginfo[rows[0]])
+            del (taginfo[rows[0]])
             rows = [i - 1 for i in rows[1:]]
 
         if row >= len(taginfo):
@@ -895,8 +909,7 @@ class TagModel(QAbstractTableModel):
 
         [taginfo.insert(row, z) for z in reversed(tags)]
 
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-            top, bottom)
+        self.dataChanged.emit(top, bottom)
 
     def permaHighlight(self, rows):
         rows = rows[::]
@@ -912,49 +925,50 @@ class TagModel(QAbstractTableModel):
                     taginfo[row].color = None
                 else:
                     taginfo[row].color = hcolor
+
         [set_color(row) for row in rows]
         if rows:
             top = self.index(min(rows), 0)
             bottom = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                top, bottom)
-    
+            self.dataChanged.emit(top, bottom)
+
     def setColors(self, tags):
         for f in self._colored:
             f.color = None
         for tag in tags:
             tag.color = self.permaColor
         index = self.taginfo.index
+
         def row_index(tag):
             try:
                 return index(tag)
             except ValueError:
                 return len(self.taginfo)
-        rows = map(row_index, tags + self._colored)
+
+        rows = list(map(row_index, tags + self._colored))
         if rows:
             top = self.index(min(rows), 0)
             bottom = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                top, bottom)
+            self.dataChanged.emit(top, bottom)
         self._colored = tags
 
-    def removeColumns(self, column, count, parent = QModelIndex()):
+    def removeColumns(self, column, count, parent=QModelIndex()):
         self.beginRemoveColumns(QModelIndex(), column, column + count - 1)
-        del(self.headerdata[column: column+count])
+        del (self.headerdata[column: column + count])
         self.endRemoveColumns()
         return True
 
-    def removeFolders(self, folders, v = True):
+    def removeFolders(self, folders, v=True):
         if v:
             f = [i for i, tag in enumerate(self.taginfo) if tag.dirpath
-                not in folders and not tag.library]
+                 not in folders and not tag.library]
         else:
             f = [i for i, tag in enumerate(self.taginfo) if tag.dirpath
-                in folders and not tag.library]
+                 in folders and not tag.library]
         while f:
             try:
                 self.removeRows(f[0])
-                del(f[0])
+                del (f[0])
                 f = [z - 1 for z in f]
             except IndexError:
                 break
@@ -963,21 +977,22 @@ class TagModel(QAbstractTableModel):
         """Please, only use this function to remove one row at a time. For some reason, it doesn't work
         too well on debian if more than one row is removed at a time."""
         self.beginRemoveRows(QModelIndex(), position,
-                         position + rows -1)
-        del(self.taginfo[position])
+                             position + rows - 1)
+        del (self.taginfo[position])
         self.endRemoveRows()
         return True
 
     def reset(self):
-        #Sometimes, (actually all the time on my box, but it may be different on yours)
-        #if a number files loaded into the model is equal to number
-        #of files currently in the model then the TableView isn't updated.
-        #Why the fuck I don't know, but this signal, intercepted by the table,
-        #updates the view and makes everything work okay.
-        self.emit(SIGNAL('modelReset'))
-        QAbstractTableModel.reset(self)
+        # Sometimes, (actually all the time on my box, but it may be different on yours)
+        # if a number files loaded into the model is equal to number
+        # of files currently in the model then the TableView isn't updated.
+        # Why the fuck I don't know, but this signal, intercepted by the table,
+        # updates the view and makes everything work okay.
+        self.beginResetModel()
+        self.modelReset.emit()
+        self.endResetModel()
 
-    def rowColors(self, rows = None, clear=False):
+    def rowColors(self, rows=None, clear=False):
         """Changes the background of rows to green.
 
         If rows is None, then the background of all the rows in the table
@@ -987,29 +1002,28 @@ class TagModel(QAbstractTableModel):
             if clear:
                 for row in rows:
                     if hasattr(taginfo[row], "color"):
-                        del(taginfo[row].color)
+                        del (taginfo[row].color)
             else:
                 for row in rows:
                     taginfo[row].color = HIGHLIGHTCOLOR
                 for i, z in enumerate(taginfo):
                     if i not in rows and hasattr(taginfo[row], "color"):
-                        del(taginfo[row].color)
+                        del (taginfo[row].color)
         else:
             rows = []
             for i, tag in enumerate(self.taginfo):
                 if hasattr(tag, 'color'):
-                    del(tag.color)
+                    del (tag.color)
                     rows.append(i)
         if rows:
             firstindex = self.index(min(rows), 0)
             lastindex = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                firstindex, lastindex)
+            self.dataChanged.emit(firstindex, lastindex)
 
-    def rowCount(self, index = QModelIndex()):
+    def rowCount(self, index=QModelIndex()):
         return len(self.taginfo)
 
-    def setData(self, index, value, role = Qt.EditRole, dontwrite=False):
+    def setData(self, index, value, role=Qt.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
         QApplication.setOverrideCursor(Qt.WaitCursor);
@@ -1017,15 +1031,15 @@ class TagModel(QAbstractTableModel):
             column = index.column()
             tag = self.headerdata[column][1]
             currentfile = self.taginfo[index.row()]
-            newvalue = unicode(value.toString())
+            newvalue = str(value)
             realtag = currentfile.mapping.get(tag, tag)
             if realtag in FILETAGS and tag not in [FILENAME, EXTENSION, DIRNAME]:
                 QApplication.restoreOverrideCursor()
                 return False
 
             if tag not in FILETAGS:
-                newvalue = filter(None, newvalue.split(SEPARATOR))
-            if newvalue == currentfile.get(tag, u'') and not dontwrite:
+                newvalue = [_f for _f in newvalue.split(SEPARATOR) if _f]
+            if newvalue == currentfile.get(tag, '') and not dontwrite:
                 QApplication.restoreOverrideCursor()
                 return False
             if dontwrite:
@@ -1033,28 +1047,28 @@ class TagModel(QAbstractTableModel):
                 return {tag: newvalue}, index.row()
             ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
             if not self.previewMode and currentfile.library:
-                self.emit(SIGNAL('libfilesedited'), [ret])
+                self.libfilesedited.emit([ret])
             self.undolevel += 1
-            self.emit(SIGNAL('fileChanged()'))
+            self.fileChanged.emit()
             QApplication.restoreOverrideCursor()
             return True
         return False
 
-    def setHeaderData(self, section, orientation, value, role = Qt.EditRole):
+    def setHeaderData(self, section, orientation, value, role=Qt.EditRole):
         if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
             self.headerdata[section] = value
 
-        self.headerdata = self.headerdata #make sure columns are set
+        self.headerdata = self.headerdata  # make sure columns are set
 
-        self.emit(SIGNAL("headerDataChanged (Qt::Orientation,int,int)"), orientation, section, section)
+        self.headerDataChanged.emit(orientation, section, section)
 
     def setHeader(self, tags):
         self.headerdata = tags
-        self.emit(SIGNAL("headerDataChanged(Qt::Orientation,int,int)"), 
+        self.headerDataChanged.emit(
             Qt.Horizontal, 0, len(self.headerdata))
         self.reset()
 
-    def setRowData(self,row, tags, undo = False, justrename = False, temp=False):
+    def setRowData(self, row, tags, undo=False, justrename=False, temp=False):
         """A function to update one row.
         row is the row, tags is a dictionary of tags.
 
@@ -1072,10 +1086,10 @@ class TagModel(QAbstractTableModel):
             if temporary:
                 for field in tags:
                     if field not in audio._temp:
-                        audio._temp[field] = audio.get(field, u'')
+                        audio._temp[field] = audio.get(field, '')
             preview = audio.preview
             undo_val = dict([(tag, copy(audio[tag])) if tag in audio
-                else (tag, []) for tag in tags])
+                             else (tag, []) for tag in tags])
             audio.update(tags)
             if undo:
                 if audio._temp:
@@ -1084,15 +1098,14 @@ class TagModel(QAbstractTableModel):
                 self._addUndo(audio, undo_val)
             return
         else:
-            artist = audio.get('artist', u'')
+            artist = audio.get('artist', '')
             undo_val = write(audio, tags, self.saveModification, justrename)
             if undo and undo_val:
                 self._addUndo(audio, undo_val)
 
             if DIRNAME in tags or DIRPATH in tags:
                 self.changeFolder(oldpath, audio.dirpath)
-                self.emit(SIGNAL('dirsmoved'),
-                    [[oldpath, audio.dirpath]])
+                self.dirsmoved.emit([[oldpath, audio.dirpath]])
             if justrename and audio.library:
                 audio.save(True)
             ret = (artist, tags)
@@ -1121,19 +1134,19 @@ class TagModel(QAbstractTableModel):
         unsetrows = rows[len(previews):]
 
         if unsetrows:
-            self.unSetTestData(rows = unsetrows)
+            self.unSetTestData(rows=unsetrows)
         for row, preview in zip(rows, previews):
             taginfo[row].preview.clear()
             taginfo[row].update(preview)
         firstindex = self.index(min(rows), 0)
-        lastindex = self.index(max(rows),self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
-        self.emit(SIGNAL('fileChanged()'))
+        lastindex = self.index(max(rows), self.columnCount() - 1)
+        self.dataChanged.emit(firstindex, lastindex)
+        self.fileChanged.emit()
 
-    def sibling(self, row, column, index = QModelIndex()):
-        if row < (self.rowCount() - 1) and row >= 0:
-            return self.index(row + 1, column)
+    def sibling(self, row, column, index=QModelIndex()):
+        if row < (self.rowCount()) and row >= 0:
+            return self.index(row, column)
+        return QModelIndex();
 
     def sort(self, column, order=Qt.DescendingOrder):
         try:
@@ -1147,10 +1160,10 @@ class TagModel(QAbstractTableModel):
             self.sortByFields([field], reverse=True)
         else:
             self.sortByFields([field], reverse=False)
-    
+
     def sortByFields(self, fields, files=None, rows=None, reverse=None):
 
-        self.emit(SIGNAL('aboutToSort'))
+        self.aboutToSort.emit()
 
         if reverse is None and fields == self.sortFields:
             reverse = not self.reverseSort
@@ -1159,19 +1172,17 @@ class TagModel(QAbstractTableModel):
 
         if files and rows:
             for field in fields:
-                f = lambda audio: audio.get(field, u'')
-                files.sort(natcasecmp, f, reverse)
+                files.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
             for index, row in enumerate(rows):
                 self.taginfo[row] = files[index]
         else:
             for field in fields:
-                f = lambda audio: audio.get(field, u'')
-                self.taginfo.sort(natcasecmp, f, reverse)                
+                self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
 
         self.reverseSort = reverse
         self.sortFields = fields
         self.reset()
-        self.emit(SIGNAL('sorted'))
+        self.sorted.emit()
 
     def supportedDropActions(self):
         return Qt.CopyAction
@@ -1208,26 +1219,26 @@ class TagModel(QAbstractTableModel):
             rows.append(row)
             if self.previewMode:
                 audio.update(undo_tags)
-                for k, v in undo_tags.iteritems():
+                for k, v in undo_tags.items():
                     if v == [] and k in audio.preview:
-                        del(audio.preview[k])
+                        del (audio.preview[k])
             else:
                 if audio.library:
                     oldfiles.append(deepcopy(audio.tags))
                 edited.append(self.setRowData(row, undo_tags, False))
 
-        del(undo[level])
+        del (undo[level])
         if rows:
             self.updateTable(rows)
             if edited:
-                self.emit(SIGNAL('libfilesedited'), edited)
+                self.libfilesedited.emit(edited)
         if self.undolevel > 0:
             self.undolevel -= 1
 
-    def unSetTestData(self, rows = None):
+    def unSetTestData(self, rows=None):
         taginfo = self.taginfo
         if not rows:
-            rows = [i for i,z in enumerate(taginfo) if z.preview]
+            rows = [i for i, z in enumerate(taginfo) if z.preview]
             if not rows:
                 return
         for row in rows:
@@ -1236,18 +1247,17 @@ class TagModel(QAbstractTableModel):
         if rows:
             firstindex = self.index(min(rows), 0)
             lastindex = self.index(max(rows), self.columnCount() - 1)
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                            firstindex, lastindex)
+            self.dataChanged.emit(firstindex, lastindex)
 
     def updateTable(self, rows):
         firstindex = self.index(min(rows), 0)
-        lastindex = self.index(max(rows),self.columnCount() - 1)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                                        firstindex, lastindex)
+        lastindex = self.index(max(rows), self.columnCount() - 1)
+        self.dataChanged.emit(firstindex, lastindex)
+
 
 class TagDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
-        #logging.debug('Creating editor')
+        # logging.debug('Creating editor')
         editor = QLineEdit(parent)
         editor.returnPressed = False
         editor.writeError = False
@@ -1255,12 +1265,12 @@ class TagDelegate(QStyledItemDelegate):
         font = editor.font()
         font.setPointSize(index.model().fontSize)
         editor.setFont(font)
-        
-        #logging.debug('Closing editor.')
+
+        # logging.debug('Closing editor.')
         return editor
 
     def eventFilter(self, editor, event):
-        if event.type() == QEvent.KeyPress:            
+        if event.type() == QEvent.KeyPress:
             if event.key() in (Qt.Key_Return, Qt.Key_Enter):
                 if event.modifiers() == Qt.ShiftModifier:
                     editor.returnPressed = SHIFT_RETURN
@@ -1270,8 +1280,8 @@ class TagDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor, model, index):
         try:
-            model.setData(index, QVariant(editor.text()))
-        except EnvironmentError, e:
+            model.setData(index, editor.text())
+        except EnvironmentError as e:
             editor.writeError = e
 
 
@@ -1280,12 +1290,15 @@ class TableHeader(QHeaderView):
     so that I can show the edit columns menu.
 
     Call it with tags in the usual form, to set the top header."""
-    def __init__(self, orientation, tags = None, parent = None):
+    saveSelection = pyqtSignal(name='saveSelection')
+    headerChanged = pyqtSignal([list, list], name='headerChanged')
+
+    def __init__(self, orientation, tags=None, parent=None):
         QHeaderView.__init__(self, orientation, parent)
         if tags is not None: self.tags = tags
-        self.setClickable(True)
+        self.setSectionsClickable(True)
         self.setHighlightSections(True)
-        self.setMovable(True)
+        self.setSectionsMovable(True)
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
 
@@ -1293,11 +1306,11 @@ class TableHeader(QHeaderView):
         menu = QMenu(self)
         settings = menu.addAction(
             translate("Column Settings", "&Select Columns"))
-        self.connect(settings, SIGNAL('triggered()'), self.setTitles)
-        
+        settings.triggered.connect(self.setTitles)
+
         menu.exec_(event.globalPos())
 
-    def mousePressEvent(self,event):
+    def mousePressEvent(self, event):
         if event.button == Qt.RightButton:
             self.contextMenuEvent(event)
             return
@@ -1307,16 +1320,16 @@ class TableHeader(QHeaderView):
         self.win = ColumnSettings(showok=True, table=self.parent())
         self.win.setModal(True)
         self.win.show()
-        self.connect(self.win, SIGNAL("headerChanged"),
-            SIGNAL('headerChanged'))
+        self.win.headerChanged.connect(self.headerChanged)
+
 
 class VerticalHeader(QHeaderView):
-    def __init__(self, orientation, parent = None):
+    def __init__(self, orientation, parent=None):
         QHeaderView.__init__(self, orientation, parent)
         self.setDefaultSectionSize(self.minimumSectionSize() + 3)
         self.setMinimumSectionSize(1)
 
-        self.connect(self, SIGNAL('sectionResized(int,int,int)'), self._resize)
+        self.sectionResized.connect(self._resize)
 
     def _resize(self, row, oldsize, newsize):
         self.setDefaultSectionSize(newsize)
@@ -1334,9 +1347,23 @@ class TagTable(QTableView):
     remRows() -> Removes the selected rows.
     playcommand -> Command to run to play files.
     """
+    dirschanged = pyqtSignal(list, name='dirschanged')
+    tagselectionchanged = pyqtSignal(name='tagselectionchanged')
+    filesloaded = pyqtSignal(bool, name='filesloaded')
+    viewfilled = pyqtSignal(bool, name='viewfilled')
+    filesselected = pyqtSignal(bool, name='filesselected')
+    enableUndo = pyqtSignal(bool, name='enableUndo')
+    playlistchanged = pyqtSignal(str, name='playlistchanged')
+    deletedfromlib = pyqtSignal(list, name='deletedfromlib')
+    libfilesedited = pyqtSignal(list, name='libfilesedited')
+    previewModeChanged = pyqtSignal(bool, name='previewModeChanged')
+    onetomany = pyqtSignal(dict, name='onetomany')
+    setDataError = pyqtSignal(str, name='setDataError')
+    dirsmoved = pyqtSignal(list, name='dirsmoved')
+    itemSelectionChanged = pyqtSignal(name='itemSelectionChanged')
 
-    def __init__(self, headerdata = None, parent = None):
-        QTableView.__init__(self,parent)
+    def __init__(self, headerdata=None, parent=None):
+        QTableView.__init__(self, parent)
         self.setSelectionMode(self.ExtendedSelection)
         self.settingsdialog = ColumnSettings
         if not headerdata:
@@ -1369,20 +1396,21 @@ class TagTable(QTableView):
         self.setHorizontalScrollMode(self.ScrollPerPixel)
 
         model = TagModel(headerdata)
-        self.connect(header, SIGNAL("headerChanged"), self.setHeaderTags)
+        header.headerChanged.connect(self.setHeaderTags)
         self.setModel(model)
 
         def emitundo(val):
-            self.emit(ENABLEUNDO, val)
+            self.enableUndo.emit(val)
             self.selectionChanged()
-        self.connect(model, ENABLEUNDO, emitundo)
-        self.connect(model, SIGNAL('libfilesedited'), SIGNAL('libfilesedited'))
+
+        model.enableUndo.connect(emitundo)
+        model.libfilesedited.connect(self.libfilesedited)
         self.undo = model.undo
 
         self.closeEditor = self._closeEditor
         delegate = TagDelegate(self)
         self.setItemDelegate(delegate)
-            
+
         self.subFolders = False
 
         def sep():
@@ -1391,9 +1419,9 @@ class TagTable(QTableView):
             return separator
 
         self.emits = ['dirschanged', SELECTIONCHANGED, 'filesloaded',
-            'viewfilled', 'filesselected', 'enableUndo',
-            'playlistchanged', 'deletedfromlib', 'libfilesedited',
-            'previewModeChanged', 'onetomany']
+                      'viewfilled', 'filesselected', 'enableUndo',
+                      'playlistchanged', 'deletedfromlib', 'libfilesedited',
+                      'previewModeChanged', 'onetomany']
         self.receives = [
             ('loadFiles', self.loadFiles),
             ('removeFolders', self.removeFolders),
@@ -1403,8 +1431,8 @@ class TagTable(QTableView):
             ('highlight', self.highlight),
             ('enable_preview_mode', partial(self.previewMode, True)),
             ('disable_preview_mode', partial(self.previewMode, False)),
-            ]
-        
+        ]
+
         self.gensettings = [
             ('Su&bfolders', True),
             ('Show &gridlines', True),
@@ -1413,7 +1441,7 @@ class TagTable(QTableView):
             ('Automatically resize columns to contents', False),
             ('&Preserve file modification times (if supported)', False),
             ('Program to &play files with:', _default_audio_player())
-            ]
+        ]
 
         status['selectedrows'] = self._getSelectedRows
         status['selectedfiles'] = self._selectedTags
@@ -1445,24 +1473,24 @@ class TagTable(QTableView):
         self._resize = value
         if value:
             self.resizeColumnsToContents()
-            self.connect(self.model(), SIGNAL('modelReset'),
-                self.resizeColumnsToContents)
+            self.model().modelReset.connect(self.resizeColumnsToContents)
         else:
-            self.disconnect(self.model(), SIGNAL('modelReset'),
-                self.resizeColumnsToContents)
+            try:
+                self.model().modelReset.disconnect(self.resizeColumnsToContents)
+            except TypeError:
+                logging.debug("Tried to disconnect un-connected Resize-Slot")
 
     def _getSelectedTags(self):
-        columns = dict([(v,k) for k,v in self.model().columns.items()])
+        columns = dict([(v, k) for k, v in self.model().columns.items()])
         rows = self.currentRowSelection()
         audios = self.selectedTags
 
-
         def get_selected(f, row):
             selected = (columns[column] for column in rows[row])
-                
-            return ((field, f.get(field, u'')) for field in selected)
-        
-        return map(dict, (get_selected(*z) for z in zip(audios, sorted(rows))))
+
+            return ((field, f.get(field, '')) for field in selected)
+
+        return list(map(dict, (get_selected(*z) for z in zip(audios, sorted(rows)))))
 
     def _firstSelection(self):
         if not self.selectedRows:
@@ -1471,14 +1499,14 @@ class TagTable(QTableView):
         get_index = self.model().index
         isselected = self.selectionModel().isSelected
 
-        field_mapping = dict([(v,k) for k,v in self.model().columns.items()])
+        field_mapping = dict([(v, k) for k, v in self.model().columns.items()])
         row = min(self.selectedRows)
         fields = [field_mapping[c] for c in range(self.columnCount())
-            if isselected(get_index(row, c))]
+                  if isselected(get_index(row, c))]
 
         audio = self.model().taginfo[row]
-        
-        return audio, dict((field, audio.get(field, u'')) for field in fields)
+
+        return audio, dict((field, audio.get(field, '')) for field in fields)
 
     def applyGenSettings(self, d, startlevel=None):
         self.saveSelection()
@@ -1515,14 +1543,14 @@ class TagTable(QTableView):
     def clearAll(self):
         self.model().taginfo = []
         self.model().reset()
-        self.emit(SIGNAL('dirschanged'), [])
+        self.dirschanged.emit([])
 
     def _closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
         if editor.writeError:
             model = self.model()
             currentfile = model.taginfo[self.currentIndex().row()]
             QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
-            model.emit(SETDATAERROR,
+            model.setDataError.emit(
                 rename_error_msg(editor.writeError, currentfile.filepath))
             return
 
@@ -1537,11 +1565,11 @@ class TagTable(QTableView):
             if editor.returnPressed == RETURN_ONLY:
                 if index.row() < self.rowCount() - 1:
                     newindex = self.model().index(index.row() + 1,
-                        index.column())
+                                                  index.column())
             elif editor.returnPressed == SHIFT_RETURN:
                 if index.row() > 0:
                     newindex = self.model().index(index.row() - 1,
-                        index.column())
+                                                  index.column())
 
             if newindex:
                 QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
@@ -1550,40 +1578,38 @@ class TagTable(QTableView):
             else:
                 QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
 
-            
-
     def removeTags(self):
         if self.model().previewMode:
             QMessageBox.information(self, 'puddletag',
-                translate("Table", 'Disable Preview Mode first to enable tag deletion.'))
+                                    translate("Table", 'Disable Preview Mode first to enable tag deletion.'))
             return
         deltag = self.model().deleteTag
+
         def func():
             for row in self.selectedRows:
                 try:
                     deltag(row)
                     yield None
-                except (OSError, IOError), e:
+                except (OSError, IOError) as e:
                     msg = translate('Table', "An error occurred while " \
-                        "deleting the tag of %1: <b>%2</b>")
+                                             "deleting the tag of %1: <b>%2</b>")
                     msg = msg.arg(e.filename).arg(e.strerror)
                     yield msg, len(self.selectedRows)
-                except NotImplementedError, e:
+                except NotImplementedError as e:
                     f = self.model().taginfo[row]
                     filename = f[PATH]
                     ext = f[EXTENSION]
                     rowlen = len(self.selectedRows)
                     yield translate("Table", "There was an error deleting the "
-                        "tag of %1: <b>Tag deletion isn't supported"
-                        "for %2 files.</b>").arg(filename).arg(ext), rowlen
-
+                                             "tag of %1: <b>Tag deletion isn't supported"
+                                             "for %2 files.</b>").arg(filename).arg(ext), rowlen
 
         def fin():
             self.selectionChanged()
             self.model().undolevel += 1
 
         f = progress(func, translate("Table", 'Deleting tag... '),
-            len(self.selectedRows), fin)
+                     len(self.selectedRows), fin)
         f(self)
 
     def columnCount(self):
@@ -1602,23 +1628,21 @@ class TagTable(QTableView):
         return False
 
     isempty = property(_isEmpty)
-    
-    def deleteSelectedWithoutMessage(self):
-        self.deleteSelected(showmsg = False)
 
-    def deleteSelected(self, delfiles=True, ifgone = False, showmsg = None):
+    def deleteSelectedWithoutMessage(self):
+        self.deleteSelected(showmsg=False)
+
+    def deleteSelected(self, delfiles=True, ifgone=False, showmsg=None):
         if showmsg is None:
             showmsg = True
             showmsg = confirmations.should_show('delete_files')
-    
+
         if delfiles and showmsg:
             result = QMessageBox.question(self, "puddletag",
-                translate("Table", "Are you sure you want to delete the selected files?"),
-                translate("Defaults", "&Yes"),
-                translate("Defaults", "&No"), "", 1, 1)
+                                          translate("Table", "Are you sure you want to delete the selected files?"))
         else:
-            result = 0
-        if result != 0:
+            result = QMessageBox.Yes
+        if result != QMessageBox.Yes:
             return
         selected = self.selectedTags
         selectedRows = self.selectedRows
@@ -1626,9 +1650,10 @@ class TagTable(QTableView):
         curindex = self.currentIndex()
         last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
         libtags = []
+
         def func():
             temprows = sorted(selectedRows[::])
-            for ((i, row), audio) in izip(enumerate(selectedRows), selected):
+            for ((i, row), audio) in zip(enumerate(selectedRows), selected):
                 try:
                     filename = audio.filepath
                     os.remove(filename)
@@ -1638,21 +1663,23 @@ class TagTable(QTableView):
                     removeRows(temprows[i])
                     temprows = [z - 1 for z in temprows]
                     yield None
-                except (OSError, IOError), detail:
-                    msg = u"I couldn't delete <b>%s</b> (%s)" % (filename,
-                            detail.strerror)
+                except (OSError, IOError) as detail:
+                    msg = "I couldn't delete <b>%s</b> (%s)" % (filename,
+                                                                detail.strerror)
                     if row == temprows[-1]:
                         yield msg, 1
                     else:
                         yield msg, len(selectedRows)
+
         def fin():
             index = self.model().index(*last)
             if libtags:
-                self.emit(SIGNAL('deletedfromlib'), libtags)
+                self.deletedfromlib.emit(libtags)
             if index.isValid():
                 self.setCurrentIndex(index)
             else:
                 self.selectionChanged()
+
         s = progress(func, translate("Table", 'Deleting '), len(selectedRows), fin)
         if self.parentWidget():
             s(self.parentWidget())
@@ -1666,7 +1693,7 @@ class TagTable(QTableView):
     def dropEvent(self, event):
         mime = event.mimeData()
         if event.source() == self and \
-            hasattr(mime, 'draggedRows') and mime.draggedRows:
+                hasattr(mime, 'draggedRows') and mime.draggedRows:
 
             row = self.rowAt(event.pos().y())
             if row == -1:
@@ -1675,8 +1702,8 @@ class TagTable(QTableView):
             self.model().moveRows(mime.draggedRows, row)
             self.restoreSelection()
         else:
-            filenames = [str(z.path().toLocal8Bit()) for z
-                in event.mimeData().urls()]
+            filenames = [z.path() for z
+                         in event.mimeData().urls()]
 
             dirs = []
             files = []
@@ -1688,8 +1715,8 @@ class TagTable(QTableView):
                     dirs.append(f)
                 else:
                     files.append(f)
-            
-            self.loadFiles(files, dirs, append = True)
+
+            self.loadFiles(files, dirs, append=True)
 
     def dragMoveEvent(self, event):
         mime = event.mimeData()
@@ -1710,8 +1737,8 @@ class TagTable(QTableView):
         if event.buttons() != Qt.LeftButton:
             return
         mimeData = QMimeData()
-        plainText = u""
-        tags= []
+        plainText = ""
+        tags = []
         if hasattr(self, "selectedRows"):
             selectedRows = self.selectedRows[::]
         else:
@@ -1720,10 +1747,10 @@ class TagTable(QTableView):
             pnt = QPoint(*self.StartPosition)
         except AttributeError:
             return
-        if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
+        if (event.pos() - pnt).manhattanLength() < QApplication.startDragDistance():
             return
         filenames = [z.filepath for z in self.selectedTags]
-        urls = map(QUrl.fromLocalFile, map(decode_fn, filenames))
+        urls = list(map(QUrl.fromLocalFile, list(map(decode_fn, filenames))))
         mimeData = QMimeData()
         mimeData.setUrls(urls)
         if event.modifiers() == Qt.MetaModifier:
@@ -1759,16 +1786,16 @@ class TagTable(QTableView):
 
         QApplication.processEvents()
         if append or append is None:
-            self.restoreSelection() 
+            self.restoreSelection()
         else:
             self.selectCorner()
 
         if self.autoresize:
             self.resizeColumnsToContents()
         if self.model().taginfo:
-            self.emit(SIGNAL('viewfilled'), True)
+            self.viewfilled.emit(True)
         else:
-            self.emit(SIGNAL('viewfilled'), False)
+            self.viewfilled.emit(False)
 
     def highlight(self, rows):
         self.model().setColors(rows)
@@ -1776,23 +1803,23 @@ class TagTable(QTableView):
     def invertSelection(self):
         model = self.model()
         topLeft = model.index(0, 0)
-        bottomRight = model.index(model.rowCount()-1, model.columnCount()-1)
+        bottomRight = model.index(model.rowCount() - 1, model.columnCount() - 1)
 
         selection = QItemSelection(topLeft, bottomRight)
         self.selectionModel().select(selection, QItemSelectionModel.Toggle)
 
     def keyPressEvent(self, event):
         event.accept()
-        #You might think that this is redundant since a delete
-        #action is defined in contextMenuEvent, but if this isn't
-        #done then the delegate is entered.
+        # You might think that this is redundant since a delete
+        # action is defined in contextMenuEvent, but if this isn't
+        # done then the delegate is entered.
 
         has_modifier = event.modifiers() in [Qt.ControlModifier, Qt.ShiftModifier, Qt.ControlModifier | Qt.ShiftModifier]
         if event.key() == Qt.Key_Delete and self.selectedRows:
             self.deleteSelected()
             return
-        #This is so that an item isn't edited when the user's holding the shift or
-        #control key.
+        # This is so that an item isn't edited when the user's holding the shift or
+        # control key.
         elif event.key() == Qt.Key_Space and (has_modifier):
             trigger = self.editTriggers()
             self.setEditTriggers(self.NoEditTriggers)
@@ -1802,7 +1829,7 @@ class TagTable(QTableView):
         return QTableView.keyPressEvent(self, event)
 
     def loadFiles(self, files=None, dirs=None, append=False, subfolders=None,
-                filepath=None, post_process=None):
+                  filepath=None, post_process=None):
         assert files or dirs, 'Either files or dirs (or both) must be specified.'
 
         if subfolders is None:
@@ -1812,10 +1839,10 @@ class TagTable(QTableView):
             files = []
         if not dirs:
             dirs = []
-        elif isinstance(dirs, basestring):
+        elif isinstance(dirs, str):
             dirs = [dirs]
 
-        dirs = map(encode_fn, dirs)
+        dirs = list(map(encode_fn, dirs))
 
         files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
 
@@ -1830,7 +1857,7 @@ class TagTable(QTableView):
         if append:
             self.saveSelection()
             if subfolders:
-                #Remove all subfolders if the parent's already loaded.
+                # Remove all subfolders if the parent's already loaded.
                 for d in self.dirs:
                     dirs = [z for z in dirs if not z.startswith(d)]
                 toremove = set()
@@ -1843,16 +1870,19 @@ class TagTable(QTableView):
         else:
             self.dirs = dirs
 
+        if not files and not dirs:
+            return
+
         tags = []
         if len(dirs) == 1:
             reading_dir = translate("Defaults",
-                'Reading Directory: %1').arg(dirs[0])
+                                    'Reading Directory: %1').arg(dirs[0])
         elif dirs:
             reading_dir = translate("Defaults",
-                'Reading Directory: %1 + others').arg(dirs[0])
+                                    'Reading Directory: %1 + others').arg(dirs[0])
         else:
             reading_dir = translate('Defaults', 'Reading Dir')
-        
+
         def load_dir():
             if files:
                 filenames = files
@@ -1872,38 +1902,38 @@ class TagTable(QTableView):
                 if tag is not None:
                     tags.append(tag)
                 yield None
-                
+
         if post_process:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
-                lambda: post_process(tags, append, filepath))
+                         lambda: post_process(tags, append, filepath))
         else:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
-                lambda: self._loadFilesDone(tags, append, filepath))
+                         lambda: self._loadFilesDone(tags, append, filepath))
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):
         self.fillTable(tags, append)
         if not filepath:
-            self.emit(SIGNAL('dirschanged'), self.dirs[::])
+            self.dirschanged.emit(self.dirs[::])
         else:
-            self.emit(SIGNAL('playlistchanged'), filepath)
-            self.emit(SIGNAL('dirschanged'), [])
-        self.emit(SIGNAL('filesloaded'), True)
+            self.playlistchanged.emit(filepath)
+            self.dirschanged.emit([])
+        self.filesloaded.emit(True)
         if self._restore:
             self.restoreSelection(self._restore)
 
         model = self.model()
-        start_index = model.index(0,0)
-        end_index = model.index(model.rowCount() - 1, model.columnCount() -1)
-        model.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), start_index, end_index)
+        start_index = model.index(0, 0)
+        end_index = model.index(model.rowCount() - 1, model.columnCount() - 1)
+        model.dataChanged.emit(start_index, end_index)
         # model.reset()
         self.selectionChanged()
 
     def load_tags(self, tags):
         self.fillTable(tags, False)
         self.dirs = []
-        self.emit(SIGNAL('dirschanged'), self.dirs[::])
-        self.emit(SIGNAL('filesloaded'), True)
+        self.dirschanged.emit(self.dirs[::])
+        self.filesloaded.emit(True)
         sortcolumn = self.horizontalHeader().sortIndicatorSection()
         QTableView.sortByColumn(self, sortcolumn)
 
@@ -1928,7 +1958,7 @@ class TagTable(QTableView):
         sort_fields = cparser.get('table', 'sort_fields', [])
         reverse = cparser.get('table', 'sort_reverse', False, True)
 
-        #print sort_fields, model.sortFields
+        # print sort_fields, model.sortFields
 
         if sort_fields:
             model.sortByFields(sort_fields, reverse=reverse)
@@ -1941,7 +1971,7 @@ class TagTable(QTableView):
             rows = self.selectedRows[::]
         if not rows:
             return
-        elif max(rows) >= self.rowCount() -1:
+        elif max(rows) >= self.rowCount() - 1:
             return
 
         taginfo = self.model().taginfo
@@ -1956,10 +1986,9 @@ class TagTable(QTableView):
             new = taginfo[row + 1]
             taginfo[row + 1] = old
             taginfo[row] = new
-            
+
         getindex = self.model().index
-        self.model().emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-            getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
+        self.model().dataChanged.emit(getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
 
         self.restoreSelection()
         self._select = True
@@ -1987,8 +2016,7 @@ class TagTable(QTableView):
             taginfo[row - 1] = old
 
         getindex = self.model().index
-        self.model().emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-            getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
+        self.model().dataChanged.emit(getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
 
         self.restoreSelection()
         self._select = True
@@ -1997,26 +2025,25 @@ class TagTable(QTableView):
         """Play the selected files using the player specified in self.playcommand"""
         if not self.selectedRows: return
         if hasattr(self, "playcommand"):
-            
-            li = map(encode_fn, self.playcommand)
-                
+
+            li = list(map(encode_fn, self.playcommand))
+
             li.extend([z.filepath for z in self.selectedTags])
 
             try:
                 Popen(li)
-            except (OSError), detail:
+            except (OSError) as detail:
                 if detail.errno != 2:
                     QMessageBox.critical(self, translate("Defaults", "Error"),
-                        translate("Table",
-                                "An error occurred while trying to play the selected files: <b>%1</b> "
-                                "<br />Does the music player you defined (<b>%2</b>)"
-                                " exist?").arg(detail.strerror).arg(" ".join(self.playcommand)),
-                            QMessageBox.Ok, QMessageBox.NoButton)
+                                         translate("Table",
+                                                   "An error occurred while trying to play the selected files: <b>%1</b> "
+                                                   "<br />Does the music player you defined (<b>%2</b>)"
+                                                   " exist?").arg(detail.strerror).arg(" ".join(self.playcommand)))
                 else:
                     QMessageBox.critical(self, translate("Defaults", "Error"),
-                        translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(" ".join(self.playcommand)),
-                            QMessageBox.Ok, QMessageBox.NoButton)
-    
+                                         translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(
+                                             " ".join(self.playcommand)))
+
     def previewMode(self, value):
         if not value:
             if has_previews(self.model().taginfo, self):
@@ -2024,18 +2051,17 @@ class TagTable(QTableView):
         self.model().previewMode = value
         return value
 
-    def reloadSelected(self, files = None):
+    def reloadSelected(self, files=None):
         self._restore = self.saveSelection()
 
-        loaded_dirs = map(encode_fn, self.dirs)
+        loaded_dirs = list(map(encode_fn, self.dirs))
         if files is None:
             files = self.model().taginfo
 
         taginfo = self.model().taginfo
-        dirs = set(map(lambda i: taginfo[i].dirpath, self.selectedRows))
+        dirs = set([taginfo[i].dirpath for i in self.selectedRows])
 
-        is_sub = lambda fn: filter(None,
-            [issubfolder(z,fn) for z in dirs])
+        is_sub = lambda fn: [_f for _f in [issubfolder(z, fn) for z in dirs] if _f]
 
         sub_files = []
         for f in files:
@@ -2043,18 +2069,18 @@ class TagTable(QTableView):
                 sub_files.append(f)
 
         self.loadFiles(None, dirs, False, self.subFolders,
-            self._playlist,
-            lambda t,a,f: self.__processReload(t,a,f, sub_files))
+                       self._playlist,
+                       lambda t, a, f: self.__processReload(t, a, f, sub_files))
 
     def __processReload(self, tags, append, filepath, sub_files):
         new_fns = set(z.filepath for z in tags)
         to_remove = set(z for z in sub_files
-            if z.filepath not in new_fns)
+                        if z.filepath not in new_fns)
         self.model().taginfo = [z for z in self.model().taginfo if
-            z not in to_remove]
+                                z not in to_remove]
         self.fillTable(tags, None)
         model = self.model().reset()
-        self.emit(SIGNAL('filesloaded'), True)
+        self.filesloaded.emit(True)
         if self._restore:
             self.restoreSelection(self._restore)
 
@@ -2062,18 +2088,18 @@ class TagTable(QTableView):
 
     def reloadFiles(self, files=None):
         self._restore = self.saveSelection()
-        dirs = map(encode_fn, self.dirs)
+        dirs = list(map(encode_fn, self.dirs))
         files = [z.filepath for z in self.model().taginfo if z.dirpath
-            not in dirs]
+                 not in dirs]
         libfiles = [z for z in self.model().taginfo if '__library' in z]
         if self._playlist:
             self.loadFiles(files, dirs, False, self.subFolders)
         else:
             self.loadFiles(files, dirs, False, self.subFolders,
-                self._playlist)
-        self.model().load(libfiles, append = True)
+                           self._playlist)
+        self.model().load(libfiles, append=True)
 
-    def rowTags(self,row, stringtags = False):
+    def rowTags(self, row, stringtags=False):
         """Returns all the tags pertinent to the file at row."""
         if stringtags:
             return self.model().taginfo[row].stringtags()
@@ -2084,7 +2110,7 @@ class TagTable(QTableView):
             col = self.currentIndex().column()
             model = self.model()
             topLeft = model.index(0, col)
-            bottomRight = model.index(model.rowCount()-1, col)
+            bottomRight = model.index(model.rowCount() - 1, col)
 
             selection = QItemSelection(topLeft, bottomRight)
             self.selectionModel().select(selection, QItemSelectionModel.Select)
@@ -2098,23 +2124,22 @@ class TagTable(QTableView):
     def setModel(self, model):
         QTableView.setModel(self, model)
         self.updateRow = model.setRowData
-        self.connect(model, SIGNAL('modelReset'), self.selectionChanged)
-        self.connect(model, SETDATAERROR, self.writeError)
-        self.connect(model, SIGNAL('fileChanged()'), self.selectionChanged)
-        self.connect(model, SIGNAL('aboutToSort'), self.saveBeforeReset)
-        self.connect(model, SIGNAL('sorted'), self.restoreSort)
-        self.connect(model, SIGNAL('previewModeChanged'), 
-            SIGNAL('previewModeChanged'))
-        self.connect(model, SIGNAL('dirsmoved'), SIGNAL('dirsmoved'))
+        model.modelReset.connect(self.selectionChanged)
+        model.setDataError.connect(self.writeError)
+        model.fileChanged.connect(self.selectionChanged)
+        model.aboutToSort.connect(self.saveBeforeReset)
+        model.sorted.connect(self.restoreSort)
+        model.previewModeChanged.connect(self.previewModeChanged)
+        model.dirsmoved.connect(self.dirsmoved)
         set_data = model.setData
 
         def modded_setData(index, value, role=Qt.EditRole):
             if len(self.selectedRows) == 1:
                 return set_data(index, value, role)
             ret = set_data(index, value, role, True)
-            
+
             if ret:
-                self.emit(SIGNAL('onetomany'), ret[0])
+                self.onetomany.emit(ret[0])
             return False
 
         model.setData = modded_setData
@@ -2163,7 +2188,7 @@ class TagTable(QTableView):
 
     selectedColumns = property(_getSelectedColumns, _setSelectedColumns)
 
-    def selectionChanged(self, selected = None, deselected = None):
+    def selectionChanged(self, selected=None, deselected=None):
         """Pretty important. This updates self.selectedRows, which is used
         everywhere.
 
@@ -2177,7 +2202,7 @@ class TagTable(QTableView):
 
         selectedRows = set()
         selectedColumns = set()
-        
+
         for z in self.selectedIndexes():
             selectedRows.add(z.row())
             selectedColumns.add(z.column())
@@ -2185,18 +2210,18 @@ class TagTable(QTableView):
         self.selectedColumns = sorted(list(selectedColumns))
 
         if self._select:
-            self.emit(SIGNAL('itemSelectionChanged()'))
+            self.itemSelectionChanged.emit()
             if self.selectedRows:
-                self.emit(SIGNAL('filesselected'), True)
+                self.filesselected.emit(True)
             else:
-                self.emit(SIGNAL('filesselected'), False)
+                self.filesselected.emit(False)
             model.highlight(self.selectedRows)
-            self.emit(SIGNAL(SELECTIONCHANGED))
+            self.tagselectionchanged.emit()
 
     def saveBeforeReset(self):
         self.setCursor(Qt.BusyCursor)
         self._savedSelection = self.saveSelection()
-    
+
     def restoreSort(self):
         self.setCursor(Qt.ArrowCursor)
         if self._savedSelection:
@@ -2209,7 +2234,7 @@ class TagTable(QTableView):
         fields = [field for title, field in self.model().headerdata]
         filenames = defaultdict(lambda: set())
         selection = self.currentRowSelection()
-        for row, columns in self.currentRowSelection().iteritems():
+        for row, columns in self.currentRowSelection().items():
             filenames[taginfo[row].filepath] = set(fields[c] for c in columns)
         self.__savedSelection = filenames
         return filenames
@@ -2239,7 +2264,7 @@ class TagTable(QTableView):
         selection = QItemSelection()
         select = lambda top, low, col: selection.append(
             QItemSelectionRange(modelindex(top, col),
-                modelindex(low, col)))
+                                modelindex(low, col)))
 
         newindexes = {}
         while True:
@@ -2251,7 +2276,7 @@ class TagTable(QTableView):
                 newindexes[tag[0]] = getrow(tag[1])
             except ValueError:
                 pass
-            del(tags[0])
+            del (tags[0])
 
         groups = {}
         for col, rows in currentcol.items():
@@ -2264,7 +2289,7 @@ class TagTable(QTableView):
     def restoreSelection(self, data=None):
         if data is None:
             data = self.__savedSelection
-            
+
         get_index = self.model().index
         selection = QItemSelection()
 
@@ -2272,14 +2297,14 @@ class TagTable(QTableView):
             model_index = get_index(row, col)
             selection.select(model_index, model_index)
 
-        columns = dict((field[1], i)  for i, field in 
-            enumerate(self.model().headerdata))
-        
+        columns = dict((field[1], i) for i, field in
+                       enumerate(self.model().headerdata))
+
         for row, fn in enumerate(z.filepath for z in self.model().taginfo):
             selected_fields = data.get(fn)
             if not selected_fields:
                 continue
-            
+
             for field in selected_fields:
                 column = columns.get(field)
                 if column is not None:
@@ -2289,7 +2314,7 @@ class TagTable(QTableView):
         self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent)
         self.model().highlight(self.selectedRows)
 
-    def removeFolders(self, dirs, valid = True):
+    def removeFolders(self, dirs, valid=True):
         if dirs:
             self.dirs = list(set(self.dirs).difference(dirs))
             self.model().removeFolders(dirs, valid)
@@ -2300,7 +2325,7 @@ class TagTable(QTableView):
         hd = TableHeader(Qt.Horizontal, tags, self)
         hd.setSortIndicatorShown(True)
         hd.setVisible(True)
-        self.connect(hd, SIGNAL("headerChanged"), self.setHeaderTags)
+        hd.headerChanged.connect(self.setHeaderTags)
         self.setHorizontalHeader(hd)
         self.model().setHeader(tags)
 
@@ -2312,7 +2337,7 @@ class TagTable(QTableView):
 
     def setHorizontalHeader(self, header):
         QTableView.setHorizontalHeader(self, header)
-        self.connect(header, SIGNAL('saveSelection'), self.saveSelection)
+        header.saveSelection.connect(self.saveSelection)
 
     def writeError(self, text):
         """Shows a tooltip when an error occors.
@@ -2322,7 +2347,7 @@ class TagTable(QTableView):
         signal is emitted with the text that can be used to show
         text in the status bar or something."""
         singleerror(self.parentWidget(), text)
-        self.emit(SETDATAERROR, text)
+        self.setDataError.emit(text)
 
     def saveSettings(self):
         cparser = PuddleConfig()
@@ -2364,11 +2389,11 @@ class TagTable(QTableView):
         for column in columns:
             index = get_index(row, column)
             selection.merge(QItemSelection(index, index),
-                QItemSelectionModel.Select)
+                            QItemSelectionModel.Select)
         self.selectionModel().select(selection,
-            QItemSelectionModel.ClearAndSelect)
+                                     QItemSelectionModel.ClearAndSelect)
 
-        self.scrollTo (get_index(row, min(columns)), self.EnsureVisible )
+        self.scrollTo(get_index(row, min(columns)), self.EnsureVisible)
 
     def selectDir(self, previous=False):
         model = self.model()
@@ -2395,7 +2420,7 @@ class TagTable(QTableView):
 
         to_select = {}
 
-        for d, columns in selected.iteritems():
+        for d, columns in selected.items():
             if len(columns) == len(dirpaths[d]) and len(selected) == 1:
                 to_select = self.nextDir(dirpaths, previous)
                 if to_select:
@@ -2407,8 +2432,8 @@ class TagTable(QTableView):
             else:
                 for row in dirpaths[d]:
                     to_select[row] = columns[-1]
-        
-        for row, column in to_select.iteritems():
+
+        for row, column in to_select.items():
             index = modelindex(row, column)
             merge(QItemSelection(index, index), QItemSelectionModel.Select)
 
@@ -2436,7 +2461,7 @@ class TagTable(QTableView):
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
         if not self.verticalScrollBar().isVisible() and h.isVisible():
-            numsteps = e.delta() / 5
+            numsteps = e.angleDelta().y() / 5
             h.setValue(h.value() - numsteps)
             e.accept()
         else:

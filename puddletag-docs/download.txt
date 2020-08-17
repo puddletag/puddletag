@@ -8,7 +8,6 @@ Download
 + :ref:`dependencies`
 + :ref:`installing_from_source`
 + :ref:`installing_on_ubuntu`
-+ :ref:`installing_on_osx`
 + :ref:`development_builds`
 
 .. _dependencies:
@@ -21,7 +20,7 @@ puddletag requires the following dependencies. Visit the respective project's pa
 Install instructions follow below.
 
 +   At least `Python 2.6 (but not Python 3) <http://python.org>`_
-+   `PyQt4 (with Qt of course) (4.5 or greater) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
++   `PyQt5 (with Qt of course) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
 +   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
 +   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
 +   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ (optional) for AcoustID support.
@@ -35,7 +34,7 @@ Install the dependencies as listed above. For Debian-based distros, you can run 
 
 .. code-block:: bash
 
-    apt-get install python-qt4 python-pyparsing python-mutagen
+    apt-get install python-pyqt5 python-pyparsing python-mutagen
 
 + Now download the source tarball |source_link|_ (SHA1 |source_sha|).
 + Unzip it.
@@ -80,28 +79,6 @@ Sometimes the latest version is still in the testing repo. Then you should use (
 
    yum --enablerepo=updates-testing install
 
-
-.. _installing_on_osx:
-
-Installing on OSX
------------------
-
-.. note:: The below section is outdated as Homebrew doesn't support PyQt4 anymore and the Vortexbox links are broken.
-          If you have further instructions on how to fix these, add an issue on `GitHub <https://github.com/puddletag/puddletag/issues>`_.
-
-
-Homebrew
-^^^^^^^^
-
-- Install the package manager from http://brew.sh.
-- Download and install puddletag by typing "brew install puddletag" in your console
-
-From source
-^^^^^^^^^^^
-
-There's a `great article on the VortexBox wiki <http://info.vortexbox.org/tiki-index.php?page=puddletag+on+os+x>`_ detailing the steps you need to follow. 
-
-You can also use Fink as `reported by wgscott on the forum <http://puddletag.sourceforge.net/forum/viewtopic.php?f=1&t=258>`_.
 
 .. _development_builds:
 

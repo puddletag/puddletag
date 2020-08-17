@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
-from PyQt4.QtGui import QApplication
-import re
 import logging
+import re
 
-class UnicodeMod(unicode):
+from PyQt5.QtWidgets import QApplication
+
+
+class UnicodeMod(str):
     """Emulates the arg method of QStrings. Not meant for use anywhere other
     than the translate function above."""
 
@@ -17,45 +18,47 @@ class UnicodeMod(unicode):
         else:
             lowest = sorted(matches, key=lambda m: m.groups())[0]
         text = lowest.group()
-        if isinstance(text, str):
+        if isinstance(text, bytes):
             text = text.decode('utf8', 'replace')
-        if isinstance(value, str):
+        if isinstance(value, bytes):
             value = value.decode('utf8', 'replace')
-        elif isinstance(value, (int, long)):
-            value = unicode(value)
+        elif isinstance(value, int):
+            value = str(value)
         return UnicodeMod(self.replace(lowest.group(), value))
 
     def __add__(self, other):
-        return UnicodeMod(unicode.__add__(self, other))
+        return UnicodeMod(str.__add__(self, other))
 
     def __radd__(self, other):
-        return UnicodeMod(other.__add__(unicode(self)))
+        return UnicodeMod(other.__add__(str(self)))
 
     def __mod__(self, other):
-        return UnicodeMod(unicode.__mod__(self, other))
+        return UnicodeMod(str.__mod__(self, other))
 
     def __format__(self, fmt=None):
-        return UnicodeMod(unicode.__format__(self, fmt))
+        return UnicodeMod(str.__format__(self, fmt))
 
     def __getitem__(self, item):
-        return UnicodeMod(unicode.__getitem__(self, item))
+        return UnicodeMod(str.__getitem__(self, item))
 
     def __rmul__(self, v):
-        return UnicodeMod(unicode.__rmul__(self, v))
+        return UnicodeMod(str.__rmul__(self, v))
 
     def __mul__(self, v):
-        return UnicodeMod(unicode.__mul__(self, v))
+        return UnicodeMod(str.__mul__(self, v))
 
-def translate(k,v):
-    if isinstance(v, str):
+
+def translate(k, v):
+    if isinstance(v, bytes):
         v = v.decode('utf8', 'replace')
     try:
-        return UnicodeMod(QApplication.translate(k,v))
+        return UnicodeMod(QApplication.translate(k, v))
     except TypeError:
         return v
 
+
 def dont_execute():
-    #General Translations
+    # General Translations
     translate("GenSettings", 'Su&bfolders')
     translate("GenSettings", 'Show &gridlines')
     translate("GenSettings", 'Show tooltips in file-view:')
@@ -65,13 +68,11 @@ def dont_execute():
     translate("GenSettings", 'Program to &play files with:')
     translate("GenSettings", '&Load last folder at startup')
 
-    
-
-    #Artwork
+    # Artwork
     translate("Artwork Context", 'Cover Varies')
     translate("Artwork Context", 'No Images')
 
-    #Menus
+    # Menus
     translate("Menus", 'Enabl&e Preview Mode')
     translate("Menus", 'Clear Selected &Files')
     translate("Menus", '&Write Previews')
@@ -147,7 +148,7 @@ def dont_execute():
     translate("Menus", "&File")
     translate("Menus", "&Actions")
 
-    #Functions
+    # Functions
     translate("Functions", "Tag->File: $1")
     translate("Functions", "Tag to filename")
     translate("Functions", "&Pattern")
@@ -250,7 +251,7 @@ def dont_execute():
     translate("Functions", "Filename to Tag")
     translate("Functions", "&Pattern")
 
-    #Dialogs
+    # Dialogs
     translate("Dialogs", "Tag Panel")
     translate("Dialogs", "Artwork")
     translate("Dialogs", "Filesystem")

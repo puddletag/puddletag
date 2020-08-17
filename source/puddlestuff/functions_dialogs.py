@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
-                         QVBoxLayout, QWidget, QLineEdit)
-from PyQt4.QtCore import SIGNAL
-from puddlestuff.translations import translate
+from PyQt5.QtWidgets import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
+                             QVBoxLayout, QWidget)
+
+from .translations import translate
+
 
 def sanitize(type_, value, default=None):
     if type_ is int:
@@ -18,8 +19,9 @@ def sanitize(type_, value, default=None):
     else:
         return value
 
+
 class AutoNumbering(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
         def hbox(*widgets):
@@ -69,6 +71,7 @@ class AutoNumbering(QWidget):
             self._padlength.value()]
         return x
 
-from functions import autonumbering
+
+from .functions import autonumbering
 
 dialogs = {autonumbering: AutoNumbering}

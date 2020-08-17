@@ -48,4 +48,4 @@ def fix_rss(text):
     return re.sub('''<a class=['"]headerlink['"] .*?</a>''', '', text)
 
 if __name__ == '__main__':
-    print fix_rss(open(sys.argv[1], 'r').read())
+    print(fix_rss(open(sys.argv[1], 'r').read()))

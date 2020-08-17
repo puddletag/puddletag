@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
-
-#this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
-#while we're at it, we also wrap url fetching.
+# this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
+# while we're at it, we also wrap url fetching.
 
 import re
-import urllib2
+import urllib.error
+import urllib.parse
+import urllib.request
 
 import lxml.html
+
 
 def classify(seq, key_func):
     result = {}
@@ -18,10 +19,12 @@ def classify(seq, key_func):
             result[key] = [item]
     return result
 
+
 class SoupWrapper(object):
-    def __init__(self, element, source = None):
+    def __init__(self, element, source=None):
         self.element = element
         self.source = source
+
     def find_all(self, *args, **kwargs):
         if isinstance(args[0], dict):
             kwargs.update(args[0])
@@ -30,8 +33,8 @@ class SoupWrapper(object):
                 kwargs.update(args[1])
             else:
                 kwargs['class'] = args[1]
-        query_items = kwargs.items()
-        query_items = classify(query_items, lambda x: isinstance(x[1], (str, unicode)))
+        query_items = list(kwargs.items())
+        query_items = classify(query_items, lambda x: isinstance(x[1], (str, str)))
         regular_items = query_items.get(True, [])
         re_items = query_items.get(False, [])
         xpath_query = ' and '.join("@%s='%s'" % (key, value) for key, value in regular_items)
@@ -51,31 +54,37 @@ class SoupWrapper(object):
                     new_results.append(x)
             results = new_results
         return [SoupWrapper(x) for x in results]
+
     def find(self, *args, **kwargs):
         r = self.find_all(*args, **kwargs)
         if r:
             return r[0]
         return None
+
     def __iter__(self):
         for x in self.element:
             yield SoupWrapper(x)
+
     def __getitem__(self, idx):
-        if isinstance(idx, (str, unicode)):
+        if isinstance(idx, (str, str)):
             if idx in self.element.attrib:
                 return self.element.attrib[idx]
             else:
                 return self.find(idx)
-        if isinstance(idx, (int, long)):
+        if isinstance(idx, int):
             return SoupWrapper(self.element[idx])
         if isinstance(idx, slice):
             return [SoupWrapper(x) for x in self.element[idx]]
+
     def __getattr__(self, name):
         if name in self.element.attrib:
             return self.element.attrib[name]
         return self.find(name)
+
     @property
     def string(self):
         return self.element.text_content()
+
     def all_text(self):
         result = []
         if self.element.text:
@@ -84,7 +93,8 @@ class SoupWrapper(object):
             if x.tail:
                 result.append(x.tail)
         return ''.join(result)
-    def all_recursive_text(self, should_continue = lambda node: True):
+
+    def all_recursive_text(self, should_continue=lambda node: True):
         r = []
         if self.element.text:
             r.append(self.element.text)
@@ -94,40 +104,48 @@ class SoupWrapper(object):
             if node.element.tail:
                 r.append(node.element.tail)
         return ' '.join(r)
+
     @property
     def contents(self):
         return [SoupWrapper(x) for x in self.element]
+
     @property
     def name(self):
         return self.element.tag
+
     @property
     def tag(self):
         return self.element.tag
+
     @property
     def parent(self):
         return SoupWrapper(self.element.getparent())
 
+
 def fetch_page(url):
-    return urllib2.urlopen(url).read()
+    return urllib.request.urlopen(url).read()
+
 
 def parse(page):
     p = lxml.html.document_fromstring(page)
     return p
+
 
 def fetch_parsed(url):
     page = fetch_page(url)
     try:
         p = parse(page)
     except:
-        print url
+        print(url)
         raise
     return p
+
 
 def fetch_soup(url):
     page = fetch_page(url)
     try:
         p = parse(page)
     except:
-        print url
+        print(url)
         raise
     return SoupWrapper(p, page)

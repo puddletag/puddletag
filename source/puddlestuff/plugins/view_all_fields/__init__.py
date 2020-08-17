@@ -1,26 +1,27 @@
-# -*- coding: utf-8 -*-
-
 import os
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+    QPushButton, QVBoxLayout
 
-from puddlestuff.constants import SAVEDIR
-from puddlestuff.plugins import add_config_widget, add_shortcuts, status
-from puddlestuff.puddleobjects import (natcasecmp, ListButtons,
-    ListBox, PuddleConfig)
-from puddlestuff.tagmodel import TableHeader
-from puddlestuff.translations import translate
+from .. import add_config_widget, add_shortcuts, status
+from ...constants import SAVEDIR
+from ...puddleobjects import (natsort_case_key, ListButtons,
+                              ListBox, PuddleConfig)
+from ...tagmodel import TableHeader
+from ...translations import translate
 
 CONFIGPATH = os.path.join(SAVEDIR, 'view_all_fields')
 ADD_TEXT = translate('Defaults', "Add item?")
 
 state = {}
 
+
 def load_fields():
     cparser = PuddleConfig(CONFIGPATH)
     return cparser.get('view_all_fields', 'fields',
-        ['__filename', '__dirpath'])
+                       ['__filename', '__dirpath'])
+
 
 def restore_view(state):
     tb = status['table']
@@ -29,8 +30,8 @@ def restore_view(state):
     QApplication.processEvents()
     header.restoreState(state['headerstate'])
 
-def show_all_fields(fields=None):
 
+def show_all_fields(fields=None):
     files = status['allfiles']
     keys = set()
     for f in files:
@@ -43,17 +44,17 @@ def show_all_fields(fields=None):
         if f in keys:
             keys.remove(f)
 
-    data = map(lambda k: (k, k), fields + sorted(keys, cmp=natcasecmp))
+    data = [(k, k) for k in fields + sorted(keys, key=natsort_case_key)]
     tb = status['table']
     tb.model().setHeader(data)
     hd = TableHeader(Qt.Horizontal, data)
     tb.setHorizontalHeader(hd)
     hd.show()
-    
+
 
 def init(parent=None):
     state = {}
-    
+
     def sep():
         k = QAction(parent)
         k.setSeparator(True)
@@ -69,20 +70,20 @@ def init(parent=None):
         else:
             restore_view(state)
 
-
     action = QAction('Show all fields', parent)
     action.setCheckable(True)
-    action.connect(action, SIGNAL('toggled(bool)'), show_fields)
+    action.toggled.connect(show_fields)
     add_shortcuts('&Plugins', [sep(), action, sep()])
     add_config_widget(Settings)
 
+
 class ButtonsAndList(QFrame):
     def __init__(self, parent=None, title=u'', add_text=ADD_TEXT,
-        help_text=u''):
-            
+                 help_text=u''):
+
         QFrame.__init__(self, parent)
         self.title = title
-        connect = lambda c, signal, s: self.connect(c, SIGNAL(signal), s)
+        connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.setFrameStyle(QFrame.Box)
         self.listbox = ListBox()
         self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
@@ -94,7 +95,7 @@ class ButtonsAndList(QFrame):
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Defaults", '&Sort'))
         self._sortOrder = Qt.AscendingOrder
-        connect(sortlistbox, 'clicked()', self._sortListBox)
+        connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
         vbox.addStretch()
@@ -112,11 +113,11 @@ class ButtonsAndList(QFrame):
 
         connect(buttons, "add", self.addItem)
         connect(buttons, "edit", self.editItem)
-        buttons.duplicate.setVisible(False)
+        buttons.duplicateButton.setVisible(False)
         self.listbox.connectToListButtons(buttons)
-        self.listbox.editButton = buttons.edit
-        connect(self.listbox, 'itemDoubleClicked(QListWidgetItem *)',
-                    self._doubleClicked)
+        self.listbox.editButton = buttons.editButton
+        connect(self.listbox, 'itemDoubleClicked',
+                self._doubleClicked)
         self.addText = add_text
 
     def _doubleClicked(self, item):
@@ -132,12 +133,12 @@ class ButtonsAndList(QFrame):
 
     def addItem(self):
         l = self.listbox.item
-        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
+        patterns = [str(l(z).text()) for z in range(self.listbox.count())]
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
         (text, ok) = QInputDialog().getItem(self, 'puddletag',
-            self.addText, patterns, row)
+                                            self.addText, patterns, row)
         if ok:
             self.listbox.clearSelection()
             self.listbox.addItem(text)
@@ -150,25 +151,27 @@ class ButtonsAndList(QFrame):
         if row is None:
             row = self.listbox.currentRow()
         l = self.listbox.item
-        patterns = [unicode(l(z).text()) for z in range(self.listbox.count())]
-        (text, ok) = QInputDialog().getItem (self, 'puddletag',
-            self.addText, patterns, row)
+        patterns = [str(l(z).text()) for z in range(self.listbox.count())]
+        (text, ok) = QInputDialog().getItem(self, 'puddletag',
+                                            self.addText, patterns, row)
         if ok:
             item = l(row)
             item.setText(text)
-            self.listbox.setItemSelected(item, True)
+            item.setSelected(True)
 
     def getItems(self):
         return [item.text() for item in self.listbox.items()]
 
+
 class Settings(ButtonsAndList):
     title = translate('ViewAllFields', 'View All Fields')
+
     def __init__(self, parent=None, status=None):
         ButtonsAndList.__init__(self, parent,
-            translate('ViewAllFields', 'View All Fields'),
-            translate("ViewAllFields", 'Add Field'),
-            translate("ViewAllFields", 'Edit fields for "View All Fields"'),
-            )
+                                translate('ViewAllFields', 'View All Fields'),
+                                translate("ViewAllFields", 'Add Field'),
+                                translate("ViewAllFields", 'Edit fields for "View All Fields"'),
+                                )
         self.addItems(load_fields())
         self.status = status
 
@@ -179,6 +182,7 @@ class Settings(ButtonsAndList):
 
         if state:
             show_all_fields()
+
 
 if __name__ == '__main__':
     app = QApplication([])

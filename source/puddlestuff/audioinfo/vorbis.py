@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from mutagen.oggvorbis import OggVorbis
+
 try:
     from mutagen.oggopus import OggOpus
 except ImportError:
@@ -11,38 +10,40 @@ except ImportError:
 from mutagen.flac import Picture, FLAC
 import base64
 
-import util
-from util import (strlength, strbitrate, strfrequency, usertags, PATH,
-    getfilename, lnglength, getinfo, FILENAME, INFOTAGS,
-    READONLY, isempty, FILETAGS, EXTENSION, DIRPATH,
-    getdeco, setdeco, str_filesize, unicode_list,
-    CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
-    MONO, STEREO, get_total, set_total, parse_image, info_to_dict,
-    get_mime)
-from tag_versions import tags_in_file
+from . import util
+from .util import (usertags, PATH,
+                   FILENAME, isempty, getdeco, setdeco, str_filesize, unicode_list,
+                   CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
+                   get_total, set_total, parse_image, info_to_dict,
+                   get_mime)
+from .tag_versions import tags_in_file
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
-    'modified', 'bitspersample')
+              'modified', 'bitspersample')
 
 COVER_KEY = 'metadata_block_picture'
+
 
 def base64_to_image(value):
     return bin_to_image(Picture(base64.standard_b64decode(value)))
 
+
 def bin_to_image(pic):
     return {'data': pic.data, 'description': pic.desc, 'mime': pic.mime,
-        'imagetype': pic.type}
+            'imagetype': pic.type}
+
 
 def image_to_base64(image):
-    return base64.standard_b64encode(image_to_bin(image).write())
+    return base64.standard_b64encode(image_to_bin(image).write()).decode('ascii')
+
 
 def image_to_bin(image):
     props = {}
     data = image[util.DATA]
     description = image.get(util.DESCRIPTION)
-    if not description: description = u''
+    if not description: description = ''
 
     mime = image.get(util.MIMETYPE)
     if mime is None: mime = get_mime(data)
@@ -57,6 +58,7 @@ def image_to_bin(image):
     [setattr(p, z, props[z]) for z in PICARGS if z in props]
     return p
 
+
 def vorbis_tag(base, name):
     class Tag(util.MockTag):
         IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA, util.IMAGETYPE)
@@ -69,14 +71,14 @@ def vorbis_tag(base, name):
 
             self.filetype = name
             self.__tags['__filetype'] = self.filetype
-            self.__tags['__tag_read'] = u'VorbisComment'
+            self.__tags['__tag_read'] = 'VorbisComment'
 
             util.MockTag.__init__(self, filename)
 
         def get_filepath(self):
             return util.MockTag.get_filepath(self)
 
-        def set_filepath(self,  val):
+        def set_filepath(self, val):
             self.__tags.update(util.MockTag.set_filepath(self, val))
 
         filepath = property(get_filepath, set_filepath)
@@ -86,24 +88,23 @@ def vorbis_tag(base, name):
 
         def _set_images(self, images):
             if images:
-                self.__images = map(lambda i: parse_image(i, self.IMAGETAGS),
-                    images)
+                self.__images = [parse_image(i, self.IMAGETAGS) for i in images]
             else:
                 self.__images = []
             cover_info(images, self.__tags)
 
         images = property(_get_images, _set_images)
-                
+
         def __contains__(self, key):
             if key == '__image':
                 return bool(self.images)
-            
+
             elif key == '__total':
                 try:
                     return bool(get_total(self))
                 except (KeyError, ValueError):
                     return False
-        
+
             if self.revmapping:
                 key = self.revmapping.get(key, key)
             return key in self.__tags
@@ -113,7 +114,7 @@ def vorbis_tag(base, name):
             cls.mapping = self.mapping
             cls.revmapping = self.revmapping
             cls.set_fundamentals(deepcopy(self.__tags),
-                self.mut_obj, self.images)
+                                 self.mut_obj, self.images)
             cls.filepath = self.filepath
             return cls
 
@@ -124,7 +125,7 @@ def vorbis_tag(base, name):
             elif key.startswith('__'):
                 return
             else:
-                del(self.__tags[key])
+                del (self.__tags[key])
 
         @getdeco
         def __getitem__(self, key):
@@ -145,24 +146,24 @@ def vorbis_tag(base, name):
                     setattr(self, fn_hash[key], value)
             elif isempty(value):
                 if key in self:
-                    del(self[key])
+                    del (self[key])
                 else:
                     return
             else:
-                if isinstance(value, (int, long)):
-                    self.__tags[key.lower()] = [unicode(value)]
+                if isinstance(value, int):
+                    self.__tags[key.lower()] = [str(value)]
                 else:
                     self.__tags[key.lower()] = unicode_list(value)
 
         def delete(self):
             self.mut_obj.delete()
             for key in self.usertags:
-                del(self.__tags[self.revmapping.get(key, key)])
+                del (self.__tags[self.revmapping.get(key, key)])
             self.images = []
 
         @keys_deco
         def keys(self):
-            return self.__tags.keys()
+            return list(self.__tags.keys())
 
         def link(self, filename):
             """Links the audio, filename
@@ -174,12 +175,12 @@ def vorbis_tag(base, name):
 
             for key in audio:
                 if key == COVER_KEY:
-                    self.images = map(base64_to_image, audio[key])
+                    self.images = list(map(base64_to_image, audio[key]))
                 else:
                     self.__tags[key.lower()] = audio.tags[key]
 
             if base == FLAC:
-                self.images = filter(None, map(bin_to_image, audio.pictures))
+                self.images = [_f for _f in map(bin_to_image, audio.pictures) if _f]
             elif not self.images:
                 self.images = []
 
@@ -187,7 +188,7 @@ def vorbis_tag(base, name):
             self.__tags.update(tags)
             self.set_attrs(ATTRIBUTES)
             self.mut_obj = audio
-            self._originaltags = self.__tags.keys()
+            self._originaltags = list(self.__tags.keys())
             self.update_tag_list()
             return self
 
@@ -209,17 +210,17 @@ def vorbis_tag(base, name):
             if self.__images:
                 if base == FLAC:
                     audio.clear_pictures()
-                    map(lambda p: audio.add_picture(image_to_bin(p)),
-                        self.__images)
+                    list(map(lambda p: audio.add_picture(image_to_bin(p)),
+                             self.__images))
                 else:
-                    newtag[COVER_KEY] = filter(None, map(image_to_base64, self.__images))
+                    newtag[COVER_KEY] = [_f for _f in map(image_to_base64, self.__images) if _f]
             else:
                 if base == FLAC:
                     audio.clear_pictures()
 
             toremove = [z for z in audio if z not in newtag]
             for z in toremove:
-                del(audio[z])
+                del (audio[z])
             audio.update(newtag)
             audio.save()
 
@@ -230,77 +231,80 @@ def vorbis_tag(base, name):
                 self.images = images
             else:
                 self.images = []
-            self._originaltags = tags.keys()
+            self._originaltags = list(tags.keys())
 
         def update_tag_list(self):
             l = tags_in_file(self.filepath)
             if l:
-                self.__tags['__tag'] = u'VorbisComment, ' + u', '.join(l)
+                self.__tags['__tag'] = 'VorbisComment, ' + ', '.join(l)
             else:
-                self.__tags['__tag'] = u'VorbisComment'
+                self.__tags['__tag'] = 'VorbisComment'
+
     return Tag
 
-class Ogg_Tag(vorbis_tag(OggVorbis, u'Ogg Vorbis')):
+
+class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
 
     def _info(self):
         info = self.mut_obj.info
         fileinfo = [
-            (u'Path', self[PATH]),
-            (u'Size', str_filesize(int(self.size))),
-            (u'Filename', self[FILENAME]),
-            (u'Modified', self.modified)]
+            ('Path', self[PATH]),
+            ('Size', str_filesize(int(self.size))),
+            ('Filename', self[FILENAME]),
+            ('Modified', self.modified)]
 
-        ogginfo = [(u'Bitrate', self.bitrate),
-                (u'Frequency', self.frequency),
-                (u'Channels', unicode(info.channels)),
-                (u'Length', self.length)]
-        return [(u'File', fileinfo), (u'Ogg Info', ogginfo)]
+        ogginfo = [('Bitrate', self.bitrate),
+                   ('Frequency', self.frequency),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length)]
+        return [('File', fileinfo), ('Ogg Info', ogginfo)]
 
     info = property(_info)
 
+
 if OggOpus:
-    class Opus_Tag(vorbis_tag(OggOpus, u'Ogg Opus')):
+    class Opus_Tag(vorbis_tag(OggOpus, 'Ogg Opus')):
         def _info(self):
             info = self.mut_obj.info
             fileinfo = [
-                (u'Path', self[PATH]),
-                (u'Size', str_filesize(int(self.size))),
-                (u'Filename', self[FILENAME]),
-                (u'Modified', self.modified)]
+                ('Path', self[PATH]),
+                ('Size', str_filesize(int(self.size))),
+                ('Filename', self[FILENAME]),
+                ('Modified', self.modified)]
 
-            ogginfo = [(u'Bitrate', self.bitrate),
-                       (u'Channels', unicode(info.channels)),
-                       (u'Length', self.length)]
-            return [(u'File', fileinfo), (u'Opus Info', ogginfo)]
+            ogginfo = [('Bitrate', self.bitrate),
+                       ('Channels', str(info.channels)),
+                       ('Length', self.length)]
+            return [('File', fileinfo), ('Opus Info', ogginfo)]
 
         info = property(_info)
 
 
-class FLAC_Tag(vorbis_tag(FLAC, u'FLAC')):
+class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
     def _info(self):
         info = self.mut_obj.info
-        fileinfo = [(u'Path', self[PATH]),
-                    (u'Size', str_filesize(int(self.size))),
-                    (u'Filename', self[FILENAME]),
-                    (u'Modified', self.modified)]
+        fileinfo = [('Path', self[PATH]),
+                    ('Size', str_filesize(int(self.size))),
+                    ('Filename', self[FILENAME]),
+                    ('Modified', self.modified)]
 
-        ogginfo = [(u'Bitrate', u'Lossless'),
-                (u'Frequency', self.frequency),
-                (u'Bits Per Sample', self.bitspersample),
-                (u'Channels', unicode(info.channels)),
-                (u'Length', self.length)]
+        ogginfo = [('Bitrate', 'Lossless'),
+                   ('Frequency', self.frequency),
+                   ('Bits Per Sample', self.bitspersample),
+                   ('Channels', str(info.channels)),
+                   ('Length', self.length)]
         return [('File', fileinfo), ('FLAC Info', ogginfo)]
 
     info = property(_info)
 
-filetypes = []
 
+filetypes = []
 
 if OggOpus:
     filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus.ogg'))
     filetypes.append((OggOpus, Opus_Tag, 'VorbisComment', 'opus'))
 
 filetypes.extend([
-    (OggVorbis, Ogg_Tag, u'VorbisComment', 'ogg'),
-    (FLAC, FLAC_Tag, u'VorbisComment', 'flac')]
+    (OggVorbis, Ogg_Tag, 'VorbisComment', 'ogg'),
+    (FLAC, FLAC_Tag, 'VorbisComment', 'flac')]
 )
