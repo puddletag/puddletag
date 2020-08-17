@@ -353,7 +353,7 @@ def userurl_handler(frames):
     for frame in frames:
         frame.get_value = get_factory(get_url, frame)
         frame.set_value = set_factory(set_url, frame)
-        d[u'www:' + frame.desc] = frame
+        d['www:' + frame.desc] = frame
     return d
 
 
@@ -373,7 +373,7 @@ def create_paired(key, value):
 
 
 def get_paired(frame):
-    return [u';'.join([u':'.join(z) for z in frame.people])]
+    return [';'.join([':'.join(z) for z in frame.people])]
 
 
 def set_paired(frame, text):
@@ -411,7 +411,7 @@ def create_comment(desc, value):
     frame = id3.COMM(encoding, 'XXX', desc, value)
     frame.get_value = lambda: get_text(frame)
     frame.set_value = partial(set_text, frame)
-    return {u'comment:' + frame.desc: frame}
+    return {'comment:' + frame.desc: frame}
 
 
 def set_commentattrs(frame):
@@ -426,7 +426,7 @@ def comment_handler(frames):
         if not frame.desc and 'comment' not in d:
             d['comment'] = frame
         else:
-            d[u'comment:' + frame.desc] = frame
+            d['comment:' + frame.desc] = frame
     return d
 
 
@@ -457,7 +457,7 @@ def playcount_handler(frame):
     frame = frame[0]
     frame.get_value = lambda: get_playcount(frame)
     frame.set_value = partial(set_playcount, frame)
-    return {u'playcount': frame}
+    return {'playcount': frame}
 
 
 def create_popm(values):
@@ -528,7 +528,7 @@ def create_ufid(key, value):
     frame = id3.UFID(owner, value)
     frame.get_value = partial(get_ufid, frame)
     frame.set_value = partial(set_ufid, frame)
-    return {u'ufid:' + frame.owner: frame}
+    return {'ufid:' + frame.owner: frame}
 
 
 def set_ufid(frame, value):
@@ -663,7 +663,7 @@ def get_uslt(frames):
         return ret if isinstance(ret, str) else \
             str(ret, 'utf8', 'replace')
 
-    ret = [u'%s|%s|%s' % (text(frame, 'lang'), text(frame, 'desc'),
+    ret = ['%s|%s|%s' % (text(frame, 'lang'), text(frame, 'desc'),
                           text(frame, 'text')) for frame in frames]
     return lambda: ret
 

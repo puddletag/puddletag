@@ -133,12 +133,12 @@ def parse_tracklist(tlist):
         a_len = len(t.get('artists', []))
         for i, a in enumerate(t.get('artists', [])):
             if a_len > 1 and a.get('join'):
-                artist.append('%s %s ' % (a[u'name'], a[u'join']))
+                artist.append('%s %s ' % (a['name'], a['join']))
             else:
                 if i < a_len - 1:
-                    artist.append('%s & ' % a[u'name'])
+                    artist.append('%s & ' % a['name'])
                 else:
-                    artist.append(a[u'name'])
+                    artist.append(a['name'])
         info['artist'] = ''.join(artist).strip()
         info['title'] = title
 
@@ -335,7 +335,7 @@ def urlopen(url):
 
 class Discogs(object):
     name = 'Discogs.com'
-    group_by = [u'album', 'artist']
+    group_by = ['album', 'artist']
     tooltip = translate("Discogs", """<p><b>Discogs only support searching by release id</b></p>
         <p>Enter the release id Eg. "1257896" to search.</p>""")
 

@@ -282,14 +282,14 @@ class Amazon(object):
     # The values passed to Object.search will be album (a string)
     # and dictionary containing the different artists as keys and
     # a list of tags (dictionaries) as the values.
-    group_by = [u'album', 'artist']
+    group_by = ['album', 'artist']
 
     # So for these values the values passed to Object.search may be
-    # ("Give Up", artist={u'The Postal Service': [track listing...]})
+    # ("Give Up", artist={'The Postal Service': [track listing...]})
 
     # Each element of track listing is a dictionary of field: value keys
     # containing file-specific info., eg.
-    # {'track': [u'10'], 'title': [u'Natural Anthem'], '__length': '5:07'}
+    # {'track': ['10'], 'title': ['Natural Anthem'], '__length': '5:07'}
     # values are usually lists and "builtin" values are strings.
     # All strings are unicode, so don't worry about conversions.
 
@@ -381,7 +381,7 @@ class Amazon(object):
 
         # albuminfo is a dictionary containing information applicable to
         # the whole album name like
-        # {'artist': [u'The Postal Service'], 'album': [u'Give Up'],
+        # {'artist': ['The Postal Service'], 'album': ['Give Up'],
         #    'year': '2003'}
         # Values can be either strings or lists of strings,
         # but all strings must be unicode!

@@ -192,7 +192,7 @@ def parse_search_page(indexformat, page, search_source, url=None):
 class Cursor(object):
     def __init__(self, text, source_lines):
         self.text = text
-        self.all_lines = [z + ' ' for z in text.split('\n')] + [u' ']
+        self.all_lines = [z + ' ' for z in text.split('\n')] + [' ']
         self.all_lowered = [z.lower() for z in self.all_lines]
         self.lineno = 0
         self.charno = 0

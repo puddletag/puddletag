@@ -54,30 +54,30 @@ def getFilename(filename):
 
 
 getTime = lambda date: audioinfo.strtime(int(date))
-getCreated = lambda created: {u'__created': getTime(created)}
-getModified = lambda modified: {u'__modified': getTime(modified)}
-getLength = lambda length: {u'__length': audioinfo.strlength(int(length))}
-getBitRate = lambda bitrate: {u'__bitrate': bitrate + ' kb/s'}
+getCreated = lambda created: {'__created': getTime(created)}
+getModified = lambda modified: {'__modified': getTime(modified)}
+getLength = lambda length: {'__length': audioinfo.strlength(int(length))}
+getBitRate = lambda bitrate: {'__bitrate': bitrate + ' kb/s'}
 
-CONVERSION = {u'title': 'title',
-              u'genre': 'genre',
-              u'artist': 'artist',
-              u'album': 'album',
-              u'track-number': 'track',
-              u'duration': getLength,
-              u'file-size': '__size',
-              u'location': getFilename,
-              u'first-seen': getCreated,
-              u'mtime': getModified,
-              u'last-seen': '__last_seen',
-              u'bitrate': getBitRate,
-              u'disc-number': 'discnumber'}
+CONVERSION = {'title': 'title',
+              'genre': 'genre',
+              'artist': 'artist',
+              'album': 'album',
+              'track-number': 'track',
+              'duration': getLength,
+              'file-size': '__size',
+              'location': getFilename,
+              'first-seen': getCreated,
+              'mtime': getModified,
+              'last-seen': '__last_seen',
+              'bitrate': getBitRate,
+              'disc-number': 'discnumber'}
 
 setLength = lambda length: {'duration': str(audioinfo.lnglength(length))}
 setCreated = lambda created: {'first-seen': str(audioinfo.lngtime(created))}
 setBitrate = lambda bitrate: {'bitrate': str(audioinfo.lngfrequency(bitrate) / 1000)}
 setModified = lambda modified: {'last-seen': str(audioinfo.lngtime(modified))}
-setFilename = lambda filename: {u'location': 'file://' + str(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
+setFilename = lambda filename: {'location': 'file://' + str(QUrl.toPercentEncoding(filename, '/()"\'')).encode('utf8')}
 
 RECONVERSION = {
     'title': 'title',

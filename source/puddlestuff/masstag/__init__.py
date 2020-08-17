@@ -245,7 +245,7 @@ def get_match_str(info):
         return MATCH_NO_INFO
 
 
-get_lower = lambda f, key, default=u'': to_string(f.get(key, default)).lower()
+get_lower = lambda f, key, default='': to_string(f.get(key, default)).lower()
 
 
 def ratio_compare(d1, d2, key):
@@ -544,7 +544,7 @@ def to_int(v):
 
 
 class MassTagProfile(object):
-    def __init__(self, name=DEFAULT_NAME, desc=u'', fields=None, files=None,
+    def __init__(self, name=DEFAULT_NAME, desc='', fields=None, files=None,
                  file_pattern=DEFAULT_PATTERN, profiles=None, album_bound=0.50,
                  track_bound=0.80, jfdi=True, leave_existing=False, regexps=''):
 
@@ -552,7 +552,7 @@ class MassTagProfile(object):
 
         self.album_bound = album_bound
         self.desc = desc
-        self.fields = [u'artist', 'title'] if fields is None else fields
+        self.fields = ['artist', 'title'] if fields is None else fields
         self.file_pattern = file_pattern
         self.files = [] if files is None else files
         self.jfdi = jfdi
@@ -741,5 +741,5 @@ if __name__ == '__main__':
 
     sources = dict((t.name, t) for t in tagsources)
     source = sources['Local TSource Plugin']()
-    source.applyPrefs([u'/mnt/multimedia/testlib'])
+    source.applyPrefs(['/mnt/multimedia/testlib'])
     print(source._dirs)

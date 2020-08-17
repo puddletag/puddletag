@@ -85,7 +85,7 @@ class ParentItem(TreeWidgetItem):
 
 
 class ChildItem(TreeWidgetItem):
-    def __init__(self, album, artist=u'', parent=None):
+    def __init__(self, album, artist='', parent=None):
         self.artist = artist
         self.album = album
 

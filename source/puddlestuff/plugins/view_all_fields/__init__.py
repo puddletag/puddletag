@@ -78,8 +78,8 @@ def init(parent=None):
 
 
 class ButtonsAndList(QFrame):
-    def __init__(self, parent=None, title=u'', add_text=ADD_TEXT,
-                 help_text=u''):
+    def __init__(self, parent=None, title='', add_text=ADD_TEXT,
+                 help_text=''):
 
         QFrame.__init__(self, parent)
         self.title = title

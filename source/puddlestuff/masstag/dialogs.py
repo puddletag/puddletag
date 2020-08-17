@@ -694,7 +694,7 @@ if __name__ == '__main__':
     mtp = MassTagProfile('Searching', 'Testing Search',
                          ['artist', 'title'], None, '%artist% - ktg',
                          [tsp], 0.70, 0.90, False, True,
-                         {'album': [u'(.*?)\s+\(.*\)', '$1']})
+                         {'album': ['(.*?)\s+\(.*\)', '$1']})
     # win = MTProfileEdit(sources, mtp)
 
     win = MassTagEdit(sources)
