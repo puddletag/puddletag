@@ -515,7 +515,7 @@ def errormsg(parent, msg, maximum):
     if maximum > 1:
         mb = QMessageBox(QMessageBox.Warning, translate("Defaults", 'Error'),
                          msg + translate("Defaults", "<br /> Do you want to continue?"),
-                         QMessageBox.Yes or QMessageBox.No or QMessageBox.YesToAll,
+                         QMessageBox.Yes | QMessageBox.No | QMessageBox.YesToAll,
                          parent)
         mb.setDefaultButton(QMessageBox.Yes)
         mb.setEscapeButton(QMessageBox.No)
