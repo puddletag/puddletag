@@ -10,8 +10,6 @@ from html.entities import name2codepoint as n2cp
 from subprocess import call
 import shutil
 
-# Need to have Sphinx and PyRSS2Gen installed.
-
 
 def remove_headerlinks(text):
     return re.sub("""<a class=['"]headerlink['"] .*?</a>""", "", text)
