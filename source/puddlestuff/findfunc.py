@@ -811,7 +811,7 @@ class Function:
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
-            self.doc = [u','.join([funcname.name, funcname.print_string])] + \
+            self.doc = [','.join([funcname.name, funcname.print_string])] + \
                        [','.join(z) for z in funcname.args]
             self.info = [funcname.name, funcname.print_string]
         else:
