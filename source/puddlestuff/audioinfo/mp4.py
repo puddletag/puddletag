@@ -374,7 +374,7 @@ class Tag(util.MockTag):
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 
-        for k, v in tags.items():
+        for k, v in list(tags.items()):
             if not v:
                 del (tags[k])
 
