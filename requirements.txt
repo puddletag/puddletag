@@ -2,3 +2,7 @@ Markdown==3.1.1
 PyRSS2Gen==1.1
 Sphinx==1.4.8
 sphinx-bootstrap-theme==0.4.13
+pyqt5==5.15
+configobj==5.0
+mutagen==1.45
+pyparsing==2.4.7
