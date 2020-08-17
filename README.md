@@ -1,9 +1,6 @@
-**WARNING**: this is a development branch to update puddletag to PyQt5 and Python3; expect bugs, if so report them in the issues session of github.
-
 # puddletag
 
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
-
 
 ## Contents
  1. [About](#1-about)
@@ -19,8 +16,6 @@ puddletag is an audio tag editor (primarily created) for GNU/Linux similar to th
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.  
 
 The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.  
-
-*Note*: Not all functions are implemented yet for this fork.  
 
 There are also Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There’s quite a bit more, but I’ve reached my comma quota.  
 
@@ -52,12 +47,11 @@ After installing the dependencies above:
 
 
 ```
-git clone https://github.com/sandrotosi/puddletag
+git clone https://github.com/puddletag/puddletag
 cd puddletag
 PYTHONPATH=source/ ./source/puddletag
 ```
 
-
 ## 5. Support
 
-Please use [Github issues](https://github.com/sandrotosi/puddletag/issues).  
+Please use [Github issues](https://github.com/puddletag/puddletag/issues).  

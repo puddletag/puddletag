@@ -1,6 +1,7 @@
 # this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
 # while we're at it, we also wrap url fetching.
 
+
 import re
 import urllib.error
 import urllib.parse
@@ -32,25 +33,28 @@ class SoupWrapper(object):
             if isinstance(args[1], dict):
                 kwargs.update(args[1])
             else:
-                kwargs['class'] = args[1]
+                kwargs["class"] = args[1]
         query_items = list(kwargs.items())
         query_items = classify(query_items, lambda x: isinstance(x[1], (str, str)))
         regular_items = query_items.get(True, [])
         re_items = query_items.get(False, [])
-        xpath_query = ' and '.join("@%s='%s'" % (key, value) for key, value in regular_items)
+        xpath_query = " and ".join(
+            "@%s='%s'" % (key, value) for key, value in regular_items
+        )
         if xpath_query:
-            xpath_query = '[%s]' % xpath_query
+            xpath_query = "[%s]" % xpath_query
         if len(args) == 1 and not isinstance(args[0], dict):
-            query = './/%s%s' % (args[0], xpath_query)
+            query = ".//%s%s" % (args[0], xpath_query)
         else:
-            query = './/*%s' % xpath_query
+            query = ".//*%s" % xpath_query
         results = self.element.xpath(query)
         if re_items:
             new_results = []
             for x in results:
-                if all(x.attrib and
-                       key in x.attrib and
-                       re.search(value, x.attrib[key]) for key, value in re_items):
+                if all(
+                    x.attrib and key in x.attrib and re.search(value, x.attrib[key])
+                    for key, value in re_items
+                ):
                     new_results.append(x)
             results = new_results
         return [SoupWrapper(x) for x in results]
@@ -92,7 +96,7 @@ class SoupWrapper(object):
         for x in self.element:
             if x.tail:
                 result.append(x.tail)
-        return ''.join(result)
+        return "".join(result)
 
     def all_recursive_text(self, should_continue=lambda node: True):
         r = []
@@ -103,7 +107,7 @@ class SoupWrapper(object):
                 r.append(node.all_recursive_text(should_continue))
             if node.element.tail:
                 r.append(node.element.tail)
-        return ' '.join(r)
+        return " ".join(r)
 
     @property
     def contents(self):
