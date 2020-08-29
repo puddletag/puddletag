@@ -19,10 +19,10 @@ puddletag requires the following dependencies. Visit the respective project's pa
 
 Install instructions follow below.
 
-+   At least `Python 2.6 (but not Python 3) <http://python.org>`_
-+   `PyQt5 (with Qt of course) <http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
++   At least `Python 3.8<http://python.org>`_
++   `PyQt5<http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
 +   `PyParsing (≥1.5.1) <http://pyparsing.wikispaces.com>`_ takes care of the parsing...
-+   `Mutagen (1.20 recommended, 1.14 required) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
++   `Mutagen (≥1.45) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
 +   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ (optional) for AcoustID support.
 
 .. _installing_from_source:
@@ -89,7 +89,7 @@ Source control is done using Git. Use
 
 .. code-block:: bash
 
-    git clone git@github.com:keithgg/puddletag.git
+    git clone git@github.com:puddletag/puddletag.git
 
 to check it out. And
 
