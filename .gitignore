@@ -10,3 +10,4 @@ puddletag-docs/translations
 venv
 rss_temp*.txt
 rss_temp*.html
+rss_temp*.doctree

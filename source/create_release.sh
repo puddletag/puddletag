@@ -5,7 +5,7 @@ echo Created dir $BUILD_DIR
 mkdir -p $BUILD_DIR
 
 echo "Creating source release"
-python2 setup.py --quiet sdist --owner=root --group=root --dist-dir=$BUILD_DIR 
+python3 setup.py --quiet sdist --owner=root --group=root --dist-dir=$BUILD_DIR 
 
 # echo "Making documentation"
 cd ../puddletag-docs
