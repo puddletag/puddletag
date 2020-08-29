@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sat, 29 Aug 2020 14:17:25 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sat, 29 Aug 2020 14:53:56 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>29 August 2020 - Python3</title><link>http://puddletag.sourceforge.net/news.html#august-2020-python3</link><description>
+  &lt;div class="section" id="august-2020-python3"&gt;
+&lt;h1&gt;29 August 2020 - Python3&lt;/h1&gt;
+&lt;p&gt;It&amp;#8217;s finally here!&lt;/p&gt;
+&lt;p&gt;(I [Keith] personally had nothing to do with it). This release is thanks to Sandro Tosi and the amazing people below.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;blueblots&lt;/li&gt;
+&lt;li&gt;Elizabeth M&lt;/li&gt;
+&lt;li&gt;elsabio&lt;/li&gt;
+&lt;li&gt;klslz&lt;/li&gt;
+&lt;li&gt;Marko Hauptvogel&lt;/li&gt;
+&lt;li&gt;Pedro M. Baeza&lt;/li&gt;
+&lt;li&gt;Steven Saus&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There are no new features, but probably a bit more bugs. This release is purely about updating puddletag to Python3 and PyQt5.&lt;/p&gt;
+&lt;p&gt;Cheers!&lt;/p&gt;
+&lt;/div&gt;
+
+</description><author>concentricpuddle</author><pubDate>Sat, 29 Aug 2020 00:00:00 GMT</pubDate></item><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
   &lt;div class="section" id="august-2020-some-updates"&gt;
 &lt;h1&gt;3 August 2020 - some updates&lt;/h1&gt;
 &lt;p&gt;Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I&amp;#8217;ll put out a release for testing. There is no timeline as yet and we&amp;#8217;ll take things as they go.&lt;/p&gt;

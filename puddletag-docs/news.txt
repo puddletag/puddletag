@@ -17,6 +17,28 @@ News
 
 ----
 
+29 August 2020 - Python3
+########################
+
+It's finally here!
+
+(I [Keith] personally had nothing to do with it). This release is thanks to Sandro Tosi and the amazing people below.
+
+- blueblots
+- Elizabeth M
+- elsabio
+- klslz
+- Marko Hauptvogel
+- Pedro M. Baeza
+- Steven Saus
+
+There are no new features, but probably a bit more bugs. This release is purely about updating puddletag to Python3 and PyQt5.
+
+Cheers!
+
+
+----
+
 3 August 2020 - some updates
 ############################
 

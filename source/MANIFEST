@@ -1,3 +1,4 @@
+requirements.txt
 changelog
 copyright
 NEWS
@@ -23,6 +24,7 @@ puddlestuff/functions_dialogs.py
 puddlestuff/genres.py
 puddlestuff/helperwin.py
 puddlestuff/loadshortcuts.py
+puddlestuff/logger.py
 puddlestuff/m3u.py
 puddlestuff/musiclib.py
 puddlestuff/pluginloader.py
