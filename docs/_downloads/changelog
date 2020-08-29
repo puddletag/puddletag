@@ -1,0 +1,268 @@
+29 August 2020
+   Python 3!
+
+27 November 2016
+   Fixed: #280 Turn off auto-saving "Enter description here" description for cover art
+   Added: CJK Encoding for Encoding Conversion Function (XIE Dongping)
+   Fixed: Parsing tracks in Discogs if only a single artist (Frank Sachsenheim)
+   Fixed: Setting user-agent for Tag Sources (Frank Sachsenheim)
+   Fixed: Support for latest mutagen (Bruno Bergot)
+   Changed: Improved Amazon tag source album matching.
+   Added: Swedish translation (Åke Engelbrektson)
+   Updated: Czech translation (Pavel Fric)
+   Added: Spanish translation (José Vidal)
+   Removed: Compiling Ubuntu deb
+
+31 January 2016 1.1.1
+    Fixes issue starting puddletag without having git installed.
+
+31 January 2016 1.1.0
+    Playlists not getting loaded in certain cases
+    Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.
+    Plugins are now included in default install
+    Padding of total tracks number follows the same rules as padding a track number #269
+    Improved matching of Amazon resources
+    Filtering 'simple' values works again #253
+    Bug in regex functions where extra \ can get added    
+    Modified date is updated by default when saving
+    Autonumbering has a bunch of new options. Explained in docs.
+	
+11 March 2014 - 1.0.3
+    Fixed: Placeholder causing puddletag to not start up for Qt < 4.7.
+    Fixed: New version of configobj library not saving unicode objects.
+    Fixed: __num_images count for mp3 and ogg.
+    
+	
+7 November 2013 - 1.0.2
+    Fixed: Escaped chars in functions weren't being escaped correctly. Check your functions if they make use of this odd behaviour.
+    Added: Opus support.
+    Added: Artwork windows list JPG + PNG's at the same time.
+	
+14 July 2013 - 1.0.2 RC1
+    Added: Multiple-valued fields can be added using '\\' in extended tags.
+    Added: Czech translation by Pavel Fric.
+    Fixed: MP4 tagging not working at all.
+    Added: Dropdown in Extended Tags that works like Tag Panel.
+    Fixed: Directory renaming not stripping invalid chars.
+    Fixed: $validate scripting function failing when '/' in arguments.
+    Fixed: Unable to delete fields if __total populated.
+    Added: __total can be edited in Tag Panel and other places.
+    Fixed: Album art can be dragged from browser. If link can be resolved, image will be loaded.
+    Added: Confirmation dialog if copying large amounts of data.
+    Added: In field selection dialog for columns, fields are listed in combo box.
+    Added: Support for MusicBrainz cover art.
+    Fixed: Search by ID for MusicBrainz tag source.
+    Added: Directory modified date is force-changed if files are modified.
+    Added: disambiguation to album title for MusiBrainz so that album titles would be "Somaro (Deluxe Edition)" instead of just "Somaro".
+    Added: Tags can be submitted to AcoustID.
+    Added: Russian translation.
+    Fixed: Removed invalid files from puddletag.pro for translations.
+    Changed: Column settings take ordering made by user (by dragging, etc) into account.
+    Fixed: checked Actions being overwritten by check Quick Actions selections.
+    Added: catno field to Discogs tag source.
+    Fixed: Discogs didn't return all album info.
+    Changed: Discogs multiple artists are concatenated using &.
+    Added: __total can be added to Tag Panel and edited.
+
+31 August 2012 - 1.0.1
+    Changed: AcoustID tag source is not loaded if fpcalc binary not found.
+    Fixed: Issue 189.
+    Fixed: puddletag.desktop file installation error with .deb file.
+    Fixed: python2.6 incompatibility.
+    
+21 August 2012 - 1.0.0
+    Added: Updated icon
+    Fixed: Cutting tags wasn't working.
+    Added: Russian translation by Viktor Yu. Kovalskiy
+    Fixed: If multiple files were selected in file-view and edited.
+           When changing focus, the new cell would be opened and would remain
+           with the value as before after the change.
+    Added: German translation by Ralf Sarholz
+    Changed: Updated .desktop file as per issue 186.
+    Fixed: Encoding is added for genre field. Fixes http://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=4&p=699&sid=10751cabefe27ffcd74eea2dde7663f8#p699
+    Fixed: Filter wasn't working with filename fields like __filename.
+    Added: To .desktop file, options that'll make it possible to right click in FM and open in puddletag.
+
+9 June 2012 - 1.0.0RC1
+    Fixed: Issue 183 where the Tag Sources dialog wouldn't unfreeze for invalid results.
+    Added: Copy/Paste now copies the data as JSON to clipboard.
+    Fixed: Masstagging was discarding albums with same name.
+    Fixed: Issue 181. regex function wasn't working on Python 2.6.
+    Fixed: Edge cases with Mp3tag tag sources.
+    Fixed: Undoing filename related changes weren't being effected.
+    Fixed: Issue 180 where directories weren't unloaded when loading a new one.
+    Added: Status message for Mp3tag tag sources.
+    Fixed: Creating new actions duplicated old ones.
+    Added: Made it impossible to save Functions with invalid field names.
+    Fixed: AcoustID doesn't have as many dependencies. Only chromaprint as
+           included sampsyo's pyacoustid source and wrote supporting libs
+           to contain only needed code.
+    Changed: Filesystem panel will not update if hidden. Works for loading
+             large directories so puddletag won't freeze for an extended
+             period.
+    Added: AcoustID tag source also returns acoustid_fingerprint field.
+    Changed: If directory was created when removing a file, that directory will
+             be removed if change is undone.
+    
+
+18 April 2012 - 1.0.0beta6
+    Fixed issues with deb not un/installing.
+    Fixed issue with dropping album art on Artwork window. Invalid files would still affect the files that have been loaded.
+    Fixed error in parser where it wouldn't detect syntax errors correctly.
+    Added translations to source tarball.
+
+10 April 2012 - 1.0.0beta5
+    Added AcoustID support. Not complete as yet.
+    Featuring artist in MusicBrainz tag source are parsed correctly.
+    Rate limiting for FreeDB as too many requests at once causes errors.
+    Restart numbering checkbox in Autonumbering wizard now hides the Total spinbox so that track numbering is generated for each directory.
+    $num function uses the length for the track number only and not the total.
+    Massively updated parser.
+    ID3v2.3 frames are written in same order as Mp3tag's.
+    $regex function added.
+    Fixed Amazon tag source as now requires AssociateTag to do lookups.
+    Added parameter to $num function to use track separators or not (default not)
+    For functions like $meta_sep to not use parsed patterns as things like \\\\ were being parsed as one separator instead of two.
+    VA album lookups for Discogs.
+    Dutch Translation by Fabian Bakkum.
+    Added __md5_sig field that lists internal MD5 signature of FLAC files.
+    For Discogs, fixed albums where tracks don't have lengths weren't being loaded.
+    Fixes issue 174, where if scrollbar shown in Functions dialog, it sometimes hides text.
+
+12 February 2012 - 1.0.0beta4
+    Helpful menu items added to about menu.
+    Updated documentation.
+    Fixed centering of images in docs.
+    When Discogs returned no results there'd be an error.
+
+24 January 2012 - 1.0.0beta3
+    Fixes for issue 171.
+    
+23 January 2012 - 1.0.0beta2
+    Fixed MusicBrainz not working (issue 170).
+    
+22 January 2012 - 1.0.0beta1
+    Improved masstagging for albums with weird track numbers.
+    Mastagging matching improved (courtesy of beets)
+    Masstagging ignores stuff inbetween brackets like "this name (disc 1)" and
+    retries the search.
+    Mastagging checks all files and rearranges for best matches instead finding the
+    best match for one file and putting that match out of the running for checking
+    with later files.
+    $round, $ceiling and $floor scripting functions.
+    Mp3tag tag sources are fully supported.
+    Files containing APEv2 tags are loaded even if the file is not a valid audio file.
+    Confirmations when exiting/loading dirs if file's still contain previews.
+    If writing previews to files fails, then those files' previews are kept.
+    $eql scripting function.
+    Fixed a bug whereby if a file has an invalid picture type, puddletag would not start up. https://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=4&p=542#p542
+    If changed field for one file and multiple files selected, all will be update. Plus others.
+    Quickactions and actions' checked settings are now stored in different keys in config.
+    Plugins are sorted in plugin chooser widget.
+    Support for MusicBrainz's new API.
+    Update Discogs tag source to use new Discogs API as per http://www.discogs.com/help/forums/topic/234138.
+    An error would be raised when trying to save invalid picture data. Data is discarded now upon saving. Issue 167
+    --version command line option.
+    Request to check log to for more info in error messages.
+
+
+24 August 2011 - 0.10.6.3
+    Did modifications for inclusion into Debian.
+
+21 August 2011 - 0.10.6-2
+    No source changes. Added missing files required for Debian packaging.
+
+6 June 2011 - 0.10.6
+    Fix for freezes if Update empty fields and 'Retrieve exact matches.' checked
+    in Tag Sources dialog.
+4 June 2011 - 0.10.5
+    Tag Sources were broken in the release.
+3 June 2011 - 0.10.4
+News:
+    Man page added.
+    New logo created.
+    Added data files to source tarball.
+    Added documentation to source tarball.
+    French translation contributed by Raphaël Rochet.
+    Added changelog.
+
+New Features:
+    Much improved masstagging.
+    Save artwork to file Function.
+    Filter that behaves like Mp3tag's.
+    In Discogs tag source:
+            Added the ability to retrieve track artists
+            for Various Artist albums.
+
+            This required that the involvedpeople field be renamed
+            to involvedpeople_album as a list of involved people were
+            returned for each track too.
+
+            These people are added to the involvedpeople_track field.
+
+    URL links for albums in Tag Sources dialog are shown for all
+    Tag Sources (except FreeDB).
+    
+    Tag to filename and Tag->Dir functions handle patterns
+    like '../%artist%' and './%artist%/%album%' correctly.
+
+    Options for setting the pattern used in saving covers to file dialogs.
+    Ability to drag and drop folders on file-view.
+
+Fixes:
+    Lines that contain '/' being parsed incorrectly in Import Text File dialog.
+    FreeDB tag source artist/album parsing.
+    Undoing renaming of dirs.
+    MusicBrainz Tag Source ratings error.
+    Tag->Dir creating subfolders when it shouldn't.
+    Issue 132: Images weren't being added to list of fields to undo.
+    
+    Numbering of COMM frames (and others like it) to have frames with
+    the same description being number 0,1,2,3 instead of 0,01,002, etc.
+    
+    When editing actions, if a field not in the current list of fields was
+    used, then the list of saved fields would contain only that field.
+    
+    If a file contained an ID3v2.2 tag than that tag would be shown
+    twice in the Stored Tags window.
+    
+    Patterns that use scripting functions like $validate(arg1,,arg3) will
+    work correctly in that the second argument will evaluate to an empty
+    string instead of being discarded.
+
+    For Discogs Tag Source: Images were being retrieved even if disabled
+    when using textual searches.
+
+    Changing files in Extended Tags changes the selection in File-View,
+    thereby ensuring changes are written to the correct file.
+
+    Editing colour in Extended Tags remaining green even if changed.
+    Multiple value handling for ID3v2.3
+
+Changes:
+    Unicode support for Replace with Regular Expression function.
+    Overhaul of Masstagging internals.
+    peformersortorder has been renamed to performersortorder in ID3 tags.
+    Images can be removed when the Cover Varies in Extended Tags.
+    The semi-colon character(';') has been removed from the list of
+    invalid filename chars.
+    
+    Renaming dirs hooks into Tag->Dir function now.
+    lyrics_us is now unsyncedlyrics
+
+    Proper error messages differentiating whether the error occurred.
+    while writing to files or renaming dirs, files.
+    
+    Subfolder checkbox in the Filesystem window being enabled
+    when it had no reason to be.
+    
+    If last loaded dir is not found on startup,
+    then all parents of that dir (still existing) will be expanded.
+    
+    Functions dialog restores last used function upon first load.
+
+    In QuodLibet Library:
+        Changes the fields: _rating to rating, _skipcount to __skipcount, _playcount to playcount.
+        All fields are caseless.
+        Fixed the loading of fields with numbers for values.
+        Added the __tag and __tag_read fields.

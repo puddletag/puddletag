@@ -1,0 +1,1108 @@
+.. include:: subs.txt
+
+News
+^^^^
+
+
+.. |rss| image:: feed.png
+    :width: 27px
+    :height: 28px
+    :alt: RSS Image
+    :class: text
+
+
+:download:`RSS Feed <rss.xml>`
+
+
+
+----
+
+29 August 2020 - Python3
+########################
+
+It's finally here!
+
+(I [Keith] personally had nothing to do with it). This release is thanks to Sandro Tosi and the amazing people below.
+
+- blueblots
+- Elizabeth M
+- elsabio
+- klslz
+- Marko Hauptvogel
+- Pedro M. Baeza
+- Steven Saus
+
+There are no new features, but probably a bit more bugs. This release is purely about updating puddletag to Python3 and PyQt5.
+
+Cheers!
+
+
+----
+
+3 August 2020 - some updates
+############################
+
+Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I'll put out a release for testing. There is no timeline as yet and we'll take things as they go.
+
+To prepare for this, we've moved puddletag to a new puddletag organisation. You can find it at https://github.com/puddletag/puddletag/ even though existing
+links should just redirect.
+
+
+----
+
+27 November 2016 - 1.2.0
+########################
+
+Minor fixes were made over the course of the year. This release is so that package maintainers can update their repos.
+
+A Debian package is no longer supplied, supporting two versions of Ubuntu and Debian from a single .deb would take way too much time. For Ubuntu users, `WebUpd8 <http://www.webupd8.org/>`_ keeps their `PPA <https://launchpad.net/~nilarimogard/+archive/ubuntu/webupd8>`_ up to date.
+
+Additions
+
+- Swedish translation (Åke Engelbrektson)
+- CJK Encoding for Encoding Conversion Function (XIE Dongping)
+- Spanish translation (José Vidal)
+
+Changes
+
+- Improved Amazon tag source album matching.
+- Czech translation (Pavel Fric)
+
+Fixes
+
+- #280 Turn off auto-saving "Enter description here" description for cover art
+- Parsing tracks in Discogs if only a single artist (Frank Sachsenheim)
+- Setting user-agent for Tag Sources (Frank Sachsenheim)
+- Support for latest mutagen (Bruno Bergot)
+   
+
+
+
+
+----
+
+31 January 2016 - 1.1.0
+#######################
+
+**Update**: There was a bug where puddletag would not start if you didn't have git installed. v1.1.1 released as a result.
+
+puddletag v1.1.0 is out. This release contains minor changes made over more than a year.
+
+This will be the last release on SourceForge. All future downloads will point to GitHub. Documentation can be found
+at the new URL http://docs.puddletag.net.
+
+I'm still looking at different options re the forum. I'll close it towards new posts within the next month.
+
+Fixes
+
+- Playlists not getting loaded in certain cases
+- Discogs changed their API to allow OAuth. As a result you can now only lookup releases using their Discogs release id.
+- Plugins are now included in default install
+- Padding of total tracks number follows the same rules as padding a track number #269
+- Improved matching of Amazon resources
+- Filtering 'simple' values works again #253
+- Bug in regex functions where extra \ can get added
+
+Changes
+
+- Modified date is updated by default when saving
+
+New
+
+- Autonumbering has a bunch of new options. Explained :ref:`here <autonumbering_wizard>`.
+
+
+
+----
+
+13 May 2015 - Moving to Github.
+###############################
+
+With the shutdown of Google Code and the increasing dissatisfaction with SF, I've moved the code and issue tracker over to Github.
+
+`Linky <https://github.com/keithgg/puddletag>`_
+
+I'll move the rest of the site soon enough.
+
+
+
+
+----
+
+15 November 2014 - 1.0.5
+########################
+
+This is a bug fix which fixes an issue in Actions where floating point values were handled incorrectly.
+
+`.tar.gz download <http://sourceforge.net/projects/puddletag/files/puddletag-1.0.5.tar.gz>`_ | `.deb download <http://sourceforge.net/projects/puddletag/files/puddletag_1.0.5-1_all.deb>`_
+
+
+----
+
+9 November 2014 - 1.0.4
+#######################
+
+This one has been a long time coming. Not much new except bugfixes, but they should lessen some of the pain that some users have been experiencing.
+
+Fixes
+-----
++ Regular expression parsing
++ Discogs API no longer working. Fixed it so that searches can be done using Discogs release id only.
++ Fixed comparison of boolean values in format strings.
++ Scripting function escaping wasn't working.
+
+Changes
+-------
+
++ All config options are stored as JSON. Should fix issues with not being able to store certain values.
+
+Added
+-----
+
++ $to_num scripting function. Converts text to numbers for easy comparison.
++ AIFF support.
++ Configuration is stored using XDG dirs. Settings are in ~/.config/puddletag and ~/.local/share/puddletag
+
+`.tar.gz download <http://sourceforge.net/projects/puddletag/files/puddletag-1.0.4.tar.gz>`_ | `.deb download <http://sourceforge.net/projects/puddletag/files/puddletag_1.0.4-1_all.deb>`_
+
+
+----
+
+22 June 2014 - New forum
+########################
+
+SourceForge has retired the hosted apps offering so I'll be maintaining it for now. You can find the new forum at http://puddletag.sourceforge.net/forum.
+
+Since logins were managed by SF, you might not be able to log in using your old password. If so, you can just reset your password.
+
+
+
+----
+
+7 November 2013 1.0.2
+#####################
+
+Well, it's been more than a month and now major new issues have been report.
+
+There's not much to tell, but here's some things anyway.
+
+Stuff in this release:
+----------------------
+
++ Escaped chars in functions weren't being escaped correctly. Check your functions if they make use of this odd behaviour.
++ Opus support.
++ Artwork windows list JPG + PNG's at the same time.
+
+
+
+
+----
+
+14 July 2013 - 1.0.2 RC1
+########################
+
+I've been using this release since forever and consider it to work pretty well.
+
+Still an RC though, just in case there are any showstoppers. Use the forum link
+above if you run into any issues. The list of changes is larger than usual.
+Checkout the :download:`changelog` for more.
+
+If no new issues are reported I'll just rename it to 1.0.2 within a month. ;-)
+
+| `Debian Package <http://sourceforge.net/projects/puddletag/files/dev/puddletag_1.0.2RC1-1_all.deb>`_ (SHA1 36b9d63504e95cba47667b48158b0a2132e39bf7)
+| `Source Tarball <http://sourceforge.net/projects/puddletag/files/dev/puddletag-1.0.2RC1.tar.gz>`_ (SHA1 fd832e627cc49aa0379021a7b777c08f23b92550)
+
+New Features:
+-------------
+
++ Dropdown in Extended Tags that works like Tag Panel. Useful for editing multiple valued fields.
++ You can now submit your tags containing MusicBrainz IDs to AcoustID. I suggest you do this.
++ Russian and Czech translations.
++ __total can be edited in Tag Panel and other places.
+
+Fixes:
+------
+
++ MP4 tagging not working at all. I cannot believe no one picked this up.
++ Discogs didn't return all album info.
+
+
+----
+
+26 June 2013 - Some news
+########################
+
+Just a heads up that the repository URL has changed to 
+
+.. code-block:: bash
+   
+   http://hg.code.sf.net/p/puddletag/code
+
+Pavel Fric has contributed a Czech translation which you can :download:`download <translations/puddletag_cs.qm>`.
+
+Contributions are always appreciated so please post on the forum (link above) if you'd like to translate puddletag.
+
+New beta coming this weekend.
+
+
+----
+
+31 August 2012 - 1.0.1
+######################
+
+This release fixes some bugs spotted with the last release.
+
+They include:
+    
++   puddletag.desktop file installation error with deb package.
++   Python2.6 incompatibility.
+
+Have fun!
+
+
+----
+
+21 August 2012 - 1.0.0
+######################
+
+v1 has finally arrived!
+
+There's not much difference between this and RC1 though. Just a change of icon and minor fixes. If you want to have a look at the :download:`changelog`.
+
+Right now puddletag is about as stable as it'll get without much more work. As for the future, I have a some things that I've been putting off until v1. A command line version being top priority.
+
+Anyway, that's it for now. Enjoy!
+
+
+----
+
+9 June 2012 - 1.0.0RC1
+######################
+
+This release is the first RC with the final release planned for next week depending on feedback. All that's still needed is to update the docs, fix some outstanding bugs and package the plugins.
+
+As for the changes here, it's just some bug fixes. For a more comprehensive list see the :download:`changelog`. The most interesting ones are:
+
+Fixes
+-----
++   Loading a new directory would sometimes not unload previously loaded directory.
++   Mp3tag tag source are more compatible than before.
+
+Changes
+-------
++   The only dependency for AcoustID now is that you have 
+    `chromaprint <http://acoustid.org/chromaprint>`_ installed.
+
+
+----
+
+11 April 2012 - 1.0.0beta5
+##########################
+
+**18 April 2012 - Updated to 1.0.0beta6 to fix issues with deb. This is the second last beta.**
+
+This release contains a ton of fixes with regards to Tag Sources.
+
+Fixes
+-----
+
++   MusicBrainz works.
++   Discogs works better with regards to VA albums.
++   Amazon works again.
+
+New Features
+------------
++   **__md5_sig** field for FLAC.
++   **$regex** scripting function.
++   Dutch Translation by Fabian Bakkum.
++   Added AcoustID support, but not for general use yet due to the heavy dependency load. Do not try to make it work unless you're an 'advanced' user.
+
+That's it basically. If you want more, see the :download:`changelog`. Docs for the latest version have been uploaded `here <http://puddletag.sf.net/latest/docs.html>`_. I still have quite a bit of updating to do though.
+
+`Please let me know if you experience any issues. <http://code.google.com/p/puddletag/issues>`_
+
+
+----
+
+22 January 2012 - 1.0.0beta1
+############################
+
+It's been a while I know, but I figured if I don't get this out now I might just
+leave it until next year.
+
+This is a beta, reason being that it's not anywhere near thoroughly tested, but
+it does contain important stuff like.
+
++   Masstagging improvements with regards to both matching (courtesy of `beets <http://beets.radbox.org/>`_)   and searching.
++   $ceiling, $eql, $floor, $round scripting functions.
++   Full support for Mp3tag tag sources.
++   Support for MusicBrainz and Discogs new APIs.
++   More than one file can be written to at a time in the file-view. Just select more than one file, edit a field as normal (like album) and Bob's your aunt.
+
+Test it out and if you find any bugs feel free to `let me know <http://code.google.com/p/puddletag/issues>`_.
+
+:ref:`Download <development_builds>`
+
+
+----
+
+21 September 2011 - Mercurial
+#############################
+
+This is just a heads up that I've moved from Subversion to Mercurial. No real reason for this other than trying something new. I've been committing only to the Mercurial repo for the last couple of months and will continue doing so. The Subversion repo will no longer be used.
+
+Quick commands to get started for those who don't know Mercurial:
+
+To get a copy:
+
+.. code-block:: bash
+
+    hg clone http://puddletag.hg.sourceforge.net:8000/hgroot/puddletag/puddletag puddletag
+
+To update, run in the previously retrieved dir:
+
+.. code-block:: bash
+
+    hg pull -u
+
+Enjoy. ;-)
+
+
+----
+
+3 June 2011 - 0.10.4
+####################
+
+**Update 6 June 2011**: 0.10.6 fixes another bug not found. Think this'll be the last for now.
+**Update 4 June 2011**: Tag sources were broken due to a bug not found in testing. Therefore 0.10.5 has been released.
+
+Unless there're some critical bugs discovered in this release, then the next release will be puddletag v1. There won't be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.
+
+As for this release, there're a lot of changes, but nothing of note UI wise (except for the website theme change copied from the `Django docs <http://djangoproject.com>`_).
+
+Quickly listed, I've added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there's a :download:`changelog` containing most everything done and **Raphaël Rochet** became the first person to translate puddletag by providing a :ref:`French translation <translations>`.
+
+
+New Features
+------------
+
++ Much improved masstagging.
++ The :ref:`Export artwork to file <export_artwork_to_file>` Function.
++ The filter behaves like Mp3tag's. Described in :doc:`source/filter`
++ For the Discogs tag source:
+    + Added the ability to retrieve track artists for Various Artist albums.
+    + This required that the **involvedpeople** field be renamed to **involvedpeople_album** as a list of involved people were returned for each track too.
+    + These people are added to the **involvedpeople_track** field.
+
+Fixes
+-----
+
++ Multiple value handling for ID3v2.3.
++ When editing actions, if a field not in the current list of fields was used, then the list of saved fields would contain only that field.
++ Undoing renaming of dirs and adding images using the Extended Tags dialog.
++ Patterns that use scripting functions in the form **$validate(arg1,,arg3)**. will work correctly in that the second argument will evaluate to an empty string instead of being discarded.
+
+Changes
+-------
+
++ The old Extended Tags plugin will no longer work. Use the :ref:`new one <plugin_downloads>`.
++ Unicode support for Replace with Regular Expression function.
++ **peformersortorder** has been renamed to **performersortorder** in ID3 tags.
++ Similarly the **lyrics_us** field is now **unsyncedlyrics**.
++ Renaming dirs hooks into :ref:`Tag->Dir <tag_to_dir>` function now.
++ A couple related to the QuodLibet library handling.
++ Proper error messages are now shown, differentiating whether the error occurred while writing to files or renaming dirs, files.
+
+
+----
+
+23 March 2011 - 0.10.3
+######################
+
+A couple of critical bugs were found in the last release, they've all been fixed.
+
+Provided nothing critical arises, there won't be any releases until at least late next month.
+
+Fixes
+-----
+
+* Deleting tags when they contain mapped fields.
+* Functions operating on multiple values like Merge Field were broken.
+* peformersortorder is spelt correctly as performersortorder for ID3 tags.
+* Renaming directories when intermediate directories are to be created.
+
+
+----
+
+20 March 2011 - 0.10.2
+######################
+
+Another incremental-bugfix release. I might release another one before month-end.
+
+New Features
+------------
+
+* A bunch of new fields related to Mp3tag compatibility, most notably **__tag** and **__tag_read**. All are listed on the :doc:`source/tags`.
+* Loading subfolders can be turned on/off using the Filesystem Window.
+* USLT Frame support for ID3 that uses the same format as ID3. See the :ref:`ID3 page <uslt>`.
+* The Stored Tags window shows the values of all tags found in file.
+* Experimental ID3v2.3 support courtesy of `MusicBrainz Picard <http://musicbrainz.org/doc/PicardTagger>`_. Multiple values are not supported. Don't use it for now unless you really need to. Then report back on how it went. Enable it in Edit->Preferences->Tags.
+* Two new plugins. Details are on the :ref:`Downloads <plugin_downloads>` page.
+
+Fixes
+-----
+
+*   Major MP4 fixes.
+*   Retrieving PUIDS using the MusicBrainz tag source.
+*   Adding album art from Tag Source was defective.
+*   The Tag Panel not updating with 'previewed' values.
+*   Properties window not showing for certain file types.
+
+Changes
+-------
+
+*   Values in the Stored Tags window aren't emboldened anymore due to performance reasons.
+*   WMA support has been completely removed due to the high risk that you'd end up with damaged files.
+
+
+
+----
+
+8 March 2011 - 0.10.0
+#####################
+
+This is a kind-of bugfix release. I'm releasing it before I start with some pretty major architecture-related changes.
+
+New Features
+------------
+
+*   Cover art support for all formats (except ASF)
+*   Loading master releases in the Discogs.com tag source.
+
+Changes
+-------
+
+*   For ID3 tags, UFID frames are now only loaded if the data can be decoded to UTF8.
+*   MusicBrainz artist search retrieves 100 albums by default.
+*   The initial reading of a directory can be canceled now.
+
+Fixes
+-----
+
+*   Uncaught errors for Tag Sources shouldn't leave the Tag Sources window disabled anymore.
+*   Discogs artist/albums are parsed correctly instead of looking weird.
+*   Amazon keyword search wasn't working at all.
+*   Having periods in the Tag->Dir function were causing problems.
+
+Oh, and puddletag is now licensed under the `GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>`_.
+
+
+----
+
+9 February 2011 - 0.9.12
+########################
+
+Almost all the work done, was modifying the code base so that puddletag could be translated properly. I've put up a :doc:`translation guide <source/translate>` for interested parties. Since this is a bug-fix release, there are no new features, just some changes and fixes.
+
+Changes
+-------
+
+*   Users stuck using python-musicbrainz2 < 0.7.0 shouldn't have problems with puddletag crashing on startup.
+*   Nor is python-musicbrainz2 a hard dependency any more.
+*   The default user agent now set to puddletag/0.9.12. New users will be able to use the Discogs Tag Source 'out of the box'.
+*   I might've used some things available only in newer Qt versions. If you're using Qt/PyQt >= 4.5 and puddletag crashes, `let me know <http://code.google.com/p/puddletag/issues>`_.
+
+Fixes include, but are not limited to
+-------------------------------------
+
+*    Editing **__dirname** and **__dirpath** while using QuodLibet library is now possible + tons of Music Library related bugs.
+*    Editing Actions sometimes didn't work.
+*    The **Load Artwork** function didn't work as advertised.
+*    **%__total_files%** and **%__counter%** not working when used within scripting functions.
+*    The Artwork Window is floating by default. Fixes an issue whereby the puddletag window would be larger than the screen.
+
+
+----
+
+19 December 2010 - 0.9.11
+#########################
+
+Another bug related to Tag Sources freezing often is fixed in this release. Promise this is the last for a while. ;)
+
+
+----
+
+18 December 2010 - 0.9.10
+#########################
+
+A bug was discovered in Discogs that'd make it fail on the vast majority of albums (just not the ones I tested with). This release is to fix that. But I've included the following too:
+
+New Features
+------------
+
+*   Discogs uses the Discogs ID field (which you can define) if it's found in your files.
+*   You can use your own Amazon and Discogs API keys.
+*   **__counter** and **__total_files** fields which you can use in Functions and Actions. Info :doc:`here <source/tags>`.
+
+Fixes
+-----
+
+*   Case Sensitivity for field names is handled better.
+
+
+----
+
+16 December 2010 - 0.9.8
+########################
+
+This'll be the last release for a while as I'm taking a break from puddletag development. I'll still be lurking in the forums and issue tracker, so don't hesitate to ask for help or report bugs.
+
+All in all this has been a good year for puddletag. It went from kinda-working to better than anything else on Linux. Besides myself you gotta thank Evan for that. Without his constant feedback, testing and feature requests puddletag would be way less than it is.
+
+So yeah, some goals (like better WMA support) haven't been met, but on the whole I'm satisfied with the way things turned out. The next planned release will be around mid to late March 2011, although I might do one in late January to update translations and plugins. Any other releases before March 2011 will be bugfix releases.
+
+New Features
+------------
+
+*   puddletag now supports translations. If you want to create one for your language create an on the |issue_tracker|_.
+*   A :ref:`new Function <convert_from_non_standard_encoding>` to correct incorrectly encoded files contributed by Stjujsckij Nickolaj.
+*   :ref:`Tag->Dir <tag_to_dir>`, with which you can move directories has also been included.
+*   MoveUp and MoveDown shortcuts that move the selected files Up/Down in file-view.
+*   The MusicBrainz tag source now retrieves even more fields. See :ref:`here <musicbrainz>` for a complete listing.
+*   **Select all in Dir** has been removed. I've added two new menu items. Select Next in Dir and Select Previous Dir. Info can be found :ref:`menus <select_next>`.
+*   Support for GUI and music library plugins. There aren't any docs yet. I'll add them in mid January. If you want to do development in the mean time, make a post on the forum and I'll help you out.
+*   A tag source that uses Discogs.com's XML service. I'm not sure how complete this tag source is since Discogs.com's documentation is woefully inadequate. :ref:`Info <discogs>`. **You must set the User-Agent to use this!**.
+*   puddletag now uses your theme's icons. Thanks to `this <http://sourceforge.net/apps/phpbb/puddletag/viewtopic.php?f=1&t=16#p178>`_ post.
+*   I've added (tentative) support for Mp3tag's tag sources. Info :ref:`here <mp3tag_sources>`.
+*   The '~'-notation used in Tag Sources can now be used for Functions too. See the bottom of :doc:`this <source/tut3>` page.
+*   Options to remove ID3v1 and ID3v2 tags separately to the Tag Tools menu.
+*   You can now automatically retrieve matches using Tag Sources. Kinda like mini-masstagging.
+
+Changes
+-------
+
+*    The Replace with Regular Expression function now starts from $1 instead of $0. I had to do this in order for Mp3tag's Tag Sources to work. Please update your actions.
+*    Previews in the Functions dialog now show the fields too.
+*    Action Shortcuts settings have been moved from Preferences to the Actions dialog.
+*    Tools->Sort Selected is now Tools->Sort By. Visit this :ref:`page <sort_option_prefs>` for info.
+*    performer in ID3 has been changed to albumartist.
+
+Fixes
+-----
+
+*   MP4 mappings and handling of unicode fields in MP4 files.
+*   ID3's rating didn't handle missing parameters well.
+*   Not loading APEv2 tags with cover art.
+*   Crashes due to renaming many directories at once.
+*   Undo errors while in Preview Mode.
+*   Quick Actions weren't working at all.
+*   Bug in Amazon Tag Source while retrieving small images.
+*   Loading playlist's with any contained file's having commas.
+*   Tag Panel not saving if genre isn't present.
+*   and more...
+
+Website changes
+---------------
+
+*   I've added another tutorial called :doc:`Things you should know <source/tut3>`. You probably know some of it already.
+*   Documentation for Preferences has been added :doc:`here <source/preferences>`.
+
+
+----
+
+30 October 2010 - 0.9.7
+#######################
+
+There's not much to this release, but I think the second 'New Feature' is pretty fundamental to puddletag's usability. Enjoy.
+
+New Features
+------------
+
+*   The Autonumbering wizard is now a Function.
+*   Fields are now case-insensitive. Which means that if a file contains a field named 'album', writing to 'ALBUM' will rename 'album' to 'ALBUM'.
+*   You can add your actions as shortcuts to the Actions menu. See the tooltip for Create Shortcut in Actions dialog for details.
+
+Fixes
+-----
+
+*   Just a couple bugs were fixed, but nothing noteworthy.
+
+Changes
+-------
+
+*   Filenames are now written using the filesystem's encoding instead of UTF-8 (though you should be using UTF-8 anyway ;)).
+*   A new logo cause the old one was getting a bit long in the tooth.
+*   Functions now save their state.
+*   PIL (the Python Imaging Library) is no longer a dependency.
+*   I've relaxed the dependencies for the deb so that it should work on a wider range of distributions.
+
+
+----
+
+13 October 2010 - 0.9.6
+#######################
+
+
+There was a major bug discovered in 0.9.5 where fields weren't being shown in the Function's dialog. This release fixes it.
+
+
+
+----
+
+9 October 2010 - 0.9.5
+######################
+
+
+This release is a bit late, but packed with features.
+
+New Features
+------------
+
+*   Actions and Functions now operate and write multiple-valued fields.
+*   A bunch of new Functions. All listed on the :doc:`functions <source/function>`.
+*   Two new scripting functions copied straight from Mp3tag, **$meta_sep** and **$meta**. See the :doc:`scripting functions <source/scripting>` page for details.
+*   A new icon. This one designed by Yianni Pappas-Acreman.
+*   A new Tag Tools menu, with which you can remove ID3 and APEv2 tags from files where they don't belong.
+*   Configurable confirmations. Like when you want to Rename Directories, etc.
+*   A __dirname field. Modify this field to rename the directory.
+*   UFID frames for ID3v2 Tags.
+*   Monkey's Audio File's are now supported.
+*   The Actions and Functions dialogs can now be tool windows too (See Windows Menu).
+*   All :doc:`docs <docs>` have been updated.
+
+Fixes
+-----
+
+*   If it was broken before, it probably works now.
+*   The one major fix is that you can load files with messed up encodings now, instead of having puddletag choke on them.
+
+Changes
+-------
+
+*   Files that have previews now have a green background while in Preview Mode (Configurable in Edit->Preferences).
+*   The configuration for the MusicBrainz Tag Source has been removed. Instead I've opted to return MusicBrainz fields (Album ID, Artist ID, Track ID) by default in mbrainz_track_id, mbrainz_album_id and mbrainz_artist_id. I've also set up default mappings, so that these fields are written to the correct field for each format. Remove ~/.puddletag/mappings to get these.
+
+
+
+
+----
+
+25 August 2010 - 0.9.4
+######################
+
+
+As promised, this release is awesome. The next one will be in a couple of weeks, it'll include some features I've been promising for a while.
+
+New Features
+------------
+
+* Profiles were added to MassTagging, which means now you can do a configuration once and use that forever.
+* Renaming files is now possible within Preview Mode.
+* A new Function called 'Remove Fields' that does exactly that.
+* A new scripting function (contributed by Erik Reckase) that'll convert unicode strings to ASCII.
+* The plugin interface for tag sources is now public. See the docs :doc:`here <source/function>`.
+* Right click on any directory. Click the refresh button to refresh it.
+* You can now change the shortcut for any menu item. Edit->Preferences->Shortcuts to configure.
+* Also, you can now sort selected tracks using predefined fields. Some defaults are in Tools->Sort Selected. Configure it using the 'Edit sort options' button in Preferences.
+* I've finally added a :download:`RSS Feed <rss.xml>` to the website.
+
+Bugs
+----
+
+* Some bugs related to Preview Mode not working correctly.
+* A bunch of others that aren't really worth mentioning.
+
+Changes
+-------
+
+* I've changed the way Tag Sources store their settings, so you'll need to reconfigure them.
+
+
+----
+
+11 August 2010 - 0.9.3
+######################
+
+
+Because of time commitments and the complexity of the new features, this release is a bit late...and a bit unfinished. I'm releasing it, because it contains too many bugfixes to keep to myself (and those using svn).
+
+Trust me when I say 0.9.4, due the 25th, will be awesome.
+
+New Features
+------------
+
+* I've added WavPack, MusePack, and basic WMA support (only common fields, not including artwork are supported.)
+* *Masstagging*. Also known as the time-sink, was added. What this allows you to do is retrieve tags from multiple tag sources at once, combine time and write them to the selected files. It sounds simple, but extremely useful. There's no tutorial for it as yet (soon), but I think the interface is pretty self-explanatory.
+* Also, I've added what I call Preview Mode, wherein you can do all your editing and write to files only once. See the description for it on the :doc:`menus page <source/menus>` (scroll to bottom).
+* A new Function called 'Load Artwork' Function with which you can load artwork from the file's directory. Explanation can be found on the :doc:`functions page <source/function>`.
+* The plugin interface is now public for Functions. Tag sources will be available in the next release. For those interested, there's a tutorial :doc:`here <source/plugins>`.
+* Converting filenames to tags can now take the directory name into account. Description on :doc:`menus page <source/menus>`.
+
+Bugs
+----
+
+* Some Tag Panel Bugs, including entries being replaced if an autocompletion was found of differing case. Genres always being Acapella and when adding entries like Blues\\Rock not being separated properly. And puddletag crashing on loading non-ASCII genres.
+* Copy/Paste not working correctly sometimes.
+* Saving artwork using Extended tags would clear the artwork instead if the cover differed between files. Sorry 'bout that one.
+* Duplicate entries in comboboxes for the Functions dialog are now removed.
+* A whole bunch of small ones which may have caused problems for someone somewhere.
+
+
+----
+
+4 July 2010 - 0.9.2
+###################
+
+
+Again just a couple of things, but they improve the puddletag experience immensely.
+
+New Stuff
+---------
+
+* FreeDB and Amazon tag sources were added.
+* And puddletag can now use the MusicBrainz ArtistID if it's in a file's tag instead of searching for one. Still need to enable it for releases.
+* Tag mappings for tag sources, see the tooltip in Preferences/Mappings for more info.
+* And the ability to load only files based on their extension (Preferences/Tags to configure.)
+* A new applicication icon created by Evan himself.
+
+Fixes
+-----
+
+* No new fixes were entered last week, but there's a bug that completely freezes puddletag that I haven't been able to track down. I'll fix this one as soon as I find out just WTH is causing it.
+
+
+
+----
+
+25 June 2010 - 0.9.1
+####################
+
+
+Just a couple of things this time. I spent most of my time on backend stuff. Next week will be dedicated to tag sources, so expect some major additions/improvements on that side.
+
+New Stuff:
+----------
+
+* Moving files using Tag->File is now supported. See the `functions page <source/functions>`_ for examples.
+* And using it as an part of an action is possible too.
+* The option to not write ID3v1 tags.
+* Complete rewrite of the tag sources backend. Now you can sort the tag sources window using any field you want.
+
+Fixes
+-----
+
+* A bug where the same value is shown for user-defined fields in ID3 tags.
+* The artwork windows resizing by itself (when not docked).
+
+Changes
+-------
+
+* The Replace with regular expression function now works like Mp3tag's. i.e only replacing matches instead of overwriting whatever field it was writing to.
+* Extended tags now shows changes properly.
+
+
+----
+
+11 June 2010
+############
+
+Interesting Trivia. The World Cup starts in about an hour.
+
+This release is pretty awesome. Evan found bugs, I fixed 'em. Then added some polish. Then uploaded this release. Which is pretty awesome.
+
+
+----
+
+14 April 2010
+#############
+
+It's five months later and from the outside it kinda looks like the project has died when in fact I've spent more time working on puddletag this year than I have the past two years. All thanks to Evan Devetsis who've taken it upon himself to help me make puddletag better. Mostly it was restructuring work in paving the way to add new features, like:
+
+New Features
+------------
+
+* Multiple tag sources support. Musicbrainz only for now, will add more over the coming week.
+* Tag mappings. Map a tag to whatever you want to.
+* Some tags were changed. See the :doc:`Tag Reference <source/tags>`.
+* More ID3 tags are supported.
+* Unicode in MP4 tags is supported.
+* Library code has been rewritten. Currently only QuodLibet is supported. Will add more week after next.
+* Some of the scripting functions with odd names (if\_, not\_, etc.) have been renamed to what they're supposed to be.
+* All icons not created by me are from the Oxygen icon set for KDE. As soon as I found out how to detect if GNOME is running, I'll add some Ubuntu icons.
+
+Fixes
+-----
+
+* Far too many to list.
+
+Most everything has changed, so for those that've used it before, explore and check it out. Cause I'm not listing all that here (...because I forgot :)
+
+
+----
+
+5 November 2009
+###############
+
+
+New Features
+------------
+
+* The only new feature for this release is that the MusicBrainz dialog now allows you to select individual tracks. I like it better now.
+
+Changes
+-------
+
+* Some (actually many) bugs with loading directories were fixed.
+
+There won't be any releases until at least February next year as I'm gonna take some time of from puddletag (and python) to learn new stuff and hopefully with enough new knowledge to implement the advanced features that I've been thinking of. If I do discover some critical bugs during this time though, I'll update the site.
+
+
+----
+
+10 October 2009
+###############
+
+
+New Features
+------------
+* A Stored Tags dialog that shows the current tags of the selected file as stored on disk. Useful for when editing libraries and the tag differs from the tag on disk.
+* I added an option to allow retrieval of duplicates via a specific tag. This can speed things up for some searches.
+* A properties dialog as in Mp3tag (but slightly different) in addition to a delete tags button.
+* And finally, a setup script.
+
+Changes
+-------
+* Instead of changing the background colour of a row, the Musicbrainz dialog now just emboldens the text that's to be written. It's better this way.
+
+Fixes
+-----
+* Duplicates can retrieve more than 300 at a time. (My fault for not checking.)
+* Musicbrainz now works for all cases (it gave an error when retrieving via 'album').
+* There ain't no more barfing of errors while editing text in the pattern combo.
+* Reloading works again (didn't even know it was broken).
+
+For the next release I'm gonna give Musicbrainz lots of attention. It really needs it.
+
+
+----
+
+9 September 2009
+################
+
+New Features
+------------
+
+* A super useful duplicates finder. It's not as well tested as I'd like so I'll make that a priority for the next release. Currently it only works on the supported music libraries. I'll add support for arbitrary folders during the month.
+* Rudimentary file-management support had been added to the filesystem view.
+* Note that I haven't added any progress bars for these features (due in a week) so just have patience when using them (and keep an eye on the command line for errors).
+
+Changes
+-------
+
+* I've changed the config system to use ConfigObj as PyQt4's too buggy and Python's built in library too much of a pain. Because of this, I recommend you remove ~/.puddletag/puddletag.conf just to avoid any adverse effects from using the new config style.
+* Amarok library support has been removed due to the fact that it'll probably not work on any machine but mine (and that's not even guaranteed).
+
+Fixes
+-----
+
+* Bugs were fixed where needed (I seriously need to remember to log this stuff)
+
+Website changes
+---------------
+
+* It looks tons better.
+* A :doc:`screenshots <screenshots>` section was added. I'll up some videos during the month if I get time.
+
+
+----
+
+4 June 2009
+###########
+
+Besides not having much time, I have been very lazy this month when it came to puddletag. If all goes well then the next release will be more bountiful. Till then, you'll have to make due with this, which only has the following to offer...
+
+New Features
+------------
+
+* Loading times are improved by a couple of miliseconds.
+* I've implemented a bit of fuzzy string matching via the Show Dupes button. Enter a tag prepended by a colon (like **":title** and values will be fuzzily matched. It uses the `python-Levenshtein <http://code.michael-noll.com/?p=third-party;a=tree;f=python-Levenshtein-0.10.1>`_ for matching. If you don't have it installed, difflib (part of the standard library) is used. There isn't much difference except that Levenshtein is supposed to be faster since it's compiled (I haven't tested it though). Furthermore, entering **:artist** in the library search box will show you all the fuzzily matched duplicate artists.
+
+Changes
+-------
+
+* I just changed the UI a bit to make it more coherent. It's still ugly as hell, but that's way outta my area of expertise.
+
+Fixes
+-----
+
+* There are many. I spent some time writing unit tests and testing the critical parts of puddletag. Many bugs were found. Many of these bugs weren't logged. This being said, there may still be some bugs as I've once again made some internal changes that could mess up things. Expect one or two updates during the month.
+
+
+----
+
+1 May 2009
+##########
+
+I like so this release so much that I almost changed it to puddletag version 1, but it still has some shortcomings compared to Mp3tag and some things that I want to implement before then.
+
+With that being said, here are the changes you'll notice.
+
+New Features
+------------
+* Saving and loading is now loads faster. On par with Mp3tag (sometimes puddletag is faster, sometimes Mp3tag).
+* Like Mp3tag, puddletag stores a history of all the values you've used for the Format Value function, and every other one. Unlike Mp3tag, puddletag allows you delete any entries you don't want on-the-fly, by clicking the red button next to it!
+* Cut, Copy and Paste of tags is supported. Available via the Edit menu.
+
+Changes
+-------
+
+* All window related actions were move to a new Windows menu to reduce clutter on the edit menu.
+* A progress indicator is now shown when loading a music library.
+* Settings are stored in ~/.puddletag instead of the ~/.config...
+
+Fixes
+-----
+
+* Bugs in the image editor (changing picture type, enabling buttons depending on context, etc.) are fixed.
+* Clicking Cancel while loading or saving now actually works as expected and instantly.
+* The progress window doesn't stay persistent anymore when puddletag loads or saves files too quickly.
+
+
+----
+
+8 April 2009
+############
+
+
+Besides the bugfixes in the minor releases last month, the changes this month include...
+
+* M4A support(You need mutagen 1.9 or greater in order not to get any error messages)
+* Bugfixes galore
+* A console version(in the main directory as console.py). I've been pressed for time, so expect documentation to be added over the coming week.
+
+P.S. This version is 0.5.8, because it's not tested as much as I'd like, so expect many bugfixes over the coming month.
+
+
+----
+
+9 March 2009
+############
+
+Nope, still don't got no console version(been busy with other stuff, definitely next month).
+
+Anyway, some changes from the last release include:
+
+* The ability to search the music libraries (albeit slowly).
+* A totally revamped parsing system(though it'll look the same from the users point of view).
+* Like Mp3tag, Actions are now stored separately instead of in one big file.
+* Two extra toolbar buttons, "In library" and 'Show Dupes".
+* If a library is loaded then "In library?" hides all the files that are not in the library.
+* "Show Dupes" hides all the files in the file-view that doesn't have a duplicate(in the file-view).
+* ...and a ton of bugfixes, most of which I can't remember(but which are in the svn logs...well, not really)
+
+For the next release I'll concentrate on supporting the rest of Mutagen's supported formats, fixing bugs and smoothing the user interface(progress when loading a library, faster search, etc.).
+
+Expect some interim updates over the next couple of days and a complete release in about a month (1 April 2009).
+
+
+----
+
+5 February 2009
+###############
+
+
+This is basically a bugfix release. There are far too many fixes to list here, but some of the major ones were unicode related like:
+
+* Unicode support in prokyon, amarok and rhythmbox libraries was fixed.
+* UTF-8 is used for everything.
+* puddletag's unicode issues were sorted(e.g. If the last folder you visited
+* contained non-ascii characters, puddletag would give you a big F-U.
+* Changing a picture using the extended tags dialog now works.
+
+Some other interesting stuff include:
+-------------------------------------
+
+* The user interface has changed. This includes the look of the icons have improved (they're remain horrible, but still)
+* If you wanna, you can use the __image tag to show the currently selected file's cover in the Tag Editor (Go to Preferences -> Tag Editor to add it)
+
+Hmmm, most of the other changes have to do with code quality (improved, but not much) and refactoring, which I doubt you'll wanna hear about.
+
+Anyway, the only thing I have for the next release is more powerful scripting and (maybe not, but probably) a console version.
+
+
+----
+
+20 January 2009
+###############
+
+
+Got a bunch of updates for ya.
+
+First as promised, the feature is called **Import Your Music Library (Tools -> Import Music Library)**. Like I said, I haven't seen it before anywhere else. The reason (I think) it because it's extremely difficult to do well. Right now, only three types of music libraries are supported: Prokyon3 (which is what I use), Rhythmbox (which is what a lot of other people use, why?) and Amarok (before version 2).
+I have to mention a couple of caveats though. If your music library is spread out across many devices (on another server especially), don't use puddletag to edit the library, because I haven't taken those conditions into account. Concerning Rhythmbox, you'll notice that it has a save button above the Library tree. Use this to save files to the database, because it takes a while to do for large libraries.
+Expect these irritants to be gone two weeks from now.
+
+Now for the other added stuff
+-----------------------------
+
+*  The user interface is a bit more customizable then before. The Tag editor and Filesystem windows are now tool windows. So you can drag them around and do whatever you want. Use the items on the Edit menu to show and hide these windows.
+* Saving and writing images to id3 tags is now supported. You can do this via the extended tags dialog. Besides that, user defined tags are now supported(as long as the don't conflict with any of internal puddletag tags). Oh, and having multiple values per tag is now possible too.
+* Like Mp3tag, the Preferences dialog now contains an extra option to edit all the patterns you've created using the patterncombo. Use it when you need to.
+
+Stuff that's fixed
+------------------
+
+* My Kubuntu cd arrived a couple of days ago and puddletag (besides having some bugs) looked atrocious. All these are fixed now, and all ya'll Kubuntu users who haven't been able to use puddletag can now share in the joy.
+* There was a pretty nasty bug where puddletag would remove any unsupported tags. Sorry about that, hopefully you haven't lost any priceless info because of it.
+
+I'm sure there's a bunch of other stuff, but I can't remember and I'm to lazy to look at previous versions, so you'll just have to see for yourself. Oh, there's a `puddletag subreddit <http://www.reddit.com/r/puddletag>`_ now too.
+
+
+----
+
+16 December 2008
+################
+
+It's December and the sun is out. As such, all I have to show is just a couple of bugfixes (in particular, the import from file window not saving tags) and a message that appears in the statusbar when an error occurs while editing a file.
+
+Don't expect any updates until the 20th of January. If everything works out I'll have at least one feature that sets puddletag apart from any tag-editor I've ever seen and propel puddletag into greatness.
+
+
+----
+
+3 December 2008
+###############
+
+Stuff that's added
+------------------
+
+* Genres! Now you don't have to remember all of them.
+* Press Ctrl+W to switch between the file-view, pattern combo and the tag panel.
+* A splash screen for the long loads at the beginning to keep you company.
+* FLAC and APEv2 tags are now supported (only text tags, not images). Feedback on these would be appreciated as I have a serious lack of FLAC on my PC.
+
+Stuff that's fixed:
+-------------------
+
+* The musicbrainz dialog doesn't freeze up puddletag anymore. Note that the threading is implemented in a very roughshod way though, so don't hesitate to contact me if behaves in unexpected ways.
+* The main window's layout in addition to its size is now saved.
+
+
+----
+
+25 November 2008
+################
+
+Stuff that's added
+------------------
+
+* A filter like in Mp3tag. F3 shows/hides it.
+* Musicbrainz support(Available on the toolbar and Tools -> Musicbrainz). Not sure how good it is. Send me a mail if you have any ideas on improving it.
+* The extended tags dialog is now available via the Tools menu(and by right clicking on the file-view).
+
+Stuff that's fixed
+------------------
+
+* Saving a file's album art to disk now works.
+* The importing tags text files dialog now looks better, by bolding the tags instead of the ugly interface puddletag had before.
+* Not everything moves around when resising puddletag anymore and the layout is saved from the previous session.

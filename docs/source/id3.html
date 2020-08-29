@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ID3 Frames &#8212; puddletag</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.10.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="puddletag" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">puddletag</a>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../download.html">Download</a></li>
+                <li><a href="../news.html">News</a></li>
+                <li><a href="../docs.html">Documentation</a></li>
+                <li><a href="https://github.com/puddletag/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../about.html">About</a></li>
+            
+            
+              
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">ID3 Frames</a><ul>
+<li><a class="reference internal" href="#text-frames">Text Frames</a></li>
+<li><a class="reference internal" href="#time-frames">Time Frames</a></li>
+<li><a class="reference internal" href="#url-frames">URL Frames</a></li>
+<li><a class="reference internal" href="#paired-frames">Paired Frames</a></li>
+<li><a class="reference internal" href="#misc-frames">Misc Frames</a><ul>
+<li><a class="reference internal" href="#field-playcount-frame-pcnt">field: playcount, frame: PCNT</a></li>
+<li><a class="reference internal" href="#field-popularimeter-frame-popm">field: popularimeter, frame: POPM</a></li>
+<li><a class="reference internal" href="#field-ufid-frame-ufid">field: ufid, frame: UFID</a></li>
+<li><a class="reference internal" href="#field-rgain-frame-rva2">field: rgain, frame: RVA2</a></li>
+<li><a class="reference internal" href="#field-unsyncedlyrics-frame-uslt">field: unsyncedlyrics, frame: USLT</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<hr style='width:80%'>
+
+
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <div class="section" id="id3-frames">
+<h1>ID3 Frames<a class="headerlink" href="#id3-frames" title="Permalink to this headline">¶</a></h1>
+<p>Below is the list of ID3 frames supported by puddletag descriptions of their usage in puddletag. These can be accessed available via the Extended Tags Dialog (Edit -&gt; Extended Tags). puddletag writes only UTF-8 encoded ID3v2.4 and ID3v2.3 (with the option of including ID3v1) tags.</p>
+<div class="section" id="text-frames">
+<h2>Text Frames<a class="headerlink" href="#text-frames" title="Permalink to this headline">¶</a></h2>
+<p>Text frames can store any text. Multiple values are allowed per field.</p>
+<p>Comment frames are written to the <strong>COMM</strong> frame. Multiple values are allowed per comment field, but storing different comment frames requires a different description for each frame. This is denoted by any text following the <strong>comment:</strong> identifier. Eg. <strong>comment:numbertwo</strong> (no spaces allowed) will have description <strong>numbertwo</strong>. The first COMM frame encountered without a description will be used as the <strong>comment</strong> field. Likewise creating a comment field will write to a description-less COMM frame.</p>
+<p>Any unknown field is assumed to be a user-defined field. Therefore writing to the field &#8216;mytag&#8217; will write to the ID3 tag frame <strong>TXXX:mytag</strong>.</p>
+<p>The list of ID3 text frames as supported by puddletag is shown below. Multiple values per field are allowed. The iTunes frames are only supported by Mutagen 1.17 and above.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="62%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">puddletag field</th>
+<th class="head">ID3v2.4 Frame</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>album</td>
+<td>TALB</td>
+</tr>
+<tr class="row-odd"><td>albumartist</td>
+<td>TPE2</td>
+</tr>
+<tr class="row-even"><td>albumsortorder</td>
+<td>TSOA</td>
+</tr>
+<tr class="row-odd"><td>arranger</td>
+<td>TPE4</td>
+</tr>
+<tr class="row-even"><td>artist</td>
+<td>TPE1</td>
+</tr>
+<tr class="row-odd"><td>audiodelay</td>
+<td>TDLY</td>
+</tr>
+<tr class="row-even"><td>audiolength</td>
+<td>TLEN</td>
+</tr>
+<tr class="row-odd"><td>audiosize</td>
+<td>TSIZ</td>
+</tr>
+<tr class="row-even"><td>author</td>
+<td>TOLY</td>
+</tr>
+<tr class="row-odd"><td>bpm</td>
+<td>TBPM</td>
+</tr>
+<tr class="row-even"><td>composer</td>
+<td>TCOM</td>
+</tr>
+<tr class="row-odd"><td>conductor</td>
+<td>TPE3</td>
+</tr>
+<tr class="row-even"><td>copyright</td>
+<td>TCOP</td>
+</tr>
+<tr class="row-odd"><td>date</td>
+<td>TDAT</td>
+</tr>
+<tr class="row-even"><td>discnumber</td>
+<td>TPOS</td>
+</tr>
+<tr class="row-odd"><td>encodedby</td>
+<td>TENC</td>
+</tr>
+<tr class="row-even"><td>encodingsettings</td>
+<td>TSSE</td>
+</tr>
+<tr class="row-odd"><td>filename</td>
+<td>TOFN</td>
+</tr>
+<tr class="row-even"><td>fileowner</td>
+<td>TOWN</td>
+</tr>
+<tr class="row-odd"><td>filetype</td>
+<td>TFLT</td>
+</tr>
+<tr class="row-even"><td>genre</td>
+<td>TCON</td>
+</tr>
+<tr class="row-odd"><td>grouping</td>
+<td>TIT1</td>
+</tr>
+<tr class="row-even"><td>initialkey</td>
+<td>TKEY</td>
+</tr>
+<tr class="row-odd"><td>isrc</td>
+<td>TSRC</td>
+</tr>
+<tr class="row-even"><td>itunesalbumsortorder</td>
+<td>TSO2</td>
+</tr>
+<tr class="row-odd"><td>itunescompilationflag</td>
+<td>TCMP</td>
+</tr>
+<tr class="row-even"><td>itunescomposersortorder</td>
+<td>TSOC</td>
+</tr>
+<tr class="row-odd"><td>language</td>
+<td>TLAN</td>
+</tr>
+<tr class="row-even"><td>lyricist</td>
+<td>TEXT</td>
+</tr>
+<tr class="row-odd"><td>mediatype</td>
+<td>TMED</td>
+</tr>
+<tr class="row-even"><td>mood</td>
+<td>TMOO</td>
+</tr>
+<tr class="row-odd"><td>organization</td>
+<td>TPUB</td>
+</tr>
+<tr class="row-even"><td>originalalbum</td>
+<td>TOAL</td>
+</tr>
+<tr class="row-odd"><td>originalartist</td>
+<td>TOPE</td>
+</tr>
+<tr class="row-even"><td>originalyear</td>
+<td>TORY</td>
+</tr>
+<tr class="row-odd"><td>performersortorder</td>
+<td>TSOP</td>
+</tr>
+<tr class="row-even"><td>producednotice</td>
+<td>TPRO</td>
+</tr>
+<tr class="row-odd"><td>radioowner</td>
+<td>TRSO</td>
+</tr>
+<tr class="row-even"><td>radiostationname</td>
+<td>TRSN</td>
+</tr>
+<tr class="row-odd"><td>recordingdates</td>
+<td>TRDA</td>
+</tr>
+<tr class="row-even"><td>setsubtitle</td>
+<td>TSST</td>
+</tr>
+<tr class="row-odd"><td>time</td>
+<td>TIME</td>
+</tr>
+<tr class="row-even"><td>title</td>
+<td>TIT2</td>
+</tr>
+<tr class="row-odd"><td>titlesortorder</td>
+<td>TSOT</td>
+</tr>
+<tr class="row-even"><td>track</td>
+<td>TRCK</td>
+</tr>
+<tr class="row-odd"><td>version</td>
+<td>TIT3</td>
+</tr>
+<tr class="row-even"><td>year</td>
+<td>TYER</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="time-frames">
+<h2>Time Frames<a class="headerlink" href="#time-frames" title="Permalink to this headline">¶</a></h2>
+<p>[From the mutagen docs] Time fields take the form of <strong>YYYY-MM-DD HH:MM:SS</strong> Or some partial form (YYYY-MM-DD HH, YYYY, etc.). puddletag supports reading from and writing to:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="57%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">puddletag field</th>
+<th class="head">ID3v2.4 Frame</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>encodingtime</td>
+<td>TDEN</td>
+</tr>
+<tr class="row-odd"><td>originalreleasetime</td>
+<td>TDOR</td>
+</tr>
+<tr class="row-even"><td>releasetime</td>
+<td>TDRL</td>
+</tr>
+<tr class="row-odd"><td>taggingtime</td>
+<td>TDTG</td>
+</tr>
+<tr class="row-even"><td>year</td>
+<td>TDRC</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="url-frames">
+<h2>URL Frames<a class="headerlink" href="#url-frames" title="Permalink to this headline">¶</a></h2>
+<p>URL link frames act like text frames, but with two caveats. Only ASCII is allowed and only one value per field is allowed (So even if you try to write multiple values, only the first one will get written).</p>
+<p>wwwartist and wwwcommercialinfo are the only URL link frames that allow multiple values per field. Each will be written to a different frame as per the ID3v2.4 standard.</p>
+<p>Starting a field name with <strong>www:</strong> will denote it to be a user-defined URL field. <strong>All</strong> text following <strong>www:</strong> will form the description. Eg. from <strong>www:homepage</strong> homepage will be the description written to the WXXX frame.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="53%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">puddletag field</th>
+<th class="head">ID3v2.4 Frame</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>wwwartist</td>
+<td>WOAR</td>
+</tr>
+<tr class="row-odd"><td>wwwcommercialinfo</td>
+<td>WCOM</td>
+</tr>
+<tr class="row-even"><td>wwwcopyright</td>
+<td>WCOP</td>
+</tr>
+<tr class="row-odd"><td>wwwfileinfo</td>
+<td>WOAF</td>
+</tr>
+<tr class="row-even"><td>wwwpayment</td>
+<td>WPAY</td>
+</tr>
+<tr class="row-odd"><td>wwwpublisher</td>
+<td>WPUB</td>
+</tr>
+<tr class="row-even"><td>wwwradio</td>
+<td>WORS</td>
+</tr>
+<tr class="row-odd"><td>wwwsource</td>
+<td>WOAS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="paired-frames">
+<h2>Paired Frames<a class="headerlink" href="#paired-frames" title="Permalink to this headline">¶</a></h2>
+<p>The following are called <strong>paired frames</strong> due to their values being represented as paired items. Eg. the involvedpeople tag could list the people involved in the band of whatever song you&#8217;re trying to tag, like <strong>Billy Taylor:Piano;Chester Bennington:Vocals;Ratatat:Instruments</strong> (note that spaces are significant). Items in a pair are separated with a colon (:), with pairs separated by a semi-colon(;) (like I just did). Although Mp3tag allows the writing of multiple paired frames, the ID3 standard doesn&#8217;t allow it, therefore mutagen doesn&#8217;t, hence puddletag refrains from writing multiple paired frames. So erm...store all your stuff in one frame if you don&#8217;t mind. Thanks.</p>
+<p>Here are the puddletag supported frames:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="53%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">puddletag field</th>
+<th class="head">ID3v2.4 Frame</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>involvedpeople</td>
+<td>TIPL</td>
+</tr>
+<tr class="row-odd"><td>musiciancredits</td>
+<td>TMCL</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="misc-frames">
+<h2>Misc Frames<a class="headerlink" href="#misc-frames" title="Permalink to this headline">¶</a></h2>
+<p>These frames are handled differently from those previously discussed, so I&#8217;ve put them all in misc.</p>
+<div class="section" id="field-playcount-frame-pcnt">
+<h3>field: playcount, frame: PCNT<a class="headerlink" href="#field-playcount-frame-pcnt" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>PCNT</strong> frame stores the number of times the file has been played. This frame is usually only used by media players. Although it&#8217;s been superseded by:</p>
+</div>
+<div class="section" id="field-popularimeter-frame-popm">
+<h3>field: popularimeter, frame: POPM<a class="headerlink" href="#field-popularimeter-frame-popm" title="Permalink to this headline">¶</a></h3>
+<p>This frame stores three values: an email, rating and playcount separated by a colon as in <strong>cpuddle&#64;unregistered.com:12:3</strong>. If playcount isn&#8217;t found in an existing field it&#8217;ll be added.</p>
+</div>
+<div class="section" id="field-ufid-frame-ufid">
+<h3>field: ufid, frame: UFID<a class="headerlink" href="#field-ufid-frame-ufid" title="Permalink to this headline">¶</a></h3>
+<p>UFID stands for <strong>Unique File Identifier</strong>. It&#8217;s a single-valued field shown in puddletag as <strong>ufid:owner</strong> eg. ufid:musicbrainz.org (the <a class="reference internal" href="tagsources.html#musicbrainz"><span class="std std-ref">MusicBrainz</span></a> tag source writes the MusicBrainz Track ID to this field). Only values that can be decoded to UTF-8 will be editable.</p>
+</div>
+<div class="section" id="field-rgain-frame-rva2">
+<h3>field: rgain, frame: RVA2<a class="headerlink" href="#field-rgain-frame-rva2" title="Permalink to this headline">¶</a></h3>
+<p>Replaygain, also know as <strong>Relative Volume Adjustment</strong> info is stored in the <strong>RVA2</strong> Frame. The field name in puddletag will take the <strong>rgain:description</strong>. You&#8217;re likely to encounter either <strong>rgain:track</strong> or <strong>rgain:album</strong> as these are used by media players to store Replaygain info. Values are of the forme <strong>channel:gain:peak</strong> where peak is a floating point number between 0 and 1.</p>
+</div>
+<div class="section" id="field-unsyncedlyrics-frame-uslt">
+<span id="uslt"></span><h3>field: unsyncedlyrics, frame: USLT<a class="headerlink" href="#field-unsyncedlyrics-frame-uslt" title="Permalink to this headline">¶</a></h3>
+<p><strong>Unsynced Lyrics frames</strong> store lyrics. Values should take the form <strong>Language|Description|Lyrics</strong>, where <strong>Language</strong> corresponds to three-letter language abbreviation as listed in ISO-639-2. If only text is entered, the language <strong>XXX</strong> will be used. If only one &#8216;|&#8217; is found in the text, it&#8217;ll be assumed that the <strong>Language</strong> and <strong>Lyrics</strong> were entered.</p>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

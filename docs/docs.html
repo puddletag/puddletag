@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>puddletag Documentation &#8212; puddletag</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.10.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="puddletag" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">puddletag</a>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="index.html">Home</a></li>
+                <li><a href="download.html">Download</a></li>
+                <li><a href="news.html">News</a></li>
+                <li><a href="#">Documentation</a></li>
+                <li><a href="https://github.com/puddletag/puddletag/issues">Issue Tracker</a></li>
+                <li><a href="screenshots.html">Screenshots</a></li>
+                <li><a href="about.html">About</a></li>
+            
+            
+              
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="puddletag-documentation">
+<h1>puddletag Documentation<a class="headerlink" href="#puddletag-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>Download these docs:</strong> <a class="reference external" href="https://github.com/puddletag/puddletag/releases/download/2.0.1/puddletag-docs-html-2.0.1.tar.bz2">HTML</a> | <a class="reference external" href="https://github.com/puddletag/puddletag/releases/download/2.0.1/puddletag-docs-rst-2.0.1.tar.bz2">ReStructuredText</a></p>
+<p>First I have to introduce you to the naming conventions used by puddletag (some copied from Mp3tag).</p>
+<p>Say you have a MP3 file with full path /mnt/music/Miley - Cyrus/USA Party.mp3</p>
+<ul class="simple">
+<li>The container used to store metadata will be referred to as the tag. In this case it&#8217;s like an ID3 tag. All containers are referred to as tags. So when I say tag think complete as APEv2 tag, ID3 (ID3v2, ID3v1) tag, etc.</li>
+<li>Fields are what the different attributes of the file are called. Eg. <strong>artist, title</strong> or <strong>album</strong>.</li>
+<li>Values associated with fields are referred to as...&#8217;values&#8217; (like &#8216;Miley Cyrus&#8217; or &#8216;USA Party&#8217; ). If there&#8217;s more than one value associated with a field (eg. two genres) it&#8217;ll referred to as a multiple-valued field.</li>
+<li>Sometimes I use <strong>tag</strong> to refer to the all the fields + values contained in a file.</li>
+</ul>
+</div>
+<div class="section" id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/tut1.html">Tutorial 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tut2.html">Tutorial 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tut3.html">Things you should know (like how to add album art)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tut4.html">Tag Sources Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tut5.html">Masstagging Tutorial</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/menus.html">Menus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/function.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/scripting.html">Scripting Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/filter.html">Filter Expressions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tagsources.html">Tag Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/preferences.html">Preferences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/id3.html">ID3 Frames</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/tags.html">Tag Reference</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/plugins.html">Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/translate.html">Translating</a></li>
+</ul>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

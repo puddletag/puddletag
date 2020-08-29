@@ -1,5 +1,5 @@
 #!/bin/bash
-BUILD_DIR=$(pwd)/releases/"release_"$(date +"%Y_%m_%d_%H%M%S")
+BUILD_DIR=$(pwd)/releases/"release_"$(date +"%Y_%m_%d")
 
 echo Created dir $BUILD_DIR
 mkdir -p $BUILD_DIR
@@ -15,7 +15,7 @@ python3 offlinezip.py $BUILD_DIR
 cd ../puddletag-docs
 python3 update_checksums.py checksums.txt $BUILD_DIR
 make html
-mv _build/html $BUILD_DIR/website
+mv _build/html ../docs/
+echo "docs.puddletag.net" > ../docs/CNAME
 
 echo "Release built"
-

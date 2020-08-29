@@ -1,0 +1,342 @@
+:tocdepth: 2
+
+Menus
+=====
+
+File
+----
+Open Folder (Ctrl+O)
+^^^^^^^^^^^^^^^^^^^^
+
+Imports a folder into puddletag. All files with supported/valid tags are read. Reading subfolders is turned off by default (use the :ref:`Preferences <subfolders>` dialog to enable).
+
+Add Folder
+^^^^^^^^^^^
+Works as Open Folder, but instead of replacing the File-Views's contents, appends the newly loaded files.
+
+Load playlist
+^^^^^^^^^^^^^
+Opens a dialog to import an m3u playlist into puddletag.
+
+Save playlist
+^^^^^^^^^^^^^
+Save's the contents of the File_view to a playlist. The format to write for the extended info can be set in :ref:`Preferences <playlist>`.
+
+Save (Ctrl+S)
+^^^^^^^^^^^^^
+Save's whatever's currently entered in the Tag Panel to the selected files. Be aware if previews have been enabled (for eg. via tag sources) then nothing will get written. Only the preview will get updated.
+
+Play (Ctrl+P)
+^^^^^^^^^^^^^
+Play's the currently selected files using the player defined in Preferences.
+
+Delete (Del)
+^^^^^^^^^^^^
+Deletes the selected files permanently.
+
+Delete Without Confirmation (Shift+Del)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Deletes the selected files permanently, but doesn't even bother confirming first.
+
+Refresh (F5)
+^^^^^^^^^^^^
+Refreshes the files currently loaded in the File-View. If any directories are loaded, they'll be re-read and checked for new files.
+
+Clear
+^^^^^
+Clear's the File-View and unloads any files/directories that have been imported.
+
+Exit (Ctrl+Q)
+^^^^^^^^^^^^^
+Closes puddletag.
+
+Edit
+----
+
+Undo (Ctrl+Z)
+^^^^^^^^^^^^^
+Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder* and some things like deleting files cannot be undone.
+
+.. _extended_tags_menu:
+
+Extended Tags
+^^^^^^^^^^^^^
+Open's the Extended Tags Dialog. With it you can edit/see all the supported fields in a file.
+
+Properties
+^^^^^^^^^^
+Shows the first selected file's format information like filetype, version, etc.
+
+Cut (Ctrl+X)
+^^^^^^^^^^^^
+Works like Copy Selection, but removes the selected fields.
+
+Copy Selection (Ctrl+C)
+^^^^^^^^^^^^^^^^^^^^^^^
+Copies the selected cells to the clipboard.
+
+Copy All Fields (Ctrl+Shift+C)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Copies the complete tag of the selected files. Note that only supported fields (I'm looking at you ID3) are copied.
+
+Paste (Ctrl+V)
+^^^^^^^^^^^^^^
+Pastes the copied/cut fields onto the selected files. If you have more files selected than the number of tags copied, then the pasting restarts from the first tag copied.
+E.g say you copied the **artist** and **title** fields of ten files before.
+
+* Pasting the copied tags onto 1 file will result in the first copied tag being written to that one file.
+* Having five files selected will result in the first five copied tags being written to the selected files.
+* If you have 15 files selected. All ten tags in the clipboard will get written the first selection. Following which, the first five copied tags will get written to the rest of the selected files.
+
+Paste Onto Selection
+^^^^^^^^^^^^^^^^^^^^
+Works just like Paste, but with an important caveat. The tags you copied will be pasted *onto* the selected cells. If, for example, you'd copied the **artist** and **album** fields of a single file before, but now have the title and originalartist fields selected. The copied value in **artist** field will get to written to the **title** field and the copied **album** value will get written to the **originalartist** field.
+
+The same rules apply as with Paste, but the pasting isn't restarted for individual files. ie. If you've copied two fields before, but have four cells selected. The values will only get written to the first two selected cells.
+
+Remove Tag (Ctrl+R)
+^^^^^^^^^^^^^^^^^^^
+Removes the tags of selected files. Note that although this operation can be undone, the tag is not restored as it was before. A new one will be created  only supported fields be restored.
+
+.. _select_next:
+
+Select Next Dir (Ctrl+N)
+^^^^^^^^^^^^^^^^^^^^^^^^
+Select a file. Invoke this menu item. All the files with the same \_\_dirpath will be selected. Invoke this menu item again, then puddletag will pick the first file (going down in the File-View) with a different \_\_dirpath to those selected and select all files with **that** \_\_dirpath.
+
+If you have multiple files with differing \_\_dirpaths selected then puddletag will select all the files belonging to those \_\_dirpaths. It will **not** do anything if you invoke this menu item again though.
+
+Select Previous Dir (Ctrl+Shift+N)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Does what the previous menu item does except it checks for the first differing file by going **up** in the File-View.
+
+Invert selection (Ctrl+Shift+A)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Selects all the cells that aren't currently selected. Deselects those that are.
+
+Select Column (Meta+Alt+C)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Select's the column of whichever cell you last selected.
+
+Select All (Ctrl+A)
+^^^^^^^^^^^^^^^^^^^
+It's obvious if you think about it.
+
+Move Selected Up (Ctrl+KP+) (KP=Keypad)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Moves the selected files up one row in the File-View.
+
+Move Selected Down (Ctrl+KP-)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Moves the selected files down one row in the File-View.
+
+Increase Font Size (Ctrl+Shift+KP+)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Increases the File-View font.
+
+Decrease Font (Ctrl+Shift+KP-)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Increases the File-View font, but in reverse.
+
+Preferences
+^^^^^^^^^^^
+Opens the Preferences dialog.
+
+Convert
+-------
+
+.. _menus_file_to_tag:
+
+File->Tag (Ctrl+T)
+^^^^^^^^^^^^^^^^^^
+Convert the selected files to tags using the pattern in the Pattern Combo. Some examples:
+
++ Invoking File->Tag on a file with filename 'Indie Artist - No Autotune.mp3' with **%artist% - %title%** in the pattern combo will retrieve **artist=Indie Artist** and **title=No Autotune**.
++ With filename 'Wanton_character_#_something_irreligious#01' the pattern '%artist%#%title%#%track%' will get you **artist=Wanton_character_**, **title=something irreligious**, **track=01**. You can then use :doc:`functions <function>` to clean up the values.
++ Use **%dummy%** to match something you don't want to retrieve. Eg. '%title% - %dummy%' for 'I love autotune - Artist Doesn't Matter.mp3' would only write 'I love autotune' to the title field, whereas dummy will be forgotten.
+
+Directory names are delimited with the forward slash ('/') character.
+
++ For a file with path '/home/cpuddle/Music/Justin Bieber - Dunno/01 - Kinda Terrible.mp3' you could use a pattern like '%artist% - %album%/%track% - %title%' to retrieve the following tag, **artist=Justin Bieber, album=Dunno, track=01, title=Kinda Terrible**.
++ Each character delimits a new directory, eg. for the file with path /home/cpuddle/Music/Freshlyground/Nomvula/06 - I'd Like.mp3 you can use the following pattern to retrieve all relevant values, '%artist%/%album%/%track% - %title%' giving **artist=Freshlyground, album=Nomvula, album=I'd Like, track=06**.
++ To only match directories you need to use %dummy% for the filename part. Eg **%artist% - %album%/%dummy%** will retrieve all relevant info from the directory name, but not the filename.
+
+Tag->File (Ctrl+F)
+^^^^^^^^^^^^^^^^^^
+Uses the pattern in the Pattern Combo to carry out the :ref:`Tag to File <tag_to_filename>` function.
+
+Format
+^^^^^^
+Applies the :ref:`Format Value <format_value>` function to the selected files using the pattern in the Pattern Combo.
+
+Be careful if you have a filename cell selected, because the file will be renamed using the Pattern Combo's pattern **without** preserving extensions. So using the **%artist% - %title%** pattern as before will result in the file being renamed to 'Before The Fame - Sounds Better Than Anything After' (<- note the absence of an extension).
+
+Rename Directories
+^^^^^^^^^^^^^^^^^^
+Renames the selected files' directories based on the pattern in Pattern Combo.
+
+It's also a shortcut for :ref:`Tag->Dir <tag_to_dir>`.
+
+Text File->Tag
+^^^^^^^^^^^^^^
+Asks you to open a Text File with which you can then use patterns to extract tags.
+
+Clipboard->Tag
+^^^^^^^^^^^^^^
+Uses the same dialog as Text File->Tag, but preloaded with text from the clipboard.
+
+Actions
+-------
+
+Actions
+^^^^^^^
+Opens the actions dialog, with which you can edit actions. Briefly described in :ref:`Tutorial 2 <actions_tut>`.
+
+Quick Actions
+^^^^^^^^^^^^^
+Opens the **Quick Actions** dialog. Quick Actions differ from Actions in that all the functions in an action is applied to the selected cells.
+
+Eg. If you have an action that converts the **artist, album** and **title** fields to Mixed Case. Now you want to apply that action to the **originalartist** and **band** fields. All you have to do is select the originalartist and band fields in the File-View, apply the Quick Action and the action will be applied to each field respectively.
+
+Functions
+^^^^^^^^^
+Opens the Functions dialog. See the :doc:`functions pages <function>` for info on individual functions.
+
+Tools
+-----
+
+.. _autonumbering_wizard:
+
+Autonumbering Wizard...
+^^^^^^^^^^^^^^^^^^^^^^^
+Opens a dialog allowing to automatically number tracks in a sequence. It's pretty self explanatory.
+
+**Output field**: Instead of writing to the track field you can write the sequency to any non-file (ie. filename, path, etc) field.
+
+**Group tracks using pattern**: Enter a pattern to group the tracks by.
+
+- Eg. if you would like to number tracks by discnumber enter *%discnumber%*.
+- If you'd like to split by directory, *%dirpath%*
+- Any valid pattern can be used, even something like *%album% - %dirpath%*
+
+**Increase counter only on group change**: If checked, the counter will only be increased when the group changes.
+
+Eg if you split the tracks by *%__dirpath%* and output field %discnumber%. The discnumber field in each folder will be the same, increasing for each folder.
+
+All tracks in the first folder will have discnumber=1. All tracks in folder 2 will have discnumber=2 and so on.
+
+Import Music Library...
+^^^^^^^^^^^^^^^^^^^^^^^
+Open's a dialog to allow you to import a supported Music Library into puddletag to edit its tags. Only QuodLibet is supported for now.
+
+Replace
+^^^^^^^
+Open's the Functions dialog with the :ref:`Replace function<replace>`. That is all it does, nothing more.
+
+Sort By
+^^^^^^^
+See :ref:`Sort By Preferences<sort_option_prefs>`.
+
+.. _preview_mode:
+
+Preview Mode
+------------
+
+Enable Preview Mode
+^^^^^^^^^^^^^^^^^^^
+Enables/Disables preview mode. When enabled any changes you make will not get written. Instead any values you change that differ from the original will be shown as emboldened text in the File-View and Extended Tags dialog. Values that you've changed, but are the same as the underlying value will be shown in italics.
+
+Use :ref:`Write Previews <write_preview>` to save the changes to file.
+
+Deleting tags is not allowed from within Preview Mode.
+
+Undo Last Clear
+^^^^^^^^^^^^^^^
+If you've cleared any previews (but not exited Preview Mode), the last one will be undone.
+
+.. _write_preview:
+    
+Write Previews
+^^^^^^^^^^^^^^
+If preview mode has been enabled and some changes were made, they'll get written to the files.
+
+Clear Selected Files.
+^^^^^^^^^^^^^^^^^^^^^
+Clears the selected files' previews.
+
+Clear Selected Cells
+^^^^^^^^^^^^^^^^^^^^
+Clears the selected cells' previews.
+
+Tag Tools
+---------
+
+**Please note that if you delete a tag not considered the 'official' tag (eg. When you delete APEv2 from and mp3 file) there'll be no way to undo that action. Deleting 'official' tags can be undone though. And by undo, I don't mean the tag will be restored as before. A new tag will be created with the fields puddletag remembers.**
+
+Delete APEv2 Tag
+^^^^^^^^^^^^^^^^
+Removes the APEv2 Tags in the selected files if present. Undoable for files that use APEv2 as the default tag (ie. Musepack, Wavpack and Monkey's Audio).
+
+Delete All ID3 Tags
+^^^^^^^^^^^^^^^^^^^
+Removes any ID3 tags found in the selected files. Undoable only for mp3 files.
+
+Remove ID3v2 Tag
+^^^^^^^^^^^^^^^^
+Removes the ID3v2 tag from the selected files. Undoable only for mp3 files.
+
+Remove ID3v1 Tag
+^^^^^^^^^^^^^^^^
+Removes the ID3v1 tag from the selected files. Undoable only for mp3 files.
+
+
+Windows
+-------
+
+Filter (F3)
+^^^^^^^^^^^
+Allows you to Filter the main-view using any :doc:`Filter Expressions <filter>`.
+
+Tag Panel
+^^^^^^^^^
+Select some files, fill in some text and save the changes (**File->Save**). Configure the fields in :ref:`Edit->Preferences->Tag Panel <tag_panel_prefs>`.
+
+.. _artwork_window:
+    
+Artwork
+^^^^^^^
+Shows the **Artwork** window with which you can edit album art. See :ref:`album_art` for more info.
+
+Filesystem
+^^^^^^^^^^
+Displays the filesystem window which lists directories. Right click on a directory and click on **Refresh** to refresh it. Also in that context menu, **Show Header** will show the Filesystem header which displays extra info.
+
+Tag Sources
+^^^^^^^^^^^
+Shows/Hides the Tag Sources dialog. See the :doc:`Tag Sources <tagsources>` page for more details.
+
+Stored Tags
+^^^^^^^^^^^
+The Stored Tags dialog displays the Tags of the currently selected files as stored on disk. Useful for when you have previews and want to see the underlying tags.
+
+Note that the files are reloaded each time the selection changes. This almost always has a performance penalty associated with it.
+
+Logs
+^^^^
+Currently displays extra info from Tag Sources.
+
+Masstagging
+^^^^^^^^^^^
+See the :doc:`Masstagging Tutorial <tut5>` for more info.
+
+Logs
+^^^^
+Shows/Hides the Logs dialog. Currently shows debugging information for Tag Sources. Will be expanded to include more information in future.
+
+Functions
+^^^^^^^^^
+Shows the Functions dialog as a tool window. Click **Apply** to apply changes to the selected files.
+
+Actions
+^^^^^^^
+Shows the Actions dialog as a tool window. Click **Apply** to apply changes to the selected files.

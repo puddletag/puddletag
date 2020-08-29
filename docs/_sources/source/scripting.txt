@@ -1,0 +1,205 @@
+Scripting functions reference
+=============================
+
+The scripting functions that puddletag supports are listed here. Use them where ever they can be used.
+
+* For comparison functions, **0** and an empty string (**""**) evaluate to **False**. Everything else evaluates to **True**.
+* Strings that contain commas must be enclode in double quotes (**"**).
+* White space before and after arguments will be discarded. Enclose the argument in quotes to preserve it as in **$left(" One space.", 3)**.
+
+.. describe:: $ceiling()
+
+   For the floating point number x.y. Returns integer x + 1.
+
+.. describe:: $and(a, b)
+
+   Returns True if both a and b evaluate to True. Returns False otherwise.
+
+.. describe:: $add(x,y)
+
+   Adds x and y
+
+
+.. describe:: $caps(string)
+
+   Capitalizes the first letter of each word in string and converts the rest to lower case.
+
+
+.. describe:: $caps2(string)
+
+   Capitalizes the first letter of each word in string and leaves all other characters unchanged.
+
+
+.. describe:: $caps3(string)
+
+   Capitalizes the first letter of the string and converts the rest to lower case.
+   
+.. describe:: $ceiling(number)
+
+   Returns the smallest integer that is greater than or equal to number.
+
+
+.. describe:: $char(character)
+
+   Returns the ASCII character number of the character.
+
+
+.. describe:: $div(x, y)
+
+   Divides x by y.
+
+.. describe:: $floor()
+
+   For the floating point number x.y. Returns integer x.
+
+.. describe:: $geql(x, y)
+
+   Returns True if x >= y. False otherwise.
+
+
+.. describe:: $grtr(x, y)
+
+   Returns true if x > y. False otherwise.
+
+
+.. describe:: $if(x, y, z)
+
+   If x is True, y is returned, otherwise z is returned.
+
+
+.. describe:: $iflonger(a,b,x,y)
+
+   If string a is longer than string b, then x is returned, otherwise y.
+
+
+.. describe:: $isdigit(x)
+
+   Returns true if x is a decimal number.
+
+.. describe:: $left(string, n)
+
+   Leftmost n characters of string.
+
+
+.. describe:: $len(string)
+
+   Returns the length of string.
+
+
+.. describe:: $leql(x,y)
+
+   Returns True if x <= y. False otherwise.
+
+.. describe:: $less(x,y)
+
+   Returns True if x < y. False otherwise.
+
+
+.. describe:: $lower(string)
+
+   Converts string to lowercase.
+
+
+.. describe:: $meta(field, n)
+
+   If field is multiple-valued, the field's nth value. Note that it's just the field name, **field** and not **%field%**.
+
+
+.. describe:: $meta_sep(field, sep=', ')
+
+   If field is multiple-valued, returns the field's values joined by sep. Otherwise just returns the field's value.
+
+
+.. describe:: $mid(string,n,i)
+
+   Returns first i characters of string, starting at n.
+
+
+.. describe:: $mod(x,y)
+
+   Returns the remainder of x divided by y.
+
+
+.. describe:: $mul(x,y)
+
+   Multiplies x by y.
+
+
+.. describe:: $neql(x,y)
+
+   Returns True if x is not equal to y.
+
+
+.. describe:: $not(x)
+
+   Returns False if x evaluates to True and vice versa.
+
+
+.. describe:: $num(number, y)
+
+   Pads zeroes to number until it's of length y. If number has excess zeroes and it's length is less than y then these zeroes are removed.
+
+
+.. describe:: $odd(x)
+
+   Returns True if x is odd.
+
+
+.. describe:: $or(x,y)
+
+   Returns True if either x or y evaluates to True. False otherwise.
+
+
+.. describe:: $rand()
+
+   Generates a pseudo-random number between 0 and 1.
+
+.. describe:: $regex(text, regex, repl, matchcase=0)
+
+   Replaces all occurrences of **regex** with **repl** in text.
+
+   | **text**: text to search, eg. *%artist%*
+   | **regex**: regular expression to use as the search eg. *jay\.**
+   | **repl**: Text to replace all matches of regex with. Can be pattern ex *$lower($1)*, but has to be quoted like in "$lower($1)" otherwise any scripting functions used will be run before the regular expression is evaluated.
+   | **matchcase**: Defaults to *0*. If *1*, will have case-sensitive matching.
+   
+   See :ref:`replace_with_regexp` for more examples.
+    
+
+.. describe:: $round()
+
+   For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.
+
+.. describe:: $replace(string, word, replaceword, matchcase, whole)
+
+   Replaces word in string with replaceword. If matchcase is true, a case-sensitive replace is done. Whole is true implies that only whole word matches are replaced.
+
+
+.. describe:: $right(string, n)
+
+   Returns rightmost n characters in string.
+
+
+.. describe:: $strip(string)
+
+   Removes leading and trailing whitespace from string.
+
+
+.. describe:: $sub(x, y)
+
+   Subtracts y from x.
+
+
+.. describe:: $to_ascii(x)
+
+   Converts all unicode chars in x to ASCII eg. 'é' will become 'e'. Characters that can't be converted will be removed.
+
+
+.. describe:: $upper(string)
+
+   Converts string to uppercase.
+
+
+.. describe:: $validate(string, y, chars)
+
+   Removes chars (defaults to **/\\\*?;"|:**) from string and replaces them with y if specified.
