@@ -60,8 +60,6 @@ Installing on Ubuntu
 
 You can install puddletag from the Software Centre in recent versions of Ubuntu.
 
-A Debian package is no longer provided, because of the complexity of generating a deb for different Ubuntu versions.
-
 .. _installing_on_fedora_14_and_later:
 
 Installing on Fedora 14 and later

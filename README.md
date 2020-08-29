@@ -21,8 +21,6 @@ There are also Functions, which can do things like replace text, trim it, do cas
 
 Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey’s Audio (.ape) and WavPack (wv).  
 
-This is a fork of the [original](https://github.com/keithgg/puddletag) which incorporates PyQt5 and Python 3 (Python 2 support has been dropped).
-
 ## 2. License
 
 `puddletag` is licensed under the GPLv3, which you can find in its entirety at  [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)  
@@ -43,8 +41,7 @@ The package names may be different in different distributions.
 
 ## 4. Installation
 
-After installing the dependencies above:  
-
+After installing the dependencies above:
 
 ```
 git clone https://github.com/puddletag/puddletag
