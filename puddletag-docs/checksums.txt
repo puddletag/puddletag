@@ -1,16 +1,16 @@
-.. |source_link| replace:: puddletag-1.2.0.tar.gz
-.. _source_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag-1.2.0.tar.gz
+.. |source_link| replace:: puddletag-2.0.0.tar.gz
+.. _source_link: https://github.com/keithgg/puddletag/releases/download/2.0.0/puddletag-2.0.0.tar.gz
 
-.. |beta_source_link| replace:: puddletag-1.2.0.tar.gz
-.. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag_beta-1.2.0.tar.gz
+.. |beta_source_link| replace:: puddletag-2.0.0.tar.gz
+.. _beta_source_link: https://github.com/keithgg/puddletag/releases/download/2.0.0/puddletag_beta-2.0.0.tar.gz
 
-.. |source_sha| replace:: 255239ba572809d37caa14ad26c9ea8806c9fde0
-.. |beta_source_sha| replace:: 255239ba572809d37caa14ad26c9ea8806c9fde0
+.. |source_sha| replace:: dfbbfc86a8d4a4ee5014ad3715fa2657e9627e33
+.. |beta_source_sha| replace:: dfbbfc86a8d4a4ee5014ad3715fa2657e9627e33
 
-.. |version| replace:: 1.2.0
+.. |version| replace:: 2.0.0
 .. |docs_html_link| replace:: HTML
-.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag-docs-html-1.2.0.tar.bz2
+.. _docs_html_link: https://github.com/keithgg/puddletag/releases/download/2.0.0/puddletag-docs-html-2.0.0.tar.bz2
 .. |docs_rst_link| replace:: ReStructuredText
-.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/1.2.0/puddletag-docs-rst-1.2.0.tar.bz2
+.. _docs_rst_link: https://github.com/keithgg/puddletag/releases/download/2.0.0/puddletag-docs-rst-2.0.0.tar.bz2
 
 

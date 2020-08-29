@@ -10,10 +10,10 @@ python2 setup.py --quiet sdist --owner=root --group=root --dist-dir=$BUILD_DIR
 # echo "Making documentation"
 cd ../puddletag-docs
 
-python2 offlinezip.py $BUILD_DIR
+python3 offlinezip.py $BUILD_DIR
 
 cd ../puddletag-docs
-python2 update_checksums.py checksums.txt $BUILD_DIR
+python3 update_checksums.py checksums.txt $BUILD_DIR
 make html
 mv _build/html $BUILD_DIR/website
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Mon, 03 Aug 2020 18:50:43 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
+<rss version="2.0"><channel><title>puddletag news feed</title><link>http://puddletag.sourceforge.net</link><description>The latest news about puddletag: A tag-editor for GNU/Linux.</description><lastBuildDate>Sat, 29 Aug 2020 14:17:25 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><item><title>3 August 2020 - some updates</title><link>http://puddletag.sourceforge.net/news.html#august-2020-some-updates</link><description>
   &lt;div class="section" id="august-2020-some-updates"&gt;
 &lt;h1&gt;3 August 2020 - some updates&lt;/h1&gt;
 &lt;p&gt;Sandro Tosi has gracefully been spearheading the effort to port puddletag to Python3. Once done I&amp;#8217;ll put out a release for testing. There is no timeline as yet and we&amp;#8217;ll take things as they go.&lt;/p&gt;
@@ -14,9 +14,9 @@ links should just redirect.&lt;/p&gt;
 &lt;p&gt;A Debian package is no longer supplied, supporting two versions of Ubuntu and Debian from a single .deb would take way too much time. For Ubuntu users, &lt;a class="reference external" href="http://www.webupd8.org/"&gt;WebUpd8&lt;/a&gt; keeps their &lt;a class="reference external" href="https://launchpad.net/~nilarimogard/+archive/ubuntu/webupd8"&gt;PPA&lt;/a&gt; up to date.&lt;/p&gt;
 &lt;p&gt;Additions&lt;/p&gt;
 &lt;ul class="simple"&gt;
-&lt;li&gt;Swedish translation (Åke Engelbrektson)&lt;/li&gt;
+&lt;li&gt;Swedish translation (Ã…ke Engelbrektson)&lt;/li&gt;
 &lt;li&gt;CJK Encoding for Encoding Conversion Function (XIE Dongping)&lt;/li&gt;
-&lt;li&gt;Spanish translation (José Vidal)&lt;/li&gt;
+&lt;li&gt;Spanish translation (JosÃ© Vidal)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Changes&lt;/p&gt;
 &lt;ul class="simple"&gt;
@@ -164,7 +164,7 @@ Checkout the &lt;a class="reference download internal" href="_downloads/changelo
 &lt;div class="highlight-bash"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;http://hg.code.sf.net/p/puddletag/code
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;a class="reference download internal" href="_downloads/puddletag_cs.qm" download=""&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Pavel Fric has contributed a Czech translation which you can &lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;download&lt;/span&gt;&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Contributions are always appreciated so please post on the forum (link above) if you&amp;#8217;d like to translate puddletag.&lt;/p&gt;
 &lt;p&gt;New beta coming this weekend.&lt;/p&gt;
 &lt;/div&gt;
@@ -278,7 +278,7 @@ it does contain important stuff like.&lt;/p&gt;
 &lt;strong&gt;Update 4 June 2011&lt;/strong&gt;: Tag sources were broken due to a bug not found in testing. Therefore 0.10.5 has been released.&lt;/p&gt;
 &lt;p&gt;Unless there&amp;#8217;re some critical bugs discovered in this release, then the next release will be puddletag v1. There won&amp;#8217;t be much changed except for a couple of dollops of polish. I plan to release it around the end of this month.&lt;/p&gt;
 &lt;p&gt;As for this release, there&amp;#8217;re a lot of changes, but nothing of note UI wise (except for the website theme change copied from the &lt;a class="reference external" href="http://djangoproject.com"&gt;Django docs&lt;/a&gt;).&lt;/p&gt;
-&lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog" download=""&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;Raphaël Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;span class="xref std std-ref"&gt;French translation&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Quickly listed, I&amp;#8217;ve added a Man page, created a slightly better looking splash screen, converted the documentation to reStructuredText and added it to the tarball. Also there&amp;#8217;s a &lt;a class="reference download internal" href="_downloads/changelog" download=""&gt;&lt;code class="xref download docutils literal"&gt;&lt;span class="pre"&gt;changelog&lt;/span&gt;&lt;/code&gt;&lt;/a&gt; containing most everything done and &lt;strong&gt;RaphaÃ«l Rochet&lt;/strong&gt; became the first person to translate puddletag by providing a &lt;span class="xref std std-ref"&gt;French translation&lt;/span&gt;.&lt;/p&gt;
 &lt;div class="section" id="new-features"&gt;
 &lt;h2&gt;New Features&lt;/h2&gt;
 &lt;ul class="simple"&gt;
