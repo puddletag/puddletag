@@ -9,3 +9,4 @@ puddletag-docs/translations
 .idea/
 venv
 rss_temp*.txt
+rss_temp*.html
