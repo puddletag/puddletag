@@ -172,11 +172,8 @@ def load_macro_info(filename):
     funcs = []
     name = cparser.get('info', 'name', '')
 
-    def get_func_index(funcname):
-        if funcname.startswith('Func'):
-            return funcname[4:].strip()
-        else:
-            return funcname
+    key_type = lambda text: int(text) if text.isdigit() else text.lower()
+    get_func_index = lambda key: [ key_type(c) for c in re.split('([0-9]+)', key) ]
 
     for section in sorted(cparser.sections(), key=get_func_index):
         if section.startswith('Func'):
