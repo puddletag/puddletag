@@ -98,6 +98,8 @@ def dont_execute():
     translate("Menus", "&Paste")
     translate("Menus", "&Copy Selection")
     translate("Menus", "&Rename Directories")
+    translate("Menus", "&Go to parent folder")
+    translate("Menus", "Focuses the current file's parent folder in the Filesystem view")
     translate("Menus", "&QuickActions")
     translate("Menus", "&Properties")
     translate("Menus", "&Delete")

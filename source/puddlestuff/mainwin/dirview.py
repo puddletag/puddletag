@@ -299,6 +299,10 @@ class DirView(QTreeView):
             self.expand(index)
             parent = parent.parent()
 
+    def focusDir(self, dir_path):
+        """Focuses the component on the given path """
+        self.selectDirs(dir_path)
+
 
 class DirViewWidget(QWidget):
     loadFiles = pyqtSignal(object, list, bool, name='loadFiles')
@@ -347,6 +351,22 @@ class DirViewWidget(QWidget):
         self.dirview.subfolders = value
         save_gen_settings({'Su&bfolders': value})
         self._status['table'].subFolders = value
+
+    def _focusDir(self, dir_path):
+        """Focuses the Filesystem component on the given path """
+        self.parentWidget().show()
+        self.dirview.focusDir(dir_path)
+
+
+    def focusCurrentFileParent(parent=None):
+        """Focuses the Filesystem component on the parent folder of the currently selected file """
+
+        files = parent._status['selectedfiles']
+        if not files:
+            return
+
+        dir_path = files[0].dirpath
+        parent._focusDir(dir_path)
 
 
 control = ('Filesystem', DirViewWidget, LEFTDOCK, True)

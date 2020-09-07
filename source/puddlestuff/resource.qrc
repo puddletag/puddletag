@@ -2,6 +2,7 @@
 <RCC version="1.0">
     <qresource>
         <file alias="action.png">data/action.png</file>
+        <file alias="target.png">data/target.png</file>
         <file alias="addfolder.png">data/addfolder.png</file>
         <file alias="filetotag.png">data/filetotag.png</file>
         <file alias="text-tag.png">data/text-tag.png</file>

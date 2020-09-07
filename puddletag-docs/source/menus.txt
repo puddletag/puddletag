@@ -192,6 +192,10 @@ Actions
 ^^^^^^^
 Opens the actions dialog, with which you can edit actions. Briefly described in :ref:`Tutorial 2 <actions_tut>`.
 
+Go to parent folder
+^^^^^^^^^^^^^^^^^^^
+Opens the filesystem dock (if not already opened) and navigates to the folder which contains the selected file. This function is similar to the "Scroll to source" function found on some IDEs.
+
 Quick Actions
 ^^^^^^^^^^^^^
 Opens the **Quick Actions** dialog. Quick Actions differ from Actions in that all the functions in an action is applied to the selected cells.

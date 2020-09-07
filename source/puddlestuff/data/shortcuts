@@ -377,5 +377,13 @@
     "enabled": "filesselected", 
     "command": "clipboard_to_tag", 
     "control": "mainwin"
+  },
+  "shortcut53": {
+    "name": "&Go to parent folder",
+    "command": "focusCurrentFileParent",
+    "control": "Filesystem",
+    "enabled": "filesselected",
+    "tooltip": "Focuses the current file's parent folder in the Filesystem view",
+    "icon": ":/target.png"
   }
 }
