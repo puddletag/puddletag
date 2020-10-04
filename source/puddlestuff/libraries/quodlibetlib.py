@@ -170,10 +170,10 @@ class Tag(MockTag):
     def save(self, justrename=False):
         libtags = self._libtags
         tags = self.__tags
-        newartist = to_string(tags.get('artist', [u'']))
+        newartist = to_string(tags.get('artist', ['']))
         oldartist = libtags.get('artist', '')
 
-        newalbum = to_string(tags.get('album', [u'']))
+        newalbum = to_string(tags.get('album', ['']))
         oldalbum = libtags.get('album', '')
 
         self._libtags.update(self._tolibformat())

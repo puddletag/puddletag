@@ -94,7 +94,7 @@ class ShortcutDialog(QDialog):
 
 
 class ShortcutName(QDialog):
-    def __init__(self, texts, default=u'', parent=None):
+    def __init__(self, texts, default='', parent=None):
         super(ShortcutName, self).__init__(parent)
         self.setWindowTitle('puddletag')
         self.ok = False

@@ -373,7 +373,7 @@ def isempty(value):
 
     >>>isempty('')
     True
-    >>>isempty([u'', None])
+    >>>isempty(['', None])
     True
     >>>isempty([0])
     False
@@ -649,9 +649,9 @@ def unicode_list(value):
     """Modifies the passed value to a unicode list.
 
     >>>unicode_list("value")
-    [u'value']
+    ['value']
     >>>unicode_list(['value1', 'value2']
-    [u'value1', 'value2']
+    ['value1', 'value2']
     """
     if not value:
         return []

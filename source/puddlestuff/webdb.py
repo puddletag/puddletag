@@ -48,7 +48,7 @@ FIELDLIST_TIP = translate("WebDB",
                           '__image</b> will write all fields but the '
                           'composer and __image fields.')
 
-DEFAULT_REGEXP = {'album': [u'(.*?)([\(\[\{].*[\)\]\}])', '$1']}
+DEFAULT_REGEXP = {'album': ['(.*?)([\(\[\{].*[\)\]\}])', '$1']}
 
 
 def apply_regexps(audio, regexps=None):
@@ -491,7 +491,7 @@ class SettingsDialog(QWidget):
         self._text.setText(trackpattern)
 
         sortoptions = cparser.get('tagsources', 'sortoptions',
-                                  [u'artist, album', 'album, artist'])
+                                  ['artist, album', 'album, artist'])
         self._sortoptions.clear()
         self._sortoptions.addItems(sortoptions)
 
@@ -799,7 +799,7 @@ class MainWin(QWidget):
         self.listbox.albumPattern = albumformat
 
         sort_options = get('sortoptions',
-                           [u'artist, album', 'album, artist'])
+                           ['artist, album', 'album, artist'])
         sort_options = split_strip(sort_options)
         self.listbox.setSortOptions(sort_options)
 

@@ -545,7 +545,7 @@ def to_file(data, name):
 class AllMusic(object):
     name = 'AllMusic.com'
     tooltip = "Enter search parameters here. If empty, the selected files are used. <ul><li><b>artist;album</b> searches for a specific album/artist combination.</li> <li>To list the albums by an artist leave off the album part, but keep the semicolon (eg. <b>Ratatat;</b>). For a album only leave the artist part as in <b>;Resurrection.</li><li>By prefacing the search text with <b>:id</b> you can search for an albums using it's AllMusic sql id eg. <b>:id 10:nstlgr7nth</b> (extraneous spaces are discarded.)<li></ul>"
-    group_by = [u'album', 'artist']
+    group_by = ['album', 'artist']
 
     def __init__(self):
         super(AllMusic, self).__init__()
@@ -571,7 +571,7 @@ class AllMusic(object):
             try:
                 params = parse_searchstring(text)
             except RetrievalError:
-                return self.search(text, [u''])
+                return self.search(text, [''])
             artists = [params[0][0]]
             album = params[0][1]
             return self.search(album, artists)

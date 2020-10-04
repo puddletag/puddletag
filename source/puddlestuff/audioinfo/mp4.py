@@ -61,9 +61,9 @@ encode = lambda x: [z.encode('utf8') for z in x]
 
 def getbool(value):
     if value:
-        return [u'Yes']
+        return ['Yes']
     else:
-        return [u'No']
+        return ['No']
 
 
 def setbool(value):

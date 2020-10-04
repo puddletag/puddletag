@@ -168,12 +168,12 @@ def joinuntil(cursor, text):
 
     append = [line[index:]] if line[index:].strip() else []
     al = cursor.all_lines
-    cursor.all_lines = al[:cursor.lineno] + [u''.join(ret)] + \
+    cursor.all_lines = al[:cursor.lineno] + [''.join(ret)] + \
                        append + al[cursor.lineno + len(ret):]
     cursor.lineno = cursor.lineno
 
 
-def killtag(cursor, tag, repl=u' '):
+def killtag(cursor, tag, repl=' '):
     if repl:
         cursor.log('Killing HTML tag %s with %s\n' % (tag, repl))
     else:

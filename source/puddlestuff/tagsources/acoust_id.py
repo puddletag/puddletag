@@ -42,10 +42,10 @@ API_KEY = "gT8GJxhO"
 def album_hash(d):
     h = ''
     if 'album' in d:
-        h = d[u'album']
+        h = d['album']
 
     if 'year' in d:
-        h += d[u'year']
+        h += d['year']
 
     return hash(h)
 

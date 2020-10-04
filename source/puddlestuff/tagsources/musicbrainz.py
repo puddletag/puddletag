@@ -146,7 +146,7 @@ def parse_artist_credit(node):
     if not artists:
         return {}
 
-    artist = ', '.join(z[u'artist'][u'name'] for z in artists)
+    artist = ', '.join(z['artist']['name'] for z in artists)
     if len(artists) == 1:
         artist_id = artists[0]['artist']['id']
         return {
@@ -160,21 +160,21 @@ def parse_artist_credit(node):
 
 def parse_artist_relation(relations):
     ret = defaultdict(lambda: [])
-    for r in to_list(relations[u'relation']):
+    for r in to_list(relations['relation']):
         field = r['type']
         desc = ''
 
         if 'attribute-list' in r:
-            desc = ', '.join(to_list(r[u'attribute-list']['attribute']))
+            desc = ', '.join(to_list(r['attribute-list']['attribute']))
         if 'artist' in r:
             if not desc:
-                desc = r[u'artist'][u'name']
+                desc = r['artist']['name']
             else:
-                if r[u'direction'] == 'backward':
+                if r['direction'] == 'backward':
                     field = '%s %s' % (desc, field)
                 else:
                     field = '%s %s' % (field, desc)
-                desc = r[u'artist'][u'name']
+                desc = r['artist']['name']
         if desc:
             ret[field].append(desc)
     return ret
@@ -202,11 +202,11 @@ def parse_label_list(release_node):
     labels = parse_node(release_node, 'label-info-list', 'label-info',
                         'label')
 
-    catalogs = [z[u'catalog-number'] for z in labels if 'catalog-number' in z]
-    label_names = [z[u'label'][u'name'] for z in labels
-                   if 'label' in z and 'name' in z[u'label']]
-    label_ids = [z[u'label'][u'id'] for z in labels
-                 if 'label' in z and 'id' in z[u'label']]
+    catalogs = [z['catalog-number'] for z in labels if 'catalog-number' in z]
+    label_names = [z['label']['name'] for z in labels
+                   if 'label' in z and 'name' in z['label']]
+    label_ids = [z['label']['id'] for z in labels
+                 if 'label' in z and 'id' in z['label']]
     return {
         'label': label_names,
         'mbrainz_label_id': label_ids,
@@ -245,16 +245,16 @@ def parse_node(node, header_tag, sub_tag, check_tag):
 def parse_recording_relation(relations):
     info = defaultdict(lambda: [])
 
-    for relation in to_list(relations[u'relation']):
+    for relation in to_list(relations['relation']):
         recording = relation['recording']
         desc = None
 
         if 'artist-credit' in recording:
             artists = []
-            for cr in to_list(recording[u'artist-credit']['name-credit']):
+            for cr in to_list(recording['artist-credit']['name-credit']):
                 if 'join-phrase' in cr:
-                    artists.append(cr[u'join-phrase'])
-                artists.append(cr[u'artist'][u'name'])
+                    artists.append(cr['join-phrase'])
+                artists.append(cr['artist']['name'])
 
             unique_artists = []
             for z in artists:
@@ -265,9 +265,9 @@ def parse_recording_relation(relations):
 
         if 'title' in recording:
             if desc:
-                desc = recording[u'title'] + ' by ' + desc
+                desc = recording['title'] + ' by ' + desc
             else:
-                desc = recording[u'title']
+                desc = recording['title']
         if desc is not None:
             info[relation['type']].append(desc)
     return info
@@ -280,7 +280,7 @@ def parse_release(node):
     info.update(parse_label_list(node))
     info.update(parse_medium_list(node))
     info = convert_dict(info, ALBUM_KEYS)
-    info['#album_id'] = info[u'mbrainz_album_id']
+    info['#album_id'] = info['mbrainz_album_id']
 
     if 'count' in info:
         del (info['count'])
@@ -324,16 +324,16 @@ def parse_track_list(node):
                 del (track[k])
 
         if 'length' in track:
-            track['length'] = strlength(int(track[u'length']) / 1000)
+            track['length'] = strlength(int(track['length']) / 1000)
 
         tracks.append(convert_dict(track, TRACK_KEYS))
     return tracks
 
 
 def parse_track_relation(relation):
-    if relation[u'target-type'] == 'recording':
+    if relation['target-type'] == 'recording':
         return parse_recording_relation(relation)
-    elif relation[u'target-type'] == 'artist':
+    elif relation['target-type'] == 'artist':
         return parse_artist_relation(relation)
     return {}
 
@@ -495,7 +495,7 @@ class XMLEscaper(HTMLParser):
 class MusicBrainz(object):
     name = 'MusicBrainz'
 
-    group_by = [u'album', 'artist']
+    group_by = ['album', 'artist']
 
     def __init__(self):
         super(MusicBrainz, self).__init__()
@@ -547,7 +547,7 @@ class MusicBrainz(object):
             album = params[0][1]
             return self.search(album, [artist], 100)
 
-    def search(self, album, artists=u'', limit=40):
+    def search(self, album, artists='', limit=40):
         if time.time() - self.__lasttime < 1000:
             time.sleep(1)
 

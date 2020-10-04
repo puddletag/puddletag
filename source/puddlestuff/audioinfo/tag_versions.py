@@ -127,12 +127,12 @@ def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2)):
     fileobj = open(fn, 'rb') if isinstance(fn, str) else fn
 
     if ID3_V1 in to_check and ID3_V2 in to_check:
-        tags = [u'ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
+        tags = ['ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
     elif ID3_V1 in to_check:
-        tags = [u'ID3v1.1'] if has_v1(fileobj) else []
+        tags = ['ID3v1.1'] if has_v1(fileobj) else []
     elif ID3_V2 in to_check:
         tags = get_v2(fileobj)
-        tags = [u'ID3v' + '.'.join(map(str, tags))] if tags else []
+        tags = ['ID3v' + '.'.join(map(str, tags))] if tags else []
     else:
         tags = []
 
