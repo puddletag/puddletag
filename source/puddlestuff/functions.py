@@ -40,6 +40,7 @@ import re
 import string
 import traceback
 import unicodedata
+from mutagen.mp3 import HeaderNotFoundError
 from collections import defaultdict
 from functools import partial
 
@@ -1038,6 +1039,8 @@ def update_from_tag(r_tags, fields, tag='APEv2'):
         if tag is None:
             return
     except EnvironmentError:
+        return
+    except mutagen.mp3.HeaderNotFoundError:
         return
     fields = [_f for _f in [z.strip() for z in fields.split(';')] if _f]
     if not fields:
