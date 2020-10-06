@@ -621,6 +621,12 @@ class MassTagWindow(QWidget):
 
     def _start(self):
         mtp = self.profile
+        if self.profile == None:
+            set_status(translate('Masstagging',
+                                 '<b>Please choose a tagging profile.</b>'))
+            self._startButton.setText(translate('Masstagging', '&Search'))
+            return None
+
         tag_groups = split_files(self._status['selectedfiles'],
                                  mtp.file_pattern)
 
