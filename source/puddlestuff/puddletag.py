@@ -448,7 +448,7 @@ class MainWin(QMainWindow):
         # not supported in PyQt5
         # filedlg.setResolveSymlinks(False) 
         filename = str(filedlg.getExistingDirectory(self,
-                                                    translate("Main Window", 'Import directory...'), dirname, QFileDialog.ShowDirsOnly))
+                                                    translate("Main Window", 'Import directory...'), dirname, QFileDialog.ShowDirsOnly|QFileDialog.DontUseNativeDialog))
         return filename
 
     def appendDir(self, filename=None):
