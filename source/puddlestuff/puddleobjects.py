@@ -2447,7 +2447,7 @@ if __name__ == '__main__':
         def __init__(self, parent=None):
             QDialog.__init__(self, parent)
             self.combo = PuddleCombo('patterncombo',
-                                     [u'%artist% - $num(%track%, 2) - %title%', '%artist% - %title%', '%artist% - %album%', '%artist% - Track %track%', '%artist% - %title%', '%artist%'])
+                                     ['%artist% - $num(%track%, 2) - %title%', '%artist% - %title%', '%artist% - %album%', '%artist% - Track %track%', '%artist% - %title%', '%artist%'])
 
             hbox = QHBoxLayout()
             hbox.addWidget(self.combo)

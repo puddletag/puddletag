@@ -84,7 +84,7 @@ def save_shortcut(name, filenames):
 
 
 class Shortcut(QAction):
-    def __init__(self, name, filenames, method, parent, shortcut=u''):
+    def __init__(self, name, filenames, method, parent, shortcut=''):
         super(Shortcut, self).__init__(name, parent)
 
         self.enabled = 'filesselected'
@@ -136,7 +136,7 @@ class Shortcut(QAction):
 class Editor(QDialog):
     actionChanged = pyqtSignal(str, list, str, name='actionChanged');
 
-    def __init__(self, title='Add Action', shortcut=u'', actions=None, names=None, shortcuts=None, parent=None):
+    def __init__(self, title='Add Action', shortcut='', actions=None, names=None, shortcuts=None, parent=None):
         super(Editor, self).__init__(parent)
         self.setWindowTitle(title)
 
@@ -233,7 +233,7 @@ class Editor(QDialog):
     def setName(self, name):
         self._name.setText(name)
 
-    def setAttrs(self, name, actions, filenames, shortcut=u''):
+    def setAttrs(self, name, actions, filenames, shortcut=''):
         names = dict([(z[2], z[1]) for z in actions])
         self.setActions(actions)
         self.setName(name)
@@ -293,7 +293,7 @@ class ShortcutEditor(QDialog):
         win.actionChanged.connect(self.addShortcut)
         win.show()
 
-    def addShortcut(self, name, filenames, shortcut=u'', select=True):
+    def addShortcut(self, name, filenames, shortcut='', select=True):
         item = QListWidgetItem(name)
         item.actionName = name
         item.filenames = filenames[::]

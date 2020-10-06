@@ -289,7 +289,7 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
     arguments -- List of arguments to pass to the function. Patterns
                  should not be evaluated. They'll be evaluated here.
     m_audio   -- Audio file containg multiple multiple values per key.
-                 Eg. {'artist': [u'Artist1': 'Artist2']}
+                 Eg. {'artist': ['Artist1': 'Artist2']}
 
     Keyword Arguments
     s_audio -- Same as m_audio, but containing strings as values.
@@ -339,7 +339,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     ---------
     s  -- *Unicode* format string. Eg. $replace(%artist%, name, surname)
     m_audio -- Audio file containg multiple multiple values per key.
-        Eg. {'artist': [u'Artist1': 'Artist2']}
+        Eg. {'artist': ['Artist1': 'Artist2']}
 
     Keyword Arguments
     s_audio -- Same as m_audio, but containing strings as values.
@@ -349,7 +349,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
     state -- Dictionary that hold state. Like {'__count': 15}.
              Used by some functions in puddlestuff.functions
 
-    >>> audio = {'artist': [u'Artist1'], 'track':u'10'}
+    >>> audio = {'artist': ['Artist1'], 'track':'10'}
     >>> parsefunc('%track% - %artist%', audio)
     Artist1 - 10
     >>> state = {'__count': '5'}
@@ -808,7 +808,7 @@ class Function:
             self.function = functions[funcname]
         elif isinstance(funcname, PluginFunction):
             self.function = funcname.function
-            self.doc = [u','.join([funcname.name, funcname.print_string])] + \
+            self.doc = [','.join([funcname.name, funcname.print_string])] + \
                        [','.join(z) for z in funcname.args]
             self.info = [funcname.name, funcname.print_string]
         else:

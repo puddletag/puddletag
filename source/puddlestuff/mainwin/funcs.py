@@ -246,7 +246,7 @@ def in_lib(state, parent=None):
                 titles = [track['title'][0].lower()
                           if 'title' in track else '' for track in libtracks]
                 for track in tracks:
-                    if track.get('title', [u''])[0].lower() in titles:
+                    if track.get('title', [''])[0].lower() in titles:
                         to_highlight.append(track)
         emit('highlight', to_highlight)
         return True

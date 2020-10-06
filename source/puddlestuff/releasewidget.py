@@ -22,7 +22,7 @@ RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
 default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
                        '[%__numtracks%], "")'
 
-no_disp_fields = [u'__numtracks', '__image']
+no_disp_fields = ['__numtracks', '__image']
 
 pyqtRemoveInputHook()
 
@@ -100,7 +100,7 @@ class Header(QHeaderView):
         self.setSortIndicatorShown(True)
         self.setSortIndicator(0, Qt.AscendingOrder)
         self.sortOptions = [z.split(',') for z in
-                            [u'artist,album', 'album,artist', '__numtracks,album']]
+                            ['artist,album', 'album,artist', '__numtracks,album']]
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -184,7 +184,7 @@ class TreeItem(RootItem):
         if self.hasTracks:
             info = self.itemData.copy()
             if '__numtracks' in info:
-                del (info[u'__numtracks'])
+                del (info['__numtracks'])
 
             def get_track(item):
                 track = info.copy()
@@ -668,7 +668,7 @@ class ReleaseWidget(QTreeView):
              if item.hasTracks]
             for item in albums:
                 if '#extrainfo' in item.itemData:
-                    desc, url = item.itemData[u'#extrainfo']
+                    desc, url = item.itemData['#extrainfo']
                     self.infoChanged.emit(
                         '<a href="%s">%s</a>' % (url, desc))
                     break

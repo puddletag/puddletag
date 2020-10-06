@@ -241,7 +241,7 @@ class AlgWin(QWidget):
         self.alcombo.clear()
         self.alcombo.addItems(names)
         self.alcombo.setCurrentIndex(0)
-        tooltip = "<dl>%s</dl>" % ''.join([u'<dt><b>%s<b></dt> <dd>%s</dd>' % z for z in x])
+        tooltip = "<dl>%s</dl>" % ''.join(['<dt><b>%s<b></dt> <dd>%s</dd>' % z for z in x])
         self.alcombo.setToolTip(tooltip)
         if alg:
             self.loadAlgo(alg)

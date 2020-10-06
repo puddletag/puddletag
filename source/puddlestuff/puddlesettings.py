@@ -54,7 +54,7 @@ def update_settings():
 
     if "ID3" in mapping:
         id3 = mapping['ID3']
-        keys = {u'MusicBrainz Album ID': 'MusicBrainz Album Id',
+        keys = {'MusicBrainz Album ID': 'MusicBrainz Album Id',
                 'MusicBrainz Artist ID': 'MusicBrainz Artist Id'}
         for k in keys:
             if k in id3:

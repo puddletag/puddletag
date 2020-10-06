@@ -608,21 +608,21 @@ class MainWin(QMainWindow):
 
         mapping = {
             'VorbisComment':
-                {u'date': 'year',
+                {'date': 'year',
                  'tracknumber': 'track',
                  'musicbrainz_albumid': 'mbrainz_album_id',
                  'musicbrainz_artistid': 'mbrainz_artist_id',
                  'musicbrainz_trackid': 'mbrainz_track_id'},
             'MP4':
-                {u'MusicBrainz Track Id': 'mbrainz_track_id',
+                {'MusicBrainz Track Id': 'mbrainz_track_id',
                  'MusicBrainz Artist Id': 'mbrainz_artist_id',
                  'MusicBrainz Album Id': 'mbrainz_album_id'},
             'ID3':
-                {u'ufid:http://musicbrainz.org': 'mbrainz_track_id',
+                {'ufid:http://musicbrainz.org': 'mbrainz_track_id',
                  'MusicBrainz Album Id': 'mbrainz_album_id',
                  'MusicBrainz Artist Id': 'mbrainz_artist_id'},
             'APEv2':
-                {u'musicbrainz_albumid': 'mbrainz_album_id',
+                {'musicbrainz_albumid': 'mbrainz_album_id',
                  'musicbrainz_artistid': 'mbrainz_artist_id',
                  'musicbrainz_trackid': 'mbrainz_track_id'}}
 

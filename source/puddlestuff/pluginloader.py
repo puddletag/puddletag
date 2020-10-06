@@ -105,7 +105,7 @@ class InfoWidget(QLabel):
                   translate('Plugin Settings', 'Version')]
         properties = [NAME, AUTHOR, DESC, VERSION]
 
-        text = '<br />'.join([u'<b>%s:</b> %s' % (disp, info[prop]) for
+        text = '<br />'.join(['<b>%s:</b> %s' % (disp, info[prop]) for
                               disp, prop in zip(labels, properties)])
         self.setText(text)
 
