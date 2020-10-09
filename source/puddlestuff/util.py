@@ -7,6 +7,7 @@ from copy import copy, deepcopy
 from errno import EEXIST
 from operator import itemgetter
 from xml.sax.saxutils import escape as escape_html
+from mutagen import MutagenError
 
 from PyQt5.QtWidgets import QAction
 
@@ -323,6 +324,10 @@ def write(audio, tags, save_mtime=True, justrename=False):
         audio.update(undo)
         audio.preview = preview
         raise
+    
+    except MutagenError as err:
+        audio.update(undo)
+        logging.exception(err)
 
     try:
         if save_mtime:
