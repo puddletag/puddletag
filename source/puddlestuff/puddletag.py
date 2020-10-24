@@ -202,7 +202,7 @@ def help_menu(parent):
 
     doc_link = QAction(translate("Menus", 'Online &Documentation'),
                        parent)
-    connect(doc_link, lambda: open_url('http://puddletag.sf.net/docs.html'))
+    connect(doc_link, lambda: open_url('https://docs.puddletag.net/docs.html'))
 
     forum_link = QAction(translate("Menus", '&Forum'), parent)
     connect(forum_link,
@@ -210,7 +210,7 @@ def help_menu(parent):
 
     issue_link = QAction(translate("Menus", '&Bug tracker'), parent)
     connect(issue_link,
-            lambda: open_url('http://code.google.com/p/puddletag/issues'))
+            lambda: open_url('https://github.com/puddletag/puddletag/issues'))
 
     about_icon = get_icon('help-about', QIcon())
     about = QAction(about_icon,
