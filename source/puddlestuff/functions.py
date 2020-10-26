@@ -901,7 +901,7 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
             i += 1
 
         if write:
-            fobj = open(fn, 'w')
+            fobj = open(fn, 'w+b')
             fobj.write(data)
             fobj.close()
         else:
