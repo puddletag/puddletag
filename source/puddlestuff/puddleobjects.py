@@ -1218,6 +1218,8 @@ class ListBox(QListWidget):
         if not yourlist:
             yourlist = self.yourlist
         rows = sorted(rows)
+        if len(rows) == 0:
+            rows.append(0)
         lastindex = rows[0]
         groups = {lastindex: [lastindex]}
         lastrow = lastindex
