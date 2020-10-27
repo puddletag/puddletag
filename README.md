@@ -2,53 +2,77 @@
 
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
 
-## Contents
- 1. [About](#1-about)
- 2. [License](#2-license)
- 3. [Prerequisites](#3-prerequisites)
- 4. [Installation](#4-installation)
- 5. [Support](#5-support)
+The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.
 
-***
+Then there’re _Functions_, which can do things like replace text, trim it, do case conversions, etc. _Actions_ can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There’s quite a bit more, but I’ve reached my comma quota.
 
-## 1. About
+Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey’s Audio (.ape) and WavPack (wv).
 
-puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.  
 
-The usual tag editor features are supported like extracting tag information from filenames, renaming files based on their tags by using patterns and basic tag editing.  
+## Dependencies
 
-There are also Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There’s quite a bit more, but I’ve reached my comma quota.  
+puddletag uses several third-party modules to performs its tasks:
 
-Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey’s Audio (.ape) and WavPack (wv).  
+- [Python3](https://www.python.org/)
+- [PyQt5](https://pypi.org/project/pyqt5/), for the GUI.
+- [configobj](https://pypi.org/project/configobj/)
+- [pyparsing](https://pypi.org/project/pyparsing/) , takes care of the parsing
+- [Mutagen](https://pypi.org/project/mutagen/), used as the tagging lib
+- [Chromaprint](http://acoustid.org/chromaprint) (recommended), for AcoustID support
 
-## 2. License
 
-`puddletag` is licensed under the GPLv3, which you can find in its entirety at  [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)  
+## Installation
 
-## 3. Prerequisites  
+Here below is a list of the distributions and platforms where puddletag is available, and how to install it:
 
-* [Python3](https://www.python.org/)  
-* [configobj](https://pypi.org/project/configobj/)
-* [pyparsing](https://pypi.org/project/pyparsing/)  
-* [PyQt5](https://pypi.org/project/pyqt5/)  
-* [Mutagen](https://pypi.org/project/mutagen/)  
+<details>
+<summary><b>Debian</b></summary>
 
-On Debian, you can install all prerequisites with the command:  
+`apt install puddletag`
 
-`apt-get install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg`
+_(soon to be available in unstable)_
 
-The package names may be different in different distributions.  
+Contact: @sandrotosi
+</details>
 
-## 4. Installation
+<details>
+<summary><b>Gentoo</b></summary>
 
-After installing the dependencies above:
+1. overlay: https://github.com/istitov/stuff/
+1. add overlay: `sudo layman -a stuff`
+1. install: `sudo emerge -av puddletag`
+
+Contact: @DolphinStKom
+</details>
+
+<details>
+<summary><b>Fedora</b></summary>
+
+_under development_
+</details>
+
+<details>
+<summary><b>Brew/MacOS</b></summary>
+
+_support needed, open an issue if interested in working on it_
+</details>
+
+<details>
+<summary><b>Source code</b></summary>
+First, you need to install the dependencies; this step is different depending on the distribution; on Debian you can run:
+
+`apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg`
+
+Then:
 
 ```
 git clone https://github.com/puddletag/puddletag
 cd puddletag
 PYTHONPATH=source/ ./source/puddletag
 ```
+</details>
 
-## 5. Support
 
-Please use [Github issues](https://github.com/puddletag/puddletag/issues).  
+## License
+
+`puddletag` is licensed under the GPLv3, which you can find in its entirety at  [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)  
