@@ -204,9 +204,9 @@ def help_menu(parent):
                        parent)
     connect(doc_link, lambda: open_url('https://docs.puddletag.net/docs.html'))
 
-    forum_link = QAction(translate("Menus", '&Forum'), parent)
+    forum_link = QAction(translate("Menus", '&GitHub project'), parent)
     connect(forum_link,
-            lambda: open_url('http://sourceforge.net/apps/phpbb/puddletag'))
+            lambda: open_url('https://github.com/puddletag/puddletag'))
 
     issue_link = QAction(translate("Menus", '&Bug tracker'), parent)
     connect(issue_link,
