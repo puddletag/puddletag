@@ -30,8 +30,6 @@ Here below is a list of the distributions and platforms where puddletag is avail
 
 `apt install puddletag`
 
-_(soon to be available in unstable)_
-
 Contact: @sandrotosi
 </details>
 
@@ -43,6 +41,15 @@ Contact: @sandrotosi
 1. install: `sudo emerge -av puddletag`
 
 Contact: @DolphinStKom
+</details>
+
+<details>
+<summary><b>Arch Linux</b></summary>
+
+`pacman -S puddletag`
+
+https://aur.archlinux.org/packages/puddletag/
+
 </details>
 
 <details>
