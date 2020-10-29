@@ -48,9 +48,13 @@ Contact: @DolphinStKom
 <details>
 <summary><b>Arch Linux</b></summary>
 
-`pacman -S puddletag`
+puddletag is currently part of the [AUR](https://aur.archlinux.org/packages/puddletag/):
 
-https://aur.archlinux.org/packages/puddletag/
+```
+git clone https://aur.archlinux.org/puddletag.git
+cd puddletag
+makepkg -si
+```
 
 </details>
 
