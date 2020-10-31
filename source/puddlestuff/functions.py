@@ -775,7 +775,7 @@ VALID_FILENAME_CHARS = "'-_.!()[]{}&~+^ %s%s%s" % (
 # Contributed by Erik Reckase
 def to_ascii(t_fn):
     cleaned_fn = unicodedata.normalize('NFKD', t_fn).encode('ASCII', 'ignore')
-    return ''.join(c for c in cleaned_fn if c in VALID_FILENAME_CHARS)
+    return ''.join(chr(c) for c in cleaned_fn if chr(c) in VALID_FILENAME_CHARS)
 
 
 def remove_dupes(m_text, matchcase=False):
