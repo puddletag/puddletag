@@ -517,6 +517,7 @@ class StatusWidgetCombo(QComboBox):
         self.statusColors = colors
         self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
 
+        items = map(str, items)
         items = sorted(items, key=natsort_case_key)
         if len(items) > 1:
             items.append(r'\\'.join(items))
