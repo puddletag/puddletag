@@ -355,7 +355,10 @@ def merge_track(audio, info):
             if isinstance(info[key], str):
                 track[key] = info[key]
             else:
-                track[key] = info[key][::]
+                if isinstance(info[key], list):
+                    track[key] = info[key][::]
+                elif isinstance(info[key], dict):
+                    track[key] = info[key]
 
     for key in audio.keys():
         if not key.startswith('#'):
