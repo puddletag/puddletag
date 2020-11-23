@@ -490,7 +490,7 @@ class TSProfileEdit(QDialog):
 
 
 class MassTagWindow(QWidget):
-    setpreview = pyqtSignal(name='setpreview')
+    setpreview = pyqtSignal(dict, name='setpreview')
     clearpreview = pyqtSignal(name='clearpreview')
     enable_preview_mode = pyqtSignal(name='enable_preview_mode')
     writepreview = pyqtSignal(name='writepreview')
