@@ -631,15 +631,15 @@ def set_uslt(f, value):
             desc = ''
             text = lyrics[0]
         elif len_l == 2:
-            lang = lyrics[0].strip().encode('utf8')
+            lang = lyrics[0].strip()
             desc = ''
             text = lyrics[1]
         elif len_l == 3:
             lang, desc, text = lyrics
-            lang = lang.strip().encode('utf8')
+            lang = lang.strip()
         elif len_l > 3:
             text = ''.join(lyrics[2:])
-            lang = lyrics[0].strip().encode('utf8')
+            lang = lyrics[0].strip()
             desc = lyrics[1]
         else:
             continue
