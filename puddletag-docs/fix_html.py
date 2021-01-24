@@ -1,10 +1,12 @@
-import sys
 import os
 import re
+import sys
+
 
 def remove_h1(text):
     regexp = r"<h1.*?>[a-zA-Z \n]*</h1>"
     return re.sub(regexp, '', text)
+
 
 def clean_files(dirpath):
     filenames = set(['index.html', 'screenshots.html', 'about.html'])
@@ -22,6 +24,7 @@ def clean_files(dirpath):
                 fo.truncate()
         except (IOError, OSError):
             print("Could not edit: " + path)
+
 
 if __name__ == "__main__":
     input_dir = sys.argv[1]

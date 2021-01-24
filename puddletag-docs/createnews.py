@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-import datetime, PyRSS2Gen, glob, os, time
-from markdown import markdown
-
-import sys
-
-from html.parser import HTMLParser
-import formatter, re
-from html.entities import name2codepoint as n2cp
-from subprocess import call
+import PyRSS2Gen
+import datetime
+import glob
+import os
+import re
 import shutil
+import sys
+from subprocess import call
 
 
 def remove_headerlinks(text):
@@ -16,7 +14,6 @@ def remove_headerlinks(text):
 
 
 def to_html(fns):
-
     rst_fns = []
     html_fns = []
     html_dir = "_build/html/"
@@ -51,7 +48,6 @@ def to_html(fns):
 
 
 def create_rss(files):
-
     contents = to_html(files)
     titles = [re.search("<h1>(.*?)</h1>", c).groups()[0] for c in contents]
 
