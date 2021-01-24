@@ -35,7 +35,7 @@ def to_html(fns):
             + rst_fns
         )
 
-    map(os.remove, rst_fns)
+    list(map(os.remove, rst_fns))
 
     ret = []
     for html_fn in html_fns:
@@ -144,7 +144,7 @@ if __name__ == "__main__":
         f.write(text.replace("_downloads/rss.xml", "rss.xml"))
         f.truncate()
         f.close()
-        shutil.move("_build/html/_downloads/rss.xml", "_build/html/rss.xml")
+        shutil.move("rss.xml", "_build/html/rss.xml")
     else:
         files = sorted(glob.glob("news/*"), reverse=True)
         if not os.path.isdir("_build/html/"):

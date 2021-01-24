@@ -39,7 +39,6 @@ clean:
 html:
 	python3 createnews.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
-	echo
 	python3 createnews.py fixnews
 	python3 fix_html.py "_build/html"
 	echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
