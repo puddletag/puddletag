@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tag Reference &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -109,7 +93,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="tag-reference">
 <h1>Tag Reference<a class="headerlink" href="#tag-reference" title="Permalink to this headline">¶</a></h1>
@@ -118,217 +102,217 @@
 <p>The following fields are common to almost all music files.</p>
 <dl class="describe">
 <dt>
-<code class="descname">__app</code></dt>
+<code class="sig-name descname">__app</code></dt>
 <dd><p>The application name: puddletag v0.10.4 depending on version number.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__bitrate</code></dt>
-<dd><p>The bitrate of the file in kb/s. Note that it&#8217;s a string with kb/s appended as in &#8216;213 kb/s&#8217; and not &#8216;213&#8217;. For Lossless formats this is always &#8216;0 kb/s&#8217;</p>
+<code class="sig-name descname">__bitrate</code></dt>
+<dd><p>The bitrate of the file in kb/s. Note that it’s a string with kb/s appended as in ‘213 kb/s’ and not ‘213’. For Lossless formats this is always ‘0 kb/s’</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__created</code></dt>
+<code class="sig-name descname">__created</code></dt>
 <dd><p>The creation date of the file in YYYY-MM-DD HH:MM:SS format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__dirpath</code></dt>
+<code class="sig-name descname">__dirpath</code></dt>
 <dd><p>The path of the directory the file resides in. /media/Multimedia/Music/myfile.mp3 has __dirpath /media/Multimedia/Music/</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__ext</code></dt>
+<code class="sig-name descname">__ext</code></dt>
 <dd><p>Extension of the file. /media/Multimedia/Music/myfile.mp3 has extension mp3</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_accessed_date</code></dt>
+<code class="sig-name descname">__file_accessed_date</code></dt>
 <dd><p>The date the file was accessed in YYYY-MM-DD format</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_accessed_datetime</code></dt>
+<code class="sig-name descname">__file_accessed_datetime</code></dt>
 <dd><p>The date including the time the file was accessed in YYYY-MM-DD HH:MM:SS format</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_accessed_datetime_raw</code></dt>
-<dd><p>UNIX time of the file&#8217;s last access eg. 1234567890.</p>
+<code class="sig-name descname">__file_accessed_datetime_raw</code></dt>
+<dd><p>UNIX time of the file’s last access eg. 1234567890.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_create_date</code></dt>
+<code class="sig-name descname">__file_create_date</code></dt>
 <dd><p>Creation date of the file in YYYY-MM-DD format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_create_datetime</code></dt>
-<dd><p>File&#8217;s creation date in YYYY-MM-DD HH:MM:SS format.</p>
+<code class="sig-name descname">__file_create_datetime</code></dt>
+<dd><p>File’s creation date in YYYY-MM-DD HH:MM:SS format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_create_datetime_raw</code></dt>
+<code class="sig-name descname">__file_create_datetime_raw</code></dt>
 <dd><p>UNIX time of file creation date eg. 1234567890.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_mod_date</code></dt>
+<code class="sig-name descname">__file_mod_date</code></dt>
 <dd><p>Date the file was last modified in YYYY-MM-DD format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_mod_datetime</code></dt>
+<code class="sig-name descname">__file_mod_datetime</code></dt>
 <dd><p>Time the file was last modified in YYYY-MM-DD HH:MM:SS format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_mod_datetime_raw</code></dt>
-<dd><p>UNIX time of file&#8217;s last modification date.</p>
+<code class="sig-name descname">__file_mod_datetime_raw</code></dt>
+<dd><p>UNIX time of file’s last modification date.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_size</code></dt>
-<dd><p>The file&#8217;s size in human-readable format.</p>
+<code class="sig-name descname">__file_size</code></dt>
+<dd><p>The file’s size in human-readable format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_size_bytes</code></dt>
-<dd><p>The file&#8217;s size in bytes.</p>
+<code class="sig-name descname">__file_size_bytes</code></dt>
+<dd><p>The file’s size in bytes.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_size_kb</code></dt>
-<dd><p>The file&#8217;s size in KB.</p>
+<code class="sig-name descname">__file_size_kb</code></dt>
+<dd><p>The file’s size in KB.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__file_size_mb</code></dt>
-<dd><p>The file&#8217;s size in MB (to two decimal places).</p>
+<code class="sig-name descname">__file_size_mb</code></dt>
+<dd><p>The file’s size in MB (to two decimal places).</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__filename</code></dt>
+<code class="sig-name descname">__filename</code></dt>
 <dd><p>The filename of the file with the folder stripped. e.g. the __filename of  /media/Multimedia/Music/myfile.mp3 is myfile.mp3</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__filename_no_ext</code></dt>
-<dd><p>The file&#8217;s filename without extension.</p>
+<code class="sig-name descname">__filename_no_ext</code></dt>
+<dd><p>The file’s filename without extension.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__filetype</code></dt>
+<code class="sig-name descname">__filetype</code></dt>
 <dd><p>The format of the file. Currently the info is very sparse.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__frequency</code></dt>
-<dd><p>The sample rate of the file in kHz. Note that it&#8217;s a string with kHz appended as in &#8216;213 kHz&#8217; and not &#8216;213&#8217;</p>
+<code class="sig-name descname">__frequency</code></dt>
+<dd><p>The sample rate of the file in kHz. Note that it’s a string with kHz appended as in ‘213 kHz’ and not ‘213’</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__image</code></dt>
+<code class="sig-name descname">__image</code></dt>
 <dd><p>Refers to the album art present in the file.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__image_mimetype</code></dt>
+<code class="sig-name descname">__image_mimetype</code></dt>
 <dd><p>MimeType of the first cover image in the file.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__image_size</code></dt>
+<code class="sig-name descname">__image_size</code></dt>
 <dd><p>Size in bytes of the first cover image in the file.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__length</code></dt>
-<dd><p>The length of the file in &#8220;minutes: seconds&#8221; format.</p>
+<code class="sig-name descname">__length</code></dt>
+<dd><p>The length of the file in “minutes: seconds” format.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__length_seconds</code></dt>
+<code class="sig-name descname">__length_seconds</code></dt>
 <dd><p>Length of the file in seconds.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__mode</code></dt>
+<code class="sig-name descname">__mode</code></dt>
 <dd><p>One of, Mono, Stereo, Joint-Stereo or Dual Channel.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__modified</code></dt>
+<code class="sig-name descname">__modified</code></dt>
 <dd><p>The last time the file was modified in YYYY-MM-DD HH:MM:SS format .</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__num_images</code></dt>
+<code class="sig-name descname">__num_images</code></dt>
 <dd><p>Number of cover images found in the file.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__parent_dir</code></dt>
-<dd><p>The name of the parent directory of the directory the file&#8217;s contained in. Cannot be written to.</p>
+<code class="sig-name descname">__parent_dir</code></dt>
+<dd><p>The name of the parent directory of the directory the file’s contained in. Cannot be written to.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__path</code></dt>
+<code class="sig-name descname">__path</code></dt>
 <dd><p>The absolute filename of a file including directories. e.g /media/Multimedia/Music/myfile.mp3</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__size</code></dt>
+<code class="sig-name descname">__size</code></dt>
 <dd><p>The size of the file in bytes.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__tag</code></dt>
+<code class="sig-name descname">__tag</code></dt>
 <dd><p>Comma-Separated list of tags found in file. Eg. VorbisComment, ID3v2.4, ID3v1.1</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__tag_read</code></dt>
-<dd><p>The tag that&#8217;ll get written to in the file.</p>
+<code class="sig-name descname">__tag_read</code></dt>
+<dd><p>The tag that’ll get written to in the file.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">__total</code></dt>
+<code class="sig-name descname">__total</code></dt>
 <dd><p>If the track field is of track/numtracks format, returns numtracks. Can also be written to.</p>
 </dd></dl>
 
@@ -338,8 +322,8 @@
 <p>Only available for Functions is:</p>
 <dl class="describe">
 <dt>
-<code class="descname">__selected</code></dt>
-<dd><p>Having __selected as the field will apply the selected function to the selected cells. So if you have the album field selected in one file and artist in another. The function&#8217;ll be applied to the album field of the first file and artist of the other respectively.</p>
+<code class="sig-name descname">__selected</code></dt>
+<dd><p>Having __selected as the field will apply the selected function to the selected cells. So if you have the album field selected in one file and artist in another. The function’ll be applied to the album field of the first file and artist of the other respectively.</p>
 </dd></dl>
 
 </div>
@@ -347,288 +331,288 @@
 <h2>Cover Art<a class="headerlink" href="#cover-art" title="Permalink to this headline">¶</a></h2>
 <p>Cover art can be accessed using the <strong>__image</strong> field. Use it only in Function like <a class="reference internal" href="function.html#remove-fields"><span class="std std-ref">Remove Fields</span></a> as album cannot be displayed anywhere other than the <a class="reference internal" href="menus.html#artwork-window"><span class="std std-ref">Artwork window</span></a> and <a class="reference internal" href="menus.html#extended-tags-menu"><span class="std std-ref">Extended Tags</span></a> dialog.</p>
 <ul class="simple">
-<li>For ID3 tag cover art, writing multiple pictures per file is supported, but a different description is required for each.</li>
-<li>MP4 tags also support multiple pictures per file, but not setting descriptions.</li>
-<li>APEv2 tags can store at most two pictures per file. Moreover, these pictures need to have different cover types, limited to <strong>Cover (front)</strong> and <strong>Cover (back)</strong>.</li>
-<li>VorbisComment tags support multiple pictures per file with no limit on the descriptions or cover types.</li>
+<li><p>For ID3 tag cover art, writing multiple pictures per file is supported, but a different description is required for each.</p></li>
+<li><p>MP4 tags also support multiple pictures per file, but not setting descriptions.</p></li>
+<li><p>APEv2 tags can store at most two pictures per file. Moreover, these pictures need to have different cover types, limited to <strong>Cover (front)</strong> and <strong>Cover (back)</strong>.</p></li>
+<li><p>VorbisComment tags support multiple pictures per file with no limit on the descriptions or cover types.</p></li>
 </ul>
 </div>
 <div class="section" id="tags">
 <h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
 <p>The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddletag fields. <a class="reference internal" href="id3.html"><span class="doc">This</span></a> page lists ID3 Frames and the various ways to edit them in puddletag.</p>
-<p>Any MP4 atoms not in this list will be assumed to be freeform frames, written using &#8216;:com.apple.iTunes:<strong>fieldname</strong>&#8216; as the atom. ID3 frames not found will be written as TXXX frames of the form <strong>TXXX:fieldname</strong> frame.</p>
-<table border="1" class="docutils">
+<p>Any MP4 atoms not in this list will be assumed to be freeform frames, written using ‘:com.apple.iTunes:<strong>fieldname</strong>’ as the atom. ID3 frames not found will be written as TXXX frames of the form <strong>TXXX:fieldname</strong> frame.</p>
+<table class="docutils align-default">
 <colgroup>
-<col width="56%" />
-<col width="27%" />
-<col width="17%" />
+<col style="width: 56%" />
+<col style="width: 27%" />
+<col style="width: 17%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">puddletag field</th>
-<th class="head">ID3v2.4 Frame</th>
-<th class="head">MP4 Atom</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>puddletag field</p></th>
+<th class="head"><p>ID3v2.4 Frame</p></th>
+<th class="head"><p>MP4 Atom</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td><strong>album</strong></td>
-<td>TALB</td>
-<td>alb</td>
-</tr>
-<tr class="row-odd"><td><strong>albumartist</strong></td>
-<td>TPE2</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>albumsortorder</strong></td>
-<td>TSOA</td>
-<td>soal</td>
-</tr>
-<tr class="row-odd"><td><strong>arranger</strong></td>
-<td>TPE4</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>artist</strong></td>
-<td>TPE1</td>
-<td>ART</td>
-</tr>
-<tr class="row-odd"><td><strong>audiodelay</strong></td>
-<td>TDLY</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>audiolength</strong></td>
-<td>TLEN</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>audiosize</strong></td>
-<td>TSIZ</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>author</strong></td>
-<td>TOLY</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>bpm</strong></td>
-<td>TBPM</td>
-<td>tmpo</td>
-</tr>
-<tr class="row-even"><td><strong>comment</strong></td>
-<td>COMM</td>
-<td>cmt</td>
-</tr>
-<tr class="row-odd"><td><strong>composer</strong></td>
-<td>TCOM</td>
-<td>wrt</td>
-</tr>
-<tr class="row-even"><td><strong>conductor</strong></td>
-<td>TPE3</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>copyright</strong></td>
-<td>TCOP</td>
-<td>cprt</td>
-</tr>
-<tr class="row-even"><td><strong>date</strong></td>
-<td>TDAT</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>discnumber</strong></td>
-<td>TPOS</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>encodedby</strong></td>
-<td>TENC</td>
-<td>too</td>
-</tr>
-<tr class="row-odd"><td><strong>encodingsettings</strong></td>
-<td>TSSE</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>encodingtime</strong></td>
-<td>TDEN</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>filename</strong></td>
-<td>TOFN</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>fileowner</strong></td>
-<td>TOWN</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>filetype</strong></td>
-<td>TFLT</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>genre</strong></td>
-<td>TCON</td>
-<td>gen</td>
-</tr>
-<tr class="row-odd"><td><strong>grouping</strong></td>
-<td>TIT1</td>
-<td>grp</td>
-</tr>
-<tr class="row-even"><td><strong>initialkey</strong></td>
-<td>TKEY</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>involvedpeople</strong></td>
-<td>TIPL</td>
-<td>&nbsp;</td>
+<tbody>
+<tr class="row-even"><td><p><strong>album</strong></p></td>
+<td><p>TALB</p></td>
+<td><p>alb</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>albumartist</strong></p></td>
+<td><p>TPE2</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>albumsortorder</strong></p></td>
+<td><p>TSOA</p></td>
+<td><p>soal</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>arranger</strong></p></td>
+<td><p>TPE4</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>artist</strong></p></td>
+<td><p>TPE1</p></td>
+<td><p>ART</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>audiodelay</strong></p></td>
+<td><p>TDLY</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>audiolength</strong></p></td>
+<td><p>TLEN</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>audiosize</strong></p></td>
+<td><p>TSIZ</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>author</strong></p></td>
+<td><p>TOLY</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>bpm</strong></p></td>
+<td><p>TBPM</p></td>
+<td><p>tmpo</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>comment</strong></p></td>
+<td><p>COMM</p></td>
+<td><p>cmt</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>composer</strong></p></td>
+<td><p>TCOM</p></td>
+<td><p>wrt</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>conductor</strong></p></td>
+<td><p>TPE3</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>copyright</strong></p></td>
+<td><p>TCOP</p></td>
+<td><p>cprt</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>date</strong></p></td>
+<td><p>TDAT</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>discnumber</strong></p></td>
+<td><p>TPOS</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>encodedby</strong></p></td>
+<td><p>TENC</p></td>
+<td><p>too</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>encodingsettings</strong></p></td>
+<td><p>TSSE</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>encodingtime</strong></p></td>
+<td><p>TDEN</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>filename</strong></p></td>
+<td><p>TOFN</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>fileowner</strong></p></td>
+<td><p>TOWN</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>filetype</strong></p></td>
+<td><p>TFLT</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>genre</strong></p></td>
+<td><p>TCON</p></td>
+<td><p>gen</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>grouping</strong></p></td>
+<td><p>TIT1</p></td>
+<td><p>grp</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>initialkey</strong></p></td>
+<td><p>TKEY</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>involvedpeople</strong></p></td>
+<td><p>TIPL</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>isrc</strong></td>
-<td>TSRC</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>isrc</strong></p></td>
+<td><p>TSRC</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>itunesalbumsortorder</strong></td>
-<td>TSO2</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>itunesalbumsortorder</strong></p></td>
+<td><p>TSO2</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>itunescompilationflag</strong></td>
-<td>TCMP</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>itunescompilationflag</strong></p></td>
+<td><p>TCMP</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>itunescomposersortorder</strong></td>
-<td>TSOC</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>itunescomposersortorder</strong></p></td>
+<td><p>TSOC</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>language</strong></td>
-<td>TLAN</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>language</strong></p></td>
+<td><p>TLAN</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>lyricist</strong></td>
-<td>TEXT</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>lyricist</strong></p></td>
+<td><p>TEXT</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>mediatype</strong></td>
-<td>TMED</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>mediatype</strong></p></td>
+<td><p>TMED</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>mood</strong></td>
-<td>TMOO</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>mood</strong></p></td>
+<td><p>TMOO</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>musiciancredits</strong></td>
-<td>TMCL</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>musiciancredits</strong></p></td>
+<td><p>TMCL</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>organization</strong></td>
-<td>TPUB</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>organization</strong></p></td>
+<td><p>TPUB</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>originalalbum</strong></td>
-<td>TOAL</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>originalalbum</strong></p></td>
+<td><p>TOAL</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>originalartist</strong></td>
-<td>TOPE</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>originalartist</strong></p></td>
+<td><p>TOPE</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>originalreleasetime</strong></td>
-<td>TDOR</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>originalreleasetime</strong></p></td>
+<td><p>TDOR</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>originalyear</strong></td>
-<td>TORY</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>originalyear</strong></p></td>
+<td><p>TORY</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>performersortorder</strong></td>
-<td>TSOP</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>performersortorder</strong></p></td>
+<td><p>TSOP</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>popularimeter</strong></td>
-<td>POPM</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>popularimeter</strong></p></td>
+<td><p>POPM</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>producednotice</strong></td>
-<td>TPRO</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>producednotice</strong></p></td>
+<td><p>TPRO</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>radioowner</strong></td>
-<td>TRSO</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>radioowner</strong></p></td>
+<td><p>TRSO</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>radiostationname</strong></td>
-<td>TRSN</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>radiostationname</strong></p></td>
+<td><p>TRSN</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>recordingdates</strong></td>
-<td>TRDA</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>recordingdates</strong></p></td>
+<td><p>TRDA</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>releasetime</strong></td>
-<td>TDRL</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>releasetime</strong></p></td>
+<td><p>TDRL</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>setsubtitle</strong></td>
-<td>TSST</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>setsubtitle</strong></p></td>
+<td><p>TSST</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>taggingtime</strong></td>
-<td>TDTG</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>taggingtime</strong></p></td>
+<td><p>TDTG</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>time</strong></td>
-<td>TIME</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>time</strong></p></td>
+<td><p>TIME</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>title</strong></td>
-<td>TIT2</td>
-<td>nam</td>
+<tr class="row-even"><td><p><strong>title</strong></p></td>
+<td><p>TIT2</p></td>
+<td><p>nam</p></td>
 </tr>
-<tr class="row-odd"><td><strong>titlesortorder</strong></td>
-<td>TSOT</td>
-<td>sonm</td>
+<tr class="row-odd"><td><p><strong>titlesortorder</strong></p></td>
+<td><p>TSOT</p></td>
+<td><p>sonm</p></td>
 </tr>
-<tr class="row-even"><td><strong>track</strong></td>
-<td>TRCK</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>track</strong></p></td>
+<td><p>TRCK</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>unsyncedlyrics</strong></td>
-<td>USLT</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>unsyncedlyrics</strong></p></td>
+<td><p>USLT</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>ufid</strong></td>
-<td>UFID</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>ufid</strong></p></td>
+<td><p>UFID</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>version</strong></td>
-<td>TIT3</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>version</strong></p></td>
+<td><p>TIT3</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>wwwartist</strong></td>
-<td>WOAR</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>wwwartist</strong></p></td>
+<td><p>WOAR</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>wwwcommercialinfo</strong></td>
-<td>WCOM</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>wwwcommercialinfo</strong></p></td>
+<td><p>WCOM</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>wwwcopyright</strong></td>
-<td>WCOP</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>wwwcopyright</strong></p></td>
+<td><p>WCOP</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>wwwfileinfo</strong></td>
-<td>WOAF</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>wwwfileinfo</strong></p></td>
+<td><p>WOAF</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>wwwpayment</strong></td>
-<td>WPAY</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>wwwpayment</strong></p></td>
+<td><p>WPAY</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>wwwpublisher</strong></td>
-<td>WPUB</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>wwwpublisher</strong></p></td>
+<td><p>WPUB</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>wwwradio</strong></td>
-<td>WORS</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><p><strong>wwwradio</strong></p></td>
+<td><p>WORS</p></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><strong>wwwsource</strong></td>
-<td>WOAS</td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><p><strong>wwwsource</strong></p></td>
+<td><p>WOAS</p></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><strong>year</strong></td>
-<td>TDRC</td>
-<td>day</td>
+<tr class="row-even"><td><p><strong>year</strong></p></td>
+<td><p>TDRC</p></td>
+<td><p>day</p></td>
 </tr>
 </tbody>
 </table>
@@ -648,7 +632,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

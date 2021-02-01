@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Preferences &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -118,7 +102,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="preferences">
 <h1>Preferences<a class="headerlink" href="#preferences" title="Permalink to this headline">¶</a></h1>
@@ -130,7 +114,7 @@
 </div>
 <div class="section" id="subfolders">
 <span id="id1"></span><h3>Subfolders<a class="headerlink" href="#subfolders" title="Permalink to this headline">¶</a></h3>
-<p>If checked, Subfolders of directories selected for import will be checked for supported files (which&#8217;ll then be loaded). Otherwise, just files residing in the selected directories will be loaded.</p>
+<p>If checked, Subfolders of directories selected for import will be checked for supported files (which’ll then be loaded). Otherwise, just files residing in the selected directories will be loaded.</p>
 </div>
 <div class="section" id="show-gridlines">
 <h3>Show gridlines<a class="headerlink" href="#show-gridlines" title="Permalink to this headline">¶</a></h3>
@@ -155,7 +139,7 @@
 <div class="section" id="edit-sort-options">
 <span id="sort-option-prefs"></span><h3>Edit sort options<a class="headerlink" href="#edit-sort-options" title="Permalink to this headline">¶</a></h3>
 <p>With Sort Options you can sort the file-view using a list of predefined fields. The window brough up by clicking this button is pretty self explanatory. Any field-lists you add will create a menu item in the <strong>Tools-&gt;Sort By</strong> menu.</p>
-<p>Provided a single file (or none at all) is selected, clicking on a menu item will sort the file-view in order of the fields defined. So <strong>track/__dirpath/album</strong> will sort the file-view by track first, then __dirpath then album. It&#8217;s equivalent to clicking the relevant headers in order in the file-view.</p>
+<p>Provided a single file (or none at all) is selected, clicking on a menu item will sort the file-view in order of the fields defined. So <strong>track/__dirpath/album</strong> will sort the file-view by track first, then __dirpath then album. It’s equivalent to clicking the relevant headers in order in the file-view.</p>
 <p>Click on it again and the sort order will be reversed like <strong>album/__dirpath/track</strong>.</p>
 <p>This sort order will be used when loading dirs unless changed (by clicking a header or using another Sort Option.) It is saved across sessions.</p>
 <p>If you have more than one file selected, <strong>only</strong> the selected files will be sorted using those fields. All other files will remain as is.</p>
@@ -163,18 +147,18 @@
 </div>
 <div class="section" id="confirmations">
 <h2>Confirmations<a class="headerlink" href="#confirmations" title="Permalink to this headline">¶</a></h2>
-<p>Confirmations let you know that you&#8217;re about to do something that can&#8217;t be reversed. Turn off the ones that you find grating.</p>
+<p>Confirmations let you know that you’re about to do something that can’t be reversed. Turn off the ones that you find grating.</p>
 </div>
 <div class="section" id="mappings">
 <h2>Mappings<a class="headerlink" href="#mappings" title="Permalink to this headline">¶</a></h2>
-<p>With mappings you can &#8216;rename&#8217; puddletag fields.</p>
-<p>For instance if you want the <strong>performer</strong> to be shown as <strong>albumartist</strong> for ID3 files. You&#8217;d set up a mapping with <strong>ID3</strong> as the Tag, performer as the <strong>Original Field</strong> and albumartist as the <strong>Target</strong>.</p>
+<p>With mappings you can ‘rename’ puddletag fields.</p>
+<p>For instance if you want the <strong>performer</strong> to be shown as <strong>albumartist</strong> for ID3 files. You’d set up a mapping with <strong>ID3</strong> as the Tag, performer as the <strong>Original Field</strong> and albumartist as the <strong>Target</strong>.</p>
 <p>Now any files that contained the <strong>performer</strong> field before the mapping will instead show it as <strong>albumartist</strong>.</p>
-<p>The mapping doesn&#8217;t work in reverse, <strong>albumartist</strong> won&#8217;t be show as <strong>performer</strong>. You&#8217;ll need to set up another mapping for that.</p>
+<p>The mapping doesn’t work in reverse, <strong>albumartist</strong> won’t be show as <strong>performer</strong>. You’ll need to set up another mapping for that.</p>
 <ul class="simple">
-<li>Tag can be one one of ID3, MP4, APEv2 (for Musepack, WavPack, etc.) or VorbisComment (for FLAC and Ogg Vorbis). Note that these are <strong>case-sensitive</strong>.</li>
-<li>You can also set mappings for Tag Sources using the <strong>exact</strong> Tag Source&#8217;s name. eg. <strong>MusicBrainz</strong>.</li>
-<li><strong>Mapping default fields like &#8220;__filename, __dirpath, __image, etc&#8221;. will cause undesired behaviour.</strong></li>
+<li><p>Tag can be one one of ID3, MP4, APEv2 (for Musepack, WavPack, etc.) or VorbisComment (for FLAC and Ogg Vorbis). Note that these are <strong>case-sensitive</strong>.</p></li>
+<li><p>You can also set mappings for Tag Sources using the <strong>exact</strong> Tag Source’s name. eg. <strong>MusicBrainz</strong>.</p></li>
+<li><p><strong>Mapping default fields like “__filename, __dirpath, __image, etc”. will cause undesired behaviour.</strong></p></li>
 </ul>
 </div>
 <div class="section" id="playlist">
@@ -190,7 +174,7 @@
 </div>
 <div class="section" id="colours">
 <h2>Colours<a class="headerlink" href="#colours" title="Permalink to this headline">¶</a></h2>
-<p>Defines the background colours to used in various puddletag dialogs. Use it when needed (you&#8217;ll need to if you&#8217;re using a dark theme).</p>
+<p>Defines the background colours to used in various puddletag dialogs. Use it when needed (you’ll need to if you’re using a dark theme).</p>
 </div>
 <div class="section" id="genres">
 <h2>Genres<a class="headerlink" href="#genres" title="Permalink to this headline">¶</a></h2>
@@ -199,8 +183,8 @@
 <div class="section" id="tags">
 <h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="restrict-incoming-files-to-eg-mp3-ogg-aac">
-<h3>Restrict incoming files to (eg. &#8220;*.mp3; *.ogg; *.aac&#8221;)<a class="headerlink" href="#restrict-incoming-files-to-eg-mp3-ogg-aac" title="Permalink to this headline">¶</a></h3>
-<p>Enter a &#8221;;&#8221;-separated list of texts to restrict the filenames puddletag loads to. &#8220;*.mp3; *.ogg; *.aac&#8221; will only load filenames beginning ending with &#8216;.ogg&#8217;, &#8216;.mp3&#8217; or &#8216;.aac&#8217;. By default puddletag checks every file for a valid tag.</p>
+<h3>Restrict incoming files to (eg. “*.mp3; *.ogg; *.aac”)<a class="headerlink" href="#restrict-incoming-files-to-eg-mp3-ogg-aac" title="Permalink to this headline">¶</a></h3>
+<p>Enter a “;”-separated list of texts to restrict the filenames puddletag loads to. “*.mp3; *.ogg; *.aac” will only load filenames beginning ending with ‘.ogg’, ‘.mp3’ or ‘.aac’. By default puddletag checks every file for a valid tag.</p>
 </div>
 <div class="section" id="id3">
 <h3>ID3<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
@@ -209,8 +193,8 @@
 </div>
 <div class="section" id="plugins">
 <h2>Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h2>
-<p>Plugins are a means with which to extend puddletag. If you want to install one drop it into &#8220;~/.puddletag/plugins&#8221;. Enable it, then restart.</p>
-<p><strong>Plugins are executable code akin to installing a program on you PC. Do not use any that aren&#8217;t from trustworthy sources.</strong></p>
+<p>Plugins are a means with which to extend puddletag. If you want to install one drop it into “~/.puddletag/plugins”. Enable it, then restart.</p>
+<p><strong>Plugins are executable code akin to installing a program on you PC. Do not use any that aren’t from trustworthy sources.</strong></p>
 </div>
 <div class="section" id="shortcuts">
 <h2>Shortcuts<a class="headerlink" href="#shortcuts" title="Permalink to this headline">¶</a></h2>
@@ -218,15 +202,15 @@
 </div>
 <div class="section" id="tag-panel">
 <span id="tag-panel-prefs"></span><h2>Tag Panel<a class="headerlink" href="#tag-panel" title="Permalink to this headline">¶</a></h2>
-<p>This is where you can edit Tag Panel settings. puddletag will show the <strong>Title</strong> above a combo box that&#8217;ll be populated using the field you specify in the <strong>Field</strong> column.</p>
-<p>Use &amp; in your Title to create an accelerator eg. &#8216;&amp;Artist&#8217; will allow you to set focus to the relevant combo box by pressing &#8216;Alt+A&#8217;</p>
+<p>This is where you can edit Tag Panel settings. puddletag will show the <strong>Title</strong> above a combo box that’ll be populated using the field you specify in the <strong>Field</strong> column.</p>
+<p>Use &amp; in your Title to create an accelerator eg. ‘&amp;Artist’ will allow you to set focus to the relevant combo box by pressing ‘Alt+A’</p>
 <p>Row refers to the row number in which to show the field. If more than one row contains the same number, the fields will be listed on one row.</p>
 </div>
 <div class="section" id="tag-sources">
 <h2>Tag Sources<a class="headerlink" href="#tag-sources" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="display-format-for-individual-tracks">
 <h3>Display format for individual tracks:<a class="headerlink" href="#display-format-for-individual-tracks" title="Permalink to this headline">¶</a></h3>
-<p>Enter a pattern to be used to display the metadata for individual tracks in the Tag Sources dialog&#8217;s album list.</p>
+<p>Enter a pattern to be used to display the metadata for individual tracks in the Tag Sources dialog’s album list.</p>
 </div>
 <div class="section" id="display-format-for-retrieved-albums">
 <h3>Display format for retrieved albums:<a class="headerlink" href="#display-format-for-retrieved-albums" title="Permalink to this headline">¶</a></h3>
@@ -234,7 +218,7 @@
 </div>
 <div class="section" id="sort-retrieved-albums-using-order">
 <h3>Sort retrieved albums using order<a class="headerlink" href="#sort-retrieved-albums-using-order" title="Permalink to this headline">¶</a></h3>
-<p>Will sort the retrieved album by the order listed. Use the dialog brought up by clicking &#8216;Edit&#8217; to bring up an editor for the sort options. You can change the order dynamically by right clicking on the header of the Tag Sources dialog&#8217;s album list and choosing from the sort options you defined.</p>
+<p>Will sort the retrieved album by the order listed. Use the dialog brought up by clicking ‘Edit’ to bring up an editor for the sort options. You can change the order dynamically by right clicking on the header of the Tag Sources dialog’s album list and choosing from the sort options you defined.</p>
 </div>
 <div class="section" id="user-agent">
 <h3>User-Agent:<a class="headerlink" href="#user-agent" title="Permalink to this headline">¶</a></h3>
@@ -253,9 +237,9 @@
 <h2>Columns<a class="headerlink" href="#columns" title="Permalink to this headline">¶</a></h2>
 <p>In this panel you can modify the columns listed in the file-view.</p>
 <ul class="simple">
-<li>Any unchecked columns will not be shown.</li>
-<li><strong>Title</strong> is the title that&#8217;ll be displayed on the file-view&#8217;s header.</li>
-<li>Data will be retrieved from the <strong>Field</strong> you specify.</li>
+<li><p>Any unchecked columns will not be shown.</p></li>
+<li><p><strong>Title</strong> is the title that’ll be displayed on the file-view’s header.</p></li>
+<li><p>Data will be retrieved from the <strong>Field</strong> you specify.</p></li>
 </ul>
 </div>
 </div>
@@ -273,7 +257,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

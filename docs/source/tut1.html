@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tutorial 1 &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -92,37 +76,37 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="tutorial-1">
 <h1>Tutorial 1<a class="headerlink" href="#tutorial-1" title="Permalink to this headline">¶</a></h1>
 <p>Start puddletag. It should not look dissimilar to this.</p>
 <a class="reference external image-reference" href="../_images/1full.png"><img alt="puddletag at startup" class="align-center" src="../_images/1full.png" style="width: 644px; height: 529px;" /></a>
-<p>Using <strong>File -&gt; Open Folder...</strong> select a directory containing supported audio files.</p>
-<p>Don&#8217;t worry about it taking a while. Qt&#8217;s just getting filesystem info.</p>
-<p>Here&#8217;s what puddletag looks like after I&#8217;ve opened a folder.</p>
+<p>Using <strong>File -&gt; Open Folder…</strong> select a directory containing supported audio files.</p>
+<p>Don’t worry about it taking a while. Qt’s just getting filesystem info.</p>
+<p>Here’s what puddletag looks like after I’ve opened a folder.</p>
 <a class="reference external image-reference" href="../_images/2full.png"><img alt="puddletag after loading a directory." class="align-center" src="../_images/2full.png" style="width: 773px; height: 383px;" /></a>
 <ol class="arabic simple">
-<li>Is the heart of puddletag. The pattern combo. THIS is where you&#8217;ll be spending a lot of you time.</li>
-<li>Converts a filename to a tag according to the pattern you specify in the pattern combo.</li>
-<li>Does the reverse. It takes the tag and creates a filename based on a pattern.</li>
+<li><p>Is the heart of puddletag. The pattern combo. THIS is where you’ll be spending a lot of you time.</p></li>
+<li><p>Converts a filename to a tag according to the pattern you specify in the pattern combo.</p></li>
+<li><p>Does the reverse. It takes the tag and creates a filename based on a pattern.</p></li>
 </ol>
-<p>Okay, so normally music files have tags, but these here files of mine don&#8217;t have any. Their filenames though, contain some useful info, which I&#8217;d like to extract.</p>
+<p>Okay, so normally music files have tags, but these here files of mine don’t have any. Their filenames though, contain some useful info, which I’d like to extract.</p>
 <p>Consider the first file named <strong>Bob Marley &amp; The Wailers - 01 - Positive Vibration.mp3</strong>, which contains the <strong>artist</strong>, <strong>track number</strong> and <strong>title</strong> of the song. I can enter these values by typing them directly into their respective field in the File-View (the large table taking up most of the viewing area), use the Tag Panel on the left or extract them using a Pattern.</p>
 <p>The third option is the one that I will concern myself with.</p>
 <p>In patterns a field of any name can be specified using the <strong>%field%</strong> notation. You can use any field listed <a class="reference internal" href="tags.html"><span class="doc">here</span></a>. <strong>%dummy%</strong> can be used as a placeholder and is discarded when extracting info from filenames.</p>
 <p>After typing <strong>%artist% - %track% - %title%</strong> into the Pattern Combo [1] and using <strong>File-&gt;Tag</strong> from the Convert menu (<a class="reference internal" href="../_images/filetotag.png"><img alt="File -&gt; Tag" class="align-middle" src="../_images/filetotag.png" style="width: 27px; height: 28px;" /></a>). I get this:</p>
 <a class="reference external image-reference" href="../_images/3full.png"><img alt="puddletag after performing a File -&gt; Tag operation." class="align-center" src="../_images/3full.png" style="width: 773px; height: 383px;" /></a>
 <p><strong>Artist, track, and title</strong> info was set as expected. Furthermore, the values be can fine-tuned editing them in the File-View or Tag Panel.</p>
-<p>Any number of files can be edited at once by selecting them. Just by pressing <strong>Ctrl-A</strong> to select everything and using <strong>File-&gt;Tag</strong> again I got...</p>
+<p>Any number of files can be edited at once by selecting them. Just by pressing <strong>Ctrl-A</strong> to select everything and using <strong>File-&gt;Tag</strong> again I got…</p>
 <a class="reference external image-reference" href="../_images/4full.png"><img alt="Everything is selected" class="align-center" src="../_images/4full.png" style="width: 778px; height: 403px;" /></a>
 <p>The <strong>Tag Panel</strong> on the left is really useful for writing common data between files. Notice that the <strong>artist</strong> combo box contains <strong>Bob Marley &amp; The Wailers</strong>. This is because all files have the same artist. On occasions where the value differs between files it would contain <strong>&lt;keep&gt;</strong>, signifying that upon saving that field will remain unchanged for each file. So in this instance, the <strong>artist</strong> field for all the files will be left as-is upon saving.</p>
-<p>To remove a field, change the text to <strong>&lt;blank&gt;</strong> and the field&#8217;ll be removed upon saving. I&#8217;ll fill in the album, year and genre tags (and click Save) while you get some coffee.</p>
+<p>To remove a field, change the text to <strong>&lt;blank&gt;</strong> and the field’ll be removed upon saving. I’ll fill in the album, year and genre tags (and click Save) while you get some coffee.</p>
 <p>Okay, now some people like their filenames in a <strong>%track% - %title%</strong> format. This can be done by entering it in the pattern combo and using <strong>Tag-File</strong> from the Convert menu ( or <a class="reference internal" href="../_images/tagtofile.png"><img alt="Tag -&gt; File" class="align-middle" src="../_images/tagtofile.png" style="width: 35px; height: 36px;" /></a>).</p>
-<p>Here&#8217;s what I see...</p>
+<p>Here’s what I see…</p>
 <a class="reference external image-reference" href="../_images/5full.png"><img alt="This mofo right here is impossible for me to describe." class="align-center" src="../_images/5full.png" style="width: 778px; height: 403px;" /></a>
-<p>Hmm, the leading zeroes are a bit of an eye-sore. puddletag allows you to use <a class="reference internal" href="scripting.html"><span class="doc">scripting functions</span></a> when renaming files using <strong>Tag-&gt;File</strong>. The functions are just like normal programming functions except they&#8217;e prepended with the <strong>$</strong> character. In this case, the <strong>$num(tag, length)</strong> function is appropriate since it pads the field&#8217;s value with leading zeroes until it is of the same length as the <strong>length</strong> argument (otherwise remove all leading zeroes until it is).</p>
-<p>I don&#8217;t want any so I&#8217;ll use <strong>$num(%track%, 1)</strong> and rename the files again using <strong>Tag-&gt;File</strong>.</p>
+<p>Hmm, the leading zeroes are a bit of an eye-sore. puddletag allows you to use <a class="reference internal" href="scripting.html"><span class="doc">scripting functions</span></a> when renaming files using <strong>Tag-&gt;File</strong>. The functions are just like normal programming functions except they’e prepended with the <strong>$</strong> character. In this case, the <strong>$num(tag, length)</strong> function is appropriate since it pads the field’s value with leading zeroes until it is of the same length as the <strong>length</strong> argument (otherwise remove all leading zeroes until it is).</p>
+<p>I don’t want any so I’ll use <strong>$num(%track%, 1)</strong> and rename the files again using <strong>Tag-&gt;File</strong>.</p>
 <a class="reference external image-reference" href="../_images/6full.png"><img alt="puddletag after using a pattern to rename some files." class="align-center" src="../_images/6full.png" style="width: 773px; height: 383px;" /></a>
 <p>Want more? Check out <a class="reference internal" href="tut2.html"><span class="doc">Part 2</span></a></p>
 </div>
@@ -140,7 +124,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

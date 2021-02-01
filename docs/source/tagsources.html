@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Using Tag Sources &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -102,7 +86,7 @@
 <li><a class="reference internal" href="#using-discogs">Using Discogs</a></li>
 <li><a class="reference internal" href="#using-freedb">Using FreeDB</a></li>
 <li><a class="reference internal" href="#using-musicbrainz">Using MusicBrainz</a></li>
-<li><a class="reference internal" href="#using-mp3tag-s-tag-sources">Using Mp3tag&#8217;s Tag Sources</a><ul>
+<li><a class="reference internal" href="#using-mp3tag-s-tag-sources">Using Mp3tag’s Tag Sources</a><ul>
 <li><a class="reference internal" href="#caveats">Caveats</a></li>
 </ul>
 </li>
@@ -116,7 +100,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="using-tag-sources">
 <h1>Using Tag Sources<a class="headerlink" href="#using-tag-sources" title="Permalink to this headline">¶</a></h1>
@@ -124,175 +108,175 @@
 <p>Included with puddletag are tag sources supporting lookups from <a class="reference internal" href="#amazon"><span class="std std-ref">Amazon</span></a>, <a class="reference internal" href="#discogs"><span class="std std-ref">Discogs</span></a>, <a class="reference internal" href="#freedb"><span class="std std-ref">FreeDB</span></a> and <a class="reference internal" href="#musicbrainz"><span class="std std-ref">MusicBrainz</span></a> and <a class="reference internal" href="#acoustid"><span class="std std-ref">AcoustID</span></a>. The metadata returned by each tag source is detailed at the bottom of this page.</p>
 <div class="section" id="the-tag-sources-window">
 <h2>The Tag Sources window<a class="headerlink" href="#the-tag-sources-window" title="Permalink to this headline">¶</a></h2>
-<p>Refer to the screenshot below for a quick explanation of the Tag Sources windows&#8217; controls:</p>
+<p>Refer to the screenshot below for a quick explanation of the Tag Sources windows’ controls:</p>
 <img alt="Tag Source Example" class="align-center" src="../_images/eg_tagsource.png" />
 <ol class="arabic simple">
-<li>Selects a tag source.</li>
-<li>Is the <strong>Search Box</strong>. Enter any text here to do a textual search. You cannot do a file-based and textual searches at the same time.</li>
-<li>Lists the retrieved albums. Click on an album to retrieve metadata. Lookups are done by album, but you can select metadata by track too. Hover over an album/track to see an overview of the metadata that&#8217;ll get written.</li>
-<li>After an album is selected, puddletag will enter <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a>. Click on Write to write the previews, or use Write from the <a class="reference internal" href="menus.html#write-preview"><span class="std std-ref">Preview Mode menu</span></a> menu. Clear preview does as it says and exits preview mode.</li>
-<li>Enter a list of comma-separated fields to write here, eg. <strong>artist, album</strong>, will update only the artist and album fields when you select an album. If left empty all the retrieved fields will be written. Starting the list with the tilde (~) character will write all but the fields you specify. eg. <strong>~year,mbrainz_track_id</strong> will write all the fields (artist, album, etc) but the year and mbrainz_track_id fields from the tag source.</li>
-<li>Check this box and only fields that aren&#8217;t already in the file will get updated.</li>
-<li>If checked, the album that best matches the retrieved albums will be automatically retrieved. See <a class="reference internal" href="preferences.html#auto-retrieval-prefs"><span class="std std-ref">Automatic Retrieval options</span></a>.</li>
+<li><p>Selects a tag source.</p></li>
+<li><p>Is the <strong>Search Box</strong>. Enter any text here to do a textual search. You cannot do a file-based and textual searches at the same time.</p></li>
+<li><p>Lists the retrieved albums. Click on an album to retrieve metadata. Lookups are done by album, but you can select metadata by track too. Hover over an album/track to see an overview of the metadata that’ll get written.</p></li>
+<li><p>After an album is selected, puddletag will enter <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a>. Click on Write to write the previews, or use Write from the <a class="reference internal" href="menus.html#write-preview"><span class="std std-ref">Preview Mode menu</span></a> menu. Clear preview does as it says and exits preview mode.</p></li>
+<li><p>Enter a list of comma-separated fields to write here, eg. <strong>artist, album</strong>, will update only the artist and album fields when you select an album. If left empty all the retrieved fields will be written. Starting the list with the tilde (~) character will write all but the fields you specify. eg. <strong>~year,mbrainz_track_id</strong> will write all the fields (artist, album, etc) but the year and mbrainz_track_id fields from the tag source.</p></li>
+<li><p>Check this box and only fields that aren’t already in the file will get updated.</p></li>
+<li><p>If checked, the album that best matches the retrieved albums will be automatically retrieved. See <a class="reference internal" href="preferences.html#auto-retrieval-prefs"><span class="std std-ref">Automatic Retrieval options</span></a>.</p></li>
 </ol>
 </div>
 <div class="section" id="how-to-search">
 <h2>How to Search<a class="headerlink" href="#how-to-search" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Make sure the Tag Sources window is visible (Windows-&gt;Tag Sources).</li>
-<li>Choose a tag source.</li>
-<li>Select all the files in an album you want to tag.</li>
-<li>Click on Search.</li>
-<li>The album&#8217;s tag&#8217;s will then be used to poll the tag sources.</li>
-<li>When results are returned, select an appropriate album.</li>
-<li>That album&#8217;s metadata will then be retrieved and the retrieved tags will be applied to the selected files. These changes aren&#8217;t written as puddletag will be in <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a>.</li>
-<li>Write the changes to the files using the <strong>Write</strong> button (feel free to make any changes yourself beforehand).</li>
+<li><p>Make sure the Tag Sources window is visible (Windows-&gt;Tag Sources).</p></li>
+<li><p>Choose a tag source.</p></li>
+<li><p>Select all the files in an album you want to tag.</p></li>
+<li><p>Click on Search.</p></li>
+<li><p>The album’s tag’s will then be used to poll the tag sources.</p></li>
+<li><p>When results are returned, select an appropriate album.</p></li>
+<li><p>That album’s metadata will then be retrieved and the retrieved tags will be applied to the selected files. These changes aren’t written as puddletag will be in <a class="reference internal" href="menus.html#preview-mode"><span class="std std-ref">Preview Mode</span></a>.</p></li>
+<li><p>Write the changes to the files using the <strong>Write</strong> button (feel free to make any changes yourself beforehand).</p></li>
 </ul>
-<p>Textual searches are also supported. If the Search Box has <em>any</em> text, it&#8217;ll be used to search with instead of the selected files. See the Search Box&#8217;s tooltip (or read the rest of this document) for details on how each tag source does textual searches.</p>
+<p>Textual searches are also supported. If the Search Box has <em>any</em> text, it’ll be used to search with instead of the selected files. See the Search Box’s tooltip (or read the rest of this document) for details on how each tag source does textual searches.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">For a more detailed explanation see the <a class="reference internal" href="tut4.html"><span class="doc">Tag Sources tutorial</span></a>.</p>
+<p class="admonition-title">Note</p>
+<p>For a more detailed explanation see the <a class="reference internal" href="tut4.html"><span class="doc">Tag Sources tutorial</span></a>.</p>
 </div>
 </div>
 <div class="section" id="using-acoustid">
 <span id="acoustid"></span><h2>Using AcoustID<a class="headerlink" href="#using-acoustid" title="Permalink to this headline">¶</a></h2>
 <p>AcoustID is a music fingerprinting service provided by Lukas Lalinsky. It works by calculating a unique fingerprint for your audio files and trying to match it to data in the AcoustID database. This allows you to find information for tracks that have no metadata!</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">In order to use the library you need to have <a class="reference external" href="http://acoustid.org/chromaprint">chromaprint</a> (specifically the fpcalc binary) installed.</p>
+<p class="admonition-title">Note</p>
+<p>In order to use the library you need to have <a class="reference external" href="http://acoustid.org/chromaprint">chromaprint</a> (specifically the fpcalc binary) installed.</p>
 </div>
 <p>AcoustID returns the same data as the <a class="reference internal" href="#musicbrainz"><span class="std std-ref">MusicBrainz tag source</span></a>, including the following fields.</p>
 <ul class="simple">
-<li><strong>acoustid_id</strong>: The AcoustID identifier for a track as returned by the AcoustID webservice.</li>
-<li><strong>acoustid_fingerprint</strong>: The calculated AcoustID fingerprint. Can be a very large value.</li>
+<li><p><strong>acoustid_id</strong>: The AcoustID identifier for a track as returned by the AcoustID webservice.</p></li>
+<li><p><strong>acoustid_fingerprint</strong>: The calculated AcoustID fingerprint. Can be a very large value.</p></li>
 </ul>
 </div>
 <div class="section" id="using-amazon">
 <span id="amazon"></span><h2>Using Amazon<a class="headerlink" href="#using-amazon" title="Permalink to this headline">¶</a></h2>
-<p>The Amazon tag source polls Amazon.com&#8217;s XML service to retrieve album art. Basic track information is also retrieved.</p>
+<p>The Amazon tag source polls Amazon.com’s XML service to retrieve album art. Basic track information is also retrieved.</p>
 <p>Be sure to configure the tag source to retrieve the optimum size cover art. It defaults to medium.</p>
 <p>Amazon does textual search too. The rules are:</p>
 <ul class="simple">
-<li>To search for a specific artist, album pair enter the search string as <strong>artist;album</strong>, ie. artist and album separated by a semi-colon.</li>
-<li>Searching for the albums of a specific artist is done by leaving of the album part as in <strong>artist;</strong></li>
-<li>For an album only leave off the artist part, ala <strong>;artist</strong></li>
-<li>Type anything not matching the above to do a keyword search.</li>
+<li><p>To search for a specific artist, album pair enter the search string as <strong>artist;album</strong>, ie. artist and album separated by a semi-colon.</p></li>
+<li><p>Searching for the albums of a specific artist is done by leaving of the album part as in <strong>artist;</strong></p></li>
+<li><p>For an album only leave off the artist part, ala <strong>;artist</strong></p></li>
+<li><p>Type anything not matching the above to do a keyword search.</p></li>
 </ul>
 <p>Fields returned by the Amazon tag source are:</p>
 <ul class="simple">
-<li><strong>__image</strong>: Cover art.</li>
-<li><strong>album</strong>: The release&#8217;s (album&#8217;s) name.</li>
-<li><strong>artist</strong>: The track&#8217;s artist.</li>
-<li><strong>asin</strong>: Amazon&#8217;s unique identifier for the album.</li>
-<li><strong>label</strong>: The record label responsible for releasing the album.</li>
-<li><strong>title</strong>: The track&#8217;s title.</li>
-<li><strong>year</strong>: The album&#8217;s release date.</li>
+<li><p><strong>__image</strong>: Cover art.</p></li>
+<li><p><strong>album</strong>: The release’s (album’s) name.</p></li>
+<li><p><strong>artist</strong>: The track’s artist.</p></li>
+<li><p><strong>asin</strong>: Amazon’s unique identifier for the album.</p></li>
+<li><p><strong>label</strong>: The record label responsible for releasing the album.</p></li>
+<li><p><strong>title</strong>: The track’s title.</p></li>
+<li><p><strong>year</strong>: The album’s release date.</p></li>
 </ul>
 </div>
 <div class="section" id="using-discogs">
 <span id="discogs"></span><h2>Using Discogs<a class="headerlink" href="#using-discogs" title="Permalink to this headline">¶</a></h2>
-<p>The Discogs.com tag source uses Discogs.com&#8217;s XML service to retrieve album information.</p>
+<p>The Discogs.com tag source uses Discogs.com’s XML service to retrieve album information.</p>
 <p>Be sure to configure the tag source to retrieve the optimum size cover art. It defaults to Large.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Discogs doesn&#8217;t allow lookups without a user agent any more. If you get <strong>Client Refused</strong> errors this is the reason. To rectify, set the user agent in Edit-&gt;Preferences-&gt;Tag Sources to <strong>puddletag/0.9.11</strong> or any other valid user agent.</p>
+<p class="admonition-title">Note</p>
+<p>Discogs doesn’t allow lookups without a user agent any more. If you get <strong>Client Refused</strong> errors this is the reason. To rectify, set the user agent in Edit-&gt;Preferences-&gt;Tag Sources to <strong>puddletag/0.9.11</strong> or any other valid user agent.</p>
 </div>
 <p>Textual searches are supported. Rules are as follows:</p>
 <ul class="simple">
-<li>To search for a specific artist, album pair enter the search string as <strong>artist;album</strong>, ie. artist and album separated by a semi-colon.</li>
-<li>Searching for the albums of a specific artist is done by leaving of the album part as in <strong>artist;</strong></li>
-<li>For an album only leave off the artist part, ala <strong>;artist</strong></li>
-<li>Retrieving an album using it&#8217;s Discogs Release ID is possible by using <strong>:r release_id</strong> where <strong>release_id</strong> is the Discogs Release ID.</li>
-<li>Type anything not matching the above to do a keyword search.</li>
+<li><p>To search for a specific artist, album pair enter the search string as <strong>artist;album</strong>, ie. artist and album separated by a semi-colon.</p></li>
+<li><p>Searching for the albums of a specific artist is done by leaving of the album part as in <strong>artist;</strong></p></li>
+<li><p>For an album only leave off the artist part, ala <strong>;artist</strong></p></li>
+<li><p>Retrieving an album using it’s Discogs Release ID is possible by using <strong>:r release_id</strong> where <strong>release_id</strong> is the Discogs Release ID.</p></li>
+<li><p>Type anything not matching the above to do a keyword search.</p></li>
 </ul>
 <p>Fields returned this tag source are:</p>
 <ul class="simple">
-<li><strong>__image</strong>: Cover art. Usually more than one image.</li>
-<li><strong>album</strong>: The release&#8217;s (album&#8217;s) name.</li>
-<li><strong>artist</strong>: The track&#8217;s artist.</li>
-<li><strong>country</strong>: The album&#8217;s release country</li>
-<li><strong>discogs_catno</strong>: Discogs catalog number.</li>
-<li><strong>discogs_format</strong>: The album&#8217;s release media (eg. Vinyl, CD, etc.)</li>
-<li><strong>discogs_format_desc</strong>: The format description (eg. Album, Single, etc.)</li>
-<li><strong>discogs_notes</strong>: Notes associated with the album.</li>
-<li><strong>discogs_r_id</strong>: Discogs Release ID.</li>
-<li><strong>discogs_summary</strong>: The album&#8217;s summary according to Discogs.</li>
-<li><strong>discogs_uri</strong>: The album&#8217;s discogs URI.</li>
-<li><strong>discnumber</strong>: Disc number.</li>
-<li><strong>discs</strong>: Number of discs in the album.</li>
-<li><strong>genre</strong>: Genres associated with the album.</li>
-<li><strong>involvedpeople_album</strong>: People involved with the album&#8217;s creation. Taken from the extraartists node for the album. (Eg. <strong>Young Churf;Harpsichord</strong>)</li>
-<li><strong>involvedpeople_track</strong>: People involved with the relevant track. Taken from the track&#8217;s extraartists node. (Eg. <strong>Young Churf;Harpsichord</strong>)</li>
-<li><strong>label</strong>: The record label responsible for releasing the album.</li>
-<li><strong>style</strong>: Discogs styles.</li>
-<li><strong>track</strong>: Track number.</li>
-<li><strong>year</strong>: The album&#8217;s release date.</li>
+<li><p><strong>__image</strong>: Cover art. Usually more than one image.</p></li>
+<li><p><strong>album</strong>: The release’s (album’s) name.</p></li>
+<li><p><strong>artist</strong>: The track’s artist.</p></li>
+<li><p><strong>country</strong>: The album’s release country</p></li>
+<li><p><strong>discogs_catno</strong>: Discogs catalog number.</p></li>
+<li><p><strong>discogs_format</strong>: The album’s release media (eg. Vinyl, CD, etc.)</p></li>
+<li><p><strong>discogs_format_desc</strong>: The format description (eg. Album, Single, etc.)</p></li>
+<li><p><strong>discogs_notes</strong>: Notes associated with the album.</p></li>
+<li><p><strong>discogs_r_id</strong>: Discogs Release ID.</p></li>
+<li><p><strong>discogs_summary</strong>: The album’s summary according to Discogs.</p></li>
+<li><p><strong>discogs_uri</strong>: The album’s discogs URI.</p></li>
+<li><p><strong>discnumber</strong>: Disc number.</p></li>
+<li><p><strong>discs</strong>: Number of discs in the album.</p></li>
+<li><p><strong>genre</strong>: Genres associated with the album.</p></li>
+<li><p><strong>involvedpeople_album</strong>: People involved with the album’s creation. Taken from the extraartists node for the album. (Eg. <strong>Young Churf;Harpsichord</strong>)</p></li>
+<li><p><strong>involvedpeople_track</strong>: People involved with the relevant track. Taken from the track’s extraartists node. (Eg. <strong>Young Churf;Harpsichord</strong>)</p></li>
+<li><p><strong>label</strong>: The record label responsible for releasing the album.</p></li>
+<li><p><strong>style</strong>: Discogs styles.</p></li>
+<li><p><strong>track</strong>: Track number.</p></li>
+<li><p><strong>year</strong>: The album’s release date.</p></li>
 </ul>
 </div>
 <div class="section" id="using-freedb">
 <span id="freedb"></span><h2>Using FreeDB<a class="headerlink" href="#using-freedb" title="Permalink to this headline">¶</a></h2>
 <p>FreeDB creates a (semi-)unique DiscID by using the number of tracks, their order and lengths of a particular CD. The DiscID is then referenced to the FreeDB database and any matching albums are returned.</p>
-<p>So all you need to do in order to do a FreeDB lookup is select all the files belonging to specific album and click on Search. It&#8217;s doesn&#8217;t work all the time, but it does most of the time.</p>
+<p>So all you need to do in order to do a FreeDB lookup is select all the files belonging to specific album and click on Search. It’s doesn’t work all the time, but it does most of the time.</p>
 <ul class="simple">
-<li><strong>album</strong>: The release&#8217;s (album&#8217;s) name.</li>
-<li><strong>artist</strong>: The track&#8217;s artist.</li>
-<li><strong>freedb_disc_id</strong>: The album&#8217;s FreeDB DiscID.</li>
-<li><strong>freedb_category</strong>: The FreeDB category the album&#8217;s listed under.</li>
-<li><strong>genre</strong>: The album&#8217;s genre.</li>
-<li><strong>title</strong>: The track&#8217;s title.</li>
-<li><strong>track</strong>: The track number.</li>
-<li><strong>year</strong>: The earliest date that the album was released. Not available for every album.</li>
+<li><p><strong>album</strong>: The release’s (album’s) name.</p></li>
+<li><p><strong>artist</strong>: The track’s artist.</p></li>
+<li><p><strong>freedb_disc_id</strong>: The album’s FreeDB DiscID.</p></li>
+<li><p><strong>freedb_category</strong>: The FreeDB category the album’s listed under.</p></li>
+<li><p><strong>genre</strong>: The album’s genre.</p></li>
+<li><p><strong>title</strong>: The track’s title.</p></li>
+<li><p><strong>track</strong>: The track number.</p></li>
+<li><p><strong>year</strong>: The earliest date that the album was released. Not available for every album.</p></li>
 </ul>
 </div>
 <div class="section" id="using-musicbrainz">
 <span id="musicbrainz"></span><h2>Using MusicBrainz<a class="headerlink" href="#using-musicbrainz" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><a class="reference external" href="http://musicbrainz.org/doc/python-musicbrainz2">python-musicbrainz2</a> ≥ 0.6.0 is required to enable MusicBrainz support.</p>
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="http://musicbrainz.org/doc/python-musicbrainz2">python-musicbrainz2</a> ≥ 0.6.0 is required to enable MusicBrainz support.</p>
 </div>
 <p>In addition to normal file lookups MusicBrainz also supports textual searches. The rules are as follows.</p>
 <ul class="simple">
-<li>To search for a specific artist, album pair enter the search string as <strong>artist;album</strong>, ie. artist and album separated by a semi-colon.</li>
-<li>Searching for the albums of a specific artist is done by leaving of the album part as in <strong>artist;</strong></li>
-<li>For an album only leave off the artist part, ala <strong>;artist</strong></li>
-<li>Retrieving the albums of an artist corresponding to a specific MusicBrainz Artist ID is done by starting your search string with <strong>:a</strong> as in
-<strong>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</strong></li>
-<li>Also retrieving a specific album using it&#8217;s <strong>MusicBrainz Album ID</strong> can be done by starting your search string with <strong>:b</strong> eg. <strong>:b 34bb630-8061-454c-b35d-8f7131f4ff08</strong></li>
+<li><p>To search for a specific artist, album pair enter the search string as <strong>artist;album</strong>, ie. artist and album separated by a semi-colon.</p></li>
+<li><p>Searching for the albums of a specific artist is done by leaving of the album part as in <strong>artist;</strong></p></li>
+<li><p>For an album only leave off the artist part, ala <strong>;artist</strong></p></li>
+<li><p>Retrieving the albums of an artist corresponding to a specific MusicBrainz Artist ID is done by starting your search string with <strong>:a</strong> as in
+<strong>:a f59c5520-5f46-4d2c-b2c4-822eabf53419</strong></p></li>
+<li><p>Also retrieving a specific album using it’s <strong>MusicBrainz Album ID</strong> can be done by starting your search string with <strong>:b</strong> eg. <strong>:b 34bb630-8061-454c-b35d-8f7131f4ff08</strong></p></li>
 </ul>
 <p>The fields returned by the MusicBrainz tag source are (not all fields are available for all albums):</p>
 <ul class="simple">
-<li><strong>album</strong>: The release&#8217;s (album&#8217;s) name.</li>
-<li><strong>artist</strong>: The track&#8217;s artist.</li>
-<li><strong>asin</strong>: Amazon identifier.</li>
-<li><strong>barcode</strong>: The album&#8217;s barcode.</li>
-<li><strong>catalog</strong>: Catalog numbers of the album.</li>
-<li><strong>country</strong>: Album&#8217;s release country.</li>
-<li><strong>discs</strong>: Number of discs in the album.</li>
-<li><strong>involvedpeople_album</strong>: People involved with the album&#8217;s creation. Taken from the extraartists node for the album. (Eg. <strong>Young Churf;Harpsichord</strong>)</li>
-<li><strong>involvedpeople_track</strong>: People involved with the relevant track. Taken from the track&#8217;s extraartists node. (Eg. <strong>Young Churf;Harpsichord</strong>)</li>
-<li><strong>isrc</strong>: <a class="reference external" href="http://en.wikipedia.org/wiki/International_Standard_Recording_Code">ISRC&#8217;s</a> associated with the album.</li>
-<li><strong>label</strong>: Label responsible for album&#8217;s release.</li>
-<li><strong>mbrainz_album_id</strong>: MusicBrainz&#8217;s unique identifier for the album.</li>
-<li><strong>mbrainz_artist_id</strong>: The unique MusicBrainz identifier for the artist.</li>
-<li><strong>mbrainz_label_id</strong>: The unique MusicBrainz identifier for the recording label.</li>
-<li><strong>musicip_puid</strong>: PUID&#8217;s associated with the track. PUID retrieval requires polling MusicBrainz for each track therefore it&#8217;s disabled by default.</li>
-<li><strong>mbrainz_rating</strong>: The album&#8217;s rating according to MusicBrainz.</li>
-<li><strong>mbrainz_track_id</strong>: MusicBrainz&#8217;s unique ID for the track.</li>
-<li><strong>title</strong>: The track&#8217;s title.</li>
-<li><strong>track</strong>: The track number.</li>
-<li><strong>year</strong>: The earliest date that the album was released. Not available for every album.</li>
+<li><p><strong>album</strong>: The release’s (album’s) name.</p></li>
+<li><p><strong>artist</strong>: The track’s artist.</p></li>
+<li><p><strong>asin</strong>: Amazon identifier.</p></li>
+<li><p><strong>barcode</strong>: The album’s barcode.</p></li>
+<li><p><strong>catalog</strong>: Catalog numbers of the album.</p></li>
+<li><p><strong>country</strong>: Album’s release country.</p></li>
+<li><p><strong>discs</strong>: Number of discs in the album.</p></li>
+<li><p><strong>involvedpeople_album</strong>: People involved with the album’s creation. Taken from the extraartists node for the album. (Eg. <strong>Young Churf;Harpsichord</strong>)</p></li>
+<li><p><strong>involvedpeople_track</strong>: People involved with the relevant track. Taken from the track’s extraartists node. (Eg. <strong>Young Churf;Harpsichord</strong>)</p></li>
+<li><p><strong>isrc</strong>: <a class="reference external" href="http://en.wikipedia.org/wiki/International_Standard_Recording_Code">ISRC’s</a> associated with the album.</p></li>
+<li><p><strong>label</strong>: Label responsible for album’s release.</p></li>
+<li><p><strong>mbrainz_album_id</strong>: MusicBrainz’s unique identifier for the album.</p></li>
+<li><p><strong>mbrainz_artist_id</strong>: The unique MusicBrainz identifier for the artist.</p></li>
+<li><p><strong>mbrainz_label_id</strong>: The unique MusicBrainz identifier for the recording label.</p></li>
+<li><p><strong>musicip_puid</strong>: PUID’s associated with the track. PUID retrieval requires polling MusicBrainz for each track therefore it’s disabled by default.</p></li>
+<li><p><strong>mbrainz_rating</strong>: The album’s rating according to MusicBrainz.</p></li>
+<li><p><strong>mbrainz_track_id</strong>: MusicBrainz’s unique ID for the track.</p></li>
+<li><p><strong>title</strong>: The track’s title.</p></li>
+<li><p><strong>track</strong>: The track number.</p></li>
+<li><p><strong>year</strong>: The earliest date that the album was released. Not available for every album.</p></li>
 </ul>
 </div>
 <div class="section" id="using-mp3tag-s-tag-sources">
-<span id="mp3tag-sources"></span><h2>Using Mp3tag&#8217;s Tag Sources<a class="headerlink" href="#using-mp3tag-s-tag-sources" title="Permalink to this headline">¶</a></h2>
-<p><strong>If you don&#8217;t know what they are, visit the</strong> <a class="reference external" href="http://www.mp3tag.de">Mp3tag website</a> <strong>for details.</strong></p>
-<p>puddletag <em>supports</em> using Mp3tag&#8217;s tag sources. To use them create the directory <strong>~/.puddletag/mp3tag_sources</strong> and place any tag sources in there. If everything went okay, they&#8217;ll be loaded when you start puddletag. In the <strong>Tag Sources</strong> window they&#8217;ll be listed with &#8216;[M]&#8217; appended to the filename.</p>
+<span id="mp3tag-sources"></span><h2>Using Mp3tag’s Tag Sources<a class="headerlink" href="#using-mp3tag-s-tag-sources" title="Permalink to this headline">¶</a></h2>
+<p><strong>If you don’t know what they are, visit the</strong> <a class="reference external" href="http://www.mp3tag.de">Mp3tag website</a> <strong>for details.</strong></p>
+<p>puddletag <em>supports</em> using Mp3tag’s tag sources. To use them create the directory <strong>~/.puddletag/mp3tag_sources</strong> and place any tag sources in there. If everything went okay, they’ll be loaded when you start puddletag. In the <strong>Tag Sources</strong> window they’ll be listed with ‘[M]’ appended to the filename.</p>
 <p>You can search as you do using Mp3tag by using the Search box. See the tooltip for the field used to do the search. Selecting files and searching works too.</p>
 <div class="section" id="caveats">
 <h3>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h3>
-<p>The sources I&#8217;ve tested work like Mp3tag&#8217;s. They also bomb on the same pages. However, unlike Mp3tag, puddletag doesn&#8217;t &#8216;detect&#8217; when retrieval has gone awry. So sometimes you might get nothing in Mp3tag, while getting jibberish in puddletag.</p>
-<p>I won&#8217;t be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn&#8217;t with puddletag, <a class="reference external" href="http://code.google.com/p/puddletag/issues">create an issue</a> with a link to the tag source and some example searches and I&#8217;ll fix &#8216;em.</p>
-<p>Be sure to set &#8216;debug off&#8217; or remove it alltogether unless you&#8217;re in the mood for having your filesystem being littered with junk files.</p>
+<p>The sources I’ve tested work like Mp3tag’s. They also bomb on the same pages. However, unlike Mp3tag, puddletag doesn’t ‘detect’ when retrieval has gone awry. So sometimes you might get nothing in Mp3tag, while getting jibberish in puddletag.</p>
+<p>I won’t be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn’t with puddletag, <a class="reference external" href="http://code.google.com/p/puddletag/issues">create an issue</a> with a link to the tag source and some example searches and I’ll fix ‘em.</p>
+<p>Be sure to set ‘debug off’ or remove it alltogether unless you’re in the mood for having your filesystem being littered with junk files.</p>
 </div>
 </div>
 </div>
@@ -310,7 +294,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

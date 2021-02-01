@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Functions &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -126,7 +110,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="functions">
 <h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
@@ -135,15 +119,15 @@
 <div class="section" id="arguments">
 <h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Start</li>
-<li>Max Length After Padding</li>
-<li>Restart Numbering</li>
+<li><p>Start</p></li>
+<li><p>Max Length After Padding</p></li>
+<li><p>Restart Numbering</p></li>
 </ol>
 </div>
 <div class="section" id="description">
 <h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
 <p>Numbers tracks sequentially beginning with <strong>Start</strong>.</p>
-<p>The number you enter in <strong>Max Length After Padding</strong> will pad the track with extra zeroes until it&#8217;s of the same length. Eg. if a file has track number &#8216;12&#8217;, having a padding of 3 will return the number &#8216;012&#8217;, while a padding of 1 will leave the number unchanged since it&#8217;s length is already greater than the Max Length.</p>
+<p>The number you enter in <strong>Max Length After Padding</strong> will pad the track with extra zeroes until it’s of the same length. Eg. if a file has track number ‘12’, having a padding of 3 will return the number ‘012’, while a padding of 1 will leave the number unchanged since it’s length is already greater than the Max Length.</p>
 <p>Restart Numbering at each directory will restart the numbering from <strong>Start</strong> for each directory encountered. A separate count will be kept for each directory.</p>
 </div>
 </div>
@@ -152,14 +136,14 @@
 <div class="section" id="id3">
 <h3>Arguments<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Type</li>
-<li>Word Delimiter</li>
+<li><p>Type</p></li>
+<li><p>Word Delimiter</p></li>
 </ol>
 </div>
 <div class="section" id="id4">
 <h3>Description<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>There are three types of case conversion: <strong>UPPER CASE</strong>,** lower case** and** Mixed Case**. Upper and lower are self-explanatory. Mixed case capitalises each word starting after the characters you specify and converts the rest to lower case.</p>
-<p>For instance, using Mixed Case with &#8220;<strong>.</strong>&#8221; as a delineator on <em>&#8220;this is my name. and my surname. with a dot.here and there.&#8221;</em> will return <em>&#8216;This Is My Name. And My Surname. With A Dot.Here And There.&#8217;</em></p>
+<p>For instance, using Mixed Case with “<strong>.</strong>” as a delineator on <em>“this is my name. and my surname. with a dot.here and there.”</em> will return <em>‘This Is My Name. And My Surname. With A Dot.Here And There.’</em></p>
 </div>
 </div>
 <div class="section" id="convert-from-non-standard-encoding">
@@ -167,12 +151,12 @@
 <div class="section" id="id6">
 <h3>Arguments<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Encoding</li>
+<li><p>Encoding</p></li>
 </ol>
 </div>
 <div class="section" id="id7">
 <h3>Description<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p>If your files were written using non-standard encoding (eg cp1251 on Windows) you can use this Function to fix &#8216;em.</p>
+<p>If your files were written using non-standard encoding (eg cp1251 on Windows) you can use this Function to fix ‘em.</p>
 </div>
 </div>
 <div class="section" id="export-artwork-to-file">
@@ -180,52 +164,52 @@
 <div class="section" id="id9">
 <h3>Arguments<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Pattern</li>
+<li><p>Pattern</p></li>
 </ol>
 </div>
 <div class="section" id="id10">
 <h3>Description<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>Saves all artwork found in an audio file using the desired <strong>Pattern</strong>. Extensions are added automatically.</p>
-<p>If a picture file already exists &#8216;_1&#8217; will be appended to the filename (before the extension). If that file already exists &#8216;_2&#8217; will be appended and so on. This will not be done for cases where two or more files contain <em>exactly</em> the same picture data and are to be written to the same filename.</p>
+<p>If a picture file already exists ‘_1’ will be appended to the filename (before the extension). If that file already exists ‘_2’ will be appended and so on. This will not be done for cases where two or more files contain <em>exactly</em> the same picture data and are to be written to the same filename.</p>
 <p>Usage of the following fields are allowed:</p>
 <dl class="describe">
 <dt>
-<code class="descname">img_desc</code></dt>
+<code class="sig-name descname">img_desc</code></dt>
 <dd><p>The description of the current image.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">img_count</code></dt>
+<code class="sig-name descname">img_count</code></dt>
 <dd><p>The number of images contained in the file.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">img_counter</code></dt>
+<code class="sig-name descname">img_counter</code></dt>
 <dd><p>The number current image being processed.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">img_mime</code></dt>
+<code class="sig-name descname">img_mime</code></dt>
 <dd><p>The mimetype of the current image.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">img_type</code></dt>
+<code class="sig-name descname">img_type</code></dt>
 <dd><p>The image type, eg. <em>Cover (Front)</em>.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>Consider a file <em>/mnt/music/Thebe/Ungawa Kum.mp3</em> containing four images. The first two PNG images and the last two JPEG. Descriptions are &#8216;one&#8217;, &#8216;two&#8217;, etc. for each image.</p>
+<p>Consider a file <em>/mnt/music/Thebe/Ungawa Kum.mp3</em> containing four images. The first two PNG images and the last two JPEG. Descriptions are ‘one’, ‘two’, etc. for each image.</p>
 <ul class="simple">
-<li>The pattern <em>folder_%img_counter%</em> will create four images in <em>/mnt/music/Thebe</em>: <strong>folder_1.png, folder_2.png, folder_3.jpg</strong> and <strong>folder_4.jpg</strong>.</li>
-<li><em>%img_desc%</em> will create four images in <em>/mnt/music/Thebe</em>: <strong>one.png, two.png, three.jpg</strong> and <strong>four.jpg</strong>.</li>
-<li><em>/home/user/Desktop/%artist%</em> will create four images in <em>/home/user/Desktop</em>: <strong>Thebe_1.png, Thebe_2.png, Thebe_3.jpg</strong> and <strong>Thebe_4.jpg</strong>.</li>
+<li><p>The pattern <em>folder_%img_counter%</em> will create four images in <em>/mnt/music/Thebe</em>: <strong>folder_1.png, folder_2.png, folder_3.jpg</strong> and <strong>folder_4.jpg</strong>.</p></li>
+<li><p><em>%img_desc%</em> will create four images in <em>/mnt/music/Thebe</em>: <strong>one.png, two.png, three.jpg</strong> and <strong>four.jpg</strong>.</p></li>
+<li><p><em>/home/user/Desktop/%artist%</em> will create four images in <em>/home/user/Desktop</em>: <strong>Thebe_1.png, Thebe_2.png, Thebe_3.jpg</strong> and <strong>Thebe_4.jpg</strong>.</p></li>
 </ul>
 </div>
 </div>
@@ -234,7 +218,7 @@
 <div class="section" id="id12">
 <h3>Arguments<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Pattern</li>
+<li><p>Pattern</p></li>
 </ol>
 </div>
 <div class="section" id="id13">
@@ -247,25 +231,25 @@
 <div class="section" id="id15">
 <h3>Arguments<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Format string (also referred to as a Pattern)</li>
+<li><p>Format string (also referred to as a Pattern)</p></li>
 </ol>
 </div>
 <div class="section" id="id16">
 <h3>Description<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>Formats whatever is passed to it using the Format string.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Extensions are <em>not</em> added if you modify filename related fields using this Function.</p>
+<p class="admonition-title">Note</p>
+<p>Extensions are <em>not</em> added if you modify filename related fields using this Function.</p>
 </div>
 </div>
 <div class="section" id="id17">
 <h3>Examples<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <p>A Format string can be (almost) any string. Eg. for a file with the tag, <em>artist=A Guy</em>, <em>album=Screeching</em>, <em>title=Excessively Emo</em>, <em>track=2</em></p>
 <ul class="simple">
-<li>Using &#8216;I wanna write my own.&#8217; as a Format string will return &#8216;I wanna write my own.&#8217; and write it to the fields you choose.</li>
-<li>Individual fields can be referenced by placing them inbetween percent characters (%). So <strong>%artist%</strong> will return &#8216;A Guy&#8217;, <strong>%album%</strong>, &#8216;Screeching&#8217; and so on for the others. Using <strong>%genre%</strong> would return nothing, because there ain&#8217;t no genre field in the tag.</li>
-<li>You can combine fields with any combination of letters as in <strong>I don&#8217;t like an %title% %artist%...%album%</strong>. Returning, &#8216;I don&#8217;t like an Excessively Emo A Guy...Screeching&#8217;</li>
-<li>More editing power is available via the scripting functions. They have the format <strong>$name(arguments)</strong>. See the <a class="reference internal" href="scripting.html"><span class="doc">scripting functions page</span></a> for a listing. They can be simple eg. <strong>$upper(value)</strong> will return &#8216;VALUE&#8217;, <strong>$lower(%artist%)</strong> will return &#8216;a guy&#8217;. You can even combine/nest them to get what you want as in <strong>I don&#8217;t like an $lower(%title% $mid(%artist%,2,10)) $lower(%album%).</strong> giving &#8220;I don&#8217;t like an excessively emo guy screeching.&#8221;</li>
+<li><p>Using ‘I wanna write my own.’ as a Format string will return ‘I wanna write my own.’ and write it to the fields you choose.</p></li>
+<li><p>Individual fields can be referenced by placing them inbetween percent characters (%). So <strong>%artist%</strong> will return ‘A Guy’, <strong>%album%</strong>, ‘Screeching’ and so on for the others. Using <strong>%genre%</strong> would return nothing, because there ain’t no genre field in the tag.</p></li>
+<li><p>You can combine fields with any combination of letters as in <strong>I don’t like an %title% %artist%…%album%</strong>. Returning, ‘I don’t like an Excessively Emo A Guy…Screeching’</p></li>
+<li><p>More editing power is available via the scripting functions. They have the format <strong>$name(arguments)</strong>. See the <a class="reference internal" href="scripting.html"><span class="doc">scripting functions page</span></a> for a listing. They can be simple eg. <strong>$upper(value)</strong> will return ‘VALUE’, <strong>$lower(%artist%)</strong> will return ‘a guy’. You can even combine/nest them to get what you want as in <strong>I don’t like an $lower(%title% $mid(%artist%,2,10)) $lower(%album%).</strong> giving “I don’t like an excessively emo guy screeching.”</p></li>
 </ul>
 </div>
 </div>
@@ -274,7 +258,7 @@
 <div class="section" id="id19">
 <h3>Arguments<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Pattern</li>
+<li><p>Pattern</p></li>
 </ol>
 </div>
 <div class="section" id="id20">
@@ -285,10 +269,10 @@
 <h3>Examples<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <p>For the file with path <strong>/mnt/Music/artist/album/filename.mp3</strong> and with the tag, <strong>artist=Black Eyed Peas, album=END</strong></p>
 <ul class="simple">
-<li>lyrics.txt will load the text file from /mnt/Music/artist/album/lyrics.txt</li>
-<li>../lyrics.txt will load the file at /mnt/Music/artist/lyrics.txt</li>
-<li>%album% will load the file at /mnt/Music/artist/album/<strong>END</strong>. No extensions will be added.</li>
-<li>/mnt/textfiles/lyrics.txt will load from the file at /mnt/textfiles/lyrics.txt</li>
+<li><p>lyrics.txt will load the text file from /mnt/Music/artist/album/lyrics.txt</p></li>
+<li><p>../lyrics.txt will load the file at /mnt/Music/artist/lyrics.txt</p></li>
+<li><p>%album% will load the file at /mnt/Music/artist/album/<strong>END</strong>. No extensions will be added.</p></li>
+<li><p>/mnt/textfiles/lyrics.txt will load from the file at /mnt/textfiles/lyrics.txt</p></li>
 </ul>
 </div>
 </div>
@@ -297,9 +281,9 @@
 <div class="section" id="id23">
 <h3>Arguments<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Filenames</li>
-<li>Default description</li>
-<li>Match Case</li>
+<li><p>Filenames</p></li>
+<li><p>Default description</p></li>
+<li><p>Match Case</p></li>
 </ol>
 </div>
 <div class="section" id="id24">
@@ -308,7 +292,7 @@
 <p>Filenames are a colon-separated list of shell-style wildcards, eg. <strong>*.jpg;*.png</strong>. Or just something like <strong>folder.jpg</strong>. The files will be loaded in order and the images.</p>
 <p>Default description can be any pattern, eg. <strong>%artist%</strong>.</p>
 <p>Match Case is pretty self-explanatory.</p>
-<p>Be aware that for now that the directory that&#8217;ll be searched will be polled every single time this Function is called, so don&#8217;t use it on large directories.</p>
+<p>Be aware that for now that the directory that’ll be searched will be polled every single time this Function is called, so don’t use it on large directories.</p>
 </div>
 </div>
 <div class="section" id="merge-field">
@@ -316,7 +300,7 @@
 <div class="section" id="id26">
 <h3>Arguments<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Separator</li>
+<li><p>Separator</p></li>
 </ol>
 </div>
 <div class="section" id="id27">
@@ -329,7 +313,7 @@
 <span id="id28"></span><h2>Remove Fields<a class="headerlink" href="#remove-fields" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id29">
 <h3>Description<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
-<p>Removes the fields you specify [separated by a comma &#8220;<strong>,</strong>&#8220;].</p>
+<p>Removes the fields you specify [separated by a comma “<strong>,</strong>”].</p>
 </div>
 </div>
 <div class="section" id="remove-all-fields-except">
@@ -337,7 +321,7 @@
 <div class="section" id="id31">
 <h3>Arguments<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Field list</li>
+<li><p>Field list</p></li>
 </ol>
 </div>
 <div class="section" id="id32">
@@ -350,7 +334,7 @@
 <div class="section" id="id34">
 <h3>Arguments<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Match case</li>
+<li><p>Match case</p></li>
 </ol>
 </div>
 <div class="section" id="id35">
@@ -364,15 +348,15 @@
 <div class="section" id="id37">
 <h3>Arguments<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Text to replace</li>
-<li>Text to replace with</li>
-<li>Match Case</li>
-<li>Only as whole word</li>
+<li><p>Text to replace</p></li>
+<li><p>Text to replace with</p></li>
+<li><p>Match Case</p></li>
+<li><p>Only as whole word</p></li>
 </ol>
 </div>
 <div class="section" id="id38">
 <h3>Description<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
-<p>It works just as you&#8217;d expect from any text editor. The only caveat is that words are designated by these <strong>,.() !</strong> characters.</p>
+<p>It works just as you’d expect from any text editor. The only caveat is that words are designated by these <strong>,.() !</strong> characters.</p>
 </div>
 </div>
 <div class="section" id="replace-with-regexp">
@@ -380,8 +364,8 @@
 <div class="section" id="id40">
 <h3>Arguments<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>The regular expression</li>
-<li>Replacement string</li>
+<li><p>The regular expression</p></li>
+<li><p>Replacement string</p></li>
 </ol>
 </div>
 <div class="section" id="id41">
@@ -390,12 +374,12 @@
 </div>
 <div class="section" id="id42">
 <h3>Examples<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
-<p>Some examples for the text, &#8216;concentricpuddle writes this&#8217;.</p>
+<p>Some examples for the text, ‘concentricpuddle writes this’.</p>
 <ul class="simple">
-<li>regexp=(concentricpuddle) and repl=$upper($1) =&gt; &#8216;CONCENTRICPUDDLE&#8217;</li>
-<li>regexp=&#8217;(concentricpuddle) writes (this)&#8217;, repl=&#8217;$upper($1) wrote $2&#8217; =&gt; &#8216;CONCENTRICPUDDLE wrote this&#8217;</li>
-<li>regexp=&#8217;(concentricpuddle) writes (this)&#8217;, repl=&#8217;$upper($1) wrote $3&#8217; =&gt; &#8216;CONCENTRICPUDDLE wrote $3&#8217;, because $3 wasn&#8217;t found.</li>
-<li>regexp=&#8217;(c.*puddle)&#8217;, repl=&#8217;name=$1&#8217; =&gt; &#8216;name=concentricpuddle&#8217;</li>
+<li><p>regexp=(concentricpuddle) and repl=$upper($1) =&gt; ‘CONCENTRICPUDDLE’</p></li>
+<li><p>regexp=’(concentricpuddle) writes (this)’, repl=’$upper($1) wrote $2’ =&gt; ‘CONCENTRICPUDDLE wrote this’</p></li>
+<li><p>regexp=’(concentricpuddle) writes (this)’, repl=’$upper($1) wrote $3’ =&gt; ‘CONCENTRICPUDDLE wrote $3’, because $3 wasn’t found.</p></li>
+<li><p>regexp=’(c.*puddle)’, repl=’name=$1’ =&gt; ‘name=concentricpuddle’</p></li>
 </ul>
 </div>
 </div>
@@ -404,8 +388,8 @@
 <div class="section" id="id44">
 <h3>Arguments<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Sort Order</li>
-<li>Match Case</li>
+<li><p>Sort Order</p></li>
+<li><p>Match Case</p></li>
 </ol>
 </div>
 <div class="section" id="id45">
@@ -418,7 +402,7 @@
 <div class="section" id="id47">
 <h3>Arguments<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Separator</li>
+<li><p>Separator</p></li>
 </ol>
 </div>
 <div class="section" id="id48">
@@ -428,8 +412,8 @@
 <div class="section" id="id49">
 <h3>Examples<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>If genre=&#8221;Rap;Rock;Dubstep&#8221; splitting it with &#8220;<strong>;</strong>&#8221; as the separator will result in genre (provided you&#8217;re writing to the genre field) having multiple values: <strong>Rap, Rock and Dubstep</strong></li>
-<li>If genre were a multiple-valued field with &#8216;Rock;Rap&#8217; and &#8216;Classical;Guitar Solo&#8217; it&#8217;s distinct values. Splitting them with <strong>;</strong> as the separator will split each value and combine them into the multiple-valued field. In this case we get <strong>Rock, Rap, Classical</strong> and <strong>Guitar Solo</strong> as the distinct values.</li>
+<li><p>If genre=”Rap;Rock;Dubstep” splitting it with “<strong>;</strong>” as the separator will result in genre (provided you’re writing to the genre field) having multiple values: <strong>Rap, Rock and Dubstep</strong></p></li>
+<li><p>If genre were a multiple-valued field with ‘Rock;Rap’ and ‘Classical;Guitar Solo’ it’s distinct values. Splitting them with <strong>;</strong> as the separator will split each value and combine them into the multiple-valued field. In this case we get <strong>Rock, Rap, Classical</strong> and <strong>Guitar Solo</strong> as the distinct values.</p></li>
 </ul>
 </div>
 </div>
@@ -438,7 +422,7 @@
 <div class="section" id="id51">
 <h3>Arguments<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Pattern</li>
+<li><p>Pattern</p></li>
 </ol>
 </div>
 <div class="section" id="id52">
@@ -451,29 +435,29 @@
 <div class="section" id="id54">
 <h3>Arguments<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>The text. Can be any pattern.</li>
+<li><p>The text. Can be any pattern.</p></li>
 </ol>
 </div>
 <div class="section" id="id55">
 <h3>Description<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
 <p>Converts a tag to filename using the pattern (see above description for Format value).</p>
-<p>If the filename contains any of the characters, <strong>\*?;&#8221;|:/</strong>, then they will be removed.</p>
-<p>Files can also be moved, by specifying &#8216;/&#8217; as a directory delimeter. Any forward slashes found in the fields used in constructing the pattern are ommitted (if the artist is AC/DC, it will not create an AC directory, rather the slash will be removed and ACDC will be used).</p>
-<p>Intermediate directories will be created if they don&#8217;t exist.</p>
+<p>If the filename contains any of the characters, <strong>\*?;”|:/</strong>, then they will be removed.</p>
+<p>Files can also be moved, by specifying ‘/’ as a directory delimeter. Any forward slashes found in the fields used in constructing the pattern are ommitted (if the artist is AC/DC, it will not create an AC directory, rather the slash will be removed and ACDC will be used).</p>
+<p>Intermediate directories will be created if they don’t exist.</p>
 </div>
 <div class="section" id="id56">
 <h3>Examples<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
-<p>Say you had a file named &#8216;track.mp3&#8217; with the following tag, <strong>artist=Before The Fame, album=The Vinyl LP, title=Sounds Better Than Anything After, track=10</strong> and invoked this function.</p>
+<p>Say you had a file named ‘track.mp3’ with the following tag, <strong>artist=Before The Fame, album=The Vinyl LP, title=Sounds Better Than Anything After, track=10</strong> and invoked this function.</p>
 <ul class="simple">
-<li><em>%artist% - %album% - %track%</em> in the pattern combo will rename it to &#8216;Before The Fame - The Vinyl LP - Sounds Better Than Anything After.mp3&#8217;</li>
-<li><em>%artist% - $num(%track%, 3) - %title%</em> will rename it to &#8216;Before The Fame - 010 - Sounds Better Than Anything After.mp3&#8217;</li>
-<li><em>%title%_$upper(%album%)-%track%-%artist%</em> will give the filename &#8216;Sounds Better Than Anything After_THE VINYL LP-10-Before The Fame.mp3&#8217;</li>
+<li><p><em>%artist% - %album% - %track%</em> in the pattern combo will rename it to ‘Before The Fame - The Vinyl LP - Sounds Better Than Anything After.mp3’</p></li>
+<li><p><em>%artist% - $num(%track%, 3) - %title%</em> will rename it to ‘Before The Fame - 010 - Sounds Better Than Anything After.mp3’</p></li>
+<li><p><em>%title%_$upper(%album%)-%track%-%artist%</em> will give the filename ‘Sounds Better Than Anything After_THE VINYL LP-10-Before The Fame.mp3’</p></li>
 </ul>
 <p>For a file with the tag, <strong>artist=Relatively Unknown, title=Horrible for everyone else, album=Fans like it, track=5</strong> with path, /home/concentricpuddle/multimedia/music/Indie/unsorted/unknown.mp3</p>
 <ul class="simple">
-<li>%album%/%artist% - %title% will move the file to /home/concentricpuddle/multimedia/music/Indie/<strong>Fans like it/Relatively Unknown - Horrible for everyone else.mp3</strong>.</li>
-<li>For every slash, the file is moved up one directory. %artist%/%album%/%title% will move the file to /home/concentricpuddle/multimedia/music/<strong>Relatively Unknown/Fans like it/Horrible for everyone else.mp3</strong></li>
-<li>If you want you can also have an absolute path, by starting the pattern with a slash, eg. the pattern /mnt/library/%album%/%track% will move the file to /mnt/library/Fans like it/5.mp3</li>
+<li><p>%album%/%artist% - %title% will move the file to /home/concentricpuddle/multimedia/music/Indie/<strong>Fans like it/Relatively Unknown - Horrible for everyone else.mp3</strong>.</p></li>
+<li><p>For every slash, the file is moved up one directory. %artist%/%album%/%title% will move the file to /home/concentricpuddle/multimedia/music/<strong>Relatively Unknown/Fans like it/Horrible for everyone else.mp3</strong></p></li>
+<li><p>If you want you can also have an absolute path, by starting the pattern with a slash, eg. the pattern /mnt/library/%album%/%track% will move the file to /mnt/library/Fans like it/5.mp3</p></li>
 </ul>
 </div>
 </div>
@@ -482,21 +466,21 @@
 <div class="section" id="id58">
 <h3>Arguments<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>The text. Can be any pattern.</li>
-<li>The pattern to match the text against. Works like Tag-&gt;Filename except that instead of using fields like %artist% you use tokens denoted by %number like <strong>%1, %3</strong>.</li>
-<li>What to output the text as, can be any pattern can be used including tokens delimited by %number.</li>
+<li><p>The text. Can be any pattern.</p></li>
+<li><p>The pattern to match the text against. Works like Tag-&gt;Filename except that instead of using fields like %artist% you use tokens denoted by %number like <strong>%1, %3</strong>.</p></li>
+<li><p>What to output the text as, can be any pattern can be used including tokens delimited by %number.</p></li>
 </ol>
 </div>
 <div class="section" id="id59">
 <h3>Description<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
-<p>Converts any text from any text to any other text. It&#8217;s better explained by using:</p>
+<p>Converts any text from any text to any other text. It’s better explained by using:</p>
 </div>
 <div class="section" id="id60">
 <h3>Examples<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Say you had the text, &#8216;First Second&#8217;. Using the pattern <em>%1 %2</em> you can reverse the text by using &#8216;%2 %1&#8217; as the output, returning &#8216;Second First&#8217;.</li>
-<li>You can use any valid pattern as the text. Say artist=&#8217;Eminem/Recovery&#8217;. Using the pattern <strong>%1/%2</strong> and having %2 in the output means that you can retrieve the album name (Recovery). %1 would return Just &#8216;Eminem&#8217;.</li>
-<li>:doc:&#8217;Scripting &lt;scripting&gt;` functions are allowed in the output. Eg. for text=&#8217;Jimmy-01/Rebellious Angel&#8217; and a pattern=&#8217;%1-%2/%3&#8217;, the <strong>$num(%2, 1)</strong> as the output will be evaluated as normal returning just &#8216;1&#8217;.</li>
+<li><p>Say you had the text, ‘First Second’. Using the pattern <em>%1 %2</em> you can reverse the text by using ‘%2 %1’ as the output, returning ‘Second First’.</p></li>
+<li><p>You can use any valid pattern as the text. Say artist=’Eminem/Recovery’. Using the pattern <strong>%1/%2</strong> and having %2 in the output means that you can retrieve the album name (Recovery). %1 would return Just ‘Eminem’.</p></li>
+<li><p>:doc:’Scripting &lt;scripting&gt;` functions are allowed in the output. Eg. for text=’Jimmy-01/Rebellious Angel’ and a pattern=’%1-%2/%3’, the <strong>$num(%2, 1)</strong> as the output will be evaluated as normal returning just ‘1’.</p></li>
 </ul>
 </div>
 </div>
@@ -504,7 +488,7 @@
 <span id="id61"></span><h2>Trim Whitespace<a class="headerlink" href="#trim-whitespace" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id62">
 <h3>Description<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
-<p>Removes any whitespace before and after text. Using it on <em>&#8221; there&#8217;s a space before and one after &#8220;</em> will return <em>&#8220;there&#8217;s a space before and one after&#8221;</em></p>
+<p>Removes any whitespace before and after text. Using it on <em>” there’s a space before and one after “</em> will return <em>“there’s a space before and one after”</em></p>
 </div>
 </div>
 <div class="section" id="update-from-tag">
@@ -512,18 +496,18 @@
 <div class="section" id="id64">
 <h3>Arguments<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li>Field list (;-separated). Start the list with the tilde (~) character to update all the fields except the ones in the list.</li>
-<li>Tag type</li>
+<li><p>Field list (;-separated). Start the list with the tilde (~) character to update all the fields except the ones in the list.</p></li>
+<li><p>Tag type</p></li>
 </ol>
 </div>
 <div class="section" id="id65">
 <h3>Description<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
 <p>Updates the fields specified with the values found in Tag type.</p>
-<p>If your FLAC file has an ID3 tag, puddletag will read/write only the VorbisComment tag. However sometimes you want to update the FLAC tag with the ID3 tag&#8217;s contents. Specify the <strong>Field List</strong>, select the <strong>Tag Type</strong> (ID3 or APEv2).</p>
-<p>After invocation, the current file&#8217;s tag will then be updated using the ID3/APEv2 tag&#8217;s fields.</p>
+<p>If your FLAC file has an ID3 tag, puddletag will read/write only the VorbisComment tag. However sometimes you want to update the FLAC tag with the ID3 tag’s contents. Specify the <strong>Field List</strong>, select the <strong>Tag Type</strong> (ID3 or APEv2).</p>
+<p>After invocation, the current file’s tag will then be updated using the ID3/APEv2 tag’s fields.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The tag will be not be changed in any manner.</p>
+<p class="admonition-title">Note</p>
+<p>The tag will be not be changed in any manner.</p>
 </div>
 </div>
 </div>
@@ -542,7 +526,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

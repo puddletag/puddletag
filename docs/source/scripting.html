@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scripting functions reference &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -92,210 +76,210 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="scripting-functions-reference">
 <h1>Scripting functions reference<a class="headerlink" href="#scripting-functions-reference" title="Permalink to this headline">¶</a></h1>
 <p>The scripting functions that puddletag supports are listed here. Use them where ever they can be used.</p>
 <ul class="simple">
-<li>For comparison functions, <strong>0</strong> and an empty string (<strong>&#8220;&#8221;</strong>) evaluate to <strong>False</strong>. Everything else evaluates to <strong>True</strong>.</li>
-<li>Strings that contain commas must be enclode in double quotes (<strong>&#8220;</strong>).</li>
-<li>White space before and after arguments will be discarded. Enclose the argument in quotes to preserve it as in <strong>$left(&#8221; One space.&#8221;, 3)</strong>.</li>
+<li><p>For comparison functions, <strong>0</strong> and an empty string (<strong>“”</strong>) evaluate to <strong>False</strong>. Everything else evaluates to <strong>True</strong>.</p></li>
+<li><p>Strings that contain commas must be enclode in double quotes (<strong>“</strong>).</p></li>
+<li><p>White space before and after arguments will be discarded. Enclose the argument in quotes to preserve it as in <strong>$left(” One space.”, 3)</strong>.</p></li>
 </ul>
 <dl class="describe">
 <dt>
-<code class="descname">$ceiling()</code></dt>
+<code class="sig-name descname">$ceiling()</code></dt>
 <dd><p>For the floating point number x.y. Returns integer x + 1.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$and(a, b)</code></dt>
+<code class="sig-name descname">$and(a, b)</code></dt>
 <dd><p>Returns True if both a and b evaluate to True. Returns False otherwise.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$add(x,y)</code></dt>
+<code class="sig-name descname">$add(x,y)</code></dt>
 <dd><p>Adds x and y</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$caps(string)</code></dt>
+<code class="sig-name descname">$caps(string)</code></dt>
 <dd><p>Capitalizes the first letter of each word in string and converts the rest to lower case.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$caps2(string)</code></dt>
+<code class="sig-name descname">$caps2(string)</code></dt>
 <dd><p>Capitalizes the first letter of each word in string and leaves all other characters unchanged.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$caps3(string)</code></dt>
+<code class="sig-name descname">$caps3(string)</code></dt>
 <dd><p>Capitalizes the first letter of the string and converts the rest to lower case.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$ceiling(number)</code></dt>
+<code class="sig-name descname">$ceiling(number)</code></dt>
 <dd><p>Returns the smallest integer that is greater than or equal to number.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$char(character)</code></dt>
+<code class="sig-name descname">$char(character)</code></dt>
 <dd><p>Returns the ASCII character number of the character.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$div(x, y)</code></dt>
+<code class="sig-name descname">$div(x, y)</code></dt>
 <dd><p>Divides x by y.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$floor()</code></dt>
+<code class="sig-name descname">$floor()</code></dt>
 <dd><p>For the floating point number x.y. Returns integer x.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$geql(x, y)</code></dt>
+<code class="sig-name descname">$geql(x, y)</code></dt>
 <dd><p>Returns True if x &gt;= y. False otherwise.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$grtr(x, y)</code></dt>
+<code class="sig-name descname">$grtr(x, y)</code></dt>
 <dd><p>Returns true if x &gt; y. False otherwise.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$if(x, y, z)</code></dt>
+<code class="sig-name descname">$if(x, y, z)</code></dt>
 <dd><p>If x is True, y is returned, otherwise z is returned.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$iflonger(a,b,x,y)</code></dt>
+<code class="sig-name descname">$iflonger(a,b,x,y)</code></dt>
 <dd><p>If string a is longer than string b, then x is returned, otherwise y.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$isdigit(x)</code></dt>
+<code class="sig-name descname">$isdigit(x)</code></dt>
 <dd><p>Returns true if x is a decimal number.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$left(string, n)</code></dt>
+<code class="sig-name descname">$left(string, n)</code></dt>
 <dd><p>Leftmost n characters of string.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$len(string)</code></dt>
+<code class="sig-name descname">$len(string)</code></dt>
 <dd><p>Returns the length of string.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$leql(x,y)</code></dt>
+<code class="sig-name descname">$leql(x,y)</code></dt>
 <dd><p>Returns True if x &lt;= y. False otherwise.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$less(x,y)</code></dt>
+<code class="sig-name descname">$less(x,y)</code></dt>
 <dd><p>Returns True if x &lt; y. False otherwise.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$lower(string)</code></dt>
+<code class="sig-name descname">$lower(string)</code></dt>
 <dd><p>Converts string to lowercase.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$meta(field, n)</code></dt>
-<dd><p>If field is multiple-valued, the field&#8217;s nth value. Note that it&#8217;s just the field name, <strong>field</strong> and not <strong>%field%</strong>.</p>
+<code class="sig-name descname">$meta(field, n)</code></dt>
+<dd><p>If field is multiple-valued, the field’s nth value. Note that it’s just the field name, <strong>field</strong> and not <strong>%field%</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$meta_sep(field, sep=', ')</code></dt>
-<dd><p>If field is multiple-valued, returns the field&#8217;s values joined by sep. Otherwise just returns the field&#8217;s value.</p>
+<code class="sig-name descname">$meta_sep(field, sep=', ')</code></dt>
+<dd><p>If field is multiple-valued, returns the field’s values joined by sep. Otherwise just returns the field’s value.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$mid(string,n,i)</code></dt>
+<code class="sig-name descname">$mid(string,n,i)</code></dt>
 <dd><p>Returns first i characters of string, starting at n.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$mod(x,y)</code></dt>
+<code class="sig-name descname">$mod(x,y)</code></dt>
 <dd><p>Returns the remainder of x divided by y.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$mul(x,y)</code></dt>
+<code class="sig-name descname">$mul(x,y)</code></dt>
 <dd><p>Multiplies x by y.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$neql(x,y)</code></dt>
+<code class="sig-name descname">$neql(x,y)</code></dt>
 <dd><p>Returns True if x is not equal to y.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$not(x)</code></dt>
+<code class="sig-name descname">$not(x)</code></dt>
 <dd><p>Returns False if x evaluates to True and vice versa.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$num(number, y)</code></dt>
-<dd><p>Pads zeroes to number until it&#8217;s of length y. If number has excess zeroes and it&#8217;s length is less than y then these zeroes are removed.</p>
+<code class="sig-name descname">$num(number, y)</code></dt>
+<dd><p>Pads zeroes to number until it’s of length y. If number has excess zeroes and it’s length is less than y then these zeroes are removed.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$odd(x)</code></dt>
+<code class="sig-name descname">$odd(x)</code></dt>
 <dd><p>Returns True if x is odd.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$or(x,y)</code></dt>
+<code class="sig-name descname">$or(x,y)</code></dt>
 <dd><p>Returns True if either x or y evaluates to True. False otherwise.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$rand()</code></dt>
+<code class="sig-name descname">$rand()</code></dt>
 <dd><p>Generates a pseudo-random number between 0 and 1.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$regex(text, regex, repl, matchcase=0)</code></dt>
+<code class="sig-name descname">$regex(text, regex, repl, matchcase=0)</code></dt>
 <dd><p>Replaces all occurrences of <strong>regex</strong> with <strong>repl</strong> in text.</p>
 <div class="line-block">
 <div class="line"><strong>text</strong>: text to search, eg. <em>%artist%</em></div>
 <div class="line"><strong>regex</strong>: regular expression to use as the search eg. <em>jay.*</em></div>
-<div class="line"><strong>repl</strong>: Text to replace all matches of regex with. Can be pattern ex <em>$lower($1)</em>, but has to be quoted like in &#8220;$lower($1)&#8221; otherwise any scripting functions used will be run before the regular expression is evaluated.</div>
+<div class="line"><strong>repl</strong>: Text to replace all matches of regex with. Can be pattern ex <em>$lower($1)</em>, but has to be quoted like in “$lower($1)” otherwise any scripting functions used will be run before the regular expression is evaluated.</div>
 <div class="line"><strong>matchcase</strong>: Defaults to <em>0</em>. If <em>1</em>, will have case-sensitive matching.</div>
 </div>
 <p>See <a class="reference internal" href="function.html#replace-with-regexp"><span class="std std-ref">Replace with RegExp</span></a> for more examples.</p>
@@ -303,50 +287,50 @@
 
 <dl class="describe">
 <dt>
-<code class="descname">$round()</code></dt>
+<code class="sig-name descname">$round()</code></dt>
 <dd><p>For the floating point number x.y. Returns the integer x if y &lt; 0.5 else x + 1.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$replace(string, word, replaceword, matchcase, whole)</code></dt>
+<code class="sig-name descname">$replace(string, word, replaceword, matchcase, whole)</code></dt>
 <dd><p>Replaces word in string with replaceword. If matchcase is true, a case-sensitive replace is done. Whole is true implies that only whole word matches are replaced.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$right(string, n)</code></dt>
+<code class="sig-name descname">$right(string, n)</code></dt>
 <dd><p>Returns rightmost n characters in string.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$strip(string)</code></dt>
+<code class="sig-name descname">$strip(string)</code></dt>
 <dd><p>Removes leading and trailing whitespace from string.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$sub(x, y)</code></dt>
+<code class="sig-name descname">$sub(x, y)</code></dt>
 <dd><p>Subtracts y from x.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$to_ascii(x)</code></dt>
-<dd><p>Converts all unicode chars in x to ASCII eg. &#8216;é&#8217; will become &#8216;e&#8217;. Characters that can&#8217;t be converted will be removed.</p>
+<code class="sig-name descname">$to_ascii(x)</code></dt>
+<dd><p>Converts all unicode chars in x to ASCII eg. ‘é’ will become ‘e’. Characters that can’t be converted will be removed.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$upper(string)</code></dt>
+<code class="sig-name descname">$upper(string)</code></dt>
 <dd><p>Converts string to uppercase.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">$validate(string, y, chars)</code></dt>
-<dd><p>Removes chars (defaults to <strong>/\*?;&#8221;|:</strong>) from string and replaces them with y if specified.</p>
+<code class="sig-name descname">$validate(string, y, chars)</code></dt>
+<dd><p>Removes chars (defaults to <strong>/\*?;”|:</strong>) from string and replaces them with y if specified.</p>
 </dd></dl>
 
 </div>
@@ -364,7 +348,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

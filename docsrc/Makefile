@@ -5,7 +5,7 @@
 SPHINXOPTS    = -q
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = _build
+BUILDDIR      = ../docs/
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -37,11 +37,11 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 
 html:
-	python3 createnews.py
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
-	python3 createnews.py fixnews
-	python3 fix_html.py "_build/html"
-	echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+	#python3 createnews.py
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)
+	#python3 createnews.py fixnews
+	python3 fix_html.py $(BUILDDIR)
+	echo "Build finished. The HTML pages are in $(BUILDDIR)"
 
 documentation:
 	@$(SPHINXBUILD) -b html -D html_domain_indices=[] $(ALLSPHINXOPTS) $(BUILDDIR)/documentation about.txt docs.txt source/*.txt

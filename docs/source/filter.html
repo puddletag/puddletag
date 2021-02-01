@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Filter Expressions &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -107,7 +91,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="filter-expressions">
 <h1>Filter Expressions<a class="headerlink" href="#filter-expressions" title="Permalink to this headline">¶</a></h1>
@@ -116,86 +100,85 @@
 <div class="section" id="strings">
 <h2>Strings<a class="headerlink" href="#strings" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Strings are either a single word containing no white-space eg. <em>Thisisvalid</em> is a valid string but <em>No spaces are allowed</em> is not a valid string.</li>
-<li>Anything enclosed in double-quotes will be regarded as a string. Eg <em>&#8220;You can do this&#8221;</em> or even <em>&#8220;artist&#8221;</em>.</li>
-<li><dl class="first docutils">
-<dt>Strings not enclosed in double quotes will be assumed to be a field. The field&#8217;s value as stored in the file will be used provided:</dt>
-<dd><ul class="first last">
-<li>The field is listed in <a class="reference internal" href="tags.html"><span class="doc">Tag Reference</span></a>. If the field isn&#8217;t present in the file it&#8217;ll evaluate to an empty string. Eg <strong>artist</strong> or <strong>title</strong>, but not <strong>madeupfield</strong>.</li>
-<li>The field is present in the file. If not the string will be interpreted as normal text.</li>
+<li><p>Strings are either a single word containing no white-space eg. <em>Thisisvalid</em> is a valid string but <em>No spaces are allowed</em> is not a valid string.</p></li>
+<li><p>Anything enclosed in double-quotes will be regarded as a string. Eg <em>“You can do this”</em> or even <em>“artist”</em>.</p></li>
+<li><dl class="simple">
+<dt>Strings not enclosed in double quotes will be assumed to be a field. The field’s value as stored in the file will be used provided:</dt><dd><ul>
+<li><p>The field is listed in <a class="reference internal" href="tags.html"><span class="doc">Tag Reference</span></a>. If the field isn’t present in the file it’ll evaluate to an empty string. Eg <strong>artist</strong> or <strong>title</strong>, but not <strong>madeupfield</strong>.</p></li>
+<li><p>The field is present in the file. If not the string will be interpreted as normal text.</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li>Any text in the form <strong>%string%</strong> (if it&#8217;s not enclosed in quotes) will be assumed to be a field.</li>
+<li><p>Any text in the form <strong>%string%</strong> (if it’s not enclosed in quotes) will be assumed to be a field.</p></li>
 </ul>
 </div>
 <div class="section" id="expressions">
 <h2>Expressions<a class="headerlink" href="#expressions" title="Permalink to this headline">¶</a></h2>
 <dl class="describe">
 <dt>
-<code class="descname">string</code></dt>
-<dd><p>Evaluates to <em>True</em> if a contains <strong>string</strong> in any of it&#8217;s fields.</p>
+<code class="sig-name descname">string</code></dt>
+<dd><p>Evaluates to <em>True</em> if a contains <strong>string</strong> in any of it’s fields.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">MISSING field</code></dt>
+<code class="sig-name descname">MISSING field</code></dt>
 <dd><p>Evaluates to <em>True</em> if field is not present in a file. Eg. <strong>MISSING artist</strong> or <strong>MISSING style</strong></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">PRESENT field</code></dt>
+<code class="sig-name descname">PRESENT field</code></dt>
 <dd><p>Evaluates to <em>True</em> if field is present in a file. Eg. <strong>PRESENT artist</strong> or <strong>PRESENT style</strong></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">expr1 GREATER expr2</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>expr1 is greater than expr2</strong>. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. <strong>track GREATER replay_gain</strong>, <strong>artist GREATER &#8220;some words&#8221;</strong>.</p>
+<code class="sig-name descname">expr1 GREATER expr2</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>expr1 is greater than expr2</strong>. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. <strong>track GREATER replay_gain</strong>, <strong>artist GREATER “some words”</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">expr1 LESS expr2</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>expr1 is less than expr2</strong>. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. <strong>track LESS replay_gain</strong>, <strong>artist LESS &#8220;some words&#8221;</strong>.</p>
+<code class="sig-name descname">expr1 LESS expr2</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>expr1 is less than expr2</strong>. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. <strong>track LESS replay_gain</strong>, <strong>artist LESS “some words”</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">expr1 EQUAL expr2</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>expr1 equals expr2</strong>. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. <strong>track EQUAL replay_gain</strong>, <strong>artist EQUAL &#8220;some words&#8221;</strong>.</p>
+<code class="sig-name descname">expr1 EQUAL expr2</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>expr1 equals expr2</strong>. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. <strong>track EQUAL replay_gain</strong>, <strong>artist EQUAL “some words”</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">field HAS expr</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>expr is contained in field</strong> for each file. Eg. <strong>artist HAS Jon</strong>, <strong>%title% HAS &#8220;Remixed By&#8221;</strong>.</p>
+<code class="sig-name descname">field HAS expr</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>expr is contained in field</strong> for each file. Eg. <strong>artist HAS Jon</strong>, <strong>%title% HAS “Remixed By”</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">field IS expr</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>field=expr</strong> for each file. Eg. <strong>artist IS &#8220;Bongo Maffin&#8221;</strong>, <strong>title IS Monster</strong>.</p>
+<code class="sig-name descname">field IS expr</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>field=expr</strong> for each file. Eg. <strong>artist IS “Bongo Maffin”</strong>, <strong>title IS Monster</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">expr1 AND expr2</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>both expr1 and expr2 evaluate to True</strong> for each file. Eg. <strong>artist IS &#8220;Bongo Maffin&#8221; AND title IS Monster</strong>.</p>
+<code class="sig-name descname">expr1 AND expr2</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>both expr1 and expr2 evaluate to True</strong> for each file. Eg. <strong>artist IS “Bongo Maffin” AND title IS Monster</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">expr1 OR expr2</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>either expr1 and expr2 evaluate to True</strong> for the file. Eg. <strong>artist IS &#8220;Bongo Maffin&#8221; OR title IS Monster</strong>.</p>
+<code class="sig-name descname">expr1 OR expr2</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>either expr1 and expr2 evaluate to True</strong> for the file. Eg. <strong>artist IS “Bongo Maffin” OR title IS Monster</strong>.</p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
-<code class="descname">NOT expr</code></dt>
-<dd><p>Evaluates to <em>True</em> if <strong>expr is False</strong>. Eg. <strong>NOT artist IS &#8220;Bongo Maffin&#8221; OR title IS Monster</strong>.</p>
+<code class="sig-name descname">NOT expr</code></dt>
+<dd><p>Evaluates to <em>True</em> if <strong>expr is False</strong>. Eg. <strong>NOT artist IS “Bongo Maffin” OR title IS Monster</strong>.</p>
 </dd></dl>
 
 </div>
@@ -214,7 +197,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

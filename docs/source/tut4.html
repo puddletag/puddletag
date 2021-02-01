@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tag Sources Tutorial &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -110,7 +94,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="tag-sources-tutorial">
 <h1>Tag Sources Tutorial<a class="headerlink" href="#tag-sources-tutorial" title="Permalink to this headline">¶</a></h1>
@@ -119,10 +103,10 @@
 <p>With puddletag you can tag your audio files using metadata from external <strong>Tag Sources</strong>.</p>
 <p>The following Tag Sources are distributed with puddletag:</p>
 <ul class="simple">
-<li>Amazon.com&#8217;s album art</li>
-<li>Discogs.com XML service</li>
-<li>FreeDB</li>
-<li>Musicbrainz</li>
+<li><p>Amazon.com’s album art</p></li>
+<li><p>Discogs.com XML service</p></li>
+<li><p>FreeDB</p></li>
+<li><p>Musicbrainz</p></li>
 </ul>
 <p>Tag Sources are album based and enable tagging individual albums using metadata from the Tag Source(s) of your choosing. For each of the Tag Sources puddletag will by default retrieve the full complement of metadata provided by the Tag Source. You do, however, have the option of choosing only specific fields or writing all fields provided by a Tag Source except those you specifically exclude.</p>
 </div>
@@ -130,52 +114,52 @@
 <span id="id1"></span><h2>Deciding what to retrieve<a class="headerlink" href="#deciding-what-to-retrieve" title="Permalink to this headline">¶</a></h2>
 <p>You can specify or omit fields from a tagging operation by specifying the following in the <strong>Fields</strong> input area (leave it blank to retrieve all fields provided by a Tag Source):</p>
 <ul class="simple">
-<li>Leave it empty and all metadata from the Tag Source will be retrieved.</li>
-<li>Enter a comma separated list of fields to retrieve only those field. Eg. <strong>artist, title, album, genre</strong></li>
-<li>Alternatively, use the tilde character (&#8220;~&#8221;) followed by a comma delimited list of fields you&#8217;d like to exclude. All fields except thouse you specify will get written to files. Eg. if you entered <strong>~genre,album</strong> and the Tag Source returned a tag with <strong>artist, title, album, track, genre</strong> fields. Only the <strong>artist, title, track</strong> fields would be written to the files.</li>
+<li><p>Leave it empty and all metadata from the Tag Source will be retrieved.</p></li>
+<li><p>Enter a comma separated list of fields to retrieve only those field. Eg. <strong>artist, title, album, genre</strong></p></li>
+<li><p>Alternatively, use the tilde character (“~”) followed by a comma delimited list of fields you’d like to exclude. All fields except thouse you specify will get written to files. Eg. if you entered <strong>~genre,album</strong> and the Tag Source returned a tag with <strong>artist, title, album, track, genre</strong> fields. Only the <strong>artist, title, track</strong> fields would be written to the files.</p></li>
 </ul>
 <img alt="Field descriptions" class="align-center" src="../_images/tagsource_dialog_tut4.png" />
 </div>
 <div class="section" id="how-you-do-it">
 <h2>How you do it<a class="headerlink" href="#how-you-do-it" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Sort tracks by ascending track number if possible.</li>
-<li>Select all tracks in an album you want to tag.</li>
-<li>Make sure that the Tag Sources dialog is visible (use <strong>Windows-&gt;Tag</strong> Sources menu to show it).</li>
-<li>Select a Tag Source.</li>
-<li>Click on Search and wait...</li>
-<li>Click on <strong>Search</strong>.</li>
-<li>Select the correct (or any really) album from the Tag Sources dialog. Retrieved metadata now be matched to the selected files.</li>
-<li>Remember I said sort files in ascending order? The matching process will &#8220;connect&#8221; each file to a retrieved track. Going from track 1 to the end.</li>
-<li>puddletag will now be in <strong>Preview Mode</strong>. You can make changes if you wish as they&#8217;ll be stored in memory.</li>
-<li>Don&#8217;t despair if you encounter a situation where the version/ release of the album you have is different to that retrieved via the Tag Source and/or the track sequence or number of tracks differ. You can tag individual tracks by selecting the track in the File-View and then clicking on the corresponding track in the Tag Source&#8217;s track list. Similarly, selecting a sequence of tracks will do the same for the selected files.</li>
-<li>Use <strong>Write</strong> on the Tag Sources dialog or <strong>Write Previews</strong> from the Preview Mode menu to save the changes to file.</li>
+<li><p>Sort tracks by ascending track number if possible.</p></li>
+<li><p>Select all tracks in an album you want to tag.</p></li>
+<li><p>Make sure that the Tag Sources dialog is visible (use <strong>Windows-&gt;Tag</strong> Sources menu to show it).</p></li>
+<li><p>Select a Tag Source.</p></li>
+<li><p>Click on Search and wait…</p></li>
+<li><p>Click on <strong>Search</strong>.</p></li>
+<li><p>Select the correct (or any really) album from the Tag Sources dialog. Retrieved metadata now be matched to the selected files.</p></li>
+<li><p>Remember I said sort files in ascending order? The matching process will “connect” each file to a retrieved track. Going from track 1 to the end.</p></li>
+<li><p>puddletag will now be in <strong>Preview Mode</strong>. You can make changes if you wish as they’ll be stored in memory.</p></li>
+<li><p>Don’t despair if you encounter a situation where the version/ release of the album you have is different to that retrieved via the Tag Source and/or the track sequence or number of tracks differ. You can tag individual tracks by selecting the track in the File-View and then clicking on the corresponding track in the Tag Source’s track list. Similarly, selecting a sequence of tracks will do the same for the selected files.</p></li>
+<li><p>Use <strong>Write</strong> on the Tag Sources dialog or <strong>Write Previews</strong> from the Preview Mode menu to save the changes to file.</p></li>
 </ol>
 </div>
 <div class="section" id="things-to-be-aware-of">
 <h2>Things to be aware of<a class="headerlink" href="#things-to-be-aware-of" title="Permalink to this headline">¶</a></h2>
-<p>There are a couple of things you need to know to able to use puddletag&#8217;s tagging abilities effectively:</p>
+<p>There are a couple of things you need to know to able to use puddletag’s tagging abilities effectively:</p>
 <ul class="simple">
-<li>Limiting the fields retrieved can be done by editing the <strong>Fields</strong> text box, see <a class="reference internal" href="#deciding-what-to-retrieve"><span class="std std-ref">above</span></a>.</li>
-<li>You can configure the Tag Source&#8217;s behaviour (if not previously configured to your liking). This is done by clicking on the Configuration icon.</li>
-<li>If you want to prevent existing values from being overwritten ensure <strong>Update empty fields only</strong> is checked.</li>
-<li>Tag Sources are album based, not track based (although you can choose individual tracks from an album).</li>
-<li>Tracks/files need to be selected in order for metadata relating to those tracks to be taken into account.</li>
-<li>Not selecting all files in an album may yield incorrect results when doing a lookup.</li>
-<li>(Ctrl-N is your friend...it selects all audio tracks located in the folder in which the currently highlighted file resides).</li>
-<li>You can map the field names for retrieved Tag Sources metadata to field names of your choosing (via Edit-&gt;Preferences-&gt;Mappings, see the tooltip for info.)</li>
-<li>While in Preview Mode, you can edit fields as normal (via the main view window, Tag Panel or Extended Tags view) before committing any changes. This makes it simple to tweak retrieved metadata to your specific needs before writing changes to your tracks.</li>
-<li>You&#8217;re also able to clear the previews of individual files or cells while in <strong>Preview Mode</strong>.</li>
-<li>puddletag will not write <em>any</em> metadata retrieved from tag source until you tell it to.</li>
+<li><p>Limiting the fields retrieved can be done by editing the <strong>Fields</strong> text box, see <a class="reference internal" href="#deciding-what-to-retrieve"><span class="std std-ref">above</span></a>.</p></li>
+<li><p>You can configure the Tag Source’s behaviour (if not previously configured to your liking). This is done by clicking on the Configuration icon.</p></li>
+<li><p>If you want to prevent existing values from being overwritten ensure <strong>Update empty fields only</strong> is checked.</p></li>
+<li><p>Tag Sources are album based, not track based (although you can choose individual tracks from an album).</p></li>
+<li><p>Tracks/files need to be selected in order for metadata relating to those tracks to be taken into account.</p></li>
+<li><p>Not selecting all files in an album may yield incorrect results when doing a lookup.</p></li>
+<li><p>(Ctrl-N is your friend…it selects all audio tracks located in the folder in which the currently highlighted file resides).</p></li>
+<li><p>You can map the field names for retrieved Tag Sources metadata to field names of your choosing (via Edit-&gt;Preferences-&gt;Mappings, see the tooltip for info.)</p></li>
+<li><p>While in Preview Mode, you can edit fields as normal (via the main view window, Tag Panel or Extended Tags view) before committing any changes. This makes it simple to tweak retrieved metadata to your specific needs before writing changes to your tracks.</p></li>
+<li><p>You’re also able to clear the previews of individual files or cells while in <strong>Preview Mode</strong>.</p></li>
+<li><p>puddletag will not write <em>any</em> metadata retrieved from tag source until you tell it to.</p></li>
 </ul>
 </div>
 <div class="section" id="textual-searches">
 <h2>Textual searches<a class="headerlink" href="#textual-searches" title="Permalink to this headline">¶</a></h2>
 <p>For all Tag Sources, but FreeDB you can also do textual searching. If the <strong>Search text box</strong> contains <em>any</em> text whatsoever, puddletag will do a textual search when you click on <strong>Search</strong>. After which you can perform the same procedure as from <strong>9</strong> above.</p>
 <ul class="simple">
-<li>Searching for something like &#8216;Nomvula&#8217; will assume you mean the album <strong>Nomvula</strong>.</li>
-<li>Searching for a specific artist/album combination can accomplished by separating the artist and album using a semi-colon as in &#8220;Jethro Tull; Aqualung&#8221;. To specify an album name only, start with the semi-colon as in &#8221;;Aqualung&#8221;. In the same way ending with a semi-colon eg. &#8220;Jethro Tull;&#8221; will only search for the specific artist.</li>
-<li>Each Tag Source can have unique means of doing searches (e.g. the Musicbrainz Tag Source supports searching via Musicbrainz Album Id). See the Search box&#8217;s tooltip for details or go <a class="reference internal" href="tagsources.html#amazon"><span class="std std-ref">here</span></a>.</li>
+<li><p>Searching for something like ‘Nomvula’ will assume you mean the album <strong>Nomvula</strong>.</p></li>
+<li><p>Searching for a specific artist/album combination can accomplished by separating the artist and album using a semi-colon as in “Jethro Tull; Aqualung”. To specify an album name only, start with the semi-colon as in “;Aqualung”. In the same way ending with a semi-colon eg. “Jethro Tull;” will only search for the specific artist.</p></li>
+<li><p>Each Tag Source can have unique means of doing searches (e.g. the Musicbrainz Tag Source supports searching via Musicbrainz Album Id). See the Search box’s tooltip for details or go <a class="reference internal" href="tagsources.html#amazon"><span class="std std-ref">here</span></a>.</p></li>
 </ul>
 </div>
 </div>
@@ -193,7 +177,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

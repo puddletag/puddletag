@@ -1,46 +1,30 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tutorial 2 &#8212; puddletag</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.6/flatly/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.10.3',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="top" title="puddletag" href="../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -92,29 +76,29 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="tutorial-2">
 <h1>Tutorial 2<a class="headerlink" href="#tutorial-2" title="Permalink to this headline">¶</a></h1>
 <p>Consider the puddletag toolbar without the pattern combo:</p>
 <img alt="puddletag toolbar" class="align-center" src="../_images/toolbarbuttonscomplete.png" />
-<p>Let&#8217;s pick buttons at random and start with the right the <strong>Reload</strong> (<img alt="Reload" class="align-middle" src="../_images/reload.png" />) button (found in <strong>File</strong> menu). All it does is reload the currently opened directory. If you&#8217;ve added files ad hoc to puddletag, it re-reads those files again (useful if you&#8217;ve moved or deleted files outside of puddletag).</p>
-<p>Next up is the <strong>Functions</strong> button (<img alt="Functions" class="align-middle" src="../_images/functions.png" />) from the <strong>Actions</strong> menu. Select some files and click on it. You&#8217;ll get this window:</p>
+<p>Let’s pick buttons at random and start with the right the <strong>Reload</strong> (<img alt="Reload" class="align-middle" src="../_images/reload.png" />) button (found in <strong>File</strong> menu). All it does is reload the currently opened directory. If you’ve added files ad hoc to puddletag, it re-reads those files again (useful if you’ve moved or deleted files outside of puddletag).</p>
+<p>Next up is the <strong>Functions</strong> button (<img alt="Functions" class="align-middle" src="../_images/functions.png" />) from the <strong>Actions</strong> menu. Select some files and click on it. You’ll get this window:</p>
 <img alt="Format functions." class="align-center" src="../_images/formataction.png" />
 <p>What you see right there is the <a class="reference internal" href="function.html#case-conversion"><span class="std std-ref">Case Conversion</span></a> puddletag Function. More are available via the combo box, but this one in particular is where our attention will be focused for the coming paragraphs.</p>
-<p>The Case Conversion function can do three types of erm...case conversion: <strong>UPPER, lower and Mixed Case</strong>. <strong>Mixed Case</strong> being special in that capitalises the first letter of each word and lowers the rest. Words boundaries are defined by the characters listed, so don&#8217;t be hollering at me when every letter after r is capitalized after some change you made.</p>
+<p>The Case Conversion function can do three types of erm…case conversion: <strong>UPPER, lower and Mixed Case</strong>. <strong>Mixed Case</strong> being special in that capitalises the first letter of each word and lowers the rest. Words boundaries are defined by the characters listed, so don’t be hollering at me when every letter after r is capitalized after some change you made.</p>
 <p>Note that <strong>__selected</strong> is listed in fields. This means that the function will be applied to all the selected cells. You can specify your own list by entering a bunch of comma-separated fields eg. <strong>artist, title, album</strong> or all fields by using <strong>__all</strong>. For more info check out the <a class="reference internal" href="tut3.html#functions-fields-know"><span class="std std-ref">Things You Should Know</span></a> page.</p>
-<p>Clicking &#8220;OK&#8221; will apply the Function each selected file using appropriate fields (ie. those selected).</p>
+<p>Clicking “OK” will apply the Function each selected file using appropriate fields (ie. those selected).</p>
 <p id="actions-tut">Three spaces to the left of the Pattern Combo is the <strong>Actions</strong> button (<img alt="Actions" class="align-middle" src="../_images/actionsbutton.png" />) also from the <strong>Actions</strong> menu. It opens up the Actions window:</p>
 <img alt="Actions window." class="align-center" src="../_images/actions.png" />
-<p><strong>Actions</strong> are just a bunch of functions run one after the other. In normal parlance they&#8217;d be called macros, but I like Mp3tag&#8217;s nomenclature.</p>
-<p>What they do is run previously defined functions on the selected files. Lemme show you how they work...</p>
+<p><strong>Actions</strong> are just a bunch of functions run one after the other. In normal parlance they’d be called macros, but I like Mp3tag’s nomenclature.</p>
+<p>What they do is run previously defined functions on the selected files. Lemme show you how they work…</p>
 <p>Select Case Conversion and click on Edit. You should get:</p>
 <img alt="Edit Case Conversion action" class="align-center" src="../_images/caseaction.png" />
-<p>What you see there are normal, old puddletag functions, but with a slight difference. The functions are applied only to the fields you specify. For example, the first is the <strong>Case Conversion</strong> function that changes the <strong>album, title and artist</strong> fields to &#8220;Mixed Case&#8221;. Here&#8217;s what it does (click the edit button - the second button from top):</p>
+<p>What you see there are normal, old puddletag functions, but with a slight difference. The functions are applied only to the fields you specify. For example, the first is the <strong>Case Conversion</strong> function that changes the <strong>album, title and artist</strong> fields to “Mixed Case”. Here’s what it does (click the edit button - the second button from top):</p>
 <img alt="puddletag Functions." class="align-center" src="../_images/caseactionedit.png" />
-<p>I told you it was a normal puddletag function, with the specified fields being the only difference. Fields are separated with a comma &#8216;,&#8217; and any spaces before and after the field name is removed.</p>
-<p>The <strong>Quick Actions</strong> (<img alt="Quick Actions" class="align-middle" src="../_images/quickactions.png" />) button is something I always wanted Mp3tag to have, but it doesn&#8217;t and puddletag does...therefore puddletag is better!...well, maybe not... Anyway, a <strong>Quick Action</strong> runs an action as normal but ignores the fields defined in the functions and uses the selected cells.</p>
+<p>I told you it was a normal puddletag function, with the specified fields being the only difference. Fields are separated with a comma ‘,’ and any spaces before and after the field name is removed.</p>
+<p>The <strong>Quick Actions</strong> (<img alt="Quick Actions" class="align-middle" src="../_images/quickactions.png" />) button is something I always wanted Mp3tag to have, but it doesn’t and puddletag does…therefore puddletag is better!…well, maybe not… Anyway, a <strong>Quick Action</strong> runs an action as normal but ignores the fields defined in the functions and uses the selected cells.</p>
 <p>So if you have an action that writes to the <strong>artist</strong> field, but now want to use that action to write to the <strong>title</strong> field. Just select the title field and do a Quick Action.</p>
 <p>The <strong>Autonumbering Wizard</strong> (<img alt="Autonumbering Wizard" class="align-middle" src="../_images/track.png" />) from the <strong>Tools</strong> menu, lets you number selected tracks sequentially. First, though, it shows you the dialog below so you specify exactly how you want the tracks numbered.</p>
 <img alt="Track numbering wizard." class="align-center" src="../_images/numbering.png" />
@@ -140,7 +124,7 @@
     </p>
     <p>
       This page and associated images are licensed under <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache Version 2.0</a>
-	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.8.<br/>
+	Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>
