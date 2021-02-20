@@ -4,7 +4,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
     QPushButton, QVBoxLayout
 
-from .. import add_config_widget, add_shortcuts, status
+from ...puddlesettings import add_config_widget
+from ...puddletag import add_shortcuts, status
 from ...constants import SAVEDIR
 from ...puddleobjects import (natsort_case_key, ListButtons,
                               ListBox, PuddleConfig)
