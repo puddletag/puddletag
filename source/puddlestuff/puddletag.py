@@ -251,6 +251,12 @@ class PreviewLabel(QLabel):
         self._enabled = not self._enabled
         self.valueChanged.emit(self._enabled)
 
+def _openFilesFilterFilename(filename):
+    filename = os.path.abspath(filename)
+    if isinstance(filename, str):
+        filename = encode_fn(filename)
+    return filename
+
 
 class MainWin(QMainWindow):
     loadFiles = pyqtSignal(object, object, object, object, object, name='loadFiles')
@@ -561,6 +567,10 @@ class MainWin(QMainWindow):
                 filename = encode_fn(filename)
 
         self.loadFiles.emit(None, [filename], append, None, None)
+
+    def openFiles(self, filenames, append=False):
+        filenames = map(_openFilesFilterFilename, filenames)
+        self.loadFiles.emit(None, filenames, append, None, None)
 
     def openPrefs(self):
         win = SettingsDialog(list(PuddleDock._controls.values()), self, status)

@@ -3,7 +3,7 @@
 puddletag \- puddletag
 .SH SYNOPSIS
 .B puddletag
-[\fIoptions\fR] [\fIdirectory path\fR]
+[\fIoptions\fR] [\fIfile/directory paths...\fR]
 .SH DESCRIPTION
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
 
@@ -14,8 +14,8 @@ Then there're Functions, which can do things like replace text, trim it, do case
 Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
 .SH OPTIONS
 .TP
-\fBdirectory path\fR
-Path to any directory which'll be loaded on startup.
+\fBfile/directory paths...\fR
+Paths to any files or directories which'll be loaded on startup.
 .TP
 \fB\-h\fR, \fB\-\-help\fR
 Show help message and exit.
@@ -28,6 +28,13 @@ Default font size to use (in points). All UI elements except the file-view will 
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Show (useless) debug messages. Do not use.
+.SH "INTEGRATION WITH CMUS"
+.TP
+To launch puddletag from cmus, loading all the marked files, set up a keybinding like this:
+
+.B bind common ^T run puddletag {}
+.TP
+in a configuration file such as \fI~/.config/cmus/rc\fR
 .SH "SEE ALSO"
 The puddletag website (
 .B http://puddletag.sourceforge.net
