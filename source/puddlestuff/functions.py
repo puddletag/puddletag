@@ -81,26 +81,18 @@ def autonumbering(r_tags, minimum=1, restart=False, padding=1, state=None):
 oi,spinbox,1
 aoeu,check, False
 au,spinbox,1'''
-    if 'autonumbering' not in state:
-        dircount = defaultdict(lambda: 0)
-        count = {}
+    if restart:
+        if 'autonumbering' not in state:
+            state['autonumbering'] = defaultdict(lambda: 0)
 
-        files = state.get('__files')
-        if files is None:
-            count = {1: '1'}
-        else:
-            for i, tag in enumerate(state['__files'], 1):
-                if restart:
-                    dircount[tag.dirpath] += 1
-                    count[i] = str(dircount[tag.dirpath])
-                else:
-                    count[i] = str(i)
+        dircount = state['autonumbering']
 
-        state['autonumbering'] = count
+        counter = dircount.get(r_tags.dirpath, 0) + 1
+        dircount[r_tags.dirpath] = counter
+    else:
+        counter = int(state.get('__counter', 1))
 
-    index = int(state.get('__counter', 1))
-
-    tracknum = state['autonumbering'][index]
+    tracknum = str(minimum + counter - 1)
 
     if padding > 1:
         return _pad(tracknum, padding)
