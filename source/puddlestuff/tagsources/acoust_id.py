@@ -104,10 +104,7 @@ def convert_for_submit(tags):
 
 
 def fingerprint_file(fn):
-    try:
-        return acoustid._fingerprint_file_fpcalc(fn, 120)
-    except TypeError:
-        return acoustid._fingerprint_file_fpcalc(fn)
+    return acoustid._fingerprint_file_fpcalc(fn, 120)
 
 
 def id_in_tag(tag):

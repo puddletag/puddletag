@@ -296,7 +296,7 @@ def _fingerprint_file_fpcalc(path, maxlength):
     duration = fp = None
     for line in output.splitlines():
         try:
-            parts = line.split('=', 1)
+            parts = str(line).split('=', 1)
         except ValueError:
             raise FingerprintGenerationError("malformed fpcalc output")
         if parts[0] == 'DURATION':
