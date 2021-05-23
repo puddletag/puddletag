@@ -28,10 +28,13 @@ _TAGS_MIME_TYPE = 'application/x.puddletag.tags'
 def applyaction(files=None, funcs=None):
     if files is None:
         files = status['selectedfiles']
-    if isinstance(funcs[0], findfunc.Macro):
-        r = findfunc.apply_macros
-    else:
-        r = findfunc.apply_actions
+    try:
+        if isinstance(funcs[0], findfunc.Macro):
+            r = findfunc.apply_macros
+        else:
+            r = findfunc.apply_actions
+    except IndexError:
+        return
     state = {'__total_files': str(len(files))}
     state['__files'] = files
 
