@@ -61,7 +61,9 @@ makepkg -si
 <details>
 <summary><b>Fedora</b></summary>
 
-_under development_
+Available since Fedora 32.
+
+`dns install puddletag`
 </details>
 
 <details>
