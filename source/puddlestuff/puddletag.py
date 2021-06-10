@@ -555,8 +555,8 @@ class MainWin(QMainWindow):
             filenames = map(os.path.abspath, filename)
             filenames = list(map(encode_fn, filenames))
 
-            files = [f for f in filenames if os.path.isfile(f)] 
-            dirs  = [f for f in filenames if os.path.isdir(f)] 
+            files = set(f for f in filenames if os.path.isfile(f))
+            dirs  = set(f for f in filenames if os.path.isdir(f))
 
         self.loadFiles.emit(files, dirs, append, None, None)
 
