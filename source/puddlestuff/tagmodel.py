@@ -1830,13 +1830,13 @@ class TagTable(QTableView):
 
     def loadFiles(self, files=None, dirs=None, append=False, subfolders=None,
                   filepath=None, post_process=None):
-        assert files or dirs, 'Either files or dirs (or both) must be specified.'
 
         if subfolders is None:
             subfolders = self.subFolders
 
         if not files:
             files = []
+
         if not dirs:
             dirs = []
         elif isinstance(dirs, str):
