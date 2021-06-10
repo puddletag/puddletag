@@ -524,7 +524,7 @@ class MainWin(QMainWindow):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         selectedFile = QFileDialog.getOpenFileName(self,
                                                    translate("Playlist", translate("Playlist", 'Select m3u file...')), )
-        filename = selectedFile[0]
+        filename = selectedFile
         if not filename:
             return
         try:
@@ -548,19 +548,17 @@ class MainWin(QMainWindow):
         Otherwise, the folder is just loaded."""
 
         if filename is None:
-            filename = self._getDir()
-            if not filename:
+            filenames = self._getDir()
+            if not filenames:
                 return
         else:
-            if not isinstance(filename, str):
-                filename = filename[0]
+            filenames = map(os.path.abspath, filename)
+            filenames = list(map(encode_fn, filenames))
 
-            filename = os.path.abspath(filename)
+            files = [f for f in filenames if os.path.isfile(f)] 
+            dirs  = [f for f in filenames if os.path.isdir(f)] 
 
-            if isinstance(filename, str):
-                filename = encode_fn(filename)
-
-        self.loadFiles.emit(None, [filename], append, None, None)
+        self.loadFiles.emit(files, dirs, append, None, None)
 
     def openPrefs(self):
         win = SettingsDialog(list(PuddleDock._controls.values()), self, status)
