@@ -63,7 +63,7 @@ makepkg -si
 
 Available since Fedora 32.
 
-`dns install puddletag`
+`dnf install puddletag`
 </details>
 
 <details>
