@@ -48,7 +48,7 @@ FIELDLIST_TIP = translate("WebDB",
                           '__image</b> will write all fields but the '
                           'composer and __image fields.')
 
-DEFAULT_REGEXP = {'album': ['(.*?)([\(\[\{].*[\)\]\}])', '$1']}
+DEFAULT_REGEXP = {'album': [r'(.*?)([\(\[\{].*[\)\]\}])', '$1']}
 
 
 def apply_regexps(audio, regexps=None):

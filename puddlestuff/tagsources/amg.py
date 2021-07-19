@@ -61,7 +61,7 @@ spanmap = CaselessDict({
     'primary': 'composer',
 })
 
-sqlre = re.compile('(r\d+)$')
+sqlre = re.compile(r'(r\d+)$')
 
 first_white = lambda match: match.groups()[0][0]
 
@@ -81,7 +81,7 @@ white_replace = lambda match: match.group()[0]
 
 def convert(value):
     text = value.strip()
-    text = re.sub('\s{2,}', white_replace, text)
+    text = re.sub(r'\s{2,}', white_replace, text)
     if isinstance(text, str):
         return str(text)
     return text
@@ -110,7 +110,7 @@ def convert_year(info):
 
 def create_search(terms):
     terms = re.sub('[%]', '', terms.strip())
-    return search_adress % urllib.parse.quote(re.sub('(\s+)', ' ',
+    return search_adress % urllib.parse.quote(re.sub(r'(\s+)', ' ',
                                                      terms))
 
 
@@ -338,7 +338,7 @@ def parse_search_element(td, id_field=ALBUM_ID):
     info['#extrainfo'] = [
         info['album'] + ' at AllMusic.com', info['#albumurl']]
 
-    info[id_field] = re.search('-(mw\d+)$', info['#albumurl']).groups()[0]
+    info[id_field] = re.search(r'-(mw\d+)$', info['#albumurl']).groups()[0]
 
     return dict((k, v) for k, v in info.items() if not isempty(v))
 
@@ -528,7 +528,7 @@ def search(album):
 
 def text(z):
     text = z.all_recursive_text().strip()
-    return re.sub('(\s+)', first_white, text)
+    return re.sub(r'(\s+)', first_white, text)
 
 
 def to_file(data, name):

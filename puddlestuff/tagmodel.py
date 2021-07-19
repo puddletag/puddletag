@@ -298,7 +298,7 @@ def _Tag(model):
                in audioinfo.options]
     filetypes = dict([(z[0], z) for z in options])
 
-    extension_regex = re.compile('\.(%s)$' % '|'.join(extensions))
+    extension_regex = re.compile(r'\.(%s)$' % '|'.join(extensions))
 
     def ReplacementTag(filename):
 

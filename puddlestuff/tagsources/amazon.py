@@ -251,7 +251,7 @@ def search(artist=None, album=None):
         keywords = artist
     else:
         keywords = album
-    keywords = re.sub('(\s+)', '+', keywords)
+    keywords = re.sub(r'(\s+)', '+', keywords)
     return keyword_search(keywords)
 
 # A couple of things you should be aware of.
