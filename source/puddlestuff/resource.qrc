@@ -36,7 +36,6 @@
     </qresource>
 
     <qresource prefix="translations">
-        <file alias="puddletag_es_ES.qm">../translations/puddletag_es_ES.qm</file>
         <file alias="puddletag_fr.qm">../translations/puddletag_fr.qm</file>
         <file alias="puddletag_de.qm">../translations/puddletag_de.qm</file>
         <file alias="puddletag_ru_RU.qm">../translations/puddletag_ru_RU.qm</file>
