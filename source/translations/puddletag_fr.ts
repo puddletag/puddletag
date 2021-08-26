@@ -4,7 +4,7 @@
 <context>
     <name>About</name>
     <message>
-        <location filename="puddlestuff/about.py" line="12"/>
+        <location filename="../puddlestuff/about.py" line="12"/>
         <source>puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.
 
 &lt;br /&gt;&lt;br /&gt;Features include: Batch editing of tags, renaming files using tags, retrieving tags from filenames, using Actions to automate repetitive tasks, importing your music library and loads of other awesome stuff. &lt;br /&gt;&lt;br /&gt;
@@ -26,7 +26,7 @@ Visitez le site web puddletag (&lt;a href=&quot;http://puddletag.sourceforge.net
 Distribué sous licence GPLv2 (&lt;a href=&quot;www.gnu.org/licenses/gpl-2.0.html&quot;&gt;www.gnu.org/licenses/gpl-2.0.html&lt;/a&gt;).</translation>
     </message>
     <message>
-        <location filename="puddlestuff/about.py" line="23"/>
+        <location filename="../puddlestuff/about.py" line="23"/>
         <source>&lt;b&gt;Evan Devetzis&lt;/b&gt; for his many, many awesome ideas and putting up with more bugs than humanly possible.&lt;br /&gt;&lt;br /&gt;
 
 To the writers of the libraries puddletag depends on (without which I&apos;ll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
@@ -52,7 +52,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.</translation>
         <translation>A propos de puddletag</translation>
     </message>
     <message>
-        <location filename="puddlestuff/about.py" line="62"/>
+        <location filename="../puddlestuff/about.py" line="62"/>
         <source>&lt;h2&gt;puddletag %1 (Revision %2)&lt;/h2&gt; %3</source>
         <translation type="obsolete">&lt;h2&gt;puddletag %1 (Revision %2)&lt;/h2&gt; %3</translation>
     </message>
