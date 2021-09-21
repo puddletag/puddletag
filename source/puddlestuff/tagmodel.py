@@ -1272,7 +1272,7 @@ class TagDelegate(QStyledItemDelegate):
     def eventFilter(self, editor, event):
         if event.type() == QEvent.KeyPress:
             if event.key() in (Qt.Key_Return, Qt.Key_Enter):
-                if event.modifiers() == Qt.ShiftModifier:
+                if event.modifiers() & Qt.ShiftModifier:
                     editor.returnPressed = SHIFT_RETURN
                 else:
                     editor.returnPressed = RETURN_ONLY
