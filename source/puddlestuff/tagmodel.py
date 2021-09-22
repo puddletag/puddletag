@@ -1099,7 +1099,10 @@ class TagModel(QAbstractTableModel):
             return
         else:
             artist = audio.get('artist', '')
-            undo_val = write(audio, tags, self.saveModification, justrename)
+            try:
+                undo_val = write(audio, tags, self.saveModification, justrename)
+            except PermissionError as e:
+                raise e
             if undo and undo_val:
                 self._addUndo(audio, undo_val)
 
