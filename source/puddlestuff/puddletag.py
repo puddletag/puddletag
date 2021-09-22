@@ -741,6 +741,14 @@ class MainWin(QMainWindow):
                     if update:
                         lib_updates.append(update)
                     yield None
+                except PermissionError as e:
+                    failed_rows.append(row)
+                    filename = model.taginfo[row][PATH]
+                    m = rename_error_msg(e, filename)
+                    if row == rows[-1]:
+                        yield m, 1
+                    else:
+                        yield m, len(rows)
                 except EnvironmentError as e:
                     failed_rows.append(row)
                     filename = model.taginfo[row][PATH]
@@ -766,7 +774,6 @@ class MainWin(QMainWindow):
 
                 model.updateTable(failed_rows)
             return fin()
-
         return func, finished, rows
 
     def writeTags(self, tagiter, rows=None, previews=None):
