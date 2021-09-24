@@ -7,6 +7,7 @@ from copy import copy, deepcopy
 from errno import EEXIST
 from operator import itemgetter
 from xml.sax.saxutils import escape as escape_html
+from mutagen import MutagenError
 
 from PyQt5.QtWidgets import QAction
 
@@ -38,6 +39,16 @@ def rename_error_msg(e, filename):
                                   'renaming the file <b>%1</b> to <i>%2</i>.</p>'
                                   '<p>Reason: <b>%3</b></p>')
         return m.arg(e.oldpath).arg(e.newpath).arg(e.strerror)
+    elif isinstance(e, PermissionError):
+        traceback.print_exc()
+        m = translate("Defaults",
+                      '<p>An error occured while writing to <b>%1</b>.</p>'
+                      '<p>Reason: <b>%2</b>.</p>'
+                      '<p>(<i>See %3 for debug info.</i>)</p>')
+        m = m.arg(filename)
+        m = m.arg(str(e) if e.strerror is None else e.strerror)
+        m = m.arg(LOG_FILENAME)
+        return m
     elif isinstance(e, EnvironmentError):
         traceback.print_exc()
         m = translate("Defaults",
@@ -323,6 +334,14 @@ def write(audio, tags, save_mtime=True, justrename=False):
         audio.update(undo)
         audio.preview = preview
         raise
+    
+    except MutagenError as e:
+        if isinstance(e.args[0], PermissionError):
+            audio.update(undo)
+            logging.exception(e)
+            raise e.args[0]
+        else:
+            raise
 
     try:
         if save_mtime:
