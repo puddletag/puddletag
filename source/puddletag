@@ -348,9 +348,11 @@ if __name__ == '__main__':
 
     # Check if dirnames passed on command line.
     if filenames:
-        dirname = filenames[0]
-        if dirname and os.path.exists(dirname):
-            win.openDir(dirname, False)
+        for filename in filenames:
+            if not os.path.exists(filename):
+                print('Directory or file %s does not exist.' % filename)
+                sys.exit(1)
+        win.openFiles(filenames, False)
     elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
         if win._lastdir and os.path.exists(win._lastdir[0]):
             win.openDir(win._lastdir[0], False)
