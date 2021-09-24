@@ -596,6 +596,10 @@ class CreateAction(QDialog):
         self.buttonlist.duplicate.connect(self.duplicate)
         self.listbox.currentRowChanged.connect(self.enableEditButtons)
         self.listbox.itemDoubleClicked.connect(self.edit)
+        
+        if len(self.functions) == 0:
+            self.buttonlist.duplicateButton.setEnabled(False)
+            self.buttonlist.editButton.setEnabled(False)
 
         if prevfunctions is not None:
             self.functions = copy(prevfunctions)
