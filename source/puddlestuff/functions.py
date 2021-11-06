@@ -925,7 +925,10 @@ def split_by_sep(m_text, sep):
     else:
         ret = []
         for t in m_text:
-            ret.extend(t.split(sep))
+            try:
+                ret.extend(t.split(sep))
+            except ValueError:
+                ret.append(t)
         return ret
 
 
