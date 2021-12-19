@@ -180,7 +180,7 @@ bool_exprs = [
 field_expr = Combine('%' + Word(alphanums + '_') + '%')
 tokens = QuotedString('"', unquoteResults=False) \
          | field_expr | Word(alphanums + '_')
-bool_expr = operatorPrecedence(tokens, bool_exprs)
+bool_expr = infixNotation(tokens, bool_exprs)
 bool_expr.enablePackrat()
 
 
