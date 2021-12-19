@@ -2094,6 +2094,17 @@ class TagTable(QTableView):
         self.selectionChanged()
 
     def reloadFiles(self, files=None):
+        previews = False
+        for z in self.model().taginfo:
+            if z.preview:
+                previews = True
+                break
+        if previews:
+            ret = QMessageBox.question(self, 'puddletag',
+                translate("Previews", 'There are unsaved changes pending. Do you want to discard and reload?'))
+            if ret != QMessageBox.Yes:
+                return
+
         self._restore = self.saveSelection()
         dirs = list(map(encode_fn, self.dirs))
         files = [z.filepath for z in self.model().taginfo if z.dirpath
