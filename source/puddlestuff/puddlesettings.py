@@ -223,7 +223,7 @@ class Playlist(QWidget):
         self.windows_separator.setCheckState(inttocheck(cparser.load('playlist', 'windows_separator', 0, True)))
 
         self.filename = QLineEdit()
-        self.filename.setText(cparser.load('playlist', 'filepattern', 'puddletag.m3u'))
+        self.filename.setText(cparser.load('playlist', 'filepattern', 'puddletag.m3u8'))
         label = QLabel(translate("Playlist Settings", '&Filename pattern.'))
         label.setBuddy(self.filename)
 

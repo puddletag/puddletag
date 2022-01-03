@@ -681,7 +681,7 @@ class MainWin(QMainWindow):
             dirname = self._lastdir[0]
         except IndexError:
             dirname = constants.HOMEDIR
-        filepattern = settings.get('playlist', 'filepattern', 'puddletag.m3u')
+        filepattern = settings.get('playlist', 'filepattern', 'puddletag.m3u8')
         default = encode_fn(findfunc.tagtofilename(filepattern, tags[0]))
         selectedFile = QFileDialog.getSaveFileName(self,
                                                    translate("Playlist", 'Save Playlist...'), os.path.join(dirname, default))

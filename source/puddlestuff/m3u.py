@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 import sys
 from os.path import abspath, dirname, normcase, normpath, splitdrive
 from os.path import join as path_join
@@ -77,8 +78,14 @@ def relpath(target, base_path=os.curdir):
 
 def readm3u(path):
     # From http://forums.fedoraforum.org/showthread.php?p=1224109
-    fileHandle = open(path, 'r')
-    reader = csv.reader(open(path, "r"))
+
+    # m3u commonly uses non-utf8 encoding, m3u8 is the utf8 equivalent
+    if (re.match(r".*\.m3u$", path)):
+        fileHandle = open(path, 'r', encoding='latin9')
+    else:
+        fileHandle = open(path, 'r', encoding='utf-8')
+
+    reader = csv.reader(fileHandle)
     olddir = os.path.abspath(os.curdir)
     os.chdir(os.path.dirname(path))
 
