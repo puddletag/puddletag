@@ -1283,6 +1283,10 @@ class ListButtons(QVBoxLayout):
         self.duplicateButton = QToolButton()
         self.duplicateButton.setIcon(get_icon('edit-copy', ':/duplicate.png'))
         self.duplicateButton.setToolTip(translate("List Buttons", 'Duplicate'))
+        self.copyButton = QToolButton()
+        self.copyButton.setToolTip(translate("List Buttons", 'Copy to clipboard'))
+        self.pasteButton = QToolButton()
+        self.pasteButton.setToolTip(translate("List Buttons", 'Paste from clipboard'))
 
         self.widgets = [self.addButton, self.editButton, self.duplicateButton,
                         self.removeButton, self.moveupButton, self.movedownButton]
@@ -1721,6 +1725,8 @@ class PicWidget(QWidget):
             self.savepic = QToolButton()
             self.savepic.setIcon(QIcon(':/save.png'))
             self.savepic.setIconSize(QSize(16, 16))
+            self.copypic = listbuttons.copyButton
+            self.pastepic = listbuttons.pasteButton
             listbuttons.insertWidget(3, self.savepic)
             listbuttons.moveupButton.hide()
             listbuttons.movedownButton.hide()
@@ -1735,6 +1741,12 @@ class PicWidget(QWidget):
             self.addpic = QAction(translate("Artwork", "&Add cover"), self)
             self.label.addAction(self.addpic)
 
+            self.copypic = QAction(translate("Artwork", "C&opy cover"), self)
+            self.label.addAction(self.copypic)
+
+            self.pastepic = QAction(translate("Artwork", "&Paste cover"), self)
+            self.label.addAction(self.pastepic)
+
             self.removepic = QAction(translate("Artwork", "&Remove cover"), self)
             self.label.addAction(self.removepic)
 
@@ -1747,6 +1759,8 @@ class PicWidget(QWidget):
         self.edit = partial(self.addImage, True)
         getattr(self.editpic, signal).connect(self.edit)
         getattr(self.savepic, signal).connect(self.saveToFile)
+        getattr(self.copypic, signal).connect(self.copyImage)
+        getattr(self.pastepic, signal).connect(self.pasteImage)
 
         self.win = PicWin(parent=self)
         self._currentImage = -1
@@ -1819,6 +1833,33 @@ class PicWidget(QWidget):
                     self.currentImage = len(self.images) - 1
             self.imageChanged.emit()
 
+    def pasteImage(self):
+        # TODO: Grey this option if no image in clipboard
+        image = QApplication.clipboard().image()
+        if image:
+            ba = QByteArray()
+            data = QBuffer(ba)
+            data.open(QIODevice.WriteOnly)
+            # TODO: Don't transform to JPG
+            image.save(data, "JPG")
+            data = bytes(data.data())
+            pic = {
+                "data": data,
+                "height": image.height(),
+                "width": image.width(),
+                "size": len(data),
+                "mime": "image/jpeg",
+                "description": "",
+                "imagetype": 3
+            }
+            self.addImages([pic])
+
+    def copyImage(self):
+        if self.images and self.currentImage:
+            image = QImage()
+            image.loadFromData(self.images[self.currentImage]["data"])
+            QApplication.clipboard().setImage(image)
+
     def addImages(self, images):
         if not self._itags or not images:
             return
@@ -1886,13 +1927,14 @@ class PicWidget(QWidget):
                     break
 
         [action.setEnabled(True) for action in
-         (self.editpic, self.savepic, self.removepic)]
+         (self.editpic, self.savepic, self.removepic, self.copypic)]
 
         if hasattr(self, '_itags'):
             self.setImageTags(self._itags)
         if num in self.readonly:
             self.editpic.setEnabled(False)
             self.removepic.setEnabled(False)
+            self.copypic.setEnabled(False)
             self._image_desc.setEnabled(False)
             self._image_type.setEnabled(False)
             self.savepic.setEnabled(False)
