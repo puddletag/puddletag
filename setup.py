@@ -12,6 +12,9 @@ else:
     except ImportError:
         from distutils.core import setup
 
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 import puddlestuff
 
 setup(
@@ -26,7 +29,6 @@ setup(
               'puddlestuff.libraries', 'puddlestuff.audioinfo',
               'puddlestuff.tagsources', 'puddlestuff.tagsources.mp3tag',
               'puddlestuff.masstag', 'puddlestuff.plugins'],
-
     keywords='tagging ogg mp3 apev2 mp4 id3',
     license='GNU General Public License v2',
     classifiers=['Development Status :: 2 - Unstable',
@@ -37,8 +39,8 @@ setup(
                  'License :: OSI Approved :: GNU General Public License v3',
                  'Topic :: Tagging',
                  ],
-
     scripts=['puddletag'],
+    install_requires=required,
     data_files=[('share/pixmaps/', ('puddletag.png',)),
                 ('share/applications/', ('puddletag.desktop',)),
                 ('share/man/man1/', ('puddletag.1',))]
