@@ -41,7 +41,7 @@ setup(
                  ],
     scripts=['puddletag'],
     install_requires=required,
-    data_files=[('share/pixmaps/', ('puddletag.png',)),
-                ('share/applications/', ('puddletag.desktop',)),
-                ('share/man/man1/', ('puddletag.1',))]
+    data_files=[('share/pixmaps/', ['puddletag.png', ]),
+                ('share/applications/', ['puddletag.desktop', ]),
+                ('share/man/man1/', ['puddletag.1', ])]
 )
