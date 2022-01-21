@@ -27,12 +27,14 @@ class WebServiceError(EnvironmentError):
 
 
 class RetrievalError(WebServiceError):
+
     def __init__(self, msg, code=0):
         WebServiceError.__init__(self, msg)
         self.code = code
 
 
 class SubmissionError(WebServiceError):
+
     def __init__(self, msg, code=0):
         WebServiceError.__init__(self, msg)
         self.code = code
@@ -56,19 +58,12 @@ useragent = "puddletag/" + version_string
 
 def get_encoding(page, decode=False, default=None):
     encoding = None
-    match = re.search('<\?xml(.+)\?>', page)
+    match = re.search(b'<\?xml(.+)\?>', page)
     if match:
         enc = re.search('''encoding(?:\s*)=(?:\s*)["'](.+?)['"]''',
                         match.group(), re.I)
         if enc:
             encoding = enc.groups()[0]
-
-    if not encoding:
-        parser = MetaProcessor()
-        try:
-            parser.feed(page)
-        except FoundEncoding as e:
-            encoding = e.encoding.strip()
 
     if not encoding and default:
         encoding = default
@@ -217,6 +212,7 @@ def write_log(text):
 
 
 class MetaProcessor(HTMLParser):
+
     def reset(self):
         self.pieces = []
         self.encoding = None
