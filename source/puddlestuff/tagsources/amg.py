@@ -358,9 +358,8 @@ def parse_searchpage(page, artist=None, album=None, id_field=ALBUM_ID):
 
     Return a tuple with the first element being == True if the list
     was truncated with only matching artist/albums.
-    
+
     """
-    page = get_encoding(page, True, 'utf8')[1]
     soup = parse_html.SoupWrapper(parse_html.parse(page))
     result_table = soup.find('ul', {'class': 'search-results'})
     try:
@@ -394,6 +393,7 @@ def parse_searchpage(page, artist=None, album=None, id_field=ALBUM_ID):
 
 
 def parse_track_table(table, discnum=None):
+
     def to_string(e):
         try:
             return convert(e.a.string)
