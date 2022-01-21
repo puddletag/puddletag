@@ -7,3 +7,4 @@ pyqt5==5.15
 configobj==5.0
 mutagen==1.45
 pyparsing==2.4.7
+lxml==4.7.1
