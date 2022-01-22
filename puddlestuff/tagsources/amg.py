@@ -177,9 +177,8 @@ def parse_albumpage(page, artist=None, album=None):
 
     album_soup = parse_html.SoupWrapper(parse_html.parse(page))
 
-    artist = album_soup.find('div', {'class': 'album-artist'})
-    album = album_soup.find('div', {'class': 'album-title'})
-
+    album = album_soup.find('h1', {'class': 'album-title'})
+    artist = album_soup.find('h2', {'class': 'album-artist'})
     release_title = album_soup.find('h3', 'release-title')
 
     if release_title:
@@ -494,9 +493,8 @@ def parse_tracks(content, album_info):
 def retrieve_album(url, coverurl=None, id_field=ALBUM_ID):
     write_log('Opening Album Page - %s' % url)
     album_page, code = urlopen(url, False, True)
-    if album_page.find("featured new releases") >= 0:
+    if album_page.find(b"featured new releases") >= 0:
         raise OldURLError("Old AMG URL used.")
-    album_page = get_encoding(album_page, True, 'utf8')[1]
 
     info, tracks = parse_albumpage(album_page)
     info['#albumurl'] = url
