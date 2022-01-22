@@ -14,7 +14,7 @@ charset-normalizer==2.0.10
     # via requests
 chromaprint==0.5
     # via -r requirements.in
-configobj==5.0
+configobj==5.0.6
     # via -r requirements.in
 idna==3.3
     # via requests
@@ -36,5 +36,7 @@ rapidfuzz==1.8.3
     # via levenshtein
 requests==2.27.1
     # via pyacoustid
+six==1.16.0
+    # via configobj
 urllib3==1.26.8
     # via requests
