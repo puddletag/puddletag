@@ -1,5 +1,5 @@
 # core functionalities
-pyqt5==5.15
+pyqt5==5.15.6
 configobj==5.0.6
 mutagen==1.45
 pyparsing==3.0.7
