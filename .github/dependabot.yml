@@ -1,0 +1,9 @@
+# Options doc at: https://docs.github.com/en/code-security/supply-chain-security/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  # Enable version updates for pip (Python)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
