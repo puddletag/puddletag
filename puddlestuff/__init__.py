@@ -2,8 +2,13 @@
 import os
 from os.path import dirname
 
-version_string = "2.0.1"
-version = (2, 0, 1)
+
+_buildid = None
+version = [2, 0, 1]
+if _buildid:
+    version.append(f"post{_buildid}")
+version_string = ".".join(map(str, version))
+
 changeset = None
 
 filedir = dirname(dirname(dirname(__file__)))
