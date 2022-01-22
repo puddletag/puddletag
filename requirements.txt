@@ -26,7 +26,7 @@ mutagen==1.45
     # via -r requirements.in
 pyacoustid==1.2.2
     # via -r requirements.in
-pyparsing==2.4.7
+pyparsing==3.0.7
     # via -r requirements.in
 pyqt5==5.15
     # via -r requirements.in
