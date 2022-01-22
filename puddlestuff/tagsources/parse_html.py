@@ -1,7 +1,6 @@
 # this module is a hack to overcome BeautifulSoup's tendency to fall on script tags contents
 # while we're at it, we also wrap url fetching.
 
-
 import re
 import urllib.error
 import urllib.parse
@@ -22,6 +21,7 @@ def classify(seq, key_func):
 
 
 class SoupWrapper(object):
+
     def __init__(self, element, source=None):
         self.element = element
         self.source = source
@@ -39,7 +39,9 @@ class SoupWrapper(object):
         regular_items = query_items.get(True, [])
         re_items = query_items.get(False, [])
         xpath_query = " and ".join(
-            "@%s='%s'" % (key, value) for key, value in regular_items
+            "contains(concat(' ',normalize-space(@class),' '),' %s ')" % value if key == "class"
+            else "@%s='%s'" % (key, value)
+            for key, value in regular_items
         )
         if xpath_query:
             xpath_query = "[%s]" % xpath_query
