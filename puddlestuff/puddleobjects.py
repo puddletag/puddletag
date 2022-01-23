@@ -1762,6 +1762,11 @@ class PicWidget(QWidget):
         getattr(self.copypic, signal).connect(self.copyImage)
         getattr(self.pastepic, signal).connect(self.pasteImage)
 
+        # Put a listener on clipboard changes for checking if there's an image
+        QApplication.clipboard().dataChanged.connect(self.clipboardChange)
+        # Call it manually for the first time status
+        self.clipboardChange()
+
         self.win = PicWin(parent=self)
         self._currentImage = -1
 
@@ -1834,9 +1839,8 @@ class PicWidget(QWidget):
             self.imageChanged.emit()
 
     def pasteImage(self):
-        # TODO: Grey this option if no image in clipboard
         image = QApplication.clipboard().image()
-        if image:
+        if not image.isNull():
             ba = QByteArray()
             data = QBuffer(ba)
             data.open(QIODevice.WriteOnly)
@@ -2122,6 +2126,11 @@ class PicWidget(QWidget):
         for z in others:
             tags[z](False)
         self._itags = itags
+
+    def clipboardChange(self):
+        """Test if clipboard has a valid image, and enable menu according it."""
+        image = QApplication.clipboard().image()
+        self.pastepic.setEnabled(not image.isNull())
 
 
 class PicWin(QDialog):
