@@ -1,7 +1,7 @@
 import codecs
 import pdb
 
-from ..mp3tag import open_script, Cursor
+from . import open_script, Cursor
 
 dbg_skip = ['ifnot', 'do', 'while']
 src_skip = ['endif', 'do', 'while', 'ifnot', 'else']

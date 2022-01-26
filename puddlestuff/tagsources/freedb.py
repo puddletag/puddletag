@@ -1,12 +1,13 @@
 from . import CDDB
 
 CDDB.proto = 6  # utf8 instead of latin1
-from ..util import to_string
 from collections import defaultdict
-from ..tagsources import RetrievalError
-from .. import version_string
-from .. import audioinfo
-from ..util import translate
+
+from puddlestuff import version_string
+from puddlestuff import audioinfo
+from puddlestuff.util import to_string
+from puddlestuff.tagsources import RetrievalError
+from puddlestuff.util import translate
 import time
 
 CLIENTINFO = {'client_name': "puddletag",
@@ -17,6 +18,7 @@ def sumdigits(n): return sum(map(int, str(n)))
 
 
 def sort_func(key, default):
+
     def func(audio):
         track = to_string(audio.get(key, [default]))
         try:

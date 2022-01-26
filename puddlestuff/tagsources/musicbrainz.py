@@ -11,11 +11,11 @@ from xml.sax.saxutils import escape, quoteattr
 from html.parser import HTMLParser
 from xml.dom import minidom, Node
 
-from ..audioinfo import IMAGETYPES, get_mime, strlength
-from ..constants import CHECKBOX, COMBO
-from ..tagsources import (find_id, write_log, RetrievalError,
+from puddlestuff.audioinfo import IMAGETYPES, get_mime, strlength
+from puddlestuff.constants import CHECKBOX, COMBO
+from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
                           urlopen, parse_searchstring)
-from ..util import isempty, translate
+from puddlestuff.util import isempty, translate
 
 SERVER = 'http://musicbrainz.org/ws/2/'
 
@@ -471,6 +471,7 @@ def to_list(v, arg=None):
 
 
 class XMLEscaper(HTMLParser):
+
     def reset(self):
         HTMLParser.reset(self)
         self._xml = []

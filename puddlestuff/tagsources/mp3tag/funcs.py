@@ -4,8 +4,8 @@ import re
 
 from html.parser import HTMLParser
 
-from ...functions import replace_regex
-from ...audioinfo import CaselessDict
+from puddlestuff.functions import replace_regex
+from puddlestuff.audioinfo import CaselessDict
 
 conditionals = set(['if', 'ifnot'])
 
@@ -401,6 +401,7 @@ def unspace(cursor):
 
 
 class TagProcessor(HTMLParser):
+
     def reset(self):
         self.pieces = []
         HTMLParser.reset(self)

@@ -9,11 +9,11 @@ import urllib.request
 from copy import deepcopy
 from io import StringIO
 
-from ..audioinfo import DATA, isempty
-from ..constants import CHECKBOX, COMBO, TEXT
-from ..tagsources import (
+from puddlestuff.audioinfo import DATA, isempty
+from puddlestuff.constants import CHECKBOX, COMBO, TEXT
+from puddlestuff.tagsources import (
     find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
-from ..util import translate
+from puddlestuff.util import translate
 
 R_ID_DEFAULT = 'discogs_id'
 R_ID = R_ID_DEFAULT
