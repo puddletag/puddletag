@@ -61,13 +61,8 @@ INVALID_KEYS = [
     'extraartists', 'images', 'videos', 'master_id', 'labels', 'companies',
     'series', 'released_formatted', 'identifiers', 'sub_tracks']
 
-
-class LastTime(object):
-    pass
-
-
-__lasttime = LastTime()
-__lasttime.time = time.time()
+__minimum_request_separation = 1  # second - no more than one request sent to discogs in this time frame
+__reference_time = 0  # A reference time. The initial value ensure first request goes ahead
 
 
 def convert_dict(d, keys=None):
@@ -306,9 +301,9 @@ def urlopen(url):
     request.add_header('Accept-Encoding', 'gzip')
     request.add_header('User-Agent', get_useragent())
 
-    if time.time() - __lasttime.time < 1:
-        time.sleep(1)
-    __lasttime.time = time.time()
+    while (time.time() - __reference_time) < __minimum_request_separation:
+        time.sleep(__minimum_request_separation)
+    __reference_time = time.time()
 
     try:
         data = urllib.request.urlopen(request).read()
