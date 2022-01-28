@@ -41,6 +41,9 @@ class TagSource():
         Called to retrieve release information when expanding a release in the Tag Sources Tree view
 
         :param release: A dict containing information about an album release
+        :return: a 2-tuple containing
+                    a dict of album release tags/fields and their values, and
+                    a list of dicts containing album track tags/fields and their values
         '''
         raise UnimplementedMethod("TagsSource.retrieve")
 
@@ -49,6 +52,7 @@ class TagSource():
         Called when Search button is clicked, if the Search box contains some text
 
         :param text: The text in the Search box
+        :return: A list of 2-tuples as described in retrieve() above
         '''
         raise UnimplementedMethod("TagsSource.keyword_search")
 
@@ -65,8 +69,9 @@ class TagSource():
         :param files: Provided only if self.group_by is defined. In which case it is the contents of the named group.
                       This will be a dict level for each remaining group_by tag, with a list of files at the bottom
                       (a ModelTag instances - see puddlestuff.tagmodel.model_tag.ModelTag).
+        :return: A list of 2-tuples as described in retrieve() above
         '''
-        raise UnimplementedMethod("TagsSource.keyword_search")
+        raise UnimplementedMethod("TagsSource.search")
 
     def submit(self, files):
         '''
@@ -81,5 +86,6 @@ class TagSource():
 
         :param files: a list of selected audio files as ModelTag instances.
                         (see puddlestuff.tagmodel.model_tag.ModelTag)
+        :return: Nothing. No result is checked.
         '''
         raise UnimplementedMethod("TagsSource.submit")
