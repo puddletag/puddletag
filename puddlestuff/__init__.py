@@ -4,7 +4,7 @@ from os.path import dirname
 
 
 _buildid = None
-version = [2, 1, 0]
+version = [2, 1, 1]
 if _buildid:
     version.append(f"post{_buildid}")
 version_string = ".".join(map(str, version))
