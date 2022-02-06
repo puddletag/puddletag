@@ -333,7 +333,7 @@ if __name__ == '__main__':
     from puddlestuff.puddletag import MainWin
     from puddlestuff.puddlesettings import load_gen_settings
 
-    app.setWindowIcon(QIcon(":/appicon.png"))
+    app.setWindowIcon(QIcon(":/appicon.svg"))
     pixmap = QPixmap(':/puddlelogo.png')
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
