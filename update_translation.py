@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import tempfile
+from os import walk, listdir, path
 from subprocess import call
 
 import puddlestuff.resource
@@ -105,6 +106,22 @@ def write_translations():
     f.truncate()
     f.close()
 
+def update_pro_file():
+    source_files = []
+    for dirpath, dirnames, filenames in walk('.'):
+        source_files.extend(
+            [path.join(dirpath[2:], filename) for filename in filenames if filename.endswith('.py')]
+        )
+    source_files.sort()
+
+    translation_path = path.join('puddlestuff', 'translations')
+    translation_files = [path.join(translation_path, filename) for filename in listdir(translation_path) if filename.endswith('.ts')]
+    translation_files.sort()
+
+    with open('puddletag.pro', 'w') as f:
+        f.write('SOURCES = %s\n' % ' '.join(sorted(source_files)))
+        f.write('TRANSLATIONS = %s\n' % ' '.join(sorted(translation_files)))
+
 
 verbose = True
 
@@ -122,20 +139,13 @@ if lang in ('--help', '-h'):
     print(usage)
     sys.exit(0)
 
-f = open('puddletag.pro', 'r+')
-for line in f.readlines():
-    if line.startswith('TRANSLATIONS'):
-        f.seek(-len(line), 1)
-        tr = ' translations/puddletag_%s.ts\n' % lang
-        if tr.strip() not in line:
-            line = line.strip() + tr
-        f.write(line)
-        break
-f.close()
-
 if verbose:
     print('Updating `translations.py` from menu-/shortcut-/function-/dialog-sourcecode...')
 write_translations()
+
+if verbose:
+    print('Updating `puddletag.pro` with location of source- and translation-files...')
+update_pro_file()
 
 try:
     if verbose:

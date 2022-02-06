@@ -12,3 +12,4 @@ rss_temp*.txt
 rss_temp*.html
 rss_temp*.doctree
 /MANIFEST
+/puddletag.pro
