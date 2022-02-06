@@ -11,8 +11,8 @@
         <file alias="tagtofile.png">data/tagtofile.png</file>
         <file alias="track.png">data/track.png</file>
         <file alias="open.png">data/open.png</file>
-        <file alias="standard.action">data/caseconversion.action</file>
-        <file alias="caseconversion.action">data/standard.action</file>
+        <file alias="caseconversion.action">data/caseconversion.action</file>
+        <file alias="standard.action">data/standard.action</file>
         <file alias="puddlelogo.png">data/puddlelogo.png</file>
         <file alias="filenew.png">data/filenew.png</file>
         <file alias="edit.png">data/edit.png</file>
