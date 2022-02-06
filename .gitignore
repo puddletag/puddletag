@@ -1,9 +1,9 @@
 *#*#
 /puddletag-docs/_build
 *.pyc
-source/releases
-source/deb_build
-source/dist/
+/releases
+/deb_build
+/dist/
 *#*
 puddletag-docs/translations
 .idea/
@@ -11,3 +11,4 @@ venv
 rss_temp*.txt
 rss_temp*.html
 rss_temp*.doctree
+/MANIFEST
