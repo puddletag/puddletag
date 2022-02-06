@@ -147,14 +147,14 @@ if verbose:
     print('Updating `puddletag.pro` with location of source- and translation-files...')
 update_pro_file()
 
+if verbose:
+    print('Updating translation keys in `*.ts` files from application sourcecode...')
 try:
-    if verbose:
-        call(['pylupdate4', '-verbose', 'puddletag.pro'])
-    else:
-        call(['pylupdate4', 'puddletag.pro'])
+    call(['pylupdate5', *(['-verbose'] if verbose else []), '-noobsolete', 'puddletag.pro'])
 except OSError:
-    print('Error: pylupdate4 is not installed.')
+    print('Error: pylupdate5 is not installed.')
     sys.exit(2)
 
 if verbose:
-    print('\nOpen %s in Qt Linguist in order to edit the translation.' % tr.strip())
+    ts_file = path.join('puddlestuff', 'translations', 'puddletag_*.ts')
+    print('\nOpen {0} in Qt Linguist in order to edit the translations.\n    $ linguist {0}'.format(ts_file))
