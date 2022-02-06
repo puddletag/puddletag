@@ -4,6 +4,7 @@
 /releases
 /deb_build
 /dist/
+/build/
 *#*
 puddletag-docs/translations
 .idea/
@@ -13,3 +14,4 @@ rss_temp*.html
 rss_temp*.doctree
 /MANIFEST
 /puddletag.pro
+/puddlestuff/translations/*.qm

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
+from os import listdir, path
+from subprocess import call
 
 # Using the setuptools setup doesn't include everything
 # in the manifest.
@@ -16,6 +18,26 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 import puddlestuff
+
+import distutils.cmd
+from distutils.command.build import build as buildCommand
+
+class BuildQmCommand(distutils.cmd.Command):
+  description = 'run lrelease on translation files'
+  user_options = []
+  def initialize_options(self):
+    pass
+
+  def finalize_options(self):
+    pass
+
+  def run(self):
+    translation_path = path.join('puddlestuff', 'translations')
+    translation_files = [path.join(translation_path, filename) for filename in listdir(translation_path) if filename.endswith('.ts')]
+    call(['lrelease', '-compress', '-removeidentical'] + translation_files)
+
+# monkey patching the default build command
+buildCommand.sub_commands.insert(0, ('build_qm', None))
 
 setup(
     name='puddletag',
@@ -40,6 +62,7 @@ setup(
                  ],
     scripts=['puddletag'],
     install_requires=required,
+    cmdclass={ 'build_qm': BuildQmCommand },
     data_files=[('share/pixmaps/', ['puddletag.png', ]),
                 ('share/applications/', ['puddletag.desktop', ]),
                 ('share/man/man1/', ['puddletag.1', ])]
