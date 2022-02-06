@@ -16,11 +16,7 @@
         <file alias="puddlelogo.png">data/puddlelogo.png</file>
         <file alias="filenew.png">data/filenew.png</file>
         <file alias="edit.png">data/edit.png</file>
-        <file alias="moveup.png">data/moveup.png</file>
-        <file alias="movedown.png">data/movedown.png</file>
         <file alias="remove.png">data/remove.png</file>
-        <file alias="rarrow.png">data/rarrow.png</file>
-        <file alias="larrow.png">data/larrow.png</file>
         <file alias="reload.png">data/reload.png</file>
         <file alias="undo.png">data/undo.png</file>
         <file alias="quickaction.png">data/quickaction.png</file>
