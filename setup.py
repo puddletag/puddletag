@@ -28,7 +28,7 @@ setup(
               'puddlestuff.libraries', 'puddlestuff.audioinfo',
               'puddlestuff.tagsources', 'puddlestuff.tagsources.mp3tag',
               'puddlestuff.masstag', 'puddlestuff.plugins'],
-    package_data={'puddlestuff': ['data/*']},
+    package_data={'puddlestuff': ['data/*', '../translations/*']},
     keywords='tagging ogg mp3 apev2 mp4 id3',
     license='GNU General Public License v3 or later (GPLv3+)',
     classifiers=['Development Status :: 5 - Production/Stable',
