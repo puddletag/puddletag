@@ -9,7 +9,7 @@ import puddlestuff.findfunc as findfunc
 import puddlestuff.loadshortcuts as loadshortcuts
 from puddlestuff.puddleobjects import PuddleConfig
 
-usage = '''Usage: python update_translation.py [-h] [-q] language
+usage = '''Usage: python update_translation.py [-h] [-q] [language]
 
 Options:
     language: Locale of the language to be created eg. en_ZA, rus, fr_BE.
@@ -106,7 +106,7 @@ def write_translations():
     f.truncate()
     f.close()
 
-def update_pro_file():
+def update_pro_file(new_lang):
     source_files = []
     for dirpath, dirnames, filenames in walk('.'):
         source_files.extend(
@@ -116,28 +116,34 @@ def update_pro_file():
 
     translation_path = path.join('puddlestuff', 'translations')
     translation_files = [path.join(translation_path, filename) for filename in listdir(translation_path) if filename.endswith('.ts')]
+
+    new_filename = None
+    if new_lang:
+        new_filename = path.join('puddlestuff', 'translations', 'puddletag_%s.ts' % new_lang)
+        if new_filename not in translation_files:
+            translation_files.append(new_filename)
+
     translation_files.sort()
 
     with open('puddletag.pro', 'w') as f:
         f.write('SOURCES = %s\n' % ' '.join(sorted(source_files)))
         f.write('TRANSLATIONS = %s\n' % ' '.join(sorted(translation_files)))
 
+    return new_filename
 
 verbose = True
+new_lang = None
 
-try:
-    lang = sys.argv[1]
-    if lang.strip() == '-q':
+for arg in sys.argv[1:]:
+    if arg == '-q':
         verbose = False
-        lang = sys.argv[2]
-except IndexError:
-    print('Error: No language specified\n')
-    print(usage)
-    sys.exit(1)
+    elif arg in ('--help', '-h'):
+        print(usage)
+        sys.exit(0)
+    else:
+        new_lang = arg
+        break
 
-if lang in ('--help', '-h'):
-    print(usage)
-    sys.exit(0)
 
 if verbose:
     print('Updating `translations.py` from menu-/shortcut-/function-/dialog-sourcecode...')
@@ -145,7 +151,7 @@ write_translations()
 
 if verbose:
     print('Updating `puddletag.pro` with location of source- and translation-files...')
-update_pro_file()
+ts_file = update_pro_file(new_lang)
 
 if verbose:
     print('Updating translation keys in `*.ts` files from application sourcecode...')
@@ -156,5 +162,6 @@ except OSError:
     sys.exit(2)
 
 if verbose:
-    ts_file = path.join('puddlestuff', 'translations', 'puddletag_*.ts')
+    if not ts_file:
+        ts_file = path.join('puddlestuff', 'translations', 'puddletag_*.ts')
     print('\nOpen {0} in Qt Linguist in order to edit the translations.\n    $ linguist {0}'.format(ts_file))
