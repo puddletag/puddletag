@@ -624,7 +624,7 @@ class MainWin(QWidget):
 
         # The Preferences/Configuration button (beside the Tag Source selector)
         preferences = QToolButton()
-        preferences.setIcon(QIcon(':/preferences.png'))
+        preferences.setIcon(QIcon('icons:preferences.png'))
         preferences.setToolTip(translate("WebDB", 'Configure'))
         self.__preferencesButton = preferences
         connect(preferences, 'clicked', self.configure)

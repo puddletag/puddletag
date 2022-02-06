@@ -290,7 +290,7 @@ class SetDialog(QDialog):
         vbox.addWidget(setlabel)
 
         comboadd = QToolButton()
-        comboadd.setIcon(QIcon(':/filenew.png'))
+        comboadd.setIcon(QIcon('icons:filenew.png'))
         comboadd.setToolTip('Add set')
         comboadd.clicked.connect(self.addSet)
 

@@ -660,7 +660,7 @@ class ExTags(QDialog):
         self._reset = QToolButton()
         self._reset.setToolTip(translate('Extended Tags',
                                          'Resets the selected fields to their original value.'))
-        self._reset.setIcon(get_icon('edit-undo', ':/undo.png'))
+        self._reset.setIcon(get_icon('edit-undo', 'icons:undo.png'))
         self._reset.clicked.connect(self.resetFields)
 
         self.listbuttons = ListButtons()

@@ -1265,10 +1265,10 @@ class ListButtons(QVBoxLayout):
     def __init__(self, parent=None):
         QVBoxLayout.__init__(self, parent)
         self.addButton = QToolButton()
-        self.addButton.setIcon(get_icon('list-add', ':/filenew.png'))
+        self.addButton.setIcon(get_icon('list-add', 'icons:filenew.png'))
         self.addButton.setToolTip(translate("List Buttons", 'Add'))
         self.removeButton = QToolButton()
-        self.removeButton.setIcon(get_icon('list-remove', ':/remove.png'))
+        self.removeButton.setIcon(get_icon('list-remove', 'icons:remove.png'))
         self.removeButton.setToolTip(translate("List Buttons", 'Remove'))
         self.removeButton.setShortcut('Delete')
         self.moveupButton = QToolButton()
@@ -1278,10 +1278,10 @@ class ListButtons(QVBoxLayout):
         self.movedownButton.setArrowType(Qt.ArrowType.DownArrow)
         self.movedownButton.setToolTip(translate("List Buttons", 'Move Down'))
         self.editButton = QToolButton()
-        self.editButton.setIcon(get_icon('document-edit', ':/edit.png'))
+        self.editButton.setIcon(get_icon('document-edit', 'icons:edit.png'))
         self.editButton.setToolTip(translate("List Buttons", 'Edit'))
         self.duplicateButton = QToolButton()
-        self.duplicateButton.setIcon(get_icon('edit-copy', ':/duplicate.png'))
+        self.duplicateButton.setIcon(get_icon('edit-copy', 'icons:duplicate.png'))
         self.duplicateButton.setToolTip(translate("List Buttons", 'Duplicate'))
         self.copyButton = QToolButton()
         self.copyButton.setToolTip(translate("List Buttons", 'Copy to clipboard'))
@@ -1723,7 +1723,7 @@ class PicWidget(QWidget):
             self.removepic = listbuttons.removeButton
             self.editpic = listbuttons.editButton
             self.savepic = QToolButton()
-            self.savepic.setIcon(QIcon(':/save.png'))
+            self.savepic.setIcon(QIcon('icons:save.png'))
             self.savepic.setIconSize(QSize(16, 16))
             self.copypic = listbuttons.copyButton
             self.pastepic = listbuttons.pasteButton
@@ -2269,7 +2269,7 @@ class PuddleCombo(QWidget):
         self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
 
         self.remove = QToolButton()
-        self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
+        self.remove.setIcon(get_icon('list-remove', 'icons:remove.png'))
         self.remove.setToolTip(translate("Combo Box", 'Remove current item.'))
         self.remove.setIconSize(QSize(13, 13))
         self.remove.clicked.connect(self.removeCurrent)

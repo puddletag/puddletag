@@ -1,32 +1,5 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-    <qresource>
-        <file alias="action.png">data/action.png</file>
-        <file alias="target.png">data/target.png</file>
-        <file alias="addfolder.png">data/addfolder.png</file>
-        <file alias="filetotag.png">data/filetotag.png</file>
-        <file alias="text-tag.png">data/text-tag.png</file>
-        <file alias="renamedirs.png">data/renamedirs.png</file>
-        <file alias="save.png">data/save.png</file>
-        <file alias="tagtofile.png">data/tagtofile.png</file>
-        <file alias="track.png">data/track.png</file>
-        <file alias="open.png">data/open.png</file>
-        <file alias="puddlelogo.png">data/puddlelogo.png</file>
-        <file alias="filenew.png">data/filenew.png</file>
-        <file alias="edit.png">data/edit.png</file>
-        <file alias="remove.png">data/remove.png</file>
-        <file alias="reload.png">data/reload.png</file>
-        <file alias="undo.png">data/undo.png</file>
-        <file alias="quickaction.png">data/quickaction.png</file>
-        <file alias="cut.png">data/cut.png</file>
-        <file alias="copy.png">data/copy.png</file>
-        <file alias="paste.png">data/paste.png</file>
-        <file alias="playlist.png">data/playlist.png</file>
-        <file alias="duplicate.png">data/duplicate.png</file>
-        <file alias="preferences.png">data/preferences.png</file>
-        <file alias="appicon.svg">data/appicon.svg</file>
-    </qresource>
-
     <qresource prefix="translations">
         <file alias="puddletag_fr.qm">../translations/puddletag_fr.qm</file>
         <file alias="puddletag_de.qm">../translations/puddletag_de.qm</file>

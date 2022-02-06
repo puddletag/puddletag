@@ -333,11 +333,11 @@ if __name__ == '__main__':
     from puddlestuff.puddletag import MainWin
     from puddlestuff.puddlesettings import load_gen_settings
 
-    app.setWindowIcon(QIcon(":/appicon.svg"))
+    app.setWindowIcon(QIcon("icons:appicon.svg"))
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
 
-    pixmap = QPixmap(':/puddlelogo.png')
+    pixmap = QPixmap('icons:puddlelogo.png')
     splash = QSplashScreen(pixmap)
     splash.show()
     app.processEvents()

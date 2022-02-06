@@ -4,7 +4,7 @@
     "command": "text_file_to_tag", 
     "control": "mainwin", 
     "enabled": "filesselected", 
-    "icon": ":/text-tag.png"
+    "icon": "icons:text-tag.png"
   }, 
   "shortcut12": {
     "name": "&Format", 
@@ -53,7 +53,7 @@
   }, 
   "shortcut10": {
     "name": "Autonumbering &Wizard...", 
-    "icon": ":/track.png", 
+    "icon": "icons:track.png",
     "command": "auto_numbering", 
     "control": "mainwin", 
     "enabled": "filesselected", 
@@ -70,13 +70,13 @@
     "command": "openPrefs", 
     "control": "mainwin", 
     "enabled": "always", 
-    "icon": ":/preferences.png", 
+    "icon": "icons:preferences.png",
     "icon_name": "configure"
   }, 
   "shortcut15": {
     "name": "&Actions", 
     "command": "run_action", 
-    "icon": ":/action.png", 
+    "icon": "icons:action.png",
     "control": "mainwin", 
     "enabled": "filesselected", 
     "icon_name": "keith"
@@ -96,7 +96,7 @@
       "Shift+Ins"
     ], 
     "enabled": "filesselected", 
-    "icon": ":/paste.png", 
+    "icon": "icons:paste.png",
     "icon_name": "edit-paste"
   }, 
   "shortcut30": {
@@ -105,14 +105,14 @@
     "control": "mainwin", 
     "shortcut": "Ctrl+C", 
     "enabled": "filesselected", 
-    "icon": ":/copy.png"
+    "icon": "icons:copy.png"
   }, 
   "shortcut19": {
     "name": "&Rename Directories", 
     "command": "rename_dirs", 
     "control": "mainwin", 
     "enabled": "filesselected", 
-    "icon": ":/renamedirs.png", 
+    "icon": "icons:renamedirs.png",
     "status": "renamedirstatus"
   }, 
   "shortcut18": {
@@ -120,7 +120,7 @@
     "command": "run_quick_action", 
     "control": "mainwin", 
     "enabled": "filesselected", 
-    "icon": ":/quickaction.png"
+    "icon": "icons:quickaction.png"
   }, 
   "shortcut35": {
     "name": "&Properties", 
@@ -133,7 +133,7 @@
     "command": "deleteSelected", 
     "control": "table", 
     "shortcut": "Del", 
-    "icon": ":/remove.png", 
+    "icon": "icons:remove.png",
     "enabled": "filesselected", 
     "icon_name": "edit-delete"
   }, 
@@ -152,7 +152,7 @@
     "command": "undo", 
     "control": "table", 
     "enabled": "enableUndo", 
-    "icon": ":/undo.png", 
+    "icon": "icons:undo.png",
     "icon_name": "edit-undo"
   }, 
   "shortcut8": {
@@ -160,14 +160,14 @@
     "shortcut": "Ctrl+T", 
     "command": "filename_to_tag", 
     "control": "mainwin", 
-    "icon": ":/filetotag.png", 
+    "icon": "icons:filetotag.png",
     "enabled": "filesselected", 
     "tooltip": "Convert filename to tag using the pattern.", 
     "status": "ftstatus"
   }, 
   "shortcut3": {
     "name": "Load &playlist", 
-    "icon": ":/playlist.png", 
+    "icon": "icons:playlist.png",
     "control": "mainwin", 
     "command": "loadPlayList", 
     "enabled": "always", 
@@ -176,7 +176,7 @@
   }, 
   "shortcut2": {
     "name": "&Add Folder", 
-    "icon": ":/addfolder.png", 
+    "icon": "icons:addfolder.png",
     "control": "mainwin", 
     "command": "appendDir", 
     "enabled": "filesloaded", 
@@ -185,7 +185,7 @@
   }, 
   "shortcut1": {
     "name": "&Open Folder", 
-    "icon": ":/open.png", 
+    "icon": "icons:open.png",
     "control": "mainwin", 
     "command": "openDir", 
     "enabled": "always", 
@@ -207,7 +207,7 @@
     "control": "Tag Panel", 
     "command": "save", 
     "shortcut": "Ctrl+S", 
-    "icon": ":/save.png", 
+    "icon": "icons:save.png",
     "enabled": "filesselected", 
     "icon_name": "document-save"
   }, 
@@ -217,7 +217,7 @@
     "command": "reloadFiles", 
     "shortcut": "F5", 
     "tooltip": "Refresh current file-view.", 
-    "icon": ":/reload.png", 
+    "icon": "icons:reload.png",
     "enabled": "filesloaded", 
     "icon_name": "view-refresh"
   }, 
@@ -255,7 +255,7 @@
     "command": "removeTags", 
     "control": "table", 
     "shortcut": "Ctrl+R", 
-    "icon": ":/remove.png", 
+    "icon": "icons:remove.png",
     "enabled": "filesselected", 
     "icon_name": "edit-delete"
   }, 
@@ -322,7 +322,7 @@
     "control": "mainwin", 
     "shortcut": "Ctrl+X", 
     "enabled": "filesselected", 
-    "icon": ":/cut.png", 
+    "icon": "icons:cut.png",
     "icon_name": "edit-cut"
   }, 
   "shortcut23": {
@@ -334,7 +334,7 @@
   }, 
   "shortcut20": {
     "name": "&Exit", 
-    "icon": ":/remove.png", 
+    "icon": "icons:remove.png",
     "control": "mainwin", 
     "enabled": "always", 
     "command": "close", 
@@ -347,7 +347,7 @@
     "enabled": "filesselected", 
     "command": "tag_to_file", 
     "shortcut": "Ctrl+F", 
-    "icon": ":/tagtofile.png", 
+    "icon": "icons:tagtofile.png",
     "status": "tfstatus"
   }, 
   "shortcut26": {
@@ -384,6 +384,6 @@
     "control": "Filesystem",
     "enabled": "filesselected",
     "tooltip": "Focuses the current file's parent folder in the Filesystem view",
-    "icon": ":/target.png"
+    "icon": "icons:target.png"
   }
 }
