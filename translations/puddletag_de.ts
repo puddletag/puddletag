@@ -143,42 +143,42 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="256"/>
         <source>Minimum Score</source>
-        <translation></translation>
+        <translation>Minimale Punktzahl</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="306"/>
         <source>Parsing Data</source>
-        <translation></translation>
+        <translation>Daten werden eingelesen</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="33"/>
         <source>Error submitting data: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei der Datenübermittlung: %1</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="34"/>
         <source>Submitting data to AcoustID: %1 to %2 of %3.</source>
-        <translation type="unfinished"></translation>
+        <translation>Übermitteln der Daten an AcoustID: %1 bis %2 von %3.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="35"/>
         <source>Found AcoustID in file.</source>
-        <translation type="unfinished"></translation>
+        <translation>AcoustID wurde in der Datei gefunden.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="36"/>
         <source>File #%1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei #%1: %2</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="257"/>
         <source>AcoustID Key</source>
-        <translation type="unfinished"></translation>
+        <translation>AcoustID Schlüssel</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="332"/>
         <source>Please enter AcoustID user key in settings.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte geben Sie einen AcoustID-Benutzerschlüssel in den Einstellung an.</translation>
     </message>
 </context>
 <context>
@@ -357,7 +357,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="485"/>
         <source>Original Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Ursprüngliche Größe</translation>
     </message>
 </context>
 <context>
@@ -435,7 +435,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
         <location filename="../puddlestuff/puddleobjects.py" line="1732"/>
         <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>JPEG &amp; PNG Bilder (*.jpg *.jpeg *.png);;JPEG Bilder (*.jpg *.jpeg);;PNG Bilder (*.png);;Alle Dateien(*.*)</translation>
     </message>
 </context>
 <context>
@@ -954,12 +954,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
         <location filename="../puddlestuff/helperwin.py" line="1073"/>
         <source>Never show this message again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Nachricht nicht mehr anzeigen.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="166"/>
         <source>Connection Error: %s </source>
-        <translation type="unfinished"></translation>
+        <translation>Verbindungsfehler: %s </translation>
     </message>
 </context>
 <context>
@@ -1231,7 +1231,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <message>
         <location filename="../puddlestuff/puddletag.py" line="650"/>
         <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won&apos;t be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Kodierung des Dateisystems wurde als &lt;b&gt;ASCII&lt;/b&gt; erkannt. &lt;br /&gt;Es wird nicht möglich sein, Dateinamen mit akzentuierten, &lt;br /&gt; kyrillischen oder anderen Zeichen außerhalb der ASCII Kodierung zu verwenden.</translation>
     </message>
 </context>
 <context>
@@ -2642,7 +2642,10 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 It may cause your system to lock up.
 
 Do you want to go ahead?</source>
-        <translation type="unfinished"></translation>
+        <translation>Das ist eine große zu kopierende Datenmenge.
+Es kann zu Systemaufhängern kommen.
+
+Wollen Sie fortfahren?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="151"/>
@@ -2713,67 +2716,67 @@ Do you want to go ahead?</source>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="350"/>
         <source>Retrieving cover: %s</source>
-        <translation type="unfinished">Empfange Cover: %s</translation>
+        <translation>Empfange Cover: %s</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="355"/>
         <source>No images exist for this album.</source>
-        <translation type="unfinished"></translation>
+        <translation>Für dieses Album existieren keine Bilder.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="366"/>
         <source>Invalid UUID</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige UUID</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="368"/>
         <source>Invalid query sent.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige Abfrage angeschickt.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="370"/>
         <source>You have exceeded your rate limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie haben Ihre Frequenzgrenze überschritten.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="373"/>
         <source>Image does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bild existiert nicht.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="392"/>
         <source>Retrieving image %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Holen des Bildes %s</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="481"/>
         <source>Retrieve Cover</source>
-        <translation type="unfinished"></translation>
+        <translation>Hole das Cover</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="482"/>
         <source>Cover size to retrieve:</source>
-        <translation type="unfinished"></translation>
+        <translation>Größe des zu holenden Covers:</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="486"/>
         <source>Amount of images to retrieve:</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der zu holenden Bilder:</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="487"/>
         <source>Just the front cover</source>
-        <translation type="unfinished"></translation>
+        <translation>Nur die Vorderseite</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="488"/>
         <source>All (can take a while)</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles (kann eine Weile dauern)</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="592"/>
         <source>Error retrieving image: %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Holen des Bildes: %s</translation>
     </message>
 </context>
 <context>
@@ -2860,12 +2863,12 @@ Do you want to go ahead?</source>
     <message>
         <location filename="../puddlestuff/mainwin/patterncombo.py" line="83"/>
         <source>&amp;Sort</source>
-        <translation type="unfinished">&amp;Sortieren</translation>
+        <translation>&amp;Sortieren</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/patterncombo.py" line="134"/>
         <source>Enter a pattern</source>
-        <translation type="unfinished">Geben Sie eine Vorlage ein</translation>
+        <translation>Geben Sie ein Muster ein</translation>
     </message>
 </context>
 <context>
@@ -3669,17 +3672,17 @@ Tatsächlich: %2</translation>
     <message>
         <location filename="../puddlestuff/webdb.py" line="552"/>
         <source>Retrying search with %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Erneuter Versuch der Suche mit %s</translation>
     </message>
     <message>
         <location filename="../puddlestuff/webdb.py" line="611"/>
         <source>S&amp;ubmit Tags</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../puddlestuff/webdb.py" line="878"/>
         <source>Submission completed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Übermittlung abgeschlossen.</translation>
     </message>
 </context>
 </TS>
