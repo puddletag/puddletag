@@ -187,7 +187,10 @@ bool_expr.enablePackrat()
 def parse(audio, expr):
     for i in bool_exprs:
         i[3].audio = audio
-    res = bool_expr.parseString(expr)[0]
+    try:
+        res = bool_expr.parseString(expr)[0]
+    except ParseException as e:
+        res = expr
     if isinstance(res, str):
         res = res.lower()
         for field, value in audio.items():
@@ -196,6 +199,7 @@ def parse(audio, expr):
             elif isinstance(value, (int, float)):
                 value = [str(value)]
             try:
+                logging.debug('simple filter: %s in %s', res, value)
                 if res in '\\\\'.join(value).lower():
                     return True
             except TypeError as e:
