@@ -2479,7 +2479,7 @@ class TagTable(QTableView):
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
         if not self.verticalScrollBar().isVisible() and h.isVisible():
-            numsteps = e.angleDelta().y() / 5
+            numsteps = e.angleDelta().y() // 5
             h.setValue(h.value() - numsteps)
             e.accept()
         else:
