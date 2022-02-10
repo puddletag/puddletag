@@ -7,12 +7,12 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 
-from .findfunc import parsefunc
-from .puddleobjects import (PuddleThread,
+from ..findfunc import parsefunc
+from ..puddleobjects import (PuddleThread,
                             natural_sort_key)
-from .tagsources import RetrievalError
-from .translations import translate
-from .util import pprint_tag, to_string
+from ..tagsources import RetrievalError
+from ..translations import translate
+from ..util import pprint_tag, to_string
 
 CHECKEDFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
@@ -45,7 +45,7 @@ def fillItem(item, info, tracks, trackpattern):
 
 
 def get_tagsources():
-    from .tagsources import exampletagsource, musicbrainz
+    from ..tagsources import exampletagsource, musicbrainz
     return exampletagsource.info[0](), musicbrainz.info[0]()
 
 
@@ -116,6 +116,7 @@ class Header(QHeaderView):
 
 
 class RootItem(object):
+
     def __init__(self, data, parent=None):
         self.parentItem = parent
         self.itemData = data
@@ -149,6 +150,7 @@ class RootItem(object):
 
 
 class TreeItem(RootItem):
+
     def __init__(self, data, pattern, parent=None):
         self.parentItem = parent
         self.itemData = data
@@ -205,6 +207,7 @@ class TreeItem(RootItem):
 
 
 class ChildItem(RootItem):
+
     def __init__(self, data, pattern, parent=None):
         self.parentItem = parent
         self.itemData = data
@@ -313,7 +316,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 parent_index = self.index(row, 0, QModelIndex())
                 top = self.index(0, 0, parent_index)
                 bottom = self.index(self.rowCount(parent_index)
-                                    - 1, 0, parent_index)
+                                    -1, 0, parent_index)
                 self.dataChanged.emit(top, bottom)
 
     trackPattern = property(_get_trackPattern, _set_trackPattern)
@@ -597,7 +600,7 @@ class ReleaseWidget(QTreeView):
         if not item.hasTracks:
             return
         preview = {}
-        from .masstag import match_files
+        from ..masstag import match_files
         tracks = item.tracks()
         copies = []
         for f in files:
@@ -705,7 +708,7 @@ class ReleaseWidget(QTreeView):
         model.mapping = self.mapping
 
     def setReleases(self, releases, files=None):
-        from .masstag import find_best
+        from ..masstag import find_best
         self.model().setupModelData(releases)
         # FIXME: The expander isn't shown if I don't do this. However
         # I can still click on it...Qt bug probably.

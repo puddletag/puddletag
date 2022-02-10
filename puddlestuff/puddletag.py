@@ -70,7 +70,7 @@ def create_tool_windows(parent, extra=None):
     cparser.filename = ls.menu_path
     widgets = (mainwin.tagpanel, mainwin.artwork,
                mainwin.dirview, mainwin.patterncombo, mainwin.filterwin,
-               webdb, mainwin.storedtags, mainwin.logdialog,
+               mainwin.tagsources, mainwin.storedtags, mainwin.logdialog,
                dialogs)
 
     controls = [z.control for z in widgets]
@@ -353,6 +353,7 @@ class PreviewLabel(QLabel):
         self._enabled = not self._enabled
         self.valueChanged.emit(self._enabled)
 
+
 def _openFilesFilterFilename(filename):
     filename = os.path.abspath(filename)
     if isinstance(filename, str):
@@ -632,7 +633,7 @@ class MainWin(QMainWindow):
     def loadPlayList(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         selectedFile = QFileDialog.getOpenFileName(self,
-                                                   translate("Playlist", translate("Playlist", 'Select m3u file...')), )
+                                                   translate("Playlist", translate("Playlist", 'Select m3u file...')),)
         filename = selectedFile[0]
         if not filename:
             return
@@ -891,6 +892,7 @@ class MainWin(QMainWindow):
 
                 model.updateTable(failed_rows)
             return fin()
+
         return func, finished, rows
 
     def writeTags(self, tagiter, rows=None, previews=None):

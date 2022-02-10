@@ -11,18 +11,19 @@ from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBo
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
 
-from . import audioinfo, version_string
-from .constants import (TEXT, COMBO, SPINBOX,
+from .. import audioinfo, version_string
+from ..constants import (TEXT, COMBO, SPINBOX,
                         CHECKBOX, RIGHTDOCK, CONFIGDIR)
-from .findfunc import FuncError
-from .functions import replace_regex
-from .puddleobjects import (create_buddy, winsettings,
+from ..findfunc import FuncError
+from ..functions import replace_regex
+from ..puddleobjects import (create_buddy, winsettings,
                             ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
-from .releasewidget import ReleaseWidget
-from .tagsources import (tagsources, status_obj, set_useragent,
+from ..tagsources import (tagsources, status_obj, set_useragent,
                          write_log, RetrievalError, mp3tag, SubmissionError)
-from .util import (isempty, pprint_tag,
+from ..util import (isempty, pprint_tag,
                    split_by_field, to_string, translate)
+
+from .releasewidget import ReleaseWidget
 
 pyqtRemoveInputHook()
 

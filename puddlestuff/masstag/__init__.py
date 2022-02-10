@@ -9,8 +9,9 @@ from ..puddleobjects import natsort_case_key, ratio
 from ..tagsources import RetrievalError
 from ..translations import translate
 from ..util import sorted_split_by_field, split_by_field, to_string
-from ..webdb import (strip as strip_fields, DEFAULT_REGEXP,
-                     apply_regexps)
+from ..mainwin.tagsources import (strip as strip_fields,
+                                  DEFAULT_REGEXP,
+                                  apply_regexps)
 
 
 def set_status(v):
@@ -103,6 +104,7 @@ NO_VALID_FOUND = translate("Masstagging",
 
 
 class MassTagFlag(object):
+
     def __init__(self):
         self.stop = False
         object.__init__(self)
@@ -245,7 +247,7 @@ def get_match_str(info):
         return MATCH_NO_INFO
 
 
-get_lower = lambda f, key, default='': to_string(f.get(key, default)).lower()
+get_lower = lambda f, key, default = '': to_string(f.get(key, default)).lower()
 
 
 def ratio_compare(d1, d2, key):
@@ -525,6 +527,7 @@ def replace_tracknumbers(files, tracks):
 
 
 def split_files(audios, pattern):
+
     def copy_audio(f):
         tags = filenametotag(pattern, f['__path'], True)
         audio_copy = deepcopy(f)
@@ -547,6 +550,7 @@ def to_int(v):
 
 
 class MassTagProfile(object):
+
     def __init__(self, name=DEFAULT_NAME, desc='', fields=None, files=None,
                  file_pattern=DEFAULT_PATTERN, profiles=None, album_bound=0.50,
                  track_bound=0.80, jfdi=True, leave_existing=False, regexps=''):
@@ -614,6 +618,7 @@ class MassTagProfile(object):
 
 
 class Result(object):
+
     def __init__(self, info=None, tracks=None, tag_source=None):
         object.__init__(self)
 
@@ -664,6 +669,7 @@ class Result(object):
 
 
 class TagSourceProfile(object):
+
     def __init__(self, files=None, tag_source=None, fields=None,
                  if_no_result=CONTINUE, replace_fields=None):
 

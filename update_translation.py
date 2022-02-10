@@ -19,7 +19,7 @@ def parse_dialogs():
     from puddlestuff.mainwin import (tagpanel, artwork, dirview,
                                      filterwin, storedtags, logdialog)
     import puddlestuff.masstag.dialogs as masstag
-    import puddlestuff.webdb as webdb
+    import puddlestuff.mainwin.tagsources as tagsources
     import puddlestuff.mainwin.action_dialogs as action_dialogs
 
     def tr(s):
@@ -28,7 +28,7 @@ def parse_dialogs():
 
     dialog_strings = []
     controls = [z.control for z in [tagpanel, artwork, dirview, filterwin,
-                                    webdb, storedtags, logdialog, masstag]]
+                                    tagsources, storedtags, logdialog, masstag]]
 
     controls.extend(action_dialogs.controls)
 
@@ -56,6 +56,7 @@ def parse_functions():
 
 
 def parse_shortcuts():
+
     def tr(s):
         s = s.replace('"', r'\"')
         return 'translate("Menus", "%s")' % s
@@ -88,6 +89,7 @@ def parse_shortcuts():
 
 
 def parse_menus():
+
     def tr(s):
         s = s.replace('"', r'\"')
         return 'translate("Menus", "%s")' % s
