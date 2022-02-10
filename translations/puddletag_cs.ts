@@ -845,7 +845,7 @@ Poděkování programátorům knihoven, na nichž je puddletag založent (bez ni
         <translation>Čte se adresář</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="+359"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="+359"/>
         <source>&amp;Edit</source>
         <translation>Ú&amp;pravy</translation>
     </message>
@@ -955,7 +955,7 @@ Poděkování programátorům knihoven, na nichž je puddletag založent (bez ni
         <translation>&lt;p&gt;Při přejmenovávání adresáře &lt;b&gt;%1&lt;/b&gt; na &lt;i&gt;%2&lt;/i&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;%3&lt;/b&gt;&lt;br /&gt;Použitý soubor: %4&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-212"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-212"/>
         <source>&amp;Fields</source>
         <translation>&amp;Pole</translation>
     </message>
@@ -2986,7 +2986,7 @@ Chcete pokračovat?</translation>
         <translation>Náhledový režim: Vypnuto</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="+471"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="+471"/>
         <source>Clea&amp;r preview</source>
         <translation>&amp;Smazat náhled</translation>
     </message>
@@ -3027,7 +3027,7 @@ Chcete pokračovat?</translation>
 <context>
     <name>Profile Editor</name>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-194"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-194"/>
         <source>Match tracks using &amp;fields: </source>
         <translation>Roztřídit stopy pomocí &amp;polí:</translation>
     </message>
@@ -3062,7 +3062,7 @@ Chcete pokračovat?</translation>
         <translation>Zadejte čárkou oddělený výčet polí, která nahradí všechny předchozí hodnoty. &lt;br /&gt;Zadávání začněte vlnovkou (~), aby se nahradila všechny pole vyjma uvedených. &lt;br /&gt;&lt;b&gt;Pozor: Zde uvedená pole musí být uvedena i v seznamu polí k získání. &lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Např. Za předpokladu, že používáte dva zdroje značek, první dává &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. Druhý zdroj dává &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Pro druhý zdroj zadejte pouze &lt;b&gt;artist&lt;/b&gt; jako pole k nahrazení. Tímto se přepíše pole Umělec z prvního zdroje. Potom budou v Puddletag ukázána následující získaná pole/hodnoty: &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-58"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-58"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Pokud není pro soubor nalezen žádný odpovídající výsledek hledání, budou jak soubory tak výsledky hledání tříděny podle názvů souborů. Odpovídající si stopy budou upraveny.&lt;/p&gt;</translation>
     </message>
@@ -3112,7 +3112,7 @@ Chcete pokračovat?</translation>
         <translation>&amp;Popis</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="+53"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="+53"/>
         <source>Minimum &amp;percentage required for album matches.</source>
         <translation>N&amp;ejmenší shoda požadovaná při hledání alb.</translation>
     </message>
@@ -3127,7 +3127,7 @@ Chcete pokračovat?</translation>
         <translation>&lt;p&gt;Brute Force verwenden um Entsprechungen zu erzwingen. Wenn eine für eine Datei kein unmittelbare Übereinstimmung gefunden werden kann, werden die Dateien und die Suchergebnisse nach Dateinamen sortiert und entsprechenden Tracks zugeordnet.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-55"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-55"/>
         <source>Brute force unmatched files.</source>
         <translation>Na neshodující se soubory použít hrubou sílu.</translation>
     </message>
@@ -3241,7 +3241,7 @@ Chcete pokračovat?</translation>
         <translation>Potvrzení</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-23"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-23"/>
         <source>Tag Sources</source>
         <translation>Zdroje značek</translation>
     </message>
@@ -3523,12 +3523,12 @@ Skutečný: %2</translation>
 <context>
     <name>WebDB</name>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="+468"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="+468"/>
         <source>Retrieval complete.</source>
         <translation>Získávání dokončeno.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-20"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-20"/>
         <source>Edit sort option</source>
         <translation>Upravit pořadí třídění</translation>
     </message>
@@ -3543,17 +3543,17 @@ Skutečný: %2</translation>
         <translation>&lt;b&gt;Vyberte soubory nebo zadejte hledané pojmy.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="-12"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="-12"/>
         <source>An unhandled error occured: %1</source>
         <translation>Vyskytla se neznámá chyba: %1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-220"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-220"/>
         <source>&amp;Write</source>
         <translation>&amp;Zapsat</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="-432"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="-432"/>
         <source>Retrieved Albums (sorted by %s)</source>
         <translation>Získaná alba (tříděno podle %s)</translation>
     </message>
@@ -3563,7 +3563,7 @@ Skutečný: %2</translation>
         <translation>Získávají se stopy...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="+198"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="+198"/>
         <source>Searching complete.</source>
         <translation>Hledání dokončeno.</translation>
     </message>
@@ -3588,12 +3588,12 @@ Skutečný: %2</translation>
         <translation>Nastavit</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="-391"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="-391"/>
         <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
         <translation>&lt;b&gt;Chyba ve vzoru&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-248"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-248"/>
         <source>Display format for &amp;retrieved albums</source>
         <translation>Ukázat formát pro získaná &amp;alba</translation>
     </message>
@@ -3623,22 +3623,22 @@ Skutečný: %2</translation>
         <translation>Vyskytla se neznámá chyba: %1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="+615"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="+615"/>
         <source>Retrieving album.</source>
         <translation>Získává se album.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-59"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-59"/>
         <source>No matching albums were found.</source>
         <translation>Nebyla nalezena žádná odpovídající alba.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="-329"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="-329"/>
         <source>Retrieving album tracks...</source>
         <translation>Získávají se stopy alba...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="-471"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="-471"/>
         <source>&amp;Display format for individual tracks.</source>
         <translation>&amp;Ukázat formát pro jednotlivé stopy.</translation>
     </message>
@@ -3663,12 +3663,12 @@ Skutečný: %2</translation>
         <translation>&amp;Zdroj:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="-123"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="-123"/>
         <source>Retrieved Albums</source>
         <translation>Získaná alba</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="+278"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="+278"/>
         <source>An error occured: %1</source>
         <translation>Vyskytla se chyba: %1</translation>
     </message>
@@ -3688,12 +3688,12 @@ Skutečný: %2</translation>
         <translation>Rozpoznání uživatele používané pro připojení se k internetovým stránkám.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/releasewidget.py" line="+449"/>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="+449"/>
         <source>More than one album matches. None will be retrieved.</source>
         <translation>Více než jedna shoda. Nebudou získávány žádné informace.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="+260"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="+260"/>
         <source>Select files and click on Search to retrieve metadata.</source>
         <translation>Vyberte soubory a klepněte na Hledat pro získání popisných dat.</translation>
     </message>

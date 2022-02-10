@@ -743,7 +743,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
 <context>
     <name>Defaults</name>
     <message>
-        <location filename="puddlestuff/webdb.py" line="147"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="147"/>
         <source>&amp;Fields</source>
         <translation>&amp;Fält</translation>
     </message>
@@ -908,7 +908,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
         <translation>%s bilder</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="359"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="359"/>
         <source>&amp;Edit</source>
         <translation>&amp;Redigera</translation>
     </message>
@@ -2942,7 +2942,7 @@ Vill du fortsätta?</translation>
         <translation>Vill du inaktivera förhandsvisningsläget?</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="618"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="618"/>
         <source>Clea&amp;r preview</source>
         <translation>&amp;Rensa förhandsvisningen</translation>
     </message>
@@ -2978,7 +2978,7 @@ Vill du fortsätta?</translation>
         <translation>&lt;p&gt;Om tagginformation inte hittas i en fil, kommer taggar med detta mönster att användas istället.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="384"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="384"/>
         <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Artist- och albumfälten kommer att användas för att avgöra om ett album album matchar det mottagna. Varje enskilt fält jämförs med hjälp av en luddig matchningsalgoritm. Om jämförelseresultatets medelvärde i procent, är större än eller lika med vad du specificerar här, anses det vara en träff.&lt;/p&gt;</translation>
     </message>
@@ -2988,7 +2988,7 @@ Vill du fortsätta?</translation>
         <translation>&lt;p&gt;De fält som listas här, kommer att användas för att avgöra om en fil matchar ett mottaget spår. Varje enskilt fält jämförs med hjälp av en luddig matchningsalgoritm. Om jämförelseresultatets medelvärde i procent, är större än minimivärdet, anses det vara en träff./p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="366"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="366"/>
         <source>Brute force unmatched files.</source>
         <translation>Använd råstyrka för omatchade filer.</translation>
     </message>
@@ -3028,7 +3028,7 @@ Vill du fortsätta?</translation>
         <translation>Matcha spår med dessa fält: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="426"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="426"/>
         <source>Minimum percentage required for track match.</source>
         <translation>Minimivärde i procent, för spårmatchning.</translation>
     </message>
@@ -3068,22 +3068,22 @@ Vill du fortsätta?</translation>
         <translation>&lt;p&gt;&lt;b&gt;Fortsätt&lt;/b&gt;: Uppslagning på aktuellt album fortsätter genom att kontrollera de andra källorna, om inga matchande resultat hittades i denna källa.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stoppa&lt;/b&gt;: Uppslagning på aktuellt album stoppas och alla tidigare hämtade resultat kommer att användas.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="368"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="368"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Om en korrekt matchning inte kan hittas för en fil, sorteras filerna efter filnamn, de hämtade taggkällorna efter filnamn och motsvarande (omatchade) spår matchas.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="375"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="375"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;De fält som listas här, kommer att användas för att avgöra om ett spår matchar det hämtade spåret. Varje enskilt fält jämförs med hjälp av en luddig matchningsalgoritm. Om jämförelseresultatets medelvärde i procent, är större än minimivärdet, anses det vara en träff.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="421"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="421"/>
         <source>Minimum &amp;percentage required for album matches.</source>
         <translation>Minimivärde i &amp;procent, för albummatchning.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="424"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="424"/>
         <source>Match tracks using &amp;fields: </source>
         <translation>Matcha spår med &amp;fälten: </translation>
     </message>
@@ -3197,7 +3197,7 @@ Vill du fortsätta?</translation>
         <translation>&amp;Fönster</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="343"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="343"/>
         <source>Tag Sources</source>
         <translation>Taggkällor</translation>
     </message>
@@ -3459,197 +3459,197 @@ Aktuell: %2</translation>
 <context>
     <name>WebDB</name>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="24"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="24"/>
         <source>Retrieved Albums (sorted by %s)</source>
         <translation>Hämtade album (sorterade efter %s)</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="83"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="83"/>
         <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
         <translation>&lt;b&gt;Fel i mönstret&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="244"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="244"/>
         <source>Retrieved Albums</source>
         <translation>Hämtade album</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="871"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="871"/>
         <source>An error occured: %1</source>
         <translation>Ett fel inträffade: %1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="452"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="452"/>
         <source>An unhandled error occured: %1</source>
         <translation>Ett obearbetat fel inträffade: %1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="365"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="365"/>
         <source>Retrieving album tracks...</source>
         <translation>Hämtar albumspår...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="464"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="464"/>
         <source>Retrieval complete.</source>
         <translation>Hämtnin slutförd.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="470"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="470"/>
         <source>Retrieving tracks...</source>
         <translation>Hämtar spår...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="816"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="816"/>
         <source>No matching albums were found.</source>
         <translation>Inga matchande album hittades.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="691"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="691"/>
         <source>More than one album matches. None will be retrieved.</source>
         <translation>Fler än ett album matchar. Inget hämtas.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/releasewidget.py" line="694"/>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="694"/>
         <source>Retrieving album.</source>
         <translation>Hämtar album.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="32"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="32"/>
         <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
         <translation>Ange sökparametrar här. De valda filerna används om fältet lämnas tomt. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; söker specifikt efter album-/artistkombination.&lt;/li&gt;&lt;li&gt;Utelämna albumdelen, men lämna kvar semikolon, för att lista album av en artist (exempel: &lt;b&gt;Ratatat;&lt;/b&gt;). För endast ett album, lämna kvar artistdelen, som i &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="41"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="41"/>
         <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
         <translation>Ange en kommaseparerad lista över fält att skriva &lt;br /&gt;&lt;br /&gt;Exempel: &lt;b&gt;artist, album, title&lt;/b&gt; skriver endast artist-, album och titelfälten från de hämtade taggarna. &lt;br /&gt;&lt;br /&gt;Om du vill utesluta några fält, men skriva alla andra, startar du listan med tilde (~). Exempel: &lt;b&gt;~composer, __image&lt;/b&gt; skriver alla fält, men utelämnar kompositörs- och bildfältet.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="78"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="78"/>
         <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Det finns inget att visa.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="94"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="94"/>
         <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
         <translation>Kunde inte läsa in Mp3-taggens källa %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="214"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="214"/>
         <source>Configure: %s</source>
         <translation>Konfigurera: %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="305"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="305"/>
         <source>Add sort option</source>
         <translation>Lägg till sorteringsalternativ</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="323"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="323"/>
         <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
         <translation>Ange ett sorteringsalternativ (En kommaseparerad lista med fält. Exempelvis: &quot;artist, title&quot;).</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="323"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="323"/>
         <source>Edit sort option</source>
         <translation>Redigera sorteringsalternativ</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="345"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="345"/>
         <source>&amp;Display format for individual tracks.</source>
         <translation>&amp;Visa format för individuella spår</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="350"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="350"/>
         <source>Display format for &amp;retrieved albums</source>
         <translation>Visa format för &amp;hämtade album</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="355"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="355"/>
         <source>Sort retrieved albums using order:</source>
         <translation>Sortera hämtade album efter:</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="362"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="362"/>
         <source>User-Agent to when accessing web sites.</source>
         <translation>User-Agent för att besöka webbsidor.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="415"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="415"/>
         <source>Automatic retrieval options</source>
         <translation>Automatiska hämtningsalternativ</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="593"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="593"/>
         <source>Sour&amp;ce: </source>
         <translation>K&amp;älla: </translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="598"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="598"/>
         <source>Configure</source>
         <translation>Konfigurera</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="606"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="606"/>
         <source>&amp;Search</source>
         <translation>&amp;Sök</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="615"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="615"/>
         <source>&amp;Write</source>
         <translation>S&amp;kriv</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="622"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="622"/>
         <source>Select files and click on Search to retrieve metadata.</source>
         <translation>Markera filer och tryck på Sök, för att hämta metadata.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="627"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="627"/>
         <source>Update empty fields only.</source>
         <translation>Uppdatera endast tomma fält.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="633"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="633"/>
         <source>Automatically retrieve matches.</source>
         <translation>Hämta matchningar automatiskt.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="813"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="813"/>
         <source>Searching complete.</source>
         <translation>Sökning slutförd.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="830"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="830"/>
         <source>Searching...</source>
         <translation>Söker...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="835"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="835"/>
         <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Markera några filer, eller ange sökparametrar.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="875"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="875"/>
         <source>An unhandled error occurred: %1</source>
         <translation>Ett obearbetat fel inträffade: %1</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="904"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="904"/>
         <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Taggar skrevs.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="552"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="552"/>
         <source>Retrying search with %s</source>
         <translation>Söker igen med %s</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="611"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="611"/>
         <source>S&amp;ubmit Tags</source>
         <translation>&amp;Föreslå taggar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="878"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="878"/>
         <source>Submission completed.</source>
         <translation>Förslag skickat.</translation>
     </message>
