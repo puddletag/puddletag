@@ -17,14 +17,14 @@ try:
 except ImportError:
     from . import _acoustid as acoustid
 
-from .. import audioinfo
+from puddlestuff import audioinfo
 
-from ..audioinfo import stringtags
-from ..constants import SPINBOX, TEXT
-from ..tagsources import set_status, write_log, SubmissionError
-from ..tagsources.musicbrainz import retrieve_album
-from ..translations import translate
-from ..util import escape_html, isempty, to_string
+from puddlestuff.audioinfo import stringtags
+from puddlestuff.constants import SPINBOX, TEXT
+from puddlestuff.tagsources import set_status, write_log, SubmissionError
+from puddlestuff.tagsources.musicbrainz import retrieve_album
+from puddlestuff.translations import translate
+from puddlestuff.util import escape_html, isempty, to_string
 
 CALCULATE_MSG = translate('AcoustID', "Calculating ID")
 RETRIEVE_MSG = translate('AcoustID', "Retrieving AcoustID data: %1 of %2.")
@@ -235,6 +235,7 @@ def retrieve_album_info(album, tracks):
 
 
 def which(program):
+
     # http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)

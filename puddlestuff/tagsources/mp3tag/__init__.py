@@ -9,13 +9,16 @@ from pyparsing import (nums, printables, Combine, Optional,
                        QuotedString, Word, ZeroOrMore)
 
 from .funcs import FUNCTIONS
-from .. import (urlopen, get_encoding,
-                write_log, retrieve_cover, set_status)
-from ...audioinfo.util import CaselessDict
-from ...constants import CHECKBOX
-from ...functions import format_value
-from ...translations import translate
-from ...util import convert_dict as _convert_dict
+
+from puddlestuff.tagsources import (urlopen, get_encoding,
+                                    write_log, retrieve_cover,
+                                    set_status)
+
+from puddlestuff.audioinfo.util import CaselessDict
+from puddlestuff.constants import CHECKBOX
+from puddlestuff.functions import format_value
+from puddlestuff.translations import translate
+from puddlestuff.util import convert_dict as _convert_dict
 
 
 class ParseError(Exception): pass
@@ -190,6 +193,7 @@ def parse_search_page(indexformat, page, search_source, url=None):
 
 
 class Cursor(object):
+
     def __init__(self, text, source_lines):
         self.text = text
         self.all_lines = [z + ' ' for z in text.split('\n')] + [' ']
@@ -312,6 +316,7 @@ class Cursor(object):
 
 
 class Mp3TagSource(object):
+
     def __init__(self, idents, search_source, album_source):
 
         self._get_cover = True
@@ -432,20 +437,20 @@ if __name__ == '__main__':
     # import puddlestuff.tagsources
     # encoding, text = puddlestuff.tagsources.get_encoding(text, True, 'utf8')
 
-    ##pdb.set_trace()
+    # #pdb.set_trace()
     # idents, search, album = open_script(sys.argv[2])
     # value = parse_search_page(idents['indexformat'], text, search)
 
-    ##value = parse_album_page(text, album, 'url')
+    # #value = parse_album_page(text, album, 'url')
     # print value
     # pdb.set_trace()
     # print convert_value(value)
-    ##source = find_idents(lines)[1]
+    # #source = find_idents(lines)[1]
 
-    ##print parse_search(idents['indexformat'], search, text)
-    ###text = open('d_album.htm', 'r').read()
-    ##c = Cursor(text.decode('utf8', 'replace'), source)
-    ##c.parse_page()
-    ###print c.cache
-    ###print c.tracks[0]
-    ##print '\n'.join('%s: %s' % z for z in c.album.items())
+    # #print parse_search(idents['indexformat'], search, text)
+    # ##text = open('d_album.htm', 'r').read()
+    # #c = Cursor(text.decode('utf8', 'replace'), source)
+    # #c.parse_page()
+    # ##print c.cache
+    # ##print c.tracks[0]
+    # #print '\n'.join('%s: %s' % z for z in c.album.items())

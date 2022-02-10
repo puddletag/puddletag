@@ -16,11 +16,11 @@ import urllib.request
 
 from xml.dom import minidom
 
-from ..audioinfo import DATA
-from ..constants import CHECKBOX, COMBO, TEXT
-from ..tagsources import (write_log, RetrievalError,
+from puddlestuff.audioinfo import DATA
+from puddlestuff.constants import CHECKBOX, COMBO, TEXT
+from puddlestuff.tagsources import (write_log, RetrievalError,
                           urlopen, parse_searchstring)
-from ..util import translate
+from puddlestuff.util import translate
 
 default_access_key = base64.b64decode('QUtJQUozS0JZUlVZUU41UFZRR0E=')
 default_secret_key = base64.b64decode('dmh6Q0ZaSEF6N0VvMmN5REt3STVnS1liU3ZFTCtSckx3c0tmanZEdA==')
@@ -67,7 +67,7 @@ def create_aws_url(aws_access_key_id, secret, query_dictionary):
 
     try:
         hm = hmac.new(secret, "GET\nwebservices.amazon.com\n/onca/xml\n" \
-                      + query, hashlib.sha256)
+                      +query, hashlib.sha256)
     except TypeError:
         raise RetrievalError(translate('Amazon',
                                        'Invalid Access or Secret Key'))
@@ -202,8 +202,8 @@ def parse_search_xml(text):
 
 
 def retrieve_album(info, image=MEDIUMIMAGE):
-    """Retrieves album from the information in info. 
-    image must be either one of image_types or None. 
+    """Retrieves album from the information in info.
+    image must be either one of image_types or None.
     If None, no image is retrieved."""
     if isinstance(info, str):
         asin = info
@@ -254,7 +254,6 @@ def search(artist=None, album=None):
     keywords = re.sub('(\s+)', '+', keywords)
     return keyword_search(keywords)
 
-
 # A couple of things you should be aware of.
 # If you're retrieving urls use puddlestuff.tagsources.urlopen instead of the
 # generic urllib functions. When I implement some progress bars, proxies, etc
@@ -270,6 +269,7 @@ def search(artist=None, album=None):
 # MIMETYPE: either 'image/jpg' or 'image/png'
 # DESCRIPTION: the image's description
 # IMAGETYPE: Index of the element corresponding to audioinfo.IMAGETYPES
+
 
 # The only thing required is just a Tag Source object,
 # which'll be the interface to puddletag.
@@ -325,10 +325,10 @@ class Amazon(object):
         # 2. The control type, either TEXT, COMBO or CHECKBOX
         # 3. For TEXT this argument is the default text. It's not required.
         #   For COMBO, the default argument is a list containing a list
-        #   of strings as the first item. 
+        #   of strings as the first item.
         #   And the default index as the second item. eg.
         #   [['text1', 'text2'], 1]
-        #   Checkboxes can either be checked or not so 
+        #   Checkboxes can either be checked or not so
         #   default arguments must either True or False.
 
         # When the user has finished editing, the Object.applyPrefs will be
