@@ -8,10 +8,10 @@ import urllib.parse
 import urllib.request
 
 from . import parse_html
-from ..audioinfo import isempty, CaselessDict
-from ..constants import CHECKBOX
-from ..puddleobjects import ratio
-from ..tagsources import (write_log, set_status, RetrievalError,
+from puddlestuff.audioinfo import isempty, CaselessDict
+from puddlestuff.constants import CHECKBOX
+from puddlestuff.puddleobjects import ratio
+from puddlestuff.tagsources import (write_log, set_status, RetrievalError,
                           urlopen, parse_searchstring, retrieve_cover, get_encoding, iri_to_uri)
 
 

@@ -3,17 +3,18 @@ import json
 import re
 import socket
 import time
+import numbers
 import urllib.error
 import urllib.parse
 import urllib.request
 from copy import deepcopy
 from io import StringIO
 
-from ..audioinfo import DATA, isempty
-from ..constants import CHECKBOX, COMBO, TEXT
-from ..tagsources import (
+from puddlestuff.audioinfo import DATA, isempty
+from puddlestuff.constants import CHECKBOX, COMBO, TEXT
+from puddlestuff.tagsources import (
     find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
-from ..util import translate
+from puddlestuff.util import translate
 
 R_ID_DEFAULT = 'discogs_id'
 R_ID = R_ID_DEFAULT
@@ -56,18 +57,13 @@ TRACK_KEYS = {
     'duration': '__length',
     'notes': 'discogs_notes'}
 
-INVALID_KEYS = [
+RELEASE_PROPERTIES_TO_IGNORE = [
     'status', 'resource_url', 'tracklist', 'thumb', 'formats', 'artists',
     'extraartists', 'images', 'videos', 'master_id', 'labels', 'companies',
     'series', 'released_formatted', 'identifiers', 'sub_tracks']
 
-
-class LastTime(object):
-    pass
-
-
-__lasttime = LastTime()
-__lasttime.time = time.time()
+__minimum_request_separation = 1  # second - no more than one request sent to discogs in this time frame
+__reference_time = 0  # A reference time. The initial value ensure first request goes ahead
 
 
 def convert_dict(d, keys=None):
@@ -81,19 +77,17 @@ def convert_dict(d, keys=None):
     return d
 
 
-def check_values(d):
+def capture_dict_values(d):
     ret = {}
     for key, v in d.items():
-        if key in INVALID_KEYS or isempty(v):
+        if key in RELEASE_PROPERTIES_TO_IGNORE or isempty(v) or isinstance(v, dict):
             continue
-        if hasattr(v, '__iter__') and hasattr(v, 'items'):
-            continue
-        elif not hasattr(v, '__iter__'):
-            v = str(v)
         elif isinstance(v, bytes):
-            v = v.decode('utf8')
-
-        ret[key] = v
+            ret[key] = v.decode('utf8')
+        elif isinstance(v, numbers.Number):
+            ret[key] = str(v)
+        else:
+            ret[key] = v
 
     return ret
 
@@ -134,7 +128,7 @@ def parse_tracklist(tlist):
 
         if people:
             info['involvedpeople_track'] = ';'.join(people)
-        tracks.append(check_values(info))
+        tracks.append(capture_dict_values(info))
     return tracks
 
 
@@ -167,8 +161,8 @@ def parse_album_json(data):
         '%s %s' % (z['entity_type_name'], z['name'])
         for z in data.get('companies', []))
     info['album'] = data['title']
-    cleaned_data = convert_dict(check_values(data), ALBUM_KEYS)
-    cleaned_data.update(check_values(convert_dict(info, ALBUM_KEYS)))
+    cleaned_data = convert_dict(capture_dict_values(data), ALBUM_KEYS)
+    cleaned_data.update(capture_dict_values(convert_dict(info, ALBUM_KEYS)))
     info = cleaned_data
 
     if 'images' in data:
@@ -179,8 +173,8 @@ def parse_album_json(data):
 
     return info, parse_tracklist(data['tracklist'])
 
-
-def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
+  
+  def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
     If None, no image is retrieved."""
@@ -250,9 +244,9 @@ def urlopen(url):
     request.add_header('Accept-Encoding', 'gzip')
     request.add_header('User-Agent', get_useragent())
 
-    if time.time() - __lasttime.time < 1:
-        time.sleep(1)
-    __lasttime.time = time.time()
+    while (time.time() - __reference_time) < __minimum_request_separation:
+        time.sleep(__minimum_request_separation)
+    __reference_time = time.time()
 
     try:
         data = urllib.request.urlopen(request).read()

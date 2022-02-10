@@ -350,6 +350,7 @@ class SortOptionEditor(QDialog):
 
 
 class SettingsDialog(QWidget):
+
     def __init__(self, parent=None, status=None):
         QWidget.__init__(self, parent)
         self.title = translate('Settings', 'Tag Sources')
@@ -570,6 +571,8 @@ def tag_source_search(ts, group, files):
     return ret, files
 
 
+#############################################################################
+# The Main Tag Sources Window
 class MainWin(QWidget):
     writepreview = pyqtSignal(name='writepreview')
     setpreview = pyqtSignal(object, name='setpreview')
@@ -608,6 +611,10 @@ class MainWin(QWidget):
         self.curSource = self.__sources[0]
         self.__sourceFields = [[] for z in self.__sources]
 
+        ##################################################################
+        # Add widgets to the window
+
+        # The Tag Source selector and its label
         self.sourcelist = QComboBox()
         self.sourcelist.addItems([ts.name for ts in self.__sources])
         connect(self.sourcelist, 'currentIndexChanged', self.changeSource)
@@ -615,83 +622,104 @@ class MainWin(QWidget):
         sourcelabel = QLabel(translate("WebDB", 'Sour&ce: '))
         sourcelabel.setBuddy(self.sourcelist)
 
+        # The Preferences/Configuration button (beside the Tag Source selector)
         preferences = QToolButton()
         preferences.setIcon(QIcon(':/preferences.png'))
         preferences.setToolTip(translate("WebDB", 'Configure'))
         self.__preferencesButton = preferences
         connect(preferences, 'clicked', self.configure)
 
+        # The Search text box
         self.searchEdit = QLineEdit()
         self.searchEdit.setToolTip(DEFAULT_SEARCH_TIP)
         connect(self.searchEdit, 'returnPressed', self.search)
 
+        # The Search button
         self.searchButton = QPushButton(translate("WebDB", "&Search"))
         self.searchButton.setDefault(True)
         self.searchButton.setAutoDefault(True)
         connect(self.searchButton, "clicked", self.search)
 
-        self.submitButton = QPushButton(translate("WebDB",
-                                                  "S&ubmit Tags"))
-        connect(self.submitButton, "clicked", self.submit)
-
-        write_preview = QPushButton(translate("WebDB", '&Write'))
-        connect(write_preview, "clicked", self.writePreview)
-
-        clear = QPushButton(translate("Previews", "Clea&r preview"))
-        connect(clear, "clicked",
-                lambda: self.disable_preview_mode.emit())
-
+        # The instruction/feedback label (between Search box and the results)
         self.label = QLabel(translate("WebDB",
                                       "Select files and click on Search to retrieve metadata."))
-        connect(status_obj, 'statusChanged', self.label.setText)
 
+        # The results box (a tree view of album releases)
         self.listbox = ReleaseWidget(status, self.curSource)
-        self.__updateEmpty = QCheckBox(translate("WebDB",
-                                                 'Update empty fields only.'))
         connect(self.listbox, 'statusChanged', self.label.setText)
         connect(self.listbox, 'preview', self.emit_preview)
         connect(self.listbox, 'exactMatches', self.emitExact)
 
-        self.__autoRetrieve = QCheckBox(translate("WebDB",
-                                                  'Automatically retrieve matches.'))
+        # An link to the web page sourced from
+        linklabel = QLabel()
+        linklabel.setOpenExternalLinks(True)
+        connect(self.listbox, 'infoChanged', linklabel.setText)
 
+        # The Submit button (optional, if the tag source support submission)
+        self.submitButton = QPushButton(translate("WebDB",
+                                                  "S&ubmit Tags"))
+        connect(self.submitButton, "clicked", self.submit)
+
+        # The Write button (beneath the Search results)
+        write_preview = QPushButton(translate("WebDB", '&Write'))
+        connect(write_preview, "clicked", self.writePreview)
+
+        # The Clear preview button (beneath the Search results)
+        clear = QPushButton(translate("Previews", "Clea&r preview"))
+        connect(clear, "clicked", self.disable_preview_mode.emit)
+
+        # The Fields row
         self.__fieldsEdit = FieldsEdit()
         self.__fieldsEdit.setToolTip(FIELDLIST_TIP)
         connect(self.__fieldsEdit, 'fieldsChanged', self.__changeFields)
 
-        infolabel = QLabel()
-        infolabel.setOpenExternalLinks(True)
-        connect(self.listbox, 'infoChanged', infolabel.setText)
+        # The first fields options
+        # If checked, only fields that aren’t already in the file will get updated.
+        self.__updateEmpty = QCheckBox(translate("WebDB",
+                                                 'Update empty fields only.'))
 
-        connect(status_obj, 'logappend', self.logappend)
+        # The Second fields option (Automatically retrieve matches)
+        # If checked, the album that best matches the retrieved albums will be automatically retrieved.
+        # Uses configured preferences to automate thinsg:
+        #    https://docs.puddletag.net/source/preferences.html#auto-retrieval-prefs
+        self.__autoRetrieve = QCheckBox(translate("WebDB",
+                                                  'Automatically retrieve matches.'))
 
+        # Layout Tag Source row
         sourcebox = QHBoxLayout()
         sourcebox.addWidget(sourcelabel)
         sourcebox.addWidget(self.sourcelist, 1)
         sourcebox.addWidget(preferences)
 
-        hbox = QHBoxLayout()
-        hbox.addWidget(self.searchButton, 0)
-        hbox.addWidget(self.searchEdit, 1)
+        # Layout the Search row
+        searchbox = QHBoxLayout()
+        searchbox.addWidget(self.searchButton, 0)
+        searchbox.addWidget(self.searchEdit, 1)
 
+        # Layout the Response row
+        responsebox = QHBoxLayout()
+        responsebox.addWidget(linklabel, 1)
+        responsebox.addStretch()
+        responsebox.addWidget(self.submitButton)
+        responsebox.addWidget(write_preview)
+        responsebox.addWidget(clear)
+
+        # Stack the rows
         vbox = QVBoxLayout()
         vbox.addLayout(sourcebox)
-        vbox.addLayout(hbox)
-
+        vbox.addLayout(searchbox)
         vbox.addWidget(self.label)
         vbox.addWidget(self.listbox, 1)
-        hbox = QHBoxLayout()
-        hbox.addWidget(infolabel, 1)
-        hbox.addStretch()
-        hbox.addWidget(self.submitButton)
-        hbox.addWidget(write_preview)
-        hbox.addWidget(clear)
-        vbox.addLayout(hbox)
-
+        vbox.addLayout(responsebox)
         vbox.addWidget(self.__fieldsEdit)
         vbox.addWidget(self.__updateEmpty)
         vbox.addWidget(self.__autoRetrieve)
+
         self.setLayout(vbox)
+
+        connect(status_obj, 'statusChanged', self.label.setText)
+        connect(status_obj, 'logappend', self.logappend)
+
         self.changeSource(0)
 
     def _applyPrefs(self, prefs):
@@ -780,7 +808,7 @@ class MainWin(QWidget):
 
     def loadSettings(self):
         settings = PuddleConfig(os.path.join(CONFIGDIR, 'tagsources.conf'))
-        get = lambda s, k, i=False: settings.get('tagsources', s, k, i)
+        get = lambda s, k, i = False: settings.get('tagsources', s, k, i)
 
         source = get('lastsource', 'Musicbrainz')
         self.__sourceFields = [settings.get('tagsourcetags', ts.name, [])

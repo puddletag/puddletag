@@ -540,6 +540,10 @@ class MainWin(QMainWindow):
             QMessageBox.information(self._table,
                                     translate("Defaults", 'Error'),
                                     translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror))
+        except (UnicodeError) as e:
+            QMessageBox.information(self._table,
+                                    translate("Defaults", 'Error'),
+                                    translate("Playlist", 'The playlist is not encoded in UTF-8'))
         except Exception as e:
             QMessageBox.information(self._table, translate("Defaults", 'Error'),
                                     translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(str(e)))

@@ -18,7 +18,7 @@ configobj==5.0.6
     # via -r requirements.in
 idna==3.3
     # via requests
-levenshtein==0.16.0
+levenshtein==0.17.0
     # via -r requirements.in
 lxml==4.7.1
     # via -r requirements.in

@@ -18,8 +18,8 @@
 
 import os
 
-from ..constants import TAGSOURCE, HOMEDIR, TEXT
-from ..puddleobjects import gettags, getfiles, PuddleConfig
+from puddlestuff.constants import TAGSOURCE, HOMEDIR, TEXT
+from puddlestuff.puddleobjects import gettags, getfiles, PuddleConfig
 
 # print 'example2'
 
@@ -62,7 +62,7 @@ class Example(object):
         ret = []
         matches = {}
         # set_status('Searching %s - %s' % (artist, albums[0]))
-        ##write_log('Retrieving %s %s' % (artist, albums[0]))
+        # #write_log('Retrieving %s %s' % (artist, albums[0]))
         albumtuple = [z.split(' - ', 1) for z in self._dirs
                       if z.startswith(artist) and ' - ' in z]
         albumtuple = [(i, z) for i, z in albumtuple]
