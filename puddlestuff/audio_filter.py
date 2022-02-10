@@ -36,15 +36,15 @@ def parse_arg(audio, text):
     return ""
 
 
-def wrap_nonzero(nonzero):
-    def __nonzero__(self):
+def wrap_bool(original):
+    def __bool__(self):
         if hasattr(self, 'args'):
             self.args = [parse_arg(self.audio, z) for z in self.args]
         else:
             self.arg = parse_arg(self.audio, self.arg)
-        return nonzero(self)
+        return original(self)
 
-    return __nonzero__
+    return __bool__
 
 
 class BoolOperand(object):
@@ -53,8 +53,8 @@ class BoolOperand(object):
 
 
 class BoolAnd(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('and: ' + str(self.args))
         for a in self.args:
             if not bool(a):
@@ -63,8 +63,8 @@ class BoolAnd(BoolOperand):
 
 
 class BoolOr(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('or: ' + str(self.args))
         for a in self.args:
             if bool(a):
@@ -76,8 +76,8 @@ class BoolNot(BoolOperand):
     def __init__(self, t):
         self.arg = t[0][1]
 
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('not: ' + str(self.arg))
         if isinstance(self.arg, str):
             arg = self.arg.lower()
@@ -92,8 +92,8 @@ class BoolNot(BoolOperand):
 
 
 class Greater(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('greater: ' + str(self.args))
         try:
             self.args = list(map(float, self.args))
@@ -103,8 +103,8 @@ class Greater(BoolOperand):
 
 
 class Less(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('less: ' + str(self.args))
         try:
             self.args = list(map(float, self.args))
@@ -114,8 +114,8 @@ class Less(BoolOperand):
 
 
 class Equal(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('equal: ' + str(self.args))
         return str_cmp(self.args[0], self.args[1])
 
@@ -124,7 +124,7 @@ class Missing(BoolOperand):
     def __init__(self, t):
         self.arg = t[0][1]
 
-    def __nonzero__(self):
+    def __bool__(self):
         logging.debug('missing: ' + str(self.arg))
         if getattr(self, "audio", None):
             return not (self.arg in self.audio)
@@ -135,7 +135,7 @@ class Present(BoolOperand):
     def __init__(self, t):
         self.arg = t[0][1]
 
-    def __nonzero__(self):
+    def __bool__(self):
         logging.debug('present: ' + str(self.arg))
         if getattr(self, "audio", None):
             return (self.arg in self.audio)
@@ -143,22 +143,22 @@ class Present(BoolOperand):
 
 
 class BoolIs(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('is: ' + str(self.args))
         return str_cmp(self.args[0], self.args[1])
 
 
 class Has(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('has: ' + str(self.args))
         return self.args[1].lower() in self.args[0].lower()
 
 
 class Matches(BoolOperand):
-    @wrap_nonzero
-    def __nonzero__(self):
+    @wrap_bool
+    def __bool__(self):
         logging.debug('matches: ' + str(self.args))
         return not re.search(self.args[1].lower(), self.args[0].lower()) is None
 
@@ -187,7 +187,10 @@ bool_expr.enablePackrat()
 def parse(audio, expr):
     for i in bool_exprs:
         i[3].audio = audio
-    res = bool_expr.parseString(expr)[0]
+    try:
+        res = bool_expr.parseString(expr)[0]
+    except ParseException as e:
+        res = expr
     if isinstance(res, str):
         res = res.lower()
         for field, value in audio.items():
@@ -196,6 +199,7 @@ def parse(audio, expr):
             elif isinstance(value, (int, float)):
                 value = [str(value)]
             try:
+                logging.debug('simple filter: %s in %s', res, value)
                 if res in '\\\\'.join(value).lower():
                     return True
             except TypeError as e:
