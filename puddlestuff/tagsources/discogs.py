@@ -3,6 +3,7 @@ import json
 import re
 import socket
 import time
+import numbers
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -56,7 +57,7 @@ TRACK_KEYS = {
     'duration': '__length',
     'notes': 'discogs_notes'}
 
-INVALID_KEYS = [
+RELEASE_PROPERTIES_TO_IGNORE = [
     'status', 'resource_url', 'tracklist', 'thumb', 'formats', 'artists',
     'extraartists', 'images', 'videos', 'master_id', 'labels', 'companies',
     'series', 'released_formatted', 'identifiers', 'sub_tracks']
@@ -81,19 +82,17 @@ def convert_dict(d, keys=None):
     return d
 
 
-def check_values(d):
+def capture_dict_values(d):
     ret = {}
     for key, v in d.items():
-        if key in INVALID_KEYS or isempty(v):
+        if key in RELEASE_PROPERTIES_TO_IGNORE or isempty(v) or isinstance(v, dict):
             continue
-        if hasattr(v, '__iter__') and hasattr(v, 'items'):
-            continue
-        elif not hasattr(v, '__iter__'):
-            v = str(v)
         elif isinstance(v, bytes):
-            v = v.decode('utf8')
-
-        ret[key] = v
+            ret[key] = v.decode('utf8')
+        elif isinstance(v, numbers.Number):
+            ret[key] = str(v)
+        else:
+            ret[key] = v
 
     return ret
 
@@ -144,7 +143,7 @@ def parse_tracklist(tlist):
 
         if people:
             info['involvedpeople_track'] = ';'.join(people)
-        tracks.append(check_values(info))
+        tracks.append(capture_dict_values(info))
     return tracks
 
 
@@ -177,8 +176,8 @@ def parse_album_json(data):
         '%s %s' % (z['entity_type_name'], z['name'])
         for z in data.get('companies', []))
     info['album'] = data['title']
-    cleaned_data = convert_dict(check_values(data), ALBUM_KEYS)
-    cleaned_data.update(check_values(convert_dict(info, ALBUM_KEYS)))
+    cleaned_data = convert_dict(capture_dict_values(data), ALBUM_KEYS)
+    cleaned_data.update(capture_dict_values(convert_dict(info, ALBUM_KEYS)))
     info = cleaned_data
 
     if 'images' in data:
@@ -221,7 +220,7 @@ def parse_search_json(data):
             translate('Discogs', '%s at Discogs.com') % info['album'],
             SITE_URL + info['discogs_uri'])
 
-        albums.append(check_values(info))
+        albums.append(capture_dict_values(info))
 
     return albums
 
