@@ -94,35 +94,36 @@ class StoredTags(QScrollArea):
             # print 'loading', time.time()
             while self._loading:
                 QApplication.processEvents()
-            self._loading = True
-            self._init()
-            if not tags:
+            try:
+                self._loading = True
+                self._init()
+                if not tags:
+                    return
+
+                grid = self._grid
+
+                offset = 1
+                for title, values in tags:
+                    if not values:
+                        continue
+                    t_label = QLabel(title)
+                    t_label.setFont(self._boldfont)
+                    grid.addWidget(t_label, offset - 1, 0)
+                    for row, (tag, value) in enumerate(values):
+                        field = QLabel('%s:' % tag)
+                        field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+                        grid.addWidget(field, row + offset, 0)
+                        vlabel = QLabel(value)
+                        grid.addWidget(vlabel, row + offset, 1)
+                    grid.setRowMinimumHeight(grid.rowCount(),
+                                             vlabel.sizeHint().height())
+                    offset += grid.rowCount() + 1
+                vbox = QVBoxLayout()
+                vbox.addStretch()
+                grid.addLayout(vbox, offset + 1 + offset, 0, -1, -1)
+                grid.setRowStretch(offset + 1, 1)
+            finally:
                 self._loading = False
-                return
-
-            grid = self._grid
-
-            offset = 1
-            for title, values in tags:
-                if not values:
-                    continue
-                t_label = QLabel(title)
-                t_label.setFont(self._boldfont)
-                grid.addWidget(t_label, offset - 1, 0)
-                for row, (tag, value) in enumerate(values):
-                    field = QLabel('%s:' % tag)
-                    field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-                    grid.addWidget(field, row + offset, 0)
-                    vlabel = QLabel(value)
-                    grid.addWidget(vlabel, row + offset, 1)
-                grid.setRowMinimumHeight(grid.rowCount(),
-                                         vlabel.sizeHint().height())
-                offset += grid.rowCount() + 1
-            vbox = QVBoxLayout()
-            vbox.addStretch()
-            grid.addLayout(vbox, offset + 1 + offset, 0, -1, -1)
-            grid.setRowStretch(offset + 1, 1)
-            self._loading = False
 
         thread = PuddleThread(retrieve_tag, self)
         thread.threadfinished.connect(_load)
