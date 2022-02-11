@@ -92,16 +92,6 @@ def capture_dict_values(d):
     return ret
 
 
-def keyword_search(keywords):
-    write_log(
-        translate("Discogs",
-                  'Retrieving search results for keywords: %s') % keywords)
-    keywords = re.sub('(\s+)', '+', keywords)
-    url = SEARCH_URL % keywords
-    text = urlopen(url)
-    return parse_search_json(json.loads(text))
-
-
 def parse_tracklist(tlist):
     tracks = []
     for t in tlist:
@@ -183,43 +173,7 @@ def parse_album_json(data):
 
     return info, parse_tracklist(data['tracklist'])
 
-
-def parse_search_json(data):
-    """Parses the xml retrieved after entering a search query. Returns a
-    list of the albums found.
-    """
-
-    results = data.get('results', []) + data.get('exactresults', [])
-
-    if not results:
-        return []
-
-    albums = []
-
-    for result in results:
-        info = result.copy()
-        try:
-            artist, album = result['title'].split(' - ')
-        except ValueError:
-            album = result['title']
-            artist = ''
-
-        info = convert_dict(info, ALBUM_KEYS)
-
-        info['artist'] = artist
-        info['album'] = album
-
-        info['discogs_id'] = info['#r_id']
-
-        info['#extrainfo'] = (
-            translate('Discogs', '%s at Discogs.com') % info['album'],
-            SITE_URL + info['discogs_uri'])
-
-        albums.append(capture_dict_values(info))
-
-    return albums
-
-
+  
 def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
@@ -282,16 +236,6 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     except KeyError:
         pass
     return info, ret[1]
-
-
-def search(artist=None, album=None):
-    if artist and album:
-        keywords = ' '.join([artist, album])
-    elif artist:
-        keywords = artist
-    else:
-        keywords = album
-    return keyword_search(keywords)
 
 
 def urlopen(url):
