@@ -174,7 +174,7 @@ def parse_album_json(data):
     return info, parse_tracklist(data['tracklist'])
 
   
-  def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
+def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     """Retrieves album from the information in info.
     image must be either one of image_types or None.
     If None, no image is retrieved."""
