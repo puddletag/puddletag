@@ -143,16 +143,19 @@ if lang in ('--help', '-h'):
     print(usage)
     sys.exit(0)
 
-f = open('puddletag.pro', 'r+')
-for line in f.readlines():
+# Update the qmake project file
+with open('puddletag.pro', 'r') as f:
+    lines = f.readlines()
+
+for i, line in enumerate(lines):
     if line.startswith('TRANSLATIONS'):
-        f.seek(-len(line), 1)
         tr = ' translations/puddletag_%s.ts\n' % lang
         if tr.strip() not in line:
-            line = line.strip() + tr
-        f.write(line)
+            lines[i] = line.strip() + tr
         break
-f.close()
+
+with open('puddletag.pro', 'w') as f:
+    f.writelines(lines)
 
 if verbose:
     print('Updating translations...\n')
@@ -161,11 +164,11 @@ write_translations()
 
 try:
     if verbose:
-        call(['pylupdate4', '-verbose', 'puddletag.pro'])
+        call(['pylupdate5', '-verbose', 'puddletag.pro'])
     else:
-        call(['pylupdate4', 'puddletag.pro'])
+        call(['pylupdate5', 'puddletag.pro'])
 except OSError:
-    print('Error: pylupdate4 is not installed.')
+    print('Error: pylupdate5 is not installed.')
     sys.exit(2)
 
 if verbose:
