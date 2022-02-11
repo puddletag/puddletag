@@ -282,8 +282,9 @@ def parse_release(node):
     info = convert_dict(info, ALBUM_KEYS)
     info['#album_id'] = info['mbrainz_album_id']
 
-    if 'count' in info:
-        del (info['count'])
+    for k in ['count', 'track-list']:
+        if k in info:
+            del info[k]
 
     if 'disambiguation' in info:
         info['album'] = "%s (%s)" % (info['album'], info['disambiguation'])

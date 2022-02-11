@@ -477,7 +477,9 @@ def get_popm(frame):
 
 
 def to_string(value):
-    if isinstance(value, str):
+    if isinstance(value, bytes):
+        return value.decode('utf8')
+    elif isinstance(value, str):
         return value
     else:
         return to_string(value[0])
@@ -519,11 +521,13 @@ def popm_handler(frames):
 
 
 def create_ufid(key, value):
-    if not isinstance(value, str):
+    if not isinstance(value, bytes):
         try:
             value = value[0]
         except IndexError:
             return {}
+    if isinstance(value, str):
+        value = value.encode('utf8')
     owner = key[len('ufid:'):]
     frame = id3.UFID(owner, value)
     frame.get_value = partial(get_ufid, frame)
@@ -532,21 +536,27 @@ def create_ufid(key, value):
 
 
 def set_ufid(frame, value):
-    if not isinstance(value, str):
+    if not isinstance(value, bytes):
         try:
             value = value[0]
         except IndexError:
             return {}
+    if isinstance(value, str):
+        value = value.encode('utf8')
     frame.data = value
 
 
 def get_ufid(frame):
-    return [frame.data]
+    return [frame.data.decode('utf8')]
 
 
 def ufid_handler(frames):
     d = {}
     for frame in frames:
+        try:
+            frame.data.decode('utf8')
+        except UnicodeDecodeError:
+            continue
         frame.get_value = get_factory(get_ufid, frame)
         frame.set_value = set_factory(set_ufid, frame)
         d['ufid:' + frame.owner] = frame
