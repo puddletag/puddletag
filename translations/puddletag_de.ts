@@ -1820,8 +1820,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     &lt;li&gt;Kombinationen wie &lt;b&gt;__selected, artist, title&lt;/b&gt; sind
     erlaubt.&lt;/li&gt;
     &lt;li&gt;Aber die Verwendung von &lt;b&gt;__selected&lt;/b&gt; in Aktionen ist &lt;b&gt;nicht&lt;/b&gt;erlaubt.&lt;/li&gt;
-    &lt;li&gt;&apos;~&apos; wird in alle diesem Feld folgenden Felder schreiben 
-    . z.B. &lt;b&gt;~artist, title&lt;/b&gt; wird die in den Dateien gefundenen Daten 
+    &lt;li&gt;&apos;~&apos; wird in alle diesem Feld folgenden Felder schreiben
+    . z.B. &lt;b&gt;~artist, title&lt;/b&gt; wird die in den Dateien gefundenen Daten
      in alle Felder außer Interpret und
     Titel schreiben.&lt;li&gt;
     &lt;/ul&gt;</translation>
@@ -3438,57 +3438,6 @@ Tatsächlich: %2</translation>
         <source>Page doesn&apos;t exist</source>
         <translation>Seite existiert nicht</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="151"/>
-        <source>Import tags from text file</source>
-        <translation>Importiere Tags aus Textdatei</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="157"/>
-        <source>Text</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="160"/>
-        <source>Tag preview</source>
-        <translation>Tagvorschau</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="181"/>
-        <source>&amp;Select File</source>
-        <translation>Au&amp;sgewählte Datei</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="183"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>&amp;Zwischenablage einfügen</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="248"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Die Datei &lt;b&gt;%1&lt;/b&gt; konnte nicht geladen werden.&lt;br /&gt; Wollen Sie eine andere Datei auswählen?</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>Error</source>
-        <translation>Fehler</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Ja</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;No</source>
-        <translation>&amp;Nein</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="24"/>
         <source>Retrieved Albums (sorted by %s)</source>
@@ -3683,6 +3632,55 @@ Tatsächlich: %2</translation>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="878"/>
         <source>Submission completed.</source>
         <translation>Übermittlung abgeschlossen.</translation>
+    </message>
+
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="151"/>
+        <source>Import tags from text file</source>
+        <translation>Importiere Tags aus Textdatei</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="157"/>
+        <source>Text</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="160"/>
+        <source>Tag preview</source>
+        <translation>Tagvorschau</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="181"/>
+        <source>&amp;Select File</source>
+        <translation>Au&amp;sgewählte Datei</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="183"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>&amp;Zwischenablage einfügen</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="248"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Die Datei &lt;b&gt;%1&lt;/b&gt; konnte nicht geladen werden.&lt;br /&gt; Wollen Sie eine andere Datei auswählen?</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>Error</source>
+        <translation>Fehler</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Ja</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;No</source>
+        <translation>&amp;Nein</translation>
     </message>
 </context>
 </TS>

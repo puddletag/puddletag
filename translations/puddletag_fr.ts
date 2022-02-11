@@ -2977,7 +2977,7 @@ Continuer ?</translation>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="194"/>
         <source>&lt;p&gt;Enter search parameters here.
         If empty, the selected files are used.&lt;/p&gt;
-        
+
         &lt;ul&gt;
         &lt;li&gt;Enter any text to search for an album. Eg.
             &lt;b&gt;Southernplayalisticadillacmuzik&lt;/b&gt;&lt;/li&gt;
@@ -3003,7 +3003,7 @@ Continuer ?</translation>
 &lt;lI&gt;Pour des combinaisons Artiste/Album multiples, séparez les par des &apos;|&apos;. Par ex &lt;b&gt;Amy Winehouse;Back To Black|Outkast;Atliens&lt;/b&gt;.&lt;/li&gt;
 &lt;li&gt;Pour lister les albums d&apos;un artiste, laissez la partie Album vide, mais laissez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;).
 Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme dans &lt;b&gt;;Resurrection.&lt;/li&gt;
-&lt;li&gt;Récupérer tous les albums d&apos;un artiste via son ID MusicBrainz est possible en préfixant la recherche par &lt;b&gt;:a&lt;/b&gt; comme dans &lt;b&gt;:a f59c5520-5f46-4d2c-b2c4-822eabf53419&lt;/b&gt; 
+&lt;li&gt;Récupérer tous les albums d&apos;un artiste via son ID MusicBrainz est possible en préfixant la recherche par &lt;b&gt;:a&lt;/b&gt; comme dans &lt;b&gt;:a f59c5520-5f46-4d2c-b2c4-822eabf53419&lt;/b&gt;
 (les espaces superflus seront supprimés.)&lt;/li&gt;
 &lt;li&gt;De la même façon un album peut être récupérer via son ID MusicBrainz ID en préfixant la recherche par &lt;b&gt;:b&lt;/b&gt; comme dans &lt;b&gt;:b 34bb630-8061-454c-b35d-8f7131f4ff08&lt;/b&gt;
 &lt;/li&gt;&lt;/ul&gt;</translation>
@@ -3813,57 +3813,6 @@ Réel: %2</translation>
         <source>python-musicbrainz2 wasn&apos;t found.</source>
         <translation type="obsolete">python-musicbrainz2 non trouvé.</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="151"/>
-        <source>Import tags from text file</source>
-        <translation>Importer les tags depuis un fichier texte</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="157"/>
-        <source>Text</source>
-        <translation>Texte</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="160"/>
-        <source>Tag preview</source>
-        <translation>Aperçu du tag</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="181"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Sélectionner le fichier</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="183"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>Coller le &amp;presse-papier</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="248"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Le fichier &lt;b&gt;%1&lt;/b&gt; n&apos;a pu être chargé.&lt;br /&gt; Voulez-vous en choisir un autre ?</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>Error</source>
-        <translation>Erreur</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Oui</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;No</source>
-        <translation>&amp;Non</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="83"/>
         <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
@@ -4068,6 +4017,54 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
         <location filename="../puddlestuff/mainwin/tagsources.py" line="878"/>
         <source>Submission completed.</source>
         <translation>Soumission terminée.</translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="151"/>
+        <source>Import tags from text file</source>
+        <translation>Importer les tags depuis un fichier texte</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="157"/>
+        <source>Text</source>
+        <translation>Texte</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="160"/>
+        <source>Tag preview</source>
+        <translation>Aperçu du tag</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="181"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Sélectionner le fichier</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="183"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>Coller le &amp;presse-papier</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="248"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Le fichier &lt;b&gt;%1&lt;/b&gt; n&apos;a pu être chargé.&lt;br /&gt; Voulez-vous en choisir un autre ?</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>Error</source>
+        <translation>Erreur</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Oui</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;No</source>
+        <translation>&amp;Non</translation>
     </message>
 </context>
 </TS>

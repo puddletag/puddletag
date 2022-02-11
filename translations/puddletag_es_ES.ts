@@ -3472,57 +3472,6 @@ Real: %2</translation>
         <source>Page doesn&apos;t exist</source>
         <translation>Página inexistente</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="214"/>
-        <source>Import tags from text file</source>
-        <translation>Importar etiquetas desde archivo de texto</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="220"/>
-        <source>Text</source>
-        <translation>Texto</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="223"/>
-        <source>Tag preview</source>
-        <translation>Vista previa etiqueta</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="244"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Seleccionar archivo</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="246"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>&amp;Pegar portapapeles</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="311"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>El archivo &lt;b&gt;%1&lt;/b&gt; no puede cargarse.&lt;br /&gt; Quiere elegir otro?</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="315"/>
-        <source>Error</source>
-        <translation>Error</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="315"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Sí</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="315"/>
-        <source>&amp;No</source>
-        <translation>&amp;No</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="24"/>
         <source>Retrieved Albums (sorted by %s)</source>
@@ -3722,6 +3671,54 @@ Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&g
         <location filename="../puddlestuff/mainwin/tagsources.py" line="904"/>
         <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Las etiquetas fueron escritas.&lt;/b&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="214"/>
+        <source>Import tags from text file</source>
+        <translation>Importar etiquetas desde archivo de texto</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="220"/>
+        <source>Text</source>
+        <translation>Texto</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="223"/>
+        <source>Tag preview</source>
+        <translation>Vista previa etiqueta</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="244"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Seleccionar archivo</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="246"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>&amp;Pegar portapapeles</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="311"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>El archivo &lt;b&gt;%1&lt;/b&gt; no puede cargarse.&lt;br /&gt; Quiere elegir otro?</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="315"/>
+        <source>Error</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="315"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Sí</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="315"/>
+        <source>&amp;No</source>
+        <translation>&amp;No</translation>
     </message>
 </context>
 </TS>

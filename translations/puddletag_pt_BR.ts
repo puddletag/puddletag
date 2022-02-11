@@ -1835,7 +1835,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; por os ícones do Oxygen.
             . Eg &lt;b&gt;~artist, title&lt;/b&gt; will write to all but the artist and
             title fields found in the selected files.&lt;li&gt;
             &lt;/ul&gt;</source>
-        <translation type="obsolete">&lt;p&gt;Campos que irão ser 
+        <translation type="obsolete">&lt;p&gt;Campos que irão ser
             gravados.&lt;/p&gt;
 
             &lt;ul&gt;
@@ -1846,7 +1846,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; por os ícones do Oxygen.
             permitidas.&lt;/li&gt;
             &lt;li&gt;Mas usar &lt;b&gt;__selecionado&lt;/b&gt; em Ações &lt;b&gt;não&lt;/b&gt; é permitido.&lt;/li&gt;
             &lt;li&gt;&apos;~&apos; será usado para gravar todos campos, exceto os que estão associados a ele
-            . Ex. &lt;b&gt;~artista, título&lt;/b&gt; irá gravar em todos, mas os campos artista e 
+            . Ex. &lt;b&gt;~artista, título&lt;/b&gt; irá gravar em todos, mas os campos artista e
             título encontrados serão gravados somente nos arquivos selecionados.&lt;li&gt;
             &lt;ul&gt;</translation>
     </message>
@@ -2051,7 +2051,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; por os ícones do Oxygen.
             tag sources are also supported, just use the name of the
             tag source as Tag, eg. &lt;b&gt;Tag=MusicBrainz,
             Source=artist,Target=performer&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation>&lt;ul&gt;&lt;li&gt;Tag é o formato ao qual o mapeamento se aplica 
+        <translation>&lt;ul&gt;&lt;li&gt;Tag é o formato ao qual o mapeamento se aplica
             Algums deles são &lt;b&gt;ID3, APEv2, MP4, or VorbisComment&lt;/b&gt;.
             &lt;/li&gt;&lt;li&gt;Campos serão mapeados da Origem para o Destino, significando que se a Origem é encotrada em uma tag, será editável no                                                                                                                                                                                                                                                 puddletag usando o Destino.&lt;/li&gt;
             &lt;li&gt;Ex. Para &lt;x&gt;Tag=VorbisComment, Origem=organização,
@@ -3506,58 +3506,6 @@ Real: %2</translation>
         <source>Page doesn&apos;t exist</source>
         <translation>Página não existe</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="151"/>
-        <source>Import tags from text file</source>
-        <translation>Importar tags de arquivo de texto</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="157"/>
-        <source>Text</source>
-        <translation>Texto</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="160"/>
-        <source>Tag preview</source>
-        <translation>Pre-visualização da tag</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="181"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Selecionar Arquivo</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="183"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>&amp;Colar</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="248"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>O arquivo &lt;b&gt;%1&lt;/b&gt; não pôde ser carregado. &lt;br /&gt; Você deseja escolher outro?
-</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>Error</source>
-        <translation>Erro</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Sim</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;No</source>
-        <translation>&amp;Não</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="24"/>
         <source>Retrieved Albums (sorted by %s)</source>
@@ -3752,6 +3700,55 @@ Real: %2</translation>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="878"/>
         <source>Submission completed.</source>
         <translation>Envio concluído</translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="151"/>
+        <source>Import tags from text file</source>
+        <translation>Importar tags de arquivo de texto</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="157"/>
+        <source>Text</source>
+        <translation>Texto</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="160"/>
+        <source>Tag preview</source>
+        <translation>Pre-visualização da tag</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="181"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Selecionar Arquivo</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="183"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>&amp;Colar</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="248"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>O arquivo &lt;b&gt;%1&lt;/b&gt; não pôde ser carregado. &lt;br /&gt; Você deseja escolher outro?
+</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>Error</source>
+        <translation>Erro</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Sim</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;No</source>
+        <translation>&amp;Não</translation>
     </message>
 </context>
 </TS>

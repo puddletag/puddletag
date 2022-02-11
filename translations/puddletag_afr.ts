@@ -2643,7 +2643,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="185"/>
         <source>&lt;p&gt;Enter search parameters here.
         If empty, the selected files are used.&lt;/p&gt;
-        
+
         &lt;ul&gt;
         &lt;li&gt;Enter any text to search for an album. Eg.
             &lt;b&gt;Southernplayalisticadillacmuzik&lt;/b&gt;&lt;/li&gt;
@@ -2719,7 +2719,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="194"/>
         <source>&lt;p&gt;Enter search parameters here.
         If empty, the selected files are used.&lt;/p&gt;
-        
+
         &lt;ul&gt;
         &lt;li&gt;Enter any text to search for an album. Eg.
             &lt;b&gt;Southernplayalisticadillacmuzik&lt;/b&gt;&lt;/li&gt;
@@ -3466,62 +3466,6 @@ Egte: %2</translation>
         <source>python-musicbrainz2 wasn&apos;t found.</source>
         <translation>python-musicbrainz2 was nie gevind nie.</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="151"/>
-        <source>Import tags from file</source>
-        <translation type="obsolete">Kry tags van file</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="136"/>
-        <source>Text</source>
-        <translation>Woorde</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="139"/>
-        <source>Tag preview</source>
-        <translation>Tag bevestiging</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="160"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Kies File</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="162"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>&amp;Druk Clipboard</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="230"/>
-        <source>Error</source>
-        <translation>Verkeerd</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="226"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Die file &lt;b&gt;%1&lt;/b&gt; kon nie opgelaai word nie.&lt;br /&gt; Wil jy &apos;n ander een kies?</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="230"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Ja</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="230"/>
-        <source>&amp;No</source>
-        <translation>&amp;Nee</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="130"/>
-        <source>Import tags from text file</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="puddlestuff/mainwin/releasewidget.py" line="93"/>
         <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
@@ -3710,6 +3654,59 @@ Egte: %2</translation>
     <message>
         <location filename="puddlestuff/mainwin/tagsources.py" line="645"/>
         <source>An unhandled error occurred: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="151"/>
+        <source>Import tags from file</source>
+        <translation type="obsolete">Kry tags van file</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="136"/>
+        <source>Text</source>
+        <translation>Woorde</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="139"/>
+        <source>Tag preview</source>
+        <translation>Tag bevestiging</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="160"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Kies File</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="162"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>&amp;Druk Clipboard</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="230"/>
+        <source>Error</source>
+        <translation>Verkeerd</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="226"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Die file &lt;b&gt;%1&lt;/b&gt; kon nie opgelaai word nie.&lt;br /&gt; Wil jy &apos;n ander een kies?</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="230"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Ja</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="230"/>
+        <source>&amp;No</source>
+        <translation>&amp;Nee</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="130"/>
+        <source>Import tags from text file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

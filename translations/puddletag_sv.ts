@@ -279,7 +279,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
 ........söker en specifik album-/artistkombination.&lt;/li&gt;
         &lt;li&gt;För att lista en artists album utelämnas albumdelen,
         men lämna kvar semikolon (exempel: &lt;b&gt;Lolita Pop;&lt;/b&gt;).
-        För endast album, lämna artistdelen som i 
+        För endast album, lämna artistdelen som i
         &lt;b&gt;;Love Poison
         &lt;li&gt;Nyckelord&lt;b&gt;utan semikolon (;)&lt;/b&gt; utför en albumsökning
         på Amazon med exakt de nyckelorden.&lt;/li&gt;
@@ -1087,7 +1087,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
 ........söker en specifik album-/artistkombination.&lt;/li&gt;
         &lt;li&gt;För att lista en artists album utelämnas albumdelen,
         men lämna kvar semikolon (exempel: &lt;b&gt;Lolita Pop;&lt;/b&gt;).
-        För endast album, lämna artistdelen som i 
+        För endast album, lämna artistdelen som i
         &lt;b&gt;;Love Poisoon.&lt;/li&gt;
         &lt;li&gt;Används&lt;b&gt;:r id&lt;/b&gt; hämtas albumet med Discogs
         ID &lt;b&gt;id&lt;/b&gt;.&lt;/li&gt;
@@ -1785,7 +1785,7 @@ Till skaparna av de bibliotek puddletag är beroende av (utan vilka jag troligen
     tillåtet.&lt;/li&gt;
     &lt;li&gt;Men användning av &lt;b&gt;__selected&lt;/b&gt; i Åtgärder är det &lt;b&gt;inte&lt;/b&gt;.&lt;/li&gt;
     &lt;li&gt;&apos;~&apos; skriver till alla fält, utom vad som kommer efter det tecknet.
-    &lt;b&gt;~artist, titel&lt;/b&gt; kommer t.ex. att skriva till alla utom till artist- 
+    &lt;b&gt;~artist, titel&lt;/b&gt; kommer t.ex. att skriva till alla utom till artist-
 ....och titelfälten i de valda filerna.&lt;li&gt;
     &lt;/ul&gt;</translation>
     </message>
@@ -3407,57 +3407,6 @@ Aktuell: %2</translation>
         <source>Page doesn&apos;t exist</source>
         <translation>Sidan finns inte</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="150"/>
-        <source>Import tags from text file</source>
-        <translation>Importera taggar från textfil</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="156"/>
-        <source>Text</source>
-        <translation>Text</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="159"/>
-        <source>Tag preview</source>
-        <translation>Taggförhandsgranskning</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="180"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Välj fil</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="182"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>&amp;Klistra in från urklipp</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="246"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Filen &lt;b&gt;%1&lt;/b&gt; kunde inte läsas in.&lt;br /&gt; Vill du välja en annan?</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="250"/>
-        <source>Error</source>
-        <translation>Fel</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="250"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Ja</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/helperwin.py" line="250"/>
-        <source>&amp;No</source>
-        <translation>&amp;Nej</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="puddlestuff/mainwin/releasewidget.py" line="24"/>
         <source>Retrieved Albums (sorted by %s)</source>
@@ -3652,6 +3601,54 @@ Aktuell: %2</translation>
         <location filename="puddlestuff/mainwin/tagsources.py" line="878"/>
         <source>Submission completed.</source>
         <translation>Förslag skickat.</translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="150"/>
+        <source>Import tags from text file</source>
+        <translation>Importera taggar från textfil</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="156"/>
+        <source>Text</source>
+        <translation>Text</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="159"/>
+        <source>Tag preview</source>
+        <translation>Taggförhandsgranskning</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="180"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Välj fil</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="182"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>&amp;Klistra in från urklipp</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="246"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Filen &lt;b&gt;%1&lt;/b&gt; kunde inte läsas in.&lt;br /&gt; Vill du välja en annan?</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="250"/>
+        <source>Error</source>
+        <translation>Fel</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="250"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Ja</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/helperwin.py" line="250"/>
+        <source>&amp;No</source>
+        <translation>&amp;Nej</translation>
     </message>
 </context>
 </TS>

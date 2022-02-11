@@ -1894,7 +1894,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
             &lt;li&gt;Введите список через запятую,
             например, &lt;b&gt;артист, заголовок, альбом&lt;/b&gt;&lt;/li&gt;
             &lt;li&gt;Используйте &lt;b&gt;__selected&lt;/b&gt;, чтобы записать только в выбранные поля.&lt;/li&gt;
-            Не позволяется использование при созданиии Действий.  
+            Не позволяется использование при созданиии Действий.
             &lt;li&gt;Комбинации как &lt;b&gt;__selected, артист, заголовок&lt;/b&gt; допускаются.
                 allowed.&lt;/li&gt;
             &lt;li&gt;Но использование &lt;b&gt;__selected&lt;/b&gt; в Действиях &lt;b&gt;не допускается&lt;/b&gt;.&lt;/li&gt;
@@ -3513,57 +3513,6 @@ Real: %2</source>
         <source>Page doesn&apos;t exist</source>
         <translation>Страница не существует</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="151"/>
-        <source>Import tags from text file</source>
-        <translation>Импортировать теги из текстового файла</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="157"/>
-        <source>Text</source>
-        <translation>Текст</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="160"/>
-        <source>Tag preview</source>
-        <translation>Предпросмотр тега</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="181"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Выберите файл</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="183"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>&amp;Вставить содержимое буфера обмена</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="248"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Файл &lt;b&gt;%1&lt;/b&gt; не может быть загружен.&lt;br /&gt; Хотите ли вы выбрать другой файл?</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>Error</source>
-        <translation>Ошибка</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Да</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="252"/>
-        <source>&amp;No</source>
-        <translation>&amp;Нет</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="24"/>
         <source>Retrieved Albums (sorted by %s)</source>
@@ -3758,6 +3707,54 @@ Real: %2</source>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="878"/>
         <source>Submission completed.</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="151"/>
+        <source>Import tags from text file</source>
+        <translation>Импортировать теги из текстового файла</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="157"/>
+        <source>Text</source>
+        <translation>Текст</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="160"/>
+        <source>Tag preview</source>
+        <translation>Предпросмотр тега</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="181"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Выберите файл</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="183"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>&amp;Вставить содержимое буфера обмена</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="248"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Файл &lt;b&gt;%1&lt;/b&gt; не может быть загружен.&lt;br /&gt; Хотите ли вы выбрать другой файл?</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Да</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="252"/>
+        <source>&amp;No</source>
+        <translation>&amp;Нет</translation>
     </message>
 </context>
 </TS>

@@ -418,7 +418,7 @@ def load_mp3tag_sources(dirpath='.'):
             idents, search, album = open_script(f)
             classes.append(Mp3TagSource(idents, search, album))
         except:
-            # print translate("WebDB", "Couldn't load Mp3tag Tag Source %s") % f
+            # print translate("Tag Sources", "Couldn't load Mp3tag Tag Source %s") % f
             traceback.print_exc()
             continue
     return classes

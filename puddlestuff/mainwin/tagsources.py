@@ -30,7 +30,7 @@ pyqtRemoveInputHook()
 TAGSOURCE_CONFIG = os.path.join(CONFIGDIR, 'tagsources.conf')
 MTAG_SOURCE_DIR = os.path.join(CONFIGDIR, 'mp3tag_sources')
 
-DEFAULT_SEARCH_TIP = translate("WebDB",
+DEFAULT_SEARCH_TIP = translate("Tag Sources",
                                "Enter search parameters here. If empty, the selected "
                                "files are used. <ul><li><b>artist;album</b> searches "
                                "for a specific album/artist combination.</li><li>To "
@@ -39,7 +39,7 @@ DEFAULT_SEARCH_TIP = translate("WebDB",
                                "For a album only leave the artist part as in "
                                "<b>;Resurrection.</li></ul>")
 
-FIELDLIST_TIP = translate("WebDB",
+FIELDLIST_TIP = translate("Tag Sources",
                           'Enter a comma seperated list of fields to write. '
                           '<br /><br />Eg. <b>artist, album, title</b> will only '
                           'write the artist, album and title fields of the '
@@ -78,7 +78,7 @@ def display_tag(tag):
                not k.startswith('#') and not isempty(v))
 
     if not tag:
-        return translate("WebDB", "<b>Nothing to display.</b>")
+        return translate("Tag Sources", "<b>Nothing to display.</b>")
     fmt = "<b>%s</b>: %s<br />"
     text = pprint_tag(tag, fmt, True)
     if text.endswith('<br />'):
@@ -95,7 +95,7 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             idents, search, album = mp3tag.open_script(f)
             classes.append(mp3tag.Mp3TagSource(idents, search, album))
         except:
-            logging.exception(translate("WebDB", "Couldn't load Mp3tag Tag Source %s") % f)
+            logging.exception(translate("Tag Sources", "Couldn't load Mp3tag Tag Source %s") % f)
             continue
     return classes
 
@@ -221,7 +221,7 @@ class SimpleDialog(QDialog):
         vbox = QVBoxLayout()
         self._controls = []
         winsettings(title, self)
-        self.setWindowTitle(translate("WebDB", 'Configure: %s') % title)
+        self.setWindowTitle(translate("Tag Sources", 'Configure: %s') % title)
         for desc, ctype, default in controls:
             if ctype == TEXT:
                 control = QLineEdit(default)
@@ -314,9 +314,9 @@ class SortOptionEditor(QDialog):
         row = self.listbox.currentRow()
         if row < 0:
             row = 0
-        (text, ok) = QInputDialog().getItem(self, translate("WebDB",
+        (text, ok) = QInputDialog().getItem(self, translate("Tag Sources",
                                                             'Add sort option'),
-                                            translate("WebDB",
+                                            translate("Tag Sources",
                                                       'Enter a sorting option (a comma-separated list of fields. '
                                                       'Eg. "artist, title")'), patterns, row)
         if ok:
@@ -333,8 +333,8 @@ class SortOptionEditor(QDialog):
         l = self.listbox.item
         patterns = [str(l(z).text()) for z in range(self.listbox.count())]
         (text, ok) = QInputDialog().getItem(self,
-                                            translate("WebDB", 'Edit sort option'),
-                                            translate("WebDB",
+                                            translate("Tag Sources", 'Edit sort option'),
+                                            translate("Tag Sources",
                                                       'Enter a sorting option (a comma-separated list of fields. '
                                                       'Eg. "artist, title")'), patterns, row)
         if ok:
@@ -356,24 +356,24 @@ class SettingsDialog(QWidget):
         QWidget.__init__(self, parent)
         self.title = translate('Settings', 'Tag Sources')
 
-        label = QLabel(translate("WebDB",
+        label = QLabel(translate("Tag Sources",
                                  '&Display format for individual tracks.'))
         self._text = QLineEdit()
         label.setBuddy(self._text)
 
-        albumlabel = QLabel(translate("WebDB",
+        albumlabel = QLabel(translate("Tag Sources",
                                       'Display format for &retrieved albums'))
         self._albumdisp = QLineEdit()
         albumlabel.setBuddy(self._albumdisp)
 
-        sortlabel = QLabel(translate("WebDB",
+        sortlabel = QLabel(translate("Tag Sources",
                                      'Sort retrieved albums using order:'))
         self._sortoptions = QComboBox()
         sortlabel.setBuddy(self._sortoptions)
         editoptions = QPushButton(translate("Defaults", '&Edit'))
         editoptions.clicked.connect(self._editOptions)
 
-        ua_label = QLabel(translate("WebDB",
+        ua_label = QLabel(translate("Tag Sources",
                                     'User-Agent to when accessing web sites.'))
         self._ua = QTextEdit()
 
@@ -565,7 +565,7 @@ def tag_source_search(ts, group, files):
         changed, audio = apply_regexps(audio)
         if changed:
             audio['album'] = audio['album'].strip()
-            write_log(translate('WebDB', 'Retrying search with %s') %
+            write_log(translate("Tag Sources", 'Retrying search with %s') %
                       audio['album'])
             ret.extend(ts.search(audio['album'], group[primary]))
 
@@ -620,13 +620,13 @@ class MainWin(QWidget):
         self.sourcelist.addItems([ts.name for ts in self.__sources])
         connect(self.sourcelist, 'currentIndexChanged', self.changeSource)
 
-        sourcelabel = QLabel(translate("WebDB", 'Sour&ce: '))
+        sourcelabel = QLabel(translate("Tag Sources", 'Sour&ce: '))
         sourcelabel.setBuddy(self.sourcelist)
 
         # The Preferences/Configuration button (beside the Tag Source selector)
         preferences = QToolButton()
         preferences.setIcon(QIcon(':/preferences.png'))
-        preferences.setToolTip(translate("WebDB", 'Configure'))
+        preferences.setToolTip(translate("Tag Sources", 'Configure'))
         self.__preferencesButton = preferences
         connect(preferences, 'clicked', self.configure)
 
@@ -636,13 +636,13 @@ class MainWin(QWidget):
         connect(self.searchEdit, 'returnPressed', self.search)
 
         # The Search button
-        self.searchButton = QPushButton(translate("WebDB", "&Search"))
+        self.searchButton = QPushButton(translate("Tag Sources", "&Search"))
         self.searchButton.setDefault(True)
         self.searchButton.setAutoDefault(True)
         connect(self.searchButton, "clicked", self.search)
 
         # The instruction/feedback label (between Search box and the results)
-        self.label = QLabel(translate("WebDB",
+        self.label = QLabel(translate("Tag Sources",
                                       "Select files and click on Search to retrieve metadata."))
 
         # The results box (a tree view of album releases)
@@ -657,12 +657,12 @@ class MainWin(QWidget):
         connect(self.listbox, 'infoChanged', linklabel.setText)
 
         # The Submit button (optional, if the tag source support submission)
-        self.submitButton = QPushButton(translate("WebDB",
+        self.submitButton = QPushButton(translate("Tag Sources",
                                                   "S&ubmit Tags"))
         connect(self.submitButton, "clicked", self.submit)
 
         # The Write button (beneath the Search results)
-        write_preview = QPushButton(translate("WebDB", '&Write'))
+        write_preview = QPushButton(translate("Tag Sources", '&Write'))
         connect(write_preview, "clicked", self.writePreview)
 
         # The Clear preview button (beneath the Search results)
@@ -676,14 +676,14 @@ class MainWin(QWidget):
 
         # The first fields options
         # If checked, only fields that aren’t already in the file will get updated.
-        self.__updateEmpty = QCheckBox(translate("WebDB",
+        self.__updateEmpty = QCheckBox(translate("Tag Sources",
                                                  'Update empty fields only.'))
 
         # The Second fields option (Automatically retrieve matches)
         # If checked, the album that best matches the retrieved albums will be automatically retrieved.
         # Uses configured preferences to automate thinsg:
         #    https://docs.puddletag.net/source/preferences.html#auto-retrieval-prefs
-        self.__autoRetrieve = QCheckBox(translate("WebDB",
+        self.__autoRetrieve = QCheckBox(translate("Tag Sources",
                                                   'Automatically retrieve matches.'))
 
         # Layout Tag Source row
@@ -860,10 +860,10 @@ class MainWin(QWidget):
         else:
             releases, files = retval
             if releases:
-                self.label.setText(translate("WebDB",
+                self.label.setText(translate("Tag Sources",
                                              'Searching complete.'))
             else:
-                self.label.setText(translate("WebDB",
+                self.label.setText(translate("Tag Sources",
                                              'No matching albums were found.'))
             if files and self.__autoRetrieve.isChecked():
                 self.listbox.setReleases(releases, files)
@@ -877,12 +877,12 @@ class MainWin(QWidget):
         files = self._status['selectedfiles']
         if self.curSource.group_by:
             group = split_by_field(files, *self.curSource.group_by)
-        self.label.setText(translate("WebDB", 'Searching...'))
+        self.label.setText(translate("Tag Sources", 'Searching...'))
         text = None
         if self.searchEdit.text() and self.searchEdit.isEnabled():
             text = str(self.searchEdit.text())
         elif not files:
-            self.label.setText(translate("WebDB",
+            self.label.setText(translate("Tag Sources",
                                          '<b>Select some files or enter search paramaters.</b>'))
             return
 
@@ -894,11 +894,11 @@ class MainWin(QWidget):
                 else:
                     return tag_source_search(self.curSource, group, files)
             except RetrievalError as e:
-                return translate('WebDB',
+                return translate("Tag Sources",
                                  'An error occured: %1').arg(str(e))
             except Exception as e:
                 traceback.print_exc()
-                return translate('WebDB',
+                return translate("Tag Sources",
                                  'An unhandled error occurred: %1').arg(str(e))
 
         self.searchButton.setEnabled(False)
@@ -919,14 +919,14 @@ class MainWin(QWidget):
                 self.curSource.submit(files)
             except SubmissionError as e:
                 traceback.print_exc()
-                return translate('WebDB',
+                return translate("Tag Sources",
                                  'An error occured: %1').arg(str(e))
             except Exception as e:
                 traceback.print_exc()
-                return translate('WebDB',
+                return translate("Tag Sources",
                                  'An unhandled error occurred: %1').arg(str(e))
 
-            return translate("WebDB", "Submission completed.")
+            return translate("Tag Sources", "Submission completed.")
 
         t = PuddleThread(submit, self)
         t.threadfinished.connect(end)
@@ -952,7 +952,7 @@ class MainWin(QWidget):
 
     def writePreview(self):
         self.writepreview.emit()
-        self.label.setText(translate("WebDB", "<b>Tags were written.</b>"))
+        self.label.setText(translate("Tag Sources", "<b>Tags were written.</b>"))
 
 
 control = ('Tag Sources', MainWin, RIGHTDOCK, False)

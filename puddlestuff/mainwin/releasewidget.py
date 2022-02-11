@@ -17,7 +17,7 @@ from ..util import pprint_tag, to_string
 CHECKEDFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
-RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
+RETRIEVED_ALBUMS = translate("Tag Sources", 'Retrieved Albums (sorted by %s)')
 
 default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
                        '[%__numtracks%], "")'
@@ -82,7 +82,7 @@ def strip(audio, taglist, reverse=False, mapping=None):
 def tooltip(tag, mapping=None):
     """Used to display tags in in a human parseable format."""
     if not tag:
-        return translate("WebDB", "<b>Error in pattern</b>")
+        return translate("Tag Sources", "<b>Error in pattern</b>")
     mapping = {} if mapping is None else mapping
     tag = dict((mapping.get(k, k), v) for k, v in tag.items()
                if not k.startswith('#'))
@@ -262,7 +262,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         QtCore.QAbstractItemModel.__init__(self, parent)
 
         self.mapping = {}
-        rootData = [translate("WebDB", 'Retrieved Albums')]
+        rootData = [translate("Tag Sources", 'Retrieved Albums')]
         self.rootItem = RootItem(rootData)
 
         self._albumPattern = ''
@@ -372,17 +372,17 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("WebDB", 'An error occured: %1').arg(str(e)))
+                    translate("Tag Sources", 'An error occured: %1').arg(str(e)))
                 return
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("WebDB", 'An unhandled error occured: %1').arg(str(e)))
+                    translate("Tag Sources", 'An unhandled error occured: %1').arg(str(e)))
                 return
 
         item.retrieving = True
         thread = PuddleThread(fetch_func, self)
-        self.statusChanged.emit(translate("WebDB", "Retrieving album tracks..."))
+        self.statusChanged.emit(translate("Tag Sources", "Retrieving album tracks..."))
         thread.start()
         while thread.isRunning():
             QApplication.processEvents()
@@ -390,7 +390,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         if val:
             info, tracks = val
             fillItem(item, info, tracks, self.trackPattern)
-            self.statusChanged.emit(translate("WebDB", "Retrieval complete."))
+            self.statusChanged.emit(translate("Tag Sources", "Retrieval complete."))
             item.retrieving = False
         else:
             if not item.childCount():
@@ -468,12 +468,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("WebDB", 'An error occured: %1').arg(str(e)))
+                    translate("Tag Sources", 'An error occured: %1').arg(str(e)))
                 return None
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("WebDB", 'An unhandled error occured: %1').arg(str(e)))
+                    translate("Tag Sources", 'An unhandled error occured: %1').arg(str(e)))
                 return None
 
         def finished(val):
@@ -483,13 +483,13 @@ class TreeModel(QtCore.QAbstractItemModel):
             fillItem(item, val[0], val[1], self.trackPattern)
             item.retrieving = False
             self.dataChanged.emit(index, index)
-            self.statusChanged.emit(translate("WebDB", "Retrieval complete."))
+            self.statusChanged.emit(translate("Tag Sources", "Retrieval complete."))
             self.retrievalDone.emit()
             if fin_func:
                 fin_func()
 
         item.retrieving = True
-        self.statusChanged.emit(translate("WebDB", "Retrieving tracks..."))
+        self.statusChanged.emit(translate("Tag Sources", "Retrieving tracks..."))
         thread = PuddleThread(retrieval_func, parent=self)
         thread.threadfinished.connect(finished)
         thread.start()

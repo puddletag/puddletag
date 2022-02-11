@@ -1854,7 +1854,7 @@ Poděkování programátorům knihoven, na nichž je puddletag založent (bez ni
     dovoleny.&lt;/li&gt;
     &lt;li&gt;Ale používání &lt;b&gt;__selected&lt;/b&gt; v Činnosti dovoleno &lt;b&gt;není&lt;/b&gt;.&lt;/li&gt;
     &lt;li&gt;&apos;~&apos; bude zapisovat do všech polí, kromě těch, která následují vlnovku.
-    Např.. &lt;b&gt;~artist, title&lt;/b&gt; bude zapisovat do všech polí kromě polí Umělec a Název 
+    Např.. &lt;b&gt;~artist, title&lt;/b&gt; bude zapisovat do všech polí kromě polí Umělec a Název
      nalezených ve vybraných souborech.&lt;li&gt;
     &lt;/ul&gt;</translation>
     </message>
@@ -3471,57 +3471,6 @@ Skutečný: %2</translation>
         <source>Retrieving cover: %s</source>
         <translation>Získává se obal: %s</translation>
     </message>
-</context>
-<context>
-    <name>Text File -&gt; Tag</name>
-    <message>
-        <location filename="../puddlestuff/helperwin.py" line="-571"/>
-        <source>&amp;No</source>
-        <translation>&amp;Ne</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>&amp;Yes</source>
-        <translation>&amp;Ano</translation>
-    </message>
-    <message>
-        <location line="-95"/>
-        <source>Text</source>
-        <translation>Text</translation>
-    </message>
-    <message>
-        <location line="+95"/>
-        <source>Error</source>
-        <translation>Chyba</translation>
-    </message>
-    <message>
-        <location line="-4"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Soubor &lt;b&gt;%1&lt;/b&gt; se nepodařilo nahrát.&lt;br /&gt; Chcete vybrat jiný soubor?</translation>
-    </message>
-    <message>
-        <location line="-88"/>
-        <source>Tag preview</source>
-        <translation>Náhled na značku</translation>
-    </message>
-    <message>
-        <location line="-9"/>
-        <source>Import tags from text file</source>
-        <translation>Zavést značky z textového souboru</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>&amp;Select File</source>
-        <translation>&amp;Vybrat soubor</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>&amp;Paste Clipboard</source>
-        <translation>Vložit do &amp;schránky</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="+468"/>
         <source>Retrieval complete.</source>
@@ -3716,6 +3665,54 @@ Skutečný: %2</translation>
         <location line="+267"/>
         <source>Submission completed.</source>
         <translation>Odeslání dokončeno.</translation>
+    </message>
+</context>
+<context>
+    <name>Text File -&gt; Tag</name>
+    <message>
+        <location filename="../puddlestuff/helperwin.py" line="-571"/>
+        <source>&amp;No</source>
+        <translation>&amp;Ne</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>&amp;Yes</source>
+        <translation>&amp;Ano</translation>
+    </message>
+    <message>
+        <location line="-95"/>
+        <source>Text</source>
+        <translation>Text</translation>
+    </message>
+    <message>
+        <location line="+95"/>
+        <source>Error</source>
+        <translation>Chyba</translation>
+    </message>
+    <message>
+        <location line="-4"/>
+        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Soubor &lt;b&gt;%1&lt;/b&gt; se nepodařilo nahrát.&lt;br /&gt; Chcete vybrat jiný soubor?</translation>
+    </message>
+    <message>
+        <location line="-88"/>
+        <source>Tag preview</source>
+        <translation>Náhled na značku</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Import tags from text file</source>
+        <translation>Zavést značky z textového souboru</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>&amp;Select File</source>
+        <translation>&amp;Vybrat soubor</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>&amp;Paste Clipboard</source>
+        <translation>Vložit do &amp;schránky</translation>
     </message>
 </context>
 </TS>
