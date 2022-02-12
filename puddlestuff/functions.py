@@ -665,7 +665,7 @@ only as &whole word, check'''
         matchcase = re.IGNORECASE
     if chars is None:
         chars = r'\,\.\(\) \!\[\]'
-    replaceword = replaceword.replace(r'\\', '\\\\')
+    replaceword = replaceword.replace('\\', '\\\\')
 
     if whole:
         pat = re.compile(r'(^|[%s])%s([%s]|$)' % (chars, word, chars), matchcase)
