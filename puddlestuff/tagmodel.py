@@ -1300,9 +1300,8 @@ class TableHeader(QHeaderView):
     saveSelection = pyqtSignal(name='saveSelection')
     headerChanged = pyqtSignal([list, list], name='headerChanged')
 
-    def __init__(self, orientation, tags=None, parent=None):
+    def __init__(self, orientation, parent=None):
         QHeaderView.__init__(self, orientation, parent)
-        if tags is not None: self.tags = tags
         self.setSectionsClickable(True)
         self.setHighlightSections(True)
         self.setSectionsMovable(True)
@@ -1375,7 +1374,7 @@ class TagTable(QTableView):
         self.settingsdialog = ColumnSettings
         if not headerdata:
             headerdata = []
-        header = TableHeader(Qt.Orientation.Horizontal, headerdata, self)
+        header = TableHeader(Qt.Orientation.Horizontal, self)
         header.setSortIndicatorShown(True)
         self.setSortingEnabled(True)
         self._savedSelection = False
@@ -2340,7 +2339,7 @@ class TagTable(QTableView):
     def setHeaderTags(self, tags, hidden=None):
 
         self.saveSelection()
-        hd = TableHeader(Qt.Orientation.Horizontal, tags, self)
+        hd = TableHeader(Qt.Orientation.Horizontal, self)
         hd.setSortIndicatorShown(True)
         hd.setVisible(True)
         hd.headerChanged.connect(self.setHeaderTags)
@@ -2354,6 +2353,7 @@ class TagTable(QTableView):
         self.restoreSelection()
 
     def setHorizontalHeader(self, header):
+        header.setModel(self.model())
         QTableView.setHorizontalHeader(self, header)
         header.saveSelection.connect(self.saveSelection)
 
