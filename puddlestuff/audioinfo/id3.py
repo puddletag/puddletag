@@ -637,7 +637,7 @@ def set_uslt(f, value):
             continue
         len_l = len(lyrics)
         if len_l == 1:
-            lang = 'XXX'
+            lang = ''
             desc = ''
             text = lyrics[0]
         elif len_l == 2:
@@ -654,8 +654,8 @@ def set_uslt(f, value):
         else:
             continue
 
-        if not lang:
-            lang = 'XXX'
+        if not lang or len(lang) is not 3:
+            lang = 'und'
         frames.append(id3.USLT(encoding, lang, desc, text))
 
     if not frames:
