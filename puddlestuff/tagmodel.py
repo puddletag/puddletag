@@ -1302,6 +1302,7 @@ class TableHeader(QHeaderView):
 
     def __init__(self, orientation, parent=None):
         QHeaderView.__init__(self, orientation, parent)
+        self.setVisible(True)
         self.setSectionsClickable(True)
         self.setHighlightSections(True)
         self.setSectionsMovable(True)
@@ -1375,7 +1376,6 @@ class TagTable(QTableView):
         if not headerdata:
             headerdata = []
         header = TableHeader(Qt.Orientation.Horizontal, self)
-        header.setSortIndicatorShown(True)
         self.setSortingEnabled(True)
         self._savedSelection = False
 
@@ -1402,7 +1402,6 @@ class TagTable(QTableView):
         self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         model = TagModel(headerdata)
-        header.headerChanged.connect(self.setHeaderTags)
         self.setModel(model)
 
         def emitundo(val):
@@ -2340,9 +2339,6 @@ class TagTable(QTableView):
 
         self.saveSelection()
         hd = TableHeader(Qt.Orientation.Horizontal, self)
-        hd.setSortIndicatorShown(True)
-        hd.setVisible(True)
-        hd.headerChanged.connect(self.setHeaderTags)
         self.setHorizontalHeader(hd)
         self.model().setHeader(tags)
 
@@ -2355,6 +2351,7 @@ class TagTable(QTableView):
     def setHorizontalHeader(self, header):
         header.setModel(self.model())
         QTableView.setHorizontalHeader(self, header)
+        header.headerChanged.connect(self.setHeaderTags)
         header.saveSelection.connect(self.saveSelection)
 
     def writeError(self, text):
