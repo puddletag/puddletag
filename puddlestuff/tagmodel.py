@@ -2338,10 +2338,18 @@ class TagTable(QTableView):
     def setHeaderTags(self, tags, hidden=None):
 
         self.saveSelection()
-        hd = TableHeader(Qt.Orientation.Horizontal, self)
-        self.setHorizontalHeader(hd)
+        old_column_sizes = {val[0]: self.horizontalHeader().sectionSize(idx)
+            for idx,val in enumerate(self.model().headerdata)
+            if self.horizontalHeader().sectionSize(idx) > 0}
+
         self.model().setHeader(tags)
 
+        hd = TableHeader(Qt.Orientation.Horizontal, self)
+        self.setHorizontalHeader(hd)
+        if not self.autoresize:
+            for idx, val in enumerate(self.model().headerdata):
+                if val[0] in old_column_sizes:
+                    hd.resizeSection(idx, old_column_sizes[val[0]])
         if hidden is not None:
             for c in hidden:
                 hd.hideSection(c)
