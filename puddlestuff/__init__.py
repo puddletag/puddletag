@@ -11,11 +11,16 @@ version_string = ".".join(map(str, version))
 
 changeset = None
 
-filedir = dirname(dirname(dirname(__file__)))
-hash_file = os.path.join(filedir, ".git/refs/heads/master")
+filedir = dirname(__file__)
+git_root = os.path.join(filedir, '..')
+hash_file = os.path.join(git_root, '.git', 'HEAD')
 if os.path.exists(hash_file):
     try:
         with open(hash_file) as fo:
             changeset = fo.read().strip()
+        if changeset.startswith("ref: "):
+            hash_file = os.path.join(git_root, '.git', *(changeset[5:].split('/')))
+            with open(hash_file) as fo:
+                changeset = fo.read().strip()
     except (EnvironmentError, AttributeError):
         pass
