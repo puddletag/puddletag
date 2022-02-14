@@ -3,8 +3,8 @@ import os
 from copy import deepcopy
 from functools import partial
 
-from PyQt5.QtCore import QMutex, QObject, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
+from PyQt6.QtCore import QMutex, QObject, pyqtSignal
+from PyQt6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
     QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
 from .. import masstag as masstag_module

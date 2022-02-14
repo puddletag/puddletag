@@ -2,9 +2,9 @@ import os
 import sys
 from copy import deepcopy
 
-from PyQt5.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QPalette
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
+from PyQt6.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QPalette
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
     QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
     QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 

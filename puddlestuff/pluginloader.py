@@ -4,8 +4,8 @@ import sys
 from os.path import exists
 from importlib import import_module
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from configobj import ConfigObj
 
 from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR, PLUGINDIR,

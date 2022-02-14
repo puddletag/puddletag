@@ -3,7 +3,7 @@ import traceback
 
 import mutagen
 import pickle
-from PyQt5.QtWidgets import QAction, QFileDialog
+from PyQt6.QtWidgets import QAction, QFileDialog
 
 from .. import status
 from ...puddletag import add_shortcuts

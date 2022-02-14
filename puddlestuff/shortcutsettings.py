@@ -1,9 +1,9 @@
 import os
 import sys
 
-from PyQt5.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
-from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt6.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
+from PyQt6.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
+from PyQt6.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls

@@ -1,7 +1,7 @@
 from functools import partial
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QPushButton, QHBoxLayout, QListWidgetItem
 
 from ..actiondlg import ActionWindow, CreateFunction
 from ..constants import RIGHTDOCK, SELECTIONCHANGED

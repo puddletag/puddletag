@@ -13,8 +13,8 @@ import sys
 from collections import defaultdict
 from functools import partial
 
-from PyQt5.QtCore import QObject, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QDialog, QFrame, QHBoxLayout, QLineEdit, \
+from PyQt6.QtCore import QObject, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QDialog, QFrame, QHBoxLayout, QLineEdit, \
     QListWidget, QMessageBox, QPushButton, QStackedWidget, QStyle, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
     QWidget
 

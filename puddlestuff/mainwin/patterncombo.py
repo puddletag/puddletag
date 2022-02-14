@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
     QShortcut, QVBoxLayout
 
 from ..puddleobjects import (PuddleConfig, ListBox,

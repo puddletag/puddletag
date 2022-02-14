@@ -2,9 +2,9 @@
 import mutagen
 from importlib import import_module
 from platform import python_version
-from PyQt5.QtCore import PYQT_VERSION_STR, QT_VERSION_STR, Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
+from PyQt6.QtCore import PYQT_VERSION_STR, QT_VERSION_STR, Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 
 from . import version_string, changeset
 from .puddleobjects import OKCancel

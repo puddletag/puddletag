@@ -9,7 +9,7 @@ from operator import itemgetter
 from xml.sax.saxutils import escape as escape_html
 from mutagen import MutagenError
 
-from PyQt5.QtWidgets import QAction
+from PyQt6.QtWidgets import QAction
 
 from . import translations, constants
 from .audioinfo import (FILETAGS, setmodtime, PATH, FILENAME,
