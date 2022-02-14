@@ -37,6 +37,14 @@ The <b>Oxygen team</b> for the Oxygen icons.
 """)
 
 
+def versions():
+    return {
+        'PyQt': PYQT_VERSION_STR,
+        'Mutagen': mutagen.version_string,
+        'Pyparsing': pyparsing.__version__,
+    }
+
+
 class ScrollLabel(QWidget):
     def __init__(self, text, alignment=Qt.AlignmentFlag.AlignCenter, parent=None):
         QWidget.__init__(self, parent)
@@ -62,25 +70,25 @@ class AboutPuddletag(QDialog):
         self.setWindowTitle(translate("About", 'About puddletag'))
         icon = QLabel()
         icon.setPixmap(QPixmap(':/appicon.png').scaled(48, 48))
-        lib_versions = ', '.join(['<b>PyQt  %s' % PYQT_VERSION_STR,
-                                  'Mutagen %s' % mutagen.version_string,
-                                  'Pyparsing %s</b>' % pyparsing.__version__])
+        lib_versions = '<br />'.join(
+            ['%s: %s' % (lib, version) for (lib, version) in versions().items()]
+        )
+
         if changeset:
-            version = translate("About",
-                                '<h2>puddletag %1 (Changeset %2)</h2> %3')
+            version = translate("About", '<h2>puddletag %1</h2>Changeset %2')
             version = version.arg(version_string)
-            version = version.arg(changeset).arg(lib_versions)
+            version = version.arg(changeset)
         else:
-            version = translate("About",
-                                '<h2>puddletag %1</h2> %2')
+            version = translate("About", '<h2>puddletag %1</h2>')
             version = version.arg(version_string)
-            version = version.arg(lib_versions)
         label = QLabel(version)
 
         tab = QTabWidget()
         tab.addTab(ScrollLabel(desc), translate('About', '&About'))
         tab.addTab(ScrollLabel(thanks, Qt.AlignmentFlag.AlignLeft),
                    translate('About', '&Thanks'))
+        tab.addTab(ScrollLabel(lib_versions, Qt.AlignmentFlag.AlignLeft),
+                   translate('About', '&Libraries'))
 
         vbox = QVBoxLayout()
         version_layout = QHBoxLayout()
