@@ -543,4 +543,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = SettingsWin()
     win.show()
-    app.exec_()
+    app.exec()

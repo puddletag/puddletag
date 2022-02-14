@@ -1331,7 +1331,7 @@ class TableHeader(QHeaderView):
             translate("Column Settings", "&Select Columns"))
         settings.triggered.connect(self.setTitles)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
     def mousePressEvent(self, event):
         if event.button == Qt.MouseButton.RightButton:
@@ -1641,7 +1641,7 @@ class TagTable(QTableView):
 
     def contextMenuEvent(self, event):
         if self.contextMenu:
-            self.contextMenu.exec_(event.globalPos())
+            self.contextMenu.exec(event.globalPos())
 
     @property
     def isempty(self):
@@ -1786,7 +1786,7 @@ class TagTable(QTableView):
         drag = QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropaction = drag.exec_()
+        dropaction = drag.exec()
         if dropaction == Qt.DropAction.MoveAction:
             if not os.path.exists(filenames[0]):
                 self.deleteSelected(False, False, False)

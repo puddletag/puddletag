@@ -86,7 +86,7 @@ class ShortcutDialog(QDialog):
         self.close()
 
     def getShortcut(self):
-        self.exec_()
+        self.exec()
         if self._text.valid:
             return str(self._text.text()), self.ok
         else:
@@ -129,7 +129,7 @@ class ShortcutName(QDialog):
             self._ok.setEnabled(False)
 
     def getText(self):
-        self.exec_()
+        self.exec()
         return str(self._text.text()), self.ok
 
 
@@ -1092,4 +1092,4 @@ if __name__ == "__main__":
     app.setApplicationName("puddletag")
     qb = ActionWindow([('Path', '__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), ('Year', 'date')])
     qb.show()
-    app.exec_()
+    app.exec()

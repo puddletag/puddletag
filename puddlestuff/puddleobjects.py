@@ -500,7 +500,7 @@ def errormsg(parent, msg, maximum):
                          parent)
         mb.setDefaultButton(QMessageBox.StandardButton.Yes)
         mb.setEscapeButton(QMessageBox.StandardButton.No)
-        ret = mb.exec_()
+        ret = mb.exec()
         if ret == QMessageBox.StandardButton.No:
             return False
         elif ret == QMessageBox.StandardButton.YesToAll:
@@ -2372,7 +2372,7 @@ class PuddleHeader(QHeaderView):
 
     def contextMenuEvent(self, event):
         menu = self.getMenu()
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
 
 class PuddleStatus(object):
@@ -2494,4 +2494,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     widget = MainWin()
     widget.show()
-    app.exec_()
+    app.exec()

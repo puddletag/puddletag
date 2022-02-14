@@ -375,4 +375,4 @@ if __name__ == '__main__':
     elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
         if win._lastdir and os.path.exists(win._lastdir[0]):
             win.openDir(win._lastdir[0], False)
-    app.exec_()
+    app.exec()

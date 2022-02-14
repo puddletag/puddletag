@@ -1178,4 +1178,4 @@ if __name__ == "__main__":
     wid.resize(200, 400)
     wid.show()
     pyqtRemoveInputHook()
-    app.exec_()
+    app.exec()
