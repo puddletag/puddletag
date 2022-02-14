@@ -57,4 +57,4 @@ if __name__ == '__main__':
     app = QApplication([])
     win = LogDialog()
     win.show()
-    app.exec_()
+    app.exec()

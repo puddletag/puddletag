@@ -125,7 +125,7 @@ class DirView(QTreeView):
         menu.addAction(show_header)
         menu.addAction(open_dir)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
         super(DirView, self).contextMenuEvent(event)
 
     def dirMoved(self, dirs):

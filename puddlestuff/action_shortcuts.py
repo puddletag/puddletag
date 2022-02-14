@@ -405,4 +405,4 @@ if __name__ == '__main__':
     win = ShortcutEditor(buttons=True)
     win.loadSettings()
     win.show()
-    app.exec_()
+    app.exec()

@@ -487,4 +487,4 @@ if __name__ == "__main__":
     qb.loadtags.connect(b)
 
     qb.show()
-    app.exec_()
+    app.exec()

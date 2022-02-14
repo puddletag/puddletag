@@ -321,4 +321,4 @@ if __name__ == '__main__':
     win = ActionEditorDialog(actions)
     # win.loadSettings(actions)
     win.show()
-    app.exec_()
+    app.exec()

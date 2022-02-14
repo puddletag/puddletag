@@ -190,4 +190,4 @@ if __name__ == '__main__':
     app = QApplication([])
     win = Settings()
     win.show()
-    app.exec_()
+    app.exec()
