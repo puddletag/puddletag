@@ -18,13 +18,13 @@ from io import StringIO
 from itertools import groupby  # for unique function.
 from typing import Any, Callable, Generator, List, Optional, Tuple, Union
 
-from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QObject, QRectF, QSettings, \
+from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QObject, QRectF, QSettings, \
     QSize, QThread, QTimer, Qt, pyqtSignal
-from PyQt5.QtCore import QFile, QIODevice
-from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
+from PyQt6.QtCore import QFile, QIODevice
+from PyQt6.QtGui import QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
-from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDialog, QDialogButtonBox, \
+from PyQt6.QtSvg import QGraphicsSvgItem, QSvgRenderer
+from PyQt6.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget

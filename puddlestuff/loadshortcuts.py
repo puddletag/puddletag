@@ -2,7 +2,7 @@
 import os
 import sys
 
-from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
+from PyQt6.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
 
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig, get_icon, open_resourcefile

@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import QMutex, Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
+from PyQt6.QtCore import QMutex, Qt
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import QApplication, QGridLayout, QLabel, QScrollArea, QVBoxLayout, QWidget
 
 from .. import audioinfo
 from ..audioinfo import tag_versions

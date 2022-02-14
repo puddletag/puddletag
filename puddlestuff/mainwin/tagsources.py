@@ -5,8 +5,8 @@ import sys
 import traceback
 from copy import deepcopy
 
-from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
 
