@@ -166,4 +166,4 @@ if __name__ == '__main__':
     win.toolbar = win.addToolBar('toolbar')
     loadShortCuts()
     win.show()
-    app.exec_()
+    app.exec()

@@ -1093,4 +1093,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MainWin()
     win.show()
-    app.exec_()
+    app.exec()

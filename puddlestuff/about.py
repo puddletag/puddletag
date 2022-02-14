@@ -130,4 +130,4 @@ if __name__ == '__main__':
     app = QApplication([])
     win = AboutPuddletag()
     win.show()
-    app.exec_()
+    app.exec()
