@@ -10,7 +10,7 @@ from errno import ENOENT
 from os import path, stat
 
 import mutagen
-from PyQt5.QtCore import QMimeDatabase
+from PyQt6.QtCore import QMimeDatabase
 
 from .constants import *
 

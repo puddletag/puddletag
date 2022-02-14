@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 
 def translate(context, source_text):

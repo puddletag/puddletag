@@ -28,8 +28,8 @@ from os import path
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
-from PyQt5.QtCore import QDir, QSettings, QUrl
-from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtCore import QDir, QSettings, QUrl
+from PyQt6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 
 from .. import audioinfo
 from .. import musiclib

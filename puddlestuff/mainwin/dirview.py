@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QFileSystemModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
+from PyQt6.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QAbstractItemView, QAction, QCheckBox, QFileSystemModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,

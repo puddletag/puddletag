@@ -9,7 +9,7 @@ from html.parser import HTMLParser
 from importlib import import_module
 from os.path import join, exists
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal
 
 from .. import version_string
 from ..constants import CONFIGDIR

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import tempfile
 
-from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QFont, QFontMetrics, QPainter, QBrush
-from PyQt5.QtSvg import QSvgGenerator
-from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6.QtCore import QRect, Qt
+from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QBrush
+from PyQt6.QtSvg import QSvgGenerator
+from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
 from ..audioinfo.util import commonimages
 from ..constants import KEEP, BLANK
