@@ -1,9 +1,9 @@
 Translating
 ===========
 
-In order to translate puddletag you need Git, Qt Linguist, the PyQt5 translation tools (specifically pylupdate5) and the ability to copy/paste into the console.
+In order to translate puddletag you need Git, Qt Linguist, the PyQt6 translation tools (specifically pylupdate6) and the ability to copy/paste into the console.
 
-In Ubuntu and Debian-based distros, Git is available in 'git' package, Qt Linguist in qttools5-dev-tools and pylupdate5 in pyqt5-dev-tools.
+In Ubuntu and Debian-based distros, Git is available in 'git' package, Qt Linguist in linguist-qt6 and pylupdate6 in pyqt6-dev-tools.
 
 After installing the required tools, you'll need to retrieve the latest development release. Open up a terminal and paste the following:
 
