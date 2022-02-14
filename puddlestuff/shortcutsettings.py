@@ -3,7 +3,7 @@ import sys
 
 from PyQt6.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
 from PyQt6.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt6.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
@@ -15,11 +15,6 @@ pyqtRemoveInputHook()
 
 
 class ActionEditorWidget(QLabel):
-
-    # Redefine the tr() function for this class.
-    def tr(self, text):
-
-        return qApp.translate("ActionEditorWidget", text)
 
     def __init__(self, text, parent):
 
@@ -188,11 +183,6 @@ class ActionEditorDelegate(QItemDelegate):
 
 
 class ActionEditorDialog(QWidget):
-
-    # Redefine the tr() function for this class.
-    def tr(self, text):
-
-        return qApp.translate("ActionEditorDialog", text)
 
     def __init__(self, actions, parent=None):
 
