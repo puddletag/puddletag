@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import mutagen
-import pyparsing
-from PyQt5.QtCore import PYQT_VERSION_STR, Qt
+from importlib import import_module
+from platform import python_version
+from PyQt5.QtCore import PYQT_VERSION_STR, QT_VERSION_STR, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 
@@ -38,10 +39,32 @@ The <b>Oxygen team</b> for the Oxygen icons.
 
 
 def versions():
+    def get_module_version(module_name):
+        try:
+            from importlib.metadata import version
+            return version(module_name)
+        except ModuleNotFoundError:
+            pass
+
+        try:
+            module = import_module(module_name)
+            return getattr(module, '__version__',
+                translate("About", 'unknown version'))
+        except ModuleNotFoundError:
+            return translate("About", 'not installed')
+
     return {
+        'Python': python_version(),
         'PyQt': PYQT_VERSION_STR,
+        'Qt': QT_VERSION_STR,
         'Mutagen': mutagen.version_string,
-        'Pyparsing': pyparsing.__version__,
+        'PyParsing': get_module_version('pyparsing'),
+        'ConfigObj': get_module_version('configobj'),
+        'lxml': get_module_version('lxml'),
+        'pyacoustid': get_module_version('pyacoustid'),
+        'audioread': get_module_version('audioread'),
+        'Levenshtein': get_module_version('Levenshtein'),
+        'Chromaprint': get_module_version('chromaprint'),
     }
 
 
