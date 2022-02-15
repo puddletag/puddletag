@@ -2,7 +2,7 @@ import os
 
 from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QFileSystemModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
@@ -26,17 +26,15 @@ class DirView(QTreeView):
         self._load = False  # If True a loadFiles signal is emitted when
         # an index is clicked. See selectionChanged.
 
-        dirmodel = QDirModel()
-        dirmodel.setSorting(QDir.SortFlag.IgnoreCase)
-        dirmodel.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
-        dirmodel.setReadOnly(False)
-        dirmodel.setLazyChildCount(False)
-        dirmodel.setResolveSymlinks(False)
+        model = QFileSystemModel()
+        model.setRootPath('/')
+        model.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
+        model.setReadOnly(False)
         header = PuddleHeader(Qt.Orientation.Horizontal, self)
         self.setHeader(header)
         self.header().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
-        self.setModel(dirmodel)
+        self.setModel(model)
         [self.hideColumn(column) for column in range(1, 4)]
 
         self.header().hide()

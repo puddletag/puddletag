@@ -7,7 +7,7 @@ from functools import partial
 
 import quodlibet.config
 from PyQt5.QtCore import QDir, Qt
-from PyQt5.QtWidgets import QCompleter, QDirModel, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QCompleter, QFileDialog, QFileSystemModel, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 from quodlibet.parse import Query
 
 from .. import audioinfo
@@ -323,27 +323,17 @@ class QuodLibet(object):
         cached[trackartist][trackalbum].append(track)
 
 
-class DirModel(QDirModel):
-
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
-        if (role == Qt.ItemDataRole.DisplayRole and index.column() == 0):
-            path = QDir.toNativeSeparators(self.filePath(index))
-            if path.endsWith(QDir.separator()):
-                path.chop(1)
-            return path
-        return QDirModel.data(self, index, role)
-
-
 class DirLineEdit(QLineEdit):
     def __init__(self, *args, **kwargs):
         super(DirLineEdit, self).__init__(*args, **kwargs)
         completer = QCompleter()
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        dirfilter = QDir.Filter.AllEntries | QDir.Filter.NoDotAndDotDot | QDir.Filter.Hidden
-        sortflags = QDir.SortFlag.DirsFirst | QDir.SortFlag.IgnoreCase
 
-        dirmodel = QDirModel(['*'], dirfilter, sortflags, completer)
-        completer.setModel(dirmodel)
+        model = QFileSystemModel()
+        model.setRootPath('/')
+        model.setFilter(QDir.Filter.AllEntries | QDir.Filter.NoDotAndDotDot | QDir.Filter.Hidden)
+        completer.setModel(model)
+
         self.setCompleter(completer)
 
 
