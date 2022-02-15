@@ -1,7 +1,7 @@
 import os
-import sip
 import sys
 
+from PyQt6 import sip
 from PyQt6.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt6.QtGui import QBrush
 from PyQt6.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
