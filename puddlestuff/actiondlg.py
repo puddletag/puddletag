@@ -5,7 +5,8 @@ from copy import copy, deepcopy
 from functools import partial
 
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
     QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
 from pyparsing import delimited_list, alphanums, Combine, Word, QuotedString

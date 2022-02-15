@@ -1,7 +1,8 @@
 import os
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QAbstractItemView, QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
     QPushButton, QVBoxLayout
 
 from ...puddlesettings import add_config_widget

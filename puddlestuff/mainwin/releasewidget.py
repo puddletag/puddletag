@@ -5,7 +5,8 @@ from functools import partial
 
 from PyQt6 import QtCore
 from PyQt6.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt6.QtWidgets import QAbstractItemView, QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 
 from ..findfunc import parsefunc
 from ..puddleobjects import (PuddleThread,

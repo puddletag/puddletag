@@ -6,8 +6,8 @@ import urllib.parse
 from functools import partial
 
 from PyQt6.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
-from PyQt6.QtGui import QDesktopServices
-from PyQt6.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
+from PyQt6.QtGui import QAction, QDesktopServices
+from PyQt6.QtWidgets import QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
 from . import m3u, genres
