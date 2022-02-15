@@ -1,5 +1,5 @@
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QAction
+from PyQt6.QtGui import QAction
 
 from ...audioinfo import commontags
 from ...constants import (LEFTDOCK, SELECTIONCHANGED,

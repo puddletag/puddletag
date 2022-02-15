@@ -1,7 +1,8 @@
 from functools import partial
 
 from PyQt6.QtCore import QObject, pyqtSignal
-from PyQt6.QtWidgets import QAction, QMenu
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMenu
 
 from ..puddleobjects import PuddleConfig
 

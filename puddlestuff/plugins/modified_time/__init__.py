@@ -2,7 +2,8 @@ import os
 import time
 from datetime import timedelta, datetime
 
-from PyQt6.QtWidgets import QAction, QApplication, QMessageBox
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from .. import status
 from ... import audioinfo

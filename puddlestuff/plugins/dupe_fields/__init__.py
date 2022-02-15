@@ -1,5 +1,6 @@
 from PyQt6.QtCore import QObject, pyqtSignal
-from PyQt6.QtWidgets import QAction, QInputDialog
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QInputDialog
 
 from .. import status, connect_control
 from ...puddletag import add_shortcuts
