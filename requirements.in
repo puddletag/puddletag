@@ -5,7 +5,7 @@ mutagen==1.45.1
 pyparsing==3.0.7
 
 # extra / tag sources
-lxml==4.7.1
+lxml==4.8.0
 pyacoustid
 audioread
 Levenshtein
