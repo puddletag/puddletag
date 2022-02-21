@@ -340,7 +340,7 @@ class DirLineEdit(QLineEdit):
         completer = QCompleter()
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         dirfilter = QDir.Filter.AllEntries | QDir.Filter.NoDotAndDotDot | QDir.Filter.Hidden
-        sortflags = QDir.DirsFirst | QDir.IgnoreCase
+        sortflags = QDir.SortFlag.DirsFirst | QDir.SortFlag.IgnoreCase
 
         dirmodel = QDirModel(['*'], dirfilter, sortflags, completer)
         completer.setModel(dirmodel)

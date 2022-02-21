@@ -27,7 +27,7 @@ class DirView(QTreeView):
         # an index is clicked. See selectionChanged.
 
         dirmodel = QDirModel()
-        dirmodel.setSorting(QDir.IgnoreCase)
+        dirmodel.setSorting(QDir.SortFlag.IgnoreCase)
         dirmodel.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
         dirmodel.setReadOnly(False)
         dirmodel.setLazyChildCount(False)
