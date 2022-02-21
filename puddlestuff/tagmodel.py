@@ -1026,7 +1026,7 @@ class TagModel(QAbstractTableModel):
     def setData(self, index, value, role=Qt.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
-        QApplication.setOverrideCursor(Qt.WaitCursor);
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor);
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
@@ -2237,11 +2237,11 @@ class TagTable(QTableView):
             self.tagselectionchanged.emit()
 
     def saveBeforeReset(self):
-        self.setCursor(Qt.BusyCursor)
+        self.setCursor(Qt.CursorShape.BusyCursor)
         self._savedSelection = self.saveSelection()
 
     def restoreSort(self):
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         if self._savedSelection:
             self.restoreSelection(self._savedSelection)
             self._savedSelection = None
