@@ -163,13 +163,13 @@ def check_copy_data(data):
 
         msgbox.setIcon(QMessageBox.Question)
         yesBtn = msgbox.addButton(translate("Defaults", "&Yes"),
-                                  QMessageBox.YesRole)
+                                  QMessageBox.ButtonRole.YesRole)
         noBtn = msgbox.addButton(translate("Defaults", "No"),
-                                 QMessageBox.NoRole)
+                                 QMessageBox.ButtonRole.NoRole)
         msgbox.setDefaultButton(noBtn)
         msgbox.setEscapeButton(noBtn)
         noImgBtn = msgbox.addButton(translate("Messages", "Copy without images."),
-                                    QMessageBox.ApplyRole)
+                                    QMessageBox.ButtonRole.ApplyRole)
 
         msgbox.exec_()
 
