@@ -332,7 +332,7 @@ class FrameCombo(QGroupBox):
         self.setMaximumHeight(self.sizeHint().height())
 
     def eventFilter(self, obj, event):
-        if isinstance(obj, QComboBox) and event.type() == QEvent.FocusOut:
+        if isinstance(obj, QComboBox) and event.type() == QEvent.Type.FocusOut:
             return False
         return QGroupBox.eventFilter(self, obj, event)
 

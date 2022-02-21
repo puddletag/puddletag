@@ -140,20 +140,20 @@ class ActionEditorDelegate(QItemDelegate):
     def eventFilter(self, obj, event):
 
         if obj == self.editor:
-            if event.type() == QEvent.KeyPress:
+            if event.type() == QEvent.Type.KeyPress:
                 obj.keyPressEvent(event)
                 if obj.valid:
                     self.commitData.emit(self.editor)
                     self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
-            elif event.type() == QEvent.KeyRelease:
+            elif event.type() == QEvent.Type.KeyRelease:
                 obj.keyReleaseEvent(event)
                 if not obj.text():
                     self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
-            elif event.type() == QEvent.MouseButtonPress:
+            elif event.type() == QEvent.Type.MouseButtonPress:
                 obj.mousePressEvent(event)
                 if obj.valid:
                     self.commitData.emit(self.editor)

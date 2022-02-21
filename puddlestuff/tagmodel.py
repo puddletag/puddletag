@@ -1273,7 +1273,7 @@ class TagDelegate(QStyledItemDelegate):
         return editor
 
     def eventFilter(self, editor, event):
-        if event.type() == QEvent.KeyPress:
+        if event.type() == QEvent.Type.KeyPress:
             if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
                 if event.key() == Qt.Key.Key_Return:
                     shift_pressed = event.modifiers() == Qt.KeyboardModifier.ShiftModifier
