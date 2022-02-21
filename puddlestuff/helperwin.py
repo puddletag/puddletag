@@ -121,7 +121,7 @@ class AutonumberDialog(QDialog):
         okcancel.ok.connect(self.emitValuesAndSave)
         okcancel.cancel.connect(self.close)
         self._separator.stateChanged.connect(
-            lambda v: self._numtracks.setEnabled(v == Qt.Checked))
+            lambda v: self._numtracks.setEnabled(v == Qt.CheckState.Checked))
 
         # self._restart_numbering.stateChanged.connect(
         #              self.showDirectorySplittingOptions)
@@ -131,7 +131,7 @@ class AutonumberDialog(QDialog):
         self._loadSettings()
 
     def showDirectorySplittingOptions(self, state):
-        is_checked = state == Qt.Checked
+        is_checked = state == Qt.CheckState.Checked
         for widget in self.custom_numbering_widgets:
             widget.setVisible(is_checked)
 
@@ -175,14 +175,14 @@ class AutonumberDialog(QDialog):
         section = 'autonumbering'
         self._start.setValue(cparser.get(section, 'start', 1))
         self._separator.setCheckState(
-            cparser.get(section, 'separator', Qt.Unchecked))
+            cparser.get(section, 'separator', Qt.CheckState.Unchecked))
         self._padlength.setValue(cparser.get(section, 'padlength', 1))
 
         self._restart_numbering.setCheckState(
-            cparser.get(section, 'restart', Qt.Unchecked))
+            cparser.get(section, 'restart', Qt.CheckState.Unchecked))
 
         self.count_by_group.setCheckState(
-            cparser.get(section, 'count_by_group', Qt.Unchecked))
+            cparser.get(section, 'count_by_group', Qt.CheckState.Unchecked))
 
         self.showDirectorySplittingOptions(self._restart_numbering.checkState())
 

@@ -138,9 +138,9 @@ class PluginConfig(QDialog):
             item = QListWidgetItem()
             item.setText(plugin[NAME])
             if plugin[MODULE_NAME] in to_load:
-                item.setCheckState(Qt.Checked)
+                item.setCheckState(Qt.CheckState.Checked)
             else:
-                item.setCheckState(Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Unchecked)
             item.plugin = plugin
             self._listbox.addItem(item)
 
@@ -151,7 +151,7 @@ class PluginConfig(QDialog):
         to_load = []
         for row in range(self._listbox.count()):
             item = self._listbox.item(row)
-            if item.checkState() == Qt.Checked:
+            if item.checkState() == Qt.CheckState.Checked:
                 to_load.append(item.plugin[MODULE_NAME])
         return to_load
 

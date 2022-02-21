@@ -419,8 +419,8 @@ class ColumnSettings(HeaderSetting):
 
         if not checked:
             checked = list(range(len(tags)))
-        [z.setCheckState(Qt.Checked) if i in checked
-         else z.setCheckState(Qt.Unchecked) for i, z in enumerate(items)]
+        [z.setCheckState(Qt.CheckState.Checked) if i in checked
+         else z.setCheckState(Qt.CheckState.Unchecked) for i, z in enumerate(items)]
 
     def applySettings(self, control=None):
         row = self.listbox.currentRow()

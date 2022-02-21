@@ -41,9 +41,9 @@ class ActionDialog(ActionWindow):
         item = self.listbox.item
         for row in range(self.listbox.count()):
             if row in rows:
-                item(row).setCheckState(Qt.Checked)
+                item(row).setCheckState(Qt.CheckState.Checked)
             else:
-                item(row).setCheckState(Qt.Unchecked)
+                item(row).setCheckState(Qt.CheckState.Unchecked)
 
     def updateOrder(self):
         self.listbox.clear()
@@ -55,9 +55,9 @@ class ActionDialog(ActionWindow):
             item = QListWidgetItem(func_name)
             item.setFlags(item.flags() | Qt.ItemIsEditable)
             if func_name in to_check:
-                item.setCheckState(Qt.Checked)
+                item.setCheckState(Qt.CheckState.Checked)
             else:
-                item.setCheckState(Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Unchecked)
             self.listbox.addItem(item)
 
     def saveSettings(self):

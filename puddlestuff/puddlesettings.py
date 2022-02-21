@@ -72,16 +72,16 @@ class SettingsCheckBox(QCheckBox):
         self._text = text
 
     def _value(self):
-        if self.checkState() == Qt.Checked:
+        if self.checkState() == Qt.CheckState.Checked:
             return self._text, True
         else:
             return self._text, False
 
     def _setValue(self, value):
         if value:
-            self.setCheckState(Qt.Checked)
+            self.setCheckState(Qt.CheckState.Checked)
         else:
-            self.setCheckState(Qt.Unchecked)
+            self.setCheckState(Qt.CheckState.Unchecked)
 
     settingValue = property(_value, _setValue)
 
@@ -203,8 +203,8 @@ class Playlist(QWidget):
 
         def inttocheck(value):
             if value:
-                return Qt.Checked
-            return Qt.Unchecked
+                return Qt.CheckState.Checked
+            return Qt.CheckState.Unchecked
 
         cparser = PuddleConfig()
 
@@ -242,7 +242,7 @@ class Playlist(QWidget):
 
     def applySettings(self, control=None):
         def checktoint(checkbox):
-            if checkbox.checkState() == Qt.Checked:
+            if checkbox.checkState() == Qt.CheckState.Checked:
                 return 1
             else:
                 return 0

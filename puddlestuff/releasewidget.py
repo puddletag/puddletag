@@ -353,9 +353,9 @@ class TreeModel(QtCore.QAbstractItemModel):
             item = index.internalPointer()
             if self.isTrack(item) and '#exact' in item.itemData:
                 if item.checked:
-                    return Qt.Checked
+                    return Qt.CheckState.Checked
                 else:
-                    return Qt.Unchecked
+                    return Qt.CheckState.Unchecked
         return None
 
     def fetchMore(self, index):

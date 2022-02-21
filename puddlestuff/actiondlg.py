@@ -269,9 +269,9 @@ class FunctionDialog(QWidget):
             newargs = []
             for method in self.retval:
                 if method.__name__ == 'checkState':
-                    if method() == Qt.Checked:
+                    if method() == Qt.CheckState.Checked:
                         newargs.append(True)
-                    elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
+                    elif (method() == Qt.CheckState.PartiallyChecked) or (method() == Qt.CheckState.Unchecked):
                         newargs.append(False)
                 else:
                     if isinstance(method(), int):
@@ -728,9 +728,9 @@ class ActionWindow(QDialog):
             item = QListWidgetItem(m.name)
             item.setFlags(item.flags() | Qt.ItemIsEditable)
             if m.name in to_check:
-                item.setCheckState(Qt.Checked)
+                item.setCheckState(Qt.CheckState.Checked)
             else:
-                item.setCheckState(Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Unchecked)
             self.listbox.addItem(item)
 
         self.okcancel = OKCancel()
@@ -846,7 +846,7 @@ class ActionWindow(QDialog):
     def enableOK(self, val):
         item = self.listbox.item
         enable = [row for row in range(self.listbox.count()) if
-                  item(row).checkState() == Qt.Checked]
+                  item(row).checkState() == Qt.CheckState.Checked]
         if enable:
             self.okcancel.okButton.setEnabled(True)
             self.shortcutButton.setEnabled(True)
@@ -923,7 +923,7 @@ class ActionWindow(QDialog):
             return
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
-        selectedrows = [i for i, z in enumerate(items) if z.checkState() == Qt.Checked]
+        selectedrows = [i for i, z in enumerate(items) if z.checkState() == Qt.CheckState.Checked]
 
         if selectedrows:
             from .puddletag import status
@@ -974,7 +974,7 @@ class ActionWindow(QDialog):
 
         if (ok is True) and text:
             item = QListWidgetItem(text)
-            item.setCheckState(Qt.Unchecked)
+            item.setCheckState(Qt.CheckState.Unchecked)
             item.setFlags(item.flags() | Qt.ItemIsEditable)
             self.listbox.addItem(item)
         else:
@@ -1015,7 +1015,7 @@ class ActionWindow(QDialog):
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
         checked = [i for i, z in enumerate(items) if
-                   z.checkState() == Qt.Checked]
+                   z.checkState() == Qt.CheckState.Checked]
         return checked
 
     def saveChecked(self):
@@ -1076,7 +1076,7 @@ class ActionWindow(QDialog):
 
     def duplicateBuddy(self, name, actions):
         item = QListWidgetItem(name)
-        item.setCheckState(Qt.Unchecked)
+        item.setCheckState(Qt.CheckState.Unchecked)
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.listbox.addItem(item)
 
