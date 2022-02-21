@@ -1486,7 +1486,7 @@ class ArtworkLabel(QGraphicsView):
 
         self._svg = QGraphicsSvgItem()
         self._pixmap = QGraphicsPixmapItem()
-        self._pixmap.setTransformationMode(Qt.SmoothTransformation)
+        self._pixmap.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
         self._scene = QGraphicsScene()
         self._scene.addItem(self._svg)
         self._scene.addItem(self._pixmap)
