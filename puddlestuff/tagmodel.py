@@ -1274,8 +1274,8 @@ class TagDelegate(QStyledItemDelegate):
 
     def eventFilter(self, editor, event):
         if event.type() == QEvent.KeyPress:
-            if event.key() in (Qt.Key_Return, Qt.Key_Enter):
-                if event.key() == Qt.Key_Return:
+            if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+                if event.key() == Qt.Key.Key_Return:
                     shift_pressed = event.modifiers() == Qt.ShiftModifier
                 else:
                     shift_pressed = event.modifiers() == Qt.ShiftModifier | Qt.KeypadModifier
@@ -1822,12 +1822,12 @@ class TagTable(QTableView):
         # done then the delegate is entered.
 
         has_modifier = event.modifiers() in [Qt.ControlModifier, Qt.ShiftModifier, Qt.ControlModifier | Qt.ShiftModifier]
-        if event.key() == Qt.Key_Delete and self.selectedRows:
+        if event.key() == Qt.Key.Key_Delete and self.selectedRows:
             self.deleteSelected()
             return
         # This is so that an item isn't edited when the user's holding the shift or
         # control key.
-        elif event.key() == Qt.Key_Space and (has_modifier):
+        elif event.key() == Qt.Key.Key_Space and (has_modifier):
             trigger = self.editTriggers()
             self.setEditTriggers(self.NoEditTriggers)
             ret = QTableView.keyPressEvent(self, event)

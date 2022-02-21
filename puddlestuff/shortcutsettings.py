@@ -37,14 +37,14 @@ class ActionEditorWidget(QLabel):
 
         other = None
 
-        if event.key() == Qt.Key_Shift:
-            self.modifiers[Qt.Key_Shift] = "Shift"
-        elif event.key() == Qt.Key_Control:
-            self.modifiers[Qt.Key_Control] = "Ctrl"
-        elif event.key() == Qt.Key_Meta:
-            self.modifiers[Qt.Key_Meta] = "Meta"
-        elif event.key() == Qt.Key_Alt:
-            self.modifiers[Qt.Key_Alt] = "Alt"
+        if event.key() == Qt.Key.Key_Shift:
+            self.modifiers[Qt.Key.Key_Shift] = "Shift"
+        elif event.key() == Qt.Key.Key_Control:
+            self.modifiers[Qt.Key.Key_Control] = "Ctrl"
+        elif event.key() == Qt.Key.Key_Meta:
+            self.modifiers[Qt.Key.Key_Meta] = "Meta"
+        elif event.key() == Qt.Key.Key_Alt:
+            self.modifiers[Qt.Key.Key_Alt] = "Alt"
         else:
             other = str(QKeySequence(event.key()))
 
@@ -61,18 +61,18 @@ class ActionEditorWidget(QLabel):
         if self.valid:
             return
 
-        if event.key() == Qt.Key_Shift:
-            if Qt.Key_Shift in self.modifiers:
-                del self.modifiers[Qt.Key_Shift]
-        elif event.key() == Qt.Key_Control:
-            if Qt.Key_Control in self.modifiers:
-                del self.modifiers[Qt.Key_Control]
-        elif event.key() == Qt.Key_Meta:
-            if Qt.Key_Meta in self.modifiers:
-                del self.modifiers[Qt.Key_Meta]
-        elif event.key() == Qt.Key_Alt:
-            if Qt.Key_Alt in self.modifiers:
-                del self.modifiers[Qt.Key_Alt]
+        if event.key() == Qt.Key.Key_Shift:
+            if Qt.Key.Key_Shift in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Shift]
+        elif event.key() == Qt.Key.Key_Control:
+            if Qt.Key.Key_Control in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Control]
+        elif event.key() == Qt.Key.Key_Meta:
+            if Qt.Key.Key_Meta in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Meta]
+        elif event.key() == Qt.Key.Key_Alt:
+            if Qt.Key.Key_Alt in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Alt]
 
         self.setText("+".join(list(self.modifiers.values())))
 

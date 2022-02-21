@@ -109,7 +109,7 @@ for i in range(1, len(mod_keys)):
             mod = mod | key
         modifiers[int(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
 
-mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
+mod_keys = set((Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Meta, Qt.Key.Key_Alt))
 
 imagetypes = [
     (translate('Cover Type', 'Other'), translate("Cover Type", 'O')),
