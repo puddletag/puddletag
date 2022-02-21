@@ -335,13 +335,13 @@ class TreeModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return None
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             item = index.internalPointer()
             return item.data(index.column())
-        elif role == Qt.ToolTipRole:
+        elif role == Qt.ItemDataRole.ToolTipRole:
             item = index.internalPointer()
             return tooltip(item.itemData, self.mapping)
-        elif role == Qt.DecorationRole:
+        elif role == Qt.ItemDataRole.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
                 return None
@@ -349,7 +349,7 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.expandedIcon
             else:
                 return self.collapsedIcon
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.ItemDataRole.CheckStateRole:
             item = index.internalPointer()
             if self.isTrack(item) and '#exact' in item.itemData:
                 if item.checked:
@@ -418,7 +418,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and \
-                role == QtCore.Qt.DisplayRole:
+                role == Qt.ItemDataRole.DisplayRole:
             ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
 
             return ret
@@ -502,7 +502,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         return parentItem.childCount()
 
-    def setData(self, index, value, role=Qt.CheckStateRole):
+    def setData(self, index, value, role=Qt.ItemDataRole.CheckStateRole):
         if index.isValid() and self.isTrack(index):
             item = index.internalPointer()
             item.checked = not item.checked

@@ -477,21 +477,21 @@ class ListModel(QAbstractListModel):
         QAbstractListModel.__init__(self)
         self.options = options
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+        if role == Qt.ItemDataRole.TextAlignmentRole:
             if orientation == Qt.Horizontal:
                 return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
         if orientation == Qt.Horizontal:
             return self.headerdata[section]
         return int(section + 1)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.options)):
             return None
-        if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
+        if (role == Qt.ItemDataRole.DisplayRole) or (role == Qt.ItemDataRole.ToolTipRole):
             try:
                 return str(self.options[index.row()][0])
             except IndexError:

@@ -687,12 +687,12 @@ class TagModel(QAbstractTableModel):
             except TypeError:
                 return str(val)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
             return None
 
-        if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole, Qt.ItemDataRole.EditRole):
             try:
                 audio = self.taginfo[row]
                 tag = self.headerdata[index.column()][1]
@@ -700,7 +700,7 @@ class TagModel(QAbstractTableModel):
             except (KeyError, IndexError):
                 return None
 
-            if role == Qt.ToolTipRole:
+            if role == Qt.ItemDataRole.ToolTipRole:
                 if not self.showToolTip:
                     return None
                 if self.previewMode and \
@@ -719,13 +719,13 @@ class TagModel(QAbstractTableModel):
                     tooltip = val
                 return tooltip
             return val
-        elif role == Qt.BackgroundColorRole:
+        elif role == Qt.ItemDataRole.BackgroundColorRole:
             audio = self.taginfo[row]
             if audio.color:
                 return audio.color
             elif self.previewMode and audio.preview:
                 return self.previewBackground
-        elif role == Qt.FontRole:
+        elif role == Qt.ItemDataRole.FontRole:
 
             field = self.headerdata[index.column()][1]
             f = QFont()
@@ -766,12 +766,12 @@ class TagModel(QAbstractTableModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
                             Qt.ItemIsEditable | Qt.ItemIsDropEnabled)
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+        if role == Qt.ItemDataRole.TextAlignmentRole:
             if orientation == Qt.Horizontal:
                 return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
         if orientation == Qt.Horizontal:
             try:
@@ -1023,7 +1023,7 @@ class TagModel(QAbstractTableModel):
     def rowCount(self, index=QModelIndex()):
         return len(self.taginfo)
 
-    def setData(self, index, value, role=Qt.EditRole, dontwrite=False):
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor);
@@ -1054,8 +1054,8 @@ class TagModel(QAbstractTableModel):
             return True
         return False
 
-    def setHeaderData(self, section, orientation, value, role=Qt.EditRole):
-        if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
+    def setHeaderData(self, section, orientation, value, role=Qt.ItemDataRole.EditRole):
+        if (orientation == Qt.Horizontal) and (role == Qt.ItemDataRole.DisplayRole):
             self.headerdata[section] = value
 
         self.headerdata = self.headerdata  # make sure columns are set
@@ -2151,7 +2151,7 @@ class TagTable(QTableView):
         model.dirsmoved.connect(self.dirsmoved)
         set_data = model.setData
 
-        def modded_setData(index, value, role=Qt.EditRole):
+        def modded_setData(index, value, role=Qt.ItemDataRole.EditRole):
             if len(self.selectedRows) == 1:
                 return set_data(index, value, role)
             ret = set_data(index, value, role, True)

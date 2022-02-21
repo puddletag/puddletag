@@ -325,8 +325,8 @@ class QuodLibet(object):
 
 class DirModel(QDirModel):
 
-    def data(self, index, role=Qt.DisplayRole):
-        if (role == Qt.DisplayRole and index.column() == 0):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if (role == Qt.ItemDataRole.DisplayRole and index.column() == 0):
             path = QDir.toNativeSeparators(self.filePath(index))
             if path.endsWith(QDir.separator()):
                 path.chop(1)
