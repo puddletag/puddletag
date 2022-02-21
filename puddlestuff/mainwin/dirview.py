@@ -47,7 +47,7 @@ class DirView(QTreeView):
         self.setDragEnabled(False)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
-        self._dropaction = Qt.MoveAction
+        self._dropaction = Qt.DropAction.MoveAction
         self._threadRunning = False
 
         self._select = True

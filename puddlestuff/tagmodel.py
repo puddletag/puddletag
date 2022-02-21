@@ -1188,7 +1188,7 @@ class TagModel(QAbstractTableModel):
         self.sorted.emit()
 
     def supportedDropActions(self):
-        return Qt.CopyAction
+        return Qt.DropAction.CopyAction
 
     def undo(self):
         """Undos the last action.
@@ -1769,7 +1769,7 @@ class TagTable(QTableView):
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
         dropaction = drag.exec_()
-        if dropaction == Qt.MoveAction:
+        if dropaction == Qt.DropAction.MoveAction:
             if not os.path.exists(filenames[0]):
                 self.deleteSelected(False, False, False)
 
