@@ -168,7 +168,7 @@ class DupeTree(QTreeWidget):
 
     # def mousePressEvent(self, event):
     # if event.buttons() == Qt.MouseButton.RightButton:
-    # e = QContextMenuEvent(QContextMenuEvent.Mouse, event.pos(), event.globalPos())
+    # e = QContextMenuEvent(QContextMenuEvent.Reason.Mouse, event.pos(), event.globalPos())
     # self.contextMenuEvent(e)
     # return
     # if event.buttons() == Qt.MouseButton.LeftButton:
