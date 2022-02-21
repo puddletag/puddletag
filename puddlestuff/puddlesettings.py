@@ -554,7 +554,7 @@ class ColorEdit(QWidget):
         label = QLabel(text)
 
         self.listbox = QTableWidget(0, 1, self)
-        self.listbox.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.listbox.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(False)
         header.setVisible(True)

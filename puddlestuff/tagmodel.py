@@ -10,7 +10,7 @@ from subprocess import Popen
 from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
-from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QVBoxLayout
 
@@ -1829,7 +1829,7 @@ class TagTable(QTableView):
         # control key.
         elif event.key() == Qt.Key.Key_Space and (has_modifier):
             trigger = self.editTriggers()
-            self.setEditTriggers(self.NoEditTriggers)
+            self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             ret = QTableView.keyPressEvent(self, event)
             self.setEditTriggers(trigger)
             return ret

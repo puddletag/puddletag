@@ -3,7 +3,7 @@ import sys
 
 from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
 from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
@@ -204,7 +204,7 @@ class ActionEditorDialog(QWidget):
 
         self.actionTable = QTableWidget(self)
         self.actionTable.setSelectionBehavior(QTableWidget.SelectRows)
-        self.actionTable.setEditTriggers(QTableWidget.DoubleClicked)
+        self.actionTable.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked)
         self.actionTable.setColumnCount(2)
         self.actionTable.setHorizontalHeaderLabels(
             [translate("Shortcut Settings", "Description"),
