@@ -101,7 +101,7 @@ class AutonumberDialog(QDialog):
 
         self.output_field.setEditable(True)
         completer = self.output_field.completer()
-        completer.setCaseSensitivity(Qt.CaseSensitive)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
         completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
 
         self.output_field.setCompleter(completer)
@@ -394,7 +394,7 @@ class EditField(QDialog):
         self.tagcombo.setEditable(True)
         label.setBuddy(self.tagcombo)
         completer = self.tagcombo.completer()
-        completer.setCaseSensitivity(Qt.CaseSensitive)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
         completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
         self.tagcombo.setCompleter(completer)
         self.tagcombo.addItems(field_list if field_list else gettaglist())
