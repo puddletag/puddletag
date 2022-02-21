@@ -2411,7 +2411,7 @@ class TagTable(QTableView):
         self.selectionModel().select(selection,
                                      QItemSelectionModel.ClearAndSelect)
 
-        self.scrollTo(get_index(row, min(columns)), self.EnsureVisible)
+        self.scrollTo(get_index(row, min(columns)), QAbstractItemView.ScrollHint.EnsureVisible)
 
     def selectDir(self, previous=False):
         model = self.model()
