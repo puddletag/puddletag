@@ -142,7 +142,7 @@ class DupeTree(QTreeWidget):
 
     # def mouseMoveEvent(self, event):
     # QTreeWidget.mouseMoveEvent(self, event)
-    # if event.buttons() != Qt.LeftButton:
+    # if event.buttons() != Qt.MouseButton.LeftButton:
     # return
     # mimeData = QMimeData()
     # plainText = ""
@@ -167,11 +167,11 @@ class DupeTree(QTreeWidget):
     # dropaction = drag.exec_(self.dropaction)
 
     # def mousePressEvent(self, event):
-    # if event.buttons() == Qt.RightButton:
+    # if event.buttons() == Qt.MouseButton.RightButton:
     # e = QContextMenuEvent(QContextMenuEvent.Mouse, event.pos(), event.globalPos())
     # self.contextMenuEvent(e)
     # return
-    # if event.buttons() == Qt.LeftButton:
+    # if event.buttons() == Qt.MouseButton.LeftButton:
     # self.StartPosition = [event.pos().x(), event.pos().y()]
     # QTreeWidget.mousePressEvent(self, event)
 

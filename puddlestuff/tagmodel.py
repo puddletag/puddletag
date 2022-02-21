@@ -1318,7 +1318,7 @@ class TableHeader(QHeaderView):
         menu.exec_(event.globalPos())
 
     def mousePressEvent(self, event):
-        if event.button == Qt.RightButton:
+        if event.button == Qt.MouseButton.RightButton:
             self.contextMenuEvent(event)
             return
         QHeaderView.mousePressEvent(self, event)
@@ -1741,7 +1741,7 @@ class TagTable(QTableView):
 
     def mouseMoveEvent(self, event):
 
-        if event.buttons() != Qt.LeftButton:
+        if event.buttons() != Qt.MouseButton.LeftButton:
             return
         mimeData = QMimeData()
         plainText = ""
@@ -1774,7 +1774,7 @@ class TagTable(QTableView):
                 self.deleteSelected(False, False, False)
 
     def mousePressEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
+        if event.buttons() == Qt.MouseButton.LeftButton:
             self.StartPosition = [event.pos().x(), event.pos().y()]
         QTableView.mousePressEvent(self, event)
 

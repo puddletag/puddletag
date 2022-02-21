@@ -179,7 +179,7 @@ class DirView(QTreeView):
         thread.start()
 
     def mousePressEvent(self, event):
-        if event.buttons() == Qt.RightButton:
+        if event.buttons() == Qt.MouseButton.RightButton:
             return
         else:
             super(DirView, self).mousePressEvent(event)

@@ -81,7 +81,7 @@ class ActionEditorWidget(QLabel):
 
     def mousePressEvent(self, event):
 
-        if event.button() != Qt.LeftButton:
+        if event.button() != Qt.MouseButton.LeftButton:
             return
 
         size = self.height() / 2.0

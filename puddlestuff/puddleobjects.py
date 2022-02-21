@@ -1518,7 +1518,7 @@ class ArtworkLabel(QGraphicsView):
 
     def mousePressEvent(self, event):
         super(ArtworkLabel, self).mousePressEvent(event)
-        if event.buttons() == Qt.LeftButton:
+        if event.buttons() == Qt.MouseButton.LeftButton:
             self.clicked.emit()
 
     def resizeEvent(self, event=None):
