@@ -144,7 +144,7 @@ class ScrollLabel(QScrollArea):
         label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
         self.setFrameStyle(QFrame.NoFrame)
         self.setWidgetResizable(True)
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def wheelEvent(self, e):

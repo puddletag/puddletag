@@ -93,7 +93,7 @@ def load_plugins(plugins=None, parent=None):
 class InfoWidget(QLabel):
     def __init__(self, info=None, parent=None):
         super(InfoWidget, self).__init__(parent)
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         self.setWordWrap(True)
         if info:
             self.changeInfo(info)

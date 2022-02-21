@@ -47,7 +47,7 @@ def create_svg(text, font, rect=None):
     painter.setFont(font)
     painter.setPen(Qt.white)
     painter.setBrush(QBrush(Qt.white))
-    painter.drawText(rect, Qt.AlignCenter, text)
+    painter.drawText(rect, Qt.AlignmentFlag.AlignCenter, text)
     painter.end()
 
     svg = open(f.name).read()

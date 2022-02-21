@@ -1148,8 +1148,8 @@ class ConfirmationErrorDialog(QDialog):
 
         layout = QVBoxLayout()
         layout.addLayout(labelbox, 1)
-        layout.addWidget(checkbox, 0, Qt.AlignHCenter)
-        layout.addWidget(ok, 0, Qt.AlignHCenter)
+        layout.addWidget(checkbox, 0, Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(ok, 0, Qt.AlignmentFlag.AlignHCenter)
         layout.addStretch()
         self.setLayout(layout)
 

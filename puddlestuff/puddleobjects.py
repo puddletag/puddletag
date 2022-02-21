@@ -1598,12 +1598,12 @@ class PicWidget(QWidget):
             self.label.setMaximumSize(200, 170)
         self._itags = []
 
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.newImages.connect(
             lambda filenames: self.addImages(self.loadPics(*filenames)))
 
         self._image_size = QLabel()
-        self._image_size.setAlignment(Qt.AlignHCenter)
+        self._image_size.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self._image_desc = QLineEdit(self)
 
@@ -1695,7 +1695,7 @@ class PicWidget(QWidget):
         if not buttons:
             h.addLayout(movebuttons)
             context_box = QHBoxLayout()
-            context_box.setAlignment(Qt.AlignHCenter)
+            context_box.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             context_box.addWidget(self._contextlabel)
             vbox.addLayout(context_box)
         h.addStretch()
@@ -1706,7 +1706,7 @@ class PicWidget(QWidget):
         if buttons:
             vbox.addLayout(movebuttons)
         vbox.addStretch()
-        vbox.setAlignment(Qt.AlignCenter)
+        vbox.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.label.clicked.connect(self.maxImage)
 
@@ -2190,7 +2190,7 @@ class ProgressWin(QDialog):
         self.pbar.setRange(0, maximum)
 
         self.label = QLabel()
-        self.label.setAlignment(Qt.AlignHCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         if maximum <= 0:
             self.pbar.setTextVisible(False)
