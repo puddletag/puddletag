@@ -768,12 +768,12 @@ class TagModel(QAbstractTableModel):
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
+            if orientation == Qt.Orientation.Horizontal:
                 return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         if role != Qt.ItemDataRole.DisplayRole:
             return None
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             try:
                 return str(self.headerdata[section][0])
             except IndexError:
@@ -1055,7 +1055,7 @@ class TagModel(QAbstractTableModel):
         return False
 
     def setHeaderData(self, section, orientation, value, role=Qt.ItemDataRole.EditRole):
-        if (orientation == Qt.Horizontal) and (role == Qt.ItemDataRole.DisplayRole):
+        if (orientation == Qt.Orientation.Horizontal) and (role == Qt.ItemDataRole.DisplayRole):
             self.headerdata[section] = value
 
         self.headerdata = self.headerdata  # make sure columns are set
@@ -1065,7 +1065,7 @@ class TagModel(QAbstractTableModel):
     def setHeader(self, tags):
         self.headerdata = tags
         self.headerDataChanged.emit(
-            Qt.Horizontal, 0, len(self.headerdata))
+            Qt.Orientation.Horizontal, 0, len(self.headerdata))
         self.reset()
 
     def setRowData(self, row, tags, undo=False, justrename=False, temp=False):
@@ -1375,12 +1375,12 @@ class TagTable(QTableView):
         self.settingsdialog = ColumnSettings
         if not headerdata:
             headerdata = []
-        header = TableHeader(Qt.Horizontal, headerdata, self)
+        header = TableHeader(Qt.Orientation.Horizontal, headerdata, self)
         header.setSortIndicatorShown(True)
         self.setSortingEnabled(True)
         self._savedSelection = False
 
-        self.setVerticalHeader(VerticalHeader(Qt.Vertical))
+        self.setVerticalHeader(VerticalHeader(Qt.Orientation.Vertical))
         self.setHorizontalHeader(header)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
@@ -2340,7 +2340,7 @@ class TagTable(QTableView):
     def setHeaderTags(self, tags, hidden=None):
 
         self.saveSelection()
-        hd = TableHeader(Qt.Horizontal, tags, self)
+        hd = TableHeader(Qt.Orientation.Horizontal, tags, self)
         hd.setSortIndicatorShown(True)
         hd.setVisible(True)
         hd.headerChanged.connect(self.setHeaderTags)

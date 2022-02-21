@@ -48,7 +48,7 @@ def show_all_fields(fields=None):
     data = [(k, k) for k in fields + sorted(keys, key=natsort_case_key)]
     tb = status['table']
     tb.model().setHeader(data)
-    hd = TableHeader(Qt.Horizontal, data)
+    hd = TableHeader(Qt.Orientation.Horizontal, data)
     tb.setHorizontalHeader(hd)
     hd.show()
 

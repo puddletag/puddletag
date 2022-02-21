@@ -32,7 +32,7 @@ class DirView(QTreeView):
         dirmodel.setReadOnly(False)
         dirmodel.setLazyChildCount(False)
         dirmodel.setResolveSymlinks(False)
-        header = PuddleHeader(Qt.Horizontal, self)
+        header = PuddleHeader(Qt.Orientation.Horizontal, self)
         self.setHeader(header)
         self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 

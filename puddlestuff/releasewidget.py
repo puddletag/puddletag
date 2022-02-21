@@ -94,7 +94,7 @@ class Header(QHeaderView):
     sortChanged = pyqtSignal(list, name='sortChanged')
 
     def __init__(self, parent=None):
-        QHeaderView.__init__(self, Qt.Horizontal, parent)
+        QHeaderView.__init__(self, Qt.Orientation.Horizontal, parent)
         self.setSectionsClickable(True)
         self.setStretchLastSection(True)
         self.setSortIndicatorShown(True)
@@ -417,7 +417,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         return NORMALFLAG
 
     def headerData(self, section, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and \
+        if orientation == Qt.Orientation.Horizontal and \
                 role == Qt.ItemDataRole.DisplayRole:
             ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
 

@@ -2348,7 +2348,7 @@ class PuddleDock(QDockWidget):
 
 
 class PuddleHeader(QHeaderView):
-    def __init__(self, orientation=Qt.Horizontal, parent=None):
+    def __init__(self, orientation=Qt.Orientation.Horizontal, parent=None):
         if parent:
             super(PuddleHeader, self).__init__(orientation, parent)
         else:

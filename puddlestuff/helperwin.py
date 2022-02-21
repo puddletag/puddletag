@@ -498,7 +498,7 @@ class StatusWidgetItem(QTableWidgetItem):
 
 class VerticalHeader(QHeaderView):
     def __init__(self, parent=None):
-        QHeaderView.__init__(self, Qt.Vertical, parent)
+        QHeaderView.__init__(self, Qt.Orientation.Vertical, parent)
         self.setDefaultSectionSize(self.minimumSectionSize() + 4)
         self.setMinimumSectionSize(1)
 
