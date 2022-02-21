@@ -171,7 +171,7 @@ class ActionEditorDelegate(QItemDelegate):
         painter.fillRect(option.rect, option.palette.brush(QPalette.Base))
         painter.setPen(QPen(option.palette.color(QPalette.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
-                         Qt.TextShowMnemonic | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                         Qt.TextFlag.TextShowMnemonic | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
                          str(index.data()))
 
     def setEditorData(self, editor, index):
