@@ -486,7 +486,7 @@ class MainWin(QMainWindow):
                     control.saveSettings()
 
         cparser = PuddleConfig()
-        settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(constants.QT_CONFIG, QSettings.Format.IniFormat)
         if self._lastdir:
             cparser.set('main', 'lastfolder', self._lastdir[0])
         cparser.set("main", "maximized", self.isMaximized())
@@ -603,7 +603,7 @@ class MainWin(QMainWindow):
         connect_actions(scts, PuddleDock._controls)
 
         cparser = PuddleConfig()
-        settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(constants.QT_CONFIG, QSettings.Format.IniFormat)
 
         gensettings = {}
         controls = list(PuddleDock._controls.values())

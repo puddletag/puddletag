@@ -144,7 +144,7 @@ class DirView(QTreeView):
         self._load = True
 
     def loadSettings(self):
-        settings = QSettings(QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(QT_CONFIG, QSettings.Format.IniFormat)
         header = self.header()
         if settings.value('dirview/header'):
             header.restoreState(settings.value('dirview/header'))
@@ -256,7 +256,7 @@ class DirView(QTreeView):
         dirthread.start()
 
     def saveSettings(self):
-        settings = QSettings(QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(QT_CONFIG, QSettings.Format.IniFormat)
         settings.setValue('dirview/header',
                           self.header().saveState())
         settings.setValue('dirview/hide', self.isHeaderHidden())

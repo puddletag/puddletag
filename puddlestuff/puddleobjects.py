@@ -281,7 +281,7 @@ class PuddleConfig(object):
 
 def _getSettings():
     filename = os.path.join(CONFIGDIR, 'windowsizes')
-    return QSettings(filename, QSettings.IniFormat)
+    return QSettings(filename, QSettings.Format.IniFormat)
 
 
 def savewinsize(name, dialog, settings=_getSettings()):
