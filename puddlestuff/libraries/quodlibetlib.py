@@ -338,7 +338,7 @@ class DirLineEdit(QLineEdit):
     def __init__(self, *args, **kwargs):
         super(DirLineEdit, self).__init__(*args, **kwargs)
         completer = QCompleter()
-        completer.setCompletionMode(QCompleter.PopupCompletion)
+        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         dirfilter = QDir.AllEntries | QDir.NoDotAndDotDot | QDir.Hidden
         sortflags = QDir.DirsFirst | QDir.IgnoreCase
 

@@ -135,7 +135,7 @@ class FrameCombo(QGroupBox):
             combo.setLineEdit(edit)
             completer = combo.completer()
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
-            completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+            completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
 
     def disableCombos(self):
         for z in self.combos:
@@ -150,7 +150,7 @@ class FrameCombo(QGroupBox):
             combo.setLineEdit(edit)
             completer = combo.completer()
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
-            completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+            completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
             edit.textEdited.connect(func)
             combo.currentIndexChanged.connect(func)
             self.__indexFuncs.append((combo, func))
@@ -316,7 +316,7 @@ class FrameCombo(QGroupBox):
                 self.combos[tagval].setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
                 self.combos[tagval].setEditable(True)
                 self.combos[tagval].completer().setCompletionMode(
-                    QCompleter.UnfilteredPopupCompletion)
+                    QCompleter.CompletionMode.UnfilteredPopupCompletion)
                 self.combos[tagval].completer().setCaseSensitivity(
                     Qt.CaseSensitivity.CaseSensitive)
                 self.labels[tagval].setBuddy(self.combos[tagval])
