@@ -1421,8 +1421,8 @@ class OKCancel(QHBoxLayout):
         # self.addStretch()
         dbox = QDialogButtonBox()
 
-        self.okButton = dbox.addButton(dbox.Ok)
-        self.cancelButton = dbox.addButton(dbox.Cancel)
+        self.okButton = dbox.addButton(QDialogButtonBox.StandardButton.Ok)
+        self.cancelButton = dbox.addButton(QDialogButtonBox.StandardButton.Cancel)
         self.addStretch()
         self.addWidget(dbox)
 
