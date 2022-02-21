@@ -829,7 +829,7 @@ def load_actions():
 
 def open_resourcefile(filename):
     f = QFile(filename)
-    f.open(QIODevice.ReadOnly)
+    f.open(QIODevice.OpenModeFlag.ReadOnly)
     return StringIO(str(f.readAll().data(), encoding='utf-8'))
 
 
@@ -1843,7 +1843,7 @@ class PicWidget(QWidget):
         if not image.isNull():
             ba = QByteArray()
             data = QBuffer(ba)
-            data.open(QIODevice.WriteOnly)
+            data.open(QIODevice.OpenModeFlag.WriteOnly)
             # TODO: Don't transform to JPG
             image.save(data, "JPG")
             data = bytes(data.data())
@@ -2070,7 +2070,7 @@ class PicWidget(QWidget):
             if filename.startswith(":/"):
                 ba = QByteArray()
                 data = QBuffer(ba)
-                data.open(QIODevice.WriteOnly)
+                data.open(QIODevice.OpenModeFlag.WriteOnly)
                 image.save(data, "JPG")
                 data = str(data.data())
             else:
