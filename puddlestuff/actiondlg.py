@@ -141,7 +141,7 @@ class ScrollLabel(QScrollArea):
         self.setWidget(label)
         self.setText(text)
         self.text = label.text
-        label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        label.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setWidgetResizable(True)
         self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)

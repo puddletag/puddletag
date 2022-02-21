@@ -1582,7 +1582,7 @@ class PicWidget(QWidget):
         self._contextFormat = translate("Artwork Context", '%1/%2')
 
         QWidget.__init__(self, parent)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.sizePolicy().setVerticalStretch(0)
         self.sizePolicy().setHorizontalStretch(3)
 
