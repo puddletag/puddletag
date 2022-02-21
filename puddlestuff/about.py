@@ -47,7 +47,7 @@ class ScrollLabel(QWidget):
         label.setTextFormat(Qt.TextFormat.RichText)
         label.setAlignment(alignment)
         label.setWordWrap(True)
-        label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
 
         sa = QScrollArea()
         sa.setWidget(label)

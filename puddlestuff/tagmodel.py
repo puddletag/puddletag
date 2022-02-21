@@ -358,7 +358,7 @@ class Properties(QDialog):
 
     def _load(self, info):
         vbox = QVBoxLayout()
-        interaction = Qt.TextSelectableByMouse or Qt.TextSelectableByKeyboard
+        interaction = Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextSelectableByKeyboard
         for title, items in info:
             frame = QGroupBox(title)
             framegrid = QGridLayout()
