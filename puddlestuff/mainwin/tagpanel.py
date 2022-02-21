@@ -431,7 +431,7 @@ class PuddleTable(QTableWidget):
 
 
 TABLEWIDGETBG = QTableWidgetItem().background()
-RED = QBrush(Qt.red)
+RED = QBrush(Qt.GlobalColor.red)
 
 TITLE = translate("Defaults", 'Title')
 FIELD = translate("Defaults", 'Field')

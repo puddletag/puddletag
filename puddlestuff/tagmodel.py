@@ -35,7 +35,7 @@ the_break = False
 status = {}
 
 LIBRARY = '__library'
-HIGHLIGHTCOLOR = Qt.green
+HIGHLIGHTCOLOR = Qt.GlobalColor.green
 SHIFT_RETURN = 2
 RETURN_ONLY = 1
 
@@ -499,7 +499,7 @@ class TagModel(QAbstractTableModel):
         self._previewMode = False
         self._prevhighlight = []
         self._permah = []
-        self.permaColor = QColor(Qt.green)
+        self.permaColor = QColor(Qt.GlobalColor.green)
         self._colored = []
         audioinfo.Tag = _Tag(self)
         audioinfo.model_tag = partial(model_tag, self)
