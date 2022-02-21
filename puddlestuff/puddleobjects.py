@@ -1529,7 +1529,7 @@ class ArtworkLabel(QGraphicsView):
         else:
             item = self._pixmap
         self.setSceneRect(item.boundingRect())
-        self.fitInView(item, Qt.KeepAspectRatio)
+        self.fitInView(item, Qt.AspectRatioMode.KeepAspectRatio)
 
     def setPixmap(self, pixmap, data=None):
         if isinstance(pixmap, str):
