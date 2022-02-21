@@ -60,13 +60,13 @@ mod_keys = {
 
 
 def keycmp(modifier):
-    if modifier == Qt.CTRL:
+    if modifier == Qt.Modifier.CTRL:
         return 4
-    elif modifier == Qt.SHIFT:
+    elif modifier == Qt.Modifier.SHIFT:
         return 3
-    elif modifier == Qt.ALT:
+    elif modifier == Qt.Modifier.ALT:
         return 2
-    elif modifier == Qt.META:
+    elif modifier == Qt.Modifier.META:
         return 1
     else:
         return 0
