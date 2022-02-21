@@ -40,7 +40,7 @@ class PatternCombo(QComboBox):
 
         shortcut = QShortcut(self)
         shortcut.setKey('F8')
-        shortcut.setContext(Qt.ApplicationShortcut)
+        shortcut.setContext(Qt.ShortcutContext.ApplicationShortcut)
 
         def set_focus():
             if self.hasFocus():
