@@ -515,7 +515,7 @@ class StatusWidgetCombo(QComboBox):
         self.preview = preview
 
         self.statusColors = colors
-        self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
 
         items = map(str, items)
         items = sorted(items, key=natsort_case_key)
