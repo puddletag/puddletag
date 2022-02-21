@@ -1400,7 +1400,7 @@ class TagTable(QTableView):
         self._playlist = False
         self.filespec = ''
         self.contextMenu = None
-        self.setHorizontalScrollMode(self.ScrollPerPixel)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         model = TagModel(headerdata)
         header.headerChanged.connect(self.setHeaderTags)
