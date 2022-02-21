@@ -134,7 +134,7 @@ def has_previews(tags=None, parent=None, msg=None):
 
     if previews and confirmations.should_show('preview_mode'):
         ret = QMessageBox.question(parent, 'puddletag', msg)
-        if ret != QMessageBox.Yes:
+        if ret != QMessageBox.StandardButton.Yes:
             return True
     return False
 
@@ -1648,8 +1648,8 @@ class TagTable(QTableView):
             result = QMessageBox.question(self, "puddletag",
                                           translate("Table", "Are you sure you want to delete the selected files?"))
         else:
-            result = QMessageBox.Yes
-        if result != QMessageBox.Yes:
+            result = QMessageBox.StandardButton.Yes
+        if result != QMessageBox.StandardButton.Yes:
             return
         selected = self.selectedTags
         selectedRows = self.selectedRows
@@ -2102,7 +2102,7 @@ class TagTable(QTableView):
         if previews:
             ret = QMessageBox.question(self, 'puddletag',
                 translate("Previews", 'There are unsaved changes pending. Do you want to discard and reload?'))
-            if ret != QMessageBox.Yes:
+            if ret != QMessageBox.StandardButton.Yes:
                 return
 
         self._restore = self.saveSelection()

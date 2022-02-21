@@ -320,7 +320,7 @@ class ImportTextFile(QDialog):
                                        translate('Text File -> Tag', "Error"),
                                        translate('Text File -> Tag', errormsg.arg(filename)))
 
-            if ret == QMessageBox.Yes:
+            if ret == QMessageBox.StandardButton.Yes:
                 return self.openFile()
             else:
                 return detail
