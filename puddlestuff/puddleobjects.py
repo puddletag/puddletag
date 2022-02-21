@@ -1734,7 +1734,7 @@ class PicWidget(QWidget):
             hbox.addLayout(listbuttons)
 
         else:
-            self.label.setContextMenuPolicy(Qt.ActionsContextMenu)
+            self.label.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
             self.savepic = QAction(translate("Artwork", "&Save cover to file"), self)
             self.label.addAction(self.savepic)
 
