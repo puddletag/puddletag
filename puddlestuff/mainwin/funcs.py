@@ -161,7 +161,7 @@ def check_copy_data(data):
                                  "It may cause your system to lock up.\n\n"
                                  "Do you want to go ahead?"))
 
-        msgbox.setIcon(QMessageBox.Question)
+        msgbox.setIcon(QMessageBox.Icon.Question)
         yesBtn = msgbox.addButton(translate("Defaults", "&Yes"),
                                   QMessageBox.ButtonRole.YesRole)
         noBtn = msgbox.addButton(translate("Defaults", "No"),

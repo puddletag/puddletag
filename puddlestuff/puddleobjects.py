@@ -513,7 +513,7 @@ def errormsg(parent, msg, maximum):
         False if No.
         None if just yes."""
     if maximum > 1:
-        mb = QMessageBox(QMessageBox.Warning, translate("Defaults", 'Error'),
+        mb = QMessageBox(QMessageBox.Icon.Warning, translate("Defaults", 'Error'),
                          msg + translate("Defaults", "<br /> Do you want to continue?"),
                          QMessageBox.Yes | QMessageBox.No | QMessageBox.YesToAll,
                          parent)

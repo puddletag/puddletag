@@ -1134,7 +1134,7 @@ class ConfirmationErrorDialog(QDialog):
         self.__label = QLabel()
         icon = QLabel()
         msgbox = QMessageBox()
-        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setIcon(QMessageBox.Icon.Warning)
         icon.setPixmap(msgbox.iconPixmap())
         ok = QPushButton(translate("Defaults", "OK"))
         checkbox = QCheckBox(
