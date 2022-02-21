@@ -1452,7 +1452,7 @@ class LongInfoMessage(QDialog):
 
         text = QTextEdit()
         text.setReadOnly(True)
-        # text.setWordWrapMode(QTextOption.NoWrap)
+        # text.setWordWrapMode(QTextOption.WrapMode.NoWrap)
         text.setHtml(html)
 
         okcancel = OKCancel()
