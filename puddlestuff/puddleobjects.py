@@ -24,7 +24,7 @@ from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
-    QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
+    QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
 from configobj import ConfigObjError
 
@@ -1713,7 +1713,7 @@ class PicWidget(QWidget):
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
         hbox.addStrut(12)
-        hbox.setSizeConstraint(hbox.SetMinAndMaxSize)
+        hbox.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
         self.setLayout(hbox)
 
         if buttons:
