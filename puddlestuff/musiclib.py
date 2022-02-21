@@ -296,8 +296,8 @@ class LibraryTree(QTreeWidget):
         self.setSortingEnabled(True)
         self.sortItems(0, Qt.SortOrder.AscendingOrder)
 
-        self.CLOSED_ICON = self.style().standardIcon(QStyle.SP_DirClosedIcon)
-        self.OPEN_ICON = self.style().standardIcon(QStyle.SP_DirOpenIcon)
+        self.CLOSED_ICON = self.style().standardIcon(QStyle.StandardPixmap.SP_DirClosedIcon)
+        self.OPEN_ICON = self.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon)
 
         self.itemCollapsed.connect(
             lambda item: item.setIcon(0, self.CLOSED_ICON))

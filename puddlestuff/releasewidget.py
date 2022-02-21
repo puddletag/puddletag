@@ -272,8 +272,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         self.trackPattern = track_pattern
         self.tagsource = tagsource
         icon = QWidget().style().standardIcon
-        self.expandedIcon = icon(QStyle.SP_DirOpenIcon)
-        self.collapsedIcon = icon(QStyle.SP_DirClosedIcon)
+        self.expandedIcon = icon(QStyle.StandardPixmap.SP_DirOpenIcon)
+        self.collapsedIcon = icon(QStyle.StandardPixmap.SP_DirClosedIcon)
 
         if data:
             self.setupModelData(data)
