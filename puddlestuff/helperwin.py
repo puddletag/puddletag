@@ -669,7 +669,7 @@ class ExTags(QDialog):
         self.listbuttons.movedownButton.hide()
 
         listframe = QFrame()
-        listframe.setFrameStyle(QFrame.Box)
+        listframe.setFrameStyle(QFrame.Shape.Box)
         hbox = QHBoxLayout()
         hbox.addWidget(self.table, 1)
         hbox.addLayout(self.listbuttons, 0)
@@ -678,7 +678,7 @@ class ExTags(QDialog):
         layout = QVBoxLayout()
         if artwork:
             imageframe = QFrame()
-            imageframe.setFrameStyle(QFrame.Box)
+            imageframe.setFrameStyle(QFrame.Shape.Box)
             vbox = QVBoxLayout()
             vbox.setContentsMargins(0, 0, 0, 0)
             vbox.addWidget(self.piclabel)

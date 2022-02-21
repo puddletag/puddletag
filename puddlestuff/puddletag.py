@@ -500,7 +500,7 @@ class MainWin(QMainWindow):
     def createStatusBar(self):
         statusbar = self.statusBar()
         statuslabel = QLabel()
-        statuslabel.setFrameStyle(QFrame.NoFrame)
+        statuslabel.setFrameStyle(QFrame.Shape.NoFrame)
         statusbar.addPermanentWidget(statuslabel, 1)
         self._totalstats = QLabel('00 (00:00:00 | 00 MB)')
         self._selectedstats = QLabel('00 (00:00:00 | 00 MB)')

@@ -142,7 +142,7 @@ class ScrollLabel(QScrollArea):
         self.setText(text)
         self.text = label.text
         label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
-        self.setFrameStyle(QFrame.NoFrame)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setWidgetResizable(True)
         self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -486,7 +486,7 @@ class CreateFunction(QDialog):
     def createWindow(self, index, fields=None, args=None):
         """Creates a Function dialog in the stack window
         if it doesn't exist already."""
-        self.stack.setFrameStyle(QFrame.Box)
+        self.stack.setFrameStyle(QFrame.Shape.Box)
         if index not in self.stackWidgets:
             widget = FunctionDialog(self.realfuncs[index],
                                     self.selectedFields, args, fields,

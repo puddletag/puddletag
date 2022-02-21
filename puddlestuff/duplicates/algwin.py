@@ -226,7 +226,7 @@ class AlgWin(QWidget):
         [vbox.addWidget(z) for z in [taglabel, self.tags, perlabel, self.threshold,
                                      allabel, self.alcombo, self.matchcase]]
         frame = QFrame()
-        frame.setFrameStyle(QFrame.Box)
+        frame.setFrameStyle(QFrame.Shape.Box)
         frame.setLayout(vbox)
 
         box = QVBoxLayout()

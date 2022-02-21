@@ -1591,7 +1591,7 @@ class PicWidget(QWidget):
         self.filePattern = 'folder.jpg'
 
         self.label = ArtworkLabel()
-        self.label.setFrameStyle(QFrame.Box)
+        self.label.setFrameStyle(QFrame.Shape.Box)
 
         self.label.setMinimumSize(200, 170)
         if buttons:
@@ -1971,7 +1971,7 @@ class PicWidget(QWidget):
         self._image_type.blockSignals(False)
         self._currentImage = num
         self.context = str(self._contextFormat.arg(str(num + 1)).arg(str(len(self.images))))
-        self.label.setFrameStyle(QFrame.NoFrame)
+        self.label.setFrameStyle(QFrame.Shape.NoFrame)
         self.enableButtons()
         # self.resizeEvent()
 
@@ -2023,7 +2023,7 @@ class PicWidget(QWidget):
                                      translate("Artwork", 'Writing to <b>%1</b> failed.').arg(filename))
 
     def setNone(self):
-        self.label.setFrameStyle(QFrame.Box)
+        self.label.setFrameStyle(QFrame.Shape.Box)
         self.label.setPixmap(QPixmap())
         self._image_size.setText("")
         self.pixmap = None

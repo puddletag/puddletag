@@ -657,7 +657,7 @@ class SettingsDialog(QDialog):
         self.listbox.setModel(self.model)
 
         self.stack = QStackedWidget()
-        self.stack.setFrameStyle(QFrame.StyledPanel)
+        self.stack.setFrameStyle(QFrame.Shape.StyledPanel)
 
         self.grid = QGridLayout()
         self.grid.addWidget(self.listbox)

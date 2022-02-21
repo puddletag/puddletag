@@ -166,7 +166,7 @@ class LibChooseDialog(QDialog):
         okcancel.cancel.connect(self.close)
 
         self.stack = QStackedWidget()
-        self.stack.setFrameStyle(QFrame.Box)
+        self.stack.setFrameStyle(QFrame.Shape.Box)
         list(map(self.stack.addWidget, self.stackwidgets))
 
         hbox = QHBoxLayout()

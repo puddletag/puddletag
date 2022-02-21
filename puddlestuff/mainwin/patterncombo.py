@@ -75,7 +75,7 @@ class SettingsWin(QFrame):
         QFrame.__init__(self, parent)
         self.title = translate('Settings', "Patterns")
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
-        self.setFrameStyle(QFrame.Box)
+        self.setFrameStyle(QFrame.Shape.Box)
         self.listbox = ListBox()
         self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         buttons = ListButtons()

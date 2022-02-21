@@ -31,7 +31,7 @@ class ActionEditorWidget(QLabel):
         palette.setBrush(palette.Base, palette.brush(palette.AlternateBase))
         self.setPalette(palette)
         self.valid = False
-        self.setFrameStyle(QFrame.Panel)
+        self.setFrameStyle(QFrame.Shape.Panel)
 
     def keyPressEvent(self, event):
 
