@@ -95,7 +95,7 @@ class ButtonsAndList(QFrame):
 
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Defaults", '&Sort'))
-        self._sortOrder = Qt.AscendingOrder
+        self._sortOrder = Qt.SortOrder.AscendingOrder
         connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
@@ -125,12 +125,12 @@ class ButtonsAndList(QFrame):
         self.editItem()
 
     def _sortListBox(self):
-        if self._sortOrder == Qt.AscendingOrder:
-            self.listbox.sortItems(Qt.DescendingOrder)
-            self._sortOrder = Qt.DescendingOrder
+        if self._sortOrder == Qt.SortOrder.AscendingOrder:
+            self.listbox.sortItems(Qt.SortOrder.DescendingOrder)
+            self._sortOrder = Qt.SortOrder.DescendingOrder
         else:
-            self.listbox.sortItems(Qt.AscendingOrder)
-            self._sortOrder = Qt.AscendingOrder
+            self.listbox.sortItems(Qt.SortOrder.AscendingOrder)
+            self._sortOrder = Qt.SortOrder.AscendingOrder
 
     def addItem(self):
         l = self.listbox.item

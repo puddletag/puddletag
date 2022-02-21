@@ -87,7 +87,7 @@ class SettingsWin(QFrame):
 
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Pattern Settings", '&Sort'))
-        self._sortOrder = Qt.AscendingOrder
+        self._sortOrder = Qt.SortOrder.AscendingOrder
         connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
@@ -103,12 +103,12 @@ class SettingsWin(QFrame):
         connect(self.listbox, 'itemDoubleClicked', self._doubleClicked)
 
     def _sortListBox(self):
-        if self._sortOrder == Qt.AscendingOrder:
-            self.listbox.sortItems(Qt.DescendingOrder)
-            self._sortOrder = Qt.DescendingOrder
+        if self._sortOrder == Qt.SortOrder.AscendingOrder:
+            self.listbox.sortItems(Qt.SortOrder.DescendingOrder)
+            self._sortOrder = Qt.SortOrder.DescendingOrder
         else:
-            self.listbox.sortItems(Qt.AscendingOrder)
-            self._sortOrder = Qt.AscendingOrder
+            self.listbox.sortItems(Qt.SortOrder.AscendingOrder)
+            self._sortOrder = Qt.SortOrder.AscendingOrder
 
     def saveSettings(self):
         patterns = [str(self.listbox.item(row).text()) for row in range(self.listbox.count())]

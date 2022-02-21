@@ -632,7 +632,7 @@ class ExTags(QDialog):
         header.setVisible(True)
         header.setSortIndicatorShown(True)
         header.setStretchLastSection(True)
-        header.setSortIndicator(0, Qt.AscendingOrder)
+        header.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
 
         self.piclabel = PicWidget(buttons=True)
         self.piclabel.imageChanged.connect(

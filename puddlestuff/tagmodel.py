@@ -493,7 +493,7 @@ class TagModel(QAbstractTableModel):
         self._headerData = []
         self.headerdata = headerdata
         self.colorRows = []
-        self.sortOrder = (0, Qt.AscendingOrder)
+        self.sortOrder = (0, Qt.SortOrder.AscendingOrder)
         self.saveModification = True
         self._filtered = []
         self._previewMode = False
@@ -1151,7 +1151,7 @@ class TagModel(QAbstractTableModel):
             return self.index(row, column)
         return QModelIndex();
 
-    def sort(self, column, order=Qt.DescendingOrder):
+    def sort(self, column, order=Qt.SortOrder.DescendingOrder):
         try:
             field = self.headerdata[column][1]
         except IndexError:
@@ -1159,7 +1159,7 @@ class TagModel(QAbstractTableModel):
                 field = self.headerdata[0][1]
             else:
                 return
-        if order == Qt.DescendingOrder:
+        if order == Qt.SortOrder.DescendingOrder:
             self.sortByFields([field], reverse=True)
         else:
             self.sortByFields([field], reverse=False)
@@ -1307,7 +1307,7 @@ class TableHeader(QHeaderView):
         self.setHighlightSections(True)
         self.setSectionsMovable(True)
         self.setSortIndicatorShown(True)
-        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)

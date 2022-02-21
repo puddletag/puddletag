@@ -98,7 +98,7 @@ class Header(QHeaderView):
         self.setSectionsClickable(True)
         self.setStretchLastSection(True)
         self.setSortIndicatorShown(True)
-        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
         self.sortOptions = [z.split(',') for z in
                             ['artist,album', 'album,artist', '__numtracks,album']]
 
@@ -521,9 +521,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         if exact_matches:
             self.exactMatches.emit(exact_matches)
 
-    def sort(self, column=0, order=Qt.AscendingOrder):
+    def sort(self, column=0, order=Qt.SortOrder.AscendingOrder):
         self.beginResetModel()
-        if order == Qt.AscendingOrder:
+        if order == Qt.SortOrder.AscendingOrder:
             self.rootItem.sort(self.sortOrder)
         else:
             self.rootItem.sort(self.sortOrder, True)

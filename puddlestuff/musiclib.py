@@ -294,7 +294,7 @@ class LibraryTree(QTreeWidget):
         self.setHeaderLabels([translate('MusicLib', "Library Artists")])
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setSortingEnabled(True)
-        self.sortItems(0, Qt.AscendingOrder)
+        self.sortItems(0, Qt.SortOrder.AscendingOrder)
 
         self.CLOSED_ICON = self.style().standardIcon(QStyle.SP_DirClosedIcon)
         self.OPEN_ICON = self.style().standardIcon(QStyle.SP_DirOpenIcon)

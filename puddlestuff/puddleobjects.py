@@ -2355,7 +2355,7 @@ class PuddleHeader(QHeaderView):
             super(PuddleHeader, self).__init__()
 
         self.setSortIndicatorShown(True)
-        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
         self.setSectionsMovable(True)
         self.setSectionsClickable(True)
 
