@@ -1813,7 +1813,7 @@ class TagTable(QTableView):
         bottomRight = model.index(model.rowCount() - 1, model.columnCount() - 1)
 
         selection = QItemSelection(topLeft, bottomRight)
-        self.selectionModel().select(selection, QItemSelectionModel.Toggle)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Toggle)
 
     def keyPressEvent(self, event):
         event.accept()
@@ -2131,12 +2131,12 @@ class TagTable(QTableView):
             bottomRight = model.index(model.rowCount() - 1, col)
 
             selection = QItemSelection(topLeft, bottomRight)
-            self.selectionModel().select(selection, QItemSelectionModel.Select)
+            self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
 
     def selectCorner(self):
         topLeft = self.model().index(0, 0)
         selection = QItemSelection(topLeft, topLeft)
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
         self.setCurrentIndex(topLeft)
 
     def setModel(self, model):
@@ -2302,7 +2302,7 @@ class TagTable(QTableView):
 
         for col, rows in groups.items():
             [select(min(row), max(row), col) for row in rows]
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
 
     def restoreSelection(self, data=None):
         if data is None:
@@ -2329,7 +2329,7 @@ class TagTable(QTableView):
                     select_index(row, column)
 
         self.selectionModel().clear()
-        self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.SelectCurrent)
         self.model().highlight(self.selectedRows)
 
     def removeFolders(self, dirs, valid=True):
@@ -2407,9 +2407,9 @@ class TagTable(QTableView):
         for column in columns:
             index = get_index(row, column)
             selection.merge(QItemSelection(index, index),
-                            QItemSelectionModel.Select)
+                            QItemSelectionModel.SelectionFlag.Select)
         self.selectionModel().select(selection,
-                                     QItemSelectionModel.ClearAndSelect)
+                                     QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
         self.scrollTo(get_index(row, min(columns)), QAbstractItemView.ScrollHint.EnsureVisible)
 
@@ -2453,9 +2453,9 @@ class TagTable(QTableView):
 
         for row, column in to_select.items():
             index = modelindex(row, column)
-            merge(QItemSelection(index, index), QItemSelectionModel.Select)
+            merge(QItemSelection(index, index), QItemSelectionModel.SelectionFlag.Select)
 
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
 
     def showProperties(self):
         f = self.selectedTags[0]

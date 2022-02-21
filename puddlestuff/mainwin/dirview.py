@@ -72,7 +72,7 @@ class DirView(QTreeView):
         smodel = self.selectionModel()
         smodel.blockSignals(True)
         smodel.clear()
-        smodel.select(deselected, smodel.Select)
+        smodel.select(deselected, QItemSelectionModel.SelectionFlag.Select)
         smodel.blockSignals(False)
         self._select = select
         return True
@@ -242,7 +242,7 @@ class DirView(QTreeView):
             if select:
                 self.setCurrentIndex(select[0])
                 self.scrollTo(select[0])
-            [selectindex(z, QItemSelectionModel.Select) for z in select]
+            [selectindex(z, QItemSelectionModel.SelectionFlag.Select) for z in select]
             if expand:
                 [self.expand(z) for z in expand]
             self.blockSignals(False)
@@ -293,7 +293,7 @@ class DirView(QTreeView):
     def selectIndex(self, index):
         if not index.isValid():
             return
-        self.selectionModel().select(index, QItemSelectionModel.Select)
+        self.selectionModel().select(index, QItemSelectionModel.SelectionFlag.Select)
         parent = index.parent()
         while parent.isValid():
             self.expand(index)

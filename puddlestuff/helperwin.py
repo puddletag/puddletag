@@ -801,7 +801,7 @@ class ExTags(QDialog):
                     cur_item = self.table.item(self.table.currentRow(), 0)
                     self.resetFields([cur_item])
                     self.table.setCurrentItem(cur_item,
-                                              QItemSelectionModel.ClearAndSelect)
+                                              QItemSelectionModel.SelectionFlag.ClearAndSelect)
                     self.table.selectRow(self.table.row(cur_item))
                     self.removeField()
                     valitem = self._settag(rowcount, tag,

@@ -672,7 +672,7 @@ class SettingsDialog(QDialog):
         index = self.model.index(0, 0)
         selection.select(index, index)
         self.listbox.setSelectionModel(self.selectionModel)
-        self.selectionModel.select(selection, QItemSelectionModel.Select)
+        self.selectionModel.select(selection, QItemSelectionModel.SelectionFlag.Select)
 
         self.okbuttons = OKCancel()
         self.okbuttons.okButton.setDefault(True)
