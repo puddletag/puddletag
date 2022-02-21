@@ -28,7 +28,7 @@ class ActionEditorWidget(QLabel):
         self.modifiers = {}
         self.setAutoFillBackground(True)
         palette = self.palette()
-        palette.setBrush(palette.Base, palette.brush(palette.AlternateBase))
+        palette.setBrush(QPalette.ColorRole.Base, palette.brush(QPalette.ColorRole.AlternateBase))
         self.setPalette(palette)
         self.valid = False
         self.setFrameStyle(QFrame.Shape.Panel)
@@ -99,10 +99,10 @@ class ActionEditorWidget(QLabel):
             painter.begin(self)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-            color = self.palette().color(QPalette.Highlight)
+            color = self.palette().color(QPalette.ColorRole.Highlight)
             color.setAlpha(127)
             painter.setBrush(QBrush(color))
-            color = self.palette().color(QPalette.HighlightedText)
+            color = self.palette().color(QPalette.ColorRole.HighlightedText)
             color.setAlpha(127)
             painter.setPen(QPen(color))
             size = self.height() / 2.0
@@ -168,8 +168,8 @@ class ActionEditorDelegate(QItemDelegate):
             QItemDelegate.paint(self, painter, option, index)
             return
 
-        painter.fillRect(option.rect, option.palette.brush(QPalette.Base))
-        painter.setPen(QPen(option.palette.color(QPalette.Text)))
+        painter.fillRect(option.rect, option.palette.brush(QPalette.ColorRole.Base))
+        painter.setPen(QPen(option.palette.color(QPalette.ColorRole.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
                          Qt.TextFlag.TextShowMnemonic | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
                          str(index.data()))

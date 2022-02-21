@@ -1954,7 +1954,7 @@ class TagTable(QTableView):
 
         cparser = PuddleConfig()
         preview_color = cparser.get('table', 'preview_color', [192, 255, 192], True)
-        default = QPalette().color(QPalette.Mid).getRgb()[:-1]
+        default = QPalette().color(QPalette.ColorRole.Mid).getRgb()[:-1]
         selection_color = cparser.get('table', 'selected_color', default, True)
 
         model = self.model()
