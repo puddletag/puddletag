@@ -726,7 +726,7 @@ class ActionWindow(QDialog):
 
         for i, m in sorted(self.macros.items()):
             item = QListWidgetItem(m.name)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
             if m.name in to_check:
                 item.setCheckState(Qt.CheckState.Checked)
             else:
@@ -975,7 +975,7 @@ class ActionWindow(QDialog):
         if (ok is True) and text:
             item = QListWidgetItem(text)
             item.setCheckState(Qt.CheckState.Unchecked)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
             self.listbox.addItem(item)
         else:
             return
@@ -1077,7 +1077,7 @@ class ActionWindow(QDialog):
     def duplicateBuddy(self, name, actions):
         item = QListWidgetItem(name)
         item.setCheckState(Qt.CheckState.Unchecked)
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         self.listbox.addItem(item)
 
         m = Macro()

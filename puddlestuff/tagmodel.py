@@ -762,9 +762,9 @@ class TagModel(QAbstractTableModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
-                            Qt.ItemIsEditable | Qt.ItemIsDropEnabled)
+            return Qt.ItemFlag.ItemIsEnabled
+        return Qt.ItemFlag(QAbstractTableModel.flags(self, index) |
+                            Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsDropEnabled)
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.TextAlignmentRole:

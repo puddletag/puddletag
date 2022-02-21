@@ -506,8 +506,8 @@ class ListModel(QAbstractListModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractListModel.flags(self, index))
+            return Qt.ItemFlag.ItemIsEnabled
+        return Qt.ItemFlag(QAbstractListModel.flags(self, index))
 
 
 class SettingsList(QListView):
@@ -527,7 +527,7 @@ class StatusWidgetItem(QTableWidgetItem):
     def __init__(self, text, color):
         QTableWidgetItem.__init__(self, text)
         self.setBackground(QBrush(color))
-        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
 
 
 class ColorEdit(QWidget):

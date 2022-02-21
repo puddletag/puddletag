@@ -37,7 +37,7 @@ class Genres(QWidget):
             genres = status['genres']
 
         self.listbox = ListBox()
-        self._itemflags = Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+        self._itemflags = Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
         [self.listbox.addItem(self._createItem(z)) for z in genres]
 
         buttons = ListButtons()

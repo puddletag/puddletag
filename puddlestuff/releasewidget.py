@@ -14,8 +14,8 @@ from .tagsources import RetrievalError
 from .translations import translate
 from .util import pprint_tag, to_string
 
-CHECKEDFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
-NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
+CHECKEDFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
+NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
 RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
 

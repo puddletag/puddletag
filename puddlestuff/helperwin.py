@@ -451,7 +451,7 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(self.statusColors[status])
 
         self._status = status
-        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
         self._original = (text, preview, status)
         self.linked = []
 

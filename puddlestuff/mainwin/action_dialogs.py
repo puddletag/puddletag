@@ -53,7 +53,7 @@ class ActionDialog(ActionWindow):
         for i, m in sorted(self.macros.items()):
             func_name = m.name
             item = QListWidgetItem(func_name)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
             if func_name in to_check:
                 item.setCheckState(Qt.CheckState.Checked)
             else:

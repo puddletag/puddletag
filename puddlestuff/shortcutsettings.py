@@ -226,12 +226,12 @@ class ActionEditorDialog(QWidget):
 
             item = QTableWidgetItem()
             item.setText(action.text())
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
             self.actionTable.setItem(row, 0, item)
 
             item = QTableWidgetItem()
             item.setText(action.shortcut().toString())
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsSelectable)
             item.oldShortcutText = item.text()
             self.actionTable.setItem(row, 1, item)
 
