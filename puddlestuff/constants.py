@@ -81,10 +81,10 @@ MUSICLIBS = 'MUSICLIBS'
 MODULES = 'MODULES'
 
 # Dock Positions
-LEFTDOCK = Qt.LeftDockWidgetArea
-RIGHTDOCK = Qt.RightDockWidgetArea
-BOTTOMDOCK = Qt.BottomDockWidgetArea
-TOPDOCK = Qt.TopDockWidgetArea
+LEFTDOCK = Qt.DockWidgetArea.LeftDockWidgetArea
+RIGHTDOCK = Qt.DockWidgetArea.RightDockWidgetArea
+BOTTOMDOCK = Qt.DockWidgetArea.BottomDockWidgetArea
+TOPDOCK = Qt.DockWidgetArea.TopDockWidgetArea
 
 # Tag constants
 PATH = "__path"
