@@ -233,7 +233,7 @@ class ImportTextFile(QDialog):
 
         self.tags = QTextEdit()
         grid.addWidget(self.tags, 1, 2, 1, 2)
-        self.tags.setLineWrapMode(QTextEdit.NoWrap)
+        self.tags.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
 
         hbox = QHBoxLayout()
 
