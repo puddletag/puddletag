@@ -203,7 +203,7 @@ class ActionEditorDialog(QWidget):
                                                      ' to <br />modify the key sequence.</b>'))
 
         self.actionTable = QTableWidget(self)
-        self.actionTable.setSelectionBehavior(QTableWidget.SelectRows)
+        self.actionTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.actionTable.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked)
         self.actionTable.setColumnCount(2)
         self.actionTable.setHorizontalHeaderLabels(

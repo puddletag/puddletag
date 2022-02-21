@@ -623,7 +623,7 @@ class ExTags(QDialog):
         self.table.setVerticalHeader(VerticalHeader())
         self.table.verticalHeader().setVisible(False)
         self.table.setSortingEnabled(True)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setHorizontalHeaderLabels([
             translate('Extended Tags', 'Field'),
             translate('Extended Tags', 'Value')])
