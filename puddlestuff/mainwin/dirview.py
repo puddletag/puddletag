@@ -28,7 +28,7 @@ class DirView(QTreeView):
 
         dirmodel = QDirModel()
         dirmodel.setSorting(QDir.IgnoreCase)
-        dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
+        dirmodel.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
         dirmodel.setReadOnly(False)
         dirmodel.setLazyChildCount(False)
         dirmodel.setResolveSymlinks(False)
