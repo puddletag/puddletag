@@ -141,7 +141,7 @@ class GeneralSettings(QWidget):
         self._lang_combo.addItems(list(get_languages([TRANSDIR])))
 
         if lang != 'auto':
-            i = self._lang_combo.findText(lang, Qt.MatchFixedString)
+            i = self._lang_combo.findText(lang, Qt.MatchFlag.MatchFixedString)
             if i > 0:
                 self._lang_combo.setCurrentIndex(i)
 

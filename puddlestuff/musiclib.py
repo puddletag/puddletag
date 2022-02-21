@@ -420,7 +420,7 @@ class LibraryTree(QTreeWidget):
         take_item = self.takeTopLevelItem
 
         for artist in data:
-            artist_item = self.findItems(artist, Qt.MatchExactly)[0]
+            artist_item = self.findItems(artist, Qt.MatchFlag.MatchExactly)[0]
             if artist in lib_artists:
                 albums = get_albums(artist)
                 remove = artist_item.removeChild
@@ -445,7 +445,7 @@ class LibraryTree(QTreeWidget):
 
         newartists = []
         for artist in set(artists):
-            artist_item = self.findItems(artist, Qt.MatchExactly)
+            artist_item = self.findItems(artist, Qt.MatchFlag.MatchExactly)
             if artist_item:
                 artist_item = artist_item[0]
                 albums = get_albums(artist)

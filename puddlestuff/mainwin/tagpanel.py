@@ -74,9 +74,9 @@ class Combo(QComboBox):
             return super(Combo, self).focusOutEvent(event)
         curtext = self.currentText()
         index = self.findText(curtext,
-                              Qt.MatchExactly | Qt.MatchFixedString | Qt.MatchCaseSensitive)
+                              Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchFixedString | Qt.MatchFlag.MatchCaseSensitive)
         if index == -1:
-            index = self.findText(curtext, Qt.MatchExactly | Qt.MatchFixedString)
+            index = self.findText(curtext, Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchFixedString)
         if index > 1:
             if curtext == self.itemText(index):
                 self.removeItem(index)
