@@ -97,7 +97,7 @@ class ActionEditorWidget(QLabel):
         if self.text():
             painter = QPainter()
             painter.begin(self)
-            painter.setRenderHint(QPainter.Antialiasing)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
             color = self.palette().color(QPalette.Highlight)
             color.setAlpha(127)
