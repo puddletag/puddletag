@@ -313,7 +313,7 @@ class FrameCombo(QGroupBox):
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
                 self.combos[tagval] = QComboBox(self)
-                self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
+                self.combos[tagval].setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
                 self.combos[tagval].setEditable(True)
                 self.combos[tagval].completer().setCompletionMode(
                     QCompleter.UnfilteredPopupCompletion)
