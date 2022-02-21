@@ -226,14 +226,14 @@ def load_language(qapp, langfile=None):
     if langargs and langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-                        QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         translators.append(translator)
 
         if 'puddletag_' in langargs[0]:
             translator = QTranslator()
             locale = langargs[0][len('puddletag_'):-len('.qm')]
             translator.load("qt_" + locale,
-                            QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                            QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
             print("Locale: " + locale)
             translators.append(translator)
 
@@ -244,7 +244,7 @@ def load_language(qapp, langfile=None):
     elif langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-                        QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         print("Locale: " + str(QLocale.system().name()))
         translators.append(translator)
 
