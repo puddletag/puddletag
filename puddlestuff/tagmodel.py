@@ -412,7 +412,7 @@ class ColumnSettings(HeaderSetting):
         if showok:
             winsettings('columnsettings', self)
 
-        self.setWindowFlags(Qt.Widget)
+        self.setWindowFlags(Qt.WindowType.Widget)
         label = QLabel(translate("Column Settings", 'Adjust visibility of columns.'))
         self.grid.addWidget(label, 0, 0)
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
