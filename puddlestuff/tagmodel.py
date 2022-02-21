@@ -1552,17 +1552,17 @@ class TagTable(QTableView):
         self.model().reset()
         self.dirschanged.emit([])
 
-    def _closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
+    def _closeEditor(self, editor, hint=QAbstractItemDelegate.EndEditHint.NoHint):
         if editor.writeError:
             model = self.model()
             currentfile = model.taginfo[self.currentIndex().row()]
-            QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+            QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
             model.setDataError.emit(
                 rename_error_msg(editor.writeError, currentfile.filepath))
             return
 
         if len(self.selectedRows) > 1:
-            QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+            QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
         elif not editor.returnPressed:
             QTableView.closeEditor(self, editor, hint)
         else:
@@ -1579,11 +1579,11 @@ class TagTable(QTableView):
                                                   index.column())
 
             if newindex:
-                QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+                QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 self.setCurrentIndex(newindex)
                 self.edit(newindex)
             else:
-                QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+                QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
 
     def removeTags(self):
         if self.model().previewMode:

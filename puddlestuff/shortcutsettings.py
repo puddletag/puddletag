@@ -3,7 +3,7 @@ import sys
 
 from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
 from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt5.QtWidgets import qApp, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
@@ -144,20 +144,20 @@ class ActionEditorDelegate(QItemDelegate):
                 obj.keyPressEvent(event)
                 if obj.valid:
                     self.commitData.emit(self.editor)
-                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
             elif event.type() == QEvent.KeyRelease:
                 obj.keyReleaseEvent(event)
                 if not obj.text():
-                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
             elif event.type() == QEvent.MouseButtonPress:
                 obj.mousePressEvent(event)
                 if obj.valid:
                     self.commitData.emit(self.editor)
-                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
         return False
