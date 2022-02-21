@@ -50,13 +50,13 @@ SD_PATTERNS = [
 ]
 
 mod_keys = {
-    Qt.ShiftModifier: 'Shift',
-    Qt.MetaModifier: 'Meta',
-    Qt.AltModifier: 'Alt',
-    Qt.ControlModifier: 'Ctrl',
-    Qt.NoModifier: '',
-    Qt.KeypadModifier: '',
-    Qt.GroupSwitchModifier: '', }
+    Qt.KeyboardModifier.ShiftModifier: 'Shift',
+    Qt.KeyboardModifier.MetaModifier: 'Meta',
+    Qt.KeyboardModifier.AltModifier: 'Alt',
+    Qt.KeyboardModifier.ControlModifier: 'Ctrl',
+    Qt.KeyboardModifier.NoModifier: '',
+    Qt.KeyboardModifier.KeypadModifier: '',
+    Qt.KeyboardModifier.GroupSwitchModifier: '', }
 
 
 def keycmp(modifier):

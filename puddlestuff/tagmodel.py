@@ -1276,9 +1276,9 @@ class TagDelegate(QStyledItemDelegate):
         if event.type() == QEvent.KeyPress:
             if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
                 if event.key() == Qt.Key.Key_Return:
-                    shift_pressed = event.modifiers() == Qt.ShiftModifier
+                    shift_pressed = event.modifiers() == Qt.KeyboardModifier.ShiftModifier
                 else:
-                    shift_pressed = event.modifiers() == Qt.ShiftModifier | Qt.KeypadModifier
+                    shift_pressed = event.modifiers() == Qt.KeyboardModifier.ShiftModifier | Qt.KeyboardModifier.KeypadModifier
                 if shift_pressed:
                     editor.returnPressed = SHIFT_RETURN
                 else:
@@ -1760,7 +1760,7 @@ class TagTable(QTableView):
         urls = list(map(QUrl.fromLocalFile, list(map(decode_fn, filenames))))
         mimeData = QMimeData()
         mimeData.setUrls(urls)
-        if event.modifiers() == Qt.MetaModifier:
+        if event.modifiers() == Qt.KeyboardModifier.MetaModifier:
             mimeData.draggedRows = self.selectedRows[::]
         else:
             mimeData.draggedRows = None
@@ -1821,7 +1821,7 @@ class TagTable(QTableView):
         # action is defined in contextMenuEvent, but if this isn't
         # done then the delegate is entered.
 
-        has_modifier = event.modifiers() in [Qt.ControlModifier, Qt.ShiftModifier, Qt.ControlModifier | Qt.ShiftModifier]
+        has_modifier = event.modifiers() in [Qt.KeyboardModifier.ControlModifier, Qt.KeyboardModifier.ShiftModifier, Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier]
         if event.key() == Qt.Key.Key_Delete and self.selectedRows:
             self.deleteSelected()
             return
