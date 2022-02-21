@@ -1272,10 +1272,10 @@ class ListButtons(QVBoxLayout):
         self.removeButton.setToolTip(translate("List Buttons", 'Remove'))
         self.removeButton.setShortcut('Delete')
         self.moveupButton = QToolButton()
-        self.moveupButton.setArrowType(Qt.UpArrow)
+        self.moveupButton.setArrowType(Qt.ArrowType.UpArrow)
         self.moveupButton.setToolTip(translate("List Buttons", 'Move Up'))
         self.movedownButton = QToolButton()
-        self.movedownButton.setArrowType(Qt.DownArrow)
+        self.movedownButton.setArrowType(Qt.ArrowType.DownArrow)
         self.movedownButton.setToolTip(translate("List Buttons", 'Move Down'))
         self.editButton = QToolButton()
         self.editButton.setIcon(get_icon('document-edit', ':/edit.png'))
@@ -1654,9 +1654,9 @@ class PicWidget(QWidget):
         self.readonly = readonly
 
         self.next = QToolButton()
-        self.next.setArrowType(Qt.RightArrow)
+        self.next.setArrowType(Qt.ArrowType.RightArrow)
         self.prev = QToolButton()
-        self.prev.setArrowType(Qt.LeftArrow)
+        self.prev.setArrowType(Qt.ArrowType.LeftArrow)
         self.next.clicked.connect(self.nextImage)
         self.prev.clicked.connect(self.prevImage)
 
@@ -1670,8 +1670,8 @@ class PicWidget(QWidget):
             movebuttons.addWidget(self._contextlabel)
             movebuttons.addStretch()
         else:
-            self.next.setArrowType(Qt.UpArrow)
-            self.prev.setArrowType(Qt.DownArrow)
+            self.next.setArrowType(Qt.ArrowType.UpArrow)
+            self.prev.setArrowType(Qt.ArrowType.DownArrow)
             movebuttons = QVBoxLayout()
             movebuttons.addStretch()
             movebuttons.addWidget(self.next)
