@@ -44,7 +44,7 @@ class ScrollLabel(QWidget):
         self.setLayout(vbox)
         label = QLabel(text)
 
-        label.setTextFormat(Qt.RichText)
+        label.setTextFormat(Qt.TextFormat.RichText)
         label.setAlignment(alignment)
         label.setWordWrap(True)
         label.setTextInteractionFlags(Qt.TextBrowserInteraction)
