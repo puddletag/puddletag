@@ -345,7 +345,7 @@ class SetDialog(QDialog):
     def addSet(self):
         def gettext():
             (text, ok) = QInputDialog.getText(self, 'puddletag', 'Enter a name'
-                                                                 'for the set', QLineEdit.Normal)
+                                                                 'for the set', QLineEdit.EchoMode.Normal)
             if ok:
                 if self.setscombo.findText(text) > -1:
                     QMessageBox.information(self, 'puddletag', 'The name entered already exists.')

@@ -377,7 +377,7 @@ class ConfigWindow(QWidget):
 
         passlabel = QLabel('&Password')
         self.passwd = QLineEdit()
-        self.passwd.setEchoMode(QLineEdit.Password)
+        self.passwd.setEchoMode(QLineEdit.EchoMode.Password)
         passlabel.setBuddy(self.passwd)
 
         datalabel = QLabel('&Database')

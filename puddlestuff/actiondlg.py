@@ -970,7 +970,7 @@ class ActionWindow(QDialog):
         (text, ok) = QInputDialog.getText(self,
                                           translate('Actions', "New Action"),
                                           translate('Actions', "Enter a name for the new action."),
-                                          QLineEdit.Normal)
+                                          QLineEdit.EchoMode.Normal)
 
         if (ok is True) and text:
             item = QListWidgetItem(text)
@@ -1059,7 +1059,7 @@ class ActionWindow(QDialog):
         (text, ok) = QInputDialog.getText(self,
                                           translate('Actions', "Copy %s action" % oldname),
                                           translate('Actions', "Enter a name for the new action."),
-                                          QLineEdit.Normal)
+                                          QLineEdit.EchoMode.Normal)
         if not (ok and text):
             return
 
