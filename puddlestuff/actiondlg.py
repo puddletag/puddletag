@@ -714,7 +714,7 @@ class ActionWindow(QDialog):
         self._shortcuts = []
         self._quickaction = quickaction
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.listbox.setEditTriggers(QAbstractItemView.EditTrigger.EditKeyPressed)
 
         self.example = example

@@ -292,7 +292,7 @@ class LibraryTree(QTreeWidget):
         self.__searchResults = []
 
         self.setHeaderLabels([translate('MusicLib', "Library Artists")])
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSortingEnabled(True)
         self.sortItems(0, Qt.SortOrder.AscendingOrder)
 

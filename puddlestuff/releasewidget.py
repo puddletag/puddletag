@@ -5,7 +5,7 @@ from functools import partial
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 
 from .findfunc import parsefunc
 from .puddleobjects import (PuddleThread,
@@ -542,7 +542,7 @@ class ReleaseWidget(QTreeView):
 
     def __init__(self, status, tagsource, parent=None):
         QTreeView.__init__(self, parent)
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSortingEnabled(True)
         self.setExpandsOnDoubleClick(False)
         self._tagSource = tagsource

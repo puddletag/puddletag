@@ -1371,7 +1371,7 @@ class TagTable(QTableView):
 
     def __init__(self, headerdata=None, parent=None):
         QTableView.__init__(self, parent)
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.settingsdialog = ColumnSettings
         if not headerdata:
             headerdata = []

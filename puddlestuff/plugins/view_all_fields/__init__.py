@@ -1,7 +1,7 @@
 import os
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
     QPushButton, QVBoxLayout
 
 from ...puddlesettings import add_config_widget
@@ -87,7 +87,7 @@ class ButtonsAndList(QFrame):
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.setFrameStyle(QFrame.Box)
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         buttons = ListButtons()
 
         hbox = QHBoxLayout()

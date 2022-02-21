@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
     QShortcut, QVBoxLayout
 
 from ..puddleobjects import (PuddleConfig, ListBox,
@@ -77,7 +77,7 @@ class SettingsWin(QFrame):
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.setFrameStyle(QFrame.Box)
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         buttons = ListButtons()
 
         self.listbox.addItems(status['patterns'])

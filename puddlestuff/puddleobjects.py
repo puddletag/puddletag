@@ -22,7 +22,7 @@ from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
@@ -1130,7 +1130,7 @@ class ListBox(QListWidget):
         QListWidget.__init__(self, parent)
         self.yourlist = None
         self.editButton = None
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
     def items(self):
         return list(map(self.item, range(self.count())))

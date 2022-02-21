@@ -2,7 +2,7 @@ import os
 
 from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
@@ -41,7 +41,7 @@ class DirView(QTreeView):
 
         self.header().hide()
         self.subfolders = subfolders
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self._lastselection = 0  # If > 0 appends files. See selectionChanged
         self._load = True
         self.setDragEnabled(False)
