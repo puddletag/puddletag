@@ -19,8 +19,7 @@ def svg_to_pic(data, desc):
 
 def get_font(rect, *text):
     font = QFont()
-    metrics = QFontMetrics
-    lengths = [(t, metrics(font).width(t)) for t in text]
+    lengths = [(t, QFontMetrics(font).horizontalAdvance(t)) for t in text]
     lowest = max(lengths, key=lambda x: x[1])
     size = 12
     while QFontMetrics(font).width(lowest[0]) < rect.width() - 30:
