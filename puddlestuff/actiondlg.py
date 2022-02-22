@@ -477,7 +477,7 @@ class CreateFunction(QDialog):
         else:
             self.createWindow(0)
 
-        self.functions.activated.connect(self.createWindow)
+        self.functions.textActivated.connect(self.createWindow)
 
         self.vbox.addWidget(self.exlabel)
         self.vbox.addLayout(self.okcancel)
