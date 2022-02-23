@@ -1938,7 +1938,7 @@ class TagTable(QTableView):
         self.dirschanged.emit(self.dirs[::])
         self.filesloaded.emit(True)
         sortcolumn = self.horizontalHeader().sortIndicatorSection()
-        QTableView.sortByColumn(self, sortcolumn)
+        QTableView.sortByColumn(self, sortcolumn, Qt.SortOrder.AscendingOrder)
 
     def loadSettings(self):
         (tags, fontsize, rowsize, self.filespec) = loadsettings()
@@ -2468,9 +2468,9 @@ class TagTable(QTableView):
         else:
             self.model().setTestData(self.selectedRows, data)
 
-    def sortByColumn(self, column):
+    def sortByColumn(self, column, order):
         """Guess"""
-        QTableView.sortByColumn(self, column)
+        QTableView.sortByColumn(self, column, order)
         self.restoreSelection()
 
     def wheelEvent(self, e):
