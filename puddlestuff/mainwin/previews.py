@@ -14,7 +14,7 @@ from ..translations import translate
 status = {}
 
 _previews = []
-_sort_action = None
+_sort_menu = None
 
 ENABLED = translate("Menus", 'Enabl&e Preview Mode')
 DISABLED = translate("Menus", 'Disabl&e Preview Mode')
@@ -88,8 +88,8 @@ def create_actions(parent):
     revert.setShortcut('Ctrl+Shift+Z')
     revert.triggered.connect(undo_last)
 
-    sort = QAction('Sort &By', parent)
-    sort.triggered.connect(sort_by_fields)
+    global _sort_menu
+    _sort_menu = QMenu('Sort &By', parent)
 
     clear_cells = PreviewAction('Clear Selected &Cells', parent)
     clear_cells.triggered.connect(clear_selected_cells)
@@ -98,8 +98,6 @@ def create_actions(parent):
     options = cparser.get('table', 'sortoptions',
                           ['__filename,track,__dirpath', 'track, album',
                            '__filename,album,__dirpath'])
-    global _sort_action
-    _sort_action = sort
     sort_actions = set_sort_options(options)
 
     preview_actions = [clear_selection, write, revert, clear_cells]
@@ -110,22 +108,21 @@ def create_actions(parent):
 
     [connect_shortcut(z, FILESSELECTED) for z in preview_actions]
 
-    return [enable_preview, clear_selection, write, revert, sort,
+    return [enable_preview, clear_selection, write, revert, _sort_menu.menuAction(),
             clear_cells] + sort_actions
 
 
 def set_sort_options(options):
-    parent = _sort_action.parentWidget()
-    menu = QMenu(parent)
+    for action in _sort_menu.actions():
+        _sort_menu.removeAction(action)
+
     sort_actions = []
     options = [[z.strip() for z in option.split(',')] for option in options]
     for option in options:
-        action = QAction('/'.join(option), parent)
+        action = _sort_menu.addAction('/'.join(option))
         action.sortOption = option
-        menu.addAction(action)
         action.triggered.connect(sort_by_fields)
         sort_actions.append(action)
-    _sort_action.setMenu(menu)
     status['sort_actions'] = sort_actions
     return sort_actions
 
