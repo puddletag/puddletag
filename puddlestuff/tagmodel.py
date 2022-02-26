@@ -719,7 +719,7 @@ class TagModel(QAbstractTableModel):
                     tooltip = val
                 return tooltip
             return val
-        elif role == Qt.ItemDataRole.BackgroundColorRole:
+        elif role == Qt.ItemDataRole.BackgroundRole:
             audio = self.taginfo[row]
             if audio.color:
                 return audio.color
