@@ -1714,7 +1714,7 @@ class TagTable(QTableView):
         if event.source() == self and \
                 hasattr(mime, 'draggedRows') and mime.draggedRows:
 
-            row = self.rowAt(event.pos().y())
+            row = self.rowAt(event.position().toPoint().y())
             if row == -1:
                 row = self.rowCount() - 1
             self.saveSelection()
