@@ -8,7 +8,8 @@ from functools import partial
 
 import quodlibet.config
 from PyQt6.QtCore import QDir, Qt
-from PyQt6.QtWidgets import QCompleter, QFileDialog, QFileSystemModel, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtGui import QFileSystemModel
+from PyQt6.QtWidgets import QCompleter, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
 from quodlibet.query import Query
 
 from .. import audioinfo
