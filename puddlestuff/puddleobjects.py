@@ -2266,7 +2266,7 @@ class PuddleCombo(QWidget):
         hbox = QHBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
         self.combo = QComboBox()
-        self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+        self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
 
         self.remove = QToolButton()
         self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
