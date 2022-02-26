@@ -570,7 +570,7 @@ class StatusWidgetCombo(QComboBox):
 
     def background(self):
         brush = QBrush()
-        brush.setColor(self.palette().color(QPalette.ColorRole.Background))
+        brush.setColor(self.palette().color(QPalette.ColorRole.Window))
         return brush
 
     def reset(self):
