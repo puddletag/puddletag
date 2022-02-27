@@ -654,7 +654,7 @@ def set_uslt(f, value):
         else:
             continue
 
-        if not lang or len(lang) is not 3:
+        if not lang or len(lang) != 3:
             lang = 'und'
         frames.append(id3.USLT(encoding, lang, desc, text))
 
