@@ -711,7 +711,7 @@ class RegHelper(object):
             return '""'
 
 
-def replaceWithReg(m_tags, text, regex, repl, matchcase=False, m_text=None, state=None):
+def replaceWithReg(m_tags, text, regex, repl=None, matchcase=False, m_text=None, state=None):
     """Replace with RegExp, "RegReplace $0: RegExp '$1' with '$2', Match Case: $3"
 &Regular Expression, text
 Replace &matches with:, text
