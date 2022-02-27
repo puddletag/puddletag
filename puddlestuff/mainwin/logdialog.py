@@ -15,7 +15,7 @@ class LogDialog(QWidget):
         self.receives = [('logappend', self.appendText)]
 
         self._text = QTextEdit()
-        self._text.setWordWrapMode(QTextOption.NoWrap)
+        self._text.setWordWrapMode(QTextOption.WrapMode.NoWrap)
 
         copy = QPushButton(translate("Logs", '&Copy'))
         clear = QPushButton(translate("Logs", '&Clear'))

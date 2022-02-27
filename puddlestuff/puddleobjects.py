@@ -22,9 +22,9 @@ from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
-    QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
+    QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
 from configobj import ConfigObjError
 
@@ -50,23 +50,23 @@ SD_PATTERNS = [
 ]
 
 mod_keys = {
-    Qt.ShiftModifier: 'Shift',
-    Qt.MetaModifier: 'Meta',
-    Qt.AltModifier: 'Alt',
-    Qt.ControlModifier: 'Ctrl',
-    Qt.NoModifier: '',
-    Qt.KeypadModifier: '',
-    Qt.GroupSwitchModifier: '', }
+    Qt.KeyboardModifier.ShiftModifier: 'Shift',
+    Qt.KeyboardModifier.MetaModifier: 'Meta',
+    Qt.KeyboardModifier.AltModifier: 'Alt',
+    Qt.KeyboardModifier.ControlModifier: 'Ctrl',
+    Qt.KeyboardModifier.NoModifier: '',
+    Qt.KeyboardModifier.KeypadModifier: '',
+    Qt.KeyboardModifier.GroupSwitchModifier: '', }
 
 
 def keycmp(modifier):
-    if modifier == Qt.CTRL:
+    if modifier == Qt.Modifier.CTRL:
         return 4
-    elif modifier == Qt.SHIFT:
+    elif modifier == Qt.Modifier.SHIFT:
         return 3
-    elif modifier == Qt.ALT:
+    elif modifier == Qt.Modifier.ALT:
         return 2
-    elif modifier == Qt.META:
+    elif modifier == Qt.Modifier.META:
         return 1
     else:
         return 0
@@ -109,7 +109,7 @@ for i in range(1, len(mod_keys)):
             mod = mod | key
         modifiers[int(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
 
-mod_keys = set((Qt.Key_Shift, Qt.Key_Control, Qt.Key_Meta, Qt.Key_Alt))
+mod_keys = set((Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Meta, Qt.Key.Key_Alt))
 
 imagetypes = [
     (translate('Cover Type', 'Other'), translate("Cover Type", 'O')),
@@ -281,7 +281,7 @@ class PuddleConfig(object):
 
 def _getSettings():
     filename = os.path.join(CONFIGDIR, 'windowsizes')
-    return QSettings(filename, QSettings.IniFormat)
+    return QSettings(filename, QSettings.Format.IniFormat)
 
 
 def savewinsize(name, dialog, settings=_getSettings()):
@@ -513,16 +513,16 @@ def errormsg(parent, msg, maximum):
         False if No.
         None if just yes."""
     if maximum > 1:
-        mb = QMessageBox(QMessageBox.Warning, translate("Defaults", 'Error'),
+        mb = QMessageBox(QMessageBox.Icon.Warning, translate("Defaults", 'Error'),
                          msg + translate("Defaults", "<br /> Do you want to continue?"),
-                         QMessageBox.Yes | QMessageBox.No | QMessageBox.YesToAll,
+                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.YesToAll,
                          parent)
-        mb.setDefaultButton(QMessageBox.Yes)
-        mb.setEscapeButton(QMessageBox.No)
+        mb.setDefaultButton(QMessageBox.StandardButton.Yes)
+        mb.setEscapeButton(QMessageBox.StandardButton.No)
         ret = mb.exec_()
-        if ret == QMessageBox.No:
+        if ret == QMessageBox.StandardButton.No:
             return False
-        elif ret == QMessageBox.YesToAll:
+        elif ret == QMessageBox.StandardButton.YesToAll:
             return True
     else:
         singleerror(parent, msg)
@@ -829,7 +829,7 @@ def load_actions():
 
 def open_resourcefile(filename):
     f = QFile(filename)
-    f.open(QIODevice.ReadOnly)
+    f.open(QIODevice.OpenModeFlag.ReadOnly)
     return StringIO(str(f.readAll().data(), encoding='utf-8'))
 
 
@@ -1130,7 +1130,7 @@ class ListBox(QListWidget):
         QListWidget.__init__(self, parent)
         self.yourlist = None
         self.editButton = None
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
     def items(self):
         return list(map(self.item, range(self.count())))
@@ -1272,10 +1272,10 @@ class ListButtons(QVBoxLayout):
         self.removeButton.setToolTip(translate("List Buttons", 'Remove'))
         self.removeButton.setShortcut('Delete')
         self.moveupButton = QToolButton()
-        self.moveupButton.setArrowType(Qt.UpArrow)
+        self.moveupButton.setArrowType(Qt.ArrowType.UpArrow)
         self.moveupButton.setToolTip(translate("List Buttons", 'Move Up'))
         self.movedownButton = QToolButton()
-        self.movedownButton.setArrowType(Qt.DownArrow)
+        self.movedownButton.setArrowType(Qt.ArrowType.DownArrow)
         self.movedownButton.setToolTip(translate("List Buttons", 'Move Down'))
         self.editButton = QToolButton()
         self.editButton.setIcon(get_icon('document-edit', ':/edit.png'))
@@ -1421,8 +1421,8 @@ class OKCancel(QHBoxLayout):
         # self.addStretch()
         dbox = QDialogButtonBox()
 
-        self.okButton = dbox.addButton(dbox.Ok)
-        self.cancelButton = dbox.addButton(dbox.Cancel)
+        self.okButton = dbox.addButton(QDialogButtonBox.StandardButton.Ok)
+        self.cancelButton = dbox.addButton(QDialogButtonBox.StandardButton.Cancel)
         self.addStretch()
         self.addWidget(dbox)
 
@@ -1452,7 +1452,7 @@ class LongInfoMessage(QDialog):
 
         text = QTextEdit()
         text.setReadOnly(True)
-        # text.setWordWrapMode(QTextOption.NoWrap)
+        # text.setWordWrapMode(QTextOption.WrapMode.NoWrap)
         text.setHtml(html)
 
         okcancel = OKCancel()
@@ -1486,7 +1486,7 @@ class ArtworkLabel(QGraphicsView):
 
         self._svg = QGraphicsSvgItem()
         self._pixmap = QGraphicsPixmapItem()
-        self._pixmap.setTransformationMode(Qt.SmoothTransformation)
+        self._pixmap.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
         self._scene = QGraphicsScene()
         self._scene.addItem(self._svg)
         self._scene.addItem(self._pixmap)
@@ -1518,7 +1518,7 @@ class ArtworkLabel(QGraphicsView):
 
     def mousePressEvent(self, event):
         super(ArtworkLabel, self).mousePressEvent(event)
-        if event.buttons() == Qt.LeftButton:
+        if event.buttons() == Qt.MouseButton.LeftButton:
             self.clicked.emit()
 
     def resizeEvent(self, event=None):
@@ -1529,7 +1529,7 @@ class ArtworkLabel(QGraphicsView):
         else:
             item = self._pixmap
         self.setSceneRect(item.boundingRect())
-        self.fitInView(item, Qt.KeepAspectRatio)
+        self.fitInView(item, Qt.AspectRatioMode.KeepAspectRatio)
 
     def setPixmap(self, pixmap, data=None):
         if isinstance(pixmap, str):
@@ -1582,7 +1582,7 @@ class PicWidget(QWidget):
         self._contextFormat = translate("Artwork Context", '%1/%2')
 
         QWidget.__init__(self, parent)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.sizePolicy().setVerticalStretch(0)
         self.sizePolicy().setHorizontalStretch(3)
 
@@ -1591,19 +1591,19 @@ class PicWidget(QWidget):
         self.filePattern = 'folder.jpg'
 
         self.label = ArtworkLabel()
-        self.label.setFrameStyle(QFrame.Box)
+        self.label.setFrameStyle(QFrame.Shape.Box)
 
         self.label.setMinimumSize(200, 170)
         if buttons:
             self.label.setMaximumSize(200, 170)
         self._itags = []
 
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.newImages.connect(
             lambda filenames: self.addImages(self.loadPics(*filenames)))
 
         self._image_size = QLabel()
-        self._image_size.setAlignment(Qt.AlignHCenter)
+        self._image_size.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self._image_desc = QLineEdit(self)
 
@@ -1654,9 +1654,9 @@ class PicWidget(QWidget):
         self.readonly = readonly
 
         self.next = QToolButton()
-        self.next.setArrowType(Qt.RightArrow)
+        self.next.setArrowType(Qt.ArrowType.RightArrow)
         self.prev = QToolButton()
-        self.prev.setArrowType(Qt.LeftArrow)
+        self.prev.setArrowType(Qt.ArrowType.LeftArrow)
         self.next.clicked.connect(self.nextImage)
         self.prev.clicked.connect(self.prevImage)
 
@@ -1670,8 +1670,8 @@ class PicWidget(QWidget):
             movebuttons.addWidget(self._contextlabel)
             movebuttons.addStretch()
         else:
-            self.next.setArrowType(Qt.UpArrow)
-            self.prev.setArrowType(Qt.DownArrow)
+            self.next.setArrowType(Qt.ArrowType.UpArrow)
+            self.prev.setArrowType(Qt.ArrowType.DownArrow)
             movebuttons = QVBoxLayout()
             movebuttons.addStretch()
             movebuttons.addWidget(self.next)
@@ -1695,7 +1695,7 @@ class PicWidget(QWidget):
         if not buttons:
             h.addLayout(movebuttons)
             context_box = QHBoxLayout()
-            context_box.setAlignment(Qt.AlignHCenter)
+            context_box.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             context_box.addWidget(self._contextlabel)
             vbox.addLayout(context_box)
         h.addStretch()
@@ -1706,14 +1706,14 @@ class PicWidget(QWidget):
         if buttons:
             vbox.addLayout(movebuttons)
         vbox.addStretch()
-        vbox.setAlignment(Qt.AlignCenter)
+        vbox.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.label.clicked.connect(self.maxImage)
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
         hbox.addStrut(12)
-        hbox.setSizeConstraint(hbox.SetMinAndMaxSize)
+        hbox.setSizeConstraint(QLayout.SizeConstraint.SetMinAndMaxSize)
         self.setLayout(hbox)
 
         if buttons:
@@ -1734,7 +1734,7 @@ class PicWidget(QWidget):
             hbox.addLayout(listbuttons)
 
         else:
-            self.label.setContextMenuPolicy(Qt.ActionsContextMenu)
+            self.label.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
             self.savepic = QAction(translate("Artwork", "&Save cover to file"), self)
             self.label.addAction(self.savepic)
 
@@ -1843,7 +1843,7 @@ class PicWidget(QWidget):
         if not image.isNull():
             ba = QByteArray()
             data = QBuffer(ba)
-            data.open(QIODevice.WriteOnly)
+            data.open(QIODevice.OpenModeFlag.WriteOnly)
             # TODO: Don't transform to JPG
             image.save(data, "JPG")
             data = bytes(data.data())
@@ -1971,7 +1971,7 @@ class PicWidget(QWidget):
         self._image_type.blockSignals(False)
         self._currentImage = num
         self.context = str(self._contextFormat.arg(str(num + 1)).arg(str(len(self.images))))
-        self.label.setFrameStyle(QFrame.NoFrame)
+        self.label.setFrameStyle(QFrame.Shape.NoFrame)
         self.enableButtons()
         # self.resizeEvent()
 
@@ -2023,7 +2023,7 @@ class PicWidget(QWidget):
                                      translate("Artwork", 'Writing to <b>%1</b> failed.').arg(filename))
 
     def setNone(self):
-        self.label.setFrameStyle(QFrame.Box)
+        self.label.setFrameStyle(QFrame.Shape.Box)
         self.label.setPixmap(QPixmap())
         self._image_size.setText("")
         self.pixmap = None
@@ -2070,7 +2070,7 @@ class PicWidget(QWidget):
             if filename.startswith(":/"):
                 ba = QByteArray()
                 data = QBuffer(ba)
-                data.open(QIODevice.WriteOnly)
+                data.open(QIODevice.OpenModeFlag.WriteOnly)
                 image.save(data, "JPG")
                 data = str(data.data())
             else:
@@ -2190,7 +2190,7 @@ class ProgressWin(QDialog):
         self.pbar.setRange(0, maximum)
 
         self.label = QLabel()
-        self.label.setAlignment(Qt.AlignHCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         if maximum <= 0:
             self.pbar.setTextVisible(False)
@@ -2266,7 +2266,7 @@ class PuddleCombo(QWidget):
         hbox = QHBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
         self.combo = QComboBox()
-        self.combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
+        self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
 
         self.remove = QToolButton()
         self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
@@ -2348,14 +2348,14 @@ class PuddleDock(QDockWidget):
 
 
 class PuddleHeader(QHeaderView):
-    def __init__(self, orientation=Qt.Horizontal, parent=None):
+    def __init__(self, orientation=Qt.Orientation.Horizontal, parent=None):
         if parent:
             super(PuddleHeader, self).__init__(orientation, parent)
         else:
             super(PuddleHeader, self).__init__()
 
         self.setSortIndicatorShown(True)
-        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
         self.setSectionsMovable(True)
         self.setSectionsClickable(True)
 

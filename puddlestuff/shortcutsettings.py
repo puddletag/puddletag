@@ -3,7 +3,7 @@ import sys
 
 from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
 from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt5.QtWidgets import qApp, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
@@ -28,23 +28,23 @@ class ActionEditorWidget(QLabel):
         self.modifiers = {}
         self.setAutoFillBackground(True)
         palette = self.palette()
-        palette.setBrush(palette.Base, palette.brush(palette.AlternateBase))
+        palette.setBrush(QPalette.ColorRole.Base, palette.brush(QPalette.ColorRole.AlternateBase))
         self.setPalette(palette)
         self.valid = False
-        self.setFrameStyle(QFrame.Panel)
+        self.setFrameStyle(QFrame.Shape.Panel)
 
     def keyPressEvent(self, event):
 
         other = None
 
-        if event.key() == Qt.Key_Shift:
-            self.modifiers[Qt.Key_Shift] = "Shift"
-        elif event.key() == Qt.Key_Control:
-            self.modifiers[Qt.Key_Control] = "Ctrl"
-        elif event.key() == Qt.Key_Meta:
-            self.modifiers[Qt.Key_Meta] = "Meta"
-        elif event.key() == Qt.Key_Alt:
-            self.modifiers[Qt.Key_Alt] = "Alt"
+        if event.key() == Qt.Key.Key_Shift:
+            self.modifiers[Qt.Key.Key_Shift] = "Shift"
+        elif event.key() == Qt.Key.Key_Control:
+            self.modifiers[Qt.Key.Key_Control] = "Ctrl"
+        elif event.key() == Qt.Key.Key_Meta:
+            self.modifiers[Qt.Key.Key_Meta] = "Meta"
+        elif event.key() == Qt.Key.Key_Alt:
+            self.modifiers[Qt.Key.Key_Alt] = "Alt"
         else:
             other = str(QKeySequence(event.key()))
 
@@ -61,18 +61,18 @@ class ActionEditorWidget(QLabel):
         if self.valid:
             return
 
-        if event.key() == Qt.Key_Shift:
-            if Qt.Key_Shift in self.modifiers:
-                del self.modifiers[Qt.Key_Shift]
-        elif event.key() == Qt.Key_Control:
-            if Qt.Key_Control in self.modifiers:
-                del self.modifiers[Qt.Key_Control]
-        elif event.key() == Qt.Key_Meta:
-            if Qt.Key_Meta in self.modifiers:
-                del self.modifiers[Qt.Key_Meta]
-        elif event.key() == Qt.Key_Alt:
-            if Qt.Key_Alt in self.modifiers:
-                del self.modifiers[Qt.Key_Alt]
+        if event.key() == Qt.Key.Key_Shift:
+            if Qt.Key.Key_Shift in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Shift]
+        elif event.key() == Qt.Key.Key_Control:
+            if Qt.Key.Key_Control in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Control]
+        elif event.key() == Qt.Key.Key_Meta:
+            if Qt.Key.Key_Meta in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Meta]
+        elif event.key() == Qt.Key.Key_Alt:
+            if Qt.Key.Key_Alt in self.modifiers:
+                del self.modifiers[Qt.Key.Key_Alt]
 
         self.setText("+".join(list(self.modifiers.values())))
 
@@ -81,7 +81,7 @@ class ActionEditorWidget(QLabel):
 
     def mousePressEvent(self, event):
 
-        if event.button() != Qt.LeftButton:
+        if event.button() != Qt.MouseButton.LeftButton:
             return
 
         size = self.height() / 2.0
@@ -97,12 +97,12 @@ class ActionEditorWidget(QLabel):
         if self.text():
             painter = QPainter()
             painter.begin(self)
-            painter.setRenderHint(QPainter.Antialiasing)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-            color = self.palette().color(QPalette.Highlight)
+            color = self.palette().color(QPalette.ColorRole.Highlight)
             color.setAlpha(127)
             painter.setBrush(QBrush(color))
-            color = self.palette().color(QPalette.HighlightedText)
+            color = self.palette().color(QPalette.ColorRole.HighlightedText)
             color.setAlpha(127)
             painter.setPen(QPen(color))
             size = self.height() / 2.0
@@ -140,24 +140,24 @@ class ActionEditorDelegate(QItemDelegate):
     def eventFilter(self, obj, event):
 
         if obj == self.editor:
-            if event.type() == QEvent.KeyPress:
+            if event.type() == QEvent.Type.KeyPress:
                 obj.keyPressEvent(event)
                 if obj.valid:
                     self.commitData.emit(self.editor)
-                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
-            elif event.type() == QEvent.KeyRelease:
+            elif event.type() == QEvent.Type.KeyRelease:
                 obj.keyReleaseEvent(event)
                 if not obj.text():
-                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
-            elif event.type() == QEvent.MouseButtonPress:
+            elif event.type() == QEvent.Type.MouseButtonPress:
                 obj.mousePressEvent(event)
                 if obj.valid:
                     self.commitData.emit(self.editor)
-                    self.closeEditor.emit(self.editor, QItemDelegate.NoHint)
+                    self.closeEditor.emit(self.editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 return True
 
         return False
@@ -168,10 +168,10 @@ class ActionEditorDelegate(QItemDelegate):
             QItemDelegate.paint(self, painter, option, index)
             return
 
-        painter.fillRect(option.rect, option.palette.brush(QPalette.Base))
-        painter.setPen(QPen(option.palette.color(QPalette.Text)))
+        painter.fillRect(option.rect, option.palette.brush(QPalette.ColorRole.Base))
+        painter.setPen(QPen(option.palette.color(QPalette.ColorRole.Text)))
         painter.drawText(option.rect.adjusted(4, 4, -4, -4),
-                         Qt.TextShowMnemonic | Qt.AlignLeft | Qt.AlignVCenter,
+                         Qt.TextFlag.TextShowMnemonic | Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
                          str(index.data()))
 
     def setEditorData(self, editor, index):
@@ -203,8 +203,8 @@ class ActionEditorDialog(QWidget):
                                                      ' to <br />modify the key sequence.</b>'))
 
         self.actionTable = QTableWidget(self)
-        self.actionTable.setSelectionBehavior(QTableWidget.SelectRows)
-        self.actionTable.setEditTriggers(QTableWidget.DoubleClicked)
+        self.actionTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.actionTable.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked)
         self.actionTable.setColumnCount(2)
         self.actionTable.setHorizontalHeaderLabels(
             [translate("Shortcut Settings", "Description"),
@@ -226,12 +226,12 @@ class ActionEditorDialog(QWidget):
 
             item = QTableWidgetItem()
             item.setText(action.text())
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
             self.actionTable.setItem(row, 0, item)
 
             item = QTableWidgetItem()
             item.setText(action.shortcut().toString())
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsSelectable)
             item.oldShortcutText = item.text()
             self.actionTable.setItem(row, 1, item)
 

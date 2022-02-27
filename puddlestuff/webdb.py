@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
 
@@ -236,9 +236,9 @@ class SimpleDialog(QDialog):
             elif ctype == CHECKBOX:
                 control = QCheckBox(desc)
                 if default:
-                    control.setCheckState(Qt.Checked)
+                    control.setCheckState(Qt.CheckState.Checked)
                 else:
-                    control.setCheckState(Qt.Unchecked)
+                    control.setCheckState(Qt.CheckState.Unchecked)
                 vbox.addWidget(control)
             elif ctype == SPINBOX:
                 control = QSpinBox()
@@ -282,7 +282,7 @@ class SortOptionEditor(QDialog):
         QDialog.__init__(self, parent)
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
         buttons = ListButtons()
 

@@ -10,7 +10,7 @@ from subprocess import Popen
 from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
-from PyQt5.QtWidgets import QAbstractItemDelegate, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QVBoxLayout
 
@@ -35,7 +35,7 @@ the_break = False
 status = {}
 
 LIBRARY = '__library'
-HIGHLIGHTCOLOR = Qt.green
+HIGHLIGHTCOLOR = Qt.GlobalColor.green
 SHIFT_RETURN = 2
 RETURN_ONLY = 1
 
@@ -134,7 +134,7 @@ def has_previews(tags=None, parent=None, msg=None):
 
     if previews and confirmations.should_show('preview_mode'):
         ret = QMessageBox.question(parent, 'puddletag', msg)
-        if ret != QMessageBox.Yes:
+        if ret != QMessageBox.StandardButton.Yes:
             return True
     return False
 
@@ -358,7 +358,7 @@ class Properties(QDialog):
 
     def _load(self, info):
         vbox = QVBoxLayout()
-        interaction = Qt.TextSelectableByMouse or Qt.TextSelectableByKeyboard
+        interaction = Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextSelectableByKeyboard
         for title, items in info:
             frame = QGroupBox(title)
             framegrid = QGridLayout()
@@ -412,15 +412,15 @@ class ColumnSettings(HeaderSetting):
         if showok:
             winsettings('columnsettings', self)
 
-        self.setWindowFlags(Qt.Widget)
+        self.setWindowFlags(Qt.WindowType.Widget)
         label = QLabel(translate("Column Settings", 'Adjust visibility of columns.'))
         self.grid.addWidget(label, 0, 0)
         items = [self.listbox.item(z) for z in range(self.listbox.count())]
 
         if not checked:
             checked = list(range(len(tags)))
-        [z.setCheckState(Qt.Checked) if i in checked
-         else z.setCheckState(Qt.Unchecked) for i, z in enumerate(items)]
+        [z.setCheckState(Qt.CheckState.Checked) if i in checked
+         else z.setCheckState(Qt.CheckState.Unchecked) for i, z in enumerate(items)]
 
     def applySettings(self, control=None):
         row = self.listbox.currentRow()
@@ -493,13 +493,13 @@ class TagModel(QAbstractTableModel):
         self._headerData = []
         self.headerdata = headerdata
         self.colorRows = []
-        self.sortOrder = (0, Qt.AscendingOrder)
+        self.sortOrder = (0, Qt.SortOrder.AscendingOrder)
         self.saveModification = True
         self._filtered = []
         self._previewMode = False
         self._prevhighlight = []
         self._permah = []
-        self.permaColor = QColor(Qt.green)
+        self.permaColor = QColor(Qt.GlobalColor.green)
         self._colored = []
         audioinfo.Tag = _Tag(self)
         audioinfo.model_tag = partial(model_tag, self)
@@ -687,12 +687,12 @@ class TagModel(QAbstractTableModel):
             except TypeError:
                 return str(val)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         row = index.row()
         if not index.isValid() or not (0 <= row < len(self.taginfo)):
             return None
 
-        if role in (Qt.DisplayRole, Qt.ToolTipRole, Qt.EditRole):
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole, Qt.ItemDataRole.EditRole):
             try:
                 audio = self.taginfo[row]
                 tag = self.headerdata[index.column()][1]
@@ -700,7 +700,7 @@ class TagModel(QAbstractTableModel):
             except (KeyError, IndexError):
                 return None
 
-            if role == Qt.ToolTipRole:
+            if role == Qt.ItemDataRole.ToolTipRole:
                 if not self.showToolTip:
                     return None
                 if self.previewMode and \
@@ -719,13 +719,13 @@ class TagModel(QAbstractTableModel):
                     tooltip = val
                 return tooltip
             return val
-        elif role == Qt.BackgroundColorRole:
+        elif role == Qt.ItemDataRole.BackgroundColorRole:
             audio = self.taginfo[row]
             if audio.color:
                 return audio.color
             elif self.previewMode and audio.preview:
                 return self.previewBackground
-        elif role == Qt.FontRole:
+        elif role == Qt.ItemDataRole.FontRole:
 
             field = self.headerdata[index.column()][1]
             f = QFont()
@@ -762,18 +762,18 @@ class TagModel(QAbstractTableModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
-                            Qt.ItemIsEditable | Qt.ItemIsDropEnabled)
+            return Qt.ItemFlag.ItemIsEnabled
+        return Qt.ItemFlag(QAbstractTableModel.flags(self, index) |
+                            Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsDropEnabled)
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return int(Qt.AlignLeft | Qt.AlignVCenter)
-            return int(Qt.AlignRight | Qt.AlignVCenter)
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            if orientation == Qt.Orientation.Horizontal:
+                return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             try:
                 return str(self.headerdata[section][0])
             except IndexError:
@@ -1023,10 +1023,10 @@ class TagModel(QAbstractTableModel):
     def rowCount(self, index=QModelIndex()):
         return len(self.taginfo)
 
-    def setData(self, index, value, role=Qt.EditRole, dontwrite=False):
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
-        QApplication.setOverrideCursor(Qt.WaitCursor);
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor);
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
@@ -1054,8 +1054,8 @@ class TagModel(QAbstractTableModel):
             return True
         return False
 
-    def setHeaderData(self, section, orientation, value, role=Qt.EditRole):
-        if (orientation == Qt.Horizontal) and (role == Qt.DisplayRole):
+    def setHeaderData(self, section, orientation, value, role=Qt.ItemDataRole.EditRole):
+        if (orientation == Qt.Orientation.Horizontal) and (role == Qt.ItemDataRole.DisplayRole):
             self.headerdata[section] = value
 
         self.headerdata = self.headerdata  # make sure columns are set
@@ -1065,7 +1065,7 @@ class TagModel(QAbstractTableModel):
     def setHeader(self, tags):
         self.headerdata = tags
         self.headerDataChanged.emit(
-            Qt.Horizontal, 0, len(self.headerdata))
+            Qt.Orientation.Horizontal, 0, len(self.headerdata))
         self.reset()
 
     def setRowData(self, row, tags, undo=False, justrename=False, temp=False):
@@ -1151,7 +1151,7 @@ class TagModel(QAbstractTableModel):
             return self.index(row, column)
         return QModelIndex();
 
-    def sort(self, column, order=Qt.DescendingOrder):
+    def sort(self, column, order=Qt.SortOrder.DescendingOrder):
         try:
             field = self.headerdata[column][1]
         except IndexError:
@@ -1159,7 +1159,7 @@ class TagModel(QAbstractTableModel):
                 field = self.headerdata[0][1]
             else:
                 return
-        if order == Qt.DescendingOrder:
+        if order == Qt.SortOrder.DescendingOrder:
             self.sortByFields([field], reverse=True)
         else:
             self.sortByFields([field], reverse=False)
@@ -1188,7 +1188,7 @@ class TagModel(QAbstractTableModel):
         self.sorted.emit()
 
     def supportedDropActions(self):
-        return Qt.CopyAction
+        return Qt.DropAction.CopyAction
 
     def undo(self):
         """Undos the last action.
@@ -1273,12 +1273,12 @@ class TagDelegate(QStyledItemDelegate):
         return editor
 
     def eventFilter(self, editor, event):
-        if event.type() == QEvent.KeyPress:
-            if event.key() in (Qt.Key_Return, Qt.Key_Enter):
-                if event.key() == Qt.Key_Return:
-                    shift_pressed = event.modifiers() == Qt.ShiftModifier
+        if event.type() == QEvent.Type.KeyPress:
+            if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+                if event.key() == Qt.Key.Key_Return:
+                    shift_pressed = event.modifiers() == Qt.KeyboardModifier.ShiftModifier
                 else:
-                    shift_pressed = event.modifiers() == Qt.ShiftModifier | Qt.KeypadModifier
+                    shift_pressed = event.modifiers() == Qt.KeyboardModifier.ShiftModifier | Qt.KeyboardModifier.KeypadModifier
                 if shift_pressed:
                     editor.returnPressed = SHIFT_RETURN
                 else:
@@ -1307,7 +1307,7 @@ class TableHeader(QHeaderView):
         self.setHighlightSections(True)
         self.setSectionsMovable(True)
         self.setSortIndicatorShown(True)
-        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -1318,7 +1318,7 @@ class TableHeader(QHeaderView):
         menu.exec_(event.globalPos())
 
     def mousePressEvent(self, event):
-        if event.button == Qt.RightButton:
+        if event.button == Qt.MouseButton.RightButton:
             self.contextMenuEvent(event)
             return
         QHeaderView.mousePressEvent(self, event)
@@ -1371,16 +1371,16 @@ class TagTable(QTableView):
 
     def __init__(self, headerdata=None, parent=None):
         QTableView.__init__(self, parent)
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.settingsdialog = ColumnSettings
         if not headerdata:
             headerdata = []
-        header = TableHeader(Qt.Horizontal, headerdata, self)
+        header = TableHeader(Qt.Orientation.Horizontal, headerdata, self)
         header.setSortIndicatorShown(True)
         self.setSortingEnabled(True)
         self._savedSelection = False
 
-        self.setVerticalHeader(VerticalHeader(Qt.Vertical))
+        self.setVerticalHeader(VerticalHeader(Qt.Orientation.Vertical))
         self.setHorizontalHeader(header)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
@@ -1400,7 +1400,7 @@ class TagTable(QTableView):
         self._playlist = False
         self.filespec = ''
         self.contextMenu = None
-        self.setHorizontalScrollMode(self.ScrollPerPixel)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         model = TagModel(headerdata)
         header.headerChanged.connect(self.setHeaderTags)
@@ -1552,17 +1552,17 @@ class TagTable(QTableView):
         self.model().reset()
         self.dirschanged.emit([])
 
-    def _closeEditor(self, editor, hint=QAbstractItemDelegate.NoHint):
+    def _closeEditor(self, editor, hint=QAbstractItemDelegate.EndEditHint.NoHint):
         if editor.writeError:
             model = self.model()
             currentfile = model.taginfo[self.currentIndex().row()]
-            QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+            QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
             model.setDataError.emit(
                 rename_error_msg(editor.writeError, currentfile.filepath))
             return
 
         if len(self.selectedRows) > 1:
-            QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+            QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
         elif not editor.returnPressed:
             QTableView.closeEditor(self, editor, hint)
         else:
@@ -1579,11 +1579,11 @@ class TagTable(QTableView):
                                                   index.column())
 
             if newindex:
-                QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+                QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
                 self.setCurrentIndex(newindex)
                 self.edit(newindex)
             else:
-                QTableView.closeEditor(self, editor, QAbstractItemDelegate.NoHint)
+                QTableView.closeEditor(self, editor, QAbstractItemDelegate.EndEditHint.NoHint)
 
     def removeTags(self):
         if self.model().previewMode:
@@ -1648,8 +1648,8 @@ class TagTable(QTableView):
             result = QMessageBox.question(self, "puddletag",
                                           translate("Table", "Are you sure you want to delete the selected files?"))
         else:
-            result = QMessageBox.Yes
-        if result != QMessageBox.Yes:
+            result = QMessageBox.StandardButton.Yes
+        if result != QMessageBox.StandardButton.Yes:
             return
         selected = self.selectedTags
         selectedRows = self.selectedRows
@@ -1741,7 +1741,7 @@ class TagTable(QTableView):
 
     def mouseMoveEvent(self, event):
 
-        if event.buttons() != Qt.LeftButton:
+        if event.buttons() != Qt.MouseButton.LeftButton:
             return
         mimeData = QMimeData()
         plainText = ""
@@ -1760,7 +1760,7 @@ class TagTable(QTableView):
         urls = list(map(QUrl.fromLocalFile, list(map(decode_fn, filenames))))
         mimeData = QMimeData()
         mimeData.setUrls(urls)
-        if event.modifiers() == Qt.MetaModifier:
+        if event.modifiers() == Qt.KeyboardModifier.MetaModifier:
             mimeData.draggedRows = self.selectedRows[::]
         else:
             mimeData.draggedRows = None
@@ -1769,12 +1769,12 @@ class TagTable(QTableView):
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
         dropaction = drag.exec_()
-        if dropaction == Qt.MoveAction:
+        if dropaction == Qt.DropAction.MoveAction:
             if not os.path.exists(filenames[0]):
                 self.deleteSelected(False, False, False)
 
     def mousePressEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
+        if event.buttons() == Qt.MouseButton.LeftButton:
             self.StartPosition = [event.pos().x(), event.pos().y()]
         QTableView.mousePressEvent(self, event)
 
@@ -1813,7 +1813,7 @@ class TagTable(QTableView):
         bottomRight = model.index(model.rowCount() - 1, model.columnCount() - 1)
 
         selection = QItemSelection(topLeft, bottomRight)
-        self.selectionModel().select(selection, QItemSelectionModel.Toggle)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Toggle)
 
     def keyPressEvent(self, event):
         event.accept()
@@ -1821,15 +1821,15 @@ class TagTable(QTableView):
         # action is defined in contextMenuEvent, but if this isn't
         # done then the delegate is entered.
 
-        has_modifier = event.modifiers() in [Qt.ControlModifier, Qt.ShiftModifier, Qt.ControlModifier | Qt.ShiftModifier]
-        if event.key() == Qt.Key_Delete and self.selectedRows:
+        has_modifier = event.modifiers() in [Qt.KeyboardModifier.ControlModifier, Qt.KeyboardModifier.ShiftModifier, Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier]
+        if event.key() == Qt.Key.Key_Delete and self.selectedRows:
             self.deleteSelected()
             return
         # This is so that an item isn't edited when the user's holding the shift or
         # control key.
-        elif event.key() == Qt.Key_Space and (has_modifier):
+        elif event.key() == Qt.Key.Key_Space and (has_modifier):
             trigger = self.editTriggers()
-            self.setEditTriggers(self.NoEditTriggers)
+            self.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             ret = QTableView.keyPressEvent(self, event)
             self.setEditTriggers(trigger)
             return ret
@@ -1954,7 +1954,7 @@ class TagTable(QTableView):
 
         cparser = PuddleConfig()
         preview_color = cparser.get('table', 'preview_color', [192, 255, 192], True)
-        default = QPalette().color(QPalette.Mid).getRgb()[:-1]
+        default = QPalette().color(QPalette.ColorRole.Mid).getRgb()[:-1]
         selection_color = cparser.get('table', 'selected_color', default, True)
 
         model = self.model()
@@ -2102,7 +2102,7 @@ class TagTable(QTableView):
         if previews:
             ret = QMessageBox.question(self, 'puddletag',
                 translate("Previews", 'There are unsaved changes pending. Do you want to discard and reload?'))
-            if ret != QMessageBox.Yes:
+            if ret != QMessageBox.StandardButton.Yes:
                 return
 
         self._restore = self.saveSelection()
@@ -2131,12 +2131,12 @@ class TagTable(QTableView):
             bottomRight = model.index(model.rowCount() - 1, col)
 
             selection = QItemSelection(topLeft, bottomRight)
-            self.selectionModel().select(selection, QItemSelectionModel.Select)
+            self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
 
     def selectCorner(self):
         topLeft = self.model().index(0, 0)
         selection = QItemSelection(topLeft, topLeft)
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
         self.setCurrentIndex(topLeft)
 
     def setModel(self, model):
@@ -2151,7 +2151,7 @@ class TagTable(QTableView):
         model.dirsmoved.connect(self.dirsmoved)
         set_data = model.setData
 
-        def modded_setData(index, value, role=Qt.EditRole):
+        def modded_setData(index, value, role=Qt.ItemDataRole.EditRole):
             if len(self.selectedRows) == 1:
                 return set_data(index, value, role)
             ret = set_data(index, value, role, True)
@@ -2237,11 +2237,11 @@ class TagTable(QTableView):
             self.tagselectionchanged.emit()
 
     def saveBeforeReset(self):
-        self.setCursor(Qt.BusyCursor)
+        self.setCursor(Qt.CursorShape.BusyCursor)
         self._savedSelection = self.saveSelection()
 
     def restoreSort(self):
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         if self._savedSelection:
             self.restoreSelection(self._savedSelection)
             self._savedSelection = None
@@ -2302,7 +2302,7 @@ class TagTable(QTableView):
 
         for col, rows in groups.items():
             [select(min(row), max(row), col) for row in rows]
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
 
     def restoreSelection(self, data=None):
         if data is None:
@@ -2329,7 +2329,7 @@ class TagTable(QTableView):
                     select_index(row, column)
 
         self.selectionModel().clear()
-        self.selectionModel().select(selection, QItemSelectionModel.SelectCurrent)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.SelectCurrent)
         self.model().highlight(self.selectedRows)
 
     def removeFolders(self, dirs, valid=True):
@@ -2340,7 +2340,7 @@ class TagTable(QTableView):
     def setHeaderTags(self, tags, hidden=None):
 
         self.saveSelection()
-        hd = TableHeader(Qt.Horizontal, tags, self)
+        hd = TableHeader(Qt.Orientation.Horizontal, tags, self)
         hd.setSortIndicatorShown(True)
         hd.setVisible(True)
         hd.headerChanged.connect(self.setHeaderTags)
@@ -2407,11 +2407,11 @@ class TagTable(QTableView):
         for column in columns:
             index = get_index(row, column)
             selection.merge(QItemSelection(index, index),
-                            QItemSelectionModel.Select)
+                            QItemSelectionModel.SelectionFlag.Select)
         self.selectionModel().select(selection,
-                                     QItemSelectionModel.ClearAndSelect)
+                                     QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
-        self.scrollTo(get_index(row, min(columns)), self.EnsureVisible)
+        self.scrollTo(get_index(row, min(columns)), QAbstractItemView.ScrollHint.EnsureVisible)
 
     def selectDir(self, previous=False):
         model = self.model()
@@ -2453,9 +2453,9 @@ class TagTable(QTableView):
 
         for row, column in to_select.items():
             index = modelindex(row, column)
-            merge(QItemSelection(index, index), QItemSelectionModel.Select)
+            merge(QItemSelection(index, index), QItemSelectionModel.SelectionFlag.Select)
 
-        self.selectionModel().select(selection, QItemSelectionModel.Select)
+        self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Select)
 
     def showProperties(self):
         f = self.selectedTags[0]

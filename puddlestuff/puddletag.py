@@ -450,11 +450,11 @@ class MainWin(QMainWindow):
     def _getDir(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
         filedlg = QFileDialog()
-        filedlg.setFileMode(filedlg.DirectoryOnly)
-        # not supported in PyQt5
-        # filedlg.setResolveSymlinks(False) 
-        filename = str(filedlg.getExistingDirectory(self,
-                                                    translate("Main Window", 'Import directory...'), dirname, QFileDialog.ShowDirsOnly|QFileDialog.DontUseNativeDialog))
+        filedlg.setFileMode(QFileDialog.FileMode.DirectoryOnly)
+        filename = str(QFileDialog.getExistingDirectory(self,
+                                                        translate("Main Window", 'Import directory...'),
+                                                        dirname,
+                                                        QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontResolveSymlinks))
         return filename
 
     def appendDir(self, filename=None):
@@ -486,7 +486,7 @@ class MainWin(QMainWindow):
                     control.saveSettings()
 
         cparser = PuddleConfig()
-        settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(constants.QT_CONFIG, QSettings.Format.IniFormat)
         if self._lastdir:
             cparser.set('main', 'lastfolder', self._lastdir[0])
         cparser.set("main", "maximized", self.isMaximized())
@@ -500,7 +500,7 @@ class MainWin(QMainWindow):
     def createStatusBar(self):
         statusbar = self.statusBar()
         statuslabel = QLabel()
-        statuslabel.setFrameStyle(QFrame.NoFrame)
+        statuslabel.setFrameStyle(QFrame.Shape.NoFrame)
         statusbar.addPermanentWidget(statuslabel, 1)
         self._totalstats = QLabel('00 (00:00:00 | 00 MB)')
         self._selectedstats = QLabel('00 (00:00:00 | 00 MB)')
@@ -603,7 +603,7 @@ class MainWin(QMainWindow):
         connect_actions(scts, PuddleDock._controls)
 
         cparser = PuddleConfig()
-        settings = QSettings(constants.QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(constants.QT_CONFIG, QSettings.Format.IniFormat)
 
         gensettings = {}
         controls = list(PuddleDock._controls.values())

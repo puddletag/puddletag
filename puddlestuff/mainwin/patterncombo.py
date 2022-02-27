@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
     QShortcut, QVBoxLayout
 
 from ..puddleobjects import (PuddleConfig, ListBox,
@@ -40,7 +40,7 @@ class PatternCombo(QComboBox):
 
         shortcut = QShortcut(self)
         shortcut.setKey('F8')
-        shortcut.setContext(Qt.ApplicationShortcut)
+        shortcut.setContext(Qt.ShortcutContext.ApplicationShortcut)
 
         def set_focus():
             if self.hasFocus():
@@ -75,9 +75,9 @@ class SettingsWin(QFrame):
         QFrame.__init__(self, parent)
         self.title = translate('Settings', "Patterns")
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
-        self.setFrameStyle(QFrame.Box)
+        self.setFrameStyle(QFrame.Shape.Box)
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         buttons = ListButtons()
 
         self.listbox.addItems(status['patterns'])
@@ -87,7 +87,7 @@ class SettingsWin(QFrame):
 
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Pattern Settings", '&Sort'))
-        self._sortOrder = Qt.AscendingOrder
+        self._sortOrder = Qt.SortOrder.AscendingOrder
         connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
@@ -103,12 +103,12 @@ class SettingsWin(QFrame):
         connect(self.listbox, 'itemDoubleClicked', self._doubleClicked)
 
     def _sortListBox(self):
-        if self._sortOrder == Qt.AscendingOrder:
-            self.listbox.sortItems(Qt.DescendingOrder)
-            self._sortOrder = Qt.DescendingOrder
+        if self._sortOrder == Qt.SortOrder.AscendingOrder:
+            self.listbox.sortItems(Qt.SortOrder.DescendingOrder)
+            self._sortOrder = Qt.SortOrder.DescendingOrder
         else:
-            self.listbox.sortItems(Qt.AscendingOrder)
-            self._sortOrder = Qt.AscendingOrder
+            self.listbox.sortItems(Qt.SortOrder.AscendingOrder)
+            self._sortOrder = Qt.SortOrder.AscendingOrder
 
     def saveSettings(self):
         patterns = [str(self.listbox.item(row).text()) for row in range(self.listbox.count())]

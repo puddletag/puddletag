@@ -1,7 +1,7 @@
 import os
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
     QPushButton, QVBoxLayout
 
 from ...puddlesettings import add_config_widget
@@ -48,7 +48,7 @@ def show_all_fields(fields=None):
     data = [(k, k) for k in fields + sorted(keys, key=natsort_case_key)]
     tb = status['table']
     tb.model().setHeader(data)
-    hd = TableHeader(Qt.Horizontal, data)
+    hd = TableHeader(Qt.Orientation.Horizontal, data)
     tb.setHorizontalHeader(hd)
     hd.show()
 
@@ -85,9 +85,9 @@ class ButtonsAndList(QFrame):
         QFrame.__init__(self, parent)
         self.title = title
         connect = lambda c, signal, s: getattr(c, signal).connect(s)
-        self.setFrameStyle(QFrame.Box)
+        self.setFrameStyle(QFrame.Shape.Box)
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(self.listbox.ExtendedSelection)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         buttons = ListButtons()
 
         hbox = QHBoxLayout()
@@ -95,7 +95,7 @@ class ButtonsAndList(QFrame):
 
         vbox = QVBoxLayout()
         sortlistbox = QPushButton(translate("Defaults", '&Sort'))
-        self._sortOrder = Qt.AscendingOrder
+        self._sortOrder = Qt.SortOrder.AscendingOrder
         connect(sortlistbox, 'clicked', self._sortListBox)
         vbox.addWidget(sortlistbox)
         vbox.addLayout(buttons)
@@ -125,12 +125,12 @@ class ButtonsAndList(QFrame):
         self.editItem()
 
     def _sortListBox(self):
-        if self._sortOrder == Qt.AscendingOrder:
-            self.listbox.sortItems(Qt.DescendingOrder)
-            self._sortOrder = Qt.DescendingOrder
+        if self._sortOrder == Qt.SortOrder.AscendingOrder:
+            self.listbox.sortItems(Qt.SortOrder.DescendingOrder)
+            self._sortOrder = Qt.SortOrder.DescendingOrder
         else:
-            self.listbox.sortItems(Qt.AscendingOrder)
-            self._sortOrder = Qt.AscendingOrder
+            self.listbox.sortItems(Qt.SortOrder.AscendingOrder)
+            self._sortOrder = Qt.SortOrder.AscendingOrder
 
     def addItem(self):
         l = self.listbox.item

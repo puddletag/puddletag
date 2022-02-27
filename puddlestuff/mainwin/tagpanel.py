@@ -74,9 +74,9 @@ class Combo(QComboBox):
             return super(Combo, self).focusOutEvent(event)
         curtext = self.currentText()
         index = self.findText(curtext,
-                              Qt.MatchExactly | Qt.MatchFixedString | Qt.MatchCaseSensitive)
+                              Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchFixedString | Qt.MatchFlag.MatchCaseSensitive)
         if index == -1:
-            index = self.findText(curtext, Qt.MatchExactly | Qt.MatchFixedString)
+            index = self.findText(curtext, Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchFixedString)
         if index > 1:
             if curtext == self.itemText(index):
                 self.removeItem(index)
@@ -134,8 +134,8 @@ class FrameCombo(QGroupBox):
             edit = QLineEdit()
             combo.setLineEdit(edit)
             completer = combo.completer()
-            completer.setCaseSensitivity(Qt.CaseSensitive)
-            completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
 
     def disableCombos(self):
         for z in self.combos:
@@ -149,8 +149,8 @@ class FrameCombo(QGroupBox):
             edit = QLineEdit()
             combo.setLineEdit(edit)
             completer = combo.completer()
-            completer.setCaseSensitivity(Qt.CaseSensitive)
-            completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
             edit.textEdited.connect(func)
             combo.currentIndexChanged.connect(func)
             self.__indexFuncs.append((combo, func))
@@ -313,12 +313,12 @@ class FrameCombo(QGroupBox):
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
                 self.combos[tagval] = QComboBox(self)
-                self.combos[tagval].setInsertPolicy(QComboBox.NoInsert)
+                self.combos[tagval].setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
                 self.combos[tagval].setEditable(True)
                 self.combos[tagval].completer().setCompletionMode(
-                    QCompleter.UnfilteredPopupCompletion)
+                    QCompleter.CompletionMode.UnfilteredPopupCompletion)
                 self.combos[tagval].completer().setCaseSensitivity(
-                    Qt.CaseSensitive)
+                    Qt.CaseSensitivity.CaseSensitive)
                 self.labels[tagval].setBuddy(self.combos[tagval])
                 labelbox.addWidget(self.labels[tagval])
                 widgetbox.addWidget(self.combos[tagval])
@@ -332,7 +332,7 @@ class FrameCombo(QGroupBox):
         self.setMaximumHeight(self.sizeHint().height())
 
     def eventFilter(self, obj, event):
-        if isinstance(obj, QComboBox) and event.type() == QEvent.FocusOut:
+        if isinstance(obj, QComboBox) and event.type() == QEvent.Type.FocusOut:
             return False
         return QGroupBox.eventFilter(self, obj, event)
 
@@ -431,7 +431,7 @@ class PuddleTable(QTableWidget):
 
 
 TABLEWIDGETBG = QTableWidgetItem().background()
-RED = QBrush(Qt.red)
+RED = QBrush(Qt.GlobalColor.red)
 
 TITLE = translate("Defaults", 'Title')
 FIELD = translate("Defaults", 'Field')

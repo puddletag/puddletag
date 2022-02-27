@@ -101,8 +101,8 @@ class AutonumberDialog(QDialog):
 
         self.output_field.setEditable(True)
         completer = self.output_field.completer()
-        completer.setCaseSensitivity(Qt.CaseSensitive)
-        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
+        completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
 
         self.output_field.setCompleter(completer)
         self.output_field.addItems(gettaglist())
@@ -121,7 +121,7 @@ class AutonumberDialog(QDialog):
         okcancel.ok.connect(self.emitValuesAndSave)
         okcancel.cancel.connect(self.close)
         self._separator.stateChanged.connect(
-            lambda v: self._numtracks.setEnabled(v == Qt.Checked))
+            lambda v: self._numtracks.setEnabled(v == Qt.CheckState.Checked))
 
         # self._restart_numbering.stateChanged.connect(
         #              self.showDirectorySplittingOptions)
@@ -131,7 +131,7 @@ class AutonumberDialog(QDialog):
         self._loadSettings()
 
     def showDirectorySplittingOptions(self, state):
-        is_checked = state == Qt.Checked
+        is_checked = state == Qt.CheckState.Checked
         for widget in self.custom_numbering_widgets:
             widget.setVisible(is_checked)
 
@@ -175,14 +175,14 @@ class AutonumberDialog(QDialog):
         section = 'autonumbering'
         self._start.setValue(cparser.get(section, 'start', 1))
         self._separator.setCheckState(
-            cparser.get(section, 'separator', Qt.Unchecked))
+            cparser.get(section, 'separator', Qt.CheckState.Unchecked))
         self._padlength.setValue(cparser.get(section, 'padlength', 1))
 
         self._restart_numbering.setCheckState(
-            cparser.get(section, 'restart', Qt.Unchecked))
+            cparser.get(section, 'restart', Qt.CheckState.Unchecked))
 
         self.count_by_group.setCheckState(
-            cparser.get(section, 'count_by_group', Qt.Unchecked))
+            cparser.get(section, 'count_by_group', Qt.CheckState.Unchecked))
 
         self.showDirectorySplittingOptions(self._restart_numbering.checkState())
 
@@ -233,7 +233,7 @@ class ImportTextFile(QDialog):
 
         self.tags = QTextEdit()
         grid.addWidget(self.tags, 1, 2, 1, 2)
-        self.tags.setLineWrapMode(QTextEdit.NoWrap)
+        self.tags.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
 
         hbox = QHBoxLayout()
 
@@ -320,7 +320,7 @@ class ImportTextFile(QDialog):
                                        translate('Text File -> Tag', "Error"),
                                        translate('Text File -> Tag', errormsg.arg(filename)))
 
-            if ret == QMessageBox.Yes:
+            if ret == QMessageBox.StandardButton.Yes:
                 return self.openFile()
             else:
                 return detail
@@ -394,8 +394,8 @@ class EditField(QDialog):
         self.tagcombo.setEditable(True)
         label.setBuddy(self.tagcombo)
         completer = self.tagcombo.completer()
-        completer.setCaseSensitivity(Qt.CaseSensitive)
-        completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
+        completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
         self.tagcombo.setCompleter(completer)
         self.tagcombo.addItems(field_list if field_list else gettaglist())
 
@@ -451,7 +451,7 @@ class StatusWidgetItem(QTableWidgetItem):
             self.setBackground(self.statusColors[status])
 
         self._status = status
-        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
         self._original = (text, preview, status)
         self.linked = []
 
@@ -498,7 +498,7 @@ class StatusWidgetItem(QTableWidgetItem):
 
 class VerticalHeader(QHeaderView):
     def __init__(self, parent=None):
-        QHeaderView.__init__(self, Qt.Vertical, parent)
+        QHeaderView.__init__(self, Qt.Orientation.Vertical, parent)
         self.setDefaultSectionSize(self.minimumSectionSize() + 4)
         self.setMinimumSectionSize(1)
 
@@ -515,7 +515,7 @@ class StatusWidgetCombo(QComboBox):
         self.preview = preview
 
         self.statusColors = colors
-        self.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLength)
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
 
         items = map(str, items)
         items = sorted(items, key=natsort_case_key)
@@ -563,14 +563,14 @@ class StatusWidgetCombo(QComboBox):
 
     def setBackground(self, brush=None):
         if brush is None:
-            color = QLineEdit().palette().color(QPalette.Base).name()
+            color = QLineEdit().palette().color(QPalette.ColorRole.Base).name()
         else:
             color = brush.color().name()
         self.setStyleSheet("QComboBox { background-color: %s; }" % color);
 
     def background(self):
         brush = QBrush()
-        brush.setColor(self.palette().color(QPalette.Background))
+        brush.setColor(self.palette().color(QPalette.ColorRole.Background))
         return brush
 
     def reset(self):
@@ -623,7 +623,7 @@ class ExTags(QDialog):
         self.table.setVerticalHeader(VerticalHeader())
         self.table.verticalHeader().setVisible(False)
         self.table.setSortingEnabled(True)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setHorizontalHeaderLabels([
             translate('Extended Tags', 'Field'),
             translate('Extended Tags', 'Value')])
@@ -632,7 +632,7 @@ class ExTags(QDialog):
         header.setVisible(True)
         header.setSortIndicatorShown(True)
         header.setStretchLastSection(True)
-        header.setSortIndicator(0, Qt.AscendingOrder)
+        header.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
 
         self.piclabel = PicWidget(buttons=True)
         self.piclabel.imageChanged.connect(
@@ -669,7 +669,7 @@ class ExTags(QDialog):
         self.listbuttons.movedownButton.hide()
 
         listframe = QFrame()
-        listframe.setFrameStyle(QFrame.Box)
+        listframe.setFrameStyle(QFrame.Shape.Box)
         hbox = QHBoxLayout()
         hbox.addWidget(self.table, 1)
         hbox.addLayout(self.listbuttons, 0)
@@ -678,7 +678,7 @@ class ExTags(QDialog):
         layout = QVBoxLayout()
         if artwork:
             imageframe = QFrame()
-            imageframe.setFrameStyle(QFrame.Box)
+            imageframe.setFrameStyle(QFrame.Shape.Box)
             vbox = QVBoxLayout()
             vbox.setContentsMargins(0, 0, 0, 0)
             vbox.addWidget(self.piclabel)
@@ -801,7 +801,7 @@ class ExTags(QDialog):
                     cur_item = self.table.item(self.table.currentRow(), 0)
                     self.resetFields([cur_item])
                     self.table.setCurrentItem(cur_item,
-                                              QItemSelectionModel.ClearAndSelect)
+                                              QItemSelectionModel.SelectionFlag.ClearAndSelect)
                     self.table.selectRow(self.table.row(cur_item))
                     self.removeField()
                     valitem = self._settag(rowcount, tag,
@@ -1134,7 +1134,7 @@ class ConfirmationErrorDialog(QDialog):
         self.__label = QLabel()
         icon = QLabel()
         msgbox = QMessageBox()
-        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setIcon(QMessageBox.Icon.Warning)
         icon.setPixmap(msgbox.iconPixmap())
         ok = QPushButton(translate("Defaults", "OK"))
         checkbox = QCheckBox(
@@ -1148,8 +1148,8 @@ class ConfirmationErrorDialog(QDialog):
 
         layout = QVBoxLayout()
         layout.addLayout(labelbox, 1)
-        layout.addWidget(checkbox, 0, Qt.AlignHCenter)
-        layout.addWidget(ok, 0, Qt.AlignHCenter)
+        layout.addWidget(checkbox, 0, Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(ok, 0, Qt.AlignmentFlag.AlignHCenter)
         layout.addStretch()
         self.setLayout(layout)
 

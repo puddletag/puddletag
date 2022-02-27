@@ -38,16 +38,16 @@ The <b>Oxygen team</b> for the Oxygen icons.
 
 
 class ScrollLabel(QWidget):
-    def __init__(self, text, alignment=Qt.AlignCenter, parent=None):
+    def __init__(self, text, alignment=Qt.AlignmentFlag.AlignCenter, parent=None):
         QWidget.__init__(self, parent)
         vbox = QVBoxLayout()
         self.setLayout(vbox)
         label = QLabel(text)
 
-        label.setTextFormat(Qt.RichText)
+        label.setTextFormat(Qt.TextFormat.RichText)
         label.setAlignment(alignment)
         label.setWordWrap(True)
-        label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
 
         sa = QScrollArea()
         sa.setWidget(label)
@@ -79,7 +79,7 @@ class AboutPuddletag(QDialog):
 
         tab = QTabWidget()
         tab.addTab(ScrollLabel(desc), translate('About', '&About'))
-        tab.addTab(ScrollLabel(thanks, Qt.AlignLeft),
+        tab.addTab(ScrollLabel(thanks, Qt.AlignmentFlag.AlignLeft),
                    translate('About', '&Thanks'))
 
         vbox = QVBoxLayout()

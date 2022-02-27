@@ -142,7 +142,7 @@ class DupeTree(QTreeWidget):
 
     # def mouseMoveEvent(self, event):
     # QTreeWidget.mouseMoveEvent(self, event)
-    # if event.buttons() != Qt.LeftButton:
+    # if event.buttons() != Qt.MouseButton.LeftButton:
     # return
     # mimeData = QMimeData()
     # plainText = ""
@@ -167,11 +167,11 @@ class DupeTree(QTreeWidget):
     # dropaction = drag.exec_(self.dropaction)
 
     # def mousePressEvent(self, event):
-    # if event.buttons() == Qt.RightButton:
-    # e = QContextMenuEvent(QContextMenuEvent.Mouse, event.pos(), event.globalPos())
+    # if event.buttons() == Qt.MouseButton.RightButton:
+    # e = QContextMenuEvent(QContextMenuEvent.Reason.Mouse, event.pos(), event.globalPos())
     # self.contextMenuEvent(e)
     # return
-    # if event.buttons() == Qt.LeftButton:
+    # if event.buttons() == Qt.MouseButton.LeftButton:
     # self.StartPosition = [event.pos().x(), event.pos().y()]
     # QTreeWidget.mousePressEvent(self, event)
 
@@ -226,7 +226,7 @@ class AlgWin(QWidget):
         [vbox.addWidget(z) for z in [taglabel, self.tags, perlabel, self.threshold,
                                      allabel, self.alcombo, self.matchcase]]
         frame = QFrame()
-        frame.setFrameStyle(QFrame.Box)
+        frame.setFrameStyle(QFrame.Shape.Box)
         frame.setLayout(vbox)
 
         box = QVBoxLayout()
@@ -257,16 +257,16 @@ class AlgWin(QWidget):
         self.tags.setText(' | '.join(alg.tags))
         self.threshold.setText('%.2f' % (alg.threshold * 100))
         if alg.matchcase:
-            self.matchcase.setCheckState(Qt.Checked)
+            self.matchcase.setCheckState(Qt.CheckState.Checked)
         else:
-            self.matchcase.setCheckState(Qt.Unchecked)
+            self.matchcase.setCheckState(Qt.CheckState.Unchecked)
 
     def saveAlgo(self):
         tags = [x for x in [z.strip() for z in str(self.tags.text()).split("|")] if x != ""]
         func = funcs[self.alcombo.currentIndex()]
         threshold = float(str(self.threshold.text())) / 100
         matchcase = False
-        if self.matchcase.checkState() == Qt.Checked:
+        if self.matchcase.checkState() == Qt.CheckState.Checked:
             matchcase = True
 
         return Algo(tags, threshold, func, matchcase)
@@ -345,7 +345,7 @@ class SetDialog(QDialog):
     def addSet(self):
         def gettext():
             (text, ok) = QInputDialog.getText(self, 'puddletag', 'Enter a name'
-                                                                 'for the set', QLineEdit.Normal)
+                                                                 'for the set', QLineEdit.EchoMode.Normal)
             if ok:
                 if self.setscombo.findText(text) > -1:
                     QMessageBox.information(self, 'puddletag', 'The name entered already exists.')

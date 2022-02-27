@@ -205,7 +205,7 @@ class Editor(QDialog):
         new_item._action = item._action
         self._newActionList.addItem(new_item)
         self._newActionList.setCurrentItem(new_item,
-                                           QItemSelectionModel.ClearAndSelect)
+                                           QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
     def enableOk(self, text):
         if not text or text in self._names:
@@ -300,7 +300,7 @@ class ShortcutEditor(QDialog):
         item.shortcut = shortcut
         self._listbox.addItem(item)
         if select:
-            self._listbox.setCurrentItem(item, QItemSelectionModel.ClearAndSelect)
+            self._listbox.setCurrentItem(item, QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
     def applySettings(self, control=None):
         from .puddletag import remove_shortcuts, add_shortcuts

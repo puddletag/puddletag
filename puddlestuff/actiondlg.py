@@ -141,11 +141,11 @@ class ScrollLabel(QScrollArea):
         self.setWidget(label)
         self.setText(text)
         self.text = label.text
-        label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
-        self.setFrameStyle(QFrame.NoFrame)
+        label.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setWidgetResizable(True)
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
@@ -269,9 +269,9 @@ class FunctionDialog(QWidget):
             newargs = []
             for method in self.retval:
                 if method.__name__ == 'checkState':
-                    if method() == Qt.Checked:
+                    if method() == Qt.CheckState.Checked:
                         newargs.append(True)
-                    elif (method() == Qt.PartiallyChecked) or (method() == Qt.Unchecked):
+                    elif (method() == Qt.CheckState.PartiallyChecked) or (method() == Qt.CheckState.Unchecked):
                         newargs.append(False)
                 else:
                     if isinstance(method(), int):
@@ -486,7 +486,7 @@ class CreateFunction(QDialog):
     def createWindow(self, index, fields=None, args=None):
         """Creates a Function dialog in the stack window
         if it doesn't exist already."""
-        self.stack.setFrameStyle(QFrame.Box)
+        self.stack.setFrameStyle(QFrame.Shape.Box)
         if index not in self.stackWidgets:
             widget = FunctionDialog(self.realfuncs[index],
                                     self.selectedFields, args, fields,
@@ -714,8 +714,8 @@ class ActionWindow(QDialog):
         self._shortcuts = []
         self._quickaction = quickaction
         self.listbox = ListBox()
-        self.listbox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.listbox.setEditTriggers(QAbstractItemView.EditKeyPressed)
+        self.listbox.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.listbox.setEditTriggers(QAbstractItemView.EditTrigger.EditKeyPressed)
 
         self.example = example
 
@@ -726,11 +726,11 @@ class ActionWindow(QDialog):
 
         for i, m in sorted(self.macros.items()):
             item = QListWidgetItem(m.name)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
             if m.name in to_check:
-                item.setCheckState(Qt.Checked)
+                item.setCheckState(Qt.CheckState.Checked)
             else:
-                item.setCheckState(Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Unchecked)
             self.listbox.addItem(item)
 
         self.okcancel = OKCancel()
@@ -846,7 +846,7 @@ class ActionWindow(QDialog):
     def enableOK(self, val):
         item = self.listbox.item
         enable = [row for row in range(self.listbox.count()) if
-                  item(row).checkState() == Qt.Checked]
+                  item(row).checkState() == Qt.CheckState.Checked]
         if enable:
             self.okcancel.okButton.setEnabled(True)
             self.shortcutButton.setEnabled(True)
@@ -923,7 +923,7 @@ class ActionWindow(QDialog):
             return
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
-        selectedrows = [i for i, z in enumerate(items) if z.checkState() == Qt.Checked]
+        selectedrows = [i for i, z in enumerate(items) if z.checkState() == Qt.CheckState.Checked]
 
         if selectedrows:
             from .puddletag import status
@@ -970,12 +970,12 @@ class ActionWindow(QDialog):
         (text, ok) = QInputDialog.getText(self,
                                           translate('Actions', "New Action"),
                                           translate('Actions', "Enter a name for the new action."),
-                                          QLineEdit.Normal)
+                                          QLineEdit.EchoMode.Normal)
 
         if (ok is True) and text:
             item = QListWidgetItem(text)
-            item.setCheckState(Qt.Unchecked)
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
             self.listbox.addItem(item)
         else:
             return
@@ -1015,7 +1015,7 @@ class ActionWindow(QDialog):
         l = self.listbox
         items = [l.item(z) for z in range(l.count())]
         checked = [i for i, z in enumerate(items) if
-                   z.checkState() == Qt.Checked]
+                   z.checkState() == Qt.CheckState.Checked]
         return checked
 
     def saveChecked(self):
@@ -1059,7 +1059,7 @@ class ActionWindow(QDialog):
         (text, ok) = QInputDialog.getText(self,
                                           translate('Actions', "Copy %s action" % oldname),
                                           translate('Actions', "Enter a name for the new action."),
-                                          QLineEdit.Normal)
+                                          QLineEdit.EchoMode.Normal)
         if not (ok and text):
             return
 
@@ -1076,8 +1076,8 @@ class ActionWindow(QDialog):
 
     def duplicateBuddy(self, name, actions):
         item = QListWidgetItem(name)
-        item.setCheckState(Qt.Unchecked)
-        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        item.setCheckState(Qt.CheckState.Unchecked)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
         self.listbox.addItem(item)
 
         m = Macro()

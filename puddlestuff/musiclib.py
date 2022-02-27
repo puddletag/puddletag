@@ -166,7 +166,7 @@ class LibChooseDialog(QDialog):
         okcancel.cancel.connect(self.close)
 
         self.stack = QStackedWidget()
-        self.stack.setFrameStyle(QFrame.Box)
+        self.stack.setFrameStyle(QFrame.Shape.Box)
         list(map(self.stack.addWidget, self.stackwidgets))
 
         hbox = QHBoxLayout()
@@ -292,12 +292,12 @@ class LibraryTree(QTreeWidget):
         self.__searchResults = []
 
         self.setHeaderLabels([translate('MusicLib', "Library Artists")])
-        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSortingEnabled(True)
-        self.sortItems(0, Qt.AscendingOrder)
+        self.sortItems(0, Qt.SortOrder.AscendingOrder)
 
-        self.CLOSED_ICON = self.style().standardIcon(QStyle.SP_DirClosedIcon)
-        self.OPEN_ICON = self.style().standardIcon(QStyle.SP_DirOpenIcon)
+        self.CLOSED_ICON = self.style().standardIcon(QStyle.StandardPixmap.SP_DirClosedIcon)
+        self.OPEN_ICON = self.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon)
 
         self.itemCollapsed.connect(
             lambda item: item.setIcon(0, self.CLOSED_ICON))
@@ -420,7 +420,7 @@ class LibraryTree(QTreeWidget):
         take_item = self.takeTopLevelItem
 
         for artist in data:
-            artist_item = self.findItems(artist, Qt.MatchExactly)[0]
+            artist_item = self.findItems(artist, Qt.MatchFlag.MatchExactly)[0]
             if artist in lib_artists:
                 albums = get_albums(artist)
                 remove = artist_item.removeChild
@@ -445,7 +445,7 @@ class LibraryTree(QTreeWidget):
 
         newartists = []
         for artist in set(artists):
-            artist_item = self.findItems(artist, Qt.MatchExactly)
+            artist_item = self.findItems(artist, Qt.MatchFlag.MatchExactly)
             if artist_item:
                 artist_item = artist_item[0]
                 albums = get_albums(artist)

@@ -72,16 +72,16 @@ class SettingsCheckBox(QCheckBox):
         self._text = text
 
     def _value(self):
-        if self.checkState() == Qt.Checked:
+        if self.checkState() == Qt.CheckState.Checked:
             return self._text, True
         else:
             return self._text, False
 
     def _setValue(self, value):
         if value:
-            self.setCheckState(Qt.Checked)
+            self.setCheckState(Qt.CheckState.Checked)
         else:
-            self.setCheckState(Qt.Unchecked)
+            self.setCheckState(Qt.CheckState.Unchecked)
 
     settingValue = property(_value, _setValue)
 
@@ -141,7 +141,7 @@ class GeneralSettings(QWidget):
         self._lang_combo.addItems(list(get_languages([TRANSDIR])))
 
         if lang != 'auto':
-            i = self._lang_combo.findText(lang, Qt.MatchFixedString)
+            i = self._lang_combo.findText(lang, Qt.MatchFlag.MatchFixedString)
             if i > 0:
                 self._lang_combo.setCurrentIndex(i)
 
@@ -203,8 +203,8 @@ class Playlist(QWidget):
 
         def inttocheck(value):
             if value:
-                return Qt.Checked
-            return Qt.Unchecked
+                return Qt.CheckState.Checked
+            return Qt.CheckState.Unchecked
 
         cparser = PuddleConfig()
 
@@ -242,7 +242,7 @@ class Playlist(QWidget):
 
     def applySettings(self, control=None):
         def checktoint(checkbox):
-            if checkbox.checkState() == Qt.Checked:
+            if checkbox.checkState() == Qt.CheckState.Checked:
                 return 1
             else:
                 return 0
@@ -477,21 +477,21 @@ class ListModel(QAbstractListModel):
         QAbstractListModel.__init__(self)
         self.options = options
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return int(Qt.AlignLeft | Qt.AlignVCenter)
-            return int(Qt.AlignRight | Qt.AlignVCenter)
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            if orientation == Qt.Orientation.Horizontal:
+                return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             return self.headerdata[section]
         return int(section + 1)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.options)):
             return None
-        if (role == Qt.DisplayRole) or (role == Qt.ToolTipRole):
+        if (role == Qt.ItemDataRole.DisplayRole) or (role == Qt.ItemDataRole.ToolTipRole):
             try:
                 return str(self.options[index.row()][0])
             except IndexError:
@@ -506,8 +506,8 @@ class ListModel(QAbstractListModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractListModel.flags(self, index))
+            return Qt.ItemFlag.ItemIsEnabled
+        return Qt.ItemFlag(QAbstractListModel.flags(self, index))
 
 
 class SettingsList(QListView):
@@ -527,7 +527,7 @@ class StatusWidgetItem(QTableWidgetItem):
     def __init__(self, text, color):
         QTableWidgetItem.__init__(self, text)
         self.setBackground(QBrush(color))
-        self.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        self.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
 
 
 class ColorEdit(QWidget):
@@ -544,7 +544,7 @@ class ColorEdit(QWidget):
             *cparser.get('table', key, default, True))
 
         preview = get_color('preview_color', [192, 255, 192])
-        selection_default = QPalette().color(QPalette.Mid).getRgb()[:-1]
+        selection_default = QPalette().color(QPalette.ColorRole.Mid).getRgb()[:-1]
 
         selection = get_color('selected_color', selection_default)
 
@@ -554,7 +554,7 @@ class ColorEdit(QWidget):
         label = QLabel(text)
 
         self.listbox = QTableWidget(0, 1, self)
-        self.listbox.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.listbox.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         header = self.listbox.horizontalHeader()
         self.listbox.setSortingEnabled(False)
         header.setVisible(True)
@@ -657,7 +657,7 @@ class SettingsDialog(QDialog):
         self.listbox.setModel(self.model)
 
         self.stack = QStackedWidget()
-        self.stack.setFrameStyle(QFrame.StyledPanel)
+        self.stack.setFrameStyle(QFrame.Shape.StyledPanel)
 
         self.grid = QGridLayout()
         self.grid.addWidget(self.listbox)
@@ -672,7 +672,7 @@ class SettingsDialog(QDialog):
         index = self.model.index(0, 0)
         selection.select(index, index)
         self.listbox.setSelectionModel(self.selectionModel)
-        self.selectionModel.select(selection, QItemSelectionModel.Select)
+        self.selectionModel.select(selection, QItemSelectionModel.SelectionFlag.Select)
 
         self.okbuttons = OKCancel()
         self.okbuttons.okButton.setDefault(True)

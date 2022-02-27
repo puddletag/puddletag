@@ -325,8 +325,8 @@ class QuodLibet(object):
 
 class DirModel(QDirModel):
 
-    def data(self, index, role=Qt.DisplayRole):
-        if (role == Qt.DisplayRole and index.column() == 0):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if (role == Qt.ItemDataRole.DisplayRole and index.column() == 0):
             path = QDir.toNativeSeparators(self.filePath(index))
             if path.endsWith(QDir.separator()):
                 path.chop(1)
@@ -338,9 +338,9 @@ class DirLineEdit(QLineEdit):
     def __init__(self, *args, **kwargs):
         super(DirLineEdit, self).__init__(*args, **kwargs)
         completer = QCompleter()
-        completer.setCompletionMode(QCompleter.PopupCompletion)
-        dirfilter = QDir.AllEntries | QDir.NoDotAndDotDot | QDir.Hidden
-        sortflags = QDir.DirsFirst | QDir.IgnoreCase
+        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        dirfilter = QDir.Filter.AllEntries | QDir.Filter.NoDotAndDotDot | QDir.Filter.Hidden
+        sortflags = QDir.SortFlag.DirsFirst | QDir.SortFlag.IgnoreCase
 
         dirmodel = QDirModel(['*'], dirfilter, sortflags, completer)
         completer.setModel(dirmodel)

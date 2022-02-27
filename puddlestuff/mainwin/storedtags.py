@@ -111,7 +111,7 @@ class StoredTags(QScrollArea):
                     grid.addWidget(t_label, offset - 1, 0)
                     for row, (tag, value) in enumerate(values):
                         field = QLabel('%s:' % tag)
-                        field.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+                        field.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
                         grid.addWidget(field, row + offset, 0)
                         vlabel = QLabel(value)
                         grid.addWidget(vlabel, row + offset, 1)

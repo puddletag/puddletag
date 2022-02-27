@@ -2,7 +2,7 @@ import os
 
 from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QDirModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
@@ -27,27 +27,27 @@ class DirView(QTreeView):
         # an index is clicked. See selectionChanged.
 
         dirmodel = QDirModel()
-        dirmodel.setSorting(QDir.IgnoreCase)
-        dirmodel.setFilter(QDir.Dirs | QDir.NoDotAndDotDot)
+        dirmodel.setSorting(QDir.SortFlag.IgnoreCase)
+        dirmodel.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
         dirmodel.setReadOnly(False)
         dirmodel.setLazyChildCount(False)
         dirmodel.setResolveSymlinks(False)
-        header = PuddleHeader(Qt.Horizontal, self)
+        header = PuddleHeader(Qt.Orientation.Horizontal, self)
         self.setHeader(header)
-        self.header().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.header().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
         self.setModel(dirmodel)
         [self.hideColumn(column) for column in range(1, 4)]
 
         self.header().hide()
         self.subfolders = subfolders
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self._lastselection = 0  # If > 0 appends files. See selectionChanged
         self._load = True
         self.setDragEnabled(False)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
-        self._dropaction = Qt.MoveAction
+        self._dropaction = Qt.DropAction.MoveAction
         self._threadRunning = False
 
         self._select = True
@@ -72,7 +72,7 @@ class DirView(QTreeView):
         smodel = self.selectionModel()
         smodel.blockSignals(True)
         smodel.clear()
-        smodel.select(deselected, smodel.Select)
+        smodel.select(deselected, QItemSelectionModel.SelectionFlag.Select)
         smodel.blockSignals(False)
         self._select = select
         return True
@@ -144,7 +144,7 @@ class DirView(QTreeView):
         self._load = True
 
     def loadSettings(self):
-        settings = QSettings(QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(QT_CONFIG, QSettings.Format.IniFormat)
         header = self.header()
         if settings.value('dirview/header'):
             header.restoreState(settings.value('dirview/header'))
@@ -179,7 +179,7 @@ class DirView(QTreeView):
         thread.start()
 
     def mousePressEvent(self, event):
-        if event.buttons() == Qt.RightButton:
+        if event.buttons() == Qt.MouseButton.RightButton:
             return
         else:
             super(DirView, self).mousePressEvent(event)
@@ -242,7 +242,7 @@ class DirView(QTreeView):
             if select:
                 self.setCurrentIndex(select[0])
                 self.scrollTo(select[0])
-            [selectindex(z, QItemSelectionModel.Select) for z in select]
+            [selectindex(z, QItemSelectionModel.SelectionFlag.Select) for z in select]
             if expand:
                 [self.expand(z) for z in expand]
             self.blockSignals(False)
@@ -256,7 +256,7 @@ class DirView(QTreeView):
         dirthread.start()
 
     def saveSettings(self):
-        settings = QSettings(QT_CONFIG, QSettings.IniFormat)
+        settings = QSettings(QT_CONFIG, QSettings.Format.IniFormat)
         settings.setValue('dirview/header',
                           self.header().saveState())
         settings.setValue('dirview/hide', self.isHeaderHidden())
@@ -293,7 +293,7 @@ class DirView(QTreeView):
     def selectIndex(self, index):
         if not index.isValid():
             return
-        self.selectionModel().select(index, QItemSelectionModel.Select)
+        self.selectionModel().select(index, QItemSelectionModel.SelectionFlag.Select)
         parent = index.parent()
         while parent.isValid():
             self.expand(index)
@@ -344,7 +344,7 @@ class DirViewWidget(QWidget):
         self.dirview.saveSettings()
 
     def setSubFolders(self, check):
-        if check == Qt.Checked:
+        if check == Qt.CheckState.Checked:
             value = True
         else:
             value = False

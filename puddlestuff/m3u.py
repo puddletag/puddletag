@@ -130,7 +130,7 @@ def exportm3u(tags, tofile, format=None, reldir=False, winsep=False):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     filedlg = QFileDialog()
-    filedlg.setFileMode(filedlg.DirectoryOnly)
+    filedlg.setFileMode(QFileDialog.FileMode.DirectoryOnly)
     filename = str(filedlg.getExistingDirectory(None,
                                                 'Open Folder'))
     tags = []

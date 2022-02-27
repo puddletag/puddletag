@@ -161,15 +161,15 @@ def check_copy_data(data):
                                  "It may cause your system to lock up.\n\n"
                                  "Do you want to go ahead?"))
 
-        msgbox.setIcon(QMessageBox.Question)
+        msgbox.setIcon(QMessageBox.Icon.Question)
         yesBtn = msgbox.addButton(translate("Defaults", "&Yes"),
-                                  QMessageBox.YesRole)
+                                  QMessageBox.ButtonRole.YesRole)
         noBtn = msgbox.addButton(translate("Defaults", "No"),
-                                 QMessageBox.NoRole)
+                                 QMessageBox.ButtonRole.NoRole)
         msgbox.setDefaultButton(noBtn)
         msgbox.setEscapeButton(noBtn)
         noImgBtn = msgbox.addButton(translate("Messages", "Copy without images."),
-                                    QMessageBox.ApplyRole)
+                                    QMessageBox.ButtonRole.ApplyRole)
 
         msgbox.exec_()
 

@@ -5,7 +5,7 @@ from functools import partial
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 
 from .findfunc import parsefunc
 from .puddleobjects import (PuddleThread,
@@ -14,8 +14,8 @@ from .tagsources import RetrievalError
 from .translations import translate
 from .util import pprint_tag, to_string
 
-CHECKEDFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
-NORMALFLAG = Qt.ItemIsEnabled | Qt.ItemIsSelectable
+CHECKEDFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
+NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
 RETRIEVED_ALBUMS = translate('WebDB', 'Retrieved Albums (sorted by %s)')
 
@@ -94,11 +94,11 @@ class Header(QHeaderView):
     sortChanged = pyqtSignal(list, name='sortChanged')
 
     def __init__(self, parent=None):
-        QHeaderView.__init__(self, Qt.Horizontal, parent)
+        QHeaderView.__init__(self, Qt.Orientation.Horizontal, parent)
         self.setSectionsClickable(True)
         self.setStretchLastSection(True)
         self.setSortIndicatorShown(True)
-        self.setSortIndicator(0, Qt.AscendingOrder)
+        self.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
         self.sortOptions = [z.split(',') for z in
                             ['artist,album', 'album,artist', '__numtracks,album']]
 
@@ -272,8 +272,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         self.trackPattern = track_pattern
         self.tagsource = tagsource
         icon = QWidget().style().standardIcon
-        self.expandedIcon = icon(QStyle.SP_DirOpenIcon)
-        self.collapsedIcon = icon(QStyle.SP_DirClosedIcon)
+        self.expandedIcon = icon(QStyle.StandardPixmap.SP_DirOpenIcon)
+        self.collapsedIcon = icon(QStyle.StandardPixmap.SP_DirClosedIcon)
 
         if data:
             self.setupModelData(data)
@@ -335,13 +335,13 @@ class TreeModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return None
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             item = index.internalPointer()
             return item.data(index.column())
-        elif role == Qt.ToolTipRole:
+        elif role == Qt.ItemDataRole.ToolTipRole:
             item = index.internalPointer()
             return tooltip(item.itemData, self.mapping)
-        elif role == Qt.DecorationRole:
+        elif role == Qt.ItemDataRole.DecorationRole:
             item = index.internalPointer()
             if self.isTrack(item):
                 return None
@@ -349,13 +349,13 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.expandedIcon
             else:
                 return self.collapsedIcon
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.ItemDataRole.CheckStateRole:
             item = index.internalPointer()
             if self.isTrack(item) and '#exact' in item.itemData:
                 if item.checked:
-                    return Qt.Checked
+                    return Qt.CheckState.Checked
                 else:
-                    return Qt.Unchecked
+                    return Qt.CheckState.Unchecked
         return None
 
     def fetchMore(self, index):
@@ -417,8 +417,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         return NORMALFLAG
 
     def headerData(self, section, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and \
-                role == QtCore.Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal and \
+                role == Qt.ItemDataRole.DisplayRole:
             ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
 
             return ret
@@ -502,7 +502,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         return parentItem.childCount()
 
-    def setData(self, index, value, role=Qt.CheckStateRole):
+    def setData(self, index, value, role=Qt.ItemDataRole.CheckStateRole):
         if index.isValid() and self.isTrack(index):
             item = index.internalPointer()
             item.checked = not item.checked
@@ -521,9 +521,9 @@ class TreeModel(QtCore.QAbstractItemModel):
         if exact_matches:
             self.exactMatches.emit(exact_matches)
 
-    def sort(self, column=0, order=Qt.AscendingOrder):
+    def sort(self, column=0, order=Qt.SortOrder.AscendingOrder):
         self.beginResetModel()
-        if order == Qt.AscendingOrder:
+        if order == Qt.SortOrder.AscendingOrder:
             self.rootItem.sort(self.sortOrder)
         else:
             self.rootItem.sort(self.sortOrder, True)
@@ -542,7 +542,7 @@ class ReleaseWidget(QTreeView):
 
     def __init__(self, status, tagsource, parent=None):
         QTreeView.__init__(self, parent)
-        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setSortingEnabled(True)
         self.setExpandsOnDoubleClick(False)
         self._tagSource = tagsource
