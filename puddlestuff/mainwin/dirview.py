@@ -357,10 +357,7 @@ class DirViewWidget(QWidget):
         self.dirview.saveSettings()
 
     def setSubFolders(self, check):
-        if check == Qt.CheckState.Checked:
-            value = True
-        else:
-            value = False
+        value = (check == Qt.CheckState.Checked)
         self.dirview.subfolders = value
         save_gen_settings({'Su&bfolders': value})
         self._status['table'].subFolders = value

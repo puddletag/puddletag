@@ -199,18 +199,13 @@ class AlgWin(QWidget):
 
         self.tags.setText(' | '.join(alg.tags))
         self.threshold.setText('%.2f' % (alg.threshold * 100))
-        if alg.matchcase:
-            self.matchcase.setCheckState(Qt.CheckState.Checked)
-        else:
-            self.matchcase.setCheckState(Qt.CheckState.Unchecked)
+        self.matchcase.setChecked(bool(alg.matchcase))
 
     def saveAlgo(self):
         tags = [x for x in [z.strip() for z in str(self.tags.text()).split("|")] if x != ""]
         func = funcs[self.alcombo.currentIndex()]
         threshold = float(str(self.threshold.text())) / 100
-        matchcase = False
-        if self.matchcase.checkState() == Qt.CheckState.Checked:
-            matchcase = True
+        matchcase = self.matchcase.isChecked()
 
         return Algo(tags, threshold, func, matchcase)
 

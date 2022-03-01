@@ -63,6 +63,22 @@ def _migrate_action_shortcut_filenames():
         fo.write(json.dumps(data, indent=2))
 
 
+def _migrate_checkstates():
+    from puddlestuff.puddleobjects import PuddleConfig
+    cparser = PuddleConfig()
+    for section, key in (
+        ('autonumbering', 'separator'),
+        ('autonumbering', 'restart'),
+        ('autonumbering', 'count_by_group'),
+        ('playlist', 'extinfo'),
+        ('playlist', 'reldir'),
+        ('playlist', 'windows_separator'),
+    ):
+        old_value = cparser.get(section, key, None)
+        if old_value is not None and isinstance(old_value, int):
+            cparser.set(section, key, bool(old_value))
+
+
 def migrate_settings():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
     for dirpath in [CONFIGDIR, SAVEDIR]:
@@ -91,6 +107,7 @@ def migrate_settings():
     _migrate_action_shortcuts()
     convert_ini_files()
     _migrate_action_shortcut_filenames()
+    _migrate_checkstates()
 
 
 def _migrate_action_shortcuts():
