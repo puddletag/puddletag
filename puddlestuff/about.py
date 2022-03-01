@@ -2,7 +2,7 @@
 import mutagen
 from importlib import import_module
 from platform import python_version
-from PyQt6.QtCore import PYQT_VERSION_STR, QT_VERSION_STR, Qt
+from PyQt6.QtCore import PYQT_VERSION_STR, Qt, qVersion
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 
@@ -56,7 +56,7 @@ def versions():
     return {
         'Python': python_version(),
         'PyQt': PYQT_VERSION_STR,
-        'Qt': QT_VERSION_STR,
+        'Qt': qVersion(),
         'Mutagen': mutagen.version_string,
         'PyParsing': get_module_version('pyparsing'),
         'ConfigObj': get_module_version('configobj'),
