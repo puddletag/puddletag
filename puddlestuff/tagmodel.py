@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import time
+from contextlib import contextmanager
 from copy import copy, deepcopy
 from operator import itemgetter
 from os import path
@@ -513,20 +514,20 @@ class TagModel(QAbstractTableModel):
         self.reverseSort = True
         self._savedundolevel = None
 
-        if taginfo is not None:
-            self.taginfo = unique(taginfo)
-            self.sortByFields(self.sortFields, reverse=self.reverseSort)
-        else:
-            self.taginfo = []
-            self.reset()
-        for z in self.taginfo:
-            z.preview = {}
-            z.previewundo = {}
-            z.undo = {}
-            z.color = None
-            z._temp = {}
-            if not hasattr(z, 'library'):
-                z.library = None
+        with self.reset_context():
+            if taginfo is not None:
+                self.taginfo = unique(taginfo)
+                self.sortByFields(self.sortFields, reverse=self.reverseSort)
+            else:
+                self.taginfo = []
+            for z in self.taginfo:
+                z.preview = {}
+                z.previewundo = {}
+                z.undo = {}
+                z.color = None
+                z._temp = {}
+                if not hasattr(z, 'library'):
+                    z.library = None
         self.undolevel = 0
         self._fontSize = QFont().pointSize()
 
@@ -636,19 +637,18 @@ class TagModel(QAbstractTableModel):
             self._undo[self.undolevel][audio] = undo
 
     def applyFilter(self, pattern=None, matchcase=True):
-        self.taginfo = self.taginfo + self._filtered
-        taginfo = self.taginfo
-        if (not pattern) and (not self._filtered):
-            return
-        elif not pattern:
-            self._filtered = []
-            self.reset()
-            return
+        with self.reset_context():
+            self.taginfo = self.taginfo + self._filtered
+            taginfo = self.taginfo
+            if (not pattern) and (not self._filtered):
+                return
+            elif not pattern:
+                self._filtered = []
+                return
 
-        filtered = [(filter_audio(a, pattern), a) for a in self.taginfo]
-        self._filtered = [z[1] for z in filtered if not z[0]]
-        self.taginfo = [z[1] for z in filtered if z[0]]
-        self.reset()
+            filtered = [(filter_audio(a, pattern), a) for a in self.taginfo]
+            self._filtered = [z[1] for z in filtered if not z[0]]
+            self.taginfo = [z[1] for z in filtered if z[0]]
 
     def changeFolder(self, olddir, newdir):
         """Used for changing the directory of all the files in olddir to newdir.
@@ -719,7 +719,7 @@ class TagModel(QAbstractTableModel):
                     tooltip = val
                 return tooltip
             return val
-        elif role == Qt.ItemDataRole.BackgroundColorRole:
+        elif role == Qt.ItemDataRole.BackgroundRole:
             audio = self.taginfo[row]
             if audio.color:
                 return audio.color
@@ -811,7 +811,6 @@ class TagModel(QAbstractTableModel):
         else:
             self.headerdata += [("", "") for z in range(count - column + 1)]
         self.endInsertColumns()
-        # self.modelReset.emit() #Because of the strange behaviour mentioned in reset.
         return True
 
     def reloadTags(self, tags):
@@ -873,10 +872,9 @@ class TagModel(QAbstractTableModel):
             bottom = self.index(self.rowCount() - 1, self.columnCount() - 1)
             self.dataChanged.emit(top, bottom)
         else:
-            top = self.index(0, 0)
-            self.taginfo = taginfo
-            self._filtered = []
-            self.reset()
+            with self.reset_context():
+                self.taginfo = taginfo
+                self._filtered = []
             self.sortByFields(self.sortFields, reverse=self.reverseSort)
             [setattr(z, 'color', None) for z in self.taginfo if z.color]
             self.undolevel = 0
@@ -982,15 +980,13 @@ class TagModel(QAbstractTableModel):
         self.endRemoveRows()
         return True
 
-    def reset(self):
-        # Sometimes, (actually all the time on my box, but it may be different on yours)
-        # if a number files loaded into the model is equal to number
-        # of files currently in the model then the TableView isn't updated.
-        # Why the fuck I don't know, but this signal, intercepted by the table,
-        # updates the view and makes everything work okay.
+    @contextmanager
+    def reset_context(self):
         self.beginResetModel()
-        self.modelReset.emit()
-        self.endResetModel()
+        try:
+            yield None
+        finally:
+            self.endResetModel()
 
     def rowColors(self, rows=None, clear=False):
         """Changes the background of rows to green.
@@ -1063,10 +1059,10 @@ class TagModel(QAbstractTableModel):
         self.headerDataChanged.emit(orientation, section, section)
 
     def setHeader(self, tags):
-        self.headerdata = tags
-        self.headerDataChanged.emit(
-            Qt.Orientation.Horizontal, 0, len(self.headerdata))
-        self.reset()
+        with self.reset_context():
+            self.headerdata = tags
+            self.headerDataChanged.emit(
+                Qt.Orientation.Horizontal, 0, len(self.headerdata))
 
     def setRowData(self, row, tags, undo=False, justrename=False, temp=False):
         """A function to update one row.
@@ -1173,18 +1169,19 @@ class TagModel(QAbstractTableModel):
         elif reverse is None:
             reverse = False
 
-        if files and rows:
-            for field in fields:
-                files.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
-            for index, row in enumerate(rows):
-                self.taginfo[row] = files[index]
-        else:
-            for field in fields:
-                self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
+        with self.reset_context():
+            if files and rows:
+                for field in fields:
+                    files.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
+                for index, row in enumerate(rows):
+                    self.taginfo[row] = files[index]
+            else:
+                for field in fields:
+                    self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=reverse)
 
-        self.reverseSort = reverse
-        self.sortFields = fields
-        self.reset()
+            self.reverseSort = reverse
+            self.sortFields = fields
+
         self.sorted.emit()
 
     def supportedDropActions(self):
@@ -1546,8 +1543,8 @@ class TagTable(QTableView):
             self.model().changeFolder(olddir, newdir)
 
     def clearAll(self):
-        self.model().taginfo = []
-        self.model().reset()
+        with self.model().reset_context():
+            self.model().taginfo = []
         self.dirschanged.emit([])
 
     def _closeEditor(self, editor, hint=QAbstractItemDelegate.EndEditHint.NoHint):
@@ -1931,7 +1928,6 @@ class TagTable(QTableView):
         start_index = model.index(0, 0)
         end_index = model.index(model.rowCount() - 1, model.columnCount() - 1)
         model.dataChanged.emit(start_index, end_index)
-        # model.reset()
         self.selectionChanged()
 
     def load_tags(self, tags):
@@ -1940,7 +1936,7 @@ class TagTable(QTableView):
         self.dirschanged.emit(self.dirs[::])
         self.filesloaded.emit(True)
         sortcolumn = self.horizontalHeader().sortIndicatorSection()
-        QTableView.sortByColumn(self, sortcolumn)
+        QTableView.sortByColumn(self, sortcolumn, Qt.SortOrder.AscendingOrder)
 
     def loadSettings(self):
         (tags, fontsize, rowsize, self.filespec) = loadsettings()
@@ -2081,10 +2077,11 @@ class TagTable(QTableView):
         new_fns = set(z.filepath for z in tags)
         to_remove = set(z for z in sub_files
                         if z.filepath not in new_fns)
-        self.model().taginfo = [z for z in self.model().taginfo if
-                                z not in to_remove]
-        self.fillTable(tags, None)
-        model = self.model().reset()
+        with self.model().reset_context():
+            self.model().taginfo = [z for z in self.model().taginfo if
+                                    z not in to_remove]
+            self.fillTable(tags, None)
+
         self.filesloaded.emit(True)
         if self._restore:
             self.restoreSelection(self._restore)
@@ -2476,9 +2473,9 @@ class TagTable(QTableView):
         else:
             self.model().setTestData(self.selectedRows, data)
 
-    def sortByColumn(self, column):
+    def sortByColumn(self, column, order):
         """Guess"""
-        QTableView.sortByColumn(self, column)
+        QTableView.sortByColumn(self, column, order)
         self.restoreSelection()
 
     def wheelEvent(self, e):

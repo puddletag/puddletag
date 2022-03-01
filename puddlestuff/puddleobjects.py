@@ -20,9 +20,9 @@ from itertools import groupby  # for unique function.
 from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
-    QKeySequence
+    QKeySequence, QScreen
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDesktopWidget, QDialog, QDialogButtonBox, \
+from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
@@ -2157,7 +2157,7 @@ class PicWin(QDialog):
         self.label.clicked.connect(self.close)
 
     def setImage(self, pixmap):
-        maxsize = QDesktopWidget().availableGeometry().size()
+        maxsize = QScreen().availableGeometry().size()
         self.label.setPixmap(pixmap)
         if hasattr(pixmap, 'size'):
             size = pixmap.size()
@@ -2266,7 +2266,7 @@ class PuddleCombo(QWidget):
         hbox = QHBoxLayout()
         hbox.setContentsMargins(0, 0, 0, 0)
         self.combo = QComboBox()
-        self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+        self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
 
         self.remove = QToolButton()
         self.remove.setIcon(get_icon('list-remove', ':/remove.png'))

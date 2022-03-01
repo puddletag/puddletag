@@ -53,7 +53,7 @@ class FilterView(QWidget):
             str(edit.text()))
         go_button.clicked.connect(emit_filter)
         edit.returnPressed.connect(emit_filter)
-        self.combo.combo.activated.connect(
+        self.combo.combo.textActivated.connect(
             lambda i: emit_filter())
 
     def saveSettings(self):
