@@ -1300,9 +1300,9 @@ class TableHeader(QHeaderView):
     saveSelection = pyqtSignal(name='saveSelection')
     headerChanged = pyqtSignal([list, list], name='headerChanged')
 
-    def __init__(self, orientation, tags=None, parent=None):
+    def __init__(self, orientation, parent=None):
         QHeaderView.__init__(self, orientation, parent)
-        if tags is not None: self.tags = tags
+        self.setVisible(True)
         self.setSectionsClickable(True)
         self.setHighlightSections(True)
         self.setSectionsMovable(True)
@@ -1375,8 +1375,7 @@ class TagTable(QTableView):
         self.settingsdialog = ColumnSettings
         if not headerdata:
             headerdata = []
-        header = TableHeader(Qt.Orientation.Horizontal, headerdata, self)
-        header.setSortIndicatorShown(True)
+        header = TableHeader(Qt.Orientation.Horizontal, self)
         self.setSortingEnabled(True)
         self._savedSelection = False
 
@@ -1403,7 +1402,6 @@ class TagTable(QTableView):
         self.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         model = TagModel(headerdata)
-        header.headerChanged.connect(self.setHeaderTags)
         self.setModel(model)
 
         def emitundo(val):
@@ -2340,13 +2338,18 @@ class TagTable(QTableView):
     def setHeaderTags(self, tags, hidden=None):
 
         self.saveSelection()
-        hd = TableHeader(Qt.Orientation.Horizontal, tags, self)
-        hd.setSortIndicatorShown(True)
-        hd.setVisible(True)
-        hd.headerChanged.connect(self.setHeaderTags)
-        self.setHorizontalHeader(hd)
+        old_column_sizes = {val[0]: self.horizontalHeader().sectionSize(idx)
+            for idx,val in enumerate(self.model().headerdata)
+            if self.horizontalHeader().sectionSize(idx) > 0}
+
         self.model().setHeader(tags)
 
+        hd = TableHeader(Qt.Orientation.Horizontal, self)
+        self.setHorizontalHeader(hd)
+        if not self.autoresize:
+            for idx, val in enumerate(self.model().headerdata):
+                if val[0] in old_column_sizes:
+                    hd.resizeSection(idx, old_column_sizes[val[0]])
         if hidden is not None:
             for c in hidden:
                 hd.hideSection(c)
@@ -2354,7 +2357,9 @@ class TagTable(QTableView):
         self.restoreSelection()
 
     def setHorizontalHeader(self, header):
+        header.setModel(self.model())
         QTableView.setHorizontalHeader(self, header)
+        header.headerChanged.connect(self.setHeaderTags)
         header.saveSelection.connect(self.saveSelection)
 
     def writeError(self, text):
