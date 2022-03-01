@@ -445,7 +445,7 @@ class ColumnSettings(HeaderSetting):
             self.tags[row][0] = str(self.textname.text())
             self.tags[row][1] = str(self.tag.currentText())
         checked = [z for z in range(self.listbox.count()) if
-                   self.listbox.item(z).checkState()]
+                   self.listbox.item(z).checkState() == Qt.CheckState.Checked]
         titles = [z[0] for z in self.tags]
         tags = [z[1] for z in self.tags]
         cparser = PuddleConfig()
@@ -468,8 +468,7 @@ class ColumnSettings(HeaderSetting):
 
     def duplicate(self):
         item = self.listbox.currentItem()
-        if item:
-            checked = item.checkState()
+        checked = item.checkState()
         HeaderSetting.duplicate(self)
         self.listbox.currentItem().setCheckState(checked)
 

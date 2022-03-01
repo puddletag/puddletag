@@ -30,7 +30,7 @@ TAG_DISP = "<b>%s: </b> %s, "
 
 
 class AutonumberDialog(QDialog):
-    newtracks = pyqtSignal(int, int, 'Qt::CheckState', int, str, str, 'Qt::CheckState', name='newtracks')
+    newtracks = pyqtSignal(int, int, bool, int, str, str, bool, name='newtracks')
 
     def __init__(self, parent=None, minval=0, numtracks=0,
                  enablenumtracks=False):
@@ -130,8 +130,7 @@ class AutonumberDialog(QDialog):
 
         self._loadSettings()
 
-    def showDirectorySplittingOptions(self, state):
-        is_checked = state == Qt.CheckState.Checked
+    def showDirectorySplittingOptions(self, is_checked: bool):
         for widget in self.custom_numbering_widgets:
             widget.setVisible(is_checked)
 
@@ -161,11 +160,11 @@ class AutonumberDialog(QDialog):
         self.newtracks.emit(
             self._start.value(),
             numtracks,
-            self._restart_numbering.checkState(),
+            self._restart_numbering.isChecked(),
             self._padlength.value(),
             str(self.grouping.text()),
             str(self.output_field.currentText()),
-            self.count_by_group.checkState()
+            self.count_by_group.isChecked(),
         )
 
         self._saveSettings()
@@ -174,17 +173,17 @@ class AutonumberDialog(QDialog):
         cparser = PuddleConfig()
         section = 'autonumbering'
         self._start.setValue(cparser.get(section, 'start', 1))
-        self._separator.setCheckState(
-            cparser.get(section, 'separator', Qt.CheckState.Unchecked))
+        self._separator.setChecked(
+            cparser.get(section, 'separator', False))
         self._padlength.setValue(cparser.get(section, 'padlength', 1))
 
-        self._restart_numbering.setCheckState(
-            cparser.get(section, 'restart', Qt.CheckState.Unchecked))
+        self._restart_numbering.setChecked(
+            cparser.get(section, 'restart', False))
 
-        self.count_by_group.setCheckState(
-            cparser.get(section, 'count_by_group', Qt.CheckState.Unchecked))
+        self.count_by_group.setChecked(
+            cparser.get(section, 'count_by_group', False))
 
-        self.showDirectorySplittingOptions(self._restart_numbering.checkState())
+        self.showDirectorySplittingOptions(self._restart_numbering.isChecked())
 
         self.grouping.setText(cparser.get(section, 'grouping', '%__dirpath%'))
 
@@ -200,10 +199,10 @@ class AutonumberDialog(QDialog):
         cparser = PuddleConfig()
         section = 'autonumbering'
         cparser.set(section, 'start', self._start.value())
-        cparser.set(section, 'separator', self._separator.checkState())
-        cparser.set(section, 'count_by_group', self.count_by_group.checkState())
+        cparser.set(section, 'separator', self._separator.isChecked())
+        cparser.set(section, 'count_by_group', self.count_by_group.isChecked())
         cparser.set(section, 'numtracks', self._numtracks.value())
-        cparser.set(section, 'restart', self._restart_numbering.checkState())
+        cparser.set(section, 'restart', self._restart_numbering.isChecked())
         cparser.set(section, 'padlength', self._padlength.value())
         cparser.set(section, 'grouping', self.grouping.text())
         cparser.set(section, 'output_field', self.output_field.currentText())

@@ -2,6 +2,7 @@ import json
 import os
 import pickle
 from collections import OrderedDict
+from typing import List, Optional
 
 from PyQt6.QtCore import QByteArray, QMimeData, pyqtSignal, QObject
 from PyQt6.QtWidgets import QApplication
@@ -11,7 +12,7 @@ from .. import findfunc
 from .. import helperwin
 from ..puddleobjects import (PuddleConfig, PuddleDock)
 
-from ..audioinfo import PATH, DIRPATH, FILETAGS, tag_to_json, encode_fn, decode_fn
+from ..audioinfo import PATH, DIRPATH, FILETAGS, AbstractTag, tag_to_json, encode_fn, decode_fn
 from .. import musiclib, about as about
 from ..util import split_by_tag, translate, to_string
 from .. import functions
@@ -277,7 +278,9 @@ def _pad(trknum, total, padlen):
     return text
 
 
-def number_tracks(tags, parent, offset, numtracks, restartdirs, padlength, split_field='__dirpath', output_field='track', by_group=False):
+def number_tracks(tags: List[AbstractTag], parent: Optional[QObject], offset: int, numtracks: int, restartdirs: bool,
+                  padlength: int, split_field: str = '__dirpath', output_field: str = 'track',
+                  by_group: bool = False) -> None:
     """Numbers the selected tracks sequentially in the range
     between the indexes.
     The first item of indices is the starting track.

@@ -235,10 +235,7 @@ class SimpleDialog(QDialog):
                 vbox.addWidget(control)
             elif ctype == CHECKBOX:
                 control = QCheckBox(desc)
-                if default:
-                    control.setCheckState(Qt.CheckState.Checked)
-                else:
-                    control.setCheckState(Qt.CheckState.Unchecked)
+                control.setChecked(bool(default))
                 vbox.addWidget(control)
             elif ctype == SPINBOX:
                 control = QSpinBox()
