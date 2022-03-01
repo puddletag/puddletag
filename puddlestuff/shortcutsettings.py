@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PyQt5.QtCore import QEvent, QRect, Qt, pyqtRemoveInputHook
+from PyQt5.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
 from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
 from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
@@ -46,7 +46,7 @@ class ActionEditorWidget(QLabel):
         elif event.key() == Qt.Key.Key_Alt:
             self.modifiers[Qt.Key.Key_Alt] = "Alt"
         else:
-            other = str(QKeySequence(event.key()))
+            other = QKeySequence(event.key()).toString(QKeySequence.SequenceFormat.NativeText)
 
         if other:
             key_string = "+".join(list(self.modifiers.values()) + [str(other), ])
@@ -85,9 +85,9 @@ class ActionEditorWidget(QLabel):
             return
 
         size = self.height() / 2.0
-        rect = QRect(self.width() - size, size * 0.5, size, size)
+        rect = QRectF(self.width() - size, size * 0.5, size, size)
 
-        if rect.contains(event.pos()):
+        if rect.contains(event.localPos()):
             self.clear()
             self.valid = True
             event.accept()
@@ -109,11 +109,11 @@ class ActionEditorWidget(QLabel):
 
             left = self.width() - 4
 
-            painter.drawRect(left - size, size * 0.5, size, size)
-            painter.drawLine(left - size * 0.75, size * 0.75,
-                             left - size * 0.25, size * 1.25)
-            painter.drawLine(left - size * 0.25, size * 0.75,
-                             left - size * 0.75, size * 1.25)
+            painter.drawRect(QRectF(left - size, size * 0.5, size, size))
+            painter.drawLine(QLineF(left - size * 0.75, size * 0.75,
+                             left - size * 0.25, size * 1.25))
+            painter.drawLine(QLineF(left - size * 0.25, size * 0.75,
+                             left - size * 0.75, size * 1.25))
             painter.end()
 
         QLabel.paintEvent(self, event)
