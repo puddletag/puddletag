@@ -22,7 +22,7 @@ def get_font(rect, *text):
     lengths = [(t, QFontMetrics(font).horizontalAdvance(t)) for t in text]
     lowest = max(lengths, key=lambda x: x[1])
     size = 12
-    while QFontMetrics(font).width(lowest[0]) < rect.width() - 30:
+    while QFontMetrics(font).horizontalAdvance(lowest[0]) < rect.width() - 30:
         font.setPointSize(size)
         size += 1
     return font
