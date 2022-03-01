@@ -20,7 +20,7 @@ from itertools import groupby  # for unique function.
 from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
-    QKeySequence, QScreen
+    QKeySequence
 from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
@@ -2157,7 +2157,7 @@ class PicWin(QDialog):
         self.label.clicked.connect(self.close)
 
     def setImage(self, pixmap):
-        maxsize = QScreen().availableGeometry().size()
+        maxsize = self.screen().availableGeometry().size()
         self.label.setPixmap(pixmap)
         if hasattr(pixmap, 'size'):
             size = pixmap.size()
