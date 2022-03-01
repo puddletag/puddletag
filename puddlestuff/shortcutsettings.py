@@ -87,7 +87,7 @@ class ActionEditorWidget(QLabel):
         size = self.height() / 2.0
         rect = QRectF(self.width() - size, size * 0.5, size, size)
 
-        if rect.contains(event.localPos()):
+        if rect.contains(event.position()):
             self.clear()
             self.valid = True
             event.accept()
