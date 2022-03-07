@@ -90,7 +90,7 @@ class DirView(QTreeView):
                                     'Refresh Directory'), self)
 
         index = self.indexAt(event.pos())
-        connect(refresh, lambda: self.model().refresh(index))
+        connect(refresh, lambda: self.model().fetchMore(index))
 
         header = self.header()
         if self.header().isHidden():
@@ -135,7 +135,7 @@ class DirView(QTreeView):
                 while not i.isValid():
                     p = os.path.dirname(p)
                     i = getindex(p)
-                model.refresh(i)
+                model.fetchMore(i)
 
         for d in [z[1] for z in dirs] + selected:
             self.selectIndex(getindex(d))
