@@ -1,6 +1,6 @@
 import os
 
-from PyQt5.QtCore import QDir, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
+from PyQt5.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QFileSystemModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
@@ -14,6 +14,25 @@ from ..translations import translate
 
 qmutex = QMutex()
 
+class DirModel(QFileSystemModel):
+    def __init__(self, parent=None):
+        QFileSystemModel.__init__(self, parent)
+
+        self.setRootPath('/')
+        self.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
+        self.setReadOnly(False)
+
+    def hasChildren(self, parent):
+        """Overridden to only show the expand arrow when there are subfolders."""
+        if parent.flags() & Qt.ItemFlag.ItemNeverHasChildren:
+            return False
+        elif (self.filePath(parent)):
+            return QDirIterator(
+                self.filePath(parent),
+                self.filter() | QDir.Filter.NoDotAndDotDot,
+                QDirIterator.IteratorFlag.NoIteratorFlags
+            ).hasNext()
+        return QFileSystemModel.hasChildren(self, parent)
 
 class DirView(QTreeView):
     """The treeview used to select a directory."""
@@ -26,15 +45,11 @@ class DirView(QTreeView):
         self._load = False  # If True a loadFiles signal is emitted when
         # an index is clicked. See selectionChanged.
 
-        model = QFileSystemModel()
-        model.setRootPath('/')
-        model.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
-        model.setReadOnly(False)
         header = PuddleHeader(Qt.Orientation.Horizontal, self)
         self.setHeader(header)
         self.header().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
-        self.setModel(model)
+        self.setModel(DirModel())
         [self.hideColumn(column) for column in range(1, 4)]
 
         self.header().hide()
