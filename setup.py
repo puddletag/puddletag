@@ -1,33 +1,34 @@
 # -*- coding: utf-8 -*-
-import sys
 
-# Using the setuptools setup doesn't include everything
-# in the manifest.
+from setuptools import setup
 
-if 'sdist' in sys.argv:
-    from distutils.core import setup
-else:
-    try:
-        from setuptools import setup
-    except ImportError:
-        from distutils.core import setup
+def _runtime_dependencies():
+    """ Read the runtime dependencies from the requirements file """
+    with open('requirements.txt') as f:
+        return f.read().splitlines()
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
-
-import puddlestuff
+def _version():
+    """ Read the version from the puddlestuff package """
+    version = {}
+    with open("puddlestuff/__init__.py") as fp:
+        exec(fp.read(), version)
+    return version['version_string']
 
 setup(
     name='puddletag',
-    version=puddlestuff.version_string,
+    version=_version(),
     author='puddletag developers',
     url='https://docs.puddletag.net/',
     download_url='https://github.com/puddletag/puddletag',
     description='Powerful, simple, audio tag editor',
-    packages=['puddlestuff', 'puddlestuff.mainwin',
-              'puddlestuff.libraries', 'puddlestuff.audioinfo',
-              'puddlestuff.tagsources', 'puddlestuff.tagsources.mp3tag',
-              'puddlestuff.masstag', 'puddlestuff.plugins'],
+    packages=['puddlestuff',
+              'puddlestuff.mainwin',
+              'puddlestuff.libraries',
+              'puddlestuff.audioinfo',
+              'puddlestuff.tagsources',
+              'puddlestuff.tagsources.mp3tag',
+              'puddlestuff.masstag',
+              'puddlestuff.plugins'],
     keywords='tagging ogg mp3 apev2 mp4 id3',
     license='GNU General Public License v3 or later (GPLv3+)',
     classifiers=['Development Status :: 5 - Production/Stable',
@@ -38,7 +39,8 @@ setup(
                  'Topic :: Multimedia :: Sound/Audio :: Editors',
                  ],
     scripts=['puddletag'],
-    install_requires=required,
+    python_requires=">=3.7",
+    install_requires=_runtime_dependencies(),
     data_files=[('share/pixmaps/', ['puddletag.png', ]),
                 ('share/applications/', ['puddletag.desktop', ]),
                 ('share/man/man1/', ['puddletag.1', ])]
