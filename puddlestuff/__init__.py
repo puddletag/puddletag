@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
-import os
-from os.path import dirname
 
+from os import path
 
+version_string = '2.1.1'
+
+# This is only used by the github workflow
 _buildid = None
-version = [2, 1, 1]
 if _buildid:
-    version.append(f"post{_buildid}")
-version_string = ".".join(map(str, version))
+    version_string += f".post{_buildid}"
 
 changeset = None
-
-filedir = dirname(__file__)
-git_root = os.path.join(filedir, '..')
-hash_file = os.path.join(git_root, '.git', 'HEAD')
-if os.path.exists(hash_file):
-    try:
-        with open(hash_file) as fo:
-            changeset = fo.read().strip()
-        if changeset.startswith("ref: "):
-            hash_file = os.path.join(git_root, '.git', *(changeset[5:].split('/')))
+if '__file__' in globals():
+    filedir = path.dirname(__file__)
+    git_root = path.join(filedir, '..')
+    hash_file = path.join(git_root, '.git', 'HEAD')
+    if path.exists(hash_file):
+        try:
             with open(hash_file) as fo:
                 changeset = fo.read().strip()
-    except (EnvironmentError, AttributeError):
-        pass
+            if changeset.startswith("ref: "):
+                hash_file = path.join(git_root, '.git', *(changeset[5:].split('/')))
+                with open(hash_file) as fo:
+                    changeset = fo.read().strip()
+        except (EnvironmentError, AttributeError):
+            pass
+
+# for PEP-396 compatibility
+__version__ = version_string
