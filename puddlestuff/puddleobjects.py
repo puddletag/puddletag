@@ -2204,7 +2204,8 @@ class ProgressWin(QDialog):
         cbox = QHBoxLayout()
         cbox.addStretch()
         cbox.addWidget(cancel)
-        cancel.setVisible(showcancel)
+        if not showcancel:
+            cancel.hide()
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.label)
