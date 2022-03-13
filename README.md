@@ -83,7 +83,16 @@ Then:
 ```
 git clone https://github.com/puddletag/puddletag
 cd puddletag
-PYTHONPATH=source/ ./source/puddletag
+./puddletag
+```
+
+Alternatively you can use a [virtual environment](https://docs.python.org/3/library/venv.html), which only requires python and pip to be installed:
+```sh
+git clone 'https://github.com/puddletag/puddletag.git'
+cd 'puddletag'
+python3 -m 'venv' '.'
+bin/pip3 install -r 'requirements.txt'
+bin/python3 'puddletag'
 ```
 </details>
 
