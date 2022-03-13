@@ -1,9 +1,5 @@
 *#*#
 /puddletag-docs/_build
-*.pyc
-source/releases
-source/deb_build
-source/dist/
 *#*
 puddletag-docs/translations
 .idea/
@@ -11,3 +7,13 @@ venv
 rss_temp*.txt
 rss_temp*.html
 rss_temp*.doctree
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+MANIFEST

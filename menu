@@ -1,6 +1,0 @@
-menu = '''?package(puddletag): needs="x11" \\
- section="Applications/Sound" \\
- icon="/usr/share/pixmaps/puddletag.xpm" \\
- title="puddletag" \\
- command="/usr/bin/puddletag"
-'''
