@@ -2,7 +2,7 @@
 pyqt5==5.15.6
 configobj==5.0.6
 mutagen==1.45.1
-pyparsing==3.0.8
+pyparsing==3.0.9
 
 # extra / tag sources
 lxml==4.8.0
