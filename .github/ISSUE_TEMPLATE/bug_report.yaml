@@ -50,6 +50,8 @@ body:
         OS: Ubuntu 20.04
         Python: 13.14.0
         PyQt: 7.6.3
+
+      Tip: This section is automatically filled when using the "Report a problem" function in the "Help" menu of the application.
     value: |-
       Puddletag: 
       OS: 
