@@ -290,6 +290,7 @@ def create_bug_report_issue():
 
     params = urllib.parse.urlencode({
         'template': 'bug_report.yaml',
+        'labels': 'bug',
         'system': '\n'.join(map(lambda x: f'{x[0]}: {x[1]}', version_list)),
     })
     url = f'https://github.com/puddletag/puddletag/issues/new?{params}'
