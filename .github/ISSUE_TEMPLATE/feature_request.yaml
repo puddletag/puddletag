@@ -12,7 +12,7 @@ body:
     description: |
       Describe the problem you are trying to solve. What would it make possible or easier?
 
-      Tip: You can attach images or files by clicking an textarea to highlight it and then dragging files in.
+      Tip: You can attach images or files by clicking an textarea to highlight it and then dragging files in. Put them in a ZIP-Archive if GitHub does not allow to attach them directly.
 - id: solution
   type: textarea
   validations:

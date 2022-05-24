@@ -31,7 +31,7 @@ body:
     description: |
       Describe what you did to run into the problem.
 
-      Be as detailed as possible. Attach a sample-file if useful.
+      Be as detailed as possible. Attach a sample-file if useful, put it in a ZIP-Archive if GitHub does not allow to attach it directly.
     placeholder: |
       1. Open file `sample.mp3`
       2. Click button `Update`
