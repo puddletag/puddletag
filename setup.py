@@ -27,6 +27,7 @@ setup(
     download_url='https://github.com/puddletag/puddletag',
     description='Powerful, simple, audio tag editor',
     long_description=readme(),
+    long_description_content_type='text/markdown',
     packages=['puddlestuff',
               'puddlestuff.mainwin',
               'puddlestuff.libraries',
