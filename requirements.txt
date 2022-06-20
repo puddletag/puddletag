@@ -28,11 +28,11 @@ pyacoustid==1.2.2
     # via -r requirements.in
 pyparsing==3.0.9
     # via -r requirements.in
-pyqt5==5.15.6
+pyqt5==5.15.7
     # via -r requirements.in
 pyqt5-qt5==5.15.2
     # via pyqt5
-pyqt5-sip==12.9.0
+pyqt5-sip==12.11.0
     # via pyqt5
 rapidfuzz==2.0.2
     # via levenshtein
