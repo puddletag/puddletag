@@ -14,6 +14,11 @@ def _version():
         exec(fp.read(), version)
     return version['version_string']
 
+
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
 setup(
     name='puddletag',
     version=_version(),
@@ -21,6 +26,7 @@ setup(
     url='https://docs.puddletag.net/',
     download_url='https://github.com/puddletag/puddletag',
     description='Powerful, simple, audio tag editor',
+    long_description=readme(),
     packages=['puddlestuff',
               'puddlestuff.mainwin',
               'puddlestuff.libraries',
