@@ -51,8 +51,8 @@ MTAG_KEYS = {
 
 
 def convert_entities(s):
-    s = re.sub('&#(\d+);', lambda m: chr(int(m.groups(0)[0])), s)
-    return re.sub('&(\w)+;',
+    s = re.sub(r'&#(\d+);', lambda m: chr(int(m.groups(0)[0])), s)
+    return re.sub(r'&(\w)+;',
                   lambda m: n2cp.get(m.groups(0), '&%s;' % m.groups(0)[0]), s)
 
 
@@ -161,7 +161,7 @@ def parse_func(lineno, line):
 
 
 def parse_ident(line):
-    ident, value = re.search('^\[(\w+)\]=(.*)$', line).groups()
+    ident, value = re.search(r'^\[(\w+)\]=(.*)$', line).groups()
     return ident, value
 
 
@@ -350,7 +350,7 @@ class Mp3TagSource(object):
             keywords = format_value(files[0], self.searchby)
         else:
             keywords = artist
-        keywords = re.sub('\s+', self._separator, keywords)
+        keywords = re.sub(r'\s+', self._separator, keywords)
 
         if self.search_source is None:
             album = self.retrieve(keywords)

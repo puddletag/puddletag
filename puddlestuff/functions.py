@@ -128,7 +128,7 @@ def caps3(text):
     # Capitalizes the first letter of the string and converts
     # the rest to lower case.
     try:
-        start = re.search("\w", text, re.U).start(0)
+        start = re.search(r"\w", text, re.U).start(0)
     except AttributeError:
         return
     return text[:start] + text[start].upper() + text[start + 1:].lower()
@@ -246,7 +246,7 @@ def grtr(text, text1):
 
 
 def to_num(text):
-    match = re.search('[\-\+]?[0-9]+(\.[0-9]+)?', text)
+    match = re.search(r'[\-\+]?[0-9]+(\.[0-9]+)?', text)
     return match.group() if match else ''
 
 
@@ -664,11 +664,11 @@ only as &whole word, check'''
     else:
         matchcase = re.IGNORECASE
     if chars is None:
-        chars = '\,\.\(\) \!\[\]'
+        chars = r'\,\.\(\) \!\[\]'
     replaceword = replaceword.replace('\\', '\\\\')
 
     if whole:
-        pat = re.compile('(^|[%s])%s([%s]|$)' % (chars, word, chars), matchcase)
+        pat = re.compile(r'(^|[%s])%s([%s]|$)' % (chars, word, chars), matchcase)
     else:
         pat = re.compile(word, matchcase)
 
@@ -703,7 +703,7 @@ class RegHelper(object):
     def repl(self, match):
         v = int(match.group()[1:])
         try:
-            if re.search('\$[\w\d_]+\(', self._repl):
+            if re.search(r'\$[\w\d_]+\(', self._repl):
                 return re_escape(self.groups[v], '"\\,')
             else:
                 return self.groups[v]
@@ -739,7 +739,7 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
-        ret = re.sub('(?i)\$\d+', RegHelper(d, repl).repl, repl, 0)
+        ret = re.sub(r'(?i)\$\d+', RegHelper(d, repl).repl, repl, 0)
         return findfunc.parsefunc(ret, m_tags)
 
     def replace_matches(value):

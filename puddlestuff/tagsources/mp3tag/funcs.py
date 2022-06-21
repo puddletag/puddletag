@@ -258,7 +258,7 @@ def saynewline(cursor):
 
 def saynextnumber(cursor):
     try:
-        number = re.search('\d+', cursor.line[cursor.charno:]).group()
+        number = re.search(r'\d+', cursor.line[cursor.charno:]).group()
         cursor.log('Saying number %s\n' % number)
         cursor.cache += number
         cursor.charno += len(number)
@@ -267,7 +267,7 @@ def saynextnumber(cursor):
 
 
 def saynextword(cursor):
-    word = re.search('\w+', cursor.line[cursor.charno:]).group()
+    word = re.search(r'\w+', cursor.line[cursor.charno:]).group()
     cursor.cache += word
     cursor.charno += len(word)
 

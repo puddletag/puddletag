@@ -741,7 +741,7 @@ def translate_filename_pattern(pat):
         else:
             res = res + re.escape(c)
     # return res + '\Z(?ms)'
-    return res + '\Z'
+    return res + r'\Z'
 
 
 def fnmatch(pattern, files, matchcase=False):

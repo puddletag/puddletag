@@ -9,7 +9,7 @@ class UnicodeMod(str):
     than the translate function above."""
 
     def arg(self, value):
-        matches = [z for z in re.finditer("%(\d+)", self)]
+        matches = [z for z in re.finditer(r"%(\d+)", self)]
         if not matches:
             logging.error('Undefined result for arg.')
             return UnicodeMod(self[::])

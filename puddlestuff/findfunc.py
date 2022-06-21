@@ -430,7 +430,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
                 escape = False
             continue
         elif c == '$' and not (escape or (field_open >= 0)):
-            func_name = re.search('^\$(\w+)\(', s[i:])
+            func_name = re.search(r'^\$(\w+)\(', s[i:])
             if not func_name:
                 token.append(c)
                 i += 1

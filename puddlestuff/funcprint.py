@@ -50,7 +50,7 @@ def func(match, d):
                 d[number] = NO
         return d[number]
     except ValueError:
-        number = int(re.search('(\d+)', matchtext).group())
+        number = int(re.search(r'(\d+)', matchtext).group())
         if number >= len(d):
             return ''
         if d[number] is False:
