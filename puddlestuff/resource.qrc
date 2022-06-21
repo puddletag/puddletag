@@ -11,16 +11,12 @@
         <file alias="tagtofile.png">data/tagtofile.png</file>
         <file alias="track.png">data/track.png</file>
         <file alias="open.png">data/open.png</file>
-        <file alias="standard.action">data/caseconversion.action</file>
-        <file alias="caseconversion.action">data/standard.action</file>
+        <file alias="caseconversion.action">data/caseconversion.action</file>
+        <file alias="standard.action">data/standard.action</file>
         <file alias="puddlelogo.png">data/puddlelogo.png</file>
         <file alias="filenew.png">data/filenew.png</file>
         <file alias="edit.png">data/edit.png</file>
-        <file alias="moveup.png">data/moveup.png</file>
-        <file alias="movedown.png">data/movedown.png</file>
         <file alias="remove.png">data/remove.png</file>
-        <file alias="rarrow.png">data/rarrow.png</file>
-        <file alias="larrow.png">data/larrow.png</file>
         <file alias="reload.png">data/reload.png</file>
         <file alias="undo.png">data/undo.png</file>
         <file alias="quickaction.png">data/quickaction.png</file>
@@ -32,7 +28,7 @@
         <file alias="preferences.png">data/preferences.png</file>
         <file alias="shortcuts">data/shortcuts</file>
         <file alias="menus">data/menus</file>
-        <file alias="appicon.png">data/icon.png</file>
+        <file alias="appicon.svg">data/appicon.svg</file>
     </qresource>
 
     <qresource prefix="translations">

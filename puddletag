@@ -284,6 +284,25 @@ def print_info():
         print(translate('Defaults', 'puddletag Version: %s' % version_string))
 
 
+def splashscreen():
+    from PyQt5.QtGui import QFont, QPainter, QPixmap
+    from PyQt5.QtWidgets import QSplashScreen
+    from puddlestuff import version_string
+
+    pixmap = QPixmap(':/puddlelogo.png')
+
+    # Add version
+    painter = QPainter(pixmap)
+    font = QFont()
+    font.setPointSize(14)
+    font.setBold(True)
+    painter.setFont(font)
+    painter.drawText(330, 115, 'v' + version_string)
+    painter.end()
+
+    return QSplashScreen(pixmap)
+
+
 class StdOut(object):
     """Class to redirect stdout/in/err."""
 
@@ -306,8 +325,8 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
-    from PyQt5.QtGui import QPixmap, QIcon
-    from PyQt5.QtWidgets import QApplication, QSplashScreen
+    from PyQt5.QtGui import QIcon
+    from PyQt5.QtWidgets import QApplication
     from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
                               QLibraryInfo, QLocale)
     import logging
@@ -333,12 +352,11 @@ if __name__ == '__main__':
     from puddlestuff.puddletag import MainWin
     from puddlestuff.puddlesettings import load_gen_settings
 
-    app.setWindowIcon(QIcon(":/appicon.png"))
-    pixmap = QPixmap(':/puddlelogo.png')
+    app.setWindowIcon(QIcon(":/appicon.svg"))
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
 
-    splash = QSplashScreen(pixmap)
+    splash = splashscreen()
     splash.show()
     app.processEvents()
     win = MainWin()
