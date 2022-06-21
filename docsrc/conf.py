@@ -119,6 +119,7 @@ html_theme_options = {
         ("Download", "download"),
         ("News", "news"),
         ("Documentation", "docs"),
+        ("Development", "https://github.com/puddletag/puddletag", True),
         ("Issue Tracker", "https://github.com/puddletag/puddletag/issues", True),
         ("Screenshots", "screenshots"),
         ("About", "about"),
