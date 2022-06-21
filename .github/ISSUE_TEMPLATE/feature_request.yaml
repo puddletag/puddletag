@@ -1,0 +1,38 @@
+---
+name: Feature request
+description: Suggest an idea for the application
+labels: ['feature-request']
+body:
+- id: idea
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: What's missing?
+    description: |
+      Describe the problem you are trying to solve. What would it make possible or easier?
+
+      Tip: You can attach images or files by clicking an textarea to highlight it and then dragging files in. Put them in a ZIP-Archive if GitHub does not allow to attach them directly.
+- id: solution
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: Your solution
+    description: |
+      Describe your solution. What needs to change? How do you imagine it will work? Add screenshots if you think it helps.
+- id: alternative
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: Any alternatives?
+    description: |
+      Are there any alternative solutions or approaches you have considered?
+- id: additional
+  type: textarea
+  attributes:
+    label: Anything else?
+    description: |
+      Got some Links or References? Anything that did not fit anywhere above but will give us more context about your idea.
+      Or a cute animal picture, they are always welcome.

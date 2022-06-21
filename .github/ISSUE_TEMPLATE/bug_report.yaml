@@ -1,0 +1,66 @@
+---
+name: Bug report
+description: Report a problem with the application
+labels: ['bug']
+body:
+- id: current
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: Current Behavior
+    description: |
+      Describe what you're experiencing.
+
+      Be as detailed as possible. Run the application from a terminal to see errors and details. Include any error message in its entirety, preferably as text in a code block. Use screenshots if you think it helps.
+
+      Tip: You can attach images or log files by clicking an textarea to highlight it and then dragging files in.
+- id: expected
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: Expected Behavior
+    description: Describe what you expected to happen.
+- id: reproduce
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: Steps To Reproduce
+    description: |
+      Describe what you did to run into the problem.
+
+      Be as detailed as possible. Attach a sample-file if useful, put it in a ZIP-Archive if GitHub does not allow to attach it directly.
+    placeholder: |
+      1. Open file `sample.mp3`
+      2. Click button `Update`
+      3. Run function `format` with parameter `title`
+- id: system
+  type: textarea
+  validations:
+    required: true
+  attributes:
+    label: Information about your system
+    description: |
+      Describe your system and the environment you run the application in.
+
+      Example:
+        Puddletag: 2.0.1
+        OS: Ubuntu 20.04
+        Python: 13.14.0
+        PyQt: 7.6.3
+
+      Tip: This section is automatically filled when using the "Report a problem" function in the "Help" menu of the application.
+    value: |-
+      Puddletag: 
+      OS: 
+      Python: 
+      PyQt: 
+- id: additional
+  type: textarea
+  attributes:
+    label: Anything else?
+    description: |
+      Got some Links or References? Anything that did not fit anywhere above but will give us more context about the problem you are encountering.
+      Or a cute animal picture, they are always welcome.
