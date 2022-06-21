@@ -43,6 +43,7 @@ import unicodedata
 from mutagen.mp3 import HeaderNotFoundError
 from collections import defaultdict
 from functools import partial
+from unidecode import unidecode
 
 import pyparsing
 
@@ -769,6 +770,10 @@ def to_ascii(t_fn):
     cleaned_fn = unicodedata.normalize('NFKD', t_fn).encode('ASCII', 'ignore')
     return ''.join(chr(c) for c in cleaned_fn if chr(c) in VALID_FILENAME_CHARS)
 
+# hack by David Gessel
+def deunicode(text):
+    dutext = unidecode(text)
+    return (dutext)
 
 def remove_dupes(m_text, matchcase=False):
     """Remove duplicate values, "Remove Dupes: $0, Match Case $1"
@@ -1126,7 +1131,8 @@ functions = {
     'update_from_tag': update_from_tag,
     "validate": validate,
     'to_ascii': to_ascii,
-    'to_num': to_num
+    'to_num': to_num,
+    'deunicode': deunicode
 }
 
 no_fields = [filenametotag, load_images, move, remove_except,

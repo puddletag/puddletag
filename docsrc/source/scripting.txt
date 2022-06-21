@@ -33,6 +33,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $caps3(string)
 
    Capitalizes the first letter of the string and converts the rest to lower case.
+
    
 .. describe:: $ceiling(number)
 
@@ -75,6 +76,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $isdigit(x)
 
    Returns true if x is a decimal number.
+
 
 .. describe:: $left(string, n)
 
@@ -154,6 +156,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Generates a pseudo-random number between 0 and 1.
 
+
 .. describe:: $regex(text, regex, repl, matchcase=0)
 
    Replaces all occurrences of **regex** with **repl** in text.
@@ -169,6 +172,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $round()
 
    For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.
+
 
 .. describe:: $replace(string, word, replaceword, matchcase, whole)
 
@@ -193,6 +197,11 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $to_ascii(x)
 
    Converts all unicode chars in x to ASCII eg. 'é' will become 'e'. Characters that can't be converted will be removed.
+
+
+.. describe:: $deunicode(x)
+
+   Converts all unicode chars in x to ASCII using unidecode eg. 'é' will become 'e'.
 
 
 .. describe:: $upper(string)

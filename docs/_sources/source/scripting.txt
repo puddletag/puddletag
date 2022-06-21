@@ -33,6 +33,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $caps3(string)
 
    Capitalizes the first letter of the string and converts the rest to lower case.
+
    
 .. describe:: $ceiling(number)
 
@@ -170,6 +171,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.
 
+
 .. describe:: $replace(string, word, replaceword, matchcase, whole)
 
    Replaces word in string with replaceword. If matchcase is true, a case-sensitive replace is done. Whole is true implies that only whole word matches are replaced.
@@ -193,6 +195,11 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $to_ascii(x)
 
    Converts all unicode chars in x to ASCII eg. 'é' will become 'e'. Characters that can't be converted will be removed.
+
+
+.. describe:: $deunicode(x)
+
+   Converts all unicode chars in x to ASCII using unidecode eg. 'é' will become 'e'.
 
 
 .. describe:: $upper(string)

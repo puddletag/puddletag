@@ -42,3 +42,5 @@ six==1.16.0
     # via configobj
 urllib3==1.26.8
     # via requests
+unidecode==1.0.22
+    # via -r requirements.in
