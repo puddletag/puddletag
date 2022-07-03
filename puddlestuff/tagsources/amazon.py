@@ -223,8 +223,8 @@ def retrieve_album(info, image=MEDIUMIMAGE):
                             'Retrieving using ASIN: %s') % asin)
     else:
         write_log(translate('Amazon',
-                            'Retrieving XML: %1 - %2').arg(
-            info.get('artist', '')).arg(info.get('album', '')))
+                            "Retrieving XML: {} - {}"
+                            ).format(info.get('artist', ''), info.get('album', '')))
     xml = urlopen(url)
 
     if isinstance(info, str):

@@ -13,7 +13,7 @@ BLANK = translate('Defaults', '<blank>')
 KEEP = translate('Defaults', '<keep>')
 VARIOUS = translate('Defaults', 'Various')
 MUSICBRAINZ = translate('Defaults', 'MusicBrainz')
-SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
+SYNTAX_ERROR = translate('Defaults', "SYNTAX ERROR in ${}: {}")
 SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
 
@@ -35,7 +35,7 @@ def trans_strings():
     KEEP = translate('Defaults', '<keep>')
     VARIOUS = translate('Defaults', 'Various Artists')
     MUSICBRAINZ = translate('Defaults', 'MusicBrainz')
-    SYNTAX_ERROR = translate('Defaults', 'SYNTAX ERROR in $%1: %2')
+    SYNTAX_ERROR = translate('Defaults', "SYNTAX ERROR in ${}: {}")
     SYNTAX_ARG_ERROR = translate('Defaults', 'SYNTAX ERROR: %s expects a number at argument %d.')
 
 

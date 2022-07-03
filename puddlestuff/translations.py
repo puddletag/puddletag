@@ -1,60 +1,8 @@
-import logging
-import re
-
 from PyQt5.QtWidgets import QApplication
 
 
-class UnicodeMod(str):
-    """Emulates the arg method of QStrings. Not meant for use anywhere other
-    than the translate function above."""
-
-    def arg(self, value):
-        matches = [z for z in re.finditer(r"%(\d+)", self)]
-        if not matches:
-            logging.error('Undefined result for arg.')
-            return UnicodeMod(self[::])
-        elif len(matches) == 1:
-            lowest = matches[0]
-        else:
-            lowest = sorted(matches, key=lambda m: m.groups())[0]
-        text = lowest.group()
-        if isinstance(text, bytes):
-            text = text.decode('utf8', 'replace')
-        if isinstance(value, bytes):
-            value = value.decode('utf8', 'replace')
-        elif isinstance(value, int):
-            value = str(value)
-        return UnicodeMod(self.replace(lowest.group(), value))
-
-    def __add__(self, other):
-        return UnicodeMod(str.__add__(self, other))
-
-    def __radd__(self, other):
-        return UnicodeMod(other.__add__(str(self)))
-
-    def __mod__(self, other):
-        return UnicodeMod(str.__mod__(self, other))
-
-    def __format__(self, fmt=None):
-        return UnicodeMod(str.__format__(self, fmt))
-
-    def __getitem__(self, item):
-        return UnicodeMod(str.__getitem__(self, item))
-
-    def __rmul__(self, v):
-        return UnicodeMod(str.__rmul__(self, v))
-
-    def __mul__(self, v):
-        return UnicodeMod(str.__mul__(self, v))
-
-
-def translate(k, v):
-    if isinstance(v, bytes):
-        v = v.decode('utf8', 'replace')
-    try:
-        return UnicodeMod(QApplication.translate(k, v))
-    except TypeError:
-        return v
+def translate(context, source_text):
+    return QApplication.translate(context, source_text)
 
 
 def dont_execute():

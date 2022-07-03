@@ -53,17 +53,17 @@ def arglen_error(e, passed, function, to_raise=True):
     message = None
     if args_len > param_len:
         message = translate('Functions',
-                            'At most %1 arguments expected. %2 given.')
+                            "At most {} arguments expected. {} given.")
     elif args_len < param_len:
         default_len = len(function.__defaults__) if \
             function.__defaults__ else 0
         if args_len < (param_len - default_len):
             message = translate('Functions',
-                                'At least %1 arguments expected. %2 given.')
+                                "At least {} arguments expected. {} given.")
     else:
         raise e
     if message is not None:
-        message = message.arg(str(param_len)).arg(str(args_len))
+        message = message.format(str(param_len), str(args_len))
     else:
         raise e
     if to_raise:
@@ -305,8 +305,8 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
         else:
             func = funcname
     except KeyError:
-        raise ParseError(SYNTAX_ERROR.arg(funcname).arg(
-            translate('Defaults', 'function does not exist.')))
+        raise ParseError(SYNTAX_ERROR.format(funcname,
+                                             translate('Defaults', "function does not exist.")))
 
     extra = {} if extra is None else extra
     s_audio = stringtags(m_audio) if s_audio is None else s_audio
@@ -321,11 +321,11 @@ def run_format_func(funcname, arguments, m_audio, s_audio=None, extra=None,
             return ''
         return ret
     except TypeError as e:
-        message = SYNTAX_ERROR.arg(funcname)
-        message = message.arg(arglen_error(e, topass, func, False))
+        message = SYNTAX_ERROR.format(funcname,
+                                      arglen_error(e, topass, func, False))
         raise ParseError(message)
     except FuncError as e:
-        message = SYNTAX_ERROR.arg(funcname).arg(e.message)
+        message = SYNTAX_ERROR.format(funcname, e.message)
         raise ParseError(message)
 
 
@@ -393,7 +393,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             c = s[i]
         except IndexError:  # Parsing's done.
             if in_func:
-                raise ParseError(SYNTAX_ERROR.arg(func[0]).arg(br_error))
+                raise ParseError(SYNTAX_ERROR.format(func[0], br_error))
             if token:
                 tokens.append(replacevars(''.join(token), tags))
             break

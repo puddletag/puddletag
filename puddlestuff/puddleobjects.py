@@ -1558,7 +1558,7 @@ class PicWidget(QWidget):
                    If False, then these functions can be found by right clicking
                    on the picture."""
 
-        self._contextFormat = translate("Artwork Context", '%1/%2')
+        self._contextFormat = translate('Artwork Context', "{}/{}")
 
         QWidget.__init__(self, parent)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -1953,7 +1953,7 @@ class PicWidget(QWidget):
             self._image_type.setCurrentIndex(3)
         self._image_type.blockSignals(False)
         self._currentImage = num
-        self.context = str(self._contextFormat.arg(str(num + 1)).arg(str(len(self.images))))
+        self.context = self._contextFormat.format(str(num + 1), str(len(self.images)))
         self.label.setFrameStyle(QFrame.Shape.NoFrame)
         self.enableButtons()
         # self.resizeEvent()
@@ -1998,8 +1998,10 @@ class PicWidget(QWidget):
             if not filename:
                 return
             if not self.pixmap.save(filename):
-                QMessageBox.critical(self, translate("Defaults", 'Error'),
-                                     translate("Artwork", 'Writing to <b>%1</b> failed.').arg(filename))
+                QMessageBox.critical(self,
+                                     translate('Defaults', "Error"),
+                                     translate('Artwork', "Writing to <b>{}</b> failed.").format(filename)
+                                     )
 
     def setNone(self):
         self.label.setFrameStyle(QFrame.Shape.Box)
@@ -2160,7 +2162,7 @@ class ProgressWin(QDialog):
         self._cached = 0
         self.setModal(True)
         self.setWindowTitle(translate("Progress Dialog", "Please Wait..."))
-        self._format = translate("Progress Dialog", '%1%2 of %3...')
+        self._format = translate('Progress Dialog', "{}{} of {}...")
 
         self.ptext = progresstext
 
@@ -2215,8 +2217,8 @@ class ProgressWin(QDialog):
         self._infunc = True
         if self.ptext:
             self.pbar.setTextVisible(False)
-            self.label.setText(self._format.arg(self.ptext
-                                                ).arg(value).arg(self.pbar.maximum()))
+            self.label.setText(self._format.format(
+                self.ptext, value, self.pbar.maximum()))
         self.pbar.setValue(value)
         self._infunc = False
         if self.pbar.maximum() and value >= self.pbar.maximum():

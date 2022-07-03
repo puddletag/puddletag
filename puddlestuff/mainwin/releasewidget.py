@@ -372,12 +372,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An error occured: {}").format(str(e)))
                 return
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An unhandled error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An unhandled error occured: {}").format(str(e)))
                 return
 
         item.retrieving = True
@@ -468,12 +468,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An error occured: {}").format(str(e)))
                 return None
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An unhandled error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An unhandled error occured: {}").format(str(e)))
                 return None
 
         def finished(val):

@@ -59,21 +59,21 @@ DEFAULT_NAME = translate('Masstagging', 'Default Profile')
 
 POLLING = translate("Masstagging", '<b>Polling: %s</b>')
 MATCH_ARTIST_ALBUM = translate("Masstagging",
-                               'Retrieving matching album. <b>%1 - %2</b>')
+                               'Retrieving matching album. <b>{} - {}</b>')
 MATCH_ARTIST = translate("Masstagging",
-                         'Retrieving matching album. Artist=<b>%1</b>')
+                         'Retrieving matching album. Artist=<b>{}</b>')
 MATCH_ALBUM = translate("Masstagging",
-                        'Retrieving matching album. Album=<b>%1</b>')
+                        'Retrieving matching album. Album=<b>{}</b>')
 MATCH_NO_INFO = translate("Masstagging", 'Retrieving matching album.')
 
 SEARCHING_ARTIST_ALBUM = ':insert' + translate("Masstagging",
-                                               'Starting search for: <br />artist=<b>%1</b> '
-                                               '<br />album=<b>%2</b><br />')
+                                               'Starting search for: <br />artist=<b>{}</b> '
+                                               '<br />album=<b>{}</b><br />')
 SEARCHING_ARTIST = ':insert' + translate("Masstagging",
-                                         'Starting search for: <br />artist=<b>%1</b>'
+                                         'Starting search for: <br />artist=<b>{}</b>'
                                          '<br />album=No album name found.')
 SEARCHING_ALBUM = ':insert' + translate("Masstagging",
-                                        'Starting search for: <br />album=<b>%1</b>'
+                                        'Starting search for: <br />album=<b>{}</b>'
                                         '<br />artist=No artist found.')
 SEARCHING_NO_INFO = ':insert' + translate("Masstagging",
                                           'No artist or album info found in files. Starting search.')
@@ -235,11 +235,11 @@ def get_match_str(info):
         album = to_string(info['album'])
 
     if artist and album:
-        return MATCH_ARTIST_ALBUM.arg(artist).arg(album)
+        return MATCH_ARTIST_ALBUM.format(artist, album)
     elif artist:
-        return MATCH_ARTIST.arg(artist)
+        return MATCH_ARTIST.format(artist)
     elif album:
-        return MATCH_ALBUM.arg(album)
+        return MATCH_ALBUM.format(album)
     else:
         return MATCH_NO_INFO
 
@@ -416,11 +416,11 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
     artist, album = get_artist_album(files)
 
     if artist and album:
-        set_status(SEARCHING_ARTIST_ALBUM.arg(artist).arg(album))
+        set_status(SEARCHING_ARTIST_ALBUM.format(artist, album))
     elif artist:
-        set_status(SEARCHING_ARTIST.arg(artist))
+        set_status(SEARCHING_ARTIST.format(artist))
     elif album:
-        set_status(SEARCHING_ALBUM.arg(album))
+        set_status(SEARCHING_ALBUM.format(album))
     else:
         set_status(SEARCHING_NO_INFO)
 

@@ -27,14 +27,14 @@ from puddlestuff.translations import translate
 from puddlestuff.util import escape_html, isempty, to_string
 
 CALCULATE_MSG = translate('AcoustID', "Calculating ID")
-RETRIEVE_MSG = translate('AcoustID', "Retrieving AcoustID data: %1 of %2.")
-RETRIEVE_MB_MSG = translate('AcoustID', "Retrieving MB album data: %1")
-FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: %1")
-WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: %1")
-SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: %1")
-SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: %1 to %2 of %3.")
+RETRIEVE_MSG = translate('AcoustID', "Retrieving AcoustID data: {} of {}.")
+RETRIEVE_MB_MSG = translate('AcoustID', "Retrieving MB album data: {}")
+FP_ERROR_MSG = translate('AcoustID', "Error generating fingerprint: {}")
+WEB_ERROR_MSG = translate('AcoustID', "Error retrieving data: {}")
+SUBMIT_ERROR_MSG = translate('AcoustID', "Error submitting data: {}")
+SUBMIT_MSG = translate('AcoustID', "Submitting data to AcoustID: {} to {} of {}.")
 FOUND_ID_MSG = translate('AcoustID', "Found AcoustID in file.")
-FILE_MSG = translate('AcoustID', 'File #%1: %2')
+FILE_MSG = translate('AcoustID', "File #{}: {}")
 
 API_KEY = "gT8GJxhO"
 
@@ -216,7 +216,7 @@ def retrieve_album_info(album, tracks):
         return album, tracks
     msg = '<b>%s - %s</b>' % tuple(map(escape_html,
                                        (album['artist'], album['album'])))
-    msg = RETRIEVE_MB_MSG.arg(msg)
+    msg = RETRIEVE_MB_MSG.format(msg)
     write_log(msg)
     set_status(msg)
 
@@ -306,19 +306,19 @@ class AcoustID(object):
                     write_log(CALCULATE_MSG)
                     dur, fp = (None, None)
 
-                write_log(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
-                set_status(RETRIEVE_MSG.arg(i + 1).arg(fns_len))
+                write_log(RETRIEVE_MSG.format(i + 1, fns_len))
+                set_status(RETRIEVE_MSG.format(i + 1, fns_len))
 
                 data, fp = match("gT8GJxhO", fn.filepath, fp, dur)
                 write_log(translate('AcoustID', "Parsing Data"))
 
                 info = parse_lookup_result(data, fp=fp)
             except acoustid.FingerprintGenerationError as e:
-                write_log(FP_ERROR_MSG.arg(str(e)))
+                write_log(FP_ERROR_MSG.format(str(e)))
                 continue
             except acoustid.WebServiceError as e:
-                set_status(WEB_ERROR_MSG.arg(str(e)))
-                write_log(WEB_ERROR_MSG.arg(str(e)))
+                set_status(WEB_ERROR_MSG.format(str(e)))
+                write_log(WEB_ERROR_MSG.format(str(e)))
                 break
 
             if hasattr(info, 'items'):
@@ -347,7 +347,7 @@ class AcoustID(object):
                 disp_fn = audioinfo.decode_fn(fn.filepath)
             except AttributeError:
                 disp_fn = fn['__path']
-            write_log(FILE_MSG.arg(i + 1).arg(disp_fn))
+            write_log(FILE_MSG.format(i + 1, disp_fn))
 
             try:
                 fp = id_in_tag(fn)
@@ -367,8 +367,7 @@ class AcoustID(object):
                 data.append(info)
 
                 if len(data) > 9 or i == fns_len - 1:
-                    msg = SUBMIT_MSG.arg(i - len(data) + 2)
-                    msg = msg.arg(i + 1).arg(fns_len)
+                    msg = SUBMIT_MSG.format(i - len(data) + 2, i + 1, fns_len)
                     write_log(msg)
                     set_status(msg)
                     acoustid.submit(API_KEY, self.__user_key, data)
@@ -376,12 +375,12 @@ class AcoustID(object):
 
             except acoustid.FingerprintGenerationError as e:
                 traceback.print_exc()
-                write_log(FP_ERROR_MSG.arg(str(e)))
+                write_log(FP_ERROR_MSG.format(str(e)))
                 continue
             except acoustid.WebServiceError as e:
                 traceback.print_exc()
-                set_status(SUBMIT_ERROR_MSG.arg(str(e)))
-                write_log(SUBMIT_ERROR_MSG.arg(str(e)))
+                set_status(SUBMIT_ERROR_MSG.format(str(e)))
+                write_log(SUBMIT_ERROR_MSG.format(str(e)))
                 break
 
     def retrieve(self, info):

@@ -376,10 +376,11 @@ class InitWidget(QWidget):
             return QuodLibet(dbpath)
         except (IOError, OSError) as e:
             raise MusicLibError(0, translate(
-                "QuodLibet", '%1 (%2)').arg(e.strerror).arg(e.filename))
+                'QuodLibet', "{} ({})").format(e.strerror, e.filename))
         except (pickle.UnpicklingError, EOFError):
-            raise MusicLibError(0, translate("QuodLibet",
-                                             '%1 is an invalid QuodLibet music library file.').arg(dbpath))
+            raise MusicLibError(0, translate('QuodLibet',
+                                             "{} is an invalid QuodLibet music library file."
+                                             ).format(dbpath))
 
 
 name = 'Quodlibet'

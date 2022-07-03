@@ -554,9 +554,9 @@ def update_status(enable=True):
         newfilename = functions.move(tag, pattern, tag, state=state.copy())
         if newfilename:
             newfilename = newfilename['__path']
-            emit('tfstatus', translate("Status Bar",
-                                       "New Filename: <b>%1</b>").arg(
-                decode_fn(newfilename)))
+            emit('tfstatus', translate('Status Bar',
+                                       "New Filename: <b>{}</b>"
+                                       ).format(decode_fn(newfilename)))
         else:
             emit('tfstatus', '<b>No change</b>')
     except findfunc.ParseError as e:
@@ -566,9 +566,9 @@ def update_status(enable=True):
         newfolder = functions.tag_dir(tag.tags, pattern, tag, state)
         if newfolder:
             newfolder = newfolder['__dirpath']
-            dirstatus = translate("Dir Renaming",
-                                  "Rename: <b>%1</b> to: <i>%2</i>")
-            dirstatus = dirstatus.arg(tag[DIRPATH]).arg(decode_fn(newfolder))
+            dirstatus = translate('Dir Renaming',
+                                  "Rename: <b>{}</b> to: <i>{}</i>"
+                                  ).format(tag[DIRPATH], decode_fn(newfolder))
             emit('renamedirstatus', dirstatus)
     except findfunc.ParseError as e:
         emit('renamedirstatus', bold_error % e.message)

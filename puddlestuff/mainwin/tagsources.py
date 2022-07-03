@@ -894,11 +894,11 @@ class MainWin(QWidget):
                     return tag_source_search(self.curSource, group, files)
             except RetrievalError as e:
                 return translate("Tag Sources",
-                                 'An error occured: %1').arg(str(e))
+                                 "An error occured: {}").format(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 'An unhandled error occurred: %1').arg(str(e))
+                                 "An unhandled error occurred: {}").format(str(e))
 
         self.searchButton.setEnabled(False)
         t = PuddleThread(search, self)
@@ -919,11 +919,11 @@ class MainWin(QWidget):
             except SubmissionError as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 'An error occured: %1').arg(str(e))
+                                 "An error occured: {}").format(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 'An unhandled error occurred: %1').arg(str(e))
+                                 "An unhandled error occurred: {}").format(str(e))
 
             return translate("Tag Sources", "Submission completed.")
 

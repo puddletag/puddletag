@@ -26,38 +26,41 @@ ALBUM = 'album'
 def rename_error_msg(e, filename):
     if isinstance(e, DirRenameError):
         traceback.print_exc()
-        m = translate("Defaults", '<p>An error occured while '
-                                  'renaming the directory <b>%1</b> to <i>%2</i>.</p>'
-                                  '<p>Reason: <b>%3</b><br />'
-                                  'File used: %4</p>')
-        m = m.arg(e.oldpath).arg(e.newpath).arg(e.strerror)
-        return m.arg(filename)
+        m = translate('Defaults',
+                      "<p>An error occured while renaming the directory <b>{}</b> to <i>{}</i>.</p>"
+                      "<p>Reason: <b>{}</b><br />"
+                      "File used: {}</p>"
+                      ).format(e.oldpath, e.newpath, e.strerror, filename)
+        return m
 
     elif isinstance(e, RenameError):
         traceback.print_exc()
-        m = translate("Defaults", '<p>An error occured while '
-                                  'renaming the file <b>%1</b> to <i>%2</i>.</p>'
-                                  '<p>Reason: <b>%3</b></p>')
-        return m.arg(e.oldpath).arg(e.newpath).arg(e.strerror)
+        m = translate('Defaults',
+                      "<p>An error occured while renaming the file <b>{}</b> to <i>{}</i>.</p>"
+                      "<p>Reason: <b>{}</b></p>"
+                      ).format(e.oldpath, e.newpath, e.strerror)
+        return m
     elif isinstance(e, PermissionError):
         traceback.print_exc()
-        m = translate("Defaults",
-                      '<p>An error occured while writing to <b>%1</b>.</p>'
-                      '<p>Reason: <b>%2</b>.</p>'
-                      '<p>(<i>See %3 for debug info.</i>)</p>')
-        m = m.arg(filename)
-        m = m.arg(str(e) if e.strerror is None else e.strerror)
-        m = m.arg(LOG_FILENAME)
+        m = translate('Defaults',
+                      "<p>An error occured while writing to <b>{}</b>.</p>"
+                      "<p>Reason: <b>{}</b>.</p>"
+                      "<p>(<i>See {} for debug info.</i>)</p>"
+                      ).format(filename,
+                               str(e) if e.strerror is None else e.strerror,
+                               LOG_FILENAME,
+                               )
         return m
     elif isinstance(e, EnvironmentError):
         traceback.print_exc()
-        m = translate("Defaults",
-                      '<p>An error occured while writing to <b>%1</b>.</p>'
-                      '<p>Reason: <b>%2</b> ('
-                      '<i>See %3 for debug info.</i>)</p>')
-        m = m.arg(filename)
-        m = m.arg(str(e) if e.strerror is None else e.strerror)
-        m = m.arg(LOG_FILENAME)
+        m = translate('Defaults',
+                      "<p>An error occured while writing to <b>{}</b>.</p>"
+                      "<p>Reason: <b>{}</b> ("
+                      "<i>See {} for debug info.</i>)</p>"
+                      ).format(filename,
+                               str(e) if e.strerror is None else e.strerror,
+                               LOG_FILENAME,
+                               )
         return m
 
 

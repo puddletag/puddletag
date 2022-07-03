@@ -524,18 +524,20 @@ class MusicBrainz(object):
                                    solr_escape(artist_id), limit=100, own=True)
                 return parse_album_search(urlopen(url))
             except RetrievalError as e:
-                msg = translate("MusicBrainz",
-                                '<b>Error:</b> While retrieving %1: %2')
-                write_log(msg.arg(artist_id).arg(escape(e)))
+                msg = translate('MusicBrainz',
+                                "<b>Error:</b> While retrieving {}: {}"
+                                ).format(artist_id, escape(e))
+                write_log(msg)
                 raise
         elif s.startswith(':b'):
             r_id = s[len(':b'):].strip()
             try:
                 return [self.retrieve(r_id)]
             except RetrievalError as e:
-                msg = translate("MusicBrainz",
-                                "<b>Error:</b> While retrieving Album ID %1 (%2)")
-                write_log(msg.arg(r_id).arg(escape(e)))
+                msg = translate('MusicBrainz',
+                                "<b>Error:</b> While retrieving Album ID {} ({})"
+                                ).format(r_id, escape(e))
+                write_log(msg)
                 raise
         else:
             try:
@@ -577,9 +579,10 @@ class MusicBrainz(object):
                                         "Found album id %s in tracks. Retrieving") % album_id)
                     return [retrieve_album(album_id)]
                 except RetrievalError as e:
-                    msg = translate("MusicBrainz",
-                                    "<b>Error:</b> While retrieving Album ID %1 (%2)")
-                    write_log(msg.arg(album_id).arg(escape(e)))
+                    msg = translate('MusicBrainz',
+                                    "<b>Error:</b> While retrieving Album ID {} ({})"
+                                    ).format(album_id, escape(e))
+                    write_log(msg)
 
         try:
             xml = urlopen(search_album(album, artist, limit))
