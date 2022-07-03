@@ -1062,7 +1062,7 @@ class ActionWindow(QDialog):
 
         win = CreateAction(self, actions, example=self.example)
         win.setWindowTitle(
-            translate('Actions', "Edit Action: %s") % name)
+            translate('Actions', "Edit Action: {}").format(name))
 
         win.show()
         dupebuddy = partial(self.duplicateBuddy, name)

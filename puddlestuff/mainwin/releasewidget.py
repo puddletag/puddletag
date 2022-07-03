@@ -17,7 +17,7 @@ from ..util import pprint_tag, to_string
 CHECKEDFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
-RETRIEVED_ALBUMS = translate("Tag Sources", 'Retrieved Albums (sorted by %s)')
+RETRIEVED_ALBUMS = translate("Tag Sources", "Retrieved Albums (sorted by {})")
 
 default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
                        '[%__numtracks%], "")'
@@ -422,7 +422,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if orientation == Qt.Orientation.Horizontal and \
                 role == Qt.ItemDataRole.DisplayRole:
-            ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
+            ret = RETRIEVED_ALBUMS.format(' / '.join(self.sortOrder))
 
             return ret
 

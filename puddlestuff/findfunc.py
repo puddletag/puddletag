@@ -266,7 +266,7 @@ def get_function_arguments(funcname, func, arguments, reserved, fmt=True, *dicts
                 if float(arg) or float(arg) == 0:
                     topass[param] = Decimal(arg)
             except ValueError:
-                raise ParseError(SYNTAX_ARG_ERROR % (funcname, no + 1))
+                raise ParseError(SYNTAX_ARG_ERROR.format(funcname, no + 1))
         else:
             if isinstance(arg, str) and fmt:
                 topass[param] = replacevars(arg, *dicts)

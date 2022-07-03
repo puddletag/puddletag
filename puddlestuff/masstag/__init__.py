@@ -57,7 +57,7 @@ EXISTING_ONLY = 'field_exists'
 DEFAULT_PATTERN = '%artist% - %album%/%track% - %title%'
 DEFAULT_NAME = translate('Masstagging', 'Default Profile')
 
-POLLING = translate("Masstagging", '<b>Polling: %s</b>')
+POLLING = translate("Masstagging", "<b>Polling: {}</b>")
 MATCH_ARTIST_ALBUM = translate("Masstagging",
                                'Retrieving matching album. <b>{} - {}</b>')
 MATCH_ARTIST = translate("Masstagging",
@@ -78,23 +78,23 @@ SEARCHING_ALBUM = ':insert' + translate("Masstagging",
 SEARCHING_NO_INFO = ':insert' + translate("Masstagging",
                                           'No artist or album info found in files. Starting search.')
 
-RESULTS_FOUND = translate("Masstagging", '<b>%d</b> results found.')
+RESULTS_FOUND = translate("Masstagging", '<b>{}</b> results found.')
 NO_RESULTS_FOUND = translate("Masstagging", '<b>No results were found.</b>')
 ONE_RESULT_FOUND = translate("Masstagging", '<b>One</b> result found.')
 
 MATCHING_ALBUMS_FOUND = translate("Masstagging",
-                                  '<b>%d</b> possibly matching albums found.')
+                                  "<b>{}</b> possibly matching albums found.")
 ONE_MATCHING_ALBUM_FOUND = translate("Masstagging",
                                      '<b>One</b> possibly matching album found.')
 NO_MATCHES = translate("Masstagging",
-                       'No matches found for tag source <b>%s</b>')
+                       "No matches found for tag source <b>{}</b>")
 
 RETRIEVING_NEXT = translate("Masstagging",
                             'Previously retrieved result does not match. '
                             'Retrieving next matching album.')
 
 RECHECKING = translate("Masstagging",
-                       '<br />Rechecking with results from <b>%s</b>.<br />')
+                       '<br />Rechecking with results from <b>{}</b>.<br />')
 
 VALID_FOUND = translate("Masstagging",
                         '<br />Valid matches were found for the album.')
@@ -430,7 +430,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
         if flag.stop:
             break
         if len(results) > 1:
-            set_status(RESULTS_FOUND % len(results))
+            set_status(RESULTS_FOUND.format(len(results)))
         elif not results:
             set_status(NO_RESULTS_FOUND)
         else:
@@ -441,7 +441,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
             continue
 
         if len(matches) > 1:
-            set_status(MATCHING_ALBUMS_FOUND % len(matches))
+            set_status(MATCHING_ALBUMS_FOUND.format(len(matches)))
         else:
             set_status(ONE_MATCHING_ALBUM_FOUND)
 
@@ -459,7 +459,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
                 break
 
         if result is None:
-            set_status(NO_MATCHES % tsp.tag_source.name)
+            set_status(NO_MATCHES.format(tsp.tag_source.name))
             not_found.append(tsp)
         else:
             found.append(tsp)
@@ -467,7 +467,7 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
     ret = []
 
     if not_found and found:
-        set_status(RECHECKING % found[0].tag_source.name)
+        set_status(RECHECKING.format(found[0].tag_source.name))
         audios_copy = []
         for t, m in zip(list(map(deepcopy, files)), found[0].result.merged):
             audios_copy.append(combine_tracks(t, m))
@@ -588,14 +588,14 @@ class MassTagProfile(object):
 
         for profile in profiles:
             profile.clear_results()
-            set_status(POLLING % profile.tag_source.name)
+            set_status(POLLING.format(profile.tag_source.name))
             try:
                 results = profile.search(files)
                 if regexps and rxp_album:
                     profile.clear_results()
                     set_status(translate('Masstagging',
-                                         'Retrying search with album name: <b>%s</b>') %
-                               rxp_album)
+                                         "Retrying search with album name: <b>{}</b>"
+                                         ).format(rxp_album))
                     rxp_results = profile.search(changed_files)
                     results.extend(rxp_results)
                     profile.clear_results()

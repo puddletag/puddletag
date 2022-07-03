@@ -75,9 +75,9 @@ def rename(oldpath, newpath):
         try:
             os.makedirs(os.path.dirname(newpath))
         except EnvironmentError as e:
-            e.strerror = translate('Errors', "Couldn't create "
-                                             "intermediate directory: %s")
-            e.strerror %= decode_fn(os.path.dirname(newpath))
+            e.strerror = translate('Errors',
+                                   "Couldn't create intermediate directory: {}"
+                                   ).format(decode_fn(os.path.dirname(newpath)))
             logging.exception(e.strerror)
             raise RenameError(e, oldpath, newpath)
     try:
@@ -168,7 +168,7 @@ def m_to_string(v):
 
 
 def pprint_tag(tags, fmt="<b>%s</b>: %s<br />", show_read_only=False):
-    image_tr = translate('Defaults', '%s images')
+    image_tr = translate('Defaults', "{} images")
     if tags:
         if isinstance(tags, str):
             return tags
@@ -186,7 +186,7 @@ def pprint_tag(tags, fmt="<b>%s</b>: %s<br />", show_read_only=False):
         items = sorted(items, key=itemgetter(0))
 
         if '__image' in tags:
-            items.insert(0, ('__image', image_tr % len(tags['__image'])))
+            items.insert(0, ('__image', image_tr.format(len(tags['__image']))))
 
         return "".join(map(map_func, items))
 
