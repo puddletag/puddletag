@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-audioread==2.1.9
+audioread==3.0.0
     # via
     #   -r requirements.in
     #   pyacoustid
