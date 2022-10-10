@@ -22,7 +22,7 @@ levenshtein==0.19.3
     # via -r requirements.in
 lxml==4.9.1
     # via -r requirements.in
-mutagen==1.45.1
+mutagen==1.46.0
     # via -r requirements.in
 pyacoustid==1.2.2
     # via -r requirements.in
