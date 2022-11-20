@@ -239,6 +239,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
 
 def urlopen(url):
+    global __reference_time
     url = iri_to_uri(url)
     request = urllib.request.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
