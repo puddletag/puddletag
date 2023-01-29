@@ -199,7 +199,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
 .. describe:: $deunicode(x)
 
-   Converts all unicode chars in x to ASCII using unidecode eg. 'é' will become 'e'.
+   Converts all unicode chars in x to ASCII using transliteration, e.g. 'abc äéç цы キウ 藏經' will become 'abc aec tsy kiu Cang Jing '.
 
 
 .. describe:: $upper(string)
