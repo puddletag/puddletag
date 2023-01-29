@@ -65,6 +65,7 @@ def versions():
         'audioread': get_module_version('audioread'),
         'Levenshtein': get_module_version('Levenshtein'),
         'Chromaprint': get_module_version('chromaprint'),
+        'Unidecode': get_module_version('Unidecode'),
     }
 
 
