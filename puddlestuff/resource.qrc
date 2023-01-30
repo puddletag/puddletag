@@ -39,6 +39,7 @@
         <file alias="puddletag_pt_BR.qm">../translations/puddletag_pt_BR.qm</file>
         <file alias="puddletag_cs.qm">../translations/puddletag_cs.qm</file>       
         <file alias="puddletag_es_ES.qm">../translations/puddletag_es_ES.qm</file>
+        <file alias="puddletag_sv.qm">../translations/puddletag_sv.qm</file>
     </qresource>
 
 </RCC>
