@@ -28,7 +28,7 @@ pyacoustid==1.2.2
     # via -r requirements.in
 pyparsing==3.0.9
     # via -r requirements.in
-pyqt5==5.15.7
+pyqt5==5.15.8
     # via -r requirements.in
 pyqt5-qt5==5.15.2
     # via pyqt5
