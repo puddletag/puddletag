@@ -90,4 +90,4 @@ if __name__ == '__main__':
     print(_confirmations)
     win = Settings()
     win.show()
-    app.exec_()
+    app.exec()

@@ -171,7 +171,7 @@ def check_copy_data(data):
         noImgBtn = msgbox.addButton(translate("Messages", "Copy without images."),
                                     QMessageBox.ButtonRole.ApplyRole)
 
-        msgbox.exec_()
+        msgbox.exec()
 
         if msgbox.clickedButton() is yesBtn:
             return 0
@@ -492,7 +492,7 @@ def search_replace(parent=None):
 def show_about(parent=None):
     win = about.AboutPuddletag(parent)
     win.setModal(True)
-    win.exec_()
+    win.exec()
 
 
 def tag_to_file():

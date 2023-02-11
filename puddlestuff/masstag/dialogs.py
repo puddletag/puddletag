@@ -700,4 +700,4 @@ if __name__ == '__main__':
     win = MassTagEdit(sources)
     win.loadProfiles()
     win.show()
-    app.exec_()
+    app.exec()

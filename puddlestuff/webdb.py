@@ -962,4 +962,4 @@ if __name__ == '__main__':
     status['selectedfiles'] = exampletags.tags
     win = MainWin(status)
     win.show()
-    app.exec_()
+    app.exec()

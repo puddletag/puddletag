@@ -708,4 +708,4 @@ if __name__ == "__main__":
     app.setApplicationName("puddletag")
     qb = SettingsDialog()
     qb.show()
-    app.exec_()
+    app.exec()

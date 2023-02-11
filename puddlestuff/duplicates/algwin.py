@@ -472,4 +472,4 @@ if __name__ == "__main__":
     qb.show()
     QApplication.processEvents()
     qb.loadDupes(lib, algos, ['%artist% - %title%', '%title%'])
-    app.exec_()
+    app.exec()
