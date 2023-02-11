@@ -23,9 +23,9 @@ import os
 from .. import audioinfo
 
 FILENAME = audioinfo.FILENAME
-from PyQt5.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
-from PyQt5.QtGui import QIntValidator
-from PyQt5.QtCore import QSettings
+from PyQt6.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
+from PyQt6.QtGui import QIntValidator
+from PyQt6.QtCore import QSettings
 
 from mutagen.id3 import TCON
 

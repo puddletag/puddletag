@@ -1,8 +1,9 @@
 import os
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QFrame, QHBoxLayout, QInputDialog, QLabel, \
     QPushButton, QVBoxLayout
+from PyQt6.QtGui import QAction
 
 from ...puddlesettings import add_config_widget
 from ...puddletag import add_shortcuts, status

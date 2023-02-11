@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QTimer, pyqtSignal
-from PyQt5.QtWidgets import (QWidget, QLineEdit, QPushButton)
+from PyQt6.QtCore import QTimer, pyqtSignal
+from PyQt6.QtWidgets import (QWidget, QLineEdit, QPushButton)
 
 from ..constants import BOTTOMDOCK
 from ..puddleobjects import create_buddy, PuddleCombo

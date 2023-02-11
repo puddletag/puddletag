@@ -3,7 +3,7 @@ import os
 import sys
 from os.path import dirname, join
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 from .translations import translate
 

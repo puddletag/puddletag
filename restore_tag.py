@@ -4,7 +4,8 @@ import pickle
 import traceback
 
 import mutagen
-from PyQt5.QtWidgets import QAction, QFileDialog
+from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtGui import QAction
 from puddlestuff.plugins import status
 
 last_fn = {'fn': '~'}

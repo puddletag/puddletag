@@ -17,12 +17,13 @@ from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
 
-from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
-from PyQt5.QtCore import QFile, QIODevice
-from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
-    QKeySequence
-from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDialog, QDialogButtonBox, \
+from PyQt6.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt6.QtCore import QFile, QIODevice
+from PyQt6.QtGui import QIcon, QBrush, QPixmap, QImage, \
+    QKeySequence, QAction
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem 
+from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
@@ -71,6 +72,17 @@ def keycmp(modifier):
     else:
         return 0
 
+def keycmp_qt6(modifier):
+    if modifier == Qt.KeyboardModifier.ControlModifier:
+        return 4
+    elif modifier == Qt.KeyboardModifier.ShiftModifier:
+        return 3
+    elif modifier == Qt.KeyboardModifier.AltModifier:
+        return 2
+    elif modifier == Qt.KeyboardModifier.MetaModifier:
+        return 1
+    else:
+        return 0
 
 try:
     permutations = itertools.permutations
@@ -107,7 +119,7 @@ for i in range(1, len(mod_keys)):
         mod = keys[0]
         for key in keys[1:]:
             mod = mod | key
-        modifiers[int(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
+        modifiers[keycmp_qt6(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp_qt6) if mod_keys[key])
 
 mod_keys = set((Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Meta, Qt.Key.Key_Alt))
 
@@ -862,7 +874,7 @@ def progress(func, pstring, maximum, threadfin=None):
 
         focused = QApplication.focusWidget()
         if focused:
-            focusedpar = focused.parentWidget()
+            focusedpar = focused.parent()
         else:
             focusedpar = None
 

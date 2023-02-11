@@ -1,6 +1,6 @@
 import tags
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QInputDialog, QPushButton, QVBoxLayout, QWidget
 
 from .. import audioinfo
 from ..audioinfo.util import (PATH,

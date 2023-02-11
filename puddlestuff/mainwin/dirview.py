@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QFileSystemModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
+from PyQt6.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
+from PyQt6.QtGui import QDesktopServices, QAction, QFileSystemModel
+from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
@@ -78,7 +78,7 @@ class DirView(QTreeView):
         msg = translate('Previews', 'Some files have uncommited previews. '
                                     'Changes will be lost once you load a directory. <br />'
                                     'Do you still want to load a new directory?<br />')
-        if not has_previews(parent=self.parentWidget(), msg=msg):
+        if not has_previews(parent=self.parent(), msg=msg):
             return False
         select = self._select
         self._select = False
@@ -367,7 +367,7 @@ class DirViewWidget(QWidget):
 
     def _focusDir(self, dir_path):
         """Focuses the Filesystem component on the given path """
-        self.parentWidget().show()
+        self.parent().show()
         self.dirview.focusDir(dir_path)
 
 

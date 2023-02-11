@@ -1,10 +1,10 @@
 import os
-import sip
 import sys
 
-from PyQt5.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtGui import QBrush
-from PyQt5.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6 import sip
+from PyQt6.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtGui import QBrush
+from PyQt6.QtWidgets import QApplication, QComboBox, QCompleter, QDialog, QGroupBox, QHBoxLayout, \
     QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from ..audioinfo import INFOTAGS
