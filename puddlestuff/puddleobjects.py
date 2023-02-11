@@ -119,7 +119,7 @@ for i in range(1, len(mod_keys)):
         mod = keys[0]
         for key in keys[1:]:
             mod = mod | key
-        modifiers[keycmp_qt6(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
+        modifiers[keycmp_qt6(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp_qt6) if mod_keys[key])
 
 mod_keys = set((Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Meta, Qt.Key.Key_Alt))
 
