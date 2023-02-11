@@ -214,7 +214,8 @@ class Playlist(QWidget):
         self.extinfo = QCheckBox(translate("Playlist Settings", '&Write extended info'), self)
         self.extinfo.stateChanged.connect(self.extpattern.setEnabled)
         self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo', 1, True)))
-        self.extpattern.setEnabled(self.extinfo.checkState())
+        #self.extpattern.setEnabled(self.extinfo.checkState())
+        self.extpattern.setEnabled(self.extinfo.isChecked())
 
         self.reldir = QCheckBox(translate("Playlist Settings", 'Entries &relative to working directory'))
         self.reldir.setCheckState(inttocheck(cparser.load('playlist', 'reldir', 0, True)))
