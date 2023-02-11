@@ -8,10 +8,10 @@ from operator import itemgetter
 from os import path
 from subprocess import Popen
 
-from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
+from PyQt6.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
-from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+from PyQt6.QtGui import QColor, QFont, QDrag, QPalette, QAction
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QVBoxLayout
 
@@ -1312,7 +1312,7 @@ class TableHeader(QHeaderView):
             translate("Column Settings", "&Select Columns"))
         settings.triggered.connect(self.setTitles)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
     def mousePressEvent(self, event):
         if event.button == Qt.MouseButton.RightButton:
@@ -1622,7 +1622,7 @@ class TagTable(QTableView):
 
     def contextMenuEvent(self, event):
         if self.contextMenu:
-            self.contextMenu.exec_(event.globalPos())
+            self.contextMenu.exec(event.globalPos())
 
     def _isEmpty(self):
         if self.model().rowCount() <= 0:
@@ -1763,7 +1763,7 @@ class TagTable(QTableView):
         drag = QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropaction = drag.exec_()
+        dropaction = drag.exec()
         if dropaction == Qt.DropAction.MoveAction:
             if not os.path.exists(filenames[0]):
                 self.deleteSelected(False, False, False)

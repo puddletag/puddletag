@@ -1,7 +1,7 @@
 import logging
 import re
 
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 
 class UnicodeMod(str):

@@ -3,8 +3,8 @@ import os
 import pickle
 from collections import OrderedDict
 
-from PyQt5.QtCore import QByteArray, QMimeData, pyqtSignal, QObject
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QByteArray, QMimeData, pyqtSignal, QObject
+from PyQt6.QtWidgets import QApplication
 
 from .. import actiondlg
 from .. import findfunc

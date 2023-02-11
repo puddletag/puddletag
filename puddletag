@@ -244,7 +244,7 @@ def load_language(qapp, langfile=None):
     elif langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-                        QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         print("Locale: " + str(QLocale.system().name()))
         translators.append(translator)
 
@@ -285,8 +285,8 @@ def print_info():
 
 
 def splashscreen():
-    from PyQt5.QtGui import QFont, QPainter, QPixmap
-    from PyQt5.QtWidgets import QSplashScreen
+    from PyQt6.QtGui import QFont, QPainter, QPixmap
+    from PyQt6.QtWidgets import QSplashScreen
     from puddlestuff import version_string
 
     pixmap = QPixmap(':/puddlelogo.png')
@@ -325,9 +325,9 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
-    from PyQt5.QtGui import QIcon
-    from PyQt5.QtWidgets import QApplication
-    from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
+    from PyQt6.QtGui import QIcon
+    from PyQt6.QtWidgets import QApplication
+    from PyQt6.QtCore import (pyqtRemoveInputHook, QTranslator,
                               QLibraryInfo, QLocale)
     import logging
     from configobj import ConfigObj
@@ -375,4 +375,4 @@ if __name__ == '__main__':
     elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
         if win._lastdir and os.path.exists(win._lastdir[0]):
             win.openDir(win._lastdir[0], False)
-    app.exec_()
+    app.exec()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
+from PyQt6.QtWidgets import (QCheckBox, QLabel, QHBoxLayout, QSpinBox,
                              QVBoxLayout, QWidget)
 
 from .translations import translate

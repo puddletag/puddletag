@@ -1,7 +1,8 @@
 from functools import partial
 
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QAction, QMenu
+from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtWidgets import QMenu
+from PyQt6.QtGui import QAction
 
 from ..puddleobjects import PuddleConfig
 
@@ -114,7 +115,8 @@ def create_actions(parent):
 
 
 def set_sort_options(options):
-    parent = _sort_action.parentWidget()
+    #parent = _sort_action.parentWidget()
+    parent = _sort_action.parent()
     menu = QMenu(parent)
     sort_actions = []
     options = [[z.strip() for z in option.split(',')] for option in options]
