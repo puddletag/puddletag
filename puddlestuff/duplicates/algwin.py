@@ -1,10 +1,10 @@
 import os
 import sys
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QDoubleValidator, \
-    QIcon
-from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QDoubleValidator, \
+    QIcon, QAction
+from PyQt6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
     QWidget
 
@@ -129,8 +129,8 @@ class DupeTree(QTreeWidget):
 
         s = progress(what, 'Checking ', len(artists))
         self.toplevel.connect(self._addItem)
-        if self.parentWidget():
-            s(self.parentWidget())
+        if self.parent():
+            s(self.parent())
         else:
             s(self)
 

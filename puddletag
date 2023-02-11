@@ -126,7 +126,7 @@ def check_libs():
               'http://code.google.com/p/configobj/'),
              ('pyparsing', '(python3-pyparsing or python3-parsing in most distros)',
               'http://pyparsing.wikispaces.com/'),
-             ('PyQt5', '(python3-pyqt5 usually)',
+             ('PyQt6', '(python3-pyqt6 usually)',
               'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 
     found = True
@@ -148,7 +148,7 @@ def check_libs():
 
     try:
         if not found:
-            from PyQt5.QtWidgets import QApplication, QMessageBox
+            from PyQt6.QtWidgets import QApplication, QMessageBox
             app = QApplication([])
             QMessageBox.critical(None, 'puddletag', '\n'.join(errors))
     except:

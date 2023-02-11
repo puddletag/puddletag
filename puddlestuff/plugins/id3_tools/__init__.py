@@ -1,7 +1,8 @@
 from functools import partial
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QApplication, QMessageBox, QAction
+from PyQt6.QtCore import QObject
+from PyQt6.QtWidgets import QApplication, QMessageBox
+from PyQt6.QtGui import QAction
 
 from .. import connect_shortcut, status
 from ... import audioinfo

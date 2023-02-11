@@ -1683,8 +1683,8 @@ class TagTable(QTableView):
                 self.selectionChanged()
 
         s = progress(func, translate("Table", 'Deleting '), len(selectedRows), fin)
-        if self.parentWidget():
-            s(self.parentWidget())
+        if self.parent():
+            s(self.parent())
         else:
             s(self)
 
@@ -1911,7 +1911,7 @@ class TagTable(QTableView):
         else:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
                          lambda: self._loadFilesDone(tags, append, filepath))
-        s(self.parentWidget())
+        s(self.parent())
 
     def _loadFilesDone(self, tags, append, filepath):
         self.fillTable(tags, append)
@@ -2366,7 +2366,7 @@ class TagTable(QTableView):
         is updated as soon as it tries to show it. So a setDataError
         signal is emitted with the text that can be used to show
         text in the status bar or something."""
-        singleerror(self.parentWidget(), text)
+        singleerror(self.parent(), text)
         self.setDataError.emit(text)
 
     def saveSettings(self):
@@ -2461,7 +2461,7 @@ class TagTable(QTableView):
 
     def showProperties(self):
         f = self.selectedTags[0]
-        win = Properties(f.info, self.parentWidget())
+        win = Properties(f.info, self.parent())
         win.show()
 
     def setPlayCommand(self, command):

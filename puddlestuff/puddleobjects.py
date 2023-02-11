@@ -79,7 +79,7 @@ def keycmp_qt6(modifier):
         return 3
     elif modifier == Qt.KeyboardModifier.AltModifier:
         return 2
-    elif modifier == Qt.Modifier.META:
+    elif modifier == Qt.KeyboardModifier.MetaModifier:
         return 1
     else:
         return 0
@@ -874,7 +874,7 @@ def progress(func, pstring, maximum, threadfin=None):
 
         focused = QApplication.focusWidget()
         if focused:
-            focusedpar = focused.parentWidget()
+            focusedpar = focused.parent()
         else:
             focusedpar = None
 
