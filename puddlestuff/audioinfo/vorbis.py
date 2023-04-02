@@ -173,6 +173,8 @@ def vorbis_tag(base, name):
             if audio is None:
                 return
 
+            if audio.tags is not None and audio.tags.vendor:
+                tags['__vendorstring'] = audio.tags.vendor
             for key in audio:
                 if key == COVER_KEY:
                     self.images = list(map(base64_to_image, audio[key]))
