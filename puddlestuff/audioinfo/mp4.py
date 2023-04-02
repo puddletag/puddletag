@@ -371,6 +371,7 @@ class Tag(util.MockTag):
                                 field_value.append(v)
                             else:
                                 field_value.append(str(v))
+                        tags[field] = field_value
                     except UnicodeDecodeError:
                         self.__errors.add(field)
 
