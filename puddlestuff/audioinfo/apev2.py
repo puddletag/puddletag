@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError
+from mutagen.apev2 import APEv2File, APEValue, BINARY, APENoHeaderError, TEXT
 from mutagen.monkeysaudio import MonkeysAudio, MonkeysAudioHeaderError
 from mutagen.musepack import Musepack, MusepackHeaderError
 from mutagen.wavpack import WavPack, WavPackHeaderError
@@ -22,7 +22,7 @@ class DefaultHeaderError(RuntimeError): pass
 
 def bin_to_pic(value, covertype=3):
     ret = {}
-    start = value.find('\x00')
+    start = value.find(b'\x00')
     ret[util.DESCRIPTION] = value[:start].decode('utf8', 'replace')
 
     ret[util.DATA] = value[start + 1:]
@@ -41,7 +41,7 @@ def pic_to_bin(pic):
     key = 'Cover Art (Back)' if covertype == 4 else 'Cover Art (Front)'
 
     if data:
-        return {key: APEValue(''.join((desc, '\x00', data)), BINARY)}
+        return {key: APEValue(b''.join((desc, b'\x00', data)), BINARY)}
     return {}
 
 
@@ -231,7 +231,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 except AttributeError:
                     pass
             toremove = [z for z in audio if z
-                        not in newtag and audio[z].kind == 0]
+                        not in newtag and audio[z].kind in (TEXT, BINARY)]
             for z in toremove:
                 del (audio[z])
             audio.tags.update(newtag)
