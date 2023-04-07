@@ -37,7 +37,6 @@ import decimal
 import math
 import os
 import re
-import string
 import traceback
 import unicodedata
 from mutagen.mp3 import HeaderNotFoundError
@@ -760,14 +759,12 @@ Match &Case, check"""
 
 replace_regex = replaceWithReg
 
-VALID_FILENAME_CHARS = "'-_.!()[]{}&~+^ %s%s%s" % (
-    string.ascii_letters, string.digits, os.path.sep)
-
 
 # Contributed by Erik Reckase
 def to_ascii(t_fn):
-    cleaned_fn = unicodedata.normalize('NFKD', t_fn).encode('ASCII', 'ignore')
-    return ''.join(chr(c) for c in cleaned_fn if chr(c) in VALID_FILENAME_CHARS)
+    cleaned_fn = unicodedata.normalize('NFKD', t_fn)
+    cleaned_fn = cleaned_fn.encode('ascii', 'ignore').decode('ascii')
+    return ''.join(c for c in cleaned_fn if c.isprintable())
 
 
 def remove_dupes(m_text, matchcase=False):
