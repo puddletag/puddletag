@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import string
 import sys
 from copy import copy, deepcopy
 from functools import partial
@@ -941,11 +940,6 @@ class ActionWindow(QDialog):
             self._examplelabel.show()
         else:
             self._examplelabel.hide()
-
-    def removeSpaces(self, text):
-        for char in string.whitespace:
-            text = text.replace(char, '')
-        return text.lower()
 
     def saveMacro(self, macro, filename=None):
         cparser = PuddleConfig()

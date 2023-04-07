@@ -522,12 +522,6 @@ def re_escape(rex):
     return escaped
 
 
-def removeSpaces(text):
-    for char in string.whitespace:
-        text = text.replace(char, '')
-    return text.lower()
-
-
 def replacevars(pattern, *dicts):
     """Replaces occurrences of %key% with the d[key] in the string pattern.
 
