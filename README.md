@@ -76,7 +76,7 @@ _support needed, open an issue if interested in working on it_
 <summary><b>Source code</b></summary>
 First, you need to install the dependencies; this step is different depending on the distribution; on Debian you can run:
 
-`apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg`
+`apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg python3-unidecode`
 
 Then:
 

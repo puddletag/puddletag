@@ -192,7 +192,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
 .. describe:: $to_ascii(x)
 
-   Converts all unicode chars in x to ASCII eg. 'é' will become 'e'. Characters that can't be converted will be removed.
+   Converts all unicode chars in x to ASCII. It uses transliteration so 'abc äéç цы キウ 藏經' will become 'abc aec tsy kiu Cang Jing'. Characters that can't be converted will be removed.
 
 
 .. describe:: $upper(string)

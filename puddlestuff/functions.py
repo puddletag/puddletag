@@ -38,10 +38,10 @@ import math
 import os
 import re
 import traceback
-import unicodedata
 from mutagen.mp3 import HeaderNotFoundError
 from collections import defaultdict
 from functools import partial
+from unidecode import unidecode
 
 import pyparsing
 
@@ -761,9 +761,10 @@ replace_regex = replaceWithReg
 
 
 # Contributed by Erik Reckase
+# Improved by David Gessel
 def to_ascii(t_fn):
-    cleaned_fn = unicodedata.normalize('NFKD', t_fn)
-    cleaned_fn = cleaned_fn.encode('ascii', 'ignore').decode('ascii')
+    """Converts all unicode chars to ASCII."""
+    cleaned_fn = unidecode(t_fn, 'ignore')
     return ''.join(c for c in cleaned_fn if c.isprintable())
 
 

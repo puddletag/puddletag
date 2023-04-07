@@ -60,6 +60,7 @@ def versions():
         'Mutagen': mutagen.version_string,
         'PyParsing': get_module_version('pyparsing'),
         'ConfigObj': get_module_version('configobj'),
+        'Unidecode': get_module_version('unidecode'),
         'lxml': get_module_version('lxml'),
         'pyacoustid': get_module_version('pyacoustid'),
         'audioread': get_module_version('audioread'),
