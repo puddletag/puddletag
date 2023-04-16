@@ -48,7 +48,7 @@ import pyparsing
 
 from . import audioinfo
 from .audioinfo import encode_fn
-from .puddleobjects import (safe_name, fnmatch, natsort_case_key)
+from .puddleobjects import (safe_name, fnmatch, natural_sort_key)
 
 PATH = audioinfo.PATH
 DIRPATH = audioinfo.DIRPATH
@@ -905,16 +905,12 @@ def sort_field(m_text, order='Ascending', matchcase=False):
 &Order, combo, Ascending, Descending,
 Match &Case, check"""
     text = m_text
-    if not matchcase:
-        key = natsort_case_key
-    else:
-        key = None
+
     if isinstance(text, str):
         return text
-    if order == 'Ascending':
-        return sorted(text, key=key)
-    else:
-        return sorted(text, key=key, reverse=True)
+    return sorted(text,
+                  key=lambda x: natural_sort_key(x, case_insensitive=not matchcase),
+                  reverse=order != 'Ascending')
 
 
 def split_by_sep(m_text, sep):

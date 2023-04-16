@@ -16,6 +16,7 @@ from functools import partial
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
+from typing import List, Union
 
 from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtCore import QFile, QIODevice
@@ -619,24 +620,25 @@ def unique(seq, stable=False):
     return result
 
 
-class compare:
-    "Natural sorting class."
-
-    def natsort_case_key(self, s):
-        "Used internally to get a tuple by which s is sorted."
-        convert = lambda text: int(text) if text.isdigit() else text.lower()
-        return [convert(c) for c in re.split('([0-9]+)', s)]
-
-
-natsort_case_key = compare().natsort_case_key
-
-
 # https://stackoverflow.com/a/16090640
-def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+def natural_sort_key(s: Union[str, List[str]], case_insensitive=True, _nsre=re.compile('([0-9]+)')) \
+        -> List[Union[str, int]]:
+    """Return a sort-key for natural sorting the given string.
+
+    Case-insensitive means uppercase- and lowercase-characters are treated equally.
+    Natural means sorting numbers by their numeric value, e.g. 100 comes after 99.
+    """
     if isinstance(s, list):
         s = s[0]
-    return [int(text) if text.isdigit() else text.lower()
-            for text in re.split(_nsre, s)]
+
+    def convert(v: str) -> Union[str, int]:
+        if v.isdigit():
+            return int(v)
+        if case_insensitive:
+            return v.lower()
+        return v
+
+    return [convert(part) for part in re.split(_nsre, s)]
 
 
 def dupes(l, method=None):
