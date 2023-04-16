@@ -18,7 +18,8 @@ from io import StringIO
 from itertools import groupby  # for unique function.
 from typing import List, Union
 
-from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
+    QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
@@ -620,25 +621,21 @@ def unique(seq, stable=False):
     return result
 
 
-# https://stackoverflow.com/a/16090640
-def natural_sort_key(s: Union[str, List[str]], case_insensitive=True, _nsre=re.compile('([0-9]+)')) \
-        -> List[Union[str, int]]:
+def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> QCollatorSortKey:
     """Return a sort-key for natural sorting the given string.
 
     Case-insensitive means uppercase- and lowercase-characters are treated equally.
     Natural means sorting numbers by their numeric value, e.g. 100 comes after 99.
+    It also takes the global user preferences into account (e.g. LC_COLLATE).
     """
     if isinstance(s, list):
         s = s[0]
 
-    def convert(v: str) -> Union[str, int]:
-        if v.isdigit():
-            return int(v)
-        if case_insensitive:
-            return v.lower()
-        return v
-
-    return [convert(part) for part in re.split(_nsre, s)]
+    collator = QCollator(QLocale.system().collation())
+    collator.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive if case_insensitive
+                                else Qt.CaseSensitivity.CaseSensitive)
+    collator.setNumericMode(True)
+    return collator.sortKey(s)
 
 
 def dupes(l, method=None):
