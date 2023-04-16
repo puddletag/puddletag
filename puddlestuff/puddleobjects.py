@@ -631,9 +631,9 @@ def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> QCollat
     if isinstance(s, list):
         s = s[0]
 
-    collator = QCollator(QLocale.system().collation())
-    collator.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive if case_insensitive
-                                else Qt.CaseSensitivity.CaseSensitive)
+    locale = QLocale.system().collation() if case_insensitive else QLocale.c()
+    collator = QCollator(locale)
+    collator.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
     collator.setNumericMode(True)
     return collator.sortKey(s)
 
