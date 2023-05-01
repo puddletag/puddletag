@@ -7,7 +7,7 @@
     "command": "text_file_to_tag", 
     "control": "mainwin", 
     "enabled": "filesselected", 
-    "icon_name": "textfiletotag"
+    "icon_name": "puddletag.textfiletotag"
   }, 
   "shortcut12": {
     "name": "&Format", 
@@ -56,7 +56,7 @@
   }, 
   "shortcut10": {
     "name": "Autonumbering &Wizard...", 
-    "icon_name": "autonumber",
+    "icon_name": "puddletag.autonumber",
     "command": "auto_numbering", 
     "control": "mainwin", 
     "enabled": "filesselected", 
@@ -112,7 +112,7 @@
     "command": "rename_dirs", 
     "control": "mainwin", 
     "enabled": "filesselected", 
-    "icon_name": "renamedirs",
+    "icon_name": "puddletag.renamedirs",
     "status": "renamedirstatus"
   }, 
   "shortcut18": {
@@ -155,7 +155,7 @@
     "shortcut": "Ctrl+T", 
     "command": "filename_to_tag", 
     "control": "mainwin", 
-    "icon_name": "filetotag",
+    "icon_name": "puddletag.filetotag",
     "enabled": "filesselected", 
     "tooltip": "Convert filename to tag using the pattern.", 
     "status": "ftstatus"
@@ -326,7 +326,7 @@
     "enabled": "filesselected", 
     "command": "tag_to_file", 
     "shortcut": "Ctrl+F", 
-    "icon_name": "tagtofile",
+    "icon_name": "puddletag.tagtofile",
     "status": "tfstatus"
   }, 
   "shortcut26": {
@@ -363,6 +363,6 @@
     "control": "Filesystem",
     "enabled": "filesselected",
     "tooltip": "Focuses the current file's parent folder in the Filesystem view",
-    "icon_name": "focustree"
+    "icon_name": "puddletag.focustree"
   }
 }
