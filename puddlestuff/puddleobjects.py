@@ -468,20 +468,18 @@ HORIZONTAL = 1
 VERTICAL = 0
 
 
-def get_icon(name: Optional[str] = None, backup: Optional[str] = None) -> QIcon:
+def get_icon(name: Optional[str] = None, fallback: Optional[str] = None) -> QIcon:
     """Return the icon with the given name from the current icon theme.
 
-    If the theme does not contain such icon, fallback to the provided backup.
-    If no backup is given, returns an empty icon.
+    If the theme does not contain such icon, fallback to built-in png of
+    the same name. The fallback file can be overriden by providing a filename
+    as the second argument.
     """
-    if not name and not backup:
+    if not name and not fallback:
         return QIcon()
-    elif not name and backup:
-        return QIcon(backup)
-    try:
-        return QIcon.fromTheme(name, QIcon(backup))
-    except AttributeError:
-        return QIcon(backup)
+
+    fallback = fallback or f'{name}.png'
+    return QIcon.fromTheme(name, QIcon(f':/{fallback}'))
 
 
 def get_languages(dirs=None):
@@ -1274,10 +1272,10 @@ class ListButtons(QVBoxLayout):
     def __init__(self, parent=None):
         QVBoxLayout.__init__(self, parent)
         self.addButton = QToolButton()
-        self.addButton.setIcon(get_icon('list-add', ':/filenew.png'))
+        self.addButton.setIcon(get_icon('list-add'))
         self.addButton.setToolTip(translate("List Buttons", 'Add'))
         self.removeButton = QToolButton()
-        self.removeButton.setIcon(get_icon('list-remove', ':/remove.png'))
+        self.removeButton.setIcon(get_icon('list-remove'))
         self.removeButton.setToolTip(translate("List Buttons", 'Remove'))
         self.removeButton.setShortcut('Delete')
         self.moveupButton = QToolButton()
@@ -1287,10 +1285,10 @@ class ListButtons(QVBoxLayout):
         self.movedownButton.setArrowType(Qt.ArrowType.DownArrow)
         self.movedownButton.setToolTip(translate("List Buttons", 'Move Down'))
         self.editButton = QToolButton()
-        self.editButton.setIcon(get_icon('document-edit', ':/edit.png'))
+        self.editButton.setIcon(get_icon('document-edit'))
         self.editButton.setToolTip(translate("List Buttons", 'Edit'))
         self.duplicateButton = QToolButton()
-        self.duplicateButton.setIcon(get_icon('edit-copy', ':/duplicate.png'))
+        self.duplicateButton.setIcon(get_icon('edit-copy'))
         self.duplicateButton.setToolTip(translate("List Buttons", 'Duplicate'))
         self.copyButton = QToolButton()
         self.copyButton.setToolTip(translate("List Buttons", 'Copy to clipboard'))
@@ -1732,7 +1730,7 @@ class PicWidget(QWidget):
             self.removepic = listbuttons.removeButton
             self.editpic = listbuttons.editButton
             self.savepic = QToolButton()
-            self.savepic.setIcon(get_icon(None, ':/save.png'))
+            self.savepic.setIcon(get_icon('document-save'))
             self.savepic.setIconSize(QSize(16, 16))
             self.copypic = listbuttons.copyButton
             self.pastepic = listbuttons.pasteButton
@@ -2279,7 +2277,7 @@ class PuddleCombo(QWidget):
         self.combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
 
         self.remove = QToolButton()
-        self.remove.setIcon(get_icon('list-remove', ':/remove.png'))
+        self.remove.setIcon(get_icon('list-remove'))
         self.remove.setToolTip(translate("Combo Box", 'Remove current item.'))
         self.remove.setIconSize(QSize(13, 13))
         self.remove.clicked.connect(self.removeCurrent)

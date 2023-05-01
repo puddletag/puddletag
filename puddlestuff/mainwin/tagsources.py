@@ -624,7 +624,7 @@ class MainWin(QWidget):
 
         # The Preferences/Configuration button (beside the Tag Source selector)
         preferences = QToolButton()
-        preferences.setIcon(get_icon(None, ':/preferences.png'))
+        preferences.setIcon(get_icon('configure'))
         preferences.setToolTip(translate("Tag Sources", 'Configure'))
         self.__preferencesButton = preferences
         connect(preferences, 'clicked', self.configure)
