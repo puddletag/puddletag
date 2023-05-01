@@ -6,7 +6,6 @@ import traceback
 from copy import deepcopy
 
 from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
@@ -16,7 +15,7 @@ from ..constants import (TEXT, COMBO, SPINBOX,
                         CHECKBOX, RIGHTDOCK, CONFIGDIR)
 from ..findfunc import FuncError
 from ..functions import replace_regex
-from ..puddleobjects import (create_buddy, winsettings,
+from ..puddleobjects import (create_buddy, get_icon, winsettings,
                             ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
 from ..tagsources import (tagsources, status_obj, set_useragent,
                          write_log, RetrievalError, mp3tag, SubmissionError)
@@ -625,7 +624,7 @@ class MainWin(QWidget):
 
         # The Preferences/Configuration button (beside the Tag Source selector)
         preferences = QToolButton()
-        preferences.setIcon(QIcon(':/preferences.png'))
+        preferences.setIcon(get_icon(None, ':/preferences.png'))
         preferences.setToolTip(translate("Tag Sources", 'Configure'))
         self.__preferencesButton = preferences
         connect(preferences, 'clicked', self.configure)

@@ -16,7 +16,7 @@ from functools import partial
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
-from typing import List, Union
+from typing import List, Optional, Union
 
 from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
     QThread, QTimer, Qt, pyqtSignal
@@ -468,7 +468,12 @@ HORIZONTAL = 1
 VERTICAL = 0
 
 
-def get_icon(name, backup):
+def get_icon(name: Optional[str] = None, backup: Optional[str] = None) -> QIcon:
+    """Return the icon with the given name from the current icon theme.
+
+    If the theme does not contain such icon, fallback to the provided backup.
+    If no backup is given, returns an empty icon.
+    """
     if not name and not backup:
         return QIcon()
     elif not name and backup:
@@ -1727,7 +1732,7 @@ class PicWidget(QWidget):
             self.removepic = listbuttons.removeButton
             self.editpic = listbuttons.editButton
             self.savepic = QToolButton()
-            self.savepic.setIcon(QIcon(':/save.png'))
+            self.savepic.setIcon(get_icon(None, ':/save.png'))
             self.savepic.setIconSize(QSize(16, 16))
             self.copypic = listbuttons.copyButton
             self.pastepic = listbuttons.pasteButton

@@ -6,7 +6,7 @@ import urllib.parse
 from functools import partial
 
 from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtGui import QDesktopServices, QIcon
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
@@ -313,7 +313,7 @@ def help_menu(parent):
     issue_link = QAction(translate("Menus", '&Report a problem'), parent)
     connect(issue_link, create_bug_report_issue)
 
-    about_icon = get_icon('help-about', QIcon())
+    about_icon = get_icon('help-about')
     about = QAction(about_icon,
                     translate("Menus", 'About puddletag'), parent)
     connect(about, partial(mainfuncs.show_about, parent))
