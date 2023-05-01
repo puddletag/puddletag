@@ -30,11 +30,11 @@
         <file alias="quickopen-function.png">data/quickopen-function.png</file>
         <file alias="view-media-playlist.png">data/view-media-playlist.png</file>
         <file alias="view-refresh.png">data/view-refresh.png</file>
+        <file alias="view-sidetree.png">data/view-sidetree.png</file>
 
         <!-- non-standard icons -->
         <file alias="puddletag.autonumber.png">data/puddletag.autonumber.png</file>
         <file alias="puddletag.filetotag.png">data/puddletag.filetotag.png</file>
-        <file alias="puddletag.focustree.png">data/puddletag.focustree.png</file>
         <file alias="puddletag.renamedirs.png">data/puddletag.renamedirs.png</file>
         <file alias="puddletag.tagtofile.png">data/puddletag.tagtofile.png</file>
         <file alias="puddletag.textfiletotag.png">data/puddletag.textfiletotag.png</file>

@@ -363,6 +363,6 @@
     "control": "Filesystem",
     "enabled": "filesselected",
     "tooltip": "Focuses the current file's parent folder in the Filesystem view",
-    "icon_name": "puddletag.focustree"
+    "icon_name": "view-sidetree"
   }
 }
