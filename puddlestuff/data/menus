@@ -1,6 +1,6 @@
 {
   "info": {
-    "version": "31"
+    "version": "32"
   }, 
   "shortcuts": {
     "__dirpath/album/track": "Alt+Meta+1"
