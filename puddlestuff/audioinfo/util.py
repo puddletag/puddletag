@@ -1,6 +1,5 @@
 import base64
 import calendar
-import imghdr
 import logging
 import os
 import sys
@@ -11,6 +10,7 @@ from errno import ENOENT
 from os import path, stat
 
 import mutagen
+from PyQt5.QtCore import QMimeDatabase
 
 from .constants import *
 
@@ -258,14 +258,13 @@ def getinfo(filename):
 
 
 def get_mime(data):
-    """Retrieve the mimetype of the image, data (a bytestring).
+    """Retrieve the mimetype of the image data (a bytes object).
 
     Returns either 'image/jpeg', 'image/png' or ''."""
-    mime = imghdr.what(None, data)
-    if mime:
-        return 'image/' + mime
-    else:
-        return ''
+    mime = QMimeDatabase().mimeTypeForData(data)
+    if not mime.isDefault():
+        return mime.name()
+    return ''
 
 
 def get_total(tag):
@@ -443,8 +442,7 @@ def path_to_string(value):
 
 _image_defaults = {
     DESCRIPTION: lambda i: i.get(DESCRIPTION, ''),
-    MIMETYPE: lambda i: get_mime(i[DATA]) if MIMETYPE in i else \
-        get_mime(i[DATA]),
+    MIMETYPE: lambda i: i.get(MIMETYPE, None) or get_mime(i[DATA]),
     IMAGETYPE: lambda i: i.get(IMAGETYPE, DEFAULT_COVER),
     DATA: lambda i: i[DATA]}
 

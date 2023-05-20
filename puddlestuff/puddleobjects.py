@@ -32,7 +32,7 @@ from configobj import ConfigObjError
 
 from . import audioinfo
 from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
-                        INFOTAGS)
+                        INFOTAGS, get_mime)
 from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
 from .translations import translate
 
@@ -1851,7 +1851,7 @@ class PicWidget(QWidget):
                 "height": image.height(),
                 "width": image.width(),
                 "size": len(data),
-                "mime": "image/jpeg",
+                "mime": get_mime(data),
                 "description": "",
                 "imagetype": 3
             }
@@ -2084,7 +2084,7 @@ class PicWidget(QWidget):
             if image.loadFromData(data):
                 pic = {'data': data, 'height': image.height(),
                        'width': image.width(), 'size': len(data),
-                       'mime': 'image/jpeg',
+                       'mime': get_mime(data),
                        'description': "",
                        'imagetype': 3}
                 images.append(pic)
@@ -2097,7 +2097,7 @@ class PicWidget(QWidget):
             image = QImage().fromData(d)
             pic = {'data': d, 'height': image.height(),
                    'width': image.width(), 'size': len(data),
-                   'mime': 'image/jpeg',
+                   'mime': get_mime(d),
                    'description': "",
                    'imagetype': 3}
             images.append(pic)
