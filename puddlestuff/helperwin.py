@@ -17,7 +17,7 @@ from .constants import HOMEDIR, KEEP
 from .puddleobjects import (
     get_icon, gettaglist, partial,
     settaglist, winsettings, ListButtons, MoveButtons, OKCancel,
-    PicWidget, PuddleConfig, natsort_case_key)
+    PicWidget, PuddleConfig, natural_sort_key)
 from .translations import translate
 from .util import pprint_tag
 from .util import to_string
@@ -518,7 +518,7 @@ class StatusWidgetCombo(QComboBox):
         self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
 
         items = map(str, items)
-        items = sorted(items, key=natsort_case_key)
+        items = sorted(items, key=natural_sort_key)
         if len(items) > 1:
             items.append(r'\\'.join(items))
         self.addItem(KEEP)

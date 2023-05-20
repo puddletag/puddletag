@@ -16,8 +16,10 @@ from functools import partial
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
+from typing import List, Union
 
-from PyQt5.QtCore import QBuffer, QByteArray, QDir, QRectF, QSettings, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
+    QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
@@ -619,24 +621,21 @@ def unique(seq, stable=False):
     return result
 
 
-class compare:
-    "Natural sorting class."
+def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> QCollatorSortKey:
+    """Return a sort-key for natural sorting the given string.
 
-    def natsort_case_key(self, s):
-        "Used internally to get a tuple by which s is sorted."
-        convert = lambda text: int(text) if text.isdigit() else text.lower()
-        return [convert(c) for c in re.split('([0-9]+)', s)]
-
-
-natsort_case_key = compare().natsort_case_key
-
-
-# https://stackoverflow.com/a/16090640
-def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    Case-insensitive means uppercase- and lowercase-characters are treated equally.
+    Natural means sorting numbers by their numeric value, e.g. 100 comes after 99.
+    It also takes the global user preferences into account (e.g. LC_COLLATE).
+    """
     if isinstance(s, list):
         s = s[0]
-    return [int(text) if text.isdigit() else text.lower()
-            for text in re.split(_nsre, s)]
+
+    locale = QLocale.system().collation() if case_insensitive else QLocale.c()
+    collator = QCollator(locale)
+    collator.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
+    collator.setNumericMode(True)
+    return collator.sortKey(s)
 
 
 def dupes(l, method=None):
