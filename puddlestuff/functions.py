@@ -37,12 +37,11 @@ import decimal
 import math
 import os
 import re
-import string
 import traceback
-import unicodedata
 from mutagen.mp3 import HeaderNotFoundError
 from collections import defaultdict
 from functools import partial
+from unidecode import unidecode
 
 import pyparsing
 
@@ -760,14 +759,13 @@ Match &Case, check"""
 
 replace_regex = replaceWithReg
 
-VALID_FILENAME_CHARS = "'-_.!()[]{}&~+^ %s%s%s" % (
-    string.ascii_letters, string.digits, os.path.sep)
-
 
 # Contributed by Erik Reckase
+# Improved by David Gessel
 def to_ascii(t_fn):
-    cleaned_fn = unicodedata.normalize('NFKD', t_fn).encode('ASCII', 'ignore')
-    return ''.join(chr(c) for c in cleaned_fn if chr(c) in VALID_FILENAME_CHARS)
+    """Converts all unicode chars to ASCII."""
+    cleaned_fn = unidecode(t_fn, 'ignore')
+    return ''.join(c for c in cleaned_fn if c.isprintable())
 
 
 def remove_dupes(m_text, matchcase=False):

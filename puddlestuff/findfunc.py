@@ -3,7 +3,6 @@ import glob
 import os
 import pickle
 import re
-import string
 from collections import defaultdict
 from copy import deepcopy
 from decimal import Decimal
@@ -30,8 +29,6 @@ FIELDS = 'fields'
 FUNC_MODULE = 'module'
 ARGS = 'arguments'
 KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
-
-whitespace = set(str(string.whitespace))
 
 
 class ParseError(Exception):
@@ -449,8 +446,9 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             func.append(func_name)
             in_func = True
             i += len(func_name) + 1
-        elif in_func and not in_quote and not token and c in whitespace:
-            'just increment counter'
+        elif in_func and not in_quote and not token and c.isspace():
+            # just increment counter
+            pass
         elif c == ',' and in_func and not in_quote:
             func.append(''.join(token))
             token = []
@@ -520,12 +518,6 @@ def re_escape(rex):
         else:
             escaped = escaped + ch
     return escaped
-
-
-def removeSpaces(text):
-    for char in string.whitespace:
-        text = text.replace(char, '')
-    return text.lower()
 
 
 def replacevars(pattern, *dicts):
