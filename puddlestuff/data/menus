@@ -17,7 +17,6 @@
       "&Play", 
       "separator", 
       "&Delete", 
-      "Delete &Without Confirmation", 
       "separator", 
       "&Refresh", 
       "Refresh &Selected", 

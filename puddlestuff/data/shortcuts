@@ -266,14 +266,6 @@
     "enabled": "filesselected", 
     "shortcut": "Ctrl+Shift+C"
   }, 
-  "shortcut41": {
-    "name": "Delete &Without Confirmation", 
-    "command": "deleteSelectedWithoutMessage", 
-    "control": "table", 
-    "enabled": "filesselected", 
-    "shortcut": "Shift+Delete", 
-    "icon_name": "edit-delete"
-  }, 
   "shortcut42": {
     "name": "In &Library", 
     "command": "in_lib", 
