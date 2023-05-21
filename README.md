@@ -21,6 +21,7 @@ puddletag uses several third-party modules to performs its tasks:
 - [pyparsing](https://pypi.org/project/pyparsing/) , takes care of the parsing
 - [Mutagen](https://pypi.org/project/mutagen/), used as the tagging lib
 - [Chromaprint](http://acoustid.org/chromaprint) (recommended), for AcoustID support
+- [unidecode](https://pypi.org/project/Unidecode/)
 
 
 ## Installation
