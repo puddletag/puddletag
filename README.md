@@ -24,7 +24,17 @@ puddletag uses several third-party modules to performs its tasks:
 - [unidecode](https://pypi.org/project/Unidecode/)
 
 
-## Installation
+## How to install
+
+### PyPI
+
+Puddletag is available on [PyPI](https://pypi.org/project/puddletag/).
+
+In addition to the full releases, every time we merge a PR or commit a change, we automatically release a new version on [TestPyPI](https://test.pypi.org/project/puddletag/), so if you want to try a brand new feature or a recent bugfix, you can give these pre-releases a try.
+
+There are several tools to install puddletag via PyPI, for example [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#installing-to-the-user-site), [pipx](https://pypa.github.io/pipx/installation/), [pipenv](https://pipenv.pypa.io/en/latest/), and several others. Choose the one that suits best your workflow, but we strongly recommend you create an isolated, local (f.e. by using `pip install --local`) environment when installing third-party software.
+
+### Distributions package
 
 Here below is a list of the distributions and platforms where puddletag is available, and how to install it:
 
@@ -73,21 +83,25 @@ Available since Fedora 32.
 _support needed, open an issue if interested in working on it_
 </details>
 
-<details>
-<summary><b>Source code</b></summary>
+### Source Code
+
+If you seek the bleeding edge of puddletag, or wanting to contribute (we welcome all contributions!) you can install and/or run via source code.
+
 First, you need to install the dependencies; this step is different depending on the distribution; on Debian you can run:
 
-`apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg python3-unidecode`
-
-Then:
-
 ```
-git clone https://github.com/puddletag/puddletag
-cd puddletag
+apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg python3-unidecode
+```
+
+Then, clone the repo and run puddletag:
+
+```sh
+git clone 'https://github.com/puddletag/puddletag'
+cd 'puddletag'
 ./puddletag
 ```
 
-Alternatively you can use a [virtual environment](https://docs.python.org/3/library/venv.html), which only requires python and pip to be installed:
+Alternatively you can use a [virtual environment](https://docs.python.org/3/library/venv.html) to install the dependencies, which only requires python and pip to be installed:
 ```sh
 git clone 'https://github.com/puddletag/puddletag.git'
 cd 'puddletag'
@@ -95,8 +109,6 @@ python3 -m 'venv' '.'
 bin/pip3 install -r 'requirements.txt'
 bin/python3 'puddletag'
 ```
-</details>
-
 
 ## License
 
