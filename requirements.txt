@@ -38,6 +38,8 @@ rapidfuzz==2.13.7
     # via levenshtein
 requests==2.31.0
     # via pyacoustid
+send2trash==1.8.2
+    # via -r requirements.in
 six==1.16.0
     # via configobj
 unidecode==1.3.6

@@ -7,6 +7,7 @@ from copy import copy, deepcopy
 from operator import itemgetter
 from os import path
 from subprocess import Popen
+from send2trash import send2trash
 
 from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
@@ -1658,7 +1659,7 @@ class TagTable(QTableView):
             for ((i, row), audio) in zip(enumerate(selectedRows), selected):
                 try:
                     filename = audio.filepath
-                    os.remove(filename)
+                    send2trash(filename)
                     if audio.library:
                         audio.remove()
                         libtags.append(audio)

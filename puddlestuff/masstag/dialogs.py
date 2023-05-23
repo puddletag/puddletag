@@ -2,6 +2,7 @@ import glob
 import os
 from copy import deepcopy
 from functools import partial
+from send2trash import send2trash
 
 from PyQt5.QtCore import QMutex, QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
@@ -173,7 +174,7 @@ class MassTagEdit(QDialog):
         for f in files:
             if f not in filenames:
                 try:
-                    os.remove(f)
+                    send2trash(f)
                 except EnvironmentError:
                     pass
         for filename, profile in filenames.items():
