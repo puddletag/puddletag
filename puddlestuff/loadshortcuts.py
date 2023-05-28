@@ -26,13 +26,15 @@ def create_file(path, resource):
     f.close()
 
 
-def check_file(path, resource):
+def check_file(path: str, resource: str) -> None:
+    """Check version of config file at path, and update with resource if needed."""
     if not os.path.exists(path):
         create_file(path, resource)
     else:
         cparser = PuddleConfig(path)
         version = cparser.get('info', 'version', 0)
         if version < __version__:
+            print(f'Replacing version {version} config file {path} with newer version')
             create_file(path, resource)
 
 

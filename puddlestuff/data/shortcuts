@@ -1,4 +1,7 @@
 {
+  "info": {
+    "version": "30"
+  },
   "shortcut13": {
     "name": "&Text File->Tag", 
     "command": "text_file_to_tag", 
@@ -142,9 +145,6 @@
     "command": "paste_onto", 
     "control": "mainwin", 
     "enabled": "filesselected"
-  }, 
-  "info": {
-    "version": "29"
   }, 
   "shortcut9": {
     "name": "&Undo", 
