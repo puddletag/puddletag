@@ -249,9 +249,12 @@ class PuddleConfig(object):
         self.data = defaultdict(lambda: {})
         if os.path.exists(self.filename):
             try:
-                self.data.update(json.loads(open(self.filename, 'r').read()))
-            except:
-                pass
+                with open(self.filename, 'r', encoding='utf-8') as config_file:
+                    self.data.update(json.load(config_file))
+            except json.JSONDecodeError as e:
+                print(f'Error parsing config file {self.filename}: {e}')
+            except Exception as e:
+                print(f'Unexpected error while reading config file {self.filename}: {e}')
 
     def save(self):
         actions = self.data.get('puddleactions')
