@@ -571,8 +571,8 @@ class MassTagProfile(object):
         profiles = self.profiles if profiles is None else profiles
         regexps = self.regexps if regexps is None else regexps
 
-        assert files
-        assert profiles
+        if not files or not profiles:
+            return
 
         self.files = files
 
