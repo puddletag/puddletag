@@ -536,13 +536,9 @@ class StatusWidgetCombo(QComboBox):
 
     def _get_preview(self):
         return False
-        return self.font().bold()
 
     def _set_preview(self, value):
         return
-        font = self.font()
-        font.setBold(value)
-        self.setFont(font)
 
     preview = property(_get_preview, _set_preview)
 

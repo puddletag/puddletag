@@ -853,7 +853,7 @@ def tag_factory(id3_filetype):
                 mpginfo = [('Type', 'DSF')]
             elif isinstance(self.mut_obj, AIFFFileType):
                 mpginfo = [('Type', 'AIFF')]
-            elif (self.mut_obj, ID3FileType):
+            elif isinstance(self.mut_obj, ID3FileType):
                 mpginfo = [('Version', 'MPEG %i Layer %i' % (info.version, info.layer))]
             else:
                 mpginfo = []

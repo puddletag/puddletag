@@ -105,7 +105,6 @@ def convert_year(info):
             return {'year': time.strftime('%Y-%m', year)}
         except ValueError:
             return {}
-    return {}
 
 
 def create_search(terms):

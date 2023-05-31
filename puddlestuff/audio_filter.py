@@ -33,7 +33,6 @@ def parse_arg(audio, text):
         if text[0] == '"' and text[-1] == '"':
             text = text[1:-1]
         return findfunc.parsefunc(text, audio)
-    return ""
 
 
 def wrap_bool(original):

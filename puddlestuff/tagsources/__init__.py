@@ -101,7 +101,6 @@ def parse_searchstring(text):
         raise RetrievalError(
             translate('Tag Sources',
                       '<b>Error parsing artist/album combinations.</b>'))
-    return []
 
 
 def retrieve_cover(url):
