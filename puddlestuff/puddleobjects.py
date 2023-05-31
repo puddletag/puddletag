@@ -74,38 +74,9 @@ def keycmp(modifier):
         return 0
 
 
-try:
-    permutations = itertools.permutations
-except AttributeError:
-    # Using python < 2.6
-    def permutations(iterable, r=None):
-        # permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
-        # permutations(range(3)) --> 012 021 102 120 201 210
-        pool = tuple(iterable)
-        n = len(pool)
-        r = n if r is None else r
-        if r > n:
-            return
-        indices = list(range(n))
-        cycles = list(range(n, n - r, -1))
-        yield tuple(pool[i] for i in indices[:r])
-        while n:
-            for i in reversed(list(range(r))):
-                cycles[i] -= 1
-                if cycles[i] == 0:
-                    indices[i:] = indices[i + 1:] + indices[i:i + 1]
-                    cycles[i] = n - i
-                else:
-                    j = cycles[i]
-                    indices[i], indices[-j] = indices[-j], indices[i]
-                    yield tuple(pool[i] for i in indices[:r])
-                    break
-            else:
-                return
-
 modifiers = {}
 for i in range(1, len(mod_keys)):
-    for keys in set(permutations(mod_keys, i)):
+    for keys in set(itertools.permutations(mod_keys, i)):
         mod = keys[0]
         for key in keys[1:]:
             mod = mod | key
