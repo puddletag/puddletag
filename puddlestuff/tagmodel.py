@@ -1593,7 +1593,7 @@ class TagTable(QTableView):
                     deltag(row)
                     yield None
                 except (OSError, IOError) as e:
-                    msg = translate('Table', "An error occurred while " \
+                    msg = translate('Table', "An error occurred while "
                                              "deleting the tag of %1: <b>%2</b>")
                     msg = msg.arg(e.filename).arg(e.strerror)
                     yield msg, len(self.selectedRows)

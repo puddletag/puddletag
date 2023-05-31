@@ -1008,7 +1008,7 @@ class MainWin(QMainWindow):
                     yield None
                 except EnvironmentError as e:
                     m = translate("Dir Renaming",
-                                  'An error occured while renaming <b>%1</b> to ' \
+                                  'An error occured while renaming <b>%1</b> to '
                                   '<b>%2</b>. (%3)').arg(audio[PATH]).arg(filename).arg(e.strerror)
                     if row == rows[-1]:
                         yield m, 1
