@@ -1022,7 +1022,7 @@ class TagModel(QAbstractTableModel):
     def setData(self, index, value, role=Qt.ItemDataRole.EditRole, dontwrite=False):
         """Sets the data of the currently edited cell as expected.
         Also writes tags and increases the undolevel."""
-        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor);
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         if index.isValid() and 0 <= index.row() < len(self.taginfo):
             column = index.column()
             tag = self.headerdata[column][1]
@@ -1145,7 +1145,7 @@ class TagModel(QAbstractTableModel):
     def sibling(self, row, column, index=QModelIndex()):
         if row < (self.rowCount()) and row >= 0:
             return self.index(row, column)
-        return QModelIndex();
+        return QModelIndex()
 
     def sort(self, column, order=Qt.SortOrder.DescendingOrder):
         try:

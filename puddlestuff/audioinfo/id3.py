@@ -1022,7 +1022,7 @@ def tag_factory(id3_filetype):
                 if apics:
                     self.images = list(map(bin_to_pic, apics))
                 else:
-                    self.images = [];
+                    self.images = []
 
             self.__tags.update(tags)
             self.__tags.update(info_to_dict(audio.info))

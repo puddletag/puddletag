@@ -1661,8 +1661,8 @@ class PicWidget(QWidget):
             v.addWidget(self._image_size)
             v.addStretch()
 
-        h = QHBoxLayout();
-        h.addStretch();
+        h = QHBoxLayout()
+        h.addStretch()
         h.addLayout(v)
         if not buttons:
             h.addLayout(movebuttons)

@@ -27,9 +27,9 @@ from puddlestuff.findfunc import *
 
 noprints = ['__path', '__ext', '__modified', '__accessed', '__folder']
 sortorder = ['__filename', '__size', '__length', '__bitrate', '__frequency', '__created']
-bold = chr(0x1b) + "[1m";
-normal = chr(0x1b) + "[0m";
-red = chr(0x1b) + "[31m";
+bold = chr(0x1b) + "[1m"
+normal = chr(0x1b) + "[0m"
+red = chr(0x1b) + "[31m"
 
 
 def printerror(text):

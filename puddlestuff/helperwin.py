@@ -566,7 +566,7 @@ class StatusWidgetCombo(QComboBox):
             color = QLineEdit().palette().color(QPalette.ColorRole.Base).name()
         else:
             color = brush.color().name()
-        self.setStyleSheet("QComboBox { background-color: %s; }" % color);
+        self.setStyleSheet("QComboBox { background-color: %s; }" % color)
 
     def background(self):
         brush = QBrush()

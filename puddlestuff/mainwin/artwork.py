@@ -36,7 +36,7 @@ def create_svg(text, font, rect=None):
     generator = QSvgGenerator()
     generator.setFileName(f.name)
     generator.setSize(rect.size())
-    generator.setViewBox(rect);
+    generator.setViewBox(rect)
     generator.setTitle("puddletag image")
     generator.setDescription("just to see")
 
