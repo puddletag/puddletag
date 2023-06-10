@@ -122,7 +122,7 @@ def has_previews(tags=None, parent=None, msg=None):
     """
 
     if msg is None:
-        msg = translate("Previews", 'Do you want to exit Preview Mode?')
+        msg = translate("Previews", 'Do you want to exit Preview Mode? Unsaved changes will be discarded')
 
     if tags is None:
         tags = status['alltags']

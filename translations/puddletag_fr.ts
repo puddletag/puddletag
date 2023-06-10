@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="fr_FR" sourcelanguage="">
+<!DOCTYPE TS>
+<TS version="2.1" language="fr_FR">
 <context>
     <name>About</name>
     <message>
@@ -16,11 +17,11 @@ Licensed under GPLv2 (&lt;a href=&quot;www.gnu.org/licenses/gpl-2.0.html&quot;&g
 </source>
         <translation type="obsolete">puddletag est un éditeur de tags audio pour GNU/Linux similaire à Mp3tag sous Windows.
 
-&lt;br /&gt;&lt;br /&gt;Il inclut les fonctionnalités suivantes : édition   par lots, renommage de fichiers depuis les tags, récupération des tags depuis les noms de fichiers, utilisation d&apos;Actions pour automatiser les tâches répétitives, importation de votre discothèque et encore plein de choses étonnantes.&lt;br /&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;br /&gt;Il inclut les fonctionnalités suivantes : édition   par lots, renommage de fichiers depuis les tags, récupération des tags depuis les noms de fichiers, utilisation d'Actions pour automatiser les tâches répétitives, importation de votre discothèque et encore plein de choses étonnantes.&lt;br /&gt;&lt;br /&gt;
 
 Formats supportés : id3v1, id3v2 (.mp3); AAC(.mp4, .m4a), Vorbis (.ogg, .flac) et APEv2 (.ape) &lt;br /&gt;&lt;.br/&gt;
 
-Visitez le site web puddletag (&lt;a href=&quot;http://puddletag.sourceforge.net&quot;&gt;http://puddletag.sourceforge.net&lt;/a&gt;) pour de l&apos;aide et des mises à jour.&lt;br /&gt;&lt;br /&gt;
+Visitez le site web puddletag (&lt;a href=&quot;http://puddletag.sourceforge.net&quot;&gt;http://puddletag.sourceforge.net&lt;/a&gt;) pour de l'aide et des mises à jour.&lt;br /&gt;&lt;br /&gt;
 &amp;copy; 2010 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
 Distribué sous licence GPLv2 (&lt;a href=&quot;www.gnu.org/licenses/gpl-2.0.html&quot;&gt;www.gnu.org/licenses/gpl-2.0.html&lt;/a&gt;).</translation>
     </message>
@@ -37,16 +38,16 @@ To the writers of the libraries puddletag depends on (without which I&apos;ll pr
 The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.</source>
         <translation type="obsolete">&lt;b&gt;Evan Devetzis&lt;/b&gt; pour ses nombreuses idées et le nombre incroyable de bugs trouvés.&lt;br /&gt;&lt;br /&gt;
 
-Aux auteurs des librairies dont puddletag dépend (sans lequelles j&apos;en serais toujours à écrire un lecteur de tags ID3);&lt;br /&gt;&lt;br /&gt;
+Aux auteurs des librairies dont puddletag dépend (sans lequelles j'en serais toujours à écrire un lecteur de tags ID3);&lt;br /&gt;&lt;br /&gt;
 
 &lt;b&gt;Paul McGuire&lt;/b&gt; pour PyParsing.&lt;br /&gt;
-&lt;b&gt;Michael Urman&lt;/b&gt; et &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (c&apos;est une tuerie).&lt;br /&gt;
+&lt;b&gt;Michael Urman&lt;/b&gt; et &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (c'est une tuerie).&lt;br /&gt;
 &lt;b&gt;Phil Thomson&lt;/b&gt; et tous ceux impliqués dans PyQt4.&lt;br /&gt;
 &lt;b&gt;Michael Foord&lt;/b&gt; et &lt;b&gt;Nicola Larosa&lt;/b&gt; pour ConfigObj (serieusement, ils devraient remplacer ConfigParser).&lt;br /&gt;
 La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/about.py" line="62"/>
+        <location filename="../puddlestuff/about.py" line="94"/>
         <source>About puddletag</source>
         <translation>A propos de puddletag</translation>
     </message>
@@ -58,25 +59,25 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.</translation>
     <message>
         <location filename="../puddlestuff/about.py" line="74"/>
         <source>&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</source>
-        <translation>&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</translation>
+        <translation type="obsolete">&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/about.py" line="81"/>
+        <location filename="../puddlestuff/about.py" line="111"/>
         <source>&amp;About</source>
         <translation>&amp;A propos</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/about.py" line="82"/>
+        <location filename="../puddlestuff/about.py" line="112"/>
         <source>&amp;Thanks</source>
         <translation>&amp;Remerciements</translation>
     </message>
     <message>
         <location filename="../puddlestuff/about.py" line="69"/>
         <source>&lt;h2&gt;puddletag %1 (Changeset %2)&lt;/h2&gt; %3</source>
-        <translation>&lt;h2&gt;puddletag %1 (Révision %2)&lt;/h2&gt; %3</translation>
+        <translation type="obsolete">&lt;h2&gt;puddletag %1 (Révision %2)&lt;/h2&gt; %3</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/about.py" line="12"/>
+        <location filename="../puddlestuff/about.py" line="13"/>
         <source>puddletag is an audio tag editor for GNU/Linux similar to the Windows program Mp3tag.
 
 &lt;br /&gt;&lt;br /&gt;Features include: Batch editing of tags, renaming files using tags, retrieving tags from filenames, using Actions to automate repetitive tasks, importing your music library and loads of other awesome stuff. &lt;br /&gt;&lt;br /&gt;
@@ -89,11 +90,11 @@ Licensed under GPLv3 (&lt;a href=&quot;www.gnu.org/licenses/gpl-3.0.html&quot;&g
 </source>
         <translation>puddletag est un éditeur de tags audio pour GNU/Linux similaire à Mp3tag sous Windows.
 
-&lt;br /&gt;&lt;br /&gt;Il inclut les fonctionnalités suivantes : édition   par lots, renommage de fichiers depuis les tags, récupération des tags depuis les noms de fichiers, utilisation d&apos;Actions pour automatiser les tâches répétitives, importation de votre discothèque et encore plein de choses étonnantes.&lt;br /&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;br /&gt;Il inclut les fonctionnalités suivantes : édition   par lots, renommage de fichiers depuis les tags, récupération des tags depuis les noms de fichiers, utilisation d'Actions pour automatiser les tâches répétitives, importation de votre discothèque et encore plein de choses étonnantes.&lt;br /&gt;&lt;br /&gt;
 
 Formats supportés : id3v1, id3v2 (.mp3); AAC(.mp4, .m4a), Vorbis (.ogg, .flac) et APEv2 (.ape) &lt;br /&gt;&lt;.br/&gt;
 
-Visitez le site web puddletag (&lt;a href=&quot;http://puddletag.sourceforge.net&quot;&gt;http://puddletag.sourceforge.net&lt;/a&gt;) pour de l&apos;aide et des mises à jour.&lt;br /&gt;&lt;br /&gt;
+Visitez le site web puddletag (&lt;a href=&quot;http://puddletag.sourceforge.net&quot;&gt;http://puddletag.sourceforge.net&lt;/a&gt;) pour de l'aide et des mises à jour.&lt;br /&gt;&lt;br /&gt;
 &amp;copy; 2008-2012 concentricpuddle (concentricpuddle@gmail.com) &lt;br /&gt;
 Distribué sous licence GPLv3 (&lt;a href=&quot;www.gnu.org/licenses/gpl-3.0.html&quot;&gt;www.gnu.org/licenses/gpl-3.0.html&lt;/a&gt;).</translation>
     </message>
@@ -103,9 +104,9 @@ Distribué sous licence GPLv3 (&lt;a href=&quot;www.gnu.org/licenses/gpl-3.0.htm
 
 First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
 
-Thanks to &lt;b&gt;Rapha&#xc3;&#xab;l Rochet&lt;/b&gt;, &lt;b&gt;Fabian Bakkum&lt;/b&gt;, &lt;b&gt;Alan Gomes&lt;/b&gt; and others for contributing translations.
+Thanks to &lt;b&gt;RaphaÃ«l Rochet&lt;/b&gt;, &lt;b&gt;Fabian Bakkum&lt;/b&gt;, &lt;b&gt;Alan Gomes&lt;/b&gt; and others for contributing translations.
 
-To the writers of the libraries puddletag depends on (without which I&apos;ll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
+To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
 
 &lt;b&gt;Paul McGuire&lt;/b&gt; for PyParsing.&lt;br /&gt;
 &lt;b&gt;Michael Urman&lt;/b&gt; and &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
@@ -114,21 +115,65 @@ To the writers of the libraries puddletag depends on (without which I&apos;ll pr
 The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 
 </source>
-        <translation>&lt;b&gt;Evan Devetzis&lt;/b&gt; pour ses nombreuses idées et le nombre incroyable de bugs trouvés.&lt;br /&gt;&lt;br /&gt;
+        <translation type="obsolete">&lt;b&gt;Evan Devetzis&lt;/b&gt; pour ses nombreuses idées et le nombre incroyable de bugs trouvés.&lt;br /&gt;&lt;br /&gt;
 
-Avant tout, un grand merci à **Evan Devetzis** pour avoir travaillé sans relâche à m&apos;aider à rendre puddletag meilleur avec ses nombreuses excelentes idées et pour sa chasse aux bugs.
+Avant tout, un grand merci à **Evan Devetzis** pour avoir travaillé sans relâche à m'aider à rendre puddletag meilleur avec ses nombreuses excelentes idées et pour sa chasse aux bugs.
 
 Merci à &lt;b&gt;RaphaÃ«l Rochet&lt;/b&gt;, &lt;b&gt;Fabian Bakkum&lt;/b&gt;, &lt;b&gt;Alan Gomes&lt;/b&gt; et tous ceux qui aident aux traductions.
 
-Aux auteurs des librairies dont puddletag dépend (sans lequelles j&apos;en serais toujours à écrire un lecteur de tags ID3);&lt;br /&gt;&lt;br /&gt;
+Aux auteurs des librairies dont puddletag dépend (sans lequelles j'en serais toujours à écrire un lecteur de tags ID3);&lt;br /&gt;&lt;br /&gt;
 
 &lt;b&gt;Paul McGuire&lt;/b&gt; pour PyParsing.&lt;br /&gt;
-&lt;b&gt;Michael Urman&lt;/b&gt; et &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (c&apos;est une tuerie).&lt;br /&gt;
+&lt;b&gt;Michael Urman&lt;/b&gt; et &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (c'est une tuerie).&lt;br /&gt;
 &lt;b&gt;Phil Thomson&lt;/b&gt; et tous ceux impliqués dans PyQt4.&lt;br /&gt;
 &lt;b&gt;Michael Foord&lt;/b&gt; et &lt;b&gt;Nicola Larosa&lt;/b&gt; pour ConfigObj (serieusement, ils devraient remplacer ConfigParser).&lt;br /&gt;
 La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
 
 </translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/about.py" line="24"/>
+        <source>&lt;b&gt;Evan Devetzis&lt;/b&gt; for his many, many awesome ideas and putting up with more bugs than humanly possible.&lt;br /&gt;&lt;br /&gt;
+
+First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
+
+Thanks to &lt;b&gt;Raphaël Rochet&lt;/b&gt;, &lt;b&gt;Fabian Bakkum&lt;/b&gt;, &lt;b&gt;Alan Gomes&lt;/b&gt; and others for contributing translations.
+
+To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).&lt;br /&gt;&lt;br /&gt;
+
+&lt;b&gt;Paul McGuire&lt;/b&gt; for PyParsing.&lt;br /&gt;
+&lt;b&gt;Michael Urman&lt;/b&gt; and &lt;b&gt;Joe Wreschnig&lt;/b&gt; for Mutagen (It. Is. Awesome).&lt;br /&gt;
+&lt;b&gt;Phil Thomson&lt;/b&gt; and everyone responsible for PyQt4.&lt;br /&gt;
+&lt;b&gt;Michael Foord&lt;/b&gt; and &lt;b&gt;Nicola Larosa&lt;/b&gt; for ConfigObj (seriously, they should replace ConfigParser with this).&lt;br /&gt;
+The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/about.py" line="51"/>
+        <source>unknown version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/about.py" line="54"/>
+        <source>not installed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/about.py" line="102"/>
+        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt;Changeset %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/about.py" line="106"/>
+        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/about.py" line="114"/>
+        <source>&amp;Libraries</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -202,27 +247,27 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
 <context>
     <name>Actions</name>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="102"/>
+        <location filename="../puddlestuff/actiondlg.py" line="101"/>
         <source>Enter a name for the shortcut.</source>
         <translation>Entrez un nom pour le raccourci.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="575"/>
+        <location filename="../puddlestuff/actiondlg.py" line="574"/>
         <source>Modify Action</source>
-        <translation>Modifier l&apos;action</translation>
+        <translation>Modifier l'action</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="712"/>
+        <location filename="../puddlestuff/actiondlg.py" line="711"/>
         <source>Actions</source>
         <translation>Actions</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="738"/>
+        <location filename="../puddlestuff/actiondlg.py" line="737"/>
         <source>Assign &amp;Shortcut</source>
         <translation>&amp;Affecter le raccourci</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="741"/>
+        <location filename="../puddlestuff/actiondlg.py" line="740"/>
         <source>&lt;p&gt;Creates a
             shortcut for the checked actions on the Actions menu.
             Use Edit Shortcuts (found by pressing down on this button)
@@ -233,42 +278,42 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
             pour modifier les raccourcis après coup.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="746"/>
+        <location filename="../puddlestuff/actiondlg.py" line="745"/>
         <source>Edit Shortcuts</source>
         <translation>Modifier les raccourcis</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="970"/>
+        <location filename="../puddlestuff/actiondlg.py" line="964"/>
         <source>New Action</source>
         <translation>Nouvelle action</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="1059"/>
+        <location filename="../puddlestuff/actiondlg.py" line="1053"/>
         <source>Enter a name for the new action.</source>
         <translation>Entrez un nom pour la nouvelle action.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="1000"/>
+        <location filename="../puddlestuff/actiondlg.py" line="994"/>
         <source>Edit Action: </source>
-        <translation>Modifier l&apos;action: </translation>
+        <translation>Modifier l'action: </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="1070"/>
+        <location filename="../puddlestuff/actiondlg.py" line="1064"/>
         <source>Edit Action: %s</source>
-        <translation>Modifier l&apos;action: %s</translation>
+        <translation>Modifier l'action: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="528"/>
+        <location filename="../puddlestuff/actiondlg.py" line="527"/>
         <source>Error: Using &lt;b&gt;__selected&lt;/b&gt; in Actions is not allowed.</source>
-        <translation>Erreur: Utiliser &lt;b&gt;__selected&lt;/b&gt; dans les Actions n&apos;est pas possible.</translation>
+        <translation>Erreur: Utiliser &lt;b&gt;__selected&lt;/b&gt; dans les Actions n'est pas possible.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="534"/>
+        <location filename="../puddlestuff/actiondlg.py" line="533"/>
         <source>Please enter some fields to write to.</source>
-        <translation>Merci d&apos;indiquer quelques champs à écrire.</translation>
+        <translation>Merci d'indiquer quelques champs à écrire.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="983"/>
+        <location filename="../puddlestuff/actiondlg.py" line="977"/>
         <source>Add Action: </source>
         <translation>Ajouter action: </translation>
     </message>
@@ -278,7 +323,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="72"/>
         <source>Invalid Access or Secret Key</source>
-        <translation>Clé d&apos;accès ou clé secrète invalide</translation>
+        <translation>Clé d'accès ou clé secrète invalide</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/amazon.py" line="131"/>
@@ -329,11 +374,11 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
         &lt;ul&gt;
         &lt;li&gt;&lt;b&gt;artiste;album&lt;/b&gt;
         cherche une combinaison spécifique album/artiste.&lt;/li&gt;
-        &lt;li&gt;Pour lister les albums d&apos;un artiste, laisser la partie album vide,
+        &lt;li&gt;Pour lister les albums d'un artiste, laisser la partie album vide,
         mais gardez le point-virgule (ex. &lt;b&gt;Ratatat;&lt;/b&gt;).
         Pour un album seulement laissez la partie artiste vide, comme dans
         &lt;b&gt;;Resurrection.&lt;/li&gt;
-        &lt;li&gt;Entrer des mots clés &lt;b&gt;sans le point-virgule (;)&lt;/b&gt; fera une recherche d&apos;album sur Amazon
+        &lt;li&gt;Entrer des mots clés &lt;b&gt;sans le point-virgule (;)&lt;/b&gt; fera une recherche d'album sur Amazon
         avec ces mots clés.&lt;/li&gt;
         &lt;/ul&gt;</translation>
     </message>
@@ -348,7 +393,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
         <translation>Taille de la pochette à récupérer</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="511"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="512"/>
         <source>Small</source>
         <translation>Petite</translation>
     </message>
@@ -358,14 +403,14 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
         <translation>Moyenne</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="512"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="513"/>
         <source>Large</source>
         <translation>Grande</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="350"/>
         <source>Access Key (Stored as plain-text. Leave empty for default.)</source>
-        <translation>Clé d&apos;accès (Stockée en texte clair. Laissez vide pour la clé par défaut)</translation>
+        <translation>Clé d'accès (Stockée en texte clair. Laissez vide pour la clé par défaut)</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="352"/>
@@ -391,11 +436,11 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
         &lt;ul&gt;
         &lt;li&gt;&lt;b&gt;artiste;album&lt;/b&gt;
         cherche une combinaison spécifique album/artiste.&lt;/li&gt;
-        &lt;li&gt;Pour lister les albums d&apos;un artiste, laisser la partie album vide,
+        &lt;li&gt;Pour lister les albums d'un artiste, laisser la partie album vide,
         mais gardez le point-virgule (ex. &lt;b&gt;Ratatat;&lt;/b&gt;).
         Pour un album seulement laissez la partie artiste vide, comme dans
         &lt;b&gt;;Resurrection.&lt;/li&gt;
-        &lt;li&gt;Entrer des mots clés &lt;b&gt;sans le point-virgule (;)&lt;/b&gt; fera une recherche d&apos;album sur Amazon
+        &lt;li&gt;Entrer des mots clés &lt;b&gt;sans le point-virgule (;)&lt;/b&gt; fera une recherche d'album sur Amazon
         avec ces mots clés.&lt;/li&gt;
         &lt;/ul&gt;</translation>
     </message>
@@ -410,7 +455,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
         <translation>%s sur Amazon.com</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="513"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="514"/>
         <source>Original Size</source>
         <translation>Taille originale</translation>
     </message>
@@ -439,67 +484,67 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
 <context>
     <name>Artwork</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1962"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1963"/>
         <source>Enter a description</source>
         <translation>Entrez une description</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1615"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1616"/>
         <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don&apos;t differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Entrez une description pour l&apos;image séleectionnée.&lt;/p&gt;&lt;p&gt;Pour les tags ID3 la description doit être différente pour chaque pochette. Sinon des espaces seront ajoutés au moment de sauvegarder.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Entrez une description pour l'image séleectionnée.&lt;/p&gt;&lt;p&gt;Pour les tags ID3 la description doit être différente pour chaque pochette. Sinon des espaces seront ajoutés au moment de sauvegarder.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1626"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1627"/>
         <source>&amp;Description</source>
         <translation>&amp;Description</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1634"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1635"/>
         <source>&amp;Type</source>
         <translation>&amp;Type</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1645"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1646"/>
         <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Sélectionnez un type d&apos;image.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Sélectionnez un type d'image.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1738"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1739"/>
         <source>&amp;Save cover to file</source>
         <translation>Enregistrer dans un &amp;fichier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1741"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1742"/>
         <source>&amp;Add cover</source>
         <translation>&amp;Ajouter une image</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1750"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1751"/>
         <source>&amp;Remove cover</source>
-        <translation>&amp;Enlever l&apos;image</translation>
+        <translation>&amp;Enlever l'image</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1753"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1754"/>
         <source>&amp;Change cover</source>
-        <translation>&amp;Changer l&apos;image</translation>
+        <translation>&amp;Changer l'image</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1819"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1820"/>
         <source>Select Image...</source>
         <translation>Sélectionner une image...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2013"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2014"/>
         <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>Images JPEG (*.jpg);;Images PNG (*.png);;Tous les Fichiers(*.*)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2013"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2014"/>
         <source>Save artwork as...</source>
-        <translation>Sauver l&apos;image sous ...</translation>
+        <translation>Sauver l'image sous ...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2022"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2023"/>
         <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
         <translation>Ecriture de &lt;b&gt;%1&lt;/b&gt; échouée.</translation>
     </message>
@@ -509,17 +554,17 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
         <translation type="obsolete">Entrez une description</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1819"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1820"/>
         <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>Images JPEG &amp; PNG (*.jpg *.jpeg *.png);;Images JPEG (*.jpg *.jpeg);;Images PNG (*.png);;All Files(*.*)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1744"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1745"/>
         <source>C&amp;opy cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1747"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1748"/>
         <source>&amp;Paste cover</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,7 +572,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
 <context>
     <name>Artwork Context</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1582"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1583"/>
         <source>%1/%2</source>
         <translation>%1/%2</translation>
     </message>
@@ -539,7 +584,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
     <message>
         <location filename="../puddlestuff/translations.py" line="73"/>
         <source>No Images</source>
-        <translation>Pas d&apos;images</translation>
+        <translation>Pas d'images</translation>
     </message>
 </context>
 <context>
@@ -562,7 +607,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
     <message>
         <location filename="../puddlestuff/helperwin.py" line="144"/>
         <source>Add track &amp;separator [&apos;/&apos;]: Number of tracks</source>
-        <translation>Ajouter un &amp;séparateur [&apos;/&apos;]: Nombre de pistes</translation>
+        <translation>Ajouter un &amp;séparateur ['/']: Nombre de pistes</translation>
     </message>
     <message>
         <location filename="../puddlestuff/functions_dialogs.py" line="51"/>
@@ -572,7 +617,7 @@ La &lt;b&gt;Oxygen team&lt;/b&gt; pour les icônes Oxygen.
     <message>
         <location filename="../puddlestuff/helperwin.py" line="140"/>
         <source>Add track &amp;separator [&apos;/&apos;]</source>
-        <translation>Ajouter un &amp;séparateur de pistes [&apos;/&apos;]</translation>
+        <translation>Ajouter un &amp;séparateur de pistes ['/']</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="79"/>
@@ -647,22 +692,22 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Column Settings</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="993"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="994"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="387"/>
+        <location filename="../puddlestuff/tagmodel.py" line="388"/>
         <source>Columns</source>
         <translation>Colonnes</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="416"/>
+        <location filename="../puddlestuff/tagmodel.py" line="417"/>
         <source>Adjust visibility of columns.</source>
         <translation>Ajuster la visibilité des colonnes.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1314"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1311"/>
         <source>&amp;Select Columns</source>
         <translation>&amp;Sélectionner des colonnes</translation>
     </message>
@@ -670,9 +715,9 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Combo Box</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2273"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2275"/>
         <source>Remove current item.</source>
-        <translation>Retirer l&apos;élément.</translation>
+        <translation>Retirer l'élément.</translation>
     </message>
 </context>
 <context>
@@ -683,12 +728,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">Confirmer pour renomer des dossiers.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="52"/>
+        <location filename="../puddlestuff/puddletag.py" line="57"/>
         <source>Confirm when exiting preview mode.</source>
         <translation>Confirmer pour sortir du mode Aperçu.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="53"/>
+        <location filename="../puddlestuff/puddletag.py" line="58"/>
         <source>Confirm when deleting files.</source>
         <translation>Confirmer pour supprimer des fichiers.</translation>
     </message>
@@ -696,212 +741,212 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Cover Type</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="141"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="143"/>
         <source>Other</source>
         <translation>Autre</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="141"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="143"/>
         <source>O</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="142"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="144"/>
         <source>File Icon</source>
         <translation>Icône de fichier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="142"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="144"/>
         <source>I</source>
         <translation>Ic</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="143"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="145"/>
         <source>Other File Icon</source>
         <translation>Autre Icône de fichier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="143"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="145"/>
         <source>OI</source>
         <translation>AIc</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="144"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="146"/>
         <source>Cover (front)</source>
         <translation>Pochette (avant)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="144"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="146"/>
         <source>CF</source>
         <translation>PAv</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="145"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="147"/>
         <source>Cover (back)</source>
         <translation>Pochette (arrière)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="145"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="147"/>
         <source>CB</source>
         <translation>PAr</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="146"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="148"/>
         <source>Leaflet page</source>
         <translation>Livret Intérieur</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="146"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="148"/>
         <source>LF</source>
         <translation>LI</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="147"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="149"/>
         <source>Media (e.g. label side of CD)</source>
         <translation>Media (par ex le CD)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="147"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="149"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="148"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="150"/>
         <source>Lead artist</source>
         <translation>Artiste principal/Soliste</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="148"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="150"/>
         <source>LA</source>
         <translation>AP</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="149"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="151"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="149"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="151"/>
         <source>A</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="150"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="152"/>
         <source>Conductor</source>
-        <translation>Chef d&apos;orchestre</translation>
+        <translation>Chef d'orchestre</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="150"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="152"/>
         <source>C</source>
         <translation>CO</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="151"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="153"/>
         <source>Band</source>
         <translation>Groupe</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="151"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="153"/>
         <source>B</source>
         <translation>G</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="152"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="154"/>
         <source>Composer</source>
         <translation>Compositeur</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="152"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="154"/>
         <source>CP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="153"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="155"/>
         <source>Lyricist</source>
         <translation>Parolier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="153"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="155"/>
         <source>L</source>
         <translation>P</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="154"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="156"/>
         <source>Recording Location</source>
-        <translation>Emplacement de l&apos;enregistrement</translation>
+        <translation>Emplacement de l'enregistrement</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="154"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="156"/>
         <source>RL</source>
         <translation>EE</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="155"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="157"/>
         <source>During recording</source>
-        <translation>Séance d&apos;enregistrement</translation>
+        <translation>Séance d'enregistrement</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="155"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="157"/>
         <source>DR</source>
         <translation>SE</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="156"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="158"/>
         <source>During performance</source>
         <translation>Pendant la représentation</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="156"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="158"/>
         <source>DP</source>
         <translation>PR</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="157"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="159"/>
         <source>Movie/video screen capture</source>
-        <translation>Capture d&apos;écran film/vidéo</translation>
+        <translation>Capture d'écran film/vidéo</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="157"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="159"/>
         <source>MC</source>
         <translation>CE</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="158"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="160"/>
         <source>A bright coloured fish</source>
         <translation>Un poisson aux couleurs vives</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="158"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="160"/>
         <source>F</source>
         <translation>F</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="159"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="161"/>
         <source>Illustration</source>
         <translation>Illustration</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="159"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="161"/>
         <source>P</source>
         <translation>Ill</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="160"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="162"/>
         <source>Band/artist logotype</source>
-        <translation>Logo du groupe/de l&apos;artiste</translation>
+        <translation>Logo du groupe/de l'artiste</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="160"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="162"/>
         <source>BL</source>
         <translation>LGA</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="161"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="163"/>
         <source>Publisher/Studio logotype</source>
-        <translation>Logo de la Maison d&apos;édition/du Studio</translation>
+        <translation>Logo de la Maison d'édition/du Studio</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="161"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="163"/>
         <source>PL</source>
         <translation>LME</translation>
     </message>
@@ -959,34 +1004,34 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">&amp;Champs:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2050"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2044"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="516"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="518"/>
         <source>&lt;br /&gt; Do you want to continue?</source>
         <translation>&lt;br /&gt; Voulez-vous continuer ?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="995"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="996"/>
         <source>Field</source>
         <translation>Champ</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2203"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2204"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="827"/>
+        <location filename="../puddlestuff/puddletag.py" line="931"/>
         <source>Writing </source>
         <translation>Ecriture de </translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagtools.py" line="58"/>
         <source>An error occured while writing to &lt;b&gt;%1&lt;/b&gt;. (%2)</source>
-        <translation>Une erreur s&apos;est produite lors de l&apos;écriture de &lt;b&gt;%1&lt;/b&gt;. (%2)</translation>
+        <translation>Une erreur s'est produite lors de l'écriture de &lt;b&gt;%1&lt;/b&gt;. (%2)</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="165"/>
@@ -999,22 +1044,22 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">&amp;Non</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1885"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1880"/>
         <source>Reading Directory: %1</source>
         <translation>Lecture du dossier: %1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1888"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1883"/>
         <source>Reading Directory: %1 + others</source>
         <translation>Lecture du dossier: %1 + autres</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1891"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1886"/>
         <source>Reading Dir</source>
         <translation>Lecture du dossier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1917"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1912"/>
         <source>Loading </source>
         <translation>Chargement </translation>
     </message>
@@ -1051,17 +1096,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/util.py" line="29"/>
         <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;%1&lt;/b&gt; to &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%3&lt;/b&gt;&lt;br /&gt;File used: %4&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Une erreur s&apos;est produite en renommant le dossier &lt;b&gt;%1&lt;/b&gt; en &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Raison:&lt;b&gt;%3&lt;/b&gt;&lt;br /&gt;Fichier utilisé %4&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Une erreur s'est produite en renommant le dossier &lt;b&gt;%1&lt;/b&gt; en &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Raison:&lt;b&gt;%3&lt;/b&gt;&lt;br /&gt;Fichier utilisé %4&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="38"/>
         <source>&lt;p&gt;An error occured while renaming the file &lt;b&gt;%1&lt;/b&gt; to &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%3&lt;/b&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Une erreur s&apos;est produite en renommant le fichier &lt;b&gt;%1&lt;/b&gt; en &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Raison:&lt;b&gt;%3&lt;/b&gt;&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Une erreur s'est produite en renommant le fichier &lt;b&gt;%1&lt;/b&gt; en &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Raison:&lt;b&gt;%3&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="puddlestuff/util.py" line="41"/>
         <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt;&lt;/p&gt;</source>
-        <translation type="obsolete">&lt;p&gt;Une erreur s&apos;est produite en écrivant &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;%2&lt;/b&gt;&lt;/p&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;Une erreur s'est produite en écrivant &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;%2&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="168"/>
@@ -1069,7 +1114,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation>%s images</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1429"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1430"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -1084,14 +1129,14 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation>Artistes divers</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/findfunc.py" line="311"/>
+        <location filename="../puddlestuff/findfunc.py" line="308"/>
         <source>function does not exist.</source>
-        <translation>la fonction n&apos;existe pas.</translation>
+        <translation>la fonction n'existe pas.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="54"/>
         <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See %3 for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Une erreur s&apos;est produite pendant l&apos;écriture de &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Voir %3 pour les détails.&lt;/i&gt;)&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Une erreur s'est produite pendant l'écriture de &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Raison: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Voir %3 pour les détails.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="1140"/>
@@ -1112,7 +1157,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Dialogs</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2146"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2147"/>
         <source>Album Art</source>
         <translation>Pochettes</translation>
     </message>
@@ -1170,19 +1215,19 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Dir Renaming</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="907"/>
+        <location filename="../puddlestuff/puddletag.py" line="1011"/>
         <source>An error occured while renaming &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;. (%3)</source>
-        <translation>Une erreur s&apos;est produit en renommant &lt;b&gt;%1&lt;/b&gt; en &lt;b&gt;%2&lt;/b&gt;. (%3)</translation>
+        <translation>Une erreur s'est produit en renommant &lt;b&gt;%1&lt;/b&gt; en &lt;b&gt;%2&lt;/b&gt;. (%3)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="915"/>
+        <location filename="../puddlestuff/puddletag.py" line="1019"/>
         <source>Renaming </source>
         <translation>Renomme </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="931"/>
+        <location filename="../puddlestuff/puddletag.py" line="1035"/>
         <source>I couldn&apos;t rename: &lt;i&gt;%1&lt;/i&gt; to &lt;b&gt;%2&lt;/b&gt; (%3)</source>
-        <translation>Je n&apos;ai pas pu renommer: &lt;i&gt;%1&lt;/i&gt; en &lt;b&gt;%2&lt;/b&gt; (%3)</translation>
+        <translation>Je n'ai pas pu renommer: &lt;i&gt;%1&lt;/i&gt; en &lt;b&gt;%2&lt;/b&gt; (%3)</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="569"/>
@@ -1193,27 +1238,27 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Dirview</name>
     <message>
-        <location filename="../puddlestuff/mainwin/dirview.py" line="91"/>
+        <location filename="../puddlestuff/mainwin/dirview.py" line="104"/>
         <source>Refresh Directory</source>
         <translation>Recharger le dossier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/dirview.py" line="99"/>
+        <location filename="../puddlestuff/mainwin/dirview.py" line="112"/>
         <source>Show Header</source>
-        <translation>Afficher l&apos;en-tête</translation>
+        <translation>Afficher l'en-tête</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/dirview.py" line="103"/>
+        <location filename="../puddlestuff/mainwin/dirview.py" line="116"/>
         <source>Hide Header</source>
-        <translation>Masquer l&apos;en-tête</translation>
+        <translation>Masquer l'en-tête</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/dirview.py" line="107"/>
+        <location filename="../puddlestuff/mainwin/dirview.py" line="120"/>
         <source>Open in File Manager</source>
         <translation>Ouvrir dans le gestionnaire de fichiers</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/dirview.py" line="325"/>
+        <location filename="../puddlestuff/mainwin/dirview.py" line="338"/>
         <source>Subfolders</source>
         <translation>Sous-dossiers</translation>
     </message>
@@ -1223,7 +1268,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="96"/>
         <source>Retrieving search results for keywords: %s</source>
-        <translation>Récupération des résultats pour les mots-clés: %s</translation>
+        <translation type="obsolete">Récupération des résultats pour les mots-clés: %s</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/discogs.py" line="224"/>
@@ -1231,17 +1276,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">Réponse XML non valide. Voir le log</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="236"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="190"/>
         <source>Retrieving using Release ID: %s</source>
         <translation>Récupération via Release ID : %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="243"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="197"/>
         <source>Retrieving album %s</source>
-        <translation>Récupération de l&apos;album %s</translation>
+        <translation>Récupération de l'album %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="269"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="223"/>
         <source>Retrieving cover: %s</source>
         <translation>Récupération de la pochette: %s</translation>
     </message>
@@ -1266,41 +1311,41 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         &lt;ul&gt;
         &lt;li&gt;&lt;b&gt;artiste;album&lt;/b&gt;
         cherche une combinaison spécifique album/artiste.&lt;/li&gt;
-        &lt;li&gt;Pour lister les albums d&apos;un artiste, laisser la partie album vide,
+        &lt;li&gt;Pour lister les albums d'un artiste, laisser la partie album vide,
         mais gardez le point-virgule (ex. &lt;b&gt;Ratatat;&lt;/b&gt;).
         Pour un album seulement laissez la partie artiste vide, comme dans
         &lt;b&gt;;Resurrection.&lt;/li&gt;
-        &lt;li&gt;Utiliser &lt;b&gt;:r id&lt;/b&gt; va récupérer l&apos;album avec l&apos;ID Discogs&lt;/li&gt;
-        &lt;li&gt;Entrer des mots clés &lt;b&gt;sans le point-virgule (;)&lt;/b&gt; fera une recherche simple d&apos;album sur Discog avec ces mots clés.&lt;/li&gt;
+        &lt;li&gt;Utiliser &lt;b&gt;:r id&lt;/b&gt; va récupérer l'album avec l'ID Discogs&lt;/li&gt;
+        &lt;li&gt;Entrer des mots clés &lt;b&gt;sans le point-virgule (;)&lt;/b&gt; fera une recherche simple d'album sur Discog avec ces mots clés.&lt;/li&gt;
         &lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="342"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="287"/>
         <source>Retrieve Cover</source>
         <translation>Récupérer la Pochette</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="343"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="288"/>
         <source>Cover size to retrieve</source>
         <translation>Taille de la pochette à récupérer</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="344"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="289"/>
         <source>Small</source>
         <translation>Petite</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="345"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="290"/>
         <source>Large</source>
         <translation>Grande</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="346"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="291"/>
         <source>Field to use for discogs_id</source>
-        <translation>Champ à utiliser pour l&apos;ID Discogs</translation>
+        <translation>Champ à utiliser pour l'ID Discogs</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="347"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="292"/>
         <source>API Key (Stored as plain-text.Leave empty to use default.)</source>
         <translation>Clé API (Stockée en texte claire, laissez vide pour utiliser la valeur par défaut)</translation>
     </message>
@@ -1310,38 +1355,38 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">Release ID Discogs invalide</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="372"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="317"/>
         <source>Checking tracks for Discogs Album ID.</source>
-        <translation>Recherche d&apos;Album ID dans les pistes.</translation>
+        <translation>Recherche d'Album ID dans les pistes.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="378"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="323"/>
         <source>No Discogs ID found in tracks.</source>
         <translation>Aucun ID trouvé dans les pistes.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="381"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="326"/>
         <source>Found Discogs ID: %s</source>
         <translation>Discogs ID trouvé: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="280"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="234"/>
         <source>%s at Discogs.com</source>
         <translation>%s sur Discogs.com</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="274"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="228"/>
         <source>Error retrieving image:</source>
-        <translation>Erreur en récupérant l&apos;image:</translation>
+        <translation>Erreur en récupérant l'image:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="333"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="278"/>
         <source>&lt;p&gt;&lt;b&gt;Discogs only support searching by release id&lt;/b&gt;&lt;/p&gt;
         &lt;p&gt;Enter the release id Eg. &quot;1257896&quot; to search.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/discogs.py" line="356"/>
+        <location filename="../puddlestuff/tagsources/discogs.py" line="301"/>
         <source>Discogs release id should be an integer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1379,7 +1424,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/util.py" line="75"/>
         <source>Couldn&apos;t create intermediate directory: %s</source>
-        <translation>N&apos;a pu créer le dossier intermédiaire: %s</translation>
+        <translation>N'a pu créer le dossier intermédiaire: %s</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="99"/>
@@ -1387,12 +1432,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation>Impossible de déplacer un dossier dans lui-même.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/findfunc.py" line="389"/>
+        <location filename="../puddlestuff/findfunc.py" line="386"/>
         <source>No closing bracket found.</source>
         <translation>Parenthèse fermante introuvable.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="659"/>
+        <location filename="../puddlestuff/puddletag.py" line="763"/>
         <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won&apos;t be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
         <translation>Votre système de fichier est détecté comme étant &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Vous ne pourrez pas renommer les fichiers avec caractères accentués, &lt;br /&gt; cyrillique ou autre non-ASCII.</translation>
     </message>
@@ -1412,7 +1457,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="661"/>
         <source>Resets the selected fields to their original value.</source>
-        <translation>Restaurer l&apos;état initial des fichiers sélectionnés.</translation>
+        <translation>Restaurer l'état initial des fichiers sélectionnés.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="891"/>
@@ -1423,57 +1468,57 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Fields</name>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Filename</source>
         <translation>Nom de fichier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Artist</source>
         <translation>Artiste</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Title</source>
         <translation>Titre</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Track</source>
         <translation>Piste</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Length</source>
         <translation>Durée</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Year</source>
         <translation>Année</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Bitrate</source>
         <translation>Débit</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Comment</source>
         <translation>Commentaire</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="73"/>
+        <location filename="../puddlestuff/tagmodel.py" line="74"/>
         <source>Dirpath</source>
         <translation>Chemin</translation>
     </message>
@@ -1489,12 +1534,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Functions</name>
     <message>
-        <location filename="../puddlestuff/findfunc.py" line="58"/>
+        <location filename="../puddlestuff/findfunc.py" line="55"/>
         <source>At most %1 arguments expected. %2 given.</source>
         <translation>Au plus %1 paramètres attendus. %2 trouvés.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/findfunc.py" line="64"/>
+        <location filename="../puddlestuff/findfunc.py" line="61"/>
         <source>At least %1 arguments expected. %2 given.</source>
         <translation>Au moins %1 paramètres attendus. %2 trouvés.</translation>
     </message>
@@ -1511,7 +1556,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="147"/>
         <source>Replace $0: &apos;$1&apos; -&gt; &apos;$2&apos;, Match Case: $3, Words Only: $4</source>
-        <translation>Remplacer $0: &apos;$1&apos; -&gt; &apos;$2&apos;, Sensible à la casse: $3, Mot entiers: $4</translation>
+        <translation>Remplacer $0: '$1' -&gt; '$2', Sensible à la casse: $3, Mot entiers: $4</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="149"/>
@@ -1571,7 +1616,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="162"/>
         <source>Sort $0, order=&apos;$1&apos;, Match Case=&apos;$2&apos;</source>
-        <translation>Trier $0, ordre=&apos;$1&apos;, Sensible à la casse=&apos;$2&apos;</translation>
+        <translation>Trier $0, ordre='$1', Sensible à la casse='$2'</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="164"/>
@@ -1616,7 +1661,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="153"/>
         <source>RegReplace $0: RegExp &apos;$1&apos; with &apos;$2&apos;, Match Case: $3</source>
-        <translation>ExprRemplace $0: ExprRat &apos;$1&apos; avec &apos;$2&apos;, Sensible à la casse: $3</translation>
+        <translation>ExprRemplace $0: ExprRat '$1' avec '$2', Sensible à la casse: $3</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="155"/>
@@ -1631,7 +1676,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="87"/>
         <source>Artwork: Filenames=&apos;$1&apos;, Description=&apos;$2&apos;, Case Sensitive=$3</source>
-        <translation>Image: Fichier=&apos;$1&apos;, Description=&apos;$2&apos;, Sensible à la casse=$3</translation>
+        <translation>Image: Fichier='$1', Description='$2', Sensible à la casse=$3</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="89"/>
@@ -1651,7 +1696,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="133"/>
         <source>Merge field: $0, sep=&apos;$1&apos;</source>
-        <translation>Fusionner le champ: $0, sep=&apos;$1&apos;</translation>
+        <translation>Fusionner le champ: $0, sep='$1'</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="170"/>
@@ -1666,12 +1711,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="129"/>
         <source>Text File: $0, &apos;$1&apos;</source>
-        <translation>Fichier texte: $0, &apos;$1&apos;</translation>
+        <translation>Fichier texte: $0, '$1'</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="168"/>
         <source>Split using separator $0: sep=&apos;$1&apos;</source>
-        <translation>Éclater en utilisant le séparateur $0: sep=&apos;$1&apos;</translation>
+        <translation>Éclater en utilisant le séparateur $0: sep='$1'</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="143"/>
@@ -1716,7 +1761,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="100"/>
         <source>Convert to encoding: $0, Encoding: $1</source>
-        <translation>Convertir l&apos;encodage: $0, Encodage: $1</translation>
+        <translation>Convertir l'encodage: $0, Encodage: $1</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="102"/>
@@ -1786,12 +1831,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="123"/>
         <source>File-&gt;Tag &apos;$1&apos;</source>
-        <translation>Fichier-&gt;Tag &apos;$1&apos;</translation>
+        <translation>Fichier-&gt;Tag '$1'</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="158"/>
         <source>Export Art: pattern=&apos;$1&apos;</source>
-        <translation>Exporter image: motif=&apos;$1&apos;</translation>
+        <translation>Exporter image: motif='$1'</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="160"/>
@@ -1871,7 +1916,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="159"/>
         <source>Export artwork to file</source>
-        <translation>Exporter l&apos;image vers un fichier</translation>
+        <translation>Exporter l'image vers un fichier</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="93"/>
@@ -2012,7 +2057,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Functions Dialog</name>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="48"/>
+        <location filename="../puddlestuff/actiondlg.py" line="47"/>
         <source>&lt;b&gt;No change.&lt;/b&gt;</source>
         <translation>&lt;b&gt;Aucun changement .&lt;/b&gt;</translation>
     </message>
@@ -2036,24 +2081,24 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 
 &lt;ul&gt;
 &lt;li&gt;Entrez un liste de champs, séparés par des virgules, par ex &lt;b&gt;artist, title, album&lt;/b&gt;&lt;/li&gt;
-&lt;lI&gt;Utilisez &lt;b&gt;__selected&lt;/b&gt; pour n&apos;écrire que dans les cellules sélectionnées.&lt;/li&gt;
+&lt;lI&gt;Utilisez &lt;b&gt;__selected&lt;/b&gt; pour n'écrire que dans les cellules sélectionnées.&lt;/li&gt;
 &lt;li&gt;Les combinaisons comme &lt;b&gt;__selected, artist, title&lt;/b&gt; sont acceptées.&lt;/li&gt;
-&lt;li&gt;Mais &lt;b&gt;__selected&lt;/b&gt; n&apos;est &lt;b&gt;pas&lt;/b&gt; autorisé dans les Actions.&lt;/li&gt;
-&lt;li&gt;&apos;~&apos; écrit dans tous les champs sauf ceux qui le suivent. par ex &lt;b&gt;~artist, title&lt;/b&gt; va écrire dans tous les champs sauf artiste et titre trouvés dans les fichiers sélectionnés.&lt;/li&gt;
+&lt;li&gt;Mais &lt;b&gt;__selected&lt;/b&gt; n'est &lt;b&gt;pas&lt;/b&gt; autorisé dans les Actions.&lt;/li&gt;
+&lt;li&gt;'~' écrit dans tous les champs sauf ceux qui le suivent. par ex &lt;b&gt;~artist, title&lt;/b&gt; va écrire dans tous les champs sauf artiste et titre trouvés dans les fichiers sélectionnés.&lt;/li&gt;
 &lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="354"/>
+        <location filename="../puddlestuff/actiondlg.py" line="353"/>
         <source>No preview for is shown for this function.</source>
         <translation>Pas de prévisualisation pour cette fonction.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="370"/>
+        <location filename="../puddlestuff/actiondlg.py" line="369"/>
         <source>&lt;b&gt;No change&lt;/b&gt;</source>
         <translation>&lt;b&gt;Aucun changement &lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="428"/>
+        <location filename="../puddlestuff/actiondlg.py" line="427"/>
         <source>Functions</source>
         <translation>Fonctions</translation>
     </message>
@@ -2077,13 +2122,13 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">&lt;p&gt;Champs qui seront écrits.&lt;/p&gt;
 &lt;ul&gt;
 .   &lt;li&gt;Entrez une liste de champs séparée par des virgules - ex. &lt;b&gt;artist, title, album&lt;/b&gt;&lt;/li&gt;
-    &lt;li&gt;Utilisez &lt;b&gt;__selected&lt;/b&gt; pour écrire seulement les cellules sélectionnées.Ce n&apos;est pas possible lors de la création d&apos;une action.&lt;/li&gt;
+    &lt;li&gt;Utilisez &lt;b&gt;__selected&lt;/b&gt; pour écrire seulement les cellules sélectionnées.Ce n'est pas possible lors de la création d'une action.&lt;/li&gt;
     &lt;li&gt;Les Combinaisons comme &lt;b&gt;__selected, artist, title&lt;/b&gt; sont possibles.&lt;/li&gt;
-    &lt;li&gt;&apos;~&apos; écrira tous les champs à l&apos;exception de ceux qui le suivent - ex. &lt;b&gt;~artist, title&lt;/b&gt; écrira tous les champs sauf Artiste et Titre trouvés dans les fichiers sélectionnés.&lt;li&gt;
+    &lt;li&gt;'~' écrira tous les champs à l'exception de ceux qui le suivent - ex. &lt;b&gt;~artist, title&lt;/b&gt; écrira tous les champs sauf Artiste et Titre trouvés dans les fichiers sélectionnés.&lt;li&gt;
 &lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="27"/>
+        <location filename="../puddlestuff/actiondlg.py" line="26"/>
         <source>&lt;p&gt;Fields that will
                            get written to.&lt;/p&gt;
                        
@@ -2168,52 +2213,52 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>List Buttons</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1269"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1270"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1272"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1273"/>
         <source>Remove</source>
         <translation>Enlever</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1276"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1277"/>
         <source>Move Up</source>
         <translation>Monter</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1279"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1280"/>
         <source>Move Down</source>
         <translation>Descendre</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1282"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1283"/>
         <source>Edit</source>
         <translation>Modifier</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1285"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1286"/>
         <source>Duplicate</source>
         <translation>Dupliquer</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1350"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1351"/>
         <source>&amp;&gt;&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1351"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1352"/>
         <source>&amp;&lt;&lt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1287"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1288"/>
         <source>Copy to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1289"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1290"/>
         <source>Paste from clipboard</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2234,17 +2279,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Main Window</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="444"/>
+        <location filename="../puddlestuff/puddletag.py" line="547"/>
         <source>puddletag: %1 + others</source>
         <translation>puddletag: %1 + autres</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="446"/>
+        <location filename="../puddlestuff/puddletag.py" line="549"/>
         <source>puddletag: %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="456"/>
+        <location filename="../puddlestuff/puddletag.py" line="558"/>
         <source>Import directory...</source>
         <translation>Importer le dossier...</translation>
     </message>
@@ -2265,7 +2310,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
             tag sources are also supported, just use the name of the
             tag source as Tag, eg. &lt;b&gt;Tag=MusicBrainz,
             Source=artist,Target=performer&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation type="obsolete">&lt;ul&gt;&lt;li&gt;Tag est le format auquel la correspondance s&apos;applique : &lt;b&gt;ID3, APEv2, MP4 ou VorbisComment&lt;/b&gt;.&lt;/li&gt;
+        <translation type="obsolete">&lt;ul&gt;&lt;li&gt;Tag est le format auquel la correspondance s'applique : &lt;b&gt;ID3, APEv2, MP4 ou VorbisComment&lt;/b&gt;.&lt;/li&gt;
 &lt;li&gt;Les champs seront associés de Source à Cible, ce qui veut dire que si Source est trouvé dans un tag, il sera modifiable dans puddletag en tant que Cible.&lt;/li&gt;
 &lt;lI&gt;Ex: Pour &lt;b&gt;Tag=VorbisComment, Source=organization et Cible=publisher&lt;/b&gt; alors écrire dans Editeur pour un tag VorbisComment dans puddletag écrira en fait dans Organisation.&lt;/li&gt;
 &lt;li&gt;Les associations pour les Sources de tag sont aussi supportées. Entrez simplement le nom de la source dans Tag, par ex &lt;b&gt;Tag=MusicBrainz, Source=artist, Cible=performer&lt;/b&gt;.&lt;/li&gt;
@@ -2358,7 +2403,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="puddlestuff/masstagging.py" line="253"/>
         <source>&lt;b&gt;%1&lt;/b&gt;: No matches, trying other sources.</source>
-        <translation type="obsolete">&lt;b&gt;%1&lt;/b&gt;: Pas de correspondances, essai d&apos;autres soruces.</translation>
+        <translation type="obsolete">&lt;b&gt;%1&lt;/b&gt;: Pas de correspondances, essai d'autres soruces.</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="256"/>
@@ -2368,7 +2413,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="puddlestuff/masstagging.py" line="261"/>
         <source>&lt;b&gt;%1&lt;/b&gt;: Inexact matches found, doing nothing.</source>
-        <translation type="obsolete">&lt;b&gt;%1&lt;/b&gt;: Correspondances inexactes trouvées, pas d&apos;action.</translation>
+        <translation type="obsolete">&lt;b&gt;%1&lt;/b&gt;: Correspondances inexactes trouvées, pas d'action.</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="264"/>
@@ -2383,7 +2428,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="puddlestuff/masstagging.py" line="271"/>
         <source>&lt;b&gt;%1&lt;/b&gt;: Retrieving album.</source>
-        <translation type="obsolete">&lt;b&gt;%1&lt;/b&gt;: Récupération de l&apos;album.</translation>
+        <translation type="obsolete">&lt;b&gt;%1&lt;/b&gt;: Récupération de l'album.</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="276"/>
@@ -2398,7 +2443,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="puddlestuff/masstagging.py" line="349"/>
         <source>&lt;br /&gt;Starting album search.</source>
-        <translation type="obsolete">&lt;br /&gt;Démarrage de la recherche d&apos;album.</translation>
+        <translation type="obsolete">&lt;br /&gt;Démarrage de la recherche d'album.</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="350"/>
@@ -2428,7 +2473,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="puddlestuff/masstagging.py" line="372"/>
         <source>No albums found</source>
-        <translation type="obsolete">Pas d&apos;album trouvé.</translation>
+        <translation type="obsolete">Pas d'album trouvé.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="507"/>
@@ -2483,7 +2528,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="puddlestuff/masstagging.py" line="954"/>
         <source>&lt;br /&gt;&lt;b&gt;Stopping due to error.&lt;/b&gt;</source>
-        <translation type="obsolete">&lt;br /&gt;&lt;b&gt;Arrêt à cause d&apos;une erreur.&lt;/b&gt;</translation>
+        <translation type="obsolete">&lt;br /&gt;&lt;b&gt;Arrêt à cause d'une erreur.&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="960"/>
@@ -2493,12 +2538,12 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="633"/>
         <source>An error occured during the search: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Une erreur s&apos;est produite lors de la recherche:  &lt;b&gt;%s&lt;/b&gt;</translation>
+        <translation>Une erreur s'est produite lors de la recherche:  &lt;b&gt;%s&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="636"/>
         <source>An error occured during album retrieval: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Une erreur s&apos;est produite lors de la récupération de l&apos;album:  &lt;b&gt;%s&lt;/b&gt;</translation>
+        <translation>Une erreur s'est produite lors de la récupération de l'album:  &lt;b&gt;%s&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="668"/>
@@ -2533,22 +2578,22 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="61"/>
         <source>Retrieving matching album. &lt;b&gt;%1 - %2&lt;/b&gt;</source>
-        <translation>Récupération de l&apos;album. &lt;b&gt;%1 - %2&lt;/b&gt;</translation>
+        <translation>Récupération de l'album. &lt;b&gt;%1 - %2&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="63"/>
         <source>Retrieving matching album. Artist=&lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Récupération de l&apos;album. Artist=&lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Récupération de l'album. Artist=&lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="65"/>
         <source>Retrieving matching album. Album=&lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Récupération de l&apos;album. Album=&lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Récupération de l'album. Album=&lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="67"/>
         <source>Retrieving matching album.</source>
-        <translation>Récupération de l&apos;album.</translation>
+        <translation>Récupération de l'album.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="69"/>
@@ -2558,17 +2603,17 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="72"/>
         <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;album=No album name found.</source>
-        <translation>Démarrage de la recherche: &lt;br /&gt;Artiste=&lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Album=Pas de nom d&apos;album trouvé.</translation>
+        <translation>Démarrage de la recherche: &lt;br /&gt;Artiste=&lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Album=Pas de nom d'album trouvé.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="75"/>
         <source>Starting search for: &lt;br /&gt;album=&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;artist=No artist found.</source>
-        <translation>Démarrage de la recherche: &lt;br /&gt;Album=&lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Artiste=Pas d&apos;artiste trouvé.</translation>
+        <translation>Démarrage de la recherche: &lt;br /&gt;Album=&lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Artiste=Pas d'artiste trouvé.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="78"/>
         <source>No artist or album info found in files. Starting search.</source>
-        <translation>Pas d&apos;info artiste ou album trouvé dans les fichiers. Démarrage de la recherche.</translation>
+        <translation>Pas d'info artiste ou album trouvé dans les fichiers. Démarrage de la recherche.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="81"/>
@@ -2603,7 +2648,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="92"/>
         <source>Previously retrieved result does not match. Retrieving next matching album.</source>
-        <translation>Les résultats précédents ne correspondent pas. Récupération de l&apos;album suivant.</translation>
+        <translation>Les résultats précédents ne correspondent pas. Récupération de l'album suivant.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="96"/>
@@ -2613,22 +2658,22 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="99"/>
         <source>&lt;br /&gt;Valid matches were found for the album.</source>
-        <translation>&lt;br /&gt;Des correspondances ont été trouvées pour l&apos;album.</translation>
+        <translation>&lt;br /&gt;Des correspondances ont été trouvées pour l'album.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="102"/>
         <source>&lt;b&gt;No valid matches were found for the album.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Aucune correspondances trouvée pour l&apos;album.&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Aucune correspondances trouvée pour l'album.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/masstag/__init__.py" line="478"/>
+        <location filename="../puddlestuff/masstag/__init__.py" line="475"/>
         <source>Rechecking</source>
         <translation>Revérification</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/masstag/__init__.py" line="599"/>
+        <location filename="../puddlestuff/masstag/__init__.py" line="596"/>
         <source>Retrying search with album name: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Nouvel essai de recherche avec le nom d&apos;album: &lt;b&gt;%s&lt;/b&gt;</translation>
+        <translation>Nouvel essai de recherche avec le nom d'album: &lt;b&gt;%s&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="625"/>
@@ -2639,24 +2684,24 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 <context>
     <name>Menus</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="197"/>
+        <location filename="../puddlestuff/puddletag.py" line="301"/>
         <source>Help</source>
         <translation>Aide</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="215"/>
+        <location filename="../puddlestuff/puddletag.py" line="318"/>
         <source>About puddletag</source>
         <translation>A propos de puddletag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="219"/>
+        <location filename="../puddlestuff/puddletag.py" line="322"/>
         <source>About Qt</source>
         <translation>A propos de Qt</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="344"/>
+        <location filename="../puddlestuff/puddletag.py" line="447"/>
         <source>Toolbar</source>
-        <translation>Barre d&apos;outils</translation>
+        <translation>Barre d'outils</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="110"/>
@@ -2936,7 +2981,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/translations.py" line="105"/>
         <source>Convert filename to tag using the pattern.</source>
-        <translation type="obsolete">Deviner les tag d&apos;après le nom de fichier et le motif.</translation>
+        <translation type="obsolete">Deviner les tag d'après le nom de fichier et le motif.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="122"/>
@@ -3014,7 +3059,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">&amp;Fenêtres</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="202"/>
+        <location filename="../puddlestuff/puddletag.py" line="306"/>
         <source>Online &amp;Documentation</source>
         <translation>&amp;Documentation en ligne</translation>
     </message>
@@ -3026,7 +3071,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="210"/>
         <source>&amp;Bug tracker</source>
-        <translation>Rapports de &amp;Bugs</translation>
+        <translation type="obsolete">Rapports de &amp;Bugs</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="90"/>
@@ -3044,8 +3089,13 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
         <translation type="obsolete">Actualiser les dossiers des fichiers sélectionnés.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="206"/>
+        <location filename="../puddlestuff/puddletag.py" line="310"/>
         <source>&amp;GitHub project</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/puddletag.py" line="314"/>
+        <source>&amp;Report a problem</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3057,7 +3107,7 @@ Double cliquer pour changer la couleur&lt;/p&gt;</translation>
 It may cause your system to lock up.
 
 Do you want to go ahead?</source>
-        <translation>C&apos;est une très grande quantité d&apos;informations à copier.
+        <translation>C'est une très grande quantité d'informations à copier.
 Cela risque de bloquer votre système.
 
 Continuer ?</translation>
@@ -3121,10 +3171,10 @@ Continuer ?</translation>
     <message>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="72"/>
         <source>Retrieving Artist Info for &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation type="obsolete">Récupération de l&apos;artiste pour &lt;b&gt;%s&lt;/b&gt;</translation>
+        <translation type="obsolete">Récupération de l'artiste pour &lt;b&gt;%s&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="527"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="528"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving %1: %2</source>
         <translation>&lt;b&gt;Erreur:&lt;/b&gt;Récupération de %1: %2</translation>
     </message>
@@ -3134,19 +3184,19 @@ Continuer ?</translation>
         <translation type="obsolete">Récupérer PUIDS (Nécéssite une requête pour chaque piste.)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="580"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="581"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID %1 (%2)</source>
-        <translation>&lt;b&gt;Erreur:&lt;/b&gt;Récupération de l&apos;ID Album %1 (%2)</translation>
+        <translation>&lt;b&gt;Erreur:&lt;/b&gt;Récupération de l'ID Album %1 (%2)</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="259"/>
         <source>Checking tracks for MusicBrainz Album ID.</source>
-        <translation type="obsolete">Vérification des pistes l&apos;ID Album MusicBrainz.</translation>
+        <translation type="obsolete">Vérification des pistes l'ID Album MusicBrainz.</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="265"/>
         <source>No Album ID found in tracks.</source>
-        <translation type="obsolete">Pas d&apos;ID Album trouvé dans les pistes.</translation>
+        <translation type="obsolete">Pas d'ID Album trouvé dans les pistes.</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="268"/>
@@ -3156,7 +3206,7 @@ Continuer ?</translation>
     <message>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="279"/>
         <source>Searching for album: %s</source>
-        <translation type="obsolete">Recherche de l&apos;album: %s</translation>
+        <translation type="obsolete">Recherche de l'album: %s</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="180"/>
@@ -3190,81 +3240,81 @@ Continuer ?</translation>
 &lt;ul&gt;
 &lt;li&gt;Entrez un texte quelconque pour chercher un album. Par ex &lt;b&gt;Southernplayalisticadillacmuzik&lt;/b&gt;&lt;/li&gt;
 &lt;li&gt;&lt;b&gt;Artiste,Album&lt;/b&gt; recherche une combinaison spécifique.&lt;/li&gt;
-&lt;lI&gt;Pour des combinaisons Artiste/Album multiples, séparez les par des &apos;|&apos;. Par ex &lt;b&gt;Amy Winehouse;Back To Black|Outkast;Atliens&lt;/b&gt;.&lt;/li&gt;
-&lt;li&gt;Pour lister les albums d&apos;un artiste, laissez la partie Album vide, mais laissez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;).
-Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme dans &lt;b&gt;;Resurrection.&lt;/li&gt;
-&lt;li&gt;Récupérer tous les albums d&apos;un artiste via son ID MusicBrainz est possible en préfixant la recherche par &lt;b&gt;:a&lt;/b&gt; comme dans &lt;b&gt;:a f59c5520-5f46-4d2c-b2c4-822eabf53419&lt;/b&gt;
+&lt;lI&gt;Pour des combinaisons Artiste/Album multiples, séparez les par des '|'. Par ex &lt;b&gt;Amy Winehouse;Back To Black|Outkast;Atliens&lt;/b&gt;.&lt;/li&gt;
+&lt;li&gt;Pour lister les albums d'un artiste, laissez la partie Album vide, mais laissez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;).
+Pour cherche sur l'album seulement, laissez la partie Artiste vide, comme dans &lt;b&gt;;Resurrection.&lt;/li&gt;
+&lt;li&gt;Récupérer tous les albums d'un artiste via son ID MusicBrainz est possible en préfixant la recherche par &lt;b&gt;:a&lt;/b&gt; comme dans &lt;b&gt;:a f59c5520-5f46-4d2c-b2c4-822eabf53419&lt;/b&gt;
 (les espaces superflus seront supprimés.)&lt;/li&gt;
 &lt;li&gt;De la même façon un album peut être récupérer via son ID MusicBrainz ID en préfixant la recherche par &lt;b&gt;:b&lt;/b&gt; comme dans &lt;b&gt;:b 34bb630-8061-454c-b35d-8f7131f4ff08&lt;/b&gt;
 &lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="375"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="376"/>
         <source>Retrieving cover: %s</source>
         <translation type="unfinished">Récupération de la pochette: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="380"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="381"/>
         <source>No images exist for this album.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="390"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="391"/>
         <source>Invalid UUID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="392"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="393"/>
         <source>Invalid query sent.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="394"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="395"/>
         <source>You have exceeded your rate limit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="397"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="398"/>
         <source>Image does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="417"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="418"/>
         <source>Retrieving image %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="509"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="510"/>
         <source>Retrieve Cover</source>
         <translation type="unfinished">Récupérer la Pochette</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="510"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="511"/>
         <source>Cover size to retrieve:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="514"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="515"/>
         <source>Amount of images to retrieve:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="515"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="516"/>
         <source>Just the front cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="516"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="517"/>
         <source>All (can take a while)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="576"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="577"/>
         <source>Found album id %s in tracks. Retrieving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="620"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="621"/>
         <source>Error retrieving image: %s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3295,7 +3345,7 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="../puddlestuff/musiclib.py" line="144"/>
         <source>Description was left out.</source>
-        <translation>La description n&apos;a pas été renseignée.</translation>
+        <translation>La description n'a pas été renseignée.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/musiclib.py" line="149"/>
@@ -3310,7 +3360,7 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="../puddlestuff/musiclib.py" line="211"/>
         <source>An error occured while loading the %1 library: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation>Une erreur s&apos;est produite au chargement de la discothèque %1:&lt;b&gt;%2&lt;/b&gt;</translation>
+        <translation>Une erreur s'est produite au chargement de la discothèque %1:&lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/musiclib.py" line="473"/>
@@ -3340,12 +3390,12 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="235"/>
         <source>Load a lib first.</source>
-        <translation>Chargez d&apos;abord une discothèque.</translation>
+        <translation>Chargez d'abord une discothèque.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="261"/>
         <source>No supported music libraries were found. Most likely the required dependencies aren&apos;t installed. Visit the puddletag website, &lt;a href=&apos;http://puddletag.sourceforge.net&apos;&gt;puddletag.sourceforge.net&lt;/a&gt; for more details.</source>
-        <translation>Aucune discothèque exploitable n&apos;a été trouvée. Il est possible que les bibliothèques nécéssaires ne soient pas installées. Voyez le site web puddletag, &lt;a href=&apos;http://puddletag.sourceforge.net&apos;&gt;puddletag.sourceforge.net&lt;/a&gt; pour plus d&apos;informations.</translation>
+        <translation>Aucune discothèque exploitable n'a été trouvée. Il est possible que les bibliothèques nécéssaires ne soient pas installées. Voyez le site web puddletag, &lt;a href='http://puddletag.sourceforge.net'&gt;puddletag.sourceforge.net&lt;/a&gt; pour plus d'informations.</translation>
     </message>
 </context>
 <context>
@@ -3364,22 +3414,22 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
 <context>
     <name>Playlist</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="531"/>
+        <location filename="../puddlestuff/puddletag.py" line="635"/>
         <source>Select m3u file...</source>
         <translation>Sélectionner un fichier m3u...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="548"/>
+        <location filename="../puddlestuff/puddletag.py" line="652"/>
         <source>An error occured while reading &lt;b&gt;%1&lt;/b&gt; (%2)</source>
-        <translation>Une erreur s&apos;est produite lors de la lecture de &lt;b&gt;%1&lt;/b&gt;. (%2)</translation>
+        <translation>Une erreur s'est produite lors de la lecture de &lt;b&gt;%1&lt;/b&gt;. (%2)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="690"/>
+        <location filename="../puddlestuff/puddletag.py" line="794"/>
         <source>Save Playlist...</source>
         <translation>Sauver la liste de lecture...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="544"/>
+        <location filename="../puddlestuff/puddletag.py" line="648"/>
         <source>The playlist is not encoded in UTF-8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3438,19 +3488,19 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
 <context>
     <name>Previews</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="516"/>
+        <location filename="../puddlestuff/puddletag.py" line="620"/>
         <source>Preview Mode: Off</source>
         <translation>Mode Aperçu: Désactivé</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="514"/>
+        <location filename="../puddlestuff/puddletag.py" line="618"/>
         <source>&lt;b&gt;Preview Mode: On&lt;/b&gt;</source>
         <translation>&lt;b&gt;Mode Aperçu: Activé&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="124"/>
         <source>Do you want to exit Preview Mode?</source>
-        <translation>Voulez-vous quitter le mode Aperçu ?</translation>
+        <translation type="obsolete">Voulez-vous quitter le mode Aperçu ?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="669"/>
@@ -3463,18 +3513,23 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
         <translation>Désactivez le mode Aperçu avant de pouvoir supprimer des tags. </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="473"/>
+        <location filename="../puddlestuff/puddletag.py" line="577"/>
         <source>Some files have uncommited previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
         <translation>Certains fichiers ont des modifications non enregistrées. Ces changements seront perdus si vous quittez puddletag. &lt;br /&gt;Voulez-vous quitter sans enregistrer ces changements ?&lt;br /&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/dirview.py" line="65"/>
+        <location filename="../puddlestuff/mainwin/dirview.py" line="78"/>
         <source>Some files have uncommited previews. Changes will be lost once you load a directory. &lt;br /&gt;Do you still want to load a new directory?&lt;br /&gt;</source>
         <translation>Certains fichiers ont des modifications non enregistrées. Ces changements seront perdus si vous charger un dossier. &lt;br /&gt;Voulez-vous charger un nouveau dossier ?&lt;br /&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2103"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2098"/>
         <source>There are unsaved changes pending. Do you want to discard and reload?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/tagmodel.py" line="125"/>
+        <source>Do you want to exit Preview Mode? Unsaved changes will be discarded</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3526,17 +3581,17 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="216"/>
         <source>&lt;p&gt;If no tag information is found in a file, the tags retrieved using this pattern will be used instead.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Si aucun tag n&apos;est trouvé dans le fichier, les informations devinées grâce à ce motif seront utilisées&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Si aucun tag n'est trouvé dans le fichier, les informations devinées grâce à ce motif seront utilisées&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="398"/>
         <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it&apos;ll be considered to match.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Les champs Artiste et Album seront utilisés pour vérifier qu&apos;un album correspond à celui récupéré. Chaque champ sera comparé avec un algorithme approximatif. Si la taux d&apos;exctitude est supérieur ou égal à ce que vous entrez ici alors le test sera considéré positif.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Les champs Artiste et Album seront utilisés pour vérifier qu'un album correspond à celui récupéré. Chaque champ sera comparé avec un algorithme approximatif. Si la taux d'exctitude est supérieur ou égal à ce que vous entrez ici alors le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="389"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu&apos;une piste correspond à celle téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d&apos;exactitude est supérieur au &quot;Pourcentage minimum&quot; le test sera considéré positif.&lt;/p&gt;</translation>
+        <translation type="unfinished">&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'une piste correspond à celle téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au &quot;Pourcentage minimum&quot; le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="380"/>
@@ -3546,7 +3601,7 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="382"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;Si au moins un fichier n&apos;est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
+        <translation type="unfinished">&lt;p&gt;Si au moins un fichier n'est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="253"/>
@@ -3561,7 +3616,7 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="269"/>
         <source>Minimum percentage required for album matches.</source>
-        <translation>Pourcentage minimum requis pour la correspondance d&apos;album.</translation>
+        <translation>Pourcentage minimum requis pour la correspondance d'album.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="272"/>
@@ -3586,20 +3641,20 @@ Pour cherche sur l&apos;album seulement, laissez la partie Artiste vide, comme d
     <message>
         <location filename="puddlestuff/masstagging.py" line="603"/>
         <source>&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album continue unabated if no results were returned for this Tag Source.&lt;br /&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup the current album will stop and any previous results will be used.</source>
-        <translation type="obsolete">&lt;b&gt;Continuer&lt;/b&gt;: La recherche pour l&apos;album en cours continue si aucun résultat n&apos;est trouvé pour cette source.&lt;br /&gt;&lt;b&gt;Stopper&lt;/b&gt;: La recherche de l&apos;album en cours s&apos;arrêtera et tous les résultats précédents seront utilisés.</translation>
+        <translation type="obsolete">&lt;b&gt;Continuer&lt;/b&gt;: La recherche pour l'album en cours continue si aucun résultat n'est trouvé pour cette source.&lt;br /&gt;&lt;b&gt;Stopper&lt;/b&gt;: La recherche de l'album en cours s'arrêtera et tous les résultats précédents seront utilisés.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="450"/>
         <source>&amp;If no results found: </source>
-        <translation>Si &amp;aucun résultat n&apos;est trouvé: </translation>
+        <translation>Si &amp;aucun résultat n'est trouvé: </translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="608"/>
         <source>Say FreeDB returned the following &lt;b&gt;artist=Linkin, album=Meteora, genre=Rock&lt;/b&gt; and MusicBrainz &lt;b&gt;artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap&lt;/b&gt;. &lt;br /&gt;&lt;br /&gt;&lt;b&gt;Combining&lt;/b&gt; them means that fields with differing values will be combined, in this case &quot;genre&quot;. The resulting tag will be &lt;b&gt;artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rock, Rap&lt;/b&gt; (ie. genre will have two values, Rock and Rap. Not the singular &quot;Rock, Rap&quot;.)&lt;br /&gt;&lt;br /&gt;Choosing to &lt;b&gt;replace&lt;/b&gt; fields will result in the following tag &lt;b&gt;artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap&lt;/b&gt; (since Musicbrainz was last, it&apos;s genre field takes precedence)</source>
         <translation type="obsolete">Mettons que FreeDB réponde ceci &lt;b&gt;artist=Linkin, album=Meteora, genre=Rock&lt;/b&gt; et MusicBrainz &lt;b&gt;artist=Linkin Park, album=Hybrid Theory, title=In The End, genre=Rap&lt;/b&gt;.
 &lt;br./&gt;&lt;br /&gt;
-En les &lt;b&gt;combinant&lt;/b&gt;, les valeurs différentes seront cumulées. (Dans l&apos;exemple, le genre résultant sera &quot;Rock, Rap&quot;).
-En les &lt;b&gt;remplacant&lt;/b&gt;, les dernières valeurs obtenues seront utilisées. (Dans l&apos;exemple, le genre résultant sera &quot;Rap&quot;).</translation>
+En les &lt;b&gt;combinant&lt;/b&gt;, les valeurs différentes seront cumulées. (Dans l'exemple, le genre résultant sera &quot;Rock, Rap&quot;).
+En les &lt;b&gt;remplacant&lt;/b&gt;, les dernières valeurs obtenues seront utilisées. (Dans l'exemple, le genre résultant sera &quot;Rap&quot;).</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="610"/>
@@ -3616,7 +3671,7 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
     <message>
         <location filename="puddlestuff/masstagging.py" line="621"/>
         <source>Choose the course of action if an exact match wasn&apos;t found. See the tooltip in the previous dialog for an explanation of &lt;b&gt;Use best match&lt;/b&gt;.</source>
-        <translation type="obsolete">Choisissez ce qu&apos;il faut faire si une correspondance exacte n&apos;est pas possible. Voyez l&apos;infobulle dans le dialogue précédent pour une explication de la fonction &quot;Bestmatch&quot;&lt;/b&gt;.</translation>
+        <translation type="obsolete">Choisissez ce qu'il faut faire si une correspondance exacte n'est pas possible. Voyez l'infobulle dans le dialogue précédent pour une explication de la fonction &quot;Bestmatch&quot;&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="puddlestuff/masstagging.py" line="623"/>
@@ -3626,7 +3681,7 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="435"/>
         <source>Minimum &amp;percentage required for album matches.</source>
-        <translation type="unfinished">&amp;Pourcentage minimum requis pour la correspondance d&apos;album.</translation>
+        <translation type="unfinished">&amp;Pourcentage minimum requis pour la correspondance d'album.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="438"/>
@@ -3641,12 +3696,12 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="232"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a file matches a retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu&apos;un fichier correspond à une piste téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d&apos;exactitude est supérieur au &quot;Pourcentage minimum&quot; le test sera considéré positif.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Les champs listés ici seront utilisé pour vérifer qu'un fichier correspond à une piste téléchargée. Chaque champ sera comparé avec un alogrithme approximatif. Si le taux d'exactitude est supérieur au &quot;Pourcentage minimum&quot; le test sera considéré positif.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="246"/>
         <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Cochez pour forcer la correspondace. Si au moins un fichier n&apos;est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Cochez pour forcer la correspondace. Si au moins un fichier n'est pas trouvé, la correspondance sera tentée avec les noms des fichiers non trouvés.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="387"/>
@@ -3660,8 +3715,8 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
 &lt;br./&gt;&lt;br /&gt;
 Par ex &lt;b&gt;artist, album, title&lt;/b&gt; pour récupérer les infos Artiste, Album, Titre depuis la Source.
 &lt;br./&gt;&lt;br /&gt;
-Commencez par un tidle (~) pour récupérer tous les champs, sauf ceux listés. Par ex &lt;b&gt;~composer,__image&lt;/b&gt; récupérera tous les champs à l&apos;exception de Compositeur et Image.&lt;/p&gt;
-&lt;p&gt;Si un champ a été récupéré via une autre Source, les valeurs seront combinées si elles différent. Par ex si genre=&lt;b&gt;Rock&lt;/b&gt; d&apos;abord et genre=&lt;b&gt;Alternative&lt;/b&gt; ensuite alors le champ aura au final plusieurs valeurs, &lt;b&gt;Rock\\Rap&lt;/b&gt; dans notre exemple.</translation>
+Commencez par un tidle (~) pour récupérer tous les champs, sauf ceux listés. Par ex &lt;b&gt;~composer,__image&lt;/b&gt; récupérera tous les champs à l'exception de Compositeur et Image.&lt;/p&gt;
+&lt;p&gt;Si un champ a été récupéré via une autre Source, les valeurs seront combinées si elles différent. Par ex si genre=&lt;b&gt;Rock&lt;/b&gt; d'abord et genre=&lt;b&gt;Alternative&lt;/b&gt; ensuite alors le champ aura au final plusieurs valeurs, &lt;b&gt;Rock\\Rap&lt;/b&gt; dans notre exemple.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="420"/>
@@ -3675,24 +3730,24 @@ Commencez par un tidle (~) pour récupérer tous les champs, sauf ceux listés. 
 Commencez par un tidle (~) pour remplacer tous les champs, sauf ceux listés. &lt;br./&gt;
 &lt;b&gt;NB: Les champs listés ici doivent aussi être listés dans les champs à récupérer&lt;/b&gt;
 &lt;br /&gt;&lt;br /&gt;
-Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La seconde source renvoie &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Pour la seconde source, en mettant juste &lt;b&gt;artiste&lt;/b&gt; dans la liste des champs à remplacer va remplacer l&apos;info Artiste récupérée par la première source. Dans notre exemple, le résultat sera &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
+Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La seconde source renvoie &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. Pour la seconde source, en mettant juste &lt;b&gt;artiste&lt;/b&gt; dans la liste des champs à remplacer va remplacer l'info Artiste récupérée par la première source. Dans notre exemple, le résultat sera &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="452"/>
         <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Continuer&lt;/b&gt;: La recherche pour l&apos;album en cours continue avec les autres sources si aucun résultat n&apos;est trouvé pour cette source.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Stopper&lt;/b&gt;: La recherche de l&apos;album en cours s&apos;arrêtera et tous les résultats précédents seront utilisés.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Continuer&lt;/b&gt;: La recherche pour l'album en cours continue avec les autres sources si aucun résultat n'est trouvé pour cette source.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Stopper&lt;/b&gt;: La recherche de l'album en cours s'arrêtera et tous les résultats précédents seront utilisés.&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
     <name>Progress Dialog</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2183"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2184"/>
         <source>Please Wait...</source>
         <translation>Veuillez patienter...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2184"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2185"/>
         <source>%1%2 of %3...</source>
         <translation>%1%2 sur %3...</translation>
     </message>
@@ -3700,29 +3755,29 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
 <context>
     <name>QuodLibet</name>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="363"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="353"/>
         <source>&amp;Library Path</source>
         <translation>Chemin de &amp;la mediathèque</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="366"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="356"/>
         <source>...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="376"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="366"/>
         <source>Select QuodLibet library file...</source>
         <translation>Sélectionner le fichier QuodLibet...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="388"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="378"/>
         <source>%1 (%2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="391"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="381"/>
         <source>%1 is an invalid QuodLibet music library file.</source>
-        <translation>%1 n&apos;est pas une mediathèque QuodLibet valide.</translation>
+        <translation>%1 n'est pas une mediathèque QuodLibet valide.</translation>
     </message>
 </context>
 <context>
@@ -3775,10 +3830,10 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="709"/>
         <source>An error occurred while saving the settings of &lt;b&gt;%1&lt;/b&gt;: %2</source>
-        <translation>Une erreur s&apos;est produite à l&apos;enregistrement de &lt;/b&gt;%1&lt;/b&gt;: %2</translation>
+        <translation>Une erreur s'est produite à l'enregistrement de &lt;/b&gt;%1&lt;/b&gt;: %2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="356"/>
+        <location filename="../puddlestuff/puddletag.py" line="459"/>
         <source>&amp;Windows</source>
         <translation>&amp;Fenêtres</translation>
     </message>
@@ -3801,12 +3856,12 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
 <context>
     <name>Shortcut Editor</name>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="62"/>
+        <location filename="../puddlestuff/actiondlg.py" line="61"/>
         <source>Enter a key sequence for the shortcut.</source>
         <translation>Entrez une séquence pour le raccourci.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/actiondlg.py" line="66"/>
+        <location filename="../puddlestuff/actiondlg.py" line="65"/>
         <source>&amp;Don&apos;t assign keyboard shortcut.</source>
         <translation>Ne &amp;pas affecter de raccourci clavier.</translation>
     </message>
@@ -3814,7 +3869,7 @@ Par exemple, mettons que vous avez deux Sources. La première renvoie &lt;b&gt;a
 <context>
     <name>Shortcut Settings</name>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="356"/>
+        <location filename="../puddlestuff/tagmodel.py" line="357"/>
         <source>File Properties</source>
         <translation>Propriétés du fichier</translation>
     </message>
@@ -3880,44 +3935,44 @@ Real: %2</source>
 Réel: %2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1590"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1585"/>
         <source>Disable Preview Mode first to enable tag deletion.</source>
         <translation>Désactivez le mode Aperçu avant de pouvoir supprimer des tags.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1601"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1596"/>
         <source>An error occurred while deleting the tag of %1: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation>Une erreur s&apos;est produite à la suppression du tag de %1:&lt;b&gt;%2&lt;/b&gt;</translation>
+        <translation>Une erreur s'est produite à la suppression du tag de %1:&lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1610"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1605"/>
         <source>There was an error deleting the tag of %1: &lt;b&gt;Tag deletion isn&apos;t supportedfor %2 files.&lt;/b&gt;</source>
-        <translation>Une erreur s&apos;est produite à la suppression du tag de %1:&lt;b&gt;La suppression du tag n&apos;est pas possible pour les fichiers %2.&lt;/b&gt;</translation>
+        <translation>Une erreur s'est produite à la suppression du tag de %1:&lt;b&gt;La suppression du tag n'est pas possible pour les fichiers %2.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1618"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1613"/>
         <source>Deleting tag... </source>
         <translation>Supprime le tag... </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1648"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1643"/>
         <source>Are you sure you want to delete the selected files?</source>
         <translation>Êtes-vous sûr de vouloir supprimer les fichiers sélectionnés ?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1690"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1685"/>
         <source>Deleting </source>
         <translation>Suppression </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2044"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2038"/>
         <source>An error occurred while trying to play the selected files: &lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Does the music player you defined (&lt;b&gt;%2&lt;/b&gt;) exist?</source>
-        <translation>Une erreur s&apos;est produite en tentant de lire les fichiers sélectionnés:&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;Est-ce que le lecteur défini (&lt;b&gt;%2&lt;/b&gt;) existe ?</translation>
+        <translation>Une erreur s'est produite en tentant de lire les fichiers sélectionnés:&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;Est-ce que le lecteur défini (&lt;b&gt;%2&lt;/b&gt;) existe ?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2050"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2044"/>
         <source>It wasn&apos;t possible to play the selected files, because the music player you defined (&lt;b&gt;%1&lt;/b&gt;) does not exist.</source>
-        <translation>Il n&apos;a pas été possible de lire les fichiers sélectionéns car le lecteur défini (&lt;b&gt;%1&lt;/b&gt;) n&apos;existe pas.</translation>
+        <translation>Il n'a pas été possible de lire les fichiers sélectionéns car le lecteur défini (&lt;b&gt;%1&lt;/b&gt;) n'existe pas.</translation>
     </message>
 </context>
 <context>
@@ -3953,12 +4008,12 @@ Réel: %2</translation>
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="406"/>
         <source>Create an ID3v1 tag if it&apos;s not present. Otherwise update it.</source>
-        <translation>Créer le tag ID3v1 s&apos;il n&apos;existe pas. Sinon le créer.</translation>
+        <translation>Créer le tag ID3v1 s'il n'existe pas. Sinon le créer.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="411"/>
         <source>puddletag writes only &amp;ID3v2 tags.&lt;br /&gt;What should be done with the ID3v1 tag upon saving?</source>
-        <translation>puddletag n&apos;écrit que des tags &amp;ID3v2.&lt;br /&gt;Qu&apos;est-ce qui doit être fait des tags ID3v1 au moment d&apos;enregistrer ?</translation>
+        <translation>puddletag n'écrit que des tags &amp;ID3v2.&lt;br /&gt;Qu'est-ce qui doit être fait des tags ID3v1 au moment d'enregistrer ?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="433"/>
@@ -3978,7 +4033,7 @@ Réel: %2</translation>
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="417"/>
         <source>Default &amp;pattern to use when saving artwork.</source>
-        <translation>Motif &amp;par défaut pour l&apos;enregistrement des images.</translation>
+        <translation>Motif &amp;par défaut pour l'enregistrement des images.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="438"/>
@@ -4006,7 +4061,7 @@ Réel: %2</translation>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="184"/>
         <source>Page doesn&apos;t exist</source>
-        <translation>La page n&apos;existe pas</translation>
+        <translation>La page n'existe pas</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/__init__.py" line="178"/>
@@ -4026,17 +4081,17 @@ Réel: %2</translation>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="922"/>
         <source>An error occured: %1</source>
-        <translation type="unfinished">Une erreur s&apos;est produite: %1</translation>
+        <translation type="unfinished">Une erreur s'est produite: %1</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="475"/>
         <source>An unhandled error occured: %1</source>
-        <translation type="unfinished">Une erreur non gérée s&apos;est produite: %1</translation>
+        <translation type="unfinished">Une erreur non gérée s'est produite: %1</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="385"/>
         <source>Retrieving album tracks...</source>
-        <translation type="unfinished">Récupération des pistes de l&apos;album...</translation>
+        <translation type="unfinished">Récupération des pistes de l'album...</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="486"/>
@@ -4056,17 +4111,17 @@ Réel: %2</translation>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="695"/>
         <source>More than one album matches. None will be retrieved.</source>
-        <translation type="obsolete">Plus d&apos;un album correspond. Aucun ne sera récupéré.</translation>
+        <translation type="obsolete">Plus d'un album correspond. Aucun ne sera récupéré.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="698"/>
         <source>Retrieving album.</source>
-        <translation type="obsolete">Récupération de l&apos;album.</translation>
+        <translation type="obsolete">Récupération de l'album.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="98"/>
         <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
-        <translation type="unfinished">N&apos;a pu charger la source Mp3tag %s</translation>
+        <translation type="unfinished">N'a pu charger la source Mp3tag %s</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="81"/>
@@ -4096,12 +4151,12 @@ Réel: %2</translation>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="359"/>
         <source>&amp;Display format for individual tracks.</source>
-        <translation type="unfinished">Format d&apos;affichage pour les pistes &amp;individuelles.</translation>
+        <translation type="unfinished">Format d'affichage pour les pistes &amp;individuelles.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="364"/>
         <source>Display format for &amp;retrieved albums</source>
-        <translation type="unfinished">Format d&apos;affichage pour les &amp;albums récupérés</translation>
+        <translation type="unfinished">Format d'affichage pour les &amp;albums récupérés</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="369"/>
@@ -4133,7 +4188,7 @@ Réel: %2</translation>
         <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
         <translation type="unfinished">Entrez les paramètres de recherche ici. Si vous laissez vide alors les fichiers sélectionnés seront utilisés.
 &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt;recherche une combinaison Artiste/Album spécifique.&lt;/li&gt;
-&lt;li&gt;Pour lister les albums d&apos;un artiste laissez la partie album vide mais gardez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;). Pour une recherche par album, laissez la partie Artiste vide (par ex &lt;b&gt;;Resurection&lt;/b&gt;.&lt;/li&gt;
+&lt;li&gt;Pour lister les albums d'un artiste laissez la partie album vide mais gardez le point-virgule (par ex &lt;b&gt;Ratatat;&lt;/b&gt;). Pour une recherche par album, laissez la partie Artiste vide (par ex &lt;b&gt;;Resurection&lt;/b&gt;.&lt;/li&gt;
 &lt;/ul&gt;</translation>
     </message>
     <message>
@@ -4186,7 +4241,7 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="926"/>
         <source>An unhandled error occurred: %1</source>
-        <translation type="unfinished">Une erreur non gérée s&apos;est produite: %1</translation>
+        <translation type="unfinished">Une erreur non gérée s'est produite: %1</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="863"/>
@@ -4249,7 +4304,7 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
     <message>
         <location filename="../puddlestuff/helperwin.py" line="315"/>
         <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Le fichier &lt;b&gt;%1&lt;/b&gt; n&apos;a pu être chargé.&lt;br /&gt; Voulez-vous en choisir un autre ?</translation>
+        <translation>Le fichier &lt;b&gt;%1&lt;/b&gt; n'a pu être chargé.&lt;br /&gt; Voulez-vous en choisir un autre ?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="319"/>
@@ -4277,12 +4332,12 @@ Si vous voulez exclure certains champs, et écrire les autres alors commencez pa
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="723"/>
         <source>More than one album matches. None will be retrieved.</source>
-        <translation type="unfinished">Plus d&apos;un album correspond. Aucun ne sera récupéré.</translation>
+        <translation type="unfinished">Plus d'un album correspond. Aucun ne sera récupéré.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="726"/>
         <source>Retrieving album.</source>
-        <translation type="unfinished">Récupération de l&apos;album.</translation>
+        <translation type="unfinished">Récupération de l'album.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="429"/>
