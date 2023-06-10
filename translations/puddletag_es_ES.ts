@@ -787,7 +787,7 @@ usando esas palabras.&lt;/li&gt;&lt;/ul&gt;
 <context>
     <name>Defaults</name>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="147"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="147"/>
         <source>&amp;Fields</source>
         <translation>&amp;Campos</translation>
     </message>
@@ -962,7 +962,7 @@ usando esas palabras.&lt;/li&gt;&lt;/ul&gt;
         <translation>%s imágenes</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="359"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="359"/>
         <source>&amp;Edit</source>
         <translation>&amp;Editar</translation>
     </message>
@@ -3007,7 +3007,7 @@ Esto puedo causar el bloque de su ordenador.
         <translation>¿Quieres salir del modo vista previa?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="618"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="618"/>
         <source>Clea&amp;r preview</source>
         <translation>Limpia&amp;r vista previa</translation>
     </message>
@@ -3043,7 +3043,7 @@ Esto puedo causar el bloque de su ordenador.
         <translation>&lt;p&gt;Si no se encuentran etiquetas en el archivo, estas serán obtenidas usando este patrón.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="384"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="384"/>
         <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Los campos artista y álbum serán usados en determinas recuperaciones dudosas de coincidencias. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor o igual al porcentaje que ha especificado aqui, se considerá como coincidente.&lt;/p&gt;</translation>
     </message>
@@ -3053,7 +3053,7 @@ Esto puedo causar el bloque de su ordenador.
         <translation>&lt;p&gt;Los campos listados aqui serán usados en determinadas recuperaciones de coincidencias dudosas de pistas. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor el &quot;Porcentaje mínimo&quot;, se considerá como coincidente.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="366"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="366"/>
         <source>Brute force unmatched files.</source>
         <translation>Fuerza bruta en archivos no coincidentes.</translation>
     </message>
@@ -3093,7 +3093,7 @@ Esto puedo causar el bloque de su ordenador.
         <translation>Coincidir pistas usando campos:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="426"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="426"/>
         <source>Minimum percentage required for track match.</source>
         <translation>Porcentaje mínimo requerido para coincidencias de la pista.</translation>
     </message>
@@ -3133,22 +3133,22 @@ Esto puedo causar el bloque de su ordenador.
         <translation>&lt;p&gt;&lt;b&gt;Continuar&lt;/b&gt;: La búsqueda para el actual álbum continuará por otras fuentes de etiquetas si no hay resultados en esta fuente.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Parar:&lt;/b&gt; La búsqueda para el actual álbúm para y se usarán los resultados previos obtenidos.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="368"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="368"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Si no se encuentra una coincidencia apropiada, los ficheros serán ordenados por nombre, y las etiquetas obtenidas de la fuente de etiquetas no emparajadas serán emparejadas con las pistas.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="375"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="375"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Los campos listados aqui serán usados en determinadas recuperaciones de coincidencias dudosas de pistas. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor el &quot;Porcentaje mínimo&quot;, se considerá como coincidente.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="421"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="421"/>
         <source>Minimum &amp;percentage required for album matches.</source>
         <translation>&amp;Porcentaje mínimo requerido para coincidencias del álbum.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="424"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="424"/>
         <source>Match tracks using &amp;fields: </source>
         <translation>Coincidir pistas usando &amp;campos:</translation>
     </message>
@@ -3262,7 +3262,7 @@ Esto puedo causar el bloque de su ordenador.
         <translation>Ve&amp;ntanas</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/webdb.py" line="343"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="343"/>
         <source>Tag Sources</source>
         <translation>Fuentes de etiquetas</translation>
     </message>
@@ -3472,6 +3472,206 @@ Real: %2</translation>
         <source>Page doesn&apos;t exist</source>
         <translation>Página inexistente</translation>
     </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="24"/>
+        <source>Retrieved Albums (sorted by %s)</source>
+        <translation>Álbumes obtenidos (ordenados por %s)</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="83"/>
+        <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Error en patrón&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="246"/>
+        <source>Retrieved Albums</source>
+        <translation>Álbumes obtenidos</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="871"/>
+        <source>An error occured: %1</source>
+        <translation>Ocurrió un error: %1</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="456"/>
+        <source>An unhandled error occured: %1</source>
+        <translation>Ocurrió un error no controlado: %1</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="369"/>
+        <source>Retrieving album tracks...</source>
+        <translation>Obteniendo pistas del álbum...</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="468"/>
+        <source>Retrieval complete.</source>
+        <translation>Recuperación completa.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="474"/>
+        <source>Retrieving tracks...</source>
+        <translation>Obteniendo pistas...</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="816"/>
+        <source>No matching albums were found.</source>
+        <translation>No se encontraron álbumes coincidentes.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="695"/>
+        <source>More than one album matches. None will be retrieved.</source>
+        <translation>Más de un álbum coincidente. Ninguno será recuperado.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/releasewidget.py" line="698"/>
+        <source>Retrieving album.</source>
+        <translation>Recuperando álbum.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="32"/>
+        <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
+        <translation>&lt;p&gt;Ponga los parámetros de búsqueda. Si está vacío,
+se usarán los archivos seleccionados.&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;&lt;b&gt;artista;álbum&lt;/b&gt; búsqueda para la combinación de artista/álbum especificada.&lt;/li&gt;
+&lt;li&gt;Para listar los álbumes de un artista deje en blanco su parte, pero manteniendo el punto y coma (p.ej. &lt;b&gt;Ratatat;&lt;/b&gt;).
+Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&gt;).&lt;/li&gt;&lt;/ul&gt;
+</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="41"/>
+        <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
+        <translation>Ponga una lista de campos a escribir separada por comas. &lt;br /&gt;&lt;br /&gt;P.ej. &lt;b&gt;artista, álbum, título&lt;/b&gt; solamente escribirá los campos artista, álbum y título de las etiquetas obtenidas. &lt;br /&gt;&lt;br /&gt;Si desea excluir algunos campos, pero escrbir todos los demás, empiece la lista con el carácter de tilde (~). P.ej.&lt;b&gt;~ compositor, __image&lt;/b&gt; escribirá todos los campos, pero no los campos compositor y __image.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="78"/>
+        <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Nada a mostrar.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="94"/>
+        <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
+        <translation>No se puede cargar la fuente de etiquetas %s</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="214"/>
+        <source>Configure: %s</source>
+        <translation>Configurar: %s</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="305"/>
+        <source>Add sort option</source>
+        <translation>Añadir opciones de ordenado</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="323"/>
+        <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
+        <translation>Ponta una opción de ordenado (la coma separa los campos. P.ej. &quot;artist, title&quot;)</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="323"/>
+        <source>Edit sort option</source>
+        <translation>Editar opciones de ordenado</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="345"/>
+        <source>&amp;Display format for individual tracks.</source>
+        <translation>&amp;Mostrar formato para pistas individuales.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="350"/>
+        <source>Display format for &amp;retrieved albums</source>
+        <translation>Mostrar formato para álbumes &amp;recuperados</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="355"/>
+        <source>Sort retrieved albums using order:</source>
+        <translation>Ordenar álbumes obtenidos usando orden:</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="362"/>
+        <source>User-Agent to when accessing web sites.</source>
+        <translation>User-Agent para acceder al sitios web.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="415"/>
+        <source>Automatic retrieval options</source>
+        <translation>Opciones de recuperación automática</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="552"/>
+        <source>Retrying search with %s</source>
+        <translation>Reintentando buscar con %s</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="593"/>
+        <source>Sour&amp;ce: </source>
+        <translation>Fuen&amp;te: </translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="598"/>
+        <source>Configure</source>
+        <translation>Configurar</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="606"/>
+        <source>&amp;Search</source>
+        <translation>&amp;Buscar</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="611"/>
+        <source>S&amp;ubmit Tags</source>
+        <translation>E&amp;nviar etiquetas</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="615"/>
+        <source>&amp;Write</source>
+        <translation>&amp;Escribir</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="622"/>
+        <source>Select files and click on Search to retrieve metadata.</source>
+        <translation>Seleccione archivos y pulse buscar para obtener metadatos.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="627"/>
+        <source>Update empty fields only.</source>
+        <translation>Actualizar solo campos vacíos.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="633"/>
+        <source>Automatically retrieve matches.</source>
+        <translation>Obtener automáticamente los coincidentes.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="813"/>
+        <source>Searching complete.</source>
+        <translation>Búsqueda completa.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="830"/>
+        <source>Searching...</source>
+        <translation>Buscando...</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="835"/>
+        <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Seleccione algunos archivos o ponga parámetros de búsqueda.&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="875"/>
+        <source>An unhandled error occurred: %1</source>
+        <translation>Ocurrió un error no controlado: %1</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="878"/>
+        <source>Submission completed.</source>
+        <translation>Envío completado.</translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="904"/>
+        <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Las etiquetas fueron escritas.&lt;/b&gt;</translation>
+    </message>
 </context>
 <context>
     <name>Text File -&gt; Tag</name>
@@ -3519,209 +3719,6 @@ Real: %2</translation>
         <location filename="../puddlestuff/helperwin.py" line="315"/>
         <source>&amp;No</source>
         <translation>&amp;No</translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="24"/>
-        <source>Retrieved Albums (sorted by %s)</source>
-        <translation>Álbumes obtenidos (ordenados por %s)</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="83"/>
-        <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Error en patrón&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="246"/>
-        <source>Retrieved Albums</source>
-        <translation>Álbumes obtenidos</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="871"/>
-        <source>An error occured: %1</source>
-        <translation>Ocurrió un error: %1</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="456"/>
-        <source>An unhandled error occured: %1</source>
-        <translation>Ocurrió un error no controlado: %1</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="369"/>
-        <source>Retrieving album tracks...</source>
-        <translation>Obteniendo pistas del álbum...</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="468"/>
-        <source>Retrieval complete.</source>
-        <translation>Recuperación completa.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="474"/>
-        <source>Retrieving tracks...</source>
-        <translation>Obteniendo pistas...</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="816"/>
-        <source>No matching albums were found.</source>
-        <translation>No se encontraron álbumes coincidentes.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="695"/>
-        <source>More than one album matches. None will be retrieved.</source>
-        <translation>Más de un álbum coincidente. Ninguno será recuperado.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/releasewidget.py" line="698"/>
-        <source>Retrieving album.</source>
-        <translation>Recuperando álbum.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="32"/>
-        <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation>&lt;p&gt;Ponga los parámetros de búsqueda. Si está vacío,
-se usarán los archivos seleccionados.&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;&lt;b&gt;artista;álbum&lt;/b&gt; búsqueda para la combinación de artista/álbum especificada.&lt;/li&gt;
-&lt;li&gt;Para listar los álbumes de un artista deje en blanco su parte, pero manteniendo el punto y coma (p.ej. &lt;b&gt;Ratatat;&lt;/b&gt;).
-Para un álbum deje sin nada la parte de artista (&lt;b&gt;;Resurrection&lt;/b&gt;).&lt;/li&gt;&lt;/ul&gt;
-</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="41"/>
-        <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
-        <translation>Ponga una lista de campos a escribir separada por comas. &lt;br /&gt;&lt;br /&gt;P.ej. &lt;b&gt;artista, álbum, título&lt;/b&gt; solamente escribirá los campos artista, álbum y título de las etiquetas obtenidas. &lt;br /&gt;&lt;br /&gt;Si desea excluir algunos campos, pero escrbir todos los demás, empiece la lista con el carácter de tilde (~). P.ej.&lt;b&gt;~ compositor, __image&lt;/b&gt; escribirá todos los campos, pero no los campos compositor y __image.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="78"/>
-        <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Nada a mostrar.&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="94"/>
-        <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
-        <translation>No se puede cargar la fuente de etiquetas %s</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="214"/>
-        <source>Configure: %s</source>
-        <translation>Configurar: %s</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="305"/>
-        <source>Add sort option</source>
-        <translation>Añadir opciones de ordenado</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="323"/>
-        <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
-        <translation>Ponta una opción de ordenado (la coma separa los campos. P.ej. &quot;artist, title&quot;)</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="323"/>
-        <source>Edit sort option</source>
-        <translation>Editar opciones de ordenado</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="345"/>
-        <source>&amp;Display format for individual tracks.</source>
-        <translation>&amp;Mostrar formato para pistas individuales.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="350"/>
-        <source>Display format for &amp;retrieved albums</source>
-        <translation>Mostrar formato para álbumes &amp;recuperados</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="355"/>
-        <source>Sort retrieved albums using order:</source>
-        <translation>Ordenar álbumes obtenidos usando orden:</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="362"/>
-        <source>User-Agent to when accessing web sites.</source>
-        <translation>User-Agent para acceder al sitios web.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="415"/>
-        <source>Automatic retrieval options</source>
-        <translation>Opciones de recuperación automática</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="552"/>
-        <source>Retrying search with %s</source>
-        <translation>Reintentando buscar con %s</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="593"/>
-        <source>Sour&amp;ce: </source>
-        <translation>Fuen&amp;te: </translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="598"/>
-        <source>Configure</source>
-        <translation>Configurar</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="606"/>
-        <source>&amp;Search</source>
-        <translation>&amp;Buscar</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="611"/>
-        <source>S&amp;ubmit Tags</source>
-        <translation>E&amp;nviar etiquetas</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="615"/>
-        <source>&amp;Write</source>
-        <translation>&amp;Escribir</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="622"/>
-        <source>Select files and click on Search to retrieve metadata.</source>
-        <translation>Seleccione archivos y pulse buscar para obtener metadatos.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="627"/>
-        <source>Update empty fields only.</source>
-        <translation>Actualizar solo campos vacíos.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="633"/>
-        <source>Automatically retrieve matches.</source>
-        <translation>Obtener automáticamente los coincidentes.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="813"/>
-        <source>Searching complete.</source>
-        <translation>Búsqueda completa.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="830"/>
-        <source>Searching...</source>
-        <translation>Buscando...</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="835"/>
-        <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Seleccione algunos archivos o ponga parámetros de búsqueda.&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="875"/>
-        <source>An unhandled error occurred: %1</source>
-        <translation>Ocurrió un error no controlado: %1</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="878"/>
-        <source>Submission completed.</source>
-        <translation>Envío completado.</translation>
-    </message>
-    <message>
-        <location filename="../puddlestuff/webdb.py" line="904"/>
-        <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Las etiquetas fueron escritas.&lt;/b&gt;</translation>
     </message>
 </context>
 </TS>

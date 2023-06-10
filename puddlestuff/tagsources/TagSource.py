@@ -34,7 +34,7 @@ class TagSource():
                 ]
 
     # Note the TAGLIST preference type is currently not implemented.
-    # See: puddlestuff.webdb.SimpleDialog
+    # See: puddlestuff.mainwin.tagsources.SimpleDialog
 
     def retrieve(self, release):
         '''

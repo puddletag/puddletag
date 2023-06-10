@@ -685,7 +685,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
 <context>
     <name>Defaults</name>
     <message>
-        <location filename="puddlestuff/webdb.py" line="83"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="83"/>
         <source>&amp;Fields</source>
         <translation>&amp;Velde</translation>
     </message>
@@ -780,7 +780,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="278"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="278"/>
         <source>&amp;Edit</source>
         <translation>&amp;Wysig</translation>
     </message>
@@ -2643,7 +2643,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; vir die Oxygen icons.</translation>
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="185"/>
         <source>&lt;p&gt;Enter search parameters here.
         If empty, the selected files are used.&lt;/p&gt;
-        
+
         &lt;ul&gt;
         &lt;li&gt;Enter any text to search for an album. Eg.
             &lt;b&gt;Southernplayalisticadillacmuzik&lt;/b&gt;&lt;/li&gt;
@@ -2719,7 +2719,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <location filename="puddlestuff/tagsources/musicbrainz.py" line="194"/>
         <source>&lt;p&gt;Enter search parameters here.
         If empty, the selected files are used.&lt;/p&gt;
-        
+
         &lt;ul&gt;
         &lt;li&gt;Enter any text to search for an album. Eg.
             &lt;b&gt;Southernplayalisticadillacmuzik&lt;/b&gt;&lt;/li&gt;
@@ -2926,7 +2926,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Tag verwydering is net moontlik as Voorskou Mode &lt;b&gt;af&lt;/b&gt; is. Skakel dit af eerste.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="479"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="479"/>
         <source>Clea&amp;r preview</source>
         <translation>Belee&amp;g voorskou</translation>
     </message>
@@ -2987,7 +2987,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>&lt;p&gt;Die kunstenaar and album velde sal gebruik word om to beskou of &apos;n album die afgelaaide album match. Elke feld was jy hier lys sal gebruik word in fuzzy-matching algoritme. As the gemiddelde gekalkuleerde persentasie groter of gelyk is aan wat jy hier lys, sal die afgelaaide album &apos;n match beskou word.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="288"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="288"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Die velde was hier gelys word sal gebruik word om to beskou of a sekere liedjie sy en sy afgelaaide maat dieselfe is. Elke veld sal getoets word met &apos;n fuzzy-matching algoritme. As die gemiddelde persentasie van aldie velde groter as die &apos;Minimum Persentasie&apos; is sal dit as &apos;n match beskou word.&lt;/p&gt;</translation>
     </message>
@@ -2997,7 +2997,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Gebruik dom krag vir ongematchde leêrs.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="286"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="286"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
         <translation>&lt;p&gt;As &apos;n presiese match nie gevind is nie vir &apos;n leêr, sal die leêr gesoort word volgens leêrnaam. Die afgelaaide albums sal dan gesoort word volgens liedjie nommer en die ooreenstemmende (vorige ongematchde) liedjies sal gematch word.&lt;/p&gt;</translation>
     </message>
@@ -3072,12 +3072,12 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>Minimum grens-vereiste vir album matches.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="321"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="321"/>
         <source>Minimum &amp;percentage required for album matches.</source>
         <translation>Minimum &amp;grens-vereiste vir album matches.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="324"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="324"/>
         <source>Match tracks using &amp;fields: </source>
         <translation>&amp;Velde om te gebruik vir liedjie matches: </translation>
     </message>
@@ -3221,7 +3221,7 @@ Terselfde manier kan jy informasie oor &apos;n album aflaai deur sy MusicBrainz 
         <translation>&apos;n Fout het plaasgevind gedurende die storing van voorkeure &lt;b&gt;%1&lt;/b&gt;: %2</translation>
     </message>
     <message>
-        <location filename="puddlestuff/webdb.py" line="265"/>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="265"/>
         <source>Tag Sources</source>
         <translation>Tag Bronne</translation>
     </message>
@@ -3466,6 +3466,196 @@ Egte: %2</translation>
         <source>python-musicbrainz2 wasn&apos;t found.</source>
         <translation>python-musicbrainz2 was nie gevind nie.</translation>
     </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="93"/>
+        <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Fout in patroon&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="252"/>
+        <source>Retrieved Albums</source>
+        <translation>Afgelaaide Albums</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="373"/>
+        <source>Retrieving album tracks...</source>
+        <translation>Besig om album liedjies af te laai...</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="469"/>
+        <source>Retrieval complete.</source>
+        <translation>Aflaai is gedaan.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="475"/>
+        <source>Retrieving tracks...</source>
+        <translation>Besig om liedjies af te laai...</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="641"/>
+        <source>An error occured: %1</source>
+        <translation>&apos;n Fout het plaasgevind: %1</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="229"/>
+        <source>Add sort option</source>
+        <translation>Voeg soort opsie by</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="245"/>
+        <source>Edit sort option</source>
+        <translation>Wysing soort opsie</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="454"/>
+        <source>Sour&amp;ce: </source>
+        <translation>&amp;Bron:</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="459"/>
+        <source>Configure</source>
+        <translation>Stel</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="469"/>
+        <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
+        <translation>&lt;p&gt;Stel you soek parameters hier. As geen woorde gestel is nie, sal die geselekteerde leêrs gebruik word.&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;kunstenaar;album&lt;/b&gt; soek vir a spesifieke kunstenaar/album kombinasie.&lt;/li&gt;&lt;li&gt;Om net die albums van &apos;n kunstenaar, behou net die kunstenaar se naam soos in &lt;b&gt;Ratatat;&lt;/b&gt; (nb. die komma-punt moet bly). Om net vir &apos;n spesifieke album to soek kan jy die kunstenaar gedeelte af los soos in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="472"/>
+        <source>&amp;Search</source>
+        <translation>&amp;Soek</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="478"/>
+        <source>&amp;Write</source>
+        <translation>&amp;Skryf</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="488"/>
+        <source>Update empty fields only.</source>
+        <translation>Update alleenlik leë velde.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="494"/>
+        <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
+        <translation>Stel &apos;n comma-spaseerde lys van velde om te skryf.&lt;br /&gt;&lt;br /&gt;Bv.&lt;b&gt;artist, album, title&lt;/b&gt; sal net die artist, album en title velde skryf van die afgelaaide albums.&lt;br /&gt;&lt;br /&gt;As jy alle velde wil skryf behalwe &apos;n, begin jou lys met die tilde karakter (~). Bv &lt;b&gt;~composer,__image&lt;/b&gt; sal al die afgelaaide waardes skryf behalwe die wat hoort and die composer en __image velde.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="577"/>
+        <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Tags was geskryfe&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="623"/>
+        <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Kies leêr eerste of stel terme om mee &apos;n versoek te doen&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="678"/>
+        <source>Searching complete.</source>
+        <translation>Versoekings is gedaan.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="680"/>
+        <source>No matching albums were found.</source>
+        <translation>Geen ooreenstemmende albums was gevind nie.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="665"/>
+        <source>No matching albums found</source>
+        <translation type="obsolete">Geen ooreenstemmende albums was gevind nie</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="668"/>
+        <source>More than one album matches. Not retrieving any.</source>
+        <translation type="obsolete">Meer as een album stem oor een. Geen albums sal afgelaai word nie.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="682"/>
+        <source>Retrieving album.</source>
+        <translation>Besig om album af te laai.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="52"/>
+        <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
+        <translation>Die Mp3tag Tag Bron %s kon nie gelaai word nie</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="150"/>
+        <source>Configure: %s</source>
+        <translation>Stel: %s</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="267"/>
+        <source>&amp;Display format for individual tracks.</source>
+        <translation>Wysigings formaat vir &amp;individieule liedjies.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="271"/>
+        <source>Display format for &amp;retrieved albums</source>
+        <translation>Wysigings formaat vir &amp;afgelaaide albums</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="275"/>
+        <source>Sort retrieved albums using order:</source>
+        <translation>Volgorde om afgelaaide albums mee te soort:</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="281"/>
+        <source>User-Agent to use for screen scraping.</source>
+        <translation>Gebruikers-Agent om te gebruik vir puddletag.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="315"/>
+        <source>Automatic retrieval options</source>
+        <translation>Automities aflaii opsies</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="490"/>
+        <source>Automatically retrieve matches.</source>
+        <translation>Laai oorenstemmende albums automaties af.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="245"/>
+        <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
+        <translation>Stel &apos;n soort opsie (&apos;n komma-gespaseer lys van velde. Bv &quot;artist, title&quot;)</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="484"/>
+        <source>Select files and click on Search to retrieve metadata.</source>
+        <translation>Kies leêrs en klik om Soek om metadata af te laai.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="618"/>
+        <source>Searching...</source>
+        <translation>Besig om te soek...</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="33"/>
+        <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Niks om te wys nie&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="679"/>
+        <source>More than one album matches. None will be retrieved.</source>
+        <translation>Meer as een album stem oorleen. Geen sal afgelaai word nie.</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="42"/>
+        <source>#images</source>
+        <translation type="obsolete">#prente</translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/releasewidget.py" line="457"/>
+        <source>An unhandled error occured: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="puddlestuff/mainwin/tagsources.py" line="645"/>
+        <source>An unhandled error occurred: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Text File -&gt; Tag</name>
@@ -3517,199 +3707,6 @@ Egte: %2</translation>
     <message>
         <location filename="puddlestuff/helperwin.py" line="130"/>
         <source>Import tags from text file</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WebDB</name>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="93"/>
-        <source>&lt;b&gt;Error in pattern&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Fout in patroon&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="252"/>
-        <source>Retrieved Albums</source>
-        <translation>Afgelaaide Albums</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="373"/>
-        <source>Retrieving album tracks...</source>
-        <translation>Besig om album liedjies af te laai...</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="469"/>
-        <source>Retrieval complete.</source>
-        <translation>Aflaai is gedaan.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="475"/>
-        <source>Retrieving tracks...</source>
-        <translation>Besig om liedjies af te laai...</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="641"/>
-        <source>An error occured: %1</source>
-        <translation>&apos;n Fout het plaasgevind: %1</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="229"/>
-        <source>Add sort option</source>
-        <translation>Voeg soort opsie by</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="245"/>
-        <source>Edit sort option</source>
-        <translation>Wysing soort opsie</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="454"/>
-        <source>Sour&amp;ce: </source>
-        <translation>&amp;Bron:</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="459"/>
-        <source>Configure</source>
-        <translation>Stel</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="469"/>
-        <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation>&lt;p&gt;Stel you soek parameters hier. As geen woorde gestel is nie, sal die geselekteerde leêrs gebruik word.&lt;p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;kunstenaar;album&lt;/b&gt; soek vir a spesifieke kunstenaar/album kombinasie.&lt;/li&gt;&lt;li&gt;Om net die albums van &apos;n kunstenaar, behou net die kunstenaar se naam soos in &lt;b&gt;Ratatat;&lt;/b&gt; (nb. die komma-punt moet bly). Om net vir &apos;n spesifieke album to soek kan jy die kunstenaar gedeelte af los soos in &lt;b&gt;;Resurrection&lt;/b&gt;.&lt;/li&gt;&lt;/ul&gt;</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="472"/>
-        <source>&amp;Search</source>
-        <translation>&amp;Soek</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="478"/>
-        <source>&amp;Write</source>
-        <translation>&amp;Skryf</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="488"/>
-        <source>Update empty fields only.</source>
-        <translation>Update alleenlik leë velde.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="494"/>
-        <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
-        <translation>Stel &apos;n comma-spaseerde lys van velde om te skryf.&lt;br /&gt;&lt;br /&gt;Bv.&lt;b&gt;artist, album, title&lt;/b&gt; sal net die artist, album en title velde skryf van die afgelaaide albums.&lt;br /&gt;&lt;br /&gt;As jy alle velde wil skryf behalwe &apos;n, begin jou lys met die tilde karakter (~). Bv &lt;b&gt;~composer,__image&lt;/b&gt; sal al die afgelaaide waardes skryf behalwe die wat hoort and die composer en __image velde.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="577"/>
-        <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Tags was geskryfe&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="623"/>
-        <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Kies leêr eerste of stel terme om mee &apos;n versoek te doen&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="678"/>
-        <source>Searching complete.</source>
-        <translation>Versoekings is gedaan.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="680"/>
-        <source>No matching albums were found.</source>
-        <translation>Geen ooreenstemmende albums was gevind nie.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="665"/>
-        <source>No matching albums found</source>
-        <translation type="obsolete">Geen ooreenstemmende albums was gevind nie</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="668"/>
-        <source>More than one album matches. Not retrieving any.</source>
-        <translation type="obsolete">Meer as een album stem oor een. Geen albums sal afgelaai word nie.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="682"/>
-        <source>Retrieving album.</source>
-        <translation>Besig om album af te laai.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="52"/>
-        <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
-        <translation>Die Mp3tag Tag Bron %s kon nie gelaai word nie</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="150"/>
-        <source>Configure: %s</source>
-        <translation>Stel: %s</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="267"/>
-        <source>&amp;Display format for individual tracks.</source>
-        <translation>Wysigings formaat vir &amp;individieule liedjies.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="271"/>
-        <source>Display format for &amp;retrieved albums</source>
-        <translation>Wysigings formaat vir &amp;afgelaaide albums</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="275"/>
-        <source>Sort retrieved albums using order:</source>
-        <translation>Volgorde om afgelaaide albums mee te soort:</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="281"/>
-        <source>User-Agent to use for screen scraping.</source>
-        <translation>Gebruikers-Agent om te gebruik vir puddletag.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="315"/>
-        <source>Automatic retrieval options</source>
-        <translation>Automities aflaii opsies</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="490"/>
-        <source>Automatically retrieve matches.</source>
-        <translation>Laai oorenstemmende albums automaties af.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="245"/>
-        <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
-        <translation>Stel &apos;n soort opsie (&apos;n komma-gespaseer lys van velde. Bv &quot;artist, title&quot;)</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="484"/>
-        <source>Select files and click on Search to retrieve metadata.</source>
-        <translation>Kies leêrs en klik om Soek om metadata af te laai.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="618"/>
-        <source>Searching...</source>
-        <translation>Besig om te soek...</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="33"/>
-        <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Niks om te wys nie&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="679"/>
-        <source>More than one album matches. None will be retrieved.</source>
-        <translation>Meer as een album stem oorleen. Geen sal afgelaai word nie.</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="42"/>
-        <source>#images</source>
-        <translation type="obsolete">#prente</translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/releasewidget.py" line="457"/>
-        <source>An unhandled error occured: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="puddlestuff/webdb.py" line="645"/>
-        <source>An unhandled error occurred: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
