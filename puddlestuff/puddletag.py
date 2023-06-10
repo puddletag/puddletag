@@ -13,7 +13,6 @@ from . import loadshortcuts as ls
 from . import m3u, genres
 from . import mainwin
 from . import tagmodel
-from . import webdb
 from . import version_string, changeset
 from .mainwin import funcs as mainfuncs
 from .masstag import dialogs
