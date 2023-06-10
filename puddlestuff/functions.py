@@ -275,14 +275,15 @@ def iflonger(a, b, text, text1):
 def import_text(m_tags, p_pattern, r_tags):
     '''Import text file, "Text File: $0, '$1'"
 &Pattern (can be relative path), text, lyrics.txt'''
-    path = os.path
-    dirpath = r_tags.dirpath
     filename = tag_to_filename(p_pattern, m_tags, r_tags, False)
     if not filename:
         return
     try:
-        return open(filename, 'r').read().decode('utf8')
+        with open(filename, 'tr', encoding='utf-8') as textfile:
+            return textfile.read()
     except EnvironmentError:
+        return
+    except UnicodeDecodeError:
         return
 
 
