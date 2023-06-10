@@ -867,10 +867,6 @@ def progress(func, pstring, maximum, threadfin=None):
 
         parent = args[0]
 
-        if maximum > 1:
-            win = ProgressWin(parent, maximum, pstring)
-            win.show()
-
         if len(args) > 1:
             f = func(*args)
         else:
@@ -884,6 +880,12 @@ def progress(func, pstring, maximum, threadfin=None):
             if threadfin:
                 threadfin()
             return
+        elif maximum > 1:
+            win = ProgressWin(parent, maximum, pstring)
+            win.show()
+        else:
+            return
+
         parent.showmessage = True
 
         def threadfunc():
