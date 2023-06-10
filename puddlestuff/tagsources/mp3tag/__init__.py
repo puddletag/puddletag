@@ -211,54 +211,51 @@ class Cursor(object):
         self.stop = False
         self.track_fields = set(['track'])
 
-    def _get_char(self):
+    @property
+    def char(self):
         return self.line[self.charno]
 
-    char = property(_get_char)
-
-    def _get_debug_file(self):
+    @property
+    def debug_file(self):
         return self._debug_file
 
-    def _set_debug_file(self, filename):
+    @debug_file.setter
+    def debug_file(self, filename):
         if not filename:
             self._debug_file = None
             return
         f = open(filename, 'w')
         self._debug_file = f
 
-    debug_file = property(_get_debug_file, _set_debug_file)
-
-    def _get_field(self):
+    @property
+    def field(self):
         return self._field
 
-    def _set_field(self, value):
+    @field.setter
+    def field(self, value):
         self.output[self._field] = self.cache
         self.cache = self.output.get(value, '')
         self._field = value
 
-    field = property(_get_field, _set_field)
-
-    def _get_lineno(self):
+    @property
+    def lineno(self):
         return self._lineno
 
-    def _set_lineno(self, value):
+    @lineno.setter
+    def lineno(self, value):
         self._lineno = value
         try:
             self.line = self.all_lines[self.lineno].strip()
         except IndexError:
             self.stop = True
 
-    lineno = property(_get_lineno, _set_lineno)
-
-    def _get_lines(self):
+    @property
+    def lines(self):
         return self.all_lines[self.lineno:]
 
-    lines = property(_get_lines)
-
-    def _get_lowered(self):
+    @property
+    def lowered(self):
         return self.all_lowered[self.lineno:]
-
-    lowered = property(_get_lowered)
 
     def log(self, text):
         if self.debug and self.debug_file:

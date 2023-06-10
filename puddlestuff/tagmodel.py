@@ -157,7 +157,8 @@ def model_tag(model, base=audioinfo.AbstractTag):
             self.edited = None
             super(ModelTag, self).__init__(*args, **kwargs)
 
-        def _get_images(self):
+        @property
+        def images(self):
             if not self.IMAGETAGS:
                 return []
             if model.previewMode and '__image' in self.preview:
@@ -165,15 +166,14 @@ def model_tag(model, base=audioinfo.AbstractTag):
             else:
                 return base.images.fget(self)
 
-        def _set_images(self, value):
+        @images.setter
+        def images(self, value):
             if not self.IMAGETAGS:
                 return
             if model.previewMode:
                 self.preview['__image'] = value
             else:
                 base.images.fset(self, value)
-
-        images = property(_get_images, _set_images)
 
         def __contains__(self, key):
             if model.previewMode:
@@ -531,21 +531,23 @@ class TagModel(QAbstractTableModel):
         self.undolevel = 0
         self._fontSize = QFont().pointSize()
 
-    def _setFontSize(self, size):
+    @property
+    def fontSize(self):
+        return self._fontSize
+
+    @fontSize.setter
+    def fontSize(self, size):
         self._fontSize = size
         top = self.index(self.rowCount(), 0)
         bottom = self.index(self.rowCount() - 1, self.columnCount() - 1)
         self.dataChanged.emit(top, bottom)
 
-    def _getFontSize(self):
-        return self._fontSize
-
-    fontSize = property(_getFontSize, _setFontSize)
-
-    def _getHeaderData(self):
+    @property
+    def headerdata(self):
         return self._headerData
 
-    def _setHeaderData(self, tags):
+    @headerdata.setter
+    def headerdata(self, tags):
 
         new_tags = []
         indexes = {}
@@ -561,12 +563,12 @@ class TagModel(QAbstractTableModel):
         self.columns = dict((field, i) for i, (title, field) in
                             enumerate(new_tags))
 
-    headerdata = property(_getHeaderData, _setHeaderData)
-
-    def _get_pBg(self):
+    @property
+    def previewBackground(self):
         return self._previewBackground
 
-    def _set_pBg(self, val):
+    @previewBackground.setter
+    def previewBackground(self, val):
         self._previewBackground = val
         rows = [i for i, z in enumerate(self.taginfo) if z.preview]
         if rows:
@@ -574,12 +576,12 @@ class TagModel(QAbstractTableModel):
             bottom = self.index(max(rows), self.columnCount() - 1)
             self.dataChanged.emit(top, bottom)
 
-    previewBackground = property(_get_pBg, _set_pBg)
-
-    def _get_previewMode(self):
+    @property
+    def previewMode(self):
         return self._previewMode
 
-    def _set_previewMode(self, value):
+    @previewMode.setter
+    def previewMode(self, value):
         if not value and self._previewMode:
             rows = []
             for row, audio in enumerate(self.taginfo):
@@ -599,12 +601,12 @@ class TagModel(QAbstractTableModel):
         status['previewmode'] = value
         self.previewModeChanged.emit(value)
 
-    previewMode = property(_get_previewMode, _set_previewMode)
-
-    def _get_sBg(self):
+    @property
+    def selectionBackground(self):
         return self._selectionBackground
 
-    def _set_sBg(self, val):
+    @selectionBackground.setter
+    def selectionBackground(self, val):
         self._selectionBackground = val
         rows = [i for i, z in enumerate(self.taginfo) if z.color]
         if rows:
@@ -612,12 +614,12 @@ class TagModel(QAbstractTableModel):
             bottom = self.index(max(rows), self.columnCount() - 1)
             self.dataChanged.emit(top, bottom)
 
-    selectionBackground = property(_get_sBg, _set_sBg)
-
-    def _getUndoLevel(self):
+    @property
+    def undolevel(self):
         return self._undolevel
 
-    def _setUndoLevel(self, value):
+    @undolevel.setter
+    def undolevel(self, value):
         if value == 0:
             self.enableUndo.emit(False)
             if self.previewMode:
@@ -627,8 +629,6 @@ class TagModel(QAbstractTableModel):
         else:
             self.enableUndo.emit(True)
         self._undolevel = value
-
-    undolevel = property(_getUndoLevel, _setUndoLevel)
 
     def _addUndo(self, audio, undo):
         if self.previewMode:
@@ -1445,22 +1445,22 @@ class TagTable(QTableView):
             ('Program to &play files with:', _default_audio_player())
         ]
 
-        status['selectedrows'] = self._getSelectedRows
-        status['selectedfiles'] = self._selectedTags
+        status['selectedrows'] = lambda: self.selectedRows
+        status['selectedfiles'] = lambda: self.selectedTags
         status['firstselection'] = self._firstSelection
-        status['selectedcolumns'] = self._getSelectedColumns
+        status['selectedcolumns'] = lambda: self.selectedColumns
         status['selectedtags'] = self._getSelectedTags
         status['alltags'] = lambda: self.model().taginfo
         status['allfiles'] = lambda: self.model().taginfo
         status['table'] = self
 
-    def _setFontSize(self, size):
-        self.model().fontSize = size
-
-    def _getFontSize(self):
+    @property
+    def fontSize(self):
         return self.model().fontSize
 
-    fontSize = property(_getFontSize, _setFontSize)
+    @fontSize.setter
+    def fontSize(self, size):
+        self.model().fontSize = size
 
     def increaseFont(self):
         self.fontSize += 1
@@ -1468,10 +1468,12 @@ class TagTable(QTableView):
     def decreaseFont(self):
         self.fontSize -= 1
 
-    def _getResize(self):
+    @property
+    def autoresize(self):
         return self._resize
 
-    def _setResize(self, value):
+    @autoresize.setter
+    def autoresize(self, value):
         self._resize = value
         if value:
             self.resizeColumnsToContents()
@@ -1527,8 +1529,6 @@ class TagTable(QTableView):
         self.clearSelection()
         self.model().applyFilter(pattern, matchcase)
         self.restoreSelection()
-
-    autoresize = property(_getResize, _setResize)
 
     def changeFolder(self, olddir, newdir, updatemodel=True):
         try:
@@ -1624,12 +1624,11 @@ class TagTable(QTableView):
         if self.contextMenu:
             self.contextMenu.exec_(event.globalPos())
 
-    def _isEmpty(self):
+    @property
+    def isempty(self):
         if self.model().rowCount() <= 0:
             return True
         return False
-
-    isempty = property(_isEmpty)
 
     def deleteSelectedWithoutMessage(self):
         self.deleteSelected(showmsg=False)
@@ -2179,27 +2178,26 @@ class TagTable(QTableView):
                 x[z.column()] = [z.row()]
         return x
 
-    def _selectedTags(self):
+    @property
+    def selectedTags(self):
         rowTags = self.rowTags
         return [rowTags(row) for row in self.selectedRows]
 
-    selectedTags = property(_selectedTags)
-
-    def _getSelectedRows(self):
+    @property
+    def selectedRows(self):
         return self._selectedRows
 
-    def _setSelectedRows(self, val):
+    @selectedRows.setter
+    def selectedRows(self, val):
         self._selectedRows = val
 
-    selectedRows = property(_getSelectedRows, _setSelectedRows)
-
-    def _getSelectedColumns(self):
+    @property
+    def selectedColumns(self):
         return self._selectedColumns
 
-    def _setSelectedColumns(self, val):
+    @selectedColumns.setter
+    def selectedColumns(self, val):
         self._selectedColumns = val
-
-    selectedColumns = property(_getSelectedColumns, _setSelectedColumns)
 
     def selectionChanged(self, selected=None, deselected=None):
         """Pretty important. This updates self.selectedRows, which is used

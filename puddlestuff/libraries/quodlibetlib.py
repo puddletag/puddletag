@@ -108,15 +108,15 @@ class Tag(MockTag):
         self.set_attrs(ATTRIBUTES, self.__tags)
         self.update_tag_list()
 
-    def get_filepath(self):
+    @property
+    def filepath(self):
         return MockTag.get_filepath(self)
 
-    def set_filepath(self, val):
+    @filepath.setter
+    def filepath(self, val):
         self.__tags.update(MockTag.set_filepath(self, val))
 
-    filepath = property(get_filepath, set_filepath)
-
-    images = property(lambda s: [], lambda s: [])
+    images = property(lambda self: [], lambda self, value: None)
 
     def __contains__(self, key):
         if self.revmapping:
@@ -259,10 +259,9 @@ class QuodLibet(object):
         return set([track.get(child, '') for track in
                     self._tracks if track.get(parent, '') == value])
 
-    def _artists(self):
+    @property
+    def artists(self):
         return list(self._cached.keys())
-
-    artists = property(_artists)
 
     def get_albums(self, artist):
         return list(self._cached[artist].keys())

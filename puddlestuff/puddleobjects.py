@@ -179,7 +179,7 @@ class PuddleConfig(object):
     def __init__(self, filename=None):
         if not filename:
             filename = os.path.join(CONFIGDIR, 'puddletag.conf')
-        self._setFilename(filename)
+        self.filename = filename
 
         self.setSection = self.set
         self.load = self.get
@@ -237,19 +237,20 @@ class PuddleConfig(object):
         with open(filename, 'w') as fo:
             fo.write(json.dumps(dict(self.data), indent=2))
 
-    def _setFilename(self, filename):
+
+    @property
+    def filename(self):
+        return self._filename
+
+    @filename.setter
+    def filename(self, filename):
         logging.debug(f'reading config file {filename}')
         self._filename = filename
         self.savedir = os.path.dirname(filename)
         self.reload()
 
-    def _getFilename(self):
-        return self._filename
-
     def sections(self):
         return list(self.data.keys())
-
-    filename = property(_getFilename, _setFilename)
 
 
 def _getSettings():
@@ -1337,7 +1338,12 @@ class MoveButtons(QWidget):
         self.next.clicked.connect(self.nextClicked)
         self.prev.clicked.connect(self.prevClicked)
 
-    def _setCurrentIndex(self, index):
+    @property
+    def index(self):
+        return self._currentindex
+
+    @index.setter
+    def index(self, index):
         try:
             if index >= len(self.arrayname) or index < 0:
                 return
@@ -1365,11 +1371,6 @@ class MoveButtons(QWidget):
             self.next.show()
 
         self.indexChanged.emit(index)
-
-    def _getCurrentIndex(self):
-        return self._currentindex
-
-    index = property(_getCurrentIndex, _setCurrentIndex)
 
     def nextClicked(self):
         self.index += 1
@@ -1752,18 +1753,18 @@ class PicWidget(QWidget):
 
         self._lastdata = None
 
-    def _setContext(self, text):
+    @property
+    def context(self):
+        return self._contextlabel.text()
+
+    @context.setter
+    def context(self, text):
         if not text:
             self._contextlabel.setVisible(False)
             self._contextlabel.setText('')
         else:
             self._contextlabel.setText(translate("Artwork Context", text))
             self._contextlabel.setVisible(True)
-
-    def _getContext(self):
-        return self._contextlabel.text()
-
-    context = property(_getContext, _setContext)
 
     def setDescription(self, text):
         '''Sets the description of the current image to the text in the
@@ -1876,10 +1877,14 @@ class PicWidget(QWidget):
             self.next.show()
             self.prev.show()
 
-    def _getCurrentImage(self):
+    @property
+    def currentImage(self):
+        """Get or set the index of the current image. If the index isn't valid
+           then a blank image is loaded."""
         return self._currentImage
 
-    def _setCurrentImage(self, num):
+    @currentImage.setter
+    def currentImage(self, num):
         while True:
             # A lot of files have corrupt picture data. I just want to
             # skip those and not have the user be any wiser.
@@ -1946,10 +1951,6 @@ class PicWidget(QWidget):
         self.label.setFrameStyle(QFrame.Shape.NoFrame)
         self.enableButtons()
         # self.resizeEvent()
-
-    currentImage = property(_getCurrentImage, _setCurrentImage, """Get or set the index of
-    the current image. If the index isn't valid
-    then a blank image is loaded.""")
 
     def maxImage(self):
         """Shows a window with the picture fullsized."""
@@ -2225,10 +2226,9 @@ class ProgressWin(QDialog):
             self._timer.stop()
         super(ProgressWin, self).closeEvent(event)
 
-    def _value(self):
+    @property
+    def value(self):
         return self.pbar.value()
-
-    value = property(_value)
 
 
 class PuddleCombo(QWidget):
@@ -2458,14 +2458,14 @@ class ShortcutEditor(QLineEdit):
         self.setText(text)
         self.valid = valid
 
-    def _getValid(self):
+    @property
+    def valid(self):
         return self._valid
 
-    def _setValid(self, value):
+    @valid.setter
+    def valid(self, value):
         self._valid = value
         self.validityChanged.emit(value)
-
-    valid = property(_getValid, _setValid)
 
 
 if __name__ == '__main__':

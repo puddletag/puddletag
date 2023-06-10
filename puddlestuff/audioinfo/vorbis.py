@@ -75,25 +75,25 @@ def vorbis_tag(base, name):
 
             util.MockTag.__init__(self, filename)
 
-        def get_filepath(self):
+        @property
+        def filepath(self):
             return util.MockTag.get_filepath(self)
 
-        def set_filepath(self, val):
+        @filepath.setter
+        def filepath(self, val):
             self.__tags.update(util.MockTag.set_filepath(self, val))
 
-        filepath = property(get_filepath, set_filepath)
-
-        def _get_images(self):
+        @property
+        def images(self):
             return self.__images
 
-        def _set_images(self, images):
+        @images.setter
+        def images(self, images):
             if images:
                 self.__images = [parse_image(i, self.IMAGETAGS) for i in images]
             else:
                 self.__images = []
             cover_info(images, self.__tags)
-
-        images = property(_get_images, _set_images)
 
         def __contains__(self, key):
             if key == '__image':
@@ -246,8 +246,8 @@ def vorbis_tag(base, name):
 
 
 class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
-
-    def _info(self):
+    @property
+    def info(self):
         info = self.mut_obj.info
         fileinfo = [
             ('Path', self[PATH]),
@@ -261,12 +261,11 @@ class Ogg_Tag(vorbis_tag(OggVorbis, 'Ogg Vorbis')):
                    ('Length', self.length)]
         return [('File', fileinfo), ('Ogg Info', ogginfo)]
 
-    info = property(_info)
-
 
 if OggOpus:
     class Opus_Tag(vorbis_tag(OggOpus, 'Ogg Opus')):
-        def _info(self):
+        @property
+        def info(self):
             info = self.mut_obj.info
             fileinfo = [
                 ('Path', self[PATH]),
@@ -279,11 +278,10 @@ if OggOpus:
                        ('Length', self.length)]
             return [('File', fileinfo), ('Opus Info', ogginfo)]
 
-        info = property(_info)
-
 
 class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
-    def _info(self):
+    @property
+    def info(self):
         info = self.mut_obj.info
         fileinfo = [('Path', self[PATH]),
                     ('Size', str_filesize(int(self.size))),
@@ -296,8 +294,6 @@ class FLAC_Tag(vorbis_tag(FLAC, 'FLAC')):
                    ('Channels', str(info.channels)),
                    ('Length', self.length)]
         return [('File', fileinfo), ('FLAC Info', ogginfo)]
-
-    info = property(_info)
 
 
 filetypes = []

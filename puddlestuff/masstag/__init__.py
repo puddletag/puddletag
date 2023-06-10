@@ -628,27 +628,29 @@ class Result(object):
         self.info = {} if info is None else info
         self.track_matched = {}
 
-    def _get_info(self):
-        return self.__info
-
-    def _set_info(self, value):
-        self.__info = value
-
+    def _update_merged(self):
         if self.__tracks:
-            self.merged = [merge_track(a, value) for a in self.__tracks]
+            self.merged = [merge_track(a, self.__info) for a in self.__tracks]
         else:
             self.merged = []
 
-    info = property(_get_info, _set_info)
+    @property
+    def info(self):
+        return self.__info
 
-    def _get_tracks(self):
+    @info.setter
+    def info(self, value):
+        self.__info = value
+        self._update_merged()
+
+    @property
+    def tracks(self):
         return self.__tracks
 
-    def _set_tracks(self, value):
+    @tracks.setter
+    def tracks(self, value):
         self.__tracks = value
-        self._set_info(self.__info)
-
-    tracks = property(_get_tracks, _set_tracks)
+        self._update_merged()
 
     def retrieve(self, errors=None):
         if self.tag_source:

@@ -756,7 +756,14 @@ class MockTag(object):
 
         return ret
 
-    def _set_ext(self, val):
+    filepath = property(get_filepath, set_filepath)
+
+    @property
+    def ext(self):
+        return path.splitext(self.filepath)[1][1:]
+
+    @ext.setter
+    def ext(self, val):
         if val:
             val = path_to_string(val)
             self.filepath = '%s%s%s' % (path.splitext(self.filepath)[0],
@@ -764,51 +771,56 @@ class MockTag(object):
         else:
             self.filepath = path.splitext(self.filepath)[0]
 
-    def _get_ext(self):
-        return path.splitext(self.filepath)[1][1:]
-
-    def _get_filename(self):
+    @property
+    def filename(self):
         return path.basename(self.filepath)
 
-    def _set_filename(self, val):
+    @filename.setter
+    def filename(self, val):
         val = path_to_string(val)
         self.filepath = path.join(self.dirpath, val)
 
-    def _get_dirpath(self):
+    @property
+    def dirpath(self):
         return path.dirname(self.filepath)
 
-    def _set_dirpath(self, val):
+    @dirpath.setter
+    def dirpath(self, val):
         val = path_to_string(val)
         self.filepath = path.join(val, self.filename)
 
-    def _get_dirname(self):
+    @property
+    def dirname(self):
         return path.basename(self.dirpath)
 
-    def _set_dirname(self, value):
+    @dirname.setter
+    def dirname(self, value):
         value = path_to_string(value)
         self.dirpath = path.join(path.dirname(self.dirpath), value)
 
-    def _set_filename_no_ext(self, value):
-        self.filename = value + '.' + self.ext
-
-    def _get_filename_no_ext(self):
+    @property
+    def filename_no_ext(self):
         return path.splitext(path.basename(self.filepath))[0]
 
-    def _get_parent_dir(self):
+    @filename_no_ext.setter
+    def filename_no_ext(self, value):
+        self.filename = value + '.' + self.ext
+
+    @property
+    def parent_dir(self):
         return path.basename(path.dirname(self.dirpath))
 
-    def _set_parent_dir(self, value):
+    @parent_dir.setter
+    def parent_dir(self, value):
         self.dirpath = path.join(path.dirname(self.dirpath), value)
 
-    filepath = property(get_filepath, set_filepath)
-    dirpath = property(_get_dirpath, _set_dirpath)
-    dirname = property(_get_dirname, _set_dirname)
-    ext = property(_get_ext, _set_ext)
-    filename = property(_get_filename, _set_filename)
-    filename_no_ext = property(_get_filename_no_ext, _set_filename_no_ext)
-    parent_dir = property(_get_parent_dir, _set_parent_dir)
-    tags = property(lambda self: dict(list(self.items())))
-    usertags = property(lambda self: usertags(self))
+    @property
+    def tags(self):
+        return dict(list(self.items()))
+
+    @property
+    def usertags(self):
+        return usertags(self)
 
     def __iter__(self):
         return list(self.keys()).__iter__()

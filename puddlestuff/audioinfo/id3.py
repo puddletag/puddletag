@@ -816,27 +816,28 @@ def tag_factory(id3_filetype):
 
             util.MockTag.__init__(self, filename)
 
-        def get_filepath(self):
+        @property
+        def filepath(self):
             return util.MockTag.get_filepath(self)
 
-        def set_filepath(self, val):
+        @filepath.setter
+        def filepath(self, val):
             self.__tags.update(util.MockTag.set_filepath(self, val))
 
-        filepath = property(get_filepath, set_filepath)
-
-        def _get_images(self):
+        @property
+        def images(self):
             return self.__images
 
-        def _set_images(self, images):
+        @images.setter
+        def images(self, images):
             if images:
                 self.__images = [parse_image(i, self.IMAGETAGS) for i in images]
             else:
                 self.__images = []
             cover_info(images, self.__tags)
 
-        images = property(_get_images, _set_images)
-
-        def _info(self):
+        @property
+        def info(self):
             info = self.mut_obj.info
             fileinfo = [('Path', self[PATH]),
                         ('Size', str_filesize(int(self.size))),
@@ -879,8 +880,6 @@ def tag_factory(id3_filetype):
                 pass
 
             return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
-
-        info = property(_info)
 
         def __contains__(self, key):
             if key == '__image':
