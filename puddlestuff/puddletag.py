@@ -360,6 +360,11 @@ def _openFilesFilterFilename(filename):
     return filename
 
 
+# set in MainWin.__init__
+add_shortcuts = None
+remove_shortcuts = None
+
+
 class MainWin(QMainWindow):
     loadFiles = pyqtSignal(object, object, object, object, object, name='loadFiles')
     always = pyqtSignal(bool, name='always')
