@@ -50,8 +50,8 @@ Poděkování programátorům knihoven, na nichž je puddletag založent (bez ni
     </message>
     <message>
         <location filename="../puddlestuff/about.py" line="74"/>
-        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</source>
-        <translation type="obsolete">&lt;h2&gt;puddletag %1&lt;/h2&gt; %2</translation>
+        <source>&lt;h2&gt;puddletag {}&lt;/h2&gt; {}</source>
+        <translation type="obsolete">&lt;h2&gt;puddletag {}&lt;/h2&gt; {}</translation>
     </message>
     <message>
         <location filename="." line="1057"/>
@@ -77,8 +77,8 @@ Licencováno pod GPLv2 (&lt;a href=&quot;www.gnu.org/licenses/gpl-2.0.html&quot;
     </message>
     <message>
         <location filename="../puddlestuff/about.py" line="69"/>
-        <source>&lt;h2&gt;puddletag %1 (Changeset %2)&lt;/h2&gt; %3</source>
-        <translation type="obsolete">&lt;h2&gt;puddletag %1 (seznam změn %2)&lt;/h2&gt; %3</translation>
+        <source>&lt;h2&gt;puddletag {} (Changeset {})&lt;/h2&gt; {}</source>
+        <translation type="obsolete">&lt;h2&gt;puddletag {} (seznam změn {})&lt;/h2&gt; {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/about.py" line="13"/>
@@ -166,12 +166,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/about.py" line="102"/>
-        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt;Changeset %2</source>
+        <source>&lt;h2&gt;puddletag {}&lt;/h2&gt;Changeset {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../puddlestuff/about.py" line="106"/>
-        <source>&lt;h2&gt;puddletag %1&lt;/h2&gt;</source>
+        <source>&lt;h2&gt;puddletag {}&lt;/h2&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -184,13 +184,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <name>AcoustID</name>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="33"/>
-        <source>Error retrieving data: %1</source>
-        <translation>Chyba při získávání dat: %1</translation>
+        <source>Error retrieving data: {}</source>
+        <translation>Chyba při získávání dat: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="30"/>
-        <source>Retrieving AcoustID data: %1 of %2.</source>
-        <translation>Získávají se data AcoustID: %1 z %2.</translation>
+        <source>Retrieving AcoustID data: {} of {}.</source>
+        <translation>Získávají se data AcoustID: {} z {}.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="313"/>
@@ -204,8 +204,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="32"/>
-        <source>Error generating fingerprint: %1</source>
-        <translation>Chyba při vytváření otisku prstu: %1</translation>
+        <source>Error generating fingerprint: {}</source>
+        <translation>Chyba při vytváření otisku prstu: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="264"/>
@@ -214,18 +214,18 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="31"/>
-        <source>Retrieving MB album data: %1</source>
-        <translation>Získávají se data MB album: %1</translation>
+        <source>Retrieving MB album data: {}</source>
+        <translation>Získávají se data MB album: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="34"/>
-        <source>Error submitting data: %1</source>
-        <translation>Chyba při odesílání dat: %1</translation>
+        <source>Error submitting data: {}</source>
+        <translation>Chyba při odesílání dat: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="35"/>
-        <source>Submitting data to AcoustID: %1 to %2 of %3.</source>
-        <translation>Odesílají se data do AcoustID: %1 do %2 z %3.</translation>
+        <source>Submitting data to AcoustID: {} to {} of {}.</source>
+        <translation>Odesílají se data do AcoustID: {} do {} z {}.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="36"/>
@@ -234,8 +234,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="37"/>
-        <source>File #%1: %2</source>
-        <translation>Soubor #%1: %2</translation>
+        <source>File #{}: {}</source>
+        <translation>Soubor #{}: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/acoust_id.py" line="265"/>
@@ -341,8 +341,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="225"/>
-        <source>Retrieving XML: %1 - %2</source>
-        <translation>Získává se XML: %1 - %2</translation>
+        <source>Retrieving XML: {} - {}</source>
+        <translation>Získává se XML: {} - {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="125"/>
@@ -477,8 +477,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/puddleobjects.py" line="2001"/>
-        <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
-        <translation>Chyba při ukládání do &lt;b&gt;%1&lt;/b&gt;.</translation>
+        <source>Writing to &lt;b&gt;{}&lt;/b&gt; failed.</source>
+        <translation>Chyba při ukládání do &lt;b&gt;{}&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddleobjects.py" line="1720"/>
@@ -540,8 +540,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <name>Artwork Context</name>
     <message>
         <location filename="../puddlestuff/puddleobjects.py" line="1561"/>
-        <source>%1/%2</source>
-        <translation>%1/%2</translation>
+        <source>{}/{}</source>
+        <translation>{}/{}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="72"/>
@@ -986,8 +986,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1882"/>
-        <source>Reading Directory: %1 + others</source>
-        <translation>Čte se adresář: %1 + jiné</translation>
+        <source>Reading Directory: {} + others</source>
+        <translation>Čte se adresář: {} + jiné</translation>
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="34"/>
@@ -1001,8 +1001,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagtools.py" line="58"/>
-        <source>An error occured while writing to &lt;b&gt;%1&lt;/b&gt;. (%2)</source>
-        <translation>Při zápisu do &lt;b&gt;%1&lt;/b&gt; se vyskytla chyba. (%2)</translation>
+        <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+        <translation>Při zápisu do &lt;b&gt;{}&lt;/b&gt; se vyskytla chyba. ({})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="35"/>
@@ -1011,8 +1011,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="38"/>
-        <source>SYNTAX ERROR in $%1: %2</source>
-        <translation>SKLADEBNÁ CHYBA v $%1: %2</translation>
+        <source>SYNTAX ERROR in ${}: {}</source>
+        <translation>SKLADEBNÁ CHYBA v ${}: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/action_dialogs.py" line="83"/>
@@ -1026,13 +1026,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="38"/>
-        <source>&lt;p&gt;An error occured while renaming the file &lt;b&gt;%1&lt;/b&gt; to &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%3&lt;/b&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Při přejmenovávání souboru &lt;b&gt;%1&lt;/b&gt; na &lt;i&gt;%2&lt;/i&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;%3&lt;/b&gt;&lt;/p&gt;</translation>
+        <source>&lt;p&gt;An error occured while renaming the file &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Při přejmenovávání souboru &lt;b&gt;{}&lt;/b&gt; na &lt;i&gt;{}&lt;/i&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;{}&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="54"/>
-        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;See %3 for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Při zápisu do &lt;b&gt;%1&lt;/b&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;%2&lt;/b&gt; (&lt;i&gt;Kvůli dalším informacím se podívejte na %3.&lt;/i&gt;)&lt;/p&gt;</translation>
+        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Při zápisu do &lt;b&gt;{}&lt;/b&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;{}&lt;/b&gt; (&lt;i&gt;Kvůli dalším informacím se podívejte na {}.&lt;/i&gt;)&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1911"/>
@@ -1051,8 +1051,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1879"/>
-        <source>Reading Directory: %1</source>
-        <translation>Čte se adresář: %1</translation>
+        <source>Reading Directory: {}</source>
+        <translation>Čte se adresář: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="935"/>
@@ -1061,8 +1061,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="29"/>
-        <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;%1&lt;/b&gt; to &lt;i&gt;%2&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%3&lt;/b&gt;&lt;br /&gt;File used: %4&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Při přejmenovávání adresáře &lt;b&gt;%1&lt;/b&gt; na &lt;i&gt;%2&lt;/i&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;%3&lt;/b&gt;&lt;br /&gt;Použitý soubor: %4&lt;/p&gt;</translation>
+        <source>&lt;p&gt;An error occured while renaming the directory &lt;b&gt;{}&lt;/b&gt; to &lt;i&gt;{}&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;File used: {}&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Při přejmenovávání adresáře &lt;b&gt;{}&lt;/b&gt; na &lt;i&gt;{}&lt;/i&gt; se vyskytla chyba.&lt;/p&gt;&lt;p&gt;Důvod: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Použitý soubor: {}&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="154"/>
@@ -1096,7 +1096,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="44"/>
-        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;%1&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;%2&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;See %3 for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
+        <source>&lt;p&gt;An error occured while writing to &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Reason: &lt;b&gt;{}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;(&lt;i&gt;See {} for debug info.&lt;/i&gt;)&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1162,8 +1162,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <name>Dir Renaming</name>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="1039"/>
-        <source>I couldn&apos;t rename: &lt;i&gt;%1&lt;/i&gt; to &lt;b&gt;%2&lt;/b&gt; (%3)</source>
-        <translation>Nepodařilo se přejmenovat &lt;i&gt;%1&lt;/i&gt; na &lt;b&gt;%2&lt;/b&gt; (%3)</translation>
+        <source>I couldn&apos;t rename: &lt;i&gt;{}&lt;/i&gt; to &lt;b&gt;{}&lt;/b&gt; ({})</source>
+        <translation>Nepodařilo se přejmenovat &lt;i&gt;{}&lt;/i&gt; na &lt;b&gt;{}&lt;/b&gt; ({})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="1023"/>
@@ -1172,13 +1172,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="1015"/>
-        <source>An error occured while renaming &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;. (%3)</source>
-        <translation>Při přejmenování &lt;b&gt;%1&lt;/b&gt; na &lt;b&gt;%2&lt;/b&gt;se vyskytla chyba. (%3)</translation>
+        <source>An error occured while renaming &lt;b&gt;{}&lt;/b&gt; to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
+        <translation>Při přejmenování &lt;b&gt;{}&lt;/b&gt; na &lt;b&gt;{}&lt;/b&gt;se vyskytla chyba. ({})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="569"/>
-        <source>Rename: &lt;b&gt;%1&lt;/b&gt; to: &lt;i&gt;%2&lt;/i&gt;</source>
-        <translation>Přejmenovat: &lt;b&gt;%1&lt;/b&gt; in: &lt;i&gt;%2&lt;/i&gt;</translation>
+        <source>Rename: &lt;b&gt;{}&lt;/b&gt; to: &lt;i&gt;{}&lt;/i&gt;</source>
+        <translation>Přejmenovat: &lt;b&gt;{}&lt;/b&gt; in: &lt;i&gt;{}&lt;/i&gt;</translation>
     </message>
 </context>
 <context>
@@ -1616,8 +1616,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/findfunc.py" line="55"/>
-        <source>At most %1 arguments expected. %2 given.</source>
-        <translation>Očekáváno nanejvýš %1 argumentů. %2 zadáno.</translation>
+        <source>At most {} arguments expected. {} given.</source>
+        <translation>Očekáváno nanejvýš {} argumentů. {} zadáno.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="215"/>
@@ -1796,8 +1796,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/findfunc.py" line="61"/>
-        <source>At least %1 arguments expected. %2 given.</source>
-        <translation>Očekáváno nanejvýš %1 argumentů. %2 zadáno.</translation>
+        <source>At least {} arguments expected. {} given.</source>
+        <translation>Očekáváno nanejvýš {} argumentů. {} zadáno.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/translations.py" line="222"/>
@@ -2207,8 +2207,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <name>Main Window</name>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="551"/>
-        <source>puddletag: %1 + others</source>
-        <translation>puddletag: %1 + jiné</translation>
+        <source>puddletag: {} + others</source>
+        <translation>puddletag: {} + jiné</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="562"/>
@@ -2217,8 +2217,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="553"/>
-        <source>puddletag: %1</source>
-        <translation>puddletag: %1</translation>
+        <source>puddletag: {}</source>
+        <translation>puddletag: {}</translation>
     </message>
 </context>
 <context>
@@ -2326,8 +2326,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="72"/>
-        <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;album=No album name found.</source>
-        <translation>Spouští se hledání: &lt;br /&gt;Umělec=&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;Album=Nenalezen žádný název alba.</translation>
+        <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;album=No album name found.</source>
+        <translation>Spouští se hledání: &lt;br /&gt;Umělec=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Album=Nenalezen žádný název alba.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="83"/>
@@ -2381,8 +2381,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="69"/>
-        <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;album=&lt;b&gt;%2&lt;/b&gt;&lt;br /&gt;</source>
-        <translation>Spouští se hledání: &lt;br /&gt;artist=&lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;album=&lt;b&gt;%2&lt;/b&gt;&lt;br /&gt;</translation>
+        <source>Starting search for: &lt;br /&gt;artist=&lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</source>
+        <translation>Spouští se hledání: &lt;br /&gt;artist=&lt;b&gt;{}&lt;/b&gt; &lt;br /&gt;album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="89"/>
@@ -2416,8 +2416,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="61"/>
-        <source>Retrieving matching album. &lt;b&gt;%1 - %2&lt;/b&gt;</source>
-        <translation>Získává se odpovídající album. &lt;b&gt;%1 - %2&lt;/b&gt;</translation>
+        <source>Retrieving matching album. &lt;b&gt;{} - {}&lt;/b&gt;</source>
+        <translation>Získává se odpovídající album. &lt;b&gt;{} - {}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="58"/>
@@ -2431,18 +2431,18 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="63"/>
-        <source>Retrieving matching album. Artist=&lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Získává se odpovídající album. Umělec=&lt;b&gt;%1&lt;/b&gt;</translation>
+        <source>Retrieving matching album. Artist=&lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Získává se odpovídající album. Umělec=&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="65"/>
-        <source>Retrieving matching album. Album=&lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Získává se odpovídající album. Album=&lt;b&gt;%1&lt;/b&gt;</translation>
+        <source>Retrieving matching album. Album=&lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Získává se odpovídající album. Album=&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="75"/>
-        <source>Starting search for: &lt;br /&gt;album=&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;artist=No artist found.</source>
-        <translation>Spouští se hledání: &lt;br /&gt;Album=&lt;b&gt;%1&lt;/b&gt;&lt;br /&gt;Umělec=Nenalezen žádný umělec.</translation>
+        <source>Starting search for: &lt;br /&gt;album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;artist=No artist found.</source>
+        <translation>Spouští se hledání: &lt;br /&gt;Album=&lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Umělec=Nenalezen žádný umělec.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="510"/>
@@ -2989,13 +2989,13 @@ Chcete pokračovat?</translation>
     <name>MusicBrainz</name>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="580"/>
-        <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID %1 (%2)</source>
-        <translation>&lt;b&gt;Chyba:&lt;/b&gt; Při získávání ID alba %1 (%2)</translation>
+        <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID {} ({})</source>
+        <translation>&lt;b&gt;Chyba:&lt;/b&gt; Při získávání ID alba {} ({})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="527"/>
-        <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving %1: %2</source>
-        <translation>&lt;b&gt;Chyba:&lt;/b&gt; Při získávání %1: %2</translation>
+        <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving {}: {}</source>
+        <translation>&lt;b&gt;Chyba:&lt;/b&gt; Při získávání {}: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="576"/>
@@ -3107,9 +3107,9 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/musiclib.py" line="131"/>
-        <source>Error loading %1: %2
+        <source>Error loading {}: {}
 </source>
-        <translation>Chyba při nahrávání %1: %2</translation>
+        <translation>Chyba při nahrávání {}: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/musiclib.py" line="149"/>
@@ -3118,8 +3118,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/musiclib.py" line="211"/>
-        <source>An error occured while loading the %1 library: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation>Při nahrávání hudební knihovny %1 se vyskytla chyba: &lt;b&gt;%2&lt;/b&gt;</translation>
+        <source>An error occured while loading the {} library: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Při nahrávání hudební knihovny {} se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="261"/>
@@ -3174,8 +3174,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="656"/>
-        <source>An error occured while reading &lt;b&gt;%1&lt;/b&gt; (%2)</source>
-        <translation>Při čtení &lt;b&gt;%1&lt;/b&gt; se vyskytla chyba. (%2)</translation>
+        <source>An error occured while reading &lt;b&gt;{}&lt;/b&gt; ({})</source>
+        <translation>Při čtení &lt;b&gt;{}&lt;/b&gt; se vyskytla chyba. ({})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="652"/>
@@ -3427,8 +3427,8 @@ Chcete pokračovat?</translation>
     <name>Progress Dialog</name>
     <message>
         <location filename="../puddlestuff/puddleobjects.py" line="2163"/>
-        <source>%1%2 of %3...</source>
-        <translation>%1%2 z %3...</translation>
+        <source>{}{} of {}...</source>
+        <translation>{}{} z {}...</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddleobjects.py" line="2162"/>
@@ -3450,8 +3450,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/libraries/quodlibetlib.py" line="377"/>
-        <source>%1 (%2)</source>
-        <translation>%1 (%2)</translation>
+        <source>{} ({})</source>
+        <translation>{} ({})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/libraries/quodlibetlib.py" line="365"/>
@@ -3460,8 +3460,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/libraries/quodlibetlib.py" line="380"/>
-        <source>%1 is an invalid QuodLibet music library file.</source>
-        <translation>%1 je neplatný soubor s hudební knihovnou QuodLibet.</translation>
+        <source>{} is an invalid QuodLibet music library file.</source>
+        <translation>{} je neplatný soubor s hudební knihovnou QuodLibet.</translation>
     </message>
 </context>
 <context>
@@ -3533,8 +3533,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddlesettings.py" line="709"/>
-        <source>An error occurred while saving the settings of &lt;b&gt;%1&lt;/b&gt;: %2</source>
-        <translation>Při ukládání nastavení &lt;b&gt;%1&lt;/b&gt; se vyskytla chyba: %2</translation>
+        <source>An error occurred while saving the settings of &lt;b&gt;{}&lt;/b&gt;: {}</source>
+        <translation>Při ukládání nastavení &lt;b&gt;{}&lt;/b&gt; se vyskytla chyba: {}</translation>
     </message>
 </context>
 <context>
@@ -3605,16 +3605,16 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="557"/>
-        <source>New Filename: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Nový název souboru: &lt;b&gt;%1&lt;/b&gt;</translation>
+        <source>New Filename: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Nový název souboru: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
     <name>Table</name>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="2037"/>
-        <source>An error occurred while trying to play the selected files: &lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Does the music player you defined (&lt;b&gt;%2&lt;/b&gt;) exist?</source>
-        <translation>Při pokusu o přehrání vybraných souborů &lt;b&gt;%1&lt;/b&gt;  se vyskytla chyba &lt;br /&gt;Je určený přehrávač (&lt;b&gt;%2&lt;/b&gt;) nainstalován?</translation>
+        <source>An error occurred while trying to play the selected files: &lt;b&gt;{}&lt;/b&gt;&lt;br /&gt;Does the music player you defined (&lt;b&gt;{}&lt;/b&gt;) exist?</source>
+        <translation>Při pokusu o přehrání vybraných souborů &lt;b&gt;{}&lt;/b&gt;  se vyskytla chyba &lt;br /&gt;Je určený přehrávač (&lt;b&gt;{}&lt;/b&gt;) nainstalován?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1684"/>
@@ -3623,8 +3623,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="2043"/>
-        <source>It wasn&apos;t possible to play the selected files, because the music player you defined (&lt;b&gt;%1&lt;/b&gt;) does not exist.</source>
-        <translation>Není možné přehrát vybrané soubory, protože program vámi určený k přehrávání (&lt;b&gt;%1&lt;/b&gt;) není nainstalován.</translation>
+        <source>It wasn&apos;t possible to play the selected files, because the music player you defined (&lt;b&gt;{}&lt;/b&gt;) does not exist.</source>
+        <translation>Není možné přehrát vybrané soubory, protože program vámi určený k přehrávání (&lt;b&gt;{}&lt;/b&gt;) není nainstalován.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1585"/>
@@ -3638,8 +3638,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1605"/>
-        <source>There was an error deleting the tag of %1: &lt;b&gt;Tag deletion isn&apos;t supportedfor %2 files.&lt;/b&gt;</source>
-        <translation>Při mazání značky %1 se vyskytla chyba: &lt;b&gt;Mazání značek není pro soubory %2 podporováno.&lt;/b&gt;</translation>
+        <source>There was an error deleting the tag of {}: &lt;b&gt;Tag deletion isn&apos;t supported for {} files.&lt;/b&gt;</source>
+        <translation>Při mazání značky {} se vyskytla chyba: &lt;b&gt;Mazání značek není pro soubory {} podporováno.&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1642"/>
@@ -3648,15 +3648,15 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="1596"/>
-        <source>An error occurred while deleting the tag of %1: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation>Při mazání značky %1 se vyskytla chyba: &lt;b&gt;%2&lt;/b&gt;</translation>
+        <source>An error occurred while deleting the tag of {}: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Při mazání značky {} se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagmodel.py" line="715"/>
-        <source>Preview: %1
-Real: %2</source>
-        <translation>Náhled: %1
-Skutečný: %2</translation>
+        <source>Preview: {}
+Real: {}</source>
+        <translation>Náhled: {}
+Skutečný: {}</translation>
     </message>
 </context>
 <context>
@@ -3764,8 +3764,8 @@ Skutečný: %2</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="475"/>
-        <source>An unhandled error occured: %1</source>
-        <translation type="unfinished">Vyskytla se neznámá chyba: %1</translation>
+        <source>An unhandled error occured: {}</source>
+        <translation type="unfinished">Vyskytla se neznámá chyba: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="664"/>
@@ -3839,8 +3839,8 @@ Skutečný: %2</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="925"/>
-        <source>An unhandled error occurred: %1</source>
-        <translation type="unfinished">Vyskytla se neznámá chyba: %1</translation>
+        <source>An unhandled error occurred: {}</source>
+        <translation type="unfinished">Vyskytla se neznámá chyba: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="615"/>
@@ -3889,8 +3889,8 @@ Skutečný: %2</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="921"/>
-        <source>An error occured: %1</source>
-        <translation type="unfinished">Vyskytla se chyba: %1</translation>
+        <source>An error occured: {}</source>
+        <translation type="unfinished">Vyskytla se chyba: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="954"/>
@@ -3962,8 +3962,8 @@ Skutečný: %2</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="315"/>
-        <source>The file &lt;b&gt;%1&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
-        <translation>Soubor &lt;b&gt;%1&lt;/b&gt; se nepodařilo nahrát.&lt;br /&gt; Chcete vybrat jiný soubor?</translation>
+        <source>The file &lt;b&gt;{}&lt;/b&gt; couldn&apos;t be loaded.&lt;br /&gt; Do you want to choose another?</source>
+        <translation>Soubor &lt;b&gt;{}&lt;/b&gt; se nepodařilo nahrát.&lt;br /&gt; Chcete vybrat jiný soubor?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/helperwin.py" line="228"/>
