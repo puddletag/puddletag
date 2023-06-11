@@ -257,8 +257,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/actiondlg.py" line="1064"/>
-        <source>Edit Action: %s</source>
-        <translation>Upravit činnost: %s</translation>
+        <source>Edit Action: {}</source>
+        <translation>Upravit činnost: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/actiondlg.py" line="994"/>
@@ -346,8 +346,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="125"/>
-        <source>Retrieving search results for keywords: %s</source>
-        <translation>Získávají se výsledky hledání pro klíčová slova: %s</translation>
+        <source>Retrieving search results for keywords: {}</source>
+        <translation>Získávají se výsledky hledání pro klíčová slova: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="348"/>
@@ -366,13 +366,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="237"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Získává se obal: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Získává se obal: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="196"/>
-        <source>%s at Amazon.com</source>
-        <translation>%s auf Amazon.com</translation>
+        <source>{} at Amazon.com</source>
+        <translation>{} auf Amazon.com</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="352"/>
@@ -381,8 +381,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="222"/>
-        <source>Retrieving using ASIN: %s</source>
-        <translation>Získává se pomocí ASIN: %s</translation>
+        <source>Retrieving using ASIN: {}</source>
+        <translation>Získává se pomocí ASIN: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="345"/>
@@ -1041,8 +1041,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="168"/>
-        <source>%s images</source>
-        <translation>%s obrázků</translation>
+        <source>{} images</source>
+        <translation>{} obrázků</translation>
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="37"/>
@@ -1076,8 +1076,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="39"/>
-        <source>SYNTAX ERROR: %s expects a number at argument %d.</source>
-        <translation>SKLADEBNÁ CHYBA: %s očekává u argumentu číslo %d.</translation>
+        <source>SYNTAX ERROR: {} expects a number at argument {}.</source>
+        <translation>SKLADEBNÁ CHYBA: {} očekává u argumentu číslo {}.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="396"/>
@@ -1091,8 +1091,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="199"/>
-        <source>Connection Error: %s </source>
-        <translation>Chyba spojení: %s </translation>
+        <source>Connection Error: {}</source>
+        <translation>Chyba spojení: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="44"/>
@@ -1252,23 +1252,23 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="326"/>
-        <source>Found Discogs ID: %s</source>
-        <translation>Nalezeno Discogs ID: %s</translation>
+        <source>Found Discogs ID: {}</source>
+        <translation>Nalezeno Discogs ID: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="190"/>
-        <source>Retrieving using Release ID: %s</source>
-        <translation>Získává se pomocí Release ID: %s</translation>
+        <source>Retrieving using Release ID: {}</source>
+        <translation>Získává se pomocí Release ID: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="234"/>
-        <source>%s at Discogs.com</source>
-        <translation>%s na Discogs.com</translation>
+        <source>{} at Discogs.com</source>
+        <translation>{} na Discogs.com</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="96"/>
-        <source>Retrieving search results for keywords: %s</source>
-        <translation type="obsolete">Získávají se výsledky hledání pro klíčová slova: %s</translation>
+        <source>Retrieving search results for keywords: {}</source>
+        <translation type="obsolete">Získávají se výsledky hledání pro klíčová slova: {}</translation>
     </message>
     <message>
         <location filename="." line="266"/>
@@ -1287,8 +1287,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="197"/>
-        <source>Retrieving album %s</source>
-        <translation>Získává se album: %s</translation>
+        <source>Retrieving album {}</source>
+        <translation>Získává se album: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="288"/>
@@ -1297,8 +1297,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="223"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Získává se obal: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Získává se obal: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="287"/>
@@ -1374,8 +1374,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="75"/>
-        <source>Couldn&apos;t create intermediate directory: %s</source>
-        <translation>Nelze vytvořit dočasný adresář %s</translation>
+        <source>Couldn&apos;t create intermediate directory: {}</source>
+        <translation>Nelze vytvořit dočasný adresář {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/puddletag.py" line="767"/>
@@ -2311,8 +2311,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="81"/>
-        <source>&lt;b&gt;%d&lt;/b&gt; results found.</source>
-        <translation>Nalezeno &lt;b&gt;%d&lt;/b&gt; výsledků.</translation>
+        <source>&lt;b&gt;{}&lt;/b&gt; results found.</source>
+        <translation>Nalezeno &lt;b&gt;{}&lt;/b&gt; výsledků.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="78"/>
@@ -2341,8 +2341,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="60"/>
-        <source>&lt;b&gt;Polling: %s&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Vyhledávání: %s&lt;/b&gt;</translation>
+        <source>&lt;b&gt;Polling: {}&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Vyhledávání: {}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="26"/>
@@ -2361,8 +2361,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="85"/>
-        <source>&lt;b&gt;%d&lt;/b&gt; possibly matching albums found.</source>
-        <translation>Nalezeno &lt;b&gt;%d&lt;/b&gt; možná odpovídajících alb.</translation>
+        <source>&lt;b&gt;{}&lt;/b&gt; possibly matching albums found.</source>
+        <translation>Nalezeno &lt;b&gt;{}&lt;/b&gt; možná odpovídajících alb.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="87"/>
@@ -2386,8 +2386,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="89"/>
-        <source>No matches found for tag source &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Nebyla nalezena žádná shoda pro zdroj &lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>No matches found for tag source &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Nebyla nalezena žádná shoda pro zdroj &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="67"/>
@@ -2396,18 +2396,18 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="633"/>
-        <source>An error occured during the search: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Při hledání se vyskytla chyba: &lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>An error occured during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Při hledání se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="596"/>
-        <source>Retrying search with album name: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Znovu se zkouší hledání s názvem alba: &lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Znovu se zkouší hledání s názvem alba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="96"/>
-        <source>&lt;br /&gt;Rechecking with results from &lt;b&gt;%s&lt;/b&gt;.&lt;br /&gt;</source>
-        <translation>&lt;br /&gt;Přezkoušení s výsledky z &lt;b&gt;%s&lt;/b&gt;.&lt;br /&gt;</translation>
+        <source>&lt;br /&gt;Rechecking with results from &lt;b&gt;{}&lt;/b&gt;.&lt;br /&gt;</source>
+        <translation>&lt;br /&gt;Přezkoušení s výsledky z &lt;b&gt;{}&lt;/b&gt;.&lt;br /&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="536"/>
@@ -2456,8 +2456,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="636"/>
-        <source>An error occured during album retrieval: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Při získávaní dat o albu se vyskytla chyba: &lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>An error occured during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Při získávaní dat o albu se vyskytla chyba: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="102"/>
@@ -2951,8 +2951,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="386"/>
-        <source>Retrieving album page: %s</source>
-        <translation>Získává se stránka alba: %s</translation>
+        <source>Retrieving album page: {}</source>
+        <translation>Získává se stránka alba: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="365"/>
@@ -2981,8 +2981,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="358"/>
-        <source>Retrieving search page: %s</source>
-        <translation>Získává se stránka hledání: %s</translation>
+        <source>Retrieving search page: {}</source>
+        <translation>Získává se stránka hledání: {}</translation>
     </message>
 </context>
 <context>
@@ -2999,13 +2999,13 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="576"/>
-        <source>Found album id %s in tracks. Retrieving</source>
-        <translation>Ve stopách nalezeno ID alba %s. Získává se</translation>
+        <source>Found album id {} in tracks. Retrieving</source>
+        <translation>Ve stopách nalezeno ID alba {}. Získává se</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="376"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Získává se obal: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Získává se obal: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="381"/>
@@ -3034,8 +3034,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="418"/>
-        <source>Retrieving image %s</source>
-        <translation>Získává se obrázek: %s</translation>
+        <source>Retrieving image {}</source>
+        <translation>Získává se obrázek: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="509"/>
@@ -3064,8 +3064,8 @@ Chcete pokračovat?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="620"/>
-        <source>Error retrieving image: %s</source>
-        <translation>Chyba při získávání obrázku: %s</translation>
+        <source>Error retrieving image: {}</source>
+        <translation>Chyba při získávání obrázku: {}</translation>
     </message>
 </context>
 <context>
@@ -3600,8 +3600,8 @@ Chcete pokračovat?</translation>
     <name>Status Bar</name>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="551"/>
-        <source>&lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>&lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>&lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="557"/>
@@ -3739,8 +3739,8 @@ Skutečný: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="107"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Získává se obal: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Získává se obal: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="486"/>
@@ -3774,8 +3774,8 @@ Skutečný: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="20"/>
-        <source>Retrieved Albums (sorted by %s)</source>
-        <translation type="unfinished">Získaná alba (tříděno podle %s)</translation>
+        <source>Retrieved Albums (sorted by {})</source>
+        <translation type="unfinished">Získaná alba (tříděno podle {})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="492"/>
@@ -3799,8 +3799,8 @@ Skutečný: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="97"/>
-        <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
-        <translation type="unfinished">Nepodařilo se nahrát zdroj značky Mp3Tag %s</translation>
+        <source>Couldn&apos;t load Mp3tag Tag Source {}</source>
+        <translation type="unfinished">Nepodařilo se nahrát zdroj značky Mp3Tag {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="628"/>
@@ -3824,8 +3824,8 @@ Skutečný: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="223"/>
-        <source>Configure: %s</source>
-        <translation type="unfinished">Nastavit: %s</translation>
+        <source>Configure: {}</source>
+        <translation type="unfinished">Nastavit: {}</translation>
     </message>
     <message>
         <location filename="." line="201"/>
@@ -3924,8 +3924,8 @@ Skutečný: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="567"/>
-        <source>Retrying search with %s</source>
-        <translation type="unfinished">Pokus o nové vyhledání s %s</translation>
+        <source>Retrying search with {}</source>
+        <translation type="unfinished">Pokus o nové vyhledání s {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="659"/>

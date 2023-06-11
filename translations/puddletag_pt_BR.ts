@@ -295,8 +295,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/actiondlg.py" line="1064"/>
-        <source>Edit Action: %s</source>
-        <translation>Editar Ação: %s</translation>
+        <source>Edit Action: {}</source>
+        <translation>Editar Ação: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/actiondlg.py" line="527"/>
@@ -323,8 +323,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="125"/>
-        <source>Retrieving search results for keywords: %s</source>
-        <translation>Obtendo resultados para as palavras: %s</translation>
+        <source>Retrieving search results for keywords: {}</source>
+        <translation>Obtendo resultados para as palavras: {}</translation>
     </message>
     <message>
         <location filename="puddlestuff/tagsources/amazon.py" line="136"/>
@@ -333,13 +333,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="196"/>
-        <source>%s at Amazon.com</source>
-        <translation>%s arroba Amazon.com</translation>
+        <source>{} at Amazon.com</source>
+        <translation>{} arroba Amazon.com</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="222"/>
-        <source>Retrieving using ASIN: %s</source>
-        <translation>Obtendo através do ASIN: %s</translation>
+        <source>Retrieving using ASIN: {}</source>
+        <translation>Obtendo através do ASIN: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="225"/>
@@ -348,8 +348,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="237"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Obtendo capa: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Obtendo capa: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/amazon.py" line="277"/>
@@ -948,8 +948,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="39"/>
-        <source>SYNTAX ERROR: %s expects a number at argument %d.</source>
-        <translation>ERRO DE SINTAXE %s espera um número como argumento %d.</translation>
+        <source>SYNTAX ERROR: {} expects a number at argument {}.</source>
+        <translation>ERRO DE SINTAXE {} espera um número como argumento {}.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/findfunc.py" line="308"/>
@@ -1068,8 +1068,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="168"/>
-        <source>%s images</source>
-        <translation>%s imagens</translation>
+        <source>{} images</source>
+        <translation>{} imagens</translation>
     </message>
     <message>
         <location filename="../puddlestuff/constants.py" line="14"/>
@@ -1088,8 +1088,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="199"/>
-        <source>Connection Error: %s </source>
-        <translation>Erro de conexão: %s </translation>
+        <source>Connection Error: {}</source>
+        <translation>Erro de conexão: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="44"/>
@@ -1210,28 +1210,28 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <name>Discogs</name>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="96"/>
-        <source>Retrieving search results for keywords: %s</source>
-        <translation type="obsolete">Obtendo resultados da busca por palavras-chave: %s</translation>
+        <source>Retrieving search results for keywords: {}</source>
+        <translation type="obsolete">Obtendo resultados da busca por palavras-chave: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="234"/>
-        <source>%s at Discogs.com</source>
-        <translation>%s (arroba) Discogs.com</translation>
+        <source>{} at Discogs.com</source>
+        <translation>{} (arroba) Discogs.com</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="190"/>
-        <source>Retrieving using Release ID: %s</source>
-        <translation>Obtendo usando Identificador de Versão: %s</translation>
+        <source>Retrieving using Release ID: {}</source>
+        <translation>Obtendo usando Identificador de Versão: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="197"/>
-        <source>Retrieving album %s</source>
-        <translation>Obtendo álbum %s</translation>
+        <source>Retrieving album {}</source>
+        <translation>Obtendo álbum {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="223"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Obtendo capa: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Obtendo capa: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="330"/>
@@ -1311,8 +1311,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="326"/>
-        <source>Found Discogs ID: %s</source>
-        <translation>Encotradas Identificações Discogs: %s</translation>
+        <source>Found Discogs ID: {}</source>
+        <translation>Encotradas Identificações Discogs: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/discogs.py" line="228"/>
@@ -1368,8 +1368,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="75"/>
-        <source>Couldn&apos;t create intermediate directory: %s</source>
-        <translation>Não foi possível criar o diretório intermediário: %s</translation>
+        <source>Couldn&apos;t create intermediate directory: {}</source>
+        <translation>Não foi possível criar o diretório intermediário: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/util.py" line="99"/>
@@ -2321,13 +2321,13 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     <name>Masstagging</name>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="633"/>
-        <source>An error occured during the search: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Ocorreu um erro durante a pesquisa:&lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>An error occured during the search: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Ocorreu um erro durante a pesquisa:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="636"/>
-        <source>An error occured during album retrieval: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Ocorreu um erro na obtenção do álbum: &lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>An error occured during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Ocorreu um erro na obtenção do álbum: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="507"/>
@@ -2416,8 +2416,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="60"/>
-        <source>&lt;b&gt;Polling: %s&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Pesquisa:%s&lt;/b&gt;</translation>
+        <source>&lt;b&gt;Polling: {}&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Pesquisa:{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="61"/>
@@ -2461,8 +2461,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="81"/>
-        <source>&lt;b&gt;%d&lt;/b&gt; results found.</source>
-        <translation>&lt;b&gt;%d&lt;/b&gt; resultados encontrados.</translation>
+        <source>&lt;b&gt;{}&lt;/b&gt; results found.</source>
+        <translation>&lt;b&gt;{}&lt;/b&gt; resultados encontrados.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="82"/>
@@ -2476,8 +2476,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="85"/>
-        <source>&lt;b&gt;%d&lt;/b&gt; possibly matching albums found.</source>
-        <translation>&lt;b&gt;%d&lt;/b&gt; álbuns possivelmente encontrados.</translation>
+        <source>&lt;b&gt;{}&lt;/b&gt; possibly matching albums found.</source>
+        <translation>&lt;b&gt;{}&lt;/b&gt; álbuns possivelmente encontrados.</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="87"/>
@@ -2486,8 +2486,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="89"/>
-        <source>No matches found for tag source &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Não houve resultados para a origem dessa tag.&lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>No matches found for tag source &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Não houve resultados para a origem dessa tag.&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="92"/>
@@ -2496,8 +2496,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="96"/>
-        <source>&lt;br /&gt;Rechecking with results from &lt;b&gt;%s&lt;/b&gt;.&lt;br /&gt;</source>
-        <translation>&lt;br /&gt;Rechecando com os resultados de &lt;b&gt;%s&lt;/b&gt;.&lt;br /&gt;</translation>
+        <source>&lt;br /&gt;Rechecking with results from &lt;b&gt;{}&lt;/b&gt;.&lt;br /&gt;</source>
+        <translation>&lt;br /&gt;Rechecando com os resultados de &lt;b&gt;{}&lt;/b&gt;.&lt;br /&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="99"/>
@@ -2516,8 +2516,8 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
         <location filename="../puddlestuff/masstag/__init__.py" line="596"/>
-        <source>Retrying search with album name: &lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>Nova tentativa de busca com o nome do álbum:&lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>Nova tentativa de busca com o nome do álbum:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/masstag/dialogs.py" line="625"/>
@@ -2976,8 +2976,8 @@ Você quer continuar?</translation>
     <name>Mp3tag</name>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="358"/>
-        <source>Retrieving search page: %s</source>
-        <translation>Obtendo o site de busca: %s</translation>
+        <source>Retrieving search page: {}</source>
+        <translation>Obtendo o site de busca: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="359"/>
@@ -2996,8 +2996,8 @@ Você quer continuar?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="386"/>
-        <source>Retrieving album page: %s</source>
-        <translation>Obtendo o site do álbum: %s</translation>
+        <source>Retrieving album page: {}</source>
+        <translation>Obtendo o site do álbum: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="387"/>
@@ -3029,8 +3029,8 @@ Você quer continuar?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="376"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Obtendo capa: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Obtendo capa: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="381"/>
@@ -3059,8 +3059,8 @@ Você quer continuar?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="418"/>
-        <source>Retrieving image %s</source>
-        <translation>Obtendo imagem %s</translation>
+        <source>Retrieving image {}</source>
+        <translation>Obtendo imagem {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="509"/>
@@ -3089,13 +3089,13 @@ Você quer continuar?</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="576"/>
-        <source>Found album id %s in tracks. Retrieving</source>
-        <translation>Encontramos a id %s do álbum em faixas. Obtendo</translation>
+        <source>Found album id {} in tracks. Retrieving</source>
+        <translation>Encontramos a id {} do álbum em faixas. Obtendo</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/musicbrainz.py" line="620"/>
-        <source>Error retrieving image: %s</source>
-        <translation>Erro ao obter a imagem: %s</translation>
+        <source>Error retrieving image: {}</source>
+        <translation>Erro ao obter a imagem: {}</translation>
     </message>
 </context>
 <context>
@@ -3631,8 +3631,8 @@ Você quer continuar?</translation>
     <name>Status Bar</name>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="551"/>
-        <source>&lt;b&gt;%s&lt;/b&gt;</source>
-        <translation>&lt;b&gt;%s&lt;/b&gt;</translation>
+        <source>&lt;b&gt;{}&lt;/b&gt;</source>
+        <translation>&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/funcs.py" line="557"/>
@@ -3765,8 +3765,8 @@ Real: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="107"/>
-        <source>Retrieving cover: %s</source>
-        <translation>Obtendo capa: %s</translation>
+        <source>Retrieving cover: {}</source>
+        <translation>Obtendo capa: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/tagsources/__init__.py" line="180"/>
@@ -3780,8 +3780,8 @@ Real: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="20"/>
-        <source>Retrieved Albums (sorted by %s)</source>
-        <translation type="unfinished">Álbuns obtidos (ordenados por %s)</translation>
+        <source>Retrieved Albums (sorted by {})</source>
+        <translation type="unfinished">Álbuns obtidos (ordenados por {})</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/releasewidget.py" line="85"/>
@@ -3850,13 +3850,13 @@ Real: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="97"/>
-        <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
-        <translation type="unfinished">Não pôde carregar fonte %s da tag Mp3tag</translation>
+        <source>Couldn&apos;t load Mp3tag Tag Source {}</source>
+        <translation type="unfinished">Não pôde carregar fonte {} da tag Mp3tag</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="223"/>
-        <source>Configure: %s</source>
-        <translation type="unfinished">Configurar: %s</translation>
+        <source>Configure: {}</source>
+        <translation type="unfinished">Configurar: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="316"/>
@@ -3960,8 +3960,8 @@ Real: {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="567"/>
-        <source>Retrying search with %s</source>
-        <translation>Tentando de novo a busca com  %s</translation>
+        <source>Retrying search with {}</source>
+        <translation>Tentando de novo a busca com  {}</translation>
     </message>
     <message>
         <location filename="../puddlestuff/mainwin/tagsources.py" line="659"/>
