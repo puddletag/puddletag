@@ -367,7 +367,12 @@ class SetDialog(QDialog):
         self.setscombo.setCurrentIndex(0)
         self.setscombo.currentIndexChanged.connect(self.changeSet)
 
-    def _setCurrentSet(self, s):
+    @property
+    def currentSet(self):
+        return self._sets[self.setscombo.currentIndex()]
+
+    @currentSet.setter
+    def currentSet(self, s):
         [text.setText(disp) for text, disp in zip(self.texts, s[1])]
         self.listbox.clear()
         [self.listbox.addItem(alg.pprint()) for alg in s[2]]
@@ -377,11 +382,6 @@ class SetDialog(QDialog):
         else:
             self.maintag.addItem(s[3])
             self.maintag.setCurrentIndex(self.maintag.count() - 1)
-
-    def _getCurrentSet(self):
-        return self._sets[self.setscombo.currentIndex()]
-
-    currentSet = property(_getCurrentSet, _setCurrentSet)
 
     def changeSet(self, index):
         i = self._previndex

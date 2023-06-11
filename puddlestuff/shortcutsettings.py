@@ -199,7 +199,7 @@ class ActionEditorDialog(QWidget):
         super(ActionEditorDialog, self).__init__(parent)
         self.actions = actions
 
-        help = QLabel(translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column' \
+        help = QLabel(translate("Shortcut Settings", '<b>Double click a cell in the Shortcut Column'
                                                      ' to <br />modify the key sequence.</b>'))
 
         self.actionTable = QTableWidget(self)

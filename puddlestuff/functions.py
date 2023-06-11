@@ -744,14 +744,7 @@ Match &Case, check"""
 
     def replace_matches(value):
         try:
-            try:
-                return re.sub(regex, replace_tokens, value, 0, flags)
-            except TypeError:
-                # Python2.6 doesn't accept flags arg.
-                if matchcase:
-                    return re.sub('(?i)' + regex, replace_tokens, value, 0)
-                else:
-                    return re.sub(regex, replace_tokens, value, 0)
+            return re.sub(regex, replace_tokens, value, 0, flags)
         except re.error as e:
             raise findfunc.FuncError(str(e))
 

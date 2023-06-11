@@ -53,7 +53,7 @@ def _migrate_action_shortcut_filenames():
     if not os.path.exists(filename):
         return
     with open(filename, 'r') as fo:
-        data = json.loads(fo.read());
+        data = json.loads(fo.read())
 
     old_dir = os.path.join(os.getenv('HOME'), '.puddletag', 'actions')
     for key, shortcut in data.items():

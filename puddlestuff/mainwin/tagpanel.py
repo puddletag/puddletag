@@ -408,7 +408,9 @@ class PuddleTable(QTableWidget):
         curitem = self.item(row + 1, self.currentItem().column())
         self.setCurrentItem(curitem)
 
-    rows = property(lambda x: range(x.rowCount()))
+    @property
+    def rows(self):
+        return range(self.rowCount())
 
     def setRowTexts(self, row, texts):
         item = self.item

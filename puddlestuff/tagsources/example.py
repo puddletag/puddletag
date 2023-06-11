@@ -88,13 +88,9 @@ class Example(object):
         return [(get_info(album), []) for album in releases]
 
     def retrieve(self, info):
-        if False:
-            artist = 'Alicia Keys'
-            album = 'As I Am'
-        else:
-            artist = info['artist']
-            album = info['album']
-            self.counter += 1
+        artist = info['artist']
+        album = info['album']
+        self.counter += 1
         dirpath = '%s/%s - %s' % (self.musicdir, artist, album)
         files = []
         for f in gettags(getfiles(dirpath)):

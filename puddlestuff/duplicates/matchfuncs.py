@@ -65,7 +65,12 @@ class Algo(object):
         self.func = func
         self.matchcase = matchcase
 
-    def _setFunc(self, func):
+    @property
+    def func(self):
+        return self._func
+
+    @func.setter
+    def func(self, func):
         if isinstance(func, str):
             funcnames = [f.__name__ for f in funcs]
             try:
@@ -74,11 +79,6 @@ class Algo(object):
                 return
         self._func = func
         self.funcname, self.funcdesc = funcinfo(func)
-
-    def _getFunc(self):
-        return self._func
-
-    func = property(_getFunc, _setFunc)
 
     def pprint(self):
         threshold = '%.2f' % (self.threshold * 100) + '%'

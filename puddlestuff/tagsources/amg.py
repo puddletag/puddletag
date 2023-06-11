@@ -105,7 +105,6 @@ def convert_year(info):
             return {'year': time.strftime('%Y-%m', year)}
         except ValueError:
             return {}
-    return {}
 
 
 def create_search(terms):
@@ -457,7 +456,7 @@ def parse_track(tr, fields, performance_title=None):
 def replace_feat(album_info, track_info):
     artist = None
     for key in ['albumartist', 'artist', 'performer', 'composer']:
-        value = album_info.get(key, '').strip();
+        value = album_info.get(key, '').strip()
         if not value.startswith('feat:'):
             artist = album_info[key]
             break

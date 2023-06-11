@@ -164,14 +164,14 @@ class TreeItem(RootItem):
     def data(self, column):
         return self._display
 
-    def _getDisp(self):
+    @property
+    def dispPattern(self):
         return self._pattern
 
-    def _setDisp(self, pattern):
+    @dispPattern.setter
+    def dispPattern(self, pattern):
         self._pattern = pattern
         self._display = inline_display(pattern, self.itemData)
-
-    dispPattern = property(_getDisp, _setDisp)
 
     def exact_matches(self):
         ret = []
@@ -224,14 +224,14 @@ class ChildItem(RootItem):
     def data(self, column):
         return self._display
 
-    def _getDisp(self):
+    @property
+    def dispPattern(self):
         return self._pattern
 
-    def _setDisp(self, pattern):
+    @dispPattern.setter
+    def dispPattern(self, pattern):
         self._pattern = pattern
         self._display = inline_display(pattern, self.itemData)
-
-    dispPattern = property(_getDisp, _setDisp)
 
     def track(self):
         track = self.parentItem.itemData.copy()
@@ -281,10 +281,12 @@ class TreeModel(QtCore.QAbstractItemModel):
         if data:
             self.setupModelData(data)
 
-    def _get_albumPattern(self):
+    @property
+    def albumPattern(self):
         return self._albumPattern
 
-    def _set_albumPattern(self, value):
+    @albumPattern.setter
+    def albumPattern(self, value):
         self._albumPattern = value
         for item in self.rootItem.childItems:
             item.dispPattern = value
@@ -293,21 +295,21 @@ class TreeModel(QtCore.QAbstractItemModel):
         bottom = self.index(self.rowCount(parent) - 1, 0, parent)
         self.dataChanged.emit(top, bottom)
 
-    albumPattern = property(_get_albumPattern, _set_albumPattern)
-
-    def _get_sortOrder(self):
+    @property
+    def sortOrder(self):
         return self._sortOrder
 
-    def _set_sortOrder(self, value):
+    @sortOrder.setter
+    def sortOrder(self, value):
         self._sortOrder = value
         self.sort()
 
-    sortOrder = property(_get_sortOrder, _set_sortOrder)
-
-    def _get_trackPattern(self):
+    @property
+    def trackPattern(self):
         return self._trackPattern
 
-    def _set_trackPattern(self, value):
+    @trackPattern.setter
+    def trackPattern(self, value):
         self._trackPattern = value
         for row, parent_item in enumerate(self.rootItem.childItems):
             if parent_item.childItems and parent_item.hasTracks:
@@ -318,8 +320,6 @@ class TreeModel(QtCore.QAbstractItemModel):
                 bottom = self.index(self.rowCount(parent_index)
                                     -1, 0, parent_index)
                 self.dataChanged.emit(top, bottom)
-
-    trackPattern = property(_get_trackPattern, _set_trackPattern)
 
     def canFetchMore(self, index):
         item = index.internalPointer()
@@ -566,32 +566,32 @@ class ReleaseWidget(QTreeView):
         model = TreeModel()
         self.setModel(model)
 
-    def _get_albumPattern(self):
+    @property
+    def albumPattern(self):
         return self._albumPattern
 
-    def _set_albumPattern(self, value):
+    @albumPattern.setter
+    def albumPattern(self, value):
         self._albumPattern = value
         self.model().albumPattern = value
 
-    albumPattern = property(_get_albumPattern, _set_albumPattern)
-
-    def _get_trackPattern(self):
+    @property
+    def trackPattern(self):
         return self._trackPattern
 
-    def _set_trackPattern(self, value):
+    @trackPattern.setter
+    def trackPattern(self, value):
         self._trackPattern = value
         self.model().trackPattern = value
 
-    trackPattern = property(_get_trackPattern, _set_trackPattern)
-
-    def _get_tagSource(self):
+    @property
+    def tagSource(self):
         return self._tagSource
 
-    def _set_tagSource(self, source):
+    @tagSource.setter
+    def tagSource(self, source):
         self._tagSource = source
         self.model().tagsource = source
-
-    tagSource = property(_get_tagSource, _set_tagSource)
 
     def cleanTrack(self, track):
         return strip(track, self.tagsToWrite, mapping=self.mapping)

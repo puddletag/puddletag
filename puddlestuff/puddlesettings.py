@@ -72,19 +72,19 @@ class SettingsCheckBox(QCheckBox):
         self.settingValue = default
         self._text = text
 
-    def _value(self):
+    @property
+    def settingValue(self):
         if self.checkState() == Qt.CheckState.Checked:
             return self._text, True
         else:
             return self._text, False
 
-    def _setValue(self, value):
+    @settingValue.setter
+    def settingValue(self, value):
         if value:
             self.setCheckState(Qt.CheckState.Checked)
         else:
             self.setCheckState(Qt.CheckState.Unchecked)
-
-    settingValue = property(_value, _setValue)
 
 
 class SettingsLineEdit(QWidget):
@@ -101,13 +101,13 @@ class SettingsLineEdit(QWidget):
         vbox.addWidget(self._text)
         self.setLayout(vbox)
 
-    def _value(self):
+    @property
+    def settingValue(self):
         return self._desc, str(self._text.text())
 
-    def _setValue(self, value):
+    @settingValue.setter
+    def settingValue(self, value):
         self._text.setText(self._desc, value)
-
-    settingValue = property(_value, _setValue)
 
 
 class GeneralSettings(QWidget):

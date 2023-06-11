@@ -134,7 +134,7 @@ class Shortcut(QAction):
 
 
 class Editor(QDialog):
-    actionChanged = pyqtSignal(str, list, str, name='actionChanged');
+    actionChanged = pyqtSignal(str, list, str, name='actionChanged')
 
     def __init__(self, title='Add Action', shortcut='', actions=None, names=None, shortcuts=None, parent=None):
         super(Editor, self).__init__(parent)

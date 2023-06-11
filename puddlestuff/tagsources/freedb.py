@@ -207,8 +207,6 @@ class FreeDB(object):
             self.__retrieved[info['#discid']] = [info, tracks]
             return info, tracks
 
-        return info
-
 
 info = FreeDB
 

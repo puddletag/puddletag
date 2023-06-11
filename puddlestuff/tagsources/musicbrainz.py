@@ -488,10 +488,9 @@ class XMLEscaper(HTMLParser):
     def unknown_endtag(self, tag):
         self._xml.append('</%s>' % tag)
 
-    def _get_xml(self):
+    @property
+    def xml(self):
         return ''.join(self._xml)
-
-    xml = property(_get_xml)
 
 
 class MusicBrainz(object):

@@ -360,6 +360,11 @@ def _openFilesFilterFilename(filename):
     return filename
 
 
+# set in MainWin.__init__
+add_shortcuts = None
+remove_shortcuts = None
+
+
 class MainWin(QMainWindow):
     loadFiles = pyqtSignal(object, object, object, object, object, name='loadFiles')
     always = pyqtSignal(bool, name='always')
@@ -1008,7 +1013,7 @@ class MainWin(QMainWindow):
                     yield None
                 except EnvironmentError as e:
                     m = translate("Dir Renaming",
-                                  'An error occured while renaming <b>%1</b> to ' \
+                                  'An error occured while renaming <b>%1</b> to '
                                   '<b>%2</b>. (%3)').arg(audio[PATH]).arg(filename).arg(e.strerror)
                     if row == rows[-1]:
                         yield m, 1
