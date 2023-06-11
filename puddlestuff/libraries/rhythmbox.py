@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushBu
 
 from .. import audioinfo
 from .. import musiclib
+from ..util import translate
 
 FILENAME, PATH = audioinfo.FILENAME, audioinfo.PATH
 
@@ -490,7 +491,7 @@ class RhythmDB(ContentHandler):
         return tracks
 
 
-class ConfigWindow(QWidget):
+class InitWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.dbpath = QLineEdit(path.join(str(QDir.homePath()), ".gnome2/rhythmbox/rhythmdb.xml"))
@@ -518,16 +519,16 @@ class ConfigWindow(QWidget):
         if filename:
             self.dbpath.setText(filename)
 
-    def getLibClass(self):
-        return RhythmDB(str(self.dbpath.text()))
-
-    def saveSettings(self):
-        QSettings().setValue('Library/dbpath', self.dbpath.text())
-
-
-def loadLibrary():
-    settings = QSettings()
-    return RhythmDB(str(settings.value('Library/dbpath')))
+    def library(self):
+        dbpath = str(self.dbpath.text())
+        try:
+            return RhythmDB(dbpath)
+        except musiclib.MusicLibError as e:
+            raise e
+        except Exception as e:
+            raise musiclib.MusicLibError(0,
+                translate("Rhythmbox", '{} is an invalid Rhythmbox music library file.').format(dbpath)
+                ) from e
 
 
 if __name__ == '__main__':

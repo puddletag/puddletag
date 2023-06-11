@@ -3,12 +3,13 @@ import pickle
 import time
 import traceback
 from collections import defaultdict
+from copy import deepcopy
 from functools import partial
 
 import quodlibet.config
 from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtWidgets import QCompleter, QFileDialog, QFileSystemModel, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
-from quodlibet.parse import Query
+from quodlibet.query import Query
 
 from .. import audioinfo
 from ..audioinfo.tag_versions import tags_in_file
