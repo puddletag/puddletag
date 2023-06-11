@@ -325,7 +325,6 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
-    from PyQt5.QtGui import QIcon
     from PyQt5.QtWidgets import QApplication
     from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
                               QLibraryInfo, QLocale)
@@ -339,7 +338,7 @@ if __name__ == '__main__':
     import puddlestuff.constants
 
     migrate_settings()
-    from puddlestuff.puddleobjects import get_languages, PuddleConfig
+    from puddlestuff.puddleobjects import get_icon, get_languages, PuddleConfig
     from puddlestuff.translations import translate
 
     # Init.
@@ -352,7 +351,7 @@ if __name__ == '__main__':
     from puddlestuff.puddletag import MainWin
     from puddlestuff.puddlesettings import load_gen_settings
 
-    app.setWindowIcon(QIcon(":/appicon.svg"))
+    app.setWindowIcon(get_icon(None, "appicon.svg"))
     app.setDesktopFileName("puddletag.desktop")
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
