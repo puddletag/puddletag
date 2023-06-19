@@ -73,9 +73,8 @@ def dupesinlib(library, algs, maintag=None, artists=None):
 
 
 if __name__ == '__main__':
-    import prokyon
-
-    lib = prokyon.Prokyon('tracks', user='prokyon', passwd='prokyon', db='prokyon')
+    from ..libraries import quodlibetlib as quodlibet
+    lib = quodlibet.QuodLibet('.quodlibet/songs')
     from Levenshtein import ratio
 
     algos = [algo(['artist', 'title'], 0.80, ratio), algo(['artist', 'title'], 0.70, ratio)]

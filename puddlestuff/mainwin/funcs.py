@@ -595,7 +595,7 @@ class _SignalObject(QObject):
     renamedirs = pyqtSignal(list, name='renamedirs')
     onetomany = pyqtSignal(dict, name='onetomany')
     renameselected = pyqtSignal(name='renameselected')
-    adddock = pyqtSignal(str, 'QDialog', int, name='adddock')
+    adddock = pyqtSignal(str, object, int, name='adddock')
     highlight = pyqtSignal(list, name='highlight')
     writeaction = pyqtSignal([object, object, dict], name='writeaction')
 

@@ -94,7 +94,7 @@ class ChildItem(TreeWidgetItem):
 
 class LibChooseDialog(QDialog):
     """Dialog used to choose a library to load."""
-    adddock = pyqtSignal(str, 'QDialog', int, name='adddock')
+    adddock = pyqtSignal(str, object, int, name='adddock')
 
     def __init__(self, parent=None):
         """Dialogs that allows users to load music libraries.
