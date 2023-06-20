@@ -340,7 +340,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Omslagsstorlek att hämta</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="512"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="511"/>
         <source>Small</source>
         <translation>Liten</translation>
     </message>
@@ -350,7 +350,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Medium</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="513"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="512"/>
         <source>Large</source>
         <translation>Stor</translation>
     </message>
@@ -365,7 +365,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Säkerhetsnyckel (Lagras som oformaterad text. Lämnas tom för standard.)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="514"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="513"/>
         <source>Original Size</source>
         <translation>Ursprunglig storlek</translation>
     </message>
@@ -394,67 +394,67 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Artwork</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1963"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1945"/>
         <source>Enter a description</source>
         <translation>Ange en beskrivning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1616"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1594"/>
         <source>&lt;p&gt;Enter a description for the current cover.&lt;/p&gt;&lt;p&gt;For ID3 tags the description has to be different for each cover as per the ID3 spec. If they don&apos;t differ then spaces are appended to the description when the tag is saved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Ange en beskrivning för aktuellt omslag&lt;/p&gt;&lt;/p&gt;För ID3-taggar, måste beskrivningen vara unik för varje omslag, enligt ID3-specifikationen. Om de inte skiljer sig åt, kommer blanksteg att läggas till i beskrivningen, när den sparas.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1627"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1605"/>
         <source>&amp;Description</source>
         <translation>&amp;Beskrivning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1635"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1613"/>
         <source>&amp;Type</source>
         <translation>&amp;Typ</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1646"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1624"/>
         <source>&lt;p&gt;Select a cover type for the artwork.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Välj en omslagstyp för albumbilden.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1739"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1717"/>
         <source>&amp;Save cover to file</source>
         <translation>&amp;Spara omslag till fil</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1742"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1720"/>
         <source>&amp;Add cover</source>
         <translation>&amp;Lägg till omslag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1751"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1729"/>
         <source>&amp;Remove cover</source>
         <translation>Ta b&amp;ort omslag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1754"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1732"/>
         <source>&amp;Change cover</source>
         <translation>B&amp;yt omslag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1820"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1798"/>
         <source>Select Image...</source>
         <translation>Välj bild...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2014"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1992"/>
         <source>JPEG Images (*.jpg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation>JPEG-bilder (*.jpg);;PNG-bilder (*.png);;Alla filer(*.*)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2014"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1992"/>
         <source>Save artwork as...</source>
         <translation>Spara albumbild som...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2023"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2001"/>
         <source>Writing to &lt;b&gt;%1&lt;/b&gt; failed.</source>
         <translation>Kunde inte skriva till &lt;b&gt;%1&lt;/b&gt;.</translation>
     </message>
@@ -464,17 +464,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation type="obsolete">Ange beskrivning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1745"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1723"/>
         <source>C&amp;opy cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1748"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1726"/>
         <source>&amp;Paste cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1820"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1798"/>
         <source>JPEG &amp; PNG Images (*.jpg *.jpeg *.png);;JPEG Images (*.jpg *.jpeg);;PNG Images (*.png);;All Files(*.*)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -482,7 +482,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Artwork Context</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1583"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1561"/>
         <source>%1/%2</source>
         <translation>%1/%2</translation>
     </message>
@@ -601,7 +601,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Column Settings</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="994"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="972"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
@@ -624,7 +624,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Combo Box</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2275"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2252"/>
         <source>Remove current item.</source>
         <translation>Ta bort aktuellt objekt.</translation>
     </message>
@@ -632,12 +632,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Confirmations</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="57"/>
+        <location filename="../puddlestuff/puddletag.py" line="56"/>
         <source>Confirm when exiting preview mode.</source>
         <translation>Bekräfta avslut av förhandsvisningsläge.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="58"/>
+        <location filename="../puddlestuff/puddletag.py" line="57"/>
         <source>Confirm when deleting files.</source>
         <translation>Bekräfta borttagning av filer.</translation>
     </message>
@@ -645,212 +645,212 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Cover Type</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="143"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="114"/>
         <source>Other</source>
         <translation>Annat</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="143"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="114"/>
         <source>O</source>
         <translation>An</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="144"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="115"/>
         <source>File Icon</source>
         <translation>Filikon</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="144"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="115"/>
         <source>I</source>
         <translation>I</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="145"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="116"/>
         <source>Other File Icon</source>
         <translation>Annan filikon</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="145"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="116"/>
         <source>OI</source>
         <translation>Af</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="146"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="117"/>
         <source>Cover (front)</source>
         <translation>Omslag (fram)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="146"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="117"/>
         <source>CF</source>
         <translation>Of</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="147"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="118"/>
         <source>Cover (back)</source>
         <translation>Omslag (bak)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="147"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="118"/>
         <source>CB</source>
         <translation>Ob</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="148"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="119"/>
         <source>Leaflet page</source>
         <translation>Broschyrsida</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="148"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="119"/>
         <source>LF</source>
         <translation>Bs</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="149"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="120"/>
         <source>Media (e.g. label side of CD)</source>
         <translation>Media (ex. etikettsida för CD)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="149"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="120"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="150"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="121"/>
         <source>Lead artist</source>
         <translation>Vokalist</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="150"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="121"/>
         <source>LA</source>
         <translation>V</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="151"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="122"/>
         <source>Artist</source>
         <translation>Artist</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="151"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="122"/>
         <source>A</source>
         <translation>A</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="152"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="123"/>
         <source>Conductor</source>
         <translation>Dirigent</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="152"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="123"/>
         <source>C</source>
         <translation>D</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="153"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="124"/>
         <source>Band</source>
         <translation>Band</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="153"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="124"/>
         <source>B</source>
         <translation>B</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="154"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="125"/>
         <source>Composer</source>
         <translation>Kompositör</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="154"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="125"/>
         <source>CP</source>
         <translation>K</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="155"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="126"/>
         <source>Lyricist</source>
         <translation>Textförfattare</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="155"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="126"/>
         <source>L</source>
         <translation>T</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="156"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="127"/>
         <source>Recording Location</source>
         <translation>Inspelningsplats</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="156"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="127"/>
         <source>RL</source>
         <translation>Ip</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="157"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="128"/>
         <source>During recording</source>
         <translation>Under inspelning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="157"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="128"/>
         <source>DR</source>
         <translation>Ui</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="158"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="129"/>
         <source>During performance</source>
         <translation>Under uppträdande</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="158"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="129"/>
         <source>DP</source>
         <translation>Uu</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="159"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="130"/>
         <source>Movie/video screen capture</source>
         <translation>Film-/Video-skärmklipp</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="159"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="130"/>
         <source>MC</source>
         <translation>Sk</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="160"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="131"/>
         <source>A bright coloured fish</source>
         <translation>En ljusfärgad fisk</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="160"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="131"/>
         <source>F</source>
         <translation>F</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="161"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="132"/>
         <source>Illustration</source>
         <translation>Illustration</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="161"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="132"/>
         <source>P</source>
         <translation>Il</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="162"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="133"/>
         <source>Band/artist logotype</source>
         <translation>Band-/Artistlogo</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="162"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="133"/>
         <source>BL</source>
         <translation>Bl</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="163"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="134"/>
         <source>Publisher/Studio logotype</source>
         <translation>Utgivar-/Studiologo</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="163"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="134"/>
         <source>PL</source>
         <translation>Ul</translation>
     </message>
@@ -858,7 +858,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Defaults</name>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="155"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="154"/>
         <source>&amp;Fields</source>
         <translation>&amp;Fält</translation>
     </message>
@@ -928,12 +928,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Kör</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagpanel.py" line="436"/>
+        <location filename="../puddlestuff/mainwin/tagpanel.py" line="438"/>
         <source>Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="996"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="974"/>
         <source>Field</source>
         <translation>Fält</translation>
     </message>
@@ -948,27 +948,27 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Fält:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2044"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2043"/>
         <source>Error</source>
         <translation>Fel</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="518"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="496"/>
         <source>&lt;br /&gt; Do you want to continue?</source>
         <translation>&lt;br /&gt; Vill du fortsätta?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1430"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1408"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2204"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2182"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="931"/>
+        <location filename="../puddlestuff/puddletag.py" line="935"/>
         <source>Writing </source>
         <translation>Skriver </translation>
     </message>
@@ -983,22 +983,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation type="obsolete">&amp;Nej</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1880"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1879"/>
         <source>Reading Directory: %1</source>
         <translation>Inläsningsmapp: %1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1883"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1882"/>
         <source>Reading Directory: %1 + others</source>
         <translation>Inläsningsmapp: %1 + andra</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1886"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1885"/>
         <source>Reading Dir</source>
         <translation>Inläsningsmapp</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1912"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1911"/>
         <source>Loading </source>
         <translation>Läser in</translation>
     </message>
@@ -1023,17 +1023,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>%s bilder</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="373"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="372"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Redigera</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/helperwin.py" line="1140"/>
+        <location filename="../puddlestuff/helperwin.py" line="1136"/>
         <source>Never show this message again.</source>
         <translation>Visa inte det här meddelandet igen.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/__init__.py" line="200"/>
+        <location filename="../puddlestuff/tagsources/__init__.py" line="199"/>
         <source>Connection Error: %s </source>
         <translation>Anslutningsfel: %s </translation>
     </message>
@@ -1046,57 +1046,57 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Dialogs</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2147"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2125"/>
         <source>Album Art</source>
         <translation>Albumomslag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="201"/>
+        <location filename="../puddlestuff/translations.py" line="270"/>
         <source>Tag Panel</source>
         <translation>Taggpanel</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="202"/>
+        <location filename="../puddlestuff/translations.py" line="271"/>
         <source>Artwork</source>
         <translation>Omslagsbild</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="203"/>
+        <location filename="../puddlestuff/translations.py" line="272"/>
         <source>Filesystem</source>
         <translation>Filsystem</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="204"/>
+        <location filename="../puddlestuff/translations.py" line="273"/>
         <source>Filter</source>
         <translation>Filter</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="205"/>
+        <location filename="../puddlestuff/translations.py" line="274"/>
         <source>Tag Sources</source>
         <translation>Taggkällor</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="206"/>
+        <location filename="../puddlestuff/translations.py" line="275"/>
         <source>Stored Tags</source>
         <translation>Lagrade taggar</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="207"/>
+        <location filename="../puddlestuff/translations.py" line="276"/>
         <source>Logs</source>
         <translation>Loggar</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="208"/>
+        <location filename="../puddlestuff/translations.py" line="277"/>
         <source>Mass Tagging</source>
         <translation>Masstaggning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="209"/>
+        <location filename="../puddlestuff/translations.py" line="278"/>
         <source>Functions</source>
         <translation>Funktioner</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="210"/>
+        <location filename="../puddlestuff/translations.py" line="279"/>
         <source>Actions</source>
         <translation>Åtgärder</translation>
     </message>
@@ -1109,17 +1109,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Byt namn på &lt;b&gt;%1&lt;/b&gt; till &lt;i&gt;%2&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="1011"/>
+        <location filename="../puddlestuff/puddletag.py" line="1015"/>
         <source>An error occured while renaming &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;. (%3)</source>
         <translation>Ett fel inträffade vid namnbyte från &lt;b&gt;%1&lt;/b&gt; till &lt;b&gt;%2&lt;/b&gt;. (%3)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="1019"/>
+        <location filename="../puddlestuff/puddletag.py" line="1023"/>
         <source>Renaming </source>
         <translation>Byter namn på </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="1035"/>
+        <location filename="../puddlestuff/puddletag.py" line="1039"/>
         <source>I couldn&apos;t rename: &lt;i&gt;%1&lt;/i&gt; to &lt;b&gt;%2&lt;/b&gt; (%3)</source>
         <translation>Kunde inte byta namn på &lt;i&gt;%1&lt;/i&gt; till &lt;b&gt;%2&lt;/b&gt; (%3)</translation>
     </message>
@@ -1323,7 +1323,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Kan inte flytta mapp till undermapp inne i sig själv.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="763"/>
+        <location filename="../puddlestuff/puddletag.py" line="767"/>
         <source>Your filesystem encoding was detected as &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;You won&apos;t be able to rename files using accented, &lt;br /&gt; cyrillic or any characters outside the ASCII alphabet.</source>
         <translation>Ditt filsystems teckentabell uppfattas som &lt;b&gt;ASCII&lt;/b&gt;. &lt;br /&gt;Du kommer inte att kunna byta namn på filer med accent, kyrilliska eller några andra tecken utanför ASCII-alfabetet.</translation>
     </message>
@@ -1331,22 +1331,22 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Extended Tags</name>
     <message>
-        <location filename="../puddlestuff/helperwin.py" line="627"/>
+        <location filename="../puddlestuff/helperwin.py" line="623"/>
         <source>Field</source>
         <translation>Fält</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/helperwin.py" line="627"/>
+        <location filename="../puddlestuff/helperwin.py" line="623"/>
         <source>Value</source>
         <translation>Värde</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/helperwin.py" line="661"/>
+        <location filename="../puddlestuff/helperwin.py" line="657"/>
         <source>Resets the selected fields to their original value.</source>
         <translation>Återställ markerade fält till ursprungliga värden.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/helperwin.py" line="891"/>
+        <location filename="../puddlestuff/helperwin.py" line="887"/>
         <source>Different files.</source>
         <translation>Olika filer.</translation>
     </message>
@@ -1430,513 +1430,518 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>Minst %1 argument förväntades. %2 angavs.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="137"/>
+        <location filename="../puddlestuff/translations.py" line="205"/>
         <source>Tag-&gt;File: $1</source>
         <translation>Tagg-&gt;Fil: $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="138"/>
+        <location filename="../puddlestuff/translations.py" line="206"/>
         <source>Tag to filename</source>
         <translation>Tagg till filnamn</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="181"/>
+        <location filename="../puddlestuff/translations.py" line="249"/>
         <source>&amp;Pattern</source>
         <translation>&amp;Mönster</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="147"/>
+        <location filename="../puddlestuff/translations.py" line="215"/>
         <source>Replace $0: &apos;$1&apos; -&gt; &apos;$2&apos;, Match Case: $3, Words Only: $4</source>
         <translation>Ersätt $0: '$1' -&gt; '$2', Skiftläge: $3, Endast ord: $4</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="148"/>
+        <location filename="../puddlestuff/translations.py" line="216"/>
         <source>Replace</source>
         <translation>Ersätt</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="149"/>
+        <location filename="../puddlestuff/translations.py" line="217"/>
         <source>&amp;Replace</source>
         <translation>&amp;Ersätt</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="150"/>
+        <location filename="../puddlestuff/translations.py" line="218"/>
         <source>w&amp;ith:</source>
         <translation>me&amp;d:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="151"/>
+        <location filename="../puddlestuff/translations.py" line="219"/>
         <source>Match c&amp;ase:</source>
         <translation>Skift&amp;läge:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="152"/>
+        <location filename="../puddlestuff/translations.py" line="220"/>
         <source>only as &amp;whole word</source>
         <translation>Endast &amp;hela ord</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="193"/>
+        <location filename="../puddlestuff/translations.py" line="261"/>
         <source>Update from $2, Fields: $1</source>
         <translation>Uppdatera från $2, Fält: $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="194"/>
+        <location filename="../puddlestuff/translations.py" line="262"/>
         <source>Update from tag</source>
         <translation>Uppdatera från tagg</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="195"/>
+        <location filename="../puddlestuff/translations.py" line="263"/>
         <source>&amp;Field list (; separated):</source>
         <translation>&amp;Fältlista (semikolonseparerad):</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="196"/>
+        <location filename="../puddlestuff/translations.py" line="264"/>
         <source>&amp;Tag</source>
         <translation>&amp;Tagg</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="197"/>
+        <location filename="../puddlestuff/translations.py" line="265"/>
         <source>APEv2</source>
         <translation>APEv2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="198"/>
+        <location filename="../puddlestuff/translations.py" line="266"/>
         <source>ID3</source>
         <translation>ID3</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="172"/>
+        <location filename="../puddlestuff/translations.py" line="240"/>
         <source>Trim $0</source>
         <translation>Trimma $0</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="173"/>
+        <location filename="../puddlestuff/translations.py" line="241"/>
         <source>Trim whitespace</source>
         <translation>Trimma blanksteg</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="153"/>
+        <location filename="../puddlestuff/translations.py" line="221"/>
         <source>RegReplace $0: RegExp &apos;$1&apos; with &apos;$2&apos;, Match Case: $3</source>
         <translation>RegReplace $0: RegExp '$1' med '$2', Skiftläge: $3</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="154"/>
+        <location filename="../puddlestuff/translations.py" line="222"/>
         <source>Replace with RegExp</source>
         <translation>Ersätt med RegExp</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="155"/>
+        <location filename="../puddlestuff/translations.py" line="223"/>
         <source>&amp;Regular Expression</source>
         <translation>&amp;Regular Expression</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="156"/>
+        <location filename="../puddlestuff/translations.py" line="224"/>
         <source>Replace &amp;matches with:</source>
         <translation>Ersätt &amp;sökträffar med:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="167"/>
+        <location filename="../puddlestuff/translations.py" line="235"/>
         <source>Match &amp;Case</source>
         <translation>Skift&amp;läge</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="158"/>
+        <location filename="../puddlestuff/translations.py" line="226"/>
         <source>Export Art: pattern=&apos;$1&apos;</source>
         <translation>Exportera bilder: mönster='$1'</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="159"/>
+        <location filename="../puddlestuff/translations.py" line="227"/>
         <source>Export artwork to file</source>
         <translation>Exportera albumbilder till fil</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="160"/>
+        <location filename="../puddlestuff/translations.py" line="228"/>
         <source>&amp;Pattern (extension not required)</source>
         <translation>&amp;Mönster (filformat behövs inte)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="161"/>
+        <location filename="../puddlestuff/translations.py" line="229"/>
         <source>folder_%img_counter%</source>
         <translation>folder_%img_counter%</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="92"/>
+        <location filename="../puddlestuff/translations.py" line="160"/>
         <source>Autonumbering: $0, Start: $1, Restart for dir: $2, Padding: $3</source>
         <translation>Autonumrering: $0, Start: $1, Omstart för mapp: $2, Utfyllnad: $3</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="93"/>
+        <location filename="../puddlestuff/translations.py" line="161"/>
         <source>Autonumbering</source>
         <translation>Autonumrering</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="94"/>
+        <location filename="../puddlestuff/translations.py" line="162"/>
         <source>oi</source>
         <translation>oi</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="99"/>
+        <location filename="../puddlestuff/translations.py" line="167"/>
         <source>1</source>
         <translation>1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="96"/>
+        <location filename="../puddlestuff/translations.py" line="164"/>
         <source>aoeu</source>
         <translation>aoeu</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="97"/>
+        <location filename="../puddlestuff/translations.py" line="165"/>
         <source>False</source>
         <translation>Falsk</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="98"/>
+        <location filename="../puddlestuff/translations.py" line="166"/>
         <source>au</source>
         <translation>Padding</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="162"/>
+        <location filename="../puddlestuff/translations.py" line="230"/>
         <source>Sort $0, order=&apos;$1&apos;, Match Case=&apos;$2&apos;</source>
         <translation>Sortera $0, ordna='$1', Skiftläge='$2'</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="163"/>
+        <location filename="../puddlestuff/translations.py" line="231"/>
         <source>Sort values</source>
         <translation>Sortera värden</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="164"/>
+        <location filename="../puddlestuff/translations.py" line="232"/>
         <source>&amp;Order</source>
         <translation>&amp;Ordna</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="165"/>
+        <location filename="../puddlestuff/translations.py" line="233"/>
         <source>Ascending</source>
         <translation>Stigande</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="166"/>
+        <location filename="../puddlestuff/translations.py" line="234"/>
         <source>Descending</source>
         <translation>Fallande</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="174"/>
+        <location filename="../puddlestuff/translations.py" line="242"/>
         <source>Tag-&gt;Dir: $1</source>
         <translation>Tagg-&gt;Mapp: $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="175"/>
+        <location filename="../puddlestuff/translations.py" line="243"/>
         <source>Tag to Dir</source>
         <translation>Tagg till mapp</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="176"/>
+        <location filename="../puddlestuff/translations.py" line="244"/>
         <source>&amp;Pattern (can be relative path)</source>
         <translation>&amp;Mönster (kan vara relativ sökväg)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="177"/>
+        <location filename="../puddlestuff/translations.py" line="245"/>
         <source>%artist% - %album%</source>
         <translation>%artist% - %album%</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="126"/>
+        <location filename="../puddlestuff/translations.py" line="194"/>
         <source>Format $0 using $1</source>
         <translation>Format $0 med hjälp av $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="127"/>
+        <location filename="../puddlestuff/translations.py" line="195"/>
         <source>Format value</source>
         <translation>Formatvärde</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="128"/>
+        <location filename="../puddlestuff/translations.py" line="196"/>
         <source>&amp;Format string</source>
         <translation>&amp;Formatsträng</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="87"/>
+        <location filename="../puddlestuff/translations.py" line="155"/>
         <source>Artwork: Filenames=&apos;$1&apos;, Description=&apos;$2&apos;, Case Sensitive=$3</source>
         <translation>Albumbilder: Filnamn='$1', Beskrivning='$2', Skiftlägeskänslig=$3</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="88"/>
+        <location filename="../puddlestuff/translations.py" line="156"/>
         <source>Load Artwork</source>
         <translation>Läs in albumbilder</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="89"/>
+        <location filename="../puddlestuff/translations.py" line="157"/>
         <source>&amp;Filenames to check (;-separated, shell wildcards [eg. *] allowed)</source>
         <translation>&amp;Filnamn att kontrollera (semikolonseparerade, jokertecken * tillåtet)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="90"/>
+        <location filename="../puddlestuff/translations.py" line="158"/>
         <source>&amp;Default description (can be pattern):</source>
         <translation>&amp;Standardbeskrivning (kan vara mönster):</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="91"/>
+        <location filename="../puddlestuff/translations.py" line="159"/>
         <source>Match filename&apos;s &amp;case:</source>
         <translation>Matcha filnamns skift&amp;läge:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="133"/>
+        <location filename="../puddlestuff/translations.py" line="201"/>
         <source>Merge field: $0, sep=&apos;$1&apos;</source>
         <translation>Sammanfoga fält: $0, sep='$1'</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="134"/>
+        <location filename="../puddlestuff/translations.py" line="202"/>
         <source>Merge field</source>
         <translation>Sammanfoga fält</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="170"/>
+        <location filename="../puddlestuff/translations.py" line="238"/>
         <source>&amp;Separator</source>
         <translation>&amp;Separator</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="171"/>
+        <location filename="../puddlestuff/translations.py" line="239"/>
         <source>;</source>
         <translation>;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="140"/>
+        <location filename="../puddlestuff/translations.py" line="208"/>
         <source>Remove Dupes: $0, Match Case $1</source>
         <translation>Ta bort dubbletter: $0, Skiftläge $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="141"/>
+        <location filename="../puddlestuff/translations.py" line="209"/>
         <source>Remove duplicate values</source>
         <translation>Ta bort dubblettvärden</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="129"/>
+        <location filename="../puddlestuff/translations.py" line="197"/>
         <source>Text File: $0, &apos;$1&apos;</source>
         <translation>Textfil: $0, '$1'</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="130"/>
+        <location filename="../puddlestuff/translations.py" line="198"/>
         <source>Import text file</source>
         <translation>Importera textfil</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="132"/>
+        <location filename="../puddlestuff/translations.py" line="200"/>
         <source>lyrics.txt</source>
         <translation>texter.txt</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="143"/>
+        <location filename="../puddlestuff/translations.py" line="211"/>
         <source>Remove fields except: $1</source>
         <translation>Ta bort fält utom: $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="144"/>
+        <location filename="../puddlestuff/translations.py" line="212"/>
         <source>Remove all fields except</source>
         <translation>Ta bort alla fält utom</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="191"/>
+        <location filename="../puddlestuff/translations.py" line="259"/>
         <source>&lt;blank&gt; $0</source>
         <translation>&lt;tom&gt; $0</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="192"/>
+        <location filename="../puddlestuff/translations.py" line="260"/>
         <source>Remove Fields</source>
         <translation>Ta bort fält</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="183"/>
+        <location filename="../puddlestuff/translations.py" line="251"/>
         <source>Convert Case: $0: $1</source>
         <translation>Konvertera skiftläge: $0 - $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="184"/>
+        <location filename="../puddlestuff/translations.py" line="252"/>
         <source>Case conversion</source>
         <translation>Skiftlägeskonvertering</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="185"/>
+        <location filename="../puddlestuff/translations.py" line="253"/>
         <source>&amp;Type</source>
         <translation>&amp;Typ</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="186"/>
+        <location filename="../puddlestuff/translations.py" line="254"/>
         <source>Mixed Case</source>
         <translation>Blandat skiftläge</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="187"/>
+        <location filename="../puddlestuff/translations.py" line="255"/>
         <source>UPPER CASE</source>
         <translation>VERSALER</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="188"/>
+        <location filename="../puddlestuff/translations.py" line="256"/>
         <source>lower case</source>
         <translation>gemener</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="189"/>
+        <location filename="../puddlestuff/translations.py" line="257"/>
         <source>For &amp;Mixed Case, after any of:</source>
         <translation>För &amp;blandat skiftäge, efter vilket som helst av:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="190"/>
+        <location filename="../puddlestuff/translations.py" line="258"/>
         <source>., !</source>
         <translation>., !</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="100"/>
+        <location filename="../puddlestuff/translations.py" line="168"/>
         <source>Convert to encoding: $0, Encoding: $1</source>
         <translation>Konvertera till teckentabell: $0, Kodning: $1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="101"/>
+        <location filename="../puddlestuff/translations.py" line="169"/>
         <source>Convert from non-standard encoding</source>
         <translation>Konvertera från icke standardkodning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="102"/>
+        <location filename="../puddlestuff/translations.py" line="170"/>
         <source>&amp;Encoding</source>
         <translation>&amp;Kodning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="103"/>
+        <location filename="../puddlestuff/translations.py" line="171"/>
         <source>cp1250</source>
         <translation>cp1250</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="104"/>
+        <location filename="../puddlestuff/translations.py" line="172"/>
         <source>cp1251</source>
         <translation>cp1251</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="105"/>
+        <location filename="../puddlestuff/translations.py" line="173"/>
         <source>cp1252</source>
         <translation>cp1252</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="106"/>
+        <location filename="../puddlestuff/translations.py" line="174"/>
         <source>cp1253</source>
         <translation>cp1253</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="107"/>
+        <location filename="../puddlestuff/translations.py" line="175"/>
         <source>cp1254</source>
         <translation>cp1254</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="108"/>
+        <location filename="../puddlestuff/translations.py" line="176"/>
         <source>cp1255</source>
         <translation>cp1255</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="109"/>
+        <location filename="../puddlestuff/translations.py" line="177"/>
         <source>cp1256</source>
         <translation>cp1256</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="110"/>
+        <location filename="../puddlestuff/translations.py" line="178"/>
         <source>cp1257</source>
         <translation>cp1257</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="111"/>
+        <location filename="../puddlestuff/translations.py" line="179"/>
         <source>cp1258</source>
         <translation>cp1258</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="178"/>
+        <location filename="../puddlestuff/translations.py" line="246"/>
         <source>Text to Tag: $0 -&gt; $1, $2</source>
         <translation>Text till tagg: $0 -&gt; $1, $2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="179"/>
+        <location filename="../puddlestuff/translations.py" line="247"/>
         <source>Text to Tag</source>
         <translation>Text till tagg</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="180"/>
+        <location filename="../puddlestuff/translations.py" line="248"/>
         <source>&amp;Text</source>
         <translation>&amp;Text</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="182"/>
+        <location filename="../puddlestuff/translations.py" line="250"/>
         <source>&amp;Output</source>
         <translation>&amp;Utdata</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="168"/>
+        <location filename="../puddlestuff/translations.py" line="236"/>
         <source>Split using separator $0: sep=&apos;$1&apos;</source>
         <translation>Dela med separator $0: sep='$1'</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="169"/>
+        <location filename="../puddlestuff/translations.py" line="237"/>
         <source>Split fields using separator</source>
         <translation>Dela fält med hjälp av separator</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="123"/>
+        <location filename="../puddlestuff/translations.py" line="191"/>
         <source>File-&gt;Tag &apos;$1&apos;</source>
         <translation>Fil-&gt;tagg '$1'</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="124"/>
+        <location filename="../puddlestuff/translations.py" line="192"/>
         <source>Filename to Tag</source>
         <translation>Filnamn till tagg</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="112"/>
+        <location filename="../puddlestuff/translations.py" line="180"/>
         <source>euc_jp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="113"/>
+        <location filename="../puddlestuff/translations.py" line="181"/>
         <source>cp932</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="114"/>
+        <location filename="../puddlestuff/translations.py" line="182"/>
         <source>euc_jis_2004</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="115"/>
+        <location filename="../puddlestuff/translations.py" line="183"/>
         <source>shift_jis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="116"/>
+        <location filename="../puddlestuff/translations.py" line="184"/>
         <source>johab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="117"/>
+        <location filename="../puddlestuff/translations.py" line="185"/>
         <source>big5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="118"/>
+        <location filename="../puddlestuff/translations.py" line="186"/>
         <source>big5hkscs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="119"/>
+        <location filename="../puddlestuff/translations.py" line="187"/>
         <source>gb2312</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="120"/>
+        <location filename="../puddlestuff/translations.py" line="188"/>
         <source>gb18030</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="121"/>
+        <location filename="../puddlestuff/translations.py" line="189"/>
         <source>gbk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/translations.py" line="122"/>
+        <location filename="../puddlestuff/translations.py" line="190"/>
         <source>hz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/translations.py" line="267"/>
+        <source>Converts all unicode chars to ASCII.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2081,52 +2086,52 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>List Buttons</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1270"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1248"/>
         <source>Add</source>
         <translation>Lägg till</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1273"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1251"/>
         <source>Remove</source>
         <translation>Ta bort</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1277"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1255"/>
         <source>Move Up</source>
         <translation>Flytta upp</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1280"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1258"/>
         <source>Move Down</source>
         <translation>Flytta ner</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1283"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1261"/>
         <source>Edit</source>
         <translation>Redigera</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1286"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1264"/>
         <source>Duplicate</source>
         <translation>Dubblett</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1351"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1329"/>
         <source>&amp;&gt;&gt;</source>
         <translation>&amp;&gt;&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1352"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1330"/>
         <source>&amp;&lt;&lt;</source>
         <translation>&amp;&lt;&lt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1288"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1266"/>
         <source>Copy to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="1290"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="1268"/>
         <source>Paste from clipboard</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2147,17 +2152,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
 <context>
     <name>Main Window</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="547"/>
+        <location filename="../puddlestuff/puddletag.py" line="551"/>
         <source>puddletag: %1 + others</source>
         <translation>puddletag: %1 + andra</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="549"/>
+        <location filename="../puddlestuff/puddletag.py" line="553"/>
         <source>puddletag: %1</source>
         <translation>puddletag: %1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="558"/>
+        <location filename="../puddlestuff/puddletag.py" line="562"/>
         <source>Import directory...</source>
         <translation>Importmapp...</translation>
     </message>
@@ -2454,12 +2459,12 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>&amp;Inktivera förhandsgranskning</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="301"/>
+        <location filename="../puddlestuff/puddletag.py" line="300"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="306"/>
+        <location filename="../puddlestuff/puddletag.py" line="305"/>
         <source>Online &amp;Documentation</source>
         <translation>Online-&amp;dokumentation</translation>
     </message>
@@ -2474,17 +2479,17 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation type="obsolete">&amp;Felrapportering</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="318"/>
+        <location filename="../puddlestuff/puddletag.py" line="317"/>
         <source>About puddletag</source>
         <translation>Om puddletag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="322"/>
+        <location filename="../puddlestuff/puddletag.py" line="321"/>
         <source>About Qt</source>
         <translation>Om Qt</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="447"/>
+        <location filename="../puddlestuff/puddletag.py" line="451"/>
         <source>Toolbar</source>
         <translation>Verktygsfält</translation>
     </message>
@@ -2519,229 +2524,229 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation>&amp;Insticksmoduler</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="79"/>
+        <location filename="../puddlestuff/translations.py" line="114"/>
         <source>&amp;Open Folder</source>
-        <translation type="obsolete">&amp;Öppna mapp</translation>
+        <translation type="unfinished">&amp;Öppna mapp</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="80"/>
+        <location filename="../puddlestuff/translations.py" line="115"/>
         <source>Select a directory to import into puddletag.</source>
-        <translation type="obsolete">Välj en mapp att importera till puddeltag.</translation>
+        <translation type="unfinished">Välj en mapp att importera till puddeltag.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="81"/>
+        <location filename="../puddlestuff/translations.py" line="112"/>
         <source>&amp;Add Folder</source>
-        <translation type="obsolete">&amp;Lägg till mapp</translation>
+        <translation type="unfinished">&amp;Lägg till mapp</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="82"/>
+        <location filename="../puddlestuff/translations.py" line="113"/>
         <source>Append a directory to current file-view.</source>
-        <translation type="obsolete">Lägg till en mapp i aktuell filvy.</translation>
+        <translation type="unfinished">Lägg till en mapp i aktuell filvy.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="83"/>
+        <location filename="../puddlestuff/translations.py" line="110"/>
         <source>Load &amp;playlist</source>
-        <translation type="obsolete">Läs in &amp;spellista</translation>
+        <translation type="unfinished">Läs in &amp;spellista</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="84"/>
+        <location filename="../puddlestuff/translations.py" line="111"/>
         <source>Import an m3u playlist into puddletag.</source>
-        <translation type="obsolete">Importera en m3u spellista till puddletag.</translation>
+        <translation type="unfinished">Importera en m3u spellista till puddletag.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="85"/>
+        <location filename="../puddlestuff/translations.py" line="121"/>
         <source>Sa&amp;ve playlist</source>
-        <translation type="obsolete">S&amp;para spellista</translation>
+        <translation type="unfinished">S&amp;para spellista</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="86"/>
+        <location filename="../puddlestuff/translations.py" line="122"/>
         <source>Save all files to m3u playlist.</source>
-        <translation type="obsolete">Spara alla filer i en m3u spellista.</translation>
+        <translation type="unfinished">Spara alla filer i en m3u spellista.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="87"/>
+        <location filename="../puddlestuff/translations.py" line="119"/>
         <source>&amp;Refresh</source>
-        <translation type="obsolete">&amp;Uppdatera</translation>
+        <translation type="unfinished">&amp;Uppdatera</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="88"/>
+        <location filename="../puddlestuff/translations.py" line="120"/>
         <source>Refresh current file-view.</source>
-        <translation type="obsolete">Uppdatera aktuell filvy</translation>
+        <translation type="unfinished">Uppdatera aktuell filvy</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="89"/>
+        <location filename="../puddlestuff/translations.py" line="118"/>
         <source>&amp;Save</source>
-        <translation type="obsolete">&amp;Spara</translation>
+        <translation type="unfinished">&amp;Spara</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="90"/>
+        <location filename="../puddlestuff/translations.py" line="116"/>
         <source>&amp;Play</source>
-        <translation type="obsolete">S&amp;pela upp</translation>
+        <translation type="unfinished">S&amp;pela upp</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="91"/>
+        <location filename="../puddlestuff/translations.py" line="117"/>
         <source>Plays the selected files in the predefined music player.</source>
-        <translation type="obsolete">Spelar upp markerade filer i fördefinierad musikspelare.</translation>
+        <translation type="unfinished">Spelar upp markerade filer i fördefinierad musikspelare.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="92"/>
+        <location filename="../puddlestuff/translations.py" line="108"/>
         <source>&amp;File-&gt;Tag</source>
-        <translation type="obsolete">&amp;Fil-&gt;Tagg</translation>
+        <translation type="unfinished">&amp;Fil-&gt;Tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="93"/>
+        <location filename="../puddlestuff/translations.py" line="109"/>
         <source>Convert filename to tag using the pattern.</source>
-        <translation type="obsolete">Konvertera filnamn till tagg, med hjälp av mönstret.</translation>
+        <translation type="unfinished">Konvertera filnamn till tagg, med hjälp av mönstret.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="94"/>
+        <location filename="../puddlestuff/translations.py" line="107"/>
         <source>&amp;Undo</source>
-        <translation type="obsolete">&amp;Ångra</translation>
+        <translation type="unfinished">&amp;Ångra</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="95"/>
+        <location filename="../puddlestuff/translations.py" line="95"/>
         <source>Autonumbering &amp;Wizard...</source>
-        <translation type="obsolete">Autonumrerings&amp;guide</translation>
+        <translation type="unfinished">Autonumrerings&amp;guide</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="96"/>
+        <location filename="../puddlestuff/translations.py" line="94"/>
         <source>&amp;Unload Everything</source>
-        <translation type="obsolete">&amp;Rensa allt</translation>
+        <translation type="unfinished">&amp;Rensa allt</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="97"/>
+        <location filename="../puddlestuff/translations.py" line="87"/>
         <source>&amp;Format</source>
-        <translation type="obsolete">&amp;Format</translation>
+        <translation type="unfinished">&amp;Format</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="98"/>
+        <location filename="../puddlestuff/translations.py" line="86"/>
         <source>&amp;Text File-&gt;Tag</source>
-        <translation type="obsolete">&amp;Textfil-&gt;Tagg</translation>
+        <translation type="unfinished">&amp;Textfil-&gt;Tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="99"/>
+        <location filename="../puddlestuff/translations.py" line="99"/>
         <source>&amp;Import Music Library...</source>
-        <translation type="obsolete">&amp;Importera musikbibliotek</translation>
+        <translation type="unfinished">&amp;Importera musikbibliotek</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="140"/>
+        <location filename="../puddlestuff/translations.py" line="148"/>
         <source>&amp;Actions</source>
-        <translation type="obsolete">&amp;Åtgärder</translation>
+        <translation type="unfinished">&amp;Åtgärder</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="101"/>
+        <location filename="../puddlestuff/translations.py" line="97"/>
         <source>&amp;Preferences</source>
-        <translation type="obsolete">&amp;Inställningar</translation>
+        <translation type="unfinished">&amp;Inställningar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="102"/>
+        <location filename="../puddlestuff/translations.py" line="96"/>
         <source>&amp;Functions</source>
-        <translation type="obsolete">&amp;Funktioner</translation>
+        <translation type="unfinished">&amp;Funktioner</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="103"/>
+        <location filename="../puddlestuff/translations.py" line="103"/>
         <source>&amp;QuickActions</source>
-        <translation type="obsolete">&amp;Snabbåtgärder</translation>
+        <translation type="unfinished">&amp;Snabbåtgärder</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="104"/>
+        <location filename="../puddlestuff/translations.py" line="102"/>
         <source>&amp;Rename Directories</source>
-        <translation type="obsolete">&amp;Namnändra mappar</translation>
+        <translation type="unfinished">&amp;Namnändra mappar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="105"/>
+        <location filename="../puddlestuff/translations.py" line="137"/>
         <source>&amp;Exit</source>
-        <translation type="obsolete">A&amp;vsluta</translation>
+        <translation type="unfinished">A&amp;vsluta</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="106"/>
+        <location filename="../puddlestuff/translations.py" line="138"/>
         <source>&amp;Tag-&gt;File</source>
-        <translation type="obsolete">&amp;Tagg-&gt;Fil</translation>
+        <translation type="unfinished">&amp;Tagg-&gt;Fil</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="107"/>
+        <location filename="../puddlestuff/translations.py" line="136"/>
         <source>&amp;Increase Font</source>
-        <translation type="obsolete">&amp;Öka teckenstorlek</translation>
+        <translation type="unfinished">&amp;Öka teckenstorlek</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="108"/>
+        <location filename="../puddlestuff/translations.py" line="141"/>
         <source>&amp;Decrease Font</source>
-        <translation type="obsolete">&amp;Minska teckenstorlek</translation>
+        <translation type="unfinished">&amp;Minska teckenstorlek</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="109"/>
+        <location filename="../puddlestuff/translations.py" line="142"/>
         <source>&amp;Clipboard-&gt;Tag</source>
-        <translation type="obsolete">&amp;Urklipp-&gt;Tagg</translation>
+        <translation type="unfinished">&amp;Urklipp-&gt;Tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="110"/>
+        <location filename="../puddlestuff/translations.py" line="139"/>
         <source>Select &amp;All</source>
-        <translation type="obsolete">Markera &amp;alla</translation>
+        <translation type="unfinished">Markera &amp;alla</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="111"/>
+        <location filename="../puddlestuff/translations.py" line="140"/>
         <source>&amp;Invert Selection</source>
-        <translation type="obsolete">&amp;Invertera markering</translation>
+        <translation type="unfinished">&amp;Invertera markering</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="112"/>
+        <location filename="../puddlestuff/translations.py" line="134"/>
         <source>&amp;Select Column</source>
-        <translation type="obsolete">&amp;Välj kolumn</translation>
+        <translation type="unfinished">&amp;Välj kolumn</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="113"/>
+        <location filename="../puddlestuff/translations.py" line="135"/>
         <source>&amp;Cut</source>
-        <translation type="obsolete">&amp;Klipp ut</translation>
+        <translation type="unfinished">&amp;Klipp ut</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="114"/>
+        <location filename="../puddlestuff/translations.py" line="101"/>
         <source>&amp;Copy Selection</source>
-        <translation type="obsolete">&amp;Kopiera markerat</translation>
+        <translation type="unfinished">&amp;Kopiera markerat</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="115"/>
+        <location filename="../puddlestuff/translations.py" line="100"/>
         <source>&amp;Paste</source>
-        <translation type="obsolete">K&amp;listra in</translation>
+        <translation type="unfinished">K&amp;listra in</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="116"/>
+        <location filename="../puddlestuff/translations.py" line="127"/>
         <source>&amp;Remove Tag</source>
-        <translation type="obsolete">&amp;Ta bort tagg</translation>
+        <translation type="unfinished">&amp;Ta bort tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="117"/>
+        <location filename="../puddlestuff/translations.py" line="123"/>
         <source>E&amp;xtended Tags</source>
-        <translation type="obsolete">&amp;Utökade taggar</translation>
+        <translation type="unfinished">&amp;Utökade taggar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="118"/>
+        <location filename="../puddlestuff/translations.py" line="105"/>
         <source>&amp;Delete</source>
-        <translation type="obsolete">&amp;Ta bort</translation>
+        <translation type="unfinished">&amp;Ta bort</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="119"/>
+        <location filename="../puddlestuff/translations.py" line="104"/>
         <source>&amp;Properties</source>
-        <translation type="obsolete">&amp;Egenskaper</translation>
+        <translation type="unfinished">&amp;Egenskaper</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="120"/>
+        <location filename="../puddlestuff/translations.py" line="106"/>
         <source>Paste &amp;Onto Selection</source>
-        <translation type="obsolete">Klistra in i &amp;markerat</translation>
+        <translation type="unfinished">Klistra in i &amp;markerat</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="121"/>
+        <location filename="../puddlestuff/translations.py" line="93"/>
         <source>&amp;Lock Layout</source>
-        <translation type="obsolete">&amp;Lås layout</translation>
+        <translation type="unfinished">&amp;Lås layout</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="122"/>
+        <location filename="../puddlestuff/translations.py" line="92"/>
         <source>Select &amp;Next Directory</source>
-        <translation type="obsolete">Välj &amp;nästa mapp</translation>
+        <translation type="unfinished">Välj &amp;nästa mapp</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="123"/>
+        <location filename="../puddlestuff/translations.py" line="128"/>
         <source>Copy All &amp;Fields</source>
-        <translation type="obsolete">Kopiera alla &amp;fält</translation>
+        <translation type="unfinished">Kopiera alla &amp;fält</translation>
     </message>
     <message>
         <location filename="puddlestuff/translations.py" line="124"/>
@@ -2749,108 +2754,118 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
         <translation type="obsolete">Ta bort &amp;utan att bekräfta</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="125"/>
+        <location filename="../puddlestuff/translations.py" line="129"/>
         <source>In &amp;Library</source>
-        <translation type="obsolete">I &amp;biblioteket</translation>
+        <translation type="unfinished">I &amp;biblioteket</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="126"/>
+        <location filename="../puddlestuff/translations.py" line="130"/>
         <source>Replace...</source>
-        <translation type="obsolete">Ersätt...</translation>
+        <translation type="unfinished">Ersätt...</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="127"/>
+        <location filename="../puddlestuff/translations.py" line="131"/>
         <source>Remove &amp;APEv2 Tag</source>
-        <translation type="obsolete">Ta bort &amp;APEv2-tagg</translation>
+        <translation type="unfinished">Ta bort &amp;APEv2-tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="128"/>
+        <location filename="../puddlestuff/translations.py" line="132"/>
         <source>Remove All &amp;ID3 Tags</source>
-        <translation type="obsolete">Ta bort alla &amp;ID3-taggar</translation>
+        <translation type="unfinished">Ta bort alla &amp;ID3-taggar</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="129"/>
+        <location filename="../puddlestuff/translations.py" line="133"/>
         <source>Move Selected &amp;Up</source>
-        <translation type="obsolete">Flytta &amp;upp markerat</translation>
+        <translation type="unfinished">Flytta &amp;upp markerat</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="130"/>
+        <location filename="../puddlestuff/translations.py" line="124"/>
         <source>Move Selected Do&amp;wn</source>
-        <translation type="obsolete">Flytta &amp;ner markerat</translation>
+        <translation type="unfinished">Flytta &amp;ner markerat</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="131"/>
+        <location filename="../puddlestuff/translations.py" line="125"/>
         <source>Select &amp;Previous Directory</source>
-        <translation type="obsolete">Välj &amp;föregående mapp</translation>
+        <translation type="unfinished">Välj &amp;föregående mapp</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="132"/>
+        <location filename="../puddlestuff/translations.py" line="126"/>
         <source>Select all files belonging to the directories of those selected. Otherwise (if only a single directory is selected) selects all the files in the previous directory.</source>
-        <translation type="obsolete">Välj alla filer som tillhör markerade mappar. Välj annars (om endast en mapp markerad) alla filer i föregående mapp.</translation>
+        <translation type="unfinished">Välj alla filer som tillhör markerade mappar. Välj annars (om endast en mapp markerad) alla filer i föregående mapp.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="133"/>
+        <location filename="../puddlestuff/translations.py" line="91"/>
         <source>Remove ID3v&amp;2 Tag</source>
-        <translation type="obsolete">Ta bort ID3v&amp;2-tagg</translation>
+        <translation type="unfinished">Ta bort ID3v&amp;2-tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="134"/>
+        <location filename="../puddlestuff/translations.py" line="90"/>
         <source>Remove ID3v&amp;1 Tag</source>
-        <translation type="obsolete">Ta bort ID3v&amp;1-tagg</translation>
+        <translation type="unfinished">Ta bort ID3v&amp;1-tagg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="135"/>
+        <location filename="../puddlestuff/translations.py" line="88"/>
         <source>Refresh &amp;Selected</source>
-        <translation type="obsolete">Uppdatera &amp;markerat</translation>
+        <translation type="unfinished">Uppdatera &amp;markerat</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="136"/>
+        <location filename="../puddlestuff/translations.py" line="89"/>
         <source>Reloads directories of selected files.</source>
-        <translation type="obsolete">Uppdaterar mappar för markerade filer.</translation>
+        <translation type="unfinished">Uppdaterar mappar för markerade filer.</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="137"/>
+        <location filename="../puddlestuff/translations.py" line="145"/>
         <source>&amp;File</source>
-        <translation type="obsolete">&amp;Arkiv</translation>
+        <translation type="unfinished">&amp;Arkiv</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="138"/>
+        <location filename="../puddlestuff/translations.py" line="146"/>
         <source>&amp;Edit</source>
-        <translation type="obsolete">&amp;Redigera</translation>
+        <translation type="unfinished">&amp;Redigera</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="139"/>
+        <location filename="../puddlestuff/translations.py" line="147"/>
         <source>&amp;Convert</source>
-        <translation type="obsolete">&amp;Konvertera</translation>
+        <translation type="unfinished">&amp;Konvertera</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="141"/>
+        <location filename="../puddlestuff/translations.py" line="149"/>
         <source>&amp;Tools</source>
-        <translation type="obsolete">&amp;Verktyg</translation>
+        <translation type="unfinished">&amp;Verktyg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="142"/>
+        <location filename="../puddlestuff/translations.py" line="150"/>
         <source>&amp;Preview Mode</source>
-        <translation type="obsolete">&amp;Förhandsgranskning</translation>
+        <translation type="unfinished">&amp;Förhandsgranskning</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="143"/>
+        <location filename="../puddlestuff/translations.py" line="151"/>
         <source>Ta&amp;g Tools</source>
-        <translation type="obsolete">&amp;Taggverktyg</translation>
+        <translation type="unfinished">&amp;Taggverktyg</translation>
     </message>
     <message>
-        <location filename="puddlestuff/translations.py" line="144"/>
+        <location filename="../puddlestuff/translations.py" line="152"/>
         <source>&amp;Windows</source>
-        <translation type="obsolete">&amp;Fönster</translation>
+        <translation type="unfinished">&amp;Fönster</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="310"/>
+        <location filename="../puddlestuff/puddletag.py" line="309"/>
         <source>&amp;GitHub project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="314"/>
+        <location filename="../puddlestuff/puddletag.py" line="313"/>
         <source>&amp;Report a problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/translations.py" line="143"/>
+        <source>&amp;Go to parent folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../puddlestuff/translations.py" line="144"/>
+        <source>Focuses the current file&apos;s parent folder in the Filesystem view</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2876,42 +2891,42 @@ Vill du fortsätta?</translation>
 <context>
     <name>Mp3tag</name>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="361"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="358"/>
         <source>Retrieving search page: %s</source>
         <translation>Hämtar söksida: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="362"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="359"/>
         <source>Retrieving search page...</source>
         <translation>Hämtar söksida...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="368"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="365"/>
         <source>Parsing search page.</source>
         <translation>Tolkar söksida.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="369"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="366"/>
         <source>Parsing search page...</source>
         <translation>Tolkar söksida...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="389"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="386"/>
         <source>Retrieving album page: %s</source>
         <translation>Hämtar albumsida: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="390"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="387"/>
         <source>Retrieving album page...</source>
         <translation>Hämtar albumsida...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="395"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="392"/>
         <source>Parsing album page.</source>
         <translation>Tolkar albumsida.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="396"/>
+        <location filename="../puddlestuff/tagsources/mp3tag/__init__.py" line="393"/>
         <source>Parsing album page...</source>
         <translation>Tolkar albumsida...</translation>
     </message>
@@ -2919,17 +2934,17 @@ Vill du fortsätta?</translation>
 <context>
     <name>MusicBrainz</name>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="528"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="527"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving %1: %2</source>
         <translation>&lt;b&gt;Fel&lt;/b&gt; vid hämtning av %1: %2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="581"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="580"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; While retrieving Album ID %1 (%2)</source>
         <translation>&lt;b&gt;Fel&lt;/b&gt; vid hämtning av album-ID %1 (%2)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="577"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="576"/>
         <source>Found album id %s in tracks. Retrieving</source>
         <translation>Hittade album-ID %s i spår. Hämtar</translation>
     </message>
@@ -2969,32 +2984,32 @@ Vill du fortsätta?</translation>
         <translation>Hämtar bild %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="510"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="509"/>
         <source>Retrieve Cover</source>
         <translation>Hämtar omslag</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="511"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="510"/>
         <source>Cover size to retrieve:</source>
         <translation>Omslagsstorlek att hämta:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="515"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="514"/>
         <source>Amount of images to retrieve:</source>
         <translation>Antal omslag att hämta:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="516"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="515"/>
         <source>Just the front cover</source>
         <translation>Endast frontbild</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="517"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="516"/>
         <source>All (can take a while)</source>
         <translation>Alla (kan ta en stund)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="621"/>
+        <location filename="../puddlestuff/tagsources/musicbrainz.py" line="620"/>
         <source>Error retrieving image: %s</source>
         <translation>Fel vid hämtning av bild: %s</translation>
     </message>
@@ -3094,22 +3109,22 @@ Vill du fortsätta?</translation>
 <context>
     <name>Playlist</name>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="635"/>
+        <location filename="../puddlestuff/puddletag.py" line="639"/>
         <source>Select m3u file...</source>
         <translation>Välj m3u-fil...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="652"/>
+        <location filename="../puddlestuff/puddletag.py" line="656"/>
         <source>An error occured while reading &lt;b&gt;%1&lt;/b&gt; (%2)</source>
         <translation>Ett fel inträffade vid läsning av &lt;b&gt;%1&lt;/b&gt; (%2)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="794"/>
+        <location filename="../puddlestuff/puddletag.py" line="798"/>
         <source>Save Playlist...</source>
         <translation>Spara spellista...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="648"/>
+        <location filename="../puddlestuff/puddletag.py" line="652"/>
         <source>The playlist is not encoded in UTF-8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3178,17 +3193,17 @@ Vill du fortsätta?</translation>
         <translation>Inaktivera förhandsvisningsläget för att aktivera taggborttagning.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="577"/>
+        <location filename="../puddlestuff/puddletag.py" line="581"/>
         <source>Some files have uncommited previews. These changes will be lost once you exit puddletag. &lt;br /&gt;Do you want to exit without writing those changes?&lt;br /&gt;</source>
         <translation>Vissa filer har obekräftade ändringar. Ändringarna kommer att förloras när du avslutar puddletag. &lt;br /&gt;Vill du avsluta utan att spara ändringarna?&lt;br /&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="620"/>
+        <location filename="../puddlestuff/puddletag.py" line="624"/>
         <source>Preview Mode: Off</source>
         <translation>Förhandsvisningsläge: Av</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="618"/>
+        <location filename="../puddlestuff/puddletag.py" line="622"/>
         <source>&lt;b&gt;Preview Mode: On&lt;/b&gt;</source>
         <translation>&lt;b&gt;Förhandsvisningsläge: På&lt;/b&gt;</translation>
     </message>
@@ -3198,12 +3213,12 @@ Vill du fortsätta?</translation>
         <translation type="obsolete">Vill du inaktivera förhandsvisningsläget?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="669"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="668"/>
         <source>Clea&amp;r preview</source>
         <translation type="unfinished">&amp;Rensa förhandsvisningen</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2098"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2097"/>
         <source>There are unsaved changes pending. Do you want to discard and reload?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3244,7 +3259,7 @@ Vill du fortsätta?</translation>
         <translation>&lt;p&gt;Om tagginformation inte hittas i en fil, kommer taggar med detta mönster att användas istället.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="398"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="397"/>
         <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Artist- och albumfälten kommer att användas för att avgöra om ett album album matchar det mottagna. Varje enskilt fält jämförs med hjälp av en luddig matchningsalgoritm. Om jämförelseresultatets medelvärde i procent, är större än eller lika med vad du specificerar här, anses det vara en träff.&lt;/p&gt;</translation>
     </message>
@@ -3254,7 +3269,7 @@ Vill du fortsätta?</translation>
         <translation>&lt;p&gt;De fält som listas här, kommer att användas för att avgöra om en fil matchar ett mottaget spår. Varje enskilt fält jämförs med hjälp av en luddig matchningsalgoritm. Om jämförelseresultatets medelvärde i procent, är större än minimivärdet, anses det vara en träff./p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="380"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="379"/>
         <source>Brute force unmatched files.</source>
         <translation>Använd råstyrka för omatchade filer.</translation>
     </message>
@@ -3294,7 +3309,7 @@ Vill du fortsätta?</translation>
         <translation>Matcha spår med dessa fält: </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="440"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="439"/>
         <source>Minimum percentage required for track match.</source>
         <translation>Minimivärde i procent, för spårmatchning.</translation>
     </message>
@@ -3334,22 +3349,22 @@ Vill du fortsätta?</translation>
         <translation>&lt;p&gt;&lt;b&gt;Fortsätt&lt;/b&gt;: Uppslagning på aktuellt album fortsätter genom att kontrollera de andra källorna, om inga matchande resultat hittades i denna källa.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stoppa&lt;/b&gt;: Uppslagning på aktuellt album stoppas och alla tidigare hämtade resultat kommer att användas.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="382"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="381"/>
         <source>&lt;p&gt;If a proper match isn&apos;t found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
         <translation type="unfinished">&lt;p&gt;Om en korrekt matchning inte kan hittas för en fil, sorteras filerna efter filnamn, de hämtade taggkällorna efter filnamn och motsvarande (omatchade) spår matchas.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="389"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="388"/>
         <source>&lt;p&gt;The fields listed here will be used in determining whether a track matches the retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the &quot;Minimum Percentage&quot; it&apos;ll be considered to match.&lt;/p&gt;</source>
         <translation type="unfinished">&lt;p&gt;De fält som listas här, kommer att användas för att avgöra om ett spår matchar det hämtade spåret. Varje enskilt fält jämförs med hjälp av en luddig matchningsalgoritm. Om jämförelseresultatets medelvärde i procent, är större än minimivärdet, anses det vara en träff.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="435"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="434"/>
         <source>Minimum &amp;percentage required for album matches.</source>
         <translation type="unfinished">Minimivärde i &amp;procent, för albummatchning.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="438"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="437"/>
         <source>Match tracks using &amp;fields: </source>
         <translation type="unfinished">Matcha spår med &amp;fälten: </translation>
     </message>
@@ -3357,12 +3372,12 @@ Vill du fortsätta?</translation>
 <context>
     <name>Progress Dialog</name>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2184"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2162"/>
         <source>Please Wait...</source>
         <translation>Vänta...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddleobjects.py" line="2185"/>
+        <location filename="../puddlestuff/puddleobjects.py" line="2163"/>
         <source>%1%2 of %3...</source>
         <translation>%1%2 av %3...</translation>
     </message>
@@ -3370,27 +3385,27 @@ Vill du fortsätta?</translation>
 <context>
     <name>QuodLibet</name>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="353"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="352"/>
         <source>&amp;Library Path</source>
         <translation>&amp;Bibliotekssökväg</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="356"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="355"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="366"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="365"/>
         <source>Select QuodLibet library file...</source>
         <translation>Välj QuodLibet biblioteksfil...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="378"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="377"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="381"/>
+        <location filename="../puddlestuff/libraries/quodlibetlib.py" line="380"/>
         <source>%1 is an invalid QuodLibet music library file.</source>
         <translation>%1 är ett ogiltigt QuodLibet musikbibliotek.</translation>
     </message>
@@ -3403,7 +3418,7 @@ Vill du fortsätta?</translation>
         <translation>Mönster</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagpanel.py" line="445"/>
+        <location filename="../puddlestuff/mainwin/tagpanel.py" line="447"/>
         <source>Tag Panel</source>
         <translation>Taggpanel</translation>
     </message>
@@ -3458,12 +3473,12 @@ Vill du fortsätta?</translation>
         <translation>Ett fel inträffade när inställningarna för &lt;b&gt;%1&lt;/b&gt; skulle sparas: %2</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/puddletag.py" line="459"/>
+        <location filename="../puddlestuff/puddletag.py" line="463"/>
         <source>&amp;Windows</source>
         <translation>&amp;Fönster</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="357"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="356"/>
         <source>Tag Sources</source>
         <translation type="unfinished">Taggkällor</translation>
     </message>
@@ -3570,22 +3585,22 @@ Aktuell: %2</translation>
         <translation>Tar bort tagg... </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1643"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1642"/>
         <source>Are you sure you want to delete the selected files?</source>
         <translation>Vill du verkligen ta bort de valda filerna?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="1685"/>
+        <location filename="../puddlestuff/tagmodel.py" line="1684"/>
         <source>Deleting </source>
         <translation>Tar bort</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2038"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2037"/>
         <source>An error occurred while trying to play the selected files: &lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Does the music player you defined (&lt;b&gt;%2&lt;/b&gt;) exist?</source>
         <translation>Ett fel inträffade vid försök att spela upp de valda filerna: &lt;b&gt;%1&lt;/b&gt; &lt;br /&gt;Finns din specificerade musikspelare (&lt;b&gt;%2&lt;/b&gt;)?</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagmodel.py" line="2044"/>
+        <location filename="../puddlestuff/tagmodel.py" line="2043"/>
         <source>It wasn&apos;t possible to play the selected files, because the music player you defined (&lt;b&gt;%1&lt;/b&gt;) does not exist.</source>
         <translation>Det gick inte att spela upp de valda filerna, eftersom din specificerade musikspelare (&lt;b&gt;%1&lt;/b&gt;) inte finns.</translation>
     </message>
@@ -3593,12 +3608,12 @@ Aktuell: %2</translation>
 <context>
     <name>Tag Panel Settings</name>
     <message>
-        <location filename="../puddlestuff/mainwin/tagpanel.py" line="438"/>
+        <location filename="../puddlestuff/mainwin/tagpanel.py" line="440"/>
         <source>Row</source>
         <translation>Rad</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagpanel.py" line="495"/>
+        <location filename="../puddlestuff/mainwin/tagpanel.py" line="497"/>
         <source>All row numbers must be integers.</source>
         <translation>Alla radnummer måste vara heltal.</translation>
     </message>
@@ -3659,17 +3674,17 @@ Aktuell: %2</translation>
         <translation>&lt;b&gt;Fel vid tolkning av artist-/albumkombinationer.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/__init__.py" line="108"/>
+        <location filename="../puddlestuff/tagsources/__init__.py" line="107"/>
         <source>Retrieving cover: %s</source>
         <translation>Hämtar omslag: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/__init__.py" line="181"/>
+        <location filename="../puddlestuff/tagsources/__init__.py" line="180"/>
         <source>HTTPError 403: Forbidden</source>
         <translation>HTTP-fel 403: Förbjudet</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/tagsources/__init__.py" line="184"/>
+        <location filename="../puddlestuff/tagsources/__init__.py" line="183"/>
         <source>Page doesn&apos;t exist</source>
         <translation>Sidan finns inte</translation>
     </message>
@@ -3689,7 +3704,7 @@ Aktuell: %2</translation>
         <translation type="unfinished">Hämtade album</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="922"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="921"/>
         <source>An error occured: %1</source>
         <translation type="unfinished">Ett fel inträffade: %1</translation>
     </message>
@@ -3714,7 +3729,7 @@ Aktuell: %2</translation>
         <translation type="unfinished">Hämtar spår...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="866"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="865"/>
         <source>No matching albums were found.</source>
         <translation type="unfinished">Inga matchande album hittades.</translation>
     </message>
@@ -3729,62 +3744,62 @@ Aktuell: %2</translation>
         <translation type="obsolete">Hämtar album.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="33"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="32"/>
         <source>Enter search parameters here. If empty, the selected files are used. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; searches for a specific album/artist combination.&lt;/li&gt;&lt;li&gt;To list the albums by an artist leave off the album part, but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;). For a album only leave the artist part as in &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</source>
         <translation type="unfinished">Ange sökparametrar här. De valda filerna används om fältet lämnas tomt. &lt;ul&gt;&lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt; söker specifikt efter album-/artistkombination.&lt;/li&gt;&lt;li&gt;Utelämna albumdelen, men lämna kvar semikolon, för att lista album av en artist (exempel: &lt;b&gt;Ratatat;&lt;/b&gt;). För endast ett album, lämna kvar artistdelen, som i &lt;b&gt;;Resurrection.&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="42"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="41"/>
         <source>Enter a comma seperated list of fields to write. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only write the artist, album and title fields of the retrieved tags. &lt;br /&gt;&lt;br /&gt;If you want to exclude some fields, but write all others start the list the tilde (~) character. Eg &lt;b&gt;~composer, __image&lt;/b&gt; will write all fields but the composer and __image fields.</source>
         <translation type="unfinished">Ange en kommaseparerad lista över fält att skriva &lt;br /&gt;&lt;br /&gt;Exempel: &lt;b&gt;artist, album, title&lt;/b&gt; skriver endast artist-, album och titelfälten från de hämtade taggarna. &lt;br /&gt;&lt;br /&gt;Om du vill utesluta några fält, men skriva alla andra, startar du listan med tilde (~). Exempel: &lt;b&gt;~composer, __image&lt;/b&gt; skriver alla fält, men utelämnar kompositörs- och bildfältet.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="81"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="80"/>
         <source>&lt;b&gt;Nothing to display.&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;Det finns inget att visa.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="98"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="97"/>
         <source>Couldn&apos;t load Mp3tag Tag Source %s</source>
         <translation type="unfinished">Kunde inte läsa in Mp3-taggens källa %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="224"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="223"/>
         <source>Configure: %s</source>
         <translation type="unfinished">Konfigurera: %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="317"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="316"/>
         <source>Add sort option</source>
         <translation type="unfinished">Lägg till sorteringsalternativ</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="335"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="334"/>
         <source>Enter a sorting option (a comma-separated list of fields. Eg. &quot;artist, title&quot;)</source>
         <translation type="unfinished">Ange ett sorteringsalternativ (En kommaseparerad lista med fält. Exempelvis: &quot;artist, title&quot;).</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="335"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="334"/>
         <source>Edit sort option</source>
         <translation type="unfinished">Redigera sorteringsalternativ</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="359"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="358"/>
         <source>&amp;Display format for individual tracks.</source>
         <translation type="unfinished">&amp;Visa format för individuella spår</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="364"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="363"/>
         <source>Display format for &amp;retrieved albums</source>
         <translation type="unfinished">Visa format för &amp;hämtade album</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="369"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="368"/>
         <source>Sort retrieved albums using order:</source>
         <translation type="unfinished">Sortera hämtade album efter:</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="376"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="375"/>
         <source>User-Agent to when accessing web sites.</source>
         <translation type="unfinished">User-Agent för att besöka webbsidor.</translation>
     </message>
@@ -3794,77 +3809,77 @@ Aktuell: %2</translation>
         <translation type="obsolete">Automatiska hämtningsalternativ</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="623"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="622"/>
         <source>Sour&amp;ce: </source>
         <translation type="unfinished">K&amp;älla: </translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="629"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="628"/>
         <source>Configure</source>
         <translation type="unfinished">Konfigurera</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="639"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="638"/>
         <source>&amp;Search</source>
         <translation type="unfinished">&amp;Sök</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="665"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="664"/>
         <source>&amp;Write</source>
         <translation type="unfinished">S&amp;kriv</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="645"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="644"/>
         <source>Select files and click on Search to retrieve metadata.</source>
         <translation type="unfinished">Markera filer och tryck på Sök, för att hämta metadata.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="679"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="678"/>
         <source>Update empty fields only.</source>
         <translation type="unfinished">Uppdatera endast tomma fält.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="686"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="685"/>
         <source>Automatically retrieve matches.</source>
         <translation type="unfinished">Hämta matchningar automatiskt.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="863"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="862"/>
         <source>Searching complete.</source>
         <translation type="unfinished">Sökning slutförd.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="880"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="879"/>
         <source>Searching...</source>
         <translation type="unfinished">Söker...</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="885"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="884"/>
         <source>&lt;b&gt;Select some files or enter search paramaters.&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;Markera några filer, eller ange sökparametrar.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="926"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="925"/>
         <source>An unhandled error occurred: %1</source>
         <translation type="unfinished">Ett obearbetat fel inträffade: %1</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="955"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="954"/>
         <source>&lt;b&gt;Tags were written.&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;Taggar skrevs.&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="568"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="567"/>
         <source>Retrying search with %s</source>
         <translation type="unfinished">Söker igen med %s</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="660"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="659"/>
         <source>S&amp;ubmit Tags</source>
         <translation type="unfinished">&amp;Föreslå taggar</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="929"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="928"/>
         <source>Submission completed.</source>
         <translation type="unfinished">Förslag skickat.</translation>
     </message>
@@ -3935,7 +3950,7 @@ Aktuell: %2</translation>
         <translation type="unfinished">Hämtar album.</translation>
     </message>
     <message>
-        <location filename="../puddlestuff/mainwin/tagsources.py" line="429"/>
+        <location filename="../puddlestuff/mainwin/tagsources.py" line="428"/>
         <source>Automatic retrieval options</source>
         <translation type="unfinished">Automatiska hämtningsalternativ</translation>
     </message>
