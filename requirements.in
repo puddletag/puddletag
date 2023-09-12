@@ -4,6 +4,7 @@ configobj==5.0.8
 mutagen==1.47.0
 pyparsing==3.1.1
 unidecode==1.3.6
+Send2Trash
 
 # extra / tag sources
 lxml==4.9.3

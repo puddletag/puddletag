@@ -66,6 +66,7 @@ def versions():
         'audioread': get_module_version('audioread'),
         'Levenshtein': get_module_version('Levenshtein'),
         'Chromaprint': get_module_version('chromaprint'),
+        'Send2Trash': get_module_version('send2trash'),
     }
 
 
