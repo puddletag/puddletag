@@ -8,14 +8,7 @@ import urllib.parse
 import urllib.request
 from itertools import chain, product, starmap
 
-try:
-    import acoustid
-
-    # Don't want it to use audioread as python-gst
-    # lib causes lockups.
-    acoustid.have_audioread = False
-except ImportError:
-    from . import _acoustid as acoustid
+import acoustid
 
 from puddlestuff import audioinfo
 
