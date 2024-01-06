@@ -5,9 +5,7 @@
 #    pip-compile
 #
 audioread==3.0.1
-    # via
-    #   -r requirements.in
-    #   pyacoustid
+    # via pyacoustid
 certifi==2023.7.22
     # via requests
 charset-normalizer==2.0.10
