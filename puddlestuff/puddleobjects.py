@@ -607,7 +607,8 @@ def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> QCollat
     It also takes the global user preferences into account (e.g. LC_COLLATE).
     """
     if isinstance(s, list):
-        s = s[0]
+        # Join all elements with ascii unit separator
+        s = '\x1f'.join(s)
 
     locale = QLocale.system().collation() if case_insensitive else QLocale.c()
     collator = QCollator(locale)
