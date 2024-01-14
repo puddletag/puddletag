@@ -548,9 +548,9 @@ class MainWin(QMainWindow):
             initial = initial.decode('utf8', 'replace')
 
         if len(dirs) > 1:
-            self.setWindowTitle(translate("Main Window", 'puddletag: %1 + others').arg(initial))
+            self.setWindowTitle(translate('Main Window', "puddletag: {} + others").format(initial))
         else:
-            self.setWindowTitle(translate("Main Window", 'puddletag: %1').arg(initial))
+            self.setWindowTitle(translate('Main Window', "puddletag: {}").format(initial))
 
         self._lastdir = dirs
 
@@ -647,14 +647,20 @@ class MainWin(QMainWindow):
         except (OSError, IOError) as e:
             QMessageBox.information(self._table,
                                     translate("Defaults", 'Error'),
-                                    translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(e.strerror))
+                                    translate('Playlist',
+                                              "An error occured while reading <b>{}</b> ({})"
+                                              ).format(filename, e.strerror)
+                                    )
         except (UnicodeError) as e:
             QMessageBox.information(self._table,
                                     translate("Defaults", 'Error'),
                                     translate("Playlist", 'The playlist is not encoded in UTF-8'))
         except Exception as e:
             QMessageBox.information(self._table, translate("Defaults", 'Error'),
-                                    translate("Playlist", 'An error occured while reading <b>%1</b> (%2)').arg(filename).arg(str(e)))
+                                    translate('Playlist',
+                                              "An error occured while reading <b>{}</b> ({})"
+                                              ).format(filename, str(e))
+                                    )
 
     def openDir(self, filename=None, append=False):
         """Opens a folder. If filename != None, then
@@ -1012,9 +1018,9 @@ class MainWin(QMainWindow):
                     setRowData(row, {tag: filename}, True, True)
                     yield None
                 except EnvironmentError as e:
-                    m = translate("Dir Renaming",
-                                  'An error occured while renaming <b>%1</b> to '
-                                  '<b>%2</b>. (%3)').arg(audio[PATH]).arg(filename).arg(e.strerror)
+                    m = translate('Dir Renaming',
+                                  "An error occured while renaming <b>{}</b> to <b>{}</b>. ({})"
+                                  ).format(audio[PATH], filename, e.strerror)
                     if row == rows[-1]:
                         yield m, 1
                     else:
@@ -1036,7 +1042,9 @@ class MainWin(QMainWindow):
                 if self._lastdir and olddir in self._lastdir:
                     self._lastdir[self._lastdir.index(olddir)] = newdir
             except (IOError, OSError) as detail:
-                msg = translate("Dir Renaming", "I couldn't rename: <i>%1</i> to <b>%2</b> (%3)").arg(olddir).arg(newdir).arg(detail.strerror)
+                msg = translate('Dir Renaming',
+                                "I couldn't rename: <i>{}</i> to <b>{}</b> ({})"
+                                ).format(olddir, newdir, detail.strerror)
                 if index == len(dirs) - 1:
                     dirlen = 1
                 else:

@@ -123,7 +123,7 @@ def get_text(node):
 
 def keyword_search(keywords):
     write_log(translate('Amazon',
-                        'Retrieving search results for keywords: %s') % keywords)
+                        "Retrieving search results for keywords: {}").format(keywords))
     query_pairs = {
         "Operation": "ItemSearch",
         'SearchIndex': 'Music',
@@ -193,8 +193,8 @@ def parse_search_xml(text):
             image_items = item.getElementsByTagName(key)
             if image_items:
                 info[IMAGEKEYS[key]] = get_image_url(image_items[0])
-        info['#extrainfo'] = (translate('Amazon', '%s at Amazon.com') %
-                              info.get('album', ''), get_site_url(item))
+        info['#extrainfo'] = (translate('Amazon', "{} at Amazon.com").format(
+                              info.get('album', '')), get_site_url(item))
         info['#asin'] = get_asin(item)
         info['asin'] = info['#asin']
         ret.append(info)
@@ -220,11 +220,11 @@ def retrieve_album(info, image=MEDIUMIMAGE):
 
     if isinstance(info, str):
         write_log(translate('Amazon',
-                            'Retrieving using ASIN: %s') % asin)
+                            "Retrieving using ASIN: {}").format(asin))
     else:
         write_log(translate('Amazon',
-                            'Retrieving XML: %1 - %2').arg(
-            info.get('artist', '')).arg(info.get('album', '')))
+                            "Retrieving XML: {} - {}"
+                            ).format(info.get('artist', ''), info.get('album', '')))
     xml = urlopen(url)
 
     if isinstance(info, str):
@@ -234,7 +234,7 @@ def retrieve_album(info, image=MEDIUMIMAGE):
 
     if image in image_types:
         url = info[image]
-        write_log(translate("Amazon", 'Retrieving cover: %s') % url)
+        write_log(translate('Amazon', "Retrieving cover: {}").format(url))
         info.update({'__image': retrieve_cover(url)})
     return tracks
 

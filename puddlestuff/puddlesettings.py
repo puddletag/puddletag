@@ -707,7 +707,9 @@ class SettingsDialog(QDialog):
                 z[1].applySettings(z[2])
             except SettingsError as e:
                 QMessageBox.warning(self, 'puddletag',
-                                    translate('Settings', 'An error occurred while saving the settings of <b>%1</b>: %2').arg(z[0]).arg(str(e)))
+                                    translate('Settings',
+                                              "An error occurred while saving the settings of <b>{}</b>: {}"
+                                              ).format(z[0], str(e)))
                 return
         self.close()
 

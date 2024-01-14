@@ -94,7 +94,7 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             idents, search, album = mp3tag.open_script(f)
             classes.append(mp3tag.Mp3TagSource(idents, search, album))
         except:
-            logging.exception(translate("Tag Sources", "Couldn't load Mp3tag Tag Source %s") % f)
+            logging.exception(translate("Tag Sources", "Couldn't load Mp3tag Tag Source {}").format(f))
             continue
     return classes
 
@@ -220,7 +220,7 @@ class SimpleDialog(QDialog):
         vbox = QVBoxLayout()
         self._controls = []
         winsettings(title, self)
-        self.setWindowTitle(translate("Tag Sources", 'Configure: %s') % title)
+        self.setWindowTitle(translate("Tag Sources", "Configure: {}").format(title))
         for desc, ctype, default in controls:
             if ctype == TEXT:
                 control = QLineEdit(default)
@@ -564,8 +564,7 @@ def tag_source_search(ts, group, files):
         changed, audio = apply_regexps(audio)
         if changed:
             audio['album'] = audio['album'].strip()
-            write_log(translate("Tag Sources", 'Retrying search with %s') %
-                      audio['album'])
+            write_log(translate("Tag Sources", "Retrying search with {}").format(audio['album']))
             ret.extend(ts.search(audio['album'], group[primary]))
 
     return ret, files
@@ -894,11 +893,11 @@ class MainWin(QWidget):
                     return tag_source_search(self.curSource, group, files)
             except RetrievalError as e:
                 return translate("Tag Sources",
-                                 'An error occured: %1').arg(str(e))
+                                 "An error occured: {}").format(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 'An unhandled error occurred: %1').arg(str(e))
+                                 "An unhandled error occurred: {}").format(str(e))
 
         self.searchButton.setEnabled(False)
         t = PuddleThread(search, self)
@@ -919,11 +918,11 @@ class MainWin(QWidget):
             except SubmissionError as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 'An error occured: %1').arg(str(e))
+                                 "An error occured: {}").format(str(e))
             except Exception as e:
                 traceback.print_exc()
                 return translate("Tag Sources",
-                                 'An unhandled error occurred: %1').arg(str(e))
+                                 "An unhandled error occurred: {}").format(str(e))
 
             return translate("Tag Sources", "Submission completed.")
 

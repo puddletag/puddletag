@@ -17,7 +17,7 @@ from ..util import pprint_tag, to_string
 CHECKEDFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable
 NORMALFLAG = Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
-RETRIEVED_ALBUMS = translate("Tag Sources", 'Retrieved Albums (sorted by %s)')
+RETRIEVED_ALBUMS = translate("Tag Sources", "Retrieved Albums (sorted by {})")
 
 default_albumpattern = '%artist% - %album% $if(%__numtracks%, ' \
                        '[%__numtracks%], "")'
@@ -372,12 +372,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An error occured: {}").format(str(e)))
                 return
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An unhandled error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An unhandled error occured: {}").format(str(e)))
                 return
 
         item.retrieving = True
@@ -422,7 +422,7 @@ class TreeModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if orientation == Qt.Orientation.Horizontal and \
                 role == Qt.ItemDataRole.DisplayRole:
-            ret = RETRIEVED_ALBUMS % ' / '.join(self.sortOrder)
+            ret = RETRIEVED_ALBUMS.format(' / '.join(self.sortOrder))
 
             return ret
 
@@ -468,12 +468,12 @@ class TreeModel(QtCore.QAbstractItemModel):
                 return self.tagsource.retrieve(item.itemData)
             except RetrievalError as e:
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An error occured: {}").format(str(e)))
                 return None
             except Exception as e:
                 traceback.print_exc()
                 self.statusChanged.emit(
-                    translate("Tag Sources", 'An unhandled error occured: %1').arg(str(e)))
+                    translate("Tag Sources", "An unhandled error occured: {}").format(str(e)))
                 return None
 
         def finished(val):

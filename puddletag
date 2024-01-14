@@ -278,10 +278,11 @@ def print_info():
     """Print program info."""
     from puddlestuff import version_string, changeset
     if changeset:
-        print(translate('Defaults', 'puddletag Version: %1, Changeset: %2').arg(
-            version_string).arg(changeset))
+        print(translate('Defaults', "puddletag Version: {}, Changeset: {}")
+              .format(version_string, changeset))
     else:
-        print(translate('Defaults', 'puddletag Version: %s' % version_string))
+        print(translate('Defaults', 'puddletag Version: {}'
+              .format(version_string)))
 
 
 def splashscreen():

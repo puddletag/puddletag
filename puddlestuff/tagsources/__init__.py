@@ -104,7 +104,7 @@ def parse_searchstring(text):
 
 
 def retrieve_cover(url):
-    write_log(translate("Tag Sources", 'Retrieving cover: %s') % url)
+    write_log(translate('Tag Sources', "Retrieving cover: {}").format(url))
     cover = urlopen(url)
     return {'__image': [{'data': cover}]}
 
@@ -197,7 +197,7 @@ def urlopen(url, mask=True, code=False):
         except AttributeError:
             msg = e.args[1] if len(e.args) > 1 else e.args[0]
             raise RetrievalError(
-                translate("Defaults", "Connection Error: %s ") % msg)
+                translate('Defaults', "Connection Error: {}").formnat(msg))
     except socket.error as e:
         msg = '%s (%s)' % (e.strerror, e.code)
         raise RetrievalError(msg)

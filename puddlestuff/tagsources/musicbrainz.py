@@ -373,7 +373,7 @@ def retrieve_cover_links(album_id, extra=None):
         url = "http://coverartarchive.org/release/" + album_id
     else:
         url = "http://coverartarchive.org/release/%s/%s" % (album_id, extra)
-    write_log(translate("MusicBrainz", "Retrieving cover: %s") % url)
+    write_log(translate('MusicBrainz', "Retrieving cover: {}").format(url))
     try:
         data, code = urlopen(url, code=True)
     except RetrievalError as e:
@@ -415,7 +415,7 @@ def retrieve_covers(cover_links, size=LARGE):
         else:
             image_url = cover['image']
 
-        write_log(translate("MusicBrainz", "Retrieving image %s") % image_url)
+        write_log(translate('MusicBrainz', "Retrieving image {}").format(image_url))
         image_data = urlopen(image_url)
 
         ret.append({'desc': desc, 'mime': get_mime(image_data),
@@ -524,18 +524,20 @@ class MusicBrainz(object):
                                    solr_escape(artist_id), limit=100, own=True)
                 return parse_album_search(urlopen(url))
             except RetrievalError as e:
-                msg = translate("MusicBrainz",
-                                '<b>Error:</b> While retrieving %1: %2')
-                write_log(msg.arg(artist_id).arg(escape(e)))
+                msg = translate('MusicBrainz',
+                                "<b>Error:</b> While retrieving {}: {}"
+                                ).format(artist_id, escape(e))
+                write_log(msg)
                 raise
         elif s.startswith(':b'):
             r_id = s[len(':b'):].strip()
             try:
                 return [self.retrieve(r_id)]
             except RetrievalError as e:
-                msg = translate("MusicBrainz",
-                                "<b>Error:</b> While retrieving Album ID %1 (%2)")
-                write_log(msg.arg(r_id).arg(escape(e)))
+                msg = translate('MusicBrainz',
+                                "<b>Error:</b> While retrieving Album ID {} ({})"
+                                ).format(r_id, escape(e))
+                write_log(msg)
                 raise
         else:
             try:
@@ -573,13 +575,14 @@ class MusicBrainz(object):
             album_id = find_id(chain(*list(artists.values())), "mbrainz_album_id")
             if album_id:
                 try:
-                    write_log(translate("MusicBrainz",
-                                        "Found album id %s in tracks. Retrieving") % album_id)
+                    write_log(translate('MusicBrainz',
+                                        "Found album id {} in tracks. Retrieving").format(album_id))
                     return [retrieve_album(album_id)]
                 except RetrievalError as e:
-                    msg = translate("MusicBrainz",
-                                    "<b>Error:</b> While retrieving Album ID %1 (%2)")
-                    write_log(msg.arg(album_id).arg(escape(e)))
+                    msg = translate('MusicBrainz',
+                                    "<b>Error:</b> While retrieving Album ID {} ({})"
+                                    ).format(album_id, escape(e))
+                    write_log(msg)
 
         try:
             xml = urlopen(search_album(album, artist, limit))
@@ -617,8 +620,8 @@ class MusicBrainz(object):
                 import traceback
                 traceback.print_exc()
                 print()
-                write_log(translate("MusicBrainz",
-                                    "Error retrieving image: %s") % str(e))
+                write_log(translate('MusicBrainz',
+                                    "Error retrieving image: {}").format(str(e)))
                 return []
         else:
             return retrieve_covers(album_id, self.__image_size)

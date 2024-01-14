@@ -128,8 +128,8 @@ class LibChooseDialog(QDialog):
                 if not hasattr(lib, 'InitWidget'):
                     raise Exception(translate('MusicLib', 'Invalid library'))
             except Exception as detail:
-                msg = translate('MusicLib', 'Error loading %1: %2\n')
-                msg = msg.arg(libname).arg(str(detail))
+                msg = translate('MusicLib', "Error loading {}: {}\n").format(
+                    libname, str(detail))
                 sys.stderr.write(msg)
                 continue
 
@@ -209,8 +209,8 @@ class LibChooseDialog(QDialog):
         if isinstance(library, str):
             error_msg = library
             msg = translate('MusicLib',
-                            'An error occured while loading the %1 library: <b>%2</b>')
-            msg = msg.arg(self.currentlib['name']).arg(error_msg)
+                            "An error occured while loading the {} library: <b>{}</b>"
+                            ).format(self.currentlib['name'], error_msg)
 
             QMessageBox.critical(self, translate('Defaults', "Error"), msg)
         else:

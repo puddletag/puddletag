@@ -182,20 +182,20 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         r_id = str(info)
         info = {}
         write_log(
-            translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
+            translate('Discogs', "Retrieving using Release ID: {}").format(r_id))
         rls_type = 'release'
     elif isinstance(info, str):
         r_id = info
         info = {}
         write_log(
-            translate("Discogs", 'Retrieving using Release ID: %s') % r_id)
+            translate('Discogs', "Retrieving using Release ID: {}").format(r_id))
         rls_type = 'release'
     else:
         if rls_type is None and '#release_type' in info:
             rls_type = info['#release_type']
         r_id = info['#r_id']
         write_log(
-            translate("Discogs", 'Retrieving album %s') % (info['album']))
+            translate('Discogs', "Retrieving album {}").format(info['album']))
 
     site_url = SITE_MASTER_URL if rls_type == MASTER else SITE_RELEASE_URL
     site_url += r_id
@@ -213,7 +213,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
         for large, small in info['#cover-url']:
             if image == LARGEIMAGE and large:
                 write_log(
-                    translate("Discogs", 'Retrieving cover: %s') % large)
+                    translate('Discogs', "Retrieving cover: {}").format(large))
                 try:
                     data.append({DATA: urlopen(large)})
                 except RetrievalError as e:
@@ -221,7 +221,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
                         'Discogs', 'Error retrieving image:') + str(e))
             else:
                 write_log(
-                    translate("Discogs", 'Retrieving cover: %s') % small)
+                    translate('Discogs', "Retrieving cover: {}").format(small))
                 try:
                     data.append({DATA: urlopen(small)})
                 except RetrievalError as e:
@@ -232,7 +232,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
     try:
         info['#extrainfo'] = translate(
-            'Discogs', '%s at Discogs.com') % info['album'], site_url
+            'Discogs', "{} at Discogs.com").format(info['album']), site_url
     except KeyError:
         pass
     return info, ret[1]
@@ -324,7 +324,7 @@ class Discogs(object):
                     translate("Discogs", 'No Discogs ID found in tracks.'))
             else:
                 write_log(
-                    translate("Discogs", 'Found Discogs ID: %s') % album_id)
+                    translate('Discogs', "Found Discogs ID: {}").format(album_id))
                 return [self.retrieve(album_id)]
 
         return []

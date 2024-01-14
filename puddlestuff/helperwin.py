@@ -313,12 +313,13 @@ class ImportTextFile(QDialog):
             f = open(filename, 'r')
         except (IOError, OSError) as detail:
             errormsg = translate('Text File -> Tag',
-                                 "The file <b>%1</b> couldn't be loaded.<br /> "
-                                 "Do you want to choose another?")
+                                 "The file <b>{}</b> couldn't be loaded.<br /> "
+                                 "Do you want to choose another?"
+                                 ).format(filename)
 
             ret = QMessageBox.question(self,
                                        translate('Text File -> Tag', "Error"),
-                                       translate('Text File -> Tag', errormsg.arg(filename)))
+                                       errormsg)
 
             if ret == QMessageBox.StandardButton.Yes:
                 return self.openFile()

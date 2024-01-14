@@ -97,12 +97,13 @@ class AboutPuddletag(QDialog):
         )
 
         if changeset:
-            version = translate("About", '<h2>puddletag %1</h2>Changeset %2')
-            version = version.arg(version_string)
-            version = version.arg(changeset)
+            version = translate('About',
+                                "<h2>puddletag {}</h2>Changeset {}"
+                                ).format(version_string, changeset)
         else:
-            version = translate("About", '<h2>puddletag %1</h2>')
-            version = version.arg(version_string)
+            version = translate('About',
+                                "<h2>puddletag {}</h2>"
+                                ).format(version_string)
         label = QLabel(version)
 
         tab = QTabWidget()

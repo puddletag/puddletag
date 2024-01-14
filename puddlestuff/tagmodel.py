@@ -712,7 +712,7 @@ class TagModel(QAbstractTableModel):
                     except KeyError:
                         real = BLANK
                     if real != val:
-                        tooltip = str(translate("Table", 'Preview: %1\nReal: %2').arg(val).arg(self._toString(real)))
+                        tooltip = translate('Table', "Preview: {}\nReal: {}").format(val, self._toString(real))
                     else:
                         tooltip = val
                 else:
@@ -1593,9 +1593,9 @@ class TagTable(QTableView):
                     deltag(row)
                     yield None
                 except (OSError, IOError) as e:
-                    msg = translate('Table', "An error occurred while "
-                                             "deleting the tag of %1: <b>%2</b>")
-                    msg = msg.arg(e.filename).arg(e.strerror)
+                    msg = translate('Table',
+                                    "An error occurred while deleting the tag of {}: <b>{}</b>"
+                                    ).format(e.filename, e.strerror)
                     yield msg, len(self.selectedRows)
                 except NotImplementedError as e:
                     f = self.model().taginfo[row]
@@ -1603,8 +1603,8 @@ class TagTable(QTableView):
                     ext = f[EXTENSION]
                     rowlen = len(self.selectedRows)
                     yield translate("Table", "There was an error deleting the "
-                                             "tag of %1: <b>Tag deletion isn't supported"
-                                             "for %2 files.</b>").arg(filename).arg(ext), rowlen
+                                             "tag of {}: <b>Tag deletion isn't supported "
+                                             "for {} files.</b>").format(filename, ext), rowlen
 
         def fin():
             self.selectionChanged()
@@ -1876,13 +1876,11 @@ class TagTable(QTableView):
 
         tags = []
         if len(dirs) == 1:
-            reading_dir = translate("Defaults",
-                                    'Reading Directory: %1').arg(dirs[0])
+            reading_dir = translate('Defaults', "Reading Directory: {}").format(dirs[0])
         elif dirs:
-            reading_dir = translate("Defaults",
-                                    'Reading Directory: %1 + others').arg(dirs[0])
+            reading_dir = translate('Defaults', "Reading Directory: {} + others").format(dirs[0])
         else:
-            reading_dir = translate('Defaults', 'Reading Dir')
+            reading_dir = translate('Defaults', "Reading Dir")
 
         def load_dir():
             if files:
@@ -2034,15 +2032,17 @@ class TagTable(QTableView):
                 Popen(li)
             except (OSError) as detail:
                 if detail.errno != 2:
-                    QMessageBox.critical(self, translate("Defaults", "Error"),
-                                         translate("Table",
-                                                   "An error occurred while trying to play the selected files: <b>%1</b> "
-                                                   "<br />Does the music player you defined (<b>%2</b>)"
-                                                   " exist?").arg(detail.strerror).arg(" ".join(self.playcommand)))
+                    QMessageBox.critical(self, translate('Defaults', "Error"),
+                                         translate('Table',
+                                                   "An error occurred while trying to play the selected files: "
+                                                   "<b>{}</b><br />Does the music player you defined (<b>{}</b>) "
+                                                   "exist?").format(detail.strerror, " ".join(self.playcommand)))
                 else:
-                    QMessageBox.critical(self, translate("Defaults", "Error"),
-                                         translate("Table", "It wasn't possible to play the selected files, because the music player you defined (<b>%1</b>) does not exist.").arg(
-                                             " ".join(self.playcommand)))
+                    QMessageBox.critical(self, translate('Defaults', "Error"),
+                                         translate('Table',
+                                                   "It wasn't possible to play the selected files, because the music "
+                                                   "player you defined (<b>{}</b>) does not exist."
+                                                   ).format(" ".join(self.playcommand)))
 
     def previewMode(self, value):
         if not value:

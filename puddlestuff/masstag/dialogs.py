@@ -37,12 +37,12 @@ mutex = QMutex()
 
 def search_error(error, profile):
     set_status(translate('Masstagging',
-                         'An error occured during the search: <b>%s</b>') % str(error))
+                         "An error occured during the search: <b>{}</b>").format(str(error)))
 
 
 def retrieval_error(error, profile):
     set_status(translate('Masstagging',
-                         'An error occured during album retrieval: <b>%s</b>') % str(error))
+                         "An error occured during album retrieval: <b>{}</b>").format(str(error)))
 
 
 class MassTagEdit(QDialog):
@@ -631,16 +631,16 @@ class MassTagWindow(QWidget):
                                  mtp.file_pattern)
 
         search_msg = translate('Masstagging',
-                               'An error occured during the search: <b>%s</b>')
+                               "An error occured during the search: <b>{}</b>")
 
         retrieve_msg = translate('Masstagging',
-                                 'An error occured during album retrieval: <b>%s</b>')
+                                 "An error occured during album retrieval: <b>{}</b>")
 
         def search_error(error, mtp):
-            thread.statusChanged.emit(search_msg % str(error))
+            thread.statusChanged.emit(search_msg.format(str(error)))
 
         def retrieval_error(error, mtp):
-            thread.statusChanged.emit(retrieve_msg % str(error))
+            thread.statusChanged.emit(retrieve_msg.format(str(error)))
 
         def run_masstag():
             replace_fields = []
