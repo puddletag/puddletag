@@ -14,7 +14,7 @@ from pyparsing import (Word, alphas, Literal, OneOrMore, alphanums,
                        Optional)
 
 from . import audioinfo
-from .constants import ACTIONDIR, CHECKBOX, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
+from .constants import ACTIONDIR, CHECKBOX, SEPARATOR, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
 from .funcprint import pprint
 from .puddleobjects import PuddleConfig, safe_name
 from .util import PluginFunction, translate, to_list, to_string
@@ -613,6 +613,8 @@ def apply_actions(actions, audio, state=None, ovr_fields=None):
             if temp is None:
                 continue
             if isinstance(temp, str):
+                if SEPARATOR in temp:
+                    temp = temp.split(SEPARATOR)
                 ret[field] = temp
             elif hasattr(temp, 'items'):
                 ret.update(temp)

@@ -16,7 +16,7 @@ from .. import musiclib, about as about
 from ..util import split_by_tag, translate, to_string
 from .. import functions
 from .tagtools import *
-from ..constants import HOMEDIR
+from ..constants import HOMEDIR, SEPARATOR
 
 path = os.path
 
@@ -455,6 +455,8 @@ def run_func(selectedfiles, func):
             for field in fields:
                 val = function(rowtags.get(field, ''), rowtags, state, r_tags=f)
                 if val is not None:
+                    if isinstance(val, str) and SEPARATOR in val:
+                        val = val.split(SEPARATOR)
                     if hasattr(val, 'items'):
                         ret.update(val)
                     else:
