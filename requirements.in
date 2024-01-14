@@ -8,6 +8,4 @@ unidecode==1.3.8
 # extra / tag sources
 lxml==5.1.0
 pyacoustid
-audioread
 Levenshtein
-chromaprint

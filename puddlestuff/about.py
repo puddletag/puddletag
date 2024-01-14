@@ -63,9 +63,7 @@ def versions():
         'Unidecode': get_module_version('unidecode'),
         'lxml': get_module_version('lxml'),
         'pyacoustid': get_module_version('pyacoustid'),
-        'audioread': get_module_version('audioread'),
         'Levenshtein': get_module_version('Levenshtein'),
-        'Chromaprint': get_module_version('chromaprint'),
     }
 
 
