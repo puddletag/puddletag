@@ -7,7 +7,7 @@ from PyQt5.QtCore import QMutex, QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QHBoxLayout, QLabel, \
     QLineEdit, QPushButton, QSpinBox, QTextEdit, QVBoxLayout, QWidget
 
-from .. import masstag
+from .. import masstag as masstag_module
 from ..constants import RIGHTDOCK
 from ..masstag import (NO_MATCH_OPTIONS, fields_from_text, match_files, masstag, merge_tsp_tracks,
                        split_files, MassTagFlag, MassTagProfile, TagSourceProfile)
@@ -30,7 +30,8 @@ def set_status(msg):
     QApplication.processEvents()
 
 
-masstag.set_status = set_status
+# monkey-patch the module to use the gui output
+masstag_module.set_status = set_status
 
 mutex = QMutex()
 
