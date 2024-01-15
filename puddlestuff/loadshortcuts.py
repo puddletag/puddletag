@@ -8,7 +8,7 @@ from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig, get_icon, open_resourcefile
 from .translations import translate
 
-__version__ = 31
+__version__ = 32
 
 files = [open_resourcefile(filename)
          for filename in [':/caseconversion.action', ':/standard.action']]
