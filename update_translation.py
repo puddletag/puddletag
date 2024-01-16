@@ -66,7 +66,7 @@ def parse_shortcuts():
     f = tempfile.NamedTemporaryFile('rb+')
     fn = f.name
 
-    loadshortcuts.check_file(fn, ':/shortcuts')
+    loadshortcuts.check_file(fn, 'data:./shortcuts')
     cparser = PuddleConfig(fn)
 
     action_strings = []
@@ -81,7 +81,7 @@ def parse_shortcuts():
     f.close()
     menus = tempfile.NamedTemporaryFile('rb+')
     fn = menus.name
-    loadshortcuts.check_file(fn, ':/menus')
+    loadshortcuts.check_file(fn, 'data:./menus')
     cparser = PuddleConfig(fn)
 
     action_strings.extend(list(map(tr, cparser.data['menu'])))

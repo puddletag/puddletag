@@ -11,7 +11,7 @@ from .translations import translate
 __version__ = 32
 
 files = [open_resourcefile(filename)
-         for filename in [':/caseconversion.action', ':/standard.action']]
+         for filename in ['data:./caseconversion.action', 'data:./standard.action']]
 
 SEPARATOR = 'separator'
 ALWAYS = 'always'
@@ -39,8 +39,8 @@ def check_file(path: str, resource: str) -> None:
 
 
 def create_files():
-    check_file(menu_path, ':/menus')
-    check_file(shortcut_path, ':/shortcuts')
+    check_file(menu_path, 'data:./menus')
+    check_file(shortcut_path, 'data:./shortcuts')
 
 
 def get_menus(section, filepath=None):

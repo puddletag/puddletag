@@ -784,7 +784,7 @@ def load_actions():
 
     files = glob(os.path.join(ACTIONDIR, '*.action'))
     if firstrun and not files:
-        filenames = [':/caseconversion.action', ':/standard.action']
+        filenames = ['data:./caseconversion.action', 'data:./standard.action']
         files = list(map(open_resourcefile, filenames))
         set_value('firstrun', False)
 

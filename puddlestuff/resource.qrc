@@ -1,11 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource>
-        <file alias="caseconversion.action">data/caseconversion.action</file>
-        <file alias="standard.action">data/standard.action</file>
         <file alias="puddlelogo.png">data/puddlelogo.png</file>
-        <file alias="shortcuts">data/shortcuts</file>
-        <file alias="menus">data/menus</file>
         <file alias="appicon.svg">data/appicon.svg</file>
 
         <!-- standard icons -->
