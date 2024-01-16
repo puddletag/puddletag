@@ -459,9 +459,9 @@ def get_languages(dirs=None):
     if dirs is not None:
         for d in dirs:
             files.extend(glob(os.path.join(d, "*.qm")))
-    d = QDir(':/')
-    if d.cd('translations'):
-        files.extend([os.path.join(':/translations', t) for t in
+    d = QDir('translations:./')
+    if not d.isEmpty():
+        files.extend([os.path.join('translations:./', t) for t in
                       map(str, d.entryList(['*.qm']))])
 
     ret = {}
