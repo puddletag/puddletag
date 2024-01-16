@@ -451,7 +451,7 @@ def get_icon(name: Optional[str] = None, fallback: Optional[str] = None) -> QIco
         return QIcon()
 
     fallback = fallback or f'{name}.png'
-    return QIcon.fromTheme(name, QIcon(f':/{fallback}'))
+    return QIcon.fromTheme(name, QIcon(f'icons:{fallback}'))
 
 
 def get_languages(dirs=None):

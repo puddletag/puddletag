@@ -91,7 +91,7 @@ class AboutPuddletag(QDialog):
         QDialog.__init__(self, parent)
         self.setWindowTitle(translate("About", 'About puddletag'))
         icon = QLabel()
-        icon.setPixmap(QPixmap(':/appicon.svg').scaled(48, 48))
+        icon.setPixmap(QPixmap('icons:appicon.svg').scaled(48, 48))
         lib_versions = '<br />'.join(
             ['%s: %s' % (lib, version) for (lib, version) in versions().items()]
         )
