@@ -290,7 +290,7 @@ def splashscreen():
     from PyQt5.QtWidgets import QSplashScreen
     from puddlestuff import version_string
 
-    pixmap = QPixmap(':/puddlelogo.png')
+    pixmap = QPixmap('icons:puddlelogo.png')
 
     # Add version
     painter = QPainter(pixmap)

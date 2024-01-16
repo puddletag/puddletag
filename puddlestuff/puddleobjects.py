@@ -451,7 +451,7 @@ def get_icon(name: Optional[str] = None, fallback: Optional[str] = None) -> QIco
         return QIcon()
 
     fallback = fallback or f'{name}.png'
-    return QIcon.fromTheme(name, QIcon(f':/{fallback}'))
+    return QIcon.fromTheme(name, QIcon(f'icons:{fallback}'))
 
 
 def get_languages(dirs=None):
@@ -459,9 +459,9 @@ def get_languages(dirs=None):
     if dirs is not None:
         for d in dirs:
             files.extend(glob(os.path.join(d, "*.qm")))
-    d = QDir(':/')
-    if d.cd('translations'):
-        files.extend([os.path.join(':/translations', t) for t in
+    d = QDir('translations:./')
+    if not d.isEmpty():
+        files.extend([os.path.join('translations:./', t) for t in
                       map(str, d.entryList(['*.qm']))])
 
     ret = {}
@@ -784,7 +784,7 @@ def load_actions():
 
     files = glob(os.path.join(ACTIONDIR, '*.action'))
     if firstrun and not files:
-        filenames = [':/caseconversion.action', ':/standard.action']
+        filenames = ['data:./caseconversion.action', 'data:./standard.action']
         files = list(map(open_resourcefile, filenames))
         set_value('firstrun', False)
 

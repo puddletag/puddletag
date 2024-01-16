@@ -900,12 +900,12 @@ class ActionWindow(QDialog):
 
         files = glob(os.path.join(ACTIONDIR, '*.action'))
         if firstrun and not files:
-            filenames = [':/caseconversion.action', ':/standard.action']
+            filenames = ['data:./caseconversion.action', 'data:./standard.action']
             files = list(map(open_resourcefile, filenames))
             set_value('firstrun', False)
 
             for fileobj, filename in zip(files, filenames):
-                filename = os.path.join(ACTIONDIR, filename[2:])
+                filename = os.path.join(ACTIONDIR, filename.rsplit('/', maxsplit=1)[1])
                 f = open(filename, 'w')
                 f.write(fileobj.read())
                 f.close()
