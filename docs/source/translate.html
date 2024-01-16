@@ -80,11 +80,10 @@
 
   <div class="section" id="translating">
 <h1>Translating<a class="headerlink" href="#translating" title="Permalink to this headline">¶</a></h1>
-<p>In order to translate puddletag you need Git, Qt Linguist, the PyQt4 translation tools (specifically pylupdate4) and the ability to copy/paste into the console.
-n
-In Ubuntu and Debian-based distros, Git is available in ‘git’ package, Qt Linguist in qt-dev-tools and pylupdate4 in pyqt-dev-tools.</p>
+<p>In order to translate puddletag you need Git, Qt Linguist, the PyQt5 translation tools (specifically pylupdate5) and the ability to copy/paste into the console.</p>
+<p>In Ubuntu and Debian-based distros, Git is available in ‘git’ package, Qt Linguist in qttools5-dev-tools and pylupdate5 in pyqt5-dev-tools.</p>
 <p>After installing the required tools, you’ll need to retrieve the latest development release. Open up a terminal and paste the following:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/keithgg/puddletag.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/puddletag/puddletag.git
 </pre></div>
 </div>
 <p>The dev version will downloaded into the puddletag directory. Change into the dev directory with:</p>
@@ -102,7 +101,7 @@ In Ubuntu and Debian-based distros, Git is available in ‘git’ package, Qt Li
 </pre></div>
 </div>
 </div>
-<p>A translation file will be created in <strong>translations/puddletag_your_locale.ts</strong>. Open this file in <strong>Qt Linguist</strong> and translate to your heart’s content.</p>
+<p>A translation file will be created in <strong>puddlestuff/translations/puddletag_your_locale.ts</strong>. Open this file in <strong>Qt Linguist</strong> and translate to your heart’s content.</p>
 <p>To test your translation, generate a .qm file using <strong>File-&gt;Release</strong> in Qt Linguist. puddletag_your_locale.qm will be generated in the directory the .ts file you opened is stored.</p>
 <p>Copy the .qm to <strong>~/.config/puddletag/translations</strong> (you’ll need to create the translations dir). Next time you start puddletag you’ll have the option to switch to the language in <strong>Edit-&gt;Preferences</strong>.</p>
 <p>Otherwise just run:</p>
