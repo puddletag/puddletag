@@ -563,8 +563,10 @@ def stringtags(tag, leaveNone=False):
             newtag[i] = v
         elif isinstance(v, (int, float)):
             newtag[i] = str(v)
-        elif isinstance(i, str) and not isinstance(v, str):
+        elif isinstance(v, list) and isinstance(v[0], str):
             newtag[i] = r'\\'.join(v)
+        elif isinstance(i, str) and not isinstance(v, str):
+            newtag[i] = v[0]
         else:
             newtag[i] = v
     return newtag
