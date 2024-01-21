@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QAction, Q
 
 from . import audioinfo
 from .audioinfo import (PATH, FILENAME, DIRPATH, FILETAGS, READONLY, INFOTAGS, DIRNAME,
-                        EXTENSION, CaselessDict, encode_fn, decode_fn)
+                        EXTENSION, FILENAME_NO_EXT, PARENT_DIR, CaselessDict, encode_fn, decode_fn, get_filename_tags)
 from .puddleobjects import (unique, partial, natural_sort_key, gettag,
                             HeaderSetting, getfiles, progress, PuddleConfig, singleerror, winsettings, issubfolder,
                             fnmatch)
@@ -263,30 +263,45 @@ def model_tag(model, base=audioinfo.AbstractTag):
                 if key not in READONLY:
                     if not value and key in self.preview:
                         del (self.preview[key])
-                        return
-                    self.preview[key] = value
+                    else:
+                        self.preview[key] = value
+                    if key in FILETAGS:
+                        self.update_file_fields_in_preview(key)
             else:
                 super(ModelTag, self).__setitem__(key, value)
 
-        def remove_from_preview(self, key):
-            if key == EXTENSION:
-                del (self.preview[key])
-            elif key == FILENAME:
-                for k in [FILENAME, EXTENSION, PATH]:
-                    if k in self.preview:
-                        del (self.preview[k])
-            elif key in FILETAGS:
-                for k in FILETAGS:
-                    if k in self.preview:
-                        del (self.preview[k])
+        def update_file_fields_in_preview(self, changed_key):
+            """ Reimplements the setter-logic of the matching properties in MockTag, but for the preview."""
+            if not changed_key or changed_key == PATH:
+                filepath = self[PATH]
+            elif changed_key in (DIRPATH, FILENAME):
+                filepath = path.join(self[DIRPATH], self[FILENAME])
+            elif changed_key in (FILENAME_NO_EXT, EXTENSION):
+                filepath = path.join(self[DIRPATH], self[FILENAME_NO_EXT])
+                if self[EXTENSION]:
+                    filepath += os.path.extsep + self[EXTENSION]
+            elif changed_key == DIRNAME:
+                filepath = path.join(path.dirname(self[DIRPATH]), self[DIRNAME], self[FILENAME])
             else:
-                del (self.preview[key])
+                return
 
-        def update(self, *args, **kwargs):
+            # clear all file fields from the preview
+            for k in FILETAGS:
+                if k in self.preview:
+                    del self.preview[k]
+            # and then write only those that actually are different
+            for k, v in get_filename_tags(filepath).items():
+                if self[k] != v:
+                    self.preview[k] = v
+
+        def update(self, dictionary=None):
+            if not dictionary:
+                return
             if model.previewMode:
-                self.preview.update(*args, **kwargs)
+                for k, v in dictionary.items():
+                    self[k] = v
             else:
-                super(ModelTag, self).update(*args, **kwargs)
+                super().update(dictionary)
 
     return ModelTag
 
