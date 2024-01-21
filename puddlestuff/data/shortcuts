@@ -1,6 +1,6 @@
 {
   "info": {
-    "version": "32"
+    "version": "33"
   },
   "shortcut13": {
     "name": "&Text File->Tag", 
@@ -14,6 +14,7 @@
     "command": "format", 
     "control": "mainwin", 
     "enabled": "filesselected", 
+    "tooltip": "Format the selected field(s) using the pattern.",
     "status": "formatstatus"
   }, 
   "shortcut52": {
@@ -157,7 +158,7 @@
     "control": "mainwin", 
     "icon_name": "puddletag.filetotag",
     "enabled": "filesselected", 
-    "tooltip": "Convert filename to tag using the pattern.", 
+    "tooltip": "Update the selected files from their filename using the pattern.",
     "status": "ftstatus"
   }, 
   "shortcut3": {
@@ -327,6 +328,7 @@
     "command": "tag_to_file", 
     "shortcut": "Ctrl+F", 
     "icon_name": "puddletag.tagtofile",
+    "tooltip": "Rename the selected files using the pattern.",
     "status": "tfstatus"
   }, 
   "shortcut26": {
