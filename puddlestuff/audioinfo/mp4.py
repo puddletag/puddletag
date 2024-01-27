@@ -43,7 +43,17 @@ TAGS = {
     'cpil': 'partofcompilation',
     'pgap': 'partofgaplessalbum',
     'pcst': 'podcast',
-    'tmpo': 'bpm'}
+    'tmpo': 'bpm',
+    'akID': 'itunesaccounttype',
+    'apID': 'itunesaccount',
+    'atID': 'itunesartistid',
+    'cmID': 'itunescomposerid',
+    'cnID': 'itunescatalogid',
+    'geID': 'itunesgenreid',
+    'plID': 'itunesalbumid',
+    'prID': 'itunesproductid',
+    'sfID': 'itunesstorecountry',
+}
 
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
 
@@ -154,7 +164,17 @@ FUNCS = {
     'disc': (getint, setint),
     'totaltracks': (getint, setint),
     'totaldiscs': (getint, setint),
-    'bpm': (getint, setint)}
+    'bpm': (getint, setint),
+    'itunesaccounttype': (getint, setint),
+    'itunesaccount': (gettext, settext),
+    'itunesartistid': (getint, setint),
+    'itunescomposerid': (gettext, settext),
+    'itunescatalogid': (getint, setint),
+    'itunesgenreid': (getint, setint),
+    'itunesalbumid': (getint, setint),
+    'itunesproductid': (gettext, settext),
+    'itunesstorecountry': (getint, setint),
+}
 
 
 def bin_to_pic(cover):
