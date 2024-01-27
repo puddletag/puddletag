@@ -27,12 +27,12 @@ IMAGETYPE = 'imagetype'
 DEFAULT_COVER = 3
 
 FIELDS = [
-    'album', 'albumsortorder', 'arranger', 'artist', 'audiodelay',
+    'album', 'albumartistsortorder', 'albumsortorder', 'arranger', 'artist', 'audiodelay',
     'audiolength', 'audiosize', 'author', 'bpm', 'comment', 'composer',
     'conductor', 'copyright', 'date', 'discnumber', 'encodedby',
     'encodingsettings', 'encodingtime', 'filename', 'fileowner', 'filetype',
     'genre', 'grouping', 'initialkey', 'involvedpeople', 'isrc',
-    'itunesalbumsortorder', 'itunescompilationflag', 'itunescomposersortorder',
+    'itunescompilationflag', 'itunescomposersortorder',
     'language', 'lyricist', 'mediatype', 'mood', 'musiciancredits',
     'organization', 'originalalbum', 'originalartist', 'originalreleasetime',
     'originalyear', 'performersortorder', 'performer', 'popularimeter',
@@ -74,11 +74,11 @@ READONLY = (PARENT_DIR, IMAGE_MIMETYPE, IMAGE_TYPE_FIELD, NUM_IMAGES,
 
 INFOTAGS = FILETAGS + list(READONLY)
 
-TEXT_FIELDS = ['album', 'albumartist', 'albumsortorder', 'arranger',
+TEXT_FIELDS = ['album', 'albumartist', 'albumartistsortorder', 'albumsortorder', 'arranger',
                'artist', 'audiodelay', 'audiolength', 'audiosize', 'author',
                'bpm', 'composer', 'conductor', 'copyright', 'date', 'discnumber',
                'encodedby', 'encodingsettings', 'filename', 'fileowner',
-               'filetype', 'grouping', 'initialkey', 'isrc', 'itunesalbumsortorder',
+               'filetype', 'grouping', 'initialkey', 'isrc',
                'itunescompilationflag', 'itunescomposersortorder', 'language',
                'lyricist', 'mediatype', 'mood', 'organization', 'originalalbum',
                'originalartist', 'originalyear', 'peformersortorder', 'producednotice',
