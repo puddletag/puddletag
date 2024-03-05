@@ -2,7 +2,7 @@
 
 from os import path
 
-version_string = '2.2.0'
+version_string = '2.3.0'
 
 # This is only used by the github workflow
 _buildid = None
