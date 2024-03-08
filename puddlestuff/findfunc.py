@@ -8,7 +8,7 @@ from copy import deepcopy
 from decimal import Decimal
 from functools import partial
 
-from pyparsing import (CharsNotIn, Combine, Literal, OneOrMore, Optional,
+from pyparsing import (CharsNotIn, Combine, Literal, OneOrMore, Optional, ParserElement,
                        QuotedString, Word, alphanums, alphas, delimited_list, nested_expr,
                        nums, original_text_for)
 
@@ -28,6 +28,9 @@ FIELDS = 'fields'
 FUNC_MODULE = 'module'
 ARGS = 'arguments'
 KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
+
+
+ParserElement.enable_packrat()
 
 
 class ParseError(Exception):
@@ -215,7 +218,6 @@ def func_tokens(dictionary, parse_action):
     func_tok = func_ident + original_text_for(nested_expr())('args')
     func_tok.leave_whitespace()
     func_tok.set_parse_action(parse_action)
-    func_tok.enable_packrat()
 
     rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
 
