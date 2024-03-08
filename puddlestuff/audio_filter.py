@@ -2,7 +2,9 @@
 import logging
 import re
 
-from pyparsing import *
+from pyparsing import (CaselessLiteral, Combine, OpAssoc,
+                       QuotedString, Word, alphanums, infix_notation)
+
 
 from . import findfunc, audioinfo
 from .puddleobjects import gettaglist
@@ -163,31 +165,31 @@ class Matches(BoolOperand):
 
 
 bool_exprs = [
-    (CaselessLiteral("missing"), 1, opAssoc.RIGHT, Missing),
-    (CaselessLiteral("present"), 1, opAssoc.RIGHT, Present),
-    (CaselessLiteral("greater"), 2, opAssoc.LEFT, Greater),
-    (CaselessLiteral("less"), 2, opAssoc.LEFT, Less),
-    (CaselessLiteral("equal"), 2, opAssoc.LEFT, Equal),
-    (CaselessLiteral("has"), 2, opAssoc.LEFT, Has),
-    (CaselessLiteral("matches"), 2, opAssoc.LEFT, Matches),
-    (CaselessLiteral("is"), 2, opAssoc.LEFT, BoolIs),
-    (CaselessLiteral("and"), 2, opAssoc.LEFT, BoolAnd),
-    (CaselessLiteral("or"), 2, opAssoc.LEFT, BoolOr),
-    (CaselessLiteral("not"), 1, opAssoc.RIGHT, BoolNot),
+    (CaselessLiteral("missing"), 1, OpAssoc.RIGHT, Missing),
+    (CaselessLiteral("present"), 1, OpAssoc.RIGHT, Present),
+    (CaselessLiteral("greater"), 2, OpAssoc.LEFT,  Greater),
+    (CaselessLiteral("less"),    2, OpAssoc.LEFT,  Less),
+    (CaselessLiteral("equal"),   2, OpAssoc.LEFT,  Equal),
+    (CaselessLiteral("has"),     2, OpAssoc.LEFT,  Has),
+    (CaselessLiteral("matches"), 2, OpAssoc.LEFT,  Matches),
+    (CaselessLiteral("is"),      2, OpAssoc.LEFT,  BoolIs),
+    (CaselessLiteral("and"),     2, OpAssoc.LEFT,  BoolAnd),
+    (CaselessLiteral("or"),      2, OpAssoc.LEFT,  BoolOr),
+    (CaselessLiteral("not"),     1, OpAssoc.RIGHT, BoolNot),
 ]
 
 field_expr = Combine('%' + Word(alphanums + '_') + '%')
-tokens = QuotedString('"', unquoteResults=False) \
+tokens = QuotedString('"', unquote_results=False) \
          | field_expr | Word(alphanums + '_')
-bool_expr = infixNotation(tokens, bool_exprs)
-bool_expr.enablePackrat()
+bool_expr = infix_notation(tokens, bool_exprs)
+bool_expr.enable_packrat()
 
 
 def parse(audio, expr):
     for i in bool_exprs:
         i[3].audio = audio
     try:
-        res = bool_expr.parseString(expr)[0]
+        res = bool_expr.parse_string(expr)[0]
     except ParseException as e:
         res = expr
     if isinstance(res, str):

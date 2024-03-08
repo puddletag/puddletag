@@ -125,7 +125,7 @@ def check_libs():
              ('configobj', '(usually python3-configobj)',
               'http://code.google.com/p/configobj/'),
              ('pyparsing', '(python3-pyparsing or python3-parsing in most distros)',
-              'http://pyparsing.wikispaces.com/'),
+              'https://github.com/pyparsing/pyparsing/'),
              ('PyQt5', '(python3-pyqt5 usually)',
               'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 

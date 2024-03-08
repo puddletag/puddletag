@@ -8,10 +8,9 @@ from copy import deepcopy
 from decimal import Decimal
 from functools import partial
 
-from pyparsing import (Word, alphas, Literal, OneOrMore, alphanums,
-                       nums, delimitedList, Combine, QuotedString,
-                       CharsNotIn, originalTextFor, nestedExpr,
-                       Optional)
+from pyparsing import (CharsNotIn, Combine, Literal, OneOrMore, Optional,
+                       QuotedString, Word, alphanums, alphas, delimited_list, nested_expr,
+                       nums, original_text_for)
 
 from . import audioinfo
 from .constants import ACTIONDIR, CHECKBOX, SEPARATOR, SPINBOX, SYNTAX_ERROR, SYNTAX_ARG_ERROR
@@ -213,10 +212,10 @@ def func_tokens(dictionary, parse_action):
     func_name = Word(alphas + '_', alphanums + '_')
 
     func_ident = Combine('$' + func_name.copy()('funcname'))
-    func_tok = func_ident + originalTextFor(nestedExpr())('args')
-    func_tok.leaveWhitespace()
-    func_tok.setParseAction(parse_action)
-    func_tok.enablePackrat()
+    func_tok = func_ident + original_text_for(nested_expr())('args')
+    func_tok.leave_whitespace()
+    func_tok.set_parse_action(parse_action)
+    func_tok.enable_packrat()
 
     rx_tok = Combine(Literal('$').suppress() + Word(nums)('num'))
 
@@ -224,16 +223,16 @@ def func_tokens(dictionary, parse_action):
         index = int(tokens.num)
         return dictionary.get(index, '')
 
-    rx_tok.setParseAction(replace_token)
+    rx_tok.set_parse_action(replace_token)
 
     strip = lambda s, l, tok: tok[0].strip()
-    text_tok = CharsNotIn(',').setParseAction(strip)
+    text_tok = CharsNotIn(',').set_parse_action(strip)
     quote_tok = QuotedString('"')
 
     if dictionary:
-        arglist = Optional(delimitedList(quote_tok | rx_tok | text_tok))
+        arglist = Optional(delimited_list(quote_tok | rx_tok | text_tok))
     else:
-        arglist = Optional(delimitedList(quote_tok | text_tok))
+        arglist = Optional(delimited_list(quote_tok | text_tok))
 
     return func_tok, arglist, rx_tok
 
@@ -762,12 +761,12 @@ def tagtotag(pattern, text, expression):
             return "(.*)"
         return "(.*?)"
 
-    expression.setParseAction(what)
+    expression.set_parse_action(what)
     global numtimes
-    numtimes = len([z for z in expression.scanString(pattern)])
+    numtimes = len([z for z in expression.scan_string(pattern)])
     if not numtimes:
         return
-    pattern = expression.transformString(pattern)
+    pattern = expression.transform_string(pattern)
     try:
         tags = re.search(pattern, text).groups()
     except AttributeError:
@@ -828,9 +827,9 @@ class Function:
         self.doc = self.function.__doc__.split("\n")
 
         identifier = QuotedString('"') | Combine(Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
-        tags = delimitedList(identifier)
+        tags = delimited_list(identifier)
 
-        self.info = [z for z in tags.parseString(self.doc[0])]
+        self.info = [z for z in tags.parse_string(self.doc[0])]
 
     def setArgs(self, args):
         self.args = args
@@ -894,15 +893,15 @@ class Function:
 
     def _getControls(self, index=1):
         identifier = QuotedString('"') | CharsNotIn(',')
-        arglist = delimitedList(identifier)
+        arglist = delimited_list(identifier)
         docstr = self.doc[1:]
         if index:
-            return [(arglist.parseString(line)[index]).strip()
+            return [(arglist.parse_string(line)[index]).strip()
                     for line in docstr]
         else:
             ret = []
             for line in docstr:
-                ret.append([z.strip() for z in arglist.parseString(line)])
+                ret.append([z.strip() for z in arglist.parse_string(line)])
             return ret
 
     def setTag(self, tag):
