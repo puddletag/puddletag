@@ -2,13 +2,16 @@
 import logging
 import re
 
-from pyparsing import (CaselessLiteral, Combine, OpAssoc,
+from pyparsing import (CaselessLiteral, Combine, OpAssoc, ParserElement,
                        QuotedString, Word, alphanums, infix_notation)
 
 
 from . import findfunc, audioinfo
 from .puddleobjects import gettaglist
 from .util import to_string
+
+
+ParserElement.enable_packrat()
 
 
 def str_cmp(a, b):
@@ -182,7 +185,6 @@ field_expr = Combine('%' + Word(alphanums + '_') + '%')
 tokens = QuotedString('"', unquote_results=False) \
          | field_expr | Word(alphanums + '_')
 bool_expr = infix_notation(tokens, bool_exprs)
-bool_expr.enable_packrat()
 
 
 def parse(audio, expr):
