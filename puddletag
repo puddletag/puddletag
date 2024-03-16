@@ -218,10 +218,13 @@ def load_language(qapp, langfile=None):
                 langargs = os.path.basename(f), os.path.dirname(f)
 
         if not langargs and lang != 'default':
-            locale = str(QLocale.system().name())
-            if locale in langs:
-                f = langs[locale]
-                langargs = os.path.basename(f), os.path.dirname(f)
+            for locale in QLocale.system().uiLanguages():
+                if locale == 'en':
+                    break
+                if locale in langs:
+                    f = langs[locale]
+                    langargs = os.path.basename(f), os.path.dirname(f)
+                    break
 
     if langargs and langargs != 'default':
         translator = QTranslator()
