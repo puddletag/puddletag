@@ -290,8 +290,6 @@ def main():
                'format': Format}
     options, actions = parseoptions(classes)
     files = options.filename
-    identifier = QuotedString('"') | Combine(NotAny('\\') + Word(alphanums + ' !"#$%&\'()*+-./:;<=>?@[\\]^_`{|}~'))
-    tags = delimitedList(identifier)
     commands = []
     for command, args in [list(action.items())[0] for action in actions]:
         # Instantiate the class for the command

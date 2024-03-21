@@ -35,8 +35,8 @@ def getnum(s, l, t):
     return int(''.join(t))
 
 
-STRING = QuotedString('"', '\\', unquoteResults=False).setParseAction(unquote)
-NUMBER = Combine(Optional('-') + Word(nums)).setParseAction(getnum)
+STRING = QuotedString('"', '\\', unquote_results=False).set_parse_action(unquote)
+NUMBER = Combine(Optional('-') + Word(nums)).set_parse_action(getnum)
 COVER = '#cover-url'
 
 ARGUMENT = STRING | NUMBER
@@ -153,7 +153,7 @@ def parse_func(lineno, line):
     funcname = line.split(None, 1)[0].strip()
     arg_string = line[len(funcname):]
     args = (z[0]
-            for z in ARGUMENT.searchString(arg_string).asList())
+            for z in ARGUMENT.search_string(arg_string).as_list())
     args = [i.replace('\\\\', '\\') if isinstance(i, str) else i
             for i in args]
     if funcname and not funcname.startswith('#'):
