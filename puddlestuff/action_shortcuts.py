@@ -2,8 +2,9 @@
 import os
 from functools import partial
 
-from PyQt5.QtCore import QFileSystemWatcher, QItemSelectionModel, pyqtSignal
-from PyQt5.QtWidgets import QAction, QApplication, QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
+from PyQt6.QtCore import QFileSystemWatcher, QItemSelectionModel, pyqtSignal
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QLineEdit, QListWidgetItem, QPushButton, QVBoxLayout
 
 from . import puddleobjects as puddleobjects
 from . import puddletag
@@ -404,4 +405,4 @@ if __name__ == '__main__':
     win = ShortcutEditor(buttons=True)
     win.loadSettings()
     win.show()
-    app.exec_()
+    app.exec()

@@ -5,8 +5,8 @@ import sys
 import traceback
 from copy import deepcopy
 
-from PyQt5.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6.QtCore import Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QGroupBox, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
 
@@ -235,10 +235,7 @@ class SimpleDialog(QDialog):
                 vbox.addWidget(control)
             elif ctype == CHECKBOX:
                 control = QCheckBox(desc)
-                if default:
-                    control.setCheckState(Qt.CheckState.Checked)
-                else:
-                    control.setCheckState(Qt.CheckState.Unchecked)
+                control.setChecked(bool(default))
                 vbox.addWidget(control)
             elif ctype == SPINBOX:
                 control = QSpinBox()
@@ -961,4 +958,4 @@ if __name__ == '__main__':
     status['selectedfiles'] = exampletags.tags
     win = MainWin(status)
     win.show()
-    app.exec_()
+    app.exec()

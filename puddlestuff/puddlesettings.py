@@ -2,9 +2,9 @@ import os
 import sys
 from copy import deepcopy
 
-from PyQt5.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QPalette
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
+from PyQt6.QtCore import QAbstractListModel, QItemSelection, QItemSelectionModel, QModelIndex, Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QPalette
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QColorDialog, QComboBox, QDialog, QFrame, \
     QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMessageBox, QPushButton, QRadioButton, \
     QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
@@ -74,17 +74,11 @@ class SettingsCheckBox(QCheckBox):
 
     @property
     def settingValue(self):
-        if self.checkState() == Qt.CheckState.Checked:
-            return self._text, True
-        else:
-            return self._text, False
+        return self._text, self.isChecked()
 
     @settingValue.setter
     def settingValue(self, value):
-        if value:
-            self.setCheckState(Qt.CheckState.Checked)
-        else:
-            self.setCheckState(Qt.CheckState.Unchecked)
+        self.setChecked(bool(value))
 
 
 class SettingsLineEdit(QWidget):
@@ -205,10 +199,6 @@ class Playlist(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-        def inttocheck(value):
-            if value:
-                return Qt.CheckState.Checked
-            return Qt.CheckState.Unchecked
 
         cparser = PuddleConfig()
 
@@ -217,14 +207,14 @@ class Playlist(QWidget):
 
         self.extinfo = QCheckBox(translate("Playlist Settings", '&Write extended info'), self)
         self.extinfo.stateChanged.connect(self.extpattern.setEnabled)
-        self.extinfo.setCheckState(inttocheck(cparser.load('playlist', 'extinfo', 1, True)))
-        self.extpattern.setEnabled(self.extinfo.checkState())
+        self.extinfo.setChecked(cparser.load('playlist', 'extinfo', True))
+        self.extpattern.setEnabled(self.extinfo.isChecked())
 
         self.reldir = QCheckBox(translate("Playlist Settings", 'Entries &relative to working directory'))
-        self.reldir.setCheckState(inttocheck(cparser.load('playlist', 'reldir', 0, True)))
+        self.reldir.setChecked(cparser.load('playlist', 'reldir', False))
 
         self.windows_separator = QCheckBox(translate("Playlist Settings", 'Use windows path separator (\\)'))
-        self.windows_separator.setCheckState(inttocheck(cparser.load('playlist', 'windows_separator', 0, True)))
+        self.windows_separator.setChecked(cparser.load('playlist', 'windows_separator', False))
 
         self.filename = QLineEdit()
         self.filename.setText(cparser.load('playlist', 'filepattern', 'puddletag.m3u'))
@@ -245,19 +235,12 @@ class Playlist(QWidget):
         self.setLayout(vbox)
 
     def applySettings(self, control=None):
-
-        def checktoint(checkbox):
-            if checkbox.checkState() == Qt.CheckState.Checked:
-                return 1
-            else:
-                return 0
-
         cparser = PuddleConfig()
-        cparser.setSection('playlist', 'extinfo', checktoint(self.extinfo))
+        cparser.setSection('playlist', 'extinfo', self.extinfo.isChecked())
         cparser.setSection('playlist', 'extpattern', str(self.extpattern.text()))
-        cparser.setSection('playlist', 'reldir', checktoint(self.reldir))
+        cparser.setSection('playlist', 'reldir', self.reldir.isChecked())
         cparser.setSection('playlist', 'filepattern', str(self.filename.text()))
-        cparser.setSection('playlist', 'windows_separator', checktoint(self.windows_separator))
+        cparser.setSection('playlist', 'windows_separator', self.windows_separator.isChecked())
 
 
 class TagMappings(QWidget):
@@ -488,8 +471,8 @@ class ListModel(QAbstractListModel):
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.TextAlignmentRole:
             if orientation == Qt.Orientation.Horizontal:
-                return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-            return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+            return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
         if role != Qt.ItemDataRole.DisplayRole:
             return None
         if orientation == Qt.Orientation.Horizontal:
@@ -720,4 +703,4 @@ if __name__ == "__main__":
     app.setApplicationName("puddletag")
     qb = SettingsDialog()
     qb.show()
-    app.exec_()
+    app.exec()

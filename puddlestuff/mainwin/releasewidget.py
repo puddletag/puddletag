@@ -3,9 +3,10 @@ import traceback
 from copy import deepcopy
 from functools import partial
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
+from PyQt6 import QtCore
+from PyQt6.QtCore import QModelIndex, Qt, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QHeaderView, QMenu, QStyle, QTreeView, QWidget
 
 from ..findfunc import parsefunc
 from ..puddleobjects import (PuddleThread,
@@ -112,7 +113,7 @@ class Header(QHeaderView):
             menu.addAction(action)
 
         [create_action(order) for order in self.sortOptions]
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
 
 class RootItem(object):
@@ -757,4 +758,4 @@ if __name__ == "__main__":
     view.setModel(model)
     view.setWindowTitle("Simple Tree Model")
     view.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

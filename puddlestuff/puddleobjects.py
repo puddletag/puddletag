@@ -12,19 +12,21 @@ import time
 from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
 from copy import copy
-from functools import partial
+from functools import partial, reduce
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
+from operator import or_
 from typing import List, Optional, Union
 
-from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
+from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
     QThread, QTimer, Qt, pyqtSignal
-from PyQt5.QtCore import QFile, QIODevice
-from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
+from PyQt6.QtCore import QFile, QIODevice
+from PyQt6.QtGui import QAction, QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
-from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QComboBox, QDialog, QDialogButtonBox, \
+from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
@@ -77,10 +79,8 @@ def keycmp(modifier):
 modifiers = {}
 for i in range(1, len(mod_keys)):
     for keys in set(itertools.permutations(mod_keys, i)):
-        mod = keys[0]
-        for key in keys[1:]:
-            mod = mod | key
-        modifiers[int(mod)] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
+        mask = reduce(or_, keys)
+        modifiers[mask] = '+'.join(mod_keys[key] for key in sorted(keys, key=keycmp) if mod_keys[key])
 
 mod_keys = set((Qt.Key.Key_Shift, Qt.Key.Key_Control, Qt.Key.Key_Meta, Qt.Key.Key_Alt))
 
@@ -499,7 +499,7 @@ def errormsg(parent, msg, maximum):
                          parent)
         mb.setDefaultButton(QMessageBox.StandardButton.Yes)
         mb.setEscapeButton(QMessageBox.StandardButton.No)
-        ret = mb.exec_()
+        ret = mb.exec()
         if ret == QMessageBox.StandardButton.No:
             return False
         elif ret == QMessageBox.StandardButton.YesToAll:
@@ -2374,7 +2374,7 @@ class PuddleHeader(QHeaderView):
 
     def contextMenuEvent(self, event):
         menu = self.getMenu()
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
 
 class PuddleStatus(object):
@@ -2496,4 +2496,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     widget = MainWin()
     widget.show()
-    app.exec_()
+    app.exec()
