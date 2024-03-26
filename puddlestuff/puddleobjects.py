@@ -654,20 +654,26 @@ def getfiles(files, subfolders=False):
             if not isdir(f):
                 yield f
             else:
-                dirname, subs, fnames = next(os.walk(f))
-                for fname in fnames:
-                    yield join(dirname, fname)
+                try:
+                    dirname, subs, fnames = next(os.walk(f))
+                    for fname in fnames:
+                        yield join(dirname, fname)
+                except StopIteration:
+                    pass
     else:
         for f in files:
             if not isdir(f):
                 yield f
             else:
-                for dirname, subs, fnames in os.walk(f):
-                    for fname in fnames:
-                        yield join(dirname, fname)
-                    for sub in subs:
-                        for fname in getfiles(join(dirname, sub), subfolders):
-                            pass
+                try:
+                    for dirname, subs, fnames in os.walk(f):
+                        for fname in fnames:
+                             yield join(dirname, fname)
+                        for sub in subs:
+                            for fname in getfiles(join(dirname, sub), subfolders):
+                                pass
+                except StopIteration:
+                    pass
 
 
 def gettags(files):
