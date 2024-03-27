@@ -654,9 +654,9 @@ def getfiles(files, subfolders=False):
             if not isdir(f):
                 yield f
             else:
-                dirname, subs, fnames = next(os.walk(f))
-                for fname in fnames:
-                    yield join(dirname, fname)
+                for dirname, subs, fnames in os.walk(f):
+                    for fname in fnames:
+                        yield join(dirname, fname)
     else:
         for f in files:
             if not isdir(f):
