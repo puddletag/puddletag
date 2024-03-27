@@ -664,7 +664,7 @@ def getfiles(files, subfolders=False):
             else:
                 for dirname, subs, fnames in os.walk(f):
                     for fname in fnames:
-                         yield join(dirname, fname)
+                        yield join(dirname, fname)
                     for sub in subs:
                         for fname in getfiles(join(dirname, sub), subfolders):
                             pass
