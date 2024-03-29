@@ -16,7 +16,7 @@ from functools import partial
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
-from typing import List, Optional, Union
+from typing import Generator, List, Optional, Union
 
 from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
     QThread, QTimer, Qt, pyqtSignal
@@ -640,34 +640,27 @@ def dupes(l, method=None):
     return [z for z in groups if len(z) > 1]
 
 
-def getfiles(files, subfolders=False):
-    if isinstance(files, str):
+def getfiles(files: Union[str, List[str]], subfolders: bool = False) -> Generator[str, None, None]:
+    """For the given path(s), yield all the files.
+       If path does not exist, ignore it.
+       If path is a directory, yield all the files in that directory.
+       If subfolders is True, also recurse into subdirectories and yield their files.
+       """
+    if not isinstance(files, list):
         files = [files]
 
-    isdir = os.path.isdir
-    join = os.path.join
+    for file in files:
+        if not os.path.exists(file):
+            continue
+        if not os.path.isdir(file):
+            yield file
 
-    temp = []
-
-    if not subfolders:
-        for f in files:
-            if not isdir(f):
-                yield f
-            else:
-                for dirname, subs, fnames in os.walk(f):
-                    for fname in fnames:
-                        yield join(dirname, fname)
-    else:
-        for f in files:
-            if not isdir(f):
-                yield f
-            else:
-                for dirname, subs, fnames in os.walk(f):
-                    for fname in fnames:
-                        yield join(dirname, fname)
-                    for sub in subs:
-                        for fname in getfiles(join(dirname, sub), subfolders):
-                            pass
+        for dirpath, dirnames, filenames in os.walk(file):
+            for filename in filenames:
+                yield os.path.join(dirpath, filename)
+            if not subfolders:
+                # don't recurse deeper
+                dirnames.clear()
 
 
 def gettags(files):
