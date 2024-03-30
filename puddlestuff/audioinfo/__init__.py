@@ -105,9 +105,9 @@ def Tag(filename):
         return None
 
 
-from . import id3, vorbis, apev2, mp4
+from . import id3, vorbis, apev2, mp4, wma
 
-tag_modules = (id3, vorbis, apev2, mp4)
+tag_modules = (id3, vorbis, apev2, mp4, wma)
 
 for m in tag_modules:
     if hasattr(m, 'filetype'):
