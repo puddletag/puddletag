@@ -18,13 +18,13 @@ def bin_to_pic(image):
     data = image.value
     (type, size) = struct.unpack_from("<bi", data)
     pos = 5
-    mime = ""
-    while data[pos:pos + 2] != "\x00\x00":
+    mime = b""
+    while data[pos:pos + 2] != b"\x00\x00":
         mime += data[pos:pos + 2]
         pos += 2
     pos += 2
-    description = ""
-    while data[pos:pos + 2] != "\x00\x00":
+    description = b""
+    while data[pos:pos + 2] != b"\x00\x00":
         description += data[pos:pos + 2]
         pos += 2
     pos += 2
@@ -47,8 +47,8 @@ def pic_to_bin(image):
     type = image.get(util.IMAGETYPE, 3)
     description = image.get(util.DESCRIPTION, '')
     tag_data = struct.pack("<bi", type, len(data))
-    tag_data += mime.encode("utf-16-le") + "\x00\x00"
-    tag_data += description.encode("utf-16-le") + "\x00\x00"
+    tag_data += mime.encode("utf-16-le") + b"\x00\x00"
+    tag_data += description.encode("utf-16-le") + b"\x00\x00"
     tag_data += data
     return ASFByteArrayAttribute(tag_data)
 
