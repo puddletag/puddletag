@@ -642,10 +642,11 @@ def dupes(l, method=None):
 
 def getfiles(files: Union[str, List[str]], subfolders: bool = False) -> Generator[str, None, None]:
     """For the given path(s), yield all the files.
-       If path does not exist, ignore it.
-       If path is a directory, yield all the files in that directory.
-       If subfolders is True, also recurse into subdirectories and yield their files.
-       """
+
+    If path does not exist, ignore it.
+    If path is a directory, yield all the files in that directory.
+    If subfolders is True, also recurse into subdirectories and yield their files.
+    """
     if not isinstance(files, list):
         files = [files]
 
@@ -654,6 +655,7 @@ def getfiles(files: Union[str, List[str]], subfolders: bool = False) -> Generato
             continue
         if not os.path.isdir(file):
             yield file
+            continue
 
         for dirpath, dirnames, filenames in os.walk(file):
             for filename in filenames:
