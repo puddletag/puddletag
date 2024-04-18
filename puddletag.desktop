@@ -3,6 +3,7 @@ Version=1.0
 Type=Application
 Name=puddletag
 TryExec=puddletag
+MimeType=inode/directory
 Exec=puddletag %F
 Icon=puddletag
 GenericName=Audio Tag Editor
