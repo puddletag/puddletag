@@ -373,7 +373,7 @@ if __name__ == '__main__':
     from puddlestuff.puddlesettings import load_gen_settings
 
     app.setWindowIcon(get_icon(None, "appicon.svg"))
-    app.setDesktopFileName("puddletag.desktop")
+    app.setDesktopFileName("puddletag")
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
 
