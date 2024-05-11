@@ -53,6 +53,10 @@ TAGS = {
     'plID': 'itunesalbumid',
     'prID': 'itunesproductid',
     'sfID': 'itunesstorecountry',
+    'rtng': 'itunesadvisory',
+    'stik': 'itunesmediatype',
+    'xid ': 'itunesxid',
+    '\xa9pub': 'itunespublisher',
 }
 
 REVTAGS = dict([reversed(z) for z in TAGS.items()])
@@ -174,6 +178,10 @@ FUNCS = {
     'itunesalbumid': (getint, setint),
     'itunesproductid': (gettext, settext),
     'itunesstorecountry': (getint, setint),
+    'itunesadvisory': (getint, setint),
+    'itunesmediatype': (getint, setint),
+    'itunesxid': (gettext, settext),
+    'itunespublisher': (gettext, settext),
 }
 
 
