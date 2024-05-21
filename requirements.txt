@@ -32,7 +32,7 @@ pyqt5-sip==12.13.0
     # via pyqt5
 rapidfuzz==3.8.1
     # via levenshtein
-requests==2.31.0
+requests==2.32.0
     # via pyacoustid
 six==1.16.0
     # via configobj
