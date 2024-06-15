@@ -851,7 +851,7 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
         if maximum == 1:
             errors = next(f)
             if errors and \
-                    not isinstance(errors, (str, str, int, int, str)):
+                    not isinstance(errors, (str, int)):
                 errormsg(parent, errors[0], 1)
             if threadfin:
                 threadfin()
@@ -870,7 +870,7 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
             while not win.wasCanceled:
                 try:
                     temp = next(f)
-                    if isinstance(temp, (str, str)):
+                    if isinstance(temp, str):
                         thread.message.emit(temp)
                     elif isinstance(temp, int):
                         thread.set_max.emit(temp)
@@ -901,7 +901,7 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
                     except RuntimeError:
                         pass
                 return
-            elif isinstance(args[0], (str, str)):
+            elif isinstance(args[0], str):
                 if parent.showmessage:
                     ret = errormsg(parent, args[0], maximum)
                     if ret is True:

@@ -564,7 +564,7 @@ def stringtags(tag, leaveNone=False):
         if i in INFOTAGS:
             newtag[i] = v
             continue
-        if isinstance(i, (int, int, float)) or hasattr(v, 'items'):
+        if isinstance(i, (int, float)) or hasattr(v, 'items'):
             continue
 
         if leaveNone and isempty(v):
