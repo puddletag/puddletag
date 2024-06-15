@@ -80,7 +80,7 @@ class Tag(audioinfo.MockTag):
             del (self[key])
         elif key in INFOTAGS or isinstance(key, int):
             self._tags[key] = value
-        elif (key not in INFOTAGS) and isinstance(value, (str, int, int)):
+        elif (key not in INFOTAGS) and isinstance(value, (str, int)):
             self._tags[key.lower()] = [str(value)]
         else:
             self._tags[key.lower()] = [str(z) for z in value]

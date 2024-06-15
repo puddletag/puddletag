@@ -35,7 +35,7 @@ class SoupWrapper(object):
             else:
                 kwargs["class"] = args[1]
         query_items = list(kwargs.items())
-        query_items = classify(query_items, lambda x: isinstance(x[1], (str, str)))
+        query_items = classify(query_items, lambda x: isinstance(x[1], str))
         regular_items = query_items.get(True, [])
         re_items = query_items.get(False, [])
         xpath_query = " and ".join(
@@ -72,7 +72,7 @@ class SoupWrapper(object):
             yield SoupWrapper(x)
 
     def __getitem__(self, idx):
-        if isinstance(idx, (str, str)):
+        if isinstance(idx, str):
             if idx in self.element.attrib:
                 return self.element.attrib[idx]
             else:

@@ -124,7 +124,7 @@ def getint(value):
 
 
 def setint(value):
-    if isinstance(value, (int, int, str)):
+    if isinstance(value, (int, str)):
         return [int(value)]
     temp = []
     for z in value:
