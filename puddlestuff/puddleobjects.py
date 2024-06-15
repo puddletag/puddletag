@@ -11,15 +11,16 @@ import sys
 import time
 from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
+from collections.abc import Callable, Generator
 from copy import copy
 from functools import partial
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
-from typing import Generator, List, Optional, Union
+from typing import Any, Generator, List, Optional, Tuple, Union
 
-from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QRectF, QSettings, QSize, \
-    QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QObject, QRectF, QSettings, \
+    QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtCore import QFile, QIODevice
 from PyQt5.QtGui import QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
@@ -806,7 +807,8 @@ def open_resourcefile(filename):
     return StringIO(str(f.readAll().data(), encoding='utf-8'))
 
 
-def progress(func, pstring, maximum, threadfin=None):
+def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None]],
+             pstring: str, maximum: int, threadfin: Optional[Callable[[], None]] = None) -> Callable[..., None]:
     """To be used for functions that need a threaded progressbar.
 
     Note that this function will only (and is meant to) work on dialogs.
@@ -862,7 +864,7 @@ def progress(func, pstring, maximum, threadfin=None):
 
         parent.showmessage = True
 
-        def threadfunc():
+        def threadfunc() -> None:
             i = 0
             err = False
             while not win.wasCanceled:
@@ -886,7 +888,7 @@ def progress(func, pstring, maximum, threadfin=None):
             if not err:
                 thread.win.emit(-1)
 
-        def threadexit(*args):
+        def threadexit(*args) -> None:
             if args[0] == -1:
                 win.close()
                 win.destroy()
@@ -914,12 +916,12 @@ def progress(func, pstring, maximum, threadfin=None):
                 thread.start()
             win.setValue(win.value + 1)
 
-        def set_message(msg):
+        def set_message(msg: str) -> None:
             if msg != win.label.text():
                 win.label.setText(msg)
                 QApplication.processEvents()
 
-        def set_max(value):
+        def set_max(value: int) -> None:
             win.pbar.setMaximum(value)
 
         thread = PuddleThread(threadfunc, parent)
@@ -2152,7 +2154,8 @@ class PicWin(QDialog):
 class ProgressWin(QDialog):
     canceled = pyqtSignal(name='canceled')
 
-    def __init__(self, parent=None, maximum=100, progresstext='', showcancel=True):
+    def __init__(self, parent: Optional[QObject] = None, maximum: int = 100, progresstext: str = '',
+                 showcancel: bool = True) -> None:
         QDialog.__init__(self, parent)
         self._infunc = False
         self._cached = 0
@@ -2207,7 +2210,7 @@ class ProgressWin(QDialog):
         if maximum <= 0:
             self._timer.start()
 
-    def setValue(self, value):
+    def setValue(self, value: int) -> None:
         if self._infunc:
             return
         self._infunc = True
@@ -2220,7 +2223,7 @@ class ProgressWin(QDialog):
         if self.pbar.maximum() and value >= self.pbar.maximum():
             self.close()
 
-    def cancel(self):
+    def cancel(self) -> None:
         self.wasCanceled = True
         self.canceled.emit()
         self.close()
@@ -2231,7 +2234,7 @@ class ProgressWin(QDialog):
         super(ProgressWin, self).closeEvent(event)
 
     @property
-    def value(self):
+    def value(self) -> int:
         return self.pbar.value()
 
 
@@ -2401,20 +2404,20 @@ class PuddleThread(QThread):
     error = pyqtSignal([str, int], name='error')
     win = pyqtSignal(int, name='win')
 
-    def __init__(self, command, parent=None):
+    def __init__(self, command: Callable[[], Any], parent: Optional[QObject] = None) -> None:
         QThread.__init__(self, parent)
         self.finished.connect(self._finish)
         self.command = command
         self.retval = None
 
-    def run(self):
+    def run(self) -> None:
         # print 'thread', self.command, time.time()
         try:
             self.retval = self.command()
         except StopIteration:
             self.retval = 'STOP'
 
-    def _finish(self):
+    def _finish(self) -> None:
         if hasattr(self, 'retval'):
             self.threadfinished.emit(self.retval)
         else:
