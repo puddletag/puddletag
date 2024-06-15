@@ -9,7 +9,7 @@ from os import path
 from subprocess import Popen
 
 from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
-    QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal
+    QMetaObject, QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal, pyqtSlot, Q_ARG
 from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
 from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
@@ -986,6 +986,7 @@ class TagModel(QAbstractTableModel):
             except IndexError:
                 break
 
+    @pyqtSlot(int, result=bool)
     def removeRows(self, position, rows=1, index=QModelIndex()):
         """Please, only use this function to remove one row at a time. For some reason, it doesn't work
         too well on debian if more than one row is removed at a time."""
@@ -1662,7 +1663,6 @@ class TagTable(QTableView):
             return
         selected = self.selectedTags
         selectedRows = self.selectedRows
-        removeRows = self.model().removeRows
         curindex = self.currentIndex()
         last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
         libtags = []
@@ -1676,7 +1676,10 @@ class TagTable(QTableView):
                     if audio.library:
                         audio.remove()
                         libtags.append(audio)
-                    removeRows(temprows[i])
+                    # Cross-thread call
+                    QMetaObject.invokeMethod(self.model(), 'removeRows',
+                                             Q_ARG(int, temprows[i]),
+                                             )
                     temprows = [z - 1 for z in temprows]
                     yield None
                 except (OSError, IOError) as detail:
