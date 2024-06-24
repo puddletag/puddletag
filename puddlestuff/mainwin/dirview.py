@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QCheckBox, QFileSystemModel, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
+from PyQt6.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
+from PyQt6.QtGui import QAction, QDesktopServices, QFileSystemModel
+from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QHeaderView, QMenu, QTreeView, QVBoxLayout, QWidget
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
@@ -125,7 +125,7 @@ class DirView(QTreeView):
         menu.addAction(show_header)
         menu.addAction(open_dir)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
         super(DirView, self).contextMenuEvent(event)
 
     def dirMoved(self, dirs):
@@ -357,10 +357,7 @@ class DirViewWidget(QWidget):
         self.dirview.saveSettings()
 
     def setSubFolders(self, check):
-        if check == Qt.CheckState.Checked:
-            value = True
-        else:
-            value = False
+        value = (check == Qt.CheckState.Checked)
         self.dirview.subfolders = value
         save_gen_settings({'Su&bfolders': value})
         self._status['table'].subFolders = value

@@ -8,10 +8,10 @@ from operator import itemgetter
 from os import path
 from subprocess import Popen
 
-from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
+from PyQt6.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMetaObject, QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal, pyqtSlot, Q_ARG
-from PyQt5.QtGui import QColor, QFont, QDrag, QPalette
-from PyQt5.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QAction, QApplication, QDialog, QGridLayout, QGroupBox, \
+from PyQt6.QtGui import QAction, QColor, QFont, QDrag, QPalette
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QDialog, QGridLayout, QGroupBox, \
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QStyledItemDelegate, QTableView, \
     QVBoxLayout
 
@@ -444,7 +444,7 @@ class ColumnSettings(HeaderSetting):
             self.tags[row][0] = str(self.textname.text())
             self.tags[row][1] = str(self.tag.currentText())
         checked = [z for z in range(self.listbox.count()) if
-                   self.listbox.item(z).checkState()]
+                   self.listbox.item(z).checkState() == Qt.CheckState.Checked]
         titles = [z[0] for z in self.tags]
         tags = [z[1] for z in self.tags]
         cparser = PuddleConfig()
@@ -467,8 +467,7 @@ class ColumnSettings(HeaderSetting):
 
     def duplicate(self):
         item = self.listbox.currentItem()
-        if item:
-            checked = item.checkState()
+        checked = item.checkState()
         HeaderSetting.duplicate(self)
         self.listbox.currentItem().setCheckState(checked)
 
@@ -784,8 +783,8 @@ class TagModel(QAbstractTableModel):
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.TextAlignmentRole:
             if orientation == Qt.Orientation.Horizontal:
-                return int(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-            return int(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+            return Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
         if role != Qt.ItemDataRole.DisplayRole:
             return None
         if orientation == Qt.Orientation.Horizontal:
@@ -1328,7 +1327,7 @@ class TableHeader(QHeaderView):
             translate("Column Settings", "&Select Columns"))
         settings.triggered.connect(self.setTitles)
 
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
     def mousePressEvent(self, event):
         if event.button == Qt.MouseButton.RightButton:
@@ -1638,7 +1637,7 @@ class TagTable(QTableView):
 
     def contextMenuEvent(self, event):
         if self.contextMenu:
-            self.contextMenu.exec_(event.globalPos())
+            self.contextMenu.exec(event.globalPos())
 
     @property
     def isempty(self):
@@ -1714,7 +1713,7 @@ class TagTable(QTableView):
         if event.source() == self and \
                 hasattr(mime, 'draggedRows') and mime.draggedRows:
 
-            row = self.rowAt(event.pos().y())
+            row = self.rowAt(event.position().toPoint().y())
             if row == -1:
                 row = self.rowCount() - 1
             self.saveSelection()
@@ -1780,7 +1779,7 @@ class TagTable(QTableView):
         drag = QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
-        dropaction = drag.exec_()
+        dropaction = drag.exec()
         if dropaction == Qt.DropAction.MoveAction:
             if not os.path.exists(filenames[0]):
                 self.deleteSelected(False, False, False)

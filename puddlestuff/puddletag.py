@@ -5,9 +5,9 @@ import sys
 import urllib.parse
 from functools import partial
 
-from PyQt5.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QAction, QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
+from PyQt6.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
+from PyQt6.QtGui import QAction, QDesktopServices
+from PyQt6.QtWidgets import QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
 from . import m3u, genres
@@ -1093,4 +1093,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MainWin()
     win.show()
-    app.exec_()
+    app.exec()

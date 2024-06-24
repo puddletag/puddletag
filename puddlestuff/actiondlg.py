@@ -4,8 +4,9 @@ import sys
 from copy import copy, deepcopy
 from functools import partial
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QAction, QApplication, QCheckBox, QComboBox, QCompleter, \
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBox, QCompleter, \
     QDialog, QFrame, QGridLayout, QInputDialog, QLabel, QLineEdit, QListWidgetItem, QMenu, QMessageBox, \
     QScrollArea, QSizePolicy, QSpinBox, QStackedWidget, QToolButton, QVBoxLayout, QWidget
 from pyparsing import delimited_list, alphanums, Combine, Word, QuotedString
@@ -85,7 +86,7 @@ class ShortcutDialog(QDialog):
         self.close()
 
     def getShortcut(self):
-        self.exec_()
+        self.exec()
         if self._text.valid:
             return str(self._text.text()), self.ok
         else:
@@ -128,7 +129,7 @@ class ShortcutName(QDialog):
             self._ok.setEnabled(False)
 
     def getText(self):
-        self.exec_()
+        self.exec()
         return str(self._text.text()), self.ok
 
 
@@ -1091,4 +1092,4 @@ if __name__ == "__main__":
     app.setApplicationName("puddletag")
     qb = ActionWindow([('Path', '__path'), ('Artist', 'artist'), ('Title', 'title'), ('Album', 'album'), ('Track', 'track'), ('Length', '__length'), ('Year', 'date')])
     qb.show()
-    app.exec_()
+    app.exec()

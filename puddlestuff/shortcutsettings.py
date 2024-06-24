@@ -1,9 +1,9 @@
 import os
 import sys
 
-from PyQt5.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
-from PyQt5.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
-from PyQt5.QtWidgets import qApp, QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
+from PyQt6.QtCore import QEvent, QLineF, QRectF, Qt, pyqtRemoveInputHook
+from PyQt6.QtGui import QBrush, QKeySequence, QPainter, QPalette, QPen
+from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QFrame, QItemDelegate, QLabel, \
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
@@ -15,11 +15,6 @@ pyqtRemoveInputHook()
 
 
 class ActionEditorWidget(QLabel):
-
-    # Redefine the tr() function for this class.
-    def tr(self, text):
-
-        return qApp.translate("ActionEditorWidget", text)
 
     def __init__(self, text, parent):
 
@@ -87,7 +82,7 @@ class ActionEditorWidget(QLabel):
         size = self.height() / 2.0
         rect = QRectF(self.width() - size, size * 0.5, size, size)
 
-        if rect.contains(event.localPos()):
+        if rect.contains(event.position()):
             self.clear()
             self.valid = True
             event.accept()
@@ -188,11 +183,6 @@ class ActionEditorDelegate(QItemDelegate):
 
 
 class ActionEditorDialog(QWidget):
-
-    # Redefine the tr() function for this class.
-    def tr(self, text):
-
-        return qApp.translate("ActionEditorDialog", text)
 
     def __init__(self, actions, parent=None):
 
@@ -321,4 +311,4 @@ if __name__ == '__main__':
     win = ActionEditorDialog(actions)
     # win.loadSettings(actions)
     win.show()
-    app.exec_()
+    app.exec()
