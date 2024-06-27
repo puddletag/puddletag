@@ -11,13 +11,12 @@ import sys
 import time
 from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
-from collections.abc import Callable, Generator
 from copy import copy
 from functools import partial
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
-from typing import Any, Generator, List, Optional, Tuple, Union
+from typing import Any, Callable, Generator, List, Optional, Tuple, Union
 
 from PyQt5.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QObject, QRectF, QSettings, \
     QSize, QThread, QTimer, Qt, pyqtSignal
