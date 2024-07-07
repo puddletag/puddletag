@@ -7,4 +7,5 @@ MimeType=inode/directory;audio/x-ape;audio/x-wavpack;audio/x-musepack;audio/mpeg
 Exec=puddletag %F
 Icon=puddletag
 GenericName=Audio Tag Editor
-Categories=AudioVideo;Audio;Qt;
+Categories=AudioVideo;Audio;Qt;FileTools;
+Keywords=tagger;mp3tag;music;
