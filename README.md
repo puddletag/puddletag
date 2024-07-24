@@ -83,7 +83,9 @@ Available since Fedora 32.
 Available for channels 24.05 and unstable
 
 On NixOS:
-`nix-env -iA nixos.puddletag`
+```
+nix-env -iA nixos.puddletag
+```
 
 On Non NixOS:
 ```
@@ -94,7 +96,7 @@ nix profile install nixpkgs#puddletag
 ```
 
 NixOS configuration:
-Add the following Nix code to your NixOS Configuration, usually located in </b>/etc/nixos/configuration.nix</b>
+Add the following Nix code to your NixOS Configuration, usually located in `/etc/nixos/configuration.nix`
 ```
   environment.systemPackages = [
     pkgs.puddletag
