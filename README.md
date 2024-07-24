@@ -78,6 +78,34 @@ Available since Fedora 32.
 </details>
 
 <details>
+<summary><b>Nix</b></summary>
+
+Available for channels 24.05 and unstable
+
+On NixOS:
+```
+nix-env -iA nixos.puddletag
+```
+
+On Non NixOS:
+```
+# without flakes:
+nix-env -iA nixpkgs.puddletag
+# with flakes:
+nix profile install nixpkgs#puddletag
+```
+
+NixOS configuration:
+Add the following Nix code to your NixOS Configuration, usually located in `/etc/nixos/configuration.nix`
+```
+  environment.systemPackages = [
+    pkgs.puddletag
+  ];
+```
+
+</details>
+
+<details>
 <summary><b>Brew/MacOS</b></summary>
 
 _support needed, open an issue if interested in working on it_
