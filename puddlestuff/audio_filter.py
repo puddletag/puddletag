@@ -3,7 +3,7 @@ import logging
 import re
 
 from pyparsing import (CaselessLiteral, Combine, OpAssoc, ParserElement,
-                       QuotedString, Word, alphanums, infix_notation)
+                       ParseException, QuotedString, Word, alphanums, infix_notation)
 
 
 from . import findfunc, audioinfo
