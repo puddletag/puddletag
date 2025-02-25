@@ -34,7 +34,7 @@ Install the dependencies as listed above. For Debian-based distros, you can run 
 
 .. code-block:: bash
 
-    apt-get install python-pyqt5 python-pyparsing python-mutagen
+    apt install python3-pyqt5 python3-pyparsing python3-mutagen # qtwayland5 # if using wayland
 
 + Now download the source tarball |source_link|_ (SHA1 |source_sha|).
 + Unzip it.
