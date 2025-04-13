@@ -1735,6 +1735,9 @@ class TagTable(QTableView):
                 else:
                     files.append(f)
 
+            if not dirs and not files:
+                return
+
             self.loadFiles(files, dirs, append=True)
 
     def dragMoveEvent(self, event):
