@@ -63,6 +63,22 @@ def _migrate_action_shortcut_filenames():
         fo.write(json.dumps(data, indent=2))
 
 
+def _migrate_checkstates():
+    from puddlestuff.puddleobjects import PuddleConfig
+    cparser = PuddleConfig()
+    for section, key in (
+        ('autonumbering', 'separator'),
+        ('autonumbering', 'restart'),
+        ('autonumbering', 'count_by_group'),
+        ('playlist', 'extinfo'),
+        ('playlist', 'reldir'),
+        ('playlist', 'windows_separator'),
+    ):
+        old_value = cparser.get(section, key, None)
+        if old_value is not None and isinstance(old_value, int):
+            cparser.set(section, key, bool(old_value))
+
+
 def migrate_settings():
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
     for dirpath in [CONFIGDIR, SAVEDIR]:
@@ -91,6 +107,7 @@ def migrate_settings():
     _migrate_action_shortcuts()
     convert_ini_files()
     _migrate_action_shortcut_filenames()
+    _migrate_checkstates()
 
 
 def _migrate_action_shortcuts():
@@ -126,7 +143,7 @@ def check_libs():
               'http://code.google.com/p/configobj/'),
              ('pyparsing', '(python3-pyparsing or python3-parsing in most distros)',
               'https://github.com/pyparsing/pyparsing/'),
-             ('PyQt5', '(python3-pyqt5 usually)',
+             ('PyQt6', '(python3-pyqt6 usually)',
               'http://www.riverbankcomputing.co.uk/software/pyqt/intro')]
 
     found = True
@@ -148,7 +165,7 @@ def check_libs():
 
     try:
         if not found:
-            from PyQt5.QtWidgets import QApplication, QMessageBox
+            from PyQt6.QtWidgets import QApplication, QMessageBox
             app = QApplication([])
             QMessageBox.critical(None, 'puddletag', '\n'.join(errors))
     except:
@@ -218,22 +235,25 @@ def load_language(qapp, langfile=None):
                 langargs = os.path.basename(f), os.path.dirname(f)
 
         if not langargs and lang != 'default':
-            locale = str(QLocale.system().name())
-            if locale in langs:
-                f = langs[locale]
-                langargs = os.path.basename(f), os.path.dirname(f)
+            for locale in QLocale.system().uiLanguages():
+                if locale == 'en':
+                    break
+                if locale in langs:
+                    f = langs[locale]
+                    langargs = os.path.basename(f), os.path.dirname(f)
+                    break
 
     if langargs and langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-                        QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         translators.append(translator)
 
         if 'puddletag_' in langargs[0]:
             translator = QTranslator()
             locale = langargs[0][len('puddletag_'):-len('.qm')]
             translator.load("qt_" + locale,
-                            QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                            QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
             print("Locale: " + locale)
             translators.append(translator)
 
@@ -244,7 +264,7 @@ def load_language(qapp, langfile=None):
     elif langargs != 'default':
         translator = QTranslator()
         translator.load("qt_" + QLocale.system().name(),
-                        QLibraryInfo.location(QLibraryInfo.LibraryLocation.TranslationsPath))
+                        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
         print("Locale: " + str(QLocale.system().name()))
         translators.append(translator)
 
@@ -286,8 +306,8 @@ def print_info():
 
 
 def splashscreen():
-    from PyQt5.QtGui import QFont, QPainter, QPixmap
-    from PyQt5.QtWidgets import QSplashScreen
+    from PyQt6.QtGui import QFont, QPainter, QPixmap
+    from PyQt6.QtWidgets import QSplashScreen
     from puddlestuff import version_string
 
     pixmap = QPixmap('icons:puddlelogo.png')
@@ -326,8 +346,8 @@ class StdOut(object):
 
 if __name__ == '__main__':
     check_libs()
-    from PyQt5.QtWidgets import QApplication
-    from PyQt5.QtCore import (pyqtRemoveInputHook, QTranslator,
+    from PyQt6.QtWidgets import QApplication
+    from PyQt6.QtCore import (pyqtRemoveInputHook, QTranslator,
                               QLibraryInfo, QLocale)
     import logging
     from configobj import ConfigObj
@@ -353,7 +373,7 @@ if __name__ == '__main__':
     from puddlestuff.puddlesettings import load_gen_settings
 
     app.setWindowIcon(get_icon(None, "appicon.svg"))
-    app.setDesktopFileName("puddletag.desktop")
+    app.setDesktopFileName("puddletag")
     app.setOrganizationName("Puddle Inc.")
     app.setApplicationName("puddletag")
 
@@ -375,4 +395,4 @@ if __name__ == '__main__':
     elif load_gen_settings([('&Load last folder at startup', False)])[0][1]:
         if win._lastdir and os.path.exists(win._lastdir[0]):
             win.openDir(win._lastdir[0], False)
-    app.exec_()
+    app.exec()

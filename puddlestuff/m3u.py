@@ -4,7 +4,7 @@ import sys
 from os.path import abspath, dirname, normcase, normpath, splitdrive
 from os.path import join as path_join
 
-from PyQt5.QtWidgets import QFileDialog, QApplication
+from PyQt6.QtWidgets import QFileDialog, QApplication
 
 from . import audioinfo
 from .audioinfo.util import lnglength, encode_fn

@@ -1,9 +1,9 @@
 import os
 import sys
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtWidgets import QAction, QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QAction, QDoubleValidator
+from PyQt6.QtWidgets import QApplication, QCheckBox, QComboBox, QDialog, QFrame, QHBoxLayout, \
     QInputDialog, QLabel, QLineEdit, QMessageBox, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, \
     QWidget
 
@@ -139,62 +139,6 @@ class DupeTree(QTreeWidget):
     def dragEnterEvent(self, event):
         event.reject()
 
-    # def mouseMoveEvent(self, event):
-    # QTreeWidget.mouseMoveEvent(self, event)
-    # if event.buttons() != Qt.MouseButton.LeftButton:
-    # return
-    # mimeData = QMimeData()
-    # plainText = ""
-    # tags= []
-    # pnt = QPoint(*self.StartPosition)
-    # if (event.pos() - pnt).manhattanLength()  < QApplication.startDragDistance():
-    # return
-    ##I'm adding plaintext to MimeData
-    ##because XMMS doesn't seem to work well with Qt's URL's
-    # for z in self.selectedFiles():
-    # url = QUrl.fromLocalFile(z['__filename'])
-    # plainText = plainText + unicode(url.toString()) + "\n"
-    # tags.append(url)
-    # mimeData = QMimeData()
-    # mimeData.setUrls(tags)
-    # mimeData.setText(plainText)
-
-    # drag = QDrag(self)
-    # drag.setDragCursor(QPixmap(), self.dropaction)
-    # drag.setMimeData(mimeData)
-    # drag.setHotSpot(event.pos() - self.rect().topLeft())
-    # dropaction = drag.exec_(self.dropaction)
-
-    # def mousePressEvent(self, event):
-    # if event.buttons() == Qt.MouseButton.RightButton:
-    # e = QContextMenuEvent(QContextMenuEvent.Reason.Mouse, event.pos(), event.globalPos())
-    # self.contextMenuEvent(e)
-    # return
-    # if event.buttons() == Qt.MouseButton.LeftButton:
-    # self.StartPosition = [event.pos().x(), event.pos().y()]
-    # QTreeWidget.mousePressEvent(self, event)
-
-    # def contextMenuEvent(self, event):
-    # menu = QMenu(self)
-    # move = QAction('Move duplicates', self)
-    # delete = QAction('Delete duplicates', self)
-    # remove = QAction('Remove from listing', self)
-
-    # delete.triggered.connect(self._move)
-    # create.triggered.connect(self._delete)
-    # rename.triggered.connect(self._remove)
-    # [menu.addAction(z) for z in [move, remove, delete]]
-    # menu.exec_(event.globalPos())
-
-    # def _remove(self):
-    # pass
-
-    # def _delete(self):
-    # pass
-
-    # def _move(self):
-    # pass
-
 
 class AlgWin(QWidget):
     okCLickedSignal = pyqtSignal(Algo, name='okClicked')
@@ -255,18 +199,13 @@ class AlgWin(QWidget):
 
         self.tags.setText(' | '.join(alg.tags))
         self.threshold.setText('%.2f' % (alg.threshold * 100))
-        if alg.matchcase:
-            self.matchcase.setCheckState(Qt.CheckState.Checked)
-        else:
-            self.matchcase.setCheckState(Qt.CheckState.Unchecked)
+        self.matchcase.setChecked(bool(alg.matchcase))
 
     def saveAlgo(self):
         tags = [x for x in [z.strip() for z in str(self.tags.text()).split("|")] if x != ""]
         func = funcs[self.alcombo.currentIndex()]
         threshold = float(str(self.threshold.text())) / 100
-        matchcase = False
-        if self.matchcase.checkState() == Qt.CheckState.Checked:
-            matchcase = True
+        matchcase = self.matchcase.isChecked()
 
         return Algo(tags, threshold, func, matchcase)
 
@@ -471,4 +410,4 @@ if __name__ == "__main__":
     qb.show()
     QApplication.processEvents()
     qb.loadDupes(lib, algos, ['%artist% - %title%', '%title%'])
-    app.exec_()
+    app.exec()

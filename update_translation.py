@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import glob
+import os
 import sys
 import tempfile
-from subprocess import call
+import subprocess
 
 import puddlestuff.resource
 import puddlestuff.findfunc as findfunc
@@ -108,6 +110,19 @@ def write_translations():
     f.close()
 
 
+def get_translation_files(new_lang):
+    translation_path = os.path.join('puddlestuff', 'translations')
+    translation_files = glob.glob(os.path.join(translation_path, '*.ts'))
+
+    new_filename = None
+    if new_lang:
+        new_filename = os.path.join(translation_path, f'puddletag_{new_lang}.ts')
+        if new_filename not in translation_files:
+            translation_files.append(new_filename)
+
+    return sorted(translation_files), new_filename
+
+
 verbose = True
 
 try:
@@ -124,33 +139,30 @@ if lang in ('--help', '-h'):
     print(usage)
     sys.exit(0)
 
-# Update the qmake project file
-with open('puddletag.pro', 'r') as f:
-    lines = f.readlines()
-
-for i, line in enumerate(lines):
-    if line.startswith('TRANSLATIONS'):
-        tr = ' translations/puddletag_%s.ts\n' % lang
-        if tr.strip() not in line:
-            lines[i] = line.strip() + tr
-        break
-
-with open('puddletag.pro', 'w') as f:
-    f.writelines(lines)
-
 if verbose:
     print('Updating `translations.py` from menu-/shortcut-/function-/dialog-sourcecode...\n')
 
 write_translations()
 
+if verbose:
+    print('Updating translation keys in `*.ts` files from application sourcecode...')
 try:
-    if verbose:
-        call(['pylupdate5', '-verbose', 'puddletag.pro'])
-    else:
-        call(['pylupdate5', 'puddletag.pro'])
+    translation_files, ts_file = get_translation_files(lang)
+
+    def argument_generator():
+        """Return all arguments to call pylupdate."""
+        yield 'pylupdate6'
+        yield '--no-obsolete'
+        if verbose:
+            yield '--verbose'
+        for file in translation_files:
+            yield '--ts'
+            yield file
+        yield 'puddlestuff'
+    subprocess.run(argument_generator(), check=True)
 except OSError:
-    print('Error: pylupdate5 is not installed.')
+    print('Error: pylupdate6 is not installed.')
     sys.exit(2)
 
 if verbose:
-    print('\nOpen %s in Qt Linguist in order to edit the translation.' % tr.strip())
+    print(f'\nOpen {ts_file} in Qt Linguist in order to edit the translation.')

@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QMutex
-from PyQt5.QtGui import QTextOption
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QPushButton, QTextEdit, QVBoxLayout, QWidget
+from PyQt6.QtCore import QMutex
+from PyQt6.QtGui import QTextOption
+from PyQt6.QtWidgets import QApplication, QHBoxLayout, QPushButton, QTextEdit, QVBoxLayout, QWidget
 
 from ..constants import RIGHTDOCK
 from ..translations import translate
@@ -57,4 +57,4 @@ if __name__ == '__main__':
     app = QApplication([])
     win = LogDialog()
     win.show()
-    app.exec_()
+    app.exec()

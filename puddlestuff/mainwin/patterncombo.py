@@ -1,8 +1,9 @@
 import sys
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
-    QShortcut, QVBoxLayout
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QShortcut
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QFrame, QHBoxLayout, QInputDialog, QPushButton, \
+    QVBoxLayout
 
 from ..puddleobjects import (PuddleConfig, ListBox,
                              ListButtons)
@@ -156,4 +157,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = PatternCombo(['one', 'the', 'three'])
     win.show()
-    app.exec_()
+    app.exec()

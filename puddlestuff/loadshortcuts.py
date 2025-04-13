@@ -2,7 +2,8 @@
 import os
 import sys
 
-from PyQt5.QtWidgets import QAction, QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QApplication, QMainWindow, QMenu, QMenuBar, QToolBar
 
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig, get_icon, open_resourcefile
@@ -165,4 +166,4 @@ if __name__ == '__main__':
     win.toolbar = win.addToolBar('toolbar')
     loadShortCuts()
     win.show()
-    app.exec_()
+    app.exec()

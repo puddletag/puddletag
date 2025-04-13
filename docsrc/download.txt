@@ -19,8 +19,8 @@ puddletag requires the following dependencies. Visit the respective project's pa
 
 Install instructions follow below.
 
-+   At least `Python 3.8<http://python.org>`_
-+   `PyQt5<http://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
++   At least `Python 3.8 <https://www.python.org>`_
++   `PyQt6 (≥6.4.0) <https://www.riverbankcomputing.co.uk/software/pyqt/intro>`_ for the GUI.
 +   `PyParsing (≥3.0) <https://pypi.org/project/pyparsing/>`_ mtakes care of the parsing...
 +   `Mutagen (≥1.45) <http://code.google.com/p/mutagen/>`_ is used as the tagging lib and...
 +   `Chromaprint (≥ 0.4) <http://acoustid.org/chromaprint>`_ (optional) for AcoustID support.
@@ -34,7 +34,7 @@ Install the dependencies as listed above. For Debian-based distros, you can run 
 
 .. code-block:: bash
 
-    apt install python3-pyqt5 python3-pyparsing python3-mutagen # qtwayland5 # if using wayland
+    apt install python-pyqt6 python-pyparsing python-mutagen
 
 + Now download the source tarball |source_link|_ (SHA1 |source_sha|).
 + Unzip it.

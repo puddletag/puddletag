@@ -16,7 +16,7 @@ Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg
 puddletag uses several third-party modules to performs its tasks:
 
 - [Python3](https://www.python.org/)
-- [PyQt5](https://pypi.org/project/pyqt5/), for the GUI.
+- [PyQt6](https://pypi.org/project/PyQt6/), for the GUI.
 - [configobj](https://pypi.org/project/configobj/)
 - [pyparsing](https://pypi.org/project/pyparsing/) , takes care of the parsing
 - [Mutagen](https://pypi.org/project/mutagen/), used as the tagging lib
@@ -118,7 +118,7 @@ If you seek the bleeding edge of puddletag, or wanting to contribute (we welcome
 First, you need to install the dependencies; this step is different depending on the distribution; on Debian you can run:
 
 ```
-apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt5 python3-pyqt5.qtsvg python3-unidecode
+apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt6 python3-pyqt6.qtsvg python3-unidecode
 ```
 
 Then, clone the repo and run puddletag:

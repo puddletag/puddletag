@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from PyQt5.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QWidget, QCheckBox, QVBoxLayout
 
 from .constants import CONFIGDIR
 from .puddleobjects import PuddleConfig
@@ -90,4 +90,4 @@ if __name__ == '__main__':
     print(_confirmations)
     win = Settings()
     win.show()
-    app.exec_()
+    app.exec()

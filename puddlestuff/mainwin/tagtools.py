@@ -1,7 +1,7 @@
 import traceback
 from functools import partial
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 from mutagen import id3, apev2
 
 from .. import audioinfo
