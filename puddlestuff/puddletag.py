@@ -952,7 +952,7 @@ class MainWin(QMainWindow):
         setRowData = model.setRowData
 
         [setRowData(row, d, undo=False, temp=True) for row in rows]
-        columns = [_f for _f in map(model.columns.get, d) if _f]
+        columns = set(idx for idx, field in model.columns.items() if field in d)
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))
@@ -967,7 +967,9 @@ class MainWin(QMainWindow):
 
         [setRowData(row, d, undo=False, temp=True) for row, d in
          zip(rows, tags)]
-        columns = set([model.columns.get(tagname) for tag in tags for tagname in tag if tagname in model.columns])
+        columns = set(idx for idx, field in model.columns.items()
+                      for tag in tags  for tagname in tag
+                      if field == tagname)
         if columns:
             start = model.index(min(rows), min(columns))
             end = model.index(max(rows), max(columns))
