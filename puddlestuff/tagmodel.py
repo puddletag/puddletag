@@ -7,6 +7,7 @@ from copy import copy, deepcopy
 from operator import itemgetter
 from os import path
 from subprocess import Popen
+from typing import Dict
 
 from PyQt5.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMetaObject, QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal, pyqtSlot, Q_ARG
@@ -575,8 +576,10 @@ class TagModel(QAbstractTableModel):
 
         self._headerData = new_tags
 
-        self.columns = dict((field, i) for i, (title, field) in
-                            enumerate(new_tags))
+    @property
+    def columns(self) -> Dict[int, str]:
+        """Return a mapping from column index to tag field of that column."""
+        return {idx: field for idx, (title, field) in enumerate(self.headerdata)}
 
     @property
     def previewBackground(self):
@@ -1501,7 +1504,7 @@ class TagTable(QTableView):
                 logging.debug("Tried to disconnect un-connected Resize-Slot")
 
     def _getSelectedTags(self):
-        columns = dict([(v, k) for k, v in self.model().columns.items()])
+        columns = self.model().columns
         rows = self.currentRowSelection()
         audios = self.selectedTags
 
@@ -1519,7 +1522,7 @@ class TagTable(QTableView):
         get_index = self.model().index
         isselected = self.selectionModel().isSelected
 
-        field_mapping = dict([(v, k) for k, v in self.model().columns.items()])
+        field_mapping = self.model().columns
         row = min(self.selectedRows)
         fields = [field_mapping[c] for c in range(self.columnCount())
                   if isselected(get_index(row, c))]
