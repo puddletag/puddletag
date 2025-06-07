@@ -115,7 +115,8 @@ for m in tag_modules:
     if hasattr(m, 'filetypes'):
         list(map(lambda x: register_tag(*x), m.filetypes))
 
-setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
+setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'},
+            'APEv2': {'disc': 'discnumber', 'album artist': 'albumartist'}})
 
 _Tag = Tag
 model_tag = lambda x: x
