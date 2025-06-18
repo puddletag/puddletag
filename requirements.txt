@@ -36,5 +36,5 @@ requests==2.32.4
     # via pyacoustid
 unidecode==1.4.0
     # via -r requirements.in
-urllib3==1.26.19
+urllib3==2.5.0
     # via requests
