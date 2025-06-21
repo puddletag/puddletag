@@ -252,7 +252,7 @@ class ChildItem(RootItem):
 class TreeModel(QtCore.QAbstractItemModel):
     retrieving = pyqtSignal(name='retrieving')
     statusChanged = pyqtSignal(str, name='statusChanged')
-    collapse = pyqtSignal(int, name='collapse')
+    collapse = pyqtSignal(QModelIndex, name='collapse')
     retrievalDone = pyqtSignal(name='retrievalDone')
     exactChanged = pyqtSignal(object, name='exactChanged')
     exactMatches = pyqtSignal(list, name='exactMatches')
