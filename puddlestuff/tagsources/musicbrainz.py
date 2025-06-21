@@ -32,7 +32,7 @@ ALBUMID_FIELD = 'mbrainz_album_id'
 ARTIST_KEYS = {
     'name': 'artist',
     'sort-name': 'sortname',
-    'id': 'mbrainz_artist_id',
+    'id': ARTISTID_FIELD,
     'ext:score': '#score',
     'type': 'artist_type',
     'rating': 'mbrainz_rating',
@@ -41,11 +41,15 @@ ARTIST_KEYS = {
 ALBUM_KEYS = ARTIST_KEYS.copy()
 ALBUM_KEYS.update({
     'name': 'album',
-    'id': 'mbrainz_album_id',
+    'id': ALBUMID_FIELD,
     'type': 'album_type',
     'xml:ext': '#xml:ext',
     'title': 'album',
     'track-count': '__numtracks',
+})
+MEDIUM_KEYS = ALBUM_KEYS.copy()
+MEDIUM_KEYS.update({
+    'id': 'mbrainz_medium_id',
 })
 
 TRACK_KEYS = {
@@ -219,7 +223,7 @@ def parse_medium_list(r_node):
     if not mediums:
         return {}
 
-    mediums = [convert_dict(m, ALBUM_KEYS) for m in mediums]
+    mediums = [convert_dict(m, MEDIUM_KEYS) for m in mediums]
     info = mediums[0]
     info.update({'discs': str(len(mediums))})
     return info
