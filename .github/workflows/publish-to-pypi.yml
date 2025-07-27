@@ -11,6 +11,8 @@ jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # This is required for trusted publishing
 
     steps:
     - uses: actions/checkout@master
