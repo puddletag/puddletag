@@ -8,3 +8,4 @@ Exec=puddletag %F
 Icon=puddletag
 GenericName=Audio Tag Editor
 Categories=AudioVideo;Audio;Qt;
+Keywords=tagger;mp3tag;music;
