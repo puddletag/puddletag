@@ -48,6 +48,8 @@ body:
       Example:
         Puddletag: 2.0.1
         OS: Ubuntu 20.04
+        Display Server: X11
+        Desktop Environment: GNOME
         Python: 13.14.0
         PyQt: 7.6.3
 
@@ -55,6 +57,8 @@ body:
     value: |-
       Puddletag: 
       OS: 
+      Display Server: 
+      Desktop Environment: 
       Python: 
       PyQt: 
 - id: additional
