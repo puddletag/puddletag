@@ -276,21 +276,45 @@ def get_os():
     return '%s %s %s' % (platform.system(), platform.release(), platform.version())
 
 
+def get_display_server():
+    """Returns a string describing the display server."""
+    display_server = QApplication.instance().platformName()
+    if display_server == 'xcb':
+        # only a heuristic, but still better than nothing
+        if os.environ.get('XDG_SESSION_TYPE') == 'wayland' or os.environ.get('WAYLAND_DISPLAY'):
+            return 'xwayland'
+        else:
+            return 'x11'
+    if display_server:
+        return display_server
+    return 'unknown'
+
+
+def get_desktop_environment():
+    """Returns a string describing the desktop environment."""
+    for env_var in ('XDG_CURRENT_DESKTOP', 'XDG_SESSION_DESKTOP'):
+        if os.environ.get(env_var):
+            return os.environ[env_var]
+    return 'unknown'
+
+
 def create_bug_report_issue():
     """Create a new, pre-filled bug report as github issue."""
     puddletag_version = version_string
     if changeset:
         puddletag_version = f'{puddletag_version} ({changeset})'
-    version_list = [
+    system_list = [
         ('Puddletag', puddletag_version),
         ('OS', get_os().strip()),
-        *versions().items()
+        ('Display Server', get_display_server().strip()),
+        ('Desktop Environment', get_desktop_environment().strip()),
+        *versions().items(),
     ]
 
     params = urllib.parse.urlencode({
         'template': 'bug_report.yaml',
         'labels': 'bug',
-        'system': '\n'.join(map(lambda x: f'{x[0]}: {x[1]}', version_list)),
+        'system': '\n'.join(map(lambda x: f'{x[0]}: {x[1]}', system_list)),
     })
     url = f'https://github.com/puddletag/puddletag/issues/new?{params}'
     QDesktopServices.openUrl(QUrl(url))
