@@ -877,12 +877,15 @@ class TagModel(QAbstractTableModel):
                 getter = lambda audio: audio.get(field, '')
                 taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
 
-            filenames = [z.filepath for z in self.taginfo]
-            self.taginfo.extend([z for z in taginfo if z.filepath
-                                 not in filenames])
+            loaded_filenames = set(z.filepath for z in self.taginfo)
+            new_tags = [z for z in taginfo if z.filepath not in loaded_filenames]
+
+            if not new_tags:
+                return
 
             first = self.rowCount()
-            self.beginInsertRows(QModelIndex(), first, first + len(taginfo) - 1)
+            self.beginInsertRows(QModelIndex(), first, first + len(new_tags) - 1)
+            self.taginfo.extend(new_tags)
             self.endInsertRows()
 
             top = self.index(first, 0)
