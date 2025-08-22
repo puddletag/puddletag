@@ -16,7 +16,7 @@ idna==3.7
     # via requests
 levenshtein==0.27.1
     # via -r requirements.in
-lxml==6.0.0
+lxml==6.0.1
     # via -r requirements.in
 mutagen==1.47.0
     # via -r requirements.in
