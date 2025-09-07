@@ -464,7 +464,7 @@ class ColumnSettings(HeaderSetting):
 
     def add(self):
         HeaderSetting.add(self)
-        self.listbox.currentItem().setCheckState(True)
+        self.listbox.currentItem().setCheckState(Qt.CheckState.Checked)
 
     def duplicate(self):
         item = self.listbox.currentItem()
