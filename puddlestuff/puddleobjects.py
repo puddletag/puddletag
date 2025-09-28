@@ -35,7 +35,7 @@ from configobj import ConfigObjError
 from . import audioinfo
 from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
                         INFOTAGS, get_mime)
-from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
+from .constants import ACTIONDIR, CONFIGDIR
 from .translations import translate
 
 path = os.path
@@ -761,9 +761,10 @@ def load_actions():
     convert = get_value('convert', True)
     order = get_value('order', [])
 
+    os.makedirs(ACTIONDIR, exist_ok=True)
+
     if convert:
         set_value('convert', False)
-        findfunc.convert_actions(SAVEDIR, ACTIONDIR)
         if order:
             old_order = dict([(basename(z), i) for i, z in
                               enumerate(order)])
