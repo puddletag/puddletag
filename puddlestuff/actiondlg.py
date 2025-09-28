@@ -14,7 +14,7 @@ from pyparsing import delimited_list, alphanums, Combine, Word, QuotedString
 from . import findfunc, functions
 from . import functions_dialogs
 from .audioinfo import INFOTAGS, READONLY
-from .constants import (TEXT, COMBO, CHECKBOX, SAVEDIR, CONFIGDIR, ACTIONDIR)
+from .constants import ACTIONDIR, CHECKBOX, COMBO, CONFIGDIR, TEXT
 from .findfunc import Function, apply_macros, apply_actions, Macro
 from .puddleobjects import (ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist, safe_name, open_resourcefile)
 from .puddleobjects import PuddleConfig, PuddleCombo
@@ -882,9 +882,10 @@ class ActionWindow(QDialog):
         convert = get_value('convert', True)
         order = get_value('order', [])
 
+        os.makedirs(ACTIONDIR, exist_ok=True)
+
         if convert:
             set_value('convert', False)
-            findfunc.convert_actions(SAVEDIR, ACTIONDIR)
             if order:
                 old_order = dict([(basename(z), i) for i, z in
                                   enumerate(order)])

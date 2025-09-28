@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import glob
 import os
-import pickle
 import re
 from collections import defaultdict
 from copy import deepcopy
@@ -74,20 +72,6 @@ def arglen_error(e, passed, function, to_raise=True):
         return message
 
 
-def convert_actions(dirpath, new_dir):
-    backup = os.path.join(dirpath, 'actions.bak')
-    if not os.path.exists(backup):
-        os.mkdir(backup)
-    if not os.path.exists(new_dir):
-        os.mkdir(new_dir)
-    path_join = os.path.join
-    basename = os.path.basename
-    for filename in glob.glob(path_join(dirpath, '*.action')):
-        funcs, name = get_old_action(filename)
-        os.rename(filename, path_join(backup, basename(filename)))
-        save_macro(path_join(new_dir, basename(filename)), name, funcs)
-
-
 def filenametotag(pattern, filename, checkext=False, split_dirs=True):
     """Retrieves tag values from your filename
         pattern is the rule with which to extract
@@ -139,24 +123,6 @@ def filenametotag(pattern, filename, checkext=False, split_dirs=True):
             del (mydict["dummy"])
         return mydict
     return {}
-
-
-def get_old_action(filename):
-    """Gets the action from filename, where filename is either a string or
-    file-like object.
-
-    An action is just a list of functions with a name attached. In puddletag
-    these are stored as pickled objects.
-
-    Returns [list of Function objects, action name]."""
-    if isinstance(filename, str):
-        f = open(filename, "rb")
-    else:
-        f = filename
-    name = pickle.load(f)
-    funcs = pickle.load(f)
-    f.close()
-    return [funcs, name]
 
 
 def load_macro_info(filename):
@@ -669,18 +635,6 @@ def save_macro(filename, name, funcs):
         set_value(i, ARGS, func.args)
 
 
-def saveAction(filename, actionname, funcs):
-    """Saves an action to filename.
-
-    funcs is a list of funcs, and actionname is...er...the name of the action."""
-    if isinstance(filename, str):
-        fileobj = open(filename, 'wb')
-    else:
-        fileobj = filename
-    pickle.dump(actionname, fileobj)
-    pickle.dump(funcs, fileobj)
-
-
 def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
     """
     tagtofilename sets the filename of an mp3 or ogg file
@@ -821,9 +775,6 @@ class Function:
         self.controls = self._getControls()
 
     def reInit(self):
-        # Since this class gets pickled in ActionWindow, the class is never 'destroyed'
-        # Since, a functions docstring wouldn't be reflected back to puddletag
-        # if it were changed calling this function to 're-read' it is a good idea.
         if not self.function.__doc__:
             return
         self.doc = self.function.__doc__.split("\n")
