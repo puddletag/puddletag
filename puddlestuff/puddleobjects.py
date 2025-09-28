@@ -30,7 +30,6 @@ from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QDialog,
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
-from configobj import ConfigObjError
 
 from . import audioinfo
 from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
@@ -2289,10 +2288,7 @@ class PuddleCombo(QWidget):
         values = [str(self.combo.itemText(index)) for index in range(self.combo.count())]
         values.append(str(self.combo.currentText()))
         cparser = PuddleConfig(self.filename)
-        try:
-            cparser.setSection(self.name, 'values', values)
-        except ConfigObjError:
-            pass
+        cparser.setSection(self.name, 'values', values)
 
     def removeCurrent(self):
         self.combo.removeItem(self.combo.currentIndex())
