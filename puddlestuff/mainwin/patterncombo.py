@@ -114,7 +114,7 @@ class SettingsWin(QFrame):
     def saveSettings(self):
         patterns = [str(self.listbox.item(row).text()) for row in range(self.listbox.count())]
         cparser = PuddleConfig()
-        cparser.setSection('editor', 'patterns', patterns)
+        cparser.set('editor', 'patterns', patterns)
 
     def addPattern(self):
         l = self.listbox.item

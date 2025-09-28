@@ -180,9 +180,6 @@ class PuddleConfig(object):
             filename = os.path.join(CONFIGDIR, 'puddletag.conf')
         self.filename = filename
 
-        self.setSection = self.set
-        self.load = self.get
-
     def get(self, section, key, default, getint=False):
         settings = self.data
         try:
@@ -2250,7 +2247,7 @@ class PuddleCombo(QWidget):
         if not default:
             default = []
         cparser.filename = self.filename
-        items = cparser.load(self.name, 'values', default)
+        items = cparser.get(self.name, 'values', default)
         newitems = []
         [newitems.append(z) for z in items if z not in newitems]
         self.combo.addItems(newitems)
@@ -2264,13 +2261,13 @@ class PuddleCombo(QWidget):
             default = []
         self.combo.clear()
         cparser = PuddleConfig(self.filename)
-        self.combo.addItems(cparser.load(self.name, 'values', default))
+        self.combo.addItems(cparser.get(self.name, 'values', default))
 
     def save(self):
         values = [str(self.combo.itemText(index)) for index in range(self.combo.count())]
         values.append(str(self.combo.currentText()))
         cparser = PuddleConfig(self.filename)
-        cparser.setSection(self.name, 'values', values)
+        cparser.set(self.name, 'values', values)
 
     def removeCurrent(self):
         self.combo.removeItem(self.combo.currentIndex())
