@@ -748,34 +748,16 @@ def settaglist(tags):
 
 def load_actions():
     from . import findfunc
-    basename = os.path.basename
 
-    funcs = {}
     cparser = PuddleConfig()
     set_value = partial(cparser.set, 'puddleactions')
     get_value = partial(cparser.get, 'puddleactions')
 
     firstrun = get_value('firstrun', True)
     set_value('firstrun', False)
-    convert = get_value('convert', True)
     order = get_value('order', [])
 
     os.makedirs(ACTIONDIR, exist_ok=True)
-
-    if convert:
-        set_value('convert', False)
-        if order:
-            old_order = dict([(basename(z), i) for i, z in
-                              enumerate(order)])
-            files = glob(os.path.join(ACTIONDIR, '*.action'))
-            order = {}
-            for f in files:
-                try:
-                    order[old_order[basename(f)]] = f
-                except KeyError:
-                    pass
-            order = [z[1] for z in sorted(order.items())]
-            set_value('order', order)
 
     files = glob(os.path.join(ACTIONDIR, '*.action'))
     if firstrun and not files:
