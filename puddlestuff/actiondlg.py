@@ -870,35 +870,16 @@ class ActionWindow(QDialog):
 
     def loadMacros(self):
         from glob import glob
-        basename = os.path.basename
 
-        funcs = {}
         cparser = PuddleConfig()
         set_value = partial(cparser.set, 'puddleactions')
         get_value = partial(cparser.get, 'puddleactions')
 
         firstrun = get_value('firstrun', True)
         set_value('firstrun', False)
-        convert = get_value('convert', True)
         order = get_value('order', [])
 
         os.makedirs(ACTIONDIR, exist_ok=True)
-
-        if convert:
-            set_value('convert', False)
-            if order:
-                old_order = dict([(basename(z), i) for i, z in
-                                  enumerate(order)])
-                files = glob(os.path.join(ACTIONDIR, '*.action'))
-                order = {}
-                for i, action_fn in enumerate(files):
-                    try:
-                        order[old_order[basename(action_fn)]] = action_fn
-                    except KeyError:
-                        if not old_order:
-                            order[i] = action_fn
-                order = [z[1] for z in sorted(order.items())]
-                set_value('order', order)
 
         files = glob(os.path.join(ACTIONDIR, '*.action'))
         if firstrun and not files:
