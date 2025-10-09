@@ -203,21 +203,21 @@ class Playlist(QWidget):
         cparser = PuddleConfig()
 
         self.extpattern = QLineEdit()
-        self.extpattern.setText(cparser.load('playlist', 'extpattern', '%artist% - %title%'))
+        self.extpattern.setText(cparser.get('playlist', 'extpattern', '%artist% - %title%'))
 
         self.extinfo = QCheckBox(translate("Playlist Settings", '&Write extended info'), self)
         self.extinfo.stateChanged.connect(self.extpattern.setEnabled)
-        self.extinfo.setChecked(cparser.load('playlist', 'extinfo', True))
+        self.extinfo.setChecked(cparser.get('playlist', 'extinfo', True))
         self.extpattern.setEnabled(self.extinfo.isChecked())
 
         self.reldir = QCheckBox(translate("Playlist Settings", 'Entries &relative to working directory'))
-        self.reldir.setChecked(cparser.load('playlist', 'reldir', False))
+        self.reldir.setChecked(cparser.get('playlist', 'reldir', False))
 
         self.windows_separator = QCheckBox(translate("Playlist Settings", 'Use windows path separator (\\)'))
-        self.windows_separator.setChecked(cparser.load('playlist', 'windows_separator', False))
+        self.windows_separator.setChecked(cparser.get('playlist', 'windows_separator', False))
 
         self.filename = QLineEdit()
-        self.filename.setText(cparser.load('playlist', 'filepattern', 'puddletag.m3u'))
+        self.filename.setText(cparser.get('playlist', 'filepattern', 'puddletag.m3u'))
         label = QLabel(translate("Playlist Settings", '&Filename pattern.'))
         label.setBuddy(self.filename)
 
@@ -236,11 +236,11 @@ class Playlist(QWidget):
 
     def applySettings(self, control=None):
         cparser = PuddleConfig()
-        cparser.setSection('playlist', 'extinfo', self.extinfo.isChecked())
-        cparser.setSection('playlist', 'extpattern', str(self.extpattern.text()))
-        cparser.setSection('playlist', 'reldir', self.reldir.isChecked())
-        cparser.setSection('playlist', 'filepattern', str(self.filename.text()))
-        cparser.setSection('playlist', 'windows_separator', self.windows_separator.isChecked())
+        cparser.set('playlist', 'extinfo', self.extinfo.isChecked())
+        cparser.set('playlist', 'extpattern', str(self.extpattern.text()))
+        cparser.set('playlist', 'reldir', self.reldir.isChecked())
+        cparser.set('playlist', 'filepattern', str(self.filename.text()))
+        cparser.set('playlist', 'windows_separator', self.windows_separator.isChecked())
 
 
 class TagMappings(QWidget):
