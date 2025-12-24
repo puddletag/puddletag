@@ -372,7 +372,7 @@
     And puddletag can now use the MusicBrainz ArtistID if it's in a file's tag instead of searching for one. Still need to enable it for releases.
     Tag mappings for tag sources, see the tooltip in Preferences/Mappings for more info.
     And the ability to load only files based on their extension (Preferences/Tags to configure.)
-    A new applicication icon created by Evan himself.
+    A new application icon created by Evan himself.
       
 
 11 June 2010 (0.90)
@@ -434,11 +434,11 @@
 
 4 June 2009 (0.7.0)
     New Features:
-        Loading times are improved by a couple of miliseconds.
+        Loading times are improved by a couple of milliseconds.
         Showing duplicates can now be slightly fuzzy by adding : in front of the tag that's to be used.
-        Added an :artist fuzzy compare listing to the libary view.
+        Added an :artist fuzzy compare listing to the library view.
     Fixes:
-        Sorting or doing anything else while some rows are higlighted is fixed.
+        Sorting or doing anything else while some rows are highlighted is fixed.
         Other little stuff that I can't remember.
     Changes:
         The user interface has been modified just a tad, to be me 'aligned.'
@@ -489,7 +489,7 @@
     Nope, still don't got no console version(next release, definitely).
 
     Anyway, some changes from the last release include:
-        The abilitiy to search the music libraries(Albeit slowly).
+        The ability to search the music libraries(Albeit slowly).
         A totally revamped parsing system(though it'll look the same from the users point of view).
         Like Mp3tag, Actions are now stored separately instead of in one big file.
 	Two extra toolbar buttons, "In library" and 'Show Dupes".
