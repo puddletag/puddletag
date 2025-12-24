@@ -11,7 +11,7 @@ New Stuff
 * And puddletag can now use the MusicBrainz ArtistID if it's in a file's tag instead of searching for one. Still need to enable it for releases.
 * Tag mappings for tag sources, see the tooltip in Preferences/Mappings for more info.
 * And the ability to load only files based on their extension (Preferences/Tags to configure.)
-* A new applicication icon created by Evan himself.
+* A new application icon created by Evan himself.
 
 Fixes
 -----

@@ -763,7 +763,7 @@ New Stuff
 * And puddletag can now use the MusicBrainz ArtistID if it's in a file's tag instead of searching for one. Still need to enable it for releases.
 * Tag mappings for tag sources, see the tooltip in Preferences/Mappings for more info.
 * And the ability to load only files based on their extension (Preferences/Tags to configure.)
-* A new applicication icon created by Evan himself.
+* A new application icon created by Evan himself.
 
 Fixes
 -----
@@ -924,7 +924,7 @@ Besides not having much time, I have been very lazy this month when it came to p
 New Features
 ------------
 
-* Loading times are improved by a couple of miliseconds.
+* Loading times are improved by a couple of milliseconds.
 * I've implemented a bit of fuzzy string matching via the Show Dupes button. Enter a tag prepended by a colon (like **":title** and values will be fuzzily matched. It uses the `python-Levenshtein <http://code.michael-noll.com/?p=third-party;a=tree;f=python-Levenshtein-0.10.1>`_ for matching. If you don't have it installed, difflib (part of the standard library) is used. There isn't much difference except that Levenshtein is supposed to be faster since it's compiled (I haven't tested it though). Furthermore, entering **:artist** in the library search box will show you all the fuzzily matched duplicate artists.
 
 Changes
