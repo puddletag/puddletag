@@ -1,32 +1,41 @@
-[info]
-name = Standard
-[Func0]
-fields = __all,
-func_name = replace
-module = puddlestuff.functions
-arguments = %20, " ", False, False
-[Func1]
-fields = __all,
-func_name = replace
-module = puddlestuff.functions
-arguments = _, " ", False, False
-[Func2]
-fields = __all,
-func_name = replace
-module = puddlestuff.functions
-arguments = Dj, DJ, False, True
-[Func3]
-fields = __all,
-func_name = replace
-module = puddlestuff.functions
-arguments = Mc, MC, False, True
-[Func4]
-fields = __all,
-func_name = replace
-module = puddlestuff.functions
-arguments = Feat, feat, False, True
-[Func5]
-fields = __all,
-func_name = replace
-module = puddlestuff.functions
-arguments = Vs, vs, False, True
+{
+  "info": {
+    "name": "Standard"
+  },
+  "Func0": {
+    "func_name": "replace",
+    "module": "puddlestuff.functions",
+    "fields": ["__all"],
+    "arguments": [ "%20", " ", "False", "False" ]
+  },
+  "Func1": {
+    "func_name": "replace",
+    "module": "puddlestuff.functions",
+    "fields": ["__all"],
+    "arguments": ["_", " ", "False", "False"]
+  },
+  "Func2": {
+    "fields": ["__all"],
+    "func_name": "replace",
+    "module": "puddlestuff.functions",
+    "arguments": ["Dj", "DJ", "False", "True"]
+  },
+  "Func3": {
+    "func_name": "replace",
+    "module": "puddlestuff.functions",
+    "fields": ["__all"],
+    "arguments": ["Mc", "MC", "False", "True"]
+  },
+  "Func4": {
+    "func_name": "replace",
+    "module": "puddlestuff.functions",
+    "fields": ["__all"],
+    "arguments": ["Feat", "feat", "False", "True"]
+  },
+  "Func5": {
+    "func_name": "replace",
+    "module": "puddlestuff.functions",
+    "fields": ["__all"],
+    "arguments": ["Vs", "vs", "False", "True"]
+  }
+}
