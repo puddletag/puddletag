@@ -52,6 +52,10 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    For the floating point number x.y. Returns integer x.
 
+.. describe:: $equals(x, y)
+
+   Returns True if x == y. False otherwise.
+
 .. describe:: $geql(x, y)
 
    Returns True if x >= y. False otherwise.
