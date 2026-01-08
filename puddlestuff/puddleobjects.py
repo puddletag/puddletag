@@ -30,12 +30,11 @@ from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QDialog,
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
     QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
     QTextEdit, QToolButton, QVBoxLayout, QWidget
-from configobj import ConfigObjError
 
 from . import audioinfo
 from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
                         INFOTAGS, get_mime)
-from .constants import ACTIONDIR, SAVEDIR, CONFIGDIR
+from .constants import ACTIONDIR, CONFIGDIR
 from .translations import translate
 
 path = os.path
@@ -180,9 +179,6 @@ class PuddleConfig(object):
         if not filename:
             filename = os.path.join(CONFIGDIR, 'puddletag.conf')
         self.filename = filename
-
-        self.setSection = self.set
-        self.load = self.get
 
     def get(self, section, key, default, getint=False):
         settings = self.data
@@ -749,33 +745,16 @@ def settaglist(tags):
 
 def load_actions():
     from . import findfunc
-    basename = os.path.basename
 
-    funcs = {}
     cparser = PuddleConfig()
     set_value = partial(cparser.set, 'puddleactions')
     get_value = partial(cparser.get, 'puddleactions')
 
     firstrun = get_value('firstrun', True)
     set_value('firstrun', False)
-    convert = get_value('convert', True)
     order = get_value('order', [])
 
-    if convert:
-        set_value('convert', False)
-        findfunc.convert_actions(SAVEDIR, ACTIONDIR)
-        if order:
-            old_order = dict([(basename(z), i) for i, z in
-                              enumerate(order)])
-            files = glob(os.path.join(ACTIONDIR, '*.action'))
-            order = {}
-            for f in files:
-                try:
-                    order[old_order[basename(f)]] = f
-                except KeyError:
-                    pass
-            order = [z[1] for z in sorted(order.items())]
-            set_value('order', order)
+    os.makedirs(ACTIONDIR, exist_ok=True)
 
     files = glob(os.path.join(ACTIONDIR, '*.action'))
     if firstrun and not files:
@@ -2268,7 +2247,7 @@ class PuddleCombo(QWidget):
         if not default:
             default = []
         cparser.filename = self.filename
-        items = cparser.load(self.name, 'values', default)
+        items = cparser.get(self.name, 'values', default)
         newitems = []
         [newitems.append(z) for z in items if z not in newitems]
         self.combo.addItems(newitems)
@@ -2282,16 +2261,13 @@ class PuddleCombo(QWidget):
             default = []
         self.combo.clear()
         cparser = PuddleConfig(self.filename)
-        self.combo.addItems(cparser.load(self.name, 'values', default))
+        self.combo.addItems(cparser.get(self.name, 'values', default))
 
     def save(self):
         values = [str(self.combo.itemText(index)) for index in range(self.combo.count())]
         values.append(str(self.combo.currentText()))
         cparser = PuddleConfig(self.filename)
-        try:
-            cparser.setSection(self.name, 'values', values)
-        except ConfigObjError:
-            pass
+        cparser.set(self.name, 'values', values)
 
     def removeCurrent(self):
         self.combo.removeItem(self.combo.currentIndex())
