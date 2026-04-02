@@ -736,6 +736,15 @@ def pic_to_bin(image):
     description = image.get(util.DESCRIPTION)
     if not description:
         description = ''
+
+    # For compatibility, prefer latin-1 if possible
+    try:
+        description.encode("latin-1")
+    except UnicodeEncodeError:
+        encoding = UTF8
+    else:
+        encoding = ISO8859
+
     imagetype = image.get(util.IMAGETYPE, encoding)
     mime = image.get(util.MIMETYPE)
     if not mime:
