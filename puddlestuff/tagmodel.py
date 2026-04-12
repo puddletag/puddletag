@@ -1979,6 +1979,16 @@ class TagTable(QTableView):
         model.previewBackground = QColor.fromRgb(*preview_color)
         model.selectionBackground = QColor.fromRgb(*selection_color)
 
+        highlight_default = QPalette().color(QPalette.ColorRole.Highlight).getRgb()[:-1]
+        focused_color = cparser.get('table', 'focused_color', highlight_default, True)
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Highlight,
+                         QColor.fromRgb(*focused_color))
+        palette.setColor(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Highlight,
+                         QColor.fromRgb(*focused_color))
+        self.setPalette(palette)
+
         sort_fields = cparser.get('table', 'sort_fields', [])
         reverse = cparser.get('table', 'sort_reverse', False, True)
 

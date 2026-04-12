@@ -541,7 +541,10 @@ class ColorEdit(QWidget):
 
         selection = get_color('selected_color', selection_default)
 
-        colors = (add, edit, remove, preview, selection)
+        highlight_default = QPalette().color(QPalette.ColorRole.Highlight).getRgb()[:-1]
+        focused = get_color('focused_color', highlight_default)
+
+        colors = (add, edit, remove, preview, selection, focused)
 
         text = translate("Colour Settings", '<p>Below are the backgrounds used for various controls in puddletag. <br /> Double click the desired action to change its colour.</p>')
         label = QLabel(text)
@@ -560,7 +563,8 @@ class ColorEdit(QWidget):
             (translate("Colour Settings", 'Row colour for files with previews.'), preview),
             (translate("Colour Settings", 'Field added in Extended Tags.'), add),
             (translate("Colour Settings", 'Field edited in Extended Tags.'), edit),
-            (translate("Colour Settings", 'Field removed in Extended Tags.'), remove), ]
+            (translate("Colour Settings", 'Field removed in Extended Tags.'), remove),
+            (translate("Colour Settings", 'Focused / selected cells colour (e.g. Ctrl+A).'), focused), ]
 
         for i, z in enumerate(titles):
             self.listbox.setItem(i, 0, StatusWidgetItem(*z))
@@ -599,9 +603,17 @@ class ColorEdit(QWidget):
         cparser.set('extendedtags', 'add', colors[2])
         cparser.set('extendedtags', 'edit', colors[3])
         cparser.set('extendedtags', 'remove', colors[4])
+        cparser.set('table', 'focused_color', colors[5])
 
         control.model().selectionBackground = QColor.fromRgb(*colors[0])
         control.model().previewBackground = QColor.fromRgb(*colors[1])
+
+        palette = control.palette()
+        palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Highlight,
+                         QColor.fromRgb(*colors[5]))
+        palette.setColor(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Highlight,
+                         QColor.fromRgb(*colors[5]))
+        control.setPalette(palette)
 
 
 SETTINGSWIN = 'settingsdialog'
