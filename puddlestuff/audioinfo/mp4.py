@@ -174,7 +174,7 @@ FUNCS = {
     'itunesaccounttype': (getint, setint),
     'itunesaccount': (gettext, settext),
     'itunesartistid': (getint, setint),
-    'itunescomposerid': (gettext, settext),
+    'itunescomposerid': (getint, setint),
     'itunescatalogid': (getint, setint),
     'itunesgenreid': (getint, setint),
     'itunesalbumid': (getint, setint),
