@@ -114,6 +114,13 @@ Add the following Nix code to your NixOS Configuration, usually located in `/etc
 </details>
 
 <details>
+<summary><b>Solus</b></summary>
+
+`eopkg it puddletag`
+
+</details>
+
+<details>
 <summary><b>Brew/MacOS</b></summary>
 
 _support needed, open an issue if interested in working on it_
