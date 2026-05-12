@@ -453,7 +453,15 @@ class Tag(util.MockTag):
             try:
                 newtag[REVTAGS[tag]] = value
             except KeyError:
-                newtag[self.__freeform[tag]] = encode(self.__tags[tag])
+                atom = self.__freeform[tag]
+                # Only freeform '----:' atoms accept bytes payloads. Other
+                # atoms (e.g. unmapped 4-char text atoms like '\xa9wrk') must
+                # be written as strings, otherwise mutagen's text-atom
+                # renderer raises TypeError ('%r not str').
+                if atom.startswith('----'):
+                    newtag[atom] = encode(self.__tags[tag])
+                else:
+                    newtag[atom] = list(self.__tags[tag])
 
         if self.images:
             newtag['covr'] = [_f for _f in map(pic_to_bin, self.images) if _f]
