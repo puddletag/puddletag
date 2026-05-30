@@ -11,6 +11,7 @@ from os import path, stat
 
 import mutagen
 from PyQt6.QtCore import QMimeDatabase
+from PyQt6.QtGui import QImage
 
 from .constants import *
 
@@ -279,6 +280,19 @@ def get_mime(data):
     if not mime.isDefault():
         return mime.name()
     return ''
+
+
+def get_image_dimensions(data):
+    """Read the pixel dimensions of image ``data``.
+
+    ``data`` is a bytes object containing an encoded image. Returns a
+    ``(width, height)`` tuple. If the image cannot be decoded, ``(0, 0)`` is
+    returned so callers can fall back to the unspecified value defined by the
+    format."""
+    image = QImage()
+    if not image.loadFromData(data):
+        return 0, 0
+    return image.width(), image.height()
 
 
 def get_total(tag):

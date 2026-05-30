@@ -54,6 +54,8 @@ def image_to_bin(image):
     props['mime'] = mime
     props['data'] = data
 
+    props['width'], props['height'] = util.get_image_dimensions(data)
+
     p = Picture()
     [setattr(p, z, props[z]) for z in PICARGS if z in props]
     return p
