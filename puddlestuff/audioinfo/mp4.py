@@ -91,9 +91,9 @@ def setbool(value):
 
 def settext(text):
     if isinstance(text, str):
-        return [str(text)]
-    elif isinstance(text, str):
         return [text]
+    elif isinstance(text, bytes):
+        return [text.decode("utf-8")]
     else:
         return [str(z) for z in text]
 
