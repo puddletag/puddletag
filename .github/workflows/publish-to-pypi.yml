@@ -8,7 +8,11 @@ on:
       - '*'
 
 jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
   build-n-publish:
+    needs: tests
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
     permissions:

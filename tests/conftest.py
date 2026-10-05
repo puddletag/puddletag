@@ -174,6 +174,8 @@ def make_audio(tmp_path):
     can't be made this way: ffmpeg has no encoder for them.
     """
     if shutil.which('ffmpeg') is None:
+        if os.environ.get('CI'):  # set by GitHub Actions; CI must not skip these
+            pytest.fail('ffmpeg is not installed')
         pytest.skip('ffmpeg is not installed')
 
     def make(name, directory=None, **tags):
