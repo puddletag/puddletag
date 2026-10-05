@@ -1,0 +1,7 @@
+-c requirements.txt
+
+# testing
+pytest
+pytest-qt
+pytest-cov
+pytest-timeout
