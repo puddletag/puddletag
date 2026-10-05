@@ -2,7 +2,7 @@
 PyQt6>=6.4.0
 configobj==5.0.9
 mutagen==1.47.0
-pyparsing>=3.1.2
+pyparsing>=3.3.3
 unidecode==1.4.0
 
 # extra / tag sources
