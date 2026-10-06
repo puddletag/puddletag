@@ -6,7 +6,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 * For comparison functions, **0** and an empty string (**""**) evaluate to **False**. Everything else evaluates to **True**.
 * Strings that contain commas must be enclode in double quotes (**"**).
 * White space before an argument is discarded, but white space after it is kept: ``$upper(ab   )`` gives ``"AB   "``. Enclose the argument in quotes to keep leading white space, as in **$left(" One space.", 3)**.
-* Inside a function's arguments, a backslash makes the next character literal if it is one of ``, ( ) $ \``, so ``$upper(a\,b)`` gives ``A,B``. Before any other character the backslash is kept. In a quoted argument every backslash is kept, so quote regular expressions that contain backslashes (see **$regex** below).
+* Inside a function's arguments, a backslash makes the next character literal if it is one of ``, ( ) $ \``, so ``$upper(a\,b)`` gives ``A,B``. Before any other character the backslash is kept. In a quoted argument every backslash is kept, so quote regular expressions that contain backslashes (see **$regex** below). The exception is ``\"``, which puts a ``"`` in a quoted argument: ``$upper("say \"hi, there\"")`` gives ``SAY "HI, THERE"``. A ``\"`` that ends the argument is its closing quote, and its backslash is kept: ``$upper("a\")`` gives ``A\``.
 
 .. describe:: $and(a, b)
 

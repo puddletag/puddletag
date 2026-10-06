@@ -23,11 +23,6 @@ def doc_mismatch(reason, **kwargs):
     return pytest.mark.xfail(strict=True, reason=f'code differs from the docs: {reason}', **kwargs)
 
 
-# Synthetic inputs. replacevars reads the \" before the closing quote as an
-# escaped quote, so the backslash turns into a ".
-QUOTED_TRAILING_BACKSLASH = 'a quoted argument that ends in a backslash loses it and gains a "'
-
-
 def run(script, state=None, **tags):
     """Evaluate script against tags shaped like a real Tag's: file-info fields
     (__ext, __path, ...) are strings, every other field is a list of values."""
@@ -55,8 +50,11 @@ def truth(expr):
     (r'$upper(a\(b\))', 'A(B)'),
     (r'$lower(A\B)', r'a\b'),            # before anything else it is kept
     (r'$upper("a\(b\)")', r'A\(B\)'),    # and in quotes every backslash is kept
-    pytest.param(r'$upper("a\\")', r'A\\', marks=doc_mismatch(QUOTED_TRAILING_BACKSLASH)),  # ... also at the end
-    pytest.param(r'$upper("a\")', 'A\\', marks=doc_mismatch(QUOTED_TRAILING_BACKSLASH)),
+    (r'$upper("say \"hi, there\"")', 'SAY "HI, THERE"'),  # except \", a quote
+    (r'$upper("a\")', 'A\\'),            # ... unless it ends the argument
+    (r'$upper("a\\")', r'A\\'),
+    (r'$upper("a\" )', 'A\\ '),
+    (r'$replace(a\b,"\",/)', 'a/b'),     # synthetic: replacing backslashes
 ])
 def test_documented_rules(script, expected):
     assert run(script) == expected
