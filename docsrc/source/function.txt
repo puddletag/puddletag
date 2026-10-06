@@ -299,7 +299,7 @@ Some examples for the text, 'concentricpuddle writes this'.
 
 * regexp=(concentricpuddle) and repl=$upper($1) => 'CONCENTRICPUDDLE'
 * regexp='(concentricpuddle) writes (this)', repl='$upper($1) wrote $2' => 'CONCENTRICPUDDLE wrote this'
-* regexp='(concentricpuddle) writes (this)', repl='$upper($1) wrote $3' => 'CONCENTRICPUDDLE wrote $3', because $3 wasn't found.
+* regexp='(concentricpuddle) writes (this)', repl='$upper($1) wrote $3' => 'CONCENTRICPUDDLE wrote ', because there is no group 3, so $3 is replaced with nothing.
 * regexp='(c.*puddle)', repl='name=$1' => 'name=concentricpuddle'
 
 .. _sort_values:

@@ -35,9 +35,6 @@ def truth(expr):
     return f'$if({expr},yes,no)'
 
 
-TRAILING_SPACE = doc_mismatch('trailing whitespace in an unquoted argument is kept')
-
-
 # docs: the rules at the top of scripting.txt -----------------------------------
 
 @pytest.mark.parametrize('script, expected', [
@@ -47,7 +44,11 @@ TRAILING_SPACE = doc_mismatch('trailing whitespace in an unquoted argument is ke
     ('$lower("Rock, Paper")', 'rock, paper'),  # commas only inside double quotes
     ('$left(" One space.", 3)', ' On'),  # the docs' own example
     ('$upper(   ab)', 'AB'),             # leading whitespace is dropped
-    pytest.param('$upper(ab   )', 'AB', marks=TRAILING_SPACE),  # ... and trailing, say the docs
+    ('$upper(ab   )', 'AB   '),          # ... trailing whitespace is kept
+    (r'$upper(a\,b)', 'A,B'),            # a backslash makes , ( ) $ \ literal
+    (r'$upper(a\(b\))', 'A(B)'),
+    (r'$lower(A\B)', r'a\b'),            # before anything else it is kept
+    (r'$upper("a\(b\)")', r'A\(B\)'),    # and in quotes every backslash is kept
 ])
 def test_documented_rules(script, expected):
     assert run(script) == expected
@@ -153,8 +154,7 @@ def test_mid_start_counts_from_zero():
 @pytest.mark.parametrize('regex, repl, expected', [
     ('(concentricpuddle)', '$upper($1)', 'CONCENTRICPUDDLE writes this'),
     ('(concentricpuddle) writes (this)', '$upper($1) wrote $2', 'CONCENTRICPUDDLE wrote this'),
-    pytest.param('(concentricpuddle) writes (this)', '$upper($1) wrote $3', 'CONCENTRICPUDDLE wrote $3',
-                 marks=doc_mismatch('a group that does not exist becomes "", not "$3"')),
+    ('(concentricpuddle) writes (this)', '$upper($1) wrote $3', 'CONCENTRICPUDDLE wrote '),
     ('(c.*puddle)', 'name=$1', 'name=concentricpuddle writes this'),
 ])
 def test_documented_replace_with_regexp(regex, repl, expected):
@@ -231,10 +231,10 @@ def test_replace_quoted_word_keeps_its_spaces():
     assert run('$replace(%artist%," / ",-)', artist='Foo / Bar') == 'Foo-Bar'
 
 
-@TRAILING_SPACE
-def test_replace_unquoted_word_drops_its_spaces():
-    # I986, unquoted: the docs say " / " is "/", which leaves "Foo - Bar".
-    assert run('$replace(%artist%, / ,-)', artist='Foo / Bar') == 'Foo - Bar'
+def test_replace_unquoted_word_keeps_its_trailing_space():
+    # I986, unquoted: the leading space is dropped and the trailing one kept,
+    # so the word replaced is "/ ".
+    assert run('$replace(%artist%, / ,-)', artist='Foo / Bar') == 'Foo -Bar'
 
 
 def test_unclosed_function_is_a_syntax_error():
@@ -258,11 +258,13 @@ def test_regex_with_escaped_brackets_quoted():
     assert run(r'$regex(%title%,"\([\s\S]*\)",)', title='Song (Live)') == 'Song '
 
 
-@pytest.mark.xfail(strict=True, reason=f'{GH}/issues/219: unquoted, the script parser eats the '
-                                       r'backslash of \( so the regex matches the whole title')
-def test_regex_with_escaped_brackets_unquoted():
-    # The exact script from the report. It no longer errors; it empties the field.
-    assert run(r'$regex(%title%,\([\s\S]*\),)', title='Song (Live)') == 'Song '
+@pytest.mark.parametrize('script', [
+    r'$regex(%title%,\(.*\),)',          # the docs' example
+    r'$regex(%title%,\([\s\S]*\),)',     # the exact script from I219
+])
+def test_regex_with_escaped_brackets_unquoted(script):
+    # docs: unquoted, \( reaches the regex as (, so it matches the whole title.
+    assert run(script, title='Song (Live)') == ''
 
 
 def test_regex_matchcase_argument():

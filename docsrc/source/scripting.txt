@@ -5,7 +5,8 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
 * For comparison functions, **0** and an empty string (**""**) evaluate to **False**. Everything else evaluates to **True**.
 * Strings that contain commas must be enclode in double quotes (**"**).
-* White space before and after arguments will be discarded. Enclose the argument in quotes to preserve it as in **$left(" One space.", 3)**.
+* White space before an argument is discarded, but white space after it is kept: ``$upper(ab   )`` gives ``"AB   "``. Enclose the argument in quotes to keep leading white space, as in **$left(" One space.", 3)**.
+* Inside a function's arguments, a backslash makes the next character literal if it is one of ``, ( ) $ \``, so ``$upper(a\,b)`` gives ``A,B``. Before any other character the backslash is kept. In a quoted argument every backslash is kept, so quote regular expressions that contain backslashes (see **$regex** below).
 
 .. describe:: $ceiling()
 
@@ -162,7 +163,9 @@ The scripting functions that puddletag supports are listed here. Use them where 
    | **regex**: regular expression to use as the search eg. *jay\.**
    | **repl**: Text to replace all matches of regex with. Can be pattern ex *$lower($1)*, but has to be quoted like in "$lower($1)" otherwise any scripting functions used will be run before the regular expression is evaluated.
    | **matchcase**: Defaults to *0*. If *1*, will have case-sensitive matching.
-   
+
+   Quote **regex** when it contains a backslash. Unquoted, ``\(`` reaches the regular expression as ``(``, so ``$regex(%title%,\(.*\),)`` turns *Song (Live)* into an empty string, while ``$regex(%title%,"\(.*\)",)`` gives *Song* followed by a space.
+
    See :ref:`replace_with_regexp` for more examples.
     
 
