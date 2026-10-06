@@ -293,6 +293,9 @@ class FunctionDialog(QWidget):
     def _createControl(self, label, ctype, default=None):
         if ctype == 'text':
             control = self._controls['text'](label, parent=self)
+            control.combo.setSizeAdjustPolicy(
+                QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+            control.combo.setMinimumContentsLength(20)
         else:
             control = self._controls[ctype](self)
 
