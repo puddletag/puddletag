@@ -2,7 +2,8 @@
 
 Expected results come from three places, named next to each case:
 - docs: docsrc/source/scripting.txt and function.txt, the documented behaviour;
-- shared: scripts users posted in the puddletag tracker (linked);
+- shared: scripts users posted in the puddletag tracker or published in
+  their configs (linked);
 - bug: reports in the tracker, with the input and expectation they gave.
 Tag values are synthetic unless the linked source gave them.
 
@@ -133,8 +134,10 @@ def test_documented_functions(script, expected):
 
 
 @pytest.mark.parametrize('script, tags, expected', [
-    pytest.param('$meta_sep(artist, " / ")', {'artist': ['A', 'B']}, 'A / B',
-                 marks=doc_mismatch('quotes are passed through to the separator')),
+    ('$meta_sep(artist, " / ")', {'artist': ['A', 'B']}, 'A / B'),
+    (r'$meta_sep(artist, "\\")', {'artist': ['A', 'B']}, r'A\\B'),  # quoted: every backslash is kept
+    ('$meta_sep(artist, " & ")', {'artist': ['A', 'B']}, 'A & B'),  # the docs' example
+    ('$meta_sep(artist, %genre%)', {'artist': ['A', 'B'], 'genre': 'G'}, 'A%genre%B'),  # fields aren't replaced
     ('$meta_sep(artist)', {'artist': ['A', 'B']}, 'A, B'),  # sep defaults to ', '
     ('$meta_sep(artist)', {'artist': 'Solo'}, 'Solo'),
 ])
@@ -184,7 +187,7 @@ def test_documented_replace_with_regexp(regex, repl, expected):
     assert functions.replaceWithReg({}, 'concentricpuddle writes this', regex, repl) == expected
 
 
-# shared: scripts users posted in the tracker -----------------------------------
+# shared: scripts users posted in the tracker or their configs ------------------
 
 @pytest.mark.parametrize('script, tags, expected', [
     pytest.param(  # disc folder only for multi-disc releases
@@ -224,6 +227,10 @@ def test_documented_replace_with_regexp(regex, repl, expected):
         '$upper($to_ascii($meta_sep(artist,/)))',
         {'artist': ['Björk', 'Sigur Rós']}, 'BJORK/SIGUR ROS',
         id='I510-artistsort'),
+    pytest.param(  # a saved pattern in github.com/xeruf/dotfiles .config/puddletag/puddletag.conf
+        '$meta_sep(artist," & ") - %title%',
+        {'artist': ['A', 'B'], 'title': 'T'}, 'A & B - T',
+        id='xeruf-dotfiles-meta-sep'),
     pytest.param(  # the working script from the issue's last comment
         r'$if(%discnumber%, %discnumber% - ,)$num(%track%,2) - %title%'
         r'$if($replace(%artist%, %albumartist%,),\ - %artist%,)',

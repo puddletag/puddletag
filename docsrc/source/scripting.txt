@@ -115,9 +115,9 @@ The scripting functions that puddletag supports are listed here. Use them where 
    If field is multiple-valued, the field's nth value. Note that it's just the field name, **field** and not **%field%**.
 
 
-.. describe:: $meta_sep(field, sep=', ')
+.. describe:: $meta_sep(field, sep)
 
-   If field is multiple-valued, returns the field's values joined by sep. Otherwise just returns the field's value.
+   If field is multiple-valued, returns the field's values joined by sep. Otherwise just returns the field's value. sep defaults to a comma followed by a space. Quote sep when it starts with a space or contains a comma: ``$meta_sep(artist, " & ")`` gives *A & B*. Fields (**%field%**) in sep are not replaced.
 
 
 .. describe:: $mid(string,n,i)

@@ -400,6 +400,10 @@ def merge_values(m_text, separator=';'):
 
 
 def meta_sep(m_tags, p_field, p_sep=', '):
+    # p_sep is the raw argument so backslashes reach the separator as typed
+    # (a4a0985); that also kept the quotes of a quoted one.
+    if len(p_sep) >= 2 and p_sep[0] == p_sep[-1] == '"':
+        p_sep = p_sep[1:-1]
     value = m_tags.get(p_field)
     if value is None:
         return None
