@@ -55,9 +55,6 @@ def test_documented_rules(script, expected):
 
 # docs: one or more cases per function in scripting.txt -------------------------
 
-RETURNS_INT = doc_mismatch('returns an int, which parsefunc cannot join', raises=TypeError)
-
-
 @pytest.mark.parametrize('script, expected', [
     (truth('$and(1,1)'), 'yes'),
     (truth('$and(1,0)'), 'no'),
@@ -66,11 +63,12 @@ RETURNS_INT = doc_mismatch('returns an int, which parsefunc cannot join', raises
     ('$caps(hello wORLD)', 'Hello World'),
     ('$caps2(hello wORLD)', 'Hello WORLD'),
     ('$caps3(hello wORLD)', 'Hello world'),
-    pytest.param('$ceiling(2.1)', '3', marks=RETURNS_INT),
-    pytest.param('$ceiling(-2.5)', '-2', marks=RETURNS_INT),
+    ('$ceiling(2.1)', '3'),
+    ('$ceiling(2)', '2'),
+    ('$ceiling(-2.5)', '-2'),
     ('$char(A)', '65'),
     ('$div(10,4)', '2.5'),
-    pytest.param('$floor(2.7)', '2', marks=RETURNS_INT),
+    ('$floor(2.7)', '2'),
     (truth('$geql(2,2)'), 'yes'),
     (truth('$geql(1,2)'), 'no'),
     (truth('$grtr(10,9)'), 'yes'),
@@ -105,8 +103,9 @@ RETURNS_INT = doc_mismatch('returns an int, which parsefunc cannot join', raises
     ('$regex(Jay Z,jay,Shawn)', 'Shawn Z'),     # matchcase defaults to 0
     ('$regex(Jay Z,jay,Shawn,1)', 'Jay Z'),     # matchcase=1 is case-sensitive
     ('$regex(abc,"(b)","$upper($1)")', 'aBc'),  # quoted repl runs after the match
-    pytest.param('$round(2.4)', '2', marks=RETURNS_INT),
-    pytest.param('$round(2.5)', '3', marks=RETURNS_INT),  # "x if y < 0.5 else x + 1"
+    ('$round(2.4)', '2'),
+    ('$round(2.5)', '3'),   # "x if y < 0.5 else x + 1"
+    ('$round(0.5)', '1'),   # ... so not half-to-even
     ('$replace(Foo Bar,bar,Baz)', 'Foo Baz'),
     ('$replace(Foo Bar,bar,Baz,1)', 'Foo Bar'),   # matchcase
     ('$replace(barbar bar,bar,X,0,1)', 'barbar X'),  # whole words only

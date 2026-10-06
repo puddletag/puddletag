@@ -134,7 +134,7 @@ def caps3(text):
 
 
 def ceiling(n_value):
-    return math.ceil(n_value)
+    return str(math.ceil(n_value))
 
 
 def char(text):
@@ -194,7 +194,7 @@ def finddups(tracks, key='title', method=None):
 
 
 def floor(n_value):
-    return math.floor(n_value)
+    return str(math.floor(n_value))
 
 
 def formatValue(m_tags, p_pattern, state=None):
@@ -587,7 +587,8 @@ def rand():
 
 
 def _round(n_value):
-    return round(n_value)
+    # The docs promise x.5 rounds up; round() would round half to even.
+    return str(n_value.quantize(D(1), rounding=decimal.ROUND_HALF_UP))
 
 
 def re_escape(rex, chars=r'^$[]\+*?.(){},|'):
