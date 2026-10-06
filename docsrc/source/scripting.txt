@@ -8,10 +8,6 @@ The scripting functions that puddletag supports are listed here. Use them where 
 * White space before an argument is discarded, but white space after it is kept: ``$upper(ab   )`` gives ``"AB   "``. Enclose the argument in quotes to keep leading white space, as in **$left(" One space.", 3)**.
 * Inside a function's arguments, a backslash makes the next character literal if it is one of ``, ( ) $ \``, so ``$upper(a\,b)`` gives ``A,B``. Before any other character the backslash is kept. In a quoted argument every backslash is kept, so quote regular expressions that contain backslashes (see **$regex** below).
 
-.. describe:: $ceiling()
-
-   For the floating point number x.y. Returns integer x + 1.
-
 .. describe:: $and(a, b)
 
    Returns True if both a and b evaluate to True. Returns False otherwise.
@@ -49,13 +45,17 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Divides x by y.
 
-.. describe:: $floor()
+.. describe:: $floor(number)
 
-   For the floating point number x.y. Returns integer x.
+   Returns the largest integer that is less than or equal to number.
 
 .. describe:: $equals(x, y)
 
    Returns True if x == y. False otherwise.
+
+.. describe:: $find(text, sub)
+
+   Returns the position of sub in text, counting from 0, or -1 if text doesn't contain sub.
 
 .. describe:: $geql(x, y)
 
@@ -159,6 +159,10 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Generates a pseudo-random number between 0 and 1.
 
+.. describe:: $re_escape(text)
+
+   Puts a backslash before every character in text that has a special meaning in a regular expression, so text is matched literally: ``$regex(%title%,$re_escape(%album%),)`` removes the album's name from the title even when it contains brackets.
+
 .. describe:: $regex(text, regex, repl, matchcase=0)
 
    Replaces all occurrences of **regex** with **repl** in text.
@@ -173,7 +177,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
    See :ref:`replace_with_regexp` for more examples.
     
 
-.. describe:: $round()
+.. describe:: $round(number)
 
    For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.
 
@@ -200,6 +204,11 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $to_ascii(x)
 
    Converts all unicode chars in x to ASCII. It uses transliteration so 'abc äéç цы キウ 藏經' will become 'abc aec tsy kiu Cang Jing'. Characters that can't be converted will be removed.
+
+
+.. describe:: $to_num(text)
+
+   Returns the first number in text, with its sign and decimals: ``$to_num(Track 07 of 12)`` gives ``07``. Returns an empty string if text contains no number.
 
 
 .. describe:: $upper(string)

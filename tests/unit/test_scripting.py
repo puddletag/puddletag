@@ -69,7 +69,12 @@ def test_documented_rules(script, expected):
     ('$ceiling(-2.5)', '-2'),
     ('$char(A)', '65'),
     ('$div(10,4)', '2.5'),
+    (truth('$equals(abc,abc)'), 'yes'),
+    (truth('$equals(abc,ABC)'), 'no'),   # x == y is case-sensitive
+    ('$find(hello,l)', '2'),
+    ('$find(hello,z)', '-1'),
     ('$floor(2.7)', '2'),
+    ('$floor(-2.5)', '-3'),
     (truth('$geql(2,2)'), 'yes'),
     (truth('$geql(1,2)'), 'no'),
     (truth('$grtr(10,9)'), 'yes'),
@@ -104,6 +109,7 @@ def test_documented_rules(script, expected):
     ('$regex(Jay Z,jay,Shawn)', 'Shawn Z'),     # matchcase defaults to 0
     ('$regex(Jay Z,jay,Shawn,1)', 'Jay Z'),     # matchcase=1 is case-sensitive
     ('$regex(abc,"(b)","$upper($1)")', 'aBc'),  # quoted repl runs after the match
+    (r'$re_escape(a.b)', r'a\.b'),
     ('$round(2.4)', '2'),
     ('$round(2.5)', '3'),   # "x if y < 0.5 else x + 1"
     ('$round(0.5)', '1'),   # ... so not half-to-even
@@ -115,6 +121,9 @@ def test_documented_rules(script, expected):
     ('$sub(5,3)', '2'),
     pytest.param('$to_ascii(abc äéç цы キウ 藏經)', 'abc aec tsy kiu Cang Jing',  # the docs' example
                  marks=doc_mismatch('unidecode leaves a trailing space after the CJK text')),
+    ('$to_num(Track 07 of 12)', '07'),   # the docs' example
+    ('$to_num(-1.5 dB)', '-1.5'),        # with its sign and decimals
+    ('$to_num(abc)', ''),
     ('$upper(abc)', 'ABC'),
     ('$validate("a/b?c")', 'abc'),   # default chars are removed
     ('$validate(a/b,-)', 'a-b'),     # ... or replaced with y
@@ -131,6 +140,11 @@ def test_documented_functions(script, expected):
 ])
 def test_documented_multi_value_functions(script, tags, expected):
     assert run(script, **tags) == expected
+
+
+def test_re_escape_makes_regex_match_literally():
+    # The docs' example: strip the album's name, brackets and all, from the title.
+    assert run('$regex(%title%,$re_escape(%album%),)', title='Song (Live)', album='(Live)') == 'Song '
 
 
 def test_rand_is_between_0_and_1():

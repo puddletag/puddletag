@@ -321,8 +321,8 @@ Sorts the values in a multiple-valued field using either Ascending or Descending
 .. _split_field_using_separator:
 
 
-Split field using separator
----------------------------
+Split fields using separator
+----------------------------
 
 Arguments
 ^^^^^^^^^
