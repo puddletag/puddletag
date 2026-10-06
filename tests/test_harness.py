@@ -41,3 +41,33 @@ def test_make_audio_writes_tags_puddletag_can_read(make_audio, name):
     tag = audioinfo.Tag(str(path))
     fields = {key: tag[key] for key in tag if not key.startswith('__')}
     assert fields == {'artist': ['Synthetic Artist'], 'title': ['Synthetic Title']}
+
+
+# Synthetic: an ffmpeg built without libvorbis, as in PR #1100's report
+# ("Unknown encoder 'libvorbis'"). Its listing is ffmpeg 6.1's, cut down.
+_FFMPEG_WITHOUT_LIBVORBIS = """#!/bin/sh
+cat <<'EOF'
+Encoders:
+ A..... = Audio
+ ------
+ A....D flac                 FLAC (Free Lossless Audio Codec)
+EOF
+"""
+
+
+@pytest.mark.parametrize('ci, outcome', [
+    (None, pytest.skip.Exception),    # a contributor's machine: skip
+    ('true', pytest.fail.Exception),  # CI must not skip
+])
+def test_make_audio_without_the_encoder(make_audio, monkeypatch, tmp_path, ci, outcome):
+    ffmpeg = tmp_path / 'bin' / 'ffmpeg'
+    ffmpeg.parent.mkdir()
+    ffmpeg.write_text(_FFMPEG_WITHOUT_LIBVORBIS)
+    ffmpeg.chmod(0o755)
+    monkeypatch.setenv('PATH', str(ffmpeg.parent), prepend=os.pathsep)
+    if ci:
+        monkeypatch.setenv('CI', ci)
+    else:
+        monkeypatch.delenv('CI', raising=False)
+    with pytest.raises(outcome, match='ffmpeg has no libvorbis encoder'):
+        make_audio('a.ogg')

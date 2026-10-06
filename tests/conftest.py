@@ -163,6 +163,23 @@ _NATIVE_KEYS = {
 }
 
 
+def _missing(reason):
+    if os.environ.get('CI'):  # set by GitHub Actions; CI must not skip these
+        pytest.fail(reason)
+    pytest.skip(reason)
+
+
+def _ffmpeg_encoders():
+    """Names of the encoders this ffmpeg was built with. Builds differ: some
+    leave out libvorbis or libmp3lame."""
+    listing = subprocess.run(['ffmpeg', '-hide_banner', '-encoders'],
+                             capture_output=True, text=True, check=True).stdout
+    # A legend, a "------" line, then one encoder per line:
+    # " A....D flac                 FLAC (Free Lossless Audio Codec)"
+    encoders = listing.split('------', 1)[1]
+    return {line.split()[1] for line in encoders.splitlines() if line.strip()}
+
+
 @pytest.fixture
 def make_audio(tmp_path):
     """Return a factory for synthetic audio files.
@@ -174,19 +191,20 @@ def make_audio(tmp_path):
     can't be made this way: ffmpeg has no encoder for them.
     """
     if shutil.which('ffmpeg') is None:
-        if os.environ.get('CI'):  # set by GitHub Actions; CI must not skip these
-            pytest.fail('ffmpeg is not installed')
-        pytest.skip('ffmpeg is not installed')
+        _missing('ffmpeg is not installed')
 
     def make(name, directory=None, **tags):
         path = (directory or tmp_path) / name
         path.parent.mkdir(parents=True, exist_ok=True)
         ext = path.suffix[1:]
+        codec = _CODECS[ext]
+        if codec not in _ffmpeg_encoders():
+            _missing(f'ffmpeg has no {codec} encoder')
         subprocess.run(
             ['ffmpeg', '-nostdin', '-loglevel', 'error',
              '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', '1',
              '-map_metadata', '-1', '-fflags', '+bitexact', '-flags:a', '+bitexact',
-             '-c:a', _CODECS[ext], str(path)],
+             '-c:a', codec, str(path)],
             check=True)
 
         audio = mutagen.File(path, easy=True)
