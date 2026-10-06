@@ -765,8 +765,18 @@ replace_regex = replaceWithReg
 # Improved by David Gessel
 def to_ascii(t_fn):
     '''Convert to ASCII, "Convert $0 to ASCII"'''
-    cleaned_fn = unidecode(t_fn, 'ignore')
-    return ''.join(c for c in cleaned_fn if c.isprintable())
+    chars = [(c, unidecode(c, 'ignore')) for c in t_fn]
+    chars = [(c, translit) for c, translit in chars if translit]
+    cleaned = []
+    for i, (c, translit) in enumerate(chars):
+        # unidecode ends each CJK ideograph with a space ('藏' -> 'Cang ') to
+        # separate words; keep it only where a word follows.
+        if translit.endswith(' ') and not c.isspace():
+            following = chars[i + 1][1] if i + 1 < len(chars) else ''
+            if not following[:1].isalnum():
+                translit = translit[:-1]
+        cleaned.append(translit)
+    return ''.join(c for c in ''.join(cleaned) if c.isprintable())
 
 
 def remove_dupes(m_text, matchcase=False):

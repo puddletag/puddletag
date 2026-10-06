@@ -120,8 +120,7 @@ def test_documented_rules(script, expected):
     ('$right(abcdef,2)', 'ef'),
     ('$strip("  padded  ")', 'padded'),
     ('$sub(5,3)', '2'),
-    pytest.param('$to_ascii(abc äéç цы キウ 藏經)', 'abc aec tsy kiu Cang Jing',  # the docs' example
-                 marks=doc_mismatch('unidecode leaves a trailing space after the CJK text')),
+    ('$to_ascii(abc äéç цы キウ 藏經)', 'abc aec tsy kiu Cang Jing'),  # the docs' example
     ('$to_num(Track 07 of 12)', '07'),   # the docs' example
     ('$to_num(-1.5 dB)', '-1.5'),        # with its sign and decimals
     ('$to_num(abc)', ''),
@@ -302,6 +301,26 @@ def test_regex_groups_unquoted_need_escaped_closing_parenthesis():
     assert run(r'$regex(%title%,(.*\) - (.*\),$2 by $1)', title='Artist - Song') == 'Song by Artist'
     with pytest.raises(ParseError):
         run('$regex(%title%,(.*) - (.*),$2 by $1)', title='Artist - Song')
+
+
+@pytest.mark.parametrize('text, expected', [
+    ('Моя цыганиада', 'Moia tsyganiada'),  # I723: Cyrillic came out as "( )"
+    ('‘a’ “b”', '\'a\' "b"'),              # I653: smart quotes were dropped
+])
+def test_to_ascii_transliterates(text, expected):
+    assert run(f'$to_ascii({text})') == expected
+
+
+@pytest.mark.parametrize('text, expected', [
+    ('藏經 Live', 'Cang Jing Live'),  # a space follows: no double space
+    ('藏經Live', 'Cang Jing Live'),   # a word follows: the space separates them
+    ('(藏經)', '(Cang Jing)'),        # punctuation follows
+    ('藏 - 經', 'Cang - Jing'),       # the text's own spaces stay
+])
+def test_to_ascii_adds_no_spaces_after_ideographs(text, expected):
+    # Synthetic. unidecode ends each ideograph with a space ("藏" -> "Cang ").
+    # The docs' example shows none at the end of the text.
+    assert run(f'$to_ascii("{text}")') == expected
 
 
 def test_regex_matchcase_argument():
