@@ -67,6 +67,11 @@ The scripting functions that puddletag supports are listed here. Use them where 
    Returns true if x > y. False otherwise.
 
 
+.. describe:: $hasformat(pattern, text)
+
+   Returns True if text matches **pattern**, which is written like a :ref:`filename_to_tag` pattern: ``$hasformat(%artist% - %title%)``. text defaults to the file's name.
+
+
 .. describe:: $if(x, y, z)
 
    If x is True, y is returned, otherwise z is returned.

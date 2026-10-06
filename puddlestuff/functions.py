@@ -249,8 +249,10 @@ def to_num(text):
     return match.group() if match else ''
 
 
-def hasformat(p_pat, tagname="__filename"):
-    if findfunc.filenametotag(p_pat, tagname):
+def hasformat(tags, p_pat, text=None):
+    if text is None:
+        text = tags.get(audioinfo.FILENAME, '')
+    if findfunc.filenametotag(p_pat, text):
         return true
     return false
 
@@ -758,7 +760,7 @@ replace_regex = replaceWithReg
 # Contributed by Erik Reckase
 # Improved by David Gessel
 def to_ascii(t_fn):
-    """Converts all unicode chars to ASCII."""
+    '''Convert to ASCII, "Convert $0 to ASCII"'''
     cleaned_fn = unidecode(t_fn, 'ignore')
     return ''.join(c for c in cleaned_fn if c.isprintable())
 
@@ -959,14 +961,6 @@ def tag_dir(m_tags, pattern, r_tags, state=None):
         return {DIRPATH: filename}
 
 
-def testfunction(tags, t_text, p_pattern, n_number):
-    text = '%s - %s' % (tags['artist'], tags['title'])
-    assert t_text == text
-    assert p_pattern == '%artist% - %title%'
-    assert n_number == 23
-    return 'Passed'
-
-
 def texttotag(tags, input_text, p_pattern, output, state=None):
     """Text to Tag, "Text to Tag: $0 -> $1, $2"
 &Text, text
@@ -1108,7 +1102,6 @@ functions = {
     "sub": sub,
     'tag_dir': tag_dir,
     "texttotag": texttotag,
-    'testfunction': testfunction,
     "titleCase": titleCase,
     'remove_fields': remove_fields,
     "upper": upper,

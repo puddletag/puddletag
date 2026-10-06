@@ -142,6 +142,15 @@ def test_documented_multi_value_functions(script, tags, expected):
     assert run(script, **tags) == expected
 
 
+@pytest.mark.parametrize('script, filename, expected', [
+    ('$hasformat(%artist% - %title%)', 'A - T.mp3', 'yes'),   # the docs' example:
+    ('$hasformat(%artist% - %title%)', 'Untitled.mp3', 'no'),  # text defaults to the file's name
+    ('$hasformat(%artist% - %title%,A - T)', 'Untitled.mp3', 'yes'),
+])
+def test_hasformat(script, filename, expected):
+    assert run(truth(script), __filename=filename) == expected
+
+
 def test_re_escape_makes_regex_match_literally():
     # The docs' example: strip the album's name, brackets and all, from the title.
     assert run('$regex(%title%,$re_escape(%album%),)', title='Song (Live)', album='(Live)') == 'Song '

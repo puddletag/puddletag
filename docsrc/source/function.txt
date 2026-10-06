@@ -57,6 +57,16 @@ Description
 
 If your files were written using non-standard encoding (eg cp1251 on Windows) you can use this Function to fix 'em.
 
+.. _convert_to_ascii:
+
+Convert to ASCII
+----------------
+
+Description
+^^^^^^^^^^^
+
+Converts all unicode characters to ASCII, using transliteration like the *$to_ascii* scripting function: *"abc äéç цы"* becomes *"abc aec tsy"*. Characters that can't be converted are removed.
+
 .. _export_artwork_to_file:
 
 Export artwork to file
