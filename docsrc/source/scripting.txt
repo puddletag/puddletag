@@ -179,6 +179,8 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Quote **regex** when it contains a backslash. Unquoted, ``\(`` reaches the regular expression as ``(``, so ``$regex(%title%,\(.*\),)`` turns *Song (Live)* into an empty string, while ``$regex(%title%,"\(.*\)",)`` gives *Song* followed by a space.
 
+   Without quotes, a ``)`` in **regex** ends the function call, so groups need an escaped closing parenthesis: ``$regex(%title%,(.*\) - (.*\),$2 by $1)`` turns *Artist - Song* into *Song by Artist*. Quoting the regex avoids both problems.
+
    See :ref:`replace_with_regexp` for more examples.
     
 

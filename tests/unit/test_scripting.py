@@ -290,6 +290,13 @@ def test_regex_with_escaped_brackets_unquoted(script):
     assert run(script, title='Song (Live)') == ''
 
 
+def test_regex_groups_unquoted_need_escaped_closing_parenthesis():
+    # docs: the example, and the bare form it warns about.
+    assert run(r'$regex(%title%,(.*\) - (.*\),$2 by $1)', title='Artist - Song') == 'Song by Artist'
+    with pytest.raises(ParseError):
+        run('$regex(%title%,(.*) - (.*),$2 by $1)', title='Artist - Song')
+
+
 def test_regex_matchcase_argument():
     # I335: $regex took at most 3 arguments, so matchcase couldn't be set.
     assert run('$regex(%artist%, "XyZ", "aaa", 1)', artist='xyz') == 'xyz'
