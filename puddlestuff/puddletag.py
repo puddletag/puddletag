@@ -580,13 +580,10 @@ class MainWin(QMainWindow):
 
     def _getDir(self):
         dirname = self._lastdir[0] if self._lastdir else QDir.homePath()
-        filedlg = QFileDialog()
-        filedlg.setFileMode(QFileDialog.FileMode.Directory)
-        filedlg.setOption(QFileDialog.Option.ShowDirsOnly)
         filename = str(QFileDialog.getExistingDirectory(self,
                                                         translate("Main Window", 'Import directory...'),
                                                         dirname,
-                                                        QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontResolveSymlinks))
+                                                        QFileDialog.Option.ShowDirsOnly))
         return filename
 
     def appendDir(self, filename=None):

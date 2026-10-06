@@ -25,3 +25,41 @@ def test_open_dir_loads_files_and_tags(mainwin, make_audio, tmp_path, qtbot):
               for audio in model.taginfo}
     assert loaded == {'01.flac': (['Artist One'], ['First']),
                       '02.mp3': (['Artist Two'], ['Second'])}
+
+
+def test_open_dir_dialog_loads_mp3_folder(mainwin, make_audio, tmp_path, qtbot, dialogs):
+    from PyQt6.QtCore import QDir
+    from PyQt6.QtWidgets import QFileDialog
+
+    folder = tmp_path / 'MP3'
+    make_audio('01.mp3', folder, artist='Artist', title='Track')
+    dialogs.answer('QFileDialog.getExistingDirectory', str(folder))
+    start = mainwin._lastdir[0] if mainwin._lastdir else QDir.homePath()
+
+    mainwin.openDir()
+    model = mainwin._table.model()
+    qtbot.waitUntil(lambda: model.rowCount() == 1)
+
+    assert len(dialogs.calls) == 1
+    _name, args, kwargs = dialogs.calls[0]
+    options = args[3] if len(args) > 3 else kwargs.get('options', QFileDialog.Option.ShowDirsOnly)
+    assert options == QFileDialog.Option.ShowDirsOnly
+    directory = args[2]
+    assert directory == start
+    assert os.path.basename(os.path.normpath(directory)) != 'Downloads'
+
+
+def test_open_dir_cancel_leaves_table_empty(mainwin, dialogs):
+    dialogs.answer('QFileDialog.getExistingDirectory', '')
+    mainwin.openDir()
+    assert mainwin._table.model().rowCount() == 0
+
+
+def test_append_dir_uses_platform_folder_dialog(mainwin, dialogs):
+    from PyQt6.QtWidgets import QFileDialog
+
+    dialogs.answer('QFileDialog.getExistingDirectory', '')
+    mainwin.appendDir()
+    _name, args, kwargs = dialogs.calls[0]
+    options = args[3] if len(args) > 3 else kwargs.get('options', QFileDialog.Option.ShowDirsOnly)
+    assert options == QFileDialog.Option.ShowDirsOnly
