@@ -702,20 +702,64 @@ only as &whole word, check'''
     return text
 
 
-class RegHelper(object):
-    def __init__(self, groups, repl):
-        self.groups = groups
-        self._repl = repl
+_GROUP_REF = re.compile(r'\$\d+')
+_FUNC_CALL = re.compile(r'\$\w+\(')
+# What findfunc.parsefunc lets a backslash escape in a function's arguments.
+_ARG_ESCAPES = '()$%\\,'
 
-    def repl(self, match):
-        v = int(match.group()[1:])
-        try:
-            if re.search(r'\$[\w\d_]+\(', self._repl):
-                return re_escape(self.groups[v], '"\\,')
+
+def _fill_groups(repl, groups):
+    """Put a match's groups into repl, the replacement script.
+
+    A group is text, not script, so how it goes in depends on where its $N
+    is, read the way findfunc.parsefunc reads repl. Outside any function
+    call, $N becomes a reference to a value (returned for parsefunc's
+    extra), so nothing in the group is parsed. In a call's arguments the
+    group is escaped; inside quotes there, only its quotes are.
+    """
+    values = {}
+    filled = []
+    depth = 0
+    in_quote = False
+    i = 0
+    while i < len(repl):
+        ref = _GROUP_REF.match(repl, i)
+        if ref:
+            index = int(ref.group()[1:])
+            group = groups.get(index)
+            if not depth:
+                name = '__regex_group%d' % index
+                values[name] = group or ''
+                filled.append('%' + name + '%')
+            elif group is None:
+                filled.append('""')
+            elif in_quote:
+                filled.append(group.replace('"', '\\"'))
             else:
-                return self.groups[v]
-        except KeyError:
-            return '""'
+                filled.append(re_escape(group, '"\\,()$'))
+            i = ref.end()
+            continue
+        c = repl[i]
+        call = None if in_quote else _FUNC_CALL.match(repl, i)
+        if c == '"':
+            in_quote = not in_quote
+        elif in_quote:
+            pass
+        elif (c == '\\' and depth and i + 1 < len(repl) and repl[i + 1] in _ARG_ESCAPES
+              and not _GROUP_REF.match(repl, i + 1)):
+            filled.append(repl[i:i + 2])
+            i += 2
+            continue
+        elif call:
+            depth += 1
+            filled.append(call.group())
+            i = call.end()
+            continue
+        elif c == ')' and depth:
+            depth -= 1
+        filled.append(c)
+        i += 1
+    return ''.join(filled), values
 
 
 def replaceWithReg(m_tags, text, regex, repl=None, matchcase=False, m_text=None, state=None):
@@ -746,8 +790,8 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
-        ret = re.sub(r'(?i)\$\d+', RegHelper(d, repl).repl, repl, 0)
-        return findfunc.parsefunc(ret, m_tags)
+        script, values = _fill_groups(repl, d)
+        return findfunc.parsefunc(script, m_tags, extra=values)
 
     def replace_matches(value):
         try:

@@ -193,6 +193,56 @@ def test_documented_replace_with_regexp(regex, repl, expected):
     assert functions.replaceWithReg({}, 'concentricpuddle writes this', regex, repl) == expected
 
 
+# Synthetic replacements of the kinds users save as actions: a group or the
+# whole match passed to a function, optional groups that match nothing,
+# removals, $N with text around it, and match case. Expected results follow
+# the docs above.
+
+@pytest.mark.parametrize('text, regex, repl, matchcase, expected', [
+    ('jay-z', r'-(\w)', '-$upper($1)', False, 'jay-Z'),
+    ('Track 7 of 12', r'\d+', '$num($1,3)', False, 'Track 007 of 012'),  # no groups: $1 is the match
+    ('one, two, three', r'(\w+),', '$upper($0)', False, 'ONE, TWO, three'),
+    ('x-y-z', r'(-[a-z])?', '$upper($1)', False, 'x-Y-Z'),
+    ('song (live)', r'\((\w)', '$upper($0)', False, 'song (Live)'),
+    ('Vol.2', r'(\w)\.(\w)', '$1. $2', False, 'Vol. 2'),
+    ('Song [Demo Version]', r'\s*[\[(](live|demo)( version)?[\])]', '', False, 'Song'),
+    ('dj DJ Dj', 'dj', '$upper($0)', True, 'DJ DJ Dj'),
+    ('dj DJ Dj', 'dj', '$upper($0)', False, 'DJ DJ DJ'),
+    ('A  B   C', r'\s{2,}', ' ', False, 'A B C'),
+    ('x!y', '(!)', '$1 ', False, 'x! y'),
+    ("it'S", "'([a-z])", "'$lower($1)", False, "it's"),
+])
+def test_replace_with_regexp(text, regex, repl, matchcase, expected):
+    assert functions.replaceWithReg({}, text, regex, repl, matchcase) == expected
+
+
+# Inside a function call's arguments the matched text is still read as
+# script: a % in it starts a field name, and a lone " a quoted string.
+GROUP_PARSED_IN_ARGUMENTS = pytest.mark.xfail(
+    strict=True, reason="matched text inside a function call's arguments is still parsed")
+
+
+@pytest.mark.parametrize('text, repl, expected', [
+    ('say "hi"', '[$1]', '[say "hi"]'),
+    ('50% off 20%', '[$1]', '[50% off 20%]'),
+    ('$lower(X)', '[$1]', '[$lower(X)]'),
+    ('a,b', '[$1] $lower(X)', '[a,b] x'),
+    ('a\\b', '[$1] $lower(X)', '[a\\b] x'),
+    ('a)b', '$upper($1)', 'A)B'),
+    ('$lower(X)', '$upper($1)', '$LOWER(X)'),
+    ('a)b', '$if(1,$upper($1),)', 'A)B'),
+    ('a,b', '$upper("$1")', 'A,B'),
+    ('a\\b', '$upper("$1")', 'A\\B'),
+    ('say "hi"', '$upper("$1")', 'SAY "HI"'),
+    pytest.param('50% off 20%', '$upper($1)', '50% OFF 20%', marks=GROUP_PARSED_IN_ARGUMENTS),
+    pytest.param('5" disc', '$upper($1)', '5" DISC', marks=GROUP_PARSED_IN_ARGUMENTS),
+])
+def test_regex_group_is_text_not_script(text, repl, expected):
+    # Synthetic. A group is the matched text, wherever its $N is, as I241's
+    # reporter expected.
+    assert functions.replaceWithReg({}, text, '(.+)', repl) == expected
+
+
 # shared: scripts users posted in the tracker or their configs ------------------
 
 @pytest.mark.parametrize('script, tags, expected', [
@@ -344,17 +394,30 @@ def test_field_with_comma_is_not_truncated(function):
     assert run(f'${function}(%title%)', title=title) == getattr(str, function)(title)
 
 
-@pytest.mark.xfail(strict=True, reason=f'open bug: {GH}/issues/941')
-def test_regex_group_with_comma_next_to_function_call():
-    # I941: a group containing a comma gains a backslash when the replacement
-    # also calls a function on another group. Text and script from the report.
+@pytest.mark.parametrize('replacement', [
+    '$1 $upper($2) $3',               # the report
+    '$if(1=1,$1,$1) $upper($2) $3',   # a commenter's workaround
+])
+def test_regex_group_with_comma_next_to_function_call(replacement):
+    # I941: a group containing a comma gained a backslash when the replacement
+    # also called a function on another group. Text and script from the report.
     title = 'String Quartet no.1 in A major, op.2 i Adante - Allegro'
-    script = r'$regex(%title%, "(.+)\s(i*v*x*i*)\s(.*)", "$1 $upper($2) $3")'
+    script = rf'$regex(%title%, "(.+)\s(i*v*x*i*)\s(.*)", "{replacement}")'
     assert run(script, title=title) == 'String Quartet no.1 in A major, op.2 I Adante - Allegro'
 
 
-@pytest.mark.xfail(strict=True, reason=f'open bug: {GH}/issues/241')
-def test_regex_replace_keeps_comma_from_group():
-    # I241: pattern "(, )(\w)", replacement "$1$caps($2)", from the report.
-    assert functions.replaceWithReg({}, 'Attack, at dawn.', r'(, )(\w)', '$1$caps($2)') \
-        == 'Attack, At dawn.'
+@pytest.mark.parametrize('text, regex, repl, expected', [
+    ('Attack, at dawn.', r'(, )(\w)', '$1$caps($2)', 'Attack, At dawn.'),    # the report
+    ('Attack, at dawn.', r'(, )(\w)', '$caps($1$2)', 'Attack, At dawn.'),    # its workaround
+    ('(Attack, at dawn.', r'(, )(\w)', '$caps($1$2)', '(Attack, At dawn.'),  # ... with a "("
+    ('Attack " \\ , at dawn.', r'(.+)(\w)', '$1$caps($2)', 'Attack " \\ , at dawN.'),
+])
+def test_regex_replace_keeps_group_text(text, regex, repl, expected):
+    # I241 and its comments: inputs and expected outputs from the reporter.
+    assert functions.replaceWithReg({}, text, regex, repl) == expected
+
+
+def test_regex_removes_leading_dots():
+    # I382: the regex suggested in the thread for "...And justice for all."
+    assert functions.replaceWithReg({}, '...And justice for all.', r'^\.{3}', '') \
+        == 'And justice for all.'
