@@ -380,7 +380,7 @@ Description
 
 Converts a tag to filename using the pattern (see above description for Format value).
 
-If the filename contains any of the characters, **\\\*?;"|:/**, then they will be removed.
+If the filename contains any of the characters, **\\\*?"|:/**, then they will be removed.
 
 Files can also be moved, by specifying '/' as a directory delimeter. Any forward slashes found in the fields used in constructing the pattern are ommitted (if the artist is AC/DC, it will not create an AC directory, rather the slash will be removed and ACDC will be used).
 
@@ -391,7 +391,7 @@ Examples
 
 Say you had a file named 'track.mp3' with the following tag, **artist=Before The Fame, album=The Vinyl LP, title=Sounds Better Than Anything After, track=10** and invoked this function.
 
-* *%artist% - %album% - %track%* in the pattern combo will rename it to 'Before The Fame - The Vinyl LP - Sounds Better Than Anything After.mp3'
+* *%artist% - %album% - %title%* in the pattern combo will rename it to 'Before The Fame - The Vinyl LP - Sounds Better Than Anything After.mp3'
 * *%artist% - $num(%track%, 3) - %title%* will rename it to 'Before The Fame - 010 - Sounds Better Than Anything After.mp3'
 * *%title%\_$upper(%album%)-%track%-%artist%* will give the filename 'Sounds Better Than Anything After\_THE VINYL LP-10-Before The Fame.mp3'
 

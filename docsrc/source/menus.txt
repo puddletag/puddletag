@@ -152,13 +152,13 @@ File->Tag (Ctrl+T)
 Convert the selected files to tags using the pattern in the Pattern Combo. Some examples:
 
 + Invoking File->Tag on a file with filename 'Indie Artist - No Autotune.mp3' with **%artist% - %title%** in the pattern combo will retrieve **artist=Indie Artist** and **title=No Autotune**.
-+ With filename 'Wanton_character_#_something_irreligious#01' the pattern '%artist%#%title%#%track%' will get you **artist=Wanton_character_**, **title=something irreligious**, **track=01**. You can then use :doc:`functions <function>` to clean up the values.
++ With filename 'Wanton_character_#_something_irreligious#01' the pattern '%artist%#%title%#%track%' will get you **artist=Wanton_character_**, **title=_something_irreligious**, **track=01**. You can then use :doc:`functions <function>` to clean up the values.
 + Use **%dummy%** to match something you don't want to retrieve. Eg. '%title% - %dummy%' for 'I love autotune - Artist Doesn't Matter.mp3' would only write 'I love autotune' to the title field, whereas dummy will be forgotten.
 
 Directory names are delimited with the forward slash ('/') character.
 
 + For a file with path '/home/cpuddle/Music/Justin Bieber - Dunno/01 - Kinda Terrible.mp3' you could use a pattern like '%artist% - %album%/%track% - %title%' to retrieve the following tag, **artist=Justin Bieber, album=Dunno, track=01, title=Kinda Terrible**.
-+ Each character delimits a new directory, eg. for the file with path /home/cpuddle/Music/Freshlyground/Nomvula/06 - I'd Like.mp3 you can use the following pattern to retrieve all relevant values, '%artist%/%album%/%track% - %title%' giving **artist=Freshlyground, album=Nomvula, album=I'd Like, track=06**.
++ Each character delimits a new directory, eg. for the file with path /home/cpuddle/Music/Freshlyground/Nomvula/06 - I'd Like.mp3 you can use the following pattern to retrieve all relevant values, '%artist%/%album%/%track% - %title%' giving **artist=Freshlyground, album=Nomvula, title=I'd Like, track=06**.
 + To only match directories you need to use %dummy% for the filename part. Eg **%artist% - %album%/%dummy%** will retrieve all relevant info from the directory name, but not the filename.
 
 Tag->File (Ctrl+F)
