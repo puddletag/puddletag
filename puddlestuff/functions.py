@@ -623,8 +623,8 @@ def remove_fields():
 def remove_except(tags, fields):
     '''Remove all fields except, "Remove fields except: $1"
 &Field list (; separated):, text, '''
-    fields = [field for field in fields.split(';')]
-    ret = dict([(field.strip(), '') for field in audioinfo.usertags(tags)
+    fields = [field.strip() for field in fields.split(';')]
+    ret = dict([(field, '') for field in audioinfo.usertags(tags)
                 if field not in fields])
     if '__image' not in fields:
         ret['__image'] = []

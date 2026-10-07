@@ -266,8 +266,7 @@ def test_remove_fields(make_audio, tmp_path):
 
 @pytest.mark.parametrize('keep', [
     'artist;title',
-    pytest.param(' artist; title ', marks=pytest.mark.xfail(
-        strict=True, reason="the spaces aren't trimmed, so artist and title are removed too")),
+    ' artist; title ',
 ])
 def test_remove_all_fields_except(make_audio, tmp_path, keep):
     # "artist;title and  artist; title  are equivalent". Synthetic tags.
