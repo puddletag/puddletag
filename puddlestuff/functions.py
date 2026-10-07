@@ -134,7 +134,7 @@ def caps3(text):
 
 
 def ceiling(n_value):
-    return math.ceil(n_value)
+    return str(math.ceil(n_value))
 
 
 def char(text):
@@ -194,7 +194,7 @@ def finddups(tracks, key='title', method=None):
 
 
 def floor(n_value):
-    return math.floor(n_value)
+    return str(math.floor(n_value))
 
 
 def formatValue(m_tags, p_pattern, state=None):
@@ -249,8 +249,10 @@ def to_num(text):
     return match.group() if match else ''
 
 
-def hasformat(p_pat, tagname="__filename"):
-    if findfunc.filenametotag(p_pat, tagname):
+def hasformat(tags, p_pat, text=None):
+    if text is None:
+        text = tags.get(audioinfo.FILENAME, '')
+    if findfunc.filenametotag(p_pat, text):
         return true
     return false
 
@@ -398,6 +400,10 @@ def merge_values(m_text, separator=';'):
 
 
 def meta_sep(m_tags, p_field, p_sep=', '):
+    # p_sep is the raw argument so backslashes reach the separator as typed
+    # (a4a0985); that also kept the quotes of a quoted one.
+    if len(p_sep) >= 2 and p_sep[0] == p_sep[-1] == '"':
+        p_sep = p_sep[1:-1]
     value = m_tags.get(p_field)
     if value is None:
         return None
@@ -587,7 +593,8 @@ def rand():
 
 
 def _round(n_value):
-    return round(n_value)
+    # The docs promise x.5 rounds up; round() would round half to even.
+    return str(n_value.quantize(D(1), rounding=decimal.ROUND_HALF_UP))
 
 
 def re_escape(rex, chars=r'^$[]\+*?.(){},|'):
@@ -695,20 +702,64 @@ only as &whole word, check'''
     return text
 
 
-class RegHelper(object):
-    def __init__(self, groups, repl):
-        self.groups = groups
-        self._repl = repl
+_GROUP_REF = re.compile(r'\$\d+')
+_FUNC_CALL = re.compile(r'\$\w+\(')
+# What findfunc.parsefunc lets a backslash escape in a function's arguments.
+_ARG_ESCAPES = '()$%\\,'
 
-    def repl(self, match):
-        v = int(match.group()[1:])
-        try:
-            if re.search(r'\$[\w\d_]+\(', self._repl):
-                return re_escape(self.groups[v], '"\\,')
+
+def _fill_groups(repl, groups):
+    """Put a match's groups into repl, the replacement script.
+
+    A group is text, not script, so how it goes in depends on where its $N
+    is, read the way findfunc.parsefunc reads repl. Outside any function
+    call, $N becomes a reference to a value (returned for parsefunc's
+    extra), so nothing in the group is parsed. In a call's arguments the
+    group is escaped; inside quotes there, only its quotes are.
+    """
+    values = {}
+    filled = []
+    depth = 0
+    in_quote = False
+    i = 0
+    while i < len(repl):
+        ref = _GROUP_REF.match(repl, i)
+        if ref:
+            index = int(ref.group()[1:])
+            group = groups.get(index)
+            if not depth:
+                name = '__regex_group%d' % index
+                values[name] = group or ''
+                filled.append('%' + name + '%')
+            elif group is None:
+                filled.append('""')
+            elif in_quote:
+                filled.append(group.replace('"', '\\"'))
             else:
-                return self.groups[v]
-        except KeyError:
-            return '""'
+                filled.append(re_escape(group, '"\\,()$'))
+            i = ref.end()
+            continue
+        c = repl[i]
+        call = None if in_quote else _FUNC_CALL.match(repl, i)
+        if c == '"':
+            in_quote = not in_quote
+        elif in_quote:
+            pass
+        elif (c == '\\' and depth and i + 1 < len(repl) and repl[i + 1] in _ARG_ESCAPES
+              and not _GROUP_REF.match(repl, i + 1)):
+            filled.append(repl[i:i + 2])
+            i += 2
+            continue
+        elif call:
+            depth += 1
+            filled.append(call.group())
+            i = call.end()
+            continue
+        elif c == ')' and depth:
+            depth -= 1
+        filled.append(c)
+        i += 1
+    return ''.join(filled), values
 
 
 def replaceWithReg(m_tags, text, regex, repl=None, matchcase=False, m_text=None, state=None):
@@ -739,8 +790,8 @@ Match &Case, check"""
         else:
             d = {1: group, 0: group}
 
-        ret = re.sub(r'(?i)\$\d+', RegHelper(d, repl).repl, repl, 0)
-        return findfunc.parsefunc(ret, m_tags)
+        script, values = _fill_groups(repl, d)
+        return findfunc.parsefunc(script, m_tags, extra=values)
 
     def replace_matches(value):
         try:
@@ -757,9 +808,19 @@ replace_regex = replaceWithReg
 # Contributed by Erik Reckase
 # Improved by David Gessel
 def to_ascii(t_fn):
-    """Converts all unicode chars to ASCII."""
-    cleaned_fn = unidecode(t_fn, 'ignore')
-    return ''.join(c for c in cleaned_fn if c.isprintable())
+    '''Convert to ASCII, "Convert $0 to ASCII"'''
+    chars = [(c, unidecode(c, 'ignore')) for c in t_fn]
+    chars = [(c, translit) for c, translit in chars if translit]
+    cleaned = []
+    for i, (c, translit) in enumerate(chars):
+        # unidecode ends each CJK ideograph with a space ('藏' -> 'Cang ') to
+        # separate words; keep it only where a word follows.
+        if translit.endswith(' ') and not c.isspace():
+            following = chars[i + 1][1] if i + 1 < len(chars) else ''
+            if not following[:1].isalnum():
+                translit = translit[:-1]
+        cleaned.append(translit)
+    return ''.join(c for c in ''.join(cleaned) if c.isprintable())
 
 
 def remove_dupes(m_text, matchcase=False):
@@ -958,14 +1019,6 @@ def tag_dir(m_tags, pattern, r_tags, state=None):
         return {DIRPATH: filename}
 
 
-def testfunction(tags, t_text, p_pattern, n_number):
-    text = '%s - %s' % (tags['artist'], tags['title'])
-    assert t_text == text
-    assert p_pattern == '%artist% - %title%'
-    assert n_number == 23
-    return 'Passed'
-
-
 def texttotag(tags, input_text, p_pattern, output, state=None):
     """Text to Tag, "Text to Tag: $0 -> $1, $2"
 &Text, text
@@ -1107,7 +1160,6 @@ functions = {
     "sub": sub,
     'tag_dir': tag_dir,
     "texttotag": texttotag,
-    'testfunction': testfunction,
     "titleCase": titleCase,
     'remove_fields': remove_fields,
     "upper": upper,

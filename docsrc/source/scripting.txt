@@ -5,11 +5,8 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
 * For comparison functions, **0** and an empty string (**""**) evaluate to **False**. Everything else evaluates to **True**.
 * Strings that contain commas must be enclode in double quotes (**"**).
-* White space before and after arguments will be discarded. Enclose the argument in quotes to preserve it as in **$left(" One space.", 3)**.
-
-.. describe:: $ceiling()
-
-   For the floating point number x.y. Returns integer x + 1.
+* White space before an argument is discarded, but white space after it is kept: ``$upper(ab   )`` gives ``"AB   "``. Enclose the argument in quotes to keep leading white space, as in **$left(" One space.", 3)**.
+* Inside a function's arguments, a backslash makes the next character literal if it is one of ``, ( ) $ \``, so ``$upper(a\,b)`` gives ``A,B``. Before any other character the backslash is kept. In a quoted argument every backslash is kept, so quote regular expressions that contain backslashes (see **$regex** below). The exception is ``\"``, which puts a ``"`` in a quoted argument: ``$upper("say \"hi, there\"")`` gives ``SAY "HI, THERE"``. A ``\"`` that ends the argument is its closing quote, and its backslash is kept: ``$upper("a\")`` gives ``A\``.
 
 .. describe:: $and(a, b)
 
@@ -48,9 +45,17 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Divides x by y.
 
-.. describe:: $floor()
+.. describe:: $floor(number)
 
-   For the floating point number x.y. Returns integer x.
+   Returns the largest integer that is less than or equal to number.
+
+.. describe:: $equals(x, y)
+
+   Returns True if x == y. False otherwise.
+
+.. describe:: $find(text, sub)
+
+   Returns the position of sub in text, counting from 0, or -1 if text doesn't contain sub.
 
 .. describe:: $geql(x, y)
 
@@ -60,6 +65,11 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $grtr(x, y)
 
    Returns true if x > y. False otherwise.
+
+
+.. describe:: $hasformat(pattern, text)
+
+   Returns True if text matches **pattern**, which is written like a :ref:`filename_to_tag` pattern: ``$hasformat(%artist% - %title%)``. text defaults to the file's name.
 
 
 .. describe:: $if(x, y, z)
@@ -105,9 +115,9 @@ The scripting functions that puddletag supports are listed here. Use them where 
    If field is multiple-valued, the field's nth value. Note that it's just the field name, **field** and not **%field%**.
 
 
-.. describe:: $meta_sep(field, sep=', ')
+.. describe:: $meta_sep(field, sep)
 
-   If field is multiple-valued, returns the field's values joined by sep. Otherwise just returns the field's value.
+   If field is multiple-valued, returns the field's values joined by sep. Otherwise just returns the field's value. sep defaults to a comma followed by a space. Quote sep when it starts with a space or contains a comma: ``$meta_sep(artist, " & ")`` gives *A & B*. Fields (**%field%**) in sep are not replaced.
 
 
 .. describe:: $mid(string,n,i)
@@ -154,6 +164,10 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
    Generates a pseudo-random number between 0 and 1.
 
+.. describe:: $re_escape(text)
+
+   Puts a backslash before every character in text that has a special meaning in a regular expression, so text is matched literally: ``$regex(%title%,$re_escape(%album%),)`` removes the album's name from the title even when it contains brackets.
+
 .. describe:: $regex(text, regex, repl, matchcase=0)
 
    Replaces all occurrences of **regex** with **repl** in text.
@@ -162,11 +176,15 @@ The scripting functions that puddletag supports are listed here. Use them where 
    | **regex**: regular expression to use as the search eg. *jay\.**
    | **repl**: Text to replace all matches of regex with. Can be pattern ex *$lower($1)*, but has to be quoted like in "$lower($1)" otherwise any scripting functions used will be run before the regular expression is evaluated.
    | **matchcase**: Defaults to *0*. If *1*, will have case-sensitive matching.
-   
+
+   Quote **regex** when it contains a backslash. Unquoted, ``\(`` reaches the regular expression as ``(``, so ``$regex(%title%,\(.*\),)`` turns *Song (Live)* into an empty string, while ``$regex(%title%,"\(.*\)",)`` gives *Song* followed by a space.
+
+   Without quotes, a ``)`` in **regex** ends the function call, so groups need an escaped closing parenthesis: ``$regex(%title%,(.*\) - (.*\),$2 by $1)`` turns *Artist - Song* into *Song by Artist*. Quoting the regex avoids both problems.
+
    See :ref:`replace_with_regexp` for more examples.
     
 
-.. describe:: $round()
+.. describe:: $round(number)
 
    For the floating point number x.y. Returns the integer x if y < 0.5 else x + 1.
 
@@ -193,6 +211,11 @@ The scripting functions that puddletag supports are listed here. Use them where 
 .. describe:: $to_ascii(x)
 
    Converts all unicode chars in x to ASCII. It uses transliteration so 'abc äéç цы キウ 藏經' will become 'abc aec tsy kiu Cang Jing'. Characters that can't be converted will be removed.
+
+
+.. describe:: $to_num(text)
+
+   Returns the first number in text, with its sign and decimals: ``$to_num(Track 07 of 12)`` gives ``07``. Returns an empty string if text contains no number.
 
 
 .. describe:: $upper(string)

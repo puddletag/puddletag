@@ -1,69 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Main puddletag executable"""
 
-import json
 import os
-import shutil
 import sys
-from glob import glob
 from optparse import OptionParser
 
 
-def convert_ini_files():
-    from puddlestuff.constants import CONFIGDIR, SAVEDIR
-
-    config_files = [
-        'puddletag.conf', 'combos',
-        'gensettings', 'menus', 'shortcuts',
-        'tagpanel', 'tagsources.conf',
-        'function_settings', 'user_shortcuts', 'view_all_fields',
-    ]
-
-    data_files = glob(os.path.join(SAVEDIR, 'actions/*')) + \
-                 glob(os.path.join(SAVEDIR, 'masstagging/*'))
-
-    files = [os.path.join(CONFIGDIR, fn) for fn in config_files] + data_files
-
-    for fn in files:
-        if os.path.exists(fn):
-            settings_to_json(fn)
-
-
-def settings_to_json(filename):
-    data = open(filename, 'r').read()
-
-    try:
-        json.loads(data)
-        return  # Valid json so already converted.
-    except:
-        pass
-
-    try:
-        config_data = json.dumps(dict(ConfigObj(filename)), indent=2)
-        fo = open(filename, 'w')
-        fo.write(config_data)
-        fo.close()
-    except:
-        pass
-
-
-def _migrate_action_shortcut_filenames():
-    from puddlestuff.constants import ACTIONDIR
-    filename = os.path.join(ACTIONDIR, 'action_shortcuts')
-    if not os.path.exists(filename):
-        return
-    with open(filename, 'r') as fo:
-        data = json.loads(fo.read())
-
-    old_dir = os.path.join(os.getenv('HOME'), '.puddletag', 'actions')
-    for key, shortcut in data.items():
-        shortcut['filenames'] = [z.replace(old_dir, ACTIONDIR) for z in shortcut['filenames']]
-
-    with open(filename, 'w') as fo:
-        fo.write(json.dumps(data, indent=2))
-
-
-def _migrate_checkstates():
+def _migrate_checkstates() -> None:
+    """PyQt6 Migration: Change int-based tri-state to boolean"""
     from puddlestuff.puddleobjects import PuddleConfig
     cparser = PuddleConfig()
     for section, key in (
@@ -79,57 +24,14 @@ def _migrate_checkstates():
             cparser.set(section, key, bool(old_value))
 
 
-def migrate_settings():
+def migrate_settings() -> None:
+    """Apply any required setting/configuration migrations"""
     from puddlestuff.constants import CONFIGDIR, SAVEDIR
     for dirpath in [CONFIGDIR, SAVEDIR]:
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
 
-    old_dir = os.path.join(os.getenv('HOME'), '.puddletag')
-    if (os.path.exists(old_dir)):
-        dirnames = [
-            'plugins', 'actions', 'masstagging', 'mp3tag_sources', 'translations']
-
-        for dirname in dirnames:
-            src = os.path.join(old_dir, dirname)
-            dest = os.path.join(SAVEDIR, dirname)
-            if os.path.exists(src) and not os.path.exists(dest):
-                os.rename(src, os.path.join(SAVEDIR, dirname))
-
-        for filename in os.listdir(old_dir):
-            dest = os.path.join(CONFIGDIR, filename)
-            if (not os.path.exists(dest)):
-                src = os.path.join(old_dir, filename)
-                shutil.move(src, dest)
-
-        shutil.rmtree(old_dir)
-
-    _migrate_action_shortcuts()
-    convert_ini_files()
-    _migrate_action_shortcut_filenames()
     _migrate_checkstates()
-
-
-def _migrate_action_shortcuts():
-    from puddlestuff.constants import SAVEDIR, ACTIONDIR
-    from puddlestuff.puddleobjects import PuddleConfig
-    filename = os.path.join(SAVEDIR, 'actions', 'action_shortcuts')
-
-    if not os.path.exists(filename):
-        return
-
-    try:
-        cparser = PuddleConfig(filename)
-    except:
-        # Already converted to json. Nothing to do.
-        return None
-
-    for section in sorted(cparser.sections()):
-        if section.startswith('Shortcut'):
-            filenames = []
-            for filename in cparser.get(section, 'filenames', []):
-                filenames.append(os.path.join(ACTIONDIR, os.path.basename(filename)))
-            cparser.set(section, 'filenames', filenames)
 
 
 def check_libs():
@@ -350,7 +252,6 @@ if __name__ == '__main__':
     from PyQt6.QtCore import (pyqtRemoveInputHook, QTranslator,
                               QLibraryInfo, QLocale)
     import logging
-    from configobj import ConfigObj
 
     pyqtRemoveInputHook()
 
