@@ -1,3 +1,13 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["ui: builds the Qt main window (slower); skip with -m 'not ui'"]
+qt_api = "pyqt6"
+timeout = 60
+
+[tool.coverage.run]
+source = ["puddlestuff"]

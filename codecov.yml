@@ -1,0 +1,10 @@
+# Most of the UI has no tests yet, so a PR's changed lines are often less
+# covered than the project. Report coverage on PRs, but never fail them.
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true

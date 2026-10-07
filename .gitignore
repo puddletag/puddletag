@@ -17,3 +17,6 @@ build/
 dist/
 *.egg-info/
 MANIFEST
+
+# Test coverage data
+.coverage

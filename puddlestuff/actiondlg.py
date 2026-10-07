@@ -14,7 +14,7 @@ from pyparsing import delimited_list, alphanums, Combine, Word, QuotedString
 from . import findfunc, functions
 from . import functions_dialogs
 from .audioinfo import INFOTAGS, READONLY
-from .constants import (TEXT, COMBO, CHECKBOX, SAVEDIR, CONFIGDIR, ACTIONDIR)
+from .constants import ACTIONDIR, CHECKBOX, COMBO, CONFIGDIR, TEXT
 from .findfunc import Function, apply_macros, apply_actions, Macro
 from .puddleobjects import (ListBox, OKCancel, ListButtons, winsettings, gettaglist, settaglist, safe_name, open_resourcefile)
 from .puddleobjects import PuddleConfig, PuddleCombo
@@ -293,6 +293,9 @@ class FunctionDialog(QWidget):
     def _createControl(self, label, ctype, default=None):
         if ctype == 'text':
             control = self._controls['text'](label, parent=self)
+            control.combo.setSizeAdjustPolicy(
+                QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+            control.combo.setMinimumContentsLength(20)
         else:
             control = self._controls[ctype](self)
 
@@ -870,34 +873,16 @@ class ActionWindow(QDialog):
 
     def loadMacros(self):
         from glob import glob
-        basename = os.path.basename
 
-        funcs = {}
         cparser = PuddleConfig()
         set_value = partial(cparser.set, 'puddleactions')
         get_value = partial(cparser.get, 'puddleactions')
 
         firstrun = get_value('firstrun', True)
         set_value('firstrun', False)
-        convert = get_value('convert', True)
         order = get_value('order', [])
 
-        if convert:
-            set_value('convert', False)
-            findfunc.convert_actions(SAVEDIR, ACTIONDIR)
-            if order:
-                old_order = dict([(basename(z), i) for i, z in
-                                  enumerate(order)])
-                files = glob(os.path.join(ACTIONDIR, '*.action'))
-                order = {}
-                for i, action_fn in enumerate(files):
-                    try:
-                        order[old_order[basename(action_fn)]] = action_fn
-                    except KeyError:
-                        if not old_order:
-                            order[i] = action_fn
-                order = [z[1] for z in sorted(order.items())]
-                set_value('order', order)
+        os.makedirs(ACTIONDIR, exist_ok=True)
 
         files = glob(os.path.join(ACTIONDIR, '*.action'))
         if firstrun and not files:

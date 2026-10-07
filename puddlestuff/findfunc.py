@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import glob
 import os
-import pickle
 import re
 from collections import defaultdict
 from copy import deepcopy
@@ -28,6 +26,8 @@ FIELDS = 'fields'
 FUNC_MODULE = 'module'
 ARGS = 'arguments'
 KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
+# What may follow a quote that ends a function's argument.
+_ARG_END = re.compile(r'\s*[,)]')
 
 
 ParserElement.enable_packrat()
@@ -72,20 +72,6 @@ def arglen_error(e, passed, function, to_raise=True):
         raise ParseError(message)
     else:
         return message
-
-
-def convert_actions(dirpath, new_dir):
-    backup = os.path.join(dirpath, 'actions.bak')
-    if not os.path.exists(backup):
-        os.mkdir(backup)
-    if not os.path.exists(new_dir):
-        os.mkdir(new_dir)
-    path_join = os.path.join
-    basename = os.path.basename
-    for filename in glob.glob(path_join(dirpath, '*.action')):
-        funcs, name = get_old_action(filename)
-        os.rename(filename, path_join(backup, basename(filename)))
-        save_macro(path_join(new_dir, basename(filename)), name, funcs)
 
 
 def filenametotag(pattern, filename, checkext=False, split_dirs=True):
@@ -139,24 +125,6 @@ def filenametotag(pattern, filename, checkext=False, split_dirs=True):
             del (mydict["dummy"])
         return mydict
     return {}
-
-
-def get_old_action(filename):
-    """Gets the action from filename, where filename is either a string or
-    file-like object.
-
-    An action is just a list of functions with a name attached. In puddletag
-    these are stored as pickled objects.
-
-    Returns [list of Function objects, action name]."""
-    if isinstance(filename, str):
-        f = open(filename, "rb")
-    else:
-        f = filename
-    name = pickle.load(f)
-    funcs = pickle.load(f)
-    f.close()
-    return [funcs, name]
 
 
 def load_macro_info(filename):
@@ -399,7 +367,14 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
                 tokens.append(replacevars(''.join(token), tags))
             break
 
-        if c == '"' and not escape:
+        if (in_quote and in_func and c == '\\' and s[i + 1:i + 2] == '"'
+                and not _ARG_END.match(s, i + 2) and '"' in s[i + 2:]):
+            # \" in quotes is a quote, unless it ends the argument (as
+            # replacevars reads it) or no quote is left to close this one.
+            token.append('\\"')
+            i += 2
+            continue
+        elif c == '"' and not escape:
             if in_func:
                 token.append(c)
             in_quote = not in_quote
@@ -558,6 +533,11 @@ def replacevars(pattern, *dicts):
         except IndexError:
             next_char = None
         if c == '\\' and next_char == '"' and not escape:
+            if in_quote and not pattern[i + 2:].strip():
+                # A \" that ends the argument closes the quote, and like
+                # every backslash in quotes, this one is kept.
+                ret.append(c)
+                continue
             escape = True
             continue
         elif escape:
@@ -667,18 +647,6 @@ def save_macro(filename, name, funcs):
         set_value(i, FUNC_NAME, func.function.__name__)
         set_value(i, FUNC_MODULE, func.function.__module__)
         set_value(i, ARGS, func.args)
-
-
-def saveAction(filename, actionname, funcs):
-    """Saves an action to filename.
-
-    funcs is a list of funcs, and actionname is...er...the name of the action."""
-    if isinstance(filename, str):
-        fileobj = open(filename, 'wb')
-    else:
-        fileobj = filename
-    pickle.dump(actionname, fileobj)
-    pickle.dump(funcs, fileobj)
 
 
 def tagtofilename(pattern, filename, addext=False, extension=None, state=None):
@@ -821,9 +789,6 @@ class Function:
         self.controls = self._getControls()
 
     def reInit(self):
-        # Since this class gets pickled in ActionWindow, the class is never 'destroyed'
-        # Since, a functions docstring wouldn't be reflected back to puddletag
-        # if it were changed calling this function to 're-read' it is a good idea.
         if not self.function.__doc__:
             return
         self.doc = self.function.__doc__.split("\n")
