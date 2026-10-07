@@ -21,7 +21,7 @@ from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
 from . import util
 from ._compatid3 import CompatID3
 
-from .constants import MODES
+from .constants import DEFAULT_COVER, MODES
 from .util import (CaselessDict, FILENAME, MockTag, PATH,
                    cover_info, del_deco, fn_hash, get_mime, get_total,
                    getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
@@ -745,7 +745,7 @@ def pic_to_bin(image):
     else:
         encoding = ISO8859
 
-    imagetype = image.get(util.IMAGETYPE, encoding)
+    imagetype = image.get(util.IMAGETYPE, DEFAULT_COVER)
     mime = image.get(util.MIMETYPE)
     if not mime:
         mime = get_mime(data)
