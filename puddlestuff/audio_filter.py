@@ -174,7 +174,10 @@ class Matches(BoolOperand):
     @wrap_bool
     def __bool__(self):
         logging.debug('matches: ' + str(self.args))
-        return not re.search(self.args[1].lower(), self.args[0].lower()) is None
+        try:
+            return not re.search(self.args[1].lower(), self.args[0].lower()) is None
+        except re.error:  # e.g. still being typed
+            return False
 
 
 bool_exprs = [

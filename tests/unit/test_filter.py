@@ -5,8 +5,6 @@ Expected results come from docsrc/source/filter.txt unless noted. Tags are
 synthetic, the docs' own example values where they give them. On a fresh
 profile, the fields the filter knows are audioinfo's default field list.
 """
-import re
-
 import pytest
 
 from puddlestuff import audioinfo
@@ -104,8 +102,7 @@ def test_reported_filters(matches, expression, tags, expected):
     assert matches(expression, **tags) is expected
 
 
-@pytest.mark.xfail(strict=True, raises=re.error, reason='an invalid regular expression in MATCHES raises')
 def test_invalid_regex_does_not_crash(matches):
     # #665, #929: a filter the user is still typing must not crash
-    # puddletag. Synthetic expression, missing a "(".
-    assert matches('title MATCHES "live)$"', title='Song (Live)') in (True, False)
+    # puddletag; it matches nothing. Synthetic expression, missing a "(".
+    assert matches('title MATCHES "live)$"', title='Song (Live)') is False
