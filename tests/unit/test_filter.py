@@ -75,10 +75,6 @@ def test_documented_filters(matches, expression, tags, expected):
     assert matches(expression, **tags) is expected
 
 
-DOCUMENTED_FIELD_UNKNOWN = pytest.mark.xfail(
-    strict=True, reason='albumartist, a documented field missing from the default field list, '
-                        'is read as the text "albumartist" (#1026)')
-
 
 @pytest.mark.parametrize('expression, tags, expected', [
     # #638: filters that "filter nothing"; synthetic values.
@@ -88,11 +84,11 @@ DOCUMENTED_FIELD_UNKNOWN = pytest.mark.xfail(
     # #665, #929: filtering by a single "-" crashed; it's a plain search.
     pytest.param('-', {'title': 'A - B'}, True, id='I929-dash'),
     # #1026: an empty list for albumartist filters, on files whose
-    # albumartist is "Various Artists".
-    pytest.param('albumartist has "Various"', {'albumartist': 'Various Artists'}, True,
-                 id='I1026-has', marks=DOCUMENTED_FIELD_UNKNOWN),
-    pytest.param('albumartist IS "Various Artists"', {'albumartist': 'Various Artists'}, True,
-                 id='I1026-is', marks=DOCUMENTED_FIELD_UNKNOWN),
+    # albumartist is "Various Artists". albumartist isn't in the default
+    # field list; filter.txt: a word is a field also when "the field is
+    # present in the file".
+    pytest.param('albumartist has "Various"', {'albumartist': 'Various Artists'}, True, id='I1026-has'),
+    pytest.param('albumartist IS "Various Artists"', {'albumartist': 'Various Artists'}, True, id='I1026-is'),
     pytest.param('albumartist IS "Various"', {'albumartist': 'Various Artists'}, False, id='I1026-is-part'),
     # #463: "Filtering a field with non-English char" finds nothing; it
     # gives no example, so a synthetic one.

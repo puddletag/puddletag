@@ -49,7 +49,7 @@ def parse_arg(audio, text):
         return text
     if text[0] == '%' and text[-1] == '%':
         return to_string(audio.get(text[1:-1], ''))
-    elif text in FIELDS:
+    elif text in FIELDS or text in audio:
         return to_string(audio.get(text, ''))
     else:
         if text[0] == '"' and text[-1] == '"':
