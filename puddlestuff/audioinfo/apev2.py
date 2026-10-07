@@ -323,4 +323,4 @@ filetypes = [
     (MonkeysAudio, MonkeysAudioTag, 'APEv2',
      ['ape', 'apl']),
     (WavPack, WavPackTag, 'APEv2', 'wv'),
-    (Musepack, Tag, 'APEv2', 'mpc')]
+    (Musepack, MusePackTag, 'APEv2', 'mpc')]

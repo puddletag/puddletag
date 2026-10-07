@@ -21,8 +21,6 @@ DATETIME = DATE + r' \d\d:\d\d:\d\d'
 
 # Where the code differs from tags.txt, by test and format.
 DIFFERS = {
-    ('test_sound', 'mpc'): 'Musepack files are read by the generic APEv2 class: '
-                           'no length, frequency or channels',
     ('test_sound', 'wv'): "mutagen gives a mono WavPack file's channels as True",
     ('test_sound', 'wma'): 'mutagen gives the length as 0.9999999999999996 s, '
                            'which __length rounds down to 00:00',
