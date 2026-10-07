@@ -10,6 +10,11 @@ jobs:
   tests:
     name: Run the test suite (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    # id-token lets the Codecov upload log in with GitHub OIDC. GitHub
+    # doesn't grant it to PRs from forks; those upload without a token.
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -39,7 +44,16 @@ jobs:
     - name: Run tests
       env:
         QT_QPA_PLATFORM: offscreen
-      run: python -m pytest --cov --cov-report=term
+      run: python -m pytest --cov --cov-report=term --cov-report=xml
+
+    # A Codecov outage must not fail the tests: "All tests passed" is
+    # required to merge.
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v7
+      with:
+        files: coverage.xml
+        use_oidc: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) }}
+        fail_ci_if_error: false
 
   # master's branch protection requires this job, not the matrix jobs, so the
   # Python versions above can change without touching the protection; keep
