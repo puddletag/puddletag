@@ -485,7 +485,9 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
     else:
 
         subdirs = new_dirs
-        count = len(path_seps)
+        # One level up per folder made, not per separator: a folder left out
+        # as empty must not move the file higher.
+        count = len(new_dirs) - 1
 
         dirpath = r_tags.dirpath
 

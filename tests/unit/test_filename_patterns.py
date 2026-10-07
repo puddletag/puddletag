@@ -187,3 +187,21 @@ def test_empty_folder_is_no_folder(tag_to_file):
     # a folder named "".
     pattern = DISC_FOLDERS.replace(',.)', ',)')
     assert tag_to_file(pattern, 'music/x.flac', **dict(ALBUM, disctotal='1')) == '/mnt/data/music/Band/Album/03 - Song.flac'
+
+
+RELATIVE_DISC_FOLDERS = '%album%/$if(%discnumber%,Disc %discnumber%,)/%title%'
+
+
+@pytest.mark.parametrize('pattern, path, tags, expected', [
+    (RELATIVE_DISC_FOLDERS, 'library/Album/x.flac', {'album': 'Album', 'title': 'Song'},
+     'library/Album/Song.flac'),
+    (RELATIVE_DISC_FOLDERS, 'library/Album/Disc 1/x.flac',
+     {'album': 'Album', 'title': 'Song', 'discnumber': '1'}, 'library/Album/Disc 1/Song.flac'),
+    ('%genre%/%album%/%title%', 'library/Album/x.flac', {'album': 'Album', 'title': 'Song'},
+     'library/Album/Song.flac'),
+])
+def test_relative_pattern_counts_only_folders_it_makes(tag_to_file, pattern, path, tags, expected):
+    # A file already laid out by the pattern stays in its folder, also when
+    # a folder comes out empty: function.txt, "a directory that comes out
+    # empty doesn't count". Synthetic layouts, the first one D1028's.
+    assert tag_to_file(pattern, path, **tags) == expected

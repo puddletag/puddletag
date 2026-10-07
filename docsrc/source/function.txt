@@ -398,7 +398,7 @@ Say you had a file named 'track.mp3' with the following tag, **artist=Before The
 For a file with the tag, **artist=Relatively Unknown, title=Horrible for everyone else, album=Fans like it, track=5** with path, /home/concentricpuddle/multimedia/music/Indie/unsorted/unknown.mp3
 
 * %album%/%artist% - %title% will move the file to /home/concentricpuddle/multimedia/music/Indie/**Fans like it/Relatively Unknown - Horrible for everyone else.mp3**.
-* For every slash, the file is moved up one directory. %artist%/%album%/%title% will move the file to /home/concentricpuddle/multimedia/music/**Relatively Unknown/Fans like it/Horrible for everyone else.mp3**
+* For every slash, the file is moved up one directory (a directory that comes out empty doesn't count). %artist%/%album%/%title% will move the file to /home/concentricpuddle/multimedia/music/**Relatively Unknown/Fans like it/Horrible for everyone else.mp3**
 * If you want you can also have an absolute path, by starting the pattern with a slash, eg. the pattern /mnt/library/%album%/%track% will move the file to /mnt/library/Fans like it/5.mp3
 
 .. _text_to_tag:
