@@ -40,3 +40,15 @@ jobs:
       env:
         QT_QPA_PLATFORM: offscreen
       run: python -m pytest --cov --cov-report=term
+
+  # master's branch protection requires this job, not the matrix jobs, so the
+  # Python versions above can change without touching the protection; keep
+  # its name. always() makes it run, and fail, when a matrix job fails: a
+  # skipped required check would count as passed.
+  all-tests:
+    name: All tests passed
+    if: always()
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+    - run: test "${{ needs.tests.result }}" = success
