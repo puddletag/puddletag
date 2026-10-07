@@ -348,7 +348,8 @@ def info_to_dict(info):
         pass
 
     try:
-        tags['__channels'] = str(info.channels)
+        # int(): mutagen gives a mono WavPack file's channels as True.
+        tags['__channels'] = str(int(info.channels))
     except AttributeError:
         pass
 
