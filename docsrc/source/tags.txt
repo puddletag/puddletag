@@ -6,13 +6,25 @@ Default fields
 
 The following fields are common to almost all music files.
 
+.. describe:: __accessed
+
+    The date and time the file was last accessed, in YYYY-MM-DD HH:MM:SS format.
+
 .. describe:: __app
 
     The application name: puddletag v0.10.4 depending on version number.
 
 .. describe:: __bitrate
 
-    The bitrate of the file in kb/s. Note that it's a string with kb/s appended as in '213 kb/s' and not '213'. For Lossless formats this is always '0 kb/s'
+    The bitrate of the file in kb/s. Note that it's a string with kb/s appended as in '213 kb/s' and not '213'.
+
+.. describe:: __bitrate_num
+
+    The bitrate of the file in whole kb/s, as a number: 213 for '213 kb/s'.
+
+.. describe:: __channels
+
+    The number of audio channels: 1 for mono, 2 for stereo.
 
 .. describe:: __created
 
@@ -20,21 +32,25 @@ The following fields are common to almost all music files.
 
 .. describe:: __dirpath
 
-    The path of the directory the file resides in. /media/Multimedia/Music/myfile.mp3 has __dirpath /media/Multimedia/Music/
+    The path of the directory the file resides in. /media/Multimedia/Music/myfile.mp3 has __dirpath /media/Multimedia/Music
+
+.. describe:: __dirname
+
+    The name of the directory the file resides in. /media/Multimedia/Music/myfile.mp3 has __dirname Music
 
 .. describe:: __ext
 
     Extension of the file. /media/Multimedia/Music/myfile.mp3 has extension mp3
 
-.. describe:: __file_accessed_date
+.. describe:: __file_access_date
 
     The date the file was accessed in YYYY-MM-DD format
 
-.. describe:: __file_accessed_datetime
+.. describe:: __file_access_datetime
 
     The date including the time the file was accessed in YYYY-MM-DD HH:MM:SS format
 
-.. describe:: __file_accessed_datetime_raw
+.. describe:: __file_access_datetime_raw
 
     UNIX time of the file's last access eg. 1234567890.
 
@@ -92,7 +108,11 @@ The following fields are common to almost all music files.
 
 .. describe:: __frequency
 
-    The sample rate of the file in kHz. Note that it's a string with kHz appended as in '213 kHz' and not '213'
+    The sample rate of the file in kHz. Note that it's a string with kHz appended as in '44.1 kHz' and not '44.1'
+
+.. describe:: __frequency_num
+
+    The sample rate of the file in kHz, as a number: 44.1 for '44.1 kHz'.
 
 .. describe:: __image
 
@@ -108,7 +128,7 @@ The following fields are common to almost all music files.
 
 .. describe:: __length
 
-    The length of the file in "minutes: seconds" format.
+    The length of the file in MM:SS format, or HH:MM:SS from an hour on, e.g. 03:25 or 01:02:05.
 
 .. describe:: __length_seconds
 
