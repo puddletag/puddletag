@@ -208,8 +208,7 @@ FIELD_LIST_TAGS = {'artist': ['a'], 'title': ['t'], 'year': ['y'], 'genre': ['g'
     # "__all, ~musicip_puid, fingerprint does as suggested": Case Conversion
     # to all but musicip_puid and fingerprint, "that should remain unchanged"
     pytest.param(['__all', '~musicip_puid', 'fingerprint'], [], {'artist', 'title', 'year', 'genre'},
-                 id='all-then-all-but',
-                 marks=pytest.mark.xfail(strict=True, reason='__all before ~ adds back the fields after it')),
+                 id='all-then-all-but'),
 ])
 def test_field_list(fields, selected, expected):
     assert set(parse_field_list(fields, FIELD_LIST_TAGS, selected)) == expected

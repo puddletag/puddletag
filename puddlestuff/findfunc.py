@@ -507,7 +507,9 @@ def parse_field_list(fields, audio, selected=None):
                 not_fields.extend(selected)
             while '__selected' in not_fields:
                 not_fields.remove('__selected')
-        fields = fields[:index]
+        # The ~ part adds every field it doesn't name, so an __all before
+        # it would only add the named ones back.
+        fields = [field for field in fields[:index] if field != '__all']
         fields.extend([key for key in audio if key not in
                        not_fields and key not in NOT_ALL])
 
