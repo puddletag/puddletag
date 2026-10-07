@@ -1,5 +1,13 @@
 # puddletag
 
+[![CI](https://img.shields.io/github/actions/workflow/status/puddletag/puddletag/publish-to-pypi.yml?branch=master&label=CI)](https://github.com/puddletag/puddletag/actions/workflows/publish-to-pypi.yml?query=branch%3Amaster)
+[![codecov](https://codecov.io/gh/puddletag/puddletag/graph/badge.svg)](https://codecov.io/gh/puddletag/puddletag)
+[![PyPI](https://img.shields.io/pypi/v/puddletag)](https://pypi.org/project/puddletag/)
+[![Python](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpuddletag%2Fpuddletag%2Fmaster%2F.github%2Fworkflows%2Ftests.yml&query=%24.jobs.tests.strategy.matrix%5B%27python-version%27%5D&label=python)](https://github.com/puddletag/puddletag/blob/master/.github/workflows/tests.yml)
+[![Packaged in](https://repology.org/badge/tiny-repos/puddletag.svg)](https://repology.org/project/puddletag/versions)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](https://github.com/puddletag/puddletag/blob/master/LICENSE)
+[![Docs](https://img.shields.io/badge/docs-docs.puddletag.net-blue)](https://docs.puddletag.net/)
+
 ![Screenshot](docs/_images/5.png)
 
 puddletag is an audio tag editor (primarily created) for GNU/Linux similar to the Windows program, Mp3tag. Unlike most taggers for GNU/Linux, it uses a spreadsheet-like layout so that all the tags you want to edit by hand are visible and easily editable.
