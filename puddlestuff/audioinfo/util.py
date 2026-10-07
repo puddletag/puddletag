@@ -326,12 +326,11 @@ def info_to_dict(info):
         pass
 
     try:
-        tags["__length"] = strlength(info.length)
-    except AttributeError:
-        pass
-
-    try:
-        tags["__length_seconds"] = str(int(info.length))
+        # Rounded first, as both fields round down: mutagen's ASF length is
+        # a difference of floats, 0.9999999999999996 for a 1-second file.
+        length = round(info.length, 6)
+        tags["__length"] = strlength(length)
+        tags["__length_seconds"] = str(int(length))
     except AttributeError:
         pass
 

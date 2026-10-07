@@ -19,18 +19,9 @@ FORMATS = {'mp3': 'ID3v2.4', 'flac': 'VorbisComment', 'ogg': 'VorbisComment', 'm
 DATE = r'\d{4}-\d\d-\d\d'
 DATETIME = DATE + r' \d\d:\d\d:\d\d'
 
-# Where the code differs from tags.txt, by test and format.
-DIFFERS = {
-    ('test_sound', 'wma'): 'mutagen gives the length as 0.9999999999999996 s, '
-                           'which __length rounds down to 00:00',
-}
-
 
 @pytest.fixture(params=sorted(FORMATS))
 def song(request, make_audio, tmp_path):
-    reason = DIFFERS.get((request.node.originalname, request.param))
-    if reason:
-        request.node.add_marker(pytest.mark.xfail(strict=True, reason=reason))
     path = make_audio('song.' + request.param, tmp_path / 'Music' / 'Artist' / 'Album', title='Song')
     return audioinfo.Tag(str(path))
 
