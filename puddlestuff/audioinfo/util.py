@@ -151,7 +151,7 @@ def cover_info(images, d=None):
             except IndexError:
                 info[IMAGE_TYPE_FIELD] = IMAGETYPES[DEFAULT_COVER]
 
-    if d:
+    if d is not None:
         if not info[IMAGE_MIMETYPE]:
             del (info[IMAGE_MIMETYPE])
             try:

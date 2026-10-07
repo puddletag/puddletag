@@ -23,7 +23,6 @@ DATETIME = DATE + r' \d\d:\d\d:\d\d'
 DIFFERS = {
     ('test_sound', 'wma'): 'mutagen gives the length as 0.9999999999999996 s, '
                            'which __length rounds down to 00:00',
-    ('test_tags', 'wma'): '__num_images is missing when the file has no cover art',
 }
 
 
