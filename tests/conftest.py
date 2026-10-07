@@ -9,6 +9,7 @@ import atexit
 import os
 import shutil
 import socket
+import struct
 import subprocess
 import tempfile
 from collections import defaultdict, deque
@@ -155,11 +156,11 @@ _CODECS = {
 
 # mutagen's "easy" interface takes the plain field names for MP3, MP4, FLAC
 # and Ogg; ASF and APEv2 need their native keys.
+_APEV2_KEYS = {'artist': 'Artist', 'title': 'Title', 'album': 'Album', 'tracknumber': 'Track'}
 _NATIVE_KEYS = {
     'wma': {'artist': 'Author', 'title': 'Title', 'album': 'WM/AlbumTitle',
             'tracknumber': 'WM/TrackNumber'},
-    'wv': {'artist': 'Artist', 'title': 'Title', 'album': 'Album',
-           'tracknumber': 'Track'},
+    'wv': _APEV2_KEYS, 'ape': _APEV2_KEYS, 'mpc': _APEV2_KEYS,
 }
 
 
@@ -180,6 +181,31 @@ def _ffmpeg_encoders():
     return {line.split()[1] for line in encoders.splitlines() if line.strip()}
 
 
+def _encode_silence(path, codec):
+    if codec not in _ffmpeg_encoders():
+        _missing(f'ffmpeg has no {codec} encoder')
+    subprocess.run(
+        ['ffmpeg', '-nostdin', '-loglevel', 'error',
+         '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', '1',
+         '-map_metadata', '-1', '-fflags', '+bitexact', '-flags:a', '+bitexact',
+         '-c:a', codec, str(path)],
+        check=True)
+
+
+def _write_ape_header(path):
+    """A Monkey's Audio 3.99 file with no audio: only the descriptor and the
+    header of one second of mono 16-bit sound at 44.1 kHz (one frame of
+    44100 blocks), which with the APEv2 tag is all mutagen reads."""
+    # Descriptor: version, padding, then the byte counts of the descriptor,
+    # header, seek table, WAV header, audio (low and high words) and WAV
+    # tail, then the audio's MD5.
+    descriptor = b'MAC ' + struct.pack('<HHIIIIIII', 3990, 0, 52, 24, 0, 0, 0, 0, 0) + bytes(16)
+    # Header: compression level (normal), format flags, blocks per frame,
+    # blocks in the final frame, frames, bits per sample, channels, rate.
+    header = struct.pack('<HHIIIHHI', 2000, 0, 73728 * 4, 44100, 1, 16, 1, 44100)
+    path.write_bytes(descriptor + header)
+
+
 @pytest.fixture
 def make_audio(tmp_path):
     """Return a factory for synthetic audio files.
@@ -187,8 +213,9 @@ def make_audio(tmp_path):
     Synthetic: one second of silence encoded by ffmpeg, carrying only the
     tags the test passes. The tags are written with mutagen rather than
     ffmpeg's -metadata, because ffmpeg's ASF muxer writes Author twice and
-    adds a second, lowercase title. Musepack (.mpc) and Monkey's Audio (.ape)
-    can't be made this way: ffmpeg has no encoder for them.
+    adds a second, lowercase title. ffmpeg has no encoder for Musepack
+    (.mpc), so mpcenc encodes ffmpeg's WAV; nothing in Ubuntu encodes
+    Monkey's Audio (.ape), so an .ape file is a header and no audio.
     """
     if shutil.which('ffmpeg') is None:
         _missing('ffmpeg is not installed')
@@ -197,15 +224,17 @@ def make_audio(tmp_path):
         path = (directory or tmp_path) / name
         path.parent.mkdir(parents=True, exist_ok=True)
         ext = path.suffix[1:]
-        codec = _CODECS[ext]
-        if codec not in _ffmpeg_encoders():
-            _missing(f'ffmpeg has no {codec} encoder')
-        subprocess.run(
-            ['ffmpeg', '-nostdin', '-loglevel', 'error',
-             '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', '1',
-             '-map_metadata', '-1', '-fflags', '+bitexact', '-flags:a', '+bitexact',
-             '-c:a', codec, str(path)],
-            check=True)
+        if ext == 'ape':
+            _write_ape_header(path)
+        elif ext == 'mpc':
+            if shutil.which('mpcenc') is None:
+                _missing('mpcenc (musepack-tools) is not installed')
+            wav = path.with_name(path.name + '.wav')
+            _encode_silence(wav, 'pcm_s16le')
+            subprocess.run(['mpcenc', '--silent', str(wav), str(path)], check=True, capture_output=True)
+            wav.unlink()
+        else:
+            _encode_silence(path, _CODECS[ext])
 
         audio = mutagen.File(path, easy=True)
         if audio.tags is None:

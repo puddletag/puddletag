@@ -2,7 +2,8 @@
 audioinfo.Tag gives a real file: the table shows them and patterns use them.
 
 Expected results come from docsrc/source/tags.txt. The files are synthetic:
-one second of mono silence at 44.1 kHz, in Music/Artist/Album.
+one second of mono silence at 44.1 kHz, in Music/Artist/Album (the .ape
+file only says so in its header).
 """
 import os
 import re
@@ -13,13 +14,27 @@ from puddlestuff import audioinfo
 from puddlestuff.audioinfo.util import strlength
 
 # Each format and the tag puddletag reads and writes in it.
-FORMATS = {'mp3': 'ID3v2.4', 'flac': 'VorbisComment', 'ogg': 'VorbisComment', 'm4a': 'MP4'}
+FORMATS = {'mp3': 'ID3v2.4', 'flac': 'VorbisComment', 'ogg': 'VorbisComment', 'm4a': 'MP4',
+           'ape': 'APEv2', 'mpc': 'APEv2', 'wv': 'APEv2', 'wma': 'ASF'}
 DATE = r'\d{4}-\d\d-\d\d'
 DATETIME = DATE + r' \d\d:\d\d:\d\d'
+
+# Where the code differs from tags.txt, by test and format.
+DIFFERS = {
+    ('test_sound', 'mpc'): 'Musepack files are read by the generic APEv2 class: '
+                           'no length, frequency or channels',
+    ('test_sound', 'wv'): "mutagen gives a mono WavPack file's channels as True",
+    ('test_sound', 'wma'): 'mutagen gives the length as 0.9999999999999996 s, '
+                           'which __length rounds down to 00:00',
+    ('test_tags', 'wma'): '__num_images is missing when the file has no cover art',
+}
 
 
 @pytest.fixture(params=sorted(FORMATS))
 def song(request, make_audio, tmp_path):
+    reason = DIFFERS.get((request.node.originalname, request.param))
+    if reason:
+        request.node.add_marker(pytest.mark.xfail(strict=True, reason=reason))
     path = make_audio('song.' + request.param, tmp_path / 'Music' / 'Artist' / 'Album', title='Song')
     return audioinfo.Tag(str(path))
 
