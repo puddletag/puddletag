@@ -27,6 +27,23 @@ def str_cmp(a, b):
 FIELDS = set(z.lower() for z in gettaglist()).union(audioinfo.FILETAGS)
 
 
+def in_any_field(audio, text):
+    """Whether any of the file's fields contains text, ignoring case."""
+    text = text.lower()
+    for value in audio.values():
+        if isinstance(value, str):
+            value = [value]
+        elif isinstance(value, (int, float)):
+            value = [str(value)]
+        try:
+            logging.debug('simple filter: %s in %s', text, value)
+            if text in '\\\\'.join(value).lower():
+                return True
+        except TypeError:  # not text, e.g. __image
+            continue
+    return False
+
+
 def parse_arg(audio, text):
     if not isinstance(text, str):
         return text
@@ -84,14 +101,7 @@ class BoolNot(BoolOperand):
     def __bool__(self):
         logging.debug('not: ' + str(self.arg))
         if isinstance(self.arg, str):
-            arg = self.arg.lower()
-            for v in self.audio.values():
-                if isinstance(v, str):
-                    v = [v]
-                v = '\\\\'.join(v).lower()
-                if arg in v:
-                    return False
-            return True
+            return not in_any_field(self.audio, self.arg)
         return not bool(self.arg)
 
 
@@ -195,21 +205,8 @@ def parse(audio, expr):
     except ParseException as e:
         res = expr
     if isinstance(res, str):
-        res = res.lower()
-        for field, value in audio.items():
-            if isinstance(value, str):
-                value = [value]
-            elif isinstance(value, (int, float)):
-                value = [str(value)]
-            try:
-                logging.debug('simple filter: %s in %s', res, value)
-                if res in '\\\\'.join(value).lower():
-                    return True
-            except TypeError as e:
-                continue
-    else:
-        return bool(res)
-    return False
+        return in_any_field(audio, res)
+    return bool(res)
 
 
 if __name__ == '__main__':

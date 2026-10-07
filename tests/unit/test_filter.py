@@ -67,9 +67,7 @@ def matches(make_audio, tmp_path):
     pytest.param('NOT artist IS "Bongo Maffin"', BONGO, False, id='not'),
     pytest.param('NOT title IS Other', BONGO, True, id='not-false'),
     pytest.param('NOT Maffin', BONGO, False, id='not-word'),
-    pytest.param('NOT Nowhere', BONGO, True, id='not-word-absent',
-                 marks=pytest.mark.xfail(strict=True, raises=TypeError,
-                                         reason="NOT with a word fails on a field whose value isn't text")),
+    pytest.param('NOT Nowhere', BONGO, True, id='not-word-absent'),
     # "If the field isn't present in the file it'll evaluate to an empty string"
     pytest.param('composer IS ""', BONGO, True, id='field-absent'),
     # A word that's no field "will be interpreted as normal text"
