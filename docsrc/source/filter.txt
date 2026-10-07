@@ -50,6 +50,10 @@ Expressions
 
     Evaluates to *True* if **field=expr** for each file. Eg. **artist IS "Bongo Maffin"**, **title IS Monster**.
 
+.. describe:: field MATCHES expr
+
+    Evaluates to *True* if the regular expression **expr** matches anywhere in **field**. Eg. **title MATCHES "^mon"** for titles starting with *Mon*, **%title% MATCHES "\(live\)$"** for titles ending in *(Live)*.
+
 .. describe:: expr1 AND expr2
 
     Evaluates to *True* if **both expr1 and expr2 evaluate to True** for each file. Eg. **artist IS "Bongo Maffin" AND title IS Monster**.
