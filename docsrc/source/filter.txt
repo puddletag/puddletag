@@ -3,7 +3,7 @@ Filter Expressions
 
 Filter expressions can be used to display only files in the file-view that match a certain criteria. They can be entered into the Filter Panel (**Windows->Filter** or **F3**).
 
-The filter expression will be evaluated for each file loaded. If it evaluates to *True* for a file, then that file will be shown. Otherwise, puddletag will hide it. All comparisons are case-insensitive.
+The filter expression will be evaluated for each file loaded. If it evaluates to *True* for a file, then that file will be shown. Otherwise, puddletag will hide it. Comparisons ignore case, except GREATER and LESS between texts.
 
 Strings
 ^^^^^^^
@@ -32,15 +32,15 @@ Expressions
 
 .. describe:: expr1 GREATER expr2
 
-    Evaluates to *True* if **expr1 is greater than expr2**. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. **track GREATER replay_gain**, **artist GREATER "some words"**.
+    Evaluates to *True* if **expr1 is greater than expr2**. If both are numbers, they're compared as numbers; otherwise as text, by character code, so capital letters come before lower case ones: **artist GREATER "a"** is *False* for *Bongo*. Eg. **track GREATER replay_gain**, **artist GREATER "some words"**.
 
 .. describe:: expr1 LESS expr2
 
-    Evaluates to *True* if **expr1 is less than expr2**. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. **track LESS replay_gain**, **artist LESS "some words"**.
+    Evaluates to *True* if **expr1 is less than expr2**, compared like GREATER. Eg. **track LESS replay_gain**, **artist LESS "some words"**.
 
 .. describe:: expr1 EQUAL expr2
 
-    Evaluates to *True* if **expr1 equals expr2**. Conversion to floats will be attempted first. For strings comparision using ASCII positions are done. Eg. **track EQUAL replay_gain**, **artist EQUAL "some words"**.
+    Evaluates to *True* if **expr1 equals expr2**, compared as text and ignoring case, like IS. Numbers are compared as text too, so **track EQUAL 5** is *False* for a track stored as *05*. Eg. **track EQUAL replay_gain**, **artist EQUAL "some words"**.
 
 .. describe:: field HAS expr
 

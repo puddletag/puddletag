@@ -36,17 +36,18 @@ def matches(make_audio, tmp_path):
     pytest.param('MISSING style', BONGO, True, id='missing-absent'),
     pytest.param('PRESENT artist', BONGO, True, id='present'),
     pytest.param('PRESENT style', BONGO, False, id='present-absent'),
-    # GREATER/LESS: "Conversion to floats will be attempted first": as text,
-    # "9" isn't less than "10".
+    # GREATER/LESS: "If both are numbers, they're compared as numbers": as
+    # text, "9" isn't less than "10".
     pytest.param('track LESS 10', dict(BONGO, tracknumber='9'), True, id='less-numbers'),
     pytest.param('track GREATER 10', dict(BONGO, tracknumber='9'), False, id='greater-numbers'),
     pytest.param('artist LESS "some words"', BONGO, True, id='less-text'),
     pytest.param('artist GREATER "some words"', BONGO, False, id='greater-text'),
-    # "All comparisons are case-insensitive"
-    pytest.param('artist GREATER "a"', BONGO, True, id='greater-text-case',
-                 marks=pytest.mark.xfail(strict=True, reason='GREATER and LESS compare text case-sensitively')),
-    pytest.param('track EQUAL 5', BONGO, True, id='equal-numbers',
-                 marks=pytest.mark.xfail(strict=True, reason="EQUAL compares as text: '05' isn't '5'")),
+    # "...by character code, so capital letters come before lower case ones"
+    pytest.param('artist GREATER "a"', BONGO, False, id='greater-text-case'),
+    # EQUAL: "Numbers are compared as text too, so track EQUAL 5 is False
+    # for a track stored as 05"
+    pytest.param('track EQUAL 5', BONGO, False, id='equal-numbers'),
+    pytest.param('track EQUAL 05', BONGO, True, id='equal-numbers-text'),
     pytest.param('artist EQUAL "bongo maffin"', BONGO, True, id='equal-text'),
     pytest.param('artist HAS Maffin', BONGO, True, id='has'),
     pytest.param('%title% HAS "Remixed By"', dict(BONGO, title='Monster (Remixed By DJ)'), True, id='has-quoted'),
