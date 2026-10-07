@@ -384,7 +384,7 @@ If the filename contains any of the characters, **\\\*?"|:/**, then they will be
 
 Files can also be moved, by specifying '/' as a directory delimeter. Any forward slashes found in the fields used in constructing the pattern are ommitted (if the artist is AC/DC, it will not create an AC directory, rather the slash will be removed and ACDC will be used).
 
-Intermediate directories will be created if they don't exist.
+Intermediate directories will be created if they don't exist. A directory that comes out empty is left out, so */mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)/%title%* only adds a *Disc* directory when the file has a disc number.
 
 Examples
 ^^^^^^^^

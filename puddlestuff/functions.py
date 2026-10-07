@@ -471,7 +471,9 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
 
     if path_seps:
         for p in path_seps:
-            if start_pos != p:
+            # Two separators in a row (an $if() with nothing to add between
+            # them) make no folder, rather than one safe_name calls "".
+            if start_pos != p and not (start_pos in path_seps and p == start_pos + 1):
                 new_dirs.append(safe_name(text[start_pos:p]))
             start_pos = p
         new_dirs.append(safe_name(text[start_pos + 1:]))

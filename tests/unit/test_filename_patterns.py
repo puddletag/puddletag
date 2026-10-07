@@ -116,6 +116,12 @@ BOB_MARLEY = {'artist': 'Bob Marley & The Wailers', 'title': 'Positive Vibration
      'home/concentricpuddle/multimedia/music/Indie/ACDC/Horrible for everyone else.mp3'),
     # The characters it removes; synthetic title.
     ('%title%', 'music/track.mp3', {'title': 'a\\b*c?d"e|f:g/h;i'}, 'music/abcdefgh;i.mp3'),
+    # "A directory that comes out empty is left out"
+    ('/mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)/%title%', 'music/track.mp3',
+     dict(BEFORE_THE_FAME, discnumber='1'),
+     '/mnt/music/The Vinyl LP/Disc 1/Sounds Better Than Anything After.mp3'),
+    ('/mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)/%title%', 'music/track.mp3',
+     BEFORE_THE_FAME, '/mnt/music/The Vinyl LP/Sounds Better Than Anything After.mp3'),
     # tut1.txt, with the patterns and new names in tut1/5full.png and 6full.png
     ('$num(%track%,2) - %title%', BOB_MARLEY_PATH, BOB_MARLEY,
      'mnt/home/storage/puddle/Bob Marley - Babylon By Bus/01 - Positive Vibration.mp3'),
@@ -175,9 +181,9 @@ def test_dot_folder_is_no_folder(tag_to_file):
     assert os.path.normpath(new_path) == '/mnt/data/music/Band/Album/03 - Song.flac'
 
 
-@pytest.mark.xfail(strict=True, reason='an empty folder name becomes a folder named "" (D1028)')
 def test_empty_folder_is_no_folder(tag_to_file):
     # D1028 asks for no disc folder on single-disc albums; its answer:
-    # "Multiple path-separators next to each other causes some funny behavior".
+    # "Multiple path-separators next to each other causes some funny behavior",
+    # a folder named "".
     pattern = DISC_FOLDERS.replace(',.)', ',)')
     assert tag_to_file(pattern, 'music/x.flac', **dict(ALBUM, disctotal='1')) == '/mnt/data/music/Band/Album/03 - Song.flac'
