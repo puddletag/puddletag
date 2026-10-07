@@ -763,7 +763,7 @@ def load_actions():
         set_value('firstrun', False)
 
         for fileobj, filename in zip(files, filenames):
-            filename = os.path.join(ACTIONDIR, filename[2:])
+            filename = os.path.join(ACTIONDIR, filename.rsplit('/', maxsplit=1)[1])
             f = open(filename, 'w')
             f.write(fileobj.read())
             f.close()
