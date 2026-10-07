@@ -1,7 +1,11 @@
-[info]
-name = Case Conversion
-[Func0]
-fields = artist, album, title
-func_name = titleCase
-module = puddlestuff.functions
-arguments = Mixed Case, "., !"
+{
+  "info": {
+    "name": "Case Conversion"
+  },
+  "Func0": {
+    "func_name": "titleCase",
+    "module": "puddlestuff.functions",
+    "fields": ["artist", "album", "title"],
+    "arguments": ["Mixed Case", "., !"]
+  }
+}

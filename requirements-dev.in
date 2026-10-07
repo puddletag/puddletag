@@ -1,0 +1,10 @@
+-c requirements.txt
+
+# testing
+pytest
+pytest-qt
+pytest-cov
+pytest-timeout
+
+# compiling the lock files (venv/bin/pip-compile)
+pip-tools
