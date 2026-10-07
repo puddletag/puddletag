@@ -227,6 +227,22 @@ def test_format_value(pattern, expected):
     assert values(apply_actions([make_action('format', ['comment'], pattern)], GUY)).get('comment', []) == expected
 
 
+@pytest.mark.parametrize('characters, text, expected', [
+    # Case Conversion: Mixed Case with "." and a space, then "." alone
+    ('. ', 'this is my name. and my surname. with a dot.here and there.',
+     'This Is My Name. And My Surname. With A Dot.Here And There.'),
+    ('.', 'this is my name. and my surname. with a dot.here and there.',
+     'This is my name. and my surname. with a dot.Here and there.'),
+    # The default characters, then with "(" added: #323 ("Fails to convert
+    # "(word" to "(Word""), whose reporter found the list. Synthetic title.
+    ('., !', 'live (acoustic version)', 'Live (acoustic Version)'),
+    ('., !(', 'live (acoustic version)', 'Live (Acoustic Version)'),
+])
+def test_mixed_case(characters, text, expected):
+    action = [make_action('titleCase', ['title'], 'Mixed Case', characters)]
+    assert values(apply_actions(action, {'title': [text]})) == {'title': [expected]}
+
+
 @pytest.mark.parametrize('name, args, before, after', [
     # Merge Field: "Rock, Rap and Reggae ... the single value Rock;Rap;Reggae"
     ('merge_values', [';'], ['Rock', 'Rap', 'Reggae'], ['Rock;Rap;Reggae']),

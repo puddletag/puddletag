@@ -40,7 +40,7 @@ Description
 
 There are three types of case conversion: **UPPER CASE**,** lower case** and** Mixed Case**. Upper and lower are self-explanatory. Mixed case capitalises each word starting after the characters you specify and converts the rest to lower case.
 
-For instance, using Mixed Case with "**.**" as a delineator on *"this is my name. and my surname. with a dot.here and there."* will return *'This Is My Name. And My Surname. With A Dot.Here And There.'*
+For instance, using Mixed Case with "**.**" and a space as delineators on *"this is my name. and my surname. with a dot.here and there."* will return *'This Is My Name. And My Surname. With A Dot.Here And There.'* With "**.**" alone it returns *'This is my name. and my surname. with a dot.Here and there.'*: besides the first letter, only a letter right after one of the characters is capitalised. So with the default characters, *"live (acoustic version)"* becomes *'Live (acoustic Version)'*; add "**(**" to the list to get *'Live (Acoustic Version)'*.
 
 .. _convert_from_non_standard_encoding:
 
