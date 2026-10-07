@@ -529,8 +529,8 @@ def set_total(tag, value):
 
 
 def strbitrate(bitrate):
-    """Converts the bitrate in bits/s to a string in kb/s."""
-    return str(bitrate / 1000) + ' kb/s'
+    """Converts the bitrate in bits/s to a string in whole kb/s."""
+    return str(int(bitrate / 1000)) + ' kb/s'
 
 
 _sizes = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB'}

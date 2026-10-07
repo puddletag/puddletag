@@ -46,8 +46,6 @@ def test_length_past_an_hour():
     assert (strlength(205), strlength(3725)) == ('03:25', '01:02:05')
 
 
-@pytest.mark.xfail(strict=True, reason="__bitrate has decimals since the Python 3 port: "
-                                       "'63.999 kb/s', not '63 kb/s'")
 def test_bitrate(song):
     # "a string with kb/s appended as in '213 kb/s'"; __bitrate_num: "in
     # whole kb/s, as a number: 213 for '213 kb/s'"
