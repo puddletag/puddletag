@@ -158,6 +158,13 @@ def test_hasformat(script, filename, expected):
     assert run(truth(script), __filename=filename) == expected
 
 
+def test_hasformat_runs_functions_first():
+    # The docs' example: with track 7 the pattern is "07 - %title%".
+    script = truth('$hasformat($num(%track%,2) - %title%)')
+    assert run(script, __filename='07 - T.mp3', track='7') == 'yes'
+    assert run(script, __filename='01 - T.mp3', track='7') == 'no'
+
+
 def test_re_escape_makes_regex_match_literally():
     # The docs' example: strip the album's name, brackets and all, from the title.
     assert run('$regex(%title%,$re_escape(%album%),)', title='Song (Live)', album='(Live)') == 'Song '

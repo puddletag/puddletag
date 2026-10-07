@@ -49,6 +49,11 @@ def tag_to_file(make_audio, tmp_path):
     ('%artist% - %album%/%dummy%',
      '/home/cpuddle/Music/Justin Bieber - Dunno/01 - Kinda Terrible.mp3',
      {'artist': 'Justin Bieber', 'album': 'Dunno'}),
+    # A function with one field sets it. The pattern is the first of the
+    # Pattern Combo's defaults (mainwin/patterncombo.py), #210's case.
+    ('%artist% - $num(%track%,2) - %title%',
+     '/music/Bob Marley & The Wailers - 01 - Positive Vibration.mp3',
+     {'artist': 'Bob Marley & The Wailers', 'track': '01', 'title': 'Positive Vibration'}),
     # tut1.txt, and its status bar in tut1/3full.png
     ('%artist% - %track% - %title%',
      '/mnt/home/storage/puddle/Bob Marley - Babylon By Bus/Bob Marley & The Wailers - 01 - Positive Vibration.mp3',
@@ -80,12 +85,20 @@ def test_shared_file_to_tag(pattern, path, expected):
     assert file_to_tag(pattern, path) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='File->Tag matches $num(...) as literal text, so the pattern matches nothing (#210)')
-def test_file_to_tag_with_a_function():
-    # The first of the Pattern Combo's default patterns
-    # (mainwin/patterncombo.py), which Tag->File handles. Synthetic filename.
-    tags = file_to_tag('%artist% - $num(%track%,2) - %title%', '/music/Artist - 01 - Title.mp3')
-    assert (tags.get('artist'), tags.get('title')) == ('Artist', 'Title')
+@pytest.mark.parametrize('pattern, path, expected', [
+    # menus.txt: "Any other function is treated like %dummy%", here one with
+    # two fields.
+    ('%artist% - $upper(%album% %year%) - %title%', '/music/Artist - ALBUM 1999 - Title.mp3',
+     {'artist': 'Artist', 'title': 'Title'}),
+    # A slash inside a function doesn't start a new folder.
+    ('%artist%/$replace(%title%,/,-)', '/music/Artist/Song - Live.mp3',
+     {'artist': 'Artist', 'title': 'Song - Live'}),
+    # Text that only looks like a call to a function that doesn't exist.
+    ('$nosuch(x) %title%', '/music/$nosuch(x) Title.mp3', {'title': 'Title'}),
+])
+def test_file_to_tag_with_functions(pattern, path, expected):
+    # Synthetic filenames.
+    assert file_to_tag(pattern, path) == expected
 
 
 BEFORE_THE_FAME = {'artist': 'Before The Fame', 'album': 'The Vinyl LP',

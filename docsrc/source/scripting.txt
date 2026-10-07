@@ -69,7 +69,7 @@ The scripting functions that puddletag supports are listed here. Use them where 
 
 .. describe:: $hasformat(pattern, text)
 
-   Returns True if text matches **pattern**, which is written like a :ref:`filename_to_tag` pattern: ``$hasformat(%artist% - %title%)``. text defaults to the file's name.
+   Returns True if text matches **pattern**, which is written like a :ref:`filename_to_tag` pattern: ``$hasformat(%artist% - %title%)``. text defaults to the file's name. Unlike in File->Tag, a function in **pattern** is run first, with the file's own tags: for a file with track 7, ``$hasformat($num(%track%,2) - %title%)`` matches ``07 - %title%``.
 
 
 .. describe:: $if(x, y, z)

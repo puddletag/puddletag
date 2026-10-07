@@ -154,6 +154,7 @@ Convert the selected files to tags using the pattern in the Pattern Combo. Some 
 + Invoking File->Tag on a file with filename 'Indie Artist - No Autotune.mp3' with **%artist% - %title%** in the pattern combo will retrieve **artist=Indie Artist** and **title=No Autotune**.
 + With filename 'Wanton_character_#_something_irreligious#01' the pattern '%artist%#%title%#%track%' will get you **artist=Wanton_character_**, **title=_something_irreligious**, **track=01**. You can then use :doc:`functions <function>` to clean up the values.
 + Use **%dummy%** to match something you don't want to retrieve. Eg. '%title% - %dummy%' for 'I love autotune - Artist Doesn't Matter.mp3' would only write 'I love autotune' to the title field, whereas dummy will be forgotten.
++ A function in the pattern matches any text, since it can't be run backwards. One with a single field in it sets that field to the text it matches, so the same pattern works for Tag->File and File->Tag: '%artist% - $num(%track%,2) - %title%' for 'Bob Marley & The Wailers - 01 - Positive Vibration.mp3' retrieves **artist=Bob Marley & The Wailers, track=01, title=Positive Vibration**. Any other function is treated like %dummy%.
 
 Directory names are delimited with the forward slash ('/') character.
 

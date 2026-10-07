@@ -74,6 +74,46 @@ def arglen_error(e, passed, function, to_raise=True):
         return message
 
 
+_CALL_START = re.compile(r'\$(\w+)\(')
+_PATTERN_FIELD = re.compile(r'%([A-Za-z]+)%')  # the fields filenametotag matches
+
+
+def _call_end(s, i):
+    """Index just past the ) closing the call whose arguments start at i,
+    or None if it isn't closed."""
+    depth, in_quote = 1, False
+    while i < len(s):
+        c = s[i]
+        if c == '\\':
+            i += 2
+            continue
+        if c == '"':
+            in_quote = not in_quote
+        elif not in_quote and c in '()':
+            depth += 1 if c == '(' else -1
+            if not depth:
+                return i + 1
+        i += 1
+    return None
+
+
+def _calls_as_fields(pattern):
+    """File->Tag can't run a function backwards, so a call matches any text.
+    A call with one field in it, e.g. $num(%track%,2), puts that text in
+    the field; any other call is a %dummy%."""
+    parts, i = [], 0
+    for call in _CALL_START.finditer(pattern):
+        if call.start() < i or call.group(1) not in functions:
+            continue
+        end = _call_end(pattern, call.end())
+        if end is None:
+            continue
+        fields = set(_PATTERN_FIELD.findall(pattern, call.end(), end))
+        parts += [pattern[i:call.start()], '%{}%'.format(fields.pop() if len(fields) == 1 else 'dummy')]
+        i = end
+    return ''.join(parts) + pattern[i:]
+
+
 def filenametotag(pattern, filename, checkext=False, split_dirs=True):
     """Retrieves tag values from your filename
         pattern is the rule with which to extract
@@ -105,7 +145,7 @@ def filenametotag(pattern, filename, checkext=False, split_dirs=True):
         filename = os.path.splitext(filename)[0]
 
     e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
-    patterns = [_f for _f in pattern.split('/') if _f]
+    patterns = [_f for _f in _calls_as_fields(pattern).split('/') if _f]
     if split_dirs:
         filenames = filename.split('/')[-len(patterns):]
     else:
