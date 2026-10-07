@@ -208,6 +208,8 @@ def parse(audio, expr):
     except ParseException as e:
         res = expr
     if isinstance(res, str):
+        if len(res) > 1 and res[0] == res[-1] == '"':
+            res = res[1:-1]
         return in_any_field(audio, res)
     return bool(res)
 

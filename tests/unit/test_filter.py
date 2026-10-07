@@ -31,8 +31,7 @@ def matches(make_audio, tmp_path):
     # "string: ... True if a contains string in any of it's fields"
     pytest.param('Maffin', BONGO, True, id='word'),
     pytest.param('Nowhere', BONGO, False, id='word-absent'),
-    pytest.param('"Bongo Maffin"', BONGO, True, id='quoted-words',
-                 marks=pytest.mark.xfail(strict=True, reason='a quoted search keeps its quotes, so it finds nothing')),
+    pytest.param('"Bongo Maffin"', BONGO, True, id='quoted-words'),
     pytest.param('MISSING artist', BONGO, False, id='missing'),
     pytest.param('MISSING style', BONGO, True, id='missing-absent'),
     pytest.param('PRESENT artist', BONGO, True, id='present'),
