@@ -932,7 +932,7 @@ class Macro(object):
             self.load(filename)
 
     def apply_action(self, audio, state=None, fields=None):
-        return apply_macros(self.actions, audio, state, fields)
+        return apply_macros([self], audio, state, fields)
 
     def copy(self):
         m = Macro()

@@ -178,8 +178,6 @@ def test_checked_actions_run_one_after_another(tmp_path):
         'title': ['Hello World']}
 
 
-@pytest.mark.xfail(strict=True, raises=AttributeError,
-                   reason='Macro.apply_action passes its functions to apply_macros, which expects actions')
 def test_one_action_applied_by_itself():
     # Synthetic action and title.
     macro = as_macro(make_action('titleCase', ['title'], 'UPPER CASE', ''))
