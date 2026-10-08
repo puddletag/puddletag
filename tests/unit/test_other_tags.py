@@ -14,19 +14,6 @@ from puddlestuff import audioinfo
 from puddlestuff.audioinfo import tag_versions
 from puddlestuff.findfunc import Function, apply_actions
 
-# Where the code differs from the docs, by test and case.
-DIFFERS = {
-    ('test_update_from_tag', 'mp3-APEv2-~title;artist'): "the first field keeps its ~, so it isn't left out",
-}
-
-
-@pytest.fixture(autouse=True)
-def _differs(request):
-    callspec = getattr(request.node, 'callspec', None)
-    reason = DIFFERS.get((request.node.originalname, callspec.id if callspec else None))
-    if reason:
-        request.applymarker(pytest.mark.xfail(strict=True, reason=reason))
-
 
 def mp3_with_apev2(make_audio):
     """An MP3 with ID3v2.4 and ID3v1 tags, as puddletag saves it, and an

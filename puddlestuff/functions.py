@@ -1094,6 +1094,7 @@ def update_from_tag(r_tags, fields, tag='APEv2'):
         return values
     else:
         if fields[0].startswith('~'):
+            fields[0] = fields[0][1:]
             return dict([(k, v) for k, v in values.items()
                          if k not in fields])
         else:
