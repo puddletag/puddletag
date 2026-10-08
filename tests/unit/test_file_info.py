@@ -16,15 +16,22 @@ from puddlestuff.audioinfo.util import strlength
 # Each format and the tag puddletag reads and writes in it.
 FORMATS = {'aiff': 'ID3v2.4', 'ape': 'APEv2', 'dff': 'ID3v2.4', 'dsf': 'ID3v2.4',
            'flac': 'VorbisComment', 'm4a': 'MP4', 'mp3': 'ID3v2.4', 'mpc': 'APEv2',
-           'ogg': 'VorbisComment', 'wma': 'ASF', 'wv': 'APEv2'}
-# __frequency and __frequency_num, where not 44.1 kHz.
-RATES = {'dff': ('2822.4 kHz', 2822.4), 'dsf': ('2822.4 kHz', 2822.4)}
+           'ogg': 'VorbisComment', 'opus': 'VorbisComment', 'wma': 'ASF', 'wv': 'APEv2'}
+# __frequency and __frequency_num, where not 44.1 kHz. Opus streams are
+# timed at 48 kHz whatever the input's rate (RFC 7845), and libopus
+# resamples ffmpeg's 44.1 kHz input to it.
+RATES = {'dff': ('2822.4 kHz', 2822.4), 'dsf': ('2822.4 kHz', 2822.4), 'opus': ('48.0 kHz', 48.0)}
 DATE = r'\d{4}-\d\d-\d\d'
 DATETIME = DATE + r' \d\d:\d\d:\d\d'
+# Where the code differs from tags.txt, by test and format.
+DIFFERS = {('test_sound', 'opus'): 'Opus files have no __frequency: mutagen gives them no rate'}
 
 
 @pytest.fixture(params=sorted(FORMATS))
 def song(request, make_audio, tmp_path):
+    reason = DIFFERS.get((request.node.originalname, request.param))
+    if reason:
+        request.node.add_marker(pytest.mark.xfail(strict=True, reason=reason))
     path = make_audio('song.' + request.param, tmp_path / 'Music' / 'Artist' / 'Album', title='Song')
     return audioinfo.Tag(str(path))
 

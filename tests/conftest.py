@@ -152,6 +152,7 @@ _CODECS = {
     'm4a': 'aac',
     'mp3': 'libmp3lame',
     'ogg': 'libvorbis',
+    'opus': 'libopus',
     'wma': 'wmav2',
     'wv': 'wavpack',
 }
