@@ -141,7 +141,7 @@ def test_id3v1_comment_is_not_a_track(make_audio):
 # id3.txt's frames, written with puddletag and read back with mutagen and
 # with puddletag, in every format whose tag is ID3. Synthetic values.
 
-ID3_FORMATS = ['mp3', 'dff', 'dsf']
+ID3_FORMATS = ['aiff', 'dff', 'dsf', 'mp3']
 
 
 @pytest.fixture(params=ID3_FORMATS)
@@ -199,8 +199,8 @@ def test_time_frames(id3_file):
     assert {field: tag[field] for field in time_frames} == fields
 
 
-ID3V23_ONLY = {'year': ['2001'], 'date': ['0512'], 'time': ['1230'], 'originalyear': ['1999'],
-               'recordingdates': ['December 5'], 'audiosize': ['1000']}
+ID3V23_ONLY = {'audiosize': ['1000'], 'date': ['0512'], 'originalyear': ['1999'],
+               'recordingdates': ['December 5'], 'time': ['1230'], 'year': ['2001']}
 
 
 def test_id3v23_frames_saved_as_id3v23(id3_file):
@@ -210,9 +210,9 @@ def test_id3v23_frames_saved_as_id3v23(id3_file):
     path = id3_file
     frames, tag = save(path, ID3V23_ONLY, v2=3)
     v23 = id3_frames(path, translate=False)
-    assert {f: v23[f].text for f in ('TYER', 'TDAT', 'TIME', 'TORY', 'TRDA', 'TSIZ')} == {
-        'TYER': ['2001'], 'TDAT': ['0512'], 'TIME': ['1230'], 'TORY': ['1999'], 'TRDA': ['December 5'],
-        'TSIZ': ['1000']}
+    assert {f: v23[f].text for f in ('TDAT', 'TIME', 'TORY', 'TRDA', 'TSIZ', 'TYER')} == {
+        'TDAT': ['0512'], 'TIME': ['1230'], 'TORY': ['1999'], 'TRDA': ['December 5'], 'TSIZ': ['1000'],
+        'TYER': ['2001']}
     assert audioinfo.usertags(tag) == {'year': ['2001-12-05 12:30:00'], 'originalreleasetime': ['1999']}
 
 

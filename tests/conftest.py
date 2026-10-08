@@ -147,25 +147,27 @@ def no_network(monkeypatch):
 # Synthetic audio -------------------------------------------------------------
 
 _CODECS = {
-    'mp3': 'libmp3lame',
-    'm4a': 'aac',
-    'ogg': 'libvorbis',
+    'aiff': 'pcm_s16be',
     'flac': 'flac',
-    'wv': 'wavpack',
+    'm4a': 'aac',
+    'mp3': 'libmp3lame',
+    'ogg': 'libvorbis',
     'wma': 'wmav2',
+    'wv': 'wavpack',
 }
 
 # mutagen's "easy" interface takes the plain field names for MP3, MP4, FLAC
 # and Ogg; ASF and APEv2 need their native keys.
-_APEV2_KEYS = {'artist': 'Artist', 'title': 'Title', 'album': 'Album', 'tracknumber': 'Track'}
+_APEV2_KEYS = {'album': 'Album', 'artist': 'Artist', 'title': 'Title', 'tracknumber': 'Track'}
 _NATIVE_KEYS = {
-    'wma': {'artist': 'Author', 'title': 'Title', 'album': 'WM/AlbumTitle',
+    'ape': _APEV2_KEYS, 'mpc': _APEV2_KEYS,
+    'wma': {'album': 'WM/AlbumTitle', 'artist': 'Author', 'title': 'Title',
             'tracknumber': 'WM/TrackNumber'},
-    'wv': _APEV2_KEYS, 'ape': _APEV2_KEYS, 'mpc': _APEV2_KEYS,
+    'wv': _APEV2_KEYS,
 }
 # Formats with an ID3 tag inside their own container: mutagen has no "easy"
 # interface for them, so the plain field names go through EasyID3's setters.
-_ID3_INSIDE = {'dff', 'dsf'}
+_ID3_INSIDE = {'aiff', 'dff', 'dsf'}
 
 
 def _missing(reason):

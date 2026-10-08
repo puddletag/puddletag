@@ -14,9 +14,9 @@ from puddlestuff import audioinfo
 from puddlestuff.audioinfo.util import strlength
 
 # Each format and the tag puddletag reads and writes in it.
-FORMATS = {'mp3': 'ID3v2.4', 'flac': 'VorbisComment', 'ogg': 'VorbisComment', 'm4a': 'MP4',
-           'ape': 'APEv2', 'mpc': 'APEv2', 'wv': 'APEv2', 'wma': 'ASF', 'dff': 'ID3v2.4',
-           'dsf': 'ID3v2.4'}
+FORMATS = {'aiff': 'ID3v2.4', 'ape': 'APEv2', 'dff': 'ID3v2.4', 'dsf': 'ID3v2.4',
+           'flac': 'VorbisComment', 'm4a': 'MP4', 'mp3': 'ID3v2.4', 'mpc': 'APEv2',
+           'ogg': 'VorbisComment', 'wma': 'ASF', 'wv': 'APEv2'}
 # __frequency and __frequency_num, where not 44.1 kHz.
 RATES = {'dff': ('2822.4 kHz', 2822.4), 'dsf': ('2822.4 kHz', 2822.4)}
 DATE = r'\d{4}-\d\d-\d\d'
