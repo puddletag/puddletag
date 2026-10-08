@@ -165,7 +165,7 @@ _NATIVE_KEYS = {
 }
 # Formats with an ID3 tag inside their own container: mutagen has no "easy"
 # interface for them, so the plain field names go through EasyID3's setters.
-_ID3_INSIDE = {'dff'}
+_ID3_INSIDE = {'dff', 'dsf'}
 
 
 def _missing(reason):
@@ -227,6 +227,19 @@ def _write_dff(path):
     path.write_bytes(chunk(b'FRM8', form))
 
 
+def _write_dsf(path):
+    """A DSF file: one second of mono DSD (all zero bits), padded to whole
+    4096-byte blocks."""
+    data = bytes(-(-DSD_RATE // 8 // 4096) * 4096)
+    # Format version, format ID (raw DSD), channel type (mono), channels,
+    # sampling rate, bits per sample, samples, block size, reserved.
+    fmt = struct.pack('<IIIIIIQII', 1, 0, 1, 1, DSD_RATE, 1, DSD_RATE, 4096, 0)
+    chunks = (b'fmt ' + struct.pack('<Q', 12 + len(fmt)) + fmt
+              + b'data' + struct.pack('<Q', 12 + len(data)) + data)
+    # File size, and no metadata yet: mutagen adds the ID3 tag at the end.
+    path.write_bytes(b'DSD ' + struct.pack('<QQQ', 28, 28 + len(chunks), 0) + chunks)
+
+
 @pytest.fixture
 def make_audio(tmp_path):
     """Return a factory for synthetic audio files.
@@ -237,7 +250,8 @@ def make_audio(tmp_path):
     adds a second, lowercase title. ffmpeg has no encoder for Musepack
     (.mpc), so mpcenc encodes ffmpeg's WAV; nothing in Ubuntu encodes
     Monkey's Audio (.ape), so an .ape file is a header and no audio; and
-    ffmpeg can't write DSDIFF (.dff), so the fixture writes it.
+    ffmpeg can't write DSDIFF (.dff) or DSF (.dsf), so the fixture writes
+    them.
     """
     if shutil.which('ffmpeg') is None:
         _missing('ffmpeg is not installed')
@@ -250,6 +264,8 @@ def make_audio(tmp_path):
             _write_ape_header(path)
         elif ext == 'dff':
             _write_dff(path)
+        elif ext == 'dsf':
+            _write_dsf(path)
         elif ext == 'mpc':
             if shutil.which('mpcenc') is None:
                 _missing('mpcenc (musepack-tools) is not installed')

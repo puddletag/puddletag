@@ -141,7 +141,7 @@ def test_id3v1_comment_is_not_a_track(make_audio):
 # id3.txt's frames, written with puddletag and read back with mutagen and
 # with puddletag, in every format whose tag is ID3. Synthetic values.
 
-ID3_FORMATS = ['mp3', 'dff']
+ID3_FORMATS = ['mp3', 'dff', 'dsf']
 
 
 @pytest.fixture(params=ID3_FORMATS)
