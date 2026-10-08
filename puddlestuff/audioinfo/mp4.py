@@ -119,7 +119,7 @@ def settuple(value):
 
 
 # The number fields whose total MP4 keeps in the same atom.
-TOTALS = {'track': 'totaltracks', 'disc': 'totaldiscs'}
+TOTALS = {'discnumber': 'totaldiscs', 'track': 'totaltracks'}
 
 
 def gettuple(value):
@@ -173,7 +173,7 @@ FUNCS = {
     'partofgaplessalbum': (getbool, setbool),
     'podcast': (getbool, setbool),
     'track': (getint, setint),
-    'disc': (getint, setint),
+    'discnumber': (getint, setint),
     'totaltracks': (getint, setint),
     'totaldiscs': (getint, setint),
     'bpm': (getint, setint),
@@ -287,6 +287,8 @@ class Tag(util.MockTag):
 
     @setdeco
     def __setitem__(self, key, value):
+        if key == 'disc':  # its name before it matched the other formats'
+            key = 'discnumber'
         if isinstance(key, int):
             self.__tags[key] = value
             return
@@ -396,7 +398,7 @@ class Tag(util.MockTag):
 
             # Same as above
             if 'disk' in keys:
-                tags['disc'] = convert('disc', [z[0] for z in audio['disk']])
+                tags['discnumber'] = convert('discnumber', [z[0] for z in audio['disk']])
                 tags['totaldiscs'] = convert('totaldiscs',
                                              [z[1] for z in audio['disk']])
                 keys.remove('disk')
@@ -448,7 +450,7 @@ class Tag(util.MockTag):
 
         newtag = {}
         tuples = (('track', ['trkn', 'totaltracks']),
-                  ('disc', ['disk', 'totaldiscs']))
+                  ('discnumber', ['disk', 'totaldiscs']))
         tags = self.__tags
         for tag, values in tuples:
             if tag in tags:
@@ -465,7 +467,7 @@ class Tag(util.MockTag):
 
         tags = usertags(self.__tags)
         tags = [(z, tags[z]) for z in tags
-                if z not in ['track', 'totaltracks', 'disc', 'totaldiscs']]
+                if z not in ['track', 'totaltracks', 'discnumber', 'totaldiscs']]
 
         for tag, value in tags:
             try:

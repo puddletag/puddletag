@@ -115,21 +115,35 @@ def test_flag_off_in_the_file(make_audio):
     assert (atoms['cpil'], tag['partofcompilation']) == (False, ['No'])
 
 
-def test_track_and_disc(make_audio):
-    # "track and totaltracks share the trkn atom, disc and totaldiscs the
-    # disk atom, each a whole number"
-    atoms, tag = save(make_audio('song.m4a'),
-                      {'track': ['3'], 'totaltracks': ['12'], 'disc': ['1'], 'totaldiscs': ['2']})
-    assert (atoms['trkn'], atoms['disk']) == ([(3, 12)], [(1, 2)])
-    assert [tag[f] for f in ('track', 'totaltracks', 'disc', 'totaldiscs')] == [['3'], ['12'], ['1'], ['2']]
+def test_track_and_its_total(make_audio):
+    # "track and totaltracks share the trkn atom ... each a whole number"
+    atoms, tag = save(make_audio('song.m4a'), {'track': ['3'], 'totaltracks': ['12']})
+    assert atoms['trkn'] == [(3, 12)]
+    assert (tag['track'], tag['totaltracks']) == (['3'], ['12'])
     # tags.txt, __total: the total (a list here, a string for MP3 and FLAC).
     assert to_string(tag['__total']) == '12'
+
+
+# The disc number is discnumber in ID3, APEv2 and WMA, in the tag sources,
+# and in the docs' Tag->File and Autonumbering examples.
+
+def test_disc_and_its_total(make_audio):
+    atoms, tag = save(make_audio('song.m4a'), {'discnumber': ['1'], 'totaldiscs': ['2']})
+    assert atoms['disk'] == [(1, 2)]
+    assert (tag['discnumber'], tag['totaldiscs']) == (['1'], ['2'])
+
+
+def test_disc_by_its_old_name(make_audio):
+    # tags.txt: "writing disc still sets it", as actions saved for MP4
+    # files may.
+    atoms, tag = save(make_audio('song.m4a'), {'disc': ['1']})
+    assert (atoms['disk'], tag['discnumber']) == ([(1, 0)], ['1'])
 
 
 @pytest.mark.parametrize('field, value, atom, stored, total_field', [
     # "writing track as 3/12, or disc as 1/2, sets both"
     ('track', '3/12', 'trkn', (3, 12), 'totaltracks'),
-    ('disc', '1/2', 'disk', (1, 2), 'totaldiscs'),
+    ('discnumber', '1/2', 'disk', (1, 2), 'totaldiscs'),
 ])
 def test_number_with_its_total(make_audio, field, value, atom, stored, total_field):
     atoms, tag = save(make_audio('song.m4a'), {field: [value]})

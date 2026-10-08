@@ -199,7 +199,7 @@ The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddlet
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
 
-MP4 keeps track and disc numbers apart from their totals: **track** and **totaltracks** share the trkn atom, **disc** and **totaldiscs** the disk atom, each a whole number; writing **track** as 3/12, or **disc** as 1/2, sets both. The flags (cpil, pgap, pcst) read **Yes** or **No** and take either. tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng, sfID, stik) take whole numbers.
+MP4 keeps track and disc numbers apart from their totals: **track** and **totaltracks** share the trkn atom, **discnumber** and **totaldiscs** the disk atom, each a whole number; writing **track** as 3/12, or **discnumber** as 1/2, sets both. (An MP4 file's disc number used to be called **disc**; writing **disc** still sets it.) The flags (cpil, pgap, pcst) read **Yes** or **No** and take either. tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng, sfID, stik) take whole numbers.
 
 VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the file, in lower case (**TITLE** shows as **title**), except these:
 
@@ -228,8 +228,7 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **copyright**                    TCOP               cprt
 **date**                         TDAT
 **description**                                     desc
-**disc**                                            disk
-**discnumber**                   TPOS
+**discnumber**                   TPOS               disk
 **encodedby**                    TENC               too
 **encodingsettings**             TSSE
 **encodingtime**                 TDEN

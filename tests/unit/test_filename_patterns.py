@@ -135,6 +135,9 @@ BOB_MARLEY = {'artist': 'Bob Marley & The Wailers', 'title': 'Positive Vibration
      '/mnt/music/The Vinyl LP/Disc 1/Sounds Better Than Anything After.mp3'),
     ('/mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)/%title%', 'music/track.mp3',
      BEFORE_THE_FAME, '/mnt/music/The Vinyl LP/Sounds Better Than Anything After.mp3'),
+    ('/mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)/%title%', 'music/track.m4a',
+     dict(BEFORE_THE_FAME, discnumber='1'),
+     '/mnt/music/The Vinyl LP/Disc 1/Sounds Better Than Anything After.m4a'),
     # tut1.txt, with the patterns and new names in tut1/5full.png and 6full.png
     ('$num(%track%,2) - %title%', BOB_MARLEY_PATH, BOB_MARLEY,
      'mnt/home/storage/puddle/Bob Marley - Babylon By Bus/01 - Positive Vibration.mp3'),
