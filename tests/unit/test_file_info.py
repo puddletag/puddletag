@@ -2,8 +2,8 @@
 audioinfo.Tag gives a real file: the table shows them and patterns use them.
 
 Expected results come from docsrc/source/tags.txt. The files are synthetic:
-one second of mono silence at 44.1 kHz, in Music/Artist/Album (the .ape
-file only says so in its header).
+one second of mono silence at 44.1 kHz (DSD at 2822.4 kHz), in
+Music/Artist/Album (the .ape file only says so in its header).
 """
 import os
 import re
@@ -15,12 +15,17 @@ from puddlestuff.audioinfo.util import strlength
 
 # Each format and the tag puddletag reads and writes in it.
 FORMATS = {'mp3': 'ID3v2.4', 'flac': 'VorbisComment', 'ogg': 'VorbisComment', 'm4a': 'MP4',
-           'ape': 'APEv2', 'mpc': 'APEv2', 'wv': 'APEv2', 'wma': 'ASF'}
+           'ape': 'APEv2', 'mpc': 'APEv2', 'wv': 'APEv2', 'wma': 'ASF', 'dff': 'ID3v2.4'}
+# __frequency and __frequency_num, where not 44.1 kHz.
+RATES = {'dff': ('2822.4 kHz', 2822.4)}
 DATE = r'\d{4}-\d\d-\d\d'
 DATETIME = DATE + r' \d\d:\d\d:\d\d'
+# Formats puddletag can't open.
+BROKEN = {'dff': 'DSDIFF files are read with the DSF class, so none opens'}
 
 
-@pytest.fixture(params=sorted(FORMATS))
+@pytest.fixture(params=[pytest.param(ext, marks=pytest.mark.xfail(strict=True, reason=BROKEN[ext]))
+                        if ext in BROKEN else ext for ext in sorted(FORMATS)])
 def song(request, make_audio, tmp_path):
     path = make_audio('song.' + request.param, tmp_path / 'Music' / 'Artist' / 'Album', title='Song')
     return audioinfo.Tag(str(path))
@@ -38,7 +43,7 @@ def test_names(song):
 
 def test_sound(song):
     assert (song['__length'], song['__length_seconds']) == ('00:01', '1')
-    assert (song['__frequency'], song['__frequency_num']) == ('44.1 kHz', 44.1)
+    assert (song['__frequency'], song['__frequency_num']) == RATES.get(song['__ext'], ('44.1 kHz', 44.1))
     assert (song['__mode'], song['__channels']) == ('Mono', '1')
 
 

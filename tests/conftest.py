@@ -16,6 +16,7 @@ from collections import defaultdict, deque
 
 import mutagen
 import pytest
+from mutagen.easyid3 import EasyID3
 
 _SANDBOX = os.path.realpath(tempfile.mkdtemp(prefix='puddletag-tests-'))
 # atexit rather than a pytest hook, so the dir also goes when this conftest
@@ -162,6 +163,9 @@ _NATIVE_KEYS = {
             'tracknumber': 'WM/TrackNumber'},
     'wv': _APEV2_KEYS, 'ape': _APEV2_KEYS, 'mpc': _APEV2_KEYS,
 }
+# Formats with an ID3 tag inside their own container: mutagen has no "easy"
+# interface for them, so the plain field names go through EasyID3's setters.
+_ID3_INSIDE = {'dff'}
 
 
 def _missing(reason):
@@ -206,6 +210,23 @@ def _write_ape_header(path):
     path.write_bytes(descriptor + header)
 
 
+DSD_RATE = 2822400  # DSD64: 64 times 44.1 kHz, one bit per sample
+
+
+def _write_dff(path):
+    """A DSDIFF file: one second of mono, uncompressed DSD (all zero bits)."""
+    def chunk(id_, data):
+        # A big-endian 8-byte size, and a pad byte after odd-sized data.
+        return id_ + struct.pack('>Q', len(data)) + data + b'\0' * (len(data) % 2)
+    name = b'not compressed'
+    sound = (b'SND ' + chunk(b'FS  ', struct.pack('>L', DSD_RATE))
+             + chunk(b'CHNL', struct.pack('>H', 1) + b'C   ')
+             + chunk(b'CMPR', b'DSD ' + bytes([len(name)]) + name + b'\0'))
+    form = (b'DSD ' + chunk(b'FVER', struct.pack('>L', 0x01050000)) + chunk(b'PROP', sound)
+            + chunk(b'DSD ', bytes(DSD_RATE // 8)))
+    path.write_bytes(chunk(b'FRM8', form))
+
+
 @pytest.fixture
 def make_audio(tmp_path):
     """Return a factory for synthetic audio files.
@@ -215,7 +236,8 @@ def make_audio(tmp_path):
     ffmpeg's -metadata, because ffmpeg's ASF muxer writes Author twice and
     adds a second, lowercase title. ffmpeg has no encoder for Musepack
     (.mpc), so mpcenc encodes ffmpeg's WAV; nothing in Ubuntu encodes
-    Monkey's Audio (.ape), so an .ape file is a header and no audio.
+    Monkey's Audio (.ape), so an .ape file is a header and no audio; and
+    ffmpeg can't write DSDIFF (.dff), so the fixture writes it.
     """
     if shutil.which('ffmpeg') is None:
         _missing('ffmpeg is not installed')
@@ -226,6 +248,8 @@ def make_audio(tmp_path):
         ext = path.suffix[1:]
         if ext == 'ape':
             _write_ape_header(path)
+        elif ext == 'dff':
+            _write_dff(path)
         elif ext == 'mpc':
             if shutil.which('mpcenc') is None:
                 _missing('mpcenc (musepack-tools) is not installed')
@@ -242,7 +266,10 @@ def make_audio(tmp_path):
         audio.tags.clear()  # libvorbis adds an encoder tag even with +bitexact
         keys = _NATIVE_KEYS.get(ext, {})
         for key, value in tags.items():
-            audio[keys.get(key, key)] = value
+            if ext in _ID3_INSIDE:
+                EasyID3.Set[key](audio.tags, key, value if isinstance(value, list) else [value])
+            else:
+                audio[keys.get(key, key)] = value
         audio.save()
         return path
 
