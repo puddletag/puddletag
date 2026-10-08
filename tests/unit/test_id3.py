@@ -7,16 +7,17 @@ import pytest
 from mutagen.id3 import Encoding, PictureType
 
 from puddlestuff import audioinfo
+from puddlestuff.audioinfo.util import to_string
 
 # Synthetic image data: a JPEG's start and end markers.
 JPEG = b'\xff\xd8\xff\xd9'
 
 
-def save_images(path, images):
+def save_images(path, images, v2=3):
     # The reporter of #1057 writes ID3v2.3.
     tag = audioinfo.Tag(str(path))
     tag.update({'__image': images})
-    tag.save(v2=3)
+    tag.save(v2=v2)
     return mutagen.id3.ID3(path).getall('APIC')
 
 
@@ -29,6 +30,15 @@ def test_cover_description_is_latin1_when_it_can_be(make_audio, description):
     [apic] = save_images(path, [{'data': JPEG, 'mime': 'image/jpeg', 'description': description,
                                  'imagetype': PictureType.COVER_FRONT}])
     assert (apic.encoding, apic.desc) == (Encoding.LATIN1, description)
+
+
+def test_cover_description_is_latin1_in_id3v24_too(make_audio):
+    # id3.txt: "a cover's description is Latin-1 when it fits". Synthetic
+    # description.
+    path = make_audio('song.mp3', title='Song')
+    [apic] = save_images(path, [{'data': JPEG, 'mime': 'image/jpeg', 'description': 'Café',
+                                 'imagetype': PictureType.COVER_FRONT}], v2=4)
+    assert (apic.encoding, apic.desc) == (Encoding.LATIN1, 'Café')
 
 
 def test_cover_description_beyond_latin1_is_unicode(make_audio):
@@ -126,3 +136,176 @@ def test_id3v1_comment_is_not_a_track(make_audio):
     # id3.txt: a comment with a description shows as comment:<description>;
     # mutagen describes the ID3v1 comment as "ID3v1 Comment".
     assert tag['comment:ID3v1 Comment'] == ['https://www.youtube.com/watch?']
+
+
+# id3.txt's frames, written with puddletag and read back with mutagen and
+# with puddletag. Synthetic values.
+
+def save(path, fields, v2=4):
+    tag = audioinfo.Tag(str(path))
+    tag.update(fields)
+    tag.save(v2=v2)
+    return mutagen.id3.ID3(path), audioinfo.Tag(str(path))
+
+
+# The text frames that ID3v2.4 has; the ID3v2.3 ones are further down.
+TEXT_FRAMES = {
+    'album': 'TALB', 'albumartist': 'TPE2', 'albumartistsortorder': 'TSO2', 'albumsortorder': 'TSOA',
+    'arranger': 'TPE4', 'artist': 'TPE1', 'audiodelay': 'TDLY', 'audiolength': 'TLEN', 'author': 'TOLY',
+    'bpm': 'TBPM', 'composer': 'TCOM', 'conductor': 'TPE3', 'copyright': 'TCOP', 'discnumber': 'TPOS',
+    'encodedby': 'TENC', 'encodingsettings': 'TSSE', 'filename': 'TOFN', 'fileowner': 'TOWN',
+    'filetype': 'TFLT', 'genre': 'TCON', 'grouping': 'TIT1', 'initialkey': 'TKEY', 'isrc': 'TSRC',
+    'itunescompilationflag': 'TCMP', 'itunescomposersortorder': 'TSOC', 'language': 'TLAN',
+    'lyricist': 'TEXT', 'mediatype': 'TMED', 'mood': 'TMOO', 'organization': 'TPUB',
+    'originalalbum': 'TOAL', 'originalartist': 'TOPE', 'performersortorder': 'TSOP',
+    'producednotice': 'TPRO', 'radioowner': 'TRSO', 'radiostationname': 'TRSN', 'setsubtitle': 'TSST',
+    'title': 'TIT2', 'titlesortorder': 'TSOT', 'track': 'TRCK', 'version': 'TIT3',
+}
+# Frames that hold numbers; the others get two values, as "Multiple values
+# per field are allowed".
+NUMBERS = {'audiodelay': ['5'], 'audiolength': ['205000'], 'bpm': ['120'], 'discnumber': ['1/2'],
+           'itunescompilationflag': ['1'], 'track': ['3/12']}
+
+
+def test_text_frames(make_audio):
+    fields = {field: NUMBERS.get(field, [field + ' one', 'Ünïcode two']) for field in TEXT_FRAMES}
+    frames, tag = save(make_audio('song.mp3'), fields)
+    assert {field: frames[frame].text for field, frame in TEXT_FRAMES.items()} == fields
+    assert {field: tag[field] for field in TEXT_FRAMES} == fields
+
+
+def test_time_frames(make_audio):
+    # "YYYY-MM-DD HH:MM:SS Or some partial form".
+    fields = {'encodingtime': ['2001-02-03 04:05:06'], 'originalreleasetime': ['1999'],
+              'releasetime': ['2001-02'], 'taggingtime': ['2001-02-03 04'], 'year': ['2001']}
+    frames, tag = save(make_audio('song.mp3'), fields)
+    time_frames = {'encodingtime': 'TDEN', 'originalreleasetime': 'TDOR', 'releasetime': 'TDRL',
+                   'taggingtime': 'TDTG', 'year': 'TDRC'}
+    assert {field: [str(t) for t in frames[frame].text] for field, frame in time_frames.items()} == fields
+    assert {field: tag[field] for field in time_frames} == fields
+
+
+ID3V23_ONLY = {'year': ['2001'], 'date': ['0512'], 'time': ['1230'], 'originalyear': ['1999'],
+               'recordingdates': ['December 5'], 'audiosize': ['1000']}
+
+
+def test_id3v23_frames_saved_as_id3v23(make_audio):
+    # They're in the file, and read back as id3.txt says: "year, date and
+    # time together as year (TDRC, eg. 2001-12-05 12:30:00), originalyear as
+    # originalreleasetime (TDOR), and recordingdates and audiosize not at all".
+    path = make_audio('song.mp3')
+    frames, tag = save(path, ID3V23_ONLY, v2=3)
+    v23 = mutagen.id3.ID3(path, translate=False)
+    assert {f: v23[f].text for f in ('TYER', 'TDAT', 'TIME', 'TORY', 'TRDA', 'TSIZ')} == {
+        'TYER': ['2001'], 'TDAT': ['0512'], 'TIME': ['1230'], 'TORY': ['1999'], 'TRDA': ['December 5'],
+        'TSIZ': ['1000']}
+    assert audioinfo.usertags(tag) == {'year': ['2001-12-05 12:30:00'], 'originalreleasetime': ['1999']}
+
+
+def test_id3v23_frames_saved_as_id3v24(make_audio):
+    # "Saving as ID3v2.4 writes year to TDRC and originalyear to TDOR, and
+    # leaves out date, time, recordingdates and audiosize."
+    frames, tag = save(make_audio('song.mp3'), ID3V23_ONLY)
+    assert {f: [str(t) for t in frames[f].text] for f in frames} == {'TDRC': ['2001'], 'TDOR': ['1999']}
+
+
+@pytest.mark.parametrize('v2, encoding', [(4, Encoding.UTF8), (3, Encoding.UTF16)])
+def test_text_encoding(make_audio, v2, encoding):
+    # "Text is written as UTF-8 in ID3v2.4 and as UTF-16 in ID3v2.3".
+    path = make_audio('song.mp3')
+    save(path, {'title': ['Ünïcode'], 'comment': ['Ünïcode'], 'mytag': ['Ünïcode']}, v2=v2)
+    frames = mutagen.id3.ID3(path, translate=False)
+    assert {frame.encoding for frame in (frames['TIT2'], frames.getall('COMM')[0], frames['TXXX:mytag'])} == {
+        encoding}
+
+
+def test_user_defined_text(make_audio):
+    # "writing to the field 'mytag' will write to the ID3 tag frame TXXX:mytag".
+    frames, tag = save(make_audio('song.mp3'), {'mytag': ['one', 'two']})
+    assert (frames['TXXX:mytag'].text, tag['mytag']) == (['one', 'two'], ['one', 'two'])
+
+
+URL_FRAMES = {'wwwartist': 'WOAR', 'wwwcommercialinfo': 'WCOM', 'wwwcopyright': 'WCOP', 'wwwfileinfo': 'WOAF',
+              'wwwpayment': 'WPAY', 'wwwpublisher': 'WPUB', 'wwwradio': 'WORS', 'wwwsource': 'WOAS'}
+
+
+def test_url_frames(make_audio):
+    # "only one value per field is allowed (So even if you try to write
+    # multiple values, only the first one will get written)", except
+    # wwwartist and wwwcommercialinfo: "Each will be written to a different
+    # frame".
+    fields = {field: [f'http://example.com/{field}/1', f'http://example.com/{field}/2'] for field in URL_FRAMES}
+    frames, tag = save(make_audio('song.mp3'), fields)
+    expected = {field: urls if field in ('wwwartist', 'wwwcommercialinfo') else urls[:1]
+                for field, urls in fields.items()}
+    assert {field: [f.url for f in frames.getall(frame)] for field, frame in URL_FRAMES.items()} == expected
+    assert {field: tag[field] for field in URL_FRAMES} == expected
+
+
+def test_user_defined_url(make_audio):
+    # "from www:homepage homepage will be the description written to the
+    # WXXX frame".
+    frames, tag = save(make_audio('song.mp3'), {'www:homepage': ['http://example.com/']})
+    assert (frames['WXXX:homepage'].url, tag['www:homepage']) == ('http://example.com/', ['http://example.com/'])
+
+
+def test_paired_frames(make_audio):
+    # id3.txt's example: items in a pair separated with a colon, pairs with a
+    # semicolon.
+    people = 'Billy Taylor:Piano;Chester Bennington:Vocals;Ratatat:Instruments'
+    frames, tag = save(make_audio('song.mp3'), {'involvedpeople': [people], 'musiciancredits': [people]})
+    pairs = [['Billy Taylor', 'Piano'], ['Chester Bennington', 'Vocals'], ['Ratatat', 'Instruments']]
+    assert (frames['TIPL'].people, frames['TMCL'].people) == (pairs, pairs)
+    assert (tag['involvedpeople'], tag['musiciancredits']) == ([people], [people])
+
+
+def test_playcount(make_audio):
+    frames, tag = save(make_audio('song.mp3'), {'playcount': ['7']})
+    assert (frames['PCNT'].count, tag['playcount']) == (7, ['7'])
+
+
+@pytest.mark.parametrize('value, count', [
+    # id3.txt's example: "an email, rating and playcount separated by a colon"
+    ('cpuddle@unregistered.com:12:3', 3),
+    # "If playcount isn't found in an existing field it'll be added."
+    pytest.param('cpuddle@unregistered.com:12', 0, marks=pytest.mark.xfail(
+        strict=True, reason='without a playcount nothing is written')),
+])
+def test_popularimeter(make_audio, value, count):
+    frames, tag = save(make_audio('song.mp3'), {'popularimeter': [value]})
+    [popm] = frames.getall('POPM')
+    assert (popm.email, popm.rating, popm.count) == ('cpuddle@unregistered.com', 12, count)
+    assert tag['popularimeter'] == [f'cpuddle@unregistered.com:12:{count}']
+
+
+def test_ufid(make_audio):
+    # "shown in puddletag as ufid:owner eg. ufid:musicbrainz.org".
+    track_id = '8f3471b5-7e6a-48da-86a9-c1c07a0f47ae'
+    frames, tag = save(make_audio('song.mp3'), {'ufid:musicbrainz.org': [track_id]})
+    assert (frames['UFID:musicbrainz.org'].data, tag['ufid:musicbrainz.org']) == (track_id.encode(), [track_id])
+
+
+def test_replaygain(make_audio):
+    # "rgain:description", values "channel:gain:peak". RVA2 stores the peak
+    # in fixed point, so it comes back close to what was written.
+    frames, tag = save(make_audio('song.mp3'), {'rgain:track': ['1:-6.5:0.5']})
+    rva2 = frames['RVA2:track']
+    channel, gain, peak = to_string(tag['rgain:track']).split(':')
+    assert (rva2.channel, rva2.gain, channel, gain) == (1, -6.5, '1', '-6.5')
+    assert rva2.peak == float(peak) == pytest.approx(0.5)
+
+
+@pytest.mark.parametrize('value, lang, desc, text', [
+    ('eng|Description|Some lyrics', 'eng', 'Description', 'Some lyrics'),
+    # "If only one '|' is found ... the Language and Lyrics were entered."
+    ('eng|Some lyrics', 'eng', '', 'Some lyrics'),
+    # "If only text is entered, or the language isn't three letters, the
+    # language und (undetermined) will be used."
+    ('Some lyrics', 'und', '', 'Some lyrics'),
+    ('english|Description|Some lyrics', 'und', 'Description', 'Some lyrics'),
+])
+def test_unsynced_lyrics(make_audio, value, lang, desc, text):
+    frames, tag = save(make_audio('song.mp3'), {'unsyncedlyrics': [value]})
+    [uslt] = frames.getall('USLT')
+    assert (uslt.lang, uslt.desc, uslt.text) == (lang, desc, text)
+    assert tag['unsyncedlyrics'] == [f'{lang}|{desc}|{text}']
