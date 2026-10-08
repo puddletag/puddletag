@@ -142,13 +142,16 @@ def test_id3v1_comment_is_not_a_track(make_audio):
 # with puddletag, in every format whose tag is ID3. Synthetic values.
 
 ID3_FORMATS = ['mp3', 'dff']
-# Formats puddletag can't open.
-BROKEN = {'dff': 'DSDIFF files are read with the DSF class, so none opens'}
+# Where a format differs from id3.txt, by test.
+DIFFERS = {('test_id3v23_frames_saved_as_id3v23', 'dff'):
+           'an ID3v2.3 save keeps the ID3v2.4 frame TDRC instead of writing TYER'}
 
 
-@pytest.fixture(params=[pytest.param(ext, marks=pytest.mark.xfail(strict=True, reason=BROKEN[ext]))
-                        if ext in BROKEN else ext for ext in ID3_FORMATS])
+@pytest.fixture(params=ID3_FORMATS)
 def id3_file(request, make_audio):
+    reason = DIFFERS.get((request.node.originalname, request.param))
+    if reason:
+        request.node.add_marker(pytest.mark.xfail(strict=True, reason=reason))
     return make_audio('song.' + request.param)
 
 

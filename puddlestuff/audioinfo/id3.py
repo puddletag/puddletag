@@ -15,6 +15,11 @@ try:
 except ImportError:
     DSF = None
 
+try:
+    from mutagen.dsdiff import DSDIFF
+except ImportError:
+    DSDIFF = None
+
 from mutagen.id3 import (APIC, PairedTextFrame, TextFrame, TimeStampTextFrame,
                          UrlFrame)
 
@@ -804,6 +809,16 @@ if DSF is not None:
         def load(self, filename, **kwargs):
             return DSF.load(self, filename, **kwargs)
 
+if DSDIFF is not None:
+    class DSDIFFFileType(DSDIFF):
+        """See ID3 class."""
+
+        def add_tags(self, ID3=_IFFID3):
+            DSDIFF.add_tags(self)
+
+        def load(self, filename, **kwargs):
+            return DSDIFF.load(self, filename, **kwargs)
+
 
 def tag_factory(id3_filetype):
     class Tag(TagBase):
@@ -865,6 +880,8 @@ def tag_factory(id3_filetype):
 
             if isinstance(self.mut_obj, DSFFileType):
                 mpginfo = [('Type', 'DSF')]
+            elif isinstance(self.mut_obj, DSDIFFFileType):
+                mpginfo = [('Type', 'DSDIFF')]
             elif isinstance(self.mut_obj, AIFFFileType):
                 mpginfo = [('Type', 'AIFF')]
             elif isinstance(self.mut_obj, ID3FileType):
@@ -1114,6 +1131,12 @@ def tag_factory(id3_filetype):
                     audio.tags.save(v2_version=3)  # DSF doesn't support id3v1
                 else:
                     audio.tags.save()  # DSF doesn't support id3v1
+
+            elif DSDIFF is not None and id3_filetype is DSDIFFFileType:
+                if v2 == 3:
+                    audio.tags.save(v2_version=3)  # DSDIFF doesn't support id3v1
+                else:
+                    audio.tags.save()  # DSDIFF doesn't support id3v1
             else:
                 if v2 == 4:
                     audio.tags.update_to_v24()
@@ -1175,4 +1198,7 @@ if AIFF is not None:
     filetypes.append((AIFFFileType, tag_factory(AIFFFileType), 'AIFF', 'aiff'))
 
 if DSF is not None:
-    filetypes.append((DSFFileType, tag_factory(DSFFileType), 'DSF', ['dsf', 'dff']))
+    filetypes.append((DSFFileType, tag_factory(DSFFileType), 'DSF', 'dsf'))
+
+if DSDIFF is not None:
+    filetypes.append((DSDIFFFileType, tag_factory(DSDIFFFileType), 'DSDIFF', 'dff'))

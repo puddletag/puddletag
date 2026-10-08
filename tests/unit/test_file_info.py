@@ -20,12 +20,9 @@ FORMATS = {'mp3': 'ID3v2.4', 'flac': 'VorbisComment', 'ogg': 'VorbisComment', 'm
 RATES = {'dff': ('2822.4 kHz', 2822.4)}
 DATE = r'\d{4}-\d\d-\d\d'
 DATETIME = DATE + r' \d\d:\d\d:\d\d'
-# Formats puddletag can't open.
-BROKEN = {'dff': 'DSDIFF files are read with the DSF class, so none opens'}
 
 
-@pytest.fixture(params=[pytest.param(ext, marks=pytest.mark.xfail(strict=True, reason=BROKEN[ext]))
-                        if ext in BROKEN else ext for ext in sorted(FORMATS)])
+@pytest.fixture(params=sorted(FORMATS))
 def song(request, make_audio, tmp_path):
     path = make_audio('song.' + request.param, tmp_path / 'Music' / 'Artist' / 'Album', title='Song')
     return audioinfo.Tag(str(path))
