@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 import time
 from contextlib import contextmanager
@@ -308,39 +307,13 @@ def model_tag(model, base=audioinfo.AbstractTag):
 
 
 def _Tag(model):
-    splitext = path.splitext
-    extensions = audioinfo.extensions
-
-    options = [[Kind[0], model_tag(model, Kind[1]), Kind[2]] for Kind
-               in audioinfo.options]
-    filetypes = dict([(z[0], z) for z in options])
-
-    extension_regex = re.compile(r'\.(%s)$' % '|'.join(extensions))
+    wrapped = dict((Kind[0], model_tag(model, Kind[1])) for Kind in audioinfo.options)
 
     def ReplacementTag(filename):
-
         try:
-            fileobj = open(filename, "rb")
+            return audioinfo.open_tag(filename, lambda Kind: wrapped[Kind[0]])
         except IOError:
             logging.info("Can't open file %s", filename)
-            return None
-
-        match = extension_regex.search(filename)
-        if match:
-            return filetypes[extensions[match.groups()[0]][0]][1](filename)
-
-        try:
-            header = fileobj.read(128)
-            results = [Kind[0].score(filename, fileobj, header) for Kind in options]
-        finally:
-            fileobj.close()
-        results = list(zip(results, options))
-        results.sort(key=lambda x: x[0])
-        score, Kind = results[-1]
-
-        if score > 0:
-            return Kind[1](filename)
-        else:
             return None
 
     return ReplacementTag

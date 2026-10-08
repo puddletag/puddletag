@@ -1,3 +1,5 @@
+import mutagen
+
 from .constants import *
 from .util import *
 
@@ -84,23 +86,31 @@ def Tag(filename):
     There are caveats associated with each module, so check out their docstrings
     for more info."""
 
-    fileobj = open(filename, "rb")
-    ext = splitext(filename)
-    try:
-        return extensions[ext][1](filename)
-    except KeyError:
-        pass
+    return open_tag(filename)
 
-    try:
+
+def open_tag(filename, tag_class=lambda kind: kind[1]):
+    """The tag of filename, read with the class its extension is registered
+    with, or else with the one whose kind fits its content best; None if
+    none fits. tag_class picks the class from a registered kind,
+    [mutagen class, tag class, name]."""
+    ext = splitext(filename)
+    if ext in extensions:
+        try:
+            return tag_class(extensions[ext])(filename)
+        except mutagen.MutagenError:
+            # Not the kind its extension says, like an Opus stream in an
+            # .ogg file: let the content decide.
+            pass
+
+    with open(filename, "rb") as fileobj:
         header = fileobj.read(128)
         results = [Kind[0].score(filename, fileobj, header) for Kind in options]
-    finally:
-        fileobj.close()
     results = list(zip(results, options))
     results.sort(key=lambda v: v[0])
     score, Kind = results[-1]
     if score > 0:
-        return Kind[1](filename)
+        return tag_class(Kind)(filename)
     else:
         return None
 

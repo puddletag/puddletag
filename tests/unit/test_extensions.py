@@ -22,9 +22,6 @@ REGISTERED = {'aiff': 'aiff', 'ape': 'ape', 'apl': 'apl', 'dff': 'dff', 'dsf': '
 # Common extensions puddletag doesn't register, and their kind.
 UNREGISTERED = {'aif': 'aiff', 'aifc': 'aiff', 'm4b': 'm4a', 'm4p': 'm4a', 'mp2': 'mp3', 'oga': 'ogg'}
 CASES = sorted({**REGISTERED, **UNREGISTERED}.items()) + [('ogg', 'opus')]  # Opus encoders write .ogg too
-# Opus streams in .ogg files: opened as Ogg Vorbis by the last extension,
-# which fails, with no fallback (the table's opener matches .opus.ogg whole).
-OPUS_AS_OGG = {('audioinfo.Tag', 'opus.ogg', 'opus'), ('audioinfo.Tag', 'ogg', 'opus'), ('table', 'ogg', 'opus')}
 
 
 @pytest.fixture(params=['audioinfo.Tag', 'table'])
@@ -39,9 +36,7 @@ def test_registered_extensions():
 
 
 @pytest.mark.parametrize('ext, kind', CASES, ids=[f'{ext}-{kind}' for ext, kind in CASES])
-def test_extension_opens_its_kind(make_audio, tmp_path, request, open_tag, ext, kind):
-    if (request.node.callspec.params['open_tag'], ext, kind) in OPUS_AS_OGG:
-        request.applymarker(pytest.mark.xfail(strict=True, reason='opened as Ogg Vorbis, with no fallback'))
+def test_extension_opens_its_kind(make_audio, tmp_path, open_tag, ext, kind):
     made = make_audio('made.' + kind, title='Song')
     path = tmp_path / ('song.' + ext)
     shutil.copy(made, path)
