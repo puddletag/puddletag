@@ -13,7 +13,7 @@ The usual tag editor features are supported like extracting tag information from
 
 Then there're Functions, which can do things like replace text, trim it, do case conversions, etc. Actions can automate repetitive tasks. Doing web lookups using Amazon (including cover art), Discogs (does cover art too!), FreeDB and MusicBrainz is also supported. There's quite a bit more, but I've reached my comma quota.
 
-Supported formats: ID3v1, ID3v2 (mp3), MP4 (mp4, m4a, etc.), VorbisComments (ogg, flac), Musepack (mpc), Monkey's Audio (.ape) and WavPack (wv).
+Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus, flac), APEv2 (Musepack mpc, Monkey's Audio ape, WavPack wv) and Windows Media (wma).
 
 Why it is
 ---------
