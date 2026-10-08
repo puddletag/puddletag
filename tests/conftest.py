@@ -15,6 +15,7 @@ import tempfile
 from collections import defaultdict, deque
 
 import mutagen
+import mutagen.apev2
 import pytest
 from mutagen.easyid3 import EasyID3
 
@@ -153,6 +154,7 @@ _CODECS = {
     'mp3': 'libmp3lame',
     'ogg': 'libvorbis',
     'opus': 'libopus',
+    'tta': 'tta',
     'wma': 'wmav2',
     'wv': 'wavpack',
 }
@@ -169,6 +171,9 @@ _NATIVE_KEYS = {
 # Formats with an ID3 tag inside their own container: mutagen has no "easy"
 # interface for them, so the plain field names go through EasyID3's setters.
 _ID3_INSIDE = {'aiff', 'dff', 'dsf'}
+# Formats puddletag reads only an APEv2 tag of, which mutagen would open
+# as something else (TrueAudio with an ID3 tag): the tag is written as is.
+_APEV2_ONLY = {'apl', 'tta'}
 
 
 def _missing(reason):
@@ -230,6 +235,13 @@ def _write_dff(path):
     path.write_bytes(chunk(b'FRM8', form))
 
 
+def _write_apl(path):
+    """A Monkey's Audio link file: text pointing at a stretch of an .ape
+    image (the lines Monkey's Audio's APELink.cpp looks for), no audio."""
+    path.write_bytes(b"[Monkey's Audio Image Link File]\r\nImage File=CD.ape\r\n"
+                     b"Start Block=0\r\nFinish Block=44100\r\n")
+
+
 def _write_dsf(path):
     """A DSF file: one second of mono DSD (all zero bits), padded to whole
     4096-byte blocks."""
@@ -254,7 +266,8 @@ def make_audio(tmp_path):
     (.mpc), so mpcenc encodes ffmpeg's WAV; nothing in Ubuntu encodes
     Monkey's Audio (.ape), so an .ape file is a header and no audio; and
     ffmpeg can't write DSDIFF (.dff) or DSF (.dsf), so the fixture writes
-    them.
+    them. A Monkey's Audio link file (.apl) is the fixture's text and an
+    APEv2 tag.
     """
     if shutil.which('ffmpeg') is None:
         _missing('ffmpeg is not installed')
@@ -265,6 +278,8 @@ def make_audio(tmp_path):
         ext = path.suffix[1:]
         if ext == 'ape':
             _write_ape_header(path)
+        elif ext == 'apl':
+            _write_apl(path)
         elif ext == 'dff':
             _write_dff(path)
         elif ext == 'dsf':
@@ -279,6 +294,12 @@ def make_audio(tmp_path):
         else:
             _encode_silence(path, _CODECS[ext])
 
+        if ext in _APEV2_ONLY:
+            apev2 = mutagen.apev2.APEv2()
+            for key, value in tags.items():
+                apev2[_APEV2_KEYS.get(key, key)] = value
+            apev2.save(path)
+            return path
         audio = mutagen.File(path, easy=True)
         if audio.tags is None:
             audio.add_tags()
