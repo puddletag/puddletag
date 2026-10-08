@@ -23,15 +23,10 @@ FORMATS = {'aiff': 'ID3v2.4', 'ape': 'APEv2', 'dff': 'ID3v2.4', 'dsf': 'ID3v2.4'
 RATES = {'dff': ('2822.4 kHz', 2822.4), 'dsf': ('2822.4 kHz', 2822.4), 'opus': ('48.0 kHz', 48.0)}
 DATE = r'\d{4}-\d\d-\d\d'
 DATETIME = DATE + r' \d\d:\d\d:\d\d'
-# Where the code differs from tags.txt, by test and format.
-DIFFERS = {('test_sound', 'opus'): 'Opus files have no __frequency: mutagen gives them no rate'}
 
 
 @pytest.fixture(params=sorted(FORMATS))
 def song(request, make_audio, tmp_path):
-    reason = DIFFERS.get((request.node.originalname, request.param))
-    if reason:
-        request.node.add_marker(pytest.mark.xfail(strict=True, reason=reason))
     path = make_audio('song.' + request.param, tmp_path / 'Music' / 'Artist' / 'Album', title='Song')
     return audioinfo.Tag(str(path))
 

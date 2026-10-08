@@ -10,6 +10,7 @@ from errno import ENOENT
 from os import path, stat
 
 import mutagen
+import mutagen.oggopus
 from PyQt6.QtCore import QMimeDatabase
 from PyQt6.QtGui import QImage
 
@@ -320,10 +321,14 @@ def info_to_dict(info):
     attrs = dir(info)
     tags = {}
     try:
-        tags["__frequency"] = strfrequency(info.sample_rate)
-        tags["__frequency_num"] = info.sample_rate / 1000.0
+        sample_rate = info.sample_rate
     except AttributeError:
-        pass
+        # mutagen gives Opus no rate: RFC 7845 times every Opus stream at
+        # 48 kHz, whatever the rate of what was encoded.
+        sample_rate = 48000 if isinstance(info, mutagen.oggopus.OggOpusInfo) else None
+    if sample_rate is not None:
+        tags["__frequency"] = strfrequency(sample_rate)
+        tags["__frequency_num"] = sample_rate / 1000.0
 
     try:
         # Rounded first, as both fields round down: mutagen's ASF length is
