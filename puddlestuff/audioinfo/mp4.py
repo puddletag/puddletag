@@ -118,6 +118,10 @@ def settuple(value):
     return temp
 
 
+# The number fields whose total MP4 keeps in the same atom.
+TOTALS = {'track': 'totaltracks', 'disc': 'totaldiscs'}
+
+
 def gettuple(value):
     return [str(track) + '/' + str(total) for track, total in value]
 
@@ -298,6 +302,18 @@ class Tag(util.MockTag):
             if key in self:
                 del (self[key])
             return
+        elif key in TOTALS and '/' in ''.join([value] if isinstance(value, str) else value):
+            # A number with its total, as ID3 keeps them: "3/12" sets both.
+            numbers, totals = [], []
+            for number, _, total in (v.partition('/') for v in ([value] if isinstance(value, str) else value)):
+                try:
+                    numbers.append(int(number))
+                    totals.append(int(total))
+                except ValueError:
+                    continue
+            if numbers:
+                self.__tags[key] = numbers
+                self.__tags[TOTALS[key]] = totals
         else:
             try:
                 new_val = FUNCS[key][1](value)

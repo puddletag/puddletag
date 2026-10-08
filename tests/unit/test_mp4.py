@@ -126,7 +126,6 @@ def test_track_and_disc(make_audio):
     assert to_string(tag['__total']) == '12'
 
 
-@pytest.mark.xfail(strict=True, reason='a number with its total is dropped, and the atom with it')
 @pytest.mark.parametrize('field, value, atom, stored, total_field', [
     # "writing track as 3/12, or disc as 1/2, sets both"
     ('track', '3/12', 'trkn', (3, 12), 'totaltracks'),
