@@ -199,11 +199,16 @@ The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddlet
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
 
+VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the file, in lower case (**TITLE** shows as **title**), except these:
+
+* VorbisComment: **tracknumber** shows as **track**, and **date** as **year**.
+* APEv2: **disc** shows as **discnumber**, and **album artist** as **albumartist**.
+
 ===========================      =============      ========
 puddletag field                  ID3v2.4 Frame      MP4 Atom
 ===========================      =============      ========
 **album**                        TALB               alb
-**albumartist**                  TPE2               
+**albumartist**                  TPE2               aART
 **albumsortorder**               TSOA               soal
 **arranger**                     TPE4
 **artist**                       TPE1               ART
@@ -242,6 +247,7 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **originalartist**               TOPE
 **originalreleasetime**          TDOR
 **originalyear**                 TORY
+**partofcompilation**                               cpil
 **performersortorder**           TSOP
 **popularimeter**                POPM
 **producednotice**               TPRO
