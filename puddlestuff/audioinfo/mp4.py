@@ -81,6 +81,8 @@ def getbool(value):
 
 
 def setbool(value):
+    if isinstance(value, list):  # as written from the table: ['No']
+        value = value[0] if value else ''
     if value == 'No':
         return False
     elif value:
@@ -404,7 +406,7 @@ class Tag(util.MockTag):
                         self.__errors.add(field)
 
         for k, v in list(tags.items()):
-            if not v:
+            if not v and v is not False:  # a flag that's off reads No
                 del (tags[k])
 
         self.__tags.update(info_to_dict(audio.info))

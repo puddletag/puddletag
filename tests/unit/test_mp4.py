@@ -96,7 +96,7 @@ def test_number_atoms(make_audio):
 @pytest.mark.parametrize('value, stored', [
     # "The flags (cpil, pgap, pcst) read Yes or No and take either."
     ('Yes', True),
-    pytest.param('No', False, marks=pytest.mark.xfail(strict=True, reason='No is saved as on')),
+    ('No', False),
 ])
 def test_flag_atoms(make_audio, value, stored):
     atoms, tag = save(make_audio('song.m4a'), {field: [value] for field in FLAG_ATOMS})
@@ -104,7 +104,6 @@ def test_flag_atoms(make_audio, value, stored):
     assert {field: tag[field] for field in FLAG_ATOMS} == {field: [value] for field in FLAG_ATOMS}
 
 
-@pytest.mark.xfail(strict=True, reason="a flag that's off doesn't show, and an edit drops its atom")
 def test_flag_off_in_the_file(make_audio):
     # A flag another program wrote off reads No, and an edit keeps it.
     # Synthetic file.
