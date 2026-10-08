@@ -16,8 +16,6 @@ from puddlestuff.findfunc import Function, apply_actions
 
 # Where the code differs from the docs, by test and case.
 DIFFERS = {
-    ('test_stored_tags', 'mp3-ID3v1.1'): "ID3 values can't be read: the frames aren't unpacked as pairs",
-    ('test_stored_tags', 'flac-ID3v2.4'): "ID3 values can't be read: the frames aren't unpacked as pairs",
     ('test_update_from_tag', 'flac-ID3-title;artist'): 'the ID3 tag is read as an MP3, which a FLAC file is not',
     ('test_update_from_tag', 'mp3-APEv2-~title;artist'): "the first field keeps its ~, so it isn't left out",
 }

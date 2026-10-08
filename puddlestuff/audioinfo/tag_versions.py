@@ -26,7 +26,7 @@ def apev2_values(fn):
 def convert_id3_frames(frames):
     mapping = id3.Tag.mapping
     return dict((mapping.get(k, k), v.get_value())
-                for k, v in id3.handle(frames)).items()
+                for k, v in id3.handle(frames).items())
 
 
 def fullread(fileobj, size):
