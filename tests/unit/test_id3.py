@@ -268,8 +268,7 @@ def test_playcount(make_audio):
     # id3.txt's example: "an email, rating and playcount separated by a colon"
     ('cpuddle@unregistered.com:12:3', 3),
     # "If playcount isn't found in an existing field it'll be added."
-    pytest.param('cpuddle@unregistered.com:12', 0, marks=pytest.mark.xfail(
-        strict=True, reason='without a playcount nothing is written')),
+    ('cpuddle@unregistered.com:12', 0),
 ])
 def test_popularimeter(make_audio, value, count):
     frames, tag = save(make_audio('song.mp3'), {'popularimeter': [value]})

@@ -488,8 +488,11 @@ def to_string(value):
 
 def set_popm(frame, value):
     value = to_string(value)
+    parts = value.split(':')
+    if len(parts) == 2:  # id3.txt: a missing playcount is added
+        parts.append('0')
     try:
-        email, rating, count = value.split(':', encoding)
+        email, rating, count = parts
         rating = int(rating)
         count = int(count)
     except ValueError:
