@@ -199,6 +199,8 @@ The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddlet
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
 
+MP4 keeps track and disc numbers apart from their totals: **track** and **totaltracks** share the trkn atom, **disc** and **totaldiscs** the disk atom, each a whole number; writing **track** as 3/12, or **disc** as 1/2, sets both. The flags (cpil, pgap, pcst) read **Yes** or **No** and take either. tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng, sfID, stik) take whole numbers.
+
 VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the file, in lower case (**TITLE** shows as **title**), except these:
 
 * VorbisComment: **tracknumber** shows as **track**, and **date** as **year**.
@@ -209,10 +211,11 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 ===========================      =============      ========
 **album**                        TALB               alb
 **albumartist**                  TPE2               aART
-**albumartistsortorder**         TSO2
+**albumartistsortorder**         TSO2               soaa
 **albumsortorder**               TSOA               soal
 **arranger**                     TPE4
 **artist**                       TPE1               ART
+**artistsortorder**                                 soar
 **audiodelay**                   TDLY
 **audiolength**                  TLEN
 **audiosize**                    TSIZ
@@ -220,9 +223,12 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **bpm**                          TBPM               tmpo
 **comment**                      COMM               cmt
 **composer**                     TCOM               wrt
+**composersortorder**                               soco
 **conductor**                    TPE3
 **copyright**                    TCOP               cprt
 **date**                         TDAT
+**description**                                     desc
+**disc**                                            disk
 **discnumber**                   TPOS
 **encodedby**                    TENC               too
 **encodingsettings**             TSSE
@@ -235,10 +241,24 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **initialkey**                   TKEY
 **involvedpeople**               TIPL
 **isrc**                         TSRC
+**itunesaccount**                                   apID
+**itunesaccounttype**                               akID
+**itunesadvisory**                                  rtng
+**itunesalbumid**                                   plID
+**itunesartistid**                                  atID
+**itunescatalogid**                                 cnID
 **itunescompilationflag**        TCMP
+**itunescomposerid**                                cmID
 **itunescomposersortorder**      TSOC
+**itunesgenreid**                                   geID
+**itunesmediatype**                                 stik
+**itunesproductid**                                 prID
+**itunespublisher**                                 pub
+**itunesstorecountry**                              sfID
+**itunesxid**                                       xid
 **language**                     TLAN
 **lyricist**                     TEXT
+**lyrics**                                          lyr
 **mediatype**                    TMED
 **mood**                         TMOO
 **musiciancredits**              TMCL
@@ -248,21 +268,33 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **originalreleasetime**          TDOR
 **originalyear**                 TORY
 **partofcompilation**                               cpil
+**partofgaplessalbum**                              pgap
 **performersortorder**           TSOP
+**podcast**                                         pcst
+**podcastcategory**                                 catg
+**podcastdesc**                                     ldes
+**podcastepisodeguid**                              egid
+**podcastkeywords**                                 keyw
+**podcasturl**                                      purl
 **popularimeter**                POPM
 **producednotice**               TPRO
+**purchasedate**                                    purd
 **radioowner**                   TRSO
 **radiostationname**             TRSN
 **recordingdates**               TRDA
 **releasetime**                  TDRL
 **setsubtitle**                  TSST
+**showname**                                        tvsh
+**showsortorder**                                   sosn
 **taggingtime**                  TDTG
 **time**                         TIME
 **title**                        TIT2               nam
 **titlesortorder**               TSOT               sonm
-**track**                        TRCK
-**unsyncedlyrics**               USLT
+**totaldiscs**                                      disk
+**totaltracks**                                     trkn
+**track**                        TRCK               trkn
 **ufid**                         UFID
+**unsyncedlyrics**               USLT
 **version**                      TIT3
 **wwwartist**                    WOAR
 **wwwcommercialinfo**            WCOM
@@ -272,5 +304,5 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **wwwpublisher**                 WPUB
 **wwwradio**                     WORS
 **wwwsource**                    WOAS
-**year**                         TDRC               day 
+**year**                         TDRC               day
 ===========================      =============      ========
