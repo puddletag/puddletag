@@ -36,15 +36,17 @@ def fullread(fileobj, size):
 
 
 def has_apev2(fn):
-    fileobj = open(fn, 'rb') if isinstance(fn, str) else fn
+    close_file = isinstance(fn, str)
+    fileobj = open(fn, 'rb') if close_file else fn
 
     try:
         fileobj.seek(-160, 2)
+        return b"APETAGEX" in fileobj.read()
     except IOError:
         return False
-
-    footer = fileobj.read()
-    return b"APETAGEX" in footer
+    finally:
+        if close_file:
+            fileobj.close()
 
 
 def has_v1(fn):
@@ -53,7 +55,7 @@ def has_v1(fn):
 
     try:
         fileobj.seek(-128, 2)
-        return "TAG" == struct.unpack("3s", fullread(fileobj, 3))[0]
+        return b"TAG" == struct.unpack("3s", fullread(fileobj, 3))[0]
     except (struct.error, EOFError, EnvironmentError):
         return False
     finally:
@@ -74,7 +76,7 @@ def get_v2(fn):
         if close_file:
             fileobj.close()
 
-    if id3 == 'ID3' and vmaj in _v2_nums:
+    if id3 == b'ID3' and vmaj in _v2_nums:
         return (2, vmaj, vrev) if vrev != 0 else (2, vmaj)
     return
 
@@ -124,21 +126,26 @@ def id3_tags(fn):
 
 
 def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2)):
-    fileobj = open(fn, 'rb') if isinstance(fn, str) else fn
+    close_file = isinstance(fn, str)
+    fileobj = open(fn, 'rb') if close_file else fn
 
-    if ID3_V1 in to_check and ID3_V2 in to_check:
-        tags = ['ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
-    elif ID3_V1 in to_check:
-        tags = ['ID3v1.1'] if has_v1(fileobj) else []
-    elif ID3_V2 in to_check:
-        tags = get_v2(fileobj)
-        tags = ['ID3v' + '.'.join(map(str, tags))] if tags else []
-    else:
-        tags = []
+    try:
+        if ID3_V1 in to_check and ID3_V2 in to_check:
+            tags = ['ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
+        elif ID3_V1 in to_check:
+            tags = ['ID3v1.1'] if has_v1(fileobj) else []
+        elif ID3_V2 in to_check:
+            tags = get_v2(fileobj)
+            tags = ['ID3v' + '.'.join(map(str, tags))] if tags else []
+        else:
+            tags = []
 
-    if APEv2 in to_check and has_apev2(fn):
-        tags.append('APEv2')
-    return tags
+        if APEv2 in to_check and has_apev2(fileobj):
+            tags.append('APEv2')
+        return tags
+    finally:
+        if close_file:
+            fileobj.close()
 
 
 _value_types = {
