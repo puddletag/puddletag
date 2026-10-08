@@ -1,7 +1,7 @@
 ID3 Frames
 ==========
 
-Below is the list of ID3 frames supported by puddletag descriptions of their usage in puddletag. These can be accessed available via the Extended Tags Dialog (Edit -> Extended Tags). puddletag writes only UTF-8 encoded ID3v2.4 and ID3v2.3 (with the option of including ID3v1) tags.
+Below is the list of ID3 frames supported by puddletag descriptions of their usage in puddletag. These can be accessed available via the Extended Tags Dialog (Edit -> Extended Tags). puddletag writes ID3v2.4 or ID3v2.3 tags (with the option of including ID3v1). Text is written as UTF-8 in ID3v2.4 and as UTF-16 in ID3v2.3, which has no UTF-8; a cover's description is Latin-1 when it fits.
 
 Text Frames
 -----------
@@ -18,6 +18,7 @@ puddletag field           ID3v2.4 Frame
 =======================   ==============
 album                       TALB
 albumartist                 TPE2
+albumartistsortorder        TSO2
 albumsortorder              TSOA
 arranger                    TPE4
 artist                      TPE1
@@ -40,7 +41,6 @@ genre                       TCON
 grouping                    TIT1
 initialkey                  TKEY
 isrc                        TSRC
-itunesalbumsortorder        TSO2
 itunescompilationflag       TCMP
 itunescomposersortorder     TSOC
 language                    TLAN
@@ -64,6 +64,8 @@ track                       TRCK
 version                     TIT3
 year                        TYER
 =======================   ==============
+
+TYER (year), TDAT (date), TIME (time), TORY (originalyear), TRDA (recordingdates) and TSIZ (audiosize) exist only in ID3v2.3. Tags are read as ID3v2.4, so these come back changed: year, date and time together as **year** (TDRC, eg. 2001-12-05 12:30:00), originalyear as **originalreleasetime** (TDOR), and recordingdates and audiosize not at all. Saving as ID3v2.4 writes year to TDRC and originalyear to TDOR, and leaves out date, time, recordingdates and audiosize.
 
 Time Frames
 -----------
@@ -138,4 +140,4 @@ Replaygain, also know as **Relative Volume Adjustment** info is stored in the **
 
 field: unsyncedlyrics, frame: USLT
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-**Unsynced Lyrics frames** store lyrics. Values should take the form **Language|Description|Lyrics**, where **Language** corresponds to three-letter language abbreviation as listed in ISO-639-2. If only text is entered, the language **XXX** will be used. If only one '|' is found in the text, it'll be assumed that the **Language** and **Lyrics** were entered.
+**Unsynced Lyrics frames** store lyrics. Values should take the form **Language|Description|Lyrics**, where **Language** corresponds to three-letter language abbreviation as listed in ISO-639-2. If only text is entered, or the language isn't three letters, the language **und** (undetermined) will be used. If only one '|' is found in the text, it'll be assumed that the **Language** and **Lyrics** were entered.

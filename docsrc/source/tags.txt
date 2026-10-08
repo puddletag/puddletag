@@ -195,7 +195,7 @@ Cover art can be accessed using the **__image** field. Use it only in Function l
 Tags
 ----
 
-The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddletag fields. :doc:`This <id3>` page lists ID3 Frames and the various ways to edit them in puddletag.
+The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddletag fields. :doc:`This <id3>` page lists ID3 Frames and the various ways to edit them in puddletag, including what happens to TDAT, TIME, TORY, TRDA and TSIZ, which only ID3v2.3 has.
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
 
@@ -209,6 +209,7 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 ===========================      =============      ========
 **album**                        TALB               alb
 **albumartist**                  TPE2               aART
+**albumartistsortorder**         TSO2
 **albumsortorder**               TSOA               soal
 **arranger**                     TPE4
 **artist**                       TPE1               ART
@@ -234,7 +235,6 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **initialkey**                   TKEY
 **involvedpeople**               TIPL
 **isrc**                         TSRC
-**itunesalbumsortorder**         TSO2
 **itunescompilationflag**        TCMP
 **itunescomposersortorder**      TSOC
 **language**                     TLAN
