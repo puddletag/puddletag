@@ -46,7 +46,7 @@ from unidecode import unidecode
 import pyparsing
 
 from . import audioinfo
-from .audioinfo import encode_fn
+from .audioinfo import encode_fn, tag_versions
 from .puddleobjects import (safe_name, fnmatch, natural_sort_key)
 
 PATH = audioinfo.PATH
@@ -1075,22 +1075,29 @@ def update_from_tag(r_tags, fields, tag='APEv2'):
 &Field list (; separated):, text,
 &Tag, combo, APEv2, ID3'''
     try:
-        tag = _update[tag]().link(r_tags.filepath)
-        if tag is None:
+        if tag == 'ID3':
+            # The ID3 tag alone: ID3's tag class opens the file as an MP3,
+            # and it may be a FLAC file (function.txt's own case).
+            values = tag_versions.id3v2_values(r_tags.filepath)
+        else:
+            tag = _update[tag]().link(r_tags.filepath)
+            values = tag.usertags if tag is not None else None
+        if values is None:
             return
     except EnvironmentError:
         return
     except mutagen.mp3.HeaderNotFoundError:
         return
+    values = dict((k, v) for k, v in values.items() if not k.startswith('__'))
     fields = [_f for _f in [z.strip() for z in fields.split(';')] if _f]
     if not fields:
-        return tag.usertags
+        return values
     else:
         if fields[0].startswith('~'):
-            return dict([(k, v) for k, v in tag.usertags.items()
+            return dict([(k, v) for k, v in values.items()
                          if k not in fields])
         else:
-            return dict([(k, v) for k, v in tag.usertags.items()
+            return dict([(k, v) for k, v in values.items()
                          if k in fields])
 
 
