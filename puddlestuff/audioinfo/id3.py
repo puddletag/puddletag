@@ -820,6 +820,15 @@ if DSDIFF is not None:
             return DSDIFF.load(self, filename, **kwargs)
 
 
+def _save_v23(tags, filename):
+    """Save a copy of tags converted to ID3v2.3: mutagen writes frames as
+    they are, and only update_to_v23 turns TDRC into TYER and so on."""
+    converted = type(tags)()
+    converted.update(tags)
+    converted.update_to_v23()
+    converted.save(filename, v2_version=3)
+
+
 def tag_factory(id3_filetype):
     class Tag(TagBase):
         IMAGETAGS = (util.MIMETYPE, util.DESCRIPTION, util.DATA,
@@ -1122,19 +1131,19 @@ def tag_factory(id3_filetype):
 
             if AIFF is not None and id3_filetype is AIFFFileType:
                 if v2 == 3:
-                    audio.tags.save(v2_version=3)  # AIFF doesn't support id3v1
+                    _save_v23(audio.tags, self.filepath)  # AIFF doesn't support id3v1
                 else:
                     audio.tags.save()  # AIFF doesn't support id3v1
 
             elif DSF is not None and id3_filetype is DSFFileType:
                 if v2 == 3:
-                    audio.tags.save(v2_version=3)  # DSF doesn't support id3v1
+                    _save_v23(audio.tags, self.filepath)  # DSF doesn't support id3v1
                 else:
                     audio.tags.save()  # DSF doesn't support id3v1
 
             elif DSDIFF is not None and id3_filetype is DSDIFFFileType:
                 if v2 == 3:
-                    audio.tags.save(v2_version=3)  # DSDIFF doesn't support id3v1
+                    _save_v23(audio.tags, self.filepath)  # DSDIFF doesn't support id3v1
                 else:
                     audio.tags.save()  # DSDIFF doesn't support id3v1
             else:
