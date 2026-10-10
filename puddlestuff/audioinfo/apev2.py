@@ -16,6 +16,12 @@ ATTRIBUTES = ['length', 'accessed', 'size', 'created',
 
 COVER_KEYS = {'cover art (front)': 3, 'cover art (back)': 4}
 
+# APEv2 keys shown under the names every other format uses.
+FIELDS = {'album artist': 'albumartist', 'disc': 'discnumber'}
+# The keys those are saved under: the one the file has, else the first
+# (foobar2000's and Winamp's; Mp3tag writes AlbumArtist).
+KEYS = {'albumartist': ('album artist', 'albumartist'), 'discnumber': ('disc', 'discnumber')}
+
 
 class DefaultHeaderError(RuntimeError): pass
 
@@ -123,6 +129,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
 
         @setdeco
         def __setitem__(self, key, value):
+            key = FIELDS.get(key.lower(), key)  # the old names still write these
 
             if key == '__image':
                 self.images = value
@@ -199,7 +206,7 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                         images.append(
                             bin_to_pic(audio[key].value, img_type))
                     else:
-                        self.__tags[key.lower()] = audio.tags[key][:]
+                        self.__tags[FIELDS.get(key.lower(), key.lower())] = audio.tags[key][:]
                 except TypeError:
                     pass
 
@@ -225,6 +232,8 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             if self.images:
                 [newtag.update(pic_to_bin(z)) for z in self.images]
             for field, value in usertags(self.__tags).items():
+                if field in KEYS:
+                    field = next((key for key in KEYS[field] if key in audio), KEYS[field][0])
                 try:
                     newtag[field] = value
                 except AttributeError:

@@ -125,8 +125,9 @@ for m in tag_modules:
     if hasattr(m, 'filetypes'):
         list(map(lambda x: register_tag(*x), m.filetypes))
 
-setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'},
-            'APEv2': {'disc': 'discnumber', 'album artist': 'albumartist'}})
+# APEv2's disc and album artist are renamed by its tag class (apev2.FIELDS),
+# so they hold whatever mapping the app or the user sets.
+setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
 
 _Tag = Tag
 model_tag = lambda x: x

@@ -204,7 +204,7 @@ MP4 keeps track and disc numbers apart from their totals: **track** and **totalt
 VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the file, in lower case (**TITLE** shows as **title**), except these:
 
 * VorbisComment: **tracknumber** shows as **track**, and **date** as **year**.
-* APEv2: **disc** shows as **discnumber**, and **album artist** as **albumartist**.
+* APEv2: **disc** shows as **discnumber**, and **album artist** as **albumartist**; they're saved under the file's own key, or as Disc and Album Artist (Mp3tag's AlbumArtist is kept as it is), and writing **disc** or **album artist** still sets them.
 
 ===========================      =============      ========
 puddletag field                  ID3v2.4 Frame      MP4 Atom

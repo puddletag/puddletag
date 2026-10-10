@@ -1,0 +1,77 @@
+"""APEv2 tags (puddlestuff/audioinfo/apev2.py) in Monkey's Audio, Musepack
+and WavPack files, saved with the two calls an edit in the main table ends
+in (update, then save) and read back with mutagen.
+
+The disc number and the album artist are discnumber and albumartist in
+every other format, the tag sources and the docs (tags.txt). APEv2 files
+keep them as Disc and Album Artist (foobar2000, Winamp), or AlbumArtist
+(Mp3tag). Synthetic files and values.
+"""
+import mutagen.apev2
+import pytest
+
+from puddlestuff import audioinfo
+
+APE_FORMATS = ['ape', 'mpc', 'wv']
+
+
+@pytest.fixture(params=['audioinfo', 'app'])
+def mapping(request):
+    """audioinfo's default field mapping, and one without APEv2 entries for
+    disc and album artist: the app's (puddletag.py, restoreSettings) and a
+    saved mappings file replace audioinfo's."""
+    original = audioinfo.mapping
+    if request.param == 'app':
+        audioinfo.setmapping(dict(original, APEv2={}))
+    yield request.param
+    audioinfo.setmapping(original)
+
+
+def ape_file(make_audio, ext, **keys):
+    """A file with only an APEv2 tag holding these keys, as written."""
+    path = make_audio('song.' + ext)
+    tag = mutagen.apev2.APEv2()
+    tag.update(keys)
+    tag.save(str(path))
+    return path
+
+
+def stored(path):
+    return {key: str(value) for key, value in mutagen.apev2.APEv2(str(path)).items()}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+@pytest.mark.parametrize('keys', [{'Disc': '1/2', 'Album Artist': 'Band'},
+                                  {'Disc': '1/2', 'AlbumArtist': 'Band'}], ids=['foobar2000', 'Mp3tag'])
+def test_disc_and_album_artist_names(make_audio, mapping, ext, keys):
+    # tags.txt: "APEv2: disc shows as discnumber, and album artist as
+    # albumartist".
+    tag = audioinfo.Tag(str(ape_file(make_audio, ext, Title='Song', **keys)))
+    assert audioinfo.usertags(tag) == {'title': ['Song'], 'discnumber': ['1/2'], 'albumartist': ['Band']}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+@pytest.mark.parametrize('keys, expected', [
+    ({'Title': 'Song'}, {'Title': 'Song', 'Disc': '2/2', 'Album Artist': 'Other'}),
+    ({'Disc': '1/2', 'Album Artist': 'Band'}, {'Disc': '2/2', 'Album Artist': 'Other'}),
+    ({'Disc': '1/2', 'AlbumArtist': 'Band'}, {'Disc': '2/2', 'AlbumArtist': 'Other'}),
+], ids=['new', 'foobar2000', 'Mp3tag'])
+def test_saved_under_the_files_key(make_audio, mapping, ext, keys, expected):
+    # tags.txt: "they're saved under the file's own key, or as Disc and Album
+    # Artist". APEv2 keys don't depend on case.
+    path = ape_file(make_audio, ext, **keys)
+    tag = audioinfo.Tag(str(path))
+    tag.update({'discnumber': ['2/2'], 'albumartist': ['Other']})
+    tag.save()
+    assert {k.lower(): v for k, v in stored(path).items()} == {k.lower(): v for k, v in expected.items()}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+def test_old_names_still_write(make_audio, mapping, ext):
+    # tags.txt: "writing disc or album artist still sets them".
+    path = ape_file(make_audio, ext, Title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'disc': ['1/2'], 'album artist': ['Band']})
+    tag.save()
+    assert audioinfo.usertags(audioinfo.Tag(str(path))) == {
+        'title': ['Song'], 'discnumber': ['1/2'], 'albumartist': ['Band']}
