@@ -6,7 +6,7 @@ from . import tag_versions, util
 from .util import (usertags, isempty,
                    FILENAME, PATH,
                    getdeco, setdeco, FILETAGS, str_filesize, fn_hash, CaselessDict, keys_deco,
-                   del_deco, cover_info, info_to_dict, parse_image, get_total, get_mime)
+                   del_deco, cover_info, info_to_dict, parse_image, get_total, get_mime, FieldNameError)
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
               'modified', 'bitspersample', 'channels')
@@ -474,6 +474,10 @@ class Tag(util.MockTag):
                 newtag[REVTAGS[tag]] = value
             except KeyError:
                 atom = self.__freeform[tag]
+                try:
+                    atom.encode('latin-1')  # how mutagen writes atom names
+                except UnicodeEncodeError:
+                    raise FieldNameError(tag, 'MP4', self.filepath)
                 # Only freeform '----:' atoms accept bytes payloads. Other
                 # atoms (e.g. unmapped 4-char text atoms like '\xa9wrk') must
                 # be written as strings, otherwise mutagen's text-atom

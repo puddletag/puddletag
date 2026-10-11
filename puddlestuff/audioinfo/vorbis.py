@@ -15,7 +15,7 @@ from .util import (usertags, PATH,
                    FILENAME, isempty, getdeco, setdeco, str_filesize, unicode_list,
                    CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
                    get_total, set_total, parse_image, info_to_dict,
-                   get_mime)
+                   get_mime, FieldNameError)
 from .tag_versions import tags_in_file
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
@@ -24,6 +24,12 @@ ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified', 'bitspersample')
 
 COVER_KEY = 'metadata_block_picture'
+
+
+def valid_key(key):
+    """The Vorbis comment spec's field names: ASCII from space to }, but
+    not =."""
+    return bool(key) and all(' ' <= c <= '}' and c != '=' for c in key)
 
 
 def base64_to_image(value):
@@ -213,6 +219,8 @@ def vorbis_tag(base, name):
             case = dict((key.lower(), key) for key, value in audio.tags)
             newtag = {}
             for tag, value in usertags(self.__tags).items():
+                if not valid_key(tag):
+                    raise FieldNameError(tag, 'VorbisComment', filepath)
                 newtag[case.get(tag, tag.upper())] = value
 
             if self.__images:

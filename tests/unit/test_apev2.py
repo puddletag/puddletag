@@ -93,6 +93,22 @@ def test_new_keys_with_each_word_capitalised(make_audio, ext):
 
 
 @pytest.mark.parametrize('ext', APE_FORMATS)
+@pytest.mark.parametrize('name', ['TAG', 'x', 'título', '藏經'])
+def test_name_it_cant_store(make_audio, ext, name):
+    # tags.txt: APEv2's field names "are 2 to 255 ASCII characters from space
+    # to ~, other than ID3, TAG, OggS and MP+"; a field whose name the format
+    # can't take "isn't saved: puddletag reports it as it does a file it
+    # can't write, and the file keeps its tags".
+    path = ape_file(make_audio, ext, Title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({name: ['x'], 'title': ['New']})
+    with pytest.raises(EnvironmentError) as error:
+        tag.save()
+    assert name in error.value.strerror and 'APEv2' in error.value.strerror
+    assert stored(path) == {'Title': 'Song'}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
 def test_old_names_still_write(make_audio, mapping, ext):
     # tags.txt: "writing disc or album artist still sets them".
     path = ape_file(make_audio, ext, Title='Song')

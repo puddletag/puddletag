@@ -157,3 +157,18 @@ def test_freeform_atom(make_audio):
     atoms, tag = save(make_audio('song.m4a'), {'mytag': ['one', 'Ünïcode two']})
     assert atoms['----:com.apple.iTunes:mytag'] == [b'one', 'Ünïcode two'.encode()]
     assert tag['mytag'] == ['one', 'Ünïcode two']
+
+
+def test_freeform_name_beyond_latin1(make_audio):
+    # tags.txt: "MP4's freeform ones are Latin-1"; a field whose name the
+    # format can't take "isn't saved: puddletag reports it as it does a file
+    # it can't write, and the file keeps its tags".
+    path = make_audio('song.m4a', title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'título': ['Latin-1'], '藏經': ['x']})
+    with pytest.raises(EnvironmentError) as error:
+        tag.save()
+    assert '藏經' in error.value.strerror and 'MP4' in error.value.strerror
+    assert dict(mutagen.mp4.MP4(path).tags) == {'\xa9nam': ['Song']}
+    atoms, tag = save(path, {'título': ['Latin-1']})
+    assert atoms['----:com.apple.iTunes:título'] == [b'Latin-1']

@@ -702,6 +702,18 @@ def writeable(tags):
     return [z for z in tags if not z.starswith('__') or z.startswith('~')]
 
 
+class FieldNameError(EnvironmentError):
+    """Raised by save for a field the tag can't store under its name, like a
+    non-ASCII one in a VorbisComment, before anything is written. An
+    EnvironmentError, so the app reports it as it does a file it can't
+    write, and puts back the values the file has."""
+
+    def __init__(self, field, tag, filename):
+        EnvironmentError.__init__(self, None, "%s tags can't store a field named %s" % (tag, field), filename)
+        self.field = field
+        self.tag = tag
+
+
 class CaselessDict(dict):
     """Caseless dictionry. Only accepts strings as keys."""
 

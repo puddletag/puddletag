@@ -6,7 +6,7 @@ from mutagen.musepack import Musepack, MusepackHeaderError
 from mutagen.wavpack import WavPack, WavPackHeaderError
 
 from . import util
-from .util import (CaselessDict, FILENAME, MockTag, PATH,
+from .util import (CaselessDict, FieldNameError, FILENAME, MockTag, PATH,
                    cover_info, del_deco, fn_hash, get_mime, get_total,
                    getdeco, info_to_dict, isempty, keys_deco, parse_image, set_total,
                    setdeco, str_filesize, unicode_list, usertags)
@@ -24,6 +24,12 @@ KEYS = {'albumartist': ('album artist', 'albumartist'), 'discnumber': ('disc', '
 # The APEv2 spec's keys (Hydrogenaudio's "APE key") that aren't written with
 # each word capitalised.
 SPEC_KEYS = {'debut album': 'Debut album', 'ean/upc': 'EAN/UPC', 'isbn': 'ISBN', 'isrc': 'ISRC', 'lc': 'LC'}
+
+
+def valid_key(key):
+    """The APEv2 spec's keys: 2 to 255 characters from space to ~, but not
+    ID3, TAG, OggS or MP+."""
+    return 2 <= len(key) <= 255 and all(' ' <= c <= '~' for c in key) and key not in ('ID3', 'MP+', 'OggS', 'TAG')
 
 
 def new_key(field):
@@ -245,8 +251,11 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
             for field, value in usertags(self.__tags).items():
                 if field.lower() in KEYS:
                     field = next((key for key in KEYS[field.lower()] if key in audio), KEYS[field.lower()][0])
+                key = case.get(field.lower(), new_key(field))
+                if not valid_key(key):
+                    raise FieldNameError(field, 'APEv2', self.filepath)
                 try:
-                    newtag[case.get(field.lower(), new_key(field))] = value
+                    newtag[key] = value
                 except AttributeError:
                     pass
             saved = set(key.lower() for key in newtag)

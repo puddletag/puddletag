@@ -208,6 +208,8 @@ VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the f
 
 Neither format tells keys apart by case, but some players do, so saving keeps each key as the file has it (TITLE stays TITLE, Title stays Title). A new key is saved the way each format's specification writes them: in upper case in VorbisComment (TITLE), and with each word capitalised in APEv2 (Title, Record Date), except the APEv2 keys Debut album, EAN/UPC, ISBN, ISRC and LC.
 
+Some formats limit field names: VorbisComment's are ASCII from space to } and can't contain =; APEv2's are 2 to 255 ASCII characters from space to ~, other than ID3, TAG, OggS and MP+; MP4's freeform ones are Latin-1. ID3 takes any name. A field whose name its file's format can't take isn't saved: puddletag reports it as it does a file it can't write, and the file keeps its tags.
+
 The MusicBrainz ids the tag sources return are saved where `MusicBrainz Picard <https://picard-docs.musicbrainz.org/en/latest/appendices/tag_mapping.html>`_ saves them, and files tagged by Picard show them under these names. Except in WMA, they're mappings (Preferences, Mappings), so they can be changed there.
 
 =====================  ===========================  =====================  ==============================================  =====================

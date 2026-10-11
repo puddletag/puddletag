@@ -72,6 +72,21 @@ def test_saving_keeps_the_case_of_keys(vorbis_file):
     assert sorted(comments(vorbis_file)) == [('Album', 'Record'), ('R128_TRACK_GAIN', '-512'), ('TITLE', 'New')]
 
 
+@pytest.mark.parametrize('name', ['a=b', 'a~b', 'título', '藏經'])
+def test_name_it_cant_store(vorbis_file, name):
+    # tags.txt: VorbisComment's field names "are ASCII from space to } and
+    # can't contain ="; a field whose name the format can't take "isn't
+    # saved: puddletag reports it as it does a file it can't write, and the
+    # file keeps its tags".
+    write_comments(vorbis_file, [('TITLE', 'Song')])
+    tag = audioinfo.Tag(str(vorbis_file))
+    tag.update({name: ['x'], 'title': ['New']})
+    with pytest.raises(EnvironmentError) as error:
+        tag.save()
+    assert name in error.value.strerror and 'VorbisComment' in error.value.strerror
+    assert comments(vorbis_file) == [('TITLE', 'Song')]
+
+
 def test_new_keys_in_upper_case(vorbis_file):
     # tags.txt: "A new key is saved ... in upper case in VorbisComment".
     save(vorbis_file, {'myfield': ['x'], 'title': ['Song'], 'track': ['3']})
