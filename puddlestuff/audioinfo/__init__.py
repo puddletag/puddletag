@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import mutagen
 
 from .constants import *
@@ -125,9 +127,28 @@ for m in tag_modules:
     if hasattr(m, 'filetypes'):
         list(map(lambda x: register_tag(*x), m.filetypes))
 
-# APEv2's disc and album artist are renamed by its tag class (apev2.FIELDS),
-# so they hold whatever mapping the app or the user sets.
-setmapping({'VorbisComment': {'tracknumber': 'track', 'date': 'year'}})
+# The fields puddletag shows under another name, by tag type: the name in
+# the file, then puddletag's. A saved mappings file (Preferences, Mappings)
+# replaces it. APEv2's disc and album artist are renamed by its tag class
+# (apev2.FIELDS), so they hold whatever the mapping.
+DEFAULT_MAPPING = {
+    'APEv2': {'musicbrainz_albumid': 'mbrainz_album_id',
+              'musicbrainz_artistid': 'mbrainz_artist_id',
+              'musicbrainz_trackid': 'mbrainz_track_id'},
+    'ID3': {'MusicBrainz Album Id': 'mbrainz_album_id',
+            'MusicBrainz Artist Id': 'mbrainz_artist_id',
+            'ufid:http://musicbrainz.org': 'mbrainz_track_id'},
+    'MP4': {'MusicBrainz Album Id': 'mbrainz_album_id',
+            'MusicBrainz Artist Id': 'mbrainz_artist_id',
+            'MusicBrainz Track Id': 'mbrainz_track_id'},
+    'VorbisComment': {'date': 'year',
+                      'musicbrainz_albumid': 'mbrainz_album_id',
+                      'musicbrainz_artistid': 'mbrainz_artist_id',
+                      'musicbrainz_trackid': 'mbrainz_track_id',
+                      'tracknumber': 'track'},
+}
+
+setmapping(deepcopy(DEFAULT_MAPPING))
 
 _Tag = Tag
 model_tag = lambda x: x

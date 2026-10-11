@@ -15,13 +15,12 @@ from puddlestuff import audioinfo
 APE_FORMATS = ['ape', 'mpc', 'wv']
 
 
-@pytest.fixture(params=['audioinfo', 'app'])
+@pytest.fixture(params=['default', 'no APEv2 entries'])
 def mapping(request):
-    """audioinfo's default field mapping, and one without APEv2 entries for
-    disc and album artist: the app's (puddletag.py, restoreSettings) and a
-    saved mappings file replace audioinfo's."""
+    """The default field mapping, and one without APEv2 entries, as a saved
+    mappings file can have: the names don't depend on the mapping."""
     original = audioinfo.mapping
-    if request.param == 'app':
+    if request.param == 'no APEv2 entries':
         audioinfo.setmapping(dict(original, APEv2={}))
     yield request.param
     audioinfo.setmapping(original)

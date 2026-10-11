@@ -3,6 +3,7 @@ import os
 import platform
 import sys
 import urllib.parse
+from copy import deepcopy
 from functools import partial
 
 from PyQt6.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
@@ -758,28 +759,8 @@ class MainWin(QMainWindow):
         self._lastdir = [encode_fn(cparser.get(
             'main', 'lastfolder', constants.HOMEDIR))]
 
-        mapping = {
-            'VorbisComment':
-                {'date': 'year',
-                 'tracknumber': 'track',
-                 'musicbrainz_albumid': 'mbrainz_album_id',
-                 'musicbrainz_artistid': 'mbrainz_artist_id',
-                 'musicbrainz_trackid': 'mbrainz_track_id'},
-            'MP4':
-                {'MusicBrainz Track Id': 'mbrainz_track_id',
-                 'MusicBrainz Artist Id': 'mbrainz_artist_id',
-                 'MusicBrainz Album Id': 'mbrainz_album_id'},
-            'ID3':
-                {'ufid:http://musicbrainz.org': 'mbrainz_track_id',
-                 'MusicBrainz Album Id': 'mbrainz_album_id',
-                 'MusicBrainz Artist Id': 'mbrainz_artist_id'},
-            'APEv2':
-                {'musicbrainz_albumid': 'mbrainz_album_id',
-                 'musicbrainz_artistid': 'mbrainz_artist_id',
-                 'musicbrainz_trackid': 'mbrainz_track_id'}}
-
         filepath = os.path.join(cparser.savedir, 'mappings')
-        audioinfo.setmapping(audioinfo.loadmapping(filepath, mapping))
+        audioinfo.setmapping(audioinfo.loadmapping(filepath, deepcopy(audioinfo.DEFAULT_MAPPING)))
         status['genres'] = genres.load_genres()
 
         connect_controls(controls + [mainwin.previews.obj])
