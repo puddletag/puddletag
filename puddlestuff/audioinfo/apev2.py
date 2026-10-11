@@ -21,6 +21,15 @@ FIELDS = {'album artist': 'albumartist', 'disc': 'discnumber'}
 # The keys those are saved under: the one the file has, else the first
 # (foobar2000's and Winamp's; Mp3tag writes AlbumArtist).
 KEYS = {'albumartist': ('album artist', 'albumartist'), 'discnumber': ('disc', 'discnumber')}
+# The APEv2 spec's keys (Hydrogenaudio's "APE key") that aren't written with
+# each word capitalised.
+SPEC_KEYS = {'debut album': 'Debut album', 'ean/upc': 'EAN/UPC', 'isbn': 'ISBN', 'isrc': 'ISRC', 'lc': 'LC'}
+
+
+def new_key(field):
+    """How a key the file doesn't have yet is written: as the APEv2 spec
+    writes its keys, each word capitalised (Title, Record Date)."""
+    return SPEC_KEYS.get(field.lower(), ' '.join(word[:1].upper() + word[1:] for word in field.split(' ')))
 
 
 class DefaultHeaderError(RuntimeError): pass
@@ -228,18 +237,21 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 self.mut_obj.filename = self.filepath
             audio = self.mut_obj
 
+            # Each key as the file has it, as players may not ignore case (#419).
+            case = dict((key.lower(), key) for key in audio)
             newtag = {}
             if self.images:
                 [newtag.update(pic_to_bin(z)) for z in self.images]
             for field, value in usertags(self.__tags).items():
-                if field in KEYS:
-                    field = next((key for key in KEYS[field] if key in audio), KEYS[field][0])
+                if field.lower() in KEYS:
+                    field = next((key for key in KEYS[field.lower()] if key in audio), KEYS[field.lower()][0])
                 try:
-                    newtag[field] = value
+                    newtag[case.get(field.lower(), new_key(field))] = value
                 except AttributeError:
                     pass
-            toremove = [z for z in audio if z
-                        not in newtag and audio[z].kind in (TEXT, BINARY)]
+            saved = set(key.lower() for key in newtag)
+            toremove = [z for z in audio if z.lower()
+                        not in saved and audio[z].kind in (TEXT, BINARY)]
             for z in toremove:
                 del (audio[z])
             audio.tags.update(newtag)

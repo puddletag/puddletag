@@ -206,6 +206,8 @@ VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the f
 * VorbisComment: **tracknumber** shows as **track**, and **date** as **year**.
 * APEv2: **disc** shows as **discnumber**, and **album artist** as **albumartist**; they're saved under the file's own key, or as Disc and Album Artist (Mp3tag's AlbumArtist is kept as it is), and writing **disc** or **album artist** still sets them.
 
+Neither format tells keys apart by case, but some players do, so saving keeps each key as the file has it (TITLE stays TITLE, Title stays Title). A new key is saved the way each format's specification writes them: in upper case in VorbisComment (TITLE), and with each word capitalised in APEv2 (Title, Record Date), except the APEv2 keys Debut album, EAN/UPC, ISBN, ISRC and LC.
+
 The MusicBrainz ids the tag sources return are saved where `MusicBrainz Picard <https://picard-docs.musicbrainz.org/en/latest/appendices/tag_mapping.html>`_ saves them, and files tagged by Picard show them under these names. Except in WMA, they're mappings (Preferences, Mappings), so they can be changed there.
 
 =====================  ===========================  =====================  ==============================================  =====================

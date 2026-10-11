@@ -207,9 +207,13 @@ def vorbis_tag(base, name):
                 self.mut_obj.filename = filepath
             audio = self.mut_obj
 
+            # Each key as the file has it, as players may not ignore case
+            # (#419); a new one in upper case, as the Vorbis comment spec
+            # writes them.
+            case = dict((key.lower(), key) for key, value in audio.tags)
             newtag = {}
             for tag, value in usertags(self.__tags).items():
-                newtag[tag] = value
+                newtag[case.get(tag, tag.upper())] = value
 
             if self.__images:
                 if base == FLAC:
@@ -217,12 +221,14 @@ def vorbis_tag(base, name):
                     list(map(lambda p: audio.add_picture(image_to_bin(p)),
                              self.__images))
                 else:
-                    newtag[COVER_KEY] = [_f for _f in map(image_to_base64, self.__images) if _f]
+                    newtag[case.get(COVER_KEY, COVER_KEY.upper())] = [
+                        _f for _f in map(image_to_base64, self.__images) if _f]
             else:
                 if base == FLAC:
                     audio.clear_pictures()
 
-            toremove = [z for z in audio if z not in newtag]
+            saved = set(key.lower() for key in newtag)
+            toremove = [z for z in audio if z.lower() not in saved]
             for z in toremove:
                 del (audio[z])
             audio.update(newtag)

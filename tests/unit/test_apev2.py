@@ -5,7 +5,8 @@ in (update, then save) and read back with mutagen.
 The disc number and the album artist are discnumber and albumartist in
 every other format, the tag sources and the docs (tags.txt). APEv2 files
 keep them as Disc and Album Artist (foobar2000, Winamp), or AlbumArtist
-(Mp3tag). Synthetic files and values.
+(Mp3tag). Keys are compared with their case, which a save keeps (#419).
+Synthetic files and values.
 """
 import mutagen.apev2
 import pytest
@@ -57,16 +58,15 @@ def test_disc_and_album_artist_names(make_audio, mapping, ext, keys):
 ], ids=['new', 'foobar2000', 'Mp3tag'])
 def test_saved_under_the_files_key(make_audio, mapping, ext, keys, expected):
     # tags.txt: "they're saved under the file's own key, or as Disc and Album
-    # Artist". APEv2 keys don't depend on case.
+    # Artist".
     path = ape_file(make_audio, ext, **keys)
     tag = audioinfo.Tag(str(path))
     tag.update({'discnumber': ['2/2'], 'albumartist': ['Other']})
     tag.save()
-    assert {k.lower(): v for k, v in stored(path).items()} == {k.lower(): v for k, v in expected.items()}
+    assert stored(path) == expected
 
 
 @pytest.mark.parametrize('ext', APE_FORMATS)
-@pytest.mark.xfail(strict=True, reason='#419: a save writes every key in lower case')
 def test_saving_keeps_the_case_of_keys(make_audio, ext):
     # #419: "When saving tags puddletag force changes the case of tag names
     # to lower case ... even when the tag values for the specific fields were
@@ -76,6 +76,20 @@ def test_saving_keeps_the_case_of_keys(make_audio, ext):
     tag.update({'title': ['New']})
     tag.save()
     assert stored(path) == {'Album': 'Record', 'REPLAYGAIN_TRACK_GAIN': '-6.00 dB', 'TITLE': 'New'}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
+def test_new_keys_with_each_word_capitalised(make_audio, ext):
+    # tags.txt: "A new key is saved ... with each word capitalised in APEv2
+    # (Title, Record Date), except the APEv2 keys Debut album, EAN/UPC, ISBN,
+    # ISRC and LC".
+    path = ape_file(make_audio, ext)
+    tag = audioinfo.Tag(str(path))
+    tag.update({'debut album': ['First'], 'isrc': ['XX0000000000'], 'myfield': ['x'],
+                'record date': ['2001'], 'title': ['Song']})
+    tag.save()
+    assert stored(path) == {'Debut album': 'First', 'ISRC': 'XX0000000000', 'Myfield': 'x',
+                            'Record Date': '2001', 'Title': 'Song'}
 
 
 @pytest.mark.parametrize('ext', APE_FORMATS)

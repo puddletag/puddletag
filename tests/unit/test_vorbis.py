@@ -1,7 +1,7 @@
 """VorbisComment tags (puddlestuff/audioinfo/vorbis.py) in FLAC, Ogg Vorbis
 and Opus files, saved with the two calls an edit in the main table ends in
 (update, then save) and read back with mutagen. Vorbis keys don't depend on
-case, so only the key-case test compares it. Synthetic files and values.
+case, so only the key-case tests compare it. Synthetic files and values.
 """
 import mutagen
 import pytest
@@ -63,7 +63,6 @@ def test_several_values_and_non_ascii_text(vorbis_file):
     assert upper(comments(vorbis_file)) == [('ARTIST', 'Ćafé'), ('ARTIST', '☕ two')]
 
 
-@pytest.mark.xfail(strict=True, reason='#419: a save writes every key in lower case')
 def test_saving_keeps_the_case_of_keys(vorbis_file):
     # #419: "When saving tags puddletag force changes the case of tag names
     # to lower case ... even when the tag values for the specific fields were
@@ -71,3 +70,9 @@ def test_saving_keeps_the_case_of_keys(vorbis_file):
     write_comments(vorbis_file, [('Album', 'Record'), ('R128_TRACK_GAIN', '-512'), ('TITLE', 'Song')])
     save(vorbis_file, {'title': ['New']})
     assert sorted(comments(vorbis_file)) == [('Album', 'Record'), ('R128_TRACK_GAIN', '-512'), ('TITLE', 'New')]
+
+
+def test_new_keys_in_upper_case(vorbis_file):
+    # tags.txt: "A new key is saved ... in upper case in VorbisComment".
+    save(vorbis_file, {'myfield': ['x'], 'title': ['Song'], 'track': ['3']})
+    assert sorted(comments(vorbis_file)) == [('MYFIELD', 'x'), ('TITLE', 'Song'), ('TRACKNUMBER', '3')]
