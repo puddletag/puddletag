@@ -1199,15 +1199,17 @@ def tag_factory(id3_filetype):
 
 Tag = tag_factory(ID3FileType)
 
+# Every one is registered as ID3, the tag it has, so the ID3 field mapping
+# applies to all of them.
 filetypes = [
     (ID3FileType, tag_factory(ID3FileType), 'ID3', 'mp3'),
 ]
 
 if AIFF is not None:
-    filetypes.append((AIFFFileType, tag_factory(AIFFFileType), 'AIFF', 'aiff'))
+    filetypes.append((AIFFFileType, tag_factory(AIFFFileType), 'ID3', 'aiff'))
 
 if DSF is not None:
-    filetypes.append((DSFFileType, tag_factory(DSFFileType), 'DSF', 'dsf'))
+    filetypes.append((DSFFileType, tag_factory(DSFFileType), 'ID3', 'dsf'))
 
 if DSDIFF is not None:
-    filetypes.append((DSDIFFFileType, tag_factory(DSDIFFFileType), 'DSDIFF', 'dff'))
+    filetypes.append((DSDIFFFileType, tag_factory(DSDIFFFileType), 'ID3', 'dff'))

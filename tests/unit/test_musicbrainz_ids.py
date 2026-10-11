@@ -29,13 +29,11 @@ KEYS = {
     'WMA': {'MusicBrainz/Album Id': 'album-id', 'MusicBrainz/Artist Id': 'artist-id',
             'MusicBrainz/Track Id': 'track-id'},
 }
-NO_ID3_MAPPING = pytest.mark.xfail(
-    strict=True, reason='registered as AIFF, DSF, DSDIFF, so the ID3 mapping misses them')
 FORMATS = [
-    pytest.param('aiff', 'ID3', marks=NO_ID3_MAPPING),
+    ('aiff', 'ID3'),
     ('ape', 'APEv2'),
-    pytest.param('dff', 'ID3', marks=NO_ID3_MAPPING),
-    pytest.param('dsf', 'ID3', marks=NO_ID3_MAPPING),
+    ('dff', 'ID3'),
+    ('dsf', 'ID3'),
     ('flac', 'VorbisComment'),
     ('m4a', 'MP4'),
     ('mp3', 'ID3'),
