@@ -66,6 +66,19 @@ def test_saved_under_the_files_key(make_audio, mapping, ext, keys, expected):
 
 
 @pytest.mark.parametrize('ext', APE_FORMATS)
+@pytest.mark.xfail(strict=True, reason='#419: a save writes every key in lower case')
+def test_saving_keeps_the_case_of_keys(make_audio, ext):
+    # #419: "When saving tags puddletag force changes the case of tag names
+    # to lower case ... even when the tag values for the specific fields were
+    # not changed".
+    path = ape_file(make_audio, ext, Album='Record', REPLAYGAIN_TRACK_GAIN='-6.00 dB', TITLE='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['New']})
+    tag.save()
+    assert stored(path) == {'Album': 'Record', 'REPLAYGAIN_TRACK_GAIN': '-6.00 dB', 'TITLE': 'New'}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
 def test_old_names_still_write(make_audio, mapping, ext):
     # tags.txt: "writing disc or album artist still sets them".
     path = ape_file(make_audio, ext, Title='Song')
