@@ -120,6 +120,13 @@ class Tag(util.MockTag):
 
         util.MockTag.__init__(self, filename)
 
+    def __shown(self, name, values):
+        """Whether puddletag shows the attribute, so that a save may remove
+        it. The others, attributes with a / in their name it doesn't map
+        (WM/Provider) and those not text, are kept as they are."""
+        return name in self.__translate or name == 'WM/Picture' or (
+            '/' not in name and isinstance(values[0], ASFUnicodeAttribute))
+
     @property
     def filepath(self):
         return util.MockTag.get_filepath(self)
@@ -226,9 +233,8 @@ class Tag(util.MockTag):
             try:
                 self.__tags[self.__translate[name]] = list(map(str, values))
             except KeyError:
-                if isinstance(values[0], ASFUnicodeAttribute):
-                    if not '/' in name and name not in self.__tags:
-                        self.__tags[name] = list(map(str, values))
+                if self.__shown(name, values) and name not in self.__tags:
+                    self.__tags[name] = list(map(str, values))
 
         if 'WM/Picture' in audio:
             self.images = list(map(bin_to_pic, audio['WM/Picture']))
@@ -265,7 +271,7 @@ class Tag(util.MockTag):
         if pics:
             newtag['WM/Picture'] = pics
 
-        toremove = [z for z in audio if z not in newtag]
+        toremove = [z for z in audio if z not in newtag and self.__shown(z, audio[z])]
         for z in toremove:
             del (audio[z])
         audio.update(newtag)
