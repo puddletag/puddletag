@@ -41,6 +41,15 @@ def stored(path):
 
 
 @pytest.mark.parametrize('ext', APE_FORMATS)
+def test_names(make_audio, ext):
+    # tags.txt: APEv2 fields "show with the name they have in the file, in
+    # lower case (TITLE shows as title)".
+    path = ape_file(make_audio, ext, ARTIST='Band', MyField='x', Title='Song', Track='3', Year='2001')
+    assert audioinfo.usertags(audioinfo.Tag(str(path))) == {
+        'artist': ['Band'], 'myfield': ['x'], 'title': ['Song'], 'track': ['3'], 'year': ['2001']}
+
+
+@pytest.mark.parametrize('ext', APE_FORMATS)
 @pytest.mark.parametrize('keys', [{'Disc': '1/2', 'Album Artist': 'Band'},
                                   {'Disc': '1/2', 'AlbumArtist': 'Band'}], ids=['foobar2000', 'Mp3tag'])
 def test_disc_and_album_artist_names(make_audio, mapping, ext, keys):
