@@ -2198,7 +2198,10 @@ class ProgressWin(QDialog):
                 self.ptext, value, self.pbar.maximum()))
         self.pbar.setValue(value)
         self._infunc = False
-        if self.pbar.maximum() and value >= self.pbar.maximum():
+        # The value is the item being worked on, from 1, so the last one is
+        # done only past the maximum. Closing cancels, which would stop a
+        # write thread restarted after an error before the last item.
+        if self.pbar.maximum() and value > self.pbar.maximum():
             self.close()
 
     def cancel(self) -> None:
