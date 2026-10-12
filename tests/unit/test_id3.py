@@ -188,6 +188,14 @@ def test_text_frames(id3_file):
     assert {field: tag[field] for field in TEXT_FRAMES} == fields
 
 
+@pytest.mark.parametrize('value, stored', [('0', '0'), ('1', '1'), ('No', '0'), ('Yes', '1')])
+def test_compilation_flag(id3_file, value, stored):
+    # tags.txt: "ID3's itunescompilationflag (TCMP) saves Yes and No as 1
+    # and 0 too", as MP4's flags read.
+    frames, tag = save(id3_file, {'itunescompilationflag': [value]})
+    assert (frames['TCMP'].text, tag['itunescompilationflag']) == ([stored], [stored])
+
+
 def test_time_frames(id3_file):
     # "YYYY-MM-DD HH:MM:SS Or some partial form".
     fields = {'encodingtime': ['2001-02-03 04:05:06'], 'originalreleasetime': ['1999'],

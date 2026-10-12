@@ -199,7 +199,9 @@ The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddlet
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
 
-MP4 keeps track and disc numbers apart from their totals: **track** and **totaltracks** share the trkn atom, **discnumber** and **totaldiscs** the disk atom, each a whole number; writing **track** as 3/12, or **discnumber** as 1/2, sets both. (An MP4 file's disc number used to be called **disc**; writing **disc** still sets it.) The flags (cpil, pgap, pcst) read **Yes** or **No** and take either. tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng, sfID, stik) take whole numbers.
+MP4 keeps track and disc numbers apart from their totals: **track** and **totaltracks** share the trkn atom, **discnumber** and **totaldiscs** the disk atom, each a whole number; writing **track** as 3/12, or **discnumber** as 1/2, sets both. The flags (cpil, pgap, pcst) read **1** or **0**, as MusicBrainz Picard and Mp3tag show them; **1** or **Yes** turns one on, anything else off. ID3's **itunescompilationflag** (TCMP) saves **Yes** and **No** as **1** and **0** too. MP4 keeps lyrics as plain text, so a language and description in front, as ID3 takes them (**eng||Lyrics**, **eng|Description|Lyrics**), aren't saved. tmpo and the iTunes IDs (akID, atID, cmID, cnID, geID, plID, rtng, sfID, stik) take whole numbers.
+
+Some MP4 fields used to have names of their own, and writing those still sets them: **disc** is now **discnumber**, **artistsortorder** is **performersortorder**, **composersortorder** is **itunescomposersortorder**, **partofcompilation** is **itunescompilationflag**, and **lyrics** is **unsyncedlyrics**, as in ID3.
 
 VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the file, in lower case (**TITLE** shows as **title**), except these:
 
@@ -229,7 +231,6 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **albumsortorder**               TSOA               soal
 **arranger**                     TPE4
 **artist**                       TPE1               ART
-**artistsortorder**                                 soar
 **audiodelay**                   TDLY
 **audiolength**                  TLEN
 **audiosize**                    TSIZ
@@ -237,7 +238,6 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **bpm**                          TBPM               tmpo
 **comment**                      COMM               cmt
 **composer**                     TCOM               wrt
-**composersortorder**                               soco
 **conductor**                    TPE3
 **copyright**                    TCOP               cprt
 **date**                         TDAT
@@ -260,9 +260,9 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **itunesalbumid**                                   plID
 **itunesartistid**                                  atID
 **itunescatalogid**                                 cnID
-**itunescompilationflag**        TCMP
+**itunescompilationflag**        TCMP               cpil
 **itunescomposerid**                                cmID
-**itunescomposersortorder**      TSOC
+**itunescomposersortorder**      TSOC               soco
 **itunesgenreid**                                   geID
 **itunesmediatype**                                 stik
 **itunesproductid**                                 prID
@@ -271,7 +271,6 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **itunesxid**                                       xid
 **language**                     TLAN
 **lyricist**                     TEXT
-**lyrics**                                          lyr
 **mediatype**                    TMED
 **mood**                         TMOO
 **musiciancredits**              TMCL
@@ -280,9 +279,8 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **originalartist**               TOPE
 **originalreleasetime**          TDOR
 **originalyear**                 TORY
-**partofcompilation**                               cpil
 **partofgaplessalbum**                              pgap
-**performersortorder**           TSOP
+**performersortorder**           TSOP               soar
 **podcast**                                         pcst
 **podcastcategory**                                 catg
 **podcastdesc**                                     ldes
@@ -307,7 +305,7 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **totaltracks**                                     trkn
 **track**                        TRCK               trkn
 **ufid**                         UFID
-**unsyncedlyrics**               USLT
+**unsyncedlyrics**               USLT               lyr
 **version**                      TIT3
 **wwwartist**                    WOAR
 **wwwcommercialinfo**            WCOM

@@ -62,13 +62,13 @@ def save(path, fields):
 
 TEXT_ATOMS = {
     'album': '©alb', 'albumartist': 'aART', 'albumartistsortorder': 'soaa', 'albumsortorder': 'soal',
-    'artist': '©ART', 'artistsortorder': 'soar', 'comment': '©cmt', 'composer': '©wrt',
-    'composersortorder': 'soco', 'copyright': 'cprt', 'description': 'desc', 'encodedby': '©too',
-    'genre': '©gen', 'grouping': '©grp', 'itunesaccount': 'apID', 'itunesproductid': 'prID',
-    'itunespublisher': '©pub', 'itunesxid': 'xid ', 'lyrics': '©lyr', 'podcastcategory': 'catg',
-    'podcastdesc': 'ldes', 'podcastepisodeguid': 'egid', 'podcastkeywords': 'keyw', 'podcasturl': 'purl',
-    'purchasedate': 'purd', 'showname': 'tvsh', 'showsortorder': 'sosn', 'title': '©nam',
-    'titlesortorder': 'sonm', 'year': '©day',
+    'artist': '©ART', 'comment': '©cmt', 'composer': '©wrt', 'copyright': 'cprt', 'description': 'desc',
+    'encodedby': '©too', 'genre': '©gen', 'grouping': '©grp', 'itunesaccount': 'apID',
+    'itunescomposersortorder': 'soco', 'itunesproductid': 'prID', 'itunespublisher': '©pub',
+    'itunesxid': 'xid ', 'performersortorder': 'soar', 'podcastcategory': 'catg', 'podcastdesc': 'ldes',
+    'podcastepisodeguid': 'egid', 'podcastkeywords': 'keyw', 'podcasturl': 'purl', 'purchasedate': 'purd',
+    'showname': 'tvsh', 'showsortorder': 'sosn', 'title': '©nam', 'titlesortorder': 'sonm',
+    'unsyncedlyrics': '©lyr', 'year': '©day',
 }
 # "tmpo and the iTunes IDs ... take whole numbers."
 NUMBER_ATOMS = {
@@ -76,7 +76,7 @@ NUMBER_ATOMS = {
     'itunesartistid': 'atID', 'itunescatalogid': 'cnID', 'itunescomposerid': 'cmID', 'itunesgenreid': 'geID',
     'itunesmediatype': 'stik', 'itunesstorecountry': 'sfID',
 }
-FLAG_ATOMS = {'partofcompilation': 'cpil', 'partofgaplessalbum': 'pgap', 'podcast': 'pcst'}
+FLAG_ATOMS = {'itunescompilationflag': 'cpil', 'partofgaplessalbum': 'pgap', 'podcast': 'pcst'}
 
 
 def test_text_atoms(make_audio):
@@ -93,26 +93,43 @@ def test_number_atoms(make_audio):
     assert {field: tag[field] for field in NUMBER_ATOMS} == {field: ['7'] for field in NUMBER_ATOMS}
 
 
-@pytest.mark.parametrize('value, stored', [
-    # "The flags (cpil, pgap, pcst) read Yes or No and take either."
-    ('Yes', True),
-    ('No', False),
+@pytest.mark.parametrize('value, stored, shown', [
+    # "The flags (cpil, pgap, pcst) read 1 or 0 ...; 1 or Yes turns one on,
+    # anything else off."
+    ('1', True, '1'),
+    ('0', False, '0'),
+    ('Yes', True, '1'),
+    ('No', False, '0'),
 ])
-def test_flag_atoms(make_audio, value, stored):
+def test_flag_atoms(make_audio, value, stored, shown):
     atoms, tag = save(make_audio('song.m4a'), {field: [value] for field in FLAG_ATOMS})
     assert {field: atoms[atom] for field, atom in FLAG_ATOMS.items()} == {field: stored for field in FLAG_ATOMS}
-    assert {field: tag[field] for field in FLAG_ATOMS} == {field: [value] for field in FLAG_ATOMS}
+    assert {field: tag[field] for field in FLAG_ATOMS} == {field: [shown] for field in FLAG_ATOMS}
 
 
 def test_flag_off_in_the_file(make_audio):
-    # A flag another program wrote off reads No, and an edit keeps it.
+    # A flag another program wrote off reads 0, and an edit keeps it.
     # Synthetic file.
     path = make_audio('song.m4a', title='Before')
     audio = mutagen.mp4.MP4(path)
     audio['cpil'] = False
     audio.save()
     atoms, tag = save(path, {'title': ['After']})
-    assert (atoms['cpil'], tag['partofcompilation']) == (False, ['No'])
+    assert (atoms['cpil'], tag['itunescompilationflag']) == (False, ['0'])
+
+
+@pytest.mark.parametrize('value, stored', [
+    # "MP4 keeps lyrics as plain text, so a language and description in
+    # front, as ID3 takes them (eng||Lyrics, eng|Description|Lyrics), aren't
+    # saved." id3.txt: one '|' is the language and the lyrics.
+    ('eng||Some lyrics', 'Some lyrics'),
+    ('eng|Description|Some lyrics', 'Some lyrics'),
+    ('eng|Some lyrics', 'Some lyrics'),
+    ('Verse 1 | Chorus', 'Verse 1 | Chorus'),
+])
+def test_lyrics_as_plain_text(make_audio, value, stored):
+    atoms, tag = save(make_audio('song.m4a'), {'unsyncedlyrics': [value]})
+    assert (atoms['\xa9lyr'], tag['unsyncedlyrics']) == ([stored], [stored])
 
 
 def test_track_and_its_total(make_audio):
@@ -133,11 +150,18 @@ def test_disc_and_its_total(make_audio):
     assert (tag['discnumber'], tag['totaldiscs']) == (['1'], ['2'])
 
 
-def test_disc_by_its_old_name(make_audio):
-    # tags.txt: "writing disc still sets it", as actions saved for MP4
-    # files may.
-    atoms, tag = save(make_audio('song.m4a'), {'disc': ['1']})
-    assert (atoms['disk'], tag['discnumber']) == ([(1, 0)], ['1'])
+@pytest.mark.parametrize('old, new, value, atom, stored', [
+    ('artistsortorder', 'performersortorder', 'Sort', 'soar', ['Sort']),
+    ('composersortorder', 'itunescomposersortorder', 'Sort', 'soco', ['Sort']),
+    ('disc', 'discnumber', '1', 'disk', [(1, 0)]),
+    ('lyrics', 'unsyncedlyrics', 'Words', '\xa9lyr', ['Words']),
+    ('partofcompilation', 'itunescompilationflag', '1', 'cpil', True),
+])
+def test_old_names_still_write(make_audio, old, new, value, atom, stored):
+    # tags.txt: "Some MP4 fields used to have names of their own, and writing
+    # those still sets them", as actions saved for MP4 files may.
+    atoms, tag = save(make_audio('song.m4a'), {old: [value]})
+    assert (atoms[atom], tag[new]) == (stored, [value])
 
 
 @pytest.mark.parametrize('field, value, atom, stored, total_field', [

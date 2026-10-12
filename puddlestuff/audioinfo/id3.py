@@ -1012,6 +1012,10 @@ def tag_factory(id3_filetype):
                     del (self[key])
                 return
 
+            if key == 'itunescompilationflag':
+                # 1 or 0, as Picard and Mp3tag write TCMP and MP4's flags read.
+                value = [{'no': '0', 'yes': '1'}.get(v.strip().lower(), v) for v in value]
+
             if key in self.__tags:
                 self.__tags[key].set_value(value)
             else:

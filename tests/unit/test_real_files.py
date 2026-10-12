@@ -21,7 +21,7 @@ SHOWN = {
     'musopen-canon.m4a': {
         'artist': ['Aya Higuchi'], 'album': [CHOPIN], 'composer': ['Frédéric Chopin'],
         'encodedby': ['X Lossless Decoder 20140504, QuickTime 7.7.3'], 'genre': ['Classical'],
-        'year': ['2015'], 'partofcompilation': ['Yes'],
+        'year': ['2015'], 'itunescompilationflag': ['1'],
     },
     # archive.org's copy of the same: ID3v2.3 and ID3v1. id3.txt: "The first
     # COMM frame encountered without a description will be used as the

@@ -1,3 +1,4 @@
+import re
 from copy import deepcopy
 
 from mutagen.mp4 import MP4, MP4Cover
@@ -26,7 +27,7 @@ TAGS = {
     'purd': 'purchasedate',
     '\xa9grp': 'grouping',
     '\xa9gen': 'genre',
-    '\xa9lyr': 'lyrics',
+    '\xa9lyr': 'unsyncedlyrics',
     'purl': 'podcasturl',
     'egid': 'podcastepisodeguid',
     'catg': 'podcastcategory',
@@ -36,12 +37,12 @@ TAGS = {
     'cprt': 'copyright',
     'soal': 'albumsortorder',
     'soaa': 'albumartistsortorder',
-    'soar': 'artistsortorder',
+    'soar': 'performersortorder',
     'sonm': 'titlesortorder',
-    'soco': 'composersortorder',
+    'soco': 'itunescomposersortorder',
     'sosn': 'showsortorder',
     'tvsh': 'showname',
-    'cpil': 'partofcompilation',
+    'cpil': 'itunescompilationflag',
     'pgap': 'partofgaplessalbum',
     'pcst': 'podcast',
     'tmpo': 'bpm',
@@ -73,22 +74,21 @@ REVTAGS = dict([reversed(z) for z in TAGS.items()])
 encode = lambda x: [z.encode('utf8') for z in x]
 
 
+# Flags read 1 or 0, as Picard and Mp3tag show them and ID3 keeps TCMP; Yes,
+# which they read before, still turns one on.
 def getbool(value):
     if value:
-        return ['Yes']
+        return ['1']
     else:
-        return ['No']
+        return ['0']
 
 
 def setbool(value):
-    if isinstance(value, list):  # as written from the table: ['No']
+    if isinstance(value, list):  # as written from the table: ['0']
         value = value[0] if value else ''
-    if value == 'No':
-        return False
-    elif value:
-        return True
-    else:
-        return False
+    if isinstance(value, bool):  # as mutagen reads it
+        return value
+    return str(value).strip().lower() in ('1', 'yes')
 
 
 def settext(text):
@@ -120,6 +120,15 @@ def settuple(value):
 
 # The number fields whose total MP4 keeps in the same atom.
 TOTALS = {'discnumber': 'totaldiscs', 'track': 'totaltracks'}
+
+# MP4's names for fields before they matched the other formats'; writing
+# them still sets these.
+OLD_NAMES = {'artistsortorder': 'performersortorder', 'composersortorder': 'itunescomposersortorder',
+             'disc': 'discnumber', 'lyrics': 'unsyncedlyrics', 'partofcompilation': 'itunescompilationflag'}
+
+# The language and description ID3 keeps in front of lyrics ("eng||Lyrics",
+# "eng|Description|Lyrics"; Mp3tag's syntax too): MP4 has no place for them.
+LYRICS_PREFIX = re.compile(r'^[a-z]{3}\|([^|\n]*\|)?')
 
 
 def gettuple(value):
@@ -154,7 +163,7 @@ FUNCS = {
     'purchasedate': (gettext, settext),
     'grouping': (gettext, settext),
     'genre': (gettext, settext),
-    'lyrics': (gettext, settext),
+    'unsyncedlyrics': (gettext, settext),
     'podcasturl': (gettext, settext),
     'podcastepisodeguid': (gettext, settext),
     'podcastcategory': (gettext, settext),
@@ -164,12 +173,12 @@ FUNCS = {
     'copyright': (gettext, settext),
     'albumsortorder': (gettext, settext),
     'albumartistsortorder': (gettext, settext),
-    'artistsortorder': (gettext, settext),
+    'performersortorder': (gettext, settext),
     'titlesortorder': (gettext, settext),
-    'composersortorder': (gettext, settext),
+    'itunescomposersortorder': (gettext, settext),
     'showsortorder': (gettext, settext),
     'showname': (gettext, settext),
-    'partofcompilation': (getbool, setbool),
+    'itunescompilationflag': (getbool, setbool),
     'partofgaplessalbum': (getbool, setbool),
     'podcast': (getbool, setbool),
     'track': (getint, setint),
@@ -287,8 +296,9 @@ class Tag(util.MockTag):
 
     @setdeco
     def __setitem__(self, key, value):
-        if key == 'disc':  # its name before it matched the other formats'
-            key = 'discnumber'
+        key = OLD_NAMES.get(key, key)
+        if key == 'unsyncedlyrics':
+            value = [LYRICS_PREFIX.sub('', text) for text in settext(value)]
         if isinstance(key, int):
             self.__tags[key] = value
             return
