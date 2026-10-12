@@ -7,10 +7,15 @@ from . import util
 from .util import (usertags, PATH,
                    FILENAME, isempty, getdeco, setdeco, str_filesize, fn_hash, cover_info,
                    get_mime, unicode_list, CaselessDict, keys_deco,
-                   del_deco, get_total, set_total, info_to_dict, parse_image)
+                   del_deco, get_total, set_total, info_to_dict, parse_image, FieldNameError,
+                   LYRICS_PREFIX)
 
 ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
               'modified', 'filetype')
+
+# WMA's names for fields before they matched the other formats'; writing
+# them still sets these.
+OLD_NAMES = {'comment:': 'comment', 'lyrics': 'unsyncedlyrics'}
 
 
 # From picard
@@ -66,7 +71,7 @@ class Tag(util.MockTag):
         'albumsortorder': 'WM/AlbumSortOrder',
         'artist': 'Author',
         'bpm': 'WM/BeatsPerMinute',
-        'comment:': 'Description',
+        'comment': 'Description',
         'composer': 'WM/Composer',
         'conductor': 'WM/Conductor',
         'copyright': 'WM/Copyright',
@@ -82,7 +87,6 @@ class Tag(util.MockTag):
         'label': 'WM/Publisher',
         'language': 'WM/Language',
         'lyricist': 'WM/Writer',
-        'lyrics': 'WM/Lyrics',
         'mbrainz_album_id': 'MusicBrainz/Album Id',
         'mbrainz_albumartist_id': 'MusicBrainz/Album Artist Id',
         'mbrainz_artist_id': 'MusicBrainz/Artist Id',
@@ -171,6 +175,7 @@ class Tag(util.MockTag):
 
     @setdeco
     def __setitem__(self, key, value):
+        key = OLD_NAMES.get(key, key)
         if key.startswith('__'):
 
             if key == '__image':
@@ -182,8 +187,11 @@ class Tag(util.MockTag):
                     return
             return
         elif isempty(value):
-            del (self[key])
-        elif key in self.__rtranslate:
+            if key in self:
+                del (self[key])
+        elif key == 'unsyncedlyrics':
+            self.__tags[key] = [LYRICS_PREFIX.sub('', text) for text in unicode_list(value)]
+        else:
             self.__tags[key] = unicode_list(value)
 
     @del_deco
@@ -263,8 +271,10 @@ class Tag(util.MockTag):
         newtag = {}
         for field, value in usertags(self.__tags).items():
             try:
-                newtag[self.__rtranslate[field]] = value
+                newtag[self.__rtranslate[field.lower()]] = value
             except KeyError:
+                if '/' in field:  # as WMA's own attributes have: it wouldn't show again
+                    raise FieldNameError(field, 'WMA', filepath)
                 newtag[field] = value
 
         pics = list(map(pic_to_bin, self.images))

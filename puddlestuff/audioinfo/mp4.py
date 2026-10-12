@@ -1,4 +1,3 @@
-import re
 from copy import deepcopy
 
 from mutagen.mp4 import MP4, MP4Cover
@@ -7,7 +6,8 @@ from . import tag_versions, util
 from .util import (usertags, isempty,
                    FILENAME, PATH,
                    getdeco, setdeco, FILETAGS, str_filesize, fn_hash, CaselessDict, keys_deco,
-                   del_deco, cover_info, info_to_dict, parse_image, get_total, get_mime, FieldNameError)
+                   del_deco, cover_info, info_to_dict, parse_image, get_total, get_mime, FieldNameError,
+                   LYRICS_PREFIX)
 
 ATTRIBUTES = ('frequency', 'bitrate', 'length', 'accessed', 'size', 'created',
               'modified', 'bitspersample', 'channels')
@@ -125,10 +125,6 @@ TOTALS = {'discnumber': 'totaldiscs', 'track': 'totaltracks'}
 # them still sets these.
 OLD_NAMES = {'artistsortorder': 'performersortorder', 'composersortorder': 'itunescomposersortorder',
              'disc': 'discnumber', 'lyrics': 'unsyncedlyrics', 'partofcompilation': 'itunescompilationflag'}
-
-# The language and description ID3 keeps in front of lyrics ("eng||Lyrics",
-# "eng|Description|Lyrics"; Mp3tag's syntax too): MP4 has no place for them.
-LYRICS_PREFIX = re.compile(r'^[a-z]{3}\|([^|\n]*\|)?')
 
 
 def gettuple(value):

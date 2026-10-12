@@ -2,6 +2,7 @@ import base64
 import calendar
 import logging
 import os
+import re
 import sys
 import time
 from copy import deepcopy
@@ -700,6 +701,12 @@ def unicode_list(value):
 
 def writeable(tags):
     return [z for z in tags if not z.starswith('__') or z.startswith('~')]
+
+
+# The language and description ID3 keeps in front of lyrics ("eng||Lyrics",
+# "eng|Description|Lyrics"; Mp3tag's syntax too): MP4 and WMA have no place
+# for them.
+LYRICS_PREFIX = re.compile(r'^[a-z]{3}\|([^|\n]*\|)?')
 
 
 class FieldNameError(EnvironmentError):

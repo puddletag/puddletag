@@ -33,8 +33,6 @@ KEYS = {
 FORMATS = [('aiff', 'ID3'), ('ape', 'APEv2'), ('dff', 'ID3'), ('dsf', 'ID3'), ('flac', 'VorbisComment'),
            ('m4a', 'MP4'), ('mp3', 'ID3'), ('mpc', 'APEv2'), ('ogg', 'VorbisComment'),
            ('opus', 'VorbisComment'), ('wma', 'WMA'), ('wv', 'APEv2')]
-WMA_DROPS_IT = pytest.mark.xfail(strict=True, reason="WMA saves only the fields in wma.py's own table "
-                                                     "(Tag.__setitem__), though it reads any")
 
 
 def stored(path, kind, key):
@@ -91,8 +89,7 @@ def test_several_values_read(make_audio, ext, kind):
     assert audioinfo.Tag(str(path))['artist'] == VALUES
 
 
-@pytest.mark.parametrize('ext, kind', [pytest.param(*format, marks=WMA_DROPS_IT) if format[0] == 'wma'
-                                       else format for format in FORMATS])
+@pytest.mark.parametrize('ext, kind', FORMATS)
 def test_field_of_its_own_saved(make_audio, ext, kind):
     path = make_audio('song.' + ext, title='Song')
     tag = save(path, {'myfield': VALUES})
