@@ -1,6 +1,6 @@
 import struct
 
-from mutagen.asf import ASF, ASFByteArrayAttribute, ASFUnicodeAttribute
+from mutagen.asf import ASF, ASFBoolAttribute, ASFByteArrayAttribute, ASFUnicodeAttribute
 
 from . import tag_versions
 from . import util
@@ -15,7 +15,22 @@ ATTRIBUTES = ('frequency', 'length', 'bitrate', 'accessed', 'size', 'created',
 
 # WMA's names for fields before they matched the other formats'; writing
 # them still sets these.
-OLD_NAMES = {'comment:': 'comment', 'lyrics': 'unsyncedlyrics'}
+OLD_NAMES = {'album_subtitle': 'setsubtitle', 'comment:': 'comment', 'encodersettings': 'encodingsettings',
+             'engineer': 'producer', 'label': 'organization', 'lyrics': 'unsyncedlyrics',
+             'originalfilename': 'filename', 'originallyricist': 'author', 'remixer': 'arranger',
+             'subtitle': 'version', 'wwwaudiosource': 'wwwsource'}
+
+# Attributes that are true or false: they read 1 or 0, as the other formats'
+# flags do, and 1 or Yes turns one on.
+FLAGS = {'WM/IsCompilation'}
+
+
+def get_flag(attribute):
+    return '1' if str(attribute.value).strip().lower() in ('1', 'true') else '0'
+
+
+def set_flag(value):
+    return ASFBoolAttribute(value.strip().lower() in ('1', 'yes'))
 
 
 # From picard
@@ -65,11 +80,12 @@ class Tag(util.MockTag):
 
     __rtranslate = {
         'album': 'WM/AlbumTitle',
-        'album_subtitle': 'WM/SetSubTitle',
         'albumartist': 'WM/AlbumArtist',
         'albumartistsortorder': 'WM/AlbumArtistSortOrder',
         'albumsortorder': 'WM/AlbumSortOrder',
+        'arranger': 'WM/ModifiedBy',
         'artist': 'Author',
+        'author': 'WM/OriginalLyricist',
         'bpm': 'WM/BeatsPerMinute',
         'comment': 'Description',
         'composer': 'WM/Composer',
@@ -77,14 +93,15 @@ class Tag(util.MockTag):
         'copyright': 'WM/Copyright',
         'discnumber': 'WM/PartOfSet',
         'encodedby': 'WM/EncodedBy',
-        'encodersettings': 'WM/EncodingSettings',
+        'encodingsettings': 'WM/EncodingSettings',
         'encodingtime': 'WM/EncodingTime',
-        'engineer': 'WM/Producer',
+        'filename': 'WM/OriginalFilename',
         'genre': 'WM/Genre',
         'grouping': 'WM/ContentGroupDescription',
         'initialkey': 'WM/InitialKey',
         'isrc': 'WM/ISRC',
-        'label': 'WM/Publisher',
+        'itunescompilationflag': 'WM/IsCompilation',
+        'itunescomposersortorder': 'WM/ComposerSortOrder',
         'language': 'WM/Language',
         'lyricist': 'WM/Writer',
         'mbrainz_album_id': 'MusicBrainz/Album Id',
@@ -95,25 +112,25 @@ class Tag(util.MockTag):
         'mbrainz_trmid': 'MusicBrainz/TRM Id',
         'mood': 'WM/Mood',
         'musicip_puid': 'MusicIP/PUID',
+        'organization': 'WM/Publisher',
         'originalalbum': 'WM/OriginalAlbumTitle',
         'originalartist': 'WM/OriginalArtist',
-        'originalfilename': 'WM/OriginalFilename',
-        'originallyricist': 'WM/OriginalLyricist',
         'originalyear': 'WM/OriginalReleaseYear',
         'performersortorder': 'WM/ArtistSortOrder',
+        'producer': 'WM/Producer',
         'releasecountry': 'MusicBrainz/Album Release Country',
         'releasestatus': 'MusicBrainz/Album Status',
         'releasetype': 'MusicBrainz/Album Type',
-        'remixer': 'WM/ModifiedBy',
-        'subtitle': 'WM/SubTitle',
+        'setsubtitle': 'WM/SetSubTitle',
         'title': 'Title',
         'titlesortorder': 'WM/TitleSortOrder',
         'track': 'WM/TrackNumber',
         'unsyncedlyrics': 'WM/Lyrics',
+        'version': 'WM/SubTitle',
         'wwwartist': 'WM/AuthorURL',
-        'wwwaudiosource': 'WM/AudioSourceURL',
         'wwwcommercialinfo': 'WM/PromotionURL',
         'wwwcopyright': 'CopyrightURL',
+        'wwwsource': 'WM/AudioSourceURL',
         'year': 'WM/Year',
     }
     __translate = dict([(v, k) for k, v in __rtranslate.items()])
@@ -238,11 +255,12 @@ class Tag(util.MockTag):
             return
 
         for name, values in audio.tags.items():
-            try:
+            if name in FLAGS:
+                self.__tags[self.__translate[name]] = list(map(get_flag, values))
+            elif name in self.__translate:
                 self.__tags[self.__translate[name]] = list(map(str, values))
-            except KeyError:
-                if self.__shown(name, values) and name not in self.__tags:
-                    self.__tags[name] = list(map(str, values))
+            elif self.__shown(name, values) and name not in self.__tags:
+                self.__tags[name] = list(map(str, values))
 
         if 'WM/Picture' in audio:
             self.images = list(map(bin_to_pic, audio['WM/Picture']))
@@ -271,7 +289,8 @@ class Tag(util.MockTag):
         newtag = {}
         for field, value in usertags(self.__tags).items():
             try:
-                newtag[self.__rtranslate[field.lower()]] = value
+                name = self.__rtranslate[field.lower()]
+                newtag[name] = list(map(set_flag, value)) if name in FLAGS else value
             except KeyError:
                 if '/' in field:  # as WMA's own attributes have: it wouldn't show again
                     raise FieldNameError(field, 'WMA', filepath)

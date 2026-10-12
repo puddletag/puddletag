@@ -195,7 +195,7 @@ Cover art can be accessed using the **__image** field. Use it only in Function l
 Tags
 ----
 
-The table below lists ID3v2.4 frames and MP4 Atoms with their respective puddletag fields. :doc:`This <id3>` page lists ID3 Frames and the various ways to edit them in puddletag, including what happens to TDAT, TIME, TORY, TRDA and TSIZ, which only ID3v2.3 has.
+The table below lists ID3v2.4 frames, MP4 atoms and WMA attributes with their respective puddletag fields. :doc:`This <id3>` page lists ID3 Frames and the various ways to edit them in puddletag, including what happens to TDAT, TIME, TORY, TRDA and TSIZ, which only ID3v2.3 has.
 
 Any MP4 atoms not in this list will be assumed to be freeform frames, written using ':com.apple.iTunes:**fieldname**' as the atom. ID3 frames not found will be written as TXXX frames of the form **TXXX:fieldname** frame.
 
@@ -203,7 +203,7 @@ MP4 keeps track and disc numbers apart from their totals: **track** and **totalt
 
 Some MP4 fields used to have names of their own, and writing those still sets them: **disc** is now **discnumber**, **artistsortorder** is **performersortorder**, **composersortorder** is **itunescomposersortorder**, **partofcompilation** is **itunescompilationflag**, and **lyrics** is **unsyncedlyrics**, as in ID3.
 
-In WMA files, **comment** is the Description attribute, and **unsyncedlyrics** is WM/Lyrics, plain text as in MP4: a language and description in front aren't saved. (They used to show as **comment:** and **lyrics**; writing those still sets them.) Any other field is saved as an attribute of its own name. WMA's own attributes have a / in their name, like WM/Provider: puddletag doesn't show those it has no name for, and keeps them as they are.
+In WMA files, **comment** is the Description attribute, and **unsyncedlyrics** is WM/Lyrics, plain text as in MP4: a language and description in front aren't saved. WM/IsCompilation reads **1** or **0**, as MP4's flags do, and **1** or **Yes** turns it on. Some WMA fields used to have names of their own, and writing those still sets them: **comment:** is now **comment**, **lyrics** is **unsyncedlyrics**, **album_subtitle** is **setsubtitle**, **encodersettings** is **encodingsettings**, **label** is **organization**, **originalfilename** is **filename**, **originallyricist** is **author**, **remixer** is **arranger**, **subtitle** is **version**, and **wwwaudiosource** is **wwwsource**, as in ID3; **engineer** is **producer**, as MusicBrainz Picard calls WM/Producer. Any other field is saved as an attribute of its own name. WMA's own attributes have a / in their name, like WM/Provider: puddletag doesn't show those it has no name for, and keeps them as they are.
 
 VorbisComment (Ogg, FLAC) and APEv2 fields show with the name they have in the file, in lower case (**TITLE** shows as **title**), except these:
 
@@ -224,65 +224,69 @@ puddletag field        ID3                          VorbisComment, APEv2   MP4  
 **mbrainz_track_id**   UFID:http://musicbrainz.org  MUSICBRAINZ_TRACKID    ----:com.apple.iTunes:MusicBrainz Track Id      MusicBrainz/Track Id
 =====================  ===========================  =====================  ==============================================  =====================
 
-===========================      =============      ========
-puddletag field                  ID3v2.4 Frame      MP4 Atom
-===========================      =============      ========
-**album**                        TALB               alb
-**albumartist**                  TPE2               aART
-**albumartistsortorder**         TSO2               soaa
-**albumsortorder**               TSOA               soal
-**arranger**                     TPE4
-**artist**                       TPE1               ART
+===========================      =============      ========      =================================
+puddletag field                  ID3v2.4 Frame      MP4 Atom      WMA Attribute
+===========================      =============      ========      =================================
+**album**                        TALB               alb           WM/AlbumTitle
+**albumartist**                  TPE2               aART          WM/AlbumArtist
+**albumartistsortorder**         TSO2               soaa          WM/AlbumArtistSortOrder
+**albumsortorder**               TSOA               soal          WM/AlbumSortOrder
+**arranger**                     TPE4                             WM/ModifiedBy
+**artist**                       TPE1               ART           Author
 **audiodelay**                   TDLY
 **audiolength**                  TLEN
 **audiosize**                    TSIZ
-**author**                       TOLY
-**bpm**                          TBPM               tmpo
-**comment**                      COMM               cmt
-**composer**                     TCOM               wrt
-**conductor**                    TPE3
-**copyright**                    TCOP               cprt
+**author**                       TOLY                             WM/OriginalLyricist
+**bpm**                          TBPM               tmpo          WM/BeatsPerMinute
+**comment**                      COMM               cmt           Description
+**composer**                     TCOM               wrt           WM/Composer
+**conductor**                    TPE3                             WM/Conductor
+**copyright**                    TCOP               cprt          WM/Copyright
 **date**                         TDAT
 **description**                                     desc
-**discnumber**                   TPOS               disk
-**encodedby**                    TENC               too
-**encodingsettings**             TSSE
-**encodingtime**                 TDEN
-**filename**                     TOFN
+**discnumber**                   TPOS               disk          WM/PartOfSet
+**encodedby**                    TENC               too           WM/EncodedBy
+**encodingsettings**             TSSE                             WM/EncodingSettings
+**encodingtime**                 TDEN                             WM/EncodingTime
+**filename**                     TOFN                             WM/OriginalFilename
 **fileowner**                    TOWN
 **filetype**                     TFLT
-**genre**                        TCON               gen
-**grouping**                     TIT1               grp
-**initialkey**                   TKEY
+**genre**                        TCON               gen           WM/Genre
+**grouping**                     TIT1               grp           WM/ContentGroupDescription
+**initialkey**                   TKEY                             WM/InitialKey
 **involvedpeople**               TIPL
-**isrc**                         TSRC
+**isrc**                         TSRC                             WM/ISRC
 **itunesaccount**                                   apID
 **itunesaccounttype**                               akID
 **itunesadvisory**                                  rtng
 **itunesalbumid**                                   plID
 **itunesartistid**                                  atID
 **itunescatalogid**                                 cnID
-**itunescompilationflag**        TCMP               cpil
+**itunescompilationflag**        TCMP               cpil          WM/IsCompilation
 **itunescomposerid**                                cmID
-**itunescomposersortorder**      TSOC               soco
+**itunescomposersortorder**      TSOC               soco          WM/ComposerSortOrder
 **itunesgenreid**                                   geID
 **itunesmediatype**                                 stik
 **itunesproductid**                                 prID
 **itunespublisher**                                 pub
 **itunesstorecountry**                              sfID
 **itunesxid**                                       xid
-**language**                     TLAN
-**lyricist**                     TEXT
+**language**                     TLAN                             WM/Language
+**lyricist**                     TEXT                             WM/Writer
+**mbrainz_albumartist_id**                                        MusicBrainz/Album Artist Id
+**mbrainz_discid**                                                MusicBrainz/Disc Id
+**mbrainz_trmid**                                                 MusicBrainz/TRM Id
 **mediatype**                    TMED
-**mood**                         TMOO
+**mood**                         TMOO                             WM/Mood
 **musiciancredits**              TMCL
-**organization**                 TPUB
-**originalalbum**                TOAL
-**originalartist**               TOPE
+**musicip_puid**                                                  MusicIP/PUID
+**organization**                 TPUB                             WM/Publisher
+**originalalbum**                TOAL                             WM/OriginalAlbumTitle
+**originalartist**               TOPE                             WM/OriginalArtist
 **originalreleasetime**          TDOR
-**originalyear**                 TORY
+**originalyear**                 TORY                             WM/OriginalReleaseYear
 **partofgaplessalbum**                              pgap
-**performersortorder**           TSOP               soar
+**performersortorder**           TSOP               soar          WM/ArtistSortOrder
 **podcast**                                         pcst
 **podcastcategory**                                 catg
 **podcastdesc**                                     ldes
@@ -291,31 +295,35 @@ puddletag field                  ID3v2.4 Frame      MP4 Atom
 **podcasturl**                                      purl
 **popularimeter**                POPM
 **producednotice**               TPRO
+**producer**                                                      WM/Producer
 **purchasedate**                                    purd
 **radioowner**                   TRSO
 **radiostationname**             TRSN
 **recordingdates**               TRDA
+**releasecountry**                                                MusicBrainz/Album Release Country
+**releasestatus**                                                 MusicBrainz/Album Status
 **releasetime**                  TDRL
-**setsubtitle**                  TSST
+**releasetype**                                                   MusicBrainz/Album Type
+**setsubtitle**                  TSST                             WM/SetSubTitle
 **showname**                                        tvsh
 **showsortorder**                                   sosn
 **taggingtime**                  TDTG
 **time**                         TIME
-**title**                        TIT2               nam
-**titlesortorder**               TSOT               sonm
+**title**                        TIT2               nam           Title
+**titlesortorder**               TSOT               sonm          WM/TitleSortOrder
 **totaldiscs**                                      disk
 **totaltracks**                                     trkn
-**track**                        TRCK               trkn
+**track**                        TRCK               trkn          WM/TrackNumber
 **ufid**                         UFID
-**unsyncedlyrics**               USLT               lyr
-**version**                      TIT3
-**wwwartist**                    WOAR
-**wwwcommercialinfo**            WCOM
-**wwwcopyright**                 WCOP
+**unsyncedlyrics**               USLT               lyr           WM/Lyrics
+**version**                      TIT3                             WM/SubTitle
+**wwwartist**                    WOAR                             WM/AuthorURL
+**wwwcommercialinfo**            WCOM                             WM/PromotionURL
+**wwwcopyright**                 WCOP                             CopyrightURL
 **wwwfileinfo**                  WOAF
 **wwwpayment**                   WPAY
 **wwwpublisher**                 WPUB
 **wwwradio**                     WORS
-**wwwsource**                    WOAS
-**year**                         TDRC               day
-===========================      =============      ========
+**wwwsource**                    WOAS                             WM/AudioSourceURL
+**year**                         TDRC               day           WM/Year
+===========================      =============      ========      =================================
