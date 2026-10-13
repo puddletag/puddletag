@@ -9,6 +9,9 @@ from ..puddleobjects import progress
 from ..translations import translate
 
 id3_tag = audioinfo.id3.Tag
+# AIFF, DSF and DSDIFF keep their ID3v2 tag in a chunk, which only their
+# own delete finds.
+id3_chunk_tags = tuple(tag for filetype, tag, name, ext in audioinfo.id3.filetypes if tag is not id3_tag)
 ape_tag = audioinfo.apev2.Tag
 
 all = ['remove_id3', 'remove_apev2']
@@ -28,6 +31,9 @@ def _remove_tag(f, tag):
         if tag.startswith('ID3') and isinstance(f, id3_tag):
             status['model'].deleteTag(audio=f, delete=False)
             _delete[tag](f.filepath)
+            f.link(f.filepath)
+        elif tag in ('ID3', 'ID3v2') and isinstance(f, id3_chunk_tags):
+            status['model'].deleteTag(audio=f, delete=True)
             f.link(f.filepath)
         elif tag == 'APEv2' and getattr(f, 'apev2', False):
             status['model'].deleteTag(audio=f, delete=True)

@@ -46,10 +46,9 @@ ALL = {'artist': ['Artist'], 'composer': ['Composer'], 'title': ['Title']}
 OWN = {'artist': ['Artist'], 'title': ['Title']}
 TOOLS = ['remove_apev2', 'remove_id3', 'remove_id3v1', 'remove_id3v2']
 
-KEEPS_ID3 = pytest.mark.xfail(strict=True, reason='code differs from the docs: the file keeps its ID3 tag')
 
-def case(kind, tool, listed, fields, marks=()):
-    return pytest.param(kind, tool, listed, fields, marks=marks, id=kind + '-' + tool)
+def case(kind, tool, listed, fields):
+    return pytest.param(kind, tool, listed, fields, id=kind + '-' + tool)
 
 
 CASES = [
@@ -67,7 +66,8 @@ CASES = [
 ]
 for ext in ['aiff', 'dff', 'dsf']:
     FILES[ext] = own(ext)
-    CASES += [case(ext, tool, None, {}, KEEPS_ID3) for tool in ['remove_id3', 'remove_id3v2']]
+    # Before, the file kept its ID3 tag.
+    CASES += [case(ext, tool, None, {}) for tool in ['remove_id3', 'remove_id3v2']]
 for ext in ['ape', 'mpc', 'wv']:
     FILES[ext] = own(ext)
     CASES += [case(ext, 'remove_apev2', None, {})]
