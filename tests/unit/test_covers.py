@@ -248,7 +248,6 @@ def test_apev2_front_and_back_covers(make_audio, ext):
     assert (sorted(tag['__image'], key=lambda cover: cover['imagetype']), tag['__num_images']) == ([FRONT, BACK], '2')
 
 
-@pytest.mark.xfail(strict=True, reason='a save deletes every APEv2 binary item but the two covers puddletag shows')
 @pytest.mark.parametrize('ext', APEV2)
 def test_apev2_pictures_puddletag_does_not_show_are_kept(make_audio, ext):
     # Pictures of other types, as foobar2000 (Artist Picture, Cover Art

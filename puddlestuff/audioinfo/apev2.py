@@ -259,8 +259,10 @@ def get_class(mutagen_file, filetype, attrib_fields, header_error=None):
                 except AttributeError:
                     pass
             saved = set(key.lower() for key in newtag)
-            toremove = [z for z in audio if z.lower()
-                        not in saved and audio[z].kind in (TEXT, BINARY)]
+            # Binary items other than the two covers don't show (foobar2000's
+            # Artist Picture, Mp3tag's Cover Art (Artist)), so are kept.
+            toremove = [z for z in audio if z.lower() not in saved
+                        and (audio[z].kind == TEXT or z.lower() in COVER_KEYS)]
             for z in toremove:
                 del (audio[z])
             audio.tags.update(newtag)
