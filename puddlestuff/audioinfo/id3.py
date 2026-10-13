@@ -1051,6 +1051,8 @@ def tag_factory(id3_filetype):
             """Links the audio, filename
             returns self if successful, None otherwise."""
             self.__images = []
+            # Linked again (by the Tag Tools), it holds what the file holds.
+            self.__tags = CaselessDict()
             tags, audio = self.load(filename, id3_filetype)
             if audio is None:
                 return
@@ -1206,7 +1208,7 @@ Tag = tag_factory(ID3FileType)
 # Every one is registered as ID3, the tag it has, so the ID3 field mapping
 # applies to all of them.
 filetypes = [
-    (ID3FileType, tag_factory(ID3FileType), 'ID3', 'mp3'),
+    (ID3FileType, Tag, 'ID3', 'mp3'),
 ]
 
 if AIFF is not None:

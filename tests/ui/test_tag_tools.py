@@ -46,8 +46,6 @@ ALL = {'artist': ['Artist'], 'composer': ['Composer'], 'title': ['Title']}
 OWN = {'artist': ['Artist'], 'title': ['Title']}
 TOOLS = ['remove_apev2', 'remove_id3', 'remove_id3v1', 'remove_id3v2']
 
-KEEPS_SHOWING = pytest.mark.xfail(strict=True, reason='code differs from the docs: the table keeps showing the '
-                                                      "removed tag's fields, and the next edit saves them back")
 KEEPS_ID3 = pytest.mark.xfail(strict=True, reason='code differs from the docs: the file keeps its ID3 tag')
 
 def case(kind, tool, listed, fields, marks=()):
@@ -59,9 +57,11 @@ CASES = [
     # found in file", tags.txt) where the file has two tags, and the fields
     # the file then holds. An MP3's ID3v1 tag holds the title and artist.
     case('mp3', 'remove_apev2', 'ID3v2.4, ID3v1.1', ALL),
-    case('mp3', 'remove_id3', 'APEv2', {}, KEEPS_SHOWING),
+    # Before, after removing ID3v2 the table kept showing its fields, and
+    # the next edit saved them back.
+    case('mp3', 'remove_id3', 'APEv2', {}),
     case('mp3', 'remove_id3v1', 'ID3v2.4, APEv2', ALL),
-    case('mp3', 'remove_id3v2', 'ID3v1.1, APEv2', OWN, KEEPS_SHOWING),
+    case('mp3', 'remove_id3v2', 'ID3v1.1, APEv2', OWN),
     case('flac', 'remove_id3', 'VorbisComment', {'title': ['Vorbis title']}),
     case('flac', 'remove_id3v2', 'VorbisComment', {'title': ['Vorbis title']}),
 ]

@@ -80,7 +80,6 @@ def test_update_from_tag(make_audio, kind, tag_type, fields, expected):
     assert update_from_tag(FILES[kind](make_audio), fields, tag_type) == expected
 
 
-@pytest.mark.xfail(strict=True, reason="code differs from the docs: the ID3 tag's MusicBrainz ids aren't mapped")
 def test_musicbrainz_ids_in_an_id3_tag(make_audio):
     # tags.txt names the MusicBrainz ids in ID3 as Picard writes them, and
     # an MP3 shows them as mbrainz_album_id and mbrainz_track_id: so does
