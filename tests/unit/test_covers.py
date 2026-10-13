@@ -435,8 +435,6 @@ def test_artwork_exported_to_another_folder(make_audio, tmp_path):
     assert sorted(pictures(desktop).values()) == sorted(cover['data'] for cover in EXAMPLE)
 
 
-@pytest.mark.xfail(strict=True, reason='code differs from the docs: with folder_1.png there too, the picture is '
-                                       'saved as folder_1_2.png')
 def test_artwork_exported_next_to_existing_pictures(make_audio):
     # "If a picture file already exists '_1' will be appended to the
     # filename (before the extension). If that file already exists '_2'

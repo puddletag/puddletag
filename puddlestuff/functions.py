@@ -944,9 +944,10 @@ def save_artwork(m_tags, pattern, r_tags, state=None, write=True):
         elif path.exists(fn):
             continue
 
+        name = path.splitext(fn)[0]
         i = 1
         while path.exists(fn):
-            fn = path.splitext(fn)[0] + '_' + str(i) + extension
+            fn = name + '_' + str(i) + extension
             i += 1
 
         if write:
