@@ -49,7 +49,6 @@ TOOLS = ['remove_apev2', 'remove_id3', 'remove_id3v1', 'remove_id3v2']
 KEEPS_SHOWING = pytest.mark.xfail(strict=True, reason='code differs from the docs: the table keeps showing the '
                                                       "removed tag's fields, and the next edit saves them back")
 KEEPS_ID3 = pytest.mark.xfail(strict=True, reason='code differs from the docs: the file keeps its ID3 tag')
-REMOVES_APEV2 = pytest.mark.xfail(strict=True, reason="code differs from the docs: removes the file's APEv2 tag")
 
 def case(kind, tool, listed, fields, marks=()):
     return pytest.param(kind, tool, listed, fields, marks=marks, id=kind + '-' + tool)
@@ -72,7 +71,8 @@ for ext in ['aiff', 'dff', 'dsf']:
 for ext in ['ape', 'mpc', 'wv']:
     FILES[ext] = own(ext)
     CASES += [case(ext, 'remove_apev2', None, {})]
-    CASES += [case(ext, tool, None, OWN, REMOVES_APEV2) for tool in TOOLS[1:]]
+    # Before, each tool removed the file's APEv2 tag.
+    CASES += [case(ext, tool, None, OWN) for tool in TOOLS[1:]]
 
 
 @pytest.mark.parametrize('kind, tool, listed, fields', CASES)

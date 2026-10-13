@@ -29,7 +29,7 @@ def _remove_tag(f, tag):
             status['model'].deleteTag(audio=f, delete=False)
             _delete[tag](f.filepath)
             f.link(f.filepath)
-        elif hasattr(f, 'apev2') and f.apev2:
+        elif tag == 'APEv2' and getattr(f, 'apev2', False):
             status['model'].deleteTag(audio=f, delete=True)
             f.link(f.filepath)
         else:
