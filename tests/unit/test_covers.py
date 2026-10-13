@@ -17,6 +17,10 @@ numbering: 3 is Cover (Front), 4 Cover (Back), 8 Artist). An MP4 cover
 holds only the image and its format, JPEG or PNG; an APEv2 one is the
 description, a zero byte and the image, under a key naming its type, and
 puddletag tells its MIME type from the image.
+
+The functions that handle cover art, as function.txt describes them: Load
+artwork, Export artwork to file, and Remove Fields and Remove all fields
+except, which remove it.
 """
 import base64
 import struct
@@ -32,6 +36,7 @@ from PyQt6.QtCore import QBuffer, QIODevice
 from PyQt6.QtGui import QImage
 
 from puddlestuff import audioinfo
+from puddlestuff.findfunc import Function, apply_actions
 
 
 def image(form, width):
@@ -279,3 +284,181 @@ def test_cover_dimensions_are_written(make_audio, ext):
     [value] = mutagen.File(str(path)).tags['metadata_block_picture']
     block = mutagen.flac.Picture(base64.b64decode(value))
     assert (block.width, block.height) == (10, 1)
+
+
+# The fields the Functions dialog gives a function that takes none.
+NO_FIELDS = ['just nothing to do with this']
+
+# function.txt's Export artwork example: "four images. The first two PNG
+# images and the last two JPEG. Descriptions are 'one', 'two', etc."
+EXAMPLE = [dict(FRONT, description='one'), dict(BACK, data=image('PNG', 40), description='two', mime='image/png'),
+           dict(BACK, description='three'), dict(ARTIST, description='four')]
+EXTENSIONS = {'image/jpeg': '.jpg', 'image/png': '.png'}
+
+
+def example(ext):
+    """The example's pictures, or for APEv2, which holds a front and a back
+    cover, its first PNG and first JPEG."""
+    return [EXAMPLE[0], EXAMPLE[2]] if ext in APEV2 else EXAMPLE
+
+
+def apply_function(name, path, *args, fields=NO_FIELDS, state=None):
+    """A function of the Functions dialog run on the file, as the table runs
+    it; its changes are saved with save()."""
+    func = Function(name)
+    func.setTag(list(fields))
+    func.setArgs(list(args))
+    return apply_actions([func], audioinfo.Tag(str(path)), {} if state is None else state)
+
+
+def pictures(directory):
+    """The files next to the songs, by name."""
+    return {path.name: path.read_bytes() for path in directory.iterdir() if not path.name.startswith('song')}
+
+
+@pytest.mark.parametrize('ext', FORMATS)
+def test_covers_removed_with_remove_fields(make_audio, ext):
+    # tags.txt: "Cover art can be accessed using the __image field. Use it
+    # only in Function like Remove Fields".
+    path = make_audio('song.' + ext, title='Song')
+    write(path, [FRONT, BACK])
+    tag = save(path, apply_function('remove_fields', path, fields=['__image']))
+    assert (stored(path), tag['__num_images'], tag['title']) == ([], '0', ['Song'])
+
+
+@pytest.mark.parametrize('keep', ['title', 'title;__image'])
+@pytest.mark.parametrize('ext', FORMATS)
+def test_remove_all_fields_except(make_audio, ext, keep):
+    # function.txt: "Removes all the fields in the file (including cover
+    # art) except the ones you specify"; the cover art is __image.
+    path = make_audio('song.' + ext, title='Song', artist='Artist')
+    write(path, [FRONT, BACK])
+    covers = stored(path) if '__image' in keep else []
+    tag = save(path, apply_function('remove_except', path, keep))
+    assert (stored(path), tag.get('artist'), tag['title']) == (covers, None, ['Song'])
+
+
+@pytest.mark.parametrize('ext', FORMATS)
+def test_artwork_loaded(make_audio, ext):
+    # function.txt, Load artwork: filenames can be "just something like
+    # folder.jpg", and the "Default description can be any pattern, eg.
+    # %artist%". The docs leave the picture type out.
+    path = make_audio('song.' + ext, title='Song', artist='Thebe')
+    (path.parent / 'folder.jpg').write_bytes(BACK['data'])
+    tag = save(path, apply_function('artwork', path, 'folder.jpg', '%artist%', False))
+    loaded = {'data': BACK['data'], 'description': 'Thebe', 'mime': 'image/jpeg'}
+    assert [{key: value for key, value in cover.items() if key != 'imagetype'}
+            for cover in tag['__image']] == [shown(ext, loaded)]
+
+
+@pytest.mark.parametrize('match_case, loaded', [(False, 1), (True, 0)])
+def test_artwork_filename_case(make_audio, match_case, loaded):
+    # "Match Case is pretty self-explanatory."
+    path = make_audio('song.mp3', title='Song')
+    (path.parent / 'Folder.JPG').write_bytes(BACK['data'])
+    changes = apply_function('artwork', path, 'folder.jpg', '', match_case)
+    assert len(changes.get('__image', [])) == loaded
+
+
+def test_artwork_from_several_filenames(make_audio):
+    # "Filenames are a colon-separated list of shell-style wildcards, eg.
+    # *.jpg;*.png": the example, like the dialog, separates them with ;.
+    path = make_audio('song.mp3', title='Song')
+    for name, cover in ('front.png', FRONT), ('back.jpg', BACK):
+        (path.parent / name).write_bytes(cover['data'])
+    (path.parent / 'notes.txt').write_text('Notes')
+    changes = apply_function('artwork', path, '*.jpg;*.png', '', False)
+    assert sorted(cover['data'] for cover in changes['__image']) == sorted([FRONT['data'], BACK['data']])
+
+
+@pytest.mark.xfail(strict=True, reason='code differs from the docs: the files load in the order the folder lists '
+                                       'them')
+def test_artwork_loaded_in_order(make_audio):
+    # "The files will be loaded in order": as the filenames list them, so
+    # the first is the cover __image_mimetype and __image_size describe.
+    # Both orders, which the folder's own order can't both match.
+    path = make_audio('song.mp3', title='Song')
+    for name, cover in ('front.png', FRONT), ('back.jpg', BACK):
+        (path.parent / name).write_bytes(cover['data'])
+    loaded = [[cover['data'] for cover in apply_function('artwork', path, filenames, '', False)['__image']]
+              for filenames in ('front.png;back.jpg', 'back.jpg;front.png')]
+    assert loaded == [[FRONT['data'], BACK['data']], [BACK['data'], FRONT['data']]]
+
+
+@pytest.mark.parametrize('ext', FORMATS)
+def test_artwork_exported(make_audio, ext):
+    # function.txt, Export artwork to file: "The pattern
+    # folder_%img_counter% will create four images in /mnt/music/Thebe:
+    # folder_1.png, folder_2.png, folder_3.jpg and folder_4.jpg".
+    path = make_audio('song.' + ext, title='Song')
+    covers = example(ext)
+    write(path, covers)
+    apply_function('save_artwork', path, 'folder_%img_counter%')
+    names = (['folder_1.png', 'folder_2.jpg'] if ext in APEV2
+             else ['folder_1.png', 'folder_2.png', 'folder_3.jpg', 'folder_4.jpg'])
+    assert pictures(path.parent) == {name: cover['data'] for name, cover in zip(names, covers)}
+
+
+@pytest.mark.parametrize('ext', [ext for ext in FORMATS if ext != 'm4a'])
+def test_artwork_exported_by_description(make_audio, ext):
+    # "%img_desc% will create four images in /mnt/music/Thebe: one.png,
+    # two.png, three.jpg and four.jpg". MP4 covers have no description.
+    path = make_audio('song.' + ext, title='Song')
+    covers = example(ext)
+    write(path, covers)
+    apply_function('save_artwork', path, '%img_desc%')
+    assert pictures(path.parent) == {cover['description'] + EXTENSIONS[cover['mime']]: cover['data']
+                                     for cover in covers}
+
+
+def test_artwork_export_fields(make_audio):
+    # img_counter, img_count, img_type ("eg. Cover (Front)"), img_desc and
+    # img_mime, whose / is left out as Tag to filename leaves out a field's
+    # slashes ("AC/DC ... ACDC").
+    path = make_audio('song.mp3', title='Song')
+    write(path, [FRONT, BACK])
+    apply_function('save_artwork', path, '%img_counter% of %img_count% %img_type% %img_desc% %img_mime%')
+    assert pictures(path.parent) == {'1 of 2 Cover (Front) Front imagepng.png': FRONT['data'],
+                                     '2 of 2 Cover (Back) Back imagejpeg.jpg': BACK['data']}
+
+
+def test_artwork_exported_to_another_folder(make_audio, tmp_path):
+    # "/home/user/Desktop/%artist% will create four images in
+    # /home/user/Desktop". The names it gives, Thebe_1.png to Thebe_4.jpg,
+    # disagree with the rule on existing pictures, so only the folder is
+    # checked.
+    path = make_audio('song.mp3', title='Song', artist='Thebe')
+    write(path, EXAMPLE)
+    desktop = tmp_path / 'Desktop'
+    desktop.mkdir()
+    apply_function('save_artwork', path, str(desktop / '%artist%'))
+    assert sorted(pictures(desktop).values()) == sorted(cover['data'] for cover in EXAMPLE)
+
+
+@pytest.mark.xfail(strict=True, reason='code differs from the docs: with folder_1.png there too, the picture is '
+                                       'saved as folder_1_2.png')
+def test_artwork_exported_next_to_existing_pictures(make_audio):
+    # "If a picture file already exists '_1' will be appended to the
+    # filename (before the extension). If that file already exists '_2'
+    # will be appended and so on."
+    path = make_audio('song.mp3', title='Song')
+    write(path, [FRONT])
+    others = {'folder.png': b'Another picture', 'folder_1.png': b'And another'}
+    for name, data in others.items():
+        (path.parent / name).write_bytes(data)
+    apply_function('save_artwork', path, 'folder')
+    assert pictures(path.parent) == dict(others, **{'folder_2.png': FRONT['data']})
+
+
+def test_same_picture_exported_once(make_audio):
+    # "This will not be done for cases where two or more files contain
+    # exactly the same picture data and are to be written to the same
+    # filename." The files share one state, as when the function runs on
+    # the selected files; the third one's picture differs.
+    paths = [make_audio(f'song{number}.mp3', title='Song') for number in (1, 2, 3)]
+    for path, cover in zip(paths, [FRONT, FRONT, EXAMPLE[1]]):
+        write(path, [cover])
+    state = {}
+    for path in paths:
+        apply_function('save_artwork', path, 'folder', state=state)
+    assert pictures(paths[0].parent) == {'folder.png': FRONT['data'], 'folder_1.png': EXAMPLE[1]['data']}
