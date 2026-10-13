@@ -15,7 +15,7 @@ import mutagen
 import pytest
 
 from puddlestuff import audioinfo
-from test_covers import BACK, FORMATS, FRONT, ID3, apply_function, save, write
+from test_covers import BACK, FORMATS, FRONT, apply_function, save, write
 
 FIELDS = {'artist': ['Artist'], 'comment': ['Comment'], 'custom': ['Custom'], 'genre': ['Genre']}
 REMOVED = ['comment', 'custom', 'genre']
@@ -45,19 +45,12 @@ def test_fields_removed(make_audio, ext, how):
     assert (audioinfo.usertags(tag), native(path)) == ({'artist': ['Artist'], 'title': ['Song']}, native(reference))
 
 
-def removed_tag(ext):
-    if ext in ID3:
-        # tags.txt, __num_images: "Number of cover images found in the file."
-        return pytest.param(ext, marks=pytest.mark.xfail(
-            strict=True, reason='code differs from the docs: a file without an ID3 tag has no __num_images'))
-    return ext
-
-
-@pytest.mark.parametrize('ext', [removed_tag(ext) for ext in FORMATS])
+@pytest.mark.parametrize('ext', FORMATS)
 def test_tag_removed(make_audio, ext):
     # Every field and the covers go, in the table (the tag it removed from)
-    # and in the file; the audio stays. Before, a FLAC file kept its
-    # pictures.
+    # and in the file, where __num_images is "Number of cover images found
+    # in the file" (tags.txt); the audio stays. Before, a FLAC file kept its
+    # pictures, and a file without an ID3 tag had no __num_images.
     path = make_audio('song.' + ext, title='Song', artist='Artist')
     write(path, [FRONT, BACK])
     tag = audioinfo.Tag(str(path))

@@ -1067,6 +1067,8 @@ def tag_factory(id3_filetype):
                     self.images = list(map(bin_to_pic, apics))
                 else:
                     self.images = []
+            else:
+                self.images = []  # __num_images is 0 without a tag too
 
             self.__tags.update(tags)
             self.__tags.update(info_to_dict(audio.info))
