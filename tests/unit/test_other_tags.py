@@ -80,6 +80,26 @@ def test_update_from_tag(make_audio, kind, tag_type, fields, expected):
     assert update_from_tag(FILES[kind](make_audio), fields, tag_type) == expected
 
 
+@pytest.mark.xfail(strict=True, reason="code differs from the docs: the ID3 tag's MusicBrainz ids aren't mapped")
+def test_musicbrainz_ids_in_an_id3_tag(make_audio):
+    # tags.txt names the MusicBrainz ids in ID3 as Picard writes them, and
+    # an MP3 shows them as mbrainz_album_id and mbrainz_track_id: so does
+    # the ID3 tag of a FLAC file, in Stored Tags and for Update From Tag,
+    # which saves them where a VorbisComment keeps them. Synthetic ids.
+    path = make_audio('song.flac', title='Vorbis title')
+    id3 = mutagen.id3.ID3()
+    id3.add(mutagen.id3.TXXX(encoding=3, desc='MusicBrainz Album Id', text=['album-id']))
+    id3.add(mutagen.id3.UFID(owner='http://musicbrainz.org', data=b'track-id'))
+    id3.save(str(path))
+    ids = {'mbrainz_album_id': ['album-id'], 'mbrainz_track_id': ['track-id']}
+    assert dict(tag_versions.tag_values(str(path), 'ID3v2.4')) == ids
+    tag = audioinfo.Tag(str(path))
+    tag.update(update_from_tag(path, 'mbrainz_album_id;mbrainz_track_id', 'ID3'))
+    tag.save()
+    tags = mutagen.File(str(path)).tags
+    assert (tags['MUSICBRAINZ_ALBUMID'], tags['MUSICBRAINZ_TRACKID']) == (['album-id'], ['track-id'])
+
+
 @pytest.mark.parametrize('kind, tag_type, read', [('mp3', 'APEv2', mutagen.apev2.APEv2),
                                                   ('flac', 'ID3', mutagen.id3.ID3)], ids=['mp3', 'flac'])
 def test_update_from_tag_keeps_that_tag(make_audio, kind, tag_type, read):

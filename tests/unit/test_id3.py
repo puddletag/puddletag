@@ -138,6 +138,41 @@ def test_id3v1_comment_is_not_a_track(make_audio):
     assert tag['comment:ID3v1 Comment'] == ['https://www.youtube.com/watch?']
 
 
+def test_id3v1_title_holds_30_characters(make_audio):
+    # ID3v1.1 (preferences.txt) has 30 bytes for the title: a longer one is
+    # cut there and kept whole in ID3v2. Synthetic title.
+    title = 'A Title Longer Than Thirty Characters'
+    path = make_audio('song.mp3', title='Song')
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': [title]})
+    tag.save()
+    assert (id3v1(path)[3:33], mutagen.id3.ID3(path)['TIT2'].text) == (title[:30].encode(), [title])
+
+
+@pytest.mark.parametrize('option, had_id3v1, title', [
+    # The Preferences dialog's choices for the ID3v1 tag on saving: "Remove
+    # ID3v1 tag.", "Update the ID3v1 tag's values only if an ID3v1 tag is
+    # present." and "Create an ID3v1 tag if it's not present. Otherwise
+    # update it." (the default). Synthetic tags.
+    (0, False, None),
+    (0, True, None),
+    (1, False, None),
+    (1, True, b'Song 2'),
+    (2, False, b'Song 2'),
+    (2, True, b'Song 2'),
+])
+def test_id3v1_on_saving(make_audio, monkeypatch, option, had_id3v1, title):
+    path = make_audio('song.mp3', title='Song')
+    if had_id3v1:
+        audioinfo.Tag(str(path)).save(v1=2)
+    monkeypatch.setattr(audioinfo.id3, 'v1_option', option)
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['Song 2']})
+    tag.save()
+    v1 = id3v1(path)
+    assert (v1[3:33].rstrip(b'\0') if v1[:3] == b'TAG' else None) == title
+
+
 # id3.txt's frames, written with puddletag and read back with mutagen and
 # with puddletag, in every format whose tag is ID3. Synthetic values.
 
