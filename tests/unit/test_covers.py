@@ -193,12 +193,7 @@ def test_image_size(make_audio, ext):
     assert audioinfo.Tag(str(path)).get('__image_size') == str(len(FRONT['data']))
 
 
-WMA_COVER_FIELD = pytest.mark.xfail(strict=True, reason='a WMA cover shows as a field named WM/Picture, which a '
-                                                        'save rejects')
-SAVED_WITH_COVERS = [pytest.param(ext, marks=WMA_COVER_FIELD) if ext == 'wma' else ext for ext in FORMATS]
-
-
-@pytest.mark.parametrize('ext', SAVED_WITH_COVERS)
+@pytest.mark.parametrize('ext', FORMATS)
 def test_covers_kept_when_another_field_is_saved(make_audio, ext):
     path = make_audio('song.' + ext, title='Song')
     write(path, [FRONT, BACK])
@@ -207,7 +202,7 @@ def test_covers_kept_when_another_field_is_saved(make_audio, ext):
     assert (stored(path), tag['title']) == (covers, ['Song 2'])
 
 
-@pytest.mark.parametrize('ext', SAVED_WITH_COVERS)
+@pytest.mark.parametrize('ext', FORMATS)
 def test_covers_removed(make_audio, ext):
     # tut3.txt: with <blank> as the picture "artwork will be removed upon
     # saving"; for APEv2, #430: "upon restarting Puddletag the covers are
