@@ -164,6 +164,9 @@ def vorbis_tag(base, name):
                     self.__tags[key.lower()] = unicode_list(value)
 
         def delete(self):
+            if base == FLAC:
+                # Blocks of their own, which mutagen's delete keeps.
+                self.mut_obj.clear_pictures()
             self.mut_obj.delete()
             for key in self.usertags:
                 del (self.__tags[self.revmapping.get(key, key)])

@@ -46,9 +46,6 @@ def test_fields_removed(make_audio, ext, how):
 
 
 def removed_tag(ext):
-    if ext == 'flac':
-        return pytest.param(ext, marks=pytest.mark.xfail(
-            strict=True, reason="code differs from the docs: the file keeps its pictures, FLAC blocks of their own"))
     if ext in ID3:
         # tags.txt, __num_images: "Number of cover images found in the file."
         return pytest.param(ext, marks=pytest.mark.xfail(
@@ -59,7 +56,8 @@ def removed_tag(ext):
 @pytest.mark.parametrize('ext', [removed_tag(ext) for ext in FORMATS])
 def test_tag_removed(make_audio, ext):
     # Every field and the covers go, in the table (the tag it removed from)
-    # and in the file; the audio stays.
+    # and in the file; the audio stays. Before, a FLAC file kept its
+    # pictures.
     path = make_audio('song.' + ext, title='Song', artist='Artist')
     write(path, [FRONT, BACK])
     tag = audioinfo.Tag(str(path))
