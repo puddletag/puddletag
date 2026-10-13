@@ -183,14 +183,19 @@ def test_cover_read(make_audio, ext):
     assert (tag['__image'], tag['__num_images'], tag['__image_mimetype']) == ([shown(ext, FRONT)], '1', 'image/png')
 
 
-@pytest.mark.xfail(strict=True, reason='code differs from the docs: tags.txt lists __image_size, which puddletag '
-                                       'has never had')
 @pytest.mark.parametrize('ext', FORMATS)
 def test_image_size(make_audio, ext):
-    # tags.txt: "Size in bytes of the first cover image in the file."
+    # tags.txt: "Size in bytes of the first cover image in the file." Read
+    # from the file, then after edits, as __num_images follows them.
     path = make_audio('song.' + ext, title='Song')
     write(path, [FRONT])
-    assert audioinfo.Tag(str(path)).get('__image_size') == str(len(FRONT['data']))
+    tag = audioinfo.Tag(str(path))
+    sizes = [tag.get('__image_size')]
+    tag.update({'__image': [BACK, FRONT]})
+    sizes.append(tag.get('__image_size'))
+    tag.update({'__image': []})
+    sizes.append(tag.get('__image_size'))
+    assert sizes == [str(len(FRONT['data'])), str(len(BACK['data'])), None]
 
 
 @pytest.mark.parametrize('ext', FORMATS)

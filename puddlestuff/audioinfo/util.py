@@ -130,6 +130,7 @@ def cover_info(images, d=None):
     Returns dictionary:
         {__num_images: unicode(len(images)) else '0'
         __image_mimetype: mimetype of images[0]
+        __image_size: size in bytes of images[0]
         __image_type: type of images[0]}
 
     if d is supplied, it'll be updated with the returned
@@ -142,6 +143,7 @@ def cover_info(images, d=None):
     else:
         info[NUM_IMAGES] = str(len(images))
         image = images[0]
+        info[IMAGE_SIZE] = str(len(image[DATA]))
         if MIMETYPE in image:
             info[IMAGE_MIMETYPE] = image[MIMETYPE]
         else:
@@ -158,6 +160,11 @@ def cover_info(images, d=None):
             del (info[IMAGE_MIMETYPE])
             try:
                 del (d[IMAGE_MIMETYPE])
+            except KeyError:
+                pass
+        if IMAGE_SIZE not in info:
+            try:
+                del (d[IMAGE_SIZE])
             except KeyError:
                 pass
         d.update(info)

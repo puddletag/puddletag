@@ -9,6 +9,7 @@ FILENAME = "__filename"
 FILENAME_NO_EXT = '__filename_no_ext'
 IMAGE_FIELD = '__image'
 IMAGE_MIMETYPE = '__image_mimetype'
+IMAGE_SIZE = '__image_size'
 IMAGE_TYPE_FIELD = '__image_type'
 NUM_IMAGES = '__num_images'
 PARENT_DIR = '__parent_dir'
@@ -58,7 +59,7 @@ IMAGETYPES = ['Other', 'File Icon', 'Other File Icon', 'Cover (Front)',
 
 MODES = [STEREO, JOINT_STEREO, DUAL_CHANNEL, MONO]
 
-READONLY = (PARENT_DIR, IMAGE_MIMETYPE, IMAGE_TYPE_FIELD, NUM_IMAGES,
+READONLY = (PARENT_DIR, IMAGE_MIMETYPE, IMAGE_SIZE, IMAGE_TYPE_FIELD, NUM_IMAGES,
             '__accessed', '__app',
             '__albumgain', '__bitrate', '__channels', "__cover_mimetype",
             "__cover_size", "__covers", "__created", '__file_access_date',
