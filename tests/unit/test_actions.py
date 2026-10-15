@@ -5,7 +5,10 @@ Expected results come from docsrc/source/function.txt unless noted.
 """
 import json
 import os
+import shutil
+import tempfile
 
+import mutagen.id3
 import pytest
 
 from puddlestuff import audioinfo
@@ -13,6 +16,8 @@ from puddlestuff.constants import ACTIONDIR, DATADIR
 from puddlestuff.findfunc import (Function, Macro, apply_actions, apply_macros, load_macro_info,
                                   parse_field_list, save_macro)
 from puddlestuff.puddleobjects import load_actions
+from puddlestuff.util import write
+from test_covers import NO_FIELDS
 
 
 def make_action(name, fields, *args):
@@ -249,6 +254,11 @@ def test_mixed_case(characters, text, expected):
     # Remove duplicate values: "Rap, Rock and rap ... (without
     # case-sensitivity) will leave Rap and Rock"
     ('remove_dupes', [False], ['Rap', 'Rock', 'rap'], ['Rap', 'Rock']),
+    # Sort values: "Sorts the values in a multiple-valued field using
+    # either Ascending or Descending order". Match Case is on: off, the
+    # order follows the system locale's collation. Synthetic values.
+    ('sort', ['Ascending', True], ['Jazz', 'Rock', 'Blues'], ['Blues', 'Jazz', 'Rock']),
+    ('sort', ['Descending', True], ['Jazz', 'Rock', 'Blues'], ['Rock', 'Jazz', 'Blues']),
     # Split fields using separator, both examples
     ('split_by_sep', [';'], ['Rap;Rock;Dubstep'], ['Rap', 'Rock', 'Dubstep']),
     ('split_by_sep', [';'], ['Rock;Rap', 'Classical;Guitar Solo'], ['Rock', 'Rap', 'Classical', 'Guitar Solo']),
@@ -309,3 +319,147 @@ def test_autonumbering(make_audio, tmp_path, start, restart, padding, expected):
     action = [make_action('autonumbering', ['track'], start, restart, padding)]
     state = {'__total_files': str(len(files)), '__files': files}
     assert [values(apply_actions(action, f, state))['track'] for f in files] == [[n] for n in expected]
+
+
+# The encodings the Functions dialog offers for Convert from non-standard
+# encoding, each with a synthetic text in a script it holds. cp1258 holds
+# Vietnamese tones as combining marks.
+ENCODED = {
+    'big5': '藏經', 'big5hkscs': '藏經', 'cp1250': 'Příliš žluťoučký kůň', 'cp1251': 'Группа крови',
+    'cp1252': '“Café” – €5', 'cp1253': 'Καλημέρα', 'cp1254': 'Gönül Dağı', 'cp1255': 'שלום', 'cp1256': 'مرحبا',
+    'cp1257': 'Žalgiris ąčęėįšųū', 'cp1258': 'Việt Nam', 'cp932': '日本語', 'euc_jis_2004': '日本語',
+    'euc_jp': '日本語', 'gb18030': '中文', 'gb2312': '中文', 'gbk': '中文', 'hz': '中文', 'johab': '한국어',
+    'shift_jis': '日本語',
+}
+
+
+def latin1_title(text, encoding):
+    """An ID3 title of Latin-1 text holding text written in encoding, as a
+    program writing the system's code page leaves it."""
+    return mutagen.id3.TIT2(encoding=mutagen.id3.Encoding.LATIN1, text=[text.encode(encoding).decode('latin-1')])
+
+
+def converted(path, encoding):
+    tag = audioinfo.Tag(str(path))
+    return save(tag, apply_actions([make_action('enconvert', ['title'], encoding)], tag))['title']
+
+
+@pytest.mark.parametrize('encoding', sorted(ENCODED))
+def test_convert_from_non_standard_encoding(make_audio, tmp_path, encoding):
+    # "If your files were written using non-standard encoding (eg cp1251 on
+    # Windows) you can use this Function to fix 'em." ID3v2 allows Latin-1
+    # text, which puddletag shows byte for byte.
+    path = make_audio('song.mp3', tmp_path)
+    id3 = mutagen.id3.ID3(str(path))
+    id3.add(latin1_title(ENCODED[encoding], encoding))
+    id3.save()
+    assert converted(path, encoding) == [ENCODED[encoding]]
+
+
+def test_convert_an_id3v1_tag(make_audio, tmp_path):
+    # ID3v1 holds Latin-1 text only, the case of the docs' example.
+    path = make_audio('song.mp3', tmp_path)
+    id3 = mutagen.id3.ID3()
+    id3.add(latin1_title(ENCODED['cp1251'], 'cp1251'))
+    id3.save(str(path), v1=2)
+    mutagen.id3.delete(str(path), delete_v1=False)
+    assert converted(path, 'cp1251') == [ENCODED['cp1251']]
+
+
+@pytest.mark.parametrize('pattern, source', [
+    ('lyrics.txt', 'Music/artist/album/lyrics.txt'),
+    ('../lyrics.txt', 'Music/artist/lyrics.txt'),
+    ('%album%', 'Music/artist/album/END'),
+    ('{root}/textfiles/lyrics.txt', 'textfiles/lyrics.txt'),
+])
+def test_import_text_file(make_audio, tmp_path, pattern, source):
+    # The four examples, "For the file with path
+    # /mnt/Music/artist/album/filename.mp3 and with the tag, artist=Black
+    # Eyed Peas, album=END" (here under tmp_path, /mnt/textfiles too): "the
+    # files complete text is loaded into that field". Synthetic texts, a
+    # different one in each place.
+    path = make_audio('filename.mp3', tmp_path / 'Music/artist/album', artist='Black Eyed Peas', album='END')
+    texts = {}
+    for name in ['Music/artist/album/END', 'Music/artist/album/lyrics.txt', 'Music/artist/lyrics.txt',
+                 'textfiles/lyrics.txt']:
+        texts[name] = f'Lyrics from {name}\n\nLast line\n'
+        (tmp_path / name).parent.mkdir(exist_ok=True)
+        (tmp_path / name).write_text(texts[name])
+    tag = audioinfo.Tag(str(path))
+    action = [make_action('import_text', ['unsyncedlyrics'], pattern.format(root=tmp_path))]
+    # id3.txt: lyrics read as Language|Description|Lyrics, and "If only text
+    # is entered ... the language und (undetermined) will be used".
+    assert save(tag, apply_actions(action, tag))['unsyncedlyrics'] == ['und||' + texts[source]]
+
+
+def write_as_table(tag, changes):
+    """Writes changes as the table does (TagModel.setRowData), which renames
+    the file's folder for a new __dirpath. Returns the file's new path."""
+    tag.library, tag.preview = None, {}  # set by the table on each file it loads
+    write(tag, changes)
+    return tag.filepath
+
+
+def tag_to_dir(path, pattern):
+    tag = audioinfo.Tag(str(path))
+    return write_as_table(tag, apply_actions([make_action('tag_dir', NO_FIELDS, pattern)], tag))
+
+
+# Tag to filename's example file, whose folder Tag to Dir renames.
+UNSORTED = 'home/concentricpuddle/multimedia/music/Indie/unsorted'
+INDIE = 'home/concentricpuddle/multimedia/music/Indie'
+UNKNOWN = {'artist': 'Relatively Unknown', 'title': 'Horrible for everyone else', 'album': 'Fans like it'}
+DISC_FOLDER = '{root}/mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)'
+
+
+@pytest.mark.parametrize('pattern, tags, expected', [
+    # tut2.txt, Rename Dir: "if the Pattern Combo contained, %artist% -
+    # %album%, it would behave the same way as file renaming (except on the
+    # directory)". It's the dialog's default pattern too.
+    ('%artist% - %album%', UNKNOWN, INDIE + '/Relatively Unknown - Fans like it'),
+    # The rules of Tag to filename: "For every slash, the file is moved up
+    # one directory";
+    ('%artist%/%album%', UNKNOWN, 'home/concentricpuddle/multimedia/music/Relatively Unknown/Fans like it'),
+    # "an absolute path, by starting the pattern with a slash", and
+    # "Intermediate directories will be created if they don't exist";
+    ('{root}/mnt/library/%album%', UNKNOWN, 'mnt/library/Fans like it'),
+    # "if the artist is AC/DC, it will not create an AC directory";
+    ('%artist%', dict(UNKNOWN, artist='AC/DC'), INDIE + '/ACDC'),
+    # the characters it removes (synthetic artist);
+    ('%artist%', dict(UNKNOWN, artist='a\\b*c?d"e|f:g/h;i'), INDIE + '/abcdefgh;i'),
+    # "a directory that comes out empty doesn't count" (synthetic pattern);
+    ('%artist%/$if(%year%,%year%,)/%album%', UNKNOWN,
+     'home/concentricpuddle/multimedia/music/Relatively Unknown/Fans like it'),
+    # and "only adds a Disc directory when the file has a disc number".
+    (DISC_FOLDER, dict(UNKNOWN, discnumber='1'), 'mnt/music/Fans like it/Disc 1'),
+    pytest.param(DISC_FOLDER, UNKNOWN, 'mnt/music/Fans like it',
+                 marks=pytest.mark.xfail(strict=True, reason='code differs from the docs: a last folder that '
+                                                             'comes out empty is named ""')),
+])
+def test_tag_to_dir(make_audio, tmp_path, pattern, tags, expected):
+    # "Works as Tag To Filename (below), but renames/moves directories
+    # instead."
+    path = make_audio('unknown.mp3', tmp_path / UNSORTED, **tags)
+    new_path = tag_to_dir(path, pattern.format(root=tmp_path))
+    assert (new_path, path.parent.exists()) == (str(tmp_path / expected / 'unknown.mp3'), False)
+    assert audioinfo.Tag(new_path)['title'] == [UNKNOWN['title']]
+
+
+@pytest.fixture
+def other_filesystem(tmp_path):
+    """A folder on another filesystem than tmp_path's: /dev/shm is a tmpfs
+    of its own on Linux."""
+    if not os.path.isdir('/dev/shm') or os.stat('/dev/shm').st_dev == os.stat(tmp_path).st_dev:
+        pytest.skip("/dev/shm isn't another filesystem")
+    folder = tempfile.mkdtemp(dir='/dev/shm')
+    yield folder
+    shutil.rmtree(folder)
+
+
+def test_tag_to_dir_on_another_filesystem(make_audio, tmp_path, other_filesystem):
+    # "Directories will only be moved if the destination dir resides on the
+    # same filesystem as the source." The table shows the error.
+    path = make_audio('unknown.mp3', tmp_path / UNSORTED, **UNKNOWN)
+    with pytest.raises(OSError):
+        tag_to_dir(path, other_filesystem + '/%album%')
+    assert (path.exists(), os.listdir(other_filesystem)) == (True, [])
