@@ -430,11 +430,14 @@ DISC_FOLDER = '{root}/mnt/music/%album%/$if(%discnumber%,Disc %discnumber%,)'
     # "a directory that comes out empty doesn't count" (synthetic pattern);
     ('%artist%/$if(%year%,%year%,)/%album%', UNKNOWN,
      'home/concentricpuddle/multimedia/music/Relatively Unknown/Fans like it'),
-    # and "only adds a Disc directory when the file has a disc number".
+    # and "only adds a Disc directory when the file has a disc number",
     (DISC_FOLDER, dict(UNKNOWN, discnumber='1'), 'mnt/music/Fans like it/Disc 1'),
-    pytest.param(DISC_FOLDER, UNKNOWN, 'mnt/music/Fans like it',
-                 marks=pytest.mark.xfail(strict=True, reason='code differs from the docs: a last folder that '
-                                                             'comes out empty is named ""')),
+    (DISC_FOLDER, UNKNOWN, 'mnt/music/Fans like it'),
+    # also as a relative pattern, where the Disc directory left out doesn't
+    # count.
+    ('%album%/$if(%discnumber%,Disc %discnumber%,)', dict(UNKNOWN, discnumber='1'),
+     'home/concentricpuddle/multimedia/music/Fans like it/Disc 1'),
+    ('%album%/$if(%discnumber%,Disc %discnumber%,)', UNKNOWN, INDIE + '/Fans like it'),
 ])
 def test_tag_to_dir(make_audio, tmp_path, pattern, tags, expected):
     # "Works as Tag To Filename (below), but renames/moves directories

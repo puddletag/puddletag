@@ -476,7 +476,10 @@ def tag_to_filename(pattern, m_tags, r_tags, ext=True, state=None,
             if start_pos != p and not (start_pos in path_seps and p == start_pos + 1):
                 new_dirs.append(safe_name(text[start_pos:p]))
             start_pos = p
-        new_dirs.append(safe_name(text[start_pos + 1:]))
+        # A folder's last part can come out empty too (a file's is its
+        # name), and then makes no folder either.
+        if not (is_dir and new_dirs and start_pos + 1 == len(text)):
+            new_dirs.append(safe_name(text[start_pos + 1:]))
     else:
         new_dirs = [safe_name(text)]
 
