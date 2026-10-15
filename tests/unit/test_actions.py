@@ -366,6 +366,19 @@ def test_convert_an_id3v1_tag(make_audio, tmp_path):
     assert converted(path, 'cp1251') == [ENCODED['cp1251']]
 
 
+def test_convert_keeps_correct_text(make_audio, tmp_path):
+    # Run on a selection where only some files hold mis-read text, it fixes
+    # those and keeps the others: a value with a character beyond Latin-1
+    # wasn't read as Latin-1. The docs don't cover text already right
+    # (synthetic titles).
+    broken = make_audio('broken.mp3', tmp_path)
+    id3 = mutagen.id3.ID3(str(broken))
+    id3.add(latin1_title(ENCODED['cp1251'], 'cp1251'))
+    id3.save()
+    correct = make_audio('correct.mp3', tmp_path, title=ENCODED['cp1251'])
+    assert [converted(path, 'cp1251') for path in (broken, correct)] == [[ENCODED['cp1251']]] * 2
+
+
 @pytest.mark.parametrize('pattern, source', [
     ('lyrics.txt', 'Music/artist/album/lyrics.txt'),
     ('../lyrics.txt', 'Music/artist/lyrics.txt'),

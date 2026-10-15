@@ -173,7 +173,13 @@ def enconvert(text, enc_name):
     ''' Convert from non-standard encoding, "Convert to encoding: $0, Encoding: $1"
 &Encoding, combo, cp1250, cp1251, cp1252, cp1253, cp1254, cp1255, cp1256, cp1257, cp1258,\
 euc_jp, cp932, euc_jis_2004, shift_jis, johab, big5, big5hkscs, gb2312, gb18030, gbk, hz'''
-    return text.encode("latin1", 'replace').decode(enc_name, 'replace')
+    try:
+        raw = text.encode("latin1")
+    except UnicodeEncodeError:
+        # Text mis-read as Latin-1 has only Latin-1 characters: this value
+        # was read right, and converting it would turn the rest into "?".
+        return text
+    return raw.decode(enc_name, 'replace')
 
 
 def filenametotag(m_tags, p_pattern):
