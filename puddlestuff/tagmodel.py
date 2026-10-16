@@ -1058,15 +1058,18 @@ class TagModel(QAbstractTableModel):
             self.headerDataChanged.emit(
                 Qt.Orientation.Horizontal, 0, len(self.headerdata))
 
-    def setRowData(self, row, tags, undo=False, justrename=False, temp=False):
+    def setRowData(self, row, tags, undo=False, justrename=False, temp=False, audio=None):
         """A function to update one row.
         row is the row, tags is a dictionary of tags.
 
         If undo`is True, then an undo level is created for this file.
         If justrename is True, then (if tags contain a PATH or EXTENSION key)
         the file is just renamed i.e not tags are written.
+        audio is the file to update instead of row's, for a file without a
+        row (one the Filter hides).
         """
-        audio = self.taginfo[row]
+        if audio is None:
+            audio = self.taginfo[row]
 
         temporary = temp
         ret = None
@@ -1206,11 +1209,20 @@ class TagModel(QAbstractTableModel):
         if level not in undo:
             return
 
-        get_row = self.taginfo.index
+        # The edit's files may have left the table since: hidden by the
+        # Filter, loaded again by Refresh Selected (as new objects for the
+        # same paths), deleted or unloaded. Those still loaded are restored,
+        # hidden or not; the others are skipped.
+        loaded = {audio.filepath: audio for audio in self.taginfo + self._filtered}
+        row_of = {id(audio): row for row, audio in enumerate(self.taginfo)}
 
         for audio, undo_tags in undo[level].items():
-            row = get_row(audio)
-            rows.append(row)
+            audio = loaded.get(audio.filepath)
+            if audio is None:
+                continue
+            row = row_of.get(id(audio))
+            if row is not None:
+                rows.append(row)
             if self.previewMode:
                 audio.update(undo_tags)
                 for k, v in undo_tags.items():
@@ -1219,7 +1231,7 @@ class TagModel(QAbstractTableModel):
             else:
                 if audio.library:
                     oldfiles.append(deepcopy(audio.tags))
-                edited.append(self.setRowData(row, undo_tags, False))
+                edited.append(self.setRowData(row, undo_tags, False, audio=audio))
 
         del (undo[level])
         if rows:
@@ -1539,6 +1551,7 @@ class TagTable(QTableView):
     def clearAll(self):
         with self.model().reset_context():
             self.model().taginfo = []
+        self.model().undolevel = 0
         self.dirschanged.emit([])
 
     def _closeEditor(self, editor, hint=QAbstractItemDelegate.EndEditHint.NoHint):

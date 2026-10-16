@@ -55,7 +55,7 @@ Edit
 
 Undo (Ctrl+Z)
 ^^^^^^^^^^^^^
-Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder* and some things like deleting files cannot be undone.
+Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder*, by *Refresh* and by *Unload Everything* (but not by *Add Folder*), and some things like deleting files cannot be undone.
 
 .. _extended_tags_menu:
 
