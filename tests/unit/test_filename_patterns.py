@@ -101,6 +101,33 @@ def test_file_to_tag_with_functions(pattern, path, expected):
     assert file_to_tag(pattern, path) == expected
 
 
+@pytest.mark.parametrize('pattern, path, expected', [
+    ('%mbrainz_track_id% - %title%', '/music/track-id - Song.mp3',
+     {'mbrainz_track_id': 'track-id', 'title': 'Song'}),
+    ('%custom2% - %title%', '/music/value - Song.mp3',
+     {'custom2': 'value', 'title': 'Song'}),
+    ('%_custom% - %title%', '/music/value - Song.mp3',
+     {'_custom': 'value', 'title': 'Song'}),
+    ('$upper(%album_artist%) - %title%', '/music/ARTIST - Song.mp3',
+     {'album_artist': 'ARTIST', 'title': 'Song'}),
+    ('$num(%custom2%,2) - %title%', '/music/01 - Song.mp3',
+     {'custom2': '01', 'title': 'Song'}),
+])
+def test_file_to_tag_fields_with_underscores_and_digits(pattern, path, expected):
+    assert file_to_tag(pattern, path) == expected
+
+
+def test_file_to_tag_writes_musicbrainz_track_id(make_audio):
+    track_id = '123e4567-e89b-12d3-a456-426614174000'
+    path = make_audio(track_id + ' - Song.flac')
+    tag = audioinfo.Tag(str(path))
+    tag.update(file_to_tag('%mbrainz_track_id% - %title%', str(path)))
+    tag.save()
+    saved = audioinfo.Tag(str(path))
+    assert saved['mbrainz_track_id'] == [track_id]
+    assert saved['title'] == ['Song']
+
+
 BEFORE_THE_FAME = {'artist': 'Before The Fame', 'album': 'The Vinyl LP',
                    'title': 'Sounds Better Than Anything After', 'track': '10'}
 UNKNOWN_PATH = 'home/concentricpuddle/multimedia/music/Indie/unsorted/unknown.mp3'

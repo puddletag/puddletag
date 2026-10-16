@@ -75,7 +75,7 @@ def arglen_error(e, passed, function, to_raise=True):
 
 
 _CALL_START = re.compile(r'\$(\w+)\(')
-_PATTERN_FIELD = re.compile(r'%([A-Za-z]+)%')  # the fields filenametotag matches
+_PATTERN_FIELD = re.compile(r'%([A-Za-z0-9_]+)%')  # the fields filenametotag matches
 
 
 def _call_end(s, i):
@@ -144,7 +144,7 @@ def filenametotag(pattern, filename, checkext=False, split_dirs=True):
     if checkext:
         filename = os.path.splitext(filename)[0]
 
-    e = Combine(Literal("%").suppress() + OneOrMore(Word(alphas)) + Literal("%").suppress())
+    e = Combine(Literal("%").suppress() + OneOrMore(Word(alphanums + '_')) + Literal("%").suppress())
     patterns = [_f for _f in _calls_as_fields(pattern).split('/') if _f]
     if split_dirs:
         filenames = filename.split('/')[-len(patterns):]
