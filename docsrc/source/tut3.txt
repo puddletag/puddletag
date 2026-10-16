@@ -38,6 +38,10 @@ The Pattern Combo
 Tag Panel
 ---------
 +   Like in the file-view multiple values are shown like **value1\\\\value2**. Entering any value like that will automatically split it.
++   What you type is written when you **Save** (**File→Save**). Selecting other files before that throws it away.
++   Clearing a field removes it on saving, as **<blank>** does.
++   Each field's list holds **<keep>**, **<blank>** and the values the selected files have: pick one to give it to all of them.
++   **Edit→Undo** puts back all the files a Save wrote to, at once.
 +   Use accelerators like your life depends on them. Pressing Alt+B will switch the focus to the Album field. I usually just switch to the first (Artist) and TAB through everything. See the :ref:`Tag Panel <tag_panel_prefs>` section on the preferences page for info in creating them.
 
 .. _album_art:

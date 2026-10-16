@@ -91,7 +91,7 @@ Defines the background colours to used in various puddletag dialogs. Use it when
 Genres
 ------
 
-The list of genres as used in the Tag Panel.  Edit to your hearts content. If you want to reset it to the default values remove **~/.puddletag/genres**.
+The list of genres as used in the Tag Panel. A genre you save in the Tag Panel that isn't in the list is added to it.  Edit to your hearts content. If you want to reset it to the default values remove **~/.puddletag/genres**.
 
 
 Tags
