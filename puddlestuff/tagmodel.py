@@ -1035,7 +1035,11 @@ class TagModel(QAbstractTableModel):
             if dontwrite:
                 QApplication.restoreOverrideCursor()
                 return {tag: newvalue}, index.row()
-            ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
+            try:
+                ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
+            except Exception:
+                QApplication.restoreOverrideCursor()
+                raise
             if not self.previewMode and currentfile.library:
                 self.libfilesedited.emit([ret])
             self.undolevel += 1

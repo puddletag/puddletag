@@ -318,3 +318,18 @@ def test_several_files_one_name(user, loaded, qtbot, dialogs):
     assert in_file(paths[0].with_name('Same.mp3')) == {'artist': ['Artist 1'], 'title': ['Title 1']}
     assert in_file(paths[1]) == {'artist': ['Artist 2'], 'title': ['Title 2']}
     assert [os.path.basename(a.filepath) for a in table.model().taginfo] == ['Same.mp3', '02.mp3', '03.mp3']
+
+
+def test_rename_error_restores_the_cursor(user, loaded, qtbot, dialogs):
+    # A name another file has shows "File exists", and the cursor is back
+    # to normal after it. Before, the wait cursor stayed for good (#1074).
+    table, paths = loaded
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    edit(user, user.cell(0, '__filename'), '02.mp3')
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert 'File exists' in message
+    assert QApplication.overrideCursor() is None
+    assert sorted(os.listdir(paths[0].parent)) == ['01.mp3', '02.mp3', '03.mp3']
+    assert in_file(paths[0]) == {'artist': ['Artist 1'], 'title': ['Title 1']}
