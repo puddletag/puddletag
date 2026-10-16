@@ -7,7 +7,6 @@ import os
 
 import pytest
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QAbstractItemView, QApplication, QMessageBox
 
 from puddlestuff import audioinfo
@@ -20,7 +19,7 @@ Shift = Qt.KeyboardModifier.ShiftModifier
 
 
 @pytest.fixture
-def loaded(mainwin, make_audio, tmp_path, qtbot):
+def loaded(mainwin, make_audio, tmp_path, qtbot, user):
     """Three MP3s in the table, in this order, with the window active and
     the table focused, as after clicking into it."""
     music = tmp_path / 'music'
@@ -30,48 +29,9 @@ def loaded(mainwin, make_audio, tmp_path, qtbot):
     table = mainwin._table
     qtbot.waitUntil(lambda: table.model().rowCount() == 3)
     assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
-    activate(qtbot, mainwin)
+    user.activate()
     table.setFocus()
     return table, paths
-
-
-def activate(qtbot, mainwin):
-    """Writing several files shows a progress window, which takes the
-    activation with it when it closes; a desktop's window manager then
-    activates the main window again, the offscreen test platform doesn't."""
-    mainwin.activateWindow()
-    qtbot.waitUntil(mainwin.isActiveWindow)
-
-
-def cell(table, row, field):
-    column = [f for title, f in table.model().headerdata].index(field)
-    return table.model().index(row, column)
-
-
-def click(qtbot, table, index, modifier=Qt.KeyboardModifier.NoModifier):
-    table.scrollTo(index)
-    qtbot.mouseClick(table.viewport(), Qt.MouseButton.LeftButton, modifier,
-                     table.visualRect(index).center())
-
-
-def double_click(qtbot, table, index):
-    """A real double-click arrives as press, release, double-click,
-    release; QTest's mouseDClick sends only the double-click, which opens
-    no editor."""
-    click(qtbot, table, index)
-    pos = table.visualRect(index).center()
-    qtbot.mouseDClick(table.viewport(), Qt.MouseButton.LeftButton, pos=pos)
-    qtbot.mouseRelease(table.viewport(), Qt.MouseButton.LeftButton, pos=pos)
-
-
-def press(qtbot, key, modifier=Qt.KeyboardModifier.NoModifier):
-    """A key goes where the keyboard sends it: to the focused widget."""
-    qtbot.keyClick(QApplication.focusWidget(), key, modifier)
-
-
-def type_text(qtbot, text):
-    for char in text:
-        press(qtbot, char)
 
 
 def open_editor(table, index):
@@ -81,10 +41,10 @@ def open_editor(table, index):
     return editor
 
 
-def edit(qtbot, table, index, text):
-    double_click(qtbot, table, index)
-    open_editor(table, index).selectAll()
-    type_text(qtbot, text)
+def edit(user, index, text):
+    user.double_click_cell(index)
+    open_editor(user.table, index).selectAll()
+    user.type(text)
 
 
 def in_file(path):
@@ -93,11 +53,6 @@ def in_file(path):
 
 def in_table(table):
     return [audioinfo.usertags(audio) for audio in table.model().taginfo]
-
-
-def undo_action(mainwin):
-    [undo] = [a for a in mainwin.findChildren(QAction) if a.text() == '&Undo']
-    return undo
 
 
 def written(qtbot, path, field, value):
@@ -111,40 +66,34 @@ def written(qtbot, path, field, value):
 # will be updated." Writing to one cell is writing as normal, started in
 # each way the table offers: a double-click, F2, or typing.
 
-def start_with_double_click(qtbot, table, index):
-    double_click(qtbot, table, index)
-    open_editor(table, index).selectAll()
+def start_with_double_click(user, index):
+    user.double_click_cell(index)
+    open_editor(user.table, index).selectAll()
 
 
-def start_with_f2(qtbot, table, index):
-    click(qtbot, table, index)
-    press(qtbot, Key.Key_F2)
-    assert open_editor(table, index).selectedText() == table.model().data(index)
+def start_with_f2(user, index):
+    user.click_cell(index)
+    user.press(Key.Key_F2)
+    assert open_editor(user.table, index).selectedText() == user.table.model().data(index)
 
 
-def start_by_typing(qtbot, table, index):
-    click(qtbot, table, index)
+def start_by_typing(user, index):
+    user.click_cell(index)
 
 
 @pytest.mark.parametrize('start', [start_with_double_click, start_with_f2, start_by_typing])
-def test_edit_one_cell(loaded, qtbot, start):
+def test_edit_one_cell(user, loaded, qtbot, start):
     table, paths = loaded
-    start(qtbot, table, cell(table, 0, 'title'))
-    type_text(qtbot, 'New')
-    press(qtbot, Key.Key_Return)
+    start(user, user.cell(0, 'title'))
+    user.type('New')
+    user.press(Key.Key_Return)
     written(qtbot, paths[0], 'title', ['New'])
     expected = [{'artist': ['Artist 1'], 'title': ['New']},
                 {'artist': ['Artist 2'], 'title': ['Title 2']},
                 {'artist': ['Artist 3'], 'title': ['Title 3']}]
     assert [in_file(p) for p in paths] == expected
     assert in_table(table) == expected
-    assert table.model().data(cell(table, 0, 'title')) == 'New'
-
-
-def select_three_titles(qtbot, table):
-    click(qtbot, table, cell(table, 0, 'title'))
-    click(qtbot, table, cell(table, 2, 'title'), Shift)
-    assert table.selectedRows == [0, 1, 2]
+    assert table.model().data(user.cell(0, 'title')) == 'New'
 
 
 # "With several files selected, the cell stays where it is instead",
@@ -155,14 +104,14 @@ def select_three_titles(qtbot, table):
 @pytest.mark.parametrize('key, modifier', [(Key.Key_Return, None), (Key.Key_Return, Shift),
                                            (Key.Key_Tab, None), (Key.Key_Backtab, Shift)],
                          ids=['Enter', 'Shift+Enter', 'Tab', 'Shift+Tab'])
-def test_edit_several_files(mainwin, loaded, qtbot, key, modifier):
+def test_edit_several_files(user, loaded, qtbot, key, modifier):
     table, paths = loaded
-    click(qtbot, table, cell(table, 0, 'title'))
-    click(qtbot, table, cell(table, 1, 'title'), Shift)
-    press(qtbot, Key.Key_F2)
-    open_editor(table, cell(table, 1, 'title')).selectAll()
-    type_text(qtbot, 'Same')
-    press(qtbot, key, modifier or Qt.KeyboardModifier.NoModifier)
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Shift)
+    user.press(Key.Key_F2)
+    open_editor(table, user.cell(1, 'title')).selectAll()
+    user.type('Same')
+    user.press(key, modifier or Qt.KeyboardModifier.NoModifier)
     for path in paths[:2]:
         written(qtbot, path, 'title', ['Same'])
     expected = [{'artist': ['Artist 1'], 'title': ['Same']},
@@ -170,42 +119,44 @@ def test_edit_several_files(mainwin, loaded, qtbot, key, modifier):
                 {'artist': ['Artist 3'], 'title': ['Title 3']}]
     assert [in_file(p) for p in paths] == expected
     assert in_table(table) == expected
-    activate(qtbot, mainwin)
+    user.activate()
     qtbot.wait(50)  # where the next cell would open
     assert table.state() == QAbstractItemView.State.NoState
-    assert table.currentIndex() == cell(table, 1, 'title')
+    assert table.currentIndex() == user.cell(1, 'title')
     assert table.selectedRows == [0, 1]
 
 
-def test_edit_several_files_undone_in_one_step(mainwin, loaded, qtbot):
+def test_edit_several_files_undone_in_one_step(user, loaded, qtbot):
     # "All selected files will be updated, and Edit→Undo puts them all
     # back at once", here with its shortcut, Ctrl+Z.
     table, paths = loaded
-    select_three_titles(qtbot, table)
-    press(qtbot, Key.Key_F2)
-    type_text(qtbot, 'Same')
-    press(qtbot, Key.Key_Return)
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(2, 'title'), Shift)
+    assert table.selectedRows == [0, 1, 2]
+    user.press(Key.Key_F2)
+    user.type('Same')
+    user.press(Key.Key_Return)
     for path in paths:
         written(qtbot, path, 'title', ['Same'])
-    activate(qtbot, mainwin)
-    press(qtbot, Key.Key_Z, Ctrl)
+    user.activate()
+    user.press(Key.Key_Z, Ctrl)
     expected = [{'artist': ['Artist 1'], 'title': ['Title 1']},
                 {'artist': ['Artist 2'], 'title': ['Title 2']},
                 {'artist': ['Artist 3'], 'title': ['Title 3']}]
     assert [in_file(p) for p in paths] == expected
     assert in_table(table) == expected
-    assert not undo_action(mainwin).isEnabled()
+    assert not user.action('&Undo').isEnabled()
 
 
-def test_selected_files_get_the_edited_field(loaded, qtbot):
+def test_selected_files_get_the_edited_field(user, loaded, qtbot):
     # "Just select the files. Choose the field you want to write to": the
     # value goes to the field of the cell being edited, in every file with
     # a cell selected, whichever column that cell is in.
     table, paths = loaded
-    click(qtbot, table, cell(table, 0, 'artist'))
-    click(qtbot, table, cell(table, 2, 'title'), Ctrl)
-    type_text(qtbot, 'New')
-    press(qtbot, Key.Key_Return)
+    user.click_cell(user.cell(0, 'artist'))
+    user.click_cell(user.cell(2, 'title'), Ctrl)
+    user.type('New')
+    user.press(Key.Key_Return)
     written(qtbot, paths[2], 'title', ['New'])
     expected = [{'artist': ['Artist 1'], 'title': ['New']},
                 {'artist': ['Artist 2'], 'title': ['Title 2']},
@@ -214,15 +165,15 @@ def test_selected_files_get_the_edited_field(loaded, qtbot):
     assert in_table(table) == expected
 
 
-def test_multiple_values(loaded, qtbot):
+def test_multiple_values(user, loaded, qtbot):
     # "Multiple-valued fields are shown like value1\\value2. Enter a value
     # like that and puddletag will assume you want some multiple values."
     table, paths = loaded
-    edit(qtbot, table, cell(table, 0, 'artist'), 'One\\\\Two')
-    press(qtbot, Key.Key_Return)
+    edit(user, user.cell(0, 'artist'), 'One\\\\Two')
+    user.press(Key.Key_Return)
     written(qtbot, paths[0], 'artist', ['One', 'Two'])
     assert table.model().taginfo[0]['artist'] == ['One', 'Two']
-    assert table.model().data(cell(table, 0, 'artist')) == 'One\\\\Two'
+    assert table.model().data(user.cell(0, 'artist')) == 'One\\\\Two'
 
 
 # "When you press Enter after editing a cell, puddletag opens the one just
@@ -237,14 +188,14 @@ def test_multiple_values(loaded, qtbot):
     (Key.Key_Tab, None, 1, 'album'),
     (Key.Key_Backtab, Shift, 1, 'artist'),
 ], ids=['Enter', 'Shift+Enter', 'Tab', 'Shift+Tab'])
-def test_next_cell_opens(loaded, qtbot, key, modifier, row, field):
+def test_next_cell_opens(user, loaded, qtbot, key, modifier, row, field):
     table, paths = loaded
-    edit(qtbot, table, cell(table, 1, 'title'), 'New')
-    press(qtbot, key, modifier or Qt.KeyboardModifier.NoModifier)
+    edit(user, user.cell(1, 'title'), 'New')
+    user.press(key, modifier or Qt.KeyboardModifier.NoModifier)
     written(qtbot, paths[1], 'title', ['New'])
-    qtbot.waitUntil(lambda: table.indexWidget(cell(table, row, field)) is not None)
-    editor = open_editor(table, cell(table, row, field))
-    assert editor.text() == (table.model().data(cell(table, row, field)) or '')
+    qtbot.waitUntil(lambda: table.indexWidget(user.cell(row, field)) is not None)
+    editor = open_editor(table, user.cell(row, field))
+    assert editor.text() == (table.model().data(user.cell(row, field)) or '')
     assert table.model().taginfo[1]['title'] == ['New']
 
 
@@ -255,71 +206,71 @@ def test_next_cell_opens(loaded, qtbot, key, modifier, row, field):
 
 @pytest.mark.parametrize('key, modifier, row', [(Key.Key_Return, None, 2), (Key.Key_Return, Shift, 0)],
                          ids=['Enter on the last row', 'Shift+Enter on the first row'])
-def test_no_cell_past_the_end(loaded, qtbot, key, modifier, row):
+def test_no_cell_past_the_end(user, loaded, qtbot, key, modifier, row):
     table, paths = loaded
-    edit(qtbot, table, cell(table, row, 'title'), 'New')
-    press(qtbot, key, modifier or Qt.KeyboardModifier.NoModifier)
+    edit(user, user.cell(row, 'title'), 'New')
+    user.press(key, modifier or Qt.KeyboardModifier.NoModifier)
     written(qtbot, paths[row], 'title', ['New'])
     qtbot.waitUntil(lambda: table.state() == QAbstractItemView.State.NoState)
-    assert table.currentIndex() == cell(table, row, 'title')
+    assert table.currentIndex() == user.cell(row, 'title')
 
 
-def test_tab_on_the_last_column(loaded, qtbot):
+def test_tab_on_the_last_column(user, loaded, qtbot):
     table, paths = loaded
     model = table.model()
-    double_click(qtbot, table, model.index(0, model.columnCount() - 1))
-    press(qtbot, Key.Key_Tab)
+    user.double_click_cell(model.index(0, model.columnCount() - 1))
+    user.press(Key.Key_Tab)
     qtbot.waitUntil(lambda: table.indexWidget(model.index(1, 0)) is not None)
     open_editor(table, model.index(1, 0))
 
 
-def test_escape_writes_nothing(mainwin, loaded, qtbot):
+def test_escape_writes_nothing(user, loaded, qtbot):
     # The docs don't say; this is what puddletag does.
     table, paths = loaded
-    edit(qtbot, table, cell(table, 0, 'title'), 'New')
-    press(qtbot, Key.Key_Escape)
+    edit(user, user.cell(0, 'title'), 'New')
+    user.press(Key.Key_Escape)
     qtbot.waitUntil(lambda: table.state() == QAbstractItemView.State.NoState)
     qtbot.wait(50)  # where a commit would come, as with Enter
     assert in_file(paths[0]) == {'artist': ['Artist 1'], 'title': ['Title 1']}
     assert in_table(table)[0] == {'artist': ['Artist 1'], 'title': ['Title 1']}
-    assert not undo_action(mainwin).isEnabled()
+    assert not user.action('&Undo').isEnabled()
 
 
-def test_emptying_a_cell_removes_the_field(loaded, qtbot):
+def test_emptying_a_cell_removes_the_field(user, loaded, qtbot):
     # "Empty a cell to remove that field from the file."
     table, paths = loaded
-    double_click(qtbot, table, cell(table, 0, 'artist'))
-    open_editor(table, cell(table, 0, 'artist')).selectAll()
-    press(qtbot, Key.Key_Delete)
-    press(qtbot, Key.Key_Return)
+    user.double_click_cell(user.cell(0, 'artist'))
+    open_editor(table, user.cell(0, 'artist')).selectAll()
+    user.press(Key.Key_Delete)
+    user.press(Key.Key_Return)
     qtbot.waitUntil(lambda: 'artist' not in in_file(paths[0]))
     assert in_file(paths[0]) == {'title': ['Title 1']}
     assert in_table(table)[0] == {'title': ['Title 1']}
 
 
-def test_same_value_writes_nothing(mainwin, loaded, qtbot):
+def test_same_value_writes_nothing(user, loaded, qtbot):
     # The docs don't say; this is what puddletag does: the file isn't
     # saved again, and there's nothing to undo.
     table, paths = loaded
     os.utime(paths[0], (1000000000, 1000000000))
-    double_click(qtbot, table, cell(table, 0, 'title'))
-    press(qtbot, Key.Key_Return)
-    qtbot.waitUntil(lambda: table.indexWidget(cell(table, 1, 'title')) is not None)
+    user.double_click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: table.indexWidget(user.cell(1, 'title')) is not None)
     assert os.stat(paths[0]).st_mtime == 1000000000
-    assert not undo_action(mainwin).isEnabled()
+    assert not user.action('&Undo').isEnabled()
 
 
 @pytest.mark.parametrize('field, text', [('__bitrate', '1 kb/s'), ('__dirpath', '/elsewhere'),
                                          ('__length', '09:59')])
-def test_file_information_cells_drop_the_text(loaded, qtbot, field, text):
+def test_file_information_cells_drop_the_text(user, loaded, qtbot, field, text):
     # "Some cells show file information that can't be changed, such as
     # Length, Bitrate and Dirpath: what you type in them is dropped." The
     # cell still opens for editing, and Enter moves on as usual.
     table, paths = loaded
     before = table.model().taginfo[0][field]
-    edit(qtbot, table, cell(table, 0, field), text)
-    press(qtbot, Key.Key_Return)
-    qtbot.waitUntil(lambda: table.indexWidget(cell(table, 1, field)) is not None)
+    edit(user, user.cell(0, field), text)
+    user.press(Key.Key_Return)
+    qtbot.waitUntil(lambda: table.indexWidget(user.cell(1, field)) is not None)
     assert table.model().taginfo[0][field] == before
     assert audioinfo.Tag(str(paths[0]))[field] == before
     assert sorted(os.listdir(paths[0].parent)) == ['01.mp3', '02.mp3', '03.mp3']
@@ -328,38 +279,38 @@ def test_file_information_cells_drop_the_text(loaded, qtbot, field, text):
 # "Editing the Filename cell renames the file. The name includes the
 # extension: leave it out and the file is renamed without one."
 
-def test_filename_renames_the_file(loaded, qtbot):
+def test_filename_renames_the_file(user, loaded, qtbot):
     table, paths = loaded
-    edit(qtbot, table, cell(table, 0, '__filename'), 'Renamed.mp3')
-    press(qtbot, Key.Key_Return)
+    edit(user, user.cell(0, '__filename'), 'Renamed.mp3')
+    user.press(Key.Key_Return)
     renamed = paths[0].with_name('Renamed.mp3')
     qtbot.waitUntil(renamed.exists)
     assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'Renamed.mp3']
     assert in_file(renamed) == {'artist': ['Artist 1'], 'title': ['Title 1']}
     assert table.model().taginfo[0].filepath == str(renamed)
-    assert table.model().data(cell(table, 0, '__filename')) == 'Renamed.mp3'
+    assert table.model().data(user.cell(0, '__filename')) == 'Renamed.mp3'
 
 
-def test_filename_without_extension(loaded, qtbot):
+def test_filename_without_extension(user, loaded, qtbot):
     table, paths = loaded
-    edit(qtbot, table, cell(table, 0, '__filename'), 'Bare')
-    press(qtbot, Key.Key_Return)
+    edit(user, user.cell(0, '__filename'), 'Bare')
+    user.press(Key.Key_Return)
     qtbot.waitUntil(paths[0].with_name('Bare').exists)
     assert sorted(os.listdir(paths[0].parent)) == ['02.mp3', '03.mp3', 'Bare']
     assert table.model().taginfo[0].filepath == str(paths[0].with_name('Bare'))
 
 
-def test_several_files_one_name(loaded, qtbot, dialogs):
+def test_several_files_one_name(user, loaded, qtbot, dialogs):
     # The docs don't say; this is what puddletag does: the first file is
     # renamed, the second can't be (the name is taken), and nothing is
     # overwritten.
     table, paths = loaded
-    click(qtbot, table, cell(table, 0, '__filename'))
-    click(qtbot, table, cell(table, 1, '__filename'), Shift)
+    user.click_cell(user.cell(0, '__filename'))
+    user.click_cell(user.cell(1, '__filename'), Shift)
     dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.Yes)
-    press(qtbot, Key.Key_F2)
-    type_text(qtbot, 'Same.mp3')
-    press(qtbot, Key.Key_Return)
+    user.press(Key.Key_F2)
+    user.type('Same.mp3')
+    user.press(Key.Key_Return)
     qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
     [(name, (box,), kwargs)] = dialogs.calls
     assert 'File exists' in box.text() and '02.mp3' in box.text()
