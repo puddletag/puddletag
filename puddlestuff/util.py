@@ -120,6 +120,15 @@ class RenameError(EnvironmentError):
 class DirRenameError(RenameError): pass
 
 
+class WriteError(EnvironmentError):
+    """Raised by write for an error that isn't an EnvironmentError, from
+    mutagen or a format module. An EnvironmentError, so the app reports it
+    as it does a file it can't write instead of closing."""
+
+    def __init__(self, error, filename):
+        EnvironmentError.__init__(self, None, '%s: %s' % (type(error).__name__, error), filename)
+
+
 def convert_dict(d, keys):
     d = deepcopy(d)
     for key in keys:
@@ -338,13 +347,14 @@ def write(audio, tags, save_mtime=True, justrename=False):
         audio.preview = preview
         raise
     
-    except MutagenError as e:
-        if isinstance(e.args[0], PermissionError):
-            audio.update(undo)
+    except Exception as e:
+        audio.update(undo)
+        if isinstance(e, MutagenError) and e.args and isinstance(e.args[0], PermissionError):
             logging.exception(e)
             raise e.args[0]
-        else:
-            raise
+        audio.preview = preview
+        logging.exception(e)
+        raise WriteError(e, audio.filepath) from e
 
     try:
         if save_mtime:

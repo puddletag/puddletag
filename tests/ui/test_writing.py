@@ -6,7 +6,8 @@ import os
 
 import mutagen
 import pytest
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QApplication, QMessageBox
 
 from puddlestuff import audioinfo
 
@@ -68,4 +69,47 @@ def test_continue_after_an_error_writes_the_rest(mainwin, loaded, dialogs, qtbot
     mainwin.writeTags(iter([{'title': ['New']}] * 2), [0, 1])
     qtbot.waitUntil(lambda: mutagen.File(str(paths[1]))['title'] == ['New'])
     assert mutagen.File(str(paths[0]))['title'] == ['One']
+    assert [audio['title'] for audio in model.taginfo] == [['One'], ['New']]
+
+
+# An error other than an EnvironmentError while saving, here from a file
+# another program damaged after puddletag loaded it (synthetic): mutagen
+# raises its own error. It's reported like any write error, the table
+# keeps the file's value and puddletag goes on. Before, it closed
+# puddletag (#989, #937, #1060, #1066 and #1086 report such errors).
+
+def damage(path):
+    path.write_bytes(b'not a FLAC file any more')
+
+
+def test_unexpected_error_one_file(user, loaded, dialogs, qtbot):
+    model, paths = loaded
+    damage(paths[0])
+    user.activate()
+    dialogs.answer('QMessageBox.warning', QMessageBox.StandardButton.Ok)
+    user.double_click_cell(user.cell(0, 'title'))
+    user.type('New')
+    user.press(Qt.Key.Key_Return)
+    qtbot.waitUntil(lambda: len(dialogs.calls) == 1)
+    [(name, (parent, title, message), kwargs)] = dialogs.calls
+    assert '01.flac' in message
+    assert model.taginfo[0]['title'] == ['One']
+    assert not user.action('&Undo').isEnabled()
+    assert QApplication.overrideCursor() is None
+
+
+def test_unexpected_error_several_files(user, loaded, dialogs, qtbot):
+    # "Do you want to continue?": yes writes the other file.
+    model, paths = loaded
+    damage(paths[0])
+    user.activate()
+    dialogs.answer('QMessageBox.exec', QMessageBox.StandardButton.Yes)
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(1, 'title'), Qt.KeyboardModifier.ShiftModifier)
+    user.press(Qt.Key.Key_F2)
+    user.type('New')
+    user.press(Qt.Key.Key_Return)
+    qtbot.waitUntil(lambda: mutagen.File(str(paths[1]))['title'] == ['New'])
+    [(name, (box,), kwargs)] = dialogs.calls
+    assert '01.flac' in box.text()
     assert [audio['title'] for audio in model.taginfo] == [['One'], ['New']]
