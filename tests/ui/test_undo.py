@@ -2,6 +2,8 @@
 toolbar button, Edit→Undo or Ctrl+Z. Each undo is checked in the files and
 in the table. Synthetic files.
 """
+import os
+
 import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMessageBox
@@ -123,3 +125,137 @@ def test_unload_everything_clears_the_history(user, loaded, qtbot):
     assert table.model().rowCount() == 0
     assert not user.action('&Undo').isEnabled()
     assert in_file(paths[0])['title'] == ['New']
+
+
+# "Undo's the last edit", from each place it's offered. "When there's
+# nothing left to undo, Undo is greyed out."
+
+UNDO = {
+    'toolbar': lambda user: user.click_toolbar('&Undo'),
+    'Edit menu': lambda user: user.click_menu('&Undo'),
+    'Ctrl+Z': lambda user: user.press(Key.Key_Z, Ctrl),
+}
+
+
+@pytest.mark.parametrize('undo', UNDO.values(), ids=UNDO.keys())
+def test_undo(user, loaded, qtbot, undo):
+    table, paths = loaded
+    assert not user.action('&Undo').isEnabled()
+    edit(user, qtbot, 0, 'New', paths[0])
+    assert user.action('&Undo').isEnabled()
+    undo(user)
+    assert in_file(paths[0])['title'] == ['Title 1']
+    assert titles(table)[str(paths[0])] == ['Title 1']
+    assert not user.action('&Undo').isEnabled()
+
+
+def test_edits_undone_in_reverse_order(user, loaded, qtbot):
+    table, paths = loaded
+    edit(user, qtbot, 0, 'First', paths[0])
+    edit(user, qtbot, 0, 'Second', paths[0])
+    edit(user, qtbot, 1, 'Other', paths[1])
+    after_each = []
+    for i in range(3):
+        user.click_toolbar('&Undo')
+        after_each.append([in_file(p)['title'] for p in paths[:2]])
+    assert after_each == [[['Second'], ['Title 2']],
+                          [['First'], ['Title 2']],
+                          [['Title 1'], ['Title 2']]]
+    assert not user.action('&Undo').isEnabled()
+
+
+def select_all(user, paths):
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(len(paths) - 1, 'title'), Shift)
+
+
+def set_pattern(user, pattern):
+    """F8 goes to the Pattern Combo, its text selected, and back
+    (tut3.txt: "Pressing F8 switches focus between it and the
+    file-view")."""
+    user.press(Key.Key_F8)
+    user.type(pattern)
+    user.press(Key.Key_F8)
+
+
+# A command that writes several files is one edit: one Undo puts them all
+# back.
+
+def test_format_undone_in_one_step(user, loaded, qtbot):
+    table, paths = loaded
+    select_all(user, paths)
+    set_pattern(user, '%artist% - %title%')
+    user.click_toolbar('&Format')
+    qtbot.waitUntil(lambda: in_file(paths[2])['title'] == ['Artist 3 - Title 3'])
+    user.activate()
+    user.click_toolbar('&Undo')
+    assert [in_file(p)['title'] for p in paths] == [['Title 1'], ['Title 2'], ['Title 3']]
+    assert not user.action('&Undo').isEnabled()
+
+
+def test_tag_to_file_undone_in_one_step(user, loaded, qtbot):
+    # The renames are undone too: the files get their names back.
+    table, paths = loaded
+    select_all(user, paths)
+    set_pattern(user, '%artist% - %title%')
+    user.press(Key.Key_F, Ctrl)
+    qtbot.waitUntil(lambda: os.path.exists(paths[2].with_name('Artist 3 - Title 3.mp3')))
+    user.activate()
+    user.click_toolbar('&Undo')
+    assert sorted(os.listdir(paths[0].parent)) == ['01.mp3', '02.mp3', '03.mp3']
+    assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
+    assert not user.action('&Undo').isEnabled()
+
+
+def test_action_undone_in_one_step(user, loaded, qtbot):
+    # The default action Case Conversion, run from Actions → Actions.
+    table, paths = loaded
+    edit_all(user, qtbot, 'lower case', paths)
+    user.click_menu('&Actions')
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is not None)
+    window = QApplication.activeModalWidget()
+    user.activate(window)
+    [item] = window.listbox.findItems('Case Conversion', Qt.MatchFlag.MatchExactly)
+    user.click(window.listbox.viewport(), window.listbox.visualItemRect(item).center())
+    user.press(Key.Key_Space)
+    assert item.checkState() == Qt.CheckState.Checked
+    user.click(window.okcancel.okButton)
+    qtbot.waitUntil(lambda: all(in_file(p)['title'] == ['Lower Case'] for p in paths))
+    user.activate()
+    user.click_toolbar('&Undo')
+    assert [in_file(p)['title'] for p in paths] == [['lower case']] * 3
+    assert user.action('&Undo').isEnabled()  # the edit before it
+
+
+# "the undo history is cleared when a new folder is imported using Open
+# Folder, by Refresh and by Unload Everything (but not by Add Folder)"
+# (menus.txt)
+
+def test_open_folder_clears_the_history(user, loaded, qtbot, dialogs):
+    table, paths = loaded
+    edit(user, qtbot, 0, 'New', paths[0])
+    dialogs.answer('QFileDialog.getExistingDirectory', str(paths[0].parent))
+    user.press(Key.Key_O, Ctrl)
+    qtbot.waitUntil(lambda: not user.action('&Undo').isEnabled())
+    qtbot.waitUntil(lambda: table.model().rowCount() == 3)
+    assert in_file(paths[0])['title'] == ['New']
+
+
+def test_refresh_clears_the_history(user, loaded, qtbot):
+    table, paths = loaded
+    edit(user, qtbot, 0, 'New', paths[0])
+    user.press(Key.Key_F5)
+    qtbot.waitUntil(lambda: not user.action('&Undo').isEnabled())
+    assert in_file(paths[0])['title'] == ['New']
+
+
+def test_add_folder_keeps_the_history(user, loaded, qtbot, dialogs, make_audio, tmp_path):
+    table, paths = loaded
+    other = make_audio('04.mp3', tmp_path / 'other', title='Title 4')
+    edit(user, qtbot, 0, 'New', paths[0])
+    dialogs.answer('QFileDialog.getExistingDirectory', str(other.parent))
+    user.click_menu('&Add Folder')
+    qtbot.waitUntil(lambda: table.model().rowCount() == 4)
+    user.click_toolbar('&Undo')
+    assert in_file(paths[0])['title'] == ['Title 1']
+    assert titles(table)[str(paths[0])] == ['Title 1']

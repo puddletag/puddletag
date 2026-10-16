@@ -17,13 +17,14 @@ class User:
         self._mainwin = mainwin
         self.table = mainwin._table
 
-    def activate(self):
-        """Activates the main window, as clicking on it does. Writing
-        several files shows a progress window, which takes the activation
-        with it when it closes; a desktop's window manager then activates
-        the main window again, the offscreen test platform doesn't."""
-        self._mainwin.activateWindow()
-        self._qtbot.waitUntil(self._mainwin.isActiveWindow)
+    def activate(self, window=None):
+        """Activates the window (the main one by default), as a desktop's
+        window manager does when a dialog opens or closes; the offscreen
+        test platform doesn't. Writing several files shows a progress
+        window, which takes the activation with it when it closes."""
+        window = window or self._mainwin
+        window.activateWindow()
+        self._qtbot.waitUntil(window.isActiveWindow)
 
     def click(self, widget, pos=QPoint(), modifier=NO_MODIFIER):
         """Clicks at pos, or at the widget's center."""
@@ -46,8 +47,10 @@ class User:
             self.press(char)
 
     def action(self, name):
-        """The command with this name in data/shortcuts, e.g. '&Save'."""
-        [action] = [a for a in self._mainwin.findChildren(QAction) if a.text() == name]
+        """The command with this name in data/shortcuts, e.g. '&Save', not
+        a menu of the same name (&Actions is both)."""
+        [action] = [a for a in self._mainwin.findChildren(QAction)
+                    if a.text() == name and not a.menu()]
         return action
 
     def click_menu(self, name):
