@@ -40,6 +40,12 @@ def tag_to_file(make_audio, tmp_path):
      {'artist': 'Wanton_character_', 'title': '_something_irreligious', 'track': '01'}),
     ('%title% - %dummy%', "/music/I love autotune - Artist Doesn't Matter.mp3",
      {'title': 'I love autotune'}),
+    # "A field ends where the text after it first appears" (#442).
+    ('%artist% - %title%', '/music/Artist - Song - Live.mp3', {'artist': 'Artist', 'title': 'Song - Live'}),
+    ('%title% (%artist%)', '/music/some (t)itle (someartist).mp3',
+     {'title': 'some', 'artist': 't)itle (someartist'}),
+    # "A file whose name the pattern doesn't match is left as it is."
+    ('%artist% - %title%', '/music/track01.mp3', {}),
     ('%artist% - %album%/%track% - %title%',
      '/home/cpuddle/Music/Justin Bieber - Dunno/01 - Kinda Terrible.mp3',
      {'artist': 'Justin Bieber', 'album': 'Dunno', 'track': '01', 'title': 'Kinda Terrible'}),
