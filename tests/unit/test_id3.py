@@ -282,6 +282,26 @@ def test_user_defined_text(id3_file):
     assert (frames['TXXX:mytag'].text, tag['mytag']) == (['one', 'two'], ['one', 'two'])
 
 
+@pytest.mark.parametrize('year, v2', [(mutagen.id3.TDRC, 4), (mutagen.id3.TYER, 3)])
+def test_user_defined_year_next_to_the_year_frame(make_audio, year, v2):
+    # #989: editing files bought from Beatport closed puddletag, with
+    # "AttributeError: 'str' object has no attribute 'text'" from saving a
+    # date frame; their year showed two values, 1998\\1998, and removing one
+    # made them save. Synthetic file: the year frame (TYER in ID3v2.3) and a
+    # TXXX:YEAR frame. year keeps showing both values, and saving writes them
+    # to TDRC, as dates.
+    path = make_audio('song.mp3', title='Song')
+    tags = mutagen.id3.ID3(path)
+    tags.add(year(text=['1998']))
+    tags.add(mutagen.id3.TXXX(desc='YEAR', text=['1998']))
+    tags.save(v2_version=v2)
+    frames, tag = save(path, {'title': ['New']})
+    assert frames['TIT2'].text == ['New']
+    assert [str(t) for t in frames['TDRC'].text] == ['1998', '1998']
+    assert 'TXXX:YEAR' not in frames
+    assert tag['year'] == ['1998', '1998']
+
+
 URL_FRAMES = {'wwwartist': 'WOAR', 'wwwcommercialinfo': 'WCOM', 'wwwcopyright': 'WCOP', 'wwwfileinfo': 'WOAF',
               'wwwpayment': 'WPAY', 'wwwpublisher': 'WPUB', 'wwwradio': 'WORS', 'wwwsource': 'WOAS'}
 

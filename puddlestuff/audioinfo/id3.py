@@ -59,13 +59,19 @@ def handle(audio):
 
     # Handler returns a dictionary with fields as used in puddletag
     # eg 'title' and text, a frame, or a list of frames as its
-    # associated value.
-    for handler, frame in handlers.items():
+    # associated value. User-defined frames come last, so one named like
+    # a field (TXXX:YEAR) adds its values to that field's frame (TDRC).
+    for handler, frame in sorted(handlers.items(), key=lambda item: item[0] is usertext_handler):
         for k, v in handler(frame).items():
             lower = k.lower()
             if lower in keys:
-                ret[keys[lower]].append(v) if isinstance(v, str) \
-                    else ret[keys[lower]].extend(v)
+                if isinstance(v, str):
+                    ret[keys[lower]].append(v)
+                else:
+                    # Through the frame's setter, which makes TDRC's text
+                    # dates.
+                    first = ret[keys[lower]]
+                    first.set_value(first.get_value() + v.get_value())
             else:
                 keys[lower] = k
                 ret[k] = v
