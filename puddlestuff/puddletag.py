@@ -369,13 +369,9 @@ def load_plugins():
 class PreviewLabel(QLabel):
     valueChanged = pyqtSignal(bool, name='valueChanged')
 
-    def __init__(self, *args, **kwargs):
-        super(PreviewLabel, self).__init__(*args, **kwargs)
-        self._enabled = False
-
     def mouseDoubleClickEvent(self, event):
-        self._enabled = not self._enabled
-        self.valueChanged.emit(self._enabled)
+        # Preview Mode may have changed from the menu or its shortcut.
+        self.valueChanged.emit(not status['previewmode'])
 
 
 def _openFilesFilterFilename(filename):

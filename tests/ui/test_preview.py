@@ -118,11 +118,7 @@ DISABLE = {
 }
 
 
-@pytest.mark.parametrize('disable', [
-    pytest.param(disable, id=name, marks=pytest.mark.xfail(
-        name == 'status bar', strict=True,
-        reason="after Ctrl+Shift+P, the switch's double-click enables Preview Mode again"))
-    for name, disable in DISABLE.items()])
+@pytest.mark.parametrize('disable', DISABLE.values(), ids=DISABLE.keys())
 def test_disable(mainwin, user, loaded, qtbot, disable):
     table, paths = loaded
     toggle(user)
