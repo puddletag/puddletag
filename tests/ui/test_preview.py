@@ -242,10 +242,7 @@ def test_tag_panel_save_updates_the_preview(mainwin, user, loaded, qtbot, key, m
     assert in_file(paths[0])['title'] == ['Title 1']
 
 
-@pytest.mark.parametrize('key, modifier', [
-    pytest.param(*keys, id=name, marks=pytest.mark.xfail(
-        name == 'Enter', strict=True, reason="#378: the rebuilt fields don't save previews"))
-    for name, keys in TAG_PANEL_SAVE.items()])
+@pytest.mark.parametrize('key, modifier', TAG_PANEL_SAVE.values(), ids=TAG_PANEL_SAVE.keys())
 def test_tag_panel_after_preferences(mainwin, user, loaded, qtbot, key, modifier):
     # #378: in Preview Mode, after Preferences' OK, "In the Tag Panel, try
     # to change any tag: the tag will revert back to the previous value".

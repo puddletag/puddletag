@@ -330,6 +330,9 @@ class FrameCombo(QGroupBox):
         self.setLayout(vbox)
         QApplication.processEvents()
         self.setMaximumHeight(self.sizeHint().height())
+        if self._status['previewmode']:
+            # New fields, as Preferences' OK makes: they save previews too.
+            self._enablePreview()
 
     def eventFilter(self, obj, event):
         if isinstance(obj, QComboBox) and event.type() == QEvent.Type.FocusOut:
