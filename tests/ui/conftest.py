@@ -1,11 +1,12 @@
 """The main window driven as a user drives it: a click goes to the widget
 under the mouse, a key to the widget with the keyboard focus, and a
-command runs from its menu, its toolbar button or its shortcut.
+command runs from its menu, its toolbar button, its shortcut or a
+right-click menu.
 """
 import pytest
-from PyQt6.QtCore import QPoint, Qt
+from PyQt6.QtCore import QPoint, Qt, QTimer
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QApplication, QMenu, QToolBar
+from PyQt6.QtWidgets import QApplication, QMenu, QToolBar, QWidget
 
 LEFT = Qt.MouseButton.LeftButton
 NO_MODIFIER = Qt.KeyboardModifier.NoModifier
@@ -40,7 +41,13 @@ class User:
 
     def press(self, key, modifier=NO_MODIFIER):
         """A key goes where the keyboard sends it: to the focused widget."""
-        self._qtbot.keyClick(QApplication.focusWidget(), key, modifier)
+        widget = QApplication.focusWidget()
+        # With no focused widget, QTest sends the key to the keyboard
+        # grabber, an open popup or the active window, as the keyboard
+        # does, and aborts the whole run when there's none of them.
+        assert widget or QWidget.keyboardGrabber() or QApplication.activePopupWidget() \
+            or QApplication.activeWindow(), 'no window is active: activate it first'
+        self._qtbot.keyClick(widget, key, modifier)
 
     def type(self, text):
         for char in text:
@@ -68,6 +75,36 @@ class User:
                     if bar.widgetForAction(action)]
         self.click(button)
 
+    def right_click(self, widget, pos, name):
+        """Right-clicks at pos and clicks the command in the menu that
+        opens. The click goes to the window, as the desktop sends it: Qt
+        makes a right-click a context menu only there, not in a click
+        sent to the widget itself. The menu runs its own event loop until
+        an item is picked, so the pick waits on a timer. The window gets
+        the activation back afterwards, as on a desktop."""
+        action = self.action(name)
+        menus = []
+
+        def pick(tries=100):
+            menu = QApplication.activePopupWidget()
+            if not (isinstance(menu, QMenu) and menu.isVisible()):
+                if tries:
+                    QTimer.singleShot(10, lambda: pick(tries - 1))
+                return
+            menus.append(menu.actions())
+            if action in menu.actions():
+                self.click(menu, menu.actionGeometry(action).center())
+            else:
+                menu.close()
+
+        QTimer.singleShot(0, pick)
+        window = widget.window()
+        self._qtbot.mouseClick(window.windowHandle(), Qt.MouseButton.RightButton, NO_MODIFIER,
+                               widget.mapTo(window, pos))
+        assert menus, 'no right-click menu opened'
+        assert action in menus[0], f'{name} is not in the right-click menu'
+        self.activate(window)
+
     def cell(self, row, field):
         """The File-View's cell of this row and field."""
         model = self.table.model()
@@ -80,6 +117,11 @@ class User:
     def double_click_cell(self, index):
         self.table.scrollTo(index)
         self.double_click(self.table.viewport(), self.table.visualRect(index).center())
+
+    def right_click_cell(self, index, name):
+        """Picks the command from the File-View's right-click menu."""
+        self.table.scrollTo(index)
+        self.right_click(self.table.viewport(), self.table.visualRect(index).center(), name)
 
 
 @pytest.fixture
