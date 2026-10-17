@@ -360,11 +360,22 @@ def _disconnect_all(qobject):
 
 
 @pytest.fixture
-def mainwin(qtbot, clean_profile, _translated_strings):
+def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
+    from puddlestuff.mainwin import previews
     from puddlestuff.puddletag import MainWin
     win = MainWin()
-    qtbot.addWidget(win)
+
+    def exit_without_writing(win):
+        # Closing the window with previews not written asks whether to
+        # exit without writing them, as a test that ends in Preview Mode
+        # does.
+        if any(audio.preview for audio in win._table.model().taginfo):
+            dialogs.answer('QMessageBox.question', QMessageBox.StandardButton.Yes)
+
+    qtbot.addWidget(win, before_close_func=exit_without_writing)
     win.show()
     yield win
     for emitter in _module_emitters():
         _disconnect_all(emitter)
+    # Each MainWin adds its Preview Mode menu's receiver to this list.
+    previews.obj.receives.clear()

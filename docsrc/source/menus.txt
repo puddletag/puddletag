@@ -255,6 +255,10 @@ Use :ref:`Write Previews <write_preview>` to save the changes to file.
 
 Deleting tags is not allowed from within Preview Mode.
 
+If some files have previews that haven't been written, disabling Preview Mode first asks whether to discard them.
+
+In Preview Mode, Undo undoes the changes made to the previews, one at a time. Edits written to files before Preview Mode was enabled can be undone once it's disabled again. Disabling Preview Mode forgets the previews' undo history.
+
 Undo Last Clear
 ^^^^^^^^^^^^^^^
 If you've cleared any previews (but not exited Preview Mode), the last one will be undone.
@@ -263,7 +267,7 @@ If you've cleared any previews (but not exited Preview Mode), the last one will 
     
 Write Previews
 ^^^^^^^^^^^^^^
-If preview mode has been enabled and some changes were made, they'll get written to the files.
+If preview mode has been enabled and some changes were made, they'll get written to the files, and Preview Mode is disabled. A single Undo then undoes the whole write.
 
 Clear Selected Files.
 ^^^^^^^^^^^^^^^^^^^^^

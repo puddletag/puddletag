@@ -22,7 +22,7 @@ Shows/Hides the gridlines in the file view depending on whether it checked/unche
 
 Show tooltips in file-view.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-By default tooltips will be shown in the file view showing the value of a cell on which the mouse is hovered. When in Preview Mode the tooltip will show both the Preview and value as stored in the file. Uncheck this box to disable it.
+By default tooltips will be shown in the file view showing the value of a cell on which the mouse is hovered. When in Preview Mode the tooltip will show both the Preview and value as stored in the file, when they differ. Uncheck this box to disable it.
 
 Show row numbers.
 ^^^^^^^^^^^^^^^^^
