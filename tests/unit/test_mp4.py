@@ -51,6 +51,25 @@ def test_save_keeps_the_narrator_of_an_audiobook(make_audio):
     assert saved['\xa9nrt'] == ['Stefan Kaminski']
 
 
+def test_save_keeps_the_descriptions_yt_dlp_writes(make_audio):
+    # #1086: saving an edit to an MP4 from yt-dlp raised "TypeError: b'...'
+    # not str"; removing its Description and Long Description made it save.
+    # yt-dlp writes the video's description to both, desc and ldes.
+    # Synthetic file and text.
+    path = make_audio('video.m4a', title='Before')
+    audio = mutagen.mp4.MP4(path)
+    audio['desc'] = audio['ldes'] = ['A video description']
+    audio.save()
+
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['After']})
+    tag.save()
+
+    saved = mutagen.mp4.MP4(path).tags
+    assert saved['\xa9nam'] == ['After']
+    assert (saved['desc'], saved['ldes']) == (['A video description'], ['A video description'])
+
+
 def test_save_keeps_itunes_composer_id(make_audio):
     # #850: saving an edit to a file with iTunes IDs crashed; naul06
     # (2026-05-03) narrowed it to itunescomposerid (the cmID atom, an
