@@ -22,7 +22,11 @@ class User:
         """Activates the window (the main one by default), as a desktop's
         window manager does when a dialog opens or closes; the offscreen
         test platform doesn't. Writing several files shows a progress
-        window, which takes the activation with it when it closes."""
+        window, which takes the activation with it when it closes. The
+        command ends, its undo step recorded, only when that window
+        closes, after the last file is written: wait for that first."""
+        from puddlestuff.puddleobjects import ProgressWin
+        self._qtbot.waitUntil(lambda: not any(w.isVisible() for w in self._mainwin.findChildren(ProgressWin)))
         window = window or self._mainwin
         window.activateWindow()
         self._qtbot.waitUntil(window.isActiveWindow)
