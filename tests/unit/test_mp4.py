@@ -70,6 +70,26 @@ def test_save_keeps_the_descriptions_yt_dlp_writes(make_audio):
     assert (saved['desc'], saved['ldes']) == (['A video description'], ['A video description'])
 
 
+def test_save_keeps_number_atoms_puddletag_does_not_map(make_audio):
+    # Atoms mutagen keeps as whole numbers that puddletag has no field for:
+    # ffmpeg writes tvsn and tves from yt-dlp's season and episode numbers,
+    # and hdvd for HD video; iTunes writes ©mvi, ©mvc and shwm for classical
+    # works. Synthetic values.
+    numbers = {'hdvd': [1], 'shwm': [1], 'tves': [7], 'tvsn': [2], '\xa9mvc': [4], '\xa9mvi': [3]}
+    path = make_audio('song.m4a', title='Before')
+    audio = mutagen.mp4.MP4(path)
+    audio.update(numbers)
+    audio.save()
+
+    tag = audioinfo.Tag(str(path))
+    tag.update({'title': ['After']})
+    tag.save()
+
+    saved = mutagen.mp4.MP4(path).tags
+    assert saved['\xa9nam'] == ['After']
+    assert {atom: saved[atom] for atom in numbers} == numbers
+
+
 def test_save_keeps_itunes_composer_id(make_audio):
     # #850: saving an edit to a file with iTunes IDs crashed; naul06
     # (2026-05-03) narrowed it to itunescomposerid (the cmID atom, an

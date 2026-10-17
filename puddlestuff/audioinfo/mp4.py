@@ -484,12 +484,15 @@ class Tag(util.MockTag):
                     atom.encode('latin-1')  # how mutagen writes atom names
                 except UnicodeEncodeError:
                     raise FieldNameError(tag, 'MP4', self.filepath)
-                # Only freeform '----:' atoms accept bytes payloads. Other
-                # atoms (e.g. unmapped 4-char text atoms like '\xa9wrk') must
-                # be written as strings, otherwise mutagen's text-atom
-                # renderer raises TypeError ('%r not str').
+                # Only freeform '----:' atoms accept bytes payloads, and the
+                # atoms mutagen keeps as numbers (e.g. tvsn, hdvd) only whole
+                # numbers. Other atoms (e.g. unmapped 4-char text atoms like
+                # '\xa9wrk') must be written as strings, otherwise mutagen's
+                # text-atom renderer raises TypeError ('%r not str').
                 if atom.startswith('----'):
                     newtag[atom] = encode(self.__tags[tag])
+                elif atom in audio and all(isinstance(v, int) for v in audio[atom]):
+                    newtag[atom] = setint(self.__tags[tag])
                 else:
                     newtag[atom] = list(self.__tags[tag])
 
