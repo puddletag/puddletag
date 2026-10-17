@@ -86,7 +86,6 @@ def test_filename_cell_loses_its_extension(user, mainwin, make_audio, tmp_path, 
     assert table.model().taginfo[0].filepath == str(renamed)
 
 
-@pytest.mark.xfail(strict=True, reason='#636: Format writes the pattern into the Dirpath cell')
 def test_folder_cells_left_alone(user, loaded, qtbot, tmp_path, monkeypatch):
     # #636: with every cell selected (Ctrl+A), Format with %track% - %title%
     # wrote the pattern into the Dirpath cell too, so the folder moved to

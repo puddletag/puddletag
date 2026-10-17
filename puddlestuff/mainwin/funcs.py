@@ -12,7 +12,7 @@ from .. import findfunc
 from .. import helperwin
 from ..puddleobjects import (PuddleConfig, PuddleDock)
 
-from ..audioinfo import PATH, DIRPATH, FILETAGS, AbstractTag, tag_to_json, encode_fn, decode_fn
+from ..audioinfo import PATH, DIRNAME, DIRPATH, FILETAGS, AbstractTag, tag_to_json, encode_fn, decode_fn
 from .. import musiclib, about as about
 from ..util import split_by_tag, translate, to_string
 from .. import functions
@@ -226,7 +226,9 @@ def format(parent=None, preview=None):
     for i, (audio, s) in enumerate(zip(files, selected)):
         state['__counter'] = str(i + 1)
         val = tf(pattern, audio, state=state)
-        ret.append(dict([(tag, val) for tag in s]))
+        # Not the folder cells: a pattern's value there moves the folder,
+        # relative to the working folder.
+        ret.append(dict([(tag, val) for tag in s if tag not in (DIRNAME, DIRPATH, PATH)]))
     emit('writeselected', ret)
 
 
