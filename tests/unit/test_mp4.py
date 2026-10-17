@@ -31,6 +31,26 @@ def test_save_keeps_atoms_puddletag_does_not_map(make_audio):
     assert saved['----:com.apple.iTunes:MOOD'] == [b'Calm']
 
 
+def test_save_keeps_the_narrator_of_an_audiobook(make_audio):
+    # #1060: editing the composer of an .m4b audiobook raised "TypeError:
+    # b'Stefan Kaminski' not str" and saved nothing; the reporter found that
+    # name in the ©nrt atom, the narrator, which puddletag doesn't map. The
+    # name is from the report; the file is synthetic, an .m4a renamed.
+    path = make_audio('book.m4a', title='Book')
+    audio = mutagen.mp4.MP4(path)
+    audio['\xa9nrt'] = ['Stefan Kaminski']
+    audio.save()
+    path = path.rename(path.with_suffix('.m4b'))
+
+    tag = audioinfo.Tag(str(path))
+    tag.update({'composer': ['After']})
+    tag.save()
+
+    saved = mutagen.mp4.MP4(path).tags
+    assert saved['\xa9wrt'] == ['After']
+    assert saved['\xa9nrt'] == ['Stefan Kaminski']
+
+
 def test_save_keeps_itunes_composer_id(make_audio):
     # #850: saving an edit to a file with iTunes IDs crashed; naul06
     # (2026-05-03) narrowed it to itunescomposerid (the cmID atom, an
