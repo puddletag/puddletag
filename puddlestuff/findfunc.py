@@ -28,6 +28,9 @@ ARGS = 'arguments'
 KEYWORD_ARGS = set(['tags', 'm_tags', 'r_tags', 'state'])
 # What may follow a quote that ends a function's argument.
 _ARG_END = re.compile(r'\s*[,)]')
+# A path separator the pattern writes inside a function, kept apart from
+# one in a field's value (dropped) until the whole pattern is parsed.
+_PATH_SEP_MARK = '\0'
 
 
 ParserElement.enable_packrat()
@@ -429,7 +432,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
             i += 1
             continue
         elif in_quote:
-            token.append(c)
+            token.append(_PATH_SEP_MARK if path_sep and in_func and c == path_sep else c)
         elif c == '\\' and not escape:
             escape = True
             i += 1
@@ -450,7 +453,7 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
                 continue
 
             if in_func:
-                func_parsed, offset = parsefunc(s[i:], m_audio, s_audio, state, extra, True)
+                func_parsed, offset = parsefunc(s[i:], m_audio, s_audio, state, extra, True, path_sep)
                 token.append(func_parsed)
                 i += offset + 1
                 continue
@@ -478,6 +481,8 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
                 return func_parsed, i
             tokens.append(func_parsed)
             token = []
+        elif path_sep and c == path_sep and in_func:
+            token.append(_PATH_SEP_MARK)
         else:
             token.append(c)
             if path_sep and c == path_sep and not in_func:
@@ -486,7 +491,9 @@ def parsefunc(s, m_audio, s_audio=None, state=None, extra=None, ret_i=False, pat
         i += 1
 
     if path_sep and not ret_i:
-        return paths, ''.join(tokens)
+        text = ''.join(tokens)
+        paths = sorted(paths + [i for i, c in enumerate(text) if c == _PATH_SEP_MARK])
+        return paths, text.replace(_PATH_SEP_MARK, path_sep)
     else:
         return ''.join(tokens)
 

@@ -221,3 +221,28 @@ def test_relative_pattern_counts_only_folders_it_makes(tag_to_file, pattern, pat
     # a folder comes out empty: function.txt, "a directory that comes out
     # empty doesn't count". Synthetic layouts, the first one D1028's.
     assert tag_to_file(pattern, path, **tags) == expected
+
+
+NESTED_FOLDERS = '/mnt/music/$if(%albumartist%,%albumartist%/$if(%album%,%album%/,Unknown Album/),)%title%'
+
+
+@pytest.mark.parametrize('pattern, path, tags, expected', [
+    # #475: a folder only when a field is set, as in Mp3tag.
+    ('$if(%album%,%album%/,)%title%', 'music/x.mp3', {'album': 'Album', 'title': 'Song'}, 'Album/Song.mp3'),
+    ('$if(%album%,%album%/,)%title%', 'music/x.mp3', {'title': 'Song'}, 'music/Song.mp3'),
+    # JoeJoeTV's layout on #475, shortened: a function inside a function.
+    (NESTED_FOLDERS, 'music/x.mp3', {'albumartist': 'Band', 'album': 'Album', 'title': 'Song'},
+     '/mnt/music/Band/Album/Song.mp3'),
+    (NESTED_FOLDERS, 'music/x.mp3', {'albumartist': 'Band', 'title': 'Song'},
+     '/mnt/music/Band/Unknown Album/Song.mp3'),
+    (NESTED_FOLDERS, 'music/x.mp3', {'title': 'Song'}, '/mnt/music/Song.mp3'),
+    # A slash in a field's value is still dropped ("if the artist is
+    # AC/DC, it will not create an AC directory").
+    ('$if(%artist%,%artist%/,)%title%', 'music/x.mp3', {'artist': 'AC/DC', 'title': 'Song'}, 'ACDC/Song.mp3'),
+    # and a function reads it as before: $num leaves out a track's total.
+    ('$num(%track%,2) - %title%', 'music/x.mp3', {'track': '3/12', 'title': 'Song'}, 'music/03 - Song.mp3'),
+])
+def test_slash_written_in_a_function_makes_a_folder(tag_to_file, pattern, path, tags, expected):
+    # function.txt: "Files can also be moved, by specifying '/' as a
+    # directory delimeter", inside a function too. Synthetic tags.
+    assert tag_to_file(pattern, path, **tags) == expected
