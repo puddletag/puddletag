@@ -204,7 +204,6 @@ def test_undo_greyed_out_after_delete(user, loaded, qtbot, dialogs):
     assert loaded_paths(table) == [str(paths[0]), str(paths[2])]
 
 
-@pytest.mark.xfail(strict=True, reason='Undo stays enabled when only a deleted file was left to undo')
 def test_undo_after_editing_the_deleted_file(user, loaded, qtbot, dialogs):
     # "some things like deleting files cannot be undone. When there's nothing
     # left to undo, Undo is greyed out." (menus.txt)
@@ -223,7 +222,6 @@ def test_undo_after_editing_the_deleted_file(user, loaded, qtbot, dialogs):
     assert not user.action('&Undo').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='the first Ctrl+Z undoes nothing: it is spent on the deleted file')
 def test_undo_after_editing_two_files_and_deleting_one(user, loaded, qtbot, dialogs):
     # "some things like deleting files cannot be undone. When there's nothing
     # left to undo, Undo is greyed out." (menus.txt): what is left to undo is
@@ -244,7 +242,6 @@ def test_undo_after_editing_two_files_and_deleting_one(user, loaded, qtbot, dial
     assert not user.action('&Undo').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='Undo stays enabled when only a deleted file was left to undo')
 def test_undo_greyed_out_after_deleting_a_previewed_file(user, loaded, qtbot, dialogs):
     # "some things like deleting files cannot be undone. When there's nothing
     # left to undo, Undo is greyed out." (menus.txt)

@@ -1245,6 +1245,29 @@ class TagModel(QAbstractTableModel):
         if self.undolevel > 0:
             self.undolevel -= 1
 
+    def removeFromUndo(self, files):
+        """Forgets the undo steps of deleted files.
+
+        Steps must stay numbered 0..n-1: undo() stops at a missing level, and
+        a step whose files are all gone would undo nothing yet keep Undo on."""
+        paths = {audio.filepath for audio in files}
+
+        def compact(undo):
+            steps = [{audio: tags for audio, tags in undo[level].items()
+                      if audio.filepath not in paths}
+                     for level in sorted(undo)]
+            steps = [step for step in steps if step]
+            undo.clear()
+            for level, step in enumerate(steps):
+                undo[level] = step
+            return len(steps)
+
+        if self.previewMode:
+            self.undolevel = compact(self._previewUndo)
+            self._savedundolevel = compact(self._undo)
+        else:
+            self.undolevel = compact(self._undo)
+
     def unSetTestData(self, rows=None):
         taginfo = self.taginfo
         if not rows:
@@ -1661,6 +1684,7 @@ class TagTable(QTableView):
         curindex = self.currentIndex()
         last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
         libtags = []
+        deleted = []
 
         def func():
             temprows = sorted(selectedRows[::])
@@ -1668,6 +1692,7 @@ class TagTable(QTableView):
                 try:
                     filename = audio.filepath
                     os.remove(filename)
+                    deleted.append(audio)
                     if audio.library:
                         audio.remove()
                         libtags.append(audio)
@@ -1686,6 +1711,8 @@ class TagTable(QTableView):
                         yield msg, len(selectedRows)
 
         def fin():
+            if deleted:
+                self.model().removeFromUndo(deleted)
             index = self.model().index(*last)
             if libtags:
                 self.deletedfromlib.emit(libtags)
