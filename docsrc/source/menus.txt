@@ -220,13 +220,15 @@ Autonumbering Wizard...
 ^^^^^^^^^^^^^^^^^^^^^^^
 Opens a dialog allowing to automatically number tracks in a sequence. It's pretty self explanatory.
 
-**Output field**: Instead of writing to the track field you can write the sequency to any non-file (ie. filename, path, etc) field.
+**Restart numbering at each directory group**: Off by default. If checked, the numbering restarts for each group of tracks. The pattern, **Output field** and **Increase counter only on group change** options are shown only once it is checked.
+
+**Output field**: Instead of writing to the track field you can write the sequence to any field except the file fields (such as __filename and __path), which are refused.
 
 **Group tracks using pattern**: Enter a pattern to group the tracks by.
 
 - Eg. if you would like to number tracks by discnumber enter *%discnumber%*.
-- If you'd like to split by directory, *%dirpath%*
-- Any valid pattern can be used, even something like *%album% - %dirpath%*
+- If you'd like to split by directory, *%__dirpath%*
+- Any valid pattern can be used, even something like *%album% - %__dirpath%*
 
 **Increase counter only on group change**: If checked, the counter will only be increased when the group changes.
 
