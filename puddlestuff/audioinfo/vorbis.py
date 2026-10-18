@@ -16,7 +16,7 @@ from .util import (usertags, PATH,
                    CaselessDict, del_deco, keys_deco, fn_hash, cover_info,
                    get_total, set_total, parse_image, info_to_dict,
                    get_mime, FieldNameError)
-from .tag_versions import tags_in_file
+from .tag_versions import tags_in_file, ID3_V2
 
 PICARGS = ('type', 'mime', 'desc', 'width', 'height', 'depth', 'data')
 
@@ -255,9 +255,12 @@ def vorbis_tag(base, name):
             self._originaltags = list(tags.keys())
 
         def update_tag_list(self):
-            l = tags_in_file(self.filepath)
-            if l:
-                self.__tags['__tag'] = 'VorbisComment, ' + ', '.join(l)
+            if base == FLAC:
+                l = tags_in_file(self.filepath, (ID3_V2,))
+                if l:
+                    self.__tags['__tag'] = 'VorbisComment, ' + ', '.join(l)
+                else:
+                    self.__tags['__tag'] = 'VorbisComment'
             else:
                 self.__tags['__tag'] = 'VorbisComment'
 

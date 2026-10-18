@@ -514,11 +514,7 @@ class Tag(util.MockTag):
         self.images = images
 
     def update_tag_list(self):
-        l = tag_versions.tags_in_file(self.filepath)
-        if l:
-            self.__tags['__tag'] = 'MP4, ' + ', '.join(l)
-        else:
-            self.__tags['__tag'] = 'MP4'
+        self.__tags['__tag'] = 'MP4'
 
 
 filetype = (MP4, Tag, 'MP4', ['m4a', 'mp4', 'm4v'])

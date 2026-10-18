@@ -23,15 +23,9 @@ class DirModel(QFileSystemModel):
         self.setReadOnly(False)
 
     def hasChildren(self, parent):
-        """Overridden to only show the expand arrow when there are subfolders."""
+        """Asynchronously determine children using QFileSystemModel's built-in background engine."""
         if parent.flags() & Qt.ItemFlag.ItemNeverHasChildren:
             return False
-        elif (self.filePath(parent)):
-            return QDirIterator(
-                self.filePath(parent),
-                self.filter() | QDir.Filter.NoDotAndDotDot,
-                QDirIterator.IteratorFlag.NoIteratorFlags
-            ).hasNext()
         return QFileSystemModel.hasChildren(self, parent)
 
 class DirView(QTreeView):

@@ -1,10 +1,19 @@
+import os
 import struct
+import sys
 
 import mutagen.id3
 from mutagen.id3 import ParseID3v1
 
-from . import apev2
-from . import id3
+if __name__ == '__main__' and not __package__:
+    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
+    from puddlestuff.audioinfo import apev2
+    from puddlestuff.audioinfo import id3
+else:
+    from . import apev2
+    from . import id3
 
 APEv2_Tag = apev2.Tag
 
@@ -125,23 +134,42 @@ def id3_tags(fn):
     return version
 
 
-def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2)):
+def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2), known_v2=None):
     close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
 
     try:
-        if ID3_V1 in to_check and ID3_V2 in to_check:
-            tags = ['ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
-        elif ID3_V1 in to_check:
-            tags = ['ID3v1.1'] if has_v1(fileobj) else []
-        elif ID3_V2 in to_check:
-            tags = get_v2(fileobj)
-            tags = ['ID3v' + '.'.join(map(str, tags))] if tags else []
-        else:
-            tags = []
+        tags = []
+        tail = b""
+        check_tail = (ID3_V1 in to_check) or (APEv2 in to_check)
+        if check_tail:
+            try:
+                fileobj.seek(-160, 2)
+                tail = fileobj.read(160)
+            except (IOError, OSError):
+                try:
+                    fileobj.seek(0, 2)
+                    size = fileobj.tell()
+                    fileobj.seek(0)
+                    tail = fileobj.read(size)
+                except (IOError, OSError):
+                    tail = b""
 
-        if APEv2 in to_check and has_apev2(fileobj):
+        has_v1_tag = (ID3_V1 in to_check) and len(tail) >= 128 and tail[-128:-125] == b"TAG"
+        if has_v1_tag:
+            tags.append('ID3v1.1')
+
+        if known_v2:
+            tags.append(known_v2)
+        elif ID3_V2 in to_check:
+            fileobj.seek(0)
+            v2 = get_v2(fileobj)
+            if v2:
+                tags.append('ID3v' + '.'.join(map(str, v2)))
+
+        if (APEv2 in to_check) and (b"APETAGEX" in tail):
             tags.append('APEv2')
+
         return tags
     finally:
         if close_file:
@@ -170,11 +198,12 @@ def tag_values(fn, tag):
 
 
 if __name__ == '__main__':
-    import sys
-
-    filename = sys.argv[1]
-    # f = open(filename, 'rb')
-    print(tags_in_file(filename))
-    print(id3v1_values(filename))
-    print(id3v2_values(filename))
-    print(apev2_values(filename))
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+        # f = open(filename, 'rb')
+        print(tags_in_file(filename))
+        print(id3v1_values(filename))
+        print(id3v2_values(filename))
+        print(apev2_values(filename))
+    else:
+        print("Usage: python tag_versions.py <filename>")

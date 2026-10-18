@@ -20,7 +20,7 @@ from operator import or_
 from typing import Any, Callable, Generator, List, Optional, Tuple, Union
 
 from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QObject, QRectF, QSettings, \
-    QSize, QThread, QTimer, Qt, pyqtSignal
+    QSize, QThread, QTimer, Qt, pyqtSignal, QEventLoop
 from PyQt6.QtCore import QFile, QIODevice
 from PyQt6.QtGui import QAction, QIcon, QBrush, QPixmap, QImage, \
     QKeySequence
@@ -647,18 +647,15 @@ def getfiles(files: Union[str, List[str]], subfolders: bool = False) -> Generato
         files = [files]
 
     for file in files:
-        if not os.path.exists(file):
-            continue
-        if not os.path.isdir(file):
+        if os.path.isdir(file):
+            for dirpath, dirnames, filenames in os.walk(file):
+                for filename in filenames:
+                    yield os.path.join(dirpath, filename)
+                if not subfolders:
+                    # don't recurse deeper
+                    dirnames.clear()
+        elif os.path.exists(file):
             yield file
-            continue
-
-        for dirpath, dirnames, filenames in os.walk(file):
-            for filename in filenames:
-                yield os.path.join(dirpath, filename)
-            if not subfolders:
-                # don't recurse deeper
-                dirnames.clear()
 
 
 def gettags(files):
@@ -827,10 +824,24 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
             f = func()
 
         if maximum == 1:
-            errors = next(f)
-            if errors and \
-                    not isinstance(errors, (str, int)):
-                errormsg(parent, errors[0], 1)
+            errors = [None]
+
+            def single_threadfunc() -> None:
+                try:
+                    errors[0] = next(f)
+                except StopIteration:
+                    pass
+                except Exception as e:
+                    errors[0] = (str(e), 1)
+
+            thread = PuddleThread(single_threadfunc, parent)
+            loop = QEventLoop()
+            thread.finished.connect(loop.quit)
+            thread.start()
+            loop.exec()
+
+            if errors[0] and not isinstance(errors[0], (str, int)):
+                errormsg(parent, errors[0][0], 1)
             if threadfin:
                 threadfin()
             return
