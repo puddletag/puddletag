@@ -490,7 +490,23 @@ def test_empty_output_field(user, four, qtbot, dialogs):
     assert in_table(table, paths, 'track') == [['9']] * 4
 
 
-@pytest.mark.xfail(strict=True, reason='the wizard closes on the message and keeps the empty pattern')
+def test_empty_pattern_without_restart(user, four, qtbot, dialogs):
+    # The docs don't say; this is what puddletag does: the pattern only
+    # applies when "Restart numbering" is ticked (menus.txt:223), so an
+    # empty one isn't refused while it's unticked.
+    table, paths = four
+    select_all(user)
+    dialog = wizard(user, qtbot)
+    tick(user, dialog._restart_numbering)
+    retype(user, dialog.grouping, '')
+    tick(user, dialog._restart_numbering)
+    run(user, dialog)
+    assert dialogs.calls == []
+    expected = [['1'], ['2'], ['3'], ['4']]
+    assert in_files(paths, 'track') == expected
+    assert in_table(table, paths, 'track') == expected
+
+
 def test_empty_pattern_keeps_the_wizard_open(user, four, qtbot, dialogs):
     # The docs don't say; this should happen: after the message about the
     # empty pattern the wizard stays open, so the user can fix it.

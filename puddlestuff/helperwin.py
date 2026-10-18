@@ -144,6 +144,23 @@ class AutonumberDialog(QDialog):
                                               "Add track &separator ['/']: Number of tracks"))
 
     def emitValuesAndSave(self):
+        if self._restart_numbering.isChecked():
+            if not self.grouping.text():
+                QMessageBox.critical(
+                    self, translate("Autonumbering Wizard", 'Field empty...'),
+                    translate("Autonumbering Wizard",
+                              "The field specified to use as a directory splitter was invalid. "
+                              "Please check your values."))
+                return
+
+            if not self.output_field.currentText():
+                QMessageBox.critical(
+                    self, translate("Autonumbering Wizard", 'Field empty...'),
+                    translate("Autonumbering Wizard",
+                              "The output field specified was invalid. "
+                              "Please check your values."))
+                return
+
         if self._numtracks.isVisible():
             if self._separator.isChecked():
                 numtracks = self._numtracks.value()
