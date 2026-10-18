@@ -344,7 +344,6 @@ def test_separator_per_folder(user, folders, qtbot):
     assert in_table(table, paths, 'track') == expected
 
 
-@pytest.mark.xfail(strict=True, reason='the Number of tracks box stays disabled when the separator is ticked')
 def test_number_of_tracks(user, four, qtbot):
     # The docs don't say; this should happen: with the separator ticked the
     # Number of tracks box is usable, and what is typed in it is the total,

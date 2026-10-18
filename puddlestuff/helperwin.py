@@ -121,7 +121,7 @@ class AutonumberDialog(QDialog):
         okcancel.ok.connect(self.emitValuesAndSave)
         okcancel.cancel.connect(self.close)
         self._separator.stateChanged.connect(
-            lambda v: self._numtracks.setEnabled(v == Qt.CheckState.Checked))
+            lambda v: self._numtracks.setEnabled(v == Qt.CheckState.Checked.value))
 
         # self._restart_numbering.stateChanged.connect(
         #              self.showDirectorySplittingOptions)
