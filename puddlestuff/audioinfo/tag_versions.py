@@ -159,7 +159,7 @@ def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2), known_v2=None):
         if has_v1_tag:
             tags.append('ID3v1.1')
 
-        if known_v2:
+        if known_v2 and known_v2.startswith('ID3v2'):
             tags.append(known_v2)
         elif ID3_V2 in to_check:
             fileobj.seek(0)

@@ -72,6 +72,7 @@ class User:
         self.click(bar, bar.actionGeometry(menu.menuAction()).center())
         self._qtbot.waitUntil(menu.isVisible)
         self.click(menu, menu.actionGeometry(action).center())
+        self.activate()
 
     def click_toolbar(self, name):
         action = self.action(name)
