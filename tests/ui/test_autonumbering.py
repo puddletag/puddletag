@@ -420,11 +420,12 @@ def test_cancel(user, four, qtbot):
     cancel(user, dialog)
 
 
-@pytest.mark.xfail(strict=True, reason='the hidden Output field is still written to')
 def test_hidden_output_field(user, four, qtbot):
-    # The docs don't say; this should happen: unticking "Restart numbering"
-    # hides the Output field again, and a hidden option doesn't apply, so
-    # track is numbered and discnumber is not written.
+    # "The pattern, **Output field** and **Increase counter only on group
+    # change** options are shown only once it is checked." (menus.txt:223)
+    # Unticking "Restart numbering" hides the Output field again, and a
+    # hidden option doesn't apply, so track is numbered and discnumber is
+    # not written.
     table, paths = four
     select_all(user)
     dialog = wizard(user, qtbot)
@@ -438,11 +439,11 @@ def test_hidden_output_field(user, four, qtbot):
     assert in_files(paths, 'discnumber') == [None] * 4
 
 
-@pytest.mark.xfail(strict=True, reason='the hidden Increase counter only on group change still applies')
 def test_hidden_count_by_group(user, four, qtbot):
-    # The docs don't say; this should happen: unticking "Restart numbering"
-    # hides "Increase counter only on group change", which then doesn't
-    # apply, so every file gets its own number.
+    # "The pattern, **Output field** and **Increase counter only on group
+    # change** options are shown only once it is checked." (menus.txt:223)
+    # Unticking "Restart numbering" hides "Increase counter only on group
+    # change", which then doesn't apply, so every file gets its own number.
     table, paths = four
     select_all(user)
     dialog = wizard(user, qtbot)

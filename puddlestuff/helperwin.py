@@ -157,14 +157,24 @@ class AutonumberDialog(QDialog):
 
         self.close()
 
+        restart = self._restart_numbering.isChecked()
+        # The options hidden while restarting is off are kept for the
+        # next run, but don't apply.
+        if restart:
+            grouping = str(self.grouping.text())
+            output_field = str(self.output_field.currentText())
+            by_group = self.count_by_group.isChecked()
+        else:
+            grouping, output_field, by_group = '__dirpath', 'track', False
+
         self.newtracks.emit(
             self._start.value(),
             numtracks,
-            self._restart_numbering.isChecked(),
+            restart,
             self._padlength.value(),
-            str(self.grouping.text()),
-            str(self.output_field.currentText()),
-            self.count_by_group.isChecked(),
+            grouping,
+            output_field,
+            by_group,
         )
 
         self._saveSettings()
