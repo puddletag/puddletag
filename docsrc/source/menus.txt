@@ -32,11 +32,7 @@ Play's the currently selected files using the player defined in Preferences.
 
 Delete (Del)
 ^^^^^^^^^^^^
-Deletes the selected files permanently.
-
-Delete Without Confirmation (Shift+Del)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Deletes the selected files permanently, but doesn't even bother confirming first.
+Deletes the selected files permanently. puddletag asks first, unless that confirmation is turned off in :ref:`Edit->Preferences->Confirmations <confirmations_prefs>`.
 
 Refresh (F5)
 ^^^^^^^^^^^^

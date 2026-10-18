@@ -50,6 +50,8 @@ This sort order will be used when loading dirs unless changed (by clicking a hea
 
 If you have more than one file selected, **only** the selected files will be sorted using those fields. All other files will remain as is.
 
+.. _confirmations_prefs:
+
 Confirmations
 -------------
 Confirmations let you know that you're about to do something that can't be reversed. Turn off the ones that you find grating.
