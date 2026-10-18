@@ -86,7 +86,7 @@ class AutonumberDialog(QDialog):
 
         self.custom_numbering_widgets = []
 
-        label = QLabel(translate('Autonumbering Wizard', "Group tracks using pattern:: "))
+        label = QLabel(translate('Autonumbering Wizard', "Group tracks using pattern: "))
 
         self.grouping = QLineEdit()
         label.setBuddy(self.grouping)

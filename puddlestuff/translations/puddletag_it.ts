@@ -491,7 +491,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; per le icone Oxygen.
     </message>
     <message>
       <location filename="../helperwin.py" line="89" />
-      <source>Group tracks using pattern:: </source>
+      <source>Group tracks using pattern: </source>
       <translation>Raggruppa le tracce utilizzando il modello:: </translation>
     </message>
     <message>

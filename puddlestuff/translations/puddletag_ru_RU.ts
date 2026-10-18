@@ -458,7 +458,7 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
     <message>
       <location filename="../helperwin.py" line="89" />
-      <source>Group tracks using pattern:: </source>
+      <source>Group tracks using pattern: </source>
       <translation type="unfinished" />
     </message>
     <message>

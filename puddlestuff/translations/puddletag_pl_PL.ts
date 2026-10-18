@@ -492,7 +492,7 @@ Zespół &lt;b&gt;Oxygen&lt;/b&gt; za ikony Oxygen.
     </message>
     <message>
       <location filename="../helperwin.py" line="89" />
-      <source>Group tracks using pattern:: </source>
+      <source>Group tracks using pattern: </source>
       <translation>Grupuj utwory używając wzoru:: </translation>
     </message>
     <message>
