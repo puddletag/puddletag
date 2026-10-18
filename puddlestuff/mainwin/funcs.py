@@ -319,7 +319,7 @@ def number_tracks(tags: List[AbstractTag], parent: Optional[QObject], offset: in
     taglist = {}
     for group_num, tags in enumerate(folders.values()):
         if numtracks == -2:
-            total = len(tags)
+            total = len(folders) if by_group else len(tags)
         elif numtracks == -1:
             total = None
         elif numtracks >= 0:

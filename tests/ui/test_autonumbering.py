@@ -366,7 +366,6 @@ def test_number_of_tracks(user, four, qtbot):
     assert in_table(table, paths, 'track') == expected
 
 
-@pytest.mark.xfail(strict=True, reason='the total of a count by group is its group\'s files, not the groups')
 def test_disc_total(user, folders, qtbot):
     # The docs don't say; this should happen: counting by group into
     # discnumber with the separator ticked, the total is the number of
