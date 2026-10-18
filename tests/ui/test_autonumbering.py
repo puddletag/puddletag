@@ -233,19 +233,25 @@ def test_discs_in_any_order(user, mainwin, make_audio, tmp_path, qtbot):
     assert in_table(table, paths, 'track') == expected
 
 
-@pytest.mark.xfail(strict=True, reason='code differs from the docs: a file field is written, '
-                                       'renaming the files to 1, 2, 3, 4')
-def test_file_field_refused(user, four, qtbot):
+def test_file_field_refused(user, four, qtbot, dialogs):
     # "...any field except the file fields (such as __filename and __path),
-    # which are refused." (menus.txt:225) The files keep their names.
+    # which are refused." (menus.txt:225) The message "Invalid field..."
+    # shows, the wizard stays open and the files keep their names.
     table, paths = four
+    dialogs.answer('QMessageBox.critical', QMessageBox.StandardButton.Ok)
     select_all(user)
     dialog = wizard(user, qtbot)
     tick(user, dialog._restart_numbering)
     retype(user, dialog.output_field.lineEdit(), '__filename')
-    run(user, dialog)
+    user.click(dialog.findChild(QDialogButtonBox).button(QDialogButtonBox.StandardButton.Ok))
+    user.activate(dialog)
+    assert [(name, args[1:]) for name, args, kwargs in dialogs.calls] == [
+        ('QMessageBox.critical', ('Invalid field...', 'The output field specified was invalid. Please check '
+                                                      'your values.'))]
+    assert dialog.isVisible()
     assert sorted(p.name for p in paths[0].parent.iterdir()) == ['01.mp3', '02.mp3', '03.mp3', '04.mp3']
     assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
+    cancel(user, dialog)
 
 
 def test_original_filename_field(user, four, qtbot):

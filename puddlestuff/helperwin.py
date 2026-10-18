@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBo
     QPlainTextEdit, QPushButton, QSpinBox, QTableWidget, QTableWidgetItem, QTextEdit, QToolButton, QVBoxLayout
 
 from . import findfunc, audioinfo
-from .audioinfo import commontags, PATH
+from .audioinfo import commontags, FILETAGS, PATH
 from .constants import HOMEDIR, KEEP
 from .puddleobjects import (
     get_icon, gettaglist, partial,
@@ -156,6 +156,14 @@ class AutonumberDialog(QDialog):
             if not self.output_field.currentText():
                 QMessageBox.critical(
                     self, translate("Autonumbering Wizard", 'Field empty...'),
+                    translate("Autonumbering Wizard",
+                              "The output field specified was invalid. "
+                              "Please check your values."))
+                return
+
+            if self.output_field.currentText() in FILETAGS:
+                QMessageBox.critical(
+                    self, translate("Autonumbering Wizard", 'Invalid field...'),
                     translate("Autonumbering Wizard",
                               "The output field specified was invalid. "
                               "Please check your values."))
