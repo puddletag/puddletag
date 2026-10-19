@@ -103,6 +103,11 @@ class User:
 
         QTimer.singleShot(0, pick)
         window = widget.window()
+        # The pointer stays where the last test's right-click left it. A move
+        # to that same spot sends the new window no mouse event, so Qt has no
+        # widget under the pointer yet and sends the context menu event to
+        # the main window instead of the File-View.
+        self._qtbot.mouseMove(window.windowHandle(), QPoint(5, 5))
         self._qtbot.mouseClick(window.windowHandle(), Qt.MouseButton.RightButton, NO_MODIFIER,
                                widget.mapTo(window, pos))
         assert menus, 'no right-click menu opened'
