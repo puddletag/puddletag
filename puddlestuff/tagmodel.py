@@ -1665,6 +1665,20 @@ class TagTable(QTableView):
             return True
         return False
 
+    def unloadSelected(self):
+        selected = self.selectedTags
+        selectedRows = self.selectedRows
+        curindex = self.currentIndex()
+        last = max(selectedRows) - len(selectedRows) + 1, curindex.column()
+        for row in sorted(selectedRows, reverse=True):
+            self.model().removeRows(row)
+        self.model().removeFromUndo(selected)
+        index = self.model().index(*last)
+        if index.isValid():
+            self.setCurrentIndex(index)
+        else:
+            self.selectionChanged()
+
     def trashSelected(self, delfiles=True, ifgone=False, showmsg=None):
         if showmsg is None:
             showmsg = True

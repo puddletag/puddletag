@@ -30,6 +30,10 @@ Play (Ctrl+P)
 ^^^^^^^^^^^^^
 Play's the currently selected files using the player defined in Preferences.
 
+Remove from List
+^^^^^^^^^^^^^^^^
+Removes the selected files from the list without asking, and leaves them as they are on disk. Their edits drop out of the undo history, and in preview mode their unsaved edits are dropped with them.
+
 Move to Trash (Del)
 ^^^^^^^^^^^^^^^^^^^
 Moves the selected files to the trash, from where your file manager can restore them. puddletag asks first, unless that confirmation is turned off in :ref:`Edit->Preferences->Confirmations <confirmations_prefs>`. A file that can't be moved to the trash stays where it is, and puddletag says why.

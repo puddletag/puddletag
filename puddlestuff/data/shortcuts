@@ -138,6 +138,12 @@
     "icon_name": "user-trash",
     "icon": "edit-delete.png"
   },
+  "shortcut54": {
+    "name": "Remove from &List",
+    "command": "unloadSelected",
+    "control": "table",
+    "enabled": "filesselected"
+  },
   "shortcut36": {
     "name": "Paste &Onto Selection", 
     "command": "paste_onto", 

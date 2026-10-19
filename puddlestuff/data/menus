@@ -16,6 +16,7 @@
       "&Save", 
       "&Play", 
       "separator", 
+      "Remove from &List",
       "Move to &Trash", 
       "separator", 
       "&Refresh", 
@@ -119,6 +120,7 @@
       "&Paste", 
       "Paste &Onto Selection", 
       "separator", 
+      "Remove from &List",
       "Move to &Trash", 
       "separator", 
       "&Properties"
