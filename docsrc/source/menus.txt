@@ -96,7 +96,7 @@ The same rules apply as with Paste, but the pasting isn't restarted for individu
 
 Remove Tag (Ctrl+R)
 ^^^^^^^^^^^^^^^^^^^
-Removes the tags of selected files. Note that although this operation can be undone, the tag is not restored as it was before. A new one will be created  only supported fields be restored.
+Removes the tags of selected files. Note that although this operation can be undone, the tag is not restored as it was before: a new one is created, and only supported fields are restored.
 
 .. _select_next:
 
@@ -294,11 +294,11 @@ Removes the APEv2 Tags in the selected files if present. Undoable for files that
 
 Delete All ID3 Tags
 ^^^^^^^^^^^^^^^^^^^
-Removes any ID3 tags found in the selected files. Undoable only for mp3 files.
+Removes any ID3 tags found in the selected files. Undoable for files that use ID3 as the default tag (ie. MP3, AIFF, DSF and DSDIFF).
 
 Remove ID3v2 Tag
 ^^^^^^^^^^^^^^^^
-Removes the ID3v2 tag from the selected files. Undoable only for mp3 files.
+Removes the ID3v2 tag from the selected files. Undoable for files that use ID3 as the default tag (ie. MP3, AIFF, DSF and DSDIFF).
 
 Remove ID3v1 Tag
 ^^^^^^^^^^^^^^^^
