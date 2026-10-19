@@ -27,22 +27,27 @@ status = {}
 
 
 def _remove_tag(f, tag):
+    """Removes tag from f. Returns whether the table recorded an undo step."""
+    undoable = False
     try:
         if tag.startswith('ID3') and isinstance(f, id3_tag):
             status['model'].deleteTag(audio=f, delete=False)
+            undoable = True
             _delete[tag](f.filepath)
             f.link(f.filepath)
         elif tag in ('ID3', 'ID3v2') and isinstance(f, id3_chunk_tags):
             status['model'].deleteTag(audio=f, delete=True)
+            undoable = True
             f.link(f.filepath)
         elif tag == 'APEv2' and getattr(f, 'apev2', False):
             status['model'].deleteTag(audio=f, delete=True)
+            undoable = True
             f.link(f.filepath)
         else:
             _delete[tag](f.filepath)
     except:
         traceback.print_exc()
-        return
+    return undoable
 
 
 def remove_tag(tag, parent):
@@ -53,11 +58,12 @@ def remove_tag(tag, parent):
         return
     files = status['selectedfiles']
     rows = status['selectedrows']
+    undoable = []
 
     def func():
         for row, f in zip(rows, files):
             try:
-                _remove_tag(f, tag)
+                undoable.append(_remove_tag(f, tag))
                 yield None
             except (IOError, OSError) as e:
                 filename = f[audioinfo.PATH]
@@ -68,10 +74,15 @@ def remove_tag(tag, parent):
                     yield m, 1
                 else:
                     yield m, len(rows)
-        status['model'].undolevel += 1
+
+    def fin():
+        # progress runs only the first step with one file, so the loop
+        # never ends there; and a step with no file in it would stop Undo.
+        if any(undoable):
+            status['model'].undolevel += 1
 
     s = progress(func, translate("Tag Tools",
-                                 'Removing %s tag: ' % tag), len(files))
+                                 'Removing %s tag: ' % tag), len(files), fin)
     s(parent)
 
 

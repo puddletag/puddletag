@@ -313,7 +313,6 @@ NOTHING_TO_UNDO = {
 }
 
 
-@pytest.mark.xfail(strict=True, reason="With one file selected, the Tag Tools never raise the undo level, so Undo can't reach the removal")
 @pytest.mark.parametrize('kind, tool', ONE_FILE.values(), ids=ONE_FILE.keys())
 def test_official_tag_undone_on_one_file(mainwin, make_audio, tmp_path, qtbot, user, kind, tool):
     # "Deleting 'official' tags can be undone though. ... A new tag will be
@@ -343,7 +342,6 @@ def test_official_tag_undone_on_one_file(mainwin, make_audio, tmp_path, qtbot, u
     assert not user.action('&Undo').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason="With one file selected, the Tag Tools never raise the undo level, so Undo can't reach the removal")
 def test_one_file_tag_tool_undone_before_the_edit_before_it(mainwin, make_audio, tmp_path, qtbot, user):
     # "Undo's the last edit": the removal is the last edit, so Undo restores
     # the tag first, with "the fields puddletag remembers" ("Deleting
@@ -367,7 +365,6 @@ def test_one_file_tag_tool_undone_before_the_edit_before_it(mainwin, make_audio,
     assert not user.action('&Undo').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='A Tag Tool that records no undo step still raises the undo level, so Undo stays enabled and does nothing')
 @pytest.mark.parametrize('kind, tool', NOTHING_TO_UNDO.values(), ids=NOTHING_TO_UNDO.keys())
 def test_tag_tool_with_nothing_to_undo(mainwin, make_audio, tmp_path, qtbot, user, kind, tool):
     # "When there's nothing left to undo, Undo is greyed out." and, for a tag
@@ -387,7 +384,6 @@ def test_tag_tool_with_nothing_to_undo(mainwin, make_audio, tmp_path, qtbot, use
     assert not user.action('&Undo').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='A Tag Tool that records no undo step still raises the undo level, so Undo stays enabled and does nothing')
 def test_edit_undone_after_a_tag_tool_with_no_undo(mainwin, make_audio, tmp_path, qtbot, user):
     # "Undo's the last edit": a removal that "there'll be no way to undo"
     # isn't an edit, so Undo still reaches the edit before it.
