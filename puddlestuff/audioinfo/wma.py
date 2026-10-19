@@ -309,11 +309,7 @@ class Tag(util.MockTag):
         audio.save()
 
     def update_tag_list(self):
-        l = tag_versions.tags_in_file(self.filepath)
-        if l:
-            self.__tags['__tag'] = 'ASF, ' + ', '.join(l)
-        else:
-            self.__tags['__tag'] = 'ASF'
+        self.__tags['__tag'] = 'ASF'
 
 
 filetype = (ASF, Tag, 'WMA', ['wma', 'wmv'])

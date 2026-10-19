@@ -1171,8 +1171,15 @@ def tag_factory(id3_filetype):
                     c.update_to_v23()
                     c.save(v1=v1, v2_version=3)
 
-            self.__tags['__tag_read'] = 'ID3v2.4' if v2 == 4 else 'ID3v2.3'
-            self.update_tag_list()
+            v2_name = 'ID3v2.4' if v2 == 4 else 'ID3v2.3'
+            self.__tags['__tag_read'] = v2_name
+            tag_list = [v2_name]
+            had_v1 = 'ID3v1.1' in self.__tags.get('__tag', '')
+            if v1 == 2 or (v1 == 1 and had_v1):
+                tag_list.append('ID3v1.1')
+            if 'APEv2' in self.__tags.get('__tag', ''):
+                tag_list.append('APEv2')
+            self.__tags['__tag'] = ', '.join(tag_list)
             self._originaltags = list(audio.keys())
 
         def set_fundamentals(self, tags, mut_obj, images=None):
@@ -1199,7 +1206,8 @@ def tag_factory(id3_filetype):
 
         def update_tag_list(self):
             tag = self.__tags['__tag_read']
-            l = tag_versions.tags_in_file(self.filepath)
+            known_v2 = tag if (tag and tag.startswith('ID3v2')) else None
+            l = tag_versions.tags_in_file(self.filepath, known_v2=known_v2)
             if l:
                 if tag and tag in l:
                     l.remove(tag)

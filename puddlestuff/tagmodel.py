@@ -9,7 +9,7 @@ from subprocess import Popen
 from typing import Dict
 from send2trash import send2trash
 
-from PyQt6.QtCore import QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
+from PyQt6.QtCore import QEventLoop, QAbstractTableModel, QEvent, QItemSelection, QItemSelectionModel, QItemSelectionRange, \
     QMetaObject, QMimeData, QModelIndex, QPoint, QUrl, Qt, pyqtSignal, pyqtSlot, Q_ARG
 from PyQt6.QtGui import QAction, QColor, QFont, QDrag, QPalette
 from PyQt6.QtWidgets import QAbstractItemDelegate, QAbstractItemView, QApplication, QDialog, QGridLayout, QGroupBox, \
@@ -21,7 +21,7 @@ from .audioinfo import (PATH, FILENAME, DIRPATH, FILETAGS, READONLY, INFOTAGS, D
                         EXTENSION, FILENAME_NO_EXT, PARENT_DIR, CaselessDict, encode_fn, decode_fn, get_filename_tags)
 from .puddleobjects import (unique, partial, natural_sort_key, gettag,
                             HeaderSetting, getfiles, progress, PuddleConfig, singleerror, winsettings, issubfolder,
-                            fnmatch)
+                            fnmatch, PuddleThread)
 
 from collections import defaultdict
 from .util import write, to_string
@@ -1036,11 +1036,29 @@ class TagModel(QAbstractTableModel):
             if dontwrite:
                 QApplication.restoreOverrideCursor()
                 return {tag: newvalue}, index.row()
-            try:
+            if self.previewMode:
                 ret = self.setRowData(index.row(), {tag: newvalue}, undo=True)
-            except Exception:
-                QApplication.restoreOverrideCursor()
-                raise
+            else:
+                write_res = [None, None]
+
+                def _bg_write():
+                    try:
+                        write_res[0] = self.setRowData(index.row(), {tag: newvalue}, undo=True)
+                    except Exception as e:
+                        write_res[1] = e
+
+                thread = PuddleThread(_bg_write, self)
+                loop = QEventLoop()
+                thread.finished.connect(loop.quit)
+                thread.start()
+                loop.exec()
+
+                if write_res[1] is not None:
+                    QApplication.restoreOverrideCursor()
+                    raise write_res[1]
+
+                ret = write_res[0]
+
             if not self.previewMode and currentfile.library:
                 self.libfilesedited.emit([ret])
             self.undolevel += 1
@@ -1951,11 +1969,34 @@ class TagTable(QTableView):
 
             yield len(filenames)
 
-            for fname in filenames:
-                tag = gettag(fname)
-                if tag is not None:
-                    tags.append(tag)
-                yield None
+            num_files = len(filenames)
+            if num_files > 1:
+                from concurrent.futures import ThreadPoolExecutor, as_completed
+                max_workers = min(16, max(4, (os.cpu_count() or 2) * 2))
+
+                with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    future_to_index = {
+                        executor.submit(gettag, fname): idx
+                        for idx, fname in enumerate(filenames)
+                    }
+                    loaded_tags = [None] * num_files
+                    for future in as_completed(future_to_index):
+                        idx = future_to_index[future]
+                        try:
+                            tag = future.result()
+                            if tag is not None:
+                                loaded_tags[idx] = tag
+                        except Exception:
+                            logging.exception('Error loading file %s', filenames[idx])
+                        yield None
+
+                    tags.extend([t for t in loaded_tags if t is not None])
+            else:
+                for fname in filenames:
+                    tag = gettag(fname)
+                    if tag is not None:
+                        tags.append(tag)
+                    yield None
 
         if post_process:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
