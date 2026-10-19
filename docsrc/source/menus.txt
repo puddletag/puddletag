@@ -30,9 +30,9 @@ Play (Ctrl+P)
 ^^^^^^^^^^^^^
 Play's the currently selected files using the player defined in Preferences.
 
-Delete (Del)
-^^^^^^^^^^^^
-Deletes the selected files permanently. puddletag asks first, unless that confirmation is turned off in :ref:`Edit->Preferences->Confirmations <confirmations_prefs>`.
+Move to Trash (Del)
+^^^^^^^^^^^^^^^^^^^
+Moves the selected files to the trash, from where your file manager can restore them. puddletag asks first, unless that confirmation is turned off in :ref:`Edit->Preferences->Confirmations <confirmations_prefs>`. A file that can't be moved to the trash stays where it is, and puddletag says why.
 
 Refresh (F5)
 ^^^^^^^^^^^^
@@ -51,7 +51,7 @@ Edit
 
 Undo (Ctrl+Z)
 ^^^^^^^^^^^^^
-Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder*, by *Refresh* and by *Unload Everything* (but not by *Add Folder*), and some things like deleting files cannot be undone. When there's nothing left to undo, Undo is greyed out.
+Undo's the last edit. Note that the undo history is cleared when a new folder is imported using *Open Folder*, by *Refresh* and by *Unload Everything* (but not by *Add Folder*), and some things like moving files to the trash cannot be undone (restore them from the trash with your file manager). When there's nothing left to undo, Undo is greyed out.
 
 .. _extended_tags_menu:
 

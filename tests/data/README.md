@@ -26,3 +26,13 @@ How each format is cut:
 The MP3, FLAC and M4A files keep the length of the whole recording, which
 those formats store in a header; an Ogg file's length comes from its last
 page, so it's the length of the audio kept.
+
+# Version 33 shortcuts and menus
+
+`v33/shortcuts` and `v33/menus` are the default `shortcuts` and `menus` files
+of puddletag 2.3.0, 2.4.0 and 2.5.0 (version 33), copied from `puddlestuff/data/`
+of the source tree, without the spaces those files leave at the end of lines.
+Every user of those releases has them in their config dir, and a newer
+release has to replace them. `tests/ui/test_trash.py` writes them into the
+config dir before the window is built, as an existing user's profile has
+them, and checks that the File menu then offers Move to Trash.

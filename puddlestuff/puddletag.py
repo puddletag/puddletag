@@ -55,7 +55,7 @@ mainwin.tagtools.set_status(status)
 plugins.status = status
 
 confirmations.add('preview_mode', True, translate("Confirmations", 'Confirm when exiting preview mode.'))
-confirmations.add('delete_files', True, translate("Confirmations", 'Confirm when deleting files.'))
+confirmations.add('trash_files', True, translate("Confirmations", 'Confirm when moving files to the trash.'))
 
 
 def create_tool_windows(parent, extra=None):
