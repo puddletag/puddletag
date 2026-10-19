@@ -3,8 +3,8 @@ PyQt6>=6.4.0
 configobj>=5.0.9
 mutagen>=1.48.1
 pyparsing>=3.1.2
+send2trash>=1.8.2
 unidecode>=1.4.0
-Send2Trash
 
 # extra / tag sources
 lxml>=6.1.3

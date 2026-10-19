@@ -38,7 +38,7 @@ rapidfuzz==3.14.6
     # via levenshtein
 requests==2.34.2
     # via pyacoustid
-send2trash==1.8.2
+send2trash==2.1.0
     # via -r requirements.in
 standard-aifc==3.13.0
     # via audioread
