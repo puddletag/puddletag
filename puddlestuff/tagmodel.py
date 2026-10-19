@@ -1665,17 +1665,14 @@ class TagTable(QTableView):
             return True
         return False
 
-    def deleteSelectedWithoutMessage(self):
-        self.deleteSelected(showmsg=False)
-
-    def deleteSelected(self, delfiles=True, ifgone=False, showmsg=None):
+    def trashSelected(self, delfiles=True, ifgone=False, showmsg=None):
         if showmsg is None:
             showmsg = True
-            showmsg = confirmations.should_show('delete_files')
+            showmsg = confirmations.should_show('trash_files')
 
         if delfiles and showmsg:
             result = QMessageBox.question(self, "puddletag",
-                                          translate("Table", "Are you sure you want to delete the selected files?"))
+                                          translate("Table", "Are you sure you want to move the selected files to the trash?"))
         else:
             result = QMessageBox.StandardButton.Yes
         if result != QMessageBox.StandardButton.Yes:
@@ -1704,8 +1701,8 @@ class TagTable(QTableView):
                     temprows = [z - 1 for z in temprows]
                     yield None
                 except (OSError, IOError) as detail:
-                    msg = "I couldn't delete <b>%s</b> (%s)" % (filename,
-                                                                detail.strerror)
+                    msg = translate("Table", "I couldn't move <b>{}</b> to the trash ({})").format(
+                        filename, detail.strerror or str(detail))
                     if row == temprows[-1]:
                         yield msg, 1
                     else:
@@ -1722,7 +1719,7 @@ class TagTable(QTableView):
             else:
                 self.selectionChanged()
 
-        s = progress(func, translate("Table", 'Deleting '), len(selectedRows), fin)
+        s = progress(func, translate("Table", 'Moving to the trash '), len(selectedRows), fin)
         if self.parentWidget():
             s(self.parentWidget())
         else:
@@ -1809,7 +1806,7 @@ class TagTable(QTableView):
         dropaction = drag.exec()
         if dropaction == Qt.DropAction.MoveAction:
             if not os.path.exists(filenames[0]):
-                self.deleteSelected(False, False, False)
+                self.trashSelected(False, False, False)
 
     def mousePressEvent(self, event):
         if event.buttons() == Qt.MouseButton.LeftButton:
@@ -1861,7 +1858,7 @@ class TagTable(QTableView):
 
         has_modifier = event.modifiers() in [Qt.KeyboardModifier.ControlModifier, Qt.KeyboardModifier.ShiftModifier, Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier]
         if event.key() == Qt.Key.Key_Delete and self.selectedRows:
-            self.deleteSelected()
+            self.trashSelected()
             return
         # This is so that an item isn't edited when the user's holding the shift or
         # control key.

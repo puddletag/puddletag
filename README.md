@@ -133,7 +133,7 @@ If you seek the bleeding edge of puddletag, or wanting to contribute (we welcome
 First, you need to install the dependencies; this step is different depending on the distribution; on Debian you can run:
 
 ```
-apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt6 python3-pyqt6.qtsvg python3-unidecode
+apt install python3 python3-mutagen python3-configobj python3-pyparsing python3-pyqt6 python3-pyqt6.qtsvg python3-unidecode python3-send2trash
 ```
 
 Then, clone the repo and run puddletag:

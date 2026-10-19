@@ -1,6 +1,6 @@
 {
   "info": {
-    "version": "33"
+    "version": "34"
   },
   "shortcut13": {
     "name": "&Text File->Tag", 
@@ -130,13 +130,14 @@
     "enabled": "filesselected"
   }, 
   "shortcut34": {
-    "name": "&Delete", 
-    "command": "deleteSelected", 
+    "name": "Move to &Trash", 
+    "command": "trashSelected", 
     "control": "table", 
     "shortcut": "Del", 
     "enabled": "filesselected", 
-    "icon_name": "edit-delete"
-  }, 
+    "icon_name": "user-trash",
+    "icon": "edit-delete.png"
+  },
   "shortcut36": {
     "name": "Paste &Onto Selection", 
     "command": "paste_onto", 
