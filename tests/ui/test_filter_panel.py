@@ -314,7 +314,6 @@ def test_picking_from_the_list_applies_it(loaded, mainwin, qtbot, user):
     assert box.lineEdit().text() == 'Maffin'
 
 
-@pytest.mark.xfail(strict=True, reason="files the Filter hid come back at the bottom, out of the File-View's order")
 def test_clearing_keeps_the_order(mainwin, loaded, user):
     # The docs are silent on the order. The files come back in the File-View's
     # sort order, the one they were loaded in.

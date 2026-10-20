@@ -630,6 +630,9 @@ class TagModel(QAbstractTableModel):
     def applyFilter(self, pattern=None, matchcase=True):
         with self.reset_context():
             self.taginfo = self.taginfo + self._filtered
+            if self._filtered:
+                for field in self.sortFields:
+                    self.taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
             taginfo = self.taginfo
             if (not pattern) and (not self._filtered):
                 return
