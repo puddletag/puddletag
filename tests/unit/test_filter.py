@@ -76,9 +76,6 @@ def test_documented_filters(matches, expression, tags, expected):
 
 
 
-NON_ASCII = pytest.mark.xfail(strict=True, reason='an unquoted word ends at its first non-ASCII letter (#463)')
-
-
 @pytest.mark.parametrize('expression, tags, expected', [
     # #638: filters that "filter nothing"; synthetic values.
     pytest.param('%title% IS "at"', {'title': 'At'}, True, id='I638-is'),
@@ -96,9 +93,9 @@ NON_ASCII = pytest.mark.xfail(strict=True, reason='an unquoted word ends at its 
     # #463: "Filtering a field with non-English char" finds nothing; it
     # gives no example, so a synthetic one.
     pytest.param('artist IS "björk"', {'artist': 'Björk'}, True, id='I463-is'),
-    pytest.param('artist HAS Λόγος', {'artist': 'Λόγος'}, True, id='I463-has-word', marks=NON_ASCII),
-    pytest.param('artist IS björk', {'artist': 'Björk'}, True, id='I463-is-word', marks=NON_ASCII),
-    pytest.param('björk', {'artist': 'Bjarne'}, False, id='I463-word-prefix', marks=NON_ASCII),
+    pytest.param('artist HAS Λόγος', {'artist': 'Λόγος'}, True, id='I463-has-word'),
+    pytest.param('artist IS björk', {'artist': 'Björk'}, True, id='I463-is-word'),
+    pytest.param('björk', {'artist': 'Bjarne'}, False, id='I463-word-prefix'),
 ])
 def test_reported_filters(matches, expression, tags, expected):
     assert matches(expression, **tags) is expected

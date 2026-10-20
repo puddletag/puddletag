@@ -2,8 +2,8 @@
 import logging
 import re
 
-from pyparsing import (CaselessLiteral, Combine, OpAssoc, ParserElement,
-                       ParseException, QuotedString, Word, alphanums, infix_notation)
+from pyparsing import (CaselessLiteral, OpAssoc, ParserElement,
+                       ParseException, QuotedString, Regex, infix_notation)
 
 
 from . import findfunc, audioinfo
@@ -194,9 +194,10 @@ bool_exprs = [
     (CaselessLiteral("not"),     1, OpAssoc.RIGHT, BoolNot),
 ]
 
-field_expr = Combine('%' + Word(alphanums + '_') + '%')
-tokens = QuotedString('"', unquote_results=False) \
-         | field_expr | Word(alphanums + '_')
+# \w: the letters and digits of any script, not only ASCII ones (#463).
+word = Regex(r'\w+')
+field_expr = Regex(r'%\w+%')
+tokens = QuotedString('"', unquote_results=False) | field_expr | word
 bool_expr = infix_notation(tokens, bool_exprs)
 
 

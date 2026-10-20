@@ -188,14 +188,11 @@ def loaded_non_ascii(mainwin, make_audio, tmp_path, qtbot, user):
 # non-English characters. No error message is shown, but nothing is
 # filtered." filter.txt: "Strings are either a single word containing no
 # white-space"; a word of any script is one.
-NON_ASCII = pytest.mark.xfail(strict=True, reason='an unquoted word ends at its first non-ASCII letter (#463)')
-
-
 @pytest.mark.parametrize('expression, expected', [
-    pytest.param('artist HAS Λόγος', ['03.mp3'], id='I463-has', marks=NON_ASCII),
-    pytest.param('artist IS björk', ['01.mp3'], id='I463-is', marks=NON_ASCII),
+    pytest.param('artist HAS Λόγος', ['03.mp3'], id='I463-has'),
+    pytest.param('artist IS björk', ['01.mp3'], id='I463-is'),
     pytest.param('artist IS "björk"', ['01.mp3'], id='I463-is-quoted'),
-    pytest.param('björk', ['01.mp3'], id='I463-word', marks=NON_ASCII),
+    pytest.param('björk', ['01.mp3'], id='I463-word'),
     pytest.param('Λόγος', ['03.mp3'], id='I463-word-greek'),
 ])
 def test_non_ascii_text(mainwin, loaded_non_ascii, user, expression, expected):
