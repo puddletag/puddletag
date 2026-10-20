@@ -486,6 +486,7 @@ class TagModel(QAbstractTableModel):
         self.sortOrder = (0, Qt.SortOrder.AscendingOrder)
         self.saveModification = True
         self._filtered = []
+        self._filterPattern = None
         self._previewMode = False
         self._prevhighlight = []
         self._permah = []
@@ -627,7 +628,15 @@ class TagModel(QAbstractTableModel):
         else:
             self._undo[self.undolevel][audio] = undo
 
+    def _splitFiltered(self, audios):
+        """Returns the audios the applied filter shows, and the ones it hides."""
+        if not self._filterPattern:
+            return audios, []
+        results = [(filter_audio(a, self._filterPattern), a) for a in audios]
+        return [a for shown, a in results if shown], [a for shown, a in results if not shown]
+
     def applyFilter(self, pattern=None, matchcase=True):
+        self._filterPattern = pattern
         with self.reset_context():
             self.taginfo = self.taginfo + self._filtered
             if self._filtered:
@@ -854,8 +863,10 @@ class TagModel(QAbstractTableModel):
                 getter = lambda audio: audio.get(field, '')
                 taginfo.sort(key=lambda a: natural_sort_key(a.get(field, '')), reverse=self.reverseSort)
 
-            loaded_filenames = set(z.filepath for z in self.taginfo)
+            loaded_filenames = set(z.filepath for z in self.taginfo + self._filtered)
             new_tags = [z for z in taginfo if z.filepath not in loaded_filenames]
+            new_tags, hidden = self._splitFiltered(new_tags)
+            self._filtered.extend(hidden)
 
             if not new_tags:
                 return
@@ -870,8 +881,7 @@ class TagModel(QAbstractTableModel):
             self.dataChanged.emit(top, bottom)
         else:
             with self.reset_context():
-                self.taginfo = taginfo
-                self._filtered = []
+                self.taginfo, self._filtered = self._splitFiltered(taginfo)
             self.sortByFields(self.sortFields, reverse=self.reverseSort)
             [setattr(z, 'color', None) for z in self.taginfo if z.color]
             self.undolevel = 0

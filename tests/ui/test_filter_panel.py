@@ -327,7 +327,6 @@ def test_clearing_keeps_the_order(mainwin, loaded, user):
     pytest.param(True, ['01.mp3', '03.mp3', '04.mp3'], id='add-folder'),
     pytest.param(False, ['04.mp3'], id='open-folder'),
 ])
-@pytest.mark.xfail(strict=True, reason="files loaded after the Filter was applied aren't filtered")
 def test_loaded_files_are_filtered(mainwin, loaded, make_audio, tmp_path, qtbot, user, append, expected):
     # filter.txt: "The filter expression will be evaluated for each file
     # loaded. If it evaluates to True for a file, then that file will be
