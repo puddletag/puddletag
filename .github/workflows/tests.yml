@@ -18,8 +18,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The oldest supported Python (python_requires in setup.py) and the newest.
-        python-version: ['3.13', '3.14']
+        # Every supported Python, from the oldest (python_requires in setup.py)
+        # to the newest.
+        python-version: ['3.13', '3.14', '3.15']
 
     steps:
     - uses: actions/checkout@v7
