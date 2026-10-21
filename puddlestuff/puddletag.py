@@ -795,6 +795,8 @@ class MainWin(QMainWindow):
         tags = status['selectedfiles']
         if not tags:
             tags = status['alltags']
+        if not tags:
+            return
         settings = PuddleConfig()
         try:
             dirname = self._lastdir[0]

@@ -429,8 +429,6 @@ def test_unload_everything(mainwin, user, loaded):
     assert in_file(paths[0])['title'] == ['Title 1']
 
 
-@pytest.mark.xfail(strict=True, reason='Unload Everything keeps the folders loaded: Add Folder, Refresh, '
-                   'Unload Everything and Save playlist stay enabled')
 def test_unload_everything_unloads_the_folders(mainwin, user, loaded):
     # menus.txt: "Clear's the File-View and unloads any files/directories
     # that have been imported." Nothing is loaded afterwards, so the
@@ -443,8 +441,6 @@ def test_unload_everything_unloads_the_folders(mainwin, user, loaded):
         '&Add Folder', '&Refresh', '&Unload Everything', 'Sa&ve playlist'))
 
 
-@pytest.mark.xfail(strict=True, reason='Unload Everything keeps the folders loaded, so Load playlist '
-                   'skips the files inside them')
 def test_load_playlist_after_unload_everything(mainwin, user, loaded, qtbot, tmp_path, dialogs):
     # menus.txt: "Clear's the File-View and unloads any files/directories
     # that have been imported." and, for Load playlist, "Opens a dialog to

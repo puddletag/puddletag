@@ -1592,8 +1592,12 @@ class TagTable(QTableView):
     def clearAll(self):
         with self.model().reset_context():
             self.model().taginfo = []
+            self.model()._filtered = []
         self.model().undolevel = 0
+        self.dirs = []
         self.dirschanged.emit([])
+        self.filesloaded.emit(False)
+        self.viewfilled.emit(False)
 
     def _closeEditor(self, editor, hint=QAbstractItemDelegate.EndEditHint.NoHint):
         if editor.writeError:
