@@ -385,3 +385,21 @@ def test_unsynced_lyrics(id3_file, value, lang, desc, text):
     [uslt] = frames.getall('USLT')
     assert (uslt.lang, uslt.desc, uslt.text) == (lang, desc, text)
     assert tag['unsyncedlyrics'] == [f'{lang}|{desc}|{text}']
+
+
+@pytest.mark.parametrize('v2', [3, 4])
+def test_saving_again_keeps_one_tag(make_audio, v2):
+    # #477 reports each edit stacking another ID3v2 and ID3v1 tag in the
+    # file. The docs are silent; synthetic file, titles and cover. Four
+    # saves leave one ID3v2 tag at the start, the audio right after it and
+    # one ID3v1 tag at the end.
+    path = make_audio('song.mp3', title='Song')
+    for count in range(4):
+        tag = audioinfo.Tag(str(path))
+        tag.update({'title': [f'Song {count}'], '__image': [{'data': JPEG, 'mime': 'image/jpeg', 'description': 'Front',
+                                                              'imagetype': PictureType.COVER_FRONT}]})
+        tag.save(v1=2, v2=v2)
+    data = path.read_bytes()
+    size = sum(b << shift for b, shift in zip(data[6:10], (21, 14, 7, 0)))  # synchsafe
+    assert (data[:4], data.count(b'ID3'), data[10 + size:10 + size + 1], data.count(b'TAG'), data[-128:-125]) == (
+        b'ID3' + bytes([v2]), 1, b'\xff', 1, b'TAG')
