@@ -63,9 +63,8 @@ def commontag(tag, tags):
 def not_in_dirs(files, dirs):
     if not dirs:
         return files
-    for d in dirs:
-        d = encode_fn(d)
-        return [z for z in files if not z.startswith(d)]
+    prefixes = tuple(os.path.join(encode_fn(d), '') for d in dirs)
+    return [z for z in files if not z.startswith(prefixes)]
 
 
 def loadsettings(filepath=None):
@@ -1917,7 +1916,9 @@ class TagTable(QTableView):
 
         dirs = list(map(encode_fn, dirs))
 
-        files = not_in_dirs(not_in_dirs(files, dirs), self.dirs)
+        files = not_in_dirs(files, dirs)
+        if append:
+            files = not_in_dirs(files, self.dirs)
 
         if subfolders:
             new_dirs = []

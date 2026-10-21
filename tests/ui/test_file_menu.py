@@ -507,8 +507,6 @@ def test_refresh_after_refresh_selected_finds_new_files(mainwin, make_audio, tmp
 # menus.txt (Refresh): "If any directories are loaded, they'll be re-read
 # and checked for new files." A file in the second folder's subfolder
 # showed twice.
-@pytest.mark.xfail(strict=True, reason="a file in the second folder's subfolder shows twice: "
-                   "not_in_dirs only checks the first folder")
 def test_refresh_with_two_folders_and_subfolders(mainwin, make_audio, tmp_path, qtbot, user):
     a = tmp_path / 'a'
     b = tmp_path / 'b'
@@ -535,8 +533,6 @@ def test_refresh_with_two_folders_and_subfolders(mainwin, make_audio, tmp_path, 
 # menus.txt (Load playlist): "Opens a dialog to import an m3u playlist into
 # puddletag." A file removed from the list, in a folder still loaded, was
 # skipped.
-@pytest.mark.xfail(strict=True, reason='not_in_dirs drops a playlist entry inside a loaded '
-                   'folder even when the table does not show it')
 def test_load_playlist_skipped_files_inside_a_loaded_folder(loaded, tmp_path, qtbot, user, dialogs):
     table, paths = loaded
     select_rows(user, 0, 1)
@@ -554,8 +550,6 @@ def test_load_playlist_skipped_files_inside_a_loaded_folder(loaded, tmp_path, qt
 # menus.txt (Load playlist): "Opens a dialog to import an m3u playlist into
 # puddletag." A folder whose name starts with a loaded folder's, music2
 # beside music (synthetic), counted as inside it.
-@pytest.mark.xfail(strict=True, reason='not_in_dirs matches a folder by prefix without a separator, '
-                   'so music2/ counts as inside music/')
 def test_load_playlist_folder_sharing_a_prefix(loaded, make_audio, tmp_path, qtbot, user, dialogs):
     table, paths = loaded
     p3 = make_audio('03.mp3', tmp_path / 'music2', title='Title 3')
