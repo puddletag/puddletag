@@ -44,7 +44,7 @@ With Sort Options you can sort the file-view using a list of predefined fields. 
 
 Provided a single file (or none at all) is selected, clicking on a menu item will sort the file-view in order of the fields defined. So **track/__dirpath/album** will sort the file-view by track first, then __dirpath then album. It's equivalent to clicking the relevant headers in order in the file-view.
 
-Click on it again and the sort order will be reversed like **album/__dirpath/track**.
+Click on it again and the sort order will be reversed: the same fields, in descending order.
 
 This sort order will be used when loading dirs unless changed (by clicking a header or using another Sort Option.) It is saved across sessions.
 
