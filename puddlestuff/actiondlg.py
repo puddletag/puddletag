@@ -622,6 +622,8 @@ class CreateAction(QDialog):
         self.enableOK()
 
     def updateExample(self):
+        if not self.example:
+            return
         try:
             from .puddletag import status
             files = status['selectedfiles']
