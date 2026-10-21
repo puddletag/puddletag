@@ -410,7 +410,6 @@ def four(mainwin, make_audio, tmp_path, qtbot, user):
     return table, stamps(paths)
 
 
-@pytest.mark.xfail(strict=True, reason='Ctrl+Shift+End and Ctrl+Shift+Home move without selecting (#206)')
 def test_ctrl_shift_end_selects_to_the_last_row(user, four):
     # The docs don't say; this is what a user expects (#206): Ctrl+Shift+End
     # extends the selection from the current cell to the last row, as
@@ -422,7 +421,6 @@ def test_ctrl_shift_end_selects_to_the_last_row(user, four):
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='Ctrl+Shift+End and Ctrl+Shift+Home move without selecting (#206)')
 def test_ctrl_shift_home_selects_to_the_first_row(user, four):
     # The docs don't say; this is what a user expects (#206): Ctrl+Shift+Home
     # extends the selection from the current cell to the first row.

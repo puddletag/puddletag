@@ -1885,6 +1885,15 @@ class TagTable(QTableView):
         selection = QItemSelection(topLeft, bottomRight)
         self.selectionModel().select(selection, QItemSelectionModel.SelectionFlag.Toggle)
 
+    def selectionCommand(self, index, event=None):
+        # Qt moves the current cell on Ctrl+Shift+Home/End without selecting
+        # (Ctrl alone means "move, don't select"); select as Shift alone does.
+        if (event is not None and event.type() == QEvent.Type.KeyPress
+                and event.key() in (Qt.Key.Key_Home, Qt.Key.Key_End)
+                and event.modifiers() == Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier):
+            return QItemSelectionModel.SelectionFlag.SelectCurrent
+        return QTableView.selectionCommand(self, index, event)
+
     def keyPressEvent(self, event):
         event.accept()
         # You might think that this is redundant since a delete
