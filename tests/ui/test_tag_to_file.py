@@ -5,6 +5,8 @@ The pattern rules themselves are in tests/unit/test_filename_patterns.py.
 Synthetic files.
 """
 import os
+import shutil
+from pathlib import Path
 
 import pytest
 from PyQt6.QtCore import Qt
@@ -120,3 +122,25 @@ def test_read_only_folder(user, loaded, qtbot, dialogs):
     assert all('Permission denied' in m and 'Do you want to continue?' in m for m in messages)
     assert sorted(os.listdir(folder)) == names
     assert [audio.filepath for audio in table.model().taginfo] == [str(p) for p in paths]
+
+
+def test_rename_to_another_filesystem(user, loaded, qtbot):
+    # #252 reports "link between devices" when Tag->File moves a file to
+    # another filesystem. function.txt: "Files can also be moved, by
+    # specifying '/' as a directory delimeter." Synthetic folder in
+    # /dev/shm, another device than tmp_path in the CI container.
+    table, paths = loaded
+    target = Path('/dev/shm') / f'puddletag-{os.getpid()}'
+    if not os.path.isdir('/dev/shm') or os.stat('/dev/shm').st_dev == os.stat(paths[0].parent).st_dev:
+        pytest.skip('/dev/shm is on the same device as the test folder')
+    try:
+        user.click_cell(user.cell(0, 'title'))
+        set_pattern(user, f'{target}/%title%')
+        user.press(Key.Key_F, Ctrl)
+        moved = target / 'Positive Vibration.mp3'
+        qtbot.waitUntil(moved.exists)
+        assert not paths[0].exists()
+        assert table.model().taginfo[0].filepath == str(moved)
+        assert table.model().data(user.cell(0, '__filename')) == moved.name
+    finally:
+        shutil.rmtree(target, ignore_errors=True)
