@@ -243,8 +243,6 @@ def test_add_folder_keeps_previews(mainwin, make_audio, tmp_path, qtbot, user, d
     assert in_file(paths[0])['title'] == ['Title 1']
 
 
-@pytest.mark.xfail(strict=True, reason='Open Folder replaces the table without asking about '
-                   'unsaved previews, where Refresh and Exit ask first')
 def test_open_folder_with_previews_asks(mainwin, make_audio, tmp_path, qtbot, user, dialogs, loaded):
     # Synthetic (docs-silent): like Refresh and Exit, Open Folder asks
     # before dropping unsaved previews; No keeps the table as it was.
@@ -378,7 +376,6 @@ def test_refresh_selected(mainwin, make_audio, user, qtbot, tmp_path):
     qtbot.waitUntil(lambda: loaded_paths(table) == [str(paths[0]), str(paths[2]), str(p4)])
 
 
-@pytest.mark.xfail(strict=True, reason='Refresh Selected drops the previews of the folders it re-reads without asking')
 @pytest.mark.parametrize('answer', [No, Yes], ids=['No', 'Yes'])
 def test_refresh_selected_with_previews_asks(mainwin, make_audio, user, qtbot, tmp_path, dialogs, answer):
     # Docs-silent: like Refresh, it asks "Do you want to discard and
@@ -457,7 +454,6 @@ def test_load_playlist_after_unload_everything(mainwin, user, loaded, qtbot, tmp
     wait_for_rows(qtbot, table, [paths[0]])
 
 
-@pytest.mark.xfail(strict=True, reason='Unload Everything drops the previews without asking')
 @pytest.mark.parametrize('answer', [No, Yes], ids=['No', 'Yes'])
 def test_unload_everything_with_previews_asks(mainwin, user, loaded, qtbot, dialogs, answer):
     # Docs-silent: with unsaved previews Unload Everything asks before it

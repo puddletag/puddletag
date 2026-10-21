@@ -705,6 +705,12 @@ class MainWin(QMainWindow):
             if isinstance(filename, str):
                 filename = encode_fn(filename)
 
+        if not append:
+            msg = translate('Previews', 'Some files have uncommited previews. '
+                                        'Changes will be lost once you load a directory. <br />'
+                                        'Do you still want to load a new directory?<br />')
+            if tagmodel.has_previews(parent=self, msg=msg):
+                return
         self.loadFiles.emit(None, [filename], append, None, None)
 
     def openFiles(self, filenames, append=False):

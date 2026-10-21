@@ -1589,6 +1589,11 @@ class TagTable(QTableView):
             self.model().changeFolder(olddir, newdir)
 
     def clearAll(self):
+        msg = translate('Previews', 'Some files have uncommited previews. '
+                                    'Changes will be lost once you unload them. <br />'
+                                    'Do you still want to unload everything?<br />')
+        if has_previews(parent=self, msg=msg):
+            return
         with self.model().reset_context():
             self.model().taginfo = []
             self.model()._filtered = []
@@ -2141,6 +2146,10 @@ class TagTable(QTableView):
             if f.dirpath in dirs or is_sub(f.dirpath):
                 sub_files.append(f)
 
+        msg = translate('Previews', 'There are unsaved changes pending. Do you want to discard and reload?')
+        if has_previews(sub_files, self, msg):
+            return
+
         kept_dirs = self.dirs[::]
         self.loadFiles(None, dirs, False, self.subFolders,
                        self._playlist,
@@ -2163,16 +2172,9 @@ class TagTable(QTableView):
         self.selectionChanged()
 
     def reloadFiles(self, files=None):
-        previews = False
-        for z in self.model().taginfo:
-            if z.preview:
-                previews = True
-                break
-        if previews:
-            ret = QMessageBox.question(self, 'puddletag',
-                translate("Previews", 'There are unsaved changes pending. Do you want to discard and reload?'))
-            if ret != QMessageBox.StandardButton.Yes:
-                return
+        msg = translate('Previews', 'There are unsaved changes pending. Do you want to discard and reload?')
+        if has_previews(self.model().taginfo, self, msg):
+            return
 
         self._restore = self.saveSelection()
         dirs = list(map(encode_fn, self.dirs))
