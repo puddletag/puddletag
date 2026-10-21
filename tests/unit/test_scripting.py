@@ -426,3 +426,14 @@ def test_regex_removes_leading_dots():
     # I382: the regex suggested in the thread for "...And justice for all."
     assert functions.replaceWithReg({}, '...And justice for all.', r'^\.{3}', '') \
         == 'And justice for all.'
+
+
+@pytest.mark.parametrize('title, expected', [
+    ('axb', 'ab'),
+    ('abc', 'abc'),
+])
+def test_regex_without_repl_deletes_the_matches(title, expected):
+    # I559: two arguments closed puddletag when the regex matched. docs: "repl:
+    # Text to replace all matches of regex with. Can be left out, then the matches
+    # are removed." Synthetic titles.
+    assert run('$regex(%title%,"x")', title=title) == expected
