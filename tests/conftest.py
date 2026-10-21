@@ -369,7 +369,7 @@ def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
         # Closing the window with previews not written asks whether to
         # exit without writing them, as a test that ends in Preview Mode
         # does.
-        if any(audio.preview for audio in win._table.model().taginfo):
+        if win.isVisible() and any(audio.preview for audio in win._table.model().taginfo):
             dialogs.answer('QMessageBox.question', QMessageBox.StandardButton.Yes)
 
     qtbot.addWidget(win, before_close_func=exit_without_writing)
