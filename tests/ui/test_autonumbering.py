@@ -54,11 +54,13 @@ def discs(mainwin, make_audio, tmp_path, qtbot, user):
 @pytest.fixture
 def folders(mainwin, make_audio, tmp_path, qtbot, user):
     """Three files in folder cd1 and two in cd2, track 9 in each. The table
-    sorts them by file name, so its rows alternate between the folders."""
+    sorts them by file name, so its rows alternate between the folders. No
+    name is in both folders: files with the same name keep the order the
+    filesystem lists the folders in, which varies between machines."""
     music = tmp_path / 'music'
     paths = [make_audio(name, music / folder, title=f'{folder} {name}', tracknumber='9')
-             for folder, name in [('cd1', '01.mp3'), ('cd1', '02.mp3'), ('cd1', '03.mp3'),
-                                  ('cd2', '01.mp3'), ('cd2', '02.mp3')]]
+             for folder, name in [('cd1', '01.mp3'), ('cd1', '03.mp3'), ('cd1', '05.mp3'),
+                                  ('cd2', '02.mp3'), ('cd2', '04.mp3')]]
     table = load(mainwin, qtbot, user, music, paths)
     assert [audio.filepath for audio in table.model().taginfo] == [str(paths[i]) for i in (0, 3, 1, 4, 2)]
     return table, paths
