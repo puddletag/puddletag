@@ -19,7 +19,7 @@ from itertools import groupby  # for unique function.
 from operator import or_
 from typing import Any, Callable, Generator, List, Optional, Tuple, Union
 
-from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QObject, QRectF, QSettings, \
+from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QMimeData, QObject, QRectF, QSettings, \
     QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt6.QtCore import QFile, QIODevice
 from PyQt6.QtGui import QAction, QIcon, QBrush, QPixmap, QImage, \
@@ -38,6 +38,9 @@ from .constants import ACTIONDIR, CONFIGDIR
 from .translations import translate
 
 path = os.path
+
+# The cover formats Copy and Paste carry as the original bytes.
+COVER_MIMES = ('image/jpeg', 'image/png')
 
 # Parameters for string distance function.
 # Words that can be moved to the end of a string using a comma.
@@ -1796,14 +1799,23 @@ class PicWidget(QWidget):
             self.imageChanged.emit()
 
     def pasteImage(self):
-        image = QApplication.clipboard().image()
+        clipboard = QApplication.clipboard()
+        image = clipboard.image()
         if not image.isNull():
-            ba = QByteArray()
-            data = QBuffer(ba)
-            data.open(QIODevice.OpenModeFlag.WriteOnly)
-            # TODO: Don't transform to JPG
-            image.save(data, "JPG")
-            data = bytes(data.data())
+            data = None
+            mimedata = clipboard.mimeData()
+            for mime in COVER_MIMES:
+                if mimedata.hasFormat(mime):
+                    raw = bytes(mimedata.data(mime))
+                    if get_mime(raw) == mime and QImage.fromData(raw).size() == image.size():
+                        data = raw
+                        break
+            if data is None:
+                ba = QByteArray()
+                buffer = QBuffer(ba)
+                buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+                image.save(buffer, "JPG")
+                data = bytes(buffer.data())
             pic = {
                 "data": data,
                 "height": image.height(),
@@ -1817,9 +1829,17 @@ class PicWidget(QWidget):
 
     def copyImage(self):
         if self.images and self.currentImage:
+            cover = self.images[self.currentImage]
             image = QImage()
-            image.loadFromData(self.images[self.currentImage]["data"])
-            QApplication.clipboard().setImage(image)
+            image.loadFromData(cover["data"])
+            mimedata = QMimeData()
+            mimedata.setImageData(image)
+            # Programs that read only the image get it; paste reads the
+            # cover's own bytes.
+            mime = get_mime(cover["data"])
+            if mime in COVER_MIMES:
+                mimedata.setData(mime, QByteArray(cover["data"]))
+            QApplication.clipboard().setMimeData(mimedata)
 
     def addImages(self, images):
         if not self._itags or not images:
@@ -1975,7 +1995,10 @@ class PicWidget(QWidget):
             filename = selectedFile[0]
             if not filename:
                 return
-            if not self.pixmap.save(filename):
+            try:
+                with open(filename, 'wb') as f:
+                    f.write(self.images[self.currentImage]['data'])
+            except EnvironmentError:
                 QMessageBox.critical(self,
                                      translate('Defaults', "Error"),
                                      translate('Artwork', "Writing to <b>{}</b> failed.").format(filename)

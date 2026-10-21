@@ -370,8 +370,6 @@ def test_cover_in_preview_mode(load, mainwin, user, qtbot, dialogs, tmp_path):
     assert (cover['imagetype'], cover['mime']) == (3, 'image/png')
 
 
-@pytest.mark.xfail(strict=True, reason='Paste re-encodes the copied cover as JPEG, so its bytes '
-                                       'and MIME type differ from the original PNG')
 def test_copy_and_paste_cover(load, mainwin, user, qtbot):
     # Synthetic: the docs (tut3.txt) list adding, removing and editing a
     # cover only; copy and paste come from issues #428 and #1042.
@@ -391,8 +389,6 @@ def test_copy_and_paste_cover(load, mainwin, user, qtbot):
     assert (pasted['data'], pasted['mime']) == (FRONT['data'], FRONT['mime'])
 
 
-@pytest.mark.xfail(strict=True, reason="Save cover to file writes Qt's re-encoding of the shown "
-                                       "picture, not the cover's own bytes")
 def test_save_cover_to_file(load, mainwin, user, qtbot, dialogs, tmp_path):
     # Synthetic: the docs don't describe Save cover to file; issue #457
     # ("Mp3tag preserves image quality") reports it.
