@@ -2265,6 +2265,9 @@ class PuddleCombo(QWidget):
         self.setLayout(hbox)
 
         self.combo.setEditable(True)
+        # The default completer is case-insensitive and, on Enter, swaps what
+        # was typed for an entry that differs only in case.
+        self.combo.completer().setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
 
         self.setEditText = self.combo.setEditText
         self.currentText = self.combo.currentText

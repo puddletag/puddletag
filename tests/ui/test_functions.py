@@ -436,6 +436,54 @@ def test_case_conversion_in_a_translated_window(user, loaded, qtbot, mainwin):
         QApplication.removeTranslator(translator)
 
 
+def regexp_replace(user, qtbot, regexp, fields, match_case=False):
+    """Fills the Replace with RegExp function and leaves the window open."""
+    user.click_toolbar('&Functions')
+    window = opened(qtbot, CreateFunction)
+    pick(user, qtbot, window.functions, 'Replace with RegExp')
+    function = window.stack.currentWidget()
+    user.activate(window)
+    user.click(function.tagcombo.lineEdit())
+    user.press(Key.Key_A, Ctrl)
+    user.type(fields)
+    user.click(function.controls[0].combo.lineEdit())
+    user.press(Key.Key_A, Ctrl)
+    # user.type and QTest.keyClicks abort on non-ASCII: send the key events
+    # the keyboard does, to the focused widget.
+    from PyQt6.QtCore import QEvent
+    from PyQt6.QtGui import QKeyEvent
+    for char in regexp:
+        for kind in (QEvent.Type.KeyPress, QEvent.Type.KeyRelease):
+            QApplication.sendEvent(QApplication.focusWidget(),
+                                   QKeyEvent(kind, ord(char), Qt.KeyboardModifier.NoModifier, char))
+    if match_case:
+        user.click(function.controls[2])
+    return window, function
+
+
+def test_regexp_history_keeps_what_was_typed(user, loaded, qtbot):
+    # Issue 433: a RegExp already used as `[àá]` is in the field's history;
+    # typing `[ÀÁ]` and pressing Enter must keep the typed case, not turn
+    # it into the history entry. Synthetic regexps; the files have no such
+    # characters, so they come out unchanged.
+    table, paths = loaded
+    select_titles(user)
+    window, function = regexp_replace(user, qtbot, '[àá]', 'year')
+    user.click(window.okcancel.okButton)
+    qtbot.waitUntil(lambda: not window.isVisible())
+    user.activate()
+
+    window, function = regexp_replace(user, qtbot, '[ÀÁ]', 'title', match_case=True)
+    user.press(Key.Key_Return)
+    assert function.controls[0].currentText() == '[ÀÁ]'
+    user.click(window.okcancel.okButton)
+    qtbot.waitUntil(lambda: not window.isVisible())
+    user.activate()
+    expected = [tags(1), tags(2), tags(3)]
+    assert in_table(table) == expected
+    assert in_files(paths) == expected
+
+
 @pytest.mark.parametrize('preview', [False, True], ids=['preview off', 'preview on'])
 def test_functions_invalid_regexp(user, loaded, qtbot, dialogs, preview):
     # Synthetic regex `..)` from #576: Replace with RegExp "closes puddletag:
