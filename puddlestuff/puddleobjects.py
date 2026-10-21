@@ -12,14 +12,14 @@ import time
 from bisect import bisect_left, insort_left  # for unique function.
 from collections import defaultdict
 from copy import copy
-from functools import partial, reduce
+from functools import partial, reduce, total_ordering
 from glob import glob
 from io import StringIO
 from itertools import groupby  # for unique function.
 from operator import or_
 from typing import Any, Callable, Generator, List, Optional, Tuple, Union
 
-from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QCollatorSortKey, QDir, QLocale, QMimeData, QObject, QRectF, QSettings, \
+from PyQt6.QtCore import QBuffer, QByteArray, QCollator, QDir, QLocale, QMimeData, QObject, QRectF, QSettings, \
     QSize, QThread, QTimer, Qt, pyqtSignal
 from PyQt6.QtCore import QFile, QIODevice
 from PyQt6.QtGui import QAction, QIcon, QBrush, QPixmap, QImage, \
@@ -610,7 +610,40 @@ def unique(seq, stable=False):
     return result
 
 
-def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> QCollatorSortKey:
+@total_ordering
+class NaturalSortKey:
+    """The parts of a string: text and digit runs alternately, starting
+    with text. Digit runs compare by value, text through the collator.
+    (QCollatorSortKey can't be used in a tuple: it has no ==.)"""
+
+    def __init__(self, parts: List[Union[str, int]], collator: QCollator):
+        self.parts = parts
+        self.collator = collator
+
+    def _compare(self, other: 'NaturalSortKey') -> int:
+        for a, b in zip(self.parts, other.parts):
+            if isinstance(a, int):
+                result = (a > b) - (a < b)
+            else:
+                result = self.collator.compare(a, b)
+            if result:
+                return result
+        return (len(self.parts) > len(other.parts)) - (len(self.parts) < len(other.parts))
+
+    def __eq__(self, other):
+        if not isinstance(other, NaturalSortKey):
+            return NotImplemented
+        return self._compare(other) == 0
+
+    def __lt__(self, other):
+        if not isinstance(other, NaturalSortKey):
+            return NotImplemented
+        return self._compare(other) < 0
+
+    __hash__ = None
+
+
+def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> NaturalSortKey:
     """Return a sort-key for natural sorting the given string.
 
     Case-insensitive means uppercase- and lowercase-characters are treated equally.
@@ -625,7 +658,8 @@ def natural_sort_key(s: Union[str, List[str]], case_insensitive=True) -> QCollat
     collator = QCollator(locale)
     collator.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
     collator.setNumericMode(True)
-    return collator.sortKey(s)
+    parts = re.split(r'(\d+)', s)
+    return NaturalSortKey([int(part) if i % 2 else part for i, part in enumerate(parts)], collator)
 
 
 def dupes(l, method=None):

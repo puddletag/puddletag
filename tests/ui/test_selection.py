@@ -6,7 +6,7 @@ column header. Each is checked in the table and on disk, where none of
 them writes. Synthetic files.
 """
 import pytest
-from PyQt6.QtCore import QLocale, QPoint, Qt, QTimer
+from PyQt6.QtCore import QPoint, Qt, QTimer
 from PyQt6.QtWidgets import QApplication, QMenu
 
 from puddlestuff import audioinfo
@@ -742,8 +742,6 @@ def test_header_sort_keeps_ties_in_order(user, mainwin, make_audio, tmp_path, qt
     untouched(before)
 
 
-@pytest.mark.xfail(QLocale.system().collation().name() == 'C', strict=True,
-                   reason="Numbers sort as text under the C locale")
 def test_header_sorts_numbers_by_value(user, mainwin, make_audio, tmp_path, qtbot):
     # The docs don't say how numbers sort; natural_sort_key's own docstring
     # does: "Natural means sorting numbers by their numeric value, e.g. 100
