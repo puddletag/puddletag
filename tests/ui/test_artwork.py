@@ -330,7 +330,6 @@ def test_change_description_and_type_of_existing_cover(mainwin, load, qtbot, use
     qtbot.waitUntil(lambda: all(stored(path) == expected for path in paths))
 
 
-@pytest.mark.xfail(strict=True, reason="Change cover resets the description and type, and isn't saved")
 def test_change_cover(mainwin, load, tmp_path, dialogs, qtbot, user):
     # tut3.txt: "right click on the shown picture container to get a menu.
     # With it you can add/remove/edit artwork".

@@ -1783,6 +1783,8 @@ class PicWidget(QWidget):
         if pic:
             pic = pic[0]
             if edit and self.images:
+                pic.pop('description')
+                pic.pop('imagetype')
                 self.images[self.currentImage].update(pic)
                 self.currentImage = self.currentImage
             else:
