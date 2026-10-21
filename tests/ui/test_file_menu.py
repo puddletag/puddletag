@@ -479,9 +479,6 @@ def test_unload_everything_with_previews_asks(mainwin, user, loaded, qtbot, dial
     assert in_file(paths[0])['title'] == ['Title 1']
 
 
-@pytest.mark.xfail(strict=True, reason='Refresh Selected replaces the table\'s list of '
-                   'loaded folders with the selected rows\' folders, so a later Refresh '
-                   'misses new files in the others')
 def test_refresh_after_refresh_selected_finds_new_files(mainwin, make_audio, tmp_path, qtbot, user):
     # menus.txt: "If any directories are loaded, they'll be re-read and
     # checked for new files."

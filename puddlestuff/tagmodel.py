@@ -2140,11 +2140,13 @@ class TagTable(QTableView):
             if f.dirpath in dirs or is_sub(f.dirpath):
                 sub_files.append(f)
 
+        kept_dirs = self.dirs[::]
         self.loadFiles(None, dirs, False, self.subFolders,
                        self._playlist,
-                       lambda t, a, f: self.__processReload(t, a, f, sub_files))
+                       lambda t, a, f: self.__processReload(t, a, f, sub_files, kept_dirs))
 
-    def __processReload(self, tags, append, filepath, sub_files):
+    def __processReload(self, tags, append, filepath, sub_files, kept_dirs):
+        self.dirs = kept_dirs
         new_fns = set(z.filepath for z in tags)
         to_remove = set(z for z in sub_files
                         if z.filepath not in new_fns)
