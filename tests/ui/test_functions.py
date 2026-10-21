@@ -304,3 +304,49 @@ def test_actions_dock_apply(user, loaded, qtbot, mainwin):
     expected = [changed(1, mixed, case), changed(2, mixed, case), tags(3)]
     assert in_files(paths) == expected
     assert in_table(table) == expected
+
+
+def select_all(user):
+    user.click_cell(user.cell(0, 'title'))
+    user.click_cell(user.cell(2, 'title'), Shift)
+
+
+def pick_autonumbering(user, qtbot, window):
+    pick(user, qtbot, window.functions, 'Autonumbering')
+    user.activate(window)
+    user.click(window.stack.currentWidget().tagcombo.lineEdit())
+    user.press(Key.Key_A, Ctrl)
+    user.type('discnumber')
+
+
+def open_functions_window(user, qtbot, mainwin):
+    user.click_menu('&Functions')
+    return opened(qtbot, CreateFunction)
+
+
+def open_functions_dock(user, qtbot, mainwin):
+    user.click_menu('Functions')
+    [dock] = mainwin.findChildren(FunctionDialog)
+    qtbot.waitUntil(dock.isVisible)
+    return dock
+
+
+@pytest.mark.parametrize('open_dialog', [open_functions_window, open_functions_dock],
+                         ids=['window', 'dock'])
+def test_autonumbering_function(user, loaded, qtbot, mainwin, open_dialog):
+    # "Numbers tracks sequentially beginning with Start." (function.txt:21)
+    # #429 and #482 report that running Autonumbering on a field from the
+    # Functions window or dock hangs with a KeyError and writes nothing.
+    # Synthetic: the field is discnumber, on three files.
+    table, paths = loaded
+    select_all(user)
+    dialog = open_dialog(user, qtbot, mainwin)
+    pick_autonumbering(user, qtbot, dialog)
+    if isinstance(dialog, FunctionDialog):
+        user.click(apply_button(dialog))
+    else:
+        user.click(dialog.okcancel.okButton)
+    written(qtbot, user, paths[2], 'discnumber', ['3'])
+    expected = [dict(tags(i), discnumber=[str(i)]) for i in (1, 2, 3)]
+    assert in_files(paths) == expected
+    assert in_table(table) == expected
