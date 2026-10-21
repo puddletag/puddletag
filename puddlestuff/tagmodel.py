@@ -527,7 +527,7 @@ class TagModel(QAbstractTableModel):
     @fontSize.setter
     def fontSize(self, size):
         self._fontSize = size
-        top = self.index(self.rowCount(), 0)
+        top = self.index(0, 0)
         bottom = self.index(self.rowCount() - 1, self.columnCount() - 1)
         self.dataChanged.emit(top, bottom)
 
@@ -2073,7 +2073,7 @@ class TagTable(QTableView):
             taginfo[row] = new
 
         getindex = self.model().index
-        self.model().dataChanged.emit(getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
+        self.model().dataChanged.emit(getindex(min(rows), 0), getindex(max(rows) + 1, self.columnCount() - 1))
 
         self.restoreSelection()
         self._select = True
@@ -2101,7 +2101,7 @@ class TagTable(QTableView):
             taginfo[row - 1] = old
 
         getindex = self.model().index
-        self.model().dataChanged.emit(getindex(min(rows), 0), getindex(max(rows), self.columnCount()))
+        self.model().dataChanged.emit(getindex(min(rows) - 1, 0), getindex(max(rows), self.columnCount() - 1))
 
         self.restoreSelection()
         self._select = True

@@ -536,7 +536,6 @@ def test_move_down_with_the_last_row(user, music):
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='Moving rows reports a changed range that ends past the last column')
 def test_move_reports_valid_cells(user, music, qtlog):
     # "Moves the selected files up one row in the File-View." Qt warns when a
     # model reports a changed range that isn't made of its cells.
@@ -831,8 +830,6 @@ def test_decrease_font_stops_at_one_point(mainwin, user, one_file):
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='Changing the font reports a changed range that starts '
-                                       'past the last row')
 def test_font_change_reports_valid_cells(mainwin, user, one_file, qtlog):
     # The docs don't say; this is what a user expects: changing the font
     # makes Qt report no invalid index range.
