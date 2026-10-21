@@ -567,8 +567,6 @@ def test_rename_field_of_one_file(load, user, qtbot):
     assert 'bailable' not in tags
 
 
-@pytest.mark.xfail(strict=True, reason='Extended Tags shows a value changed and set back as plain '
-                   'text; the File-View shows it in italics')
 def test_value_set_back_shown_in_italics(mainwin, user, load, qtbot):
     # menus.txt, Preview Mode: "Values that you've changed, but are the
     # same as the underlying value will be shown in italics."

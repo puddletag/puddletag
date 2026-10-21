@@ -492,12 +492,16 @@ class StatusWidgetItem(QTableWidgetItem):
 
     @property
     def preview(self):
-        return self.font().bold()
+        font = self.font()
+        if font.italic():
+            return ITALICS
+        return BOLD if font.bold() else UNCHANGED
 
     @preview.setter
     def preview(self, value):
         font = self.font()
-        font.setBold(value)
+        font.setBold(value == BOLD)
+        font.setItalic(value == ITALICS)
         self.setFont(font)
 
     @property
@@ -940,7 +944,7 @@ class ExTags(QDialog):
 
             for field, values in common.items():
                 if field in italics:
-                    preview = UNCHANGED
+                    preview = ITALICS
                 # field in italics => field in previews.
                 elif field in previews:
                     preview = BOLD
@@ -979,7 +983,7 @@ class ExTags(QDialog):
 
         for key, val in sorted(d.items()):
             if key in italics:
-                preview = UNCHANGED
+                preview = ITALICS
             elif key in tags.preview:
                 preview = BOLD
             else:
