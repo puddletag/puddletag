@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import tempfile
+from copy import deepcopy
 
 from PyQt6.QtCore import QRect, Qt
 from PyQt6.QtGui import QFont, QFontMetrics, QPainter, QBrush
@@ -104,7 +105,7 @@ class ArtworkWidget(QWidget):
         elif images is None:
             self.picwidget.setImages(pics, default=1)
         else:
-            pics.extend(images)
+            pics.extend(deepcopy(images))
             self.picwidget.setImages(pics, default=2)
         self.picwidget.readonly = [0, 1]
 

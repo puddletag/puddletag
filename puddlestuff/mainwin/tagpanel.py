@@ -1,5 +1,6 @@
 import os
 import sys
+from copy import deepcopy
 
 from PyQt6 import sip
 from PyQt6.QtCore import QEvent, QThread, Qt, pyqtRemoveInputHook, pyqtSignal
@@ -224,7 +225,7 @@ class FrameCombo(QGroupBox):
 
         self._originalValues = dict([(field, str(combo.currentText()))
                                      for field, combo in self.combos.items()])
-        self._originalValues['__image'] = self._status['images']
+        self._originalValues['__image'] = deepcopy(self._status['images'])
         [combo.blockSignals(False) for combo in combos.values()]
 
     def save(self):

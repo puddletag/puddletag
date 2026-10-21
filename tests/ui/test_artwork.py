@@ -314,8 +314,6 @@ def test_two_covers_without_descriptions(mainwin, user, load, qtbot, dialogs, tm
         '': image('PNG', 10), ' ': image('PNG', 20)}
 
 
-@pytest.mark.xfail(strict=True, reason='the Artwork window edits the covers of the table in place, '
-                                       'so Save finds nothing changed')
 def test_change_description_and_type_of_existing_cover(mainwin, load, qtbot, user):
     # tut3.txt: "right click on the shown picture container to get a menu.
     # With it you can add/remove/edit artwork" and "covers you modify aren't
