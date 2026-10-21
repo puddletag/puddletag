@@ -5,6 +5,7 @@ pytest
 pytest-qt
 pytest-cov
 pytest-timeout
+pytest-xdist
 
 # compiling the lock files (venv/bin/pip-compile)
 pip-tools
