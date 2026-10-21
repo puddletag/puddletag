@@ -816,8 +816,6 @@ def test_decrease_font(mainwin, user, one_file, decrease):
     untouched(before)
 
 
-@pytest.mark.xfail(strict=True, reason='Decrease Font goes below 1 point, and the File-View '
-                                       'falls back to the default size')
 def test_decrease_font_stops_at_one_point(mainwin, user, one_file):
     # The docs don't say; this is what a user expects: Decrease Font stops
     # at the smallest size, 1 point.

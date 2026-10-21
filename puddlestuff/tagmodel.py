@@ -1512,7 +1512,7 @@ class TagTable(QTableView):
         self.fontSize += 1
 
     def decreaseFont(self):
-        self.fontSize -= 1
+        self.fontSize = max(self.fontSize - 1, 1)
 
     @property
     def autoresize(self):
