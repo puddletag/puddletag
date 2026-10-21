@@ -333,3 +333,18 @@ def test_rename_error_restores_the_cursor(user, loaded, qtbot, dialogs):
     assert QApplication.overrideCursor() is None
     assert sorted(os.listdir(paths[0].parent)) == ['01.mp3', '02.mp3', '03.mp3']
     assert in_file(paths[0]) == {'artist': ['Artist 1'], 'title': ['Title 1']}
+
+
+def test_filename_drops_reserved_characters(user, loaded, qtbot):
+    # function.txt, Tag to filename: "If the filename contains any of the
+    # characters, \*?"|:/, then they will be removed." Editing the Filename
+    # cell follows the same rule (#386 reports the " going); the single
+    # quotes aren't on the list and stay. Synthetic name.
+    table, paths = loaded
+    edit(user, user.cell(0, '__filename'), 'a "b" \'c\' \\*?|:/d.mp3')
+    user.press(Key.Key_Return)
+    new = paths[0].with_name("a b 'c' d.mp3")
+    qtbot.waitUntil(new.exists)
+    assert sorted(os.listdir(paths[0].parent)) == sorted(['02.mp3', '03.mp3', new.name])
+    assert table.model().taginfo[0].filepath == str(new)
+    assert table.model().data(user.cell(0, '__filename')) == new.name
