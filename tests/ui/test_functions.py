@@ -402,6 +402,40 @@ def test_actions_dock_long_preview(user, mainwin, make_audio, tmp_path, qtbot):
     assert button.mapTo(mainwin, button.rect().bottomLeft()).y() == y
 
 
+def test_case_conversion_in_a_translated_window(user, loaded, qtbot, mainwin):
+    # function.txt: "There are three types of case conversion: **UPPER CASE**,
+    # **lower case** and **Mixed Case**." (#230: in French, UPPER CASE gave
+    # Mixed Case.) Synthetic files; the French translation is one of the
+    # program's own.
+    from PyQt6.QtCore import QTranslator
+    from puddlestuff.translations import translate
+    translator = QTranslator()
+    assert translator.load('translations:puddletag_fr.qm')
+    QApplication.installTranslator(translator)
+    try:
+        table, paths = loaded
+        select_titles(user)
+        user.click_menu('Functions')
+        [dock] = mainwin.findChildren(FunctionDialog)
+        qtbot.waitUntil(dock.isVisible)
+        pick(user, qtbot, dock.functions, translate('Functions', 'Case Conversion'))
+        function = dock.stack.currentWidget()
+        upper = translate('Functions', 'UPPER CASE')
+        assert upper != 'UPPER CASE'
+        pick(user, qtbot, function.controls[0], upper)
+        user.activate(dock)
+        user.click(function.tagcombo.lineEdit())
+        user.press(Key.Key_A, Ctrl)
+        user.type('__selected')
+        user.click(apply_button(dock))
+        written(qtbot, user, paths[1], 'title', ['TITLE 2'])
+        expected = [changed(1, str.upper, ['title']), changed(2, str.upper, ['title']), tags(3)]
+        assert in_files(paths) == expected
+        assert in_table(table) == expected
+    finally:
+        QApplication.removeTranslator(translator)
+
+
 @pytest.mark.parametrize('preview', [False, True], ids=['preview off', 'preview on'])
 def test_functions_invalid_regexp(user, loaded, qtbot, dialogs, preview):
     # Synthetic regex `..)` from #576: Replace with RegExp "closes puddletag:

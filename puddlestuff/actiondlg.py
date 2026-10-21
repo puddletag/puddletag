@@ -304,9 +304,11 @@ class FunctionDialog(QWidget):
             control = self._controls[ctype](self)
 
         if ctype == 'combo':
-            func = control.currentText
+            # The function gets the English name, whatever the language.
+            func = control.currentData
             if default:
-                control.addItems([translate('Functions', d) for d in default])
+                for d in default:
+                    control.addItem(translate('Functions', d), d)
         elif ctype == 'text':
             self.textcombos.append(control)
             func = control.currentText
@@ -410,7 +412,10 @@ class FunctionDialog(QWidget):
 
         for argument, control in zip(args, self.controls):
             if isinstance(control, QComboBox):
-                index = control.findText(argument)
+                index = control.findData(argument)
+                if index == -1:
+                    # Saved with a translated name.
+                    index = control.findText(argument)
                 if index != -1:
                     control.setCurrentIndex(index)
             elif isinstance(control, PuddleCombo):
