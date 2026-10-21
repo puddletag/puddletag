@@ -224,7 +224,7 @@
     "control": "mainwin", 
     "command": "savePlayList", 
     "enabled": "viewfilled", 
-    "tooltip": "Save all files to m3u playlist."
+    "tooltip": "Save the selected files, or every file when none is selected, to an m3u playlist."
   }, 
   "shortcut33": {
     "name": "E&xtended Tags", 

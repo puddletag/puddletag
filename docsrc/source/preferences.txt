@@ -80,6 +80,14 @@ Write extended info:
 ^^^^^^^^^^^^^^^^^^^^
 When enabled the pattern you will be used to write extended info for M3U playlists.
 
+Entries relative to working directory:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+When enabled, the entries are written relative to the playlist's folder, not as absolute paths.
+
+Use windows path separator:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+When enabled, the entries are written with ``\`` instead of ``/``.
+
 Filename pattern:
 ^^^^^^^^^^^^^^^^^
 Then default filename pattern to use when saving playlists.

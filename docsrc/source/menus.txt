@@ -16,11 +16,11 @@ Works as Open Folder, but instead of replacing the File-Views's contents, append
 
 Load playlist
 ^^^^^^^^^^^^^
-Opens a dialog to import an m3u playlist into puddletag.
+Opens a dialog to import an m3u playlist into puddletag. The playlist's files are added after the files already shown.
 
 Save playlist
 ^^^^^^^^^^^^^
-Save's the contents of the File_view to a playlist. The format to write for the extended info can be set in :ref:`Preferences <playlist>`.
+Save's the selected files of the File_view to a playlist, or every file when none is selected. The format to write for the extended info can be set in :ref:`Preferences <playlist>`.
 
 Save (Ctrl+S)
 ^^^^^^^^^^^^^
@@ -42,8 +42,12 @@ Refresh (F5)
 ^^^^^^^^^^^^
 Refreshes the files currently loaded in the File-View. If any directories are loaded, they'll be re-read and checked for new files.
 
-Clear
-^^^^^
+Refresh Selected
+^^^^^^^^^^^^^^^^
+Re-reads the folders of the selected files: new files in them are added and deleted ones are removed. The other loaded folders are left as they are.
+
+Unload Everything
+^^^^^^^^^^^^^^^^^
 Clear's the File-View and unloads any files/directories that have been imported.
 
 Exit (Ctrl+Q)
