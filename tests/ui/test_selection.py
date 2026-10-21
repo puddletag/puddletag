@@ -279,12 +279,9 @@ def test_select_next_directory_after_a_sort(user, two_folders):
 
 
 @pytest.mark.timeout(10)
-@pytest.mark.xfail(strict=True, reason='Select Next Directory loops forever when every loaded '
-                                       'file is in the selected folder')
 def test_select_next_directory_with_one_folder(user, one_folder):
-    # The docs don't say; this is what puddletag should do, as Select
-    # Previous Directory does: with one folder loaded, whole and selected,
-    # nothing changes.
+    # The docs don't say; this is what puddletag does: with one folder
+    # loaded, whole and selected, nothing changes.
     table, paths = one_folder
     before = stamps(paths)
     click(user, 0, 'title')

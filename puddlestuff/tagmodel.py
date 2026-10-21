@@ -2456,21 +2456,14 @@ class TagTable(QTableView):
         taginfo = self.model().taginfo
         row = self.currentIndex().row()
         column = self.currentIndex().column()
-        i = 0
         d = taginfo[row].dirpath
-        while True:
-            try:
-                if d != taginfo[row + i].dirpath:
-                    new_dir = taginfo[row + i].dirpath
-                    break
-            except IndexError:
-                return
-            if not previous:
-                i += 1
-                if row + i >= len(taginfo):
-                    row = 0 - i
-            else:
-                i -= 1
+        step = -1 if previous else 1
+        for offset in range(1, len(taginfo)):
+            new_dir = taginfo[(row + step * offset) % len(taginfo)].dirpath
+            if d != new_dir:
+                break
+        else:
+            return
 
         return dict((row, column) for row in dirpaths[new_dir])
 
