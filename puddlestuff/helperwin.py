@@ -747,6 +747,7 @@ class ExTags(QDialog):
 
         self.canceled = False
         self.filechanged = False
+        self.coversdiffer = False
 
         if row and row >= 0 and files:
             self._prevnext(row)
@@ -863,6 +864,10 @@ class ExTags(QDialog):
 
     def _imageChanged(self):
         self.filechanged = True
+        # Adding a cover replaces the differing ones; removing one with
+        # nothing shown is removePic's to handle.
+        if self.piclabel.images:
+            self.coversdiffer = False
 
     def loadSettings(self):
         cparser = PuddleConfig()
@@ -912,6 +917,7 @@ class ExTags(QDialog):
         if self.filechanged:
             self.save()
         self.filechanged = False
+        self.coversdiffer = False
         self.table.clearContents()
         self.table.setRowCount(0)
         self.piclabel.lastfilename = audios[0].filepath
@@ -970,6 +976,7 @@ class ExTags(QDialog):
                 self.piclabel.setImages(None)
                 self.piclabel.setEnabled(True)
                 if images == 0:
+                    self.coversdiffer = True
                     self.piclabel.context = 'Cover Varies'
                     self.piclabel.removepic.setEnabled(True)
         self._checkListBox()
@@ -1084,7 +1091,8 @@ class ExTags(QDialog):
         self._checkListBox()
 
     def removePic(self):
-        if self.piclabel.context == 'Cover Varies':
+        if self.coversdiffer:
+            self.coversdiffer = False
             self.piclabel.context = 'No Images'
             self.piclabel.removepic.setEnabled(False)
             if not isinstance(self.piclabel.removepic, QAction):
@@ -1109,7 +1117,7 @@ class ExTags(QDialog):
             return
 
         tags = self.listtotag()
-        if self.piclabel.context != 'Cover Varies':
+        if not self.coversdiffer:
             if not self.piclabel.images:
                 tags['__image'] = []
             else:

@@ -582,9 +582,6 @@ def test_value_set_back_shown_in_italics(mainwin, user, load, qtbot):
     window.close()
 
 
-@pytest.mark.xfail(strict=True, reason='Extended Tags tells that the covers differ by comparing '
-                   "the label's translated text with 'Cover Varies', so in a translated window "
-                   'it saves an empty cover list and removes every selected file\'s cover')
 def test_edit_keeps_covers_that_differ_in_a_translated_window(load, mainwin, qtbot, user):
     # menus.txt: "With it you can edit/see all the supported fields in a
     # file", and tut3.txt: "<keep> will leave artwork unmodified for each
