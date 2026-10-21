@@ -59,3 +59,27 @@ def test_tag_removed(make_audio, ext):
     again = audioinfo.Tag(str(path))
     assert [(audioinfo.usertags(t), t['__image'], t.get('__num_images')) for t in (tag, again)] == [({}, [], '0')] * 2
     assert (native(path), again['__length']) == ([], length)
+
+
+def test_remove_tag_leaves_no_padding(make_audio):
+    # menus.txt: "Remove Tag (Ctrl+R): Removes the tags of selected files."
+    # #469 reports space left in an MP3 after removing the fields; the tag
+    # goes whole, padding included: the file starts with the audio and has
+    # no ID3v1 tag. Synthetic file and tags.
+    path = make_audio('song.mp3', title='Song', artist='Artist', album='Album')
+    save(path, {'genre': ['Genre']})
+    audioinfo.Tag(str(path)).delete()
+    data = path.read_bytes()
+    assert (data[:3] != b'ID3', data[-128:-125] != b'TAG', data[:1]) == (True, True, b'\xff')
+
+
+def test_remove_all_fields_except_nothing_leaves_padding(make_audio):
+    # #469: after "Remove all fields except" with nothing kept, the MP3
+    # starts with an ID3v2 header and zero bytes. By design: mutagen keeps
+    # the tag's padding so the next save needn't rewrite the file; Remove
+    # Tag removes it. Synthetic file and tags.
+    path = make_audio('song.mp3', title='Song', artist='Artist', album='Album')
+    save(path, apply_function('remove_except', path, ''))
+    data = path.read_bytes()
+    size = sum(b << shift for b, shift in zip(data[6:10], (21, 14, 7, 0)))  # synchsafe
+    assert (data[:3], size > 0, set(data[10:10 + size]), native(path)) == (b'ID3', True, {0}, [])
