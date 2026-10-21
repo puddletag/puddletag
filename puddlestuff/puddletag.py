@@ -857,13 +857,25 @@ class MainWin(QMainWindow):
         failed_rows = [rows[0]]  # First element=last row used.
         # Rest, rows that failed to write.
 
+        parse_errors = []
+
+        def parsed():
+            # The tag generator can't continue after it raised.
+            try:
+                yield from tagiter
+            except findfunc.ParseError as e:
+                parse_errors.append(e)
+
         if model.previewMode:
-            [setRowData(row, f, undo=True) for row, f in zip(rows, tagiter)]
-            fin()
+            previewed = [setRowData(row, f, undo=True) for row, f in zip(rows, parsed())]
+            if parse_errors:
+                errormsg(self, parse_errors[0].message, 1)
+            if previewed:
+                fin()
             return
 
         def func():
-            for row, f in zip(rows, tagiter):
+            for row, f in zip(rows, parsed()):
                 failed_rows[0] = row
                 try:
                     update = setRowData(row, f, undo=True)
@@ -886,6 +898,8 @@ class MainWin(QMainWindow):
                         yield m, 1
                     else:
                         yield m, len(rows)
+            if parse_errors:
+                yield parse_errors[0].message, 1
 
         def finished():
             self.__updateDirs = True

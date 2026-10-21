@@ -371,3 +371,36 @@ def test_function_editor_width_is_bounded(user, loaded, qtbot):
     assert len(function.tagcombo.currentText()) > 2000
     screen = QApplication.primaryScreen().availableGeometry().width()
     assert window.minimumSizeHint().width() < screen
+
+
+@pytest.mark.parametrize('preview', [False, True], ids=['preview off', 'preview on'])
+def test_functions_invalid_regexp(user, loaded, qtbot, dialogs, preview):
+    # Synthetic regex `..)` from #576: Replace with RegExp "closes puddletag:
+    # FuncError: unbalanced parenthesis at position 2". It should show the
+    # error and leave the file unchanged, and set no preview in Preview Mode.
+    table, paths = loaded
+    user.click_cell(user.cell(0, 'title'))
+    if preview:
+        user.press(Key.Key_P, Ctrl | Shift)
+        assert table.model().previewMode
+    user.click_menu('&Functions')
+    window = opened(qtbot, CreateFunction)
+    pick(user, qtbot, window.functions, 'Replace with RegExp')
+    function = window.stack.currentWidget()
+    user.activate(window)
+    user.click(function.controls[0].combo.lineEdit())
+    user.type('..)')
+    assert function.controls[0].combo.currentText() == '..)'
+    user.click(function.tagcombo.lineEdit())
+    user.press(Key.Key_A, Ctrl)
+    user.type('title')
+    dialogs.answer('QMessageBox.warning', None)
+    user.click(window.okcancel.okButton)
+    qtbot.waitUntil(lambda: bool(dialogs.calls))
+    [(name, args, kwargs)] = dialogs.calls
+    assert name == 'QMessageBox.warning'
+    assert 'unbalanced parenthesis at position 2' in args[2]
+    user.activate()
+    assert in_files(paths) == [tags(1), tags(2), tags(3)]
+    assert in_table(table) == [tags(1), tags(2), tags(3)]
+    assert [audio.preview for audio in table.model().taginfo] == [{}, {}, {}]
