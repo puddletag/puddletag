@@ -236,8 +236,20 @@ class PuddleConfig(object):
             except:
                 pass
 
-        with open(filename, 'w') as fo:
-            fo.write(json.dumps(dict(self.data), indent=2))
+        # Encode first and swap the file in whole, so a value json can't
+        # encode or a crash mid-write never leaves the config empty.
+        text = json.dumps(dict(self.data), indent=2)
+        temp = f'{filename}.tmp'
+        try:
+            with open(temp, 'w') as fo:
+                fo.write(text)
+            os.replace(temp, filename)
+        except BaseException:
+            try:
+                os.remove(temp)
+            except OSError:
+                pass
+            raise
 
 
     @property
