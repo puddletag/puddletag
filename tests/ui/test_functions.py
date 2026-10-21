@@ -373,6 +373,35 @@ def test_function_editor_width_is_bounded(user, loaded, qtbot):
     assert window.minimumSizeHint().width() < screen
 
 
+def test_actions_dock_long_preview(user, mainwin, make_audio, tmp_path, qtbot):
+    # #467, #608 and #1059: "Too many tags, apply button gone": the preview
+    # of many changed fields must not grow the dock past the window.
+    # Synthetic file with 60 extra fields that the Standard action changes.
+    music = tmp_path / 'long'
+    path = make_audio('01.mp3', music, title='title 1')
+    id3 = mutagen.id3.ID3(str(path))
+    for i in range(60):
+        id3.add(mutagen.id3.TXXX(encoding=3, desc=f'field {i:02}', text=[f'value_{i}']))
+    id3.save()
+    mainwin.openDir(str(music), False)
+    table = mainwin._table
+    qtbot.waitUntil(lambda: table.model().rowCount() == 1)
+    user.activate()
+    table.setFocus()
+    user.click_cell(user.cell(0, 'title'))
+    user.click_menu('Actions')
+    [dock] = mainwin.findChildren(ActionDialog)
+    qtbot.waitUntil(dock.isVisible)
+    button = apply_button(dock)
+    height = mainwin.height()
+    y = button.mapTo(mainwin, button.rect().bottomLeft()).y()
+    check(user, dock, 'Standard')
+    qtbot.wait(200)
+    assert dock._examplelabel.isVisible()
+    assert mainwin.height() == height
+    assert button.mapTo(mainwin, button.rect().bottomLeft()).y() == y
+
+
 @pytest.mark.parametrize('preview', [False, True], ids=['preview off', 'preview on'])
 def test_functions_invalid_regexp(user, loaded, qtbot, dialogs, preview):
     # Synthetic regex `..)` from #576: Replace with RegExp "closes puddletag:

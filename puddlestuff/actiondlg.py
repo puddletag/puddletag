@@ -134,6 +134,8 @@ class ShortcutName(QDialog):
 
 
 class ScrollLabel(QScrollArea):
+    MAX_LINES = 10
+
     def __init__(self, text='', parent=None):
         QScrollArea.__init__(self, parent)
         label = QLabel()
@@ -145,7 +147,7 @@ class ScrollLabel(QScrollArea):
         self.setFrameStyle(QFrame.Shape.NoFrame)
         self.setWidgetResizable(True)
         self.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
     def wheelEvent(self, e):
         h = self.horizontalScrollBar()
@@ -161,6 +163,8 @@ class ScrollLabel(QScrollArea):
         label.setText(text)
         hbar = self.horizontalScrollBar()
         height = label.sizeHint().height() + hbar.height()
+        # A long preview scrolls instead of growing the window.
+        height = min(height, self.MAX_LINES * label.fontMetrics().lineSpacing())
         self.setMaximumHeight(height)
         self.setMinimumHeight(height)
 
