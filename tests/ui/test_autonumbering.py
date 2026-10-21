@@ -524,3 +524,17 @@ def test_empty_pattern_keeps_the_wizard_open(user, four, qtbot, dialogs):
     retype(user, dialog.grouping, '')
     run(user, dialog)
     assert dialog.isVisible()
+
+
+def test_remembers_an_output_field_outside_the_list(user, four, qtbot):
+    # The docs don't say; this is what puddletag should do (#963): the next
+    # time the wizard opens, Output field has the last one typed, also when
+    # it is not in the field list.
+    select_all(user)
+    dialog = wizard(user, qtbot)
+    tick(user, dialog._restart_numbering)
+    retype(user, dialog.output_field.lineEdit(), 'tracknumber')
+    run(user, dialog)
+    dialog = wizard(user, qtbot)
+    assert dialog.output_field.currentText() == 'tracknumber'
+    cancel(user, dialog)

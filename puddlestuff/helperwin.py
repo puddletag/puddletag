@@ -229,6 +229,8 @@ class AutonumberDialog(QDialog):
         last_output_field_index = self.output_field.findText(output_field_text)
         if last_output_field_index > -1:
             self.output_field.setCurrentIndex(last_output_field_index)
+        else:
+            self.output_field.setEditText(output_field_text)
 
     def _saveSettings(self):
         cparser = PuddleConfig()
