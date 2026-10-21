@@ -356,3 +356,18 @@ def test_autonumbering_function(user, loaded, qtbot, mainwin, open_dialog):
     expected = [dict(tags(i), discnumber=[str(i)]) for i in (1, 2, 3)]
     assert in_files(paths) == expected
     assert in_table(table) == expected
+
+
+def test_function_editor_width_is_bounded(user, loaded, qtbot):
+    # #713 reports that editing a function with a long field list makes the
+    # dialog wider than the screen. Synthetic: 2,500 characters of fields.
+    table, paths = loaded
+    select_titles(user)
+    user.click_toolbar('&Functions')
+    window = opened(qtbot, CreateFunction)
+    pick(user, qtbot, window.functions, 'Case Conversion')
+    function = window.stack.currentWidget()
+    function.tagcombo.setEditText(', '.join(f'field{i:04}' for i in range(250)))
+    assert len(function.tagcombo.currentText()) > 2000
+    screen = QApplication.primaryScreen().availableGeometry().width()
+    assert window.minimumSizeHint().width() < screen
