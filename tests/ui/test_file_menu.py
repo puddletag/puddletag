@@ -777,8 +777,6 @@ def test_load_playlist_not_utf8(mainwin, user, dialogs, tmp_path):
     assert mainwin._table.model().rowCount() == 0
 
 
-@pytest.mark.xfail(strict=True, reason='#222: readm3u keeps the backslash in sub\\01.mp3 as part of the '
-                   'name on Linux, so no file loads; it should read it as a separator')
 def test_load_playlist_with_backslashes(mainwin, qtbot, user, dialogs, make_audio, tmp_path):
     # "Use windows path separator: When enabled, the entries are written
     # with \ instead of /." puddletag writes such entries, so it reads them.

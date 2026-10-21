@@ -94,7 +94,11 @@ def readm3u(path):
             continue
         else:
             # store rule
-            mp3Files.append(normpath(abspath(','.join(row))))
+            entry = ','.join(row)
+            if os.sep == '/':
+                # Playlists written on Windows separate folders with \
+                entry = entry.replace('\\', '/')
+            mp3Files.append(normpath(abspath(entry)))
 
     fileHandle.close()
     os.chdir(olddir)
