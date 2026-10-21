@@ -281,6 +281,9 @@ def test_functions_dock_apply(user, loaded, qtbot, mainwin):
     user.click_menu('Functions')
     [dock] = mainwin.findChildren(FunctionDialog)
     qtbot.waitUntil(dock.isVisible)
+    # Only Apply shows (#519 reports OK and Cancel overlapping it).
+    assert not dock.okcancel.okButton.isVisible()
+    assert not dock.okcancel.cancelButton.isVisible()
     upper_case(user, qtbot, dock, '__selected')
     user.click(apply_button(dock))
     written(qtbot, user, paths[1], 'title', ['TITLE 2'])
@@ -297,6 +300,9 @@ def test_actions_dock_apply(user, loaded, qtbot, mainwin):
     user.click_menu('Actions')
     [dock] = mainwin.findChildren(ActionDialog)
     qtbot.waitUntil(dock.isVisible)
+    # Only Apply shows (#519 reports OK and Cancel overlapping it).
+    assert not dock.okcancel.okButton.isVisible()
+    assert not dock.okcancel.cancelButton.isVisible()
     check(user, dock, 'Case Conversion')
     user.click(apply_button(dock))
     written(qtbot, user, paths[1], 'title', ['Title 2'])
