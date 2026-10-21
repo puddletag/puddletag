@@ -199,8 +199,26 @@ def extended_tags(parent=None):
     win.setModal(True)
     win.rowChanged.connect(status['table'].selectRow)
     win.loadSettings()
-    x = lambda val: emit('onetomany', val)
-    win.extendedtags.connect(x)
+
+    def write(val):
+        renames = win.keep_renames()
+        if not renames:
+            emit('onetomany', val)
+            return
+
+        # A renamed row that showed <keep> has a different value in each
+        # file, so the files can't be given the same dict.
+        def tagiter():
+            for audio in files:
+                tags = val.copy()
+                for new, old in renames.items():
+                    tags[new] = list(audio.get(old, []))
+                yield tags
+
+        files = status['selectedfiles']
+        emit('writeaction', tagiter(), None, {})
+
+    win.extendedtags.connect(write)
     win.show()
 
 

@@ -637,8 +637,6 @@ def load_values(mainwin, make_audio, tmp_path, qtbot, user, values, covers=()):
     return paths
 
 
-@pytest.mark.xfail(strict=True, reason='renaming a row that shows <keep> writes nothing under the '
-                   'new name and removes the old field from every file, so each file loses its value')
 def test_rename_field_of_several_files(mainwin, make_audio, tmp_path, qtbot, user):
     # No docs sentence covers renaming; the report is #466. Synthetic: two
     # files with different values of the same field.
@@ -650,4 +648,34 @@ def test_rename_field_of_several_files(mainwin, make_audio, tmp_path, qtbot, use
     user.click(win.okcancel.okButton)
     qtbot.waitUntil(lambda: all('quodlibet::bailable' in in_file(p) for p in paths))
     assert [in_file(p)['quodlibet::bailable'] for p in paths] == [['Yes'], ['No']]
+    assert all('bailable' not in in_file(p) for p in paths)
+
+
+def test_rename_field_and_edit_another_in_one_dialog(mainwin, make_audio, tmp_path, qtbot, user):
+    # Synthetic: renaming a <keep> row must not stop the other edits and
+    # the covers from being written.
+    paths = load_values(mainwin, make_audio, tmp_path, qtbot, user, ['Yes', 'No'], [FRONT, BACK])
+    user.press(Key.Key_E, Ctrl)
+    win = extended_tags(qtbot)
+    rename_field(user, qtbot, win, 'bailable', 'quodlibet::bailable')
+    edit_value(user, qtbot, win, 'album', 'New')
+    user.click(win.okcancel.okButton)
+    qtbot.waitUntil(lambda: all(in_file(p).get('album') == ['New'] for p in paths))
+    assert [in_file(p)['quodlibet::bailable'] for p in paths] == [['Yes'], ['No']]
+    assert all('bailable' not in in_file(p) for p in paths)
+    assert [stored(p) for p in paths] == [[FRONT], [BACK]]
+
+
+def test_rename_field_of_files_sharing_a_value(mainwin, make_audio, tmp_path, qtbot, user):
+    # Synthetic: a value edited together with the rename, for files that
+    # hold the same value, goes to both under the new name.
+    paths = load_values(mainwin, make_audio, tmp_path, qtbot, user, ['Yes', 'Yes'])
+    user.press(Key.Key_E, Ctrl)
+    win = extended_tags(qtbot)
+    assert ('bailable', 'Yes') in rows(win)
+    rename_field(user, qtbot, win, 'bailable', 'quodlibet::bailable')
+    edit_value(user, qtbot, win, 'quodlibet::bailable', 'Maybe')
+    user.click(win.okcancel.okButton)
+    qtbot.waitUntil(lambda: all('quodlibet::bailable' in in_file(p) for p in paths))
+    assert [in_file(p)['quodlibet::bailable'] for p in paths] == [['Maybe'], ['Maybe']]
     assert all('bailable' not in in_file(p) for p in paths)

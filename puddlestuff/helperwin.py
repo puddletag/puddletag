@@ -647,6 +647,7 @@ class ExTags(QDialog):
         winsettings('extendedtags', self)
         self.get_fieldlist = []
         self.previewMode = preview_mode
+        self._keep_renames = []
 
         add = QColor.fromRgb(255, 255, 0)
         edit = QColor.fromRgb(0, 255, 0)
@@ -843,11 +844,27 @@ class ExTags(QDialog):
                     valitem = self._settag(rowcount, tag,
                                            value, ADD, self.previewMode, True)
                     cur_item.linked = [valitem]
+                    if value == KEEP:
+                        self._keep_renames.append((valitem, prevtag[0]))
         else:
             self._settag(rowcount, tag, value, ADD, self.previewMode, True)
         self._checkListBox()
         self.filechanged = True
         self.table.clearSelection()
+
+    def keep_renames(self):
+        """Returns {new field: old field} for the renamed rows that showed
+        <keep>: their value is each file's own, so it isn't in the dict
+        `extendedtags` emits."""
+        ret = {}
+        for valitem, old in self._keep_renames:
+            try:
+                row = self.table.row(valitem)
+            except RuntimeError:  # The row was removed.
+                continue
+            if row != -1 and valitem.status != REMOVE:
+                ret[self.table.item(row, 0).text()] = old
+        return ret
 
     def get_field(self, row, status=None):
         getitem = self.table.item
