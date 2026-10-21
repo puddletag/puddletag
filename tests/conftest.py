@@ -13,6 +13,7 @@ import struct
 import subprocess
 import tempfile
 from collections import defaultdict, deque
+from functools import cache
 
 import mutagen
 import mutagen.apev2
@@ -182,10 +183,13 @@ def _missing(reason):
     pytest.skip(reason)
 
 
-def _ffmpeg_encoders():
+@cache
+def _ffmpeg_encoders(ffmpeg):
     """Names of the encoders this ffmpeg was built with. Builds differ: some
-    leave out libvorbis or libmp3lame."""
-    listing = subprocess.run(['ffmpeg', '-hide_banner', '-encoders'],
+    leave out libvorbis or libmp3lame. Read once per ffmpeg in a test
+    process, not once per file made; a test that puts another ffmpeg first
+    on PATH gets that one's list."""
+    listing = subprocess.run([ffmpeg, '-hide_banner', '-encoders'],
                              capture_output=True, text=True, check=True).stdout
     # A legend, a "------" line, then one encoder per line:
     # " A....D flac                 FLAC (Free Lossless Audio Codec)"
@@ -194,7 +198,7 @@ def _ffmpeg_encoders():
 
 
 def _encode_silence(path, codec):
-    if codec not in _ffmpeg_encoders():
+    if codec not in _ffmpeg_encoders(shutil.which('ffmpeg')):
         _missing(f'ffmpeg has no {codec} encoder')
     subprocess.run(
         ['ffmpeg', '-nostdin', '-loglevel', 'error',
