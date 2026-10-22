@@ -202,7 +202,6 @@ def test_replacement_with_the_separator_writes_several_values(mainwin, make_audi
     assert in_table(table) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='whole-word Replace skips or mangles a word right after a replaced one')
 @pytest.mark.parametrize('title, expected', [('song song', 'tune tune'), ('song,song song', 'tune,tune tune')])
 def test_whole_word_next_to_another(mainwin, make_audio, tmp_path, qtbot, user, title, expected):
     # function.txt: "It works just as you'd expect from any text editor. The

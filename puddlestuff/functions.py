@@ -685,33 +685,16 @@ only as &whole word, check'''
         matchcase = re.IGNORECASE
     if chars is None:
         chars = r'\,\.\(\) \!\[\]'
-    replaceword = replaceword.replace('\\', '\\\\')
 
     if whole:
-        pat = re.compile(r'(^|[%s])%s([%s]|$)' % (chars, word, chars), matchcase)
+        pat = re.compile(r'(?<![^%s])%s(?![^%s])' % (chars, word, chars), matchcase)
     else:
         pat = re.compile(word, matchcase)
 
-    start = 0
-    match = pat.search(text, start)
-    if whole:
-        while match:
-            start = match.start()
-            end = match.end()
-            sub = text[start: end]
-            repl = replaceword
-            if sub[0] in chars:
-                repl = sub[0] + repl
-            if sub[-1] in chars:
-                repl = repl + sub[-1]
-
-            text = pat.sub(repl, text, 1)
-            match = pat.search(text, start + len(repl))
-    else:
-        try:
-            text = pat.sub(replaceword, text)
-        except Exception as e:
-            raise findfunc.FuncError(str(e))
+    try:
+        text = pat.sub(lambda match: replaceword, text)
+    except Exception as e:
+        raise findfunc.FuncError(str(e))
     return text
 
 
