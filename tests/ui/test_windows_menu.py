@@ -1,7 +1,8 @@
 """The Windows menu and the main window's layout, used as menus.txt
 describes them: each tool window shown and hidden from the Windows menu,
-the layout kept from one session to the next, the Logs window, and Lock
-Layout's key. Synthetic keys and log lines.
+the layout kept from one session to the next, the Logs window, Lock
+Layout's key, and the window fitting the screen. Synthetic keys and log
+lines.
 """
 import os
 
@@ -275,3 +276,22 @@ def test_layout_is_unlocked_after_a_restart(lock_key, mainwin, user, qtbot, rest
     lock_with_key(mainwin, user, qtbot)
     win = restart()
     assert all(d.titleBarWidget() is None for d in docks(win).values())
+
+
+# The window fitting the screen
+
+
+@pytest.mark.xfail(strict=True, reason='Tag Sources, Functions and Actions make the window taller than the screen (#768)')
+def test_three_right_docks_fit_the_screen(mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does. #768: "the window ...
+    # resizes to be too big ... and also loses the maximize button", after
+    # showing "Tag Sources", "Functions" and "Actions".
+    for name in ['Tag Sources', 'Functions', 'Actions']:
+        toggle(user, name)
+        qtbot.waitUntil(docks(mainwin)[name].isVisible)
+    assert mainwin.minimumSizeHint().height() <= QApplication.primaryScreen().availableGeometry().height()
+    # Qt reports a tab only between shown windows
+    toggle(user, 'Mass Tagging')
+    qtbot.waitUntil(docks(mainwin)['Mass Tagging'].isVisible)
+    assert mainwin.tabifiedDockWidgets(docks(mainwin)['Functions']) == [docks(mainwin)['Actions']]
+    assert mainwin.tabifiedDockWidgets(docks(mainwin)['Tag Sources']) == [docks(mainwin)['Mass Tagging']]
