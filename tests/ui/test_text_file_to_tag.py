@@ -352,7 +352,6 @@ COMMANDS = {
 }
 
 
-@pytest.mark.xfail(strict=True, reason='the window shows before it is made modal')
 @pytest.mark.parametrize('command', COMMANDS.values(), ids=COMMANDS.keys())
 def test_window_is_modal(user, loaded, qtbot, dialogs, tmp_path, command):
     # Not in the docs; synthetic files and text. The window blocks the main

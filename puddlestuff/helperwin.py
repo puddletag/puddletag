@@ -251,6 +251,7 @@ class ImportTextFile(QDialog):
 
     def __init__(self, parent=None, filename=None, clipboard=None):
         QDialog.__init__(self, parent)
+        self.setModal(True)
 
         self.setWindowTitle(
             translate('Text File -> Tag', "Import tags from text file"))

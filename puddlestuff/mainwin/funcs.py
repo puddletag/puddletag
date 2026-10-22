@@ -72,7 +72,6 @@ def auto_numbering(parent=None):
 
 def clipboard_to_tag(parent=None):
     win = helperwin.ImportTextFile(parent, clipboard=True)
-    win.setModal(True)
     win.patterncombo.addItems(status['patterns'])
 
     cparser = PuddleConfig()
@@ -544,7 +543,6 @@ def text_file_to_tag(parent=None):
     if win.openFile(dirpath=last_dir):
         win.close()
         return
-    win.setModal(True)
     win.patterncombo.addItems(status['patterns'])
 
     last_pattern = cparser.get('importwindow', 'lastpattern', '')
