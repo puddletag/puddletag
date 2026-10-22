@@ -342,15 +342,11 @@ Note that the files are reloaded each time the selection changes. This almost al
 
 Logs
 ^^^^
-Currently displays extra info from Tag Sources.
-
-Masstagging
-^^^^^^^^^^^
-See the :doc:`Masstagging Tutorial <tut5>` for more info.
-
-Logs
-^^^^
 Shows/Hides the Logs dialog. Currently shows debugging information for Tag Sources. Will be expanded to include more information in future.
+
+Mass Tagging
+^^^^^^^^^^^^
+See the :doc:`Masstagging Tutorial <tut5>` for more info.
 
 Functions
 ^^^^^^^^^
