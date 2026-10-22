@@ -308,7 +308,6 @@ def assert_preview_kept(user, table):
     assert model.data(index, Qt.ItemDataRole.FontRole).bold()
 
 
-@pytest.mark.xfail(strict=True, reason='clicking another folder drops unsaved previews without asking')
 @pytest.mark.parametrize('answer', [pytest.param(No, id='No'), pytest.param(Yes, id='Yes')])
 def test_click_with_previews_asks(mainwin, qtbot, tmp_path, user, dialogs, music, answer):
     # Synthetic (docs-silent): like Open Folder, a click that replaces the
@@ -317,10 +316,7 @@ def test_click_with_previews_asks(mainwin, qtbot, tmp_path, user, dialogs, music
     table, view = with_preview(mainwin, qtbot, tmp_path, user, music)
     dialogs.answer('QMessageBox.question', answer)
     click_folder(user, qtbot, view, tmp_path / 'b')
-    try:
-        qtbot.waitUntil(lambda: not dialogs.unused_answers(), timeout=2000)
-    finally:
-        dialogs._answers.clear()  # an answer never asked for fails the teardown, not the test
+    qtbot.waitUntil(lambda: not dialogs.unused_answers(), timeout=2000)
     if answer == No:
         assert loaded_paths(table) == [str(music['a'])]
         assert_preview_kept(user, table)
@@ -331,12 +327,10 @@ def test_click_with_previews_asks(mainwin, qtbot, tmp_path, user, dialogs, music
     assert in_file(music['a'])['title'] == ['Title a']
 
 
-@pytest.mark.xfail(strict=True, reason='adding a folder asks about previews it keeps')
 def test_ctrl_click_keeps_previews(mainwin, qtbot, tmp_path, user, dialogs, music):
     # Synthetic (docs-silent): like Add Folder, adding a folder keeps the
     # previews and asks nothing.
     table, view = with_preview(mainwin, qtbot, tmp_path, user, music)
-    dialogs.answer('QMessageBox.question', Yes)
     click_folder(user, qtbot, view, tmp_path / 'b', Ctrl)
     wait_for_rows(qtbot, table, [music['a'], music['b']])
     assert not dialogs.calls

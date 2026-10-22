@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QAbstractItemView, QCheckBox, QHeaderView, QMenu, QT
 
 from ..constants import LEFTDOCK, QT_CONFIG
 from ..puddleobjects import (PuddleConfig, PuddleThread,
-                             PuddleHeader)
+                             PuddleHeader, issubfolder)
 from ..puddlesettings import (load_gen_settings,
                               save_gen_settings)
 from ..tagmodel import has_previews
@@ -41,6 +41,7 @@ class DirView(QTreeView):
 
     def __init__(self, parent=None, subfolders=False, status=None):
         QTreeView.__init__(self, parent)
+        self._status = status
 
         self._load = False  # If True a loadFiles signal is emitted when
         # an index is clicked. See selectionChanged.
@@ -67,27 +68,29 @@ class DirView(QTreeView):
 
         self.expanded.connect(lambda discarded: self.resizeColumnToContents(0))
 
-    def checkPreviews(self, deselected):
-        """Confirm to user if any file have previewes.
+    def checkPreviews(self, old, selected, deselected):
+        """Confirm to user if the files about to be unloaded have previews.
 
-        If any currently loaded files have previews then the user
-        is asked to confirm whether they want to change to a new dir.
-        Returns True if the user cancels the action, False if
-        the user chooses to go ahead or there are no un-commited previews.
+        old are the folders being unselected. If any loaded file in them
+        (or in their subfolders, with Subfolders on) has a preview, the
+        user is asked to confirm. Returns True if the user cancels the
+        action (the selection is put back as it was), False if the user
+        chooses to go ahead or there are no un-commited previews.
         """
         msg = translate('Previews', 'Some files have uncommited previews. '
                                     'Changes will be lost once you load a directory. <br />'
                                     'Do you still want to load a new directory?<br />')
-        if not has_previews(parent=self.parentWidget(), msg=msg):
+        subfolders = self._status['table'].subFolders
+        tags = [tag for tag in self._status['alltags']
+                if tag.dirpath in old or (subfolders and any(
+                    issubfolder(folder, tag.dirpath, None) for folder in old))]
+        if not has_previews(tags, parent=self.parentWidget(), msg=msg):
             return False
-        select = self._select
-        self._select = False
         smodel = self.selectionModel()
         smodel.blockSignals(True)
-        smodel.clear()
+        smodel.select(selected, QItemSelectionModel.SelectionFlag.Deselect)
         smodel.select(deselected, QItemSelectionModel.SelectionFlag.Select)
         smodel.blockSignals(False)
-        self._select = select
         return True
 
     def clearSelection(self, *args):
@@ -294,10 +297,11 @@ class DirView(QTreeView):
             append = False
         dirs = list(set(dirs).difference(old))
         if old:
+            if self.checkPreviews(old, selected, deselected):
+                self.viewport().update()
+                return
             self.removeFolders.emit(old, False)
 
-        if self.checkPreviews(deselected):
-            return
         if dirs:
             self.loadFiles.emit(None, dirs, append)
         self._lastselection = len(self.selectedIndexes())
