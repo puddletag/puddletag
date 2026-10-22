@@ -16,7 +16,7 @@ def load_patterns(filepath=None):
                          ['%artist% - $num(%track%,2) - %title%',
                           '%artist% - %album% - $num(%track%,2) - %title%',
                           '%artist% - %title%', '%artist% - %album%',
-                          '%artist% - Track %track%', '%artist% - %title%']),
+                          '%artist% - Track %track%']),
             settings.get('editor', 'index', 0, True)]
 
 

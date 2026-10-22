@@ -240,7 +240,6 @@ def test_typing_completes_to_a_listed_pattern(loaded, user):
     assert combo.currentIndex() == combo.findText('%artist% - %album%')
 
 
-@pytest.mark.xfail(strict=True, reason='a fresh profile lists %artist% - %title% twice')
 def test_fresh_profile_patterns(loaded):
     # The docs don't list the default patterns; this is what puddletag
     # starts with, each pattern once.
