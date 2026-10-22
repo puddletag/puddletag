@@ -126,7 +126,6 @@ def test_link_file_info(make_audio, tmp_path):
     assert (title, dict(rows)['Filename']) == ('File', 'song.apl')
 
 
-@pytest.mark.xfail(raises=NameError, strict=True, reason='The MP3 panel names an undefined exception, Att')
 def test_info_without_length(make_audio, tmp_path):
     # Synthetic: a file whose header gives no length leaves Length out.
     tag = audioinfo.Tag(str(make_audio('song.mp3', tmp_path, title='Song')))

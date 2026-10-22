@@ -921,7 +921,7 @@ def tag_factory(id3_filetype):
 
             try:
                 mpginfo.append(('Length', self.length))
-            except Att:
+            except AttributeError:
                 pass
 
             return [('File', fileinfo), (mpginfo[0][0], mpginfo)]
