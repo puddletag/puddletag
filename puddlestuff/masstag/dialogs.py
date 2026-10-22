@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 from copy import deepcopy
 from functools import partial
@@ -637,6 +638,8 @@ class MassTagWindow(QWidget):
         retrieve_msg = translate('Masstagging',
                                  "An error occured during album retrieval: <b>{}</b>")
 
+        error_msg = translate('Masstagging', "An error occurred: <b>{}</b>")
+
         def search_error(error, mtp):
             thread.statusChanged.emit(search_msg.format(str(error)))
 
@@ -646,19 +649,24 @@ class MassTagWindow(QWidget):
         def run_masstag():
             replace_fields = []
             for files in tag_groups:
-                mtp.clear()
+                try:
+                    mtp.clear()
 
-                masstag(mtp, files, self.__flag, search_error,
-                        retrieval_error)
+                    masstag(mtp, files, self.__flag, search_error,
+                            retrieval_error)
 
-                retrieved = merge_tsp_tracks(mtp.profiles)
-                ret = match_files(files, retrieved,
-                                  mtp.track_bound, mtp.fields,
-                                  mtp.jfdi, mtp.leave_existing, True)[0]
+                    retrieved = merge_tsp_tracks(mtp.profiles)
+                    ret = match_files(files, retrieved,
+                                      mtp.track_bound, mtp.fields,
+                                      mtp.jfdi, mtp.leave_existing, True)[0]
 
-                if ret:
-                    thread.enable_preview_mode.emit()
-                    thread.setpreview.emit(ret)
+                    if ret:
+                        thread.enable_preview_mode.emit()
+                        thread.setpreview.emit(ret)
+                except Exception as e:
+                    # An exception escaping the thread aborts puddletag.
+                    logging.exception('Masstagging failed on a group of files')
+                    thread.statusChanged.emit(error_msg.format(str(e)))
 
                 set_status('<hr width="45%" /><br />')
 

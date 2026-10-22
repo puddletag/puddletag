@@ -631,8 +631,6 @@ def test_retrieval_error_while_retrieving_is_logged(mainwin, make_audio, tmp_pat
     no_previews(mainwin)
 
 
-@pytest.mark.xfail(strict=True, reason='an error other than RetrievalError in a tag source '
-                                       'aborts puddletag (#520)')
 def test_other_source_error_is_logged_and_the_run_goes_on(mainwin, make_audio, tmp_path, qtbot,
                                                           user):
     # tut5:9: "sequentially process each directory." The Introduction calls it
