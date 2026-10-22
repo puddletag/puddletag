@@ -2,7 +2,7 @@
 "Open's the Functions dialog with the Replace function. That is all it
 does, nothing more." function.txt, Replace: "It works just as you'd expect
 from any text editor. The only caveat is that words are designated by these
-,.() ! characters." Each result is checked in the files and in the table.
+,.() ![] characters." Each result is checked in the files and in the table.
 Synthetic files.
 """
 import pytest
@@ -127,7 +127,7 @@ def test_match_case(loaded, qtbot, user):
 
 
 def test_whole_word(mainwin, make_audio, tmp_path, qtbot, user):
-    # function.txt: "words are designated by these ,.() ! characters".
+    # function.txt: "words are designated by these ,.() ![] characters".
     # scripting.txt: "Whole is true implies that only whole word matches
     # are replaced." Synthetic file.
     path = make_audio('01.mp3', tmp_path / 'music', title='Songbook,song.(song) song!')
@@ -205,7 +205,7 @@ def test_replacement_with_the_separator_writes_several_values(mainwin, make_audi
 @pytest.mark.parametrize('title, expected', [('song song', 'tune tune'), ('song,song song', 'tune,tune tune')])
 def test_whole_word_next_to_another(mainwin, make_audio, tmp_path, qtbot, user, title, expected):
     # function.txt: "It works just as you'd expect from any text editor. The
-    # only caveat is that words are designated by these ,.() !
+    # only caveat is that words are designated by these ,.() ![]
     # characters." Synthetic files.
     path = make_audio('01.mp3', tmp_path / 'music', title=title)
     table = load(mainwin, qtbot, user, [path])
@@ -217,6 +217,21 @@ def test_whole_word_next_to_another(mainwin, make_audio, tmp_path, qtbot, user, 
     written(user, qtbot, lambda: in_files([path]) != [{'title': [title]}])
     assert in_files([path]) == [{'title': [expected]}]
     assert in_table(table) == [{'title': [expected]}]
+
+
+def test_whole_word_in_brackets(mainwin, make_audio, tmp_path, qtbot, user):
+    # function.txt: "words are designated by these ,.() ![] characters."
+    # Synthetic file.
+    path = make_audio('01.mp3', tmp_path / 'music', title='[song]')
+    table = load(mainwin, qtbot, user, [path])
+    user.click_cell(user.cell(0, 'title'))
+    window, function = open_replace(user, qtbot)
+    fill(user, function, 'song', 'tune')
+    tick(user, function.controls[3])
+    user.click(window.okcancel.okButton)
+    written(user, qtbot, lambda: in_files([path]) != [{'title': ['[song]']}])
+    assert in_files([path]) == [{'title': ['[tune]']}]
+    assert in_table(table) == [{'title': ['[tune]']}]
 
 
 def test_window_opens_on_the_selected_text(loaded, qtbot, user):
