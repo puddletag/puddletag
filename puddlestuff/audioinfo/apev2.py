@@ -321,11 +321,15 @@ class MonkeysAudioTag(ma_base):
                     ('Size', str_filesize(int(self.size))),
                     ('Filename', self[FILENAME]),
                     ('Modified', self.modified)]
-        mainfo = [('Bitrate', 'Lossless'),
-                  ('Frequency', self.frequency),
-                  ('Channels', str(info.channels)),
-                  ('Length', self.length),
-                  ('Stream Version', str(info.version))]
+        mainfo = [('Bitrate', 'Lossless')]
+        for name, value in [('Frequency', lambda: self.frequency),
+                            ('Channels', lambda: str(info.channels)),
+                            ('Length', lambda: self.length),
+                            ('Stream Version', lambda: str(info.version))]:
+            try:
+                mainfo.append((name, value()))
+            except AttributeError:
+                pass
         return [('File', fileinfo), ("Monkey's Audio", mainfo)]
 
 

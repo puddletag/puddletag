@@ -118,8 +118,6 @@ def test_info_panel(song):
     assert (rows['Frequency'], rows['Length']) == (song['__frequency'], song['__length'])
 
 
-@pytest.mark.xfail(raises=AttributeError, strict=True,
-                   reason="Properties fails on a Monkey's Audio link file, which has no frequency")
 def test_link_file_info(make_audio, tmp_path):
     # Synthetic .apl: the fixture's link text and an APEv2 tag. Properties
     # "Shows the first selected file's format information".
