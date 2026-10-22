@@ -328,7 +328,7 @@ Shows the **Artwork** window with which you can edit album art. See :ref:`album_
 
 Filesystem
 ^^^^^^^^^^
-Displays the filesystem window which lists directories. Right click on a directory and click on **Refresh** to refresh it. Also in that context menu, **Show Header** will show the Filesystem header which displays extra info.
+Displays the filesystem window which lists directories. Right click on a directory and click on **Refresh Directory** to refresh it. Also in that context menu, **Show Header** will show the Filesystem header which displays extra info, and **Open in File Manager** will open the directory in the desktop's file manager.
 
 Tag Sources
 ^^^^^^^^^^^
