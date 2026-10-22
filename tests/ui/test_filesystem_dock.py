@@ -4,7 +4,7 @@ folder. Each load is checked in the table and on disk. Synthetic files.
 """
 import pytest
 from PyQt6.QtCore import QPoint, Qt, QTimer
-from PyQt6.QtWidgets import QApplication, QCheckBox, QMenu, QMessageBox, QStyle, QStyleOptionButton
+from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QMenu, QMessageBox, QStyle, QStyleOptionButton
 
 from puddlestuff import audioinfo
 from puddlestuff.mainwin.dirview import DirView, DirViewWidget
@@ -57,11 +57,14 @@ def folder_pos(qtbot, view, path):
     """Where the folder's row is. scrollTo expands its parents, as a user
     does; the model lists each folder in a thread, so rows move until it's
     done: the position is taken in the check that finds the folder under
-    it, and used right away."""
+    it, and used right away. The row goes to the middle, because one at
+    the bottom edge can end up under the horizontal scroll bar that appears
+    once deep folders widen the tree; the point must be visible."""
     index = view.model().index(str(path))
-    view.scrollTo(index)
+    view.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
     pos = []
     qtbot.waitUntil(lambda: view.indexAt(view.visualRect(index).center()) == index
+                    and view.viewport().rect().contains(view.visualRect(index).center())
                     and not pos.append(view.visualRect(index).center()))
     return pos[-1]
 
