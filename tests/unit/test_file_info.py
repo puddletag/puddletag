@@ -109,13 +109,10 @@ def test_opus_bitrate(make_audio, tmp_path):
     assert dict(tag.info[1][1])['Bitrate'] == tag['__bitrate']
 
 
-def test_info_panel(song, request):
+def test_info_panel(song):
     # menus.txt: Properties "Shows the first selected file's format
     # information"; tags.txt: __frequency and __length. The panel shows what
     # the table shows.
-    if song['__ext'] == 'opus':
-        request.applymarker(pytest.mark.xfail(raises=KeyError, strict=True,
-                                              reason="Opus's panel leaves out Frequency"))
     [(_, _), (_, rows)] = song.info
     rows = dict(rows)
     assert (rows['Frequency'], rows['Length']) == (song['__frequency'], song['__length'])

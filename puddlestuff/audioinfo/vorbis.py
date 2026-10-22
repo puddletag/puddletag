@@ -293,6 +293,7 @@ if OggOpus:
                 ('Modified', self.modified)]
 
             ogginfo = [('Bitrate', self.bitrate),
+                       ('Frequency', self.frequency),
                        ('Channels', str(info.channels)),
                        ('Length', self.length)]
             return [('File', fileinfo), ('Opus Info', ogginfo)]
