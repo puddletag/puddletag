@@ -281,7 +281,6 @@ def test_layout_is_unlocked_after_a_restart(lock_key, mainwin, user, qtbot, rest
 # The window fitting the screen
 
 
-@pytest.mark.xfail(strict=True, reason='Tag Sources, Functions and Actions make the window taller than the screen (#768)')
 def test_three_right_docks_fit_the_screen(mainwin, user, qtbot):
     # The docs don't say; this is what puddletag does. #768: "the window ...
     # resizes to be too big ... and also loses the maximize button", after
@@ -295,3 +294,23 @@ def test_three_right_docks_fit_the_screen(mainwin, user, qtbot):
     qtbot.waitUntil(docks(mainwin)['Mass Tagging'].isVisible)
     assert mainwin.tabifiedDockWidgets(docks(mainwin)['Functions']) == [docks(mainwin)['Actions']]
     assert mainwin.tabifiedDockWidgets(docks(mainwin)['Tag Sources']) == [docks(mainwin)['Mass Tagging']]
+
+
+def test_layout_saved_in_an_earlier_session_keeps_its_windows_out_of_the_default_tabs(mainwin, user, qtbot, restart):
+    # news.txt: "the layout is saved from the previous session." Actions,
+    # moved to the left side, stays out of the tabs the first start makes.
+    left = Qt.DockWidgetArea.LeftDockWidgetArea
+    for name in ['Functions', 'Actions']:
+        toggle(user, name)
+        qtbot.waitUntil(docks(mainwin)[name].isVisible)
+    actions = docks(mainwin)['Actions']
+    # Stands in for the user dragging the window there, which the offscreen
+    # platform doesn't carry out.
+    mainwin.addDockWidget(left, actions)
+    qtbot.waitUntil(lambda: mainwin.dockWidgetArea(actions) == left)
+
+    win = restart()
+    actions = docks(win)['Actions']
+    assert win.dockWidgetArea(actions) == left
+    assert actions.isVisible()
+    assert actions not in win.tabifiedDockWidgets(docks(win)['Functions'])

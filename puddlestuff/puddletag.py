@@ -8,7 +8,7 @@ from functools import partial
 
 from PyQt6.QtCore import QDir, QSettings, QUrl, pyqtRemoveInputHook, pyqtSignal
 from PyQt6.QtGui import QAction, QDesktopServices
-from PyQt6.QtWidgets import QApplication, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QDockWidget, QFileDialog, QFrame, QLabel, QMainWindow, QMenu, QMessageBox, QSplitter, QVBoxLayout, QWidget
 
 from . import loadshortcuts as ls
 from . import m3u, genres
@@ -792,6 +792,12 @@ class MainWin(QMainWindow):
             h.restoreState(settings.value('table/header'))
         if settings.value('main/state'):
             self.restoreState(settings.value('main/state'))
+        else:
+            # Stacked, the right-hand docks make the window taller than the
+            # screen. A saved layout wins, so this is only the first start.
+            tool = {dock.objectName(): dock for dock in self.findChildren(QDockWidget)}
+            self.tabifyDockWidget(tool['Tag Sources'], tool['Mass Tagging'])
+            self.tabifyDockWidget(tool['Functions'], tool['Actions'])
 
         confirmations.load()
         shortcutsettings.ActionEditorDialog._loadSettings(status['actions'])
