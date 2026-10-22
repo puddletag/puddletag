@@ -1,17 +1,19 @@
 """The Windows menu and the main window's layout, used as menus.txt
 describes them: each tool window shown and hidden from the Windows menu,
 the layout kept from one session to the next, the Logs window, Lock
-Layout's key, and the window fitting the screen. Synthetic keys and log
-lines.
+Layout's key, and the window fitting the screen. Synthetic files, keys and
+log lines.
 """
 import os
 
 import pytest
 from PyQt6.QtCore import QEvent, QPoint, QPointF, Qt
-from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtGui import QMouseEvent, QWheelEvent
 from PyQt6.QtWidgets import QApplication, QDockWidget, QMenu, QPushButton, QWidget
 
+from puddlestuff import audioinfo
 from puddlestuff.constants import CONFIGDIR
+from puddlestuff.mainwin.tagpanel import FrameCombo, savesettings
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.tagsources import write_log
 
@@ -40,6 +42,21 @@ def double_click_title(user, dock):
     """Double-clicks the tool window's title bar, as a user does to float it
     or dock it again."""
     user.double_click(dock, QPoint(dock.width() // 2, 5))
+
+
+def in_file(path):
+    return audioinfo.usertags(audioinfo.Tag(str(path)))
+
+
+def wheel(widget, notches):
+    """Turns the mouse wheel over the widget: positive notches roll it up,
+    away from the user. The desktop sends the wheel to the widget under the
+    pointer, whether it has the focus or not."""
+    pos = QPointF(widget.rect().center())
+    event = QWheelEvent(pos, QPointF(widget.mapToGlobal(pos)), QPoint(0, 0), QPoint(0, 120 * notches),
+                        Qt.MouseButton.NoButton, Qt.KeyboardModifier.NoModifier,
+                        Qt.ScrollPhase.NoScrollPhase, False)
+    QApplication.sendEvent(widget, event)
 
 
 # The Filter's F3 and menu toggles are tested in
@@ -314,3 +331,60 @@ def test_layout_saved_in_an_earlier_session_keeps_its_windows_out_of_the_default
     assert win.dockWidgetArea(actions) == left
     assert actions.isVisible()
     assert actions not in win.tabifiedDockWidgets(docks(win)['Functions'])
+
+
+@pytest.fixture
+def tall_panel(clean_profile):
+    """40 one-field rows in the Tag Panel, as Edit > Preferences > Tag Panel
+    saves them in an earlier session (synthetic fields field1..field39 after
+    Title)."""
+    rows = {row: [(f'Field {row}', f'field{row}')] for row in range(1, 40)}
+    rows[0] = [('&Title', 'title')]
+    savesettings(rows)
+
+
+@pytest.mark.xfail(strict=True, reason='A long Tag Panel makes the window taller than the screen (#1092)')
+def test_long_tag_panel_fits_the_screen(tall_panel, mainwin):
+    # menus.txt: "Tag Panel: ... Configure the fields in
+    # Edit->Preferences->Tag Panel". #1092: "It is impossible for me to look
+    # at the Filesystem because I cannot scroll".
+    assert mainwin.minimumSizeHint().height() <= QApplication.primaryScreen().availableGeometry().height()
+
+
+def title_field(mainwin, make_audio, tmp_path, qtbot, user):
+    """Three synthetic MP3s loaded and the first selected: returns their paths
+    and the Tag Panel's Title field."""
+    music = tmp_path / 'music'
+    paths = [make_audio(f'0{n}.mp3', music, title=f'Title {n}') for n in range(1, 4)]
+    mainwin.openDir(str(music), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == 3)
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+    combo = mainwin.findChild(FrameCombo).combos['title']
+    qtbot.waitUntil(lambda: combo.isEnabled() and combo.currentText() == 'Title 1')
+    return paths, combo
+
+
+@pytest.mark.xfail(strict=True, reason='The mouse wheel over a Tag Panel field changes its value without a click (#1094)')
+def test_wheel_over_a_tag_panel_field_keeps_its_value(mainwin, make_audio, tmp_path, qtbot, user):
+    # tut1.txt: "To remove a field, change the text to <blank> and the
+    # field'll be removed upon saving." tut3.txt: "Each field's list holds
+    # <keep>, <blank> and the values the selected files have: pick one to
+    # give it to all of them." #1094: the wheel should not change a field "so
+    # that it cannot be executed unintentionally".
+    paths, combo = title_field(mainwin, make_audio, tmp_path, qtbot, user)
+    wheel(combo, 1)
+    assert combo.currentText() == 'Title 1'
+    user.activate()
+    user.press(Key.Key_S, Ctrl)
+    qtbot.waitUntil(lambda: in_file(paths[0]).get('title') == ['Title 1'])
+    assert mainwin._table.model().taginfo[0]['title'] == ['Title 1']
+
+
+def test_wheel_over_a_clicked_tag_panel_field_changes_its_value(mainwin, make_audio, tmp_path, qtbot, user):
+    # tut3.txt: "pick one to give it to all of them." Once the user has
+    # clicked a field, it takes the wheel.
+    paths, combo = title_field(mainwin, make_audio, tmp_path, qtbot, user)
+    user.click(combo.lineEdit())
+    wheel(combo, 1)
+    assert combo.currentText() == '<blank>'
