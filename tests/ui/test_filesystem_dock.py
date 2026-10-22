@@ -337,7 +337,6 @@ def test_ctrl_click_keeps_previews(mainwin, qtbot, tmp_path, user, dialogs, musi
     assert in_file(music['a'])['title'] == ['Title a']
 
 
-@pytest.mark.xfail(strict=True, reason='https://github.com/puddletag/puddletag/issues/59')
 def test_arrow_keys_open_the_next_folder(mainwin, music, tmp_path, qtbot, user):
     # "Click on a folder to open it." (tut3.txt); issue #59: "Cannot navigate
     # Filesystem view using arrow keys on the keyboard".
