@@ -833,7 +833,6 @@ def test_automatic_retrieval_previews_the_best_album(mainwin, make_audio, tmp_pa
     qtbot.waitUntil(lambda: previews(mainwin) == expected, timeout=2000)
 
 
-@pytest.mark.xfail(strict=True, reason="the default source's name doesn't match MusicBrainz's")
 def test_fresh_profile_starts_on_musicbrainz(mainwin, qtbot, user):
     # The docs don't say; this is what puddletag should do: a fresh profile
     # opens the Tag Sources window on MusicBrainz, the source listed for it.

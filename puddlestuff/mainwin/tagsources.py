@@ -807,7 +807,7 @@ class MainWin(QWidget):
         settings = PuddleConfig(os.path.join(CONFIGDIR, 'tagsources.conf'))
         get = lambda s, k, i = False: settings.get('tagsources', s, k, i)
 
-        source = get('lastsource', 'Musicbrainz')
+        source = get('lastsource', 'MusicBrainz')
         self.__sourceFields = [settings.get('tagsourcetags', ts.name, [])
                                for ts in self.__sources]
 
