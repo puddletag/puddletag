@@ -318,6 +318,9 @@ class DirView(QTreeView):
 
     def focusDir(self, dir_path):
         """Focuses the component on the given path """
+        # selectionChanged clears _select expecting a load's dirschanged;
+        # a click that loaded nothing would make selectDirs swallow this.
+        self._select = True
         self.selectDirs(dir_path)
 
 

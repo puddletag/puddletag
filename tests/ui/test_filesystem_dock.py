@@ -499,7 +499,6 @@ def test_go_to_parent_folder_greyed_out_with_no_files(mainwin, user):
     assert not user.action('&Go to parent folder').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='Go to parent folder is ignored once after a folder is unselected')
 def test_go_to_parent_folder_after_unloading_a_folder(mainwin, qtbot, user, music, tmp_path):
     # menus.txt: "Opens the filesystem dock (if not already opened) and
     # navigates to the folder which contains the selected file." It works
