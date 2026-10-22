@@ -888,7 +888,7 @@ def tag_factory(id3_filetype):
                         ('Modified', self.modified)]
             try:
                 version = self.mut_obj.tags.version
-                version = ('ID3 Version', self.filetype)
+                version = ('ID3 Version', 'ID3v%d.%d' % version[:2])
             except AttributeError:
                 version = ('ID3 Version', 'No tags in file.')
             fileinfo.append(version)

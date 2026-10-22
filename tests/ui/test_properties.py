@@ -137,7 +137,6 @@ def test_no_key(mainwin, user):
     assert user.action('&Properties').shortcut().isEmpty()
 
 
-@pytest.mark.xfail(strict=True, reason='The ID3 Version row shows the file type, MP3')
 def test_id3_version(mainwin, qtbot, user, loaded):
     # "format information like filetype, version, etc.", and the row's own
     # label, ID3 Version.
