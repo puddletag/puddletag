@@ -653,10 +653,6 @@ def loaded_over(mainwin, qtbot, user, folders):
     return table
 
 
-FOLDER_HOLDING_A_LOADED_ONE = "a folder holding a loaded folder removes the other folders' files"
-
-
-@pytest.mark.xfail(strict=True, reason=FOLDER_HOLDING_A_LOADED_ONE)
 @pytest.mark.parametrize('add', ADD_A_FOLDER.values(), ids=ADD_A_FOLDER.keys())
 def test_add_folder_holding_a_loaded_folder_keeps_the_others(mainwin, make_audio, tmp_path, qtbot, user, dialogs, add):
     # Add Folder: "Works as Open Folder, but instead of replacing the
@@ -672,7 +668,6 @@ def test_add_folder_holding_a_loaded_folder_keeps_the_others(mainwin, make_audio
     assert titles_loaded(table) == ['a1', 'a2', 'b1']
 
 
-@pytest.mark.xfail(strict=True, reason="a folder whose name starts with a loaded folder's name loads nothing")
 @pytest.mark.parametrize('add', ADD_A_FOLDER.values(), ids=ADD_A_FOLDER.keys())
 def test_add_folder_named_like_a_loaded_one(mainwin, make_audio, tmp_path, qtbot, user, dialogs, add):
     # Add Folder: "Works as Open Folder, but instead of replacing the
@@ -687,7 +682,6 @@ def test_add_folder_named_like_a_loaded_one(mainwin, make_audio, tmp_path, qtbot
     assert titles_loaded(table) == ['x', 'y']
 
 
-@pytest.mark.xfail(strict=True, reason=FOLDER_HOLDING_A_LOADED_ONE)
 @pytest.mark.parametrize('add', ADD_A_FOLDER.values(), ids=ADD_A_FOLDER.keys())
 def test_add_folder_named_like_the_start_of_a_loaded_one(mainwin, make_audio, tmp_path, qtbot, user, dialogs, add):
     # Add Folder: "Works as Open Folder, but instead of replacing the

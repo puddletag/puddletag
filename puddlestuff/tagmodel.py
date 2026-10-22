@@ -1949,11 +1949,11 @@ class TagTable(QTableView):
             if subfolders:
                 # Remove all subfolders if the parent's already loaded.
                 for d in self.dirs:
-                    dirs = [z for z in dirs if not z.startswith(d)]
+                    dirs = [z for z in dirs if z != d and not issubfolder(d, z, None)]
                 toremove = set()
                 for d in dirs:
-                    toremove = toremove.union([z for z in self.dirs if z.startswith(d)])
-                self.removeFolders(toremove)
+                    toremove = toremove.union([z for z in self.dirs if issubfolder(d, z, None)])
+                self.removeFolders(toremove, False)
             else:
                 self.removeFolders([z for z in dirs if z in self.dirs], False)
             self.dirs.extend(dirs)
