@@ -490,6 +490,8 @@ class MainWin(QMainWindow):
         connect_actions(actions, controls)
         connect_action_shortcuts(all_actions)
         create_context_menus(controls, all_actions)
+        # A key only works for an action that is on a widget.
+        self.addActions([a for a in all_actions if not a.associatedObjects()])
         status['actions'] = all_actions
 
         for m in plugin_modules:

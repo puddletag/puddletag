@@ -235,8 +235,6 @@ def test_copy_puts_the_logs_on_the_clipboard(mainwin, user, qtbot):
 
 # Lock Layout
 
-LOCK_KEY_DOES_NOTHING = "Lock Layout's key, set in Preferences > Shortcuts, does nothing: the command is on no widget"
-
 
 @pytest.fixture
 def lock_key(clean_profile):
@@ -254,7 +252,6 @@ def lock_with_key(mainwin, user, qtbot):
     qtbot.waitUntil(lambda: all(type(d.titleBarWidget()) is QWidget for d in docks(mainwin).values()))
 
 
-@pytest.mark.xfail(strict=True, reason=LOCK_KEY_DOES_NOTHING)
 def test_lock_layout_key_locks_the_docks(lock_key, mainwin, user, qtbot):
     # The docs don't say what locking does; this is what puddletag does.
     lock_with_key(mainwin, user, qtbot)
@@ -262,7 +259,6 @@ def test_lock_layout_key_locks_the_docks(lock_key, mainwin, user, qtbot):
     assert all(d.titleBarWidget().height() == 0 for d in docks(mainwin).values() if d.isVisible())
 
 
-@pytest.mark.xfail(strict=True, reason=LOCK_KEY_DOES_NOTHING)
 def test_locked_dock_does_not_float(lock_key, mainwin, user, qtbot):
     # The docs don't say; this is what puddletag does.
     lock_with_key(mainwin, user, qtbot)
@@ -274,7 +270,6 @@ def test_locked_dock_does_not_float(lock_key, mainwin, user, qtbot):
     qtbot.waitUntil(lambda: not fs.isVisible())
 
 
-@pytest.mark.xfail(strict=True, reason=LOCK_KEY_DOES_NOTHING)
 def test_layout_is_unlocked_after_a_restart(lock_key, mainwin, user, qtbot, restart):
     # The docs don't say; this is what puddletag does: the lock isn't saved.
     lock_with_key(mainwin, user, qtbot)
