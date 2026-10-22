@@ -649,6 +649,7 @@ class MainWin(QWidget):
         self.listbox.header().sortChanged.connect(self.saveSort)
         connect(self.listbox, 'statusChanged', self.label.setText)
         connect(self.listbox, 'preview', self.emit_preview)
+        connect(self.listbox, 'exact', self.emitExact)
         connect(self.listbox, 'exactMatches', self.emitExact)
 
         # An link to the web page sourced from

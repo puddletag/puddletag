@@ -813,7 +813,6 @@ def test_preferences_ok_keeps_the_header_sort(mainwin, make_audio, tmp_path, qtb
 
 # Automatic retrieval, the default source and the album tooltip.
 
-@pytest.mark.xfail(strict=True, reason="automatic retrieval finds the matches but previews none")
 def test_automatic_retrieval_previews_the_best_album(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "7. If checked, the album that best matches the retrieved
     # albums will be automatically retrieved." preferences.txt: "If automatic
