@@ -394,6 +394,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             self.statusChanged.emit(translate("Tag Sources", "Retrieval complete."))
             item.retrieving = False
         else:
+            item.retrieving = False
             if not item.childCount():
                 self.collapse.emit(index)
         self.retrievalDone.emit()
@@ -479,6 +480,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         def finished(val):
             if val is None:
+                item.retrieving = False
                 self.retrievalDone.emit()
                 return
             fillItem(item, val[0], val[1], self.trackPattern)

@@ -679,7 +679,6 @@ def test_unhandled_retrieval_error_is_shown_in_the_window(mainwin, make_audio, t
     assert previews(mainwin) == [{}, {}, {}]
 
 
-@pytest.mark.xfail(strict=True, reason='a failed retrieval leaves the album marked as retrieving')
 def test_failed_retrieval_keeps_the_album_expandable(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs are silent; an album with tracks to fetch has an expand arrow
     # before the click, and a failed click shouldn't take it away. Synthetic
