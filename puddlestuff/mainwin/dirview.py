@@ -363,8 +363,14 @@ class DirViewWidget(QWidget):
     def saveSettings(self):
         self.dirview.saveSettings()
 
+    def applyGenSettings(self, d, startlevel=None):
+        self.subfolderCheck.blockSignals(True)
+        self.subfolderCheck.setChecked(bool(d['Su&bfolders']))
+        self.subfolderCheck.blockSignals(False)
+
     def setSubFolders(self, check):
-        value = (check == Qt.CheckState.Checked)
+        # PyQt6 passes stateChanged's value as an int
+        value = (Qt.CheckState(check) == Qt.CheckState.Checked)
         self.dirview.subfolders = value
         save_gen_settings({'Su&bfolders': value})
         self._status['table'].subFolders = value

@@ -356,7 +356,6 @@ def test_arrow_keys_open_the_next_folder(mainwin, music, tmp_path, qtbot, user):
         assert in_file(music[name])['title'] == [f'Title {name}']
 
 
-@pytest.mark.xfail(strict=True, reason="ticking the Filesystem dock's Subfolders box turns subfolders off")
 def test_subfolders_box(mainwin, music, tmp_path, qtbot, user):
     # preferences.txt: "If checked, Subfolders of directories selected for
     # import will be checked for supported files (which'll then be loaded).
@@ -372,7 +371,6 @@ def test_subfolders_box(mainwin, music, tmp_path, qtbot, user):
     assert in_file(music['a'])['title'] == ['Title a']
 
 
-@pytest.mark.xfail(strict=True, reason="the Filesystem dock's Subfolders box ignores Preferences")
 def test_subfolders_box_follows_preferences(mainwin, qtbot, user):
     # Synthetic (docs-silent): the dock's box shows the setting Preferences
     # changed.
