@@ -57,33 +57,19 @@ def savesettings(d, filepath=None):
 
 
 class Combo(QComboBox):
+    """A field that takes the mouse wheel only once it has been clicked, so
+    that rolling the wheel over it can't change its value unintentionally."""
 
     def __init__(self, *args, **kwargs):
-        super(Combo, self).__init__(*args, **kwargs)
-        self._edited = False
+        super().__init__(*args, **kwargs)
+        # The default, WheelFocus, would let the wheel give it the focus.
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        def k(text): self._edited = True
-
-        self.editTextChanged.connect(k)
-
-    def setEditText(self, text):
-        self._edited = False
-        super(Combo, self).setEditText(text)
-
-    def focusOutEvent(self, event):
-        if not self._edited:
-            return super(Combo, self).focusOutEvent(event)
-        curtext = self.currentText()
-        index = self.findText(curtext,
-                              Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchFixedString | Qt.MatchFlag.MatchCaseSensitive)
-        if index == -1:
-            index = self.findText(curtext, Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchFixedString)
-        if index > 1:
-            if curtext == self.itemText(index):
-                self.removeItem(index)
-            self.insertItem(2, curtext)
-        self._edited = False
-        return super(Combo, self).focusOutEvent(event)
+    def wheelEvent(self, event):
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()
 
 
 class Thread(QThread):
@@ -313,7 +299,7 @@ class FrameCombo(QGroupBox):
             for tag in tags:
                 tagval = tag[1]
                 self.labels[tagval] = QLabel(tag[0])
-                self.combos[tagval] = QComboBox(self)
+                self.combos[tagval] = Combo(self)
                 self.combos[tagval].setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
                 self.combos[tagval].setEditable(True)
                 self.combos[tagval].completer().setCompletionMode(

@@ -365,7 +365,6 @@ def title_field(mainwin, make_audio, tmp_path, qtbot, user):
     return paths, combo
 
 
-@pytest.mark.xfail(strict=True, reason='The mouse wheel over a Tag Panel field changes its value without a click (#1094)')
 def test_wheel_over_a_tag_panel_field_keeps_its_value(mainwin, make_audio, tmp_path, qtbot, user):
     # tut1.txt: "To remove a field, change the text to <blank> and the
     # field'll be removed upon saving." tut3.txt: "Each field's list holds
