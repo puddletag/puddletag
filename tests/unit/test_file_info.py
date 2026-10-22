@@ -99,3 +99,41 @@ def test_total(make_audio, tmp_path, ext):
     tag.update({'__total': '15'})
     tag.save()
     assert audioinfo.Tag(str(path))['track'] == ['3/15']
+
+
+def test_opus_bitrate(make_audio, tmp_path):
+    # #980: "the software can't show the bitrate of opus files".
+    # tags.txt: __bitrate_num is the bitrate as a number.
+    tag = audioinfo.Tag(str(make_audio('song.opus', tmp_path, title='Song')))
+    assert int(tag['__bitrate_num']) > 0
+    assert dict(tag.info[1][1])['Bitrate'] == tag['__bitrate']
+
+
+def test_info_panel(song, request):
+    # menus.txt: Properties "Shows the first selected file's format
+    # information"; tags.txt: __frequency and __length. The panel shows what
+    # the table shows.
+    if song['__ext'] == 'opus':
+        request.applymarker(pytest.mark.xfail(raises=KeyError, strict=True,
+                                              reason="Opus's panel leaves out Frequency"))
+    [(_, _), (_, rows)] = song.info
+    rows = dict(rows)
+    assert (rows['Frequency'], rows['Length']) == (song['__frequency'], song['__length'])
+
+
+@pytest.mark.xfail(raises=AttributeError, strict=True,
+                   reason="Properties fails on a Monkey's Audio link file, which has no frequency")
+def test_link_file_info(make_audio, tmp_path):
+    # Synthetic .apl: the fixture's link text and an APEv2 tag. Properties
+    # "Shows the first selected file's format information".
+    tag = audioinfo.Tag(str(make_audio('song.apl', tmp_path, title='Song')))
+    [(title, rows), *_] = tag.info
+    assert (title, dict(rows)['Filename']) == ('File', 'song.apl')
+
+
+@pytest.mark.xfail(raises=NameError, strict=True, reason='The MP3 panel names an undefined exception, Att')
+def test_info_without_length(make_audio, tmp_path):
+    # Synthetic: a file whose header gives no length leaves Length out.
+    tag = audioinfo.Tag(str(make_audio('song.mp3', tmp_path, title='Song')))
+    del tag.length
+    assert 'Length' not in dict(tag.info[1][1])
