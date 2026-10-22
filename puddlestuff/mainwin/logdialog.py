@@ -44,12 +44,6 @@ class LogDialog(QWidget):
         text = self._text.toPlainText()
         QApplication.clipboard().setText(text)
 
-    def setText(self, text, html=True):
-        if html:
-            self._text.setHtml(text)
-        else:
-            self._text.setPlaintext(text)
-
 
 control = ('Logs', LogDialog, RIGHTDOCK, False)
 
