@@ -33,7 +33,8 @@ The Pattern Combo
 -----------------
 
 + Pressing F8 switches focus between it and the file-view.
-+ Patterns aren't saved by default. Just press Enter and whatever's currently there will be added to the list. **Edit→Preferences→Tag Panel** works as a more fully featured editor.
++ Patterns aren't saved by default. Just press Enter and whatever's currently there will be added to the list. **Edit→Preferences→Patterns** works as a more fully featured editor.
++ Typing completes to the first saved pattern that starts the same way; press Delete to keep just what you typed.
 
 Tag Panel
 ---------
