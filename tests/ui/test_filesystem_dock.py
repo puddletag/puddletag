@@ -266,7 +266,6 @@ def test_right_click_loads_nothing(mainwin, music, tmp_path, qtbot, user):
     assert in_file(music['b'])['title'] == ['Title b']
 
 
-@pytest.mark.xfail(strict=True, reason="unselecting a folder leaves its subfolders' files loaded")
 def test_ctrl_click_unloads_subfolders(mainwin, music, tmp_path, qtbot, user):
     # preferences.txt: "If checked, Subfolders of directories selected for
     # import will be checked for supported files (which'll then be loaded)."

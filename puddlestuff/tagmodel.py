@@ -2420,6 +2420,10 @@ class TagTable(QTableView):
 
     def removeFolders(self, dirs, valid=True):
         if dirs:
+            if self.subFolders and not valid:
+                # Loaded subfolders aren't in self.dirs: find them in the rows.
+                loaded = {tag.dirpath for tag in self.model().taginfo}
+                dirs = set(dirs).union(z for z in loaded if any(issubfolder(d, z, None) for d in dirs))
             self.dirs = list(set(self.dirs).difference(dirs))
             self.model().removeFolders(dirs, valid)
 
