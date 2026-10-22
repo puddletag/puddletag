@@ -99,6 +99,7 @@ class FrameCombo(QGroupBox):
     onetomany = pyqtSignal(dict, name='onetomany')
     onetomanypreview = pyqtSignal(dict, name='onetomanypreview')
     manypreview = pyqtSignal(list, name='manypreview')
+    scrollable = True
 
     def __init__(self, tags=None, parent=None, status=None):
         self.settingsdialog = SettingsWin

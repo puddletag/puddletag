@@ -343,12 +343,21 @@ def tall_panel(clean_profile):
     savesettings(rows)
 
 
-@pytest.mark.xfail(strict=True, reason='A long Tag Panel makes the window taller than the screen (#1092)')
 def test_long_tag_panel_fits_the_screen(tall_panel, mainwin):
     # menus.txt: "Tag Panel: ... Configure the fields in
     # Edit->Preferences->Tag Panel". #1092: "It is impossible for me to look
     # at the Filesystem because I cannot scroll".
     assert mainwin.minimumSizeHint().height() <= QApplication.primaryScreen().availableGeometry().height()
+
+
+def test_long_tag_panel_scrolls_to_its_last_field(tall_panel, mainwin, qtbot):
+    # #1092: "I cannot scroll". The panel's last field can be scrolled to.
+    panel = mainwin.findChild(FrameCombo)
+    scroll = panel.parentWidget().parentWidget()
+    combo = panel.combos['field39']
+    scroll.ensureWidgetVisible(combo)
+    viewport = scroll.viewport()
+    qtbot.waitUntil(lambda: viewport.rect().contains(combo.mapTo(viewport, combo.rect().center())))
 
 
 def title_field(mainwin, make_audio, tmp_path, qtbot, user):

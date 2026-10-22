@@ -28,8 +28,8 @@ from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtSvgWidgets import QGraphicsSvgItem
 from PyQt6.QtWidgets import QAbstractItemView, QApplication, QComboBox, QDialog, QDialogButtonBox, \
     QDockWidget, QFileDialog, QFrame, QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QGridLayout, QHBoxLayout, \
-    QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy, \
-    QTextEdit, QToolButton, QVBoxLayout, QWidget
+    QHeaderView, QLabel, QLayout, QLineEdit, QListWidget, QMenu, QMessageBox, QProgressBar, QPushButton, QScrollArea, \
+    QSizePolicy, QTextEdit, QToolButton, QVBoxLayout, QWidget
 
 from . import audioinfo
 from .audioinfo import (IMAGETYPES, DESCRIPTION, DATA, IMAGETYPE, DEFAULT_COVER,
@@ -2372,7 +2372,17 @@ class PuddleDock(QDockWidget):
             self.setObjectName(title)
             self._control = control
             self._controls.update({title: control})
-            self.setWidget(control)
+            if getattr(control, 'scrollable', False):
+                # So a control taller than the screen scrolls instead of
+                # making the window taller.
+                scroll = QScrollArea()
+                scroll.setWidgetResizable(True)
+                scroll.setFrameShape(QFrame.Shape.NoFrame)
+                scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+                scroll.setWidget(control)
+                self.setWidget(scroll)
+            else:
+                self.setWidget(control)
 
     def setVisible(self, visible):
         QDockWidget.setVisible(self, visible)
