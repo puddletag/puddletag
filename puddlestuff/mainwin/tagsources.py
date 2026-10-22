@@ -792,13 +792,9 @@ class MainWin(QWidget):
             self.enable_preview_mode.emit()
             self.setpreview.emit(d)
         else:
-            previews = []
+            previews = {}
             for f, r in d.items():
-                temp = {}
-                for field in r:
-                    if field not in f:
-                        temp[field] = r[field]
-                previews.append(temp)
+                previews[f] = {field: r[field] for field in r if not f.stored(field)}
             self.enable_preview_mode.emit()
             self.setpreview.emit(previews)
 

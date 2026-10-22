@@ -536,8 +536,6 @@ def test_update_empty_fields_only_after_another_album(mainwin, make_audio, tmp_p
                                  for n, title in enumerate(('One', 'Two', 'Three'), 1)]
 
 
-@pytest.mark.xfail(strict=True, reason='Update empty fields only puts exact matches on the selected '
-                                       'rows in match order')
 def test_update_empty_fields_only_with_exact_matches(mainwin, make_audio, tmp_path, qtbot, user):
     # "Check this box and only fields that aren't already in the file will
     # get updated." (tagsources.txt). Synthetic files and matches, given for
