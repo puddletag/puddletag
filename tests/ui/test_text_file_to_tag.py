@@ -323,7 +323,6 @@ def test_empty_clipboard(loaded, qtbot, user):
     assert in_table(table) == UNCHANGED
 
 
-@pytest.mark.xfail(strict=True, reason='a text file that is not UTF-8 raises UnicodeDecodeError instead of asking for another file')
 def test_text_file_that_is_not_utf8(user, loaded, qtbot, dialogs, tmp_path):
     # menus.txt: "Asks you to open a Text File". The program's own message
     # for a file it can't load is "The file <b>...</b> couldn't be

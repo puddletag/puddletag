@@ -346,8 +346,9 @@ class ImportTextFile(QDialog):
             return True
 
         try:
-            f = open(filename, 'r')
-        except (IOError, OSError) as detail:
+            with open(filename, 'r') as f:
+                lines = f.readlines()
+        except (OSError, UnicodeDecodeError) as detail:
             errormsg = translate('Text File -> Tag',
                                  "The file <b>{}</b> couldn't be loaded.<br /> "
                                  "Do you want to choose another?"
@@ -362,7 +363,7 @@ class ImportTextFile(QDialog):
             else:
                 return detail
 
-        self.lines = f.readlines()
+        self.lines = lines
         self.file.setPlainText("".join(self.lines))
         self.setLines()
         self.fillTags()
