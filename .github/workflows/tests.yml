@@ -21,6 +21,12 @@ jobs:
         # Every supported Python, from the oldest (python_requires in setup.py)
         # to the newest.
         python-version: ['3.13', '3.14', '3.15']
+        # Only this Python measures coverage and uploads it to Codecov; the
+        # others skip it and run faster. Name one of the versions above:
+        # another one would add a job instead of marking an existing one.
+        include:
+        - python-version: '3.15'
+          coverage: true
 
     steps:
     - uses: actions/checkout@v7
@@ -43,14 +49,19 @@ jobs:
     - name: Install Python dependencies
       run: python -m pip install -r requirements.txt -r requirements-dev.txt
 
+    # One pytest-xdist worker per core: GitHub's standard Linux runner for
+    # public repositories has 4.
     - name: Run tests
       env:
         QT_QPA_PLATFORM: offscreen
-      run: python -m pytest --cov --cov-report=term --cov-report=xml
+      run: >-
+        python -m pytest --numprocesses=4
+        ${{ matrix.coverage && '--cov --cov-report=term --cov-report=xml' || '' }}
 
     # A Codecov outage must not fail the tests: "All tests passed" is
     # required to merge.
     - name: Upload coverage to Codecov
+      if: matrix.coverage
       uses: codecov/codecov-action@v7
       with:
         files: coverage.xml
