@@ -86,7 +86,7 @@ def tooltip(tag, mapping=None):
         return translate("Tag Sources", "<b>Error in pattern</b>")
     mapping = {} if mapping is None else mapping
     tag = dict((mapping.get(k, k), v) for k, v in tag.items()
-               if not k.startswith('#'))
+               if not k.startswith('#') and k not in no_disp_fields)
 
     return pprint_tag(tag)
 

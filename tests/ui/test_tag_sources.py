@@ -842,7 +842,6 @@ def test_fresh_profile_starts_on_musicbrainz(mainwin, qtbot, user):
     assert window.sourcelist.currentText() == 'MusicBrainz'
 
 
-@pytest.mark.xfail(strict=True, reason="the album tooltip lists __numtracks")
 def test_album_tooltip_shows_the_fields_to_write(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "Hover over an album/track to see an overview of the
     # metadata that'll get written." Synthetic files and albums.
