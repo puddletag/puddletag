@@ -53,8 +53,14 @@ class PatternCombo(QComboBox):
         shortcut.activated.connect(set_focus)
 
     def setItems(self, texts):
+        text = self.currentText()
         self.clear()
         self.addItems(texts)
+        index = self.findText(text)
+        if index >= 0:
+            self.setCurrentIndex(index)
+        else:
+            self.setEditText(text)
 
     def items(self):
         text = self.itemText

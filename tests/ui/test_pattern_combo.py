@@ -370,7 +370,6 @@ def test_edited_list_is_kept_after_a_restart(loaded, user, qtbot, dialogs, resta
     assert saved_patterns()['patterns'] == before + ['%title% - %album%']
 
 
-@pytest.mark.xfail(strict=True, reason='OK in Preferences puts the first listed pattern in the Pattern Combo')
 def test_preferences_ok_keeps_a_typed_pattern(loaded, user, qtbot):
     # The docs don't say; a pattern being used shouldn't be lost by saving
     # preferences. OK on the General page, Patterns never opened.
@@ -382,7 +381,6 @@ def test_preferences_ok_keeps_a_typed_pattern(loaded, user, qtbot):
     assert combo.currentText() == '%title% - %album%'
 
 
-@pytest.mark.xfail(strict=True, reason='OK in Preferences puts the first listed pattern in the Pattern Combo')
 def test_preferences_ok_keeps_a_picked_pattern(loaded, user, qtbot):
     # The docs don't say; a pattern being used shouldn't be lost by saving
     # preferences.
