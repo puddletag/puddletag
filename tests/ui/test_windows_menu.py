@@ -1,16 +1,23 @@
 """The Windows menu and the main window's layout, used as menus.txt
 describes them: each tool window shown and hidden from the Windows menu,
-the layout kept from one session to the next, and the Logs window.
-Synthetic log lines.
+the layout kept from one session to the next, the Logs window, and Lock
+Layout's key. Synthetic keys and log lines.
 """
+import os
+
 import pytest
 from PyQt6.QtCore import QEvent, QPoint, QPointF, Qt
 from PyQt6.QtGui import QMouseEvent
-from PyQt6.QtWidgets import QApplication, QDockWidget, QMenu, QPushButton
+from PyQt6.QtWidgets import QApplication, QDockWidget, QMenu, QPushButton, QWidget
 
+from puddlestuff.constants import CONFIGDIR
+from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.tagsources import write_log
 
 pytestmark = pytest.mark.ui
+
+Key = Qt.Key
+Ctrl = Qt.KeyboardModifier.ControlModifier
 
 
 def docks(win):
@@ -224,3 +231,52 @@ def test_copy_puts_the_logs_on_the_clipboard(mainwin, user, qtbot):
     user.click(log_button(dock, '&Copy'))
     assert QApplication.clipboard().text() == 'Synthetic line one\nSynthetic line two'
     assert logs.toPlainText() == 'Synthetic line one\nSynthetic line two'
+
+
+# Lock Layout
+
+LOCK_KEY_DOES_NOTHING = "Lock Layout's key, set in Preferences > Shortcuts, does nothing: the command is on no widget"
+
+
+@pytest.fixture
+def lock_key(clean_profile):
+    """A key for Lock Layout, set in Preferences > Shortcuts in an earlier
+    session: preferences.txt: "With this panel you can edit the keyboard
+    shortcuts of any menu item in puddletag." Ctrl+L is synthetic; no other
+    command uses it."""
+    PuddleConfig(os.path.join(CONFIGDIR, 'user_shortcuts')).set('shortcuts', '&Lock Layout', 'Ctrl+L')
+
+
+def lock_with_key(mainwin, user, qtbot):
+    user.activate()
+    mainwin._table.setFocus()
+    user.press(Key.Key_L, Ctrl)
+    qtbot.waitUntil(lambda: all(type(d.titleBarWidget()) is QWidget for d in docks(mainwin).values()))
+
+
+@pytest.mark.xfail(strict=True, reason=LOCK_KEY_DOES_NOTHING)
+def test_lock_layout_key_locks_the_docks(lock_key, mainwin, user, qtbot):
+    # The docs don't say what locking does; this is what puddletag does.
+    lock_with_key(mainwin, user, qtbot)
+    # A hidden dock's blank title bar has not been laid out yet.
+    assert all(d.titleBarWidget().height() == 0 for d in docks(mainwin).values() if d.isVisible())
+
+
+@pytest.mark.xfail(strict=True, reason=LOCK_KEY_DOES_NOTHING)
+def test_locked_dock_does_not_float(lock_key, mainwin, user, qtbot):
+    # The docs don't say; this is what puddletag does.
+    lock_with_key(mainwin, user, qtbot)
+    fs = docks(mainwin)['Filesystem']
+    user.double_click(fs, QPoint(fs.width() // 2, 2))
+    qtbot.wait(100)
+    assert not fs.isFloating()
+    toggle(user, 'Filesystem')
+    qtbot.waitUntil(lambda: not fs.isVisible())
+
+
+@pytest.mark.xfail(strict=True, reason=LOCK_KEY_DOES_NOTHING)
+def test_layout_is_unlocked_after_a_restart(lock_key, mainwin, user, qtbot, restart):
+    # The docs don't say; this is what puddletag does: the lock isn't saved.
+    lock_with_key(mainwin, user, qtbot)
+    win = restart()
+    assert all(d.titleBarWidget() is None for d in docks(win).values())
