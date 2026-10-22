@@ -365,8 +365,10 @@ def _disconnect_all(qobject):
 
 @pytest.fixture
 def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
+    from puddlestuff import audioinfo
     from puddlestuff.mainwin import previews
     from puddlestuff.puddletag import MainWin, status
+    tag = audioinfo.Tag
     win = MainWin()
 
     def exit_without_writing(win):
@@ -386,6 +388,10 @@ def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
     # The Functions window opens on the last function run, kept in this
     # module-level dict.
     status['prevfunc'] = None
+    # The File-View replaces audioinfo.Tag with its own (tagmodel.py), which
+    # saves into its previews while it's in Preview Mode: a later test in
+    # this process would read and save files through it.
+    audioinfo.Tag = tag
 
 
 @pytest.fixture
