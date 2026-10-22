@@ -436,6 +436,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
         if not matches:
             not_found.append(tsp)
+            if tsp.if_no_result == STOP:
+                break
             continue
 
         if len(matches) > 1:
@@ -459,6 +461,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
         if result is None:
             set_status(NO_MATCHES.format(tsp.tag_source.name))
             not_found.append(tsp)
+            if tsp.if_no_result == STOP:
+                break
         else:
             found.append(tsp)
 

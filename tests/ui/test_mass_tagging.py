@@ -554,8 +554,6 @@ def test_fields_limit_what_is_retrieved(mainwin, user, album, qtbot):
 # and use any previously retrieved results." (tut5.txt) Synthetic files and
 # albums.
 
-@pytest.mark.xfail(strict=True,
-                   reason='If no results found: Stop still polls the next tag sources')
 def test_stop_ends_the_lookup_when_a_source_finds_nothing(mainwin, user, album, qtbot):
     files, window = album
     SecondSource.albums = [(ALBUM_A, tracks(genre='Two'))]
