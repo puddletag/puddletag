@@ -469,8 +469,6 @@ def test_best_matching_album_is_retrieved(mainwin, make_audio, tmp_path, qtbot, 
     assert [shown_previews[str(p)]['genre'] for p in files] == [['Plain']] * 3
 
 
-@pytest.mark.xfail(strict=True, reason='a track that matches exactly the minimum track '
-                                       'percentage is not matched')
 def test_track_at_exactly_the_track_percentage_matches(
         mainwin, make_audio, tmp_path, qtbot, user):
     # tut5:95: "If a track has a Match Percentage higher or equal to

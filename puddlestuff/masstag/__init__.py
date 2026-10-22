@@ -269,7 +269,7 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
             if not totals:
                 continue
             score = min(totals)
-            if score > minimum and score not in scores:
+            if score >= minimum and score not in scores:
                 matched[f_index][t_index] = sum(totals)
 
     def get_best(f_index, t_indexes):
