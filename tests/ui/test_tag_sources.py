@@ -885,7 +885,6 @@ def user_plugin(clean_profile):
     (folder / '__init__.py').write_text(PLUGIN_CODE)
 
 
-@pytest.mark.xfail(strict=True, reason="plugins in the user's plugin folder aren't found (#639)")
 def test_tag_source_plugin_appears_in_the_source_list(user_plugin, mainwin, user, qtbot, restart):
     # plugins.txt: "puddletag plugins are stored in ~/.puddletag/plugins"
     # and the example's "tagsources = [Amazon]": "Required in order to let

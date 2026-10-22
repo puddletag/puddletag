@@ -8,6 +8,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QVBoxLayout
 from configobj import ConfigObj
 
+from . import plugins as plugins_package
 from .constants import (FUNCTIONS, TAGSOURCE, SAVEDIR, PLUGINDIR,
                         DIALOGS, MUSICLIBS, MODULES, FUNCTIONS_NO_PREVIEW)
 from .puddleobjects import PuddleConfig, winsettings
@@ -48,6 +49,10 @@ def get_plugins(plugindir):
 
 def load_plugins(plugins=None, parent=None):
     [sys.path.insert(0, d) for d in PLUGIN_DIRS]
+    # Plugins are imported as puddlestuff.plugins.<dir>, so the user's
+    # plugin folder has to be on that package's path to be found.
+    if PLUGINDIR not in plugins_package.__path__:
+        plugins_package.__path__.append(PLUGINDIR)
     cparser = PuddleConfig()
     to_load = cparser.get('plugins', 'to_load', [])
     functions = {}
