@@ -558,7 +558,6 @@ def test_status_bar_after_unload_everything(mainwin, qtbot, user, music):
     assert mainwin._selectedstats.text() == '00 (00:00:00 | 00 KB)'
 
 
-@pytest.mark.xfail(strict=True, reason='Remove from List leaves the status bar counting the removed file')
 def test_status_bar_after_remove_from_list(mainwin, qtbot, user, music):
     # Not in the docs; synthetic files. Remove from List takes the file out of
     # the all-files counter.
@@ -570,7 +569,6 @@ def test_status_bar_after_remove_from_list(mainwin, qtbot, user, music):
     assert mainwin._totalstats.text() == counter([paths[0], paths[2]])
 
 
-@pytest.mark.xfail(strict=True, reason='Move to Trash leaves the status bar counting the trashed file')
 def test_status_bar_after_move_to_trash(mainwin, qtbot, user, music, dialogs, empty_trash):
     # Not in the docs; synthetic files. Move to Trash takes the file out of
     # the all-files counter.

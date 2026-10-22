@@ -1699,6 +1699,7 @@ class TagTable(QTableView):
             self.setCurrentIndex(index)
         else:
             self.selectionChanged()
+        self.filesloaded.emit(bool(self.model().taginfo))
 
     def trashSelected(self, delfiles=True, ifgone=False, showmsg=None):
         if showmsg is None:
@@ -1753,6 +1754,7 @@ class TagTable(QTableView):
                 self.setCurrentIndex(index)
             else:
                 self.selectionChanged()
+            self.filesloaded.emit(bool(self.model().taginfo))
 
         s = progress(func, translate("Table", 'Moving to the trash '), len(selectedRows), fin)
         if self.parentWidget():
