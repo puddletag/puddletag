@@ -675,7 +675,6 @@ def test_fields_the_source_lacks_are_left_alone(mainwin, make_audio, tmp_path, q
         assert in_file(f)['discnumber'] == ['1']
 
 
-@pytest.mark.xfail(strict=True, reason='a saved profile loses its filename pattern and its If no results found choice')
 def test_profile_is_kept_after_a_restart(mainwin, user, qtbot, restart):
     # Synthetic expectation (tut5.txt gives none on persistence): a saved
     # profile comes back as it was saved. tut5:36: "The best way to explain

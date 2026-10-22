@@ -99,8 +99,9 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
     album_bound = cparser.get(info_section, ALBUM_BOUND, 70) / 100.0
     track_bound = cparser.get(info_section, TRACK_BOUND, 80) / 100.0
     match_fields = cparser.get(info_section, FIELDS, ['artist', 'title'])
-    pattern = cparser.get(info_section, PATTERN,
-                          '%artist% - %album%/%track% - %title%')
+    pattern = cparser.get(info_section, 'file_pattern',
+                          cparser.get(info_section, PATTERN,
+                                      '%artist% - %album%/%track% - %title%'))
     jfdi = cparser.get(info_section, JFDI, True)
     desc = cparser.get(info_section, DESC, '')
     leave_existing = cparser.get(info_section, EXISTING_ONLY, False)
@@ -112,7 +113,7 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
         get = lambda key, default: cparser.get(section, key, default)
 
         source = tag_sources.get(get('source', ''), None)
-        no_result = get('no_match', 0)
+        no_result = get('if_no_result', get('no_match', 0))
         fields = fields_from_text(get('fields', ''))
         replace_fields = fields_from_text(get('replace_fields', ''))
 
