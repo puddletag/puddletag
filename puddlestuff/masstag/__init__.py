@@ -148,13 +148,11 @@ def combine_tracks(track1, track2, repl=None):
     ret = defaultdict(lambda: [])
 
     for key, value in list(track2.items()) + list(track1.items()):
-        if isinstance(value, str):
-            if value not in ret[key]:
-                ret[key].append(value)
-        else:
-            for v in value:
-                if v not in ret[key]:
-                    ret[key].append(v)
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+        for v in value:
+            if v not in ret[key]:
+                ret[key].append(v)
     if repl:
         for key in repl:
             if key in track2:

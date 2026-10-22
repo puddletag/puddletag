@@ -573,8 +573,6 @@ def test_stop_ends_the_lookup_when_a_source_finds_nothing(mainwin, user, album, 
 # source." (tut5.txt) Synthetic files and albums; 'AA' is a synthetic
 # abbreviation.
 
-@pytest.mark.xfail(strict=True,
-                   reason='polling a tag source again with the found data raises TypeError')
 def test_source_without_a_match_is_polled_again_with_the_found_data(
         mainwin, user, make_audio, tmp_path, qtbot):
     files = album_files(make_audio, tmp_path / 'music' / 'AA - Album A',
