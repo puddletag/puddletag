@@ -185,7 +185,6 @@ def test_replace_needs_a_selection(loaded, user):
     assert not user.action('Replace...').isEnabled()
 
 
-@pytest.mark.xfail(strict=True, reason='Replace writes a replacement that holds \\\\ as one value (#873)')
 def test_replacement_with_the_separator_writes_several_values(mainwin, make_audio, tmp_path, qtbot, user):
     # tut3.txt: "Multiple-valued fields are shown like value1\\value2. Enter
     # a value like that and puddletag will assume you want some multiple

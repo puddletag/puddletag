@@ -479,6 +479,8 @@ def run_func(selectedfiles, func):
                 if val is not None:
                     if isinstance(val, str) and SEPARATOR in val:
                         val = val.split(SEPARATOR)
+                    elif isinstance(val, list):
+                        val = [part for v in val for part in (v.split(SEPARATOR) if isinstance(v, str) else [v])]
                     if hasattr(val, 'items'):
                         ret.update(val)
                     else:
