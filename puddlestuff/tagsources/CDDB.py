@@ -19,7 +19,7 @@ version = 1.4
 if 'EMAIL' in os.environ:
     (default_user, hostname) = os.environ['EMAIL'].split('@')
 else:
-    default_user = os.geteuid() or os.environ['USER'] or 'user'
+    default_user = os.geteuid() or os.environ.get('USER') or 'user'
     hostname = socket.gethostname() or 'host'
 
 # Use protocol version 5 to get DYEAR and DGENRE fields.

@@ -4,12 +4,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
-@pytest.mark.xfail(strict=True, reason="CDDB fails to import as root when USER isn't set (KeyError: 'USER')")
 def test_cddb_imports_as_root_without_user():
     # Synthetic: root in a container, where USER and EMAIL aren't set. A
     # subprocess, because reloading CDDB here would reset the protocol
