@@ -519,8 +519,6 @@ def test_update_empty_fields_only_keeps_values_in_the_files(mainwin, make_audio,
     assert in_file(paths[2])['genre'] == ['Rock']
 
 
-@pytest.mark.xfail(strict=True, reason="Update empty fields only counts another album's previews "
-                                       "as values in the file")
 def test_update_empty_fields_only_after_another_album(mainwin, make_audio, tmp_path, qtbot, user):
     # "Check this box and only fields that aren't already in the file will
     # get updated." (tagsources.txt). Synthetic files and albums: the files

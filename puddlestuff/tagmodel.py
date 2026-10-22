@@ -181,6 +181,10 @@ def model_tag(model, base=audioinfo.AbstractTag):
                     return True
             return base.__contains__(self, key)
 
+        def stored(self, key):
+            """Whether the file itself has key, whatever the previews hold."""
+            return base.__contains__(self, key)
+
         def clear(self):
             self.preview.clear()
             super(ModelTag, self).clear()

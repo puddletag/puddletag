@@ -781,7 +781,7 @@ class MainWin(QWidget):
             for f, r in zip(files, tags):
                 temp = {}
                 for field in r:
-                    if field not in f:
+                    if not f.stored(field):
                         temp[field] = r[field]
                 previews.append(temp)
             self.enable_preview_mode.emit()
