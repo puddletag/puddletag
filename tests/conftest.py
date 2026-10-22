@@ -386,3 +386,26 @@ def mainwin(qtbot, clean_profile, _translated_strings, dialogs):
     # The Functions window opens on the last function run, kept in this
     # module-level dict.
     status['prevfunc'] = None
+
+
+@pytest.fixture
+def restart(qtbot, mainwin):
+    """Quits puddletag and starts it again on the same profile: closing the
+    window saves the layout, as quitting does. The module-level emitters
+    the first window was wired to are disconnected first, as mainwin's
+    teardown does, or they'd call into its deleted actions. Returns the
+    new window."""
+    from puddlestuff.mainwin import previews
+    from puddlestuff.puddletag import MainWin
+
+    def start_again():
+        mainwin.close()
+        for emitter in _module_emitters():
+            _disconnect_all(emitter)
+        previews.obj.receives.clear()
+        win = MainWin()
+        qtbot.addWidget(win)
+        win.show()
+        return win
+
+    return start_again
