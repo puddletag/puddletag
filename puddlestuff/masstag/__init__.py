@@ -494,12 +494,13 @@ def replace_tracknumbers(files, tracks):
     if len(files) != len(tracks):
         return
 
-    files = sorted(files, key=lambda f: to_string(f.get('track', f[FILENAME])))
-    try:
-        tracks = sorted(tracks, key=itemgetter('track'))
-        tracks = sorted(tracks, key=itemgetter('discnumber'))
-    except KeyError:
+    # The tracks are defaultdicts, so sorting by key never raises KeyError.
+    if not all('track' in t and 'discnumber' in t for t in tracks):
         return
+
+    files = sorted(files, key=lambda f: to_string(f.get('track', f[FILENAME])))
+    tracks = sorted(tracks, key=itemgetter('track'))
+    tracks = sorted(tracks, key=itemgetter('discnumber'))
 
     if len(files) == len(tracks):
         discnum = 1

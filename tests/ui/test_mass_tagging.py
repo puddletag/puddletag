@@ -658,8 +658,6 @@ def test_other_source_error_is_logged_and_the_run_goes_on(mainwin, make_audio, t
     assert [shown_previews[str(f)] for f in one] == [{}] * 3
 
 
-@pytest.mark.xfail(strict=True, reason='fields the tag source did not return are emptied: '
-                                       'the track and disc numbers are deleted')
 def test_fields_the_source_lacks_are_left_alone(mainwin, make_audio, tmp_path, qtbot, user):
     # tut5:118: "Fields: The list of fields to retrieve from the tag source."
     # tut5:20: "the metadata will be applied to the files". Synthetic files and
