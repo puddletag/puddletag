@@ -1,3 +1,4 @@
+import html
 import os
 import sys
 import time
@@ -361,7 +362,7 @@ class Properties(QDialog):
                 prop = QLabel(value[0] + ':')
                 prop.setTextInteractionFlags(interaction)
                 framegrid.addWidget(prop, row, 0)
-                propvalue = QLabel('<b>%s</b>' % value[1])
+                propvalue = QLabel('<b>%s</b>' % html.escape(value[1]))
 
                 propvalue.setTextInteractionFlags(interaction)
                 framegrid.addWidget(propvalue, row, 1)

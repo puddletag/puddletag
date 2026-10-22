@@ -147,7 +147,6 @@ def test_id3_version(mainwin, qtbot, user, loaded):
     assert panel(window)['File']['ID3 Version'] == 'ID3v2.4'
 
 
-@pytest.mark.xfail(strict=True, reason='The window reads file names as rich text and drops <Live>')
 def test_file_name_with_angle_brackets(mainwin, make_audio, tmp_path, qtbot, user):
     # "Shows the first selected file's format information": the file's name
     # and path as they are (synthetic name).
