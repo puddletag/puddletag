@@ -474,6 +474,7 @@ class SettingsDialog(QWidget):
         set_value('trackpattern', text)
         set_value('albumpattern', albumdisp)
         set_value('sortoptions', sort_options_text)
+        set_value('lastsort', listbox.lastSortIndex)
         set_value('useragent', useragent)
         set_value('album_bound', self.albumBound.value())
         set_value('track_bound', self.trackBound.value())
@@ -492,6 +493,9 @@ class SettingsDialog(QWidget):
                                   ['artist, album', 'album, artist'])
         self._sortoptions.clear()
         self._sortoptions.addItems(sortoptions)
+        lastsort = cparser.get('tagsources', 'lastsort', 0, True)
+        if 0 <= lastsort < len(sortoptions):
+            self._sortoptions.setCurrentIndex(lastsort)
 
         albumformat = cparser.get('tagsources', 'albumpattern',
                                   '%artist% - %album% $if(%__numtracks%, [%__numtracks%], "")')
@@ -642,6 +646,7 @@ class MainWin(QWidget):
 
         # The results box (a tree view of album releases)
         self.listbox = ReleaseWidget(status, self.curSource)
+        self.listbox.header().sortChanged.connect(self.saveSort)
         connect(self.listbox, 'statusChanged', self.label.setText)
         connect(self.listbox, 'preview', self.emit_preview)
         connect(self.listbox, 'exactMatches', self.emitExact)
@@ -922,6 +927,13 @@ class MainWin(QWidget):
         t = PuddleThread(submit, self)
         t.threadfinished.connect(end)
         t.start()
+
+    def saveSort(self, *args):
+        # The Preferences page opens on the saved order, so a sort picked
+        # from the header has to be saved when it's picked.
+        settings = PuddleConfig()
+        settings.filename = os.path.join(CONFIGDIR, 'tagsources.conf')
+        settings.set('tagsources', 'lastsort', self.listbox.lastSortIndex)
 
     def saveSettings(self):
         settings = PuddleConfig()

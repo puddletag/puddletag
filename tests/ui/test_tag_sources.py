@@ -794,7 +794,6 @@ def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audi
     assert stripped(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
 
-@pytest.mark.xfail(strict=True, reason='the Preferences page opens on the first sort option and OK applies it')
 def test_preferences_ok_keeps_the_header_sort(mainwin, make_audio, tmp_path, qtbot, user):
     # preferences.txt: "You can change the order dynamically by right
     # clicking on the header of the Tag Sources dialog's album list and
