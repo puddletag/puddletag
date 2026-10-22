@@ -24,7 +24,7 @@ How to use it
 
 * Select a profile from the **Masstagging Window**.
 * Select files.
-* Click on start.
+* Click on **Search**.
 * Wait until it's done.
 * Make modifications.
 * Write changes.
@@ -55,7 +55,7 @@ Inputs required are:
 
 .. describe:: Description
 
-    Any description you'd like. Will be shown as a tooltip for the 
+    Any description you'd like. Will be shown as a tooltip for the profile in the **Masstagging Window**.
 
 .. describe:: Tag Sources
 
@@ -81,6 +81,8 @@ Inputs required are:
 
     An album will be considered a match if the percentage by which the  **album name** and **artist** differ for the album is less than what's specified here.
 
+    A search result that already has as many tracks as the files you selected is also considered a match, whatever its album name and artist.
+
 .. describe:: Match tracks using fields:
 
     For a matching album, each retrieved track will be checked against the files. For each file, puddletag cycle through the list of retrieved tracks and do the following.
@@ -88,19 +90,19 @@ Inputs required are:
     * Check if all the fields listed are present in the retrieved track.
     * If so, each field will be compared in the file vs each track and the field with the **lowest** match percentage will be used to assess the track match the file.
 
-    puddletag will compare all retrieved tracks against the files and choose the one with the highest **Matching Percentage** as a match if and only if the **Match Percentage** is higher than
+    puddletag will compare all retrieved tracks against the files and choose the one with the highest **Matching Percentage** as a match if and only if the **Match Percentage** is at least the **Minimum percentage required for track match**.
 
 .. describe:: Minimum percentage required for track match.
 
     If a track has a **Match Percentage** higher or equal to this when compared to a file, then that track will be considered a match.
 
-.. describe:: Tag Sources
+.. describe:: Brute force unmatched files.
 
     Check to enable brute force matching.
 
     If no matches were found for some files, then the files will be sorted by **track** (if it's not present, **__filename**). The retrieved data will also be sorted using **track**. Each retrieved track will then be paired with a file (in order) provided that file hasn't been matched previously.
 
-.. describe:: Brute force unmatched files.
+.. describe:: Update empty fields only.
 
     If checked, only fields that don't already have values will be updated with retrieved data.
 
@@ -118,6 +120,8 @@ Clicking on the **Add Tag Source ("+") button** should bring up this dialog:
 .. describe:: Fields
 
     The list of fields to retrieve from the tag source. Rules are as described in :ref:`deciding_what_to_retrieve`.
+
+    The retrieved tracks are cut to these fields before they're matched against the files. If the match fields aren't among them, no track will match a file, and the tracks can only be paired by brute force.
 
     Fields from different tag sources will be combined into multiple values where they differ. Eg. If one tag source retrieved **genre=Rock** and another **genre=Alternative**, the value that puddletag will write to the files will the values **Rock\\\\Alternative**. Values will only be combined if they differ.
 
