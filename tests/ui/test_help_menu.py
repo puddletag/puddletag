@@ -274,7 +274,6 @@ def test_about_tab_link_opens_in_the_browser(mainwin, qtbot, user, monkeypatch, 
     assert opened == [link]
 
 
-@pytest.mark.xfail(strict=True, reason='The Thanks tab differs from about.txt and shows Markdown asterisks')
 def test_thanks_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # about.txt's "Thank yous" and "Translators" sections, as the page
     # shows them: in the page's order, bold without the asterisks.

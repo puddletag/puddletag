@@ -21,20 +21,32 @@ Visit the puddletag website (<a href="https://docs.puddletag.net">https://docs.p
 Licensed under GPLv3 (<a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>).
 ''')
 
-thanks = translate("About", """<b>Evan Devetzis</b> for his many, many awesome ideas and putting up with more bugs than humanly possible.<br /><br />
+thanks = translate("About", """<b>Thank yous</b><br /><br />
 
-First off, a big thanks to **Evan Devetzis** for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.
-
-Thanks to <b>Raphaël Rochet</b>, <b>Fabian Bakkum</b>, <b>Alan Gomes</b> and others for contributing translations.
+First off, a big thanks to <b>Evan Devetzis</b> for working tirelessly in helping me make puddletag better by contributing many, many awesome ideas and for being a great bug hunter.<br /><br />
 
 To the writers of the libraries puddletag depends on (without which I'll probably still be writing an id3 reader).<br /><br />
 
-<b>Paul McGuire</b> for PyParsing.<br />
+<b>Paul McGuire</b> for PyParsing and for being extraordinarily helpful.<br />
 <b>Michael Urman</b> and <b>Joe Wreschnig</b> for Mutagen (It. Is. Awesome).<br />
-<b>Phil Thomson</b> and everyone responsible for PyQt4.<br />
+<b>Nokia, Phil Thomson</b> and all parties responsible for PyQt4.<br />
 <b>Michael Foord</b> and <b>Nicola Larosa</b> for ConfigObj (seriously, they should replace ConfigParser with this).<br />
-The <b>Oxygen team</b> for the Oxygen icons.
+The <b>Oxygen team</b> for the Oxygen icons.<br /><br />
 
+And for those who've contributed, the people whose code I stole, those who helped me out on discussion boards and to open-source creators, <b>Thanks a bunch</b>.<br /><br />
+
+<b>Translators</b><br /><br />
+
+Thank you to the translators below for their contributions.<br /><br />
+
+Dutch (Nederlands) by <b>Fabian Bakkum</b>.<br />
+French by <b>Raphaël Rochet</b>.<br />
+German by <b>Ralf Sarholz</b>.<br />
+Portuguese (Brazilian) by <b>Alan Gomes</b>.<br />
+Russian by <b>Viktor Yu. Kovalskiy</b>.<br />
+Czech by <b>Pavel Fric</b>.<br />
+Spanish by <b>José Vidal</b><br />
+Swedish by <b>Åke Engelbrektson</b>
 """)
 
 
