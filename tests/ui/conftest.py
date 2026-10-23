@@ -68,7 +68,9 @@ class User:
         """Opens the menu bar's menu holding the command and clicks it."""
         action = self.action(name)
         bar = self._mainwin.menuBar()
-        [menu] = [m for m in bar.findChildren(QMenu) if action in m.actions()]
+        # The bar's menus, not its children: the main window owns the Help menu.
+        [menu] = [title.menu() for title in bar.actions()
+                  if title.menu() and action in title.menu().actions()]
         self.click(bar, bar.actionGeometry(menu.menuAction()).center())
         self._qtbot.waitUntil(menu.isVisible)
         self.click(menu, menu.actionGeometry(action).center())
