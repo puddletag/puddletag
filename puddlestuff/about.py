@@ -2,8 +2,8 @@
 import mutagen
 from importlib import import_module
 from platform import python_version
-from PyQt6.QtCore import PYQT_VERSION_STR, Qt, qVersion
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import PYQT_VERSION_STR, Qt, QUrl, qVersion
+from PyQt6.QtGui import QDesktopServices, QPixmap
 from PyQt6.QtWidgets import QApplication, QDialog, QHBoxLayout, QLabel, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 
 from . import version_string, changeset
@@ -79,6 +79,7 @@ class ScrollLabel(QWidget):
         label.setAlignment(alignment)
         label.setWordWrap(True)
         label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+        label.linkActivated.connect(lambda url: QDesktopServices.openUrl(QUrl(url)))
 
         sa = QScrollArea()
         sa.setWidget(label)

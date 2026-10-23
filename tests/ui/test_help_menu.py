@@ -252,7 +252,6 @@ def test_about_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     assert 'http://www.gnu.org/licenses/gpl-3.0.html' in text
 
 
-@pytest.mark.xfail(strict=True, reason='Links in the About window open nothing')
 def test_about_tab_link_opens_in_the_browser(mainwin, qtbot, user, monkeypatch, opened):
     # The About tab says "Visit the puddletag website (<address>)": the
     # address is shown as a link, so following it opens it.
