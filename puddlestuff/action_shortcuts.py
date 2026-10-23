@@ -248,6 +248,7 @@ class Editor(QDialog):
 
     def setShortcut(self, text):
         self._shortcut.setText(text)
+        self._shortcut.valid = bool(text)
 
 
 class ShortcutEditor(QDialog):

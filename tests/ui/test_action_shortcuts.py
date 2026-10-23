@@ -489,7 +489,6 @@ def test_shortcut_runs_the_edited_action(mainwin, loaded, user, qtbot, monkeypat
     assert in_table(table) == [upper, tags(2)]
 
 
-@pytest.mark.xfail(strict=True, reason='Edit Shortcut drops the key unless it is typed again')
 def test_editing_a_shortcut_keeps_its_key(loaded, mainwin, user, qtbot, monkeypatch):
     # The docs don't say; this is what puddletag should do: renaming a
     # shortcut in Edit Shortcuts, leaving its key field as it opened, keeps
