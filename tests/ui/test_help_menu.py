@@ -230,7 +230,6 @@ def test_about_qt_shows_the_qt_version_and_ok_closes_it(mainwin, qtbot, user):
     assert QApplication.activeModalWidget() is None
 
 
-@pytest.mark.xfail(strict=True, reason="The About tab's formats, website and license address are older than the docs")
 def test_about_tab_matches_the_docs(mainwin, qtbot, user, monkeypatch):
     # index.txt: "Supported formats: ID3v1, ID3v2 (mp3, and in AIFF, DSF
     # and DSDIFF files), MP4 (mp4, m4a, etc.), VorbisComments (ogg, opus,
