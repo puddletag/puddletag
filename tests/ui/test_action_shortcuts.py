@@ -531,8 +531,6 @@ def test_removed_shortcut_key_stays_removed(loaded, mainwin, user, qtbot, monkey
     assert shortcuts_on_menu(win) == [('Case Conversion', '')]
 
 
-@pytest.mark.xfail(strict=True, reason='with eleven or more shortcuts, Edit Shortcuts moves '
-                                       'keys between them')
 def test_eleven_shortcuts_keep_their_keys(loaded, mainwin, user, qtbot, monkeypatch):
     # The docs don't say; this is what puddletag should do: pressing OK in
     # Edit Shortcuts without a change leaves every shortcut with its own

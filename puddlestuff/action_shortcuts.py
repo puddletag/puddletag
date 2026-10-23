@@ -57,6 +57,13 @@ def get_shortcuts(default=None):
         return set(ret)
 
 
+def _sections(cparser):
+    """The shortcut sections in numeric order: as text, Shortcut10 would
+    come before Shortcut2."""
+    return sorted((s for s in cparser.sections() if s.startswith(SHORTCUT_SECTION)),
+                  key=lambda s: int(s[len(SHORTCUT_SECTION):]))
+
+
 def load_settings(filename=None, actions=None):
     if filename is None:
         filename = FILENAME
@@ -69,11 +76,10 @@ def load_settings(filename=None, actions=None):
     actions = load_actions() if actions is None else actions
 
     shortcuts = []
-    for section in sorted(cparser.sections()):
-        if section.startswith(SHORTCUT_SECTION):
-            name = cparser.get(section, NAME, 'Default')
-            filenames = cparser.get(section, FILENAMES, [])
-            shortcuts.append([name, filenames])
+    for section in _sections(cparser):
+        name = cparser.get(section, NAME, 'Default')
+        filenames = cparser.get(section, FILENAMES, [])
+        shortcuts.append([name, filenames])
     return actions, shortcuts
 
 
@@ -387,14 +393,13 @@ class ShortcutEditor(QDialog):
         else:
             shortcuts = {}
 
-        for section in sorted(cparser.sections()):
-            if section.startswith('Shortcut'):
-                name = cparser.get(section, NAME, 'Default')
-                self._names.append(name)
-                filenames = cparser.get(section, FILENAMES, [])
-                shortcut = shortcuts.get(name, '')
-                self.addShortcut(name, filenames, shortcut, select=False)
-                self._hotkeys.append(shortcut)
+        for section in _sections(cparser):
+            name = cparser.get(section, NAME, 'Default')
+            self._names.append(name)
+            filenames = cparser.get(section, FILENAMES, [])
+            shortcut = shortcuts.get(name, '')
+            self.addShortcut(name, filenames, shortcut, select=False)
+            self._hotkeys.append(shortcut)
 
     def names(self):
         return [item.actionName for item in self._listbox.items()]
