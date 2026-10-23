@@ -33,7 +33,7 @@ def create_action_shortcut(name, filenames, scut_key=None, method=None, parent=N
 
     if add:
         from .puddletag import add_shortcuts
-        add_shortcuts('&Actions', [shortcut], save=bool(scut_key))
+        add_shortcuts('&Actions', [shortcut], save=True)
     return shortcut
 
 

@@ -512,8 +512,6 @@ def test_editing_a_shortcut_keeps_its_key(loaded, mainwin, user, qtbot, monkeypa
     assert in_files(paths) == [mixed(1), tags(2)]
 
 
-@pytest.mark.xfail(strict=True, reason='a shortcut assigned without a key gets back the key of '
-                                       'a removed shortcut of the same name at the next start')
 def test_removed_shortcut_key_stays_removed(loaded, mainwin, user, qtbot, monkeypatch, restart):
     # The docs don't say; this is what puddletag should do: a shortcut
     # removed in Edit Shortcuts, then assigned again under the same name
