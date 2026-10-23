@@ -28,10 +28,8 @@ def changeset(checkout):
     pytest.param(None, [], None, id='no_git'),
     pytest.param({'HEAD': 'ref: refs/heads/main\n',
                   'packed-refs': f'# pack-refs with: peeled fully-peeled sorted \n{SHA} refs/heads/main\n'},
-                 [], SHA, id='packed',
-                 marks=pytest.mark.xfail(strict=True, reason="A packed branch ref shows as 'ref: ...' instead of the hash")),
-    pytest.param({'HEAD': 'ref: refs/heads/.invalid\n'}, ['reftable'], None, id='reftable',
-                 marks=pytest.mark.xfail(strict=True, reason="An unreadable branch ref shows as 'ref: ...'")),
+                 [], SHA, id='packed'),
+    pytest.param({'HEAD': 'ref: refs/heads/.invalid\n'}, ['reftable'], None, id='reftable'),
 ])
 def test_changeset_from_a_git_checkout(tmp_path, files, dirs, expected):
     if files is not None:
