@@ -229,8 +229,6 @@ def test_import_music_library_opens_its_window(mainwin, qtbot, user):
     assert docks(mainwin) == before
 
 
-@pytest.mark.xfail(strict=True, reason="The window opens with no library picked in its list while the "
-                                       "first one's page shows, so OK raises AttributeError")
 def test_music_library_window_picks_its_first_library(mainwin, qtbot, user):
     # Synthetic: menus.txt (Tools) only says the window imports a supported
     # Music Library, so a user expects the library whose page shows to be the

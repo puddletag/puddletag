@@ -168,6 +168,7 @@ class LibChooseDialog(QDialog):
         self.stack = QStackedWidget()
         self.stack.setFrameStyle(QFrame.Shape.Box)
         list(map(self.stack.addWidget, self.stackwidgets))
+        self.listbox.setCurrentRow(0)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.listbox, 0)
