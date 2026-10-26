@@ -108,6 +108,9 @@ def test_file_to_tag_with_functions(pattern, path, expected):
 
 
 @pytest.mark.parametrize('pattern, path, expected', [
+    # tut1.txt: "In patterns a field of any name can be specified using the
+    # %field% notation. You can use any field listed here", which lists
+    # mbrainz_track_id (tags.txt).
     ('%mbrainz_track_id% - %title%', '/music/track-id - Song.mp3',
      {'mbrainz_track_id': 'track-id', 'title': 'Song'}),
     ('%custom2% - %title%', '/music/value - Song.mp3',
@@ -120,10 +123,12 @@ def test_file_to_tag_with_functions(pattern, path, expected):
      {'custom2': '01', 'title': 'Song'}),
 ])
 def test_file_to_tag_fields_with_underscores_and_digits(pattern, path, expected):
+    # Synthetic patterns and filenames.
     assert file_to_tag(pattern, path) == expected
 
 
 def test_file_to_tag_writes_musicbrainz_track_id(make_audio):
+    # tags.txt lists mbrainz_track_id; a synthetic id and filename.
     track_id = '123e4567-e89b-12d3-a456-426614174000'
     path = make_audio(track_id + ' - Song.flac')
     tag = audioinfo.Tag(str(path))
