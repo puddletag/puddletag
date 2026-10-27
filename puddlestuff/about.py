@@ -73,7 +73,6 @@ def versions():
         'PyParsing': get_module_version('pyparsing'),
         'ConfigObj': get_module_version('configobj'),
         'Unidecode': get_module_version('unidecode'),
-        'lxml': get_module_version('lxml'),
         'pyacoustid': get_module_version('pyacoustid'),
         'Levenshtein': get_module_version('Levenshtein'),
         'Send2Trash': get_module_version('send2trash'),
