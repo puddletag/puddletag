@@ -8,13 +8,14 @@ from pathlib import Path
 
 import mutagen.id3
 import pytest
-from PyQt6.QtCore import QBuffer, QIODevice, QModelIndex, QPoint, Qt, QTimer
+from PyQt6.QtCore import QBuffer, QIODevice, QModelIndex, QPoint, Qt, QTimer, QTranslator
 from PyQt6.QtGui import QImage
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QMenu, QMessageBox, QPushButton, QStyle,
                              QStyleOptionViewItem)
 
 from puddlestuff import audioinfo, tagsources
-from puddlestuff.constants import PLUGINDIR
+from puddlestuff.constants import CONFIGDIR, PLUGINDIR
+from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.puddlesettings import SettingsDialog
 from puddlestuff.tagsources import RetrievalError, write_log
 
@@ -909,3 +910,55 @@ def test_tag_source_plugin_appears_in_the_source_list(user_plugin, mainwin, user
     window = tag_sources_window()
     shown = [window.sourcelist.itemText(n) for n in range(window.sourcelist.count())]
     assert 'Plugin Source' in shown
+
+
+# Built-in tag sources.
+
+@pytest.mark.xfail(strict=True, reason='Amazon and AllMusic are still listed')
+def test_source_list_offers_the_built_in_sources(user, qtbot):
+    # tagsources.txt: "Included with puddletag are tag sources supporting
+    # lookups from Discogs, FreeDB, MusicBrainz and AcoustID." AcoustID is
+    # listed only where fpcalc is installed (tagsources.txt: "you need to
+    # have chromaprint (specifically the fpcalc binary) installed").
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    listed = {window.sourcelist.itemText(n) for n in range(window.sourcelist.count())}
+    assert listed - {'AcoustID'} == {'Discogs.com', 'FreeDB', 'MusicBrainz', 'Synthetic'}
+
+
+@pytest.fixture(params=['AllMusic.com', 'Amazon'])
+def gone_source_saved(request, clean_profile):
+    """tagsources.conf as puddletag saved it when the user last used a
+    source it no longer has: the window's last source and that
+    source's fields. Synthetic."""
+    config = PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf'))
+    config.set('tagsources', 'lastsource', request.param)
+    config.set('tagsourcetags', request.param, ['album'])
+    return request.param
+
+
+@pytest.mark.xfail(strict=True, reason='Amazon and AllMusic are still listed')
+def test_saved_source_that_is_gone_opens_on_musicbrainz(gone_source_saved, mainwin, user, qtbot):
+    # The docs are silent: tut4.txt and tagsources.txt say only "Choose a
+    # tag source". A fresh profile opens on MusicBrainz, so a saved source
+    # that is no longer there does too.
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    assert window.sourcelist.currentText() == 'MusicBrainz'
+
+
+def test_musicbrainz_cover_sizes_keep_their_translation(qtbot):
+    # The docs are silent on translations. The expected words are the German
+    # translators' (puddletag_de.ts). These are the sizes MusicBrainz's
+    # Configure dialog (the button beside the Source combo) offers.
+    from puddlestuff.tagsources.musicbrainz import MusicBrainz
+    translator = QTranslator()
+    assert translator.load('translations:puddletag_de.qm')
+    QApplication.installTranslator(translator)
+    try:
+        [label, kind, (sizes, default)] = MusicBrainz().preferences[1]
+    finally:
+        QApplication.removeTranslator(translator)
+    assert sizes == ['klein', 'groß', 'Ursprüngliche Größe']

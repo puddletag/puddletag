@@ -762,3 +762,66 @@ def test_clear_preview_discards_the_previews(mainwin, make_audio, user, qtbot, t
         # A field the file lacks has no text at all in the model.
         assert shown(user, f, 'genre') == (None, 'plain')
         assert 'genre' not in in_file(f)
+
+
+# The tag sources a profile can poll.
+
+@pytest.mark.xfail(strict=True, reason='Amazon and AllMusic are still listed')
+def test_profile_editor_offers_the_built_in_sources(mainwin, user, qtbot):
+    # tut5.txt: "Clicking on the Add Tag Source ("+") button should bring
+    # up this dialog", whose Source box lists tagsources.txt's sources:
+    # Discogs, FreeDB, MusicBrainz and AcoustID (only where fpcalc is
+    # installed). The two other sources are synthetic.
+    window = open_mass_tagging(user, mainwin, qtbot)
+    user.click(button(window, '&Configure Profiles'))
+    profiles = opened(qtbot, MassTagEdit)
+    user.click(profiles.buttonlist.addButton)
+    editor = opened(qtbot, MTProfileEdit)
+    user.activate(editor)
+    user.click(editor.buttonlist.addButton)
+    config = opened(qtbot, TSProfileEdit)
+    listed = {config.source.itemText(n) for n in range(config.source.count())}
+    user.click(button(config, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is editor)
+    user.click(button(editor, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
+    user.click(button(profiles, 'Cancel'))
+    assert listed - {'AcoustID'} == {'Discogs.com', 'FreeDB', 'MusicBrainz', 'Second Source', 'Synthetic Source'}
+
+
+@pytest.mark.xfail(strict=True, reason="a profile naming a tag source puddletag doesn't have stops the whole lookup")
+def test_profile_skips_a_tag_source_that_is_gone(mainwin, make_audio, user, qtbot, tmp_path,
+                                                 restart, dialogs):
+    # Synthetic expectation (tut5.txt is silent on a profile whose tag source
+    # is gone; it only says "Source: The tag source to use." (tut5:152-154)):
+    # puddletag was updated to a version without one of the profile's sources,
+    # so the lookup skips that source, says so in the log and still polls the
+    # others. Synthetic files and album.
+    from puddlestuff import tagsources
+    window = open_mass_tagging(user, mainwin, qtbot)
+    create_profile(user, qtbot, window, 'Old',
+                   [{'source': 'Second Source'}, {'source': 'Synthetic Source'}])
+    tagsources.tagsources.remove(SecondSource)
+    try:
+        new = restart()
+        user2 = type(user)(qtbot, new)
+        files = synthetic_album(make_audio, new, qtbot, tmp_path)
+        [window2] = new.findChildren(MassTagWindow)
+        qtbot.waitUntil(window2.isVisible)
+        pick(user2, qtbot, window2.profileCombo, 'Old')
+        log = search(user2, qtbot, new, window2)
+        assert 'Tag source Second Source not found: skipped.' in log
+        assert 'An error occurred' not in log
+        assert 'Polling: Synthetic Source' in log
+        assert len(SyntheticSource.searches) == 1
+        assert SecondSource.searches == []
+        for f in files:
+            assert shown(user2, f, 'genre') == ('Synth', 'bold')
+            assert previews(new)[str(f)]['genre'] == ['Synth']
+        # The previews are cleared (Clear Preview asks first), or closing the
+        # restarted window would ask whether to write them.
+        dialogs.answer('QMessageBox.question', Yes)
+        user2.click(button(window2, 'Clear &Preview'))
+        qtbot.waitUntil(lambda: not new._table.model().previewMode)
+    finally:
+        tagsources.tagsources.append(SecondSource)
