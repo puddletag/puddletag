@@ -789,7 +789,6 @@ def test_profile_editor_offers_the_built_in_sources(mainwin, user, qtbot):
     assert listed - {'AcoustID'} == {'Discogs.com', 'FreeDB', 'MusicBrainz', 'Second Source', 'Synthetic Source'}
 
 
-@pytest.mark.xfail(strict=True, reason="a profile naming a tag source puddletag doesn't have stops the whole lookup")
 def test_profile_skips_a_tag_source_that_is_gone(mainwin, make_audio, user, qtbot, tmp_path,
                                                  restart, dialogs):
     # Synthetic expectation (tut5.txt is silent on a profile whose tag source

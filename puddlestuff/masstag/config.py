@@ -112,13 +112,17 @@ def mtp_from_file(filename=CONFIG, tag_sources=None):
         section = 'config%s' % num
         get = lambda key, default: cparser.get(section, key, default)
 
-        source = tag_sources.get(get('source', ''), None)
+        source_name = get('source', '')
+        source = tag_sources.get(source_name, None)
         no_result = get('if_no_result', get('no_match', 0))
         fields = fields_from_text(get('fields', ''))
         replace_fields = fields_from_text(get('replace_fields', ''))
 
-        ts_profiles.append(TagSourceProfile(None, source, fields,
-                                            no_result, replace_fields))
+        ts_profile = TagSourceProfile(None, source, fields,
+                                      no_result, replace_fields)
+        if source is None:
+            ts_profile.missing_source = source_name
+        ts_profiles.append(ts_profile)
 
     mtp = MassTagProfile(name, desc, match_fields, None,
                          pattern, ts_profiles, album_bound, track_bound, jfdi,

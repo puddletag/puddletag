@@ -58,6 +58,7 @@ DEFAULT_PATTERN = '%artist% - %album%/%track% - %title%'
 DEFAULT_NAME = translate('Masstagging', 'Default Profile')
 
 POLLING = translate("Masstagging", "<b>Polling: {}</b>")
+SOURCE_NOT_FOUND = translate("Masstagging", "Tag source <b>{}</b> not found: skipped.")
 MATCH_ARTIST_ALBUM = translate("Masstagging",
                                'Retrieving matching album. <b>{} - {}</b>')
 MATCH_ARTIST = translate("Masstagging",
@@ -591,6 +592,9 @@ class MassTagProfile(object):
 
         for profile in profiles:
             profile.clear_results()
+            if profile.tag_source is None:
+                set_status(SOURCE_NOT_FOUND.format(profile.missing_source))
+                continue
             set_status(POLLING.format(profile.tag_source.name))
             try:
                 results = profile.search(files)
@@ -682,6 +686,7 @@ class TagSourceProfile(object):
         self.files = [] if files is None else files
         self.group_by = tag_source.group_by if tag_source else None
         self.matched = []
+        self.missing_source = None  # the saved name of a source that isn't available
         self.replace_fields = [] if replace_fields is None else replace_fields
         self.result = None
         self.results = []
