@@ -229,102 +229,6 @@ The &lt;b&gt;Oxygen team&lt;/b&gt; for the Oxygen icons.
     </message>
   </context>
   <context>
-    <name>Amazon</name>
-    <message>
-      <location filename="../tagsources/amazon.py" line="347" />
-      <location filename="../tagsources/musicbrainz.py" line="511" />
-      <source>Small</source>
-      <translation>Klein</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="349" />
-      <location filename="../tagsources/musicbrainz.py" line="512" />
-      <source>Large</source>
-      <translation>Groot</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="513" />
-      <source>Original Size</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="72" />
-      <source>Invalid Access or Secret Key</source>
-      <translation>Ongeldige toegang of geheime-sleutel</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="125" />
-      <source>Retrieving search results for keywords: {}</source>
-      <translation>Bezig met het ophalen van de zoekresultaten, van de zoekwoorden: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="147" />
-      <source>No tracks found in listing.</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="196" />
-      <source>{} at Amazon.com</source>
-      <translation>{} op Amazon.com</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="222" />
-      <source>Retrieving using ASIN: {}</source>
-      <translation>Bezig met ophalen door gebruik te maken van ASIN: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="225" />
-      <source>Retrieving XML: {} - {}</source>
-      <translation>Bezig met ophalen van het XML-bestand: {} - {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="237" />
-      <source>Retrieving cover: {}</source>
-      <translation>Bezig met het ophalen van de cover: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="296" />
-      <source>&lt;p&gt;Enter search parameters here. If empty, the selected files
-                        are used.&lt;/p&gt;
-                        &lt;ul&gt;
-                        &lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt;
-                        searches for a specific album/artist combination.&lt;/li&gt;
-                        &lt;li&gt;To list the albums by an artist leave off the album part,
-                        but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;).
-                        For a album only leave the artist part as in
-                        &lt;b&gt;;Resurrection.&lt;/li&gt;
-                        &lt;li&gt;Entering keywords &lt;b&gt;without a semi-colon (;)&lt;/b&gt; will do an
-                        Amazon album search using those keywords.&lt;/li&gt;
-                        &lt;/ul&gt;</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="345" />
-      <source>Retrieve Cover</source>
-      <translation>Cover ophalen</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="346" />
-      <source>Cover size to retrieve</source>
-      <translation>Grootte van de cover om te ophalen</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="348" />
-      <source>Medium</source>
-      <translation>Middelmatig</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="350" />
-      <source>Access Key (Stored as plain-text. Leave empty for default.)</source>
-      <translation>Toegangssleutel (Opgelagen als plain-text. Laat deze standaard leeg.)</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="352" />
-      <source>Secret Key (Stored as plain-text. Leave empty for default.)</source>
-      <translation>Geheime sleutel (Bewaart als plain-text. Laat deze standaard leeg.)</translation>
-    </message>
-  </context>
-  <context>
     <name>Artwork</name>
     <message>
       <location filename="../puddleobjects.py" line="1944" />
@@ -2964,6 +2868,21 @@ Do you want to go ahead?</source>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="510" />
       <source>Cover size to retrieve:</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="511" />
+      <source>Small</source>
+      <translation>Klein</translation>
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="512" />
+      <source>Large</source>
+      <translation>Groot</translation>
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="513" />
+      <source>Original Size</source>
       <translation type="unfinished" />
     </message>
     <message>

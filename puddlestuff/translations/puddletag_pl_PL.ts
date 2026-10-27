@@ -252,113 +252,6 @@ Zespół &lt;b&gt;Oxygen&lt;/b&gt; za ikony Oxygen.
     </message>
   </context>
   <context>
-    <name>Amazon</name>
-    <message>
-      <location filename="../tagsources/amazon.py" line="347" />
-      <location filename="../tagsources/musicbrainz.py" line="515" />
-      <source>Small</source>
-      <translation>Mały</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="349" />
-      <location filename="../tagsources/musicbrainz.py" line="516" />
-      <source>Large</source>
-      <translation>Duży</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/musicbrainz.py" line="517" />
-      <source>Original Size</source>
-      <translation>Oryginalny rozmiar</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="72" />
-      <source>Invalid Access or Secret Key</source>
-      <translation>Nieprawidłowy klucz dostępu lub klucz tajny</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="125" />
-      <source>Retrieving search results for keywords: {}</source>
-      <translation>Pobieranie wyników wyszukiwania dla podanych słów kluczowych: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="147" />
-      <source>No tracks found in listing.</source>
-      <translation>Nie znaleziono utworów na liście.</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="196" />
-      <source>{} at Amazon.com</source>
-      <translation>{} na Amazon.com</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="222" />
-      <source>Retrieving using ASIN: {}</source>
-      <translation>Pobieranie przy użyciu ASIN: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="225" />
-      <source>Retrieving XML: {} - {}</source>
-      <translation>Pobieranie XML: {} - {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="237" />
-      <source>Retrieving cover: {}</source>
-      <translation>Pobieranie okładki: {}</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="296" />
-      <source>&lt;p&gt;Enter search parameters here. If empty, the selected files
-                        are used.&lt;/p&gt;
-                        &lt;ul&gt;
-                        &lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt;
-                        searches for a specific album/artist combination.&lt;/li&gt;
-                        &lt;li&gt;To list the albums by an artist leave off the album part,
-                        but keep the semicolon (eg. &lt;b&gt;Ratatat;&lt;/b&gt;).
-                        For a album only leave the artist part as in
-                        &lt;b&gt;;Resurrection.&lt;/li&gt;
-                        &lt;li&gt;Entering keywords &lt;b&gt;without a semi-colon (;)&lt;/b&gt; will do an
-                        Amazon album search using those keywords.&lt;/li&gt;
-                        &lt;/ul&gt;</source>
-      <translation>&lt;p&gt;Wprowadź tutaj parametry wyszukiwania. Tylko wypełnione pola
-                        zostaną użyte.&lt;/p&gt;
-                        &lt;ul&gt;
-                        &lt;li&gt;&lt;b&gt;artist;album&lt;/b&gt;
-                        wyszukuje określoną kombinację album/artysta.&lt;/li&gt;
-                        &lt;li&gt;Aby wyświetlić albumy danego artysty, pomiń część dotyczącą albumu,
-                        ale pozostaw średnik (np. &lt;b&gt;Ratatat;&lt;/b&gt;).
-                        W przypadku albumu pozostaw tylko część dotyczącą artysty, jak w tym przykładzie
-                        &lt;b&gt;;Resurrection.&lt;/li&gt;
-                        &lt;li&gt;Wpisanie słów kluczowych &lt;b&gt;bez średnika (;)&lt;/b&gt; spowoduje
-                        wyszukanie albumów w serwisie Amazon przy użyciu podanych słów kluczowych.&lt;/li&gt;
-                        &lt;/ul&gt;</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="345" />
-      <source>Retrieve Cover</source>
-      <translation>Pobierz okładkę</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="346" />
-      <source>Cover size to retrieve</source>
-      <translation>Rozmiar okładki do pobrania</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="348" />
-      <source>Medium</source>
-      <translation>Średni</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="350" />
-      <source>Access Key (Stored as plain-text. Leave empty for default.)</source>
-      <translation>Klucz dostępu (zapisany jako zwykły tekst. Pozostaw puste pole, aby uzyskać klucz domyślny.)</translation>
-    </message>
-    <message>
-      <location filename="../tagsources/amazon.py" line="352" />
-      <source>Secret Key (Stored as plain-text. Leave empty for default.)</source>
-      <translation>Klucz tajny (zapisany jako zwykły tekst. Pozostaw puste pole, aby uzyskać klucz domyślny.)</translation>
-    </message>
-  </context>
-  <context>
     <name>Artwork</name>
     <message>
       <location filename="../puddleobjects.py" line="1943" />
@@ -3029,6 +2922,21 @@ Czy chcesz kontynuować?</translation>
       <location filename="../tagsources/musicbrainz.py" line="514" />
       <source>Cover size to retrieve:</source>
       <translation>Rozmiar okładki do pobrania:</translation>
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="515" />
+      <source>Small</source>
+      <translation>Mały</translation>
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="516" />
+      <source>Large</source>
+      <translation>Duży</translation>
+    </message>
+    <message>
+      <location filename="../tagsources/musicbrainz.py" line="517" />
+      <source>Original Size</source>
+      <translation>Oryginalny rozmiar</translation>
     </message>
     <message>
       <location filename="../tagsources/musicbrainz.py" line="518" />

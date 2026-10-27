@@ -512,9 +512,9 @@ class MusicBrainz(object):
         self.preferences = [
             [translate('MusicBrainz', 'Retrieve Cover'), CHECKBOX, True],
             [translate('MusicBrainz', 'Cover size to retrieve:'), COMBO,
-             [[translate('Amazon', 'Small'),
-               translate('Amazon', 'Large'),
-               translate('Amazon', 'Original Size')], 1]],
+             [[translate('MusicBrainz', 'Small'),
+               translate('MusicBrainz', 'Large'),
+               translate('MusicBrainz', 'Original Size')], 1]],
             [translate('MusicBrainz', 'Amount of images to retrieve:'), COMBO,
              [[translate('MusicBrainz', 'Just the front cover'),
                translate('MusicBrainz', 'All (can take a while)')], 0]],

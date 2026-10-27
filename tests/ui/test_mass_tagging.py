@@ -766,7 +766,6 @@ def test_clear_preview_discards_the_previews(mainwin, make_audio, user, qtbot, t
 
 # The tag sources a profile can poll.
 
-@pytest.mark.xfail(strict=True, reason='Amazon and AllMusic are still listed')
 def test_profile_editor_offers_the_built_in_sources(mainwin, user, qtbot):
     # tut5.txt: "Clicking on the Add Tag Source ("+") button should bring
     # up this dialog", whose Source box lists tagsources.txt's sources:

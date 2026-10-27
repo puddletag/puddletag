@@ -8,7 +8,6 @@ With puddletag you can tag your audio files using metadata from external **Tag S
 
 The following Tag Sources are distributed with puddletag:
 
-* Amazon.com's album art
 * Discogs.com XML service
 * FreeDB
 * Musicbrainz
@@ -70,4 +69,4 @@ For all Tag Sources, but FreeDB you can also do textual searching. If the **Sear
 
 * Searching for something like 'Nomvula' will assume you mean the album **Nomvula**.
 * Searching for a specific artist/album combination can accomplished by separating the artist and album using a semi-colon as in "Jethro Tull; Aqualung". To specify an album name only, start with the semi-colon as in ";Aqualung". In the same way ending with a semi-colon eg. "Jethro Tull;" will only search for the specific artist.
-* Each Tag Source can have unique means of doing searches (e.g. the Musicbrainz Tag Source supports searching via Musicbrainz Album Id). See the Search box's tooltip for details or go :ref:`here <amazon>`.
+* Each Tag Source can have unique means of doing searches (e.g. the Musicbrainz Tag Source supports searching via Musicbrainz Album Id). See the Search box's tooltip for details or go :doc:`here <tagsources>`.

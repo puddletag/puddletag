@@ -914,7 +914,6 @@ def test_tag_source_plugin_appears_in_the_source_list(user_plugin, mainwin, user
 
 # Built-in tag sources.
 
-@pytest.mark.xfail(strict=True, reason='Amazon and AllMusic are still listed')
 def test_source_list_offers_the_built_in_sources(user, qtbot):
     # tagsources.txt: "Included with puddletag are tag sources supporting
     # lookups from Discogs, FreeDB, MusicBrainz and AcoustID." AcoustID is
@@ -938,7 +937,6 @@ def gone_source_saved(request, clean_profile):
     return request.param
 
 
-@pytest.mark.xfail(strict=True, reason='Amazon and AllMusic are still listed')
 def test_saved_source_that_is_gone_opens_on_musicbrainz(gone_source_saved, mainwin, user, qtbot):
     # The docs are silent: tut4.txt and tagsources.txt say only "Choose a
     # tag source". A fresh profile opens on MusicBrainz, so a saved source

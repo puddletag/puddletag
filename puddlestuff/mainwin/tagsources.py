@@ -814,7 +814,7 @@ class MainWin(QWidget):
 
         index = self.sourcelist.findText(source)
         if index == -1:
-            index = 0
+            index = max(self.sourcelist.findText('MusicBrainz'), 0)
         self.sourcelist.setCurrentIndex(index)
         self.__fieldsEdit.setTags(self.__sourceFields[index])
         df = get('trackpattern', '%track% - %title%')
