@@ -47,10 +47,6 @@ ALBUM_KEYS.update({
     'title': 'album',
     'track-count': '__numtracks',
 })
-MEDIUM_KEYS = ALBUM_KEYS.copy()
-MEDIUM_KEYS.update({
-    'id': 'mbrainz_medium_id',
-})
 
 TRACK_KEYS = {
     'id': 'mbrainz_track_id',
@@ -225,13 +221,17 @@ def parse_label_list(release_node):
 
 
 def parse_medium_list(r_node):
-    mediums = parse_node(r_node, 'medium-list', 'medium', 'format')
-    if not mediums:
+    lists = [z for z in r_node.childNodes
+             if getattr(z, 'tagName', '') == 'medium-list']
+    count = sum(1 for l in lists for z in l.childNodes
+                if getattr(z, 'tagName', '') == 'medium')
+    if not count:
         return {}
 
-    mediums = [convert_dict(m, MEDIUM_KEYS) for m in mediums]
-    info = mediums[0]
-    info.update({'discs': str(len(mediums))})
+    info = {'discs': str(count)}
+    formats = parse_node(r_node, 'medium-list', 'medium', 'format')
+    if formats:
+        info['format'] = formats[0]['format']
     return info
 
 
@@ -302,7 +302,13 @@ def parse_release(node):
 
     tracks = []
     for medium in node.getElementsByTagName('medium'):
-        tracks.extend(parse_track_list(medium))
+        disc = children_to_text(medium)
+        disc = convert_dict({'discnumber': disc.get('position'),
+                             'format': disc.get('format'),
+                             'mbrainz_medium_id': disc.get('id')}, {})
+        for track in parse_track_list(medium):
+            track.update(disc)
+            tracks.append(track)
     return info, tracks
 
 

@@ -344,7 +344,6 @@ def test_a_recording_without_an_artist_credit(source, web_server):
 
 # Discs -----------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason='nothing says which disc a track is on')
 @pytest.mark.parametrize('release_id, expected', [
     (ABBEY_ROAD, ['1'] * 17),
     (NINE_SYMPHONIES, ['1'] * 8 + ['2'] * 8 + ['3'] * 9 + ['4'] * 8 + ['5'] * 5),
@@ -356,7 +355,6 @@ def test_discnumber(source, release_id, expected):
     assert [t.get('discnumber') for t in tracks] == expected
 
 
-@pytest.mark.xfail(strict=True, reason="every track gets the first disc's id")
 def test_each_track_has_its_own_discs_id(source):
     """tagsources.txt: "**mbrainz_medium_id**: MusicBrainz's unique identifier
     for the disc the track is on." The ids are the recorded <medium id>s."""
@@ -369,7 +367,6 @@ def test_each_track_has_its_own_discs_id(source):
         + ['25895bbc-2237-3942-9eac-366078cb3cea'] * 5)
 
 
-@pytest.mark.xfail(strict=True, reason="the first disc's number is written to every track as a field named position")
 def test_no_position_field(source):
     """tagsources.txt's field list has no **position**: the disc's number is
     **discnumber**."""
@@ -378,7 +375,6 @@ def test_no_position_field(source):
     assert not any('position' in t for t in tracks)
 
 
-@pytest.mark.xfail(strict=True, reason="the first disc's title replaces the album's")
 def test_album_is_not_a_discs_title(source, web_server):
     """tagsources.txt: "**album**: The release's (album's) name." Synthetic:
     Abbey Road's disc is given a title."""
