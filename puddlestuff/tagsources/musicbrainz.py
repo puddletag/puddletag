@@ -6,9 +6,8 @@ import urllib.parse
 import urllib.request
 from collections import defaultdict
 from itertools import chain
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 
-from html.parser import HTMLParser
 from xml.dom import minidom, Node
 
 from puddlestuff.audioinfo import IMAGETYPES, get_mime, strlength
@@ -20,11 +19,6 @@ from puddlestuff.util import isempty, translate
 SERVER = 'http://musicbrainz.org/ws/2/'
 
 TEXT_NODE = Node.TEXT_NODE
-
-ARTISTID = '#artistid'
-ALBUMID = '#albumid'
-LABELID = '#labelid'
-INCLUDES = ''
 
 ARTISTID_FIELD = 'mbrainz_artist_id'
 ALBUMID_FIELD = 'mbrainz_album_id'
@@ -86,12 +80,6 @@ def children_to_text(node):
 def convert_dict(d, fm):
     return dict((fm.get(k, k), v) for k, v in d.items() if
                 not isempty(v))
-
-
-def fix_xml(xml):
-    c = XMLEscaper()
-    c.feed(album_xml)
-    return c.xml
 
 
 def istext(node):
@@ -481,28 +469,6 @@ def to_list(v, arg=None):
         return [v, arg] if arg is not None else [v]
 
 
-class XMLEscaper(HTMLParser):
-
-    def reset(self):
-        HTMLParser.reset(self)
-        self._xml = []
-
-    def handle_data(self, data):
-        self._xml.append(escape(data))
-
-    def unknown_starttag(self, tag, attributes):
-        attrib_str = ' '.join('%s=%s' % (k, quoteattr(v))
-                              for k, v in attributes)
-        self._xml.append('<%s %s>' % (tag, attrib_str))
-
-    def unknown_endtag(self, tag):
-        self._xml.append('</%s>' % tag)
-
-    @property
-    def xml(self):
-        return ''.join(self._xml)
-
-
 class MusicBrainz(object):
     name = 'MusicBrainz'
 
@@ -643,12 +609,3 @@ class MusicBrainz(object):
 
 
 info = MusicBrainz
-
-if __name__ == '__main__':
-    # retrieve_album('f504ebe7-8fb4-40e5-aa55-b6384bdf863e')
-    # c = MusicBrainz()
-    xml = open('/home/keith/Desktop/mb.xml', 'r').read()
-    # x = c.search('New Again', 'Taking Back Sunday')
-    tracks = parse_album(xml)[1]
-    for z in tracks:
-        print(z['title'], z['track'])
