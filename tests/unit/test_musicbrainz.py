@@ -90,8 +90,6 @@ def test_release_fields(source, release_id, expected):
     assert tuple(info.get(name) for name in names) == expected
 
 
-@pytest.mark.xfail(strict=True, reason="the request has no labels, so no label or catalog "
-                   "number comes back (https://github.com/puddletag/puddletag/issues/307)")
 def test_release_request_asks_for_labels(source, web_server):
     """tagsources.txt: "**label**: Labels responsible for the album's release."
     The recorded response has the labels whatever the request asks, so the
@@ -104,10 +102,8 @@ def test_release_request_asks_for_labels(source, web_server):
 @pytest.mark.parametrize('release_id, expected', [
     (ABBEY_ROAD, (['EMI‐Odeon'], ['CP35‐3016'], ['3b6781a7-7733-4f04-8f0b-a41dfb8d6401'])),
     (ABBEYS_ROAD, (['Incipit Records'], ['INC225'], ['1a649f65-61c3-4e7d-8214-ff7e73837661'])),
-    pytest.param(COFFEE_LANDS, (['Putumayo World Music'], ['M 135-2', 'PUTU 135-2'],
-                                ['98049da0-a5be-49b9-8d95-770e2d7906d2']),
-                 marks=pytest.mark.xfail(strict=True, reason="the release lists its label once "
-                                         "per catalog number, and each copy comes back")),
+    (COFFEE_LANDS, (['Putumayo World Music'], ['M 135-2', 'PUTU 135-2'],
+                    ['98049da0-a5be-49b9-8d95-770e2d7906d2'])),
     (NINE_SYMPHONIES, (['Deutsche Grammophon'], ['429 036-2'], ['5a584032-dcef-41bb-9f8b-19540116fb1c'])),
 ])
 def test_release_labels(source, release_id, expected):
@@ -123,11 +119,9 @@ def test_release_labels(source, release_id, expected):
 
 @pytest.mark.parametrize('release_id', [
     ABBEY_ROAD,
-    pytest.param(ABBEYS_ROAD, marks=pytest.mark.xfail(
-        strict=True, reason="the release's credits are joined with ', ', not their own join phrases")),
+    ABBEYS_ROAD,
     COFFEE_LANDS,
-    pytest.param(NINE_SYMPHONIES, marks=pytest.mark.xfail(
-        strict=True, reason="the release's credits are joined with ', ', not their own join phrases")),
+    NINE_SYMPHONIES,
 ])
 def test_release_artist_keeps_the_join_phrases(source, release_id):
     """tagsources.txt: "**albumartist**: The release's artists, joined as the
@@ -138,11 +132,7 @@ def test_release_artist_keeps_the_join_phrases(source, release_id):
     assert info['artist'] == ALBUM_ARTISTS[release_id]
 
 
-@pytest.mark.parametrize('release_id', [
-    pytest.param(release_id, marks=pytest.mark.xfail(
-        strict=True, reason="https://github.com/puddletag/puddletag/issues/836"))
-    for release_id in sorted(ALBUM_ARTISTS)
-])
+@pytest.mark.parametrize('release_id', sorted(ALBUM_ARTISTS))
 def test_albumartist(source, release_id):
     """tagsources.txt: "**albumartist**: The release's artists, joined as the
     release joins them (eg. **Ada Montellanico feat. Giovanni Falzone**)."
@@ -154,16 +144,12 @@ def test_albumartist(source, release_id):
 
 @pytest.mark.parametrize('release_id, expected', [
     (ABBEY_ROAD, ['b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d']),
-    pytest.param(ABBEYS_ROAD, ['1aa00b34-ccfc-468d-aa4c-425e1b8eb7f8',
-                               'e3fe8224-eb5f-4411-a922-26da0ebdc912'],
-                 marks=pytest.mark.xfail(strict=True, reason="no artist id when the release "
-                                         "credits more than one artist")),
+    (ABBEYS_ROAD, ['1aa00b34-ccfc-468d-aa4c-425e1b8eb7f8',
+                   'e3fe8224-eb5f-4411-a922-26da0ebdc912']),
     (COFFEE_LANDS, ['89ad4ac3-39f7-470e-963a-56509c546377']),
-    pytest.param(NINE_SYMPHONIES, ['1f9df192-a621-4f54-8850-2c5373b7eac9',
-                                   'd2ced2f1-6b58-47cf-ae87-5943e2ab6d99',
-                                   'dea28aa9-1086-4ffa-8739-0ccc759de1ce'],
-                 marks=pytest.mark.xfail(strict=True, reason="no artist id when the release "
-                                         "credits more than one artist")),
+    (NINE_SYMPHONIES, ['1f9df192-a621-4f54-8850-2c5373b7eac9',
+                       'd2ced2f1-6b58-47cf-ae87-5943e2ab6d99',
+                       'dea28aa9-1086-4ffa-8739-0ccc759de1ce']),
 ])
 def test_release_artist_ids(source, release_id, expected):
     """tagsources.txt: "**mbrainz_artist_id**: MusicBrainz's unique identifiers

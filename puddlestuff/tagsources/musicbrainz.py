@@ -150,16 +150,22 @@ def parse_artist_credit(node):
     if not artists:
         return {}
 
-    artist = ', '.join(z['artist']['name'] for z in artists)
+    artist = ''.join(z['artist']['name'] + z.get('joinphrase', '')
+                     for z in artists)
     if len(artists) == 1:
         artist_id = artists[0]['artist']['id']
         return {
             'artist': artist,
+            'albumartist': artist,
             '#artist_id': artist_id,
             'mbrainz_artist_id': artist_id,
         }
     else:
-        return {'artist': artist}
+        return {
+            'artist': artist,
+            'albumartist': artist,
+            'mbrainz_artist_id': [z['artist']['id'] for z in artists],
+        }
 
 
 def parse_artist_relation(relations):
@@ -212,8 +218,8 @@ def parse_label_list(release_node):
     label_ids = [z['label']['id'] for z in labels
                  if 'label' in z and 'id' in z['label']]
     return {
-        'label': label_names,
-        'mbrainz_label_id': label_ids,
+        'label': list(dict.fromkeys(label_names)),
+        'mbrainz_label_id': list(dict.fromkeys(label_ids)),
         'catalognumber': catalogs
     }
 
@@ -367,7 +373,7 @@ def rec_children_to_text(node):
 
 def retrieve_album(album_id):
     url = SERVER + 'release/' + album_id + \
-          '?inc=recordings+artist-credits+puids+isrcs+tags+ratings' \
+          '?inc=recordings+artist-credits+labels+puids+isrcs+tags+ratings' \
           '+artist-rels+recording-rels+release-rels+release-group-rels' \
           '+url-rels+work-rels+recording-level-rels+work-level-rels'
 
