@@ -117,8 +117,6 @@ So all you need to do in order to do a FreeDB lookup is select all the files bel
 Using MusicBrainz
 -----------------
 
-.. note:: `python-musicbrainz2 <http://musicbrainz.org/doc/python-musicbrainz2>`_ ≥ 0.6.0 is required to enable MusicBrainz support.
-
 In addition to normal file lookups MusicBrainz also supports textual searches. The rules are as follows.
 
 +   To search for a specific artist, album pair enter the search string as **artist;album**, ie. artist and album separated by a semi-colon.
@@ -130,26 +128,39 @@ In addition to normal file lookups MusicBrainz also supports textual searches. T
 
 The fields returned by the MusicBrainz tag source are (not all fields are available for all albums):
 
-+    **album**: The release's (album's) name.
-+    **artist**: The track's artist.
++    **album**: The release's (album's) name. A release's disambiguation comment is added in brackets, as in **Abbey Road (anniversary edition)**.
++    **albumartist**: The release's artists, joined as the release joins them (eg. **Ada Montellanico feat. Giovanni Falzone**).
++    **artist**: The track's artists on the release, joined as the release joins them.
 +    **asin**: Amazon identifier.
 +    **barcode**: The album's barcode.
-+    **catalog**: Catalog numbers of the album.
++    **catalognumber**: Catalog numbers of the album.
 +    **country**: Album's release country.
++    **date**: The release's date. Not available for every album.
++    **disambiguation**: The comment that tells the track's recording apart from others with its title (eg. **original studio mix**).
++    **discnumber**: The number of the disc the track is on.
 +    **discs**: Number of discs in the album.
-+    **involvedpeople_album**: People involved with the album's creation. Taken from the extraartists node for the album. (Eg. **Young Churf;Harpsichord**)
-+    **involvedpeople_track**: People involved with the relevant track. Taken from the track's extraartists node. (Eg. **Young Churf;Harpsichord**)
-+    **isrc**: `ISRC's <http://en.wikipedia.org/wiki/International_Standard_Recording_Code>`_ associated with the album.
-+    **label**: Label responsible for album's release.
++    **first-release-date**: When the track's recording was first released.
++    **format**: The format of the disc the track is on (eg. **CD**).
++    **isrc**: `ISRCs <http://en.wikipedia.org/wiki/International_Standard_Recording_Code>`_ of the track's recording.
++    **label**: Labels responsible for the album's release.
 +    **mbrainz_album_id**: MusicBrainz's unique identifier for the album.
-+    **mbrainz_artist_id**: The unique MusicBrainz identifier for the artist.
-+    **mbrainz_label_id**: The unique MusicBrainz identifier for the recording label.
-+    **musicip_puid**: PUID's associated with the track. PUID retrieval requires polling MusicBrainz for each track therefore it's disabled by default.
-+    **mbrainz_rating**: The album's rating according to MusicBrainz.
-+    **mbrainz_track_id**: MusicBrainz's unique ID for the track.
-+    **title**: The track's title.
-+    **track**: The track number.
-+    **year**: The earliest date that the album was released. Not available for every album.
++    **mbrainz_artist_id**: MusicBrainz's unique identifiers for the track's artists.
++    **mbrainz_label_id**: MusicBrainz's unique identifiers for the labels.
++    **mbrainz_medium_id**: MusicBrainz's unique identifier for the disc the track is on.
++    **mbrainz_rating**: The track's rating according to MusicBrainz, from its recording.
++    **mbrainz_track_id**: MusicBrainz's unique identifier for the track's recording (what Picard calls the MusicBrainz Recording Id).
++    **number**: The track's number as the release prints it (eg. **A1** on a record).
++    **packaging**: The release's packaging (eg. **Jewel Case**).
++    **quality**: How complete MusicBrainz considers the release's data (**low**, **normal** or **high**).
++    **status**: The release's status (eg. **Official**).
++    **title**: The track's title, as the release gives it.
++    **track**: The track's number on its disc.
+
+The people credited on a track's recording, and its relationships to other recordings, come back as fields named after the relationship, with its attributes first:
+
++    The artists in a role, as in **engineer**, **producer**, **conductor** or **arranger**: **producer**: **George Martin**.
++    The performers of an instrument or a voice, as in **electric bass guitar instrument**: **Paul McCartney** and **lead vocals vocal**: **John Lennon**.
++    Other recordings, by title and artist, as in **music video**: **Come Together by The Beatles**, or **remix** and **compilation**.
 
 .. _mp3tag_sources:
 
