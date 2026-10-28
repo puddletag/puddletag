@@ -198,14 +198,12 @@ def test_track_numbers(source, release_id, expected):
                   'Because', 'You Never Give Me Your Money', 'Sun King', 'Mean Mr. Mustard',
                   'Polythene Pam', 'She Came In Through the Bathroom Window',
                   'Golden Slumbers', 'Carry That Weight', 'The End', 'Her Majesty']),
-    pytest.param(COFFEE_LANDS, [
+    (COFFEE_LANDS, [
         'Guajira Bonita (Peru)', 'Soltarlo (Colombia)', 'Wasuze Otya? (Uganda)',
         'Maria Lando (Peru)', 'Below the Bassline (Jamaica)', 'M’Ban Samba (Brazil)',
         'Hanzvadzi (Zimbabwe)', 'Dilema (Cuba)', 'Esa noche (Mexico)', 'Gabby Kai (Hawai)',
         'Kothbiro (Kenya)', 'Este son (Costa Rica)',
-        'La milonga de Ricardo en cha‐cha‐chá (Congo)'],
-        marks=pytest.mark.xfail(strict=True, reason='the title is the recording\'s, not the release\'s '
-                                'track title (https://github.com/puddletag/puddletag/issues/760)')),
+        'La milonga de Ricardo en cha‐cha‐chá (Congo)']),
 ])
 def test_track_titles(source, release_id, expected):
     """tagsources.txt: "**title**: The track's title, as the release gives it."
@@ -232,8 +230,6 @@ NINE_SYMPHONIES_TITLES = {
 }
 
 
-@pytest.mark.xfail(strict=True, reason='the title is the recording\'s, not the release\'s track title '
-                   '(https://github.com/puddletag/puddletag/issues/760)')
 def test_track_titles_of_a_release_with_several_discs(source):
     """tagsources.txt: "**title**: The track's title, as the release gives it."
     Values: each <track>'s <title> in the recorded response."""
@@ -242,11 +238,8 @@ def test_track_titles_of_a_release_with_several_discs(source):
 
 
 @pytest.mark.parametrize('release_id, expected', [
-    pytest.param(ABBEY_ROAD, ['04:20', '03:02', '03:27', '03:27', '02:50', '07:46', '03:05', '02:46',
-                              '03:57', '02:31', '01:06', '01:18', '01:52', '01:31', '01:36', '02:20',
-                              '00:25'],
-                 marks=pytest.mark.xfail(strict=True, reason='the length is the recording\'s, not the '
-                                         'release\'s track')),
+    (ABBEY_ROAD, ['04:20', '03:02', '03:27', '03:27', '02:50', '07:46', '03:05', '02:46',
+                  '03:57', '02:31', '01:06', '01:18', '01:52', '01:31', '01:36', '02:20', '00:25']),
     (ABBEYS_ROAD, [None] * 11),
 ])
 def test_track_lengths(source, release_id, expected):
@@ -262,15 +255,11 @@ def test_track_lengths(source, release_id, expected):
 @pytest.mark.parametrize('release_id, expected', [
     (ABBEY_ROAD, ['The Beatles'] * 17),
     (ABBEYS_ROAD, ['Ada Montellanico feat. Giovanni Falzone'] * 11),
-    pytest.param(COFFEE_LANDS, [
+    (COFFEE_LANDS, [
         'Julian Avalos', 'Claudia Gómez', 'Samite', 'Susana Baca', 'Ernest Ranglin',
         'Raimundo Sodré', 'Thomas Mapfumo', 'Carlos Puebla', 'Café Tacvba',
-        'James “Bla” Pahinui', 'Ayub Ogada', 'Juan Carlos Ureña', 'Ricardo Lemvo & Makina Loca'],
-        marks=pytest.mark.xfail(strict=True, reason='the artist is the recording\'s, not the release '
-                                'track\'s')),
-    pytest.param(NINE_SYMPHONIES, ['Ludwig van Beethoven'] * 38,
-                 marks=pytest.mark.xfail(strict=True, reason='the artist is the recording\'s, not the '
-                                         'release track\'s')),
+        'James “Bla” Pahinui', 'Ayub Ogada', 'Juan Carlos Ureña', 'Ricardo Lemvo & Makina Loca']),
+    (NINE_SYMPHONIES, ['Ludwig van Beethoven'] * 38),
 ])
 def test_track_artists(source, release_id, expected):
     """tagsources.txt: "**artist**: The track's artists on the release, joined
@@ -293,9 +282,7 @@ COFFEE_LANDS_ARTIST_IDS = [
 
 @pytest.mark.parametrize('release_id, expected', [
     (ABBEY_ROAD, [['b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d']] * 17),
-    pytest.param(COFFEE_LANDS, COFFEE_LANDS_ARTIST_IDS,
-                 marks=pytest.mark.xfail(strict=True, reason='every track gets the album\'s artist id '
-                                         '(https://github.com/puddletag/puddletag/issues/874)')),
+    (COFFEE_LANDS, COFFEE_LANDS_ARTIST_IDS),
 ])
 def test_track_artist_ids(source, release_id, expected):
     """tagsources.txt: "**mbrainz_artist_id**: MusicBrainz's unique identifiers
@@ -306,8 +293,6 @@ def test_track_artist_ids(source, release_id, expected):
     assert [values(t, 'mbrainz_artist_id') for t in tracks] == expected
 
 
-@pytest.mark.xfail(strict=True, reason='the recording\'s ISRCs are dropped '
-                   '(https://github.com/puddletag/puddletag/issues/134)')
 @pytest.mark.parametrize('release_id, index, expected', [
     (ABBEY_ROAD, 0, ['GBAYE0000944', 'GBAYE0601690']),
     (ABBEY_ROAD, 1, ['GBAYE0000943', 'GBAYE0601691']),
@@ -358,7 +343,6 @@ def test_rating_is_the_recordings(source, web_server):
     assert 'mbrainz_rating' not in tracks[1]
 
 
-@pytest.mark.xfail(strict=True, reason='a recording without an artist credit raises TypeError')
 def test_a_recording_without_an_artist_credit(source, web_server):
     """Synthetic: Come Together's recording without its <artist-credit>. The
     track still comes back, with the album's artist as the window applies

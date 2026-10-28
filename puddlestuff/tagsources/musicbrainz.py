@@ -234,11 +234,11 @@ def parse_node(node, header_tag, sub_tag, check_tag):
     nodes = [z for z in node.childNodes if
              getattr(z, "tagName", '') == header_tag]
     for node in nodes:
-        info = children_to_text(node)
+        header = children_to_text(node)
         for ch in node.getElementsByTagName(sub_tag):
             if ch not in node.childNodes:
                 continue
-            info = info.copy()
+            info = header.copy()
             info.update(rec_children_to_text(ch))
             if check_tag not in info:
                 continue
@@ -304,8 +304,10 @@ def parse_track_list(node):
     tracks = []
     for i, t in enumerate(parse_node(node, 'track-list', 'track', 'position')):
         track = t['recording']
-        rem_keys = set(track).union(TO_REMOVE)
-        track.update((k, v) for k, v in t.items() if k not in rem_keys)
+        track.update((k, v) for k, v in t.items() if k not in TO_REMOVE + ('id',))
+
+        if 'isrc-list' in track:
+            track['isrc'] = to_list(track.pop('isrc-list')['id'])
 
         if 'puid-list' in track:
             track['musicip_puid'] = track['puid-list']['id']
@@ -315,12 +317,13 @@ def parse_track_list(node):
             for r in to_list(track['relation-list']):
                 track.update(parse_track_relation(r))
 
-        feat = to_list(track.get('artist-credit', {}).get('name-credit'))
+        feat = to_list(track['artist-credit']['name-credit']) if 'artist-credit' in track else []
         if feat:
             names = [(z['artist']['name'], z.get('joinphrase', ''))
                      for z in feat]
 
             track['artist'] = ''.join('%s%s' % a for a in names)
+            track['mbrainz_artist_id'] = [z['artist']['id'] for z in feat]
 
         for k, v in list(track.items()):
             if not isinstance(track[k], (str, list)):
