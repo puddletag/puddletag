@@ -415,7 +415,6 @@ def test_artist_relationships_are_fields(source, release_id, field, expected):
     assert values(tracks[0], field) == expected
 
 
-@pytest.mark.xfail(strict=True, reason='an artist with two relationships of one type is listed twice')
 @pytest.mark.parametrize('field, expected', [
     ('electric guitar instrument', ['George Harrison', 'John Lennon']),
     ('lead vocals vocal', ['John Lennon']),
@@ -436,7 +435,6 @@ def test_a_recording_relationship_is_a_field(source):
     assert values(tracks[0], 'music video') == ['Come Together by The Beatles']
 
 
-@pytest.mark.xfail(strict=True, reason="the other recording's credits lose their join phrases")
 def test_a_related_recordings_credits_keep_their_join_phrases(source):
     """tagsources.txt: "Other recordings, by title and artist, as in ... remix
     and compilation". The recorded response credits the related recording's
@@ -447,7 +445,6 @@ def test_a_related_recordings_credits_keep_their_join_phrases(source):
         ' by Reinhold Schmidt, Walter Berry, Gundula Janowitz, Waldemar Kmentt, Hilde Rössel‐Majdan, Wiener Singverein, Berliner Philharmoniker, Herbert von Karajan']
 
 
-@pytest.mark.xfail(strict=True, reason='the search score comes back as a field named ns2:score')
 def test_search_results_have_no_score_field(source, web_server):
     """Synthetic: a score added to each release of the recorded search
     response, since the recordings have none (scores aren't CC0). It isn't a

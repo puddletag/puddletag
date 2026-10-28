@@ -33,7 +33,7 @@ ARTIST_KEYS = {
     'name': 'artist',
     'sort-name': 'sortname',
     'id': ARTISTID_FIELD,
-    'ext:score': '#score',
+    'ns2:score': '#score',
     'type': 'artist_type',
     'rating': 'mbrainz_rating',
 }
@@ -181,7 +181,7 @@ def parse_artist_relation(relations):
                 else:
                     field = '%s %s' % (field, desc)
                 desc = r['artist']['name']
-        if desc:
+        if desc and desc not in ret[field]:
             ret[field].append(desc)
     return ret
 
@@ -260,18 +260,9 @@ def parse_recording_relation(relations):
         desc = None
 
         if 'artist-credit' in recording:
-            artists = []
-            for cr in to_list(recording['artist-credit']['name-credit']):
-                if 'join-phrase' in cr:
-                    artists.append(cr['join-phrase'])
-                artists.append(cr['artist']['name'])
-
-            unique_artists = []
-            for z in artists:
-                if z not in unique_artists:
-                    unique_artists.append(z)
-
-            desc = ' '.join(unique_artists)
+            desc = ''.join(
+                cr['artist']['name'] + cr.get('joinphrase', '')
+                for cr in to_list(recording['artist-credit']['name-credit']))
 
         if 'title' in recording:
             if desc:
