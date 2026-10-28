@@ -6,14 +6,20 @@ HOME and the XDG dirs are redirected here, when pytest imports this conftest
 and before any test module imports puddlestuff.
 """
 import atexit
+import http.server
 import os
 import shutil
 import socket
 import struct
 import subprocess
 import tempfile
+import threading
+import urllib.parse
 from collections import defaultdict, deque
+from dataclasses import dataclass
+from email.message import Message
 from functools import cache
+from pathlib import Path
 
 import mutagen
 import mutagen.apev2
@@ -144,6 +150,103 @@ def no_network(monkeypatch):
     yield attempts
     if attempts:
         pytest.fail(f'network access attempted: {attempts!r}')
+
+
+# Local web server ------------------------------------------------------------
+
+@dataclass
+class ServedRequest:
+    """A request the local web server answered: ``path`` unquoted, without
+    the query; ``query`` as ``urllib.parse.parse_qs`` gives it."""
+    method: str
+    path: str
+    query: dict
+    raw_query: str
+    headers: Message
+    body: bytes
+
+
+class WebServer:
+    """Canned web responses on 127.0.0.1, for the tag sources' tests.
+
+    ``add(path, body)`` answers every request for ``path``, whatever its
+    query, unless ``query`` names parameters the request must have, each
+    with exactly that value. The last matching ``add`` wins, so a test can
+    replace one of a fixture's answers. A request nothing matches gets a
+    404, and is recorded in ``unmatched`` so the test fails at teardown
+    even when puddletag swallows the error; a test that expects one clears
+    ``unmatched``. Every request, matched or not, is kept in ``requests``.
+    Point a source at ``url`` through its base address.
+    """
+
+    def __init__(self):
+        self.requests = []
+        self.unmatched = []
+        self._routes = []
+        self._lock = threading.Lock()
+        server = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+
+            def serve(self):
+                split = urllib.parse.urlsplit(self.path)
+                length = int(self.headers.get('Content-Length') or 0)
+                request = ServedRequest(
+                    self.command, urllib.parse.unquote(split.path),
+                    urllib.parse.parse_qs(split.query, keep_blank_values=True),
+                    split.query, self.headers, self.rfile.read(length))
+                status, body, content_type = server._answer(request)
+                self.send_response(status)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            do_GET = do_POST = serve
+
+        self._httpd = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+        self.url = f'http://127.0.0.1:{self._httpd.server_port}'
+        self._thread = threading.Thread(
+            target=self._httpd.serve_forever, kwargs={'poll_interval': 0.05}, daemon=True)
+        self._thread.start()
+
+    def add(self, path, body=b'', status=200, content_type='application/octet-stream',
+            query=None):
+        """``body``: bytes, str (sent as UTF-8) or a Path (its bytes)."""
+        if isinstance(body, Path):
+            body = body.read_bytes()
+        elif isinstance(body, str):
+            body = body.encode('utf-8')
+        with self._lock:
+            self._routes.append((path, query or {}, (status, body, content_type)))
+
+    def _answer(self, request):
+        with self._lock:
+            self.requests.append(request)
+            for path, query, answer in reversed(self._routes):
+                if path == request.path and all(
+                        request.query.get(name) == [value] for name, value in query.items()):
+                    return answer
+            self.unmatched.append(f'{request.method} {request.path}?{request.raw_query}')
+            return 404, f'no canned response for {request.method} {request.path}'.encode(), 'text/plain'
+
+    def close(self):
+        self._httpd.shutdown()
+        self._httpd.server_close()
+
+
+@pytest.fixture
+def web_server(monkeypatch):
+    # A proxy from the environment would send 127.0.0.1's requests elsewhere.
+    monkeypatch.setenv('NO_PROXY', '127.0.0.1')
+    monkeypatch.setenv('no_proxy', '127.0.0.1')
+    server = WebServer()
+    yield server
+    server.close()
+    if server.unmatched:
+        pytest.fail(f'requests the web server had no answer for: {server.unmatched!r}')
 
 
 # Synthetic audio -------------------------------------------------------------
