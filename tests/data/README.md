@@ -36,3 +36,34 @@ Every user of those releases has them in their config dir, and a newer
 release has to replace them. `tests/ui/test_trash.py` writes them into the
 config dir before the window is built, as an existing user's profile has
 them, and checks that the File menu then offers Move to Trash.
+
+# MusicBrainz responses
+
+Responses MusicBrainz served, which `tests/unit/test_musicbrainz.py`
+serves back from a local web server (the `web_server` fixture in
+`tests/conftest.py`). `record_musicbrainz.py` requests them as puddletag
+does and cuts them down; the tests never run it.
+
+`musicbrainz/release-<id>.xml` is
+`https://musicbrainz.org/ws/2/release/<id>?inc=recordings+artist-credits+labels+puids+isrcs+tags+ratings+artist-rels+recording-rels+release-rels+release-group-rels+url-rels+work-rels+recording-level-rels+work-level-rels`,
+the request puddletag sends when a release is chosen in the Tag Sources
+window:
+
+| Release id | Release |
+|---|---|
+| `33eff102-8312-4be2-b3d9-5bd9957f0158` | A Putumayo Blend: Music From the Coffee Lands (Various Artists, 1997); MusicBrainz serves release `b8621ea1-acaf-46b5-b292-3a7c9eba9773`, which it was merged into |
+| `6bb3793b-f991-378e-9bff-0bd3117f2298` | Abbey Road (The Beatles; the 1983 Japanese CD) |
+| `70516629-7715-41bf-97e1-b7bf11254cb8` | Abbey's Road (Ada Montellanico feat. Giovanni Falzone, 2016) |
+| `f0217095-5daf-4293-8f59-6ddec7187707` | 9 Symphonien (Beethoven; Herbert von Karajan, Berliner Philharmoniker; five CDs) |
+
+`musicbrainz/search-abbey-road-the-beatles.xml` is
+`https://musicbrainz.org/ws/2/release/?query=release:Abbey+Road%20AND%20artistname:The+Beatles&limit=2&offset=0`,
+a search as puddletag sends it.
+
+License: MusicBrainz releases its core data under
+[CC0](https://musicbrainz.org/doc/About/Data_License); the rest
+(annotations, genres, ratings, tags and search scores) is CC BY-NC-SA
+3.0, so the script removes it, along with the Cover Art Archive's
+artwork flags and the relationships puddletag doesn't read (to URLs and
+works). Where a test needs a rating or a score, it adds a synthetic
+one.
