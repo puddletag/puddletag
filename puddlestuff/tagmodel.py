@@ -1,7 +1,9 @@
 import html
 import os
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from contextlib import contextmanager
 from copy import copy, deepcopy
 from operator import itemgetter
@@ -1976,32 +1978,88 @@ class TagTable(QTableView):
         else:
             reading_dir = translate('Defaults', "Reading Dir")
 
+        cancel_event = threading.Event()
+
         def load_dir():
             if files:
                 filenames = files
             else:
                 filenames = []
             for fname in getfiles(dirs, subfolders):
+                if cancel_event.is_set():
+                    break
                 filenames.append(fname)
                 yield reading_dir
+
+            if cancel_event.is_set():
+                return
 
             if self.filespec and self.filespec.strip():
                 filenames = fnmatch(self.filespec, filenames)
 
-            yield len(filenames)
+            num_files = len(filenames)
+            yield num_files
 
-            for fname in filenames:
-                tag = gettag(fname)
-                if tag is not None:
-                    tags.append(tag)
-                yield None
+            if num_files <= 1:
+                for fname in filenames:
+                    if cancel_event.is_set():
+                        break
+                    tag = gettag(fname)
+                    if tag is not None:
+                        tags.append(tag)
+                    yield None
+            else:
+                max_workers = min(16, max(4, (os.cpu_count() or 2) * 2))
+                window_size = max_workers * 2
+
+                executor = ThreadPoolExecutor(max_workers=max_workers)
+                item_iter = iter(enumerate(filenames))
+                pending = {}
+                loaded_tags = [None] * num_files
+
+                def _read_tag(filename):
+                    if cancel_event.is_set():
+                        return None
+                    return gettag(filename)
+
+                try:
+                    for _ in range(min(window_size, num_files)):
+                        idx, fname = next(item_iter)
+                        pending[executor.submit(_read_tag, fname)] = idx
+
+                    while pending and not cancel_event.is_set():
+                        done, _ = wait(pending, timeout=0.05, return_when=FIRST_COMPLETED)
+                        for fut in done:
+                            idx = pending.pop(fut)
+                            try:
+                                tag = fut.result()
+                                if tag is not None:
+                                    loaded_tags[idx] = tag
+                            except Exception:
+                                logging.exception('Error loading file %s', filenames[idx])
+
+                            if not cancel_event.is_set():
+                                try:
+                                    next_idx, next_fname = next(item_iter)
+                                    pending[executor.submit(_read_tag, next_fname)] = next_idx
+                                except StopIteration:
+                                    pass
+
+                            yield None
+                finally:
+                    for fut in pending:
+                        fut.cancel()
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    tags.extend([t for t in loaded_tags if t is not None])
 
         if post_process:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
-                         lambda: post_process(tags, append, filepath))
+                         lambda: post_process(tags, append, filepath),
+                         on_cancel=cancel_event.set)
         else:
             s = progress(load_dir, translate("Defaults", 'Loading '), 20,
-                         lambda: self._loadFilesDone(tags, append, filepath))
+                         lambda: self._loadFilesDone(tags, append, filepath),
+                         on_cancel=cancel_event.set)
         s(self.parentWidget())
 
     def _loadFilesDone(self, tags, append, filepath):
