@@ -689,15 +689,9 @@ def all_images(suffix):
 
 
 @pytest.mark.parametrize('size, suffix', [
-    pytest.param(0, '-250', marks=pytest.mark.xfail(
-        strict=True, reason='Issue 622: "All" images crashes, and then fetches the original '
-                            'whatever the size')),
-    pytest.param(1, '-500', marks=pytest.mark.xfail(
-        strict=True, reason='Issue 622: "All" images crashes, and then fetches the original '
-                            'whatever the size')),
-    pytest.param(2, '', marks=pytest.mark.xfail(
-        raises=TypeError, strict=True,
-        reason='Issue 622: "All" images crashes with "string indices must be integers"')),
+    (0, '-250'),
+    (1, '-500'),
+    (2, ''),
 ])
 def test_all_images(covers, web_server, size, suffix):
     """tagsources.txt: "**Cover size to retrieve:** is Small (250 px), Large
@@ -738,12 +732,7 @@ def test_front_cover(covers, web_server, size, name, suffix):
     assert info['__image'][0].get('imagetype', 3) == 3
 
 
-@pytest.mark.parametrize('count', [
-    pytest.param(0),
-    pytest.param(1, marks=pytest.mark.xfail(
-        raises=TypeError, strict=True,
-        reason='Issue 622: "All" images crashes with "string indices must be integers"')),
-])
+@pytest.mark.parametrize('count', [0, 1])
 def test_no_images(covers, web_server, log, count):
     """The docs are silent on an album with no cover. The Cover Art Archive
     answers 404: the album comes back without a cover, and the log says why,
@@ -769,8 +758,6 @@ def test_retrieve_cover_unchecked(covers, web_server, count):
     assert '__image' not in info
 
 
-@pytest.mark.xfail(strict=True, reason='Issue 622: "All" images crashes, and then one image '
-                                       'that fails drops them all')
 def test_an_image_that_fails_leaves_the_others(covers, web_server, log):
     """The docs are silent on an image that fails. Synthetic: the second image
     is gone (404). "All" logs the error and keeps the other two."""

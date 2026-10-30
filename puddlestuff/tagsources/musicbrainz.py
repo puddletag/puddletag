@@ -407,15 +407,21 @@ def retrieve_covers(cover_links, size=LARGE):
             cover_type = imagetypes[mb_imagetypes[cover_type]]
         else:
             cover_type = imagetypes["Other"]
-        if cover == SMALL:
-            image_url = cover['thumbnails']['small']
-        elif cover == LARGE:
-            image_url = cover['thumbnails']['large']
+        thumbnails = cover['thumbnails']
+        if size == SMALL:
+            image_url = thumbnails.get('250') or thumbnails['small']
+        elif size == LARGE:
+            image_url = thumbnails.get('500') or thumbnails['large']
         else:
             image_url = cover['image']
 
         write_log(translate('MusicBrainz', "Retrieving image {}").format(image_url))
-        image_data = urlopen(image_url)
+        try:
+            image_data = urlopen(image_url)
+        except RetrievalError as e:
+            write_log(translate('MusicBrainz',
+                                "Error retrieving image: {}").format(str(e)))
+            continue
 
         ret.append({'desc': desc, 'mime': get_mime(image_data),
                     "imagetype": cover_type, "data": image_data})
@@ -584,20 +590,18 @@ class MusicBrainz(object):
     def retrieve_covers(self, album_id):
         if not self.__get_images:
             return []
-        if self.__num_images == 0:
-            try:
+        try:
+            if self.__num_images == 0:
                 image = retrieve_front_cover(album_id)
                 if image:
                     return [image]
-            except RetrievalError as e:
-                import traceback
-                traceback.print_exc()
-                print()
-                write_log(translate('MusicBrainz',
-                                    "Error retrieving image: {}").format(str(e)))
-                return []
-        else:
-            return retrieve_covers(album_id, self.__image_size)
+            else:
+                return retrieve_covers(retrieve_cover_links(album_id),
+                                       self.__image_size)
+        except RetrievalError as e:
+            write_log(translate('MusicBrainz',
+                                "Error retrieving image: {}").format(str(e)))
+            return []
 
     def applyPrefs(self, args):
         self.__get_images = args[0]
