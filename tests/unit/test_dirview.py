@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from PyQt6.QtCore import QDir
 
+from puddlestuff.mainwin import dirview
 from puddlestuff.mainwin.dirview import (
     DirModel,
     get_network_mounts,
@@ -12,32 +13,67 @@ from puddlestuff.mainwin.dirview import (
 )
 
 
-def test_is_network_path_unc():
-    is_network_path.cache_clear()
-    assert is_network_path('//nas/music/rock') is True
-    assert is_network_path(r'\\nas\music\rock') is True
-
-
-def test_is_network_path_gvfs():
-    is_network_path.cache_clear()
-    assert is_network_path('/run/user/1000/gvfs/smb-share:server=nas/music') is True
-
-
 def test_is_network_path_empty_or_none():
-    is_network_path.cache_clear()
     assert is_network_path('') is False
     assert is_network_path(None) is False
 
 
 def test_is_network_path_mount_table(tmp_path):
-    is_network_path.cache_clear()
     net_mount = str(tmp_path / 'mnt' / 'nas')
     local_path = str(tmp_path / 'home' / 'user' / 'music')
 
     with patch('puddlestuff.mainwin.dirview.get_network_mounts', return_value=[net_mount]):
-        is_network_path.cache_clear()
         assert is_network_path(net_mount + '/Albums/Rock') is True
         assert is_network_path(local_path) is False
+
+
+def test_is_network_path_follows_the_mount_table(monkeypatch):
+    # A folder checked before its share was mounted, as an automounted
+    # share is on first access.
+    table = [[]]
+    monkeypatch.setattr(dirview, 'get_network_mounts', lambda: table[0])
+    assert is_network_path('/mnt/nas/Artist') is False
+    table[0] = ['/mnt/nas']
+    assert is_network_path('/mnt/nas/Artist') is True
+
+
+# Lines of a real /proc/mounts: a local disk, an NFS share and GNOME's GVFS.
+REAL_MOUNTS = (
+    '/dev/mapper/system-root / xfs rw,noatime,attr2,inode64,logbufs=8,logbsize=32k,noquota 0 0\n'
+    'nas:/music /nas/music nfs4 rw,nosuid,nodev,noatime,vers=4.1,rsize=1048576,wsize=1048576,namlen=255,soft,'
+    'proto=tcp,timeo=100,retrans=2,sec=sys,clientaddr=192.168.0.218,local_lock=none,addr=192.168.0.70 0 0\n'
+    'gvfsd-fuse /run/user/1000/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000 0 0\n'
+)
+
+
+@pytest.fixture
+def mounts(tmp_path, monkeypatch):
+    """The mount table's file, for the test to write."""
+    path = tmp_path / 'mounts'
+    monkeypatch.setattr(dirview, 'MOUNTS', str(path))
+    monkeypatch.setattr(dirview, '_network_mounts_cache', None)
+    return path
+
+
+def test_network_mounts(mounts):
+    # Synthetic: SMB shares mounted on folders named with a space, which
+    # the table escapes, and with a non-ASCII letter.
+    mounts.write_text(REAL_MOUNTS + '//nas/a /mnt/My\\040Music cifs rw 0 0\n'
+                                    '//nas/b /mnt/Música cifs rw 0 0\n', encoding='utf-8')
+    assert sorted(get_network_mounts()) == ['/mnt/My Music', '/mnt/Música', '/nas/music', '/run/user/1000/gvfs']
+
+
+def test_mount_table_read_again_after_10_seconds(mounts, monkeypatch):
+    # Also when it lists no network mount.
+    clock = [1000.0]
+    monkeypatch.setattr(dirview.time, 'monotonic', lambda: clock[0])
+    mounts.write_text(REAL_MOUNTS.splitlines(keepends=True)[0])
+    assert get_network_mounts() == []
+    mounts.write_text(REAL_MOUNTS)
+    clock[0] += 9
+    assert get_network_mounts() == []
+    clock[0] += 2
+    assert sorted(get_network_mounts()) == ['/nas/music', '/run/user/1000/gvfs']
 
 
 def test_dirmodel_local_empty_and_nonempty(qapp, tmp_path):

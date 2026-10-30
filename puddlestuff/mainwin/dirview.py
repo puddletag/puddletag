@@ -1,7 +1,6 @@
 import os
-import sys
+import re
 import time
-from functools import lru_cache
 
 from PyQt6.QtCore import QDir, QDirIterator, QItemSelectionModel, QMutex, QSettings, QUrl, Qt, pyqtSignal
 from PyQt6.QtGui import QAction, QDesktopServices, QFileSystemModel
@@ -18,12 +17,12 @@ from ..translations import translate
 qmutex = QMutex()
 
 NETWORK_FS_TYPES = {
-    'cifs', 'smbfs', 'nfs', 'nfs4', 'fuse.sshfs', 'sshfs', 'davfs',
-    'fuse.davfs', 'glusterfs', 'ceph', 'afpfs', 'fuse.gvfsd-fuse',
-    '9p', 'lustre', 'gpfs', 'kio-fuse',
+    '9p', 'afpfs', 'ceph', 'cifs', 'davfs', 'fuse.davfs', 'fuse.gvfsd-fuse', 'fuse.sshfs',
+    'glusterfs', 'gpfs', 'kio-fuse', 'lustre', 'nfs', 'nfs4', 'smbfs', 'sshfs',
 }
+MOUNTS = '/proc/mounts'
 
-_network_mounts_cache = []
+_network_mounts_cache = None
 _network_mounts_cache_time = 0.0
 
 
@@ -31,47 +30,25 @@ def get_network_mounts(cache_timeout: float = 10.0):
     """Return a list of network mount points, sorted longest first for prefix matching."""
     global _network_mounts_cache, _network_mounts_cache_time
     now = time.monotonic()
-    if _network_mounts_cache and (now - _network_mounts_cache_time < cache_timeout):
+    if _network_mounts_cache is not None and (now - _network_mounts_cache_time < cache_timeout):
         return _network_mounts_cache
 
     mounts = []
-    if sys.platform == 'darwin':
-        try:
-            import subprocess
-            output = subprocess.check_output(['mount'], text=True, errors='ignore')
-            for line in output.splitlines():
-                parts = line.split(' on ')
-                if len(parts) == 2:
-                    dev = parts[0].strip()
-                    rest = parts[1].split(' (')
-                    if len(rest) == 2:
-                        mnt = rest[0].strip()
-                        fstype = rest[1].split(',')[0].strip()
-                        if fstype.lower() in NETWORK_FS_TYPES or dev.startswith('//'):
-                            mounts.append(mnt)
-        except Exception:
-            pass
-    else:
-        mount_file = '/proc/mounts' if os.path.exists('/proc/mounts') else '/etc/mtab'
-        try:
-            if os.path.exists(mount_file):
-                with open(mount_file, 'r', encoding='utf-8', errors='ignore') as f:
-                    for line in f:
-                        parts = line.strip().split()
-                        if len(parts) >= 3:
-                            dev, mnt, fstype = parts[0], parts[1], parts[2]
-                            try:
-                                mnt = mnt.encode('utf-8').decode('unicode_escape')
-                            except Exception:
-                                pass
-                            if (
-                                fstype.lower() in NETWORK_FS_TYPES
-                                or dev.startswith(('//', '\\\\'))
-                                or (':' in dev and not dev.startswith('/dev'))
-                            ):
-                                mounts.append(mnt)
-        except Exception:
-            pass
+    try:
+        with open(MOUNTS, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) >= 3:
+                    dev, mnt, fstype = parts[0], parts[1], parts[2]
+                    if (
+                        fstype.lower() in NETWORK_FS_TYPES
+                        or dev.startswith('//')
+                        or (':' in dev and not dev.startswith('/dev'))
+                    ):
+                        # The table writes a space, tab, newline or backslash as \ooo.
+                        mounts.append(re.sub(r'\\([0-7]{3})', lambda m: chr(int(m[1], 8)), mnt))
+    except OSError:
+        pass
 
     mounts.sort(key=len, reverse=True)
     _network_mounts_cache = mounts
@@ -79,32 +56,12 @@ def get_network_mounts(cache_timeout: float = 10.0):
     return mounts
 
 
-@lru_cache(maxsize=1024)
 def is_network_path(path: str) -> bool:
     """Determine whether a path is located on a network share or remote filesystem."""
     if not path:
         return False
 
-    if path.startswith(('//', '\\\\')):
-        return True
-
-    if sys.platform == 'win32':
-        try:
-            import ctypes
-            drive = os.path.splitdrive(path)[0]
-            if drive:
-                return ctypes.windll.kernel32.GetDriveTypeW(drive + '\\') == 4
-        except Exception:
-            pass
-        return False
-
     norm_path = os.path.abspath(path)
-
-    if '/gvfs/' in norm_path or (
-        norm_path.startswith(('/run/user/', '/var/run/user/')) and '/gvfs' in norm_path
-    ):
-        return True
-
     for mnt in get_network_mounts():
         if norm_path == mnt or norm_path.startswith(mnt + '/'):
             return True
@@ -137,7 +94,8 @@ class DirModel(QFileSystemModel):
         if not path:
             return QFileSystemModel.hasChildren(self, parent)
 
-        # If Qt's background loader has already read the folder, check rowCount.
+        # Once fetchMore() has asked Qt's background loader for the folder,
+        # count the subfolders it has listed: none until it's done.
         if not self.canFetchMore(parent):
             return self.rowCount(parent) > 0
 
