@@ -17,8 +17,8 @@ from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
                           urlopen, parse_searchstring)
 from puddlestuff.util import isempty, translate
 
-SERVER = 'http://musicbrainz.org/ws/2/'
-COVER_SERVER = 'http://coverartarchive.org/'
+SERVER = 'https://musicbrainz.org/ws/2/'
+COVER_SERVER = 'https://coverartarchive.org/'
 
 _last_request = None
 _request_lock = threading.Lock()
