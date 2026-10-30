@@ -173,7 +173,7 @@ Using Mp3tag's Tag Sources
 
 **If you don't know what they are, visit the** `Mp3tag website <http://www.mp3tag.de>`_ **for details.**
 
-puddletag *supports* using Mp3tag's tag sources. To use them create the directory **~/.puddletag/mp3tag_sources** and place any tag sources in there. If everything went okay, they'll be loaded when you start puddletag. In the **Tag Sources** window they'll be listed with '[M]' appended to the filename.
+puddletag *supports* using Mp3tag's tag sources. To use them create the directory **~/.config/puddletag/mp3tag_sources** and place any tag sources (their **.src** files) in there. If everything went okay, they'll be loaded when you start puddletag. In the **Tag Sources** window they'll be listed by the name on their **[Name]** line, with '[M]' appended. A tag source that can't be loaded is left out, and the reason is shown in the **Tag Sources** window and written to puddletag's log.
 
 You can search as you do using Mp3tag by using the Search box. See the tooltip for the field used to do the search. Selecting files and searching works too.
 
@@ -182,7 +182,9 @@ Caveats
 
 The sources I've tested work like Mp3tag's. They also bomb on the same pages. However, unlike Mp3tag, puddletag doesn't 'detect' when retrieval has gone awry. So sometimes you might get nothing in Mp3tag, while getting jibberish in puddletag.
 
-I won't be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn't with puddletag, `create an issue <http://code.google.com/p/puddletag/issues>`_ with a link to the tag source and some example searches and I'll fix 'em.
+Tag sources that use **[Include]** (they come with a **.inc** file) aren't supported yet.
+
+I won't be supporting the creation of Mp3tag tag source nor does puddletag have any useful debugging facilities for them. However, if a tag source works fine with Mp3tag, but doesn't with puddletag, `create an issue <https://github.com/puddletag/puddletag/issues>`_ with a link to the tag source and some example searches and I'll fix 'em.
 
 Be sure to set 'debug off' or remove it alltogether unless you're in the mood for having your filesystem being littered with junk files.
 
