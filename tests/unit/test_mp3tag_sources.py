@@ -165,7 +165,6 @@ def test_script_that_cannot_load_logs_why(folder, caplog, text, encoding, reason
     assert caplog.records[-1].exc_info is None
 
 
-@pytest.mark.xfail(strict=True, reason='the byte order mark hides the first line, [Name]')
 def test_script_with_a_byte_order_mark_loads(folder):
     # Synthetic: editors such as Notepad save UTF-8 text with a byte order
     # mark; it isn't part of the first line, [Name].

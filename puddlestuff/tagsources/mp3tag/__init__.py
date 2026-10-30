@@ -1,4 +1,3 @@
-import codecs
 import os
 import re
 import traceback
@@ -118,8 +117,8 @@ def find_idents(lines):
 
 
 def open_script(filename):
-    f = codecs.open(filename, 'r', encoding='utf8')
-    idents, search, album = find_idents(f.readlines())
+    with open(filename, encoding='utf-8-sig') as f:
+        idents, search, album = find_idents(f.readlines())
     return idents, search, album
 
 
