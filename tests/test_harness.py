@@ -71,3 +71,38 @@ def test_make_audio_without_the_encoder(make_audio, monkeypatch, tmp_path, ci, o
         monkeypatch.delenv('CI', raising=False)
     with pytest.raises(outcome, match='ffmpeg has no libvorbis encoder'):
         make_audio('a.ogg')
+
+
+def test_web_server_answers_by_path_and_records_the_request(web_server):
+    web_server.add('/a', 'one', content_type='text/plain')
+    request = urllib.request.Request(web_server.url + '/a?x=1&y=2', headers={'User-Agent': 'tester'})
+    with urllib.request.urlopen(request, timeout=5) as response:
+        assert (response.status, response.read()) == (200, b'one')
+    [served] = web_server.requests
+    assert (served.method, served.path, served.query) == ('GET', '/a', {'x': ['1'], 'y': ['2']})
+    assert served.headers['User-Agent'] == 'tester'
+
+
+def test_web_server_matches_a_query_and_the_last_answer_wins(web_server):
+    web_server.add('/a', 'any')
+    web_server.add('/a', 'first', query={'cmd': 'go'})
+    web_server.add('/a', 'second', query={'cmd': 'go'})
+    with urllib.request.urlopen(web_server.url + '/a?cmd=go', timeout=5) as response:
+        assert response.read() == b'second'
+    with urllib.request.urlopen(web_server.url + '/a?cmd=stop', timeout=5) as response:
+        assert response.read() == b'any'
+
+
+def test_web_server_answers_an_error_status(web_server):
+    web_server.add('/busy', status=503)
+    with pytest.raises(urllib.error.HTTPError) as error:
+        urllib.request.urlopen(web_server.url + '/busy', timeout=5)
+    assert error.value.code == 503
+
+
+def test_web_server_answers_404_to_anything_else_and_records_it(web_server):
+    with pytest.raises(urllib.error.HTTPError) as error:
+        urllib.request.urlopen(web_server.url + '/nothing?q=1', timeout=5)
+    assert error.value.code == 404
+    assert web_server.unmatched == ['GET /nothing?q=1']
+    web_server.unmatched.clear()

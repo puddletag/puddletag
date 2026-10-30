@@ -6,9 +6,8 @@ import urllib.parse
 import urllib.request
 from collections import defaultdict
 from itertools import chain
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 
-from html.parser import HTMLParser
 from xml.dom import minidom, Node
 
 from puddlestuff.audioinfo import IMAGETYPES, get_mime, strlength
@@ -21,11 +20,6 @@ SERVER = 'http://musicbrainz.org/ws/2/'
 
 TEXT_NODE = Node.TEXT_NODE
 
-ARTISTID = '#artistid'
-ALBUMID = '#albumid'
-LABELID = '#labelid'
-INCLUDES = ''
-
 ARTISTID_FIELD = 'mbrainz_artist_id'
 ALBUMID_FIELD = 'mbrainz_album_id'
 
@@ -33,7 +27,7 @@ ARTIST_KEYS = {
     'name': 'artist',
     'sort-name': 'sortname',
     'id': ARTISTID_FIELD,
-    'ext:score': '#score',
+    'ns2:score': '#score',
     'type': 'artist_type',
     'rating': 'mbrainz_rating',
 }
@@ -46,10 +40,6 @@ ALBUM_KEYS.update({
     'xml:ext': '#xml:ext',
     'title': 'album',
     'track-count': '__numtracks',
-})
-MEDIUM_KEYS = ALBUM_KEYS.copy()
-MEDIUM_KEYS.update({
-    'id': 'mbrainz_medium_id',
 })
 
 TRACK_KEYS = {
@@ -90,12 +80,6 @@ def children_to_text(node):
 def convert_dict(d, fm):
     return dict((fm.get(k, k), v) for k, v in d.items() if
                 not isempty(v))
-
-
-def fix_xml(xml):
-    c = XMLEscaper()
-    c.feed(album_xml)
-    return c.xml
 
 
 def istext(node):
@@ -150,16 +134,22 @@ def parse_artist_credit(node):
     if not artists:
         return {}
 
-    artist = ', '.join(z['artist']['name'] for z in artists)
+    artist = ''.join(z['artist']['name'] + z.get('joinphrase', '')
+                     for z in artists)
     if len(artists) == 1:
         artist_id = artists[0]['artist']['id']
         return {
             'artist': artist,
+            'albumartist': artist,
             '#artist_id': artist_id,
             'mbrainz_artist_id': artist_id,
         }
     else:
-        return {'artist': artist}
+        return {
+            'artist': artist,
+            'albumartist': artist,
+            'mbrainz_artist_id': [z['artist']['id'] for z in artists],
+        }
 
 
 def parse_artist_relation(relations):
@@ -179,7 +169,7 @@ def parse_artist_relation(relations):
                 else:
                     field = '%s %s' % (field, desc)
                 desc = r['artist']['name']
-        if desc:
+        if desc and desc not in ret[field]:
             ret[field].append(desc)
     return ret
 
@@ -212,20 +202,24 @@ def parse_label_list(release_node):
     label_ids = [z['label']['id'] for z in labels
                  if 'label' in z and 'id' in z['label']]
     return {
-        'label': label_names,
-        'mbrainz_label_id': label_ids,
+        'label': list(dict.fromkeys(label_names)),
+        'mbrainz_label_id': list(dict.fromkeys(label_ids)),
         'catalognumber': catalogs
     }
 
 
 def parse_medium_list(r_node):
-    mediums = parse_node(r_node, 'medium-list', 'medium', 'format')
-    if not mediums:
+    lists = [z for z in r_node.childNodes
+             if getattr(z, 'tagName', '') == 'medium-list']
+    count = sum(1 for l in lists for z in l.childNodes
+                if getattr(z, 'tagName', '') == 'medium')
+    if not count:
         return {}
 
-    mediums = [convert_dict(m, MEDIUM_KEYS) for m in mediums]
-    info = mediums[0]
-    info.update({'discs': str(len(mediums))})
+    info = {'discs': str(count)}
+    formats = parse_node(r_node, 'medium-list', 'medium', 'format')
+    if formats:
+        info['format'] = formats[0]['format']
     return info
 
 
@@ -234,11 +228,11 @@ def parse_node(node, header_tag, sub_tag, check_tag):
     nodes = [z for z in node.childNodes if
              getattr(z, "tagName", '') == header_tag]
     for node in nodes:
-        info = children_to_text(node)
+        header = children_to_text(node)
         for ch in node.getElementsByTagName(sub_tag):
             if ch not in node.childNodes:
                 continue
-            info = info.copy()
+            info = header.copy()
             info.update(rec_children_to_text(ch))
             if check_tag not in info:
                 continue
@@ -254,18 +248,9 @@ def parse_recording_relation(relations):
         desc = None
 
         if 'artist-credit' in recording:
-            artists = []
-            for cr in to_list(recording['artist-credit']['name-credit']):
-                if 'join-phrase' in cr:
-                    artists.append(cr['join-phrase'])
-                artists.append(cr['artist']['name'])
-
-            unique_artists = []
-            for z in artists:
-                if z not in unique_artists:
-                    unique_artists.append(z)
-
-            desc = ' '.join(unique_artists)
+            desc = ''.join(
+                cr['artist']['name'] + cr.get('joinphrase', '')
+                for cr in to_list(recording['artist-credit']['name-credit']))
 
         if 'title' in recording:
             if desc:
@@ -296,7 +281,13 @@ def parse_release(node):
 
     tracks = []
     for medium in node.getElementsByTagName('medium'):
-        tracks.extend(parse_track_list(medium))
+        disc = children_to_text(medium)
+        disc = convert_dict({'discnumber': disc.get('position'),
+                             'format': disc.get('format'),
+                             'mbrainz_medium_id': disc.get('id')}, {})
+        for track in parse_track_list(medium):
+            track.update(disc)
+            tracks.append(track)
     return info, tracks
 
 
@@ -304,8 +295,10 @@ def parse_track_list(node):
     tracks = []
     for i, t in enumerate(parse_node(node, 'track-list', 'track', 'position')):
         track = t['recording']
-        rem_keys = set(track).union(TO_REMOVE)
-        track.update((k, v) for k, v in t.items() if k not in rem_keys)
+        track.update((k, v) for k, v in t.items() if k not in TO_REMOVE + ('id',))
+
+        if 'isrc-list' in track:
+            track['isrc'] = to_list(track.pop('isrc-list')['id'])
 
         if 'puid-list' in track:
             track['musicip_puid'] = track['puid-list']['id']
@@ -315,12 +308,13 @@ def parse_track_list(node):
             for r in to_list(track['relation-list']):
                 track.update(parse_track_relation(r))
 
-        feat = to_list(track.get('artist-credit', {}).get('name-credit'))
+        feat = to_list(track['artist-credit']['name-credit']) if 'artist-credit' in track else []
         if feat:
             names = [(z['artist']['name'], z.get('joinphrase', ''))
                      for z in feat]
 
             track['artist'] = ''.join('%s%s' % a for a in names)
+            track['mbrainz_artist_id'] = [z['artist']['id'] for z in feat]
 
         for k, v in list(track.items()):
             if not isinstance(track[k], (str, list)):
@@ -364,7 +358,7 @@ def rec_children_to_text(node):
 
 def retrieve_album(album_id):
     url = SERVER + 'release/' + album_id + \
-          '?inc=recordings+artist-credits+puids+isrcs+tags+ratings' \
+          '?inc=recordings+artist-credits+labels+puids+isrcs+tags+ratings' \
           '+artist-rels+recording-rels+release-rels+release-group-rels' \
           '+url-rels+work-rels+recording-level-rels+work-level-rels'
 
@@ -473,28 +467,6 @@ def to_list(v, arg=None):
         return v
     else:
         return [v, arg] if arg is not None else [v]
-
-
-class XMLEscaper(HTMLParser):
-
-    def reset(self):
-        HTMLParser.reset(self)
-        self._xml = []
-
-    def handle_data(self, data):
-        self._xml.append(escape(data))
-
-    def unknown_starttag(self, tag, attributes):
-        attrib_str = ' '.join('%s=%s' % (k, quoteattr(v))
-                              for k, v in attributes)
-        self._xml.append('<%s %s>' % (tag, attrib_str))
-
-    def unknown_endtag(self, tag):
-        self._xml.append('</%s>' % tag)
-
-    @property
-    def xml(self):
-        return ''.join(self._xml)
 
 
 class MusicBrainz(object):
@@ -637,12 +609,3 @@ class MusicBrainz(object):
 
 
 info = MusicBrainz
-
-if __name__ == '__main__':
-    # retrieve_album('f504ebe7-8fb4-40e5-aa55-b6384bdf863e')
-    # c = MusicBrainz()
-    xml = open('/home/keith/Desktop/mb.xml', 'r').read()
-    # x = c.search('New Again', 'Taking Back Sunday')
-    tracks = parse_album(xml)[1]
-    for z in tracks:
-        print(z['title'], z['track'])

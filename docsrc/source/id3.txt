@@ -130,7 +130,7 @@ This frame stores three values: an email, rating and playcount separated by a co
 
 field: ufid, frame: UFID
 ^^^^^^^^^^^^^^^^^^^^^^^^
-UFID stands for **Unique File Identifier**. It's a single-valued field shown in puddletag as **ufid:owner** eg. ufid:musicbrainz.org (the :ref:`MusicBrainz <musicbrainz>` tag source writes the MusicBrainz Track ID to this field). Only values that can be decoded to UTF-8 will be editable.
+UFID stands for **Unique File Identifier**. It's a single-valued field shown in puddletag as **ufid:owner** eg. ufid:musicbrainz.org (the :ref:`MusicBrainz <musicbrainz>` tag source writes the track's recording id, **mbrainz_track_id**, to this field, as Picard does). Only values that can be decoded to UTF-8 will be editable.
 
 field: rgain, frame: RVA2
 ^^^^^^^^^^^^^^^^^^^^^^^^^

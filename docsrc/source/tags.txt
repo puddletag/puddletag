@@ -214,7 +214,7 @@ Neither format tells keys apart by case, but some players do, so saving keeps ea
 
 Some formats limit field names: VorbisComment's are ASCII from space to } and can't contain =; APEv2's are 2 to 255 ASCII characters from space to ~, other than ID3, TAG, OggS and MP+; MP4's freeform ones are Latin-1; WMA's can't contain /. ID3 takes any name. A field whose name its file's format can't take isn't saved: puddletag reports it as it does a file it can't write, and the file keeps its tags.
 
-The MusicBrainz ids the tag sources return are saved where `MusicBrainz Picard <https://picard-docs.musicbrainz.org/en/latest/appendices/tag_mapping.html>`_ saves them, and files tagged by Picard show them under these names. Except in WMA, they're mappings (Preferences, Mappings), so they can be changed there.
+The MusicBrainz ids the tag sources return are saved where `MusicBrainz Picard <https://picard-docs.musicbrainz.org/en/latest/appendices/tag_mapping.html>`_ saves them, and files tagged by Picard show them under these names. Except in WMA, they're mappings (Preferences, Mappings), so they can be changed there. **mbrainz_track_id** holds the track's recording id, which Picard calls the MusicBrainz Recording Id; the release's own track id (Picard's MusicBrainz Track Id, saved as MusicBrainz Release Track Id) isn't returned.
 
 =====================  ===========================  =====================  ==============================================  =====================
 puddletag field        ID3                          VorbisComment, APEv2   MP4                                             WMA
