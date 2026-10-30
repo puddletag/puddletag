@@ -1199,7 +1199,8 @@ def tag_factory(id3_filetype):
 
         def update_tag_list(self):
             tag = self.__tags['__tag_read']
-            l = tag_versions.tags_in_file(self.filepath)
+            known_v2 = tag if (tag and tag.startswith('ID3v2')) else None
+            l = tag_versions.tags_in_file(self.filepath, known_v2=known_v2)
             if l:
                 if tag and tag in l:
                     l.remove(tag)
