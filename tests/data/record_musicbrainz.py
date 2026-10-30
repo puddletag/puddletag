@@ -31,6 +31,8 @@ RELEASES = [
 SEARCHES = {
     'search-abbey-road-the-beatles.xml':
         'release/?query=release:Abbey+Road%20AND%20artistname:The+Beatles&limit=2&offset=0',
+    'search-arid-the-beatles.xml':
+        'release/?query=arid%3Ab10bbbfc-cf9e-42e0-be17-e2c3e1d2600d&limit=2&offset=0',
 }
 # Not core data, which is all MusicBrainz releases under CC0: the Cover
 # Art Archive's flags, and the scores of MusicBrainz's search index.

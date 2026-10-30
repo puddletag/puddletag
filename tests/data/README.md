@@ -59,6 +59,10 @@ window:
 `musicbrainz/search-abbey-road-the-beatles.xml` is
 `https://musicbrainz.org/ws/2/release/?query=release:Abbey+Road%20AND%20artistname:The+Beatles&limit=2&offset=0`,
 a search as puddletag sends it.
+`musicbrainz/search-arid-the-beatles.xml` is
+`https://musicbrainz.org/ws/2/release/?query=arid%3Ab10bbbfc-cf9e-42e0-be17-e2c3e1d2600d&limit=2&offset=0`,
+a search for The Beatles' releases by their artist id, as **:a** sends
+it.
 
 License: MusicBrainz releases its core data under
 [CC0](https://musicbrainz.org/doc/About/Data_License); the rest
