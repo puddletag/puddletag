@@ -2,16 +2,17 @@
 responses MusicBrainz served (tests/data/musicbrainz/, recorded by
 tests/data/record_musicbrainz.py), sent back by a local web server. Ratings
 and search scores aren't in the recordings (they aren't CC0): a test that
-needs one adds it, labelled synthetic.
+needs one adds it, labelled synthetic. Cover Art Archive indexes and images
+are synthetic.
 """
+import json
 import re
-import time
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
-from puddlestuff.tagsources import musicbrainz
+from puddlestuff import tagsources, version_string
+from puddlestuff.tagsources import RetrievalError, musicbrainz
 
 DATA = Path(__file__).parent.parent / 'data' / 'musicbrainz'
 
@@ -19,6 +20,10 @@ ABBEY_ROAD = '6bb3793b-f991-378e-9bff-0bd3117f2298'
 ABBEYS_ROAD = '70516629-7715-41bf-97e1-b7bf11254cb8'  # two artists, " feat. "
 COFFEE_LANDS = '33eff102-8312-4be2-b3d9-5bd9957f0158'  # Various Artists
 NINE_SYMPHONIES = 'f0217095-5daf-4293-8f59-6ddec7187707'  # five discs
+
+THE_BEATLES = 'b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d'
+# The releases of the recorded Abbey Road search, in its order.
+SEARCH_RESULTS = ['7a2075a2-ab80-4225-b20d-63b6b9c6a20d', '8c6a00d5-8673-4aad-8192-5fe8649b5efa']
 
 
 def release_path(release_id):
@@ -29,13 +34,44 @@ def recorded(release_id):
     return (DATA / f'release-{release_id}.xml').read_text(encoding='utf-8')
 
 
+class FakeClock:
+    """The time module as musicbrainz sees it: time moves only when the
+    source waits, each wait kept in ``sleeps``, or when a test advances
+    it."""
+
+    def __init__(self):
+        self.now = 1_000_000.0
+        self.sleeps = []
+
+    def advance(self, seconds):
+        self.now += seconds
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.sleeps.append(seconds)
+        self.now += seconds
+
+    time = monotonic
+
+
 @pytest.fixture
-def source(web_server, monkeypatch):
+def clock(monkeypatch):
+    fake = FakeClock()
+    monkeypatch.setattr(musicbrainz, 'time', fake)
+    # When MusicBrainz was last asked something: shared by every source.
+    monkeypatch.setattr(musicbrainz, '_last_request', None, raising=False)
+    return fake
+
+
+@pytest.fixture
+def source(web_server, monkeypatch, clock):
     """MusicBrainz as the Tag Sources window sets it up with Retrieve Cover
     unchecked, sending its requests to the local server, which answers with
-    the recorded responses, without the second it waits before each one."""
+    the recorded responses. Its waits take no time: the clock stands
+    still."""
     monkeypatch.setattr(musicbrainz, 'SERVER', web_server.url + '/ws/2/')
-    monkeypatch.setattr(musicbrainz, 'time', SimpleNamespace(sleep=lambda seconds: None, time=time.time))
     for path in sorted(DATA.glob('release-*.xml')):
         web_server.add(release_path(path.stem.removeprefix('release-')), path,
                        content_type='application/xml')
@@ -44,6 +80,62 @@ def source(web_server, monkeypatch):
     mb = musicbrainz.MusicBrainz()
     mb.applyPrefs([False, 1, 0])
     return mb
+
+
+@pytest.fixture
+def log(monkeypatch):
+    """The lines the source writes to the Tag Sources window's log."""
+    lines = []
+    monkeypatch.setattr(musicbrainz, 'write_log', lines.append)
+    return lines
+
+
+def cover_bytes(path):
+    """Synthetic image data: a JPEG's first bytes, then the address it is
+    served at, so a test can tell which image came back."""
+    return b'\xff\xd8\xff\xe0 synthetic ' + path.encode()
+
+
+def serve_covers(web_server, release_id=ABBEY_ROAD):
+    """Synthetic: a Cover Art Archive index for the release, in the
+    service's shape (as Abbey Road's real index has it: each image's types,
+    comment, original and thumbnails), and its images, on the local server.
+    The Cover Art Archive redirects /front, /front-250 and /front-500 to
+    the front image; the local server answers them with it."""
+    base = f'/release/{release_id}'
+    images = []
+    for image_id, types, comment in [(1, ['Front', 'Booklet'], ''),
+                                     (2, ['Back', 'Spine'], ''),
+                                     (3, ['Medium'], 'Synthetic disc photo')]:
+        stem = f'{base}/{image_id}'
+        for suffix in ['', '-1200', '-250', '-500']:
+            path = f'{stem}{suffix}.jpg'
+            web_server.add(path, cover_bytes(path), content_type='image/jpeg')
+        url = web_server.url + stem
+        images.append({
+            'approved': True, 'back': 'Back' in types, 'comment': comment, 'edit': image_id,
+            'front': 'Front' in types, 'id': image_id, 'image': url + '.jpg',
+            'thumbnails': {'1200': url + '-1200.jpg', '250': url + '-250.jpg',
+                           '500': url + '-500.jpg', 'large': url + '-500.jpg',
+                           'small': url + '-250.jpg'},
+            'types': types,
+        })
+    web_server.add(base, json.dumps({'images': images,
+                                     'release': f'https://musicbrainz.org/release/{release_id}'}),
+                   content_type='application/json')
+    for name, suffix in [('front', ''), ('front-1200', '-1200'), ('front-250', '-250'),
+                         ('front-500', '-500')]:
+        web_server.add(f'{base}/{name}', cover_bytes(f'{base}/1{suffix}.jpg'),
+                       content_type='image/jpeg')
+
+
+@pytest.fixture
+def covers(source, web_server, monkeypatch):
+    """The source with the Cover Art Archive on the local server, serving
+    serve_covers' synthetic index and images for Abbey Road."""
+    monkeypatch.setattr(musicbrainz, 'COVER_SERVER', web_server.url + '/')
+    serve_covers(web_server)
+    return source
 
 
 def retrieve(source, release_id):
@@ -456,3 +548,423 @@ def test_search_results_have_no_score_field(source, web_server):
     results = source.search('Abbey Road', ['The Beatles'])
     assert len(results) == 2
     assert not any('ns2:score' in info for info, tracks in results)
+
+
+# Searches --------------------------------------------------------------------
+
+@pytest.mark.parametrize('text, query', [
+    (';Abbey Road', 'release:Abbey Road'),
+    ('Abbey Road', 'release:Abbey Road'),
+    ('The Beatles;', 'artistname:The Beatles'),
+    ('The Beatles;Abbey Road', 'release:Abbey Road AND artistname:The Beatles'),
+])
+def test_text_searches(source, web_server, text, query):
+    """tagsources.txt: "To search for a specific artist, album pair enter the
+    search string as **artist;album**", "Searching for the albums of a
+    specific artist is done by leaving off the album part as in **artist;**",
+    "For an album only leave off the artist part, as in **;album**",
+    "Anything else is searched as an album title." The results are the
+    recorded Abbey Road search's, without tracks."""
+    results = source.keyword_search(text)
+    [request] = web_server.requests
+    assert request.path == '/ws/2/release/'
+    assert request.query['query'] == [query]
+    assert [info['mbrainz_album_id'] for info, tracks in results] == SEARCH_RESULTS
+    assert all(tracks == [] for info, tracks in results)
+
+
+@pytest.mark.xfail(strict=True, reason='the artist id is escaped (arid\\:...), so MusicBrainz '
+                   'searches for the word Arid')
+def test_search_by_artist_id(source, web_server):
+    """tagsources.txt: "**:a f59c5520-5f46-4d2c-b2c4-822eabf53419**"
+    (Retrieving the albums of an artist by MusicBrainz Artist ID). The route
+    answers only the unescaped query, with the recorded search by The
+    Beatles' artist id."""
+    web_server.add('/ws/2/release/', DATA / 'search-arid-the-beatles.xml',
+                   content_type='application/xml', query={'query': 'arid:' + THE_BEATLES})
+    results = source.keyword_search(':a ' + THE_BEATLES)
+    [request] = web_server.requests
+    assert request.query['query'] == ['arid:' + THE_BEATLES]
+    assert len(results) == 2
+    for info, tracks in results:
+        assert THE_BEATLES in values(info, 'mbrainz_artist_id')
+
+
+def test_retrieve_by_album_id(source, web_server):
+    """tagsources.txt: "retrieving a specific album using its **MusicBrainz
+    Album ID** can be done by starting your search string with **:b**";
+    tut4.txt: "the Musicbrainz Tag Source supports searching via Musicbrainz
+    Album Id". The album is retrieved at once, with its tracks."""
+    [(info, tracks)] = source.keyword_search(':b ' + ABBEY_ROAD)
+    assert [r.path for r in web_server.requests] == [release_path(ABBEY_ROAD)]
+    assert info['album'] == 'Abbey Road'
+    assert len(tracks) == 17
+
+
+@pytest.mark.parametrize('text', [
+    pytest.param(':a ' + THE_BEATLES, marks=pytest.mark.xfail(
+        raises=AttributeError, strict=True,
+        reason="the error is written to the log with xml.sax's escape(), which takes only text")),
+    pytest.param(':b ' + ABBEY_ROAD, marks=pytest.mark.xfail(
+        raises=AttributeError, strict=True,
+        reason="the error is written to the log with xml.sax's escape(), which takes only text")),
+    'Abbey Road',
+    'The Beatles;Abbey Road',
+])
+def test_a_busy_musicbrainz_is_an_error(source, web_server, text):
+    """The docs are silent on errors. A busy MusicBrainz (HTTP 503) is a
+    RetrievalError with urllib's text and the code, for every kind of
+    search."""
+    web_server.add('/ws/2/release/', b'busy', status=503, content_type='text/plain')
+    web_server.add(release_path(ABBEY_ROAD), b'busy', status=503, content_type='text/plain')
+    with pytest.raises(RetrievalError) as error:
+        source.keyword_search(text)
+    assert error.value.code == 503
+    assert str(error.value) == 'HTTP Error 503: Service Unavailable'
+
+
+def test_file_search_with_an_album_id_retrieves_it(source, web_server):
+    """tagsources.txt (How to Search): "Select all the files in an album you
+    want to tag. Click on Search. The album's tag's will then be used to poll
+    the tag sources." Files that carry the album's MusicBrainz id are
+    retrieved by it, with no text search."""
+    [(info, tracks)] = source.search('Abbey Road', {'The Beatles': [{
+        'album': ['Abbey Road'], 'artist': ['The Beatles'], 'mbrainz_album_id': [ABBEY_ROAD]}]})
+    assert [r.path for r in web_server.requests] == [release_path(ABBEY_ROAD)]
+    assert info['mbrainz_album_id'] == ABBEY_ROAD
+    assert len(tracks) == 17
+
+
+def test_file_search_without_an_album_id(source, web_server):
+    """tagsources.txt (How to Search): "Select all the files in an album you
+    want to tag. Click on Search. The album's tag's will then be used to poll
+    the tag sources." Without an album id the album and artist are searched
+    for."""
+    results = source.search('Abbey Road', {'The Beatles': [{
+        'album': ['Abbey Road'], 'artist': ['The Beatles']}]})
+    [request] = web_server.requests
+    assert request.query['query'] == ['release:Abbey Road AND artistname:The Beatles']
+    assert [info['mbrainz_album_id'] for info, tracks in results] == SEARCH_RESULTS
+
+
+def test_file_search_of_several_artists_is_various_artists(source, web_server):
+    """The docs are silent on files by several artists. Synthetic: two
+    artists."""
+    source.search('Abbey Road', {'Synthetic One': [{}], 'Synthetic Two': [{}]})
+    [request] = web_server.requests
+    assert request.query['query'] == ['release:Abbey Road AND artistname:Various Artists']
+
+
+@pytest.mark.parametrize('status, reason', [
+    (404, 'Not Found'),
+    (503, 'Service Unavailable'),
+])
+@pytest.mark.xfail(raises=AttributeError, strict=True,
+                   reason="the error is written to the log with xml.sax's escape(), which takes "
+                   'only text')
+def test_an_album_id_that_fails_falls_back_to_the_text_search(source, web_server, log, status,
+                                                              reason):
+    """The docs are silent on a file whose album id fails to retrieve. The
+    search logs the error and goes on with the text search instead of
+    crashing."""
+    web_server.add(release_path(ABBEY_ROAD), b'', status=status, content_type='text/plain')
+    results = source.search('Abbey Road', {'The Beatles': [{'mbrainz_album_id': [ABBEY_ROAD]}]})
+    assert [r.path for r in web_server.requests] == [release_path(ABBEY_ROAD), '/ws/2/release/']
+    assert [info['mbrainz_album_id'] for info, tracks in results] == SEARCH_RESULTS
+    assert (f'<b>Error:</b> While retrieving Album ID {ABBEY_ROAD} '
+            f'(HTTP Error {status}: {reason})') in log
+
+
+def test_a_search_needs_an_artist_or_an_album(source, web_server):
+    """The docs are silent on an empty search. A lone ";" is a RetrievalError
+    and sends no request."""
+    with pytest.raises(RetrievalError, match='Album or Artist required.'):
+        source.keyword_search(';')
+    assert web_server.requests == []
+
+
+# Covers ----------------------------------------------------------------------
+
+COVERS = f'/release/{ABBEY_ROAD}/'  # where serve_covers puts the images
+
+
+def all_images(suffix):
+    """What "All" returns for serve_covers' index: each image, with the
+    puddletag image type of its first type (Front, Back, else Other)."""
+    return [{'data': cover_bytes(f'{COVERS}{number}{suffix}.jpg'), 'desc': desc,
+             'imagetype': imagetype, 'mime': 'image/jpeg'}
+            for number, desc, imagetype in [(1, '', 3), (2, '', 4),
+                                            (3, 'Synthetic disc photo', 0)]]
+
+
+@pytest.mark.parametrize('size, suffix', [
+    pytest.param(0, '-250', marks=pytest.mark.xfail(
+        strict=True, reason='Issue 622: "All" images crashes, and then fetches the original '
+                            'whatever the size')),
+    pytest.param(1, '-500', marks=pytest.mark.xfail(
+        strict=True, reason='Issue 622: "All" images crashes, and then fetches the original '
+                            'whatever the size')),
+    pytest.param(2, '', marks=pytest.mark.xfail(
+        raises=TypeError, strict=True,
+        reason='Issue 622: "All" images crashes with "string indices must be integers"')),
+])
+def test_all_images(covers, web_server, size, suffix):
+    """tagsources.txt: "**Cover size to retrieve:** is Small (250 px), Large
+    (500 px) or Original Size (the default), for the front cover and for all
+    images alike. **Amount of images to retrieve:** is Just the front cover
+    (the default) or All (can take a while)." Every image of the Cover Art
+    Archive's index comes back, in its order, at the size chosen, with the
+    type of its first type: Front is Cover (Front), Back is Cover (Back),
+    anything else Other. Issue 622: "An unhandled error occured: string
+    indices must be integers"."""
+    covers.applyPrefs([True, size, 1])
+    info, tracks = covers.retrieve(ABBEY_ROAD)
+    assert info['__image'] == all_images(suffix)
+    assert [r.path for r in web_server.requests] == [
+        release_path(ABBEY_ROAD), f'/release/{ABBEY_ROAD}',
+        *[f'{COVERS}{number}{suffix}.jpg' for number in (1, 2, 3)]]
+
+
+@pytest.mark.parametrize('size, name, suffix', [
+    pytest.param(0, 'front-250', '-250', marks=pytest.mark.xfail(
+        strict=True, reason='the front cover is always the original, whatever the size')),
+    pytest.param(1, 'front-500', '-500', marks=pytest.mark.xfail(
+        strict=True, reason='the front cover is always the original, whatever the size')),
+    (2, 'front', ''),
+])
+def test_front_cover(covers, web_server, size, name, suffix):
+    """tagsources.txt: "**Cover size to retrieve:** is Small (250 px), Large
+    (500 px) or Original Size (the default), for the front cover and for all
+    images alike." The Cover Art Archive serves the front cover as /front,
+    /front-250 and /front-500. It has no image type: puddletag saves a
+    missing one as Cover (Front)."""
+    covers.applyPrefs([True, size, 0])
+    info, tracks = covers.retrieve(ABBEY_ROAD)
+    assert [r.path for r in web_server.requests] == [
+        release_path(ABBEY_ROAD), f'/release/{ABBEY_ROAD}/{name}']
+    assert [image['data'] for image in info['__image']] == [cover_bytes(f'{COVERS}1{suffix}.jpg')]
+    assert info['__image'][0]['mime'] == 'image/jpeg'
+    assert info['__image'][0].get('imagetype', 3) == 3
+
+
+@pytest.mark.parametrize('count', [
+    pytest.param(0),
+    pytest.param(1, marks=pytest.mark.xfail(
+        raises=TypeError, strict=True,
+        reason='Issue 622: "All" images crashes with "string indices must be integers"')),
+])
+def test_no_images(covers, web_server, log, count):
+    """The docs are silent on an album with no cover. The Cover Art Archive
+    answers 404: the album comes back without a cover, and the log says why,
+    for the front cover and for All."""
+    web_server.add(f'/release/{ABBEY_ROAD}', b'', status=404, content_type='text/plain')
+    web_server.add(f'/release/{ABBEY_ROAD}/front', b'', status=404, content_type='text/plain')
+    covers.applyPrefs([True, 2, count])
+    info, tracks = covers.retrieve(ABBEY_ROAD)
+    assert '__image' not in info
+    assert len(tracks) == 17
+    assert 'Error retrieving image: No images exist for this album.' in log
+
+
+@pytest.mark.parametrize('count', [0, 1])
+def test_retrieve_cover_unchecked(covers, web_server, count):
+    """tagsources.txt: "If **Retrieve Cover** is checked in the tag source's
+    preferences, an album comes with its covers, from the Cover Art
+    Archive." Unchecked, the Cover Art Archive isn't asked, for the front
+    cover or for All."""
+    covers.applyPrefs([False, 2, count])
+    info, _ = covers.retrieve(ABBEY_ROAD)
+    assert [r.path for r in web_server.requests] == [release_path(ABBEY_ROAD)]
+    assert '__image' not in info
+
+
+@pytest.mark.xfail(strict=True, reason='Issue 622: "All" images crashes, and then one image '
+                                       'that fails drops them all')
+def test_an_image_that_fails_leaves_the_others(covers, web_server, log):
+    """The docs are silent on an image that fails. Synthetic: the second image
+    is gone (404). "All" logs the error and keeps the other two."""
+    web_server.add(f'{COVERS}2.jpg', b'', status=404, content_type='text/plain')
+    covers.applyPrefs([True, 2, 1])
+    info, _ = covers.retrieve(ABBEY_ROAD)
+    assert [i['data'] for i in info['__image']] == [cover_bytes(f'{COVERS}1.jpg'),
+                                                    cover_bytes(f'{COVERS}3.jpg')]
+    assert 'Error retrieving image: HTTP Error 404: Not Found' in log
+
+
+@pytest.mark.xfail(strict=True, reason='a file search that finds an album id in the files '
+                                       'retrieves the album without its cover')
+def test_cover_with_an_album_id_in_the_files(covers, web_server):
+    """tagsources.txt (How to Search): "Select all the files in an album you
+    want to tag. Click on Search. The album's tag's will then be used to poll
+    the tag sources." Files that carry the album's MusicBrainz id get the
+    album as the **:b** search retrieves it, with its cover."""
+    covers.applyPrefs([True, 2, 0])
+    [(info, tracks)] = covers.search('Abbey Road', {'The Beatles': [{
+        'mbrainz_album_id': [ABBEY_ROAD]}]})
+    assert [i['data'] for i in info['__image']] == [cover_bytes(f'{COVERS}1.jpg')]
+
+
+# Pacing ----------------------------------------------------------------------
+
+# Every kind of request to MusicBrainz's web service, each sent by a source.
+PACED_REQUESTS = {
+    'album id search': lambda mb: mb.keyword_search(':b ' + ABBEY_ROAD),
+    'artist and album search': lambda mb: mb.keyword_search('The Beatles;Abbey Road'),
+    'artist id search': lambda mb: mb.keyword_search(':a ' + THE_BEATLES),
+    'file search': lambda mb: mb.search('Abbey Road', {'The Beatles': [{'album': ['Abbey Road']}]}),
+    'file search with an album id':
+        lambda mb: mb.search('Abbey Road', {'The Beatles': [{'mbrainz_album_id': [ABBEY_ROAD]}]}),
+    'release': lambda mb: mb.retrieve(ABBEY_ROAD),
+    'release for AcoustID': lambda mb: musicbrainz.retrieve_album(ABBEY_ROAD),
+    'text search': lambda mb: mb.keyword_search('Abbey Road'),
+}
+
+
+@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
+def test_the_first_request_does_not_wait(source, clock):
+    """MusicBrainz's rate limiting page: "Your per-IP average must stay at
+    about one request per second." Nothing was asked before, so there is
+    nothing to wait for."""
+    source.search('Abbey Road', ['The Beatles'])
+    assert clock.sleeps == []
+
+
+@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
+def test_a_request_within_a_second_waits_the_rest(source, clock):
+    """MusicBrainz's rate limiting page: "Your per-IP average must stay at
+    about one request per second." A request a quarter second after the last
+    waits the other three quarters."""
+    source.search('Abbey Road', ['The Beatles'])
+    clock.advance(0.25)
+    source.retrieve(ABBEY_ROAD)
+    assert clock.sleeps == [pytest.approx(0.75)]
+
+
+@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
+def test_a_request_more_than_a_second_later_does_not_wait(source, clock):
+    """MusicBrainz's rate limiting page: "Your per-IP average must stay at
+    about one request per second." A request over a second after the last has
+    nothing to wait for."""
+    source.search('Abbey Road', ['The Beatles'])
+    clock.advance(1.5)
+    source.search('Abbey Road', ['The Beatles'])
+    assert clock.sleeps == []
+
+
+@pytest.mark.xfail(strict=True, reason='the text, artist id and AcoustID requests never wait, '
+                                       'the others wait twice')
+@pytest.mark.parametrize('kind', sorted(PACED_REQUESTS))
+def test_every_musicbrainz_request_is_paced(source, clock, kind):
+    """MusicBrainz's rate limiting page: "Your per-IP average must stay at
+    about one request per second. If it doesn't, all your requests are
+    declined with 503 errors until your rate drops." Two requests of any
+    kind in a row are a second apart."""
+    PACED_REQUESTS[kind](source)
+    PACED_REQUESTS[kind](source)
+    assert clock.sleeps == [pytest.approx(1)]
+
+
+@pytest.mark.xfail(strict=True, reason='every retrieve waits a second first')
+def test_cover_art_archive_requests_are_not_paced(covers, web_server, clock):
+    """The Cover Art Archive's rate limiting page: "There are currently no
+    rate limiting rules in place". The front cover is asked right after the
+    release, with no wait."""
+    covers.applyPrefs([True, 2, 0])
+    covers.retrieve(ABBEY_ROAD)
+    assert [r.path for r in web_server.requests] == [release_path(ABBEY_ROAD),
+                                                     f'/release/{ABBEY_ROAD}/front']
+    assert clock.sleeps == []
+
+
+@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
+def test_every_source_shares_the_pace(source, clock):
+    """MusicBrainz's rate limiting page: "Your per-IP average must stay at
+    about one request per second." The limit is per IP, not per source: the
+    Tag Sources window and Mass Tagging each make a source of their own."""
+    source.search('Abbey Road', ['The Beatles'])
+    musicbrainz.MusicBrainz().search('Abbey Road', ['The Beatles'])
+    assert clock.sleeps == [pytest.approx(1)]
+
+
+@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
+def test_a_failed_request_counts(source, web_server, clock):
+    """MusicBrainz's rate limiting page: "Your per-IP average must stay at
+    about one request per second." A request that is declined was still
+    sent, so the next waits for it."""
+    web_server.add('/ws/2/release/', b'busy', status=503, content_type='text/plain')
+    with pytest.raises(RetrievalError):
+        source.search('Abbey Road', ['The Beatles'])
+    web_server.add('/ws/2/release/', DATA / 'search-abbey-road-the-beatles.xml',
+                   content_type='application/xml')
+    source.search('Abbey Road', ['The Beatles'])
+    assert clock.sleeps == [pytest.approx(1)]
+
+
+# User agent ------------------------------------------------------------------
+
+# What MusicBrainz asks of every program: "Application name/<version> ( contact-url )".
+DEFAULT_USERAGENT = f'puddletag/{version_string} ( https://github.com/puddletag/puddletag )'
+
+
+@pytest.mark.xfail(strict=True, reason='the user agent has no contact address')
+def test_musicbrainz_is_told_who_to_contact(source, web_server, monkeypatch):
+    """MusicBrainz's rate limiting page: "Each request sent to MusicBrainz
+    needs to include a User-Agent header, with enough information in the
+    User-Agent for us (MusicBrainz) to contact the application maintainers",
+    as "Application name/<version> ( contact-url )"."""
+    monkeypatch.setattr(tagsources, 'useragent', tagsources.useragent)
+    source.search('Abbey Road', ['The Beatles'])
+    [request] = web_server.requests
+    assert request.headers['User-Agent'] == DEFAULT_USERAGENT
+
+
+def test_the_preferences_user_agent_is_sent(source, web_server, monkeypatch):
+    """preferences.txt: "The User-Agent puddletag sends to the web sites its
+    tag sources read (MusicBrainz, Discogs, Mp3tag's tag sources)." What the
+    user entered is what is sent."""
+    monkeypatch.setattr(tagsources, 'useragent', tagsources.useragent)
+    tagsources.set_useragent('Synthetic/1.0 ( https://example.org )')
+    source.search('Abbey Road', ['The Beatles'])
+    [request] = web_server.requests
+    assert request.headers['User-Agent'] == 'Synthetic/1.0 ( https://example.org )'
+
+
+@pytest.mark.xfail(strict=True, reason='a user agent saved by an older version is sent as it '
+                                       'was saved')
+@pytest.mark.parametrize('saved', [
+    'puddletag/2.4.0',
+    f'puddletag/{version_string}',
+    'puddletag/2.4.0 ( https://github.com/puddletag/puddletag )',
+])
+def test_an_old_default_user_agent_becomes_the_new_one(source, web_server, monkeypatch, saved):
+    """preferences.txt: "The default names puddletag, its version and its
+    address, as MusicBrainz asks of every program; leave it empty for the
+    default." Pressing OK in Preferences saves the default of the day, so a
+    saved puddletag/<version> is the default, not a choice."""
+    monkeypatch.setattr(tagsources, 'useragent', tagsources.useragent)
+    tagsources.set_useragent(saved)
+    source.search('Abbey Road', ['The Beatles'])
+    [request] = web_server.requests
+    assert request.headers['User-Agent'] == DEFAULT_USERAGENT
+
+
+@pytest.mark.xfail(strict=True, reason="an empty user agent sends urllib's own")
+def test_an_empty_user_agent_sends_the_default(source, web_server, monkeypatch):
+    """preferences.txt: "The default names puddletag, its version and its
+    address, as MusicBrainz asks of every program; leave it empty for the
+    default." """
+    monkeypatch.setattr(tagsources, 'useragent', tagsources.useragent)
+    tagsources.set_useragent('')
+    source.search('Abbey Road', ['The Beatles'])
+    [request] = web_server.requests
+    assert request.headers['User-Agent'] == DEFAULT_USERAGENT
+
+
+@pytest.mark.xfail(strict=True, reason='an empty user agent is read as "puddetag/<version>"')
+def test_an_empty_user_agent_is_read_as_the_default(monkeypatch):
+    """preferences.txt: "The default names puddletag, its version and its
+    address, as MusicBrainz asks of every program; leave it empty for the
+    default." """
+    monkeypatch.setattr(tagsources, 'useragent', tagsources.useragent)
+    tagsources.set_useragent('')
+    assert tagsources.get_useragent() == DEFAULT_USERAGENT
