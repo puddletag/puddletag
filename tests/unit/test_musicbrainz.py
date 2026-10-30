@@ -767,8 +767,6 @@ def test_an_image_that_fails_leaves_the_others(covers, web_server, log):
     assert 'Error retrieving image: HTTP Error 404: Not Found' in log
 
 
-@pytest.mark.xfail(strict=True, reason='a file search that finds an album id in the files '
-                                       'retrieves the album without its cover')
 def test_cover_with_an_album_id_in_the_files(covers, web_server):
     """tagsources.txt (How to Search): "Select all the files in an album you
     want to tag. Click on Search. The album's tag's will then be used to poll

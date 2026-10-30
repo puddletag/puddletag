@@ -562,7 +562,7 @@ class MusicBrainz(object):
                 try:
                     write_log(translate('MusicBrainz',
                                         "Found album id {} in tracks. Retrieving").format(album_id))
-                    return [retrieve_album(album_id)]
+                    return [self.retrieve(album_id)]
                 except RetrievalError as e:
                     msg = translate('MusicBrainz',
                                     "<b>Error:</b> While retrieving Album ID {} ({})"
