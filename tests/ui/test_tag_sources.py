@@ -1063,7 +1063,6 @@ def broken_mp3tag_script(clean_profile):
     (mp3tag_folder() / 'Synthetic Include.src').write_text(MP3TAG_INCLUDE)
 
 
-@pytest.mark.xfail(strict=True, reason='a script that fails to load is only logged')
 def test_mp3tag_script_that_fails_to_load_is_named_in_the_window(broken_mp3tag_script, mainwin, user, qtbot):
     # tagsources.txt: "A tag source that can't be loaded is left out, and
     # the reason is shown in the Tag Sources window". The script is

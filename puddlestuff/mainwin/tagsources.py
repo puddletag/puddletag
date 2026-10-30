@@ -85,8 +85,11 @@ def display_tag(tag):
     return text
 
 
-def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
-    "Loads Mp3tag tag sources from dirpath and return the tag source classes."
+def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR, failures=None):
+    """Loads Mp3tag tag sources from dirpath and return the tag source classes.
+
+    If failures is a list, a (file name, reason) pair is appended to it for
+    each script that couldn't be loaded."""
     files = sorted(glob.glob(os.path.join(dirpath, '*.src')))
     classes = []
     for f in files:
@@ -95,8 +98,12 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
             classes.append(mp3tag.Mp3TagSource(idents, search, album))
         except mp3tag.ParseError as error:
             logging.error(translate("Tag Sources", "Couldn't load Mp3tag Tag Source {}").format(f) + ': ' + str(error))
+            if failures is not None:
+                failures.append((os.path.basename(f), str(error)))
         except Exception as error:
             logging.exception(translate("Tag Sources", "Couldn't load Mp3tag Tag Source {}").format(f) + ': ' + str(error))
+            if failures is not None:
+                failures.append((os.path.basename(f), str(error)))
     return classes
 
 
@@ -598,7 +605,8 @@ class MainWin(QWidget):
 
         self._status = status
         self.__sources = [z() for z in tagsources]
-        self.__sources.extend(load_mp3tag_sources())
+        failures = []
+        self.__sources.extend(load_mp3tag_sources(failures=failures))
 
         for ts in self.__sources:
             if hasattr(ts, 'preferences') and not isinstance(ts, QWidget):
@@ -644,6 +652,10 @@ class MainWin(QWidget):
         # The instruction/feedback label (between Search box and the results)
         self.label = QLabel(translate("Tag Sources",
                                       "Select files and click on Search to retrieve metadata."))
+        if failures:
+            self.label.setText('<br />'.join(
+                translate("Tag Sources", "Couldn't load Mp3tag script {}: {}").format(name, reason)
+                for name, reason in failures))
 
         # The results box (a tree view of album releases)
         self.listbox = ReleaseWidget(status, self.curSource)
