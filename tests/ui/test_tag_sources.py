@@ -4,6 +4,7 @@ A synthetic tag source stands in for the web ones, so nothing goes to
 the network; the real sources' parsing is tested on its own. Synthetic
 files, albums and images.
 """
+import logging
 from pathlib import Path
 
 import mutagen.id3
@@ -960,3 +961,115 @@ def test_musicbrainz_cover_sizes_keep_their_translation(qtbot):
     finally:
         QApplication.removeTranslator(translator)
     assert sizes == ['klein', 'groß', 'Ursprüngliche Größe']
+
+
+# Mp3tag scripts.
+
+MP3TAG_SCRIPT = """[AlbumUrl]=https://example.org/album?id=
+[Name]=Synthetic Mp3tag
+[SearchBy]=%album%
+[ParserScriptAlbum]=...
+outputto "album"
+sayrest
+"""
+
+# As in #795: the .src holds the search keys and names the .inc that
+# holds the rest.
+MP3TAG_INCLUDE = """[IndexUrl]=https://example.org/search?q=%s
+[SearchBy]=Search for||%album%||%s
+[Include]=Synthetic Web.inc
+"""
+
+
+def mp3tag_folder():
+    folder = Path(CONFIGDIR) / 'mp3tag_sources'
+    folder.mkdir(exist_ok=True)
+    return folder
+
+
+def listed(window):
+    return [window.sourcelist.itemText(n) for n in range(window.sourcelist.count())]
+
+
+def mp3tag_listed(window):
+    return [name for name in listed(window) if name.endswith(' [M]')]
+
+
+@pytest.fixture
+def mp3tag_script(clean_profile):
+    """A script in the user's mp3tag_sources folder, written before
+    mainwin builds the window. Its file name and [Name] differ."""
+    (mp3tag_folder() / 'synthetic script.src').write_text(MP3TAG_SCRIPT)
+
+
+@pytest.fixture
+def mp3tag_scripts_one_broken(clean_profile):
+    """A script that loads, and #795's kind that doesn't, with the .inc
+    it names beside it."""
+    folder = mp3tag_folder()
+    (folder / 'Synthetic Mp3tag.src').write_text(MP3TAG_SCRIPT)
+    (folder / 'Synthetic Include.src').write_text(MP3TAG_INCLUDE)
+    (folder / 'Synthetic Web.inc').write_text(MP3TAG_SCRIPT.replace('Synthetic Mp3tag', 'Synthetic Web'))
+
+
+def test_mp3tag_script_is_listed_by_its_name_with_m_appended(mp3tag_script, mainwin, user, qtbot):
+    # tagsources.txt: "If everything went okay, they'll be loaded when you
+    # start puddletag. In the Tag Sources window they'll be listed by the
+    # name on their [Name] line, with '[M]' appended." The script is
+    # synthetic.
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    assert mp3tag_listed(window) == ['Synthetic Mp3tag [M]']
+    pick(user, qtbot, window.sourcelist, 'Synthetic Mp3tag [M]')
+    assert window.sourcelist.currentText() == 'Synthetic Mp3tag [M]'
+
+
+def test_mp3tag_script_that_fails_to_load_is_left_out(mp3tag_scripts_one_broken, mainwin, user, qtbot, caplog):
+    # tagsources.txt: "If everything went okay, they'll be loaded", and "A
+    # tag source that can't be loaded is left out, and the reason is shown
+    # in the Tag Sources window and written to puddletag's log." The
+    # scripts are synthetic, the broken one shaped like the ones in #795.
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    assert mp3tag_listed(window) == ['Synthetic Mp3tag [M]']
+    assert 'MusicBrainz' in listed(window)
+    # The window is built while the fixtures are set up, not in the test call.
+    [message] = [r.getMessage() for r in caplog.get_records('setup')
+                 if r.levelno == logging.ERROR and 'Mp3tag' in r.getMessage()]
+    assert message.startswith(f"Couldn't load Mp3tag Tag Source {mp3tag_folder() / 'Synthetic Include.src'}")
+
+
+def test_mp3tag_scripts_are_read_when_puddletag_starts(clean_profile, mainwin, user, qtbot, restart):
+    # tagsources.txt: "If everything went okay, they'll be loaded when you
+    # start puddletag." The script is synthetic.
+    (mp3tag_folder() / 'Synthetic Mp3tag.src').write_text(MP3TAG_SCRIPT)
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    assert mp3tag_listed(window) == []
+
+    restart()
+
+    window = tag_sources_window()
+    assert mp3tag_listed(window) == ['Synthetic Mp3tag [M]']
+
+
+@pytest.fixture
+def broken_mp3tag_script(clean_profile):
+    """A script that can't load, in the user's folder before mainwin
+    builds the window."""
+    (mp3tag_folder() / 'Synthetic Include.src').write_text(MP3TAG_INCLUDE)
+
+
+@pytest.mark.xfail(strict=True, reason='a script that fails to load is only logged')
+def test_mp3tag_script_that_fails_to_load_is_named_in_the_window(broken_mp3tag_script, mainwin, user, qtbot):
+    # tagsources.txt: "A tag source that can't be loaded is left out, and
+    # the reason is shown in the Tag Sources window". The script is
+    # synthetic, shaped like the one in #795.
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    assert window.label.text() == ("Couldn't load Mp3tag script Synthetic Include.src: "
+                                   "[Include] is not supported (Synthetic Web.inc)")
