@@ -2,7 +2,6 @@ import json
 import re
 import threading
 import time
-import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
@@ -393,28 +392,16 @@ def retrieve_cover_links(album_id, extra=None):
         url = '%srelease/%s/%s' % (COVER_SERVER, album_id, extra)
     write_log(translate('MusicBrainz', "Retrieving cover: {}").format(url))
     try:
-        data, code = urlopen(url, code=True)
+        data = urlopen(url)
     except RetrievalError as e:
         if e.code == 404:
             raise RetrievalError(translate("MusicBrainz",
                                            "No images exist for this album."), 404)
         raise e
 
-    if code == 200:
-        if extra is None:
-            return json.loads(data)
-        else:
-            return data
-    elif code == 400:
-        raise RetrievalError(translate("MusicBrainz", "Invalid UUID"))
-    elif code in (405, 406):
-        raise RetrievalError(translate("MusicBrainz", "Invalid query sent."))
-    elif code == 503:
-        raise RetrievalError(translate("MusicBrainz",
-                                       "You have exceeded your rate limit."))
-    elif code == 404:
-        raise RetrievalError(translate("MusicBrainz",
-                                       "Image does not exist."))
+    if extra is None:
+        return json.loads(data)
+    return data
 
 
 def retrieve_covers(cover_links, size=LARGE):
@@ -584,12 +571,7 @@ class MusicBrainz(object):
                                     ).format(album_id, escape(str(e)))
                     write_log(msg)
 
-        try:
-            xml = mb_urlopen(search_album(album, artist, limit))
-        except urllib.error.URLError as e:
-            write_log('Error: While retrieving search page %s' %
-                      str(e))
-            raise RetrievalError(str(e))
+        xml = mb_urlopen(search_album(album, artist, limit))
         write_log('Retrieved search results.')
         return parse_album_search(xml)
 
