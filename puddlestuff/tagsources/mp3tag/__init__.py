@@ -350,7 +350,8 @@ class Mp3TagSource(object):
         self.search_source = search_source
         self.album_source = album_source
         self._search_base = idents['indexurl'] if search_source else ''
-        self._separator = idents.get('wordseperator', '+')
+        self._separator = idents.get('wordseparator',
+                                       idents.get('wordseperator', '+'))
         self.searchby = idents.get('searchby', '')
         self.group_by = ['album' if '$' in idents['searchby'] \
                              else idents['searchby'][1:-1], None]

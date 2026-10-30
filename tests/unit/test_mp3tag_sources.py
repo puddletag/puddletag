@@ -188,7 +188,6 @@ def test_script_with_include_and_its_own_keys_still_loads(folder):
     assert source.name == 'Synthetic [M]'
 
 
-@pytest.mark.xfail(strict=True, reason="only the misspelt [WordSeperator] is read")
 def test_word_separator_is_read(folder):
     # Mp3tag's reference: "[WordSeparator]: Character/string used instead
     # of blanks within the search criteria entered by the user", e.g. %20.
@@ -204,7 +203,6 @@ def test_old_word_seperator_spelling_still_works(folder):
     assert source._separator == '%20'
 
 
-@pytest.mark.xfail(strict=True, reason="only the misspelt [WordSeperator] is read")
 def test_word_separator_wins_over_the_old_spelling(folder):
     # The reference only knows [WordSeparator]. The maintainer's choice
     # (not a quote): when a script has both spellings, [WordSeparator]
