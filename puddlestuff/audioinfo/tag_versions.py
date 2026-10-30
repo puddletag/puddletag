@@ -125,23 +125,42 @@ def id3_tags(fn):
     return version
 
 
-def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2)):
+def tags_in_file(fn, to_check=(ID3_V1, ID3_V2, APEv2), known_v2=None):
     close_file = isinstance(fn, str)
     fileobj = open(fn, 'rb') if close_file else fn
 
     try:
-        if ID3_V1 in to_check and ID3_V2 in to_check:
-            tags = ['ID3v' + '.'.join(map(str, z)) for z in id3_tags(fileobj)]
-        elif ID3_V1 in to_check:
-            tags = ['ID3v1.1'] if has_v1(fileobj) else []
-        elif ID3_V2 in to_check:
-            tags = get_v2(fileobj)
-            tags = ['ID3v' + '.'.join(map(str, tags))] if tags else []
-        else:
-            tags = []
+        tags = []
+        tail = b""
+        check_tail = (ID3_V1 in to_check) or (APEv2 in to_check)
+        if check_tail:
+            try:
+                fileobj.seek(-160, 2)
+                tail = fileobj.read(160)
+            except (IOError, OSError):
+                try:
+                    fileobj.seek(0, 2)
+                    size = fileobj.tell()
+                    fileobj.seek(0)
+                    tail = fileobj.read(size)
+                except (IOError, OSError):
+                    tail = b""
 
-        if APEv2 in to_check and has_apev2(fileobj):
+        has_v1_tag = (ID3_V1 in to_check) and len(tail) >= 128 and tail[-128:-125] == b"TAG"
+        if has_v1_tag:
+            tags.append('ID3v1.1')
+
+        if known_v2 and known_v2.startswith('ID3v2'):
+            tags.append(known_v2)
+        elif ID3_V2 in to_check:
+            fileobj.seek(0)
+            v2 = get_v2(fileobj)
+            if v2:
+                tags.append('ID3v' + '.'.join(map(str, v2)))
+
+        if (APEv2 in to_check) and (b"APETAGEX" in tail):
             tags.append('APEv2')
+
         return tags
     finally:
         if close_file:
