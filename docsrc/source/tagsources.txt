@@ -120,14 +120,18 @@ Using MusicBrainz
 In addition to normal file lookups MusicBrainz also supports textual searches. The rules are as follows.
 
 +   To search for a specific artist, album pair enter the search string as **artist;album**, ie. artist and album separated by a semi-colon.
-+   Searching for the albums of a specific artist is done by leaving of the album part as in **artist;**
-+   For an album only leave off the artist part, ala **;artist**
-+   Retrieving the albums of an artist corresponding to a specific MusicBrainz Artist ID is done by starting your search string with **:a** as in 
++   Searching for the albums of a specific artist is done by leaving off the album part as in **artist;**
++   For an album only leave off the artist part, as in **;album**
++   Retrieving the albums of an artist corresponding to a specific MusicBrainz Artist ID is done by starting your search string with **:a** as in
     **:a f59c5520-5f46-4d2c-b2c4-822eabf53419**
-+   Also retrieving a specific album using it's **MusicBrainz Album ID** can be done by starting your search string with **:b** eg. **:b 34bb630-8061-454c-b35d-8f7131f4ff08**
++   Also retrieving a specific album using its **MusicBrainz Album ID** can be done by starting your search string with **:b** eg. **:b 6bb3793b-f991-378e-9bff-0bd3117f2298**
++   Anything else is searched as an album title.
+
+If **Retrieve Cover** is checked in the tag source's preferences, an album comes with its covers, from the Cover Art Archive. **Cover size to retrieve:** is Small (250 px), Large (500 px) or Original Size (the default), for the front cover and for all images alike. **Amount of images to retrieve:** is Just the front cover (the default) or All (can take a while).
 
 The fields returned by the MusicBrainz tag source are (not all fields are available for all albums):
 
++    **__image**: Cover art, if **Retrieve Cover** is checked.
 +    **album**: The release's (album's) name. A release's disambiguation comment is added in brackets, as in **Abbey Road (anniversary edition)**.
 +    **albumartist**: The release's artists, joined as the release joins them (eg. **Ada Montellanico feat. Giovanni Falzone**).
 +    **artist**: The track's artists on the release, joined as the release joins them.

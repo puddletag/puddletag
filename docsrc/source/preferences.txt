@@ -156,7 +156,7 @@ Will sort the retrieved album by the order listed. Use the dialog brought up by 
 
 User-Agent:
 ^^^^^^^^^^^
-If you use a Tag Sources to scrape a website, using anything other than the default User-Agent is a good idea.
+The User-Agent puddletag sends to the web sites its tag sources read (MusicBrainz, Discogs, Mp3tag's tag sources). The default names puddletag, its version and its address, as MusicBrainz asks of every program; leave it empty for the default.
 
 .. _auto_retrieval_prefs:
 
