@@ -600,12 +600,8 @@ def test_retrieve_by_album_id(source, web_server):
 
 
 @pytest.mark.parametrize('text', [
-    pytest.param(':a ' + THE_BEATLES, marks=pytest.mark.xfail(
-        raises=AttributeError, strict=True,
-        reason="the error is written to the log with xml.sax's escape(), which takes only text")),
-    pytest.param(':b ' + ABBEY_ROAD, marks=pytest.mark.xfail(
-        raises=AttributeError, strict=True,
-        reason="the error is written to the log with xml.sax's escape(), which takes only text")),
+    ':a ' + THE_BEATLES,
+    ':b ' + ABBEY_ROAD,
     'Abbey Road',
     'The Beatles;Abbey Road',
 ])
@@ -657,9 +653,6 @@ def test_file_search_of_several_artists_is_various_artists(source, web_server):
     (404, 'Not Found'),
     (503, 'Service Unavailable'),
 ])
-@pytest.mark.xfail(raises=AttributeError, strict=True,
-                   reason="the error is written to the log with xml.sax's escape(), which takes "
-                   'only text')
 def test_an_album_id_that_fails_falls_back_to_the_text_search(source, web_server, log, status,
                                                               reason):
     """The docs are silent on a file whose album id fails to retrieve. The

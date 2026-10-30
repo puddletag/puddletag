@@ -499,7 +499,7 @@ class MusicBrainz(object):
             except RetrievalError as e:
                 msg = translate('MusicBrainz',
                                 "<b>Error:</b> While retrieving {}: {}"
-                                ).format(artist_id, escape(e))
+                                ).format(artist_id, escape(str(e)))
                 write_log(msg)
                 raise
         elif s.startswith(':b'):
@@ -509,7 +509,7 @@ class MusicBrainz(object):
             except RetrievalError as e:
                 msg = translate('MusicBrainz',
                                 "<b>Error:</b> While retrieving Album ID {} ({})"
-                                ).format(r_id, escape(e))
+                                ).format(r_id, escape(str(e)))
                 write_log(msg)
                 raise
         else:
@@ -554,7 +554,7 @@ class MusicBrainz(object):
                 except RetrievalError as e:
                     msg = translate('MusicBrainz',
                                     "<b>Error:</b> While retrieving Album ID {} ({})"
-                                    ).format(album_id, escape(e))
+                                    ).format(album_id, escape(str(e)))
                     write_log(msg)
 
         try:
