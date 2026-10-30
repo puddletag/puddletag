@@ -172,7 +172,6 @@ def test_script_with_a_byte_order_mark_loads(folder):
     assert [s.name for s in loaded(folder)] == ['Synthetic [M]']
 
 
-@pytest.mark.xfail(strict=True, reason="scripts load in the folder's order")
 def test_scripts_load_in_file_name_order(folder):
     # Synthetic: the sources are listed in the same order whatever order the
     # files were created in.

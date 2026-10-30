@@ -87,7 +87,7 @@ def display_tag(tag):
 
 def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
     "Loads Mp3tag tag sources from dirpath and return the tag source classes."
-    files = glob.glob(os.path.join(dirpath, '*.src'))
+    files = sorted(glob.glob(os.path.join(dirpath, '*.src')))
     classes = []
     for f in files:
         try:
