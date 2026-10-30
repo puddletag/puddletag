@@ -119,6 +119,9 @@ class DirModel(QFileSystemModel):
         self.setRootPath('/')
         self.setFilter(QDir.Filter.Dirs | QDir.Filter.NoDotAndDotDot)
         self.setReadOnly(False)
+        # The tree asks hasChildren() again only when a row changes: a
+        # network folder without subfolders loses its arrow once it's read.
+        self.directoryLoaded.connect(lambda path: self.dataChanged.emit(self.index(path), self.index(path)))
 
     def hasChildren(self, parent):
         """Only show the expand arrow when there are subfolders.

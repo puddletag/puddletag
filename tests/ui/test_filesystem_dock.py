@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QMenu, 
                              QStyleOptionButton)
 
 from puddlestuff import audioinfo
+from puddlestuff.mainwin import dirview
 from puddlestuff.mainwin.dirview import DirView, DirViewWidget
 from puddlestuff.puddlesettings import SettingsDialog
 
@@ -126,18 +127,21 @@ class Branches(QProxyStyle):
             self.drawn.append((QRect(option.rect), bool(option.state & QStyle.StateFlag.State_Children)))
         super().drawPrimitive(element, option, painter, widget)
 
-    def has_arrow(self, path):
-        """Whether the folder's row shows the arrow, as the tree draws it:
-        the row's innermost branch, the one next to its name."""
+    def branch(self, path):
+        """The folder's row as the tree draws it: its innermost branch, the
+        one next to its name, as (rect, has the arrow)."""
         index = self.view.model().index(str(path))
         self.view.scrollTo(index)
         name = self.view.visualRect(index)
         self.drawn.clear()
         self.view.viewport().grab()
-        row = [(rect.x(), arrow) for rect, arrow in self.drawn
+        row = [(rect, arrow) for rect, arrow in self.drawn
                if rect.top() <= name.center().y() <= rect.bottom() and rect.right() <= name.left()]
         assert row, f'{path} is not drawn'
-        return max(row)[1]
+        return max(row, key=lambda branch: branch[0].x())
+
+    def has_arrow(self, path):
+        return self.branch(path)[1]
 
 
 def click_check_box(user, box):
@@ -207,6 +211,25 @@ def test_arrow_only_on_folders_with_subfolders(mainwin, music, tmp_path, qtbot, 
     root = model.index(str(tmp_path))
     folder_pos(qtbot, view, tmp_path / 'a')
     qtbot.waitUntil(lambda: model.rowCount(root) == 3)
+    assert [branches.has_arrow(tmp_path / name) for name in ['a', 'b', 'c']] == [True, False, False]
+
+
+def test_arrow_on_network_folders_until_read(mainwin, music, tmp_path, qtbot, user, monkeypatch):
+    # The review of #1107 (#1104, a freeze on a network share): on a
+    # network mount every folder shows the arrow until it is read, and
+    # loses it then if it has no subfolders.
+    monkeypatch.setattr(dirview, 'get_network_mounts', lambda: [str(tmp_path)])
+    view = tree(mainwin)
+    branches = Branches(view)
+    model = view.model()
+    root = model.index(str(tmp_path))
+    folder_pos(qtbot, view, tmp_path / 'a')
+    qtbot.waitUntil(lambda: model.rowCount(root) == 3)
+    assert [branches.has_arrow(tmp_path / name) for name in ['a', 'b', 'c']] == [True, True, True]
+    for name in ['a', 'b', 'c']:
+        path = str(tmp_path / name)
+        with qtbot.waitSignal(model.directoryLoaded, check_params_cb=lambda loaded: loaded == path):
+            user.click(view.viewport(), branches.branch(path)[0].center())
     assert [branches.has_arrow(tmp_path / name) for name in ['a', 'b', 'c']] == [True, False, False]
 
 
