@@ -872,7 +872,6 @@ def test_a_failed_request_counts(source, web_server, clock):
 DEFAULT_USERAGENT = f'puddletag/{version_string} ( https://github.com/puddletag/puddletag )'
 
 
-@pytest.mark.xfail(strict=True, reason='the user agent has no contact address')
 def test_musicbrainz_is_told_who_to_contact(source, web_server, monkeypatch):
     """MusicBrainz's rate limiting page: "Each request sent to MusicBrainz
     needs to include a User-Agent header, with enough information in the
@@ -895,8 +894,6 @@ def test_the_preferences_user_agent_is_sent(source, web_server, monkeypatch):
     assert request.headers['User-Agent'] == 'Synthetic/1.0 ( https://example.org )'
 
 
-@pytest.mark.xfail(strict=True, reason='a user agent saved by an older version is sent as it '
-                                       'was saved')
 @pytest.mark.parametrize('saved', [
     'puddletag/2.4.0',
     f'puddletag/{version_string}',
@@ -914,7 +911,6 @@ def test_an_old_default_user_agent_becomes_the_new_one(source, web_server, monke
     assert request.headers['User-Agent'] == DEFAULT_USERAGENT
 
 
-@pytest.mark.xfail(strict=True, reason="an empty user agent sends urllib's own")
 def test_an_empty_user_agent_sends_the_default(source, web_server, monkeypatch):
     """preferences.txt: "The default names puddletag, its version and its
     address, as MusicBrainz asks of every program; leave it empty for the
@@ -926,7 +922,6 @@ def test_an_empty_user_agent_sends_the_default(source, web_server, monkeypatch):
     assert request.headers['User-Agent'] == DEFAULT_USERAGENT
 
 
-@pytest.mark.xfail(strict=True, reason='an empty user agent is read as "puddetag/<version>"')
 def test_an_empty_user_agent_is_read_as_the_default(monkeypatch):
     """preferences.txt: "The default names puddletag, its version and its
     address, as MusicBrainz asks of every program; leave it empty for the

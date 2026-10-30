@@ -10,14 +10,14 @@ from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QComboBo
     QInputDialog, QLabel, QLineEdit, QPushButton, QSpinBox, QTextEdit, QToolButton, QVBoxLayout, \
     QWidget
 
-from .. import audioinfo, version_string
+from .. import audioinfo
 from ..constants import (TEXT, COMBO, SPINBOX,
                         CHECKBOX, RIGHTDOCK, CONFIGDIR)
 from ..findfunc import FuncError
 from ..functions import replace_regex
 from ..puddleobjects import (create_buddy, get_icon, winsettings,
                             ListBox, ListButtons, OKCancel, PuddleConfig, PuddleThread)
-from ..tagsources import (tagsources, status_obj, set_useragent,
+from ..tagsources import (DEFAULT_USERAGENT, tagsources, status_obj, set_useragent,
                          write_log, RetrievalError, mp3tag, SubmissionError)
 from ..util import (isempty, pprint_tag,
                    split_by_field, to_string, translate)
@@ -502,7 +502,7 @@ class SettingsDialog(QWidget):
         self._albumdisp.setText(albumformat)
 
         self._ua.setText(cparser.get('tagsources',
-                                     'useragent', 'puddletag/' + version_string))
+                                     'useragent', DEFAULT_USERAGENT))
 
         self.albumBound.setValue(
             cparser.get('tagsources', 'album_bound', 70, True))

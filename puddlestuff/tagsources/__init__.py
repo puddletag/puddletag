@@ -53,7 +53,10 @@ SAVECOVERS = False
 
 mapping = {}
 status_obj = _SignalObject()
-useragent = "puddletag/" + version_string
+# MusicBrainz asks for "Application name/<version> ( contact-url )".
+DEFAULT_USERAGENT = ('puddletag/' + version_string +
+                     ' ( https://github.com/puddletag/puddletag )')
+useragent = DEFAULT_USERAGENT
 
 
 def get_encoding(page, decode=False, default=None):
@@ -146,14 +149,14 @@ def set_status(msg):
 
 
 def get_useragent():
-    if useragent:
-        return useragent
-    else:
-        return 'puddetag/' + version_string
+    return useragent or DEFAULT_USERAGENT
 
 
 def set_useragent(agent):
     global useragent
+    # Preferences saves the default of the day, so an older version's is the default too.
+    if re.fullmatch(r'puddletag/\S+( \( \S+ \))?', agent):
+        agent = DEFAULT_USERAGENT
     useragent = agent
 
 
@@ -173,8 +176,7 @@ def url_encode_non_ascii(b):
 def urlopen(url, mask=True, code=False):
     try:
         request = urllib.request.Request(url)
-        if useragent:
-            request.add_header('User-Agent', useragent)
+        request.add_header('User-Agent', get_useragent())
         page = urllib.request.build_opener().open(request)
         if page.code == 403:
             raise RetrievalError(
