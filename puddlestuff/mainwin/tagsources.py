@@ -93,9 +93,10 @@ def load_mp3tag_sources(dirpath=MTAG_SOURCE_DIR):
         try:
             idents, search, album = mp3tag.open_script(f)
             classes.append(mp3tag.Mp3TagSource(idents, search, album))
-        except:
-            logging.exception(translate("Tag Sources", "Couldn't load Mp3tag Tag Source {}").format(f))
-            continue
+        except mp3tag.ParseError as error:
+            logging.error(translate("Tag Sources", "Couldn't load Mp3tag Tag Source {}").format(f) + ': ' + str(error))
+        except Exception as error:
+            logging.exception(translate("Tag Sources", "Couldn't load Mp3tag Tag Source {}").format(f) + ': ' + str(error))
     return classes
 
 

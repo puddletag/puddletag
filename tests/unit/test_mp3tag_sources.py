@@ -155,7 +155,6 @@ INCLUDE_HEADER = {'Include': 'Synthetic Web.inc', 'IndexUrl': 'https://example.o
     pytest.param(script({**HEADER, 'Name': 'Synthétique'}), 'latin-1', 'not UTF-8 text', id='not-utf-8'),
     pytest.param('# A comment\n', 'utf-8', 'no [Name] line', id='only-comments'),
 ])
-@pytest.mark.xfail(strict=True, reason='the log names only the exception')
 def test_script_that_cannot_load_logs_why(folder, caplog, text, encoding, reason):
     # Mp3tag's reference lists the header keys; a script without the ones it
     # needs, or with a line it can't read, isn't loaded. Synthetic scripts.

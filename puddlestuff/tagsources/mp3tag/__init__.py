@@ -69,17 +69,41 @@ def convert_dict(d, keys=MTAG_KEYS):
     return _convert_dict(d, keys)
 
 
+def missing_key_reason(idents):
+    """Why a script with these header keys can't load, or None."""
+    if 'name' not in idents:
+        return translate('Mp3tag', 'no [Name] line')
+    if 'searchby' not in idents:
+        return translate('Mp3tag', 'no [SearchBy] line')
+    if 'parserscriptalbum' not in idents:
+        return translate('Mp3tag', 'no [ParserScriptAlbum] section')
+    if 'parserscriptindex' in idents:
+        if 'indexurl' not in idents:
+            return translate('Mp3tag', 'no [IndexUrl] line, which [ParserScriptIndex] needs')
+        if 'indexformat' not in idents:
+            return translate('Mp3tag', 'no [IndexFormat] line, which [ParserScriptIndex] needs')
+
+
 def find_idents(lines):
     ident_lines = {}
     idents = {}
     for i, line in enumerate(lines):
         line = line.strip()
         if line.startswith('['):
-            name, value = parse_ident(line)
+            try:
+                name, value = parse_ident(line)
+            except AttributeError:
+                raise ParseError(translate('Mp3tag', 'line {} is not a [Key]=value line: {}').format(i + 1, line))
             idents[name.lower()] = value
             ident_lines[i] = name.lower()
         elif not line or line.startswith('#'):
             continue
+
+    reason = missing_key_reason(idents)
+    if reason:
+        if 'include' in idents:
+            reason = translate('Mp3tag', '[Include] is not supported ({})').format(idents['include'])
+        raise ParseError(reason)
 
     values = sorted(ident_lines)
     max_val = max(values)
@@ -117,8 +141,12 @@ def find_idents(lines):
 
 
 def open_script(filename):
-    with open(filename, encoding='utf-8-sig') as f:
-        idents, search, album = find_idents(f.readlines())
+    try:
+        with open(filename, encoding='utf-8-sig') as f:
+            lines = f.readlines()
+    except UnicodeDecodeError:
+        raise ParseError(translate('Mp3tag', 'not UTF-8 text'))
+    idents, search, album = find_idents(lines)
     return idents, search, album
 
 
