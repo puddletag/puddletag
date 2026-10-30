@@ -3,8 +3,9 @@ folders clicked in its tree, its right-click menu and Go to parent
 folder. Each load is checked in the table and on disk. Synthetic files.
 """
 import pytest
-from PyQt6.QtCore import QPoint, Qt, QTimer
-from PyQt6.QtWidgets import QAbstractItemView, QApplication, QCheckBox, QMenu, QMessageBox, QStyle, QStyleOptionButton
+from PyQt6.QtCore import QPoint, QRect, Qt, QTimer
+from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QMenu, QMessageBox, QProxyStyle, QStyle,
+                             QStyleOptionButton)
 
 from puddlestuff import audioinfo
 from puddlestuff.mainwin.dirview import DirView, DirViewWidget
@@ -109,6 +110,36 @@ def right_click_folder(user, qtbot, view, path, text):
     return right_click(user, qtbot, view.viewport(), folder_pos(qtbot, view, path), text)
 
 
+class Branches(QProxyStyle):
+    """Set on the tree, records each branch it draws (the area left of a
+    row's name): where it is and whether it has the expand arrow."""
+
+    def __init__(self, view):
+        super().__init__()
+        self.setParent(view)
+        view.setStyle(self)
+        self.view = view
+        self.drawn = []
+
+    def drawPrimitive(self, element, option, painter, widget=None):
+        if element == QStyle.PrimitiveElement.PE_IndicatorBranch:
+            self.drawn.append((QRect(option.rect), bool(option.state & QStyle.StateFlag.State_Children)))
+        super().drawPrimitive(element, option, painter, widget)
+
+    def has_arrow(self, path):
+        """Whether the folder's row shows the arrow, as the tree draws it:
+        the row's innermost branch, the one next to its name."""
+        index = self.view.model().index(str(path))
+        self.view.scrollTo(index)
+        name = self.view.visualRect(index)
+        self.drawn.clear()
+        self.view.viewport().grab()
+        row = [(rect.x(), arrow) for rect, arrow in self.drawn
+               if rect.top() <= name.center().y() <= rect.bottom() and rect.right() <= name.left()]
+        assert row, f'{path} is not drawn'
+        return max(row)[1]
+
+
 def click_check_box(user, box):
     """At its indicator: the box stretches, and a click at its center
     misses it."""
@@ -165,6 +196,18 @@ def test_lists_folders_only(mainwin, music, tmp_path, qtbot, user):
         return sorted(model.fileName(model.index(row, 0, root)) for row in range(model.rowCount(root)))
 
     qtbot.waitUntil(lambda: names() == ['a', 'b', 'c'])
+
+
+def test_arrow_only_on_folders_with_subfolders(mainwin, music, tmp_path, qtbot, user):
+    # The docs are silent; 3a3edb4: "Hide the little expand arrow on
+    # folders that do not have subfolders." Only a has one (a/sub).
+    view = tree(mainwin)
+    branches = Branches(view)
+    model = view.model()
+    root = model.index(str(tmp_path))
+    folder_pos(qtbot, view, tmp_path / 'a')
+    qtbot.waitUntil(lambda: model.rowCount(root) == 3)
+    assert [branches.has_arrow(tmp_path / name) for name in ['a', 'b', 'c']] == [True, False, False]
 
 
 @pytest.mark.parametrize('subfolders', [False, True], ids=['off', 'on'])
