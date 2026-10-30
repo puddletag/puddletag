@@ -1,5 +1,6 @@
 import json
 import re
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -18,6 +19,9 @@ from puddlestuff.util import isempty, translate
 
 SERVER = 'http://musicbrainz.org/ws/2/'
 COVER_SERVER = 'http://coverartarchive.org/'
+
+_last_request = None
+_request_lock = threading.Lock()
 
 TEXT_NODE = Node.TEXT_NODE
 
@@ -357,13 +361,28 @@ def rec_children_to_text(node):
     return info
 
 
+def mb_urlopen(url):
+    """urlopen for MusicBrainz's web service, at most one request a
+    second, as MusicBrainz asks of every program."""
+    global _last_request
+    with _request_lock:
+        if _last_request is not None:
+            wait = _last_request + 1 - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+        try:
+            return urlopen(url)
+        finally:
+            _last_request = time.monotonic()
+
+
 def retrieve_album(album_id):
     url = SERVER + 'release/' + album_id + \
           '?inc=recordings+artist-credits+labels+puids+isrcs+tags+ratings' \
           '+artist-rels+recording-rels+release-rels+release-group-rels' \
           '+url-rels+work-rels+recording-level-rels+work-level-rels'
 
-    data = urlopen(url)
+    data = mb_urlopen(url)
     return parse_album(data)
 
 
@@ -486,7 +505,6 @@ class MusicBrainz(object):
 
     def __init__(self):
         super(MusicBrainz, self).__init__()
-        self.__lasttime = time.time()
         self.__image_size = ORIG
         self.__num_images = 0
         self.__get_images = True
@@ -507,7 +525,7 @@ class MusicBrainz(object):
             artist_id = s[len(':a'):].strip()
             try:
                 url = search_album('arid:' + artist_id, limit=100, own=True)
-                return parse_album_search(urlopen(url))
+                return parse_album_search(mb_urlopen(url))
             except RetrievalError as e:
                 msg = translate('MusicBrainz',
                                 "<b>Error:</b> While retrieving {}: {}"
@@ -528,7 +546,7 @@ class MusicBrainz(object):
             try:
                 params = parse_searchstring(s)
             except RetrievalError as e:
-                return parse_album_search(urlopen(search_album(s, limit=100)))
+                return parse_album_search(mb_urlopen(search_album(s, limit=100)))
             if not params:
                 return
             artist = params[0][0]
@@ -536,9 +554,6 @@ class MusicBrainz(object):
             return self.search(album, [artist], 100)
 
     def search(self, album, artists='', limit=40):
-        if time.time() - self.__lasttime < 1000:
-            time.sleep(1)
-
         ret = []
         check_matches = False
         if isempty(artists):
@@ -570,13 +585,12 @@ class MusicBrainz(object):
                     write_log(msg)
 
         try:
-            xml = urlopen(search_album(album, artist, limit))
+            xml = mb_urlopen(search_album(album, artist, limit))
         except urllib.error.URLError as e:
             write_log('Error: While retrieving search page %s' %
                       str(e))
             raise RetrievalError(str(e))
         write_log('Retrieved search results.')
-        self.__lasttime = time.time()
         return parse_album_search(xml)
 
     def retrieve(self, albuminfo):
@@ -584,10 +598,7 @@ class MusicBrainz(object):
             album_id = albuminfo['#album_id']
         except TypeError:
             album_id = albuminfo
-        if time.time() - self.__lasttime < 1000:
-            time.sleep(1)
         ret = retrieve_album(album_id)
-        self.__lasttime = time.time()
         image = self.retrieve_covers(album_id)
         if image:
             ret[0]['__image'] = image

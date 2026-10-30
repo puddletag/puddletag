@@ -794,7 +794,6 @@ PACED_REQUESTS = {
 }
 
 
-@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
 def test_the_first_request_does_not_wait(source, clock):
     """MusicBrainz's rate limiting page: "Your per-IP average must stay at
     about one request per second." Nothing was asked before, so there is
@@ -803,7 +802,6 @@ def test_the_first_request_does_not_wait(source, clock):
     assert clock.sleeps == []
 
 
-@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
 def test_a_request_within_a_second_waits_the_rest(source, clock):
     """MusicBrainz's rate limiting page: "Your per-IP average must stay at
     about one request per second." A request a quarter second after the last
@@ -814,7 +812,6 @@ def test_a_request_within_a_second_waits_the_rest(source, clock):
     assert clock.sleeps == [pytest.approx(0.75)]
 
 
-@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
 def test_a_request_more_than_a_second_later_does_not_wait(source, clock):
     """MusicBrainz's rate limiting page: "Your per-IP average must stay at
     about one request per second." A request over a second after the last has
@@ -825,8 +822,6 @@ def test_a_request_more_than_a_second_later_does_not_wait(source, clock):
     assert clock.sleeps == []
 
 
-@pytest.mark.xfail(strict=True, reason='the text, artist id and AcoustID requests never wait, '
-                                       'the others wait twice')
 @pytest.mark.parametrize('kind', sorted(PACED_REQUESTS))
 def test_every_musicbrainz_request_is_paced(source, clock, kind):
     """MusicBrainz's rate limiting page: "Your per-IP average must stay at
@@ -838,7 +833,6 @@ def test_every_musicbrainz_request_is_paced(source, clock, kind):
     assert clock.sleeps == [pytest.approx(1)]
 
 
-@pytest.mark.xfail(strict=True, reason='every retrieve waits a second first')
 def test_cover_art_archive_requests_are_not_paced(covers, web_server, clock):
     """The Cover Art Archive's rate limiting page: "There are currently no
     rate limiting rules in place". The front cover is asked right after the
@@ -850,7 +844,6 @@ def test_cover_art_archive_requests_are_not_paced(covers, web_server, clock):
     assert clock.sleeps == []
 
 
-@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
 def test_every_source_shares_the_pace(source, clock):
     """MusicBrainz's rate limiting page: "Your per-IP average must stay at
     about one request per second." The limit is per IP, not per source: the
@@ -860,7 +853,6 @@ def test_every_source_shares_the_pace(source, clock):
     assert clock.sleeps == [pytest.approx(1)]
 
 
-@pytest.mark.xfail(strict=True, reason='every search and retrieve waits a full second')
 def test_a_failed_request_counts(source, web_server, clock):
     """MusicBrainz's rate limiting page: "Your per-IP average must stay at
     about one request per second." A request that is declined was still
