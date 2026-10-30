@@ -573,8 +573,6 @@ def test_text_searches(source, web_server, text, query):
     assert all(tracks == [] for info, tracks in results)
 
 
-@pytest.mark.xfail(strict=True, reason='the artist id is escaped (arid\\:...), so MusicBrainz '
-                   'searches for the word Arid')
 def test_search_by_artist_id(source, web_server):
     """tagsources.txt: "**:a f59c5520-5f46-4d2c-b2c4-822eabf53419**"
     (Retrieving the albums of an artist by MusicBrainz Artist ID). The route

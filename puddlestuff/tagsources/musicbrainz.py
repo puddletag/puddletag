@@ -430,9 +430,6 @@ def retrieve_front_cover(album_id):
 
 def search_album(album=None, artist=None, limit=25, offset=0, own=False):
     if own:
-        if isinstance(album, str):
-            album = solr_escape(album)
-
         return SERVER + 'release/?query=' + urllib.parse.quote_plus(album) + \
                '&limit=%d&offset=%d' % (limit, offset)
 
@@ -497,8 +494,7 @@ class MusicBrainz(object):
         if s.startswith(':a'):
             artist_id = s[len(':a'):].strip()
             try:
-                url = search_album('arid:' +
-                                   solr_escape(artist_id), limit=100, own=True)
+                url = search_album('arid:' + artist_id, limit=100, own=True)
                 return parse_album_search(urlopen(url))
             except RetrievalError as e:
                 msg = translate('MusicBrainz',
