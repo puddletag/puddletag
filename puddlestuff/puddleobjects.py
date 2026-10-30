@@ -835,7 +835,8 @@ def open_resourcefile(filename):
 
 
 def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None]],
-             pstring: str, maximum: int, threadfin: Optional[Callable[[], None]] = None) -> Callable[..., None]:
+             pstring: str, maximum: int, threadfin: Optional[Callable[[], None]] = None,
+             on_cancel: Optional[Callable[[], None]] = None) -> Callable[..., None]:
     """To be used for functions that need a threaded progressbar.
 
     Note that this function will only (and is meant to) work on dialogs.
@@ -885,6 +886,8 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
             return
         elif maximum > 1:
             win = ProgressWin(parent, maximum, pstring)
+            if on_cancel:
+                win.canceled.connect(on_cancel)
             win.show()
         else:
             return
@@ -911,6 +914,12 @@ def progress(func: Callable[..., Generator[Optional[Tuple[str, int]], None, None
                 except StopIteration:
                     break
                 i += 1
+
+            if win.wasCanceled:
+                try:
+                    f.close()
+                except Exception:
+                    pass
 
             if not err:
                 thread.win.emit(-1)
