@@ -17,6 +17,7 @@ from puddlestuff.tagsources import (find_id, write_log, RetrievalError,
 from puddlestuff.util import isempty, translate
 
 SERVER = 'http://musicbrainz.org/ws/2/'
+COVER_SERVER = 'http://coverartarchive.org/'
 
 TEXT_NODE = Node.TEXT_NODE
 
@@ -368,9 +369,9 @@ def retrieve_album(album_id):
 
 def retrieve_cover_links(album_id, extra=None):
     if extra is None:
-        url = "http://coverartarchive.org/release/" + album_id
+        url = COVER_SERVER + 'release/' + album_id
     else:
-        url = "http://coverartarchive.org/release/%s/%s" % (album_id, extra)
+        url = '%srelease/%s/%s' % (COVER_SERVER, album_id, extra)
     write_log(translate('MusicBrainz', "Retrieving cover: {}").format(url))
     try:
         data, code = urlopen(url, code=True)
