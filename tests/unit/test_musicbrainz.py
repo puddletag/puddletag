@@ -711,10 +711,8 @@ def test_all_images(covers, web_server, size, suffix):
 
 
 @pytest.mark.parametrize('size, name, suffix', [
-    pytest.param(0, 'front-250', '-250', marks=pytest.mark.xfail(
-        strict=True, reason='the front cover is always the original, whatever the size')),
-    pytest.param(1, 'front-500', '-500', marks=pytest.mark.xfail(
-        strict=True, reason='the front cover is always the original, whatever the size')),
+    (0, 'front-250', '-250'),
+    (1, 'front-500', '-500'),
     (2, 'front', ''),
 ])
 def test_front_cover(covers, web_server, size, name, suffix):

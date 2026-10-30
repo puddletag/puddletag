@@ -429,8 +429,14 @@ def retrieve_covers(cover_links, size=LARGE):
     return ret
 
 
-def retrieve_front_cover(album_id):
-    data = retrieve_cover_links(album_id, "front")
+def retrieve_front_cover(album_id, size=ORIG):
+    if size == SMALL:
+        extra = 'front-250'
+    elif size == LARGE:
+        extra = 'front-500'
+    else:
+        extra = 'front'
+    data = retrieve_cover_links(album_id, extra)
     return {'data': data, 'mime': get_mime(data)}
 
 
@@ -481,7 +487,7 @@ class MusicBrainz(object):
     def __init__(self):
         super(MusicBrainz, self).__init__()
         self.__lasttime = time.time()
-        self.__image_size = LARGE
+        self.__image_size = ORIG
         self.__num_images = 0
         self.__get_images = True
 
@@ -490,7 +496,7 @@ class MusicBrainz(object):
             [translate('MusicBrainz', 'Cover size to retrieve:'), COMBO,
              [[translate('MusicBrainz', 'Small'),
                translate('MusicBrainz', 'Large'),
-               translate('MusicBrainz', 'Original Size')], 1]],
+               translate('MusicBrainz', 'Original Size')], 2]],
             [translate('MusicBrainz', 'Amount of images to retrieve:'), COMBO,
              [[translate('MusicBrainz', 'Just the front cover'),
                translate('MusicBrainz', 'All (can take a while)')], 0]],
@@ -592,7 +598,7 @@ class MusicBrainz(object):
             return []
         try:
             if self.__num_images == 0:
-                image = retrieve_front_cover(album_id)
+                image = retrieve_front_cover(album_id, self.__image_size)
                 if image:
                     return [image]
             else:
