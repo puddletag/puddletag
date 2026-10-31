@@ -175,7 +175,7 @@ Using Mp3tag's Tag Sources
 
 puddletag *supports* using Mp3tag's tag sources. To use them create the directory **~/.config/puddletag/mp3tag_sources** and place any tag sources (their **.src** files) in there. If everything went okay, they'll be loaded when you start puddletag. In the **Tag Sources** window they'll be listed by the name on their **[Name]** line, with '[M]' appended. A tag source that can't be loaded is left out, and the reason is shown in the **Tag Sources** window and written to puddletag's log.
 
-You can search as you do using Mp3tag by using the Search box. See the tooltip for the field used to do the search. Selecting files and searching works too.
+You can search as you do using Mp3tag by using the Search box. Selecting files and searching works too, for a tag source whose **[SearchBy]** line names plain fields, not Mp3tag's functions. See the tooltip for the fields used to search the selected files.
 
 Caveats
 ^^^^^^^

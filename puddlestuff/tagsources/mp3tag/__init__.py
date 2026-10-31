@@ -11,8 +11,9 @@ from .funcs import FUNCTIONS
 
 from puddlestuff.tagsources import (urlopen, get_encoding,
                                     write_log, retrieve_cover,
-                                    set_status)
+                                    set_status, RetrievalError)
 
+from puddlestuff import findfunc
 from puddlestuff.audioinfo.util import CaselessDict
 from puddlestuff.constants import CHECKBOX
 from puddlestuff.functions import format_value
@@ -85,8 +86,6 @@ def missing_key_reason(idents):
     """Why a script with these header keys can't load, or None."""
     if 'name' not in idents:
         return translate('Mp3tag', 'no [Name] line')
-    if 'searchby' not in idents:
-        return translate('Mp3tag', 'no [SearchBy] line')
     if 'parserscriptalbum' not in idents:
         return translate('Mp3tag', 'no [ParserScriptAlbum] section')
     if 'parserscriptindex' in idents:
@@ -365,14 +364,15 @@ class Mp3TagSource(object):
         self._separator = idents.get('wordseparator',
                                        idents.get('wordseperator', '+'))
         self.searchby = idents.get('searchby', '')
-        self.group_by = ['album' if '$' in idents['searchby'] \
-                             else idents['searchby'][1:-1], None]
+        fields = re.findall(r'%(\w+)%', self.searchby)
+        self.group_by = ['album' if '$' in self.searchby or not fields
+                         else fields[0], None]
         self.name = idents['name'] + ' [M]'
         self.indexformat = idents['indexformat'] if search_source else ''
         self.album_url = idents.get('albumurl', '')
-        self.tooltip = tooltip = """<p>Enter search keywords here. If empty,
-        the selected files are used.<br /><br />
-        Searches are done by <b>%s</b></p>""" % self.group_by[0]
+        self.tooltip = translate(
+            'Mp3tag', '<p>Enter search keywords here. If empty, the selected files are used.<br /><br />'
+                      'Searches are done by <b>{}</b></p>').format(self.searchby)
 
     def applyPrefs(self, args):
         self._get_cover = args[0]
@@ -381,10 +381,35 @@ class Mp3TagSource(object):
         return self.search(text)
 
     def search(self, artist, files=None):
-        if files is not None and self.searchby:
-            keywords = format_value(files[0], self.searchby)
+        if files is None:
+            return self._search(artist)
+
+        if not self.searchby:
+            raise RetrievalError(translate(
+                'Mp3tag', 'This script has no [SearchBy] line. Type the search in the Search box.'))
+        if '||' in self.searchby:
+            raise RetrievalError(translate(
+                'Mp3tag', "[SearchBy] with several search fields (||) isn't supported. "
+                          "Type the search in the Search box."))
+
+        if re.fullmatch(r'%\w+%', self.searchby):
+            # The group's key is the field's value, and is what the caller
+            # wants searched (it retries with a shorter one).
+            values = [artist]
         else:
-            keywords = artist
+            try:
+                values = [format_value(f, self.searchby) for f in files]
+            except findfunc.ParseError as e:
+                raise RetrievalError(translate(
+                    'Mp3tag', "[SearchBy] uses a function puddletag doesn't have ({}). "
+                              "Type the search in the Search box.").format(e))
+
+        ret = []
+        for value in dict.fromkeys(v for v in values if v and v.strip()):
+            ret.extend(self._search(value))
+        return ret
+
+    def _search(self, keywords):
         keywords = re.sub(r'\s+', self._separator, keywords)
 
         if self.search_source is None:

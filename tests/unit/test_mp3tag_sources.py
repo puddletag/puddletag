@@ -156,8 +156,6 @@ INCLUDE_HEADER = {'Include': 'Synthetic Web.inc', 'IndexUrl': 'https://example.o
     pytest.param(script(album=None), 'utf-8', 'no [ParserScriptAlbum] section', id='no-album-parser'),
     pytest.param(script({k: v for k, v in HEADER.items() if k != 'Name'}), 'utf-8',
                  'no [Name] line', id='no-name'),
-    pytest.param(script({k: v for k, v in HEADER.items() if k != 'SearchBy'}), 'utf-8',
-                 'no [SearchBy] line', id='no-search-by'),
     pytest.param(script({**HEADER, 'Name': 'Synthétique'}), 'latin-1', 'not UTF-8 text', id='not-utf-8'),
     pytest.param('# A comment\n', 'utf-8', 'no [Name] line', id='only-comments'),
 ])
@@ -495,7 +493,6 @@ def test_selected_files_are_searched_once_per_album(folder, server):
     assert [q for _, q in requested(server)] == ['q=First+Light', 'q=Second+Light']
 
 
-@pytest.mark.xfail(strict=True, reason='a [SearchBy] naming two fields searches only the first selected file')
 def test_search_by_two_fields_searches_each_selected_album(folder, server):
     # Mp3tag's reference, SearchBy: "Field(s) which are offered as search
     # criteria".
@@ -508,7 +505,6 @@ def test_search_by_two_fields_searches_each_selected_album(folder, server):
     assert [q for _, q in requested(server)] == ['q=Synthetic+Band+First+Light', 'q=Other+Band+Second+Light']
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError, reason='a selected file without the [SearchBy] field stops the search')
 def test_selected_files_without_the_field_are_skipped(folder, server):
     # Synthetic: the second file has no album. The files that do have one
     # are still searched.
@@ -520,7 +516,6 @@ def test_selected_files_without_the_field_are_skipped(folder, server):
     assert [q for _, q in requested(server)] == ['q=First+Light']
 
 
-@pytest.mark.xfail(strict=True, raises=TypeError, reason='a selected file without the [SearchBy] field stops the search')
 def test_no_request_when_no_selected_file_has_the_field(folder, server):
     # Synthetic: no selected file has an album.
     source = load_one(folder, script(local_header(server), index=INDEX_PARSER))
@@ -529,7 +524,6 @@ def test_no_request_when_no_selected_file_has_the_field(folder, server):
     assert server.requests == []
 
 
-@pytest.mark.xfail(strict=True, reason='when the search finds nothing, it retries with the files again')
 def test_retry_without_the_brackets_searches_the_shorter_album(folder, server):
     # Synthetic: the Tag Sources window retries a search that finds nothing
     # with the album's bracketed part removed.
@@ -549,7 +543,6 @@ def test_retry_without_the_brackets_searches_the_shorter_album(folder, server):
     ('%artist% %album%', '<b>%artist% %album%</b>'),
     ('Search for||%album%||%s', '<b>Search for||%album%||%s</b>'),
 ])
-@pytest.mark.xfail(strict=True, reason='the tooltip shows [SearchBy] with its outer % signs cut off')
 def test_tooltip_names_the_search_by_fields(folder, search_by, expected):
     # tagsources.txt: "See the tooltip for the fields used to search the
     # selected files."
@@ -558,7 +551,6 @@ def test_tooltip_names_the_search_by_fields(folder, search_by, expected):
     assert expected in source.tooltip
 
 
-@pytest.mark.xfail(strict=True, reason='the tooltip is not translated')
 def test_tooltip_goes_through_translate(folder, monkeypatch):
     # Synthetic: the tooltip is user-visible text.
     monkeypatch.setattr('puddlestuff.tagsources.mp3tag.translate',
@@ -567,7 +559,6 @@ def test_tooltip_goes_through_translate(folder, monkeypatch):
     assert load_one(folder, script()).tooltip.startswith('<<<p>Enter search keywords here.')
 
 
-@pytest.mark.xfail(strict=True, reason='Mp3tag functions in [SearchBy] fail with a parse error')
 def test_search_by_with_mp3tag_functions_says_so(folder, server):
     # tagsources.txt: searching selected files works for a [SearchBy] of
     # plain fields, "not Mp3tag's functions". Synthetic [SearchBy].
@@ -591,7 +582,6 @@ def test_search_box_works_with_mp3tag_functions_in_search_by(folder, server):
     assert requested(server) == [('/search', 'q=First+Light')]
 
 
-@pytest.mark.xfail(strict=True, reason='a script without [SearchBy] is not loaded')
 def test_script_without_search_by_can_search_with_the_search_box(folder, server):
     # Mp3tag's reference doesn't make [SearchBy] required. Synthetic script
     # without it.
@@ -603,7 +593,6 @@ def test_script_without_search_by_can_search_with_the_search_box(folder, server)
     assert source.keyword_search('First Light') == [({'#url': 'u1', 'album': 'First Light'}, [])]
 
 
-@pytest.mark.xfail(strict=True, reason='a script without [SearchBy] is not loaded')
 def test_script_without_search_by_says_so_for_selected_files(folder, server):
     server.add('/search', 'u1|First Light')
     header = {k: v for k, v in local_header(server).items() if k != 'SearchBy'}
@@ -614,7 +603,6 @@ def test_script_without_search_by_says_so_for_selected_files(folder, server):
         search_files(source, SELECTED_ALBUMS)
 
 
-@pytest.mark.xfail(strict=True, reason='a [SearchBy] with several search fields (||) searches the selected files')
 def test_search_by_with_several_search_fields_says_so(folder, server):
     # Synthetic: the [SearchBy] value of Mp3tag scripts that offer several
     # search fields, written "Name||%field%||%s".
