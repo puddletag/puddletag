@@ -124,15 +124,9 @@ def test_read_keeps_an_equals_sign_in_a_value(web_server, cddb):
 
 @pytest.mark.parametrize(('value', 'expected'), [
     pytest.param(r'A\\B', r'A\B', id='backslash'),
-    pytest.param(r'A\\nB', r'A\nB', id='backslash-then-n',
-                 marks=pytest.mark.xfail(strict=True, reason='escapes are translated one at a '
-                                         'time, before the value is read')),
-    pytest.param(r'C:\\temp', r'C:\temp', id='backslash-then-t',
-                 marks=pytest.mark.xfail(strict=True, reason='escapes are translated one at a '
-                                         'time, before the value is read')),
-    pytest.param(r'A\nB', 'A\nB', id='newline',
-                 marks=pytest.mark.xfail(strict=True, reason='escapes are translated one at a '
-                                         'time, before the value is read')),
+    pytest.param(r'A\\nB', r'A\nB', id='backslash-then-n'),
+    pytest.param(r'C:\\temp', r'C:\temp', id='backslash-then-t'),
+    pytest.param(r'A\nB', 'A\nB', id='newline'),
     pytest.param(r'A\tB', 'A\tB', id='tab'),
     # Synthetic: the format names no other escape, so it stays as it is.
     pytest.param(r'A\xB', r'A\xB', id='unknown'),
@@ -150,14 +144,10 @@ def test_read_translates_escapes(web_server, cddb, value, expected):
 
 @pytest.mark.parametrize(('lines', 'expected'), [
     pytest.param([r'EXTD=Recorded live\nMixed in stu', 'EXTD=dio B'],
-                 'Recorded live\nMixed in studio B', id='escape-in-a-line',
-                 marks=pytest.mark.xfail(strict=True, reason='escapes are translated one at a '
-                                         'time, before the value is read')),
+                 'Recorded live\nMixed in studio B', id='escape-in-a-line'),
     # Synthetic: the format joins the lines, then translates.
     pytest.param(['EXTD=Side one\\', 'EXTD=nSide two'], 'Side one\nSide two',
-                 id='escape-split-across-lines',
-                 marks=pytest.mark.xfail(strict=True, reason='escapes are translated one at a '
-                                         'time, before the value is read')),
+                 id='escape-split-across-lines'),
 ])
 def test_read_joins_continued_lines_before_translating(web_server, cddb, lines, expected):
     # The format's own example: "EXTD=Copyright (c) 1981 MCA Records
@@ -171,7 +161,6 @@ def test_read_joins_continued_lines_before_translating(web_server, cddb, lines, 
     assert data['EXTD'] == expected
 
 
-@pytest.mark.xfail(strict=True, reason='a comment holding = is read as a KEYWORD=data line')
 def test_read_reads_comments_only_as_comments(web_server, cddb):
     # "Lines that begin with # are comments. ... Comments should be ignored by
     # applications", bar "Submitted via: client_name client_version

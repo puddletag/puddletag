@@ -25,6 +25,7 @@ else:
 # Use protocol version 5 to get DYEAR and DGENRE fields.
 proto = 5
 default_server = 'http://gnudb.gnudb.org/~cddb/cddb.cgi'
+escapes = {'\\': '\\', 'n': '\n', 't': '\t'}
 
 
 def query(track_info, server_url=default_server,
@@ -100,10 +101,6 @@ def read(category, disc_id, server_url=default_server,
             if line == '.':
                 break
 
-            line = line.replace(r'\t', "\t")
-            line = line.replace(r'\n', "\n")
-            line = line.replace(r'\\', "\\")
-
             reply.append(line)
 
         if header[0] == 210:  # success, parse the reply
@@ -122,15 +119,19 @@ def parse_read_reply(comments):
 
     result = {}
 
-    for line in comments:
-        keyword_match = keyword_re.match(line)
-        if keyword_match:
-            (keyword, data) = keyword_match.groups()
+    keywords = []
 
-            if keyword in result:
-                result[keyword] = result[keyword] + data
-            else:
-                result[keyword] = data
+    for line in comments:
+        if not line.startswith('#'):
+            keyword_match = keyword_re.match(line)
+            if keyword_match:
+                (keyword, data) = keyword_match.groups()
+
+                if keyword in result:
+                    result[keyword] = result[keyword] + data
+                else:
+                    result[keyword] = data
+                    keywords.append(keyword)
             continue
 
         len_match = len_re.match(line)
@@ -147,5 +148,9 @@ def parse_read_reply(comments):
         if submit_match:
             result['submitted_via'] = submit_match.group(1)
             continue
+
+    # Translated once the lines are joined, so an escape can span two lines.
+    for keyword in keywords:
+        result[keyword] = re.sub(r'\\([\\nt])', lambda m: escapes[m.group(1)], result[keyword])
 
     return result
