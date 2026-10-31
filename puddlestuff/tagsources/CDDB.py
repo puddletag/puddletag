@@ -6,6 +6,8 @@
 # Release version 1.4
 # CVS ID: $Id: CDDB.py,v 1.8 2003/08/31 23:18:43 che_fox Exp $
 
+import email.utils
+import getpass
 import os
 import re
 import socket
@@ -16,11 +18,19 @@ import urllib.request
 name = 'CDDB.py'
 version = 1.4
 
-if 'EMAIL' in os.environ:
-    (default_user, hostname) = os.environ['EMAIL'].split('@')
-else:
-    default_user = os.geteuid() or os.environ.get('USER') or 'user'
-    hostname = socket.gethostname() or 'host'
+
+def _hello_names():
+    local, _, domain = email.utils.parseaddr(os.environ.get('EMAIL', ''))[1].rpartition('@')
+    if local and domain:
+        return local, domain
+    try:
+        user = getpass.getuser()
+    except OSError:
+        user = 'user'
+    return user, socket.gethostname() or 'host'
+
+
+default_user, hostname = _hello_names()
 
 # Use protocol version 5 to get DYEAR and DGENRE fields.
 proto = 5

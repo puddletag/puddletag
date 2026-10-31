@@ -79,7 +79,6 @@ def imported_hello(env, patch=''):
     return done.stdout.splitlines()
 
 
-@pytest.mark.xfail(strict=True, reason="the hello's user is 'user' for root, not its login name")
 def test_cddb_imports_as_root_without_user():
     # Synthetic: root in a container, where USER and EMAIL aren't set. The
     # hello's user is "Login name of user".
@@ -326,8 +325,7 @@ def test_read_keeps_the_space_where_a_line_was_split(web_server, cddb):
 
 
 @pytest.mark.parametrize(('email', 'expected'), [
-    pytest.param('Joe Bloggs <joe@my.host.com>', ['joe', 'my.host.com'], id='display-name',
-                 marks=pytest.mark.xfail(strict=True, reason='gives "Joe Bloggs <joe"')),
+    pytest.param('Joe Bloggs <joe@my.host.com>', ['joe', 'my.host.com'], id='display-name'),
     pytest.param('joe@my.host.com', ['joe', 'my.host.com'], id='bare'),
 ])
 def test_hello_names_come_from_an_email_address(email, expected):
@@ -341,19 +339,16 @@ def test_hello_names_come_from_an_email_address(email, expected):
     pytest.param('joe', id='no-at-sign'),
     pytest.param('joe@a@b', id='two-at-signs'),
 ])
-@pytest.mark.xfail(strict=True, reason='the import raises ValueError, so puddletag cannot start')
 def test_hello_user_is_the_login_name_when_email_is_no_address(email):
     # "username: Login name of user. Example: johndoe"
     assert imported_hello({'EMAIL': email, 'USER': 'johndoe'}) == ['johndoe', 'my.host.com']
 
 
-@pytest.mark.xfail(strict=True, reason='gives the numeric user id')
 def test_hello_user_is_the_login_name():
     # "username: Login name of user. Example: johndoe"
     assert imported_hello({'USER': 'johndoe'}) == ['johndoe', 'my.host.com']
 
 
-@pytest.mark.xfail(strict=True, reason='gives the numeric user id')
 def test_hello_user_without_a_login_name():
     # Synthetic: a user id with no password entry, as in a container started
     # with --user 4242.
