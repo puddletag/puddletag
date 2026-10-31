@@ -101,7 +101,9 @@ Using FreeDB
 
 FreeDB creates a (semi-)unique DiscID by using the number of tracks, their order and lengths of a particular CD. The DiscID is then referenced to the FreeDB database and any matching albums are returned.
 
-So all you need to do in order to do a FreeDB lookup is select all the files belonging to specific album and click on Search. It's doesn't work all the time, but it does most of the time.
+puddletag asks gnudb.org, which took over freedb's database when freedb.org closed in 2020, and gnudb lists every album under the category "data".
+
+So all you need to do in order to do a FreeDB lookup is select all the files belonging to specific album and click on Search. It doesn't work all the time, but it does most of the time.
 
 +    **album**: The release's (album's) name.
 +    **artist**: The track's artist.
