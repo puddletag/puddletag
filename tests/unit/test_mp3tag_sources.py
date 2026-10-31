@@ -613,3 +613,60 @@ def test_search_by_with_several_search_fields_says_so(folder, server):
     with pytest.raises(RetrievalError, match=r'^\[SearchBy\] with several search fields \(\|\|\) '
                                              r"isn't supported\. Type the search in the Search box\.$"):
         search_files(source, SELECTED_ALBUMS)
+
+
+# Mp3tag's reference:
+# - Encoding: "Encoding used for all URLs. Can be utf-8, iso-8859-1, url,
+#   url-utf-8, or ansi"
+# puddletag always uses UTF-8 for the words it puts in the address.
+@pytest.mark.parametrize('words, query', [
+    pytest.param('Simon & Garfunkel #1', 'q=Simon+%26+Garfunkel+%231', marks=pytest.mark.xfail(
+        strict=True, reason='the search words are put in the address without percent-encoding')),
+    pytest.param('Sigur Rós', 'q=Sigur+R%C3%B3s', marks=pytest.mark.xfail(
+        strict=True, reason='the search words are put in the address without percent-encoding')),
+])
+def test_search_words_are_percent_encoded(folder, server, words, query):
+    # Synthetic: an [Encoding] of url-utf-8 and words with characters
+    # that mean something in an address.
+    server.add('/search', 'u1|First Light')
+    source = load_one(folder, script(local_header(server, Encoding='url-utf-8'),
+                                     index=INDEX_PARSER))
+
+    source.keyword_search(words)
+
+    assert requested(server) == [('/search', query)]
+
+
+def test_word_separator_is_not_encoded(folder, server):
+    # Mp3tag's reference: [WordSeparator] "Character/string used instead
+    # of blanks within the search criteria, e.g., `%20` or `+`".
+    server.add('/search', 'u1|First Light')
+    source = load_one(folder, script(local_header(server, WordSeparator='%20'),
+                                     index=INDEX_PARSER))
+
+    source.keyword_search('Daft Punk')
+
+    assert requested(server) == [('/search', 'q=Daft%20Punk')]
+
+
+def test_blanks_in_a_row_are_one_separator(folder, server):
+    # Synthetic: three blanks between the words.
+    server.add('/search', 'u1|First Light')
+    source = load_one(folder, script(local_header(server), index=INDEX_PARSER))
+
+    source.keyword_search('Daft   Punk')
+
+    assert requested(server) == [('/search', 'q=Daft+Punk')]
+
+
+@pytest.mark.parametrize('keys', [{}, {'UserAgent': '1'}])
+def test_search_sends_puddletags_user_agent(folder, server, keys):
+    # Mp3tag's reference: [UserAgent] "If set to `1`, Mp3tag uses its name
+    # and version number as user agent". puddletag sends its own whatever
+    # the script says.
+    server.add('/search', 'u1|First Light')
+    source = load_one(folder, script(local_header(server, **keys), index=INDEX_PARSER))
+
+    source.keyword_search('First Light')
+
+    assert server.requests[0].headers['User-Agent'] == DEFAULT_USERAGENT
