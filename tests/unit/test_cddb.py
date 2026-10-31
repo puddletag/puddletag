@@ -267,3 +267,82 @@ def test_level_6_reply_is_utf8(web_server, cddb):
     status, matches = served_query(web_server, cddb, body)
 
     assert matches[0]['title'] == 'Café / Déjà vu'
+
+
+@pytest.mark.xfail(strict=True,
+                   reason='the server, user and host are bound when CDDB is imported')
+def test_requests_go_to_the_module_defaults(cddb, monkeypatch, no_network, web_server):
+    monkeypatch.setattr(CDDB, 'default_server', cddb)
+    monkeypatch.setattr(CDDB, 'default_user', 'joe')
+    monkeypatch.setattr(CDDB, 'hostname', 'my.host.com')
+    web_server.add(CGI, reply('202 No match for disc ID 0c025603.'), content_type='text/plain')
+    try:
+        assert CDDB.query(TRACK_INFO) == [202, None]
+    finally:
+        no_network.clear()  # only while xfailed: today the request goes to gnudb
+    assert web_server.requests[-1].query['hello'] == ['joe my.host.com CDDB.py 1.4']
+
+
+@pytest.mark.parametrize(('user', 'expected'), [
+    pytest.param('josé', 'josé my.host.com puddletag 1.0',
+                 marks=pytest.mark.xfail(strict=True, reason='a non-ASCII user name '
+                                         'raises UnicodeEncodeError'),
+                 id='non-ascii'),
+    pytest.param('joe+tag', 'joe+tag my.host.com puddletag 1.0',
+                 marks=pytest.mark.xfail(strict=True, reason='a + in the user name '
+                                         'arrives as a space'),
+                 id='plus'),
+])
+def test_hello_words_are_quoted(web_server, cddb, user, expected):
+    # "Special characters may be represented by the sequence "%XX"" and the
+    # hello is "username hostname clientname version": five words would break
+    # it. A non-ASCII word is sent as its UTF-8 bytes.
+    web_server.add(CGI, reply('202 No match for disc ID 0c025603.'),
+                   content_type='text/plain', query=QUERY)
+
+    CDDB.query(TRACK_INFO, server_url=cddb, **{**HELLO, 'user': user})
+
+    assert web_server.requests[-1].query['hello'] == [expected]
+
+
+@pytest.mark.xfail(strict=True, reason='every reply is read as UTF-8 whatever the protocol level')
+def test_level_5_reply_is_latin1(web_server, cddb, monkeypatch):
+    # "Protocol level 6 is the same as level 5 except that the character set
+    # is now UTF-8 instead of ISO-8859-1."
+    monkeypatch.setattr(CDDB, 'proto', 5)
+    body = entry('DISCID=0c025603', 'DTITLE=Café / Déjà vu', 'TTITLE0=Naïve')
+
+    status, data = served_read(web_server, cddb, body.encode('latin-1'))
+
+    assert (data['DTITLE'], data['TTITLE0']) == ('Café / Déjà vu', 'Naïve')
+
+    body = reply("211 Found inexact matches, list follows (until terminating `.')",
+                 'rock 0c025603 Café / Déjà vu', '.')
+
+    status, matches = served_query(web_server, cddb, body.encode('latin-1'))
+
+    assert matches[0]['title'] == 'Café / Déjà vu'
+
+
+@pytest.mark.xfail(strict=True,
+                   reason='a level 6 reply that is not UTF-8 raises UnicodeDecodeError')
+def test_level_6_reply_that_is_not_utf8(web_server, cddb):
+    # Synthetic: a level 6 server that still sends ISO-8859-1, which "Database
+    # entries must be in the US-ASCII, ISO-8859-1 ... or UTF-8" allows.
+    body = entry('DISCID=0c025603', 'DTITLE=Café / Déjà vu', 'TTITLE0=Naïve')
+
+    status, data = served_read(web_server, cddb, body.encode('latin-1'))
+
+    assert (data['DTITLE'], data['TTITLE0']) == ('Café / Déjà vu', 'Naïve')
+
+
+@pytest.mark.xfail(strict=True,
+                   reason='each line loses its trailing spaces, not only CR LF')
+def test_read_keeps_the_space_where_a_line_was_split(web_server, cddb):
+    # "Multiple occurrences of the same keyword indicate that the data
+    # contained on those lines should be concatenated"
+    body = entry('DISCID=0c025603', 'TTITLE0=Part one of a long ', 'TTITLE0=title')
+
+    status, data = served_read(web_server, cddb, body)
+
+    assert data['TTITLE0'] == 'Part one of a long title'
