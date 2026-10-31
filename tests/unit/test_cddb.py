@@ -79,18 +79,11 @@ def imported_hello(env, patch=''):
     return done.stdout.splitlines()
 
 
+@pytest.mark.xfail(strict=True, reason="the hello's user is 'user' for root, not its login name")
 def test_cddb_imports_as_root_without_user():
-    # Synthetic: root in a container, where USER and EMAIL aren't set. A
-    # subprocess, because reloading CDDB here would reset the protocol
-    # freedb sets at import.
-    env = {k: v for k, v in os.environ.items() if k not in ('EMAIL', 'USER')}
-    code = ('import os; os.geteuid = lambda: 0; '
-            'from puddlestuff.tagsources import CDDB; print(CDDB.default_user)')
-
-    done = subprocess.run([sys.executable, '-c', code], env=env, cwd=ROOT,
-                          capture_output=True, text=True)
-
-    assert (done.returncode, done.stdout.strip()) == (0, 'user'), done.stderr
+    # Synthetic: root in a container, where USER and EMAIL aren't set. The
+    # hello's user is "Login name of user".
+    assert imported_hello({}, 'os.getuid = os.geteuid = lambda: 0; ') == ['root', 'my.host.com']
 
 
 def test_read_returns_the_entrys_fields(web_server, cddb):
@@ -330,3 +323,38 @@ def test_read_keeps_the_space_where_a_line_was_split(web_server, cddb):
     status, data = served_read(web_server, cddb, body)
 
     assert data['TTITLE0'] == 'Part one of a long title'
+
+
+@pytest.mark.parametrize(('email', 'expected'), [
+    pytest.param('Joe Bloggs <joe@my.host.com>', ['joe', 'my.host.com'], id='display-name',
+                 marks=pytest.mark.xfail(strict=True, reason='gives "Joe Bloggs <joe"')),
+    pytest.param('joe@my.host.com', ['joe', 'my.host.com'], id='bare'),
+])
+def test_hello_names_come_from_an_email_address(email, expected):
+    # gnudb "requires a valid email" and its example hello is "emailname+emailhost.com+
+    # applicationname+0.1": the user and host are the address's two sides.
+    assert imported_hello({'EMAIL': email, 'USER': 'johndoe'}) == expected
+
+
+@pytest.mark.parametrize('email', [
+    pytest.param('', id='empty'),
+    pytest.param('joe', id='no-at-sign'),
+    pytest.param('joe@a@b', id='two-at-signs'),
+])
+@pytest.mark.xfail(strict=True, reason='the import raises ValueError, so puddletag cannot start')
+def test_hello_user_is_the_login_name_when_email_is_no_address(email):
+    # "username: Login name of user. Example: johndoe"
+    assert imported_hello({'EMAIL': email, 'USER': 'johndoe'}) == ['johndoe', 'my.host.com']
+
+
+@pytest.mark.xfail(strict=True, reason='gives the numeric user id')
+def test_hello_user_is_the_login_name():
+    # "username: Login name of user. Example: johndoe"
+    assert imported_hello({'USER': 'johndoe'}) == ['johndoe', 'my.host.com']
+
+
+@pytest.mark.xfail(strict=True, reason='gives the numeric user id')
+def test_hello_user_without_a_login_name():
+    # Synthetic: a user id with no password entry, as in a container started
+    # with --user 4242.
+    assert imported_hello({}, 'os.getuid = os.geteuid = lambda: 4242; ') == ['user', 'my.host.com']
