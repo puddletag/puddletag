@@ -304,10 +304,6 @@ def search_files(source, files):
     return tag_source_search(source, split_by_field(files, *source.group_by), files)[0]
 
 
-DECODE = pytest.mark.xfail(strict=True, raises=TypeError,
-                           reason='the downloaded page is passed on as bytes, not text')
-
-
 def serve_itunes_album(server):
     """One album in the search answer, and it with two tracks in the album
     page's."""
@@ -324,7 +320,6 @@ def retrieve_itunes_album(folder, server, covers=False):
     return source.retrieve(result)
 
 
-@DECODE
 def test_search_box_search_requests_index_url(folder, server):
     # Mp3tag's reference: [IndexUrl] "Search URL where %s is replaced by the
     # search criteria entered by the user"; [WordSeparator] "Character/string
@@ -337,7 +332,6 @@ def test_search_box_search_requests_index_url(folder, server):
     assert requested(server) == [('/search', 'country=ES&entity=album&term=Daft+Punk+Discovery')]
 
 
-@DECODE
 def test_search_lists_each_album_by_index_format(folder, server):
     # tagsources.txt: "You can search as you do using Mp3tag by using the
     # Search box"; Mp3tag's reference, [IndexFormat]: "Format string for
@@ -359,7 +353,6 @@ def test_search_lists_each_album_by_index_format(folder, server):
     ]
 
 
-@DECODE
 def test_retrieve_requests_album_url_with_the_result_url_appended(folder, server):
     # Mp3tag's reference, [AlbumUrl]: "Result base URL (URL result from first
     # search pass will be appended)". The "&entity=song&limit=200" twice is
@@ -371,7 +364,6 @@ def test_retrieve_requests_album_url_with_the_result_url_appended(folder, server
     assert info['#url'] == f'{server.url}/lookup?country=ES&entity=song&limit=200&id=101&entity=song&limit=200'
 
 
-@DECODE
 def test_retrieve_gives_the_album_page_fields(folder, server):
     # The result list's fields stay and the album page's are added. The
     # explicitness, label and currenturl are left out (the commands' tests
@@ -396,7 +388,6 @@ def test_retrieve_gives_one_entry_per_track(folder, server):
         ('Dawn', '200001', '1001'), ('Dusk', '200002', '1002')]
 
 
-@DECODE
 def test_retrieve_downloads_the_cover(folder, server):
     # Docs-silent: the Retrieve Covers preference is puddletag's own, on by
     # default.
@@ -408,12 +399,10 @@ def test_retrieve_downloads_the_cover(folder, server):
     assert requested(server)[-1] == ('/cover.jpg', '')
 
 
-@pytest.mark.xfail(strict=True, reason='the downloaded page is passed on as bytes, not text')
 def test_script_without_index_parser_goes_to_the_album_page(folder, server):
     # Synthetic: Mp3tag's reference doesn't say whether the index parser is
     # required. Without one, the search words are appended to [AlbumUrl]
-    # and the album page is the result. The xfail has no raises=: retrieve
-    # swallows the TypeError.
+    # and the album page is the result.
     server.add('/album', 'Synthetic album page')
     source = load_one(folder, script({**HEADER, 'AlbumUrl': f'{server.url}/album?id='}))
 
@@ -423,7 +412,6 @@ def test_script_without_index_parser_goes_to_the_album_page(folder, server):
     assert [(info['album'], tracks) for info, tracks in results] == [('Synthetic album page', None)]
 
 
-@DECODE
 def test_page_declaring_another_encoding_is_read_in_it(folder, server):
     # Synthetic: a page whose XML declaration names ISO-8859-1.
     server.add('/search', '<?xml version="1.0" encoding="ISO-8859-1"?>\nu1|Café\n'.encode('latin-1'))
@@ -432,7 +420,6 @@ def test_page_declaring_another_encoding_is_read_in_it(folder, server):
     assert source.keyword_search('Cafe') == [({'#url': 'u1', 'album': 'Café'}, [])]
 
 
-@DECODE
 def test_bytes_that_are_not_utf8_do_not_stop_the_search(folder, server):
     # Synthetic: Latin-1 bytes in a page that declares no encoding.
     server.add('/search', b'u1|Caf\xe9\n')
@@ -441,7 +428,6 @@ def test_bytes_that_are_not_utf8_do_not_stop_the_search(folder, server):
     assert source.keyword_search('Cafe') == [({'#url': 'u1', 'album': 'Caf�'}, [])]
 
 
-@DECODE
 def test_search_without_results_finds_nothing(folder, server):
     # Synthetic: an empty page. The window then says "No matching albums
     # were found."
@@ -477,7 +463,6 @@ def test_search_page_error_is_reported(folder, server, status, message):
     assert str(error.value) == message
 
 
-@pytest.mark.xfail(strict=True, reason="retrieve swallows the album page's download error")
 def test_album_page_error_is_reported(folder, server):
     # Synthetic: the album page answers 404.
     server.add('/album', 'Synthetic error page', status=404)

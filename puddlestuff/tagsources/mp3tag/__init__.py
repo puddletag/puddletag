@@ -69,6 +69,18 @@ def convert_dict(d, keys=MTAG_KEYS):
     return _convert_dict(d, keys)
 
 
+def decode_page(data):
+    """A downloaded page as text: UTF-8, unless its XML declaration names
+    another encoding. Bytes that don't decode become U+FFFD."""
+    encoding = get_encoding(data.decode('utf-8', 'replace'))
+    if encoding:
+        try:
+            return data.decode(encoding, 'replace')
+        except LookupError:
+            pass
+    return data.decode('utf-8', 'replace')
+
+
 def missing_key_reason(idents):
     """Why a script with these header keys can't load, or None."""
     if 'name' not in idents:
@@ -362,8 +374,6 @@ class Mp3TagSource(object):
         the selected files are used.<br /><br />
         Searches are done by <b>%s</b></p>""" % self.group_by[0]
 
-        self.html = None
-
     def applyPrefs(self, args):
         self._get_cover = args[0]
 
@@ -385,10 +395,7 @@ class Mp3TagSource(object):
 
         write_log(translate('Mp3tag', "Retrieving search page: {}").format(url))
         set_status(translate('Mp3tag', 'Retrieving search page...'))
-        if self.html is None:
-            page = get_encoding(urlopen(url), True, 'utf8')[1]
-        else:
-            page = get_encoding(self.html, True, 'utf8')[1]
+        page = decode_page(urlopen(url))
 
         write_log(translate('Mp3tag', 'Parsing search page.'))
         set_status(translate('Mp3tag', 'Parsing search page...'))
@@ -410,12 +417,9 @@ class Mp3TagSource(object):
 
         info['#url'] = url
 
-        try:
-            write_log(translate('Mp3tag', "Retrieving album page: {}").format(url))
-            set_status(translate('Mp3tag', 'Retrieving album page...'))
-            page = get_encoding(urlopen(url), True, 'utf8')[1]
-        except:
-            page = ''
+        write_log(translate('Mp3tag', "Retrieving album page: {}").format(url))
+        set_status(translate('Mp3tag', 'Retrieving album page...'))
+        page = decode_page(urlopen(url))
 
         write_log(translate('Mp3tag', 'Parsing album page.'))
         set_status(translate('Mp3tag', 'Parsing album page...'))
