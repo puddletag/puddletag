@@ -28,9 +28,27 @@ default_server = 'http://gnudb.gnudb.org/~cddb/cddb.cgi'
 escapes = {'\\': '\\', 'n': '\n', 't': '\t'}
 
 
-def query(track_info, server_url=default_server,
-          user=default_user, host=hostname, client_name=name,
+def _decode(raw):
+    # Level 6 is UTF-8, but the format also allows ISO-8859-1, so a line that
+    # isn't UTF-8 is read as that. Below level 6 it is always ISO-8859-1.
+    if proto >= 6:
+        try:
+            return raw.decode()
+        except UnicodeDecodeError:
+            pass
+    return raw.decode('latin-1')
+
+
+def query(track_info, server_url=None,
+          user=None, host=None, client_name=name,
           client_version=version):
+    if server_url is None:
+        server_url = default_server
+    if user is None:
+        user = default_user
+    if host is None:
+        host = hostname
+
     disc_id = track_info[0]
     num_tracks = track_info[1]
 
@@ -39,16 +57,15 @@ def query(track_info, server_url=default_server,
     for i in track_info[2:]:
         query_str = query_str + ('%d ' % i)
 
-    query_str = urllib.parse.quote_plus(query_str.rstrip())
-
-    url = "%s?cmd=cddb+query+%s&hello=%s+%s+%s+%s&proto=%i" % \
-          (server_url, query_str, user, host, client_name,
-           client_version, proto)
+    url = "%s?%s" % (server_url, urllib.parse.urlencode({
+        'cmd': 'cddb query ' + query_str.rstrip(),
+        'hello': ' '.join(str(word) for word in (user, host, client_name, client_version)),
+        'proto': proto}))
 
     response = urllib.request.urlopen(url)
 
     # Four elements in header: status, category, disc-id, title
-    header = response.readline().decode().rstrip().split(' ', 3)
+    header = _decode(response.readline()).rstrip().split(' ', 3)
 
     header[0] = int(header[0])
 
@@ -62,7 +79,7 @@ def query(track_info, server_url=default_server,
         result = []
 
         for line in response.readlines():
-            line = line.decode().rstrip()
+            line = _decode(line).rstrip()
 
             if line == '.':  # end of matches
                 break
@@ -80,23 +97,31 @@ def query(track_info, server_url=default_server,
         return [header[0], None]
 
 
-def read(category, disc_id, server_url=default_server,
-         user=default_user, host=hostname, client_name=name,
+def read(category, disc_id, server_url=None,
+         user=None, host=None, client_name=name,
          client_version=version):
-    url = "%s?cmd=cddb+read+%s+%s&hello=%s+%s+%s+%s&proto=%i" % \
-          (server_url, category, disc_id, user, host, client_name,
-           client_version, proto)
+    if server_url is None:
+        server_url = default_server
+    if user is None:
+        user = default_user
+    if host is None:
+        host = hostname
+
+    url = "%s?%s" % (server_url, urllib.parse.urlencode({
+        'cmd': 'cddb read %s %s' % (category, disc_id),
+        'hello': ' '.join(str(word) for word in (user, host, client_name, client_version)),
+        'proto': proto}))
 
     response = urllib.request.urlopen(url)
 
-    header = response.readline().decode().rstrip().split(' ', 3)
+    header = _decode(response.readline()).rstrip().split(' ', 3)
 
     header[0] = int(header[0])
     if header[0] == 210 or header[0] == 417:  # success or access denied
         reply = []
 
         for line in response.readlines():
-            line = line.decode().rstrip()
+            line = _decode(line).rstrip('\r\n')
 
             if line == '.':
                 break
