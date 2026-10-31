@@ -48,18 +48,28 @@ REAL_MOUNTS = (
 
 @pytest.fixture
 def mounts(tmp_path, monkeypatch):
-    """The mount table's file, for the test to write."""
+    """Writes the mount table's file for dirview to read, with its cache
+    empty, and returns the file.
+
+    The test calls it, not the fixture: pytest-qt processes Qt events after
+    the fixtures, and a DirModel an earlier test left alive then reads the
+    table, caching it before the test has written it.
+    """
     path = tmp_path / 'mounts'
-    monkeypatch.setattr(dirview, 'MOUNTS', str(path))
-    monkeypatch.setattr(dirview, '_network_mounts_cache', None)
-    return path
+
+    def write(text):
+        path.write_text(text, encoding='utf-8')
+        monkeypatch.setattr(dirview, 'MOUNTS', str(path))
+        monkeypatch.setattr(dirview, '_network_mounts_cache', None)
+        return path
+    return write
 
 
 def test_network_mounts(mounts):
     # Synthetic: SMB shares mounted on folders named with a space, which
     # the table escapes, and with a non-ASCII letter.
-    mounts.write_text(REAL_MOUNTS + '//nas/a /mnt/My\\040Music cifs rw 0 0\n'
-                                    '//nas/b /mnt/Música cifs rw 0 0\n', encoding='utf-8')
+    mounts(REAL_MOUNTS + '//nas/a /mnt/My\\040Music cifs rw 0 0\n'
+                         '//nas/b /mnt/Música cifs rw 0 0\n')
     assert sorted(get_network_mounts()) == ['/mnt/My Music', '/mnt/Música', '/nas/music', '/run/user/1000/gvfs']
 
 
@@ -67,9 +77,9 @@ def test_mount_table_read_again_after_10_seconds(mounts, monkeypatch):
     # Also when it lists no network mount.
     clock = [1000.0]
     monkeypatch.setattr(dirview.time, 'monotonic', lambda: clock[0])
-    mounts.write_text(REAL_MOUNTS.splitlines(keepends=True)[0])
+    table = mounts(REAL_MOUNTS.splitlines(keepends=True)[0])
     assert get_network_mounts() == []
-    mounts.write_text(REAL_MOUNTS)
+    table.write_text(REAL_MOUNTS)
     clock[0] += 9
     assert get_network_mounts() == []
     clock[0] += 2
