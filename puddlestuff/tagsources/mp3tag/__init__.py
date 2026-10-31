@@ -436,9 +436,9 @@ class Mp3TagSource(object):
             info = deepcopy(info)
             text = info['#url']
 
-        try:
-            url = self.album_url % text
-        except TypeError:
+        if '%s' in self.album_url:
+            url = self.album_url.replace('%s', text)
+        else:
             url = self.album_url + text
 
         info['#url'] = url
@@ -454,10 +454,13 @@ class Mp3TagSource(object):
 
         if self._get_cover and COVER in info:
             cover_url = new_info[COVER]
-            if isinstance(cover_url, str):
-                info.update(retrieve_cover(cover_url))
-            else:
-                info.update(list(map(retrieve_cover, cover_url)))
+            try:
+                if isinstance(cover_url, str):
+                    info.update(retrieve_cover(cover_url))
+                else:
+                    info.update(list(map(retrieve_cover, cover_url)))
+            except RetrievalError as e:
+                write_log(translate('Mp3tag', "Couldn't retrieve the cover: {}").format(e))
         if not tracks:
             tracks = None
         return info, tracks

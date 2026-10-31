@@ -670,8 +670,6 @@ def test_search_sends_puddletags_user_agent(folder, server, keys):
     assert server.requests[0].headers['User-Agent'] == DEFAULT_USERAGENT
 
 
-@pytest.mark.xfail(strict=True, raises=ValueError,
-                   reason='a % sign in [AlbumUrl] is read as a Python format')
 def test_percent_sign_in_album_url_is_kept(folder, server):
     # Mp3tag's reference: [AlbumUrl] "will be appended" to the result's
     # address.
@@ -696,8 +694,6 @@ def test_percent_s_in_album_url_is_replaced_by_the_result_url(folder, server):
     assert requested(server) == [('/album/u1/tracks', '')]
 
 
-@pytest.mark.xfail(strict=True, raises=RetrievalError,
-                   reason="a cover that can't be downloaded fails the whole album")
 def test_cover_that_cannot_be_downloaded_leaves_the_album(folder, server, monkeypatch):
     # Docs-silent: the album still arrives, without its cover; the error
     # goes to the Tag Sources window's log.
