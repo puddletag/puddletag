@@ -140,8 +140,6 @@ def numbered_disc_id(tmp_path):
     return freedb.calculate_discid(known_disc(tmp_path / 'numbered'))
 
 
-@pytest.mark.xfail(strict=True, reason='the disc id starts its offsets at 0, without the 2-second '
-                                       'lead-in, and rounds each track to whole seconds')
 def test_disc_id_of_a_known_disc(tmp_path):
     # tagsources.txt:102: "FreeDB creates a (semi-)unique DiscID by using the
     # number of tracks, their order and lengths of a particular CD."
@@ -159,8 +157,6 @@ def test_disc_id_follows_the_track_numbers(tmp_path):
             == freedb.calculate_discid(known_disc(tmp_path / 'ordered')))
 
 
-@pytest.mark.xfail(strict=True, reason='track numbers like 2/22 sort as text, and mixed with plain '
-                                       'numbers raise TypeError')
 @pytest.mark.parametrize('tracks', [
     pytest.param([f'{n}/22' for n in range(1, 23)], id='n-of-m'),
     pytest.param([str(n) if n % 2 else f'{n}/22' for n in range(1, 23)], id='mixed'),

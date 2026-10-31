@@ -20,29 +20,38 @@ def sumdigits(n): return sum(map(int, str(n)))
 def sort_func(key, default):
 
     def func(audio):
-        track = to_string(audio.get(key, [default]))
+        # "2/12" is track 2; what isn't a number sorts after the numbers.
+        track = to_string(audio.get(key, [default])).split('/')[0]
         try:
-            return int(track)
-        except:
-            return track
+            return 0, int(track), ''
+        except ValueError:
+            return 1, 0, track
 
     return func
 
 
+def frame_count(audio):
+    """The track's length in CD frames (75 a second)."""
+    mut_obj = getattr(audio, 'mut_obj', None)
+    if mut_obj is not None:
+        return round(mut_obj.info.length * 75)
+    return audioinfo.lnglength(to_string(audio['__length'])) * 75
+
+
 def calculate_discid(album):
     # from quodlibet's cddb plugin by Michael Urman
+    # The CDDB algorithm: the first track starts 150 frames in.
     album = sorted(album, key=sort_func('__filename', ''))
     album = sorted(album, key=sort_func('track', '1'))
-    lengths = [audioinfo.lnglength(to_string(song['__length']))
-               for song in album]
-    total_time = 0
     offsets = []
-    for length in lengths:
-        offsets.append(total_time)
-        total_time += length
-    checksum = sum(map(sumdigits, offsets))
+    leadout = 150
+    for song in album:
+        offsets.append(leadout)
+        leadout += frame_count(song)
+    checksum = sum(sumdigits(o // 75) for o in offsets)
+    total_time = leadout // 75 - offsets[0] // 75
     discid = ((checksum % 0xff) << 24) | (total_time << 8) | len(album)
-    return [discid, len(album)] + [75 * o for o in offsets] + [total_time]
+    return [discid, len(album)] + offsets + [leadout // 75]
 
 
 def convert_info(info):
