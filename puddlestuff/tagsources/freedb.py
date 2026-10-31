@@ -96,28 +96,31 @@ def decode_str(s):
     return s if isinstance(s, str) else s.decode('utf8', 'replace')
 
 
-def query(category, discid, xcode='utf8:utf8'):
+def query(category, discid):
     # from quodlibet's cddb plugin by Michael Urman
     discinfo = {}
     tracktitles = {}
 
     read, info = CDDB.read(category, discid, **CLIENTINFO)
-    if read != 210: return None
+    if read != 210:
+        message = translate(
+            "FreeDB", "Couldn't read {} {}: the server answered {}.").format(
+            category, discid, read)
+        if isinstance(info, list):
+            message = ' '.join([message] + info)
+        raise RetrievalError(message, read)
 
-    xf, xt = xcode.split(':')
     for key, value in info.items():
-        try:
-            value = value.decode('utf-8', 'replace').strip().encode(
-                xf, 'replace').decode(xt, 'replace')
-        except AttributeError:
-            pass
+        if isinstance(value, str):
+            value = value.strip()
         if key.startswith('TTITLE'):
             try:
                 tracktitles[int(key[6:])] = value
             except ValueError:
                 pass
         elif key == 'DGENRE':
-            discinfo['genre'] = value
+            if value:
+                discinfo['genre'] = value
         elif key == 'DTITLE':
             dtitle = value.strip().split(' / ', 1)
             if len(dtitle) == 2:
@@ -125,7 +128,8 @@ def query(category, discid, xcode='utf8:utf8'):
             else:
                 discinfo['title'] = dtitle[0].strip()
         elif key == 'DYEAR':
-            discinfo['year'] = value
+            if value:
+                discinfo['year'] = value
 
     return discinfo, tracktitles
 
@@ -133,8 +137,13 @@ def query(category, discid, xcode='utf8:utf8'):
 def retrieve(category, discid):
     try:
         info, tracks = query(category, discid)
+    except RetrievalError:
+        raise
     except EnvironmentError as e:
-        raise RetrievalError(e.strerror)
+        raise RetrievalError(str(e))
+    except ValueError:
+        raise RetrievalError(translate(
+            "FreeDB", "The server's reply isn't a CDDB reply."))
     if 'disc_id' not in info:
         info['disc_id'] = discid
     if 'category' not in info:
@@ -160,9 +169,14 @@ def search(tracklist):
 def search_by_id(discid):
     try:
         stat, discs = CDDB.query(discid, **CLIENTINFO)
+    except RetrievalError:
+        raise
     except EnvironmentError as e:
-        raise RetrievalError(e.strerror)
-    if stat not in [200, 211]:
+        raise RetrievalError(str(e))
+    except ValueError:
+        raise RetrievalError(translate(
+            "FreeDB", "The server's reply isn't a CDDB reply."))
+    if stat not in [200, 210, 211]:
         return []
     if discs:
         if hasattr(discs, 'items'):

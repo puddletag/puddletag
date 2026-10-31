@@ -181,7 +181,6 @@ def test_disc_id_without_track_numbers_keeps_filename_order(tmp_path):
 # Albums, fields and errors ---------------------------------------------------
 
 ALBUM = 'Some Artist / Some Album'
-EXACT_MATCH_DROPPED = pytest.mark.xfail(strict=True, reason='an exact match (210) is dropped')
 
 
 def hit(category, disc_id, artist='Some Artist', album='Some Album'):
@@ -201,11 +200,11 @@ def album_info(**fields):
     pytest.param(reply(f'200 rock {DISC_ID} {ALBUM}'), [hit('rock', DISC_ID)], id='exact'),
     pytest.param(reply("210 Found exact matches, list follows (until terminating `.')",
                        f'data {DISC_ID} {ALBUM}', '.'),
-                 [hit('data', DISC_ID)], id='exact-list-one', marks=EXACT_MATCH_DROPPED),
+                 [hit('data', DISC_ID)], id='exact-list-one'),
     pytest.param(reply("210 Found exact matches, list follows (until terminating `.')",
                        f'data {DISC_ID} {ALBUM}', f'data 0c025604 {ALBUM} (Remastered)', '.'),
                  [hit('data', DISC_ID), hit('data', '0c025604', album='Some Album (Remastered)')],
-                 id='exact-list', marks=EXACT_MATCH_DROPPED),
+                 id='exact-list'),
     pytest.param(reply("211 Found inexact matches, list follows (until terminating `.')",
                        'misc 0c0256ff Other Artist / Other Album', f'rock {DISC_ID} {ALBUM}', '.'),
                  [hit('misc', '0c0256ff', artist='Other Artist', album='Other Album'),
@@ -285,7 +284,6 @@ def test_tracks_in_number_order(gnudb):
                       {'title': 'Three', 'track': '3'}]
 
 
-@pytest.mark.xfail(strict=True, reason='an empty year or genre comes back as an empty value')
 def test_album_without_year_or_genre(gnudb):
     # tagsources.txt: year is "Not available for every album." DBFORMAT
     # leaves DYEAR and DGENRE empty when the submitter gave none.
@@ -294,7 +292,6 @@ def test_album_without_year_or_genre(gnudb):
     assert freedb.retrieve('data', DISC_ID) == (album_info(), [{'title': 'One', 'track': '1'}])
 
 
-@pytest.mark.xfail(strict=True, reason='the values keep their surrounding spaces')
 def test_values_are_stripped(gnudb):
     # Synthetic: spaces around a title carry no meaning in a tag.
     answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'TTITLE0=  One  '))
@@ -316,7 +313,6 @@ def test_values_are_stripped(gnudb):
                  'from this address today. Please try again tomorrow.',
                  id='refused'),
 ])
-@pytest.mark.xfail(strict=True, raises=TypeError, reason='a failed read raises TypeError')
 def test_failed_read(gnudb, body, message):
     # A read the server refuses ends in an error that says why, not in a
     # crash.
@@ -329,7 +325,6 @@ def test_failed_read(gnudb, body, message):
     assert excinfo.value.code == int(body[:3])
 
 
-@pytest.mark.xfail(strict=True, reason="an HTTP error's text is lost")
 def test_http_error(gnudb):
     gnudb.add(CGI, '', status=500, content_type='text/plain')
 
@@ -344,7 +339,6 @@ def test_http_error(gnudb):
     pytest.param(lambda: freedb.retrieve('data', DISC_ID), id='retrieve'),
 ])
 @pytest.mark.parametrize('body', ['', 'garbage\r\n'])
-@pytest.mark.xfail(strict=True, raises=ValueError, reason='an unreadable reply raises ValueError')
 def test_unreadable_reply(gnudb, call, body):
     # A reply that isn't CDDB's (no status line) is reported, not a crash.
     answer_queries(gnudb, body)

@@ -1209,7 +1209,6 @@ def not_found(disc_id):
     return gnudb_reply(f'401 data {disc_id} No such CD entry in database.')
 
 
-@pytest.mark.xfail(strict=True, reason='an exact match (210) is dropped')
 def test_freedb_exact_match_is_listed(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "The DiscID is then referenced to the FreeDB database
     # and any matching albums are returned."
@@ -1224,7 +1223,6 @@ def test_freedb_exact_match_is_listed(gnudb, mainwin, make_audio, tmp_path, qtbo
     assert albums(window) == ['Synth Artist - Synth Album[3]']
 
 
-@pytest.mark.xfail(strict=True, reason='a failed read is an unhandled error')
 def test_freedb_failed_read_during_search_shows_the_servers_answer(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # CDDBPROTO: "401 Specified CDDB entry not found." The window reports
     # the answer instead of crashing.
@@ -1237,7 +1235,6 @@ def test_freedb_failed_read_during_search_shows_the_servers_answer(gnudb, mainwi
     assert albums(window) == []
 
 
-@pytest.mark.xfail(strict=True, reason='a failed read is an unhandled error')
 def test_freedb_failed_read_of_a_picked_album_shows_the_servers_answer(gnudb, mainwin, make_audio, tmp_path, qtbot,
                                                                        user):
     answer_freedb(gnudb, TWO_HITS, [('0a0b0c03', SYNTH_ALBUM), ('0a0b0c99', not_found('0a0b0c99'))])
@@ -1250,7 +1247,6 @@ def test_freedb_failed_read_of_a_picked_album_shows_the_servers_answer(gnudb, ma
     assert window.label.text() == "An error occured: Couldn't read data 0a0b0c99: the server answered 401."
 
 
-@pytest.mark.xfail(strict=True, reason="an HTTP error's text is lost")
 def test_freedb_http_error(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     gnudb.add(CGI, '', status=500, content_type='text/plain')
     window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
@@ -1260,7 +1256,6 @@ def test_freedb_http_error(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     assert window.label.text() == 'An error occured: HTTP Error 500: Internal Server Error'
 
 
-@pytest.mark.xfail(strict=True, reason='an unreadable reply is an unhandled error')
 def test_freedb_unreadable_reply(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     answer_freedb(gnudb, '')
     window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
