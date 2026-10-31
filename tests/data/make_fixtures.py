@@ -1,9 +1,9 @@
-"""Rebuild the public-domain fixtures in this directory from their sources.
+"""Rebuild the fixtures in this directory from their sources.
 
 Each source is downloaded, checked against the hash its site publishes, and
-cut down to its tags, byte for byte, plus the start of its audio. README.md
-lists the sources and their licenses. Needs network access; the tests never
-run it.
+audio files are cut down to their tags, byte for byte, plus the start of the
+audio; other files are kept whole. README.md lists the sources and their
+licenses. Needs network access; the tests never run it.
 
     venv/bin/python tests/data/make_fixtures.py
 """
@@ -33,6 +33,15 @@ SOURCES = [
      'https://upload.wikimedia.org/wikipedia/commons/3/3a/'
      '1906_-_Scott_Joplin%27s_Maple_Leaf_Rag_%281899%29_played_by_the_United_States_Marine_Band.ogg',
      'sha1', 'b76a36d2811a6aede6b3fe3c58c314ba501c4716'),
+    # 'git-blob' is the hash GitHub publishes for a file.
+    ('mp3tag/iTunes#Spain.src',
+     'https://raw.githubusercontent.com/jonaaa20/itunes-web-sources/'
+     '598812c26e88924e8bf3c72fe57d7ddd9b196f76/v0.2/iTunes%23Spain.src',
+     'git-blob', '69d56cd7fe2b94d4958bc82ce6ae419fb937acd2'),
+    ('mp3tag/LICENSE',
+     'https://raw.githubusercontent.com/jonaaa20/itunes-web-sources/'
+     '598812c26e88924e8bf3c72fe57d7ddd9b196f76/LICENSE',
+     'git-blob', '261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64'),
 ]
 
 
@@ -84,15 +93,23 @@ def trim_m4a(data):
 TRIM = {'.m4a': trim_m4a, '.mp3': trim_mp3, '.ogg': trim_ogg, '.flac': trim_flac}
 
 
+def digest(algorithm, data):
+    if algorithm == 'git-blob':
+        return hashlib.sha1(b'blob %d\0' % len(data) + data).hexdigest()
+    return hashlib.new(algorithm, data).hexdigest()
+
+
 def main():
     for name, url, algorithm, published in SOURCES:
         request = urllib.request.Request(
             url, headers={'User-Agent': 'puddletag-tests (https://github.com/puddletag/puddletag)'})
         with urllib.request.urlopen(request) as response:
             data = response.read()
-        if hashlib.new(algorithm, data).hexdigest() != published:
+        if digest(algorithm, data) != published:
             sys.exit(f'{url}: its {algorithm} differs from the published one')
-        fixture = TRIM[Path(name).suffix](data)
+        trim = TRIM.get(Path(name).suffix)
+        fixture = trim(data) if trim else data
+        (HERE / name).parent.mkdir(exist_ok=True)
         (HERE / name).write_bytes(fixture)
         print(f'{name}: {len(data)} -> {len(fixture)} bytes')
 

@@ -71,3 +71,15 @@ License: MusicBrainz releases its core data under
 artwork flags and the relationships puddletag doesn't read (to URLs and
 works). Where a test needs a rating or a score, it adds a synthetic
 one.
+
+# Mp3tag web source script
+
+`mp3tag/iTunes#Spain.src` is jonaaa20's iTunes web source for Mp3tag,
+version 0.2 ("Update 14 Release 3", by pone, JonaaaBR and amine), byte for
+byte (CR LF line endings) from
+[github.com/jonaaa20/itunes-web-sources](https://github.com/jonaaa20/itunes-web-sources/blob/598812c26e88924e8bf3c72fe57d7ddd9b196f76/v0.2/iTunes%23Spain.src);
+`make_fixtures.py` downloads it and checks it against GitHub's hash. It is
+under the Apache License 2.0: `mp3tag/LICENSE` is that repository's license.
+`tests/unit/test_mp3tag_sources.py` installs a copy with its iTunes address
+replaced by the local web server's and serves it synthetic answers in the
+iTunes Search API's layout; nothing from iTunes is recorded.
