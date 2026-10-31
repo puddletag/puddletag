@@ -176,3 +176,200 @@ def test_disc_id_without_track_numbers_keeps_filename_order(tmp_path):
     # in filename order.
     files = known_disc(tmp_path / 'unnumbered', tracks=[None] * 22)
     assert freedb.calculate_discid(files) == numbered_disc_id(tmp_path)
+
+
+# Albums, fields and errors ---------------------------------------------------
+
+ALBUM = 'Some Artist / Some Album'
+EXACT_MATCH_DROPPED = pytest.mark.xfail(strict=True, reason='an exact match (210) is dropped')
+
+
+def hit(category, disc_id, artist='Some Artist', album='Some Album'):
+    """What search_by_id returns for one album of a query's reply."""
+    return ({'#category': category, '#discid': disc_id, 'album': album, 'artist': artist,
+             'freedb_category': category, 'freedb_disc_id': disc_id}, [])
+
+
+def album_info(**fields):
+    """What retrieve returns as the album's fields: those the tests share and
+    ``fields``."""
+    return {'#category': 'data', '#discid': DISC_ID, 'album': 'Some Album', 'artist': 'Some Artist',
+            'freedb_category': 'data', 'freedb_disc_id': DISC_ID, **fields}
+
+
+@pytest.mark.parametrize(('body', 'expected'), [
+    pytest.param(reply(f'200 rock {DISC_ID} {ALBUM}'), [hit('rock', DISC_ID)], id='exact'),
+    pytest.param(reply("210 Found exact matches, list follows (until terminating `.')",
+                       f'data {DISC_ID} {ALBUM}', '.'),
+                 [hit('data', DISC_ID)], id='exact-list-one', marks=EXACT_MATCH_DROPPED),
+    pytest.param(reply("210 Found exact matches, list follows (until terminating `.')",
+                       f'data {DISC_ID} {ALBUM}', f'data 0c025604 {ALBUM} (Remastered)', '.'),
+                 [hit('data', DISC_ID), hit('data', '0c025604', album='Some Album (Remastered)')],
+                 id='exact-list', marks=EXACT_MATCH_DROPPED),
+    pytest.param(reply("211 Found inexact matches, list follows (until terminating `.')",
+                       'misc 0c0256ff Other Artist / Other Album', f'rock {DISC_ID} {ALBUM}', '.'),
+                 [hit('misc', '0c0256ff', artist='Other Artist', album='Other Album'),
+                  hit('rock', DISC_ID)],
+                 id='inexact'),
+    pytest.param(reply(f'202 No match for disc ID {DISC_ID}.'), [], id='none'),
+])
+def test_query_statuses(gnudb, body, expected):
+    # tagsources.txt: "The DiscID is then referenced to the FreeDB database
+    # and any matching albums are returned." CDDBPROTO's status lines: "200
+    # Found exact match", "210 Found exact matches, list follows (until
+    # terminating marker)", "211 Found inexact matches, list follows (until
+    # terminating marker)", "202 No match found".
+    answer_queries(gnudb, body)
+
+    assert freedb.search_by_id(TRACK_INFO) == expected
+
+
+def test_retrieve_returns_the_docs_fields(gnudb):
+    # tagsources.txt lists album, artist, freedb_disc_id, freedb_category,
+    # genre, title, track and year. The # keys are the window's own and are
+    # never written.
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'DYEAR=1999', 'DGENRE=Synthpop', 'TTITLE0=One',
+                             'TTITLE1=Two', 'TTITLE2=Three', 'EXTD=', 'PLAYORDER='))
+
+    assert freedb.retrieve('data', DISC_ID) == (
+        album_info(genre='Synthpop', year='1999'),
+        [{'title': 'One', 'track': '1'}, {'title': 'Two', 'track': '2'},
+         {'title': 'Three', 'track': '3'}])
+
+
+def test_track_with_its_own_artist(gnudb):
+    # tagsources.txt: "artist: The track's artist." DBFORMAT's TTITLEn
+    # holds "artist / title" on a various-artists disc.
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'TTITLE0=One', 'TTITLE1=Guest / Two', 'TTITLE2=Three'))
+
+    _, tracks = freedb.retrieve('data', DISC_ID)
+
+    assert tracks == [{'title': 'One', 'track': '1'},
+                      {'artist': 'Guest', 'title': 'Two', 'track': '2'},
+                      {'title': 'Three', 'track': '3'}]
+
+
+@pytest.mark.parametrize(('dtitle', 'fields'), [
+    pytest.param('Some Album', {'album': 'Some Album'}, id='album-only'),
+    pytest.param(f'{ALBUM} / Part One', {'album': 'Some Album / Part One', 'artist': 'Some Artist'},
+                 id='split-on-the-first'),
+])
+def test_title_without_an_artist(gnudb, dtitle, fields):
+    # DBFORMAT: DTITLE is "artist / title" and says no more about a title
+    # without the separator.
+    answer_read(gnudb, entry(f'DTITLE={dtitle}', 'TTITLE0=One'))
+
+    info, _ = freedb.retrieve('data', DISC_ID)
+
+    assert {key: info[key] for key in ('album', 'artist') if key in info} == fields
+
+
+def test_non_ascii_text(gnudb):
+    # DBFORMAT allows UTF-8 text at protocol level 6. The text is synthetic.
+    answer_read(gnudb, entry('DTITLE=Sÿnth Ärtist / Ålbum', 'TTITLE0=Öne', 'TTITLE1=Thrée'))
+
+    info, tracks = freedb.retrieve('data', DISC_ID)
+
+    assert (info['artist'], info['album']) == ('Sÿnth Ärtist', 'Ålbum')
+    assert [track['title'] for track in tracks] == ['Öne', 'Thrée']
+
+
+def test_tracks_in_number_order(gnudb):
+    # DBFORMAT: "TTITLEn" is the title of track n + 1, wherever it stands in
+    # the entry.
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'TTITLE0=One', 'TTITLE2=Three', 'TTITLE1=Two'))
+
+    _, tracks = freedb.retrieve('data', DISC_ID)
+
+    assert tracks == [{'title': 'One', 'track': '1'}, {'title': 'Two', 'track': '2'},
+                      {'title': 'Three', 'track': '3'}]
+
+
+@pytest.mark.xfail(strict=True, reason='an empty year or genre comes back as an empty value')
+def test_album_without_year_or_genre(gnudb):
+    # tagsources.txt: year is "Not available for every album." DBFORMAT
+    # leaves DYEAR and DGENRE empty when the submitter gave none.
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'DYEAR=', 'DGENRE=', 'TTITLE0=One'))
+
+    assert freedb.retrieve('data', DISC_ID) == (album_info(), [{'title': 'One', 'track': '1'}])
+
+
+@pytest.mark.xfail(strict=True, reason='the values keep their surrounding spaces')
+def test_values_are_stripped(gnudb):
+    # Synthetic: spaces around a title carry no meaning in a tag.
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'TTITLE0=  One  '))
+
+    _, tracks = freedb.retrieve('data', DISC_ID)
+
+    assert tracks == [{'title': 'One', 'track': '1'}]
+
+
+@pytest.mark.parametrize(('body', 'message'), [
+    # CDDBPROTO: "401 Specified CDDB entry not found."
+    pytest.param(reply(f'401 data {DISC_ID} No such CD entry in database.'),
+                 f"Couldn't read data {DISC_ID}: the server answered 401.", id='not-found'),
+    # 417 isn't one of read's codes: its explanation runs up to the ".".
+    pytest.param(reply("417 Access limit exceeded, explanation follows (until terminating `.')",
+                       'Too many requests from this address today.',
+                       'Please try again tomorrow.', '.'),
+                 f"Couldn't read data {DISC_ID}: the server answered 417. Too many requests "
+                 'from this address today. Please try again tomorrow.',
+                 id='refused'),
+])
+@pytest.mark.xfail(strict=True, raises=TypeError, reason='a failed read raises TypeError')
+def test_failed_read(gnudb, body, message):
+    # A read the server refuses ends in an error that says why, not in a
+    # crash.
+    answer_read(gnudb, body)
+
+    with pytest.raises(RetrievalError) as excinfo:
+        freedb.retrieve('data', DISC_ID)
+
+    assert str(excinfo.value) == message
+    assert excinfo.value.code == int(body[:3])
+
+
+@pytest.mark.xfail(strict=True, reason="an HTTP error's text is lost")
+def test_http_error(gnudb):
+    gnudb.add(CGI, '', status=500, content_type='text/plain')
+
+    with pytest.raises(RetrievalError) as excinfo:
+        freedb.search_by_id(TRACK_INFO)
+
+    assert str(excinfo.value) == 'HTTP Error 500: Internal Server Error'
+
+
+@pytest.mark.parametrize('call', [
+    pytest.param(lambda: freedb.search_by_id(TRACK_INFO), id='search'),
+    pytest.param(lambda: freedb.retrieve('data', DISC_ID), id='retrieve'),
+])
+@pytest.mark.parametrize('body', ['', 'garbage\r\n'])
+@pytest.mark.xfail(strict=True, raises=ValueError, reason='an unreadable reply raises ValueError')
+def test_unreadable_reply(gnudb, call, body):
+    # A reply that isn't CDDB's (no status line) is reported, not a crash.
+    answer_queries(gnudb, body)
+
+    with pytest.raises(RetrievalError) as excinfo:
+        call()
+
+    assert str(excinfo.value) == "The server's reply isn't a CDDB reply."
+
+
+def test_search_reads_the_first_album_only(gnudb, make_audio, tmp_path):
+    answer_queries(gnudb, reply("211 Found inexact matches, list follows (until terminating `.')",
+                                f'data {DISC_ID} {ALBUM}', 'data 0c025699 Other / Second', '.'))
+    answer_read(gnudb, entry(f'DTITLE={ALBUM}', 'DYEAR=1999', 'DGENRE=Synthpop', 'TTITLE0=One'))
+
+    result = freedb.FreeDB().search('Old', one_second_files(make_audio, tmp_path))
+
+    assert result == [(album_info(genre='Synthpop', year='1999'), [{'title': 'One', 'track': '1'}]),
+                      hit('data', '0c025699', artist='Other', album='Second')]
+    commands = [request.query['cmd'][0] for request in gnudb.requests]
+    assert len(commands) == 2
+    assert commands[0].startswith('cddb query ')
+    assert commands[1] == f'cddb read data {DISC_ID}'
+
+
+def test_search_without_files(gnudb):
+    assert freedb.FreeDB().search('Old', []) == []
+    assert gnudb.requests == []
