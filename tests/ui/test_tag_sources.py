@@ -18,7 +18,7 @@ from puddlestuff import audioinfo, tagsources
 from puddlestuff.constants import CONFIGDIR, PLUGINDIR
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.puddlesettings import SettingsDialog
-from puddlestuff.tagsources import RetrievalError, write_log
+from puddlestuff.tagsources import CDDB, RetrievalError, freedb, write_log
 
 pytestmark = pytest.mark.ui
 
@@ -1072,3 +1072,127 @@ def test_mp3tag_script_that_fails_to_load_is_named_in_the_window(broken_mp3tag_s
     qtbot.waitUntil(window.isVisible)
     assert window.label.text() == ("Couldn't load Mp3tag script Synthetic Include.src: "
                                    "[Include] is not supported (Synthetic Web.inc)")
+
+
+# FreeDB ---------------------------------------------------------------------
+# The FreeDB source asks a local server standing in for gnudb's CGI; every
+# reply is synthetic, in gnudb's shape.
+
+CGI = '/~cddb/cddb.cgi'
+FREEDB_FILES = [{'album': 'Old', 'artist': 'Old', 'title': f'Old {n}', 'track': str(n),
+                 'year': '2001'} for n in (1, 2, 3)]
+
+
+class StillClock:
+    """The time module as freedb sees it: it moves only when the source
+    waits, so its waits take no time."""
+
+    def __init__(self):
+        self.now = 1_000_000.0
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+    time = monotonic
+
+
+@pytest.fixture
+def gnudb(monkeypatch, web_server):
+    """Listed before mainwin in a test's arguments: the window builds its
+    FreeDB source, which reads the clock, when mainwin is built."""
+    monkeypatch.setattr(freedb, 'time', StillClock())
+    monkeypatch.setattr(freedb, '_last_request', None, raising=False)
+    monkeypatch.setattr(CDDB, 'proto', 6)
+    monkeypatch.setattr(CDDB, 'default_server', web_server.url + CGI)
+    return web_server
+
+
+def gnudb_reply(*lines):
+    return ''.join(line + '\r\n' for line in lines)
+
+
+TWO_HITS = gnudb_reply("211 Found inexact matches, list follows (until terminating `.')",
+                       'data 0a0b0c03 Synth Artist / Synth Album', 'data 0a0b0c99 Other / Second', '.')
+SYNTH_ALBUM = gnudb_reply("210 data 0a0b0c03 CD database entry follows (until terminating `.')",
+                          '# xmcd', 'DISCID=0a0b0c03', 'DTITLE=Synth Artist / Synth Album',
+                          'DYEAR=1999', 'DGENRE=Synthpop', 'TTITLE0=Öne', 'TTITLE1=Two',
+                          'TTITLE2=Guest / Thrée', '.')
+
+
+def answer_freedb(gnudb, query, reads=()):
+    """Every query gets ``query``, whatever disc id the files give; each
+    (disc id, body) in ``reads`` answers that disc's read."""
+    gnudb.add(CGI, query, content_type='text/plain')
+    for disc_id, body in reads:
+        gnudb.add(CGI, body, content_type='text/plain', query={'cmd': f'cddb read data {disc_id}'})
+
+
+def load_freedb(mainwin, make_audio, tmp_path, qtbot, user):
+    """Loads three one-second FLAC files of one album, opens the Tag Sources
+    window from the Windows menu, picks FreeDB and selects every file."""
+    music = tmp_path / 'music'
+    paths = [make_audio(f'0{n}.flac', music, **t) for n, t in enumerate(FREEDB_FILES, 1)]
+    mainwin.openDir(str(music), False)
+    qtbot.waitUntil(lambda: mainwin._table.model().rowCount() == len(paths))
+    user.click_menu('Tag Sources')
+    window = tag_sources_window()
+    qtbot.waitUntil(window.isVisible)
+    pick(user, qtbot, window.sourcelist, 'FreeDB')
+    user.activate()
+    user.click_cell(user.cell(0, 'title'))
+    user.press(Key.Key_A, Ctrl)
+    return window, paths
+
+
+def search_until(user, qtbot, window, label):
+    """Clicks Search and waits for the search to end with ``label``."""
+    user.click(window.searchButton)
+    qtbot.waitUntil(lambda: window.searchButton.isEnabled() and window.label.text() == label)
+
+
+def test_freedb_search_and_write(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "So all you need to do in order to do a FreeDB lookup
+    # is select all the files belonging to specific album and click on
+    # Search." The fields it lists: album, artist, freedb_category,
+    # freedb_disc_id, genre, title, track and year. The replies and files
+    # are synthetic.
+    answer_freedb(gnudb, TWO_HITS, [('0a0b0c03', SYNTH_ALBUM)])
+    window, paths = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
+
+    search_until(user, qtbot, window, 'Searching complete.')
+
+    assert albums(window) == ['Other - Second', 'Synth Artist - Synth Album[3]']
+    click_album(user, window, 'Synth Album')
+    qtbot.waitUntil(lambda: all(previews(mainwin)))
+    user.click(button(window, '&Write'))
+    qtbot.waitUntil(lambda: in_file(paths[2])['title'] == ['Thrée'])
+    album = {'album': ['Synth Album'], 'freedb_category': ['data'], 'freedb_disc_id': ['0a0b0c03'],
+             'genre': ['Synthpop'], 'year': ['1999']}
+    assert [in_file(path) for path in paths] == [
+        {**album, 'artist': ['Synth Artist'], 'title': ['Öne'], 'track': ['1']},
+        {**album, 'artist': ['Synth Artist'], 'title': ['Two'], 'track': ['2']},
+        {**album, 'artist': ['Guest'], 'title': ['Thrée'], 'track': ['3']}]
+    assert [r.query['cmd'][0].split()[:2] for r in gnudb.requests] == [['cddb', 'query'], ['cddb', 'read']]
+
+
+def test_freedb_no_match(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
+    # CDDBPROTO: "202 No match found". The reply is synthetic.
+    answer_freedb(gnudb, gnudb_reply('202 No match for disc ID 03000303.'))
+    window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
+
+    search_until(user, qtbot, window, 'No matching albums were found.')
+
+    assert albums(window) == []
+
+
+def test_freedb_has_no_text_search(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
+    # tut4.txt: "For all Tag Sources, but FreeDB you can also do textual
+    # searching."
+    window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
+
+    assert not window.searchEdit.isEnabled()
+    assert window.searchEdit.toolTip() == '<b>FreeDB does not support text-based searches.</b>'
+    assert gnudb.requests == []
