@@ -50,7 +50,7 @@ def clock(monkeypatch):
     fake = FakeClock()
     monkeypatch.setattr(freedb, 'time', fake)
     # When gnudb was last asked something: shared by every FreeDB source.
-    monkeypatch.setattr(freedb, '_last_request', None, raising=False)
+    monkeypatch.setattr(freedb, '_last_request', None)
     return fake
 
 
@@ -391,22 +391,17 @@ def searched_two_hits(gnudb, make_audio, tmp_path):
     return source, results
 
 
-@pytest.mark.xfail(strict=True, reason="the source waits a second before every request, the "
-                                       "first included")
 def test_first_request_does_not_wait(gnudb, clock, make_audio, tmp_path):
     answer_queries(gnudb, NO_MATCH)
     freedb.FreeDB().search('Old', one_second_files(make_audio, tmp_path))
     assert clock.sleeps == []
 
 
-@pytest.mark.xfail(strict=True, reason="the source waits a second before the query as well as "
-                                       "before the read")
 def test_requests_are_a_second_apart(gnudb, clock, make_audio, tmp_path):
     searched_two_hits(gnudb, make_audio, tmp_path)
     assert clock.sleeps == [1]
 
 
-@pytest.mark.xfail(strict=True, reason="the source waits a second before every request")
 def test_a_request_after_a_second_does_not_wait(gnudb, clock, make_audio, tmp_path):
     source, results = searched_two_hits(gnudb, make_audio, tmp_path)
     clock.advance(1)
@@ -414,7 +409,6 @@ def test_a_request_after_a_second_does_not_wait(gnudb, clock, make_audio, tmp_pa
     assert clock.sleeps == [1]
 
 
-@pytest.mark.xfail(strict=True, reason="the source waits a whole second before every request")
 def test_a_request_waits_only_the_rest_of_the_second(gnudb, clock, make_audio, tmp_path):
     source, results = searched_two_hits(gnudb, make_audio, tmp_path)
     clock.advance(0.25)
@@ -422,8 +416,6 @@ def test_a_request_waits_only_the_rest_of_the_second(gnudb, clock, make_audio, t
     assert clock.sleeps[-1] == pytest.approx(0.75)
 
 
-@pytest.mark.xfail(strict=True, reason="the source waits a second even for an album it has "
-                                       "already read")
 def test_a_cached_album_is_not_asked_again(gnudb, clock, make_audio, tmp_path):
     source, results = searched_two_hits(gnudb, make_audio, tmp_path)
     requests, sleeps = len(gnudb.requests), list(clock.sleeps)
@@ -432,8 +424,6 @@ def test_a_cached_album_is_not_asked_again(gnudb, clock, make_audio, tmp_path):
     assert clock.sleeps == sleeps
 
 
-@pytest.mark.xfail(strict=True, reason="every source waits a second on its own, whatever the "
-                                       "others asked")
 def test_sources_share_the_gap(gnudb, clock, make_audio, tmp_path):
     answer_queries(gnudb, NO_MATCH)
     files = one_second_files(make_audio, tmp_path)

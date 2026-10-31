@@ -1101,10 +1101,10 @@ class StillClock:
 
 @pytest.fixture
 def gnudb(monkeypatch, web_server):
-    """Listed before mainwin in a test's arguments: the window builds its
-    FreeDB source, which reads the clock, when mainwin is built."""
+    """The local server in place of gnudb's CGI, and a clock that makes the
+    FreeDB source's waits take no time."""
     monkeypatch.setattr(freedb, 'time', StillClock())
-    monkeypatch.setattr(freedb, '_last_request', None, raising=False)
+    monkeypatch.setattr(freedb, '_last_request', None)
     monkeypatch.setattr(CDDB, 'proto', 6)
     monkeypatch.setattr(CDDB, 'default_server', web_server.url + CGI)
     return web_server

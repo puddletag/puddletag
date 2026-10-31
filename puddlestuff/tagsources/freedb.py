@@ -196,6 +196,20 @@ def split_by_tag(tracks, main='artist', secondary='album'):
     return ret
 
 
+_last_request = None
+
+
+def _wait():
+    """Keeps the requests to the server a second apart: it refuses too many
+    at once."""
+    global _last_request
+    if _last_request is not None:
+        wait = _last_request + 1 - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+    _last_request = time.monotonic()
+
+
 class FreeDB(object):
     name = 'FreeDB'
     tooltip = translate("FreeDB",
@@ -205,14 +219,11 @@ class FreeDB(object):
     def __init__(self):
         object.__init__(self)
         self.__retrieved = {}
-        self.__lasttime = time.time()
 
     def search(self, album, files):
-        if time.time() - self.__lasttime < 1000:
-            time.sleep(1)
         if files:
+            _wait()
             results = search(files)
-            self.__lasttime = time.time()
             if results:
                 results[0] = self.retrieve(results[0][0])
             return results
@@ -220,24 +231,14 @@ class FreeDB(object):
             return []
 
     def retrieve(self, info):
-        if time.time() - self.__lasttime < 1000:
-            time.sleep(1)
         discid = info['#discid']
         if discid in self.__retrieved:
             return self.__retrieved[discid]
         else:
+            _wait()
             info, tracks = retrieve_from_info(info)
             self.__retrieved[info['#discid']] = [info, tracks]
             return info, tracks
 
 
 info = FreeDB
-
-if __name__ == '__main__':
-    # return [({'#discid': '0200d001', '#category': 'soundtrack', 'album': 'German'}, [])]
-    from .. import audioinfo
-    import glob
-
-    files = list(map(audioinfo.Tag,
-                     glob.glob("/mnt/multimedia/Music/Ratatat - Classics/*.mp3")))
-    print(search(files))
