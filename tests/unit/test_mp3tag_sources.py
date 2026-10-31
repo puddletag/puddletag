@@ -620,10 +620,8 @@ def test_search_by_with_several_search_fields_says_so(folder, server):
 #   url-utf-8, or ansi"
 # puddletag always uses UTF-8 for the words it puts in the address.
 @pytest.mark.parametrize('words, query', [
-    pytest.param('Simon & Garfunkel #1', 'q=Simon+%26+Garfunkel+%231', marks=pytest.mark.xfail(
-        strict=True, reason='the search words are put in the address without percent-encoding')),
-    pytest.param('Sigur Rós', 'q=Sigur+R%C3%B3s', marks=pytest.mark.xfail(
-        strict=True, reason='the search words are put in the address without percent-encoding')),
+    ('Simon & Garfunkel #1', 'q=Simon+%26+Garfunkel+%231'),
+    ('Sigur Rós', 'q=Sigur+R%C3%B3s'),
 ])
 def test_search_words_are_percent_encoded(folder, server, words, query):
     # Synthetic: an [Encoding] of url-utf-8 and words with characters

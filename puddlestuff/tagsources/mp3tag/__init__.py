@@ -1,6 +1,7 @@
 import os
 import re
 import traceback
+import urllib.parse
 from copy import deepcopy
 from html.entities import name2codepoint as n2cp
 
@@ -410,7 +411,7 @@ class Mp3TagSource(object):
         return ret
 
     def _search(self, keywords):
-        keywords = re.sub(r'\s+', self._separator, keywords)
+        keywords = self._separator.join(urllib.parse.quote(word, safe='') for word in keywords.split())
 
         if self.search_source is None:
             album = self.retrieve(keywords)
