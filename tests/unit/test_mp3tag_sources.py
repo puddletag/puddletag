@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 from puddlestuff.mainwin.tagsources import load_mp3tag_sources, tag_source_search
-from puddlestuff.tagsources import DEFAULT_USERAGENT, RetrievalError, discogs
+from puddlestuff.tagsources import DEFAULT_USERAGENT, RetrievalError, discogs, mp3tag
 from puddlestuff.util import split_by_field
 
 ALBUM_PARSER = 'outputto "album"\nsayrest\n'
@@ -668,3 +668,45 @@ def test_search_sends_puddletags_user_agent(folder, server, keys):
     source.keyword_search('First Light')
 
     assert server.requests[0].headers['User-Agent'] == DEFAULT_USERAGENT
+
+
+@pytest.mark.xfail(strict=True, raises=ValueError,
+                   reason='a % sign in [AlbumUrl] is read as a Python format')
+def test_percent_sign_in_album_url_is_kept(folder, server):
+    # Mp3tag's reference: [AlbumUrl] "will be appended" to the result's
+    # address.
+    server.add('/album', 'Synthetic album page')
+    header = local_header(server, AlbumUrl=f'{server.url}/album?term=a%20b&id=')
+    source = load_one(folder, script(header, index=INDEX_PARSER))
+
+    source.retrieve({'#url': 'u1'})
+
+    assert requested(server) == [('/album', 'term=a%20b&id=u1')]
+
+
+def test_percent_s_in_album_url_is_replaced_by_the_result_url(folder, server):
+    # Docs-silent: a %s in [AlbumUrl] is where the result's address goes,
+    # as in [IndexUrl].
+    server.add('/album/u1/tracks', 'Synthetic album page')
+    header = local_header(server, AlbumUrl=f'{server.url}/album/%s/tracks')
+    source = load_one(folder, script(header, index=INDEX_PARSER))
+
+    source.retrieve({'#url': 'u1'})
+
+    assert requested(server) == [('/album/u1/tracks', '')]
+
+
+@pytest.mark.xfail(strict=True, raises=RetrievalError,
+                   reason="a cover that can't be downloaded fails the whole album")
+def test_cover_that_cannot_be_downloaded_leaves_the_album(folder, server, monkeypatch):
+    # Docs-silent: the album still arrives, without its cover; the error
+    # goes to the Tag Sources window's log.
+    lines = []
+    monkeypatch.setattr(mp3tag, 'write_log', lines.append)
+    server.add('/cover.jpg', 'Synthetic error page', status=404)
+
+    info, tracks = retrieve_itunes_album(folder, server, covers=True)
+
+    assert info['album'] == 'First Light'
+    assert '__image' not in info
+    assert "Couldn't retrieve the cover: HTTP Error 404: Not Found" in lines
