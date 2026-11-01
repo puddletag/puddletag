@@ -60,7 +60,8 @@ TRACK_KEYS = {
 RELEASE_PROPERTIES_TO_IGNORE = [
     'status', 'resource_url', 'tracklist', 'thumb', 'formats', 'artists',
     'extraartists', 'images', 'videos', 'master_id', 'labels', 'companies',
-    'series', 'released_formatted', 'identifiers', 'sub_tracks']
+    'series', 'released_formatted', 'identifiers', 'sub_tracks',
+    'type_']
 
 __minimum_request_separation = 1  # second - no more than one request sent to discogs in this time frame
 __reference_time = 0  # A reference time. The initial value ensure first request goes ahead
@@ -92,43 +93,58 @@ def capture_dict_values(d):
     return ret
 
 
+def parse_track(t, title_prefix=''):
+    """The fields of one track of Discogs' tracklist."""
+    title = title_prefix + t['title']
+    people = []
+    featuring = []
+    for person in t.get('extraartists', {}):
+        name = person['name']
+        if person.get('join'):
+            title = title + ' ' + person.get('join') + ' ' + name
+        elif person.get('role', '') == 'Featuring':
+            featuring.append(name)
+        else:
+            people.append("%s:%s" % (person['name'], person['role']))
+
+    if featuring:
+        title = title + ' featuring ' + ', '.join(featuring)
+
+    info = convert_dict(t)
+    artist = []
+    a_len = len(t.get('artists', []))
+    for i, a in enumerate(t.get('artists', [])):
+        if a_len > 1 and a.get('join'):
+            space = '' if a['join'] == ',' else ' '
+            artist.append('%s%s%s ' % (a['name'], space, a['join']))
+        else:
+            if i < a_len - 1:
+                artist.append('%s & ' % a['name'])
+            else:
+                artist.append(a['name'])
+    info['artist'] = ''.join(artist).strip()
+    info['title'] = title
+
+    if people:
+        info['involvedpeople_track'] = ';'.join(people)
+
+    match = re.fullmatch(r'(\d+)-(\d+)', info.get('track', ''))
+    if match:
+        info['discnumber'], info['track'] = match.groups()
+    return capture_dict_values(info)
+
+
 def parse_tracklist(tlist):
     tracks = []
     for t in tlist:
-        if not t.get('duration') and not t.get('position'):
+        if t.get('type_') == 'heading' or (
+                'type_' not in t and not t.get('duration') and not t.get('position')):
             continue
-        title = t['title']
-        people = []
-        featuring = []
-        for person in t.get('extraartists', {}):
-            name = person['name']
-            if person.get('join'):
-                title = title + ' ' + person.get('join') + ' ' + name
-            elif person.get('role', '') == 'Featuring':
-                featuring.append(name)
-            else:
-                people.append("%s:%s" % (person['name'], person['role']))
-
-        if featuring:
-            title = title + ' featuring ' + ', '.join(featuring)
-
-        info = convert_dict(t)
-        artist = []
-        a_len = len(t.get('artists', []))
-        for i, a in enumerate(t.get('artists', [])):
-            if a_len > 1 and a.get('join'):
-                artist.append('%s %s ' % (a['name'], a['join']))
-            else:
-                if i < a_len - 1:
-                    artist.append('%s & ' % a['name'])
-                else:
-                    artist.append(a['name'])
-        info['artist'] = ''.join(artist).strip()
-        info['title'] = title
-
-        if people:
-            info['involvedpeople_track'] = ';'.join(people)
-        tracks.append(capture_dict_values(info))
+        if t.get('type_') == 'index' and t.get('sub_tracks'):
+            # The index is a title over its movements, which are the tracks.
+            tracks.extend(parse_track(sub, t['title'] + ': ') for sub in t['sub_tracks'])
+        else:
+            tracks.append(parse_track(t))
     return tracks
 
 
@@ -171,7 +187,11 @@ def parse_album_json(data):
              for z in data['images'] if 'uri' in z or 'uri150' in z]
         info['#cover-url'] = images
 
-    return info, parse_tracklist(data['tracklist'])
+    tracks = parse_tracklist(data['tracklist'])
+    discs = {t['discnumber'] for t in tracks if 'discnumber' in t}
+    if discs:
+        info['discs'] = str(len(discs))
+    return info, tracks
 
   
 def retrieve_album(info, image=LARGEIMAGE, rls_type=None):

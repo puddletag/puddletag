@@ -217,7 +217,6 @@ def test_track_credits(source):
 LEGENDS = 'Legends Op. 59 (B. 122, 1881)'
 
 
-@pytest.mark.xfail(strict=True, reason="Discogs' type_ (track, index) is returned as a field of every track")
 def test_tracks_have_no_type(source):
     """tagsources.txt lists the fields a track gets: "title", "artist",
     "track" and so on, with no ``type_``. The Tag Sources window writes
@@ -230,7 +229,6 @@ def test_tracks_have_no_type(source):
         assert 'type_' not in track
 
 
-@pytest.mark.xfail(strict=True, reason='the movements of an index track are dropped (#725)')
 def test_index_track_movements(source):
     """#725: "This release has 12 tracks, 10 of which are under an Index
     track ... it only shows the two non-indexed tracks and the index track,
@@ -243,7 +241,6 @@ def test_index_track_movements(source):
         ('9', '2:47'), ('10', '3:45'), ('11', '2:33'), ('12', '4:02')]
 
 
-@pytest.mark.xfail(strict=True, reason='the movements of an index track are dropped (#725)')
 def test_index_track_titles(source):
     """tagsources.txt: "**title**: The track's title. An index track's
     movements are tracks of their own, titled **work: movement**." (#725)"""
@@ -273,7 +270,6 @@ def test_headings_are_dropped(source, web_server):
     assert {'Disc 1', 'Disc 2'}.isdisjoint(t['title'] for t in tracks)
 
 
-@pytest.mark.xfail(strict=True, reason='a track with neither a position nor a duration is dropped as a heading')
 def test_track_without_position_or_duration_is_kept(source, web_server):
     """Synthetic: Discogs lists a hidden track with a title only; it is a
     track of the release, not a heading."""
@@ -300,7 +296,6 @@ def test_track_artists(source):
     assert all('artist' not in t for t in retrieve(source, NEVER_GONNA)[1])
 
 
-@pytest.mark.xfail(strict=True, reason="discnumber and discs aren't taken from 1-1 positions")
 def test_disc_numbers(source):
     """tagsources.txt: "**discnumber**: Disc number, from a track position
     like **2-5**.", "**discs**: Number of discs in the album.", "**track**:
@@ -348,7 +343,6 @@ def test_featuring_credit_goes_to_title(source, web_server):
     assert 'Fiuzz' not in track['involvedpeople_track']
 
 
-@pytest.mark.xfail(strict=True, reason="a ',' join is written with a space before it")
 def test_comma_join_has_no_space_before_it(source, web_server):
     """Synthetic: artists Discogs joins with a ',' are written "A, B"."""
     synthetic_credits(web_server)
