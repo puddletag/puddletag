@@ -1,0 +1,316 @@
+{
+ "id": 16106482,
+ "status": "Accepted",
+ "year": 2002,
+ "resource_url": "https://api.discogs.com/releases/16106482",
+ "uri": "https://www.discogs.com/release/16106482-Dvořák-Czech-Philharmonic-Orchestra-Sir-Charles-Mackerras-Symphonic-Variations-Scherzo-Capriccioso",
+ "artists": [
+  {
+   "name": "Antonín Dvořák",
+   "anv": "Dvořák",
+   "join": ",",
+   "role": "",
+   "tracks": "",
+   "id": 268272,
+   "resource_url": "https://api.discogs.com/artists/268272"
+  },
+  {
+   "name": "The Czech Philharmonic Orchestra",
+   "anv": "Czech Philharmonic Orchestra",
+   "join": ",",
+   "role": "",
+   "tracks": "",
+   "id": 435555,
+   "resource_url": "https://api.discogs.com/artists/435555"
+  },
+  {
+   "name": "Sir Charles Mackerras",
+   "anv": "",
+   "join": "",
+   "role": "",
+   "tracks": "",
+   "id": 832951,
+   "resource_url": "https://api.discogs.com/artists/832951"
+  }
+ ],
+ "artists_sort": "Antonín Dvořák, Czech Philharmonic Orchestra, The, Sir Charles Mackerras",
+ "labels": [
+  {
+   "name": "Supraphon",
+   "catno": "SU 3533-2 031",
+   "entity_type": "1",
+   "entity_type_name": "Label",
+   "id": 21873,
+   "resource_url": "https://api.discogs.com/labels/21873"
+  }
+ ],
+ "series": [],
+ "companies": [
+  {
+   "name": "Supraphon a.s.",
+   "catno": "",
+   "entity_type": "13",
+   "entity_type_name": "Phonographic Copyright (p)",
+   "id": 266129,
+   "resource_url": "https://api.discogs.com/labels/266129"
+  },
+  {
+   "name": "Supraphon a.s.",
+   "catno": "",
+   "entity_type": "14",
+   "entity_type_name": "Copyright (c)",
+   "id": 266129,
+   "resource_url": "https://api.discogs.com/labels/266129"
+  },
+  {
+   "name": "Rudolfinum Studio",
+   "catno": "",
+   "entity_type": "23",
+   "entity_type_name": "Recorded At",
+   "id": 264243,
+   "resource_url": "https://api.discogs.com/labels/264243"
+  },
+  {
+   "name": "Sonopress",
+   "catno": "A-67449",
+   "entity_type": "17",
+   "entity_type_name": "Pressed By",
+   "id": 95728,
+   "resource_url": "https://api.discogs.com/labels/95728"
+  }
+ ],
+ "formats": [
+  {
+   "name": "CD",
+   "qty": "1",
+   "descriptions": [
+    "Album",
+    "Stereo"
+   ]
+  }
+ ],
+ "data_quality": "Needs Vote",
+ "format_quantity": 1,
+ "date_added": "2020-10-24T04:32:23-07:00",
+ "date_changed": "2024-11-27T06:52:15-08:00",
+ "master_id": 3668964,
+ "master_url": "https://api.discogs.com/masters/3668964",
+ "title": "Symphonic Variations - Scherzo Capriccioso - Legends",
+ "country": "Europe",
+ "released": "2002",
+ "notes": "Recording dates: October 7-8, 2001 (track 1); March 17-25, 2001 (track 2-12)",
+ "released_formatted": "2002",
+ "identifiers": [
+  {
+   "type": "Barcode",
+   "value": "099925353322",
+   "description": "Scanned"
+  },
+  {
+   "type": "Barcode",
+   "value": "0 99925 35332 2",
+   "description": "Text"
+  },
+  {
+   "type": "Label Code",
+   "value": "LC 000358"
+  },
+  {
+   "type": "SPARS Code",
+   "value": "DDD"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "■ [Sonopress logo] A-67449/ SU3533-2 B ■"
+  },
+  {
+   "type": "Mastering SID Code",
+   "value": "IFPI L0 30"
+  },
+  {
+   "type": "Mould SID Code",
+   "value": "IFPI 0785"
+  }
+ ],
+ "genres": [
+  "Classical"
+ ],
+ "styles": [
+  "Romantic"
+ ],
+ "tracklist": [
+  {
+   "position": "1",
+   "type_": "track",
+   "title": "Symphonic Variations Op. 78 (B. 70 1877)",
+   "duration": "21:58"
+  },
+  {
+   "position": "2",
+   "type_": "track",
+   "title": "Scherzo Capriccioso Op. 66 (B. 131, 1883)",
+   "duration": "14:01"
+  },
+  {
+   "position": "",
+   "type_": "index",
+   "title": "Legends Op. 59 (B. 122, 1881)",
+   "duration": "40:39",
+   "sub_tracks": [
+    {
+     "position": "3",
+     "type_": "track",
+     "title": "I. Allegretto Non Troppo, Quasi Andantino",
+     "duration": "3:23"
+    },
+    {
+     "position": "4",
+     "type_": "track",
+     "title": "II. Molto Moderato",
+     "duration": "4:18"
+    },
+    {
+     "position": "5",
+     "type_": "track",
+     "title": "III. Allegro Giusto",
+     "duration": "4:06"
+    },
+    {
+     "position": "6",
+     "type_": "track",
+     "title": "IV. Molto Maestoso",
+     "duration": "5:44"
+    },
+    {
+     "position": "7",
+     "type_": "track",
+     "title": "V. Allegro Giusto",
+     "duration": "4:23"
+    },
+    {
+     "position": "8",
+     "type_": "track",
+     "title": "VI. Allegro Con Moto",
+     "duration": "5:11"
+    },
+    {
+     "position": "9",
+     "type_": "track",
+     "title": "VII. Allegretto Grazioso",
+     "duration": "2:47"
+    },
+    {
+     "position": "10",
+     "type_": "track",
+     "title": "VIII. Un Poco Allegretto",
+     "duration": "3:45"
+    },
+    {
+     "position": "11",
+     "type_": "track",
+     "title": "IX. Andante Con Moto",
+     "duration": "2:33"
+    },
+    {
+     "position": "12",
+     "type_": "track",
+     "title": "X. Andante",
+     "duration": "4:02"
+    }
+   ]
+  }
+ ],
+ "extraartists": [
+  {
+   "name": "Antonín Dvořák",
+   "anv": "",
+   "join": "",
+   "role": "Composed By",
+   "tracks": "",
+   "id": 268272,
+   "resource_url": "https://api.discogs.com/artists/268272"
+  },
+  {
+   "name": "Sir Charles Mackerras",
+   "anv": "",
+   "join": "",
+   "role": "Conductor",
+   "tracks": "",
+   "id": 832951,
+   "resource_url": "https://api.discogs.com/artists/832951"
+  },
+  {
+   "name": "Vít Roubíček",
+   "anv": "",
+   "join": "",
+   "role": "Editor",
+   "tracks": "",
+   "id": 943559,
+   "resource_url": "https://api.discogs.com/artists/943559"
+  },
+  {
+   "name": "Erich Kunze",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "1",
+   "id": 943561,
+   "resource_url": "https://api.discogs.com/artists/943561"
+  },
+  {
+   "name": "Stanislav Sýkora",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "2 to 12",
+   "id": 984098,
+   "resource_url": "https://api.discogs.com/artists/984098"
+  },
+  {
+   "name": "Jiří Hesoun",
+   "anv": "",
+   "join": "",
+   "role": "Engineer [Assistant]",
+   "tracks": "",
+   "id": 936522,
+   "resource_url": "https://api.discogs.com/artists/936522"
+  },
+  {
+   "name": "The Czech Philharmonic Orchestra",
+   "anv": "Czech Philharmonic Orchestra",
+   "join": "",
+   "role": "Orchestra",
+   "tracks": "",
+   "id": 435555,
+   "resource_url": "https://api.discogs.com/artists/435555"
+  },
+  {
+   "name": "Petr Vít",
+   "anv": "",
+   "join": "",
+   "role": "Producer",
+   "tracks": "",
+   "id": 997349,
+   "resource_url": "https://api.discogs.com/artists/997349"
+  },
+  {
+   "name": "Jaroslav Rybář",
+   "anv": "",
+   "join": "",
+   "role": "Recording Supervisor",
+   "tracks": "2 to 12",
+   "id": 835852,
+   "resource_url": "https://api.discogs.com/artists/835852"
+  },
+  {
+   "name": "Milan Puklický",
+   "anv": "",
+   "join": "",
+   "role": "Recording Supervisor",
+   "tracks": "1",
+   "id": 955715,
+   "resource_url": "https://api.discogs.com/artists/955715"
+  }
+ ],
+ "is_offensive": false
+}

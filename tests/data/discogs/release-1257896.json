@@ -1,0 +1,320 @@
+{
+ "id": 1257896,
+ "status": "Accepted",
+ "year": 2007,
+ "resource_url": "https://api.discogs.com/releases/1257896",
+ "uri": "https://www.discogs.com/release/1257896-Fiuzz-Existence-Dance-Festival",
+ "artists": [
+  {
+   "name": "Fiuzz",
+   "anv": "",
+   "join": "",
+   "role": "",
+   "tracks": "",
+   "id": 1062989,
+   "resource_url": "https://api.discogs.com/artists/1062989"
+  }
+ ],
+ "artists_sort": "Fiuzz",
+ "labels": [
+  {
+   "name": "Spectral Records",
+   "catno": "SPLCD005",
+   "entity_type": "1",
+   "entity_type_name": "Label",
+   "id": 24477,
+   "resource_url": "https://api.discogs.com/labels/24477"
+  }
+ ],
+ "series": [],
+ "companies": [
+  {
+   "name": "Arabesque Distribution",
+   "catno": "",
+   "entity_type": "9",
+   "entity_type_name": "Distributed By",
+   "id": 265396,
+   "resource_url": "https://api.discogs.com/labels/265396"
+  },
+  {
+   "name": "Spectral Records",
+   "catno": "",
+   "entity_type": "21",
+   "entity_type_name": "Published By",
+   "id": 24477,
+   "resource_url": "https://api.discogs.com/labels/24477"
+  },
+  {
+   "name": "Painkiller Studio",
+   "catno": "",
+   "entity_type": "29",
+   "entity_type_name": "Mastered At",
+   "id": 521497,
+   "resource_url": "https://api.discogs.com/labels/521497"
+  },
+  {
+   "name": "VDC Group",
+   "catno": "011397",
+   "entity_type": "31",
+   "entity_type_name": "Glass Mastered At",
+   "id": 343789,
+   "resource_url": "https://api.discogs.com/labels/343789"
+  }
+ ],
+ "formats": [
+  {
+   "name": "CD",
+   "qty": "1",
+   "descriptions": [
+    "Compilation"
+   ]
+  }
+ ],
+ "data_quality": "Correct",
+ "format_quantity": 1,
+ "date_added": "2008-03-06T10:24:31-08:00",
+ "date_changed": "2024-12-18T18:29:57-08:00",
+ "title": "Existence Dance Festival",
+ "country": "Portugal",
+ "released": "2007-12-00",
+ "notes": "Mastered - Painkiller studio, Barcelona",
+ "released_formatted": "Dec 2007",
+ "identifiers": [
+  {
+   "type": "Barcode",
+   "value": "9366977744936"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "| SPLCD005 | ARABESQUE DISTRIBUTION LTD | 011397"
+  },
+  {
+   "type": "Mastering SID Code",
+   "value": "IFPI LD12"
+  },
+  {
+   "type": "Mould SID Code",
+   "value": "IFPI 5Q74"
+  }
+ ],
+ "genres": [
+  "Electronic"
+ ],
+ "styles": [
+  "Psy-Trance"
+ ],
+ "tracklist": [
+  {
+   "position": "1",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Menog",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 152322,
+     "resource_url": "https://api.discogs.com/artists/152322"
+    }
+   ],
+   "title": "Other Reality",
+   "duration": "8:24"
+  },
+  {
+   "position": "2",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "A-Team (17)",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 7030813,
+     "resource_url": "https://api.discogs.com/artists/7030813"
+    }
+   ],
+   "title": "A-Team",
+   "extraartists": [
+    {
+     "name": "Roy Engel",
+     "anv": "",
+     "join": "",
+     "role": "Written-By, Producer",
+     "tracks": "",
+     "id": 441554,
+     "resource_url": "https://api.discogs.com/artists/441554"
+    },
+    {
+     "name": "Yonatan Marcow",
+     "anv": "",
+     "join": "",
+     "role": "Written-By, Producer",
+     "tracks": "",
+     "id": 474546,
+     "resource_url": "https://api.discogs.com/artists/474546"
+    }
+   ],
+   "duration": "7:38"
+  },
+  {
+   "position": "3",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Painkiller (3)",
+     "anv": "",
+     "join": "vs.",
+     "role": "",
+     "tracks": "",
+     "id": 306003,
+     "resource_url": "https://api.discogs.com/artists/306003"
+    },
+    {
+     "name": "Fiuzz",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 1062989,
+     "resource_url": "https://api.discogs.com/artists/1062989"
+    }
+   ],
+   "title": "The Myth",
+   "duration": "7:26"
+  },
+  {
+   "position": "4",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Abomination (2)",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 321025,
+     "resource_url": "https://api.discogs.com/artists/321025"
+    }
+   ],
+   "title": "Prestige",
+   "duration": "7:55"
+  },
+  {
+   "position": "5",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Khopat",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 262628,
+     "resource_url": "https://api.discogs.com/artists/262628"
+    }
+   ],
+   "title": "Time Distortion",
+   "duration": "6:33"
+  },
+  {
+   "position": "6",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Shift (2)",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 51954,
+     "resource_url": "https://api.discogs.com/artists/51954"
+    }
+   ],
+   "title": "Aim",
+   "duration": "7:32"
+  },
+  {
+   "position": "7",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Tickets",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 171674,
+     "resource_url": "https://api.discogs.com/artists/171674"
+    }
+   ],
+   "title": "Break The Floor",
+   "duration": "6:27"
+  },
+  {
+   "position": "8",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "Jaws Underground",
+     "anv": "",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 946542,
+     "resource_url": "https://api.discogs.com/artists/946542"
+    }
+   ],
+   "title": "Organic Drugs",
+   "duration": "6:37"
+  },
+  {
+   "position": "9",
+   "type_": "track",
+   "artists": [
+    {
+     "name": "MIDI-Terranien",
+     "anv": "Midi-Terranean",
+     "join": "",
+     "role": "",
+     "tracks": "",
+     "id": 47936,
+     "resource_url": "https://api.discogs.com/artists/47936"
+    }
+   ],
+   "title": "Hinni Downmix",
+   "duration": "5:30"
+  }
+ ],
+ "extraartists": [
+  {
+   "name": "Fiuzz",
+   "anv": "",
+   "join": "",
+   "role": "Compiled By",
+   "tracks": "",
+   "id": 1062989,
+   "resource_url": "https://api.discogs.com/artists/1062989"
+  },
+  {
+   "name": "Painkiller (3)",
+   "anv": "",
+   "join": "",
+   "role": "Mastered By",
+   "tracks": "",
+   "id": 306003,
+   "resource_url": "https://api.discogs.com/artists/306003"
+  },
+  {
+   "name": "Roy Engel",
+   "anv": "",
+   "join": "",
+   "role": "Mastered By",
+   "tracks": "",
+   "id": 441554,
+   "resource_url": "https://api.discogs.com/artists/441554"
+  }
+ ],
+ "is_offensive": false
+}

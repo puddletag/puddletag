@@ -1,0 +1,429 @@
+{
+ "id": 10102399,
+ "status": "Accepted",
+ "year": 2013,
+ "resource_url": "https://api.discogs.com/releases/10102399",
+ "uri": "https://www.discogs.com/release/10102399-The-Beatles-The-Beatles",
+ "artists": [
+  {
+   "name": "The Beatles",
+   "anv": "",
+   "join": "",
+   "role": "",
+   "tracks": "",
+   "id": 82730,
+   "resource_url": "https://api.discogs.com/artists/82730"
+  }
+ ],
+ "artists_sort": "Beatles, The",
+ "labels": [
+  {
+   "name": "Apple Records",
+   "catno": "05099962829724",
+   "entity_type": "1",
+   "entity_type_name": "Label",
+   "id": 25693,
+   "resource_url": "https://api.discogs.com/labels/25693"
+  },
+  {
+   "name": "Parlophone",
+   "catno": "05099962829724",
+   "entity_type": "1",
+   "entity_type_name": "Label",
+   "id": 2294,
+   "resource_url": "https://api.discogs.com/labels/2294"
+  }
+ ],
+ "series": [
+  {
+   "name": "The Beatles Collection (2)",
+   "catno": "",
+   "entity_type": "2",
+   "entity_type_name": "Series",
+   "id": 988959,
+   "resource_url": "https://api.discogs.com/labels/988959"
+  }
+ ],
+ "companies": [
+  {
+   "name": "Universal Music Spain S.L.",
+   "catno": "",
+   "entity_type": "7",
+   "entity_type_name": "Licensed Through",
+   "id": 123043,
+   "resource_url": "https://api.discogs.com/labels/123043"
+  },
+  {
+   "name": "Ediciones El País, S.L.",
+   "catno": "",
+   "entity_type": "9",
+   "entity_type_name": "Distributed By",
+   "id": 433044,
+   "resource_url": "https://api.discogs.com/labels/433044"
+  },
+  {
+   "name": "Calderstone Productions Limited",
+   "catno": "",
+   "entity_type": "13",
+   "entity_type_name": "Phonographic Copyright (p)",
+   "id": 601924,
+   "resource_url": "https://api.discogs.com/labels/601924"
+  },
+  {
+   "name": "Ediciones El País, S.L.",
+   "catno": "",
+   "entity_type": "13",
+   "entity_type_name": "Phonographic Copyright (p)",
+   "id": 433044,
+   "resource_url": "https://api.discogs.com/labels/433044"
+  },
+  {
+   "name": "Calderstone Productions Limited",
+   "catno": "",
+   "entity_type": "14",
+   "entity_type_name": "Copyright (c)",
+   "id": 601924,
+   "resource_url": "https://api.discogs.com/labels/601924"
+  },
+  {
+   "name": "Ediciones El País, S.L.",
+   "catno": "",
+   "entity_type": "14",
+   "entity_type_name": "Copyright (c)",
+   "id": 433044,
+   "resource_url": "https://api.discogs.com/labels/433044"
+  }
+ ],
+ "formats": [
+  {
+   "name": "CD",
+   "qty": "2",
+   "descriptions": [
+    "Album",
+    "Enhanced",
+    "Reissue",
+    "Remastered"
+   ],
+   "text": "Gatefold Cardbard Sleeve"
+  }
+ ],
+ "data_quality": "Needs Vote",
+ "format_quantity": 2,
+ "date_added": "2017-04-08T04:54:26-07:00",
+ "date_changed": "2024-07-18T09:18:22-07:00",
+ "master_id": 46402,
+ "master_url": "https://api.discogs.com/masters/46402",
+ "title": "The Beatles",
+ "country": "Spain",
+ "released": "2013-10-27",
+ "notes": "Original double LP released in 1968.\n\nThis remastered album has been created from the original stereo analogue master tapes.\n\n℗&© 2013 Distributed by Ediciones El País, SL\nMade in EU\n\nIssued in 4-panel gatefold cardboard sleeve in cardboard slipcase.",
+ "released_formatted": "27 Oct 2013",
+ "identifiers": [
+  {
+   "type": "Barcode",
+   "value": "8 425536 001444 00003",
+   "description": "Text"
+  },
+  {
+   "type": "Rights Society",
+   "value": "SDRM / BIEM"
+  },
+  {
+   "type": "Label Code",
+   "value": "LC 0299"
+  },
+  {
+   "type": "Other",
+   "value": "05099962829823",
+   "description": "Cat#, CD1"
+  },
+  {
+   "type": "Other",
+   "value": "05099962829700",
+   "description": "Cat#, CD2"
+  },
+  {
+   "type": "Depósito Legal",
+   "value": "M-24263-2013"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "THE BEATLES WHITE 3 CD1 4-10-13/01 13001271 @",
+   "description": "CD1, variant 1, 2"
+  },
+  {
+   "type": "Mould SID Code",
+   "value": "ifpi 1323",
+   "description": "CD1, variant 1, 2"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "THE BEATLES WHITE 3 CD2 4-10-13/02 13001272 @",
+   "description": "CD2, variant 1, 2"
+  },
+  {
+   "type": "Mould SID Code",
+   "value": "ifpi 1323",
+   "description": "CD2, variant 1"
+  },
+  {
+   "type": "Mould SID Code",
+   "value": "ifpi 1321",
+   "description": "CD2, variant 2"
+  }
+ ],
+ "genres": [
+  "Rock"
+ ],
+ "styles": [
+  "Art Rock",
+  "Pop Rock"
+ ],
+ "tracklist": [
+  {
+   "position": "1-1",
+   "type_": "track",
+   "title": "Back In The U.S.S.R.",
+   "duration": "2:43"
+  },
+  {
+   "position": "1-2",
+   "type_": "track",
+   "title": "Dear Prudence",
+   "duration": "3:55"
+  },
+  {
+   "position": "1-3",
+   "type_": "track",
+   "title": "Glass Onion",
+   "duration": "2:17"
+  },
+  {
+   "position": "1-4",
+   "type_": "track",
+   "title": "Ob-La-Di, Ob-La-Da",
+   "duration": "3:08"
+  },
+  {
+   "position": "1-5",
+   "type_": "track",
+   "title": "Wild Honey Pie",
+   "duration": "0:52"
+  },
+  {
+   "position": "1-6",
+   "type_": "track",
+   "title": "The Continuing Story Of Bungalow Bill",
+   "duration": "3:14"
+  },
+  {
+   "position": "1-7",
+   "type_": "track",
+   "title": "While My Guitar Gently Weeps",
+   "duration": "4:45"
+  },
+  {
+   "position": "1-8",
+   "type_": "track",
+   "title": "Happiness Is A Warm Gun",
+   "duration": "2:44"
+  },
+  {
+   "position": "1-9",
+   "type_": "track",
+   "title": "Martha My Dear",
+   "duration": "2:28"
+  },
+  {
+   "position": "1-10",
+   "type_": "track",
+   "title": "I'm So Tired",
+   "duration": "2:03"
+  },
+  {
+   "position": "1-11",
+   "type_": "track",
+   "title": "Blackbird",
+   "duration": "2:18"
+  },
+  {
+   "position": "1-12",
+   "type_": "track",
+   "title": "Piggies",
+   "duration": "2:04"
+  },
+  {
+   "position": "1-13",
+   "type_": "track",
+   "title": "Rocky Raccoon",
+   "duration": "3:33"
+  },
+  {
+   "position": "1-14",
+   "type_": "track",
+   "title": "Don't Pass Me By",
+   "extraartists": [
+    {
+     "name": "Richard Starkey",
+     "anv": "Starkey",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 298525,
+     "resource_url": "https://api.discogs.com/artists/298525"
+    }
+   ],
+   "duration": "3:50"
+  },
+  {
+   "position": "1-15",
+   "type_": "track",
+   "title": "Why Don't We Do It In The Road?",
+   "duration": "1:41"
+  },
+  {
+   "position": "1-16",
+   "type_": "track",
+   "title": "I Will",
+   "duration": "1:45"
+  },
+  {
+   "position": "1-17",
+   "type_": "track",
+   "title": "Julia",
+   "duration": "2:56"
+  },
+  {
+   "position": "2-1",
+   "type_": "track",
+   "title": "Birthday",
+   "duration": "2:43"
+  },
+  {
+   "position": "2-2",
+   "type_": "track",
+   "title": "Yer Blues",
+   "duration": "4:00"
+  },
+  {
+   "position": "2-3",
+   "type_": "track",
+   "title": "Mother Nature's Son",
+   "duration": "2:48"
+  },
+  {
+   "position": "2-4",
+   "type_": "track",
+   "title": "Everybody's Got Something To Hide Except Me And My Monkey",
+   "duration": "2:24"
+  },
+  {
+   "position": "2-5",
+   "type_": "track",
+   "title": "Sexy Sadie",
+   "duration": "3:15"
+  },
+  {
+   "position": "2-6",
+   "type_": "track",
+   "title": "Helter Skelter",
+   "duration": "4:29"
+  },
+  {
+   "position": "2-7",
+   "type_": "track",
+   "title": "Long, Long, Long",
+   "duration": "3:06"
+  },
+  {
+   "position": "2-8",
+   "type_": "track",
+   "title": "Revolution1",
+   "duration": "4:15"
+  },
+  {
+   "position": "2-9",
+   "type_": "track",
+   "title": "Honey Pie",
+   "duration": "2:41"
+  },
+  {
+   "position": "2-10",
+   "type_": "track",
+   "title": "Savoy Truffle",
+   "duration": "2:54"
+  },
+  {
+   "position": "2-11",
+   "type_": "track",
+   "title": "Cry Baby Cry",
+   "duration": "3:02"
+  },
+  {
+   "position": "2-12",
+   "type_": "track",
+   "title": "Revolution 9",
+   "duration": "8:22"
+  },
+  {
+   "position": "2-13",
+   "type_": "track",
+   "title": "Good Night",
+   "duration": "3:13"
+  },
+  {
+   "position": "Data",
+   "type_": "track",
+   "title": "The Beatles Mini Documentary",
+   "duration": ""
+  }
+ ],
+ "extraartists": [
+  {
+   "name": "George Martin",
+   "anv": "",
+   "join": "",
+   "role": "Producer, Orchestrated By [Orchestrations]",
+   "tracks": "",
+   "id": 259769,
+   "resource_url": "https://api.discogs.com/artists/259769"
+  },
+  {
+   "name": "Guy Massey",
+   "anv": "",
+   "join": "",
+   "role": "Remastered By",
+   "tracks": "",
+   "id": 262646,
+   "resource_url": "https://api.discogs.com/artists/262646"
+  },
+  {
+   "name": "Steve Rooke",
+   "anv": "",
+   "join": "",
+   "role": "Remastered By",
+   "tracks": "",
+   "id": 370051,
+   "resource_url": "https://api.discogs.com/artists/370051"
+  },
+  {
+   "name": "George Harrison",
+   "anv": "Harrison",
+   "join": "",
+   "role": "Written-By",
+   "tracks": "1-7, 1-12, 2-7, 2-10",
+   "id": 243955,
+   "resource_url": "https://api.discogs.com/artists/243955"
+  },
+  {
+   "name": "Lennon-McCartney",
+   "anv": "Lennon/McCartney",
+   "join": "",
+   "role": "Written-By",
+   "tracks": "1-1 to 1-6, 1-8 to 1-11, 1-13, 1-15 to 2-6, 2-8, 2-9, 2-11 to 2-13",
+   "id": 779927,
+   "resource_url": "https://api.discogs.com/artists/779927"
+  }
+ ],
+ "is_offensive": false
+}

@@ -1,0 +1,51 @@
+{
+ "id": 96559,
+ "main_release": 221824,
+ "most_recent_release": 3341754,
+ "resource_url": "https://api.discogs.com/masters/96559",
+ "uri": "https://www.discogs.com/master/96559-Rick-Astley-Never-Gonna-Give-You-Up",
+ "versions_url": "https://api.discogs.com/masters/96559/versions",
+ "main_release_url": "https://api.discogs.com/releases/221824",
+ "most_recent_release_url": "https://api.discogs.com/releases/3341754",
+ "genres": [
+  "Electronic",
+  "Pop"
+ ],
+ "styles": [
+  "Synth-pop"
+ ],
+ "year": 1987,
+ "tracklist": [
+  {
+   "position": "A",
+   "type_": "track",
+   "title": "Never Gonna Give You Up (Cake Mix)",
+   "duration": "5:47"
+  },
+  {
+   "position": "B1",
+   "type_": "track",
+   "title": "Never Gonna Give You Up (Instrumental)",
+   "duration": "6:21"
+  },
+  {
+   "position": "B2",
+   "type_": "track",
+   "title": "Never Gonna Give You Up",
+   "duration": "3:32"
+  }
+ ],
+ "artists": [
+  {
+   "name": "Rick Astley",
+   "anv": "",
+   "join": "",
+   "role": "",
+   "tracks": "",
+   "id": 72872,
+   "resource_url": "https://api.discogs.com/artists/72872"
+  }
+ ],
+ "title": "Never Gonna Give You Up",
+ "data_quality": "Correct"
+}

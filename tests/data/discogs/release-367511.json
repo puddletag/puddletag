@@ -1,0 +1,785 @@
+{
+ "id": 367511,
+ "status": "Accepted",
+ "year": 0,
+ "resource_url": "https://api.discogs.com/releases/367511",
+ "uri": "https://www.discogs.com/release/367511-Pink-Floyd-The-Wall",
+ "artists": [
+  {
+   "name": "Pink Floyd",
+   "anv": "",
+   "join": "",
+   "role": "",
+   "tracks": "",
+   "id": 45467,
+   "resource_url": "https://api.discogs.com/artists/45467"
+  }
+ ],
+ "artists_sort": "Pink Floyd",
+ "labels": [
+  {
+   "name": "Harvest",
+   "catno": "SHDW 411",
+   "entity_type": "1",
+   "entity_type_name": "Label",
+   "id": 2564,
+   "resource_url": "https://api.discogs.com/labels/2564"
+  }
+ ],
+ "series": [],
+ "companies": [
+  {
+   "name": "EMI Records Ltd.",
+   "catno": "",
+   "entity_type": "4",
+   "entity_type_name": "Record Company",
+   "id": 63404,
+   "resource_url": "https://api.discogs.com/labels/63404"
+  },
+  {
+   "name": "Pink Floyd Music Ltd.",
+   "catno": "",
+   "entity_type": "13",
+   "entity_type_name": "Phonographic Copyright (p)",
+   "id": 272650,
+   "resource_url": "https://api.discogs.com/labels/272650"
+  },
+  {
+   "name": "Pink Floyd Music Publishers Ltd.",
+   "catno": "",
+   "entity_type": "14",
+   "entity_type_name": "Copyright (c)",
+   "id": 276178,
+   "resource_url": "https://api.discogs.com/labels/276178"
+  },
+  {
+   "name": "Super Bear Studios",
+   "catno": "",
+   "entity_type": "23",
+   "entity_type_name": "Recorded At",
+   "id": 284670,
+   "resource_url": "https://api.discogs.com/labels/284670"
+  },
+  {
+   "name": "Producers Workshop",
+   "catno": "",
+   "entity_type": "23",
+   "entity_type_name": "Recorded At",
+   "id": 275068,
+   "resource_url": "https://api.discogs.com/labels/275068"
+  },
+  {
+   "name": "CBS Studios, New York",
+   "catno": "",
+   "entity_type": "23",
+   "entity_type_name": "Recorded At",
+   "id": 270550,
+   "resource_url": "https://api.discogs.com/labels/270550"
+  },
+  {
+   "name": "The Mastering Lab",
+   "catno": "",
+   "entity_type": "30",
+   "entity_type_name": "Lacquer Cut At",
+   "id": 186075,
+   "resource_url": "https://api.discogs.com/labels/186075"
+  },
+  {
+   "name": "EMI Records",
+   "catno": "",
+   "entity_type": "17",
+   "entity_type_name": "Pressed By",
+   "id": 754,
+   "resource_url": "https://api.discogs.com/labels/754"
+  }
+ ],
+ "formats": [
+  {
+   "name": "Vinyl",
+   "qty": "2",
+   "descriptions": [
+    "LP",
+    "Album",
+    "Repress",
+    "Stereo"
+   ],
+   "text": "Gatefold"
+  }
+ ],
+ "data_quality": "Correct",
+ "format_quantity": 2,
+ "date_added": "2004-12-31T14:50:07-08:00",
+ "date_changed": "2025-03-16T02:22:48-07:00",
+ "master_id": 11329,
+ "master_url": "https://api.discogs.com/masters/11329",
+ "title": "The Wall",
+ "country": "UK",
+ "notes": "Gatefold sleeve with plastic 'sticker' that adheres to the sleeve, but is not permanently stuck on. \nBand members are listed inside the sleeve, below the songwriting credits. \nInner sleeves also feature the \"Wall\" design with lyrics (graphics by Gerald Scarfe). \nThe track order on the inners is not the same as featured on the album. \n \nRecorded at \nSuperbear Miravel, France \nProducers Workshop Los Angeles \nC.B.S. New York \nbetween April and November 1979. \n \nThree different catalog numbers, one for the album and one for each disc: \nSHDW 411 = album \nOC-158 63410 SHSP 4111 = disc 1 \nOC-158 63411 SHSP 4112 = disc 2 \n\nAccordingly the system of matrix numbering this repress was pressed in 1980-1982.\n\nYou can view the UK first edition here: [r27371856]\n\nAll  runouts data is stamped",
+ "identifiers": [
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A",
+   "description": "Label side A"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B",
+   "description": "Label side B"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A",
+   "description": "Label side C"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B",
+   "description": "Label side D"
+  },
+  {
+   "type": "Other",
+   "value": "OC-158 63410 SHSP4111",
+   "description": "Record 1 catalog numbers"
+  },
+  {
+   "type": "Other",
+   "value": "OC-158 63411 SHSP4112",
+   "description": "Record 2 catalog numbers"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-6U",
+   "description": "Runout side A, variant 1"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-3U TML-X",
+   "description": "Runout side B, variant 1"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A1-U",
+   "description": "Runout side C, variant 1"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B2-U TML-M",
+   "description": "Runout side D, variant 1"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-4U TML-X",
+   "description": "Runout side A, variant 2"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-6U TML-S",
+   "description": "Runout side B, variant 2"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A4-U TML-X",
+   "description": "Runout side C, variant 2"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B2-U TML-M",
+   "description": "Runout side D, variant 2"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-4U TMLX 2",
+   "description": "Runout side A, variant 3"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-4U 342 TMLS 1",
+   "description": "Runout side B, variant 3"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-3U TMLX 2",
+   "description": "Runout side C, variant 3"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-5U 274 TML-M",
+   "description": "Runout side D, variant 3"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-4U TML-X",
+   "description": "Runout side A, variant 5"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B 3U TML-X",
+   "description": "Runout side B, variant 5"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-4U TML-X",
+   "description": "Runout side C, variant 5"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-2U TML-M",
+   "description": "Runout side D, variant 5"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-2U TML-X 7 3 22",
+   "description": "Runout side A, variant 7"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-3U TML-X 5",
+   "description": "Runout side B, variant 7"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-3U 202",
+   "description": "Runout side C, variant 7"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-6U TML-X 1",
+   "description": "Runout side D, variant 7"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-2U 312 L-X 4",
+   "description": "Runout side A, variant 8"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-2U TML-M LMG 2",
+   "description": "Runout side B, variant  8"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-3U CHG TML-X 3",
+   "description": "Runout side C, variant 8"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-2U TML-M 302 5",
+   "description": "Runout side D, variant 8"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-8U TML-S 388",
+   "description": "Runout side A, variant 9"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-3U 368 TML-X 4",
+   "description": "Runout side B, variant 9"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-4U TML-X 340 1",
+   "description": "Runout side C, variant 9"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-2U TML-M 356 7",
+   "description": "Runout side D, variant 9"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-9U TML-M 1",
+   "description": "Runout side A, variant 10"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-6U TML-S 2",
+   "description": "Runout side B, variant 10"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-6U TML-S 1",
+   "description": "Runout side C, variant 10"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-11 1 7",
+   "description": "Runout side D, variant 10"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 A-2U 320 TML-X 5",
+   "description": "Runout side A, variant 11"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4111 B-3U TML-X 3",
+   "description": "Runout side B, variant 11"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 A-3U 280 TML-X 3",
+   "description": "Runout side C, variant 11"
+  },
+  {
+   "type": "Matrix / Runout",
+   "value": "SHSP 4112 B-2U TML-M 233 5",
+   "description": "Runout side D, variant 11"
+  }
+ ],
+ "genres": [
+  "Rock"
+ ],
+ "styles": [
+  "Prog Rock",
+  "Art Rock"
+ ],
+ "tracklist": [
+  {
+   "position": "A1",
+   "type_": "track",
+   "title": "In The Flesh?",
+   "duration": ""
+  },
+  {
+   "position": "A2",
+   "type_": "track",
+   "title": "The Thin Ice",
+   "duration": ""
+  },
+  {
+   "position": "A3",
+   "type_": "track",
+   "title": "Another Brick In The Wall (Part 1)",
+   "duration": ""
+  },
+  {
+   "position": "A4",
+   "type_": "track",
+   "title": "The Happiest Days Of Our Lives",
+   "duration": ""
+  },
+  {
+   "position": "A5",
+   "type_": "track",
+   "title": "Another Brick In The Wall (Part 2)",
+   "duration": ""
+  },
+  {
+   "position": "A6",
+   "type_": "track",
+   "title": "Mother",
+   "duration": ""
+  },
+  {
+   "position": "B1",
+   "type_": "track",
+   "title": "Goodbye Blue Sky",
+   "duration": ""
+  },
+  {
+   "position": "B2",
+   "type_": "track",
+   "title": "Empty Spaces",
+   "duration": ""
+  },
+  {
+   "position": "B3",
+   "type_": "track",
+   "title": "Young Lust",
+   "extraartists": [
+    {
+     "name": "David Gilmour",
+     "anv": "Gilmour",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110863,
+     "resource_url": "https://api.discogs.com/artists/110863"
+    },
+    {
+     "name": "Roger Waters",
+     "anv": "Waters",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110862,
+     "resource_url": "https://api.discogs.com/artists/110862"
+    }
+   ],
+   "duration": ""
+  },
+  {
+   "position": "B4",
+   "type_": "track",
+   "title": "One Of My Turns",
+   "duration": ""
+  },
+  {
+   "position": "B5",
+   "type_": "track",
+   "title": "Don't Leave Me Now",
+   "duration": ""
+  },
+  {
+   "position": "B6",
+   "type_": "track",
+   "title": "Another Brick In The Wall Part 3",
+   "duration": ""
+  },
+  {
+   "position": "B7",
+   "type_": "track",
+   "title": "Goodbye Cruel World",
+   "duration": ""
+  },
+  {
+   "position": "C1",
+   "type_": "track",
+   "title": "Hey You",
+   "duration": ""
+  },
+  {
+   "position": "C2",
+   "type_": "track",
+   "title": "Is There Anybody Out There?",
+   "duration": ""
+  },
+  {
+   "position": "C3",
+   "type_": "track",
+   "title": "Nobody Home",
+   "duration": ""
+  },
+  {
+   "position": "C4",
+   "type_": "track",
+   "title": "Vera",
+   "duration": ""
+  },
+  {
+   "position": "C5",
+   "type_": "track",
+   "title": "Bring The Boys Back Home",
+   "duration": ""
+  },
+  {
+   "position": "C6",
+   "type_": "track",
+   "title": "Comfortably Numb",
+   "extraartists": [
+    {
+     "name": "David Gilmour",
+     "anv": "Gilmour",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110863,
+     "resource_url": "https://api.discogs.com/artists/110863"
+    },
+    {
+     "name": "Roger Waters",
+     "anv": "Waters",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110862,
+     "resource_url": "https://api.discogs.com/artists/110862"
+    }
+   ],
+   "duration": ""
+  },
+  {
+   "position": "D1",
+   "type_": "track",
+   "title": "The Show Must Go On",
+   "duration": ""
+  },
+  {
+   "position": "D2",
+   "type_": "track",
+   "title": "In The Flesh",
+   "duration": ""
+  },
+  {
+   "position": "D3",
+   "type_": "track",
+   "title": "Run Like Hell",
+   "extraartists": [
+    {
+     "name": "David Gilmour",
+     "anv": "Gilmour",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110863,
+     "resource_url": "https://api.discogs.com/artists/110863"
+    },
+    {
+     "name": "Roger Waters",
+     "anv": "Waters",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110862,
+     "resource_url": "https://api.discogs.com/artists/110862"
+    }
+   ],
+   "duration": ""
+  },
+  {
+   "position": "D4",
+   "type_": "track",
+   "title": "Waiting For The Worms",
+   "duration": ""
+  },
+  {
+   "position": "D5",
+   "type_": "track",
+   "title": "Stop",
+   "duration": ""
+  },
+  {
+   "position": "D6",
+   "type_": "track",
+   "title": "The Trial",
+   "extraartists": [
+    {
+     "name": "Bob Ezrin",
+     "anv": "Ezrin",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 125350,
+     "resource_url": "https://api.discogs.com/artists/125350"
+    },
+    {
+     "name": "Roger Waters",
+     "anv": "Waters",
+     "join": "",
+     "role": "Written-By",
+     "tracks": "",
+     "id": 110862,
+     "resource_url": "https://api.discogs.com/artists/110862"
+    }
+   ],
+   "duration": ""
+  },
+  {
+   "position": "D7",
+   "type_": "track",
+   "title": "Outside The Wall",
+   "duration": ""
+  }
+ ],
+ "extraartists": [
+  {
+   "name": "Michael Kamen",
+   "anv": "",
+   "join": "",
+   "role": "Arranged By [Orchestra]",
+   "tracks": "",
+   "id": 106802,
+   "resource_url": "https://api.discogs.com/artists/106802"
+  },
+  {
+   "name": "Bruce Johnston",
+   "anv": "",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 100702,
+   "resource_url": "https://api.discogs.com/artists/100702"
+  },
+  {
+   "name": "Islington Green School",
+   "anv": "",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 386604,
+   "resource_url": "https://api.discogs.com/artists/386604"
+  },
+  {
+   "name": "Jim Haas",
+   "anv": "",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 277535,
+   "resource_url": "https://api.discogs.com/artists/277535"
+  },
+  {
+   "name": "Joe Chemay",
+   "anv": "",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 277531,
+   "resource_url": "https://api.discogs.com/artists/277531"
+  },
+  {
+   "name": "Jon Joyce",
+   "anv": "John Joyce",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 318148,
+   "resource_url": "https://api.discogs.com/artists/318148"
+  },
+  {
+   "name": "Stan Farber",
+   "anv": "",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 277530,
+   "resource_url": "https://api.discogs.com/artists/277530"
+  },
+  {
+   "name": "Toni Tennille",
+   "anv": "",
+   "join": "",
+   "role": "Backing Vocals",
+   "tracks": "",
+   "id": 386605,
+   "resource_url": "https://api.discogs.com/artists/386605"
+  },
+  {
+   "name": "James Guthrie",
+   "anv": "",
+   "join": "",
+   "role": "Co-producer, Engineer",
+   "tracks": "",
+   "id": 171450,
+   "resource_url": "https://api.discogs.com/artists/171450"
+  },
+  {
+   "name": "Gerald Scarfe",
+   "anv": "",
+   "join": "",
+   "role": "Design [Sleeve]",
+   "tracks": "",
+   "id": 1831200,
+   "resource_url": "https://api.discogs.com/artists/1831200"
+  },
+  {
+   "name": "Brian Christian",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "",
+   "id": 329354,
+   "resource_url": "https://api.discogs.com/artists/329354"
+  },
+  {
+   "name": "John McClure",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "",
+   "id": 381298,
+   "resource_url": "https://api.discogs.com/artists/381298"
+  },
+  {
+   "name": "Nick Griffiths",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "",
+   "id": 259621,
+   "resource_url": "https://api.discogs.com/artists/259621"
+  },
+  {
+   "name": "Patrice Quef",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "",
+   "id": 386606,
+   "resource_url": "https://api.discogs.com/artists/386606"
+  },
+  {
+   "name": "Rick Hart",
+   "anv": "",
+   "join": "",
+   "role": "Engineer",
+   "tracks": "",
+   "id": 376979,
+   "resource_url": "https://api.discogs.com/artists/376979"
+  },
+  {
+   "name": "Doug Sax",
+   "anv": "",
+   "join": "",
+   "role": "Mastered By [Uncredited]",
+   "tracks": "",
+   "id": 365860,
+   "resource_url": "https://api.discogs.com/artists/365860"
+  },
+  {
+   "name": "Nick Mason",
+   "anv": "",
+   "join": "",
+   "role": "Performer, Drums [Uncredited], Percussion [Uncredited]",
+   "tracks": "",
+   "id": 246097,
+   "resource_url": "https://api.discogs.com/artists/246097"
+  },
+  {
+   "name": "Richard Wright",
+   "anv": "",
+   "join": "",
+   "role": "Performer, Piano [Uncredited], Organ [Uncredited], Synthesizer [Uncredited], Clavinet [Uncredited], Pedalboard [Bass Pedals, Uncredited]",
+   "tracks": "",
+   "id": 110861,
+   "resource_url": "https://api.discogs.com/artists/110861"
+  },
+  {
+   "name": "Bob Ezrin",
+   "anv": "",
+   "join": "",
+   "role": "Producer, Arranged By [Orchestra]",
+   "tracks": "",
+   "id": 125350,
+   "resource_url": "https://api.discogs.com/artists/125350"
+  },
+  {
+   "name": "Roger Waters",
+   "anv": "",
+   "join": "",
+   "role": "Producer, Design [Sleeve], Performer, Vocals [Uncredited], Bass [Uncredited], Synthesizer [Uncredited], Guitar [Uncredited]",
+   "tracks": "",
+   "id": 110862,
+   "resource_url": "https://api.discogs.com/artists/110862"
+  },
+  {
+   "name": "David Gilmour",
+   "anv": "",
+   "join": "",
+   "role": "Producer, Performer, Guitar [Uncredited], Vocals [Uncredited], Bass [Uncredited], Sequencer [Uncredited], Synthesizer [Uncredited], Clavinet [Uncredited], Percussion [Uncredited]",
+   "tracks": "",
+   "id": 110863,
+   "resource_url": "https://api.discogs.com/artists/110863"
+  },
+  {
+   "name": "Phil Taylor (5)",
+   "anv": "",
+   "join": "",
+   "role": "Technician [Sound Equipment]",
+   "tracks": "",
+   "id": 563958,
+   "resource_url": "https://api.discogs.com/artists/563958"
+  },
+  {
+   "name": "Roger Waters",
+   "anv": "",
+   "join": "",
+   "role": "Written-By",
+   "tracks": "A1 to B2, B4 to C5, D1, D2, D4, D5, D7",
+   "id": 110862,
+   "resource_url": "https://api.discogs.com/artists/110862"
+  }
+ ],
+ "is_offensive": false
+}

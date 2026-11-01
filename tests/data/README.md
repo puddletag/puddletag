@@ -72,6 +72,38 @@ artwork flags and the relationships puddletag doesn't read (to URLs and
 works). Where a test needs a rating or a score, it adds a synthetic
 one.
 
+# Discogs responses
+
+Responses Discogs served, which `tests/unit/test_discogs.py` serves back
+from a local web server (the `web_server` fixture in `tests/conftest.py`).
+`record_discogs.py` requests them as puddletag does and cuts them down; the
+tests never run it.
+
+`discogs/release-<id>.json` is `https://api.discogs.com/releases/<id>`, the
+request puddletag sends for a release id typed in the Tag Sources window,
+and `discogs/master-<id>.json` is `https://api.discogs.com/masters/<id>`,
+the request for a master:
+
+| File | Release |
+|---|---|
+| `master-96559.json` | Never Gonna Give You Up (Rick Astley), the master of its releases |
+| `release-10102399.json` | The Beatles (The Beatles; a 2013 Spanish reissue on two CDs, with a data track) |
+| `release-1257896.json` | Existence Dance Festival (compiled by Fiuzz; Spectral Records, Portugal, 2007) |
+| `release-16106482.json` | Symphonic Variations - Scherzo Capriccioso - Legends (Dvořák; the Czech Philharmonic Orchestra, Sir Charles Mackerras; Supraphon, 2002), whose Legends are an index track of ten movements |
+| `release-249504.json` | Never Gonna Give You Up (Rick Astley; RCA's 1987 UK 7" single) |
+| `release-367511.json` | The Wall (Pink Floyd; a UK repress on two LPs, with no durations) |
+
+License: Discogs' [API Terms of
+Use](https://support.discogs.com/hc/en-us/articles/360009334593-API-Terms-of-Use)
+make release data (titles, notes, dates, formats, track listings,
+identifiers, credits) CC0, and images, marketplace data and user data
+Restricted Data. So the script removes the images and their addresses, the
+marketplace fields (`blocked_from_sale`, `estimated_weight`,
+`lowest_price`, `num_for_sale`) and the community's data, along with the
+links to videos, which puddletag doesn't read. Where a test needs a
+marketplace field, it adds a synthetic one; cover images are always
+synthetic.
+
 # Mp3tag web source script
 
 `mp3tag/iTunes#Spain.src` is jonaaa20's iTunes web source for Mp3tag,
