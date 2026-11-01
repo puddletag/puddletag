@@ -603,9 +603,6 @@ def test_files_without_release_id_find_nothing(source, web_server):
     assert web_server.requests == []
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    'files are looked up only by the "Field to use for discogs_id" preference, '
-    'not by discogs_r_id, which a retrieved release writes'))
 def test_files_with_a_retrieved_release_id(source):
     """tagsources.txt: "or else in **discogs_r_id**, which a retrieved release
     writes." The file, carrying the fields a retrieval returned, is

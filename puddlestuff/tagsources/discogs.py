@@ -354,7 +354,7 @@ class Discogs(object):
                 translate("Discogs", 'Checking tracks for Discogs Album ID.'))
             tracks = []
             [tracks.extend(z) for z in artists.values()]
-            album_id = find_id(tracks, R_ID)
+            album_id = find_id(tracks, R_ID) or find_id(tracks, 'discogs_r_id')
             if not album_id:
                 write_log(
                     translate("Discogs", 'No Discogs ID found in tracks.'))
