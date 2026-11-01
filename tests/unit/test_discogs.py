@@ -1,17 +1,21 @@
 """The Discogs tag source (puddlestuff/tagsources/discogs.py): the fields it
-returns for a release and its tracks, as tagsources.txt lists them, from
+returns for a release and its tracks, as tagsources.txt lists them, how it
+finds a release, its covers and the pause between its requests, from
 responses Discogs served (tests/data/discogs/, recorded by
 tests/data/record_discogs.py), sent back by a local web server. The
 recordings keep only release data, which Discogs publishes under CC0: a test
-that needs a marketplace field, a heading or a credit no recording has adds
-it, labelled synthetic.
+that needs a marketplace field, a heading, a credit or an image no recording
+has adds it, labelled synthetic.
 """
+import gzip
 import json
 from pathlib import Path
 
 import pytest
 
-from puddlestuff.tagsources import discogs
+from puddlestuff.constants import COMBO
+from puddlestuff.tagsources import RetrievalError, discogs
+from puddlestuff.util import split_by_field
 
 DATA = Path(__file__).parent.parent / 'data' / 'discogs'
 
@@ -26,11 +30,14 @@ RELEASES = [BEATLES, DVORAK, EXISTENCE, NEVER_GONNA, THE_WALL]
 
 class FakeClock:
     """The time module as discogs sees it: time moves only when the source
-    waits, each wait kept in ``sleeps``, or when a test advances it."""
+    waits, each wait kept in ``sleeps``, or when a test advances it. A test
+    can also set the wall clock (``time()``) back, as a clock change does,
+    which leaves ``monotonic()`` alone."""
 
     def __init__(self):
         self.now = 1_000_000.0
         self.sleeps = []
+        self.wall_offset = 0
 
     def advance(self, seconds):
         self.now += seconds
@@ -38,11 +45,15 @@ class FakeClock:
     def monotonic(self):
         return self.now
 
+    def set_back(self, seconds):
+        self.wall_offset -= seconds
+
     def sleep(self, seconds):
         self.sleeps.append(seconds)
         self.now += seconds
 
-    time = monotonic
+    def time(self):
+        return self.now + self.wall_offset
 
 
 @pytest.fixture
@@ -69,6 +80,7 @@ def source(web_server, monkeypatch, clock):
     monkeypatch.setattr(discogs, 'RELEASE_URL', web_server.url + '/releases/%s')
     monkeypatch.setattr(discogs, 'MASTER_URL', web_server.url + '/masters/%s')
     monkeypatch.setattr(discogs, 'R_ID', discogs.R_ID_DEFAULT)
+    monkeypatch.setattr(discogs, 'API_KEY', '', raising=False)
     for path in sorted(DATA.glob('*.json')):
         kind, discogs_id = path.stem.split('-')
         web_server.add(f'/{kind}s/{discogs_id}', path, content_type='application/json')
@@ -489,3 +501,383 @@ def test_only_documented_fields(source, web_server):
         assert written(info) <= ALBUM_FIELDS, release_id
     info, _ = retrieve_master(source, NEVER_GONNA_MASTER, 'Never Gonna Give You Up')
     assert written(info) <= ALBUM_FIELDS
+
+
+# Looking up a release --------------------------------------------------------
+
+def lookup(source, *files):
+    """What the source finds when Search is clicked with the search box
+    empty: one search per album among the files, grouped as the Tag
+    Sources window groups them. Each file is a dict of field: values, as
+    a tag reads them (synthetic)."""
+    group = split_by_field(files, *source.group_by)
+    return [found for album in group for found in source.search(album, group[album])]
+
+
+def albums(found):
+    return [info['album'] for info, tracks in found]
+
+
+@pytest.mark.parametrize('text', ['249504', ' 249504 '])
+def test_search_by_release_id(source, text):
+    """tagsources.txt: "To retrieve a release, type its Discogs release id, the
+    number in its address on discogs.com, in the search box, eg. **1257896**
+    or **:r 1257896**." """
+    assert albums(source.keyword_search(text)) == ['Never Gonna Give You Up']
+
+
+@pytest.mark.parametrize('text', [
+    ':r 249504',
+    pytest.param(':r249504', id='no-space'),  # synthetic: the docs show a space
+])
+@pytest.mark.xfail(strict=True, raises=RetrievalError, reason=(
+    'only a bare release id is read: ":r 249504" gives "Discogs release id '
+    'should be an integer." (#725)'))
+def test_r_release_id(source, text):
+    """tagsources.txt: "To retrieve a release, type its Discogs release id, the
+    number in its address on discogs.com, in the search box, eg. **1257896**
+    or **:r 1257896**." The text without a space is synthetic."""
+    assert albums(source.keyword_search(text)) == ['Never Gonna Give You Up']
+
+
+def test_r_without_id(source, web_server):
+    """Synthetic: ":r" alone has no release id to retrieve."""
+    with pytest.raises(RetrievalError, match='^Discogs release id should be an integer.$'):
+        source.keyword_search(':r')
+
+    assert web_server.requests == []
+
+
+@pytest.mark.parametrize('text', [
+    'Rick Astley;Never Gonna Give You Up',
+    'Rick Astley;',
+    ';Never Gonna Give You Up',
+    'never gonna give you up',
+])
+def test_text_is_not_searched(source, web_server, text):
+    """tagsources.txt: "puddletag doesn't search Discogs by artist or album."
+    The texts are synthetic."""
+    with pytest.raises(RetrievalError, match='^Discogs release id should be an integer.$'):
+        source.keyword_search(text)
+
+    assert web_server.requests == []
+
+
+def test_files_with_release_id(source):
+    """tagsources.txt: "With the search box empty, each album among the
+    selected files is retrieved by the release id its files carry: in the field
+    the tag source's **Field to use for discogs_id** preference names
+    (**discogs_id** unless changed), or else in **discogs_r_id**, which a
+    retrieved release writes." The files are synthetic."""
+    found = lookup(source, {'album': ['Never Gonna Give You Up'],
+                            'artist': ['Rick Astley'], 'discogs_id': ['249504']})
+
+    assert albums(found) == ['Never Gonna Give You Up']
+
+
+def test_files_without_artist(source):
+    """tagsources.txt: "With the search box empty, each album among the
+    selected files is retrieved by the release id its files carry". The file,
+    with an album and no artist, is synthetic."""
+    found = lookup(source, {'album': ['Never Gonna Give You Up'],
+                            'discogs_id': ['249504']})
+
+    assert albums(found) == ['Never Gonna Give You Up']
+
+
+def test_release_id_field_preference(source):
+    """tagsources.txt: "in the field the tag source's **Field to use for
+    discogs_id** preference names (**discogs_id** unless changed)". The field
+    name and the files are synthetic."""
+    source.applyPrefs([False, 1, 'my_discogs', ''])
+
+    assert albums(lookup(source, {'album': ['x'], 'my_discogs': ['249504']})) == [
+        'Never Gonna Give You Up']
+    assert lookup(source, {'album': ['x'], 'discogs_id': ['249504']}) == []
+
+
+def test_files_without_release_id_find_nothing(source, web_server):
+    """Synthetic: files without a release id aren't searched for by their
+    album or artist."""
+    found = lookup(source, {'album': ['Never Gonna Give You Up'],
+                            'artist': ['Rick Astley']})
+
+    assert found == []
+    assert web_server.requests == []
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    'files are looked up only by the "Field to use for discogs_id" preference, '
+    'not by discogs_r_id, which a retrieved release writes'))
+def test_files_with_a_retrieved_release_id(source):
+    """tagsources.txt: "or else in **discogs_r_id**, which a retrieved release
+    writes." The file, carrying the fields a retrieval returned, is
+    synthetic."""
+    info, _ = retrieve(source, NEVER_GONNA)
+
+    found = lookup(source, {'album': [info['album']],
+                            'discogs_r_id': [info['discogs_r_id']]})
+
+    assert albums(found) == ['Never Gonna Give You Up']
+
+
+@pytest.mark.xfail(strict=True, raises=IndexError, reason=(
+    'search() with no artists raises IndexError on an artist it never uses'))
+def test_search_without_artists(source):
+    """Synthetic: a script or plugin calling search() with no files for the
+    album gets no result, not a crash."""
+    assert source.search('Never Gonna Give You Up', {}) == []
+
+
+def test_unknown_release_id(source, web_server):
+    """Synthetic: Discogs answers an id it doesn't know with 404 (its body is
+    in Discogs' shape)."""
+    web_server.add('/releases/999999999', '{"message": "Release not found."}',
+                   status=404, content_type='application/json')
+
+    with pytest.raises(RetrievalError, match='^HTTP Error 404: Not Found$'):
+        source.keyword_search('999999999')
+
+
+def test_server_error(source, web_server):
+    """Synthetic: Discogs answering with a server error."""
+    web_server.add('/releases/1', b'error', status=500)
+
+    with pytest.raises(RetrievalError, match='^HTTP Error 500: Internal Server Error$'):
+        retrieve(source, 1)
+
+
+def test_gzipped_answer(source, web_server):
+    """Synthetic: the requests ask for gzip, and a gzipped answer is read as
+    the release."""
+    web_server.add('/releases/249504',
+                   gzip.compress((DATA / 'release-249504.json').read_bytes()),
+                   content_type='application/json')
+
+    assert retrieve(source, NEVER_GONNA)[0]['album'] == 'Never Gonna Give You Up'
+
+
+# Covers ----------------------------------------------------------------------
+
+# Two images, front and back, each in Discogs' two sizes.
+COVERS = [('front.jpg', 'front-150.jpg'), ('back.jpg', 'back-150.jpg')]
+NEVER_RETRIEVED = 'covers are never retrieved: retrieve() has "if False and self._getcover"'
+
+
+def covers(web_server, release_id, sizes):
+    """Serves release ``release_id`` with images (synthetic: the recordings
+    have none), one per (large, small) pair of file names in ``sizes``,
+    '' for a size Discogs doesn't give. Each image answers with a JPEG's
+    first bytes and its name. Returns each image's bytes by file name."""
+    release = recorded(f'release-{release_id}')
+    release['images'] = [
+        {'type': 'secondary' if i else 'primary',
+         'uri': large and f'{web_server.url}/{large}',
+         'uri150': small and f'{web_server.url}/{small}'}
+        for i, (large, small) in enumerate(sizes)]
+    serve(web_server, release_id, release)
+    data = {}
+    for name in sorted(n for pair in sizes for n in pair if n):
+        data[name] = b'\xff\xd8\xff' + name.encode()
+        web_server.add(f'/{name}', data[name], content_type='image/jpeg')
+    return data
+
+
+def default_prefs(source):
+    """The preferences of a user who never changed them: each one's
+    default, as the Tag Sources window reads them from an empty config."""
+    return [option[2][1] if option[1] == COMBO else option[2]
+            for option in source.preferences]
+
+
+@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
+def test_large_covers(source, web_server):
+    """tagsources.txt: "**__image**: Cover art. Usually more than one image."
+    "With **Retrieve Cover** checked (the default), the release's images
+    become its cover art, at the size the tag source's **Cover size to
+    retrieve** preference picks: **Large** (the default) or **Small**."
+    Synthetic images, front and back."""
+    data = covers(web_server, NEVER_GONNA, COVERS)
+    source.applyPrefs([True, 1, discogs.R_ID_DEFAULT, ''])
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['front.jpg']}, {'data': data['back.jpg']}]
+
+
+@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
+def test_small_covers(source, web_server):
+    """tagsources.txt: "**__image**: Cover art. Usually more than one image."
+    "...at the size the tag source's **Cover size to retrieve** preference
+    picks: **Large** (the default) or **Small**." Synthetic images, front
+    and back."""
+    data = covers(web_server, NEVER_GONNA, COVERS)
+    source.applyPrefs([True, 0, discogs.R_ID_DEFAULT, ''])
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['front-150.jpg']}, {'data': data['back-150.jpg']}]
+
+
+@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
+def test_covers_default_to_large(source, web_server):
+    """tagsources.txt: "With **Retrieve Cover** checked (the default), ...
+    **Large** (the default) or **Small**." A user who never changed the
+    preferences gets the large images. Synthetic images."""
+    data = covers(web_server, NEVER_GONNA, COVERS)
+    source.applyPrefs(default_prefs(source))
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['front.jpg']}, {'data': data['back.jpg']}]
+
+
+@pytest.mark.xfail(strict=True, reason='covers are never retrieved, and a new '
+                                       "source's cover size is 1, which names no size")
+def test_new_source_gets_large_covers(source, web_server):
+    """tagsources.txt: "**Large** (the default) or **Small**." A source
+    nobody set the preferences of (a plugin's, a script's) gets the large
+    images. Synthetic images."""
+    data = covers(web_server, NEVER_GONNA, COVERS)
+
+    info = discogs.Discogs().retrieve(NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['front.jpg']}, {'data': data['back.jpg']}]
+
+
+def test_no_covers_when_unchecked(source, web_server):
+    """tagsources.txt: "**__image**: Cover art. Usually more than one
+    image." With Retrieve Cover unchecked there is none, and the images
+    aren't downloaded. Synthetic images."""
+    covers(web_server, NEVER_GONNA, COVERS)
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert '__image' not in info
+    assert [r.path for r in web_server.requests] == ['/releases/249504']
+
+
+@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
+def test_large_falls_back_to_small(source, web_server):
+    """Synthetic: an image Discogs gives only in its small size. tagsources.txt:
+    "**__image**: Cover art. Usually more than one image." Large takes what
+    there is."""
+    data = covers(web_server, NEVER_GONNA, [('', 'front-150.jpg')])
+    source.applyPrefs([True, 1, discogs.R_ID_DEFAULT, ''])
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['front-150.jpg']}]
+
+
+@pytest.mark.xfail(strict=True, reason='covers are never retrieved, and Small '
+                                       'with no small image opens the address ""')
+def test_small_falls_back_to_large(source, web_server):
+    """Synthetic: an image Discogs gives only in its large size. tagsources.txt:
+    "**__image**: Cover art. Usually more than one image." Small takes what
+    there is."""
+    data = covers(web_server, NEVER_GONNA, [('front.jpg', '')])
+    source.applyPrefs([True, 0, discogs.R_ID_DEFAULT, ''])
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['front.jpg']}]
+
+
+@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
+def test_failed_cover_is_skipped(source, web_server):
+    """Synthetic: the front image is gone (404). tagsources.txt: "**__image**:
+    Cover art. Usually more than one image." The release is still retrieved,
+    with the images that came."""
+    data = covers(web_server, NEVER_GONNA, COVERS)
+    web_server.add('/front.jpg', b'', status=404)
+    source.applyPrefs([True, 1, discogs.R_ID_DEFAULT, ''])
+
+    info = retrieve(source, NEVER_GONNA)[0]
+
+    assert info['__image'] == [{'data': data['back.jpg']}]
+
+
+# The pause between requests, and the API key ---------------------------------
+
+def test_first_request_does_not_wait(source, clock):
+    """Synthetic: the docs don't mention the pause. The first request goes
+    straight out."""
+    retrieve(source, NEVER_GONNA)
+
+    assert clock.sleeps == []
+
+
+def test_requests_are_a_second_apart(source, clock):
+    """Synthetic: the docs don't mention the pause. A request right after
+    another waits a second."""
+    retrieve(source, NEVER_GONNA)
+    retrieve(source, NEVER_GONNA)
+
+    assert clock.sleeps == [1]
+
+
+def test_a_request_after_a_second_does_not_wait(source, clock):
+    """Synthetic: the docs don't mention the pause."""
+    retrieve(source, NEVER_GONNA)
+    clock.advance(1)
+    retrieve(source, NEVER_GONNA)
+
+    assert clock.sleeps == []
+
+
+@pytest.mark.xfail(strict=True, reason='the source waits a whole second before '
+                   'a request, whatever part of it has gone')
+def test_a_request_waits_only_the_rest_of_the_second(source, clock):
+    """Synthetic: the docs don't mention the pause."""
+    retrieve(source, NEVER_GONNA)
+    clock.advance(0.25)
+    retrieve(source, NEVER_GONNA)
+
+    assert clock.sleeps == [pytest.approx(0.75)]
+
+
+@pytest.mark.xfail(strict=True, reason='the source times its waits by the wall '
+                   'clock: set back an hour, it waits an hour')
+def test_setting_the_clock_back_does_not_hold_requests(source, clock):
+    """Synthetic: the docs don't mention the pause. A clock change doesn't
+    stop the requests for as long as it moved the clock."""
+    retrieve(source, NEVER_GONNA)
+    clock.set_back(3600)
+    retrieve(source, NEVER_GONNA)
+
+    assert clock.sleeps == [1]
+
+
+@pytest.mark.xfail(strict=True, reason='the API Key preference is read nowhere')
+@pytest.mark.parametrize('kind', ['master', 'release'])
+def test_api_key_is_sent(source, web_server, kind):
+    """tagsources.txt: "puddletag sends it with each request to Discogs'
+    API." (the paragraph on the **API Key** preference)."""
+    source.applyPrefs([False, 1, discogs.R_ID_DEFAULT, 'synthetic-token'])
+    if kind == 'release':
+        retrieve(source, NEVER_GONNA)
+    else:
+        retrieve_master(source, NEVER_GONNA_MASTER, 'Never Gonna Give You Up')
+
+    assert web_server.requests[-1].headers['Authorization'] == 'Discogs token=synthetic-token'
+
+
+def test_no_api_key_sends_no_authorization(source, web_server):
+    """tagsources.txt: "If you have a Discogs account, you can paste a
+    personal access token from its developer settings into the tag source's
+    **API Key** preference". Synthetic: with no key pasted, nothing is
+    sent."""
+    retrieve(source, NEVER_GONNA)
+
+    assert 'Authorization' not in web_server.requests[-1].headers
+
+
+def test_api_key_is_not_sent_elsewhere(source, web_server):
+    """Synthetic: Mp3tag scripts download other sites' pages through
+    discogs.urlopen, and the key is Discogs' own."""
+    source.applyPrefs([False, 1, discogs.R_ID_DEFAULT, 'synthetic-token'])
+    web_server.add('/page', b'page')
+
+    assert discogs.urlopen(web_server.url + '/page') == b'page'
+    assert 'Authorization' not in web_server.requests[-1].headers
