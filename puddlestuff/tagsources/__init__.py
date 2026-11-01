@@ -1,25 +1,15 @@
 import http.client
 import logging
-import os
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from html.parser import HTMLParser
 from importlib import import_module
-from os.path import join, exists
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from .. import version_string
-from ..constants import CONFIGDIR
-from ..findfunc import tagtofilename
-from ..puddleobjects import PuddleConfig
 from ..util import translate
-
-
-class FoundEncoding(Exception):
-    pass
 
 
 class WebServiceError(EnvironmentError):
@@ -45,13 +35,6 @@ class _SignalObject(QObject):
     logappend = pyqtSignal(str, name='logappend')
 
 
-cparser = PuddleConfig()
-
-COVERDIR = cparser.get('tagsources', 'coverdir', join(CONFIGDIR, 'covers'))
-COVER_PATTERN = '%artist% - %album%'
-SAVECOVERS = False
-
-mapping = {}
 status_obj = _SignalObject()
 # MusicBrainz asks for "Application name/<version> ( contact-url )".
 DEFAULT_USERAGENT = ('puddletag/' + version_string +
@@ -115,38 +98,6 @@ def retrieve_cover(url):
     return {'__image': [{'data': cover}]}
 
 
-def save_cover(info, data, filetype):
-    filename = tagtofilename(COVER_PATTERN, info, True, filetype)
-    save_file(filename, data)
-
-
-def save_file(filename, data):
-    path = join(filename, COVERDIR)
-    if exists(path):
-        save_file('%s0' % filename)
-        return
-    f = open(filename, 'wb')
-    f.write(data)
-    f.close()
-
-
-def set_coverdir(dirpath):
-    global COVERDIR
-    COVERDIR = dirpath
-
-
-def set_savecovers(value):
-    global SAVECOVERS
-    SAVECOVERS = value
-
-
-def set_mapping(m):
-    global mapping
-
-    mapping.clear()
-    mapping.update(m)
-
-
 def set_status(msg):
     status_obj.statusChanged.emit(msg)
 
@@ -161,19 +112,6 @@ def set_useragent(agent):
     if re.fullmatch(r'puddletag/\S+( \( \S+ \))?', agent):
         agent = DEFAULT_USERAGENT
     useragent = agent
-
-
-def to_file(data, name):
-    if os.path.exists(name):
-        return to_file(data, name + '_')
-
-    f = open(name, 'w')
-    f.write(data)
-    f.close()
-
-
-def url_encode_non_ascii(b):
-    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
 
 
 def urlopen(url, mask=True, code=False, headers=None):
@@ -197,29 +135,6 @@ def urlopen(url, mask=True, code=False, headers=None):
 
 def write_log(text):
     status_obj.logappend.emit(text)
-
-
-class MetaProcessor(HTMLParser):
-
-    def reset(self):
-        self.pieces = []
-        self.encoding = None
-        HTMLParser.reset(self)
-
-    def start_meta(self, text):
-        text = [tuple([x.lower() for x in z]) for z in text]
-        if text[0] == ('http-equiv', 'content-type'):
-            d = dict(text)
-            if 'charset' in d:
-                encoding = d['charset']
-                error = FoundEncoding()
-                error.encoding = encoding
-                raise error
-            if text[1][0] == 'content':
-                encoding = re.search('charset.*=(.+)', text[1][1]).group(1)
-                error = FoundEncoding()
-                error.encoding = encoding
-                raise error
 
 
 tagsources = []
