@@ -332,8 +332,12 @@ class Discogs(object):
 
     def keyword_search(self, text):
 
+        text = text.strip()
+        if text.startswith(':r'):
+            text = text[len(':r'):].strip()
+
         try:
-            r_id = int(text.strip())
+            r_id = int(text)
         except (TypeError, ValueError):
             raise RetrievalError(translate(
                 "Discogs", 'Discogs release id should be an integer.'))

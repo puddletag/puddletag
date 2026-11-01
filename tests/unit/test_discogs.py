@@ -530,9 +530,6 @@ def test_search_by_release_id(source, text):
     ':r 249504',
     pytest.param(':r249504', id='no-space'),  # synthetic: the docs show a space
 ])
-@pytest.mark.xfail(strict=True, raises=RetrievalError, reason=(
-    'only a bare release id is read: ":r 249504" gives "Discogs release id '
-    'should be an integer." (#725)'))
 def test_r_release_id(source, text):
     """tagsources.txt: "To retrieve a release, type its Discogs release id, the
     number in its address on discogs.com, in the search box, eg. **1257896**
