@@ -23,22 +23,14 @@ RELEASE = 'release'
 
 SITE_MASTER_URL = 'https://www.discogs.com/master/'
 SITE_RELEASE_URL = 'https://www.discogs.com/releases/'
-API_RELEASE_URL = 'https://api.discogs.com/releases/'
-API_MASTER_URL = 'https://api.discogs.com/masters/'
-SITE_URL = 'https://www.discogs.com'
 
 BASE_URL = 'https://api.discogs.com/%s'
-SEARCH_URL = BASE_URL % 'database/search?type=release&q=%s&per_page=100'
 RELEASE_URL = BASE_URL % 'releases/%s'
 MASTER_URL = BASE_URL % 'masters/%s'
 
 SMALLIMAGE = '#smallimage'
 LARGEIMAGE = '#largeimage'
 IMAGE_TYPES = [SMALLIMAGE, LARGEIMAGE]
-
-IMAGEKEYS = {
-    'SmallImage': SMALLIMAGE,
-    'LargeImage': LARGEIMAGE}
 
 # The release's own values that are kept, by the field each becomes.
 ALBUM_KEYS = {
@@ -50,7 +42,6 @@ ALBUM_KEYS = {
     'released': 'year',
     'resource_url': '#discogs_url',
     'styles': 'style',
-    'thumb': '#cover_url',
     'title': 'album',
     'type': '#release_type',
     'uri': 'discogs_uri',
