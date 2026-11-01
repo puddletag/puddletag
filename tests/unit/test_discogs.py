@@ -653,7 +653,6 @@ def test_gzipped_answer(source, web_server):
 
 # Two images, front and back, each in Discogs' two sizes.
 COVERS = [('front.jpg', 'front-150.jpg'), ('back.jpg', 'back-150.jpg')]
-NEVER_RETRIEVED = 'covers are never retrieved: retrieve() has "if False and self._getcover"'
 
 
 def covers(web_server, release_id, sizes):
@@ -682,7 +681,6 @@ def default_prefs(source):
             for option in source.preferences]
 
 
-@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
 def test_large_covers(source, web_server):
     """tagsources.txt: "**__image**: Cover art. Usually more than one image."
     "With **Retrieve Cover** checked (the default), the release's images
@@ -697,7 +695,6 @@ def test_large_covers(source, web_server):
     assert info['__image'] == [{'data': data['front.jpg']}, {'data': data['back.jpg']}]
 
 
-@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
 def test_small_covers(source, web_server):
     """tagsources.txt: "**__image**: Cover art. Usually more than one image."
     "...at the size the tag source's **Cover size to retrieve** preference
@@ -711,7 +708,6 @@ def test_small_covers(source, web_server):
     assert info['__image'] == [{'data': data['front-150.jpg']}, {'data': data['back-150.jpg']}]
 
 
-@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
 def test_covers_default_to_large(source, web_server):
     """tagsources.txt: "With **Retrieve Cover** checked (the default), ...
     **Large** (the default) or **Small**." A user who never changed the
@@ -724,8 +720,6 @@ def test_covers_default_to_large(source, web_server):
     assert info['__image'] == [{'data': data['front.jpg']}, {'data': data['back.jpg']}]
 
 
-@pytest.mark.xfail(strict=True, reason='covers are never retrieved, and a new '
-                                       "source's cover size is 1, which names no size")
 def test_new_source_gets_large_covers(source, web_server):
     """tagsources.txt: "**Large** (the default) or **Small**." A source
     nobody set the preferences of (a plugin's, a script's) gets the large
@@ -749,7 +743,6 @@ def test_no_covers_when_unchecked(source, web_server):
     assert [r.path for r in web_server.requests] == ['/releases/249504']
 
 
-@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
 def test_large_falls_back_to_small(source, web_server):
     """Synthetic: an image Discogs gives only in its small size. tagsources.txt:
     "**__image**: Cover art. Usually more than one image." Large takes what
@@ -762,8 +755,6 @@ def test_large_falls_back_to_small(source, web_server):
     assert info['__image'] == [{'data': data['front-150.jpg']}]
 
 
-@pytest.mark.xfail(strict=True, reason='covers are never retrieved, and Small '
-                                       'with no small image opens the address ""')
 def test_small_falls_back_to_large(source, web_server):
     """Synthetic: an image Discogs gives only in its large size. tagsources.txt:
     "**__image**: Cover art. Usually more than one image." Small takes what
@@ -776,7 +767,6 @@ def test_small_falls_back_to_large(source, web_server):
     assert info['__image'] == [{'data': data['front.jpg']}]
 
 
-@pytest.mark.xfail(strict=True, reason=NEVER_RETRIEVED)
 def test_failed_cover_is_skipped(source, web_server):
     """Synthetic: the front image is gone (404). tagsources.txt: "**__image**:
     Cover art. Usually more than one image." The release is still retrieved,

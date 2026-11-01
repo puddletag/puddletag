@@ -59,7 +59,7 @@ Using Discogs
 
 The Discogs.com tag source uses Discogs.com's API to retrieve album information by its Discogs release id.
 
-Be sure to configure the tag source to retrieve the optimum size cover art. It defaults to Large.
+With **Retrieve Cover** checked (the default), the release's images become its cover art, at the size the tag source's **Cover size to retrieve** preference picks: **Large** (the default) or **Small**.
 
 .. note:: Discogs doesn't allow lookups without a user agent any more. If you get **Client Refused** errors this is the reason. To rectify, set the user agent in Edit->Preferences->Tag Sources to **puddletag/0.9.11** or any other valid user agent.
 

@@ -248,22 +248,16 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     if image in IMAGE_TYPES and '#cover-url' in info:
         data = []
         for large, small in info['#cover-url']:
-            if image == LARGEIMAGE and large:
-                write_log(
-                    translate('Discogs', "Retrieving cover: {}").format(large))
-                try:
-                    data.append({DATA: urlopen(large)})
-                except RetrievalError as e:
-                    write_log(translate(
-                        'Discogs', 'Error retrieving image:') + str(e))
-            else:
-                write_log(
-                    translate('Discogs', "Retrieving cover: {}").format(small))
-                try:
-                    data.append({DATA: urlopen(small)})
-                except RetrievalError as e:
-                    write_log(translate(
-                        'Discogs', 'Error retrieving image:') + str(e))
+            address = (large or small) if image == LARGEIMAGE else (small or large)
+            if not address:
+                continue
+            write_log(
+                translate('Discogs', "Retrieving cover: {}").format(address))
+            try:
+                data.append({DATA: urlopen(address)})
+            except RetrievalError as e:
+                write_log(translate(
+                    'Discogs', 'Error retrieving image:') + str(e))
         if data:
             info.update({'__image': data})
 
@@ -318,7 +312,7 @@ class Discogs(object):
     def __init__(self):
         super(Discogs, self).__init__()
         self._getcover = True
-        self.covertype = 1
+        self.covertype = LARGEIMAGE
 
         self.preferences = [
             [translate('Discogs', 'Retrieve Cover'), CHECKBOX, True],
@@ -366,7 +360,7 @@ class Discogs(object):
         return []
 
     def retrieve(self, info):
-        if False and self._getcover:  # retrieving images is broken by Discogs
+        if self._getcover:
             return retrieve_album(info, self.covertype)
         else:
             return retrieve_album(info, None)
