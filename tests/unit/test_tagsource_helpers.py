@@ -275,8 +275,6 @@ def test_encoding_of_a_page_without_one_is_the_default():
 # 2.1 through 2.3 below." "Convert the character to a sequence of one or more
 # octets using UTF-8", "Convert each octet to %HH". The query case is
 # synthetic, the same rule.
-@pytest.mark.xfail(strict=True,
-                   reason='any non-ASCII character outside the host raises UnicodeDecodeError')
 @pytest.mark.parametrize(('iri', 'uri'), [
     pytest.param('http://www.example.org/Dürst', 'http://www.example.org/D%C3%BCrst',
                  id='path'),
@@ -289,11 +287,7 @@ def test_encoding_of_a_page_without_one_is_the_default():
     # and U+007D (})", and the query percent-encode set "the C0 control
     # percent-encode set and U+0020 SPACE, ...": a space and the controls
     # become %XX. Synthetic address.
-    pytest.param('http://example.org/a b', 'http://example.org/a%20b', id='space',
-                 marks=pytest.mark.xfail(
-                     strict=True,
-                     reason='the space is left as it is, and the request then raises '
-                            'http.client.InvalidURL')),
+    pytest.param('http://example.org/a b', 'http://example.org/a%20b', id='space'),
 ])
 def test_non_ascii_characters_are_percent_encoded_as_utf8(iri, uri):
     assert iri_to_uri(iri) == uri
@@ -315,8 +309,6 @@ def test_ascii_address_is_unchanged():
 # tagsources.txt: "puddletag supports using Mp3tag's tag sources". Their search and
 # album pages download through Discogs' urlopen, and a result's address may
 # hold any character (synthetic).
-@pytest.mark.xfail(strict=True, raises=UnicodeDecodeError,
-                   reason='any non-ASCII character outside the host raises UnicodeDecodeError')
 def test_discogs_downloads_a_non_ascii_address(web_server, no_wait):
     web_server.add('/Björk/cover.jpg', b'synthetic image')
     assert discogs.urlopen(web_server.url + '/Björk/cover.jpg') == b'synthetic image'

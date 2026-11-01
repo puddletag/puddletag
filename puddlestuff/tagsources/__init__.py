@@ -85,14 +85,16 @@ def find_id(tracks, field):
             return value[0]
 
 
-# From http://stackoverflow.com/questions/4389572 by bobince
 def iri_to_uri(iri):
-    parts = urllib.parse.urlparse(iri)
-    return urllib.parse.urlunparse(
-        part.encode('idna') if i == 1
-        else part.encode('utf-8')
-        for i, part in enumerate(parts)
-    ).decode()
+    """The address as a URI (RFC 3987, 3.1): the host in IDNA; elsewhere
+    spaces, control characters and every non-ASCII character as their UTF-8
+    bytes, percent-encoded."""
+    parts = urllib.parse.urlsplit(iri)
+    netloc = parts.netloc.encode('idna').decode('ascii')
+    path, query, fragment = (
+        re.sub('[^\x21-\x7e]+', lambda m: urllib.parse.quote(m.group()), part)
+        for part in (parts.path, parts.query, parts.fragment))
+    return urllib.parse.urlunsplit((parts.scheme, netloc, path, query, fragment))
 
 
 def parse_searchstring(text):
