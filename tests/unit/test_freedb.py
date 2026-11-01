@@ -346,13 +346,12 @@ def test_http_error(gnudb):
     assert str(excinfo.value) == 'HTTP Error 500: Internal Server Error'
 
 
-@pytest.mark.xfail(strict=True, reason='requests have no timeout')
 @pytest.mark.timeout(10)
 def test_silent_gnudb_times_out(silent_server, monkeypatch, clock):
     # Synthetic: a server that accepts the connection and never answers is
     # reported, not waited on for ever.
     monkeypatch.setattr(CDDB, 'default_server', silent_server)
-    monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2, raising=False)
+    monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2)
 
     with pytest.raises(RetrievalError) as excinfo:
         freedb.search_by_id(TRACK_INFO)

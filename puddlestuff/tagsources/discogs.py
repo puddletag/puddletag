@@ -1,19 +1,17 @@
 import gzip
 import json
 import re
-import socket
 import time
 import numbers
-import urllib.error
 import urllib.parse
-import urllib.request
 from copy import deepcopy
 from io import StringIO
 
 from puddlestuff.audioinfo import DATA, isempty
 from puddlestuff.constants import CHECKBOX, COMBO, TEXT
 from puddlestuff.tagsources import (
-    find_id, write_log, RetrievalError, iri_to_uri, get_useragent)
+    find_id, write_log, RetrievalError)
+from puddlestuff.tagsources import urlopen as tagsources_urlopen
 from puddlestuff.util import translate
 
 R_ID_DEFAULT = 'discogs_id'
@@ -271,29 +269,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
 
 def urlopen(url, token=''):
-    url = iri_to_uri(url)
-    request = urllib.request.Request(url)
-    request.add_header('Accept-Encoding', 'gzip')
-    request.add_header('User-Agent', get_useragent())
+    headers = {'Accept-Encoding': 'gzip'}
     if token:
-        request.add_header('Authorization', 'Discogs token=' + token)
+        headers['Authorization'] = 'Discogs token=' + token
 
     _wait()
 
-    try:
-        data = urllib.request.urlopen(request).read()
-    except urllib.error.URLError as e:
-        try:
-            msg = '%s (%s)' % (e.reason.strerror, e.reason.errno)
-        except AttributeError:
-            msg = str(e)
-        raise RetrievalError(msg)
-    except socket.error as e:
-        msg = '%s (%s)' % (e.strerror, e.errno)
-        raise RetrievalError(msg)
-    except EnvironmentError as e:
-        msg = '%s (%s)' % (e.strerror, e.errno)
-        raise RetrievalError(msg)
+    data = tagsources_urlopen(url, headers=headers)
 
     try:
         data = gzip.decompress(data)

@@ -1,7 +1,7 @@
+import http.client
 import logging
 import os
 import re
-import socket
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -57,6 +57,8 @@ status_obj = _SignalObject()
 DEFAULT_USERAGENT = ('puddletag/' + version_string +
                      ' ( https://github.com/puddletag/puddletag )')
 useragent = DEFAULT_USERAGENT
+# Seconds a request waits for the server before it gives up.
+TIMEOUT = 30
 
 
 def get_encoding(page, decode=False, default=None):
@@ -174,39 +176,23 @@ def url_encode_non_ascii(b):
     return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
 
 
-def urlopen(url, mask=True, code=False):
+def urlopen(url, mask=True, code=False, headers=None):
+    request = urllib.request.Request(iri_to_uri(url))
+    request.add_header('User-Agent', get_useragent())
+    for name, value in (headers or {}).items():
+        request.add_header(name, value)
     try:
-        request = urllib.request.Request(url)
-        request.add_header('User-Agent', get_useragent())
-        page = urllib.request.build_opener().open(request)
-        if page.code == 403:
-            raise RetrievalError(
-                translate("Tag Sources", 'HTTPError 403: Forbidden'))
-        elif page.code == 404:
-            raise RetrievalError(
-                translate("Tag Sources", "Page doesn't exist"))
-        if code:
-            return page.read(), page.code
-        else:
-            return page.read()
+        page = urllib.request.build_opener().open(request, timeout=TIMEOUT)
+        data = page.read()
+    except urllib.error.HTTPError as e:
+        raise RetrievalError(str(e), e.code)
     except urllib.error.URLError as e:
-        try:
-            msg = '%s (%s)' % (e.reason.strerror, e.reason.errno)
-        except AttributeError:
-            msg = str(e)
-
-        try:
-            raise RetrievalError(msg, e.code)
-        except AttributeError:
-            msg = e.args[1] if len(e.args) > 1 else e.args[0]
-            raise RetrievalError(
-                translate('Defaults', "Connection Error: {}").format(msg))
-    except socket.error as e:
-        msg = '%s (%s)' % (e.strerror, e.code)
-        raise RetrievalError(msg)
-    except EnvironmentError as e:
-        msg = '%s (%s)' % (e.strerror, e.code)
-        raise RetrievalError(msg)
+        raise RetrievalError(
+            translate('Defaults', "Connection Error: {}").format(e.reason))
+    except (OSError, http.client.HTTPException) as e:
+        raise RetrievalError(
+            translate('Defaults', "Connection Error: {}").format(e))
+    return (data, page.code) if code else data
 
 
 def write_log(text):

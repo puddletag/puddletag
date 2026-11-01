@@ -15,6 +15,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from puddlestuff import tagsources
+
 name = 'CDDB.py'
 version = 1.4
 
@@ -72,7 +74,7 @@ def query(track_info, server_url=None,
         'hello': ' '.join(str(word) for word in (user, host, client_name, client_version)),
         'proto': proto}))
 
-    response = urllib.request.urlopen(url)
+    response = urllib.request.urlopen(url, timeout=tagsources.TIMEOUT)
 
     # Four elements in header: status, category, disc-id, title
     header = _decode(response.readline()).rstrip().split(' ', 3)
@@ -122,7 +124,7 @@ def read(category, disc_id, server_url=None,
         'hello': ' '.join(str(word) for word in (user, host, client_name, client_version)),
         'proto': proto}))
 
-    response = urllib.request.urlopen(url)
+    response = urllib.request.urlopen(url, timeout=tagsources.TIMEOUT)
 
     header = _decode(response.readline()).rstrip().split(' ', 3)
 
