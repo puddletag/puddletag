@@ -257,7 +257,6 @@ def test_find_id_without_a_field_is_none():
     assert find_id([{'discogs_id': ['249504']}], '') is None
 
 
-@pytest.mark.xfail(strict=True, reason='a line break inside the XML declaration hides its encoding')
 def test_encoding_declared_over_two_lines():
     """XML 1.0, section 2.3: `S` includes line feeds (#xA), so a line break
     may separate the declaration's parts (synthetic page)."""

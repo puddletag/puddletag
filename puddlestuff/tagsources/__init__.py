@@ -61,7 +61,7 @@ useragent = DEFAULT_USERAGENT
 
 def get_encoding(page, decode=False, default=None):
     encoding = None
-    match = re.search(r'<\?xml(.+)\?>', page)
+    match = re.search(r'<\?xml(.+?)\?>', page, re.S)
     if match:
         enc = re.search(r'''encoding(?:\s*)=(?:\s*)["'](.+?)['"]''',
                         match.group(), re.I)
