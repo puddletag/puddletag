@@ -359,7 +359,6 @@ ALBUM_FIELDS = {
 }
 
 
-@pytest.mark.xfail(strict=True, reason='genres and styles are returned as genres and styles')
 @pytest.mark.parametrize('release_id, expected', [
     (BEATLES, (['Rock'], ['Art Rock', 'Pop Rock'])),
     (DVORAK, (['Classical'], ['Romantic'])),
@@ -378,7 +377,6 @@ def test_genre_and_style(source, release_id, expected):
     assert 'styles' not in info
 
 
-@pytest.mark.xfail(strict=True, reason='genres and styles are returned as genres and styles')
 def test_master_genre_and_style(source):
     """tagsources.txt: "**genre**: Genres associated with the album.",
     "**style**: Discogs styles." A master has them too."""
@@ -389,8 +387,7 @@ def test_master_genre_and_style(source):
 
 
 @pytest.mark.parametrize('release_id, expected', [
-    pytest.param(BEATLES, ['05099962829724'], marks=pytest.mark.xfail(
-        strict=True, reason='a catalog number two labels share is given twice')),
+    (BEATLES, ['05099962829724']),
     (DVORAK, ['SU 3533-2 031']),
     (EXISTENCE, ['SPLCD005']),
     (NEVER_GONNA, ['PB 41447']),
@@ -403,7 +400,6 @@ def test_catalog_numbers(source, release_id, expected):
     assert info['catno'] == expected
 
 
-@pytest.mark.xfail(strict=True, reason='the release media (Vinyl, CD) is returned in no field')
 @pytest.mark.parametrize('release_id, expected', [
     (BEATLES, ['CD']),
     (DVORAK, ['CD']),
@@ -418,7 +414,6 @@ def test_format_media(source, release_id, expected):
     assert info.get('discogs_format') == expected
 
 
-@pytest.mark.xfail(strict=True, reason="format comes from a set, so its order changes from run to run")
 def test_format_descriptions_keep_discogs_order(source):
     """tagsources.txt: "**format**: The format description (eg. Album, Single,
     etc.)" The descriptions come in the order Discogs lists them. All five
@@ -435,7 +430,6 @@ def test_format_descriptions_keep_discogs_order(source):
             for release_id in RELEASES} == expected
 
 
-@pytest.mark.xfail(strict=True, reason="album credits are written name;role:name;role, the track credits' separators swapped")
 @pytest.mark.parametrize('release_id, expected', [
     (EXISTENCE, 'Fiuzz:Compiled By;Painkiller (3):Mastered By;Roy Engel:Mastered By'),
     (NEVER_GONNA, 'Me Company:Design;Mark McGuire:Engineer;Mike Duffy:Engineer;'
@@ -452,7 +446,6 @@ def test_album_credits(source, release_id, expected):
     assert info['involvedpeople_album'] == expected
 
 
-@pytest.mark.xfail(strict=True, reason='the release id is returned only as the hidden #r_id')
 @pytest.mark.parametrize('release_id', RELEASES)
 def test_release_id(source, release_id):
     """tagsources.txt: "**discogs_r_id**: Discogs Release ID." """
@@ -470,12 +463,9 @@ def test_master_has_no_release_id(source):
 @pytest.mark.parametrize('release_id, expected', [
     (BEATLES, '2013-10-27'),
     (DVORAK, '2002'),
-    pytest.param(EXISTENCE, '2007-12', marks=pytest.mark.xfail(
-        strict=True, reason='an unknown month or day is written as 00')),
-    pytest.param(NEVER_GONNA, '1987-07', marks=pytest.mark.xfail(
-        strict=True, reason='an unknown month or day is written as 00')),
-    pytest.param(THE_WALL, None, marks=pytest.mark.xfail(
-        strict=True, reason='an unknown year is written as 0')),
+    (EXISTENCE, '2007-12'),
+    (NEVER_GONNA, '1987-07'),
+    (THE_WALL, None),
 ])
 def test_release_date(source, release_id, expected):
     """tagsources.txt: "**year**: The album's release date." Discogs writes
@@ -485,7 +475,6 @@ def test_release_date(source, release_id, expected):
     assert info.get('year') == expected
 
 
-@pytest.mark.xfail(strict=True, reason='marketplace and Discogs bookkeeping fields are returned (#522)')
 def test_only_documented_fields(source, web_server):
     """tagsources.txt lists the fields the source returns, and no marketplace
     ones (#522). The marketplace fields are synthetic: the recording has none

@@ -40,17 +40,21 @@ IMAGEKEYS = {
     'SmallImage': SMALLIMAGE,
     'LargeImage': LARGEIMAGE}
 
+# The release's own values that are kept, by the field each becomes.
 ALBUM_KEYS = {
-    'title': 'album',
-    'uri': 'discogs_uri',
-    'summary': 'discogs_summary',
-    'released': 'year',
-    'notes': 'discogs_notes',
+    'country': 'country',
+    'genres': 'genre',
     'id': '#r_id',
-    'thumb': '#cover_url',
+    'master_url': 'discogs_master_url',
+    'notes': 'discogs_notes',
+    'released': 'year',
     'resource_url': '#discogs_url',
+    'styles': 'style',
+    'thumb': '#cover_url',
+    'title': 'album',
     'type': '#release_type',
-    'master_url': "discogs_master_url"}
+    'uri': 'discogs_uri',
+    'year': 'year'}
 
 TRACK_KEYS = {
     'position': 'track',
@@ -154,7 +158,10 @@ def parse_album_json(data):
     info = {}
 
     formats = []
+    media = []
     for fmt in data.get('formats', []):
+        if fmt.get('name'):
+            media.append(fmt['name'])
         desc = fmt.get('descriptions', fmt.get('name', ''))
         if not desc:
             continue
@@ -164,21 +171,29 @@ def parse_album_json(data):
             formats.extend(desc)
 
     if formats:
-        info['format'] = list(set(formats))
+        info['format'] = list(dict.fromkeys(formats))
+    if media:
+        info['discogs_format'] = list(dict.fromkeys(media))
     info['artist'] = [z['name'] for z in data.get('artists', [])]
     info['artist'] = " & ".join([_f for _f in info['artist'] if _f])
     info['involvedpeople_album'] = \
-        ':'.join('%s;%s' % (z['name'], z['role'])
+        ';'.join('%s:%s' % (z['name'], z['role'])
                  for z in data.get('extraartists', []))
     info['label'] = [z['name'] for z in data.get('labels', [])]
-    info['catno'] = [_f for _f in (z.get('catno') for z in data.get('labels', [])) if _f]
-
-    info['companies'] = ';'.join(
-        '%s %s' % (z['entity_type_name'], z['name'])
-        for z in data.get('companies', []))
+    info['catno'] = list(dict.fromkeys(
+        _f for _f in (z.get('catno') for z in data.get('labels', [])) if _f))
     info['album'] = data['title']
-    cleaned_data = convert_dict(capture_dict_values(data), ALBUM_KEYS)
-    cleaned_data.update(capture_dict_values(convert_dict(info, ALBUM_KEYS)))
+
+    # Discogs writes what it doesn't know as 00, or 0 for a year.
+    kept = capture_dict_values(data)
+    if 'released' in kept:
+        kept['released'] = re.sub(r'(-00)+$', '', kept['released'])
+        kept.pop('year', None)
+    elif kept.get('year') == '0':
+        del kept['year']
+    cleaned_data = {
+        ALBUM_KEYS[key]: value for key, value in kept.items() if key in ALBUM_KEYS}
+    cleaned_data.update(capture_dict_values(info))
     info = cleaned_data
 
     if 'images' in data:
@@ -227,6 +242,8 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
     info = deepcopy(info)
     info.update(ret[0])
+    if rls_type != MASTER:
+        info['discogs_r_id'] = str(r_id)
 
     if image in IMAGE_TYPES and '#cover-url' in info:
         data = []
