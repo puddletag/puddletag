@@ -71,6 +71,8 @@ Textual searches are supported. Rules are as follows:
 +   Retrieving an album using it's Discogs Release ID is possible by using **:r release_id** where **release_id** is the Discogs Release ID.
 +   Type anything not matching the above to do a keyword search.
 
+If you have a Discogs account, you can paste a personal access token from its developer settings into the tag source's **API Key** preference: puddletag sends it with each request to Discogs' API. It is stored as plain text in puddletag's configuration.
+
 Fields returned this tag source are:
 
 +    **__image**: Cover art. Usually more than one image.

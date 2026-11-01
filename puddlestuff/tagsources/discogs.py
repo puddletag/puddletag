@@ -67,6 +67,7 @@ RELEASE_PROPERTIES_TO_IGNORE = [
     'series', 'released_formatted', 'identifiers', 'sub_tracks',
     'type_']
 
+API_KEY = ''  # the API Key preference: sent to Discogs' API only
 _last_request = None
 
 
@@ -246,7 +247,7 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
     url = MASTER_URL % r_id if rls_type == MASTER else RELEASE_URL % r_id
 
-    x = urlopen(url)
+    x = urlopen(url, API_KEY)
     ret = parse_album_json(json.loads(x))
 
     info = deepcopy(info)
@@ -278,11 +279,13 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
     return info, ret[1]
 
 
-def urlopen(url):
+def urlopen(url, token=''):
     url = iri_to_uri(url)
     request = urllib.request.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
     request.add_header('User-Agent', get_useragent())
+    if token:
+        request.add_header('Authorization', 'Discogs token=' + token)
 
     _wait()
 
@@ -326,8 +329,8 @@ class Discogs(object):
              [[translate("Discogs", 'Small'),
                translate("Discogs", 'Large')], 1]],
             [translate("Discogs", 'Field to use for discogs_id'), TEXT, R_ID],
-            [translate("Discogs", 'API Key (Stored as plain-text.'
-                                  'Leave empty to use default.)'), TEXT, ''],
+            [translate("Discogs", 'API Key (Stored as plain text. '
+                                  'Leave empty to send none.)'), TEXT, ''],
         ]
 
     def keyword_search(self, text):
@@ -381,6 +384,8 @@ class Discogs(object):
             R_ID = args[2]
         else:
             R_ID = R_ID_DEFAULT
+        global API_KEY
+        API_KEY = args[3].strip()
 
 
 info = Discogs

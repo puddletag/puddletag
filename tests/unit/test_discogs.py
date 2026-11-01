@@ -80,7 +80,7 @@ def source(web_server, monkeypatch, clock):
     monkeypatch.setattr(discogs, 'RELEASE_URL', web_server.url + '/releases/%s')
     monkeypatch.setattr(discogs, 'MASTER_URL', web_server.url + '/masters/%s')
     monkeypatch.setattr(discogs, 'R_ID', discogs.R_ID_DEFAULT)
-    monkeypatch.setattr(discogs, 'API_KEY', '', raising=False)
+    monkeypatch.setattr(discogs, 'API_KEY', '')
     for path in sorted(DATA.glob('*.json')):
         kind, discogs_id = path.stem.split('-')
         web_server.add(f'/{kind}s/{discogs_id}', path, content_type='application/json')
@@ -827,7 +827,6 @@ def test_setting_the_clock_back_does_not_hold_requests(source, clock):
     assert clock.sleeps == [1]
 
 
-@pytest.mark.xfail(strict=True, reason='the API Key preference is read nowhere')
 @pytest.mark.parametrize('kind', ['master', 'release'])
 def test_api_key_is_sent(source, web_server, kind):
     """tagsources.txt: "puddletag sends it with each request to Discogs'
