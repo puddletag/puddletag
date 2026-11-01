@@ -60,9 +60,9 @@ class FakeClock:
 def clock(monkeypatch):
     fake = FakeClock()
     monkeypatch.setattr(discogs, 'time', fake)
-    # When Discogs was last asked something: 0, as at import, so the first
-    # request doesn't wait.
-    monkeypatch.setattr(discogs, '__reference_time', 0)
+    # When Discogs was last asked something: shared by every request, so the
+    # first doesn't wait.
+    monkeypatch.setattr(discogs, '_last_request', None)
     return fake
 
 
@@ -808,8 +808,6 @@ def test_a_request_after_a_second_does_not_wait(source, clock):
     assert clock.sleeps == []
 
 
-@pytest.mark.xfail(strict=True, reason='the source waits a whole second before '
-                   'a request, whatever part of it has gone')
 def test_a_request_waits_only_the_rest_of_the_second(source, clock):
     """Synthetic: the docs don't mention the pause."""
     retrieve(source, NEVER_GONNA)
@@ -819,8 +817,6 @@ def test_a_request_waits_only_the_rest_of_the_second(source, clock):
     assert clock.sleeps == [pytest.approx(0.75)]
 
 
-@pytest.mark.xfail(strict=True, reason='the source times its waits by the wall '
-                   'clock: set back an hour, it waits an hour')
 def test_setting_the_clock_back_does_not_hold_requests(source, clock):
     """Synthetic: the docs don't mention the pause. A clock change doesn't
     stop the requests for as long as it moved the clock."""

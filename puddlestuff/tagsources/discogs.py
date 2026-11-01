@@ -67,8 +67,17 @@ RELEASE_PROPERTIES_TO_IGNORE = [
     'series', 'released_formatted', 'identifiers', 'sub_tracks',
     'type_']
 
-__minimum_request_separation = 1  # second - no more than one request sent to discogs in this time frame
-__reference_time = 0  # A reference time. The initial value ensure first request goes ahead
+_last_request = None
+
+
+def _wait():
+    """Keeps the requests to Discogs a second apart."""
+    global _last_request
+    if _last_request is not None:
+        wait = _last_request + 1 - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+    _last_request = time.monotonic()
 
 
 def convert_dict(d, keys=None):
@@ -270,15 +279,12 @@ def retrieve_album(info, image=LARGEIMAGE, rls_type=None):
 
 
 def urlopen(url):
-    global __reference_time
     url = iri_to_uri(url)
     request = urllib.request.Request(url)
     request.add_header('Accept-Encoding', 'gzip')
     request.add_header('User-Agent', get_useragent())
 
-    while (time.time() - __reference_time) < __minimum_request_separation:
-        time.sleep(__minimum_request_separation)
-    __reference_time = time.time()
+    _wait()
 
     try:
         data = urllib.request.urlopen(request).read()
@@ -378,7 +384,3 @@ class Discogs(object):
 
 
 info = Discogs
-
-if __name__ == '__main__':
-    k = Discogs()
-    print(k.keyword_search(":r 911637"))

@@ -232,7 +232,7 @@ ITUNES = Path(__file__).parent.parent / 'data' / 'mp3tag' / 'iTunes#Spain.src'
 def server(web_server, monkeypatch):
     """The local web server, without the second Mp3tag scripts wait between
     requests: they download through Discogs' urlopen."""
-    monkeypatch.setattr(discogs, '__minimum_request_separation', 0)
+    monkeypatch.setattr(discogs, '_wait', lambda: None)
     return web_server
 
 
