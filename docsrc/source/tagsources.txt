@@ -57,7 +57,7 @@ AcoustID returns the same data as the :ref:`MusicBrainz tag source <musicbrainz>
 Using Discogs
 -------------
 
-The Discogs.com tag source uses Discogs.com's XML service to retrieve album information.
+The Discogs.com tag source uses Discogs.com's API to retrieve album information by its Discogs release id.
 
 Be sure to configure the tag source to retrieve the optimum size cover art. It defaults to Large.
 
@@ -74,24 +74,26 @@ Textual searches are supported. Rules are as follows:
 Fields returned this tag source are:
 
 +    **__image**: Cover art. Usually more than one image.
++    **__length**: The track's length, when Discogs has it.
 +    **album**: The release's (album's) name.
-+    **artist**: The track's artist.
++    **artist**: The track's artist, as Discogs names it: an artist sharing a name with another carries Discogs' number, eg. **Shift (2)**.
++    **catno**: Discogs catalog number.
 +    **country**: The album's release country
-+    **discogs_catno**: Discogs catalog number.
 +    **discogs_format**: The album's release media (eg. Vinyl, CD, etc.)
-+    **discogs_format_desc**: The format description (eg. Album, Single, etc.)
++    **discogs_master_url**: The address of the release's master in Discogs' API.
 +    **discogs_notes**: Notes associated with the album.
 +    **discogs_r_id**: Discogs Release ID.
-+    **discogs_summary**: The album's summary according to Discogs.
 +    **discogs_uri**: The album's discogs URI.
-+    **discnumber**: Disc number.
++    **discnumber**: Disc number, from a track position like **2-5**.
 +    **discs**: Number of discs in the album.
++    **format**: The format description (eg. Album, Single, etc.)
 +    **genre**: Genres associated with the album.
-+    **involvedpeople_album**: People involved with the album's creation. Taken from the extraartists node for the album. (Eg. **Young Churf;Harpsichord**)
-+    **involvedpeople_track**: People involved with the relevant track. Taken from the track's extraartists node. (Eg. **Young Churf;Harpsichord**)
++    **involvedpeople_album**: People involved with the album's creation. Taken from the extraartists node for the album, several people separated by semi-colons. (Eg. **Young Churf:Harpsichord**)
++    **involvedpeople_track**: People involved with the relevant track. Taken from the track's extraartists node, several people separated by semi-colons. (Eg. **Young Churf:Harpsichord**)
 +    **label**: The record label responsible for releasing the album.
 +    **style**: Discogs styles.
-+    **track**: Track number.
++    **title**: The track's title. An index track's movements are tracks of their own, titled **work: movement**.
++    **track**: Track number, or Discogs' position for a vinyl side, eg. **A1**.
 +    **year**: The album's release date.
 
 .. _freedb:
