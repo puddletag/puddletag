@@ -618,8 +618,6 @@ def test_files_with_a_retrieved_release_id(source):
     assert albums(found) == ['Never Gonna Give You Up']
 
 
-@pytest.mark.xfail(strict=True, raises=IndexError, reason=(
-    'search() with no artists raises IndexError on an artist it never uses'))
 def test_search_without_artists(source):
     """Synthetic: a script or plugin calling search() with no files for the
     album gets no result, not a crash."""

@@ -349,11 +349,6 @@ class Discogs(object):
 
     def search(self, album, artists):
 
-        if len(artists) > 1:
-            artist = 'Various Artists'
-        else:
-            artist = [z for z in artists][0]
-
         if hasattr(artists, 'values'):
             write_log(
                 translate("Discogs", 'Checking tracks for Discogs Album ID.'))
