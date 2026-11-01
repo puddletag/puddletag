@@ -78,12 +78,11 @@ def find_id(tracks, field):
     if not field:
         return
     for track in tracks:
-        if field in track:
-            value = track[field]
-            if isinstance(value, str):
-                return value
-            else:
-                return value[0]
+        value = track.get(field)
+        if isinstance(value, str):
+            value = [value]
+        if value and value[0]:
+            return value[0]
 
 
 # From http://stackoverflow.com/questions/4389572 by bobince

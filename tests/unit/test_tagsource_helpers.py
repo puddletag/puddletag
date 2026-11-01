@@ -239,7 +239,6 @@ def test_search_text_without_a_pair_is_an_error(text):
         parse_searchstring(text)
 
 
-@pytest.mark.xfail(strict=True, reason="an empty value stops the search: '' for [''], IndexError for []")
 @pytest.mark.parametrize('value', [
     pytest.param([''], id='empty-string'),
     pytest.param([], id='empty-list'),
