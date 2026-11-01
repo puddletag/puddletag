@@ -10,11 +10,12 @@ web.archive.org/web/2019/http://ftp.freedb.org/pub/freedb/latest/), and, for
 the disc id, from libdiscid's test data (github.com/metabrainz/libdiscid,
 test/test_put.c).
 """
+import socket
 import struct
 
 import pytest
 
-from puddlestuff import audioinfo
+from puddlestuff import audioinfo, tagsources
 from puddlestuff.tagsources import CDDB, RetrievalError, freedb
 
 CGI = '/~cddb/cddb.cgi'
@@ -62,6 +63,17 @@ def gnudb(monkeypatch, web_server, clock):
     monkeypatch.setattr(CDDB, 'proto', 6)
     monkeypatch.setattr(CDDB, 'default_server', web_server.url + CGI)
     return web_server
+
+
+@pytest.fixture
+def silent_server():
+    """A local address that takes connections and never answers. Closing it
+    at teardown frees any request still waiting."""
+    listener = socket.socket()
+    listener.bind(('127.0.0.1', 0))
+    listener.listen()
+    yield f'http://127.0.0.1:{listener.getsockname()[1]}/'
+    listener.close()
 
 
 def reply(*lines):
@@ -332,6 +344,20 @@ def test_http_error(gnudb):
         freedb.search_by_id(TRACK_INFO)
 
     assert str(excinfo.value) == 'HTTP Error 500: Internal Server Error'
+
+
+@pytest.mark.xfail(strict=True, reason='requests have no timeout')
+@pytest.mark.timeout(10)
+def test_silent_gnudb_times_out(silent_server, monkeypatch, clock):
+    # Synthetic: a server that accepts the connection and never answers is
+    # reported, not waited on for ever.
+    monkeypatch.setattr(CDDB, 'default_server', silent_server)
+    monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2, raising=False)
+
+    with pytest.raises(RetrievalError) as excinfo:
+        freedb.search_by_id(TRACK_INFO)
+
+    assert str(excinfo.value).endswith('timed out')
 
 
 @pytest.mark.parametrize('call', [

@@ -313,3 +313,75 @@ def test_discogs_downloads_a_non_ascii_address(web_server, no_wait):
     web_server.add('/Björk/cover.jpg', b'synthetic image')
     assert discogs.urlopen(web_server.url + '/Björk/cover.jpg') == b'synthetic image'
     assert web_server.requests[-1].path == '/Björk/cover.jpg'
+
+
+# Failed downloads -------------------------------------------------------------
+
+OPENERS = [pytest.param(discogs.urlopen, id='discogs'),
+           pytest.param(tagsources.urlopen, id='shared')]
+
+
+# The example plugin: "Raise puddlestuff.tagsources.RetrievalError if an error
+# occurs."
+@pytest.mark.xfail(strict=True, reason="a connection closed without an answer raises AttributeError ('... has no attribute code')")
+def test_dropped_connection_becomes_a_retrieval_error(hanging_up_server):
+    with pytest.raises(RetrievalError, match='^Connection Error: ') as error:
+        tagsources.urlopen(hanging_up_server)
+    assert error.value.code == 0
+
+
+# The example plugin: "Raise puddlestuff.tagsources.RetrievalError if an error
+# occurs." A server that never answers is an error, not an endless wait.
+@pytest.mark.timeout(10)
+@pytest.mark.xfail(strict=True, reason='requests have no timeout')
+def test_silent_server_times_out(silent_server, monkeypatch):
+    monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2)
+    with pytest.raises(RetrievalError, match='^Connection Error: timed out$') as error:
+        tagsources.urlopen(silent_server)
+    assert error.value.code == 0
+
+
+# The example plugin: "Pass it your url and it'll return your data." An
+# address may hold any character (an Mp3tag script's cover, for one).
+@pytest.mark.xfail(strict=True, reason="a non-ASCII address raises UnicodeEncodeError ('ascii' codec)")
+def test_urlopen_downloads_a_non_ascii_address(web_server):
+    web_server.add('/Björk/cover.jpg', b'synthetic image')
+    assert tagsources.urlopen(web_server.url + '/Björk/cover.jpg') == b'synthetic image'
+    assert web_server.requests[-1].path == '/Björk/cover.jpg'
+
+
+# The example plugin: "Raise puddlestuff.tagsources.RetrievalError if an error
+# occurs." Mp3tag scripts download through Discogs' urlopen, MusicBrainz
+# through the shared one: both give the same error the same code.
+@pytest.mark.parametrize('opener', OPENERS)
+@pytest.mark.parametrize('status', [403, 404, 500], ids=['forbidden', 'not-found', 'server-error'])
+def test_every_download_reports_the_http_status(web_server, no_wait, opener, status, request):
+    if opener is discogs.urlopen:
+        request.applymarker(pytest.mark.xfail(strict=True, reason='Discogs answers every HTTP error with code 0'))
+    web_server.add('/page', b'Synthetic error page', status=status, content_type='text/html')
+    with pytest.raises(RetrievalError) as error:
+        opener(web_server.url + '/page')
+    assert error.value.code == status
+
+
+# The example plugin: "Raise puddlestuff.tagsources.RetrievalError if an error
+# occurs." The same refused connection reads the same in both.
+@pytest.mark.parametrize('opener', OPENERS)
+def test_every_download_reports_a_connection_error_alike(closed_port, no_wait, opener, request):
+    if opener is discogs.urlopen:
+        request.applymarker(pytest.mark.xfail(strict=True, reason="Discogs' urlopen words a refused connection 'Connection refused (111)'"))
+    with pytest.raises(RetrievalError) as error:
+        opener(closed_port)
+    assert str(error.value) == f'Connection Error: [Errno {errno.ECONNREFUSED}] Connection refused'
+    assert error.value.code == 0
+
+
+# The example plugin: "Raise puddlestuff.tagsources.RetrievalError if an error
+# occurs." Discogs' server not answering is an error, not an endless wait.
+@pytest.mark.timeout(10)
+@pytest.mark.xfail(strict=True, reason='requests have no timeout')
+def test_discogs_download_times_out(silent_server, monkeypatch, no_wait):
+    monkeypatch.setattr(tagsources, 'TIMEOUT', 0.2)
+    with pytest.raises(RetrievalError, match='^Connection Error: timed out$') as error:
+        discogs.urlopen(silent_server)
+    assert error.value.code == 0
