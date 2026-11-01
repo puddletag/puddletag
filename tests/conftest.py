@@ -374,7 +374,8 @@ def make_audio(tmp_path):
     Monkey's Audio (.ape), so an .ape file is a header and no audio; and
     ffmpeg can't write DSDIFF (.dff) or DSF (.dsf), so the fixture writes
     them. A Monkey's Audio link file (.apl) is the fixture's text and an
-    APEv2 tag.
+    APEv2 tag. .apl and .tta files get only an APEv2 tag, which is all
+    puddletag reads in them.
     """
     if shutil.which('ffmpeg') is None:
         _missing('ffmpeg is not installed')
