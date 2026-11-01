@@ -267,3 +267,57 @@ def test_encoding_declared_over_two_lines():
 def test_encoding_of_a_page_without_one_is_the_default():
     """A page naming no encoding gets the caller's default (synthetic)."""
     assert get_encoding('<a/>', default='utf-8') == 'utf-8'
+
+
+# Addresses with characters outside ASCII -------------------------------------
+
+# RFC 3987, 3.1: "For each character in 'ucschar' or 'iprivate', apply steps
+# 2.1 through 2.3 below." "Convert the character to a sequence of one or more
+# octets using UTF-8", "Convert each octet to %HH". The query case is
+# synthetic, the same rule.
+@pytest.mark.xfail(strict=True,
+                   reason='any non-ASCII character outside the host raises UnicodeDecodeError')
+@pytest.mark.parametrize(('iri', 'uri'), [
+    pytest.param('http://www.example.org/Dürst', 'http://www.example.org/D%C3%BCrst',
+                 id='path'),
+    pytest.param('http://www.example.org/red%09rosé#red',
+                 'http://www.example.org/red%09ros%C3%A9#red', id='keeps-percent-escapes'),
+    pytest.param('http://example.org/search?q=Björk', 'http://example.org/search?q=Bj%C3%B6rk',
+                 id='query'),
+    # WHATWG URL standard: the path percent-encode set is "the query
+    # percent-encode set and U+003F (?), U+005E (^), U+0060 (`), U+007B ({),
+    # and U+007D (})", and the query percent-encode set "the C0 control
+    # percent-encode set and U+0020 SPACE, ...": a space and the controls
+    # become %XX. Synthetic address.
+    pytest.param('http://example.org/a b', 'http://example.org/a%20b', id='space',
+                 marks=pytest.mark.xfail(
+                     strict=True,
+                     reason='the space is left as it is, and the request then raises '
+                            'http.client.InvalidURL')),
+])
+def test_non_ascii_characters_are_percent_encoded_as_utf8(iri, uri):
+    assert iri_to_uri(iri) == uri
+
+
+# RFC 3987, 3.1: "Systems accepting IRIs MAY convert the ireg-name component
+# of an IRI as follows (before step 2 above)": "Replace the ireg-name part of
+# the IRI by the part converted using the ToASCII operation."
+def test_non_ascii_host_is_encoded_in_idna():
+    assert iri_to_uri('http://résumé.example.org') == 'http://xn--rsum-bpad.example.org'
+
+
+# Synthetic: an address with nothing outside ASCII has nothing to encode.
+def test_ascii_address_is_unchanged():
+    assert (iri_to_uri('https://api.discogs.com/releases/249504?a=1&b=2')
+            == 'https://api.discogs.com/releases/249504?a=1&b=2')
+
+
+# tagsources.txt: "puddletag supports using Mp3tag's tag sources". Their search and
+# album pages download through Discogs' urlopen, and a result's address may
+# hold any character (synthetic).
+@pytest.mark.xfail(strict=True, raises=UnicodeDecodeError,
+                   reason='any non-ASCII character outside the host raises UnicodeDecodeError')
+def test_discogs_downloads_a_non_ascii_address(web_server, no_wait):
+    web_server.add('/Björk/cover.jpg', b'synthetic image')
+    assert discogs.urlopen(web_server.url + '/Björk/cover.jpg') == b'synthetic image'
+    assert web_server.requests[-1].path == '/Björk/cover.jpg'
