@@ -61,15 +61,9 @@ The Discogs.com tag source uses Discogs.com's API to retrieve album information 
 
 With **Retrieve Cover** checked (the default), the release's images become its cover art, at the size the tag source's **Cover size to retrieve** preference picks: **Large** (the default) or **Small**.
 
-.. note:: Discogs doesn't allow lookups without a user agent any more. If you get **Client Refused** errors this is the reason. To rectify, set the user agent in Edit->Preferences->Tag Sources to **puddletag/0.9.11** or any other valid user agent.
+To retrieve a release, type its Discogs release id, the number in its address on discogs.com, in the search box, eg. **1257896** or **:r 1257896**. puddletag doesn't search Discogs by artist or album.
 
-Textual searches are supported. Rules are as follows:
-
-+   To search for a specific artist, album pair enter the search string as **artist;album**, ie. artist and album separated by a semi-colon.
-+   Searching for the albums of a specific artist is done by leaving of the album part as in **artist;**
-+   For an album only leave off the artist part, ala **;artist**
-+   Retrieving an album using it's Discogs Release ID is possible by using **:r release_id** where **release_id** is the Discogs Release ID.
-+   Type anything not matching the above to do a keyword search.
+With the search box empty, each album among the selected files is retrieved by the release id its files carry: in the field the tag source's **Field to use for discogs_id** preference names (**discogs_id** unless changed), or else in **discogs_r_id**, which a retrieved release writes.
 
 If you have a Discogs account, you can paste a personal access token from its developer settings into the tag source's **API Key** preference: puddletag sends it with each request to Discogs' API. It is stored as plain text in puddletag's configuration.
 
