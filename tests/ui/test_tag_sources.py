@@ -664,6 +664,9 @@ def test_retrieval_error_is_shown_and_the_album_can_be_retried(mainwin, make_aud
     assert previews(mainwin) == [{}, {}, {}]
     assert [in_file(p)['title'] for p in paths] == [['Old 1'], ['Old 2'], ['Old 3']]
 
+    # The error reaches the label from the worker thread before the thread
+    # ends, and the album list stays disabled until then.
+    qtbot.waitUntil(window.listbox.isEnabled)
     click_album(user, window, 'Alpha')
     expected = [{'album': 'Alpha', 'artist': 'Band', 'title': title, 'track': track, 'year': '1999'}
                 for title, track in (('One', '1'), ('Two', '2'), ('Three', '3'))]
