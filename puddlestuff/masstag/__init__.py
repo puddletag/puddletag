@@ -249,8 +249,7 @@ def ratio_compare(d1, d2, key):
 
 def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
                 existing=False, as_index=False):
-    if not keys:
-        keys = ['artist', 'title']
+    keys = [k for k in keys or [] if k] or ['artist', 'title']
     if 'track' in keys and len(keys) > 1:
         keys = keys[::]
         keys.remove('track')
@@ -261,14 +260,15 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
     b = False
 
     for f_index, f in enumerate(files):
-        scores = {}
+        if any(key not in f for key in keys):
+            continue
         for t_index, track in enumerate(tracks):
-            totals = [ratio_compare(f, track, key) for key in keys]
-            if not totals:
+            if any(key not in track for key in keys):
                 continue
+            totals = [ratio_compare(f, track, key) for key in keys]
             score = min(totals)
-            if score >= minimum and score not in scores:
-                matched[f_index][t_index] = sum(totals)
+            if score >= minimum:
+                matched[f_index][t_index] = (score, sum(totals))
 
     def get_best(f_index, t_indexes):
         if not t_indexes:

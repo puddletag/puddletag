@@ -264,7 +264,6 @@ def test_update_empty_fields_only_fills_a_field_the_pattern_found():
     assert matched == {song: {'title': ['Song']}}
 
 
-@pytest.mark.xfail(strict=True, reason='an empty match-fields box matches nothing')
 def test_an_empty_match_fields_box_matches_on_artist_and_title():
     """tut5.txt (Match tracks using fields): "If no fields are listed,
     **artist** and **title** are used." A box emptied by the user is saved as
@@ -279,7 +278,6 @@ def test_an_empty_match_fields_box_matches_on_artist_and_title():
     assert titles(matched) == {'same.mp3': ['Come Together']}
 
 
-@pytest.mark.xfail(strict=True, reason='a missing field counts as a one-letter value')
 def test_a_track_without_a_match_field_matches_no_file():
     """tut5.txt: "Check if all the fields listed are present in the
     retrieved track." A track without a title is not checked against a file
@@ -290,7 +288,6 @@ def test_a_track_without_a_match_field_matches_no_file():
     assert match_files(searched([song]), tracks, 0.7, ['artist', 'title']) == {}
 
 
-@pytest.mark.xfail(strict=True, reason='a missing field counts as a one-letter value')
 def test_a_file_without_a_match_field_matches_no_track():
     """A file without a title is not compared with a track titled 'A': the
     field can't be compared, so no track matches (synthetic)."""
@@ -300,7 +297,6 @@ def test_a_file_without_a_match_field_matches_no_track():
     assert match_files(searched([song]), tracks, 0.7, ['artist', 'title']) == {}
 
 
-@pytest.mark.xfail(strict=True, reason="tracks are ranked by the sum of their fields' percentages")
 def test_the_track_whose_lowest_field_is_highest_wins():
     """tut5.txt: "the field with the **lowest** match percentage will be used
     to assess the track match the file", and puddletag will "choose the one
