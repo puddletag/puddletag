@@ -439,6 +439,8 @@ def masstag(mtp, files=None, flag=None, mtp_error_func=None,
 
         if not matches:
             not_found.append(tsp)
+            if results:
+                set_status(NO_MATCHES.format(tsp.tag_source.name))
             if tsp.if_no_result == STOP:
                 stopped = True
                 break
@@ -609,7 +611,7 @@ class MassTagProfile(object):
                     profile.clear_results()
                     set_status(translate('Masstagging',
                                          "Retrying search with album name: <b>{}</b>"
-                                         ).format(rxp_album))
+                                         ).format(rxp_album.strip()))
                     rxp_results = profile.search(changed_files)
                     results.extend(rxp_results)
                     profile.clear_results()

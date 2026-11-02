@@ -874,8 +874,6 @@ def test_albums_found_with_and_without_the_bracketed_part_are_pooled(log):
     assert '<b>2</b> results found.' in log
 
 
-@pytest.mark.xfail(strict=True, reason="the album name in the retry's log line keeps the space "
-                                       'before the removed bracketed part')
 def test_the_retry_logs_the_album_it_searches(log):
     """tut5.txt, How it works: "each Tag Source is searched a second time
     with the album name without it." The docs don't describe the log line,
@@ -886,8 +884,6 @@ def test_the_retry_logs_the_album_it_searches(log):
     assert 'Retrying search with album name: <b>Album</b>' in log
 
 
-@pytest.mark.xfail(strict=True, reason="no line says that a source's albums were all below the "
-                                       'album percentage')
 def test_a_source_whose_albums_are_below_the_album_percentage_says_so(log):
     """The docs are silent on the log when every album a source found is
     below the album percentage: the log says the source has no matches, as
