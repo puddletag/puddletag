@@ -754,8 +754,7 @@ class MainWin(QWidget):
             getattr(self.curSource, 'tooltip', DEFAULT_SEARCH_TIP))
         self.listbox.tagSource = self.curSource
 
-        self.__preferencesButton.setVisible(
-            not (getattr(self.curSource, 'preferences', False) is False))
+        self.__preferencesButton.setVisible(bool(getattr(self.curSource, 'preferences', None)))
 
         self.__fieldsEdit.setTags(self.__sourceFields[index])
 

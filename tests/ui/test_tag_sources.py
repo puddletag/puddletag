@@ -1520,7 +1520,6 @@ def unconfigurable_source(synthetic):
     tagsources.tagsources.append(Unconfigurable)
 
 
-@pytest.mark.xfail(strict=True, reason="a source whose preferences are None shows a Configure button")
 def test_configure_is_hidden_for_a_source_whose_preferences_are_none(unconfigurable_source, mainwin, make_audio,
                                                                      tmp_path, qtbot, user):
     # tut4.txt: "You can configure the Tag Source's behaviour (if not
