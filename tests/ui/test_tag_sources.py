@@ -1786,7 +1786,6 @@ def test_unticking_an_exact_match_clears_its_preview(mainwin, make_audio, tmp_pa
     assert the_status()['previewmode']
 
 
-@pytest.mark.xfail(strict=True, reason="ticking an exact match again previews the track without its album's fields")
 def test_ticking_an_exact_match_again_previews_it_again(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "Lookups are done by album, but you can select
     # metadata by track too." The docs don't say what ticking again does;

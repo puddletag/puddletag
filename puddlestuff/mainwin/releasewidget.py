@@ -642,8 +642,7 @@ class ReleaseWidget(QTreeView):
 
     def exactChanged(self, item):
         if item.checked:
-            track = strip(item.itemData, self.tagsToWrite,
-                          mapping=self.mapping)
+            track = self.cleanTrack(item.track())
             self.preview.emit({item.itemData['#exact']: track})
         else:
             self.preview.emit({item.itemData['#exact']: {}})
