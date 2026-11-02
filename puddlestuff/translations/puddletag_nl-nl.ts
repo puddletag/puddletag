@@ -937,11 +937,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Titel</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="361" />
-      <source>&amp;Edit</source>
-      <translation type="unfinished">&amp;Bewerken</translation>
-    </message>
-    <message>
       <location filename="../mainwin/tagtools.py" line="70" />
       <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>Er is een fout opgetreden tijdens het schrijven naar &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
@@ -952,7 +947,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&amp;Ja</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="399" />
+      <location filename="../mainwin/tagsources.py" line="361" />
+      <source>&amp;Edit</source>
+      <translation type="unfinished">&amp;Bewerken</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="400" />
       <source>Fields: </source>
       <translation>Velden: </translation>
     </message>
@@ -1330,16 +1330,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   </context>
   <context>
     <name>Functions</name>
-    <message>
-      <location filename="../findfunc.py" line="60" />
-      <source>At most {} arguments expected. {} given.</source>
-      <translation>De meeste {} argumenten worden als verwacht. {} meegegeven.</translation>
-    </message>
-    <message>
-      <location filename="../findfunc.py" line="66" />
-      <source>At least {} arguments expected. {} given.</source>
-      <translation>In ieder geval {} agumenten verwacht. {} meegegeven.</translation>
-    </message>
     <message>
       <location filename="../translations.py" line="106" />
       <source>Artwork: Filenames='$1', Description='$2', Case Sensitive=$3</source>
@@ -1869,6 +1859,16 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <source>Convert to ASCII</source>
       <translation type="unfinished" />
     </message>
+    <message>
+      <location filename="../findfunc.py" line="60" />
+      <source>At most {} arguments expected. {} given.</source>
+      <translation>De meeste {} argumenten worden als verwacht. {} meegegeven.</translation>
+    </message>
+    <message>
+      <location filename="../findfunc.py" line="66" />
+      <source>At least {} arguments expected. {} given.</source>
+      <translation>In ieder geval {} agumenten verwacht. {} meegegeven.</translation>
+    </message>
   </context>
   <context>
     <name>Functions Dialog</name>
@@ -2271,73 +2271,73 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Opnieuw controleren</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="603" />
+      <location filename="../masstag/__init__.py" line="608" />
       <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Opnieuw proberen te zoeken met de albumnaam:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="635" />
+      <location filename="../masstag/dialogs.py" line="636" />
       <location filename="../masstag/dialogs.py" line="41" />
       <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Er is een fout opgetreden tijdens het zoeken: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="638" />
+      <location filename="../masstag/dialogs.py" line="639" />
       <location filename="../masstag/dialogs.py" line="46" />
       <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Er is een fout opgetreden tijdens het ontvangen van de albuminformatie:&lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="509" />
+      <location filename="../masstag/dialogs.py" line="510" />
       <source>Mass Tagging</source>
       <translation>Massataggen</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="677" />
-      <location filename="../masstag/dialogs.py" line="629" />
-      <location filename="../masstag/dialogs.py" line="593" />
-      <location filename="../masstag/dialogs.py" line="511" />
+      <location filename="../masstag/dialogs.py" line="678" />
+      <location filename="../masstag/dialogs.py" line="630" />
+      <location filename="../masstag/dialogs.py" line="594" />
+      <location filename="../masstag/dialogs.py" line="512" />
       <source>&amp;Search</source>
       <translation>&amp;Zoeken</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="512" />
+      <location filename="../masstag/dialogs.py" line="513" />
       <source>&amp;Configure Profiles</source>
       <translation>Profiel &amp;configureren</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="513" />
+      <location filename="../masstag/dialogs.py" line="514" />
       <source>&amp;Write Previews</source>
       <translation>&amp;Voorbeelden schrijven</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="514" />
+      <location filename="../masstag/dialogs.py" line="515" />
       <source>Clear &amp;Preview</source>
       <translation>&amp;Voorbeelden wissen</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="538" />
+      <location filename="../masstag/dialogs.py" line="539" />
       <source>&amp;Profile:</source>
       <translation>&amp;Profiel:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="590" />
-      <location filename="../masstag/dialogs.py" line="587" />
+      <location filename="../masstag/dialogs.py" line="591" />
+      <location filename="../masstag/dialogs.py" line="588" />
       <source>&amp;Stop</source>
       <translation>&amp;Stop</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="627" />
+      <location filename="../masstag/dialogs.py" line="628" />
       <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="641" />
+      <location filename="../masstag/dialogs.py" line="642" />
       <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="675" />
+      <location filename="../masstag/dialogs.py" line="676" />
       <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Succesvol nagegaan&lt;/b&gt;</translation>
     </message>
@@ -3191,14 +3191,14 @@ Do you want to go ahead?</source>
       <translation>Sommige bestanden hebben geen machtiging tot voorbeelden. Veranderingen zullen verloren gaan zodra u een nieuwe map laad. &lt;br /&gt;Weet u zeker dat u een nieuwe map wilt laden?&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="666" />
-      <source>Clea&amp;r preview</source>
-      <translation type="unfinished">Voorbeelde&amp;n opschonen</translation>
-    </message>
-    <message>
       <location filename="../mainwin/tagtools.py" line="56" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Schakel de voorbeeldmodus eerst uit om de tag te kunnen te verwijderen.</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="666" />
+      <source>Clea&amp;r preview</source>
+      <translation type="unfinished">Voorbeelde&amp;n opschonen</translation>
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="52" />
@@ -3240,7 +3240,6 @@ Do you want to go ahead?</source>
       <translation type="unfinished">&lt;p&gt;De velden, hier in een lijst angeduid, zullen daarmee beslist worden of deze nummers daadwerkelijk overeenkomen met de opgehaalde nummerinformatie. Elk veld zal worden vergeleken door het "fuzzy matching" algoritme. Als het gemiddelde hoger  is dan "Het minimale percentage" zal hij worden gebruikt.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="225" />
       <location filename="../mainwin/tagsources.py" line="386" />
       <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Het artiest en album veld zullen worden gebruikt om vast te stellen of een album overeenkomt met het opgehaalde exemplaar. Elk veld zal worden vergeleken door een vaag algoritme. Als het gemiddelde hoger is dan "Het minimale percentage" zal hij worden gebruikt.&lt;/p&gt;</translation>
@@ -3256,7 +3255,7 @@ Do you want to go ahead?</source>
       <translation type="unfinished">Zoek nummers door gebruik te maken van deze &amp;velden: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="277" />
+      <location filename="../masstag/dialogs.py" line="278" />
       <location filename="../mainwin/tagsources.py" line="428" />
       <source>Minimum percentage required for track match.</source>
       <translation>Minimale percentage benodigd voor overeengekomen nummers.</translation>
@@ -3277,77 +3276,82 @@ Do you want to go ahead?</source>
       <translation>&lt;p&gt;Als er geen tag informatie gevonden word in een bestand, worden de tags opgehaald door dit patroon.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="234" />
-      <source>&lt;p&gt;The fields listed here will be used in determining whether a file matches a retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;De velden hier onder weegegeven in een lijst, zal worden gebruikt voor het vaststellen of de bestanden overeenkomen met het opgehaalde nummer. Elk veld zal worden vergeleken door een vaag algoritme. Als het gemiddelde hoger is dan "Het mininame percentage" zal hij worden gebruikt.&lt;/p&gt;</translation>
+      <location filename="../masstag/dialogs.py" line="225" />
+      <source>&lt;p&gt;The album's artist and album name are each compared with the files' by fuzzy matching. The album matches when both are at least this percentage alike. A search result with as many tracks as the selected files also matches, whatever its names.&lt;/p&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="233" />
+      <source>&lt;p&gt;The fields listed here are compared between each file and each retrieved track by fuzzy matching; a track lacking one of them is skipped. The field with the lowest match percentage decides, and the track matches when that is at least the "Minimum percentage required for track match". An empty box means artist and title; track is ignored beside other fields.&lt;/p&gt;</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="248" />
-      <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Vink aan om door middel van brute force overeenkomsten te vinden. Als er redelijke resultaten worden gevonden voor een bestand worden de bestanden gesorteerd op bestandsnaam, de tags worden vervolgens afgestemd op het bestand.&lt;/p&gt;</translation>
+      <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the unmatched files are sorted by discnumber, then track (or by filename without them), the retrieved tracks by discnumber, then track, and paired in order.&lt;/p&gt;</source>
+      <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="255" />
+      <location filename="../masstag/dialogs.py" line="256" />
       <source>Update empty fields only.</source>
       <translation>Alleen de lege velden updaten.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="262" />
+      <location filename="../masstag/dialogs.py" line="263" />
       <source>&amp;Name:</source>
       <translation>&amp;Naam:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="264" />
+      <location filename="../masstag/dialogs.py" line="265" />
       <source>&amp;Description</source>
       <translation>&amp;Beschrijving</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="268" />
+      <location filename="../masstag/dialogs.py" line="269" />
       <source>Pattern to match filenames against.</source>
       <translation>Patroon voor overeengekomen bestandsnamen.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="271" />
+      <location filename="../masstag/dialogs.py" line="272" />
       <source>Minimum percentage required for album matches.</source>
       <translation>Minimale percentage dat benodigd is voor overeengekomen albums.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="274" />
+      <location filename="../masstag/dialogs.py" line="275" />
       <source>Match tracks using fields: </source>
       <translation>Zoek overeenkomsten met de gebruikte velden: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="389" />
+      <location filename="../masstag/dialogs.py" line="390" />
       <source>Edit Tag Source Config</source>
       <translation>Tagbron configuratie bewerken</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="400" />
+      <location filename="../masstag/dialogs.py" line="401" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Voer een door komma's gescheiden lijst met velden in om op te halen. Laat leeg om allen beschikbare velden/waarden op te halen. &lt;br /&gt;&lt;br /&gt; Voorbeeld: &lt;b&gt;artiest, album, titel&lt;/b&gt; haalt alleen de artiest, het album en de titel velden op van de Tagbron. &lt;br /&gt;&lt;br /&gt;Begin de lijst met het tilde (~) teken om alle opgehaalde velden in te voeren, behalve onderstaande. Voorbeeld: &lt;b&gt;~componist, _afbeelding&lt;/b&gt; zal alle velden behalve de componist en _afbeelding (cover) velden overschrijven.&lt;/p&gt;&lt;p&gt;Als een veld al ontvangen in in een vorige tagbron, zullen de waardes worden vergelijkt, als deze verschillen. Bijvoorbeeld Als genre=&lt;b&gt;Rock&lt;/b&gt; bij de eerste tagbron en genre=&lt;b&gt;Alternative&lt;/b&gt; dan zal het resulterende velt meerdere waardes krijgen bijvoorbeeld: genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="422" />
+      <location filename="../masstag/dialogs.py" line="423" />
       <source>Fields to replace: </source>
       <translation>Velden om te vervangen: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="424" />
+      <location filename="../masstag/dialogs.py" line="425" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
       <translation>Voer een bij komma gesorteerde lijst van velden in dat alle ontvangen tags zal vervangen door de vorige. &lt;br /&gt;Begin de lijst met een tilde (~) symbool om alles te vervangen behalve de velden die u heeft ingevoerd. &lt;br /&gt;&lt;b&gt;NB: Velden hier onder zullen ook in de velden voor de ontvangst moeten worden ingevuld.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Bijvoorbeeld, ga er van uit dat er twee tagbronnen zijn. De eerste ontvangt. &lt;b&gt;artiest=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt; De tweede bron krijgt &lt;b&gt;artiest=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. Voor de instellingen van de tweede tagbron doe slechts &lt;b&gt;artiest&lt;/b&gt; als de lijst van velden het artiest gedeelte vind zal hij het overschrijven vanuit de eerste tagbron. De ontvangen resulterende velden/waardes, weergegeven in puddletag zal dan &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt; worden.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="448" />
+      <location filename="../masstag/dialogs.py" line="449" />
       <source>&amp;Source</source>
       <translation>&amp;Bron</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="452" />
+      <location filename="../masstag/dialogs.py" line="453" />
       <source>&amp;If no results found: </source>
       <translation>&amp;Als er geen resultaat voor gevonden wordt: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="454" />
+      <location filename="../masstag/dialogs.py" line="455" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
       <translation>&lt;p&gt;&lt;b&gt;Verder&lt;/b&gt;: Het opzoeken voor het huidige album zal doorgaan door het checken van de andere tag bronnen, als er geen passende resultaten gevonden worden voor deze tag bron.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; Het opzoeken voor het huidige album zal stopen en alle voorheen opgehaalde resultaten zullen gebruikt worden.&lt;/p&gt;</translation>
     </message>
@@ -3464,14 +3468,14 @@ Do you want to go ahead?</source>
       <translation>Tag paneel</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="345" />
-      <source>Tag Sources</source>
-      <translation type="unfinished">Tagbronnen</translation>
-    </message>
-    <message>
       <location filename="../mainwin/patterncombo.py" line="83" />
       <source>Patterns</source>
       <translation type="unfinished">Patronen</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="345" />
+      <source>Tag Sources</source>
+      <translation type="unfinished">Tagbronnen</translation>
     </message>
   </context>
   <context>

@@ -937,11 +937,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Título</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="361" />
-      <source>&amp;Edit</source>
-      <translation>&amp;Editar</translation>
-    </message>
-    <message>
       <location filename="../mainwin/tagtools.py" line="70" />
       <source>An error occured while writing to &lt;b&gt;{}&lt;/b&gt;. ({})</source>
       <translation>A ocurrido un error al guardar &lt;b&gt;{}&lt;/b&gt;. ({})</translation>
@@ -952,7 +947,12 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>&amp;Sí</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="399" />
+      <location filename="../mainwin/tagsources.py" line="361" />
+      <source>&amp;Edit</source>
+      <translation>&amp;Editar</translation>
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="400" />
       <source>Fields: </source>
       <translation>Campos: </translation>
     </message>
@@ -1331,16 +1331,6 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
   </context>
   <context>
     <name>Functions</name>
-    <message>
-      <location filename="../findfunc.py" line="60" />
-      <source>At most {} arguments expected. {} given.</source>
-      <translation>Como mucho se esperan {} argumentos. {} dados.</translation>
-    </message>
-    <message>
-      <location filename="../findfunc.py" line="66" />
-      <source>At least {} arguments expected. {} given.</source>
-      <translation>Al menos se esperan {} argumentos. {} dados.</translation>
-    </message>
     <message>
       <location filename="../translations.py" line="106" />
       <source>Artwork: Filenames='$1', Description='$2', Case Sensitive=$3</source>
@@ -1870,6 +1860,16 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <source>Convert to ASCII</source>
       <translation type="unfinished" />
     </message>
+    <message>
+      <location filename="../findfunc.py" line="60" />
+      <source>At most {} arguments expected. {} given.</source>
+      <translation>Como mucho se esperan {} argumentos. {} dados.</translation>
+    </message>
+    <message>
+      <location filename="../findfunc.py" line="66" />
+      <source>At least {} arguments expected. {} given.</source>
+      <translation>Al menos se esperan {} argumentos. {} dados.</translation>
+    </message>
   </context>
   <context>
     <name>Functions Dialog</name>
@@ -2272,73 +2272,73 @@ Swedish by &lt;b&gt;Åke Engelbrektson&lt;/b&gt;
       <translation>Reverificando</translation>
     </message>
     <message>
-      <location filename="../masstag/__init__.py" line="603" />
+      <location filename="../masstag/__init__.py" line="608" />
       <source>Retrying search with album name: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Reintentando buscar con el nombre de álbum: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="635" />
+      <location filename="../masstag/dialogs.py" line="636" />
       <location filename="../masstag/dialogs.py" line="41" />
       <source>An error occurred during the search: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Error durante la búsqueda de: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="638" />
+      <location filename="../masstag/dialogs.py" line="639" />
       <location filename="../masstag/dialogs.py" line="46" />
       <source>An error occurred during album retrieval: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation>Error durante la recuperación del álbum: &lt;b&gt;{}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="509" />
+      <location filename="../masstag/dialogs.py" line="510" />
       <source>Mass Tagging</source>
       <translation>Etiquetado masivo</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="677" />
-      <location filename="../masstag/dialogs.py" line="629" />
-      <location filename="../masstag/dialogs.py" line="593" />
-      <location filename="../masstag/dialogs.py" line="511" />
+      <location filename="../masstag/dialogs.py" line="678" />
+      <location filename="../masstag/dialogs.py" line="630" />
+      <location filename="../masstag/dialogs.py" line="594" />
+      <location filename="../masstag/dialogs.py" line="512" />
       <source>&amp;Search</source>
       <translation>Bu&amp;scar</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="512" />
+      <location filename="../masstag/dialogs.py" line="513" />
       <source>&amp;Configure Profiles</source>
       <translation>&amp;Configurar perfiles</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="513" />
+      <location filename="../masstag/dialogs.py" line="514" />
       <source>&amp;Write Previews</source>
       <translation>&amp;Escribir vista previa</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="514" />
+      <location filename="../masstag/dialogs.py" line="515" />
       <source>Clear &amp;Preview</source>
       <translation>Limpia&amp;r vista previa</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="538" />
+      <location filename="../masstag/dialogs.py" line="539" />
       <source>&amp;Profile:</source>
       <translation>&amp;Perfil:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="590" />
-      <location filename="../masstag/dialogs.py" line="587" />
+      <location filename="../masstag/dialogs.py" line="591" />
+      <location filename="../masstag/dialogs.py" line="588" />
       <source>&amp;Stop</source>
       <translation>&amp;Parar</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="627" />
+      <location filename="../masstag/dialogs.py" line="628" />
       <source>&lt;b&gt;Please choose a tagging profile.&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="641" />
+      <location filename="../masstag/dialogs.py" line="642" />
       <source>An error occurred: &lt;b&gt;{}&lt;/b&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="675" />
+      <location filename="../masstag/dialogs.py" line="676" />
       <source>&lt;b&gt;Lookups completed.&lt;/b&gt;</source>
       <translation>&lt;b&gt;Búsqueda completada.&lt;/b&gt;</translation>
     </message>
@@ -3194,14 +3194,14 @@ Esto puedo causar el bloque de su ordenador.
       <translation>En algunos archivos no se ha confirmados la vista previa. Esos cambios se perderan al cargar un directorio. &lt;br /&gt;¿Quiere cargar un nuevo directorio?&lt;br /&gt;</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="666" />
-      <source>Clea&amp;r preview</source>
-      <translation>Limpia&amp;r vista previa</translation>
-    </message>
-    <message>
       <location filename="../mainwin/tagtools.py" line="56" />
       <source>Disable Preview Mode first to enable tag deletion.</source>
       <translation>Desactive el modo vista previa antes de activar el borrado de etiqueta.</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="666" />
+      <source>Clea&amp;r preview</source>
+      <translation>Limpia&amp;r vista previa</translation>
     </message>
     <message>
       <location filename="../plugins/id3_tools/__init__.py" line="52" />
@@ -3243,7 +3243,6 @@ Esto puedo causar el bloque de su ordenador.
       <translation>&lt;p&gt;Los campos listados aqui serán usados en determinadas recuperaciones de coincidencias dudosas de pistas. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor el "Porcentaje mínimo", se considerá como coincidente.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="225" />
       <location filename="../mainwin/tagsources.py" line="386" />
       <source>&lt;p&gt;The artist and album fields will be used in determining whether an album matches the retrieved one. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater or equal than what you specify here it'll be considered to match.&lt;/p&gt;</source>
       <translation>&lt;p&gt;Los campos artista y álbum serán usados en determinas recuperaciones dudosas de coincidencias. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor o igual al porcentaje que ha especificado aqui, se considerá como coincidente.&lt;/p&gt;</translation>
@@ -3259,7 +3258,7 @@ Esto puedo causar el bloque de su ordenador.
       <translation>Coincidir pistas usando &amp;campos:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="277" />
+      <location filename="../masstag/dialogs.py" line="278" />
       <location filename="../mainwin/tagsources.py" line="428" />
       <source>Minimum percentage required for track match.</source>
       <translation>Porcentaje mínimo requerido para coincidencias de la pista.</translation>
@@ -3280,77 +3279,82 @@ Esto puedo causar el bloque de su ordenador.
       <translation>&lt;p&gt;Si no se encuentran etiquetas en el archivo, estas serán obtenidas usando este patrón.&lt;/p&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="234" />
-      <source>&lt;p&gt;The fields listed here will be used in determining whether a file matches a retrieved track. Each field will be compared using a fuzzy matching algorithm. If the resulting average match percentage is greater than the "Minimum Percentage" it'll be considered to match.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Los campos listados aqui serán usados en determinadas recuperaciones de coincidencias dudosas de pistas. Cada campo será comparado usando un algoritmo de coincidencia confuso. Si el porcentaje de coincidencia es mayor el "Porcentaje mínimo", se considerá como coincidente.&lt;/p&gt;</translation>
+      <location filename="../masstag/dialogs.py" line="225" />
+      <source>&lt;p&gt;The album's artist and album name are each compared with the files' by fuzzy matching. The album matches when both are at least this percentage alike. A search result with as many tracks as the selected files also matches, whatever its names.&lt;/p&gt;</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../masstag/dialogs.py" line="233" />
+      <source>&lt;p&gt;The fields listed here are compared between each file and each retrieved track by fuzzy matching; a track lacking one of them is skipped. The field with the lowest match percentage decides, and the track matches when that is at least the "Minimum percentage required for track match". An empty box means artist and title; track is ignored beside other fields.&lt;/p&gt;</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../masstag/dialogs.py" line="248" />
-      <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the files will get sorted by filename, the retrieved tag sources by filename and corresponding (unmatched) tracks will matched.&lt;/p&gt;</source>
-      <translation>&lt;p&gt;Marque para activar el forzado de emparejamientos. Si no se encuentra una coincidencia apropiada para el archivo, el archivo se ordenará por nombre del archivo, serán emparejadas con los datos obtenidos de la fuente de etiquetas no coincidentes.&lt;p&gt;</translation>
+      <source>&lt;p&gt;Check to enable brute forcing matches.  If a proper match isn't found for a file, the unmatched files are sorted by discnumber, then track (or by filename without them), the retrieved tracks by discnumber, then track, and paired in order.&lt;/p&gt;</source>
+      <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="255" />
+      <location filename="../masstag/dialogs.py" line="256" />
       <source>Update empty fields only.</source>
       <translation>Actualizar solo campos vacíos.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="262" />
+      <location filename="../masstag/dialogs.py" line="263" />
       <source>&amp;Name:</source>
       <translation>&amp;Nombre:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="264" />
+      <location filename="../masstag/dialogs.py" line="265" />
       <source>&amp;Description</source>
       <translation>&amp;Descripción</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="268" />
+      <location filename="../masstag/dialogs.py" line="269" />
       <source>Pattern to match filenames against.</source>
       <translation>Patrón para coincidir con los nombre de archivos.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="271" />
+      <location filename="../masstag/dialogs.py" line="272" />
       <source>Minimum percentage required for album matches.</source>
       <translation>Porcentaje mínimo requerido para coincidencias del álbum.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="274" />
+      <location filename="../masstag/dialogs.py" line="275" />
       <source>Match tracks using fields: </source>
       <translation>Coincidir pistas usando campos:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="389" />
+      <location filename="../masstag/dialogs.py" line="390" />
       <source>Edit Tag Source Config</source>
       <translation>Editar configuración de la fuente de etiquetas</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="400" />
+      <location filename="../masstag/dialogs.py" line="401" />
       <source>&lt;p&gt;Enter a comma-separated list of fields to retrieve. Leave empty to retrieve all available fields/values. &lt;br /&gt;&lt;br /&gt;Eg. &lt;b&gt;artist, album, title&lt;/b&gt; will only retrieve the artist, album and title fields of from the Tag Source. &lt;br /&gt;&lt;br /&gt;Start the list with the tilde (~) character to write all retrieved fields , but the ones listed. Eg the field list &lt;b&gt;~composer,__image&lt;/b&gt; will write all fields but the composer and __image (aka cover art) fields.&lt;/p&gt;&lt;p&gt;If a field has been retrieved in a previous Tag Source the values will be combined if they differ. Eg. If genre=&lt;b&gt;Rock&lt;/b&gt; for the first tag source polled and genre=&lt;b&gt;Alternative&lt;/b&gt; for the tag source polled second then the resulting field will have multiple-values ie. genre=&lt;b&gt;Rock\\Rap&lt;/b&gt;</source>
       <translation>&lt;p&gt;Ponga comas para separar los campos a obtener. Deje en blanco para obtener todos los campos/valores. &lt;br /&gt;&lt;br /&gt;P.ej. &lt;b&gt;artist, album, title&lt;/b&gt; solo se obtendrán los campos artista, álbum y título desde la fuente de etiquetas. &lt;br /&gt;&lt;br /&gt;Comienza la lista con el carácter ~ para escribir todos los campos obtenidos excepto los que están en la lista. P.ej. &lt;b&gt;~composer,__image&lt;/b&gt; escribirá todos los campos excepto el compositor e __image (carátula).&lt;/p&gt;&lt;p&gt;Si los valores de un campo difieren con los obtenidos de la fuente de etiquetas, se combinaran si difieren. P.ej. si género=&lt;b&gt;Rock&lt;/b&gt; en la primera obtención y género=&lt;b&gt;Alternative&lt;/b&gt; en la segunda obtención, entonces el campo resultante tendrá múltiples valores. P.ej.género=&lt;b&gt;Rock\\Alternative&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="422" />
+      <location filename="../masstag/dialogs.py" line="423" />
       <source>Fields to replace: </source>
       <translation>Campos a reemplazar:</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="424" />
+      <location filename="../masstag/dialogs.py" line="425" />
       <source>Enter a comma-separated lists of fields that'll replace any retrieved from previously polled tag sources. &lt;br /&gt;Start the list with the tilde (~) character to replace all but the fields you list. &lt;br /&gt;&lt;b&gt;NB: Fields listed here must also be listed in the list of fields to retrieve.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Eg. Assume you have two Tag Sources. The first retrieves &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. The second source gets &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;. For the second Tag Source, setting just &lt;b&gt;artist&lt;/b&gt; as the list of fields to replace will overwrite the artist field retrieved from the first tag source. The resulting retrieved fields/values as shown in puddletag will then be &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</source>
       <translation>Ponga una lista separada por comas de los campos que serán reemplazados de consultas anteriores&lt;br /&gt;Comience la lista con el carácter tilde (~) para escribir todos los campos obtenidos excepto los que están en la lista. &lt;br /&gt;&lt;b&gt;NB: Los campos mencionados aqui también son listados en la lista de campos a recuperar.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;P.ej. Asume que tiene dos fuentes de etiquetas. La primera recupera &lt;b&gt;artist=Freshlyground, album=Nomvula, genre=Afro Pop&lt;/b&gt;. La segunda fuente consigue &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Pop&lt;/b&gt;.Simplemente estableciendo para la segunda fuente de etiquetas &lt;b&gt;artist&lt;/b&gt; como la lista de campos a reemplazar, será sobreescrito el campo artista obtenido desde la primera fuente de etiquetas. El resultado de los campos/valores obtenidos se muestra en puddletag como &lt;b&gt;artist=Freshly Ground, album=Nomvula, genre=Afro Pop\\Pop&lt;/b&gt;.</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="448" />
+      <location filename="../masstag/dialogs.py" line="449" />
       <source>&amp;Source</source>
       <translation>&amp;Fuente</translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="452" />
+      <location filename="../masstag/dialogs.py" line="453" />
       <source>&amp;If no results found: </source>
       <translation>&amp;Si no se encuentran resultados: </translation>
     </message>
     <message>
-      <location filename="../masstag/dialogs.py" line="454" />
+      <location filename="../masstag/dialogs.py" line="455" />
       <source>&lt;p&gt;&lt;b&gt;Continue&lt;/b&gt;: The lookup for the current album will continue by checking the other tag sources if no matching results were found for this tag source.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Stop:&lt;/b&gt; The lookup for the current album will stop and any previously retrieved results will be used.&lt;/p&gt;</source>
       <translation>&lt;p&gt;&lt;b&gt;Continuar&lt;/b&gt;: La búsqueda para el actual álbum continuará por otras fuentes de etiquetas si no hay resultados en esta fuente.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Parar:&lt;/b&gt; La búsqueda para el actual álbúm para y se usarán los resultados previos obtenidos.&lt;/p&gt;</translation>
     </message>
@@ -3467,14 +3471,14 @@ Esto puedo causar el bloque de su ordenador.
       <translation>Panel etiquetas</translation>
     </message>
     <message>
-      <location filename="../mainwin/tagsources.py" line="345" />
-      <source>Tag Sources</source>
-      <translation>Fuentes de etiquetas</translation>
-    </message>
-    <message>
       <location filename="../mainwin/patterncombo.py" line="83" />
       <source>Patterns</source>
       <translation>Patrones</translation>
+    </message>
+    <message>
+      <location filename="../mainwin/tagsources.py" line="345" />
+      <source>Tag Sources</source>
+      <translation>Fuentes de etiquetas</translation>
     </message>
   </context>
   <context>
