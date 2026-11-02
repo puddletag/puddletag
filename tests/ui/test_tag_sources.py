@@ -9,16 +9,18 @@ from pathlib import Path
 
 import mutagen.id3
 import pytest
-from PyQt6.QtCore import QBuffer, QIODevice, QModelIndex, QPoint, Qt, QTimer, QTranslator
-from PyQt6.QtGui import QImage
-from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QMenu, QMessageBox, QPushButton, QStyle,
-                             QStyleOptionViewItem)
+from PyQt6.QtCore import (QBuffer, QIODevice, QModelIndex, QObject, QPoint, Qt, QTimer, QTranslator, QUrl,
+                          pyqtSlot)
+from PyQt6.QtGui import QDesktopServices, QImage
+from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QLabel, QLineEdit, QMenu, QMessageBox,
+                             QPushButton, QSpinBox, QStyle, QStyleOptionViewItem, QToolButton)
 
 from puddlestuff import audioinfo, tagsources
-from puddlestuff.constants import CONFIGDIR, PLUGINDIR
+from puddlestuff.constants import CHECKBOX, COMBO, CONFIGDIR, PLUGINDIR, SPINBOX, TEXT
+from puddlestuff.mainwin.tagsources import SimpleDialog, SortOptionEditor
 from puddlestuff.puddleobjects import PuddleConfig
 from puddlestuff.puddlesettings import SettingsDialog
-from puddlestuff.tagsources import CDDB, RetrievalError, freedb, write_log
+from puddlestuff.tagsources import CDDB, RetrievalError, SubmissionError, freedb, write_log
 
 pytestmark = pytest.mark.ui
 
@@ -327,6 +329,7 @@ def test_search_box_text_is_searched_instead_of_the_files(mainwin, make_audio, t
     assert source.searches == []
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'parameters'")
 def test_search_with_nothing_selected_asks_for_files(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what puddletag does. (synthetic files)
     window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
@@ -340,7 +343,7 @@ def test_search_with_nothing_selected_asks_for_files(mainwin, make_audio, tmp_pa
 
     user.click(window.searchButton)
 
-    qtbot.waitUntil(lambda: window.label.text() == '<b>Select some files or enter search paramaters.</b>')
+    qtbot.waitUntil(lambda: window.label.text() == '<b>Select some files or enter search parameters.</b>')
     assert source.searches == []
     assert albums(window) == []
 
@@ -434,6 +437,7 @@ def test_clear_preview_exits_preview_mode(mainwin, make_audio, tmp_path, qtbot, 
     assert [in_file(path)['title'] for path in paths] == [[f'Old {n}'] for n in (1, 2, 3)]
 
 
+@pytest.mark.xfail(strict=True, reason="the album shows its track count without a space before the bracket")
 def test_album_tracks_are_retrieved_once(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "Lists the retrieved albums. Click on an album to
     # retrieve metadata." The docs don't say what a second click does; this
@@ -448,7 +452,7 @@ def test_album_tracks_are_retrieved_once(mainwin, make_audio, tmp_path, qtbot, u
     assert source.retrieved == ['alpha']
     assert model.rowCount(alpha) == 3
     assert model.index(0, 0, alpha).data() == '1 - One'
-    assert albums(window)[0] == 'Band - Alpha[3]'
+    assert albums(window)[0] == 'Band - Alpha [3]'
 
 
 # The Fields box, Update empty fields only and covers.
@@ -628,6 +632,7 @@ def fail_to_retrieve(user, qtbot, window, error, label):
     qtbot.waitUntil(lambda: window.label.text() == label)
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_search_error_is_shown_in_the_window(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
     # The docs don't say what the window does when a search fails; this is what
     # puddletag does. tagsources.txt's example plugin: "Raise
@@ -635,7 +640,7 @@ def test_search_error_is_shown_in_the_window(mainwin, make_audio, tmp_path, qtbo
     # message the only argument (may be html)." Synthetic source and error.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     fail_to_search(user, qtbot, window, RetrievalError('<b>Synthetic failure</b>'),
-                   'An error occured: <b>Synthetic failure</b>')
+                   'An error occurred: <b>Synthetic failure</b>')
     assert albums(window) == []
     assert window.searchButton.isEnabled()
     assert dialogs.calls == []
@@ -652,6 +657,7 @@ def test_unhandled_search_error_is_shown_in_the_window(mainwin, make_audio, tmp_
     assert dialogs.calls == []
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_retrieval_error_is_shown_and_the_album_can_be_retried(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say what a failed retrieval does; this is what puddletag
     # does. tagsources.txt's example plugin: "Raise
@@ -660,7 +666,7 @@ def test_retrieval_error_is_shown_and_the_album_can_be_retried(mainwin, make_aud
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     source = the_source()
     fail_to_retrieve(user, qtbot, window, RetrievalError('Synthetic failure'),
-                     'An error occured: Synthetic failure')
+                     'An error occurred: Synthetic failure')
     assert previews(mainwin) == [{}, {}, {}]
     assert [in_file(p)['title'] for p in paths] == [['Old 1'], ['Old 2'], ['Old 3']]
 
@@ -675,22 +681,24 @@ def test_retrieval_error_is_shown_and_the_album_can_be_retried(mainwin, make_aud
     assert window.label.text() == 'Retrieval complete.'
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_unhandled_retrieval_error_is_shown_in_the_window(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs don't say; this is what puddletag does (the traceback on stderr
     # is expected). Synthetic source and error.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     fail_to_retrieve(user, qtbot, window, RuntimeError('Synthetic crash'),
-                     'An unhandled error occured: Synthetic crash')
+                     'An unhandled error occurred: Synthetic crash')
     assert previews(mainwin) == [{}, {}, {}]
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_failed_retrieval_keeps_the_album_expandable(mainwin, make_audio, tmp_path, qtbot, user):
     # The docs are silent; an album with tracks to fetch has an expand arrow
     # before the click, and a failed click shouldn't take it away. Synthetic
     # source and error.
     window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
     fail_to_retrieve(user, qtbot, window, RetrievalError('Synthetic failure'),
-                     'An error occured: Synthetic failure')
+                     'An error occurred: Synthetic failure')
     assert window.listbox.model().hasChildren(album_index(window, 'Alpha'))
 
 
@@ -732,12 +740,6 @@ def header_text(window):
     return window.listbox.model().headerData(0, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
 
 
-def stripped(window):
-    """The albums as shown, without the trailing space the Preferences
-    page's album pattern adds once the user has pressed OK there."""
-    return [shown.strip() for shown in albums(window)]
-
-
 def test_albums_are_sorted_by_artist_then_album(mainwin, make_audio, tmp_path, qtbot, user):
     # preferences.txt: "Sort retrieved albums using order: Will sort the
     # retrieved album by the order listed." The default order is the
@@ -765,6 +767,7 @@ def test_header_right_click_sorts_by_another_option(mainwin, make_audio, tmp_pat
     assert header_text(window) == 'Retrieved Albums (sorted by album / artist)'
 
 
+@pytest.mark.xfail(strict=True, reason="after OK in Preferences an album without tracks ends in a space")
 def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audio, tmp_path, qtbot, user,
                                                                restart):
     # preferences.txt: "Sort retrieved albums using order: Will sort the
@@ -780,7 +783,7 @@ def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audi
     page = preferences_page(user, qtbot, dialog, 'Tag Sources')
     pick(user, qtbot, page._sortoptions, 'album, artist')
     close_preferences(user, qtbot, dialog)
-    assert stripped(window) == ['Moe - A', 'Zed - B', 'Abe - C']
+    assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
     win = restart()
     user = type(user)(qtbot, win)
@@ -796,9 +799,10 @@ def test_sort_option_from_preferences_is_kept_after_a_restart(mainwin, make_audi
     user.press(Key.Key_Return)
     qtbot.waitUntil(lambda: window.searchButton.isEnabled() and len(albums(window)) == 3)
 
-    assert stripped(window) == ['Moe - A', 'Zed - B', 'Abe - C']
+    assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
 
+@pytest.mark.xfail(strict=True, reason="after OK in Preferences an album without tracks ends in a space")
 def test_preferences_ok_keeps_the_header_sort(mainwin, make_audio, tmp_path, qtbot, user):
     # preferences.txt: "You can change the order dynamically by right
     # clicking on the header of the Tag Sources dialog's album list and
@@ -813,7 +817,7 @@ def test_preferences_ok_keeps_the_header_sort(mainwin, make_audio, tmp_path, qtb
     dialog = open_preferences(user, qtbot, mainwin)
     close_preferences(user, qtbot, dialog)
 
-    assert stripped(window) == ['Moe - A', 'Zed - B', 'Abe - C']
+    assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
 
 
 # Automatic retrieval, the default source and the album tooltip.
@@ -1156,6 +1160,7 @@ def search_until(user, qtbot, window, label):
     qtbot.waitUntil(lambda: window.searchButton.isEnabled() and window.label.text() == label)
 
 
+@pytest.mark.xfail(strict=True, reason="the album shows its track count without a space before the bracket")
 def test_freedb_search_and_write(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "So all you need to do in order to do a FreeDB lookup
     # is select all the files belonging to specific album and click on
@@ -1167,7 +1172,7 @@ def test_freedb_search_and_write(gnudb, mainwin, make_audio, tmp_path, qtbot, us
 
     search_until(user, qtbot, window, 'Searching complete.')
 
-    assert albums(window) == ['Other - Second', 'Synth Artist - Synth Album[3]']
+    assert albums(window) == ['Other - Second', 'Synth Artist - Synth Album [3]']
     click_album(user, window, 'Synth Album')
     qtbot.waitUntil(lambda: all(previews(mainwin)))
     user.click(button(window, '&Write'))
@@ -1212,6 +1217,7 @@ def not_found(disc_id):
     return gnudb_reply(f'401 data {disc_id} No such CD entry in database.')
 
 
+@pytest.mark.xfail(strict=True, reason="the album shows its track count without a space before the bracket")
 def test_freedb_exact_match_is_listed(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt: "The DiscID is then referenced to the FreeDB database
     # and any matching albums are returned."
@@ -1223,9 +1229,10 @@ def test_freedb_exact_match_is_listed(gnudb, mainwin, make_audio, tmp_path, qtbo
     search_ended(user, qtbot, window)
 
     assert window.label.text() == 'Searching complete.'
-    assert albums(window) == ['Synth Artist - Synth Album[3]']
+    assert albums(window) == ['Synth Artist - Synth Album [3]']
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_failed_read_during_search_shows_the_servers_answer(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     # CDDBPROTO: "401 Specified CDDB entry not found." The window reports
     # the answer instead of crashing.
@@ -1234,10 +1241,11 @@ def test_freedb_failed_read_during_search_shows_the_servers_answer(gnudb, mainwi
 
     search_ended(user, qtbot, window)
 
-    assert window.label.text() == "An error occured: Couldn't read data 0a0b0c03: the server answered 401."
+    assert window.label.text() == "An error occurred: Couldn't read data 0a0b0c03: the server answered 401."
     assert albums(window) == []
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_failed_read_of_a_picked_album_shows_the_servers_answer(gnudb, mainwin, make_audio, tmp_path, qtbot,
                                                                        user):
     answer_freedb(gnudb, TWO_HITS, [('0a0b0c03', SYNTH_ALBUM), ('0a0b0c99', not_found('0a0b0c99'))])
@@ -1247,22 +1255,717 @@ def test_freedb_failed_read_of_a_picked_album_shows_the_servers_answer(gnudb, ma
     click_album(user, window, 'Second')
 
     qtbot.waitUntil(lambda: window.label.text().startswith('An '))
-    assert window.label.text() == "An error occured: Couldn't read data 0a0b0c99: the server answered 401."
+    assert window.label.text() == "An error occurred: Couldn't read data 0a0b0c99: the server answered 401."
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_http_error(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     gnudb.add(CGI, '', status=500, content_type='text/plain')
     window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
 
     search_ended(user, qtbot, window)
 
-    assert window.label.text() == 'An error occured: HTTP Error 500: Internal Server Error'
+    assert window.label.text() == 'An error occurred: HTTP Error 500: Internal Server Error'
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_freedb_unreadable_reply(gnudb, mainwin, make_audio, tmp_path, qtbot, user):
     answer_freedb(gnudb, '')
     window, _ = load_freedb(mainwin, make_audio, tmp_path, qtbot, user)
 
     search_ended(user, qtbot, window)
 
-    assert window.label.text() == "An error occured: The server's reply isn't a CDDB reply."
+    assert window.label.text() == "An error occurred: The server's reply isn't a CDDB reply."
+
+
+# Configure, Submit and sources without grouping.
+
+class Configurable:
+    """A tag source with one control of each kind a source's preferences
+    can declare: the example plugin's CHECKBOX, COMBO and TEXT, and the
+    SPINBOX AcoustID's Minimum Score uses. applyPrefs records each list of
+    values it's given. Synthetic."""
+    group_by = ['album', 'artist']
+    name = 'Configurable'
+
+    def __init__(self):
+        self.applied = []
+        self.preferences = [['Retrieve Cover', CHECKBOX, True],
+                            ['Cover size to retrieve', COMBO, [['Small', 'Large'], 1]],
+                            ['API Key', TEXT, 'Synthetic key'],
+                            ['Minimum Score', SPINBOX, [0, 100, 80]]]
+
+    def applyPrefs(self, values):
+        self.applied.append(values)
+
+    def search(self, album, artists):
+        return []
+
+
+class Submitter:
+    """A tag source that can submit, as AcoustID can, and has no text
+    search. errors: what the next submits raise, in order. Synthetic."""
+    group_by = ['album', 'artist']
+    name = 'Submitter'
+
+    def __init__(self):
+        self.errors = []
+        self.submitted = []
+
+    def search(self, album, artists):
+        return []
+
+    def submit(self, files):
+        self.submitted.append([f.filepath for f in files])
+        if self.errors:
+            raise self.errors.pop(0)
+
+
+class Ungrouped:
+    """A tag source that doesn't group the files: search gets the selected
+    files themselves. Synthetic."""
+    group_by = None
+    name = 'Ungrouped'
+
+    def __init__(self):
+        self.searched = []
+
+    def search(self, files):
+        self.searched.append([f.filepath for f in files])
+        return [({'album': 'Loose', 'artist': 'Band'}, [])]
+
+
+@pytest.fixture
+def more_sources(synthetic):
+    """Adds the sources above to the window's list, after Synthetic. A test
+    lists it before mainwin; the synthetic fixture puts the list back."""
+    tagsources.tagsources.extend([Configurable, Submitter, Ungrouped])
+
+
+def instance(cls):
+    """The window's instance of a tag source class."""
+    [source] = [s for s in the_status()['initialized_tagsources'] if type(s) is cls]
+    return source
+
+
+def configure_button(window):
+    return window._MainWin__preferencesButton
+
+
+def opened_window(user, qtbot, cls):
+    """The modal window of that class the last click opened (shown, not
+    exec'd), activated so keys reach it."""
+    qtbot.waitUntil(lambda: isinstance(QApplication.activeModalWidget(), cls))
+    window = QApplication.activeModalWidget()
+    user.activate(window)
+    return window
+
+
+def push_button(window, text):
+    [found] = [b for b in window.findChildren(QPushButton) if b.text() == text]
+    return found
+
+
+def tool_button(window, tooltip):
+    [found] = [b for b in window.findChildren(QToolButton) if b.toolTip() == tooltip]
+    return found
+
+
+def replace_text(user, box, text):
+    user.click(box)
+    user.press(Key.Key_A, Ctrl)
+    user.type(text)
+
+
+def configure_dialog(user, qtbot, window):
+    """Clicks Configure and returns the dialog it opens."""
+    user.click(configure_button(window))
+    return opened_window(user, qtbot, SimpleDialog)
+
+
+def configure_values(dialog):
+    """What the dialog's four controls show: the check box, combo, line edit
+    and spin box."""
+    check, combo, text, spin = dialog._controls
+    return [check.isChecked(), combo.currentText(), text.text(), spin.value()]
+
+
+def edit_configure(user, qtbot, dialog):
+    """Changes all four controls of the Configurable dialog."""
+    check, combo, text, spin = dialog._controls
+    # A centre click lands past the short label.
+    user.click(check, QPoint(8, check.height() // 2))
+    pick(user, qtbot, combo, 'Small')
+    user.activate(dialog)
+    replace_text(user, text, 'Typed key')
+    replace_text(user, spin, '55')
+
+
+def test_configure_shows_each_control_with_its_default(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # tut4.txt: "You can configure the Tag Source's behaviour (if not
+    # previously configured to your liking). This is done by clicking on the
+    # Configuration icon." The example plugin: "Object.preferences is a list
+    # of lists definining the the controls that'll be used to created the
+    # Tag Source's config dialog." The defaults shown are the source's own.
+    # Synthetic source.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    pick(user, qtbot, window.sourcelist, 'Configurable')
+    user.activate()
+    source = instance(Configurable)
+
+    dialog = configure_dialog(user, qtbot, window)
+
+    assert dialog.windowTitle() == 'Configure: Configurable'
+    assert [type(c) for c in dialog._controls] == [QCheckBox, QComboBox, QLineEdit, QSpinBox]
+    check, combo, text, spin = dialog._controls
+    assert check.text() == 'Retrieve Cover'
+    assert check.isChecked()
+    assert [combo.itemText(row) for row in range(combo.count())] == ['Small', 'Large']
+    assert combo.currentText() == 'Large'
+    assert text.text() == 'Synthetic key'
+    assert (spin.minimum(), spin.maximum(), spin.value()) == (0, 100, 80)
+    assert source.applied == [[True, 1, 'Synthetic key', 80]]
+    user.click(push_button(dialog, 'Cancel'))
+
+
+def test_configure_ok_applies_the_values_and_keeps_them_after_a_restart(more_sources, mainwin, make_audio, tmp_path,
+                                                                        qtbot, user, restart):
+    # The example plugin: "When the user has finished editing, the
+    # Object.applyPrefs will be called with a list of values correcsponding
+    # to the order in which the were defined. The value returned will be
+    # either True or False for CHECKBOX. For TEXT, it'll be just the text and
+    # for COMBO it'll be the index the user's selected." The docs don't say
+    # the values are kept after a restart; this is what puddletag does.
+    # Synthetic source.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    pick(user, qtbot, window.sourcelist, 'Configurable')
+    user.activate()
+    source = instance(Configurable)
+    dialog = configure_dialog(user, qtbot, window)
+
+    edit_configure(user, qtbot, dialog)
+    user.click(push_button(dialog, 'OK'))
+    qtbot.waitUntil(lambda: not dialog.isVisible())
+
+    assert source.applied[-1] == [False, 0, 'Typed key', 55]
+    saved = PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf')).data['Configurable']
+    assert saved == {'API Key': 'Typed key', 'Cover size to retrieve': 0, 'Minimum Score': 55,
+                     'Retrieve Cover': False}
+
+    win = restart()
+    user = type(user)(qtbot, win)
+    window = tag_sources_window()
+    if not window.isVisible():
+        user.click_menu('Tag Sources')
+        qtbot.waitUntil(window.isVisible)
+    assert window.sourcelist.currentText() == 'Configurable'
+    assert instance(Configurable).applied == [[False, 0, 'Typed key', 55]]
+    user.activate(win)
+    dialog = configure_dialog(user, qtbot, window)
+    assert configure_values(dialog) == [False, 'Small', 'Typed key', 55]
+    user.click(push_button(dialog, 'Cancel'))
+
+
+def test_configure_cancel_applies_nothing(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag does. Synthetic source.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    pick(user, qtbot, window.sourcelist, 'Configurable')
+    user.activate()
+    source = instance(Configurable)
+    dialog = configure_dialog(user, qtbot, window)
+
+    edit_configure(user, qtbot, dialog)
+    user.click(push_button(dialog, 'Cancel'))
+    qtbot.waitUntil(lambda: not dialog.isVisible())
+
+    assert source.applied == [[True, 1, 'Synthetic key', 80]]
+    assert 'Configurable' not in PuddleConfig(str(Path(CONFIGDIR) / 'tagsources.conf')).data
+    user.activate()
+    dialog = configure_dialog(user, qtbot, window)
+    assert configure_values(dialog) == [True, 'Large', 'Synthetic key', 80]
+    user.click(push_button(dialog, 'Cancel'))
+
+
+def test_configure_is_offered_only_for_a_source_with_preferences(mainwin, make_audio, tmp_path, qtbot, user):
+    # tut4.txt: "You can configure the Tag Source's behaviour (if not
+    # previously configured to your liking). This is done by clicking on the
+    # Configuration icon." FreeDB has no preferences (tagsources.txt's FreeDB
+    # section names none); MusicBrainz has ("If **Retrieve Cover** is checked
+    # in the tag source's preferences"). The docs don't say a source without
+    # any hides the icon rather than disabling it; this is what puddletag
+    # does.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    assert not configure_button(window).isVisible()
+
+    pick(user, qtbot, window.sourcelist, 'FreeDB')
+    assert not configure_button(window).isVisible()
+
+    pick(user, qtbot, window.sourcelist, 'MusicBrainz')
+    assert configure_button(window).isVisible()
+    assert configure_button(window).toolTip() == 'Configure'
+
+
+class Unconfigurable:
+    """A tag source that declares preferences = None. Synthetic."""
+    group_by = ['album', 'artist']
+    name = 'Unconfigurable'
+    preferences = None
+
+    def search(self, album, artists):
+        return []
+
+
+@pytest.fixture
+def unconfigurable_source(synthetic):
+    tagsources.tagsources.append(Unconfigurable)
+
+
+@pytest.mark.xfail(strict=True, reason="a source whose preferences are None shows a Configure button")
+def test_configure_is_hidden_for_a_source_whose_preferences_are_none(unconfigurable_source, mainwin, make_audio,
+                                                                     tmp_path, qtbot, user):
+    # tut4.txt: "You can configure the Tag Source's behaviour (if not
+    # previously configured to your liking). This is done by clicking on the
+    # Configuration icon." The docs don't say what a source with
+    # preferences = None gets; it is treated as having none, like a source
+    # without the attribute. Synthetic source.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+
+    pick(user, qtbot, window.sourcelist, 'Unconfigurable')
+
+    assert not configure_button(window).isVisible()
+
+
+# Submit and the Search box.
+
+def submit_and_wait(user, qtbot, window, label):
+    """Clicks Submit Tags and waits for the label to show the outcome."""
+    user.click(window.submitButton)
+    qtbot.waitUntil(lambda: window.label.text() == label and window.submitButton.isEnabled())
+
+
+def test_submit_is_offered_only_by_a_source_that_can_submit(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag does. AcoustID is the source
+    # that submits, and CI doesn't list it, so a synthetic source stands in.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    assert not window.submitButton.isVisible()
+
+    pick(user, qtbot, window.sourcelist, 'MusicBrainz')
+    assert not window.submitButton.isVisible()
+
+    pick(user, qtbot, window.sourcelist, 'Submitter')
+    assert window.submitButton.isVisible()
+    assert window.submitButton.text() == 'S&ubmit Tags'
+
+
+def test_submit_sends_the_selected_files_and_says_so(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag does. Synthetic source.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    pick(user, qtbot, window.sourcelist, 'Submitter')
+    user.activate()
+
+    submit_and_wait(user, qtbot, window, 'Submission completed.')
+
+    assert instance(Submitter).submitted == [[str(p) for p in paths]]
+    assert in_file(paths[0])['title'] == ['Old 1']
+
+
+def test_unhandled_submit_error_is_shown_in_the_window(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag does (the traceback on stderr
+    # is expected). Synthetic source and error.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    pick(user, qtbot, window.sourcelist, 'Submitter')
+    user.activate()
+    instance(Submitter).errors.append(RuntimeError('Synthetic crash'))
+
+    submit_and_wait(user, qtbot, window, 'An unhandled error occurred: Synthetic crash')
+
+    assert instance(Submitter).submitted == [[str(p) for p in paths]]
+
+
+def test_search_box_is_off_for_a_source_without_text_search(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt's example plugin: "This method is optional, but
+    # recommended." (keyword_search); tut4.txt: "For all Tag Sources, but
+    # FreeDB and AcoustID, you can also do textual searching". Synthetic
+    # source.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    assert window.searchEdit.isEnabled()
+
+    pick(user, qtbot, window.sourcelist, 'Submitter')
+    assert not window.searchEdit.isEnabled()
+    assert window.searchEdit.toolTip().startswith('Enter search parameters here.')
+
+
+@pytest.mark.xfail(strict=True, reason="a source without group_by can't search the selected files")
+def test_source_without_grouping_searches_the_selected_files(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag should do. The interface it
+    # describes for sources: "if self.group_by is Falsey, a list of selected
+    # audio files as ModelTag instances." (synthetic files and source)
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    pick(user, qtbot, window.sourcelist, 'Ungrouped')
+    user.activate()
+
+    user.click(window.searchButton)
+    qtbot.waitUntil(lambda: window.searchButton.isEnabled() and window.label.text() != 'Searching...')
+
+    assert window.label.text() == 'Searching complete.'
+    assert albums(window) == ['Band - Loose']
+    assert instance(Ungrouped).searched == [[str(p) for p in paths]]
+
+
+# The sort options' editor.
+
+def sort_editor(user, qtbot, page):
+    """Clicks the Tag Sources page's Edit button and returns the editor."""
+    user.click(push_button(page, '&Edit'))
+    return opened_window(user, qtbot, SortOptionEditor)
+
+
+def listed_options(editor):
+    return [editor.listbox.item(row).text() for row in range(editor.listbox.count())]
+
+
+def combo_items(combo):
+    return [combo.itemText(row) for row in range(combo.count())]
+
+
+@pytest.mark.xfail(strict=True, reason="after OK in Preferences an album without tracks ends in a space")
+def test_sort_option_editor_adds_an_option(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # preferences.txt: "Will sort the retrieved album by the order listed.
+    # Use the dialog brought up by clicking 'Edit' to bring up an editor for
+    # the sort options. You can change the order dynamically by right
+    # clicking on the header of the Tag Sources dialog's album list and
+    # choosing from the sort options you defined." Synthetic albums.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    the_source().albums = THREE_ALBUMS
+    search(user, qtbot, window, 3)
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    editor = sort_editor(user, qtbot, page)
+
+    dialogs.answer('QInputDialog.getItem', ('album', True))
+    user.click(tool_button(editor, 'Add'))
+
+    assert listed_options(editor) == ['artist, album', 'album, artist', 'album']
+    assert dialogs.calls[-1][1][2] == 'Add sort option'
+
+    user.click(push_button(editor, 'OK'))
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    assert combo_items(page._sortoptions) == ['artist, album', 'album, artist', 'album']
+    user.activate(dialog)
+    pick(user, qtbot, page._sortoptions, 'album')
+    close_preferences(user, qtbot, dialog)
+
+    assert albums(window) == ['Moe - A', 'Zed - B', 'Abe - C']
+    assert header_text(window) == 'Retrieved Albums (sorted by album)'
+    assert pick_sort(user, qtbot, window, 'album') == ['artist/album', 'album/artist', 'album']
+
+
+def test_sort_option_editor_edit_changes_the_selected_option(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # preferences.txt: "Use the dialog brought up by clicking 'Edit' to
+    # bring up an editor for the sort options." The docs don't say how an
+    # option is changed; this is what puddletag does. Synthetic option.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    editor = sort_editor(user, qtbot, page)
+    lb = editor.listbox
+    user.click(lb.viewport(), lb.visualItemRect(lb.item(1)).center())
+
+    dialogs.answer('QInputDialog.getItem', ('year, album', True))
+    user.click(tool_button(editor, 'Edit'))
+
+    assert listed_options(editor) == ['artist, album', 'year, album']
+    assert dialogs.calls[-1][1][2] == 'Edit sort option'
+    assert dialogs.calls[-1][1][5] == 1
+
+    user.click(push_button(editor, 'OK'))
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    assert combo_items(page._sortoptions) == ['artist, album', 'year, album']
+
+
+def test_sort_option_editor_double_click_edits_the_option(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # preferences.txt: "Use the dialog brought up by clicking 'Edit' to
+    # bring up an editor for the sort options." The docs don't say that
+    # double-clicking an option edits it; this is what puddletag does.
+    # Synthetic option.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    editor = sort_editor(user, qtbot, page)
+    lb = editor.listbox
+
+    dialogs.answer('QInputDialog.getItem', ('genre, album', True))
+    user.double_click(lb.viewport(), lb.visualItemRect(lb.item(0)).center())
+
+    assert listed_options(editor) == ['genre, album', 'album, artist']
+
+    user.click(push_button(editor, 'OK'))
+    qtbot.waitUntil(lambda: not editor.isVisible())
+    assert page._sortoptions.currentText() == 'genre, album'
+
+
+@pytest.mark.xfail(strict=True, reason="the sort options editor's Cancel applies the edits")
+def test_sort_option_editor_cancel_keeps_the_options(mainwin, make_audio, tmp_path, qtbot, user, dialogs):
+    # The docs don't say; this is what puddletag should do: Cancel in a
+    # dialog throws the edits away. Synthetic option.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    editor = sort_editor(user, qtbot, page)
+    dialogs.answer('QInputDialog.getItem', ('title, artist', True))
+    user.click(tool_button(editor, 'Add'))
+
+    user.click(push_button(editor, 'Cancel'))
+    qtbot.waitUntil(lambda: not editor.isVisible())
+
+    assert combo_items(page._sortoptions) == ['artist, album', 'album, artist']
+
+
+# The results tree.
+
+def check_box_rect(tree, index):
+    """Where a tree row's check box is drawn, as test_functions.py's check
+    finds a list item's."""
+    option = QStyleOptionViewItem()
+    tree.initViewItemOption(option)
+    option.rect = tree.visualRect(index)
+    option.features |= QStyleOptionViewItem.ViewItemFeature.HasCheckIndicator
+    return tree.style().subElementRect(QStyle.SubElement.SE_ItemViewItemCheckIndicator, option, tree)
+
+
+def expand(user, qtbot, window, album):
+    """Clicks the album's arrow, left of its row."""
+    tree = window.listbox
+    rect = tree.visualRect(album_index(window, album))
+    user.click(tree.viewport(), QPoint(rect.left() - tree.indentation() // 2, rect.center().y()))
+    qtbot.waitUntil(lambda: tree.isExpanded(album_index(window, album)))
+
+
+class Browser(QObject):
+    """Stands in for the desktop's browser: Qt hands it the addresses a
+    link opens (a link label opens them from C++, where opened in
+    test_help_menu.py can't see them)."""
+
+    def __init__(self):
+        super().__init__()
+        self.urls = []
+
+    @pyqtSlot(QUrl)
+    def open(self, url):
+        self.urls.append(url.toString())
+
+
+@pytest.fixture
+def browser():
+    catcher = Browser()
+    QDesktopServices.setUrlHandler('https', catcher, 'open')
+    yield catcher
+    QDesktopServices.unsetUrlHandler('https')
+
+
+def link_label(window):
+    [label] = [label for label in window.findChildren(QLabel) if label.openExternalLinks()]
+    return label
+
+
+FULL = [{'album': 'Alpha', 'artist': 'Band', 'title': f'E{p}', 'track': str(p + 1)} for p in (0, 1, 2)]
+
+
+def test_unticking_an_exact_match_clears_its_preview(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "Lookups are done by album, but you can select
+    # metadata by track too." The docs don't say what unticking does; this
+    # is what puddletag does. Synthetic matches.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    the_source().exact = [(p, {'title': f'E{p}', 'track': str(p + 1)}) for p in (0, 1, 2)]
+    search(user, qtbot, window, 1)
+    qtbot.waitUntil(lambda: previews(mainwin) == FULL)
+    expand(user, qtbot, window, 'Alpha')
+    track = window.listbox.model().index(1, 0, album_index(window, 'Alpha'))
+
+    user.click(window.listbox.viewport(), check_box_rect(window.listbox, track).center())
+
+    qtbot.waitUntil(lambda: previews(mainwin) == [FULL[0], {}, FULL[2]])
+    assert track.data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Unchecked
+    assert the_status()['previewmode']
+
+
+@pytest.mark.xfail(strict=True, reason="ticking an exact match again previews the track without its album's fields")
+def test_ticking_an_exact_match_again_previews_it_again(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "Lookups are done by album, but you can select
+    # metadata by track too." The docs don't say what ticking again does;
+    # the first preview had the album's fields, so it should keep them.
+    # Synthetic matches.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    the_source().exact = [(p, {'title': f'E{p}', 'track': str(p + 1)}) for p in (0, 1, 2)]
+    search(user, qtbot, window, 1)
+    qtbot.waitUntil(lambda: previews(mainwin) == FULL)
+    expand(user, qtbot, window, 'Alpha')
+    track = window.listbox.model().index(1, 0, album_index(window, 'Alpha'))
+    user.click(window.listbox.viewport(), check_box_rect(window.listbox, track).center())
+    qtbot.waitUntil(lambda: previews(mainwin)[1] == {})
+
+    user.click(window.listbox.viewport(), check_box_rect(window.listbox, track).center())
+
+    qtbot.waitUntil(lambda: previews(mainwin)[1] != {})
+    assert track.data(Qt.ItemDataRole.CheckStateRole) == Qt.CheckState.Checked
+    assert previews(mainwin) == FULL
+
+
+def test_track_display_format_applies_to_the_shown_albums(mainwin, make_audio, tmp_path, qtbot, user):
+    # preferences.txt: "Display format for individual tracks: Enter a
+    # pattern to be used to display the metadata for individual tracks in
+    # the Tag Sources dialog's album list." The docs don't say when it
+    # shows; this is what puddletag does.
+    window, _, _ = picked_alpha(mainwin, make_audio, tmp_path, qtbot, user)
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+
+    replace_text(user, page._text, '%title% (%track%)')
+    close_preferences(user, qtbot, dialog)
+
+    model = window.listbox.model()
+    alpha = album_index(window, 'Alpha')
+    assert [model.index(n, 0, alpha).data() for n in range(3)] == ['One (1)', 'Two (2)', 'Three (3)']
+    assert previews(mainwin) == ALPHA_PREVIEWS
+
+
+def test_album_link_is_shown_and_opens_in_the_browser(browser, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what puddletag does. The example plugin
+    # sets info['#extrainfo'] = ('Album at Amazon', page_url(item)) without
+    # a comment. Synthetic album and address.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    the_source().albums[0][0]['#extrainfo'] = ('Alpha at Synthetic', 'https://example.org/alpha?id=1&v=2')
+    search(user, qtbot, window)
+    click_album(user, window, 'Alpha')
+    qtbot.waitUntil(lambda: previews(mainwin) == ALPHA_PREVIEWS)
+    label = link_label(window)
+
+    user.click(label, QPoint(10, label.height() // 2))
+
+    assert label.text() == '<a href="https://example.org/alpha?id=1&v=2">Alpha at Synthetic</a>'
+    qtbot.waitUntil(lambda: browser.urls == ['https://example.org/alpha?id=1&v=2'])
+
+
+@pytest.mark.xfail(strict=True, reason="the link of the album picked before stays shown")
+def test_album_link_goes_when_an_album_without_one_is_picked(mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say; this is what a user would expect: the link
+    # belongs to the picked album, so another album must not show it.
+    # Synthetic album and address.
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user)
+    the_source().albums[0][0]['#extrainfo'] = ('Alpha at Synthetic', 'https://example.org/alpha?id=1&v=2')
+    search(user, qtbot, window)
+    click_album(user, window, 'Alpha')
+    qtbot.waitUntil(lambda: previews(mainwin) == ALPHA_PREVIEWS)
+    label = link_label(window)
+    assert label.text().startswith('<a ')
+    qtbot.waitUntil(window.listbox.isEnabled)
+
+    click_album(user, window, 'Zeta')
+
+    qtbot.waitUntil(lambda: the_source().retrieved == ['alpha', 'zeta'] and window.label.text() == 'Retrieval complete.')
+    assert link_label(window).text() == ''
+
+
+# Strings.
+
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
+def test_submit_error_is_shown_in_the_window(more_sources, mainwin, make_audio, tmp_path, qtbot, user):
+    # The docs don't say what the window does when a submit fails; this is what
+    # puddletag does. Synthetic source and error.
+    window, paths = load(mainwin, make_audio, tmp_path, qtbot, user)
+    pick(user, qtbot, window.sourcelist, 'Submitter')
+    user.activate()
+    instance(Submitter).errors.append(SubmissionError('<b>Synthetic refusal</b>'))
+
+    user.click(window.submitButton)
+
+    qtbot.waitUntil(lambda: window.label.text().startswith('An ') and window.submitButton.isEnabled())
+    assert window.label.text() == 'An error occurred: <b>Synthetic refusal</b>'
+    assert instance(Submitter).submitted == [[str(p) for p in paths]]
+
+
+@pytest.mark.xfail(strict=True, reason="the tooltip misspells 'comma-separated'")
+def test_fields_box_tooltip_says_comma_separated(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "Enter a list of comma-separated fields to write here,
+    # eg. **artist, album**, will update only the artist and album fields when
+    # you select an album."
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+
+    [label] = [l for l in window.findChildren(QLabel) if l.text() == '&Fields']
+    assert label.buddy().toolTip().startswith('Enter a comma-separated list of fields to write.')
+
+
+@pytest.mark.xfail(strict=True, reason="the search box tooltip leaves '<b>;Resurrection.' unclosed")
+def test_search_box_tooltip_closes_its_bold_text(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt: "See the Search Box's tooltip (or read the rest of this
+    # document) for details on how each tag source does textual searches."
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+
+    tip = window.searchEdit.toolTip()
+
+    assert 'For an album only' in tip
+    assert tip.count('<b>') == tip.count('</b>')
+
+
+@pytest.mark.xfail(strict=True, reason="MusicBrainz has no tooltip of its own, so the search box shows the "
+                                       "default one, which doesn't list ':a' and ':b'")
+def test_musicbrainz_search_box_tooltip_lists_its_searches(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt, Using MusicBrainz: "To search for a specific artist, album
+    # pair enter the search string as **artist;album** ... Searching for the
+    # albums of a specific artist is done by leaving off the album part as in
+    # **artist;** ... For an album only leave off the artist part, as in
+    # **;album** ... starting your search string with **:a** ... starting your
+    # search string with **:b** ... Anything else is searched as an album
+    # title."
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    pick(user, qtbot, window.sourcelist, 'MusicBrainz')
+
+    tip = window.searchEdit.toolTip()
+
+    assert 'artist;album' in tip
+    assert ':a ' in tip
+    assert ':b ' in tip
+    assert tip.count('<b>') == tip.count('</b>')
+
+
+@pytest.mark.xfail(strict=True, reason="the label lacks 'send': 'User-Agent to when accessing web sites.'")
+def test_user_agent_label(mainwin, qtbot, user):
+    # preferences.txt, User-Agent: "The User-Agent puddletag sends to the web
+    # sites its tag sources read".
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+
+    assert 'User-Agent to send when accessing web sites.' in [l.text() for l in page.findChildren(QLabel)]
+
+    close_preferences(user, qtbot, dialog)
+
+
+@pytest.mark.xfail(strict=True, reason="the tooltip says 'Discogs only support searching by release id'")
+def test_discogs_search_box_tooltip(mainwin, make_audio, tmp_path, qtbot, user):
+    # tagsources.txt, Using Discogs: "To retrieve a release, type its Discogs
+    # release id ... in the search box ... puddletag doesn't search Discogs by
+    # artist or album."
+    window, _ = load(mainwin, make_audio, tmp_path, qtbot, user, select=False)
+    pick(user, qtbot, window.sourcelist, 'Discogs.com')
+
+    tip = window.searchEdit.toolTip()
+
+    assert tip.startswith('<p><b>Discogs only supports searching by release id</b></p>')
+
+
+@pytest.mark.xfail(strict=True, reason="the window shows the track count without a space before the bracket, "
+                                       "and the Preferences page's pattern leaves a trailing space")
+def test_album_shows_its_track_count_after_a_space(mainwin, make_audio, tmp_path, qtbot, user):
+    # preferences.txt, Display format for retrieved albums: "As above but for
+    # the album. You can use the field **%__numtracks%** to get the number of
+    # tracks in an album." The window and the Preferences page should use the
+    # same format. Synthetic files and albums.
+    window, _, _ = picked_alpha(mainwin, make_audio, tmp_path, qtbot, user)
+    assert albums(window) == ['Band - Alpha [3]', 'Band - Zeta']
+
+    dialog = open_preferences(user, qtbot, mainwin)
+    page = preferences_page(user, qtbot, dialog, 'Tag Sources')
+    assert page._albumdisp.text() == window.listbox.albumPattern
+    close_preferences(user, qtbot, dialog)
+
+    assert albums(window) == ['Band - Alpha [3]', 'Band - Zeta']

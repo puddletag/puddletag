@@ -589,6 +589,7 @@ def test_source_without_a_match_is_polled_again_with_the_found_data(
         assert previews(mainwin)[str(f)]['genre'] == ['One']
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_retrieval_error_while_searching_is_logged(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt's example plugin: "Raise puddlestuff.tagsources.RetrievalError
     # if an error occurs." Synthetic files and album.
@@ -602,11 +603,12 @@ def test_retrieval_error_while_searching_is_logged(mainwin, make_audio, tmp_path
 
     log = search(user, qtbot, mainwin, window)
 
-    assert 'An error occured during the search: synthetic search failure' in log
+    assert 'An error occurred during the search: synthetic search failure' in log
     assert 'No valid matches were found for the album.' in log
     no_previews(mainwin)
 
 
+@pytest.mark.xfail(strict=True, reason="the message misspells 'occurred'")
 def test_retrieval_error_while_retrieving_is_logged(mainwin, make_audio, tmp_path, qtbot, user):
     # tagsources.txt's example plugin: "Raise puddlestuff.tagsources.RetrievalError
     # if an error occurs." Synthetic files and album.
@@ -620,7 +622,7 @@ def test_retrieval_error_while_retrieving_is_logged(mainwin, make_audio, tmp_pat
 
     log = search(user, qtbot, mainwin, window)
 
-    assert 'An error occured during album retrieval: synthetic retrieval failure' in log
+    assert 'An error occurred during album retrieval: synthetic retrieval failure' in log
     assert 'No matches found for tag source Synthetic Source' in log
     no_previews(mainwin)
 
@@ -726,6 +728,27 @@ def test_profile_editor_defaults(mainwin, user, qtbot):
     assert editor.trackBound.value() == 80
     assert not editor.jfdi.isChecked()
     assert not editor.existing.isChecked()
+    user.click(button(editor, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
+    user.click(button(profiles, 'Cancel'))
+
+
+@pytest.mark.xfail(strict=True, reason="the tooltip misspells 'comma-separated'")
+def test_profile_source_fields_tooltip_says_comma_separated(mainwin, user, qtbot):
+    # tut5.txt, Fields: "The list of fields to retrieve from the tag source."
+    # tagsources.txt: "Enter a list of comma-separated fields to write here".
+    window = open_mass_tagging(user, mainwin, qtbot)
+    user.click(button(window, '&Configure Profiles'))
+    profiles = opened(qtbot, MassTagEdit)
+    user.click(profiles.buttonlist.addButton)
+    editor = opened(qtbot, MTProfileEdit)
+    user.click(editor.buttonlist.addButton)
+    config = opened(qtbot, TSProfileEdit)
+
+    assert config.fields.toolTip().startswith('<p>Enter a comma-separated list of fields to retrieve.')
+
+    user.click(button(config, 'Cancel'))
+    qtbot.waitUntil(lambda: QApplication.activeModalWidget() is editor)
     user.click(button(editor, 'Cancel'))
     qtbot.waitUntil(lambda: QApplication.activeModalWidget() is profiles)
     user.click(button(profiles, 'Cancel'))

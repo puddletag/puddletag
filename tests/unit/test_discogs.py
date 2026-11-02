@@ -173,6 +173,68 @@ def test_master_fields(source, web_server):
     assert [r.path for r in web_server.requests] == ['/masters/96559']
 
 
+NOTICE = 'Data provided by Discogs.'
+
+
+@pytest.mark.xfail(strict=True, reason="the link goes to /releases/<id> and "
+                   "doesn't say 'Data provided by Discogs.'")
+def test_release_notice_links_to_its_page(source):
+    """Discogs' API terms of use: "You must display the following notice
+    directly next to any data You use from the Discogs API: “Data provided by
+    Discogs.” The notice must include a hyperlink to the discogs.com page that
+    includes the data." """
+    info, _ = retrieve(source, EXISTENCE)
+
+    assert info['#extrainfo'] == (NOTICE, 'https://www.discogs.com/release/'
+                                  '1257896-Fiuzz-Existence-Dance-Festival')
+
+
+@pytest.mark.xfail(strict=True, reason="the link goes to /releases/<id> and "
+                   "doesn't say 'Data provided by Discogs.'")
+def test_release_notice_without_address(source, web_server):
+    """Discogs' API terms of use: "You must display the following notice
+    directly next to any data You use from the Discogs API: “Data provided by
+    Discogs.” The notice must include a hyperlink to the discogs.com page that
+    includes the data." The response without its uri is synthetic."""
+    release = recorded(f'release-{EXISTENCE}')
+    del release['uri']
+    serve(web_server, EXISTENCE, release)
+
+    info, _ = retrieve(source, EXISTENCE)
+
+    assert info['#extrainfo'] == (NOTICE, 'https://www.discogs.com/release/1257896')
+
+
+@pytest.mark.xfail(strict=True, reason="the link goes to /master/<id> and "
+                   "doesn't say 'Data provided by Discogs.'")
+def test_master_notice_links_to_its_page(source):
+    """Discogs' API terms of use: "You must display the following notice
+    directly next to any data You use from the Discogs API: “Data provided by
+    Discogs.” The notice must include a hyperlink to the discogs.com page that
+    includes the data." """
+    info, _ = retrieve_master(source, NEVER_GONNA_MASTER, 'Never Gonna Give You Up')
+
+    assert info['#extrainfo'] == (NOTICE, 'https://www.discogs.com/master/'
+                                  '96559-Rick-Astley-Never-Gonna-Give-You-Up')
+
+
+@pytest.mark.xfail(strict=True, reason="the link goes to /master/<id> and "
+                   "doesn't say 'Data provided by Discogs.'")
+def test_master_notice_without_address(source, web_server):
+    """Discogs' API terms of use: "You must display the following notice
+    directly next to any data You use from the Discogs API: “Data provided by
+    Discogs.” The notice must include a hyperlink to the discogs.com page that
+    includes the data." The response without its uri is synthetic."""
+    master = recorded(f'master-{NEVER_GONNA_MASTER}')
+    del master['uri']
+    web_server.add(f'/masters/{NEVER_GONNA_MASTER}', json.dumps(master),
+                   content_type='application/json')
+
+    info, _ = retrieve_master(source, NEVER_GONNA_MASTER, 'Never Gonna Give You Up')
+
+    assert info['#extrainfo'] == (NOTICE, 'https://www.discogs.com/master/96559')
+
+
 @pytest.mark.parametrize(('release_id', 'expected'), [
     pytest.param(NEVER_GONNA, [('A', 'Never Gonna Give You Up', '3:32'),
                                ('B', 'Never Gonna Give You Up (Instrumental)', '3:30')],
