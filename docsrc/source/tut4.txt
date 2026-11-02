@@ -65,7 +65,7 @@ There are a couple of things you need to know to able to use puddletag's tagging
 Textual searches
 ----------------
 
-For all Tag Sources, but FreeDB you can also do textual searching. If the **Search text box** contains *any* text whatsoever, puddletag will do a textual search when you click on **Search**. After which you can perform the same procedure as from **9** above.
+For all Tag Sources, but FreeDB and AcoustID, you can also do textual searching. If the **Search text box** contains *any* text whatsoever, puddletag will do a textual search when you click on **Search**. After which you can perform the same procedure as from **9** above.
 
 * Searching for something like 'Nomvula' will assume you mean the album **Nomvula**.
 * Searching for a specific artist/album combination can accomplished by separating the artist and album using a semi-colon as in "Jethro Tull; Aqualung". To specify an album name only, start with the semi-colon as in ";Aqualung". In the same way ending with a semi-colon eg. "Jethro Tull;" will only search for the specific artist.
