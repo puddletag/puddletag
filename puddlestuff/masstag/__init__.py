@@ -114,8 +114,10 @@ class MassTagFlag(object):
 def brute_force_results(audios, retrieved):
     matched = {}
 
-    audios = sorted(audios, key=lambda f: natural_sort_key(to_string(f.get('track', f['__filename']))))
-    retrieved = sorted(retrieved, key=lambda t: natural_sort_key(to_string(t.get('track', t.get('title', '')))))
+    audios = sorted(audios, key=lambda f: (natural_sort_key(to_string(f.get('discnumber', ''))),
+                                           natural_sort_key(to_string(f.get('track', f['__filename'])))))
+    retrieved = sorted(retrieved, key=lambda t: (natural_sort_key(to_string(t.get('discnumber', ''))),
+                                                 natural_sort_key(to_string(t.get('track', t.get('title', ''))))))
 
     for audio, result in zip(audios, retrieved):
         matched[audio] = result
@@ -331,8 +333,9 @@ def match_files(files, tracks, minimum=0.7, keys=None, jfdi=False,
     if jfdi:
         unmatched_tracks = [t for i, t in enumerate(tracks) if i
                             not in assigned]
-        unmatched_files = [f.cls for f in files if f.cls not in ret]
-        ret.update(brute_force_results(unmatched_files, unmatched_tracks))
+        unmatched_files = [f for f in files if getattr(f, 'cls', f) not in ret]
+        ret.update((getattr(f, 'cls', f), t) for f, t in
+                   brute_force_results(unmatched_files, unmatched_tracks).items())
 
     if existing:
         ret = dict((f, dict_difference(f, r)) for f, r in ret.items())
@@ -498,9 +501,14 @@ def replace_tracknumbers(files, tracks):
     if not all('track' in t and 'discnumber' in t for t in tracks):
         return
 
-    files = sorted(files, key=lambda f: to_string(f.get('track', f[FILENAME])))
-    tracks = sorted(tracks, key=itemgetter('track'))
-    tracks = sorted(tracks, key=itemgetter('discnumber'))
+    def number(t, key):
+        try:
+            return 0, to_int(t[key]), ''
+        except (ValueError, TypeError):
+            return 1, 0, to_string(t[key])
+
+    files = sorted(files, key=lambda f: natural_sort_key(to_string(f.get('track', f[FILENAME]))))
+    tracks = sorted(tracks, key=lambda t: (number(t, 'discnumber'), number(t, 'track')))
 
     if len(files) == len(tracks):
         discnum = 1

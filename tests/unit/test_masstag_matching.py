@@ -383,7 +383,6 @@ def test_without_brute_force_unmatched_files_get_nothing():
     assert brute_forced(unlike_files(), unlike_tracks(), jfdi=False) == {}
 
 
-@pytest.mark.xfail(strict=True, reason="brute force reads the file's own tags, not the pattern's")
 def test_brute_force_uses_the_track_number_the_pattern_found():
     """tut5.txt, Pattern to match filenames against: "The tag used to poll Tag
     Sources will then be **artist=Bongo Maffin, album=Bonglut, genre=Kwaito,
@@ -394,7 +393,6 @@ def test_brute_force_uses_the_track_number_the_pattern_found():
         'a - 2.mp3': ['Something'], 'b - 1.mp3': ['Come Together']}
 
 
-@pytest.mark.xfail(strict=True, reason='brute force sorts the retrieved tracks by track number only')
 def test_brute_force_keeps_a_two_disc_album_in_order():
     """tut5.txt, Brute force unmatched files: "The retrieved data will also be
     sorted using **discnumber**, then **track**." Three files for a
@@ -415,7 +413,6 @@ def test_matching_by_track_renumbers_a_two_disc_album():
         '03.mp3': ['Disc 2 Track 1'], '04.mp3': ['Disc 2 Track 2']}
 
 
-@pytest.mark.xfail(strict=True, reason='track numbers are sorted as text when the discs are renumbered')
 def test_matching_by_track_renumbers_discs_of_more_than_nine_files():
     """tut5.txt, Match tracks using fields: "files numbered straight through
     the album are renumbered disc by disc before they're compared". Two discs
